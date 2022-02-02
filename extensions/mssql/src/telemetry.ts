@@ -122,7 +122,6 @@ export class Telemetry {
 	 * property bag
 	 */
 	public static fillServerInfo(telemetryInfo: { [key: string]: string }, serverInfo: ServerInfo): { [key: string]: string } {
-		telemetryInfo['osVersion'] = serverInfo?.osVersion;
 		telemetryInfo['serverEdition'] = serverInfo?.serverEdition;
 		telemetryInfo['serverLevel'] = serverInfo?.serverLevel;
 		telemetryInfo['serverMajorVersion'] = serverInfo?.serverMajorVersion.toString();
