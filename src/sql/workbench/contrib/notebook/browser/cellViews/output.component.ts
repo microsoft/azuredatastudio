@@ -158,6 +158,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 				options.trusted ? '' : localize('safe', "safe "),
 				mimeTypesWithoutRenderer.join(', '));
 			this.cellModel?.notebookModel?.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.MIMETypeRendererNotFound, { mime_types: mimeTypesWithoutRenderer });
+			return;
 		}
 		let selector = componentRegistry.getCtorFromMimeType(mimeType);
 		if (!selector) {
