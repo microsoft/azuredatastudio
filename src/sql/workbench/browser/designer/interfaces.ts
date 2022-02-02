@@ -191,6 +191,7 @@ export enum DesignerEditType {
 	Remove = 1,
 	Update = 2
 }
+
 export interface DesignerEdit {
 	type: DesignerEditType;
 	path: DesignerEditPath;

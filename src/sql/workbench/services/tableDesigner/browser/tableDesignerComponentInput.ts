@@ -33,7 +33,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	public readonly onEditProcessed: Event<DesignerEditProcessedEventArgs> = this._onEditProcessed.event;
 	public readonly onStateChange: Event<DesignerStateChangedEventArgs> = this._onStateChange.event;
 
-	public readonly designerEditTypeDisplayValue: { [key: number]: string } = {
+	private readonly designerEditTypeDisplayValue: { [key: number]: string } = {
 		0: 'Add', 1: 'Remove', 2: 'Update'
 	};
 
@@ -71,7 +71,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	processEdit(edit: DesignerEdit): void {
-		let telemetryInfo = this.createTelemetryInfo();
+		const telemetryInfo = this.createTelemetryInfo();
 		telemetryInfo.tableObjectType = this.getObjectTypeFromPath(edit.path);
 		const editAction = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner,
 			this.designerEditTypeDisplayValue[edit.type]).withAdditionalProperties(telemetryInfo);
@@ -131,7 +131,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	async publishChanges(): Promise<void> {
 		const telemetryInfo = this.createTelemetryInfo();
-		const publishEvent = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.GenerateScript).withAdditionalProperties(telemetryInfo);
+		const publishEvent = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.PublishChanges).withAdditionalProperties(telemetryInfo);
 		const saveNotificationHandle = this._notificationService.notify({
 			severity: Severity.Info,
 			message: localize('tableDesigner.savingChanges', "Saving table designer changes..."),
@@ -624,18 +624,19 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		return telemetryInfo;
 	}
 
-	/// 1. 'Add' scenario
-	///     a. ['propertyName1']. Example: add a column to the columns property: ['columns'].
-	///     b. ['propertyName1',index-1,'propertyName2']. Example: add a column mapping to the first foreign key: ['foreignKeys',0,'mappings'].
-	/// 2. 'Update' scenario
-	///     a. ['propertyName1']. Example: update the name of the table: ['name'].
-	///     b. ['propertyName1',index-1,'propertyName2']. Example: update the name of a column: ['columns',0,'name'].
-	///     c. ['propertyName1',index-1,'propertyName2',index-2,'propertyName3']. Example: update the source column of an entry in a foreign key's column mapping table: ['foreignKeys',0,'mappings',0,'source'].
-	/// 3. 'Remove' scenario
-	///     a. ['propertyName1',index-1]. Example: remove a column from the columns property: ['columns',0'].
-	///     b. ['propertyName1',index-1,'proper
-	/// The return values would be the propertyNames followed by slashes in level order. Eg.: propertyName1/propertyName2/...
-
+	/**
+	 * 	1. 'Add' scenario
+			a. ['propertyName1']. Example: add a column to the columns property: ['columns'].
+			b. ['propertyName1',index-1,'propertyName2']. Example: add a column mapping to the first foreign key: ['foreignKeys',0,'mappings'].
+		2. 'Update' scenario
+			a. ['propertyName1']. Example: update the name of the table: ['name'].
+			b. ['propertyName1',index-1,'propertyName2']. Example: update the name of a column: ['columns',0,'name'].
+			c. ['propertyName1',index-1,'propertyName2',index-2,'propertyName3']. Example: update the source column of an entry in a foreign key's column mapping table: ['foreignKeys',0,'mappings',0,'source'].
+		3. 'Remove' scenario
+			a. ['propertyName1',index-1]. Example: remove a column from the columns property: ['columns',0'].
+			b. ['propertyName1',index-1,'proper
+		The return values would be the propertyNames followed by slashes in level order. Eg.: propertyName1/propertyName2/...
+	 */
 	private getObjectTypeFromPath(path: DesignerEditPath): string {
 		let typeArray = [];
 		for (let i = 0; i < path.length; i++) {

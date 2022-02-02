@@ -5,7 +5,6 @@
 
 // This is the place for API experiments and proposal.
 
-import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import * as vscode from 'vscode';
 
 declare module 'azdata' {
@@ -1024,7 +1023,7 @@ declare module 'azdata' {
 		 * @param tableInfo The table information. The object will be passed back to the table designer provider as the unique identifier for the table.
 		 * @param telemetryInfo: Optional Key-value pair containing any extra information that needs to be sent via telemetry
 		 */
-		export function openTableDesigner(providerId: string, tableInfo: TableInfo, telemetryInfo?: ITelemetryEventProperties): Thenable<void>;
+		export function openTableDesigner(providerId: string, tableInfo: TableInfo, telemetryInfo?: { [key: string]: string }): Thenable<void>;
 
 		/**
 		 * Definition for the table designer provider.
