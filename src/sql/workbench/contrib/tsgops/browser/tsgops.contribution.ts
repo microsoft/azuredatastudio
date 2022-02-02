@@ -15,7 +15,7 @@ export class ADSWebLite implements IWorkbenchContribution {
 	constructor(
 		@ICommandService private commandService: ICommandService,
 	) {
-		this.createTSGOpsImage().then(() => null);
+		void this.createTSGOpsImage();
 	}
 
 	private async createTSGOpsImage(): Promise<void> {
