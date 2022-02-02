@@ -116,7 +116,7 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 					validateAz(azToolService.localAz);
 					return azToolService.localAz!.sql.miarc.show(name, namespace, additionalEnvVars);
 				},
-				edit: async (
+				update: async (
 					name: string,
 					args: {
 						coresLimit?: string;
@@ -130,7 +130,7 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 				) => {
 					await localAzDiscovered;
 					validateAz(azToolService.localAz);
-					return azToolService.localAz!.sql.miarc.edit(name, args, namespace, additionalEnvVars);
+					return azToolService.localAz!.sql.miarc.update(name, args, namespace, additionalEnvVars);
 				}
 			},
 			midbarc: {

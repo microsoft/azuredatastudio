@@ -154,7 +154,7 @@ export class AzTool implements azExt.IAzApi {
 			show: (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.SqlMiShowResult>> => {
 				return this.executeCommand<azExt.SqlMiShowResult>(['sql', 'mi-arc', 'show', '-n', name, '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
 			},
-			edit: (
+			update: (
 				name: string,
 				args: {
 					coresLimit?: string,
@@ -167,7 +167,7 @@ export class AzTool implements azExt.IAzApi {
 				namespace: string,
 				additionalEnvVars?: azExt.AdditionalEnvVars
 			): Promise<azExt.AzOutput<void>> => {
-				const argsArray = ['sql', 'mi-arc', 'edit', '-n', name, '--k8s-namespace', namespace, '--use-k8s'];
+				const argsArray = ['sql', 'mi-arc', 'update', '-n', name, '--k8s-namespace', namespace, '--use-k8s'];
 				if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
 				if (args.coresRequest) { argsArray.push('--cores-request', args.coresRequest); }
 				if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
