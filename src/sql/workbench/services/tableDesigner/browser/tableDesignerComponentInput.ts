@@ -97,7 +97,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				this._notificationService.error(localize('tableDesigner.errorProcessingEdit', "An error occured while processing the change: {0}", error?.message ?? error));
 				this.updateState(this.valid, this.dirty);
 				this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner,
-					this.designerEditTypeDisplayValue[edit.type], error?.code, error?.message).withAdditionalProperties(telemetryInfo).send();
+					this.designerEditTypeDisplayValue[edit.type]).withAdditionalProperties(telemetryInfo).send();
 			}
 		);
 	}
@@ -124,8 +124,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			notificationHandle.updateSeverity(Severity.Error);
 			notificationHandle.updateMessage(localize('tableDesigner.generateScriptError', "An error occured while generating the script: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
-			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.GenerateScript,
-				error?.code, error?.message).withAdditionalProperties(telemetryInfo).send();
+			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.GenerateScript).withAdditionalProperties(telemetryInfo).send();
 		}
 	}
 
@@ -151,8 +150,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			saveNotificationHandle.updateSeverity(Severity.Error);
 			saveNotificationHandle.updateMessage(localize('tableDesigner.publishChangeError', "An error occured while publishing changes: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
-			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.PublishChanges,
-				error?.code, error?.message).withAdditionalProperties(telemetryInfo).send();
+			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.PublishChanges).withAdditionalProperties(telemetryInfo).send();
 		}
 	}
 
