@@ -454,7 +454,7 @@
     "vscode-nls": "^4.1.2",
     "which": "^2.0.2",
     "xml-formatter": "^2.1.0",
-    "xmldom": "^0.3.0"
+    "xmldom": "^0.6.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^5.0.0",
@@ -470,7 +470,7 @@
     "sinon": "^9.0.2",
     "tslint": "^5.8.0",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.1.0"
+    "@microsoft/vscodetestcover": "^1.2.0"
   },
   "__metadata": {
     "id": "70",

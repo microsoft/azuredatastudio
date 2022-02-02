@@ -168,8 +168,9 @@ type AzureComponent = azdata.InputBoxComponent | azdata.DropDownComponent;
 /**
  * Creates an inputBox using the properties defined in context.fieldInfo object
  *
- * @param context - the fieldContext object for this field
- * @param inputBoxType - the type of inputBox
+ * @param root
+ * @param root.context - the fieldContext object for this field
+ * @param root.inputBoxType - the type of inputBox
  */
 function createInputBoxField({ context, inputBoxType = 'text' }: { context: FieldContext; inputBoxType?: azdata.InputBoxInputType; }) {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
@@ -930,8 +931,8 @@ function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
  *
  * Only variables in the current model starting with {@see NoteBookEnvironmentVariablePrefix} are replaced.
  *
- * @param inputValue
  * @param inputComponents
+ * @param inputValue
  */
 async function substituteVariableValues(inputComponents: InputComponents, inputValue?: string): Promise<string | undefined> {
 	await Promise.all(Object.keys(inputComponents)

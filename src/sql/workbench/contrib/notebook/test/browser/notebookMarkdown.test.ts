@@ -18,7 +18,7 @@ suite('NotebookMarkdownRenderer', () => {
 		const imageFromMarked = marked(markdown.value, {
 			sanitize: true,
 			renderer
-		}).trim();
+		}).trim().replace('someimageurl', 'vscode-file://vscode-app/someimageurl');
 		assert.strictEqual(result.innerHTML, imageFromMarked);
 	});
 
@@ -26,26 +26,26 @@ suite('NotebookMarkdownRenderer', () => {
 		const markdown = { value: `![image](someimageurl)` };
 		const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown(markdown);
 		const renderer = new marked.Renderer();
-		const imageFromMarked = marked(markdown.value, {
+		let imageFromMarked = marked(markdown.value, {
 			sanitize: true,
 			renderer
-		}).trim();
+		}).trim().replace('someimageurl', 'vscode-file://vscode-app/someimageurl');
 		assert.strictEqual(result.innerHTML, imageFromMarked);
 	});
 
 	test('image width from title params', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![image](someimageurl|width=100 'caption')` });
-		assert.strictEqual(result.innerHTML, `<p><img src="someimageurl" alt="image" title="caption" width="100"></p>`);
+		assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/someimageurl" alt="image" title="caption" width="100"></p>`);
 	});
 
 	test('image height from title params', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![image](someimageurl|height=100 'caption')` });
-		assert.strictEqual(result.innerHTML, `<p><img src="someimageurl" alt="image" title="caption" height="100"></p>`);
+		assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/someimageurl" alt="image" title="caption" height="100"></p>`);
 	});
 
 	test('image width and height from title params', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![image](someimageurl|height=200,width=100 'caption')` });
-		assert.strictEqual(result.innerHTML, `<p><img src="someimageurl" alt="image" title="caption" width="100" height="200"></p>`);
+		assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/someimageurl" alt="image" title="caption" width="100" height="200"></p>`);
 	});
 
 	test('link from local file path', () => {
@@ -99,10 +99,41 @@ suite('NotebookMarkdownRenderer', () => {
 		assert.strictEqual(result.innerHTML, `<p><img src="attachment:ads.png" alt="altText"></p>`, 'Cell attachment name not found failed');
 
 		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachments:ads.png)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads2.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}') });
-		assert.strictEqual(result.innerHTML, `<p><img src="attachments:ads.png" alt="altText"></p>`, 'Cell attachment scheme mismatch failed');
+		assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/attachments:ads.png" alt="altText"></p>`, 'Cell attachment scheme mismatch failed');
 
 		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads.png)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads2.png":"image/png"}') });
 		assert.strictEqual(result.innerHTML, `<p><img src="attachment:ads.png" alt="altText"></p>`, 'Cell attachment no image data failed');
+	});
+
+	suite('Schema validation', function () {
+		test('https', () => {
+			const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![](https://example.com)` });
+			assert.strictEqual(result.innerHTML, `<p><img src="https://example.com/"></p>`, 'HTTPS schema link should not be modified');
+		});
+		test('http', () => {
+			const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![](http://example.com)` });
+			assert.strictEqual(result.innerHTML, `<p><img src="http://example.com/"></p>`, 'HTTP schema link should not be modified');
+		});
+		test('attachment & data', () => {
+			const result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads.png)`, isTrusted: false }, { cellAttachments: JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}') });
+			assert.strictEqual(result.innerHTML, `<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAggg==" alt="altText"></p>`, 'Cell with attachment should have attachment URI not be modified');
+		});
+		test('vscode-file', () => {
+			const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![](vscode-file://vscode-app/mypath)` });
+			assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/mypath"></p>`, 'vscode-file schema link should not be modified');
+		});
+		test('file', () => {
+			const filePath = URI.parse(__filename).fsPath;
+			const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![](${filePath})` });
+			let renderedPath = filePath.replace(/\\/g, '/');
+			// Unix filesystems start with / which is deduplicated in the final src URI - so just remove that now if it exists
+			renderedPath = renderedPath.startsWith('/') ? renderedPath.slice(1) : renderedPath;
+			assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/${renderedPath}"></p>`, 'file links should have vscode-file schema added');
+		});
+		test('unknown', () => {
+			const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![](unknown://some/path)` });
+			assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/unknown://some/path"></p>`, 'unknown schema should be treated like a path and have vscode-file schema added');
+		});
 	});
 
 	test('table followed by blank line with space and then header renders correctly (#16245)', function (): void {

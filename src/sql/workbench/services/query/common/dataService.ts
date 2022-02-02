@@ -135,9 +135,6 @@ export class DataService {
 
 	/**
 	 * send request to save the selected result set as csv
-	 * @param uri of the calling document
-	 * @param batchId The batch id of the batch with the result to save
-	 * @param resultId The id of the result to save as csv
 	 */
 	sendSaveRequest(saveRequest: ISaveRequest): void {
 		let serializer = this._instantiationService.createInstance(ResultSerializer);

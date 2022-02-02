@@ -14,6 +14,7 @@ import { IURITransformer } from 'vs/base/common/uriIpc';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { mapToSerializable } from 'sql/base/common/map';
+import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
@@ -916,8 +917,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).disposeTableDesigner(table);
 	}
 
-	public override $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo): Promise<void> {
-		this._proxy.$openTableDesigner(providerId, tableInfo);
+	public override $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): Promise<void> {
+		this._proxy.$openTableDesigner(providerId, tableInfo, telemetryInfo);
 		return Promise.resolve();
 	}
 }
