@@ -188,7 +188,7 @@ However we always want it to be the width of the container it is resizing.
 	text-overflow: ellipsis;
 	overflow: hidden;
 	font-size: 11px;
-	min-width: 3ch;
+	min-width: 10px;
 	-webkit-margin-before: 0;
 	-webkit-margin-after: 0;
 	font-weight: bold;
