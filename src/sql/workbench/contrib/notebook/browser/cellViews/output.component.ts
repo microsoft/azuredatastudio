@@ -152,9 +152,10 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 		);
 		this.errorText = undefined;
 		if (!mimeType) {
-			this.errorText = localize('noMimeTypeFound', "No {0}renderer could be found for output. It has the following MIME types: {1}",
-				options.trusted ? '' : localize('safe', "safe "),
-				Object.keys(options.data).join(', '));
+			const mimeTypes = Object.keys(options.data).join(', ');
+			this.errorText = options.trusted ?
+				localize('noMimeTypeFound', "No renderer could be found for output. It has the following MIME types: {0}", mimeTypes) :
+				localize('noSafeMimeTypeFound', "No safe renderer could be found for output. It has the following MIME types: {0}", mimeTypes);
 			return;
 		}
 		let selector = componentRegistry.getCtorFromMimeType(mimeType);
