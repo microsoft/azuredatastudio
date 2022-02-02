@@ -66,7 +66,6 @@ interface MssqlBackupInfo {
 	backupPathDevices: { [path: string]: number };
 	backupPathList: string[];
 	isCopyOnly: boolean;
-	toUrl: boolean;
 	formatMedia: boolean;
 	initialize: boolean;
 	skipTapeHeader: boolean;
@@ -291,6 +290,8 @@ export class BackupComponent extends AngularDisposable {
 		this.urlInputBox = this._register(new InputBox(this.pathElement!.nativeElement, this.contextViewService, {
 			ariaLabel: LocalizedStrings.BACKUP_URL
 		}));
+
+		this.urlInputBox.onDidChange((value) => this.onUrlInputBoxChanged(value));
 
 		this.addPathButton = this._register(new Button(this.addPathElement!.nativeElement, { secondary: true }));
 		this.addPathButton.label = 'Browse';
@@ -675,6 +676,11 @@ export class BackupComponent extends AngularDisposable {
 		//this.pathListBox.render(this.pathElement!.nativeElement);
 	}
 
+	private onUrlInputBoxChanged(value: string) {
+		this.backupPathTypePairs = {};
+		this.backupPathTypePairs[value] = BackupConstants.deviceTypeURL;
+	}
+
 	private onChangeMediaFormat(): void {
 		this.isFormatChecked = !this.isFormatChecked;
 		this.enableMediaInput(this.isFormatChecked);
@@ -722,6 +728,9 @@ export class BackupComponent extends AngularDisposable {
 		if (filepath && !this.backupPathTypePairs![filepath]) {
 			if ((this.getBackupPathCount() < BackupConstants.maxDevices)) {
 				this.backupPathTypePairs![filepath] = BackupConstants.deviceTypeFile;
+				if (this.toUrlCheckBox!.checked) {
+					this.backupPathTypePairs![filepath] = BackupConstants.deviceTypeURL;
+				}
 				//this.pathListBox!.add(filepath);
 				this.urlInputBox.value = filepath;
 				this.enableBackupButton();
@@ -824,8 +833,12 @@ export class BackupComponent extends AngularDisposable {
 			let formattedDateTime: string = `-${d.getFullYear()}${d.getMonth() + 1}${d.getDate()}-${d.getHours()}-${d.getMinutes()}-${d.getSeconds()}`;
 			let defaultNewBackupLocation = this.defaultNewBackupFolder + serverPathSeparator + this.databaseName + formattedDateTime + '.bak';
 
-			// Add a default new backup location
-			this.backupPathTypePairs![defaultNewBackupLocation] = BackupConstants.deviceTypeFile;
+			// Add a default new backup locationthis.backupPathTypePairs![filepath] = BackupConstants.deviceTypeFile;
+			if (this.toUrlCheckBox!.checked) {
+				this.backupPathTypePairs![defaultNewBackupLocation] = BackupConstants.deviceTypeURL;
+			} else {
+				this.backupPathTypePairs![defaultNewBackupLocation] = BackupConstants.deviceTypeFile;
+			}
 		}
 	}
 
@@ -872,6 +885,13 @@ export class BackupComponent extends AngularDisposable {
 				break;
 		}
 		return backupType!;
+	}
+
+	private getBackupDeviceType(): number {
+		if (this.toUrlCheckBox!.checked) {
+			return BackupConstants.backupDeviceTypeURL;
+		}
+		return BackupConstants.backupDeviceTypeDisk;
 	}
 
 	private getBackupPathCount(): number {
@@ -942,14 +962,13 @@ export class BackupComponent extends AngularDisposable {
 			databaseName: this.databaseName!,
 			backupType: this.getBackupTypeNumber(),
 			backupComponent: 0,
-			backupDeviceType: BackupConstants.backupDeviceTypeDisk,
+			backupDeviceType: this.getBackupDeviceType(),
 			backupPathList: backupPathArray,
 			selectedFiles: this.selectedFilesText!,
 			backupsetName: this.backupNameBox!.value,
 			selectedFileGroup: undefined,
 			backupPathDevices: this.backupPathTypePairs!,
 			isCopyOnly: this.copyOnlyCheckBox!.checked,
-			toUrl: this.toUrlCheckBox!.checked,
 
 			// Get advanced options
 			formatMedia: this.isFormatChecked!,
