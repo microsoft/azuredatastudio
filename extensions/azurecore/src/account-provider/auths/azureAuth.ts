@@ -264,7 +264,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 		Logger.verbose('Fetching token');
 		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
 		const response = await this.makePostRequest(tokenUrl, postData);
-		Logger.pii(`Token: `, [response.data], []);
+		Logger.pii('Token: ', [{ name: 'access token', objOrArray: response.data }, { name: 'refresh token', objOrArray: response.data }],
+			[{ name: 'access token', value: response.data.access_token }, { name: 'refresh token', value: response.data.refresh_token }]);
 		if (response.data.error === 'interaction_required') {
 			return this.handleInteractionRequired(tenant, resource);
 		}
@@ -382,9 +383,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 			throw new AzureAuthError(msg, 'Adding account to cache failed', undefined);
 		}
 		try {
-			Logger.pii(`Saving access token`, [{ name: 'access', objOrArray: accessToken }], []);
+			Logger.pii(`Saving access token`, [{ name: 'access_token', objOrArray: accessToken }], []);
 			await this.tokenCache.saveCredential(`${accountKey.accountId}_access_${resource.id}_${tenant.id}`, JSON.stringify(accessToken));
-			Logger.pii(`Saving refresh token`, [{ name: 'refresh', objOrArray: refreshToken }], []);
+			Logger.pii(`Saving refresh token`, [{ name: 'refresh_token', objOrArray: refreshToken }], []);
 			await this.tokenCache.saveCredential(`${accountKey.accountId}_refresh_${resource.id}_${tenant.id}`, JSON.stringify(refreshToken));
 			this.memdb.set(`${accountKey.accountId}_${tenant.id}_${resource.id}`, expiresOn);
 		} catch (ex) {

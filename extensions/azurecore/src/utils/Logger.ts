@@ -96,6 +96,8 @@ function sanitizeImpl(obj: any): string {
 	shortenIfExists(obj, 'token');
 	shortenIfExists(obj, 'refresh_token');
 	shortenIfExists(obj, 'access_token');
+	shortenIfExists(obj, 'code');
+	shortenIfExists(obj, 'id_token');
 	return JSON.stringify(obj);
 }
 
