@@ -622,13 +622,13 @@ export interface AzureSqlSkuCategory {
 	computeTier: ComputeTier;
 }
 
-export interface AzureSqlSkuPaaSCategory extends AzureSqlSkuCategory{
+export interface AzureSqlSkuPaaSCategory extends AzureSqlSkuCategory {
 	sqlPurchasingModel: AzureSqlPurchasingModel;
 	sqlServiceTier: AzureSqlPaaSServiceTier;
 	hardwareType: AzureSqlPaaSHardwareType;
 }
 
-export interface AzureSqlSkuIaaSCategory extends AzureSqlSkuCategory{
+export interface AzureSqlSkuIaaSCategory extends AzureSqlSkuCategory {
 	virtualMachineFamilyType: VirtualMachineFamilyType;
 }
 
@@ -684,19 +684,19 @@ export interface SkuRecommendationResultItem {
 
 export interface SqlInstanceRequirements {
 	cpuRequirementInCores: number;
-    dataStorageRequirementInMB: number;
-    logStorageRequirementInMB: number;
-    memoryRequirementInMB: number;
-    dataIOPSRequirement: number;
-    logIOPSRequirement: number;
-    ioLatencyRequirementInMs: number;
-    ioThroughputRequirementInMBps: number;
-    tempDBSizeInMB: number;
-    dataPointsStartTime: string;
-    dataPointsEndTime: string;
-    aggregationTargetPercentile: number;
-    perfDataCollectionIntervalInSeconds: number;
-    databaseLevelRequirements: SqlDatabaseRequirements[];
+	dataStorageRequirementInMB: number;
+	logStorageRequirementInMB: number;
+	memoryRequirementInMB: number;
+	dataIOPSRequirement: number;
+	logIOPSRequirement: number;
+	ioLatencyRequirementInMs: number;
+	ioThroughputRequirementInMBps: number;
+	tempDBSizeInMB: number;
+	dataPointsStartTime: string;
+	dataPointsEndTime: string;
+	aggregationTargetPercentile: number;
+	perfDataCollectionIntervalInSeconds: number;
+	databaseLevelRequirements: SqlDatabaseRequirements[];
 	numberOfDataPointsAnalyzed: number;
 }
 
@@ -865,6 +865,6 @@ export interface StopPerfDataCollectionResult {
 export interface ISqlMigrationService {
 	getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
 	getSkuRecommendations(dataFolder: string, perfQueryIntervalInSec: number, targetPlatforms: string[], targetSqlInstance: string, targetPercentile: number, scalingFactor: number, startTime: string, endTime: string, databaseAllowList: string[]): Promise<SkuRecommendationResult | undefined>;
-	startPerfDataCollection(ownerUri: string, dataFolder: string, perfQueryIntervalInSec: number, staticQueryIntervalInSec: number, numberOfIterations: number) : Promise<StartPerfDataCollectionResult | undefined>;
-	stopPerfDataCollection() : Promise<StopPerfDataCollectionResult | undefined>;
+	startPerfDataCollection(ownerUri: string, dataFolder: string, perfQueryIntervalInSec: number, staticQueryIntervalInSec: number, numberOfIterations: number): Promise<StartPerfDataCollectionResult | undefined>;
+	stopPerfDataCollection(): Promise<StopPerfDataCollectionResult | undefined>;
 }
