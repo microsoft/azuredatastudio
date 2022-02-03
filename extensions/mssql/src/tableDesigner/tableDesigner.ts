@@ -31,7 +31,6 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		const schema = context.nodeInfo.metadata.schema;
 		const name = context.nodeInfo.metadata.name;
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
-		const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
 		const serverInfo = await azdata.connection.getServerInfo(context.connectionProfile.id);
 		let telemetryInfo: ITelemetryEventProperties = {};
 		telemetryInfo = Telemetry.fillServerInfo(telemetryInfo, serverInfo);
@@ -41,7 +40,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			isNewTable: false,
 			name: name,
 			schema: schema,
-			id: `${connectionUri}|${database}|${schema}|${name}`,
+			id: `${connectionString}|${database}|${schema}|${name}`,
 			connectionString: connectionString
 		}, telemetryInfo);
 	}));
