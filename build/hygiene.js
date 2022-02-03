@@ -195,7 +195,7 @@ function createGitIndexVinyls(paths) {
 				}
 
 				cp.exec(
-					`git show :"${relativePath}"`,
+					process.platform === 'win32' ? `git show :"${relativePath}"` : `git show ':${relativePath}'`, // {{SQL CARBON EDIT}} Add double quotes around Windows path
 					{ maxBuffer: 2000 * 1024, encoding: 'buffer' },
 					(err, out) => {
 						if (err) {
