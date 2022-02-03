@@ -176,7 +176,7 @@ export interface DesignerTableProperties extends ComponentProperties {
 	 */
 	canRemoveRows?: boolean;
 	/**
-	 * Whether to show confirmation when user removes a row.
+	 * Whether to show confirmation when user removes a row. The default value is false.
 	 */
 	showRemoveRowConfirmation?: boolean;
 	/**

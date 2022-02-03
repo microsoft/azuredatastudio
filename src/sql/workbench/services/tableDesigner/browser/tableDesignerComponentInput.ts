@@ -406,7 +406,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		const foreignKeyColumnMappingProperties: DesignerDataPropertyInfo[] = [
 			{
 				componentType: 'dropdown',
-				propertyName: designers.ForeignKeyColumnMappingProperty.foreignColumn,
+				propertyName: designers.ForeignKeyColumnMappingProperty.ForeignColumn,
 				componentProperties: {
 					title: localize('tableDesigner.foreignKey.foreignColumn', "Foreign Column"),
 					width: 150
@@ -414,7 +414,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			},
 			{
 				componentType: 'dropdown',
-				propertyName: designers.ForeignKeyColumnMappingProperty.column,
+				propertyName: designers.ForeignKeyColumnMappingProperty.Column,
 				componentProperties: {
 					title: localize('tableDesigner.foreignKey.column', "Column"),
 					width: 150
@@ -466,7 +466,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				group: localize('tableDesigner.foreignKeyColumns', "Columns"),
 				componentProperties: <DesignerTableProperties>{
 					ariaLabel: localize('tableDesigner.foreignKeyColumns', "Columns"),
-					columns: [designers.ForeignKeyColumnMappingProperty.column, designers.ForeignKeyColumnMappingProperty.foreignColumn],
+					columns: [designers.ForeignKeyColumnMappingProperty.Column, designers.ForeignKeyColumnMappingProperty.ForeignColumn],
 					itemProperties: foreignKeyColumnMappingProperties,
 					objectTypeDisplayName: '',
 					canAddRows: options.canAddRows,

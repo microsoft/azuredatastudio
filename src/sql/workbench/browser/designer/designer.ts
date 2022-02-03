@@ -317,7 +317,8 @@ export class Designer extends Disposable implements IThemable {
 				} else if (edit.type === DesignerEditType.Update) {
 					// for edit, update the properties pane with new values of current object.
 					this.updatePropertiesPane(this._propertiesPane.objectPath);
-				} else {
+				} else if (edit.type === DesignerEditType.Remove) {
+					// removing the secondary level entities, the properties pane needs to be updated to reflect the changes.
 					if (edit.path.length === 4) {
 						this.updatePropertiesPane(this._propertiesPane.objectPath);
 					}
@@ -707,10 +708,11 @@ export class Designer extends Disposable implements IThemable {
 						isFontIcon: true
 					});
 					deleteRowColumn.onClick(async (e) => {
-						if (tableProperties.showRemoveRowConfirmation && tableProperties.removeRowConfirmationMessage) {
+						if (tableProperties.showRemoveRowConfirmation) {
+							const confirmMessage = tableProperties.removeRowConfirmationMessage || localize('designer.defaultRemoveRowConfirmationMessage', "Are you sure you want to remove the row?");
 							const result = await this._dialogService.confirm({
 								type: 'question',
-								message: tableProperties.removeRowConfirmationMessage
+								message: confirmMessage
 							});
 							if (!result.confirmed) {
 								return;

@@ -976,8 +976,8 @@ export namespace designers {
 	}
 
 	export enum ForeignKeyColumnMappingProperty {
-		column = 'column',
-		foreignColumn = 'foreignColumn'
+		Column = 'column',
+		ForeignColumn = 'foreignColumn'
 	}
 
 	export enum TableCheckConstraintProperty {

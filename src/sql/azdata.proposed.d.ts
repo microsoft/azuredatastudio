@@ -1164,8 +1164,8 @@ declare module 'azdata' {
 		 * Name of the columns mapping properties for foreign key.
 		 */
 		export enum ForeignKeyColumnMappingProperty {
-			column = 'column',
-			foreignColumn = 'foreignColumn'
+			Column = 'column',
+			ForeignColumn = 'foreignColumn'
 		}
 
 		/**
@@ -1319,7 +1319,7 @@ declare module 'azdata' {
 			 */
 			canRemoveRows?: boolean;
 			/**
-			 * Whether to show confirmation when user removes a row.
+			 * Whether to show confirmation when user removes a row. The default value is false.
 			 */
 			showRemoveRowConfirmation?: boolean;
 			/**
