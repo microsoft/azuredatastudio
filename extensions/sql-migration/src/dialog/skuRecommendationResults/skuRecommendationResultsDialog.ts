@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
-
 import * as mssql from '../../../../mssql';
 
 export class SkuRecommendationResultsDialog {
@@ -18,10 +17,6 @@ export class SkuRecommendationResultsDialog {
 
 	private _isOpen: boolean = false;
 	private dialog: azdata.window.Dialog | undefined;
-
-	// private _model: MigrationStateModel;
-	// private _dialogObject!: azdata.window.Dialog;
-	// private _view!: azdata.ModelView;
 
 	// Dialog Name for Telemetry
 	public dialogName: string | undefined;
@@ -39,7 +34,7 @@ export class SkuRecommendationResultsDialog {
 				break;
 
 			case MigrationTargetType.SQLVM:
-				this.targetName = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE; // AZURE_SQL_DATABASE_VIRTUAL_MACHINE_SHORT
+				this.targetName = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
 				break;
 
 			case MigrationTargetType.SQLDB:
@@ -214,8 +209,7 @@ export class SkuRecommendationResultsDialog {
 		const reasonsContainer = _view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
 		}).component();
-		const justifications: string[] = recommendation.positiveJustifications;
-
+		const justifications: string[] = recommendation.positiveJustifications.concat(recommendation.negativeJustifications);
 		justifications.forEach(text => {
 			reasonsContainer.addItem(
 				_view.modelBuilder.text().withProps({
@@ -227,55 +221,18 @@ export class SkuRecommendationResultsDialog {
 			);
 		});
 
-		// TO-DO: add SqlInstanceRequirements to justification text for now until we have a dedicated 'Source properties' table
-		let requirements = [];
-		switch (recommendation.targetSku.category.sqlTargetPlatform) {
-			case mssql.AzureSqlTargetPlatform.AzureSqlManagedInstance:
-			case mssql.AzureSqlTargetPlatform.AzureSqlVirtualMachine:
-				requirements.push('CPU requirement: ' + this.instanceRequirements?.cpuRequirementInCores! + ' cores');
-				requirements.push('Memory requirement: ' + this.instanceRequirements?.memoryRequirementInMB! / 1024 + ' GB');
-				requirements.push('Data storage requirement: ' + this.instanceRequirements?.dataStorageRequirementInMB! / 1024 + ' GB');
-				requirements.push('Log storage requirement: ' + this.instanceRequirements?.logStorageRequirementInMB! / 1024 + ' GB');
-				requirements.push('Data IOPS requirement: ' + this.instanceRequirements?.dataIOPSRequirement! + ' IOPS');
-				requirements.push('Log IOPS requirement: ' + this.instanceRequirements?.logIOPSRequirement! + ' IOPS');
-				requirements.push('IO latency requirement: ' + this.instanceRequirements?.ioLatencyRequirementInMs! + ' ms');
-				break;
-			case mssql.AzureSqlTargetPlatform.AzureSqlDatabase:
-				let db = this.instanceRequirements?.databaseLevelRequirements.filter(d => {
-					return recommendation.databaseName === d.databaseName;
-				})[0]!;
-
-				requirements.push('CPU requirement: ' + db.cpuRequirementInCores! + ' cores');
-				requirements.push('Memory requirement: ' + db.memoryRequirementInMB! / 1024 + ' GB');
-				requirements.push('Data storage requirement: ' + db.dataStorageRequirementInMB! / 1024 + ' GB');
-				requirements.push('Log storage requirement: ' + db.logStorageRequirementInMB! / 1024 + ' GB');
-				requirements.push('Data IOPS requirement: ' + db.dataIOPSRequirement! + ' IOPS');
-				requirements.push('Log IOPS requirement: ' + db.logIOPSRequirement! + ' IOPS');
-				requirements.push('IO latency requirement: ' + db.ioLatencyRequirementInMs! + ' ms');
-				break;
-		}
-		requirements.forEach(text => {
-			reasonsContainer.addItem(
-				_view.modelBuilder.text().withProps({
-					value: text,
-					CSSStyles: {
-						...styles.BODY_CSS,
-					}
-				}).component()
-			);
-		});
-		////////////
+		const storagePropertiesContainer = this.createStoragePropertiesTable(_view, recommendation.databaseName);
 
 		recommendationContainer.addItems([
 			recommendationsReasonSection,
 			reasonsContainer,
+			storagePropertiesContainer,
 		]);
 
 		return recommendationContainer;
 	}
 
 	private createSqlVmTargetStorageSection(_view: azdata.ModelView, recommendation: mssql.IaaSSkuRecommendationResultItem): azdata.FlexContainer {
-
 		const recommendedTargetStorageSection = _view.modelBuilder.text().withProps({
 			value: constants.RECOMMENDED_TARGET_STORAGE_CONFIGURATION,
 			CSSStyles: {
@@ -406,6 +363,106 @@ export class SkuRecommendationResultsDialog {
 		}
 
 		return text;
+	}
+
+	private createStoragePropertiesTable(_view: azdata.ModelView, databaseName?: string): azdata.FlexContainer {
+		let instanceRequirements;
+		switch (this._targetType) {
+			case MigrationTargetType.SQLVM:
+			case MigrationTargetType.SQLMI:
+				instanceRequirements = this.instanceRequirements;
+				break;
+
+			case MigrationTargetType.SQLDB:
+				instanceRequirements = this.instanceRequirements?.databaseLevelRequirements.filter(d => {
+					return databaseName === d.databaseName;
+				})[0]!;
+				break;
+		}
+
+		const storagePropertiesSection = _view.modelBuilder.text().withProps({
+			value: constants.STORAGE_PROPERTIES,
+			CSSStyles: {
+				...styles.SECTION_HEADER_CSS,
+				'margin-top': '12px'
+			}
+		}).component();
+
+		const headerCssStyle = {
+			'border': 'none',
+			'text-align': 'left',
+			'white-space': 'nowrap',
+			'text-overflow': 'ellipsis',
+			'overflow': 'hidden',
+			'border-bottom': '1px solid'
+		};
+
+		const rowCssStyle = {
+			'border': 'none',
+			'text-align': 'left',
+			'white-space': 'nowrap',
+			'text-overflow': 'ellipsis',
+			'overflow': 'hidden',
+		};
+
+		const columnWidth = 80;
+		let columns: azdata.DeclarativeTableColumn[] = [
+			{
+				valueType: azdata.DeclarativeDataType.string,
+				displayName: constants.DIMENSION,
+				isReadOnly: true,
+				width: columnWidth,
+				rowCssStyles: rowCssStyle,
+				headerCssStyles: headerCssStyle
+			},
+			{
+				valueType: azdata.DeclarativeDataType.string,
+				displayName: constants.RECOMMENDED_VALUE,
+				isReadOnly: true,
+				width: columnWidth,
+				rowCssStyles: rowCssStyle,
+				headerCssStyles: headerCssStyle
+			}
+		];
+
+		const createRow = (dimension: string, value: string) => {
+			const row: azdata.DeclarativeTableCellValue[] = [
+				{ value: dimension },
+				{ value: value }
+			];
+			return row;
+		};
+		const cpuRow = createRow(constants.CPU_REQUIREMENT, constants.CPU_CORES(instanceRequirements?.cpuRequirementInCores!));
+		const memoryRow = createRow(constants.MEMORY_REQUIREMENT, constants.STORAGE_GB(instanceRequirements?.memoryRequirementInMB! / 1024));
+		const dataStorageRow = createRow(constants.DATA_STORAGE_REQUIREMENT, constants.STORAGE_GB(instanceRequirements?.dataStorageRequirementInMB! / 1024));
+		const logStorageRow = createRow(constants.LOG_STORAGE_REQUIREMENT, constants.STORAGE_GB(instanceRequirements?.logStorageRequirementInMB! / 1024));
+		const dataIOPSRow = createRow(constants.DATA_IOPS_REQUIREMENT, constants.IOPS(instanceRequirements?.dataIOPSRequirement!));
+		const logsIOPSRow = createRow(constants.LOGS_IOPS_REQUIREMENT, constants.IOPS(instanceRequirements?.logIOPSRequirement!));
+		const ioLatencyRow = createRow(constants.IO_LATENCY_REQUIREMENT, constants.MS(instanceRequirements?.ioLatencyRequirementInMs!));
+		const storagePropertiesTableRows: azdata.DeclarativeTableCellValue[][] = [
+			cpuRow,
+			memoryRow,
+			dataStorageRow,
+			logStorageRow,
+			dataIOPSRow,
+			logsIOPSRow,
+			ioLatencyRow,
+		];
+
+		const storagePropertiesTable: azdata.DeclarativeTableComponent = _view.modelBuilder.declarativeTable().withProps({
+			ariaLabel: constants.RECOMMENDED_TARGET_STORAGE_CONFIGURATION,
+			columns: columns,
+			dataValues: storagePropertiesTableRows,
+			width: 700
+		}).component();
+
+		const container = _view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column'
+		}).withItems([
+			storagePropertiesSection,
+			storagePropertiesTable,
+		]).component();
+		return container;
 	}
 
 	public async openDialog(dialogName?: string, recommendations?: mssql.SkuRecommendationResult) {
