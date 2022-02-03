@@ -94,7 +94,7 @@ export const GET_AZURE_RECOMMENDATION = localize('sql.migration.sku.getAzureReco
 export const AZURE_RECOMMENDATION_NOT_ENABLED = localize('sql.migration.sku.azureRecommendation.notEnabled', "Azure recommendation is not enabled");
 export const AZURE_RECOMMENDATION_START = localize('sql.migration.sku.azureRecommendation.start', "Start");
 export const AZURE_RECOMMENDATION_DESCRIPTION = localize('sql.migration.sku.azureRecommendation.description', "Azure recommendation requires performance data of SQL server instance to provide target recommendation. Enable performance data collection to receive the target recommendation for the databases you want to migrate. The longer this will be enabled the better the recommendation. You can disable performance data collection at any time.");
-export const AZURE_RECOMMENDATION_DESCRIPTION2 = localize('sql.migration.sku.azureRecommendation.description2', "You can also choose to select this data from an existing folder, if you have already collected it using Data Migration Assistant or Azure Migrate.");
+export const AZURE_RECOMMENDATION_DESCRIPTION2 = localize('sql.migration.sku.azureRecommendation.description2', "You can also choose to select this data from an existing folder, if you have already collected it using Data Migration Assistant.");
 export const AZURE_RECOMMENDATION_CHOOSE_METHOD = localize('sql.migration.sku.azureRecommendation.chooseMethod.instructions', "Choose how you want to provide performance data");
 export const AZURE_RECOMMENDATION_COLLECT_DATA = localize('sql.migration.sku.azureRecommendation.collectData.method', "Collect performance data now");
 export const AZURE_RECOMMENDATION_OPEN_EXISTING = localize('sql.migration.sku.azureRecommendation.openExisting.method', "I already have the performance data");
@@ -117,11 +117,17 @@ export const AZURE_CONFIGURATION = localize('sql.migration.sku.azureConfiguratio
 export function VM_CONFIGURATION(vmSize: string, vCPU: number): string {
 	return localize('sql.migration.sku.azureConfiguration.vm', "{0} ({1} vCPU)", vmSize, vCPU);
 }
+export function VM_CONFIGURATION_PREVIEW(vmSize: string, vCPU: number, diskCount: number, diskName: string): string {
+	return localize('sql.migration.sku.azureConfiguration.vmPreview', "{0} ({1} vCPU) - {2}x {3}", vmSize, vCPU, diskCount, diskName);
+}
 export function DB_CONFIGURATION(computeTier: string, vCore: number): string {
 	return localize('sql.migration.sku.azureConfiguration.db', "{0} - {1} vCore", computeTier, vCore);
 }
 export function MI_CONFIGURATION(hardwareType: string, computeTier: string, vCore: number): string {
 	return localize('sql.migration.sku.azureConfiguration.mi', "{0} - {1} - {2} vCore", hardwareType, computeTier, vCore);
+}
+export function MI_CONFIGURATION_PREVIEW(hardwareType: string, computeTier: string, vCore: number, storage: number): string {
+	return localize('sql.migration.sku.azureConfiguration.miPreview', "{0} - {1} - {2} vCore - {3} GB", hardwareType, computeTier, vCore, storage);
 }
 export const GENERAL_PURPOSE = localize('sql.migration.sku.azureConfiguration.generalPurpose', "General purpose");
 export const BUSINESS_CRITICAL = localize('sql.migration.sku.azureConfiguration.businessCritical', "Business critical");

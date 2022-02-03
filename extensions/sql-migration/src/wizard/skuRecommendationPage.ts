@@ -134,6 +134,26 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				await this.migrationStateModel.stopPerfDataCollection();
 				const durationMins = Math.abs(new Date(this.migrationStateModel._perfDataCollectionStopDate).getTime() - new Date(this.migrationStateModel._perfDataCollectionStartDate).getTime()) / 60000;
 				console.log('data collected for ' + durationMins + ' minutes');
+
+				const perfQueryIntervalInSec = 30;
+				const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
+				const targetPercentile = 95;
+				const scalingFactor = 100;
+				const startTime = '1900-01-01 00:00:00';
+				const endTime = '2200-01-01 00:00:00';
+
+				await this.migrationStateModel.getSkuRecommendations(
+					this.migrationStateModel._skuRecommendationPerformanceLocation,
+					perfQueryIntervalInSec,
+					targetPlatforms,
+					targetPercentile,
+					scalingFactor,
+					startTime,
+					endTime,
+					this.migrationStateModel._databaseAssessment);
+
+				console.log('results - this.migrationStateModel._skuRecommendationResults:');
+				console.log(this.migrationStateModel._skuRecommendationResults);
 			}
 
 			await this.constructDetails();
@@ -593,6 +613,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 				if (this.hasRecommendations()) {
 					this._rbg.cards[index].descriptions[7 - 1].linkDisplayValue = constants.VIEW_DETAILS;
+				} else if (this.migrationStateModel._perfDataCollectionStartDate) {
+					// TO-DO: close on what to do here
+					this._rbg.cards[index].descriptions[7 - 1].linkDisplayValue = 'Refresh assessment to see results';
 				} else {
 					this._rbg.cards[index].descriptions[7 - 1].linkDisplayValue = constants.GET_AZURE_RECOMMENDATION;
 				}
@@ -612,8 +635,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 								: recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.PremiumSeries
 									? constants.PREMIUM_SERIES
 									: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
-							this._rbg.cards[index].descriptions[6 - 1].textValue = constants.MI_CONFIGURATION(hardwareType, serviceTier, recommendation.targetSku.computeSize!);
-							// TO-DO: add storage configuration here
+							this._rbg.cards[index].descriptions[6 - 1].textValue = constants.MI_CONFIGURATION_PREVIEW(hardwareType, serviceTier, recommendation.targetSku.computeSize!, recommendation.targetSku.storageMaxSizeInMb! / 1024);
+						} else if (this.migrationStateModel._perfDataCollectionStartDate) {
+							// TO-DO: close on what to do here
+							this._rbg.cards[index].descriptions[6 - 1].textValue = 'Data collection in progress, started at ' + new Date(this.migrationStateModel._perfDataCollectionStartDate).toLocaleString();
 						}
 						break;
 
@@ -622,8 +647,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 						if (this.hasRecommendations()) {
 							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlVmRecommendationResults[0];
-							this._rbg.cards[index].descriptions[6 - 1].textValue = constants.VM_CONFIGURATION(recommendation.targetSku.virtualMachineSize!.sizeName, recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
-							// TO-DO: add storage configuration here
+							this._rbg.cards[index].descriptions[6 - 1].textValue = constants.VM_CONFIGURATION_PREVIEW(recommendation.targetSku.virtualMachineSize!.sizeName, recommendation.targetSku.virtualMachineSize!.vCPUsAvailable, recommendation.targetSku.dataDiskSizes!.length, recommendation.targetSku.dataDiskSizes![0].size);
+						} else if (this.migrationStateModel._perfDataCollectionStartDate) {
+							// TO-DO: close on what to do here
+							this._rbg.cards[index].descriptions[6 - 1].textValue = 'Data collection in progress, started at ' + new Date(this.migrationStateModel._perfDataCollectionStartDate).toLocaleString();
 						}
 						break;
 
@@ -632,6 +659,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 						if (this.hasRecommendations()) {
 							this._rbg.cards[index].descriptions[6 - 1].textValue = constants.RECOMMENDATIONS_AVAILABLE(dbCount);
+						} else if (this.migrationStateModel._perfDataCollectionStartDate) {
+							// TO-DO: close on what to do here
+							this._rbg.cards[index].descriptions[6 - 1].textValue = 'Data collection in progress, started at ' + new Date(this.migrationStateModel._perfDataCollectionStartDate).toLocaleString();
 						}
 						break;
 				}

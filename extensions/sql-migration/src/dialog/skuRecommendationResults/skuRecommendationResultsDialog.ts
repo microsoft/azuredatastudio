@@ -30,6 +30,7 @@ export class SkuRecommendationResultsDialog {
 	public targetName?: string;
 
 	public targetRecommendations?: mssql.SkuRecommendationResultItem[];
+	public instanceRequirements?: mssql.SqlInstanceRequirements;
 
 	constructor(public model: MigrationStateModel, public _targetType: MigrationTargetType) {
 		switch (this._targetType) {
@@ -85,7 +86,7 @@ export class SkuRecommendationResultsDialog {
 
 	private createRecommendation(_view: azdata.ModelView, recommendationItem: mssql.SkuRecommendationResultItem): azdata.FlexContainer {
 
-		let recommendation;
+		let recommendation: mssql.IaaSSkuRecommendationResultItem | mssql.PaaSSkuRecommendationResultItem;
 
 		let configuration;
 		let storageSection;
@@ -214,6 +215,7 @@ export class SkuRecommendationResultsDialog {
 			flexFlow: 'column'
 		}).component();
 		const justifications: string[] = recommendation.positiveJustifications;
+
 		justifications.forEach(text => {
 			reasonsContainer.addItem(
 				_view.modelBuilder.text().withProps({
@@ -224,6 +226,46 @@ export class SkuRecommendationResultsDialog {
 				}).component()
 			);
 		});
+
+		// TO-DO: add SqlInstanceRequirements to justification text for now until we have a dedicated 'Source properties' table
+		let requirements = [];
+		switch (recommendation.targetSku.category.sqlTargetPlatform) {
+			case mssql.AzureSqlTargetPlatform.AzureSqlManagedInstance:
+			case mssql.AzureSqlTargetPlatform.AzureSqlVirtualMachine:
+				requirements.push('CPU requirement: ' + this.instanceRequirements?.cpuRequirementInCores! + ' cores');
+				requirements.push('Memory requirement: ' + this.instanceRequirements?.memoryRequirementInMB! / 1024 + ' GB');
+				requirements.push('Data storage requirement: ' + this.instanceRequirements?.dataStorageRequirementInMB! / 1024 + ' GB');
+				requirements.push('Log storage requirement: ' + this.instanceRequirements?.logStorageRequirementInMB! / 1024 + ' GB');
+				requirements.push('Data IOPS requirement: ' + this.instanceRequirements?.dataIOPSRequirement! + ' IOPS');
+				requirements.push('Log IOPS requirement: ' + this.instanceRequirements?.logIOPSRequirement! + ' IOPS');
+				requirements.push('IO latency requirement: ' + this.instanceRequirements?.ioLatencyRequirementInMs! + ' ms');
+				break;
+			case mssql.AzureSqlTargetPlatform.AzureSqlDatabase:
+				let db = this.instanceRequirements?.databaseLevelRequirements.filter(d => {
+					return recommendation.databaseName === d.databaseName;
+				})[0]!;
+
+				requirements.push('CPU requirement: ' + db.cpuRequirementInCores! + ' cores');
+				requirements.push('Memory requirement: ' + db.memoryRequirementInMB! / 1024 + ' GB');
+				requirements.push('Data storage requirement: ' + db.dataStorageRequirementInMB! / 1024 + ' GB');
+				requirements.push('Log storage requirement: ' + db.logStorageRequirementInMB! / 1024 + ' GB');
+				requirements.push('Data IOPS requirement: ' + db.dataIOPSRequirement! + ' IOPS');
+				requirements.push('Log IOPS requirement: ' + db.logIOPSRequirement! + ' IOPS');
+				requirements.push('IO latency requirement: ' + db.ioLatencyRequirementInMs! + ' ms');
+				break;
+		}
+		requirements.forEach(text => {
+			reasonsContainer.addItem(
+				_view.modelBuilder.text().withProps({
+					value: text,
+					CSSStyles: {
+						...styles.BODY_CSS,
+					}
+				}).component()
+			);
+		});
+		////////////
+
 		recommendationContainer.addItems([
 			recommendationsReasonSection,
 			reasonsContainer,
@@ -368,6 +410,8 @@ export class SkuRecommendationResultsDialog {
 
 	public async openDialog(dialogName?: string, recommendations?: mssql.SkuRecommendationResult) {
 		if (!this._isOpen) {
+			this.instanceRequirements = recommendations?.instanceRequirements;
+
 			switch (this._targetType) {
 				case MigrationTargetType.SQLMI:
 					this.targetRecommendations = recommendations?.sqlMiRecommendationResults;
