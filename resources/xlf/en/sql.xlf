@@ -639,6 +639,9 @@
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/designer/designer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.defaultRemoveRowConfirmationMessage">
+      <source xml:lang="en">Are you sure you want to remove the row?</source>
+    </trans-unit>
     <trans-unit id="designer.generalGroupName">
       <source xml:lang="en">General</source>
     </trans-unit>
@@ -5952,11 +5955,11 @@ Error: {1}</source>
     <trans-unit id="tableDesigner.ForeignKeyTypeName">
       <source xml:lang="en">Foreign Key</source>
     </trans-unit>
+    <trans-unit id="tableDesigner.ForeignTableName">
+      <source xml:lang="en">Foreign Table</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.IndexTypeName">
       <source xml:lang="en">Index</source>
-    </trans-unit>
-    <trans-unit id="tableDesigner.PrimaryKeyTableName">
-      <source xml:lang="en">Primary Key Table</source>
     </trans-unit>
     <trans-unit id="tableDesigner.checkConstraintExpressionTitle">
       <source xml:lang="en">Expression</source>
@@ -6009,11 +6012,14 @@ Error: {1}</source>
     <trans-unit id="tableDesigner.errorProcessingEdit">
       <source xml:lang="en">An error occured while processing the change: {0}</source>
     </trans-unit>
-    <trans-unit id="tableDesigner.foreignKeyColumn">
-      <source xml:lang="en">Foreign Key Column</source>
+    <trans-unit id="tableDesigner.foreignKey.column">
+      <source xml:lang="en">Column</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.foreignKey.foreignColumn">
+      <source xml:lang="en">Foreign Column</source>
     </trans-unit>
     <trans-unit id="tableDesigner.foreignKeyColumns">
-      <source xml:lang="en">Column Mapping</source>
+      <source xml:lang="en">Columns</source>
     </trans-unit>
     <trans-unit id="tableDesigner.foreignKeyNameTitle">
       <source xml:lang="en">Name</source>
@@ -6060,9 +6066,6 @@ Error: {1}</source>
     <trans-unit id="tableDesigner.nameTitle">
       <source xml:lang="en">Table name</source>
     </trans-unit>
-    <trans-unit id="tableDesigner.primaryKeyColumn">
-      <source xml:lang="en">Primary Key Column</source>
-    </trans-unit>
     <trans-unit id="tableDesigner.publishChangeError">
       <source xml:lang="en">An error occured while publishing changes: {0}</source>
     </trans-unit>
@@ -6070,7 +6073,7 @@ Error: {1}</source>
       <source xml:lang="en">The changes have been successfully published.</source>
     </trans-unit>
     <trans-unit id="tableDesigner.savingChanges">
-      <source xml:lang="en">Saving table designer changes...</source>
+      <source xml:lang="en">Publishing table designer changes...</source>
     </trans-unit>
     <trans-unit id="tableDesigner.schemaTitle">
       <source xml:lang="en">Schema</source>
