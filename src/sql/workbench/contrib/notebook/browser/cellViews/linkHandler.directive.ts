@@ -72,29 +72,31 @@ export class LinkHandlerDirective {
 				return;
 			}
 		}
-		// Convert vscode-file protocol URIs to file since that's what Notebooks expect to work with
-		uri = FileAccess.asFileUri(uri);
-		if (uri && this.openerService && this.isSupportedLink(uri)) {
-			if (uri.fragment && uri.fragment.length > 0 && uri.fsPath === this.workbenchFilePath.fsPath) {
-				this.notebookService.navigateTo(this.notebookUri, uri.fragment);
-			} else {
-				if (uri.scheme === 'file') {
-					let exists = await this.fileService.exists(uri);
-					if (!exists) {
-						let relPath = relative(this.workbenchFilePath.fsPath, uri.fsPath);
-						let path = resolve(this.notebookUri.fsPath, relPath);
-						try {
-							uri = URI.file(path);
-						} catch (error) {
-							onUnexpectedError(error);
+		if (uri && this.openerService) {
+			// Convert vscode-file protocol URIs to file since that's what Notebooks expect to work with
+			uri = FileAccess.asFileUri(uri);
+			if (this.isSupportedLink(uri)) {
+				if (uri.fragment && uri.fragment.length > 0 && uri.fsPath === this.workbenchFilePath.fsPath) {
+					this.notebookService.navigateTo(this.notebookUri, uri.fragment);
+				} else {
+					if (uri.scheme === 'file') {
+						let exists = await this.fileService.exists(uri);
+						if (!exists) {
+							let relPath = relative(this.workbenchFilePath.fsPath, uri.fsPath);
+							let path = resolve(this.notebookUri.fsPath, relPath);
+							try {
+								uri = URI.file(path);
+							} catch (error) {
+								onUnexpectedError(error);
+							}
 						}
 					}
-				}
-				if (this.forceOpenExternal(uri)) {
-					this.openerService.open(uri, { openExternal: true }).catch(onUnexpectedError);
-				}
-				else {
-					this.openerService.open(uri, { allowCommands: true }).catch(onUnexpectedError);
+					if (this.forceOpenExternal(uri)) {
+						this.openerService.open(uri, { openExternal: true }).catch(onUnexpectedError);
+					}
+					else {
+						this.openerService.open(uri, { allowCommands: true }).catch(onUnexpectedError);
+					}
 				}
 			}
 		}
