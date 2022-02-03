@@ -3,67 +3,213 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.qp-container .query-plan {
+/* Styling for the a queryplan container in the tab */
+.qps-container .query-plan {
 	width: 100%;
 	height: 500px;
+	display: flex;
+	overflow: hidden;
+}
+
+/* horizontal height resizing sash container that is below a queryplan */
+.qps-container .query-plan-sash {
+	width: 100%;
+	height: 3px;
 	position: relative;
+}
+
+/*
+The actual sash element constructed by code. Important is used here because the width of the sash is fixed.
+However we always want it to be the width of the container it is resizing.
+*/
+.qps-container .query-plan-sash > div {
+	width: 100% !important;
+}
+
+/* Container that contains showplan header, description and graph diagram */
+.qps-container .query-plan .plan {
+	flex: 1;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	border: 1px solid;
+}
+
+/* Container that contains views made by the action-bar actions */
+.qps-container .query-plan .plan .plan-action-container {
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	right: 0;
+}
+
+/* views created by the action-bar actions */
+.qps-container .query-plan .plan .plan-action-container .child {
+	flex: 0 0 25px;
+	margin-left: auto;
+}
+
+/* Search node action view */
+.qps-container .query-plan .plan .plan-action-container .search-node-view {
+	display: flex;
+	flex-direction: row;
+	border: 1px solid;
+	padding: 5px;
+	height: auto;
+	width: 470px;
+}
+
+/* input bar styling in search node action view */
+.qps-container .query-plan .plan .plan-action-container .search-node-view .search-bar-container{
+	margin-left: 5px;
+}
+
+/* styling for select element in search node action view */
+.qps-container .query-plan .plan .plan-action-container .search-node-view .search-bar-container > select{
+	height: 100%;
+}
+
+/* Custom zoom action view */
+.qps-container .query-plan .plan .plan-action-container .custom-zoom-view {
+	display: flex;
+	flex-direction: row;
+	border: 1px solid;
+	padding: 5px;
+	height: auto;
+	width: 180px;
+}
+
+/* query plan header that contains the relative query cost, query statement and recommendations */
+.qps-container .query-plan .plan .header {
+	font-family: 'Courier New', Courier, monospace;
+	border-bottom: solid 1px;
+	font-weight: bolder;
+	padding-left: 5px;
+	font-size: 13px;
+}
+
+/* each link in query plan recommendations */
+.qps-container .query-plan .plan .header .recommendations > a {
+	width: fit-content;
+	align-items: left;
+	text-align: left;
+}
+
+/* graph diagram in query plan */
+.qps-container .query-plan .plan .diagram {
+	width: 100%;
+	height: 100%;
+	overflow: scroll;
+}
+
+/* Properties view in query plan */
+.qps-container .query-plan .properties {
+	flex: 0 0 500px;
+	overflow: hidden;
+	width: 500px;
+	height: 100%;
+	border: 1px solid;
+	display: flex;
+	flex-direction: column;
+	border: 1px solid;
+}
+
+/* Title container of the properties view */
+.qps-container .query-plan .properties .title {
+	line-height: 22px;
+	height: 22px;
+	font-size: 11px;
+	font-weight: bold;
+	text-transform: uppercase;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	box-sizing: border-box;
+	margin-top: 3px;
+	margin-bottom: 5px;
+	padding-left: 5px;
+	border-bottom: solid 1px;
+	flex: 0 0 25px;
+}
+
+/* text in title container of properties view */
+.qps-container .query-plan .properties .title .text {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 11px;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	flex: 1;
+}
+
+/* action bar in the title container for the properties view. This contains the close icon */
+.qps-container .query-plan .properties .title .action-bar {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 11px;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	flex: 0 0 30px;
+}
+
+/* Operation name styling in the properties view. */
+.qps-container .query-plan .properties .operation-name {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 13px;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	flex: 0 0 25px;
+	margin-top: 3px;
+	margin-bottom: 5px;
+	margin-left: 5px;
+}
+
+/* Properties table container in properties view */
+.qps-container .query-plan .properties .table-container {
+	overflow-y: scroll;
+	flex: 1;
+	flex-grow: 1;
 	border-top: 1px solid;
 }
 
-.qp-container .query-plan .actionbar-container {
-height: 100%;
-width: 30px;
-position: absolute;
-top: 0px;
-right: 0px;
+/* Action bar for the query plan */
+.qps-container .query-plan .action-bar-container {
+	flex: 0 0 25px;
 }
 
-.qp-container .query-plan .properties-container {
-	position: absolute;
-	top: 0px;
-	right: 32px;
-	height: 100%;
-	overflow-y: scroll;
-	background-color: #eeeeee;
-	width: 510px;
-}
-
-.qp-container .prop-table-header {
+/* styling for the column headers in the properties table */
+.qps-container .properties .table-container .prop-table-header {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 11px;
+	min-width: 10px;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
 	font-weight: bold;
+	text-transform: uppercase;
 }
 
-.qp-container .properties-header {
+.qps-container .properties-header {
 	font-weight: bold;
 	padding: 5px;
 }
 
-.qp-container .properties-toggle {
+.qps-container .properties-toggle {
 	height: 9px;
 	width: 9px;
 	display: inline-block;
 }
 
-.qp-container .properties-toggle .expand {
+.qps-container .properties-toggle .expand {
 	background: url(../images/expand.gif) no-repeat center center;
 }
 
-.qp-container .properties-toggle .collapse {
+.qps-container .properties-toggle .collapse {
 	background: url(../images/collapse.gif) no-repeat center center;
-}
-
-.qp-container .mxTooltip {
-	-webkit-box-shadow: 3px 3px 12px #C0C0C0;
-	-moz-box-shadow: 3px 3px 12px #C0C0C0;
-	box-shadow: 3px 3px 12px #C0C0C0;
-	background: #FFFFCC;
-	border-style: solid;
-	border-width: 1px;
-	border-color: black;
-	font-family: Arial;
-	font-size: 8pt;
-	position: absolute;
-	cursor: default;
-	padding: 4px;
-	color: black;
-	z-index: 3;
 }

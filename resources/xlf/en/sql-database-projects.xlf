@@ -61,6 +61,9 @@
     <trans-unit id="appSettingPrompt">
       <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
     </trans-unit>
+    <trans-unit id="applyConfirmation">
+      <source xml:lang="en">Are you sure you want to update the target project?</source>
+    </trans-unit>
     <trans-unit id="applyError">
       <source xml:lang="en">There was an error updating the project: {0}</source>
     </trans-unit>

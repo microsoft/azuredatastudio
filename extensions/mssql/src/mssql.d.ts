@@ -6,7 +6,6 @@
 // This is the place for extensions to expose APIs.
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 
 /**
  * Covers defining what the mssql extension exports to other extensions
