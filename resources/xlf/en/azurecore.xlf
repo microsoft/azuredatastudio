@@ -569,11 +569,14 @@
     <trans-unit id="config.enableUsNatCloudDescription">
       <source xml:lang="en">Should US National Azure cloud integration be enabled</source>
     </trans-unit>
+    <trans-unit id="config.loggingLevel">
+      <source xml:lang="en">[Optional] The verbosity of logging for the Azure Accounts extension.</source>
+    </trans-unit>
     <trans-unit id="config.noSystemKeychain">
       <source xml:lang="en">Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.</source>
     </trans-unit>
     <trans-unit id="config.piiLogging">
-      <source xml:lang="en">Should Personally Identifiable Information (PII) be logged in the console view locally</source>
+      <source xml:lang="en">Should Personally Identifiable Information (PII) be logged in the Azure Accounts output channel and the output channel log file.</source>
     </trans-unit>
 </body></file>
 </xliff>
