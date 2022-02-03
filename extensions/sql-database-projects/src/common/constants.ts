@@ -538,6 +538,7 @@ export const hostFileName = 'host.json';
 export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
 export const placeHolderObject = '[dbo].[table1]';
 export const sqlBindingsHelpLink = 'https://github.com/Azure/azure-functions-sql-extension/blob/main/README.md';
+export const passwordPlaceholder = '******';
 
 export const input = localize('input', "Input");
 export const output = localize('output', "Output");
@@ -570,4 +571,5 @@ export const connectionProfile = localize('connectionProfile', 'Select a connect
 export const userConnectionString = localize('userConnectionString', 'Enter connection string');
 export const selectConnectionString = localize('selectConnectionString', 'Select SQL connection string method');
 export const selectConnectionError = (err?: any) => err ? localize('selectConnectionError', "Failed to set connection string app setting: {0}", utils.getErrorMessage(err)) : localize('unableToSetConnectionString', "Failed to set connection string app setting");
-
+export const changePasswordPrompt = localize('changePasswordPrompt', 'Password has been set to default. Enter password manually in order to use sql connection string.');
+export const changePassword = localize('changePassword', 'Change Password');

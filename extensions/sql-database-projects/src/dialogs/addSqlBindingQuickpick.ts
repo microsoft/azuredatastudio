@@ -204,10 +204,18 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					}
 					if (connectionString) {
 						try {
-							const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectUri.fsPath), newConnectionStringSettingName, connectionString);
+							const projectFolder: string = path.dirname(projectUri.fsPath);
+							const localSettingsPath: string = path.join(projectFolder, constants.azureFunctionLocalSettingsFileName);
+							const success = await azureFunctionsUtils.setLocalAppSetting(projectFolder, newConnectionStringSettingName, connectionString);
 							if (success) {
 								// exit both loops and insert binding
 								connectionStringSettingName = newConnectionStringSettingName;
+								if (connectionString.includes(`Password=${constants.passwordPlaceholder}`)) {
+									let response = await vscode.window.showWarningMessage(constants.changePasswordPrompt, constants.changePassword, constants.cancelButtonText);
+									if (response === constants.changePassword) {
+										await vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(localSettingsPath));
+									}
+								}
 								break;
 							} else {
 								void vscode.window.showErrorMessage(constants.selectConnectionError());
