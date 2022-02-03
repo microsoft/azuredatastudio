@@ -117,11 +117,17 @@ export const AZURE_CONFIGURATION = localize('sql.migration.sku.azureConfiguratio
 export function VM_CONFIGURATION(vmSize: string, vCPU: number): string {
 	return localize('sql.migration.sku.azureConfiguration.vm', "{0} ({1} vCPU)", vmSize, vCPU);
 }
+export function VM_CONFIGURATION_PREVIEW(vmSize: string, vCPU: number, diskCount: number, diskName: string): string {
+	return localize('sql.migration.sku.azureConfiguration.vmPreview', "{0} ({1} vCPU) - {2}x {3}", vmSize, vCPU, diskCount, diskName);
+}
 export function DB_CONFIGURATION(computeTier: string, vCore: number): string {
 	return localize('sql.migration.sku.azureConfiguration.db', "{0} - {1} vCore", computeTier, vCore);
 }
 export function MI_CONFIGURATION(hardwareType: string, computeTier: string, vCore: number): string {
 	return localize('sql.migration.sku.azureConfiguration.mi', "{0} - {1} - {2} vCore", hardwareType, computeTier, vCore);
+}
+export function MI_CONFIGURATION_PREVIEW(hardwareType: string, computeTier: string, vCore: number, storage: number): string {
+	return localize('sql.migration.sku.azureConfiguration.miPreview', "{0} - {1} - {2} vCore - {3} GB", hardwareType, computeTier, vCore, storage);
 }
 export const GENERAL_PURPOSE = localize('sql.migration.sku.azureConfiguration.generalPurpose', "General purpose");
 export const BUSINESS_CRITICAL = localize('sql.migration.sku.azureConfiguration.businessCritical', "Business critical");
