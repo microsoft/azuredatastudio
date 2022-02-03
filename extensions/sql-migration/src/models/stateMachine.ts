@@ -329,12 +329,16 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				databaseAllowList))!;
 			this._skuRecommendationApiResponse = response;
 
+			console.log('sqlinstancerequirements: ');
+			console.log(this._skuRecommendationApiResponse.instanceRequirements);
+
 			if (response?.sqlDbRecommendationResults || response?.sqlMiRecommendationResults || response?.sqlVmRecommendationResults) {
 				this._skuRecommendationResults = {
 					recommendations: {
 						sqlDbRecommendationResults: response?.sqlDbRecommendationResults ?? [],
 						sqlMiRecommendationResults: response?.sqlMiRecommendationResults ?? [],
-						sqlVmRecommendationResults: response?.sqlVmRecommendationResults ?? []
+						sqlVmRecommendationResults: response?.sqlVmRecommendationResults ?? [],
+						instanceRequirements: response?.instanceRequirements
 					},
 					// recommendationError:
 				};
@@ -343,7 +347,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					recommendations: {
 						sqlDbRecommendationResults: [],
 						sqlMiRecommendationResults: [],
-						sqlVmRecommendationResults: []
+						sqlVmRecommendationResults: [],
+						instanceRequirements: response?.instanceRequirements
 					},
 					// recommendationError:
 				};
@@ -357,7 +362,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				recommendations: {
 					sqlDbRecommendationResults: this._skuRecommendationApiResponse?.sqlDbRecommendationResults ?? [],
 					sqlMiRecommendationResults: this._skuRecommendationApiResponse?.sqlMiRecommendationResults ?? [],
-					sqlVmRecommendationResults: this._skuRecommendationApiResponse?.sqlVmRecommendationResults ?? []
+					sqlVmRecommendationResults: this._skuRecommendationApiResponse?.sqlVmRecommendationResults ?? [],
+					instanceRequirements: this._skuRecommendationApiResponse?.instanceRequirements
 				},
 				recommendationError: error
 			};

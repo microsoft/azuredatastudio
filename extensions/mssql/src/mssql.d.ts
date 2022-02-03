@@ -682,6 +682,50 @@ export interface SkuRecommendationResultItem {
 	negativeJustifications: string[];
 }
 
+export interface SqlInstanceRequirements {
+	cpuRequirementInCores: number;
+    dataStorageRequirementInMB: number;
+    logStorageRequirementInMB: number;
+    memoryRequirementInMB: number;
+    dataIOPSRequirement: number;
+    logIOPSRequirement: number;
+    ioLatencyRequirementInMs: number;
+    ioThroughputRequirementInMBps: number;
+    tempDBSizeInMB: number;
+    dataPointsStartTime: string;
+    dataPointsEndTime: string;
+    aggregationTargetPercentile: number;
+    perfDataCollectionIntervalInSeconds: number;
+    databaseLevelRequirements: SqlDatabaseRequirements[];
+	numberOfDataPointsAnalyzed: number;
+}
+
+export interface SqlDatabaseRequirements {
+	cpuRequirementInCores: number;
+	dataIOPSRequirement: number;
+	logIOPSRequirement: number;
+	ioLatencyRequirementInMs: number;
+	ioThroughputRequirementInMBps: number;
+	dataStorageRequirementInMB: number;
+	logStorageRequirementInMB: number;
+	databaseName: string;
+	memoryRequirementInMB: number;
+	cpuRequirementInPercentageOfTotalInstance: number;
+	numberOfDataPointsAnalyzed: number;
+	fileLevelRequirements: SqlFileRequirements[];
+}
+
+export interface SqlFileRequirements {
+	fileName: string;
+	fileType: DatabaseFileType;
+	sizeInMB: number;
+	readLatencyInMs: number;
+	writeLatencyInMs: number;
+	iopsRequirement: number;
+	ioThroughputRequirementInMBps: number;
+	numberOfDataPointsAnalyzed: number;
+}
+
 export interface PaaSSkuRecommendationResultItem extends SkuRecommendationResultItem {
 	targetSku: AzureSqlPaaSSku;
 }
@@ -694,9 +738,18 @@ export interface SkuRecommendationResult {
 	sqlDbRecommendationResults: PaaSSkuRecommendationResultItem[];
 	sqlMiRecommendationResults: PaaSSkuRecommendationResultItem[];
 	sqlVmRecommendationResults: IaaSSkuRecommendationResultItem[];
+	instanceRequirements: SqlInstanceRequirements;
 }
 
 // SKU recommendation enums, mirrored from Microsoft.SqlServer.Migration.SkuRecommendation
+export const enum DatabaseFileType {
+	Rows = 0,
+	Log = 1,
+	Filestream = 2,
+	NotSupported = 3,
+	Fulltext = 4
+}
+
 export const enum AzureSqlTargetPlatform {
 	AzureSqlDatabase = 0,
 	AzureSqlManagedInstance = 1,
