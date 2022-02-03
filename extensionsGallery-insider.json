@@ -3027,14 +3027,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.7.1",
-							"lastUpdated": "4/16/2021",
+							"version": "0.8.2",
+							"lastUpdated": "9/22/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/R0tenur/visualization/releases/tag/v0.7.1"
+									"source": "https://github.com/R0tenur/visualization/releases/tag/v0.8.2"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
