@@ -23,8 +23,8 @@ export function supportsNodeNameDrop(nodeId: string): boolean {
 
 /**
  * Whether the specified node supports having a schema
- * @param node
- * @returns
+ * @param node The node being dragged
+ * @returns True if the node supports having the schema appended to its name, false if not
  */
 function supportsSchema(node: TreeNode): boolean {
 	// Currently the tree node created by SQL Tools Service will set the schema for a node to the schema
