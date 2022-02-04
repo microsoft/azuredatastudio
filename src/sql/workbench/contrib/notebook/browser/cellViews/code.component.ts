@@ -269,9 +269,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			this._layoutEmitter.fire();
 		}));
 		this._register(this.cellModel.onCellModeChanged((state) => {
-			if (this.cellModel.cellType === CellTypes.Code) {
-				this.onCellModeChanged(state);
-			}
+			this.onCellModeChanged(state);
 		}));
 
 		this.layout();
