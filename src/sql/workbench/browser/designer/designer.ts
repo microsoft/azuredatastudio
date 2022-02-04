@@ -36,6 +36,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { DesignerScriptEditor } from 'sql/workbench/browser/designer/designerScriptEditor';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -53,7 +54,7 @@ export type DesignerUIComponent = InputBox | Checkbox | Table<Slick.SlickData> |
 export type CreateComponentsFunc = (container: HTMLElement, components: DesignerDataPropertyInfo[], parentPath: DesignerEditPath) => DesignerUIComponent[];
 export type SetComponentValueFunc = (definition: DesignerDataPropertyInfo, component: DesignerUIComponent, data: DesignerViewModel) => void;
 
-const TableRowHeight = 23;
+const TableRowHeight = 25;
 const TableHeaderRowHeight = 28;
 
 type DesignerUIArea = 'PropertiesView' | 'ScriptView' | 'TopContentView' | 'TabsView';
@@ -85,7 +86,8 @@ export class Designer extends Disposable implements IThemable {
 	constructor(private readonly _container: HTMLElement,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IContextViewService private readonly _contextViewProvider: IContextViewService,
-		@INotificationService private readonly _notificationService: INotificationService) {
+		@INotificationService private readonly _notificationService: INotificationService,
+		@IDialogService private readonly _dialogService: IDialogService) {
 		super();
 		this._tableCellEditorFactory = new TableCellEditorFactory(
 			{
@@ -303,11 +305,23 @@ export class Designer extends Disposable implements IThemable {
 						const propertyName = edit.path[0] as string;
 						const tableData = this._input.viewModel[propertyName] as DesignerTableProperties;
 						const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
-						table.setActiveCell(tableData.data.length - 1, 0);
+						try {
+							table.setActiveCell(tableData.data.length - 1, 0);
+						}
+						catch {
+							// Ignore the slick grid error when setting active cell.
+						}
+					} else {
+						this.updatePropertiesPane(this._propertiesPane.objectPath);
 					}
 				} else if (edit.type === DesignerEditType.Update) {
 					// for edit, update the properties pane with new values of current object.
 					this.updatePropertiesPane(this._propertiesPane.objectPath);
+				} else if (edit.type === DesignerEditType.Remove) {
+					// removing the secondary level entities, the properties pane needs to be updated to reflect the changes.
+					if (edit.path.length === 4) {
+						this.updatePropertiesPane(this._propertiesPane.objectPath);
+					}
 				}
 			} catch (err) {
 				this._notificationService.error(err);
@@ -330,7 +344,7 @@ export class Designer extends Disposable implements IThemable {
 		let message;
 		let timeout;
 		switch (action) {
-			case 'save':
+			case 'publish':
 				message = showLoading ? localize('designer.publishingChanges', "Publishing changes...") : localize('designer.publishChangesCompleted', "Changes have been published");
 				timeout = 0;
 				break;
@@ -693,7 +707,17 @@ export class Designer extends Disposable implements IThemable {
 						resizable: false,
 						isFontIcon: true
 					});
-					deleteRowColumn.onClick((e) => {
+					deleteRowColumn.onClick(async (e) => {
+						if (tableProperties.showRemoveRowConfirmation) {
+							const confirmMessage = tableProperties.removeRowConfirmationMessage || localize('designer.defaultRemoveRowConfirmationMessage', "Are you sure you want to remove the row?");
+							const result = await this._dialogService.confirm({
+								type: 'question',
+								message: confirmMessage
+							});
+							if (!result.confirmed) {
+								return;
+							}
+						}
 						this.handleEdit({
 							type: DesignerEditType.Remove,
 							path: [...propertyPath, e.row]
