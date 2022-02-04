@@ -156,24 +156,26 @@ export const CACHING_NONE = localize('sql.migration.sku.targetStorageConfigurati
 export const CACHING_READ_ONLY = localize('sql.migration.sku.targetStorageConfiguration.caching.readOnly', "Read-only");
 export const CACHING_READ_WRITE = localize('sql.migration.sku.targetStorageConfiguration.caching.readWrite', "Read/write");
 
-export const STORAGE_PROPERTIES = localize('sql.migration.sku.storage.properties', "Storage properties");
 export const DIMENSION = localize('sql.migration.sku.storage.dimension', "Dimension");
-export const RECOMMENDED_VALUE = localize('sql.migration.sku.recommended.value', "Recommended value");
+export const VALUE = localize('sql.migration.sku.recommended.value', "Value");
 export const CPU_REQUIREMENT = localize('sql.migration.sku.cpu.requirement', "CPU requirement");
-export function CPU_CORES(cpu: number): string {
-	return localize('sql.migration.sku.cpu', "{0} cores", cpu);
-}
 export const MEMORY_REQUIREMENT = localize('sql.migration.sku.memory.requirement', "Memory requirement");
 export const DATA_STORAGE_REQUIREMENT = localize('sql.migration.sku.data.storage.requirement', "Data storage requirement");
 export const LOG_STORAGE_REQUIREMENT = localize('sql.migration.sku.log.storage.requirement', "Log storage requirement");
 export const DATA_IOPS_REQUIREMENT = localize('sql.migration.sku.data.iops.requirement', "Data IOPS requirement");
 export const LOGS_IOPS_REQUIREMENT = localize('sql.migration.sku.logs.iops.requirement', "Logs IOPS requirement");
-export const IO_LATENCY_REQUIREMENT = localize('sql.migration.sku.io.memory.requirement', "IO Latency requirement");
+export const IO_LATENCY_REQUIREMENT = localize('sql.migration.sku.io.memory.requirement', "IO latency requirement");
+export function CPU_CORES(cpu: number): string {
+	return localize('sql.migration.sku.cpu', "{0} cores", cpu.toFixed(2));
+}
+export function GB(gb: number): string {
+	return localize('sql.migration.sku.gb', "{0} GB", gb.toFixed(2));
+}
 export function IOPS(iops: number): string {
-	return localize('sql.migration.sku.iops', "{0} IOPS", iops);
+	return localize('sql.migration.sku.iops', "{0} IOPS", iops.toFixed(2));
 }
 export function MS(ms: number): string {
-	return localize('sql.migration.sku.ms', "{0} ms", ms);
+	return localize('sql.migration.sku.ms', "{0} ms", ms.toFixed(2));
 }
 
 // Azure SQL Target
