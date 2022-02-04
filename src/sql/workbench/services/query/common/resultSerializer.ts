@@ -107,9 +107,7 @@ export class ResultSerializer {
 			// then fall back to the system default
 			filepathPlaceHolder = (await this.fileDialogService.defaultFilePath(Schemas.file)).fsPath;
 		}
-		if (filepathPlaceHolder) {
-			filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(format));
-		}
+		filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(format));
 		const fileUri = await this.fileDialogService.showSaveDialog({
 			title: nls.localize('resultsSerializer.saveAsFileTitle', "Choose Results File"),
 			defaultUri: filepathPlaceHolder ? URI.file(filepathPlaceHolder) : undefined,
