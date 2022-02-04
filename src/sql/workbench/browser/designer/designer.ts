@@ -262,6 +262,9 @@ export class Designer extends Disposable implements IThemable {
 		this._inputDisposable.add(this._input.onStateChange((args) => {
 			this.handleInputStateChangedEvent(args);
 		}));
+		this._inputDisposable.add(this._input.onRefreshRequested(() => {
+			this.refresh();
+		}));
 
 		if (this._input.view === undefined) {
 			this._input.initialize();
@@ -367,6 +370,11 @@ export class Designer extends Disposable implements IThemable {
 		} else {
 			this.stopLoading(message);
 		}
+	}
+
+	private refresh() {
+		this.updateComponentValues();
+		this.updatePropertiesPane(this._propertiesPane.objectPath);
 	}
 
 	private layoutTabbedPanel() {

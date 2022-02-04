@@ -24,6 +24,11 @@ export interface DesignerComponentInput {
 	readonly onEditProcessed: Event<DesignerEditProcessedEventArgs>;
 
 	/**
+	 * The event that is triggerd when a refresh of the UI is requested.
+	 */
+	readonly onRefreshRequested: Event<void>;
+
+	/**
 	 * Gets the object type display name.
 	 */
 	readonly objectTypeDisplayName: string;
