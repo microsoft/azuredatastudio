@@ -125,12 +125,17 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 						memoryRequest?: string;
 						noWait?: boolean;
 					},
-					namespace: string,
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
+					namespace?: string,
+					usek8s?: boolean,
+					// Additional arguments
 					additionalEnvVars?: azExt.AdditionalEnvVars
 				) => {
 					await localAzDiscovered;
 					validateAz(azToolService.localAz);
-					return azToolService.localAz!.sql.miarc.update(name, args, namespace, additionalEnvVars);
+					return azToolService.localAz!.sql.miarc.update(name, args, resourceGroup, namespace, usek8s, additionalEnvVars);
 				}
 			},
 			midbarc: {

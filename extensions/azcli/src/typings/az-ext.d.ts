@@ -338,7 +338,12 @@ declare module 'az-ext' {
 						noWait?: boolean, //true
 						retentionDays?: string, //5
 					},
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
 					namespace?: string,
+					usek8s?: boolean,
+					// Additional arguments
 					additionalEnvVars?: AdditionalEnvVars
 				): Promise<AzOutput<void>>
 			},
