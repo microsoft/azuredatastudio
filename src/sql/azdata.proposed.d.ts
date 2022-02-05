@@ -1445,6 +1445,10 @@ declare module 'azdata' {
 			 * The new table information after the changes are published.
 			 */
 			newTableInfo: TableInfo;
+			/**
+			 * The new view model.
+			 */
+			viewModel: DesignerViewModel;
 		}
 	}
 
