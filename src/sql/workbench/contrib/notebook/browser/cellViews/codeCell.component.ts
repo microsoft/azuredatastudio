@@ -43,15 +43,13 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 		let event = new StandardKeyboardEvent(e);
 		if (this.cellModel.active) {
 			if (event.keyCode === KeyCode.Escape) {
-				if (this.isEditMode) {
-					this.setEditMode(false);
-				}
+				this.toggleEditMode();
 			}
 			else if (event.keyCode === KeyCode.Enter) {
 				if (!this.isEditMode) {
+					// prevent the execution of enter if the cell is not currently in edit mode
 					e.preventDefault();
-					this.setEditMode(true);
-					this._model.updateActiveCell(this.cellModel);
+					this.toggleEditMode();
 				}
 			}
 		}
@@ -82,9 +80,9 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 			}));
 			this._register(this.cellModel.onCellModeChanged(mode => {
 				if (mode !== this.isEditMode) {
-					this.setEditMode(mode);
+					this.toggleEditMode();
+					this._changeRef.detectChanges();
 				}
-				this._changeRef.detectChanges();
 			}));
 			// Register request handler, cleanup on dispose of this component
 			this.cellModel.setStdInHandler({ handle: (msg) => this.handleStdIn(msg) });
@@ -125,8 +123,8 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 
 	}
 
-	public setEditMode(editMode?: boolean): void {
-		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
+	public toggleEditMode(): void {
+		this.isEditMode = this.isEditMode !== undefined ? this.isEditMode : !this.isEditMode;
 		this.cellModel.isEditMode = this.isEditMode;
 		this._changeRef.detectChanges();
 	}
