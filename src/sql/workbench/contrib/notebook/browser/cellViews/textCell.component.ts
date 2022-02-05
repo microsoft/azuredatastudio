@@ -63,14 +63,12 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		const keyEvent = new StandardKeyboardEvent(e);
 		if (this.cellModel.active) {
 			if (keyEvent.keyCode === KeyCode.Escape) {
-				if (this.isEditMode) {
-					this.setEditMode(false);
-				}
+				this.toggleEditMode(false);
 			} else if (keyEvent.keyCode === KeyCode.Enter) {
 				if (!this.isEditMode) {
+					//TODO: add comment
 					e.preventDefault();
-					this.setEditMode(true);
-					this._model.updateActiveCell(this.cellModel);
+					this.toggleEditMode(true);
 				}
 			}
 		}
@@ -213,7 +211,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}));
 		this._register(this.cellModel.onCellModeChanged(mode => {
 			if (mode !== this.isEditMode) {
-				this.setEditMode(mode);
+				this.toggleEditMode(mode);
 			}
 			this._changeRef.detectChanges();
 		}));
@@ -270,9 +268,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this._activeCellId = changedProp.currentValue;
 				this.toggleUserSelect(this.isActive());
 				// If the activeCellId is undefined (i.e. in an active cell update), don't unnecessarily set editMode to false;
-				// it will be set to true in a subsequent call to setEditMode()
+				// it will be set to true in a subsequent call to toggleEditMode()
 				if (changedProp.previousValue !== undefined) {
-					this.setEditMode(false);
+					this.toggleEditMode(false);
 				}
 				break;
 			}
@@ -439,7 +437,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.updateCellSource();
 	}
 
-	public setEditMode(editMode?: boolean): void {
+	public toggleEditMode(editMode?: boolean): void {
 		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
 		this.cellModel.isEditMode = this.isEditMode;
 		if (!this.isEditMode) {
@@ -485,7 +483,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private setFocusAndScroll(): void {
-		this.setEditMode(this.isActive());
+		this.toggleEditMode(this.isActive());
 
 		if (this.output && this.output.nativeElement) {
 			let outputElement = this.output.nativeElement as HTMLElement;
@@ -560,7 +558,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	// Enables edit mode on double clicking active cell
 	private enableActiveCellEditOnDoubleClick() {
 		if (!this.isEditMode && this.doubleClickEditEnabled) {
-			this.setEditMode(true);
+			this.toggleEditMode(true);
 		}
 		this._model.updateActiveCell(this.cellModel);
 	}

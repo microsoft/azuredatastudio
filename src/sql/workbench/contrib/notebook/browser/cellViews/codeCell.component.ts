@@ -49,6 +49,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 				if (!this.isEditMode) {
 					// prevent the execution of enter if the cell is not currently in edit mode
 					e.preventDefault();
+					// TODO: add comment here why not in edit mode
 					this.toggleEditMode();
 				}
 			}

@@ -147,10 +147,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 						}
 						this.selectCell(this.cells[--index]);
 					} else if (event.keyCode === KeyCode.Escape) {
-						this.enableActiveCellEditIcon(false);
+						this.setActiveCellEditActionMode(false);
 					}
 				} else if (event.keyCode === KeyCode.Enter) {
-					this.enableActiveCellEditIcon(true);
+					this.setActiveCellEditActionMode(true);
 				} else if (event.keyCode === KeyCode.Escape) {
 					this.unselectActiveCell();
 				}
@@ -289,11 +289,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	// See textcell.component.ts for changing edit behavior
 	public enableActiveCellEditIconOnDoubleClick() {
 		if (this.doubleClickEditEnabled) {
-			this.enableActiveCellEditIcon(true);
+			this.setActiveCellEditActionMode(true);
 		}
 	}
 
-	public enableActiveCellEditIcon(editMode: boolean) {
+	public setActiveCellEditActionMode(editMode: boolean) {
 		const toolbarComponent = (<CellToolbarComponent>this.cellToolbar.first);
 		const toolbarEditCellAction = toolbarComponent.getEditCellAction();
 		toolbarEditCellAction.editMode = editMode;
