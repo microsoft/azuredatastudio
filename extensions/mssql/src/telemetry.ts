@@ -114,21 +114,18 @@ export class Telemetry {
 			// If sending telemetry event fails ignore it so it won't break the extension
 			console.error('Failed to send telemetry event. error: ' + telemetryErr);
 		}
-
 	}
 
 	/**
 	 * Collects server information from ServerInfo to put into a
 	 * property bag
 	 */
-	public static fillServerInfo(telemetryInfo: { [key: string]: string }, serverInfo: ServerInfo): { [key: string]: string } {
+	public static fillServerInfo(telemetryInfo: { [key: string]: string }, serverInfo: ServerInfo): void {
 		telemetryInfo['serverEdition'] = serverInfo?.serverEdition;
 		telemetryInfo['serverLevel'] = serverInfo?.serverLevel;
 		telemetryInfo['serverMajorVersion'] = serverInfo?.serverMajorVersion.toString();
 		telemetryInfo['serverMinorVersion'] = serverInfo?.serverMinorVersion.toString();
 		telemetryInfo['isCloud'] = serverInfo?.isCloud.toString();
-		telemetryInfo['tableType'] = Constants.TableType.Basic;
-		return telemetryInfo;
 	}
 }
 
