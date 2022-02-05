@@ -21,6 +21,19 @@ export function supportsNodeNameDrop(nodeId: string): boolean {
 	return false;
 }
 
+/**
+ * Whether the specified node supports having a schema
+ * @param node The node being dragged
+ * @returns True if the node supports having the schema appended to its name, false if not
+ */
+function supportsSchema(node: TreeNode): boolean {
+	// Currently the tree node created by SQL Tools Service will set the schema for a node to the schema
+	// of its parent node if it doesn't have one itself. While it's not clear why this is being done
+	// changing it at this point would be risky so instead just doing a check here so that we don't
+	// accidently put a schema on an element that doesn't support it
+	return node.nodeTypeId === 'Column' ? false : true;
+}
+
 export function supportsFolderNodeNameDrop(nodeId: string, label: string): boolean {
 	if (nodeId === 'Folder' && label === 'Columns') {
 		return true;
@@ -95,9 +108,9 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		let escapedSchema, escapedName, finalString;
 		TreeUpdateUtils.isInDragAndDrop = true;
 		const data = dragAndDropData.getData();
-		const element = data[0];
+		const element = data[0] as TreeNode;
 		if (supportsNodeNameDrop(element.nodeTypeId)) {
-			escapedSchema = escapeString(element.metadata.schema);
+			escapedSchema = supportsSchema(element) ? escapeString(element.metadata.schema) : undefined;
 			escapedName = escapeString(element.metadata.name);
 			let providerName = this.getProviderNameFromElement(element);
 			if (providerName === 'KUSTO') {
@@ -116,7 +129,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			let returnString = '';
 			let providerName = this.getProviderNameFromElement(element);
 			for (let child of element.children) {
-				escapedSchema = escapeString(child.metadata.schema);
+				escapedSchema = supportsSchema(child) ? escapeString(child.metadata.schema) : undefined;
 				escapedName = escapeString(child.metadata.name);
 				if (providerName === mssqlProviderName) {
 					finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
