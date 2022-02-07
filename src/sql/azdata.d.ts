@@ -5070,7 +5070,6 @@ declare module 'azdata' {
 			version?: string | undefined;
 			mimetype?: string | undefined;
 			codemirror_mode?: string | ICodeMirrorMode | undefined;
-			supportedLanguages?: string[];
 		}
 
 		export interface ICodeMirrorMode {
@@ -5477,7 +5476,7 @@ declare module 'azdata' {
 		}
 		export interface IKernelSpec {
 			name: string;
-			language?: string | string[] | undefined;
+			language?: string | undefined;
 			display_name?: string | undefined;
 		}
 

@@ -30,6 +30,14 @@ declare module 'azdata' {
 			setTrusted(state: boolean): void;
 		}
 
+		export interface IKernelSpec {
+			supportedLanguages?: string[];
+		}
+
+		export interface ILanguageInfo {
+			supportedLanguages?: string[];
+		}
+
 		export interface IStandardKernel {
 			supportedLanguages: string[];
 			readonly blockedOnSAW?: boolean;

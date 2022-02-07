@@ -8,7 +8,6 @@ import type * as azdata from 'azdata';
 import { ADSNotebookController } from 'sql/workbench/api/common/notebooks/adsNotebookController';
 import * as nls from 'vs/nls';
 import { convertToVSCodeNotebookCell } from 'sql/workbench/api/common/notebooks/notebookUtils';
-import { asArray } from 'vs/base/common/arrays';
 
 class VSCodeFuture implements azdata.nb.IFuture {
 	private _inProgress = true;
@@ -92,8 +91,9 @@ class VSCodeKernel implements azdata.nb.IKernel {
 		};
 		this._kernelSpec = {
 			name: this._name,
-			language: languages,
-			display_name: this._name
+			language: languages[0],
+			display_name: this._name,
+			supportedLanguages: languages
 		};
 	}
 
@@ -224,8 +224,9 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 	public get specs(): azdata.nb.IAllKernels {
 		let kernel: azdata.nb.IKernelSpec = {
 			name: this._controller.notebookType,
-			language: this._controller.supportedLanguages,
-			display_name: this._controller.label
+			language: this._controller.supportedLanguages[0],
+			display_name: this._controller.label,
+			supportedLanguages: this._controller.supportedLanguages
 		};
 		return {
 			defaultKernel: kernel.name,
@@ -238,7 +239,7 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 			return Promise.reject(new Error(nls.localize('errorStartBeforeReady', "Cannot start a session, the manager is not yet initialized")));
 		}
 		let targetKernel = this.specs.kernels.find(kernel => kernel.name === this.specs.defaultKernel);
-		let session: azdata.nb.ISession = new VSCodeSession(this._controller, options, asArray(targetKernel.language));
+		let session: azdata.nb.ISession = new VSCodeSession(this._controller, options, targetKernel.supportedLanguages);
 		let index = this._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
 			this._sessions.splice(index);

@@ -1154,13 +1154,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._language = language.toLowerCase();
 		this._cells?.forEach(cell => {
 			let oldLangNotSupported = false;
-			if (this._savedKernelInfo?.language) {
-				if (Array.isArray(this._savedKernelInfo.language)) {
-					oldLangNotSupported = !this._savedKernelInfo.language.includes(oldLanguage);
-				} else {
-					oldLangNotSupported = this._savedKernelInfo.language !== oldLanguage;
-				}
+			if (this._savedKernelInfo.supportedLanguages) {
+				oldLangNotSupported = !this._savedKernelInfo.supportedLanguages.includes(oldLanguage);
 			}
+
 			if (!cell.language || cell.language === oldLanguage || oldLangNotSupported) {
 				cell.setOverrideLanguage(this._language);
 			}
@@ -1444,7 +1441,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._savedKernelInfo = {
 					name: kernel.name,
 					display_name: spec.display_name,
-					language: spec.language
+					language: spec.language,
+					supportedLanguages: spec.supportedLanguages
 				};
 				this.clientSession?.configureKernel(this._savedKernelInfo);
 			} catch (err) {
@@ -1570,7 +1568,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		let metadata = Object.create(null) as nb.INotebookMetadata;
 		// TODO update language and kernel when these change
 		metadata.kernelspec = this._savedKernelInfo;
+		delete (metadata.kernelspec as nb.IKernelSpec)?.supportedLanguages;
+
 		metadata.language_info = this.languageInfo;
+		delete metadata.language_info?.supportedLanguages;
+
 		metadata.tags = this._tags;
 		metadata.multi_connection_mode = this._multiConnectionMode ? this._multiConnectionMode : undefined;
 		if (this.configurationService.getValue(saveConnectionNameConfigName)) {
