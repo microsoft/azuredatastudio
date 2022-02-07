@@ -73,6 +73,9 @@ class SQLMigration {
 				};
 				return await vscode.commands.executeCommand(actionId, args);
 			}),
+			azdata.tasks.registerTask('sqlmigration.stopSkuPerformanceDataCollection', async () => {
+				await this.stopPerformanceCollection();
+			}),
 		];
 
 		this.context.subscriptions.push(...commandDisposables);
@@ -123,6 +126,18 @@ class SQLMigration {
 	async launchNewSupportRequest(): Promise<void> {
 		await vscode.env.openExternal(vscode.Uri.parse(
 			`https://portal.azure.com/#blade/Microsoft_Azure_Support/HelpAndSupportBlade/newsupportrequest`));
+	}
+
+	async stopPerformanceCollection(): Promise<void> {
+		if (this.stateModel && !!this.stateModel?.startPerfDataCollection) {
+			void vscode.window.showInformationMessage(loc.STOP_PERFORMANCE_COLLECTION_CONFIRMATION, { modal: true }, loc.YES, loc.NO).then(async (v) => {
+				if (v === loc.YES) {
+					await this.stateModel.stopPerfDataCollection();
+				}
+			});
+		} else {
+			void vscode.window.showInformationMessage(loc.NO_PERFORMANCE_COLLECTION_ERROR);
+		}
 	}
 
 	stop(): void {

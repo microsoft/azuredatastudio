@@ -103,6 +103,8 @@ export const AZURE_RECOMMENDATION_OPEN_EXISTING_FOLDER = localize('sql.migration
 export const FOLDER_NAME = localize('sql.migration.azureRecommendation.folder.name', "Folder name");
 export const BROWSE = localize('sql.migration.azureRecommendation.browse', "Browse");
 export const OPEN = localize('sql.migration.azureRecommendation.open', "Open");
+export const STOP_PERFORMANCE_COLLECTION_CONFIRMATION = localize('sql.migration.sku.stopPerformanceCollection.confirmation', "Are you sure you want to stop collecting performance data?");
+export const NO_PERFORMANCE_COLLECTION_ERROR = localize('sql.migration.sku.stopPerformanceCollection.error', "There is no performance data collection to be stopped.");
 
 export const VIEW_DETAILS = localize('sql.migration.sku.viewDetails', "View details");
 export function ASSESSED_DBS(totalDbs: number): string {

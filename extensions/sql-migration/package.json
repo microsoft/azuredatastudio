@@ -92,6 +92,12 @@
 				"command": "sqlmigration.retry.migration",
 				"title": "%retry-migration-menu%",
 				"category": "%migration-context-menu-category%"
+			},
+      {
+        "command": "sqlmigration.stopSkuPerformanceDataCollection",
+				"title": "%stop-sku-performance-data-collection%",
+				"category": "%migration-command-category%",
+        "icon": "./images/cancel.svg"
 			}
 		],
 		"menu": {
@@ -131,6 +137,10 @@
         {
 					"command": "sqlmigration.retry.migration",
 					"when": "false"
+				},
+        {
+					"command": "sqlmigration.stopSkuPerformanceDataCollection",
+					"when": "false"
 				}
 			]
 		},
@@ -155,7 +165,8 @@
 								"tasks-widget": [
 									"sqlmigration.start",
 									"sqlmigration.newsupportrequest",
-									"sqlmigration.sendfeedback"
+									"sqlmigration.sendfeedback",
+                  "sqlmigration.stopSkuPerformanceDataCollection"
 								]
 							}
 						},
