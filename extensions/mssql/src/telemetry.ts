@@ -129,6 +129,8 @@ export class Telemetry {
 	/**
 	 * Collects server information from ServerInfo to put into a
 	 * property bag
+	 * @param telemetryInfo
+	 * @param serverInfo
 	 */
 	public static fillServerInfo(telemetryInfo: { [key: string]: string }, serverInfo: ServerInfo): void {
 		telemetryInfo['serverEdition'] = serverInfo?.serverEdition;

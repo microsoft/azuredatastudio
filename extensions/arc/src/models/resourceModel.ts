@@ -32,11 +32,11 @@ export abstract class ResourceModel {
 	}
 
 	/**
- * Loads the saved connection profile associated with this model. Will prompt for one if
-* we don't have one or can't find it (it was deleted)
- *
- * @param promptForConnection
- */
+	 * Loads the saved connection profile associated with this model. Will prompt for one if
+	 * we don't have one or can't find it (it was deleted)
+	 *
+	 * @param promptForConnection
+	 */
 	protected async getConnectionProfile(promptForConnection: boolean = true): Promise<void> {
 		let connectionProfile: azdata.IConnectionProfile | undefined = this.createConnectionProfile();
 

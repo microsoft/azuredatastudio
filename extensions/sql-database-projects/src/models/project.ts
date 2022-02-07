@@ -529,9 +529,9 @@ export class Project implements ISqlProject {
 	}
 
 	/**
-	 *  Checks for the 3 possible ways a project can reference the sql project sdk
-	 *  https://docs.microsoft.com/en-us/visualstudio/msbuild/how-to-use-project-sdk?view=vs-2019
-	 *  @returns true if the project is an sdk style project, false if it isn't
+	 * Checks for the 3 possible ways a project can reference the sql project sdk
+	 * https://docs.microsoft.com/en-us/visualstudio/msbuild/how-to-use-project-sdk?view=vs-2019
+	 * @returns true if the project is an sdk style project, false if it isn't
 	 */
 	public CheckForSdkStyleProject(): boolean {
 		// type 1: Sdk node like <Sdk Name="Microsoft.Build.Sql" Version="1.0.0" />

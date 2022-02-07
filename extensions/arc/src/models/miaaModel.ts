@@ -151,12 +151,12 @@ export class MiaaModel extends ResourceModel {
 	}
 
 	/**
- * Gets the list of databases and adds backup earliest and latest point in time
-* information, this could be used as an upper and lower time limit for restoring
-* backup.
- *
- * @param promptForConnection
- */
+	 * Gets the list of databases and adds backup earliest and latest point in time
+	 * information, this could be used as an upper and lower time limit for restoring
+	 * backup.
+	 *
+	 * @param promptForConnection
+	 */
 	public async getDatabases(promptForConnection: boolean = true): Promise<void> {
 		if (!this._connectionProfile) {
 			await this.getConnectionProfile(promptForConnection);
