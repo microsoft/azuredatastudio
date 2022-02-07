@@ -715,7 +715,7 @@ export class DashboardWidget {
 		const links = [
 			{
 				title: localize('sql.migration.dashboard.help.link.migrateUsingADS', 'Migrate databases using Azure Data Studio'),
-				description: localize('sql.migration.dashboard.help.description.migrateUsingADS', 'The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server database to Azure.'),
+				description: localize('sql.migration.dashboard.help.description.migrateUsingADS', 'The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.'),
 				link: 'https://docs.microsoft.com/en-us/azure/dms/migration-using-azure-data-studio'
 			},
 			{
