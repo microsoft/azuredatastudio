@@ -6,16 +6,14 @@
 import { AppContext } from '../appContext';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { sqlProviderName } from '../constants';
+import { sqlProviderName, TableType } from '../constants';
 import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
 import { ITelemetryEventProperties, Telemetry } from '../telemetry';
 
 export function registerTableDesignerCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newTable', async (context: azdata.ObjectExplorerContext) => {
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
-		const serverInfo = await azdata.connection.getServerInfo(context.connectionProfile.id);
-		let telemetryInfo: ITelemetryEventProperties = {};
-		telemetryInfo = Telemetry.fillServerInfo(telemetryInfo, serverInfo);
+		const telemetryInfo = await getTelemetryInfo(context, TableType.Basic);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: context.connectionProfile.serverName,
 			database: context.connectionProfile.databaseName,
@@ -31,9 +29,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		const schema = context.nodeInfo.metadata.schema;
 		const name = context.nodeInfo.metadata.name;
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
-		const serverInfo = await azdata.connection.getServerInfo(context.connectionProfile.id);
-		let telemetryInfo: ITelemetryEventProperties = {};
-		telemetryInfo = Telemetry.fillServerInfo(telemetryInfo, serverInfo);
+		const telemetryInfo = await getTelemetryInfo(context, TableType.Basic);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: server,
 			database: database,
@@ -44,4 +40,12 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			connectionString: connectionString
 		}, telemetryInfo);
 	}));
+}
+
+async function getTelemetryInfo(context: azdata.ObjectExplorerContext, tableType: string): Promise<ITelemetryEventProperties> {
+	const serverInfo = await azdata.connection.getServerInfo(context.connectionProfile.id);
+	const telemetryInfo: ITelemetryEventProperties = {};
+	Telemetry.fillServerInfo(telemetryInfo, serverInfo);
+	telemetryInfo['tableType'] = tableType;
+	return telemetryInfo;
 }
