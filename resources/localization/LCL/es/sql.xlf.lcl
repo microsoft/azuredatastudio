@@ -16758,8 +16758,8 @@
       <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.savingChanges" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Publishing table designer changes...]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Publicando cambios del diseñador de tablas...]]></Val>
+          <Tgt Cat="Text" Stat="Update" Orig="New">
+            <Val><![CDATA[Guardando cambios del diseñador de tablas...]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Saving table designer changes...]]></Val>
