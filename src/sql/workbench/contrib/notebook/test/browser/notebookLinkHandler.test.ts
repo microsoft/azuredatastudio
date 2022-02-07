@@ -105,14 +105,4 @@ suite('Noteboook Link Handler', function (): void {
 		assert.strictEqual(result.getLinkUrl(), `.${path.sep}my%2520stuff.png`, 'Basic link test with %20 filename failed');
 	});
 
-	test('Should return correctly encoded url/filePath', () => {
-		let result = new NotebookLinkHandler(notebookUri, 'https://github.com/search/advanced?q=test&r=microsoft%2Fazuredatastudio&type=Code', configurationService);
-		assert.strictEqual(getEncodedLinkUrl(result.getLinkUrl()), `https://github.com/search/advanced?q=test&r=microsoft%2Fazuredatastudio&type=Code`, 'HTTPS link encoding failed');
-
-		result = new NotebookLinkHandler(notebookUri, 'https://github.com/search/advanced?q=test&r=(microsoft%2Fazuredatastudio)&type=Code', configurationService);
-		assert.strictEqual(getEncodedLinkUrl(result.getLinkUrl()), `https://github.com/search/advanced?q=test&r=(microsoft%2Fazuredatastudio)&type=Code`, '() in HTTP link failed to resolve');
-
-		result = new NotebookLinkHandler(notebookUri, 'https://github.com/search/advanced?q=test&r=(microsoft/azuredata studio)&type=Code', configurationService);
-		assert.strictEqual(getEncodedLinkUrl(result.getLinkUrl()), `https://github.com/search/advanced?q=test&r=(microsoft/azuredata%20studio)&type=Code`, 'space failed to be encoded failed');
-	});
 });
