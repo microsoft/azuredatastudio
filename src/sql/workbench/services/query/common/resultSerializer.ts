@@ -19,6 +19,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { Schemas } from 'vs/base/common/network';
 
 let prevSavePath: URI;
 
@@ -99,23 +100,23 @@ export class ResultSerializer {
 		return getRootPath(this._contextService);
 	}
 
-	private promptForFilepath(format: SaveFormat, resourceUri: string): Promise<URI | undefined> {
+	private async promptForFilepath(format: SaveFormat, resourceUri: string): Promise<URI | undefined> {
 		let filepathPlaceHolder = prevSavePath ? path.dirname(prevSavePath.fsPath) : resolveCurrentDirectory(resourceUri, this.rootPath);
-		if (filepathPlaceHolder) {
-			filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(format));
+		if (!filepathPlaceHolder) {
+			// If we haven't saved previously and there isn't a file path associated with this resource (e.g. for untitled files)
+			// then fall back to the system default
+			filepathPlaceHolder = (await this.fileDialogService.defaultFilePath(Schemas.file)).fsPath;
 		}
-
-		return this.fileDialogService.showSaveDialog({
+		filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(format));
+		const fileUri = await this.fileDialogService.showSaveDialog({
 			title: nls.localize('resultsSerializer.saveAsFileTitle', "Choose Results File"),
 			defaultUri: filepathPlaceHolder ? URI.file(filepathPlaceHolder) : undefined,
 			filters: this.getResultsFileExtension(format)
-		}).then(filePath => {
-			if (filePath) {
-				prevSavePath = filePath;
-				return filePath;
-			}
-			return undefined;
 		});
+		if (fileUri) {
+			prevSavePath = fileUri;
+		}
+		return fileUri;
 	}
 
 	private getResultsDefaultFilename(format: SaveFormat): string {

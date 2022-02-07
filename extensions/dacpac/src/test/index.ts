@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-const testRunner = require('vscodetestcover');
+import * as testRunner from '@microsoft/vscodetestcover';
 
 const suite = 'dacpac Extension Tests';
 

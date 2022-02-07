@@ -1614,6 +1614,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/package.config.loggingLevel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[[Optional]5D; The verbosity of logging for the Azure Accounts extension.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[オプション]5D; Azure アカウント拡張機能のログ記録の詳細。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/package.config.noSystemKeychain" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.]]></Val>
@@ -1625,10 +1634,13 @@
       </Item>
       <Item ItemId=";extensions/azurecore/package.config.piiLogging" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Should Personally Identifiable Information (PII) be logged in the console view locally]]></Val>
+          <Val><![CDATA[Should Personally Identifiable Information (PII) be logged in the Azure Accounts output channel and the output channel log file.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[PII (Personally Identifiable Information) をコンソール ビューにローカルに記録するかどうか]]></Val>
+            <Val><![CDATA[個人を特定できる情報 (PII) を Azure アカウントの出力チャネルと出力チャネルのログ ファイルにログ記録してしまった場合。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Should Personally Identifiable Information (PII) be logged in the console view locally]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
