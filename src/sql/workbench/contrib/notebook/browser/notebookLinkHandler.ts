@@ -118,6 +118,20 @@ export class NotebookLinkHandler {
 		}
 	}
 
+	public getEncodedLinkUrl(linkUrl: string): string {
+		// Need to encode URI here in order for user to click the proper encoded link in WYSIWYG
+		// skip encoding it if it's already encoded
+		if (!this.containsEncodedComponents(linkUrl)) {
+			return encodeURI(linkUrl);
+		}
+		return linkUrl;
+	}
+
+	public containsEncodedComponents(url) {
+		// ie ?,=,&,/ etc
+		return (decodeURI(url) !== decodeURIComponent(url));
+	}
+
 	/**
 	 * Creates a URI for for a link with a anchor (#)
 	 * @param node is the HTMLAnchorElement of the target notebook
