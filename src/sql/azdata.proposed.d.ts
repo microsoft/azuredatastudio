@@ -82,6 +82,9 @@ declare module 'azdata' {
 
 		export interface ICellMetadata {
 			connection_name?: string;
+			dotnet_interactive?: {
+				language: string;
+			}
 		}
 
 		export interface ICellContents {

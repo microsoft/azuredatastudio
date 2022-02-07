@@ -1077,8 +1077,10 @@ export class CellModel extends Disposable implements ICellModel {
 	private setLanguageFromContents(cell: nb.ICellContents): void {
 		if (cell.cell_type === CellTypes.Markdown) {
 			this._language = 'markdown';
-		} else if (cell.metadata && cell.metadata.language) {
+		} else if (cell.metadata?.language) {
 			this._language = cell.metadata.language;
+		} else if (cell.metadata?.dotnet_interactive?.language) {
+			this._language = cell.metadata.dotnet_interactive.language;
 		}
 		// else skip, we set default language anyhow
 	}
