@@ -733,21 +733,17 @@ export class DashboardWidget {
 				description: localize('sql.migration.dashboard.help.description.dmsGuide', 'A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.'),
 				link: 'https://docs.microsoft.com/en-us/data-migration/'
 			},
-			{
-				title: localize('sql.migration.dashboard.help.link.assessment', 'Assessment rules for Azure SQL Managed Instance'),
-				description: localize('sql.migration.dashboard.help.description.assessment', 'Assessment rules used to determine the feasibility of migrating your SQL Server instance to Azure SQL Managed Instance.'),
-				link: 'https://docs.microsoft.com/azure/azure-sql/migration-guides/managed-instance/sql-server-to-sql-managed-instance-assessment-rules'
-			},
 		];
 
 		linksContainer.addItems(links.map(l => this.createLink(view, l)), {});
 
-		const videosContainer = this.createVideoLinkContainers(view, []);
-		linksContainer.addItem(videosContainer, {
-			CSSStyles: {
-				'margin-bottom': '8px'
-			}
-		});
+		const videoLinks: IActionMetadata[] = [];
+		const videosContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row',
+			width: maxWidth,
+		}).component();
+		videosContainer.addItems(videoLinks.map(l => this.createVideoLink(view, l)), {});
+		linksContainer.addItem(videosContainer);
 
 		return linksContainer;
 	}
@@ -789,19 +785,6 @@ export class DashboardWidget {
 		linkContainer.addItem(linkComponent);
 		labelsContainer.addItems([linkContainer, descriptionComponent]);
 		return labelsContainer;
-	}
-
-	private createVideoLinkContainers(view: azdata.ModelView, links: IActionMetadata[]): azdata.Component {
-		const maxWidth = 400;
-		const videosContainer = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'row',
-			width: maxWidth,
-		}).component();
-		links.forEach(link => {
-			const videoContainer = this.createVideoLink(view, link);
-			videosContainer.addItem(videoContainer);
-		});
-		return videosContainer;
 	}
 
 	private createVideoLink(view: azdata.ModelView, linkMetaData: IActionMetadata): azdata.Component {
