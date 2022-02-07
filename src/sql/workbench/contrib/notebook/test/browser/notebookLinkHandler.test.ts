@@ -9,6 +9,7 @@ import { URI } from 'vs/base/common/uri';
 import { NotebookLinkHandler } from 'sql/workbench/contrib/notebook/browser/notebookLinkHandler';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
+import { getEncodedLinkUrl } from 'sql/workbench/contrib/notebook/browser/utils';
 
 suite('Noteboook Link Handler', function (): void {
 	let notebookUri = URI.file('/tmp/notebook.ipynb');
@@ -106,12 +107,12 @@ suite('Noteboook Link Handler', function (): void {
 
 	test('Should return correctly encoded url/filePath', () => {
 		let result = new NotebookLinkHandler(notebookUri, 'https://github.com/search/advanced?q=test&r=microsoft%2Fazuredatastudio&type=Code', configurationService);
-		assert.strictEqual(result.getEncodedLinkUrl(result.getLinkUrl()), `https://github.com/search/advanced?q=test&r=microsoft%2Fazuredatastudio&type=Code`, 'HTTPS link encoding failed');
+		assert.strictEqual(getEncodedLinkUrl(result.getLinkUrl()), `https://github.com/search/advanced?q=test&r=microsoft%2Fazuredatastudio&type=Code`, 'HTTPS link encoding failed');
 
 		result = new NotebookLinkHandler(notebookUri, 'https://github.com/search/advanced?q=test&r=(microsoft%2Fazuredatastudio)&type=Code', configurationService);
-		assert.strictEqual(result.getEncodedLinkUrl(result.getLinkUrl()), `https://github.com/search/advanced?q=test&r=(microsoft%2Fazuredatastudio)&type=Code`, '() in HTTP link failed to resolve');
+		assert.strictEqual(getEncodedLinkUrl(result.getLinkUrl()), `https://github.com/search/advanced?q=test&r=(microsoft%2Fazuredatastudio)&type=Code`, '() in HTTP link failed to resolve');
 
 		result = new NotebookLinkHandler(notebookUri, 'https://github.com/search/advanced?q=test&r=(microsoft/azuredata studio)&type=Code', configurationService);
-		assert.strictEqual(result.getEncodedLinkUrl(result.getLinkUrl()), `https://github.com/search/advanced?q=test&r=(microsoft/azuredata%20studio)&type=Code`, 'space failed to be encoded failed');
+		assert.strictEqual(getEncodedLinkUrl(result.getLinkUrl()), `https://github.com/search/advanced?q=test&r=(microsoft/azuredata%20studio)&type=Code`, 'space failed to be encoded failed');
 	});
 });
