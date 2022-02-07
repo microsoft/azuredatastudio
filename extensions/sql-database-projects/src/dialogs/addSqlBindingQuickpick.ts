@@ -194,7 +194,18 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 							continue;
 						}
 						try {
-							connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, false, false);
+							// Prompt to include password in connection string
+							let includePassword = await vscode.window.showQuickPick([constants.yesString, constants.noString], {
+								title: constants.includePassword,
+								canPickMany: false,
+								ignoreFocusOut: true
+							});
+							if (includePassword === constants.yesString) {
+								connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, true, false);
+							} else {
+								connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, false, false);
+								await vscode.window.showInformationMessage(constants.userPasswordLater);
+							}
 						} catch (e) {
 							// failed to get connection string for selected connection and will go back to prompt for connection string methods
 							console.warn(e);
@@ -206,16 +217,27 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 						try {
 							const projectFolder: string = path.dirname(projectUri.fsPath);
 							const localSettingsPath: string = path.join(projectFolder, constants.azureFunctionLocalSettingsFileName);
+							// Connection string does not include a password, so will prompt user to optionally enter it manually
+							if (connectionString.includes(`Password=${constants.passwordPlaceholder}`)) {
+								let userPassword = await vscode.window.showInputBox({
+									prompt: constants.includePassword,
+									placeHolder: constants.enterPasswordManually,
+									ignoreFocusOut: true,
+									password: true
+								});
+								if (!userPassword) {
+									await vscode.window.showWarningMessage(constants.userPasswordLater);
+									continue;
+								} else {
+									// replace the default password with the user's password
+									await vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(localSettingsPath));
+									connectionString.replace(constants.passwordPlaceholder, userPassword);
+								}
+							}
 							const success = await azureFunctionsUtils.setLocalAppSetting(projectFolder, newConnectionStringSettingName, connectionString);
 							if (success) {
 								// exit both loops and insert binding
 								connectionStringSettingName = newConnectionStringSettingName;
-								if (connectionString.includes(`Password=${constants.passwordPlaceholder}`)) {
-									let response = await vscode.window.showWarningMessage(constants.changePasswordPrompt, constants.changePassword, constants.cancelButtonText);
-									if (response === constants.changePassword) {
-										await vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(localSettingsPath));
-									}
-								}
 								break;
 							} else {
 								void vscode.window.showErrorMessage(constants.selectConnectionError());
