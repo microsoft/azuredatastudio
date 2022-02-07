@@ -9,7 +9,6 @@ import { URI } from 'vs/base/common/uri';
 import { NotebookLinkHandler } from 'sql/workbench/contrib/notebook/browser/notebookLinkHandler';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
-import { getEncodedLinkUrl } from 'sql/workbench/contrib/notebook/browser/utils';
 
 suite('Noteboook Link Handler', function (): void {
 	let notebookUri = URI.file('/tmp/notebook.ipynb');
@@ -105,4 +104,30 @@ suite('Noteboook Link Handler', function (): void {
 		assert.strictEqual(result.getLinkUrl(), `.${path.sep}my%2520stuff.png`, 'Basic link test with %20 filename failed');
 	});
 
+	test('Should return correctly encoded url/filePath', () => {
+		test('when given an already-encoded URL', () => {
+			let notebookLinkHandler = new NotebookLinkHandler(notebookUri, 'https://github.com/search/advanced?q=test&r=microsoft%2Fazuredatastudio&type=Code', configurationService);
+			assert.strictEqual(notebookLinkHandler.getEncodedLinkUrl(), `https://github.com/search/advanced?q=test&r=microsoft%2Fazuredatastudio&type=Code`, 'HTTPS link does not need encoding');
+		});
+
+		test('when given an already encoded URL with non-reserved characters', () => {
+			let notebookLinkHandler = new NotebookLinkHandler(notebookUri, 'https://github.com/search/advanced?q=test&r=(microsoft%2Fazuredatastudio)&type=Code', configurationService);
+			assert.strictEqual(notebookLinkHandler.getEncodedLinkUrl(), `https://github.com/search/advanced?q=test&r=(microsoft%2Fazuredatastudio)&type=Code`, '() in HTTP link failed to resolve');
+		});
+
+		test('when given an unencoded URL with a space', () => {
+			let notebookLinkHandler = new NotebookLinkHandler(notebookUri, 'https://github.com/search/advanced?q=test&r=(microsoft/azuredata studio)&type=Code', configurationService);
+			assert.strictEqual(notebookLinkHandler.getEncodedLinkUrl(), `https://github.com/search/advanced?q=test&r=(microsoft/azuredata%20studio)&type=Code`, 'space in the url failed to be encoded');
+		});
+
+		test('when given file path with a space', () => {
+			let notebookLinkHandler = new NotebookLinkHandler(notebookUri, '/Notebooks/Test_Paths/My File.ipynb', configurationService);
+			assert.strictEqual(notebookLinkHandler.getEncodedLinkUrl(), `/Notebooks/Test_Paths/My%20File.ipynb`, 'space in file path failed to be encoded');
+		});
+
+		test('when given file path has special characters such as %', () => {
+			let notebookLinkHandler = new NotebookLinkHandler(notebookUri, '/Notebooks/Test_Paths/My%20File.ipynb', configurationService);
+			assert.strictEqual(notebookLinkHandler.getEncodedLinkUrl(), `/Notebooks/Test_Paths/My%2520File.ipynb`, '% in file path failed to be encoded');
+		});
+	});
 });

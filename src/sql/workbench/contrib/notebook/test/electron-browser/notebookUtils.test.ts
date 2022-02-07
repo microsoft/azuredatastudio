@@ -13,7 +13,6 @@ import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 import { RichTextEditStack } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
-import { getEncodedLinkUrl } from 'sql/workbench/contrib/notebook/browser/utils';
 
 suite('notebookUtils', function (): void {
 	const mockNotebookService = TypeMoq.Mock.ofType<INotebookService>(NotebookServiceStub);
@@ -324,23 +323,5 @@ suite('notebookUtils', function (): void {
 		stack.push('c');
 		assert.strictEqual(stack.count, maxStackSize);
 		assert.strictEqual(stack.peek(), 'c');
-	});
-
-	test('getEncodedLinkUrl should return correctly encoded url/filePath', () => {
-		let result = getEncodedLinkUrl('https://github.com/search/advanced?q=test&r=microsoft%2Fazuredatastudio&type=Code');
-		assert.strictEqual(result, `https://github.com/search/advanced?q=test&r=microsoft%2Fazuredatastudio&type=Code`, 'HTTPS link encoding failed');
-
-		result = getEncodedLinkUrl('https://github.com/search/advanced?q=test&r=(microsoft%2Fazuredatastudio)&type=Code');
-		assert.strictEqual(result, `https://github.com/search/advanced?q=test&r=(microsoft%2Fazuredatastudio)&type=Code`, '() in HTTP link failed to resolve');
-
-		result = getEncodedLinkUrl('https://github.com/search/advanced?q=test&r=(microsoft/azuredata studio)&type=Code');
-		assert.strictEqual(result, `https://github.com/search/advanced?q=test&r=(microsoft/azuredata%20studio)&type=Code`, 'space failed to be encoded failed');
-
-		// test file paths
-		result = getEncodedLinkUrl('/Notebooks/Test_Paths/My%20File.ipynb');
-		assert.strictEqual(result, `/Notebooks/Test_Paths/My%2520File.ipynb`, '% failed to be encoded');
-
-		result = getEncodedLinkUrl('/Notebooks/Test_Paths/My File.ipynb');
-		assert.strictEqual(result, `/Notebooks/Test_Paths/My%20File.ipynb`, '% failed to be encoded');
 	});
 });

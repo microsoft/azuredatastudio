@@ -118,6 +118,25 @@ export class NotebookLinkHandler {
 		}
 	}
 
+	public getEncodedLinkUrl(): string | undefined {
+		// Need to encode URI here in order for user to click the proper encoded link in WYSIWYG
+		// skip encoding it if it's already encoded
+		if (typeof this._link === 'string') {
+			if (!this.containsEncodedComponents(this._link)) {
+				return encodeURI(this._link);
+			}
+			return this._link;
+		}
+		return undefined;
+	}
+
+	// returns true if the passed in url has encoded strings:
+	// space gets encoded as %20 and ;,/?:@&=+$ -> %3B%2C%2F%3F%3A%40%26%3D%2B%24
+	containsEncodedComponents(url): boolean {
+		// ie ?,=,&,/ etc
+		return (decodeURI(url) !== decodeURIComponent(url));
+	}
+
 	/**
 	 * Creates a URI for for a link with a anchor (#)
 	 * @param node is the HTMLAnchorElement of the target notebook

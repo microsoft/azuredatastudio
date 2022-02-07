@@ -43,19 +43,3 @@ export function highlightSelectedText(): void {
 		document.execCommand('hiliteColor', false, 'Yellow');
 	}
 }
-
-export function getEncodedLinkUrl(linkUrl: string): string {
-	// Need to encode URI here in order for user to click the proper encoded link in WYSIWYG
-	// skip encoding it if it's already encoded
-	if (!containsEncodedComponents(linkUrl)) {
-		return encodeURI(linkUrl);
-	}
-	return linkUrl;
-}
-
-// returns true if the passed in url has encoded strings:
-// space gets encoded as %20 and ;,/?:@&=+$ -> %3B%2C%2F%3F%3A%40%26%3D%2B%24
-export function containsEncodedComponents(url) {
-	// ie ?,=,&,/ etc
-	return (decodeURI(url) !== decodeURIComponent(url));
-}
