@@ -87,7 +87,7 @@ export class CreateProjectFromDatabaseDialog {
 			createProjectSettingsFormSection.addItems([folderStructureRow]);
 
 			// could also potentially be radio buttons once there's a term to refer to "legacy" style sqlprojs
-			const sdkStyleCheckbox = view.modelBuilder.checkBox().withProps({
+			this.sdkStyleCheckbox = view.modelBuilder.checkBox().withProps({
 				checked: true,
 				label: constants.sdkStyleProject
 			}).component();
@@ -117,7 +117,7 @@ export class CreateProjectFromDatabaseDialog {
 								component: createProjectSettingsFormSection,
 							},
 							{
-								component: sdkStyleCheckbox
+								component: this.sdkStyleCheckbox
 							}
 						]
 					}
