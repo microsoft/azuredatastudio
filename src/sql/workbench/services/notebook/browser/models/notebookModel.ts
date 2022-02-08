@@ -1154,7 +1154,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._language = language.toLowerCase();
 		this._cells?.forEach(cell => {
 			let oldLangNotSupported = false;
-			if (this._savedKernelInfo.supportedLanguages) {
+			if (this._savedKernelInfo?.supportedLanguages) {
 				oldLangNotSupported = !this._savedKernelInfo.supportedLanguages.includes(oldLanguage);
 			}
 
