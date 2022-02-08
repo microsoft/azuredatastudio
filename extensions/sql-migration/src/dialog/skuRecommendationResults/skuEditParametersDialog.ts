@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { MigrationStateModel } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
-import { findDropDownItemIndex, selectDropDownIndex } from '../../api/utils';
+import { selectDropDownIndex } from '../../api/utils';
 import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
 
 export const TARGET_PERCENTILE_VALUES = [99, 97, 95, 90, 75, 50];
@@ -111,17 +111,13 @@ export class SkuEditParametersDialog {
 			values: createPercentageValues(),
 			ariaLabel: constants.PERCENTAGE_UTILIZATION,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
-			editable: true,
+			editable: false,
 			required: true,
 			fireOnTextChange: true,
 			CSSStyles: {
 				'margin-top': '-1em'
 			},
 		}).component();
-		// TODO: validate user selected value from the list
-		this._disposables.push(this._targetPercentileDropdown.onValueChanged(async (value) => {
-			await this._targetPercentileDropdown.validate();
-		}));
 
 		const enablePreviewLabel = _view.modelBuilder.text().withProps({
 			value: constants.ENABLE_PREVIEW_SKU,
