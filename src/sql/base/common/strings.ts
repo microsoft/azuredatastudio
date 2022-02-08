@@ -71,3 +71,10 @@ export function endsWith(haystack: string, needle: string): boolean {
 		return false;
 	}
 }
+
+/**
+ * Remove line breaks/eols from a string across different operating systems.
+ */
+export function removeLineBreaks(str: string): string {
+	return str.replace(/(\r\n|\n|\r)/gm, '');
+}

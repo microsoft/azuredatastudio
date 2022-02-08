@@ -14,6 +14,7 @@ import { URI } from 'vs/base/common/uri';
 import { NotebookCellExecutionTaskState } from 'vs/workbench/api/common/extHostNotebookKernels';
 import { asArray } from 'vs/base/common/arrays';
 import { convertToADSCellOutput } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 type SelectionChangedEvent = { selected: boolean, notebook: vscode.NotebookDocument; };
 type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };
@@ -173,7 +174,7 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 	}
 
 	public get token(): vscode.CancellationToken {
-		return undefined;
+		return CancellationToken.None;
 	}
 
 	public get executionOrder(): number {

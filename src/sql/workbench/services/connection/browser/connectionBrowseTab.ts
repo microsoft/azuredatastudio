@@ -248,7 +248,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 				if (selectedNode.element.payload) {
 					this._onSelectedConnectionChanged.fire(
 						{
-							connectionProfile: selectedNode.element.payload,
+							connectionProfile: new ConnectionProfile(this.capabilitiesService, selectedNode.element.payload),
 							connect: connect,
 							source: 'azure'
 						});

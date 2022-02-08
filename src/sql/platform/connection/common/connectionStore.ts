@@ -106,7 +106,7 @@ export class ConnectionStore {
 	 * Password values are stored to a separate credential store if the "savePassword" option is true
 	 *
 	 * @param profile the profile to save
-	 * @param whether the plaintext password should be written to the settings file
+	 * @param forceWritePlaintextPassword whether the plaintext password should be written to the settings file
 	 * @returns a Promise that returns the original profile, for help in chaining calls
 	 */
 	public async saveProfile(profile: IConnectionProfile, forceWritePlaintextPassword?: boolean, matcher?: ProfileMatcher): Promise<IConnectionProfile> {
@@ -192,7 +192,6 @@ export class ConnectionStore {
 	 * Password values are stored to a separate credential store if the "savePassword" option is true
 	 *
 	 * @param conn the connection to add
-	 * @param addToMru Whether to add this connection to the MRU
 	 * @returns a Promise that returns when the connection was saved
 	 */
 	public addRecentConnection(conn: IConnectionProfile): Promise<void> {

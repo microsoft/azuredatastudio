@@ -1,5 +1,6 @@
 {
 	"rules": {
-		"no-cond-assign": 2
+		"no-cond-assign": 2,
+		"jsdoc/check-param-names": "error"
 	}
 }

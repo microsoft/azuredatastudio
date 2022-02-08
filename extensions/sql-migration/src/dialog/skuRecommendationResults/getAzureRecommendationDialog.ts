@@ -21,12 +21,16 @@ export class GetAzureRecommendationDialog {
 
 	private _disposables: vscode.Disposable[] = [];
 
-	private _collectDataContainer!: azdata.FlexContainer;
-	private _openExistingContainer!: azdata.FlexContainer;
+	private _skuRecommendationPerformanceDataSource!: PerformanceDataSourceOptions;
 
+	private _collectDataContainer!: azdata.FlexContainer;
+	private _collectDataFolderInput!: azdata.InputBoxComponent;
+
+	private _openExistingContainer!: azdata.FlexContainer;
+	private _openExistingFolderInput!: azdata.InputBoxComponent;
 
 	constructor(public skuRecommendationPage: SKURecommendationPage, public wizard: azdata.window.Wizard, public migrationStateModel: MigrationStateModel) {
-		console.log('constructor GetAzureRecommendationDialog');
+		this._skuRecommendationPerformanceDataSource = PerformanceDataSourceOptions.CollectData;
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
@@ -97,7 +101,7 @@ export class GetAzureRecommendationDialog {
 			CSSStyles: {
 				'flex-direction': 'row',
 				'width': 'fit-content',
-				'margin': '4px 0 8px',
+				'margin': '4px 0 16px',
 			}
 		}).component();
 
@@ -109,7 +113,7 @@ export class GetAzureRecommendationDialog {
 					...styles.BODY_CSS,
 					'margin': '0'
 				},
-				checked: true,
+				checked: this._skuRecommendationPerformanceDataSource === PerformanceDataSourceOptions.CollectData,
 			}).component();
 		this._disposables.push(collectDataButton.onDidChangeCheckedState(async (e) => {
 			if (e) {
@@ -171,25 +175,21 @@ export class GetAzureRecommendationDialog {
 		const selectFolderContainer = _view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'flex-direction': 'row',
+				'align-items': 'center',
 			}
 		}).component();
 
-		const folderNameInput = _view.modelBuilder.inputBox().withProps({
-			// TO-DO: now that there are two input boxes, one for the start data collection workflow and one for the import existing data workflow,
-			// this needs to be updated so that the Start button in this dialog is greyed out only when *neither* of them has a value, but un-greyed
-			// when *either* one has a value
-			required: false,
+		this._collectDataFolderInput = _view.modelBuilder.inputBox().withProps({
+			required: this._skuRecommendationPerformanceDataSource === PerformanceDataSourceOptions.CollectData,
 			placeHolder: constants.FOLDER_NAME,
+			CSSStyles: {
+				'margin-right': '12px'
+			},
 			// validationErrorMessage: "invalid location??",
 			width: '300px'
-		})
-			// .withValidation(c => {
-			// 	return true;
-			// })
-			.component();
-		this._disposables.push(folderNameInput.onTextChanged(async (value) => {
+		}).component();
+		this._disposables.push(this._collectDataFolderInput.onTextChanged(async (value) => {
 			this.migrationStateModel._skuRecommendationPerformanceLocation = value.trim();
-			console.log('this.migrationStateModel._skuRecommendationPerformanceLocation', this.migrationStateModel._skuRecommendationPerformanceLocation);
 		}));
 
 		const browseButton = _view.modelBuilder.button().withProps({
@@ -203,11 +203,11 @@ export class GetAzureRecommendationDialog {
 			console.log('on click BROWSE');
 
 			let folder = await this.handleBrowse();
-			folderNameInput.value = folder;			// update value of textbox, which in turn will update this.migrationStateModel._skuRecommendationPerformanceLocation via onTextChanged()
+			this._collectDataFolderInput.value = folder;			// update value of textbox, which in turn will update this.migrationStateModel._skuRecommendationPerformanceLocation via onTextChanged()
 		}));
 
 		selectFolderContainer.addItems([
-			folderNameInput,
+			this._collectDataFolderInput,
 			browseButton,
 		]);
 
@@ -237,44 +237,40 @@ export class GetAzureRecommendationDialog {
 		const selectFolderContainer = _view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'flex-direction': 'row',
+				'align-items': 'center',
 			}
 		}).component();
 
-		const folderNameInput = _view.modelBuilder.inputBox().withProps({
-			// TO-DO: now that there are two input boxes, one for the start data collection workflow and one for the import existing data workflow,
-			// this needs to be updated so that the Start button in this dialog is greyed out only when *neither* of them has a value, but un-greyed
-			// when *either* one has a value
-			required: false,
+		this._openExistingFolderInput = _view.modelBuilder.inputBox().withProps({
+			required: this._skuRecommendationPerformanceDataSource === PerformanceDataSourceOptions.OpenExisting,
 			placeHolder: constants.FOLDER_NAME,
+			CSSStyles: {
+				'margin-right': '12px'
+			},
 			// validationErrorMessage: "invalid location??",
 			width: '300px'
-		})
-			// .withValidation(c => {
-			// 	return true;
-			// })
-			.component();
-		this._disposables.push(folderNameInput.onTextChanged(async (value) => {
+		}).component();
+		this._disposables.push(this._openExistingFolderInput.onTextChanged(async (value) => {
 			this.migrationStateModel._skuRecommendationPerformanceLocation = value.trim();
 			console.log('this.migrationStateModel._skuRecommendationPerformanceLocation', this.migrationStateModel._skuRecommendationPerformanceLocation);
 		}));
 
-		// TO-DO: for some reason the open button for the import workflow renders a few pixels lower than the open button for the start data collection workflow
 		const openButton = _view.modelBuilder.button().withProps({
 			label: constants.OPEN, // TODO: rename as import?
 			width: 100,
 			CSSStyles: {
-				'margin': '12px 0',
+				// 'margin': '12px 0',
 			}
 		}).component();
 		this._disposables.push(openButton.onDidClick(async (e) => {
 			console.log('on click OPEN/IMPORT');
 
 			let folder = await this.handleBrowse();
-			folderNameInput.value = folder;			// update value of textbox, which in turn will update this.migrationStateModel._skuRecommendationPerformanceLocation via onTextChanged()
+			this._openExistingFolderInput.value = folder;			// update value of textbox, which in turn will update this.migrationStateModel._skuRecommendationPerformanceLocation via onTextChanged()
 		}));
 
 		selectFolderContainer.addItems([
-			folderNameInput,
+			this._openExistingFolderInput,
 			openButton,
 		]);
 		container.addItems([
@@ -285,12 +281,11 @@ export class GetAzureRecommendationDialog {
 	}
 
 	private async switchDataSourceContainerFields(containerType: PerformanceDataSourceOptions): Promise<void> {
+		this._skuRecommendationPerformanceDataSource = containerType;
 		await this._collectDataContainer.updateCssStyles({ 'display': (containerType === PerformanceDataSourceOptions.CollectData) ? 'inline' : 'none' });
 		await this._openExistingContainer.updateCssStyles({ 'display': (containerType === PerformanceDataSourceOptions.OpenExisting) ? 'inline' : 'none' });
-
-		this.migrationStateModel._skuRecommendationPerformanceDataSource = containerType;
-
-		// TODO: update the 'Start' button text?
+		this._collectDataFolderInput.required = containerType === PerformanceDataSourceOptions.CollectData;
+		this._openExistingFolderInput.required = containerType === PerformanceDataSourceOptions.OpenExisting;
 	}
 
 	public async openDialog(dialogName?: string) {
@@ -314,7 +309,7 @@ export class GetAzureRecommendationDialog {
 		this._isOpen = false;
 		console.log('Start button');
 
-		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
+		switch (this._skuRecommendationPerformanceDataSource) {
 			case PerformanceDataSourceOptions.CollectData: {
 				// start data collection entry point
 				// TO-DO: expose the rest of these in the UI
@@ -381,7 +376,7 @@ export class GetAzureRecommendationDialog {
 			}
 		}
 
-		await this.skuRecommendationPage.refreshCardText();
+		await this.skuRecommendationPage.refreshDataCollectionStatus();
 	}
 
 	public get isOpen(): boolean {

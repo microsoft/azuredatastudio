@@ -84,19 +84,26 @@ export function ASSESSMENT_TILE(serverName: string): string {
 	return localize('sql.migration.assessment', "Assessment results for '{0}'", serverName);
 }
 export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number): string {
-	return localize('sql.migration.can.be.migrated', "{0} out of {1} databases can be migrated", eligibleDbs, totalDbs);
+	return localize('sql.migration.can.be.migrated', "{0}/{1} databases can be migrated", eligibleDbs, totalDbs);
 }
 export const ASSESSMENT_MIGRATION_WARNING = localize('sql.migration.assessment.migration.warning', "Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.");
 export const DATABASES_TABLE_TILE = localize('sql.migration.databases.table.title', "Databases");
 export const SQL_SERVER_INSTANCE = localize('sql.migration.sql.server.instance', "SQL Server instance");
 
 // SKU
+export const AZURE_RECOMMENDATION = localize('sql.migration.sku.recommendation', "Azure recommendation");
 export function RECOMMENDATIONS_TITLE(targetType: string): string {
 	return localize('sql.migration.sku.recommendations.title', "{0} Recommendations", targetType);
 }
 export const RECOMMENDED_CONFIGURATION = localize('sql.migration.sku.recommendedConfiguration', "Recommended configuration");
 export const GET_AZURE_RECOMMENDATION = localize('sql.migration.sku.getAzureRecommendation', "Get Azure recommendation");
-export const AZURE_RECOMMENDATION_NOT_ENABLED = localize('sql.migration.sku.azureRecommendation.notEnabled', "Azure recommendation is not enabled");
+export const STOP_PERFORMANCE_COLLECTION = localize('sql.migration.sku.stop.performance.collection', "Stop collection");
+export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click “Start” button below to get started.");
+export const AZURE_RECOMMENDATION_CARD_IN_PROGRESS = localize('sql.migration.sku.card.azureRecommendation.inProgress', "Azure recommendation will be displayed once data collection is complete.");
+export const AZURE_RECOMMENDATION_STATUS_NOT_ENABLED = localize('sql.migration.sku.azureRecommendation.status.notEnabled', "Azure recommendation requires performance data to be collected from the SQL server instance.");
+export const AZURE_RECOMMENDATION_STATUS_IN_PROGRESS = localize('sql.migration.sku.azureRecommendation.status.inProgress', "Data collection in progress. Generating first set of recommendations...");
+export const AZURE_RECOMMENDATION_STATUS_REFINING = localize('sql.migration.sku.azureRecommendation.status.refining', "Data collection in progress. Refining existing recommendations...");
+
 export const AZURE_RECOMMENDATION_START = localize('sql.migration.sku.azureRecommendation.start', "Start");
 export const AZURE_RECOMMENDATION_DESCRIPTION = localize('sql.migration.sku.azureRecommendation.description', "Azure recommendation requires performance data of SQL server instance to provide target recommendation. Enable performance data collection to receive the target recommendation for the databases you want to migrate. The longer this will be enabled the better the recommendation. You can disable performance data collection at any time.");
 export const AZURE_RECOMMENDATION_DESCRIPTION2 = localize('sql.migration.sku.azureRecommendation.description2', "You can also choose to select this data from an existing folder, if you have already collected it using Data Migration Assistant.");

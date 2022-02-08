@@ -207,6 +207,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Opens the connection dialog
 	 * @param params Include the uri, type of connection
+	 * @param options
 	 * @param model the existing connection profile to create a new one from
 	 */
 	public showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: Partial<interfaces.IConnectionProfile>, connectionResult?: IConnectionResult): Promise<void> {
@@ -287,7 +288,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	/**
 	 * Loads the  password and try to connect. If fails, shows the dialog so user can change the connection
-	 * @param Connection Profile
+	 * @param connection Profile
 	 * @param owner of the connection. Can be the editors
 	 * @param options to use after the connection is complete
 	 */
@@ -361,7 +362,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	/**
 	 * Load the password and opens a new connection
-	 * @param Connection Profile
+	 * @param connection Profile
 	 * @param uri assigned to the profile (used only when connecting from an editor)
 	 * @param options to be used after the connection is completed
 	 * @param callbacks to call after the connection is completed
@@ -761,7 +762,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 *
 	 * @param uri the URI of the resource whose language has changed
 	 * @param language the base language
-	 * @param flavor the specific language flavor that's been set
+	 * @param provider
 	 * @throws {Error} if the provider is not in the list of registered providers
 	 */
 	public doChangeLanguageFlavor(uri: string, language: string, provider: string): void {

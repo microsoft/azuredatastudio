@@ -37,8 +37,12 @@ import { INotebookInput } from 'sql/workbench/services/notebook/browser/interfac
 import { EditorModel } from 'vs/workbench/common/editor/editorModel';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
+import { Registry } from 'vs/platform/registry/common/platform';
+import { Extensions as LanguageAssociationExtensions, ILanguageAssociationRegistry } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
+import { NotebookLanguage } from 'sql/workbench/common/constants';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
+const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
 export class NotebookEditorModel extends EditorModel {
 	private _dirty: boolean;
@@ -322,14 +326,16 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		await this.updateModel();
 		let input = await this.textInput.save(groupId, options);
 		await this.setTrustForNewEditor(input);
-		return input;
+		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
+		return langAssociation.convertInput(input);
 	}
 
 	override async saveAs(group: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
 		await this.updateModel();
 		let input = await this.textInput.saveAs(group, options);
 		await this.setTrustForNewEditor(input);
-		return input;
+		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
+		return langAssociation.convertInput(input);
 	}
 
 	private async setTrustForNewEditor(newInput: IEditorInput | undefined): Promise<void> {
