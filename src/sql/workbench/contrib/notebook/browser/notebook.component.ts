@@ -149,15 +149,20 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 						this.selectCell(this.cells[--index]);
 						this.scrollToActiveCell();
 					} else if (event.keyCode === KeyCode.Escape) {
+						// unselects active cell and removes the focus for code cells
 						this.unselectActiveCell();
 						(document.activeElement as HTMLElement).blur();
 					}
 					else if (event.keyCode === KeyCode.Enter) {
+						// prevent default to not add a newline to the cell source
 						e.preventDefault();
+						// show edit toolbar
 						this.setActiveCellEditActionMode(true);
 						this.toggleEditMode();
 					}
 				} else if (event.keyCode === KeyCode.Escape) {
+					// first time hitting escape removes the cursor from code cell and changes toolbar in text cells
+					// and changes edit mode to false
 					this.toggleEditMode();
 					this.setActiveCellEditActionMode(false);
 				}
