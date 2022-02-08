@@ -13,6 +13,8 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 //import { FileBrowserTreeView } from 'sql/workbench/services/fileBrowser/browser/fileBrowserTreeView';
 import { FileBrowserViewModel } from 'sql/workbench/services/fileBrowser/common/fileBrowserViewModel';
+//import { AzureApi } from 'sql/extension';
+//import { AzureResourceSubscription } from 'sql/base/azureapi/common/azureResource/azureResource';
 
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 //import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
@@ -32,8 +34,12 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { Account } from 'azdata';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 export class FileBrowserDialog extends Modal {
+	//private _azureApi: AzureApi;
+	private _accounts: Account[];
 	private _restoreDialog: boolean;
 	private _viewModel: FileBrowserViewModel;
 	private _body: HTMLElement;
@@ -68,13 +74,15 @@ export class FileBrowserDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
-		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
+		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
 		super(title, TelemetryKeys.ModalDialogName.FileBrowser, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'flyout', hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
 		this._viewModel = this._instantiationService.createInstance(FileBrowserViewModel);
 		this._viewModel.onAddFileTree(args => this.handleOnAddFileTree(args.rootNode, args.selectedNode, args.expandedNodes).catch(err => onUnexpectedError(err)));
 		this._viewModel.onPathValidate(args => this.handleOnValidate(args.succeeded, args.message));
 		this._restoreDialog = restoreDialog;
+		//this._azureApi = new AzureApi();
 	}
 
 	protected layout(height?: number): void {
@@ -107,8 +115,8 @@ export class FileBrowserDialog extends Modal {
 		this._accountSelectorBox.setAriaLabel(azureAccountLabel);
 		let accountSelector = DialogHelper.appendRow(tableContainer, azureAccountLabel, 'file-input-label', 'file-input-box');
 		DialogHelper.appendInputSelectBox(accountSelector, this._accountSelectorBox);
-		this._accountSelectorBox.setOptions(['Branislav Uzelac - bruzel@microsoft.com', 'Nemanja Milovancevic - a-nemanjam@microsoft.com']);
-		this._accountSelectorBox.select(0);
+		this._accountSelectorBox.onDidSelect(e => this.onAccountSelectorBoxChanged(e.index));
+		this._accountManagementService.getAccounts().then((accounts) => this.setAccountSelectorBoxOptions(accounts)).catch((reason) => this.setAccountSelectorBoxError());
 
 		let linkAccountButton = DialogHelper.appendRow(tableContainer, '', 'file-input-label', 'file-input-box');
 		let anchorNode: HTMLAnchorElement = DOM.append(linkAccountButton, DOM.$('a.anchor'));
@@ -124,8 +132,7 @@ export class FileBrowserDialog extends Modal {
 		this._tenantSelectorBox.setAriaLabel(tenantLabel);
 		let tenantSelector = DialogHelper.appendRow(tableContainer, tenantLabel, 'file-input-label', 'file-input-box');
 		DialogHelper.appendInputSelectBox(tenantSelector, this._tenantSelectorBox);
-		this._tenantSelectorBox.setOptions(['Tenant 1', 'Tenant 2']);
-		this._tenantSelectorBox.select(0);
+		this._tenantSelectorBox.onDidSelect(selectedTenant => this.onTenantSelectorBoxChanged(selectedTenant.index));
 
 		let subscriptionLabel = localize('azurebrowser.subscription', "Azure subscription");
 		this._subscriptionSelectorBox = new SelectBox(['*'], '*', this._contextViewService);
@@ -192,6 +199,45 @@ export class FileBrowserDialog extends Modal {
 		this.registerListeners();
 		this.updateTheme();
 	}
+
+	private setAccountSelectorBoxOptions(accounts: Account[]) {
+		this._accounts = accounts;
+		const accountDisplayNames: string[] = accounts.map(account => account.displayInfo.displayName);
+		this._accountSelectorBox.setOptions(accountDisplayNames);
+		this._accountSelectorBox.select(0);
+	}
+
+	private setAccountSelectorBoxError() {
+		this._accountSelectorBox.setOptions(['Please link Azure account']);
+		this._accountSelectorBox.select(0);
+		this._accountSelectorBox.disable();
+	}
+
+	private onAccountSelectorBoxChanged(checkedAccount: number) {
+		const account = this._accounts[checkedAccount];
+		const tenants = account.properties.tenants;
+		const tenantsDisplayNames = tenants.map(tenant => tenant.displayName);
+		this._tenantSelectorBox.setOptions(tenantsDisplayNames);
+	}
+
+	private onTenantSelectorBoxChanged(checkedAccount: number) {
+		//if (this._accounts) {
+		//const selectedAccount = this._accounts[checkedAccount];
+		//this._azureApi.getSubscriptions(selectedAccount);
+		//.then(getSubscriptionResult => this.changeSubscriptionSelectorBoxOptions(getSubscriptionResult.subscriptions));
+		//}
+		//
+		//.catch(getSubscriptionResult => this.printErrorInSubscriptionSelectorBox(getSubscriptionResult.error)));
+	}
+
+	//private changeSubscriptionSelectorBoxOptions(subscriptions: AzureResourceSubscription[]) {
+	//	const subscriptionDisplayNames: string[] = subscriptions.map(subscription => subscription.name);
+	//	this._subscriptionSelectorBox.setOptions(subscriptionDisplayNames);
+	//}
+
+	//private printErrorInSubscriptionSelectorBox(getSubscriptionResult: any) {
+
+	//}
 
 	public open(ownerUri: string,
 		expandPath: string,

@@ -26,5 +26,5 @@
 		"./typings",
 		"./vs",
 		"./sql"
-	]
+, "azurecore.ts"	]
 }
