@@ -101,7 +101,6 @@ export class GetAzureRecommendationDialog {
 				'flex-direction': 'row',
 				'width': 'fit-content',
 				'margin': '4px 0 16px',
-			}
 		}).component();
 
 		const collectDataButton = _view.modelBuilder.radioButton()

@@ -70,6 +70,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			name: constants.SKU_RECOMMENDATION_VM_CARD_TEXT,
 			icon: IconPathHelper.sqlVmLogo
 		},
+		// TO-DO: remove SQL DB
 		{
 			type: MigrationTargetType.SQLDB,
 			name: constants.SKU_RECOMMENDATION_DB_CARD_TEXT,

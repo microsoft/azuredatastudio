@@ -67,7 +67,6 @@ export class SkuEditParametersDialog {
 		const WIZARD_INPUT_COMPONENT_WIDTH = '300px';
 		const scaleFactorLabel = _view.modelBuilder.text().withProps({
 			value: constants.SCALE_FACTOR,
-			// description: ,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
@@ -121,7 +120,6 @@ export class SkuEditParametersDialog {
 
 		const enablePreviewLabel = _view.modelBuilder.text().withProps({
 			value: constants.ENABLE_PREVIEW_SKU,
-			// description: ,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {

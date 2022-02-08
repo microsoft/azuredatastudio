@@ -446,6 +446,7 @@ suite('ExtHostModelView Validation Tests', () => {
  * Helper function that creates a simple declarative table. Supports just a single column
  * of data.
  * @param modelView The ModelView used to create the component
+ * @param dataType
  * @param data The rows of data
  */
 function createDeclarativeTable(modelView: azdata.ModelView, dataType: DeclarativeDataType, data?: any[]): azdata.DeclarativeTableComponent {

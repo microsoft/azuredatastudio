@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import * as testRunner from 'vscodetestcover';
+import * as testRunner from '@microsoft/vscodetestcover';
 
 const suite = 'Extension Integration Tests';
 
