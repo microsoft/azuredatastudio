@@ -140,19 +140,26 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					if (event.keyCode === KeyCode.DownArrow) {
 						let next = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
 						this.selectCell(this.cells[next]);
+						this.scrollToActiveCell();
 					} else if (event.keyCode === KeyCode.UpArrow) {
 						let index = this.findCellIndex(this.model.activeCell);
 						if (index === 0) {
 							index = this.cells.length;
 						}
 						this.selectCell(this.cells[--index]);
+						this.scrollToActiveCell();
 					} else if (event.keyCode === KeyCode.Escape) {
-						this.setActiveCellEditActionMode(false);
+						this.unselectActiveCell();
+						(document.activeElement as HTMLElement).blur();
 					}
-				} else if (event.keyCode === KeyCode.Enter) {
-					this.setActiveCellEditActionMode(true);
+					else if (event.keyCode === KeyCode.Enter) {
+						e.preventDefault();
+						this.setActiveCellEditActionMode(true);
+						this.toggleEditMode();
+					}
 				} else if (event.keyCode === KeyCode.Escape) {
-					this.unselectActiveCell();
+					this.toggleEditMode();
+					this.setActiveCellEditActionMode(false);
 				}
 			}
 		}));
@@ -269,9 +276,23 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
 			this.model.updateActiveCell(cell);
-			this.model.activeCell.isEditMode = false;
 			this.detectChanges();
 		}
+	}
+
+	private scrollToActiveCell(): void {
+		const activeCellElement = document.querySelector(`.notebook-cell.active`);
+		activeCellElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+	}
+
+	private toggleEditMode(): void {
+		let selectedCell: TextCellComponent | CodeCellComponent = undefined;
+		if (this.model.activeCell.cellType !== CellTypes.Code) {
+			selectedCell = this.textCells.filter(c => c.cellModel.id === this.activeCellId)[0];
+		} else {
+			selectedCell = this.codeCells.filter(c => c.cellModel.id === this.activeCellId)[0];
+		}
+		selectedCell.toggleEditMode();
 	}
 
 	//Saves scrollTop value on scroll change

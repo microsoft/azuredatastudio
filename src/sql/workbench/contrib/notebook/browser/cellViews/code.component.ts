@@ -427,7 +427,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 
 	private onCellModeChanged(isEditMode: boolean): void {
 		let ownerDocument = this._editor.getContainer().ownerDocument;
-		if (this.cellModel.id === this._activeCellId && this._editor.getContainer().offsetParent && ownerDocument && ownerDocument.hasFocus()) {
+		if ((this.cellModel.id === this._activeCellId || this._activeCellId === '') && this._editor.getContainer().offsetParent && ownerDocument && ownerDocument.hasFocus()) {
 			if (isEditMode) {
 				this._editor.getContainer().contentEditable = 'true';
 				this._editor.getControl().focus();

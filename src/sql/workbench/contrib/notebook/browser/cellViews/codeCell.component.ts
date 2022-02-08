@@ -12,8 +12,6 @@ import { Deferred } from 'sql/base/common/promise';
 import { ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
 import { OutputAreaComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/outputArea.component';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode } from 'vs/base/common/keyCodes';
 
 export const CODE_SELECTOR: string = 'code-cell-component';
 
@@ -33,27 +31,9 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 		this._activeCellId = value;
 	}
 
-	// Onclick to edit text cell in notebook
+	// On click to edit code cell in notebook
 	@HostListener('click', ['$event']) onClick() {
-		this.setEditMode(true);
-	}
-
-	@HostListener('document:keydown', ['$event'])
-	handleKeyboardEvent(e) {
-		let event = new StandardKeyboardEvent(e);
-		if (this.cellModel.active) {
-			if (event.keyCode === KeyCode.Escape) {
-				this.toggleEditMode();
-			}
-			else if (event.keyCode === KeyCode.Enter) {
-				if (!this.isEditMode) {
-					// prevent the execution of enter if the cell is not currently in edit mode
-					e.preventDefault();
-					// TODO: add comment here why not in edit mode
-					this.toggleEditMode();
-				}
-			}
-		}
+		this.toggleEditMode();
 	}
 
 	private _activeCellId: string;
@@ -70,6 +50,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 
 	ngOnInit() {
 		if (this.cellModel) {
+			this.isEditMode = this.cellModel.isEditMode;
 			this._register(this.cellModel.onCollapseStateChanged((state) => {
 				this._changeRef.detectChanges();
 			}));
@@ -81,7 +62,6 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 			}));
 			this._register(this.cellModel.onCellModeChanged(mode => {
 				if (mode !== this.isEditMode) {
-					this.toggleEditMode();
 					this._changeRef.detectChanges();
 				}
 			}));
@@ -125,7 +105,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	public toggleEditMode(): void {
-		this.isEditMode = this.isEditMode !== undefined ? this.isEditMode : !this.isEditMode;
+		this.isEditMode = this.isEditMode !== undefined ? !this.isEditMode : false;
 		this.cellModel.isEditMode = this.isEditMode;
 		this._changeRef.detectChanges();
 	}
