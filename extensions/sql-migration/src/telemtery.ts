@@ -25,7 +25,8 @@ export enum TelemetryViews {
 	MigrationWizardController = 'MigrationWizardController',
 	StartMigrationService = 'StartMigrationSerivce',
 	SqlMigrationWizard = 'SqlMigrationWizard',
-	MigrationLocalStorage = 'MigrationLocalStorage'
+	MigrationLocalStorage = 'MigrationLocalStorage',
+	SkuRecommendationWizard = 'SkuRecommendationWizard'
 }
 
 export enum TelemetryAction {
@@ -44,6 +45,7 @@ export enum TelemetryAction {
 	Next = 'next',
 	Done = 'done',
 	Cancel = 'cancel',
+	GetSkuRecommendation = 'GetSkuRecommendation'
 }
 
 export function logError(telemetryView: TelemetryViews, err: string, error: any): void {

@@ -363,8 +363,29 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			};
 		}
 
-		// this.generateAssessmentTelemetry().catch(e => console.error(e));
+		// Generating all the telemetry asynchronously as we don't need to block the user for it.
+		this.generateSkuRecommendationTelemetry().catch(e => console.error(e));
+
 		return this._skuRecommendationResults;
+	}
+
+	private async generateSkuRecommendationTelemetry(): Promise<void> {
+		try {
+			this._skuRecommendationResults?.recommendations?.sqlMiRecommendationResults.forEach(resultItem => {
+				sendSqlMigrationActionEvent(
+					TelemetryViews.SkuRecommendationWizard,
+					TelemetryAction.GetSkuRecommendation,
+					{
+						'sessionId': this._sessionId,
+						'RecommendedSku': JSON.stringify(resultItem?.targetSku)
+					},
+					{}
+				);
+			});
+
+		} catch (e) {
+			console.log(e);
+		}
 	}
 
 	public async startPerfDataCollection(
@@ -408,7 +429,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return true;
 	}
 
-
 	private async generateAssessmentTelemetry(): Promise<void> {
 		try {
 
@@ -442,9 +462,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.ServerAssessment,
 				{
 					'sessionId': this._sessionId,
-					'tenantId': this._azureAccount.properties.tenants[0].id,
-					'subscriptionId': this._targetSubscription?.id,
-					'resourceGroup': this._resourceGroup?.name,
+					//'tenantId': this._azureAccount.properties.tenants[0].id,
+					//'subscriptionId': this._targetSubscription?.id,
+					//'resourceGroup': this._resourceGroup?.name,
 					'hashedServerName': hashString(this._assessmentApiResponse?.assessmentResult?.name),
 					'startTime': startTime.toString(),
 					'endTime': endTime.toString(),
@@ -478,8 +498,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					TelemetryAction.DatabaseAssessment,
 					{
 						'sessionId': this._sessionId,
-						'subscriptionId': this._targetSubscription?.id,
-						'resourceGroup': this._resourceGroup?.name,
+						//'subscriptionId': this._targetSubscription?.id,
+						//'resourceGroup': this._resourceGroup?.name,
 						'hashedDatabaseName': hashString(d.name),
 						'compatibilityLevel': d.compatibilityLevel
 					},
@@ -516,8 +536,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.DatabaseAssessmentWarning,
 				{
 					'sessionId': this._sessionId,
-					'subscriptionId': this._targetSubscription?.id,
-					'resourceGroup': this._resourceGroup?.name,
+					//'subscriptionId': this._targetSubscription?.id,
+					//'resourceGroup': this._resourceGroup?.name,
 					'warnings': JSON.stringify(databaseWarnings)
 				},
 				{}
@@ -536,8 +556,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.DatabaseAssessmentError,
 				{
 					'sessionId': this._sessionId,
-					'subscriptionId': this._targetSubscription?.id,
-					'resourceGroup': this._resourceGroup?.name,
+					//'subscriptionId': this._targetSubscription?.id,
+					//'resourceGroup': this._resourceGroup?.name,
 					'errors': JSON.stringify(databaseErrors)
 				},
 				{}
