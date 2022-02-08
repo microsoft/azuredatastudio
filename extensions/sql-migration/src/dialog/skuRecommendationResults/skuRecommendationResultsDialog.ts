@@ -247,7 +247,6 @@ export class SkuRecommendationResultsDialog {
 			}
 		}).component();
 
-
 		const headerCssStyle = {
 			'border': 'none',
 			'text-align': 'left',
