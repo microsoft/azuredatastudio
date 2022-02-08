@@ -25,7 +25,6 @@ export class GetAzureRecommendationDialog {
 
 
 	constructor(public skuRecommendationPage: SKURecommendationPage, public migrationStateModel: MigrationStateModel) {
-		console.log('constructor GetAzureRecommendationDialog');
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
@@ -95,7 +94,7 @@ export class GetAzureRecommendationDialog {
 		const radioButtonContainer = _view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'flex-direction': 'row',
-				'max-width': '400px',
+				'width': 'fit-content',
 				'margin': '4px 0 8px',
 			}
 		}).component();
@@ -122,7 +121,7 @@ export class GetAzureRecommendationDialog {
 				label: constants.AZURE_RECOMMENDATION_OPEN_EXISTING,
 				CSSStyles: {
 					...styles.BODY_CSS,
-					'margin': '0',
+					'margin': '0 12px',
 				}
 			}).component();
 		this._disposables.push(openExistingButton.onDidChangeCheckedState(async (e) => {

@@ -176,6 +176,21 @@ export function MS(ms: number): string {
 	return localize('sql.migration.sku.ms', "{0} ms", ms);
 }
 
+export const RECOMMENDATION_PARAMETERS = localize('sql.migration.sku.parameters', "Recommendation parameters");
+export const EDIT_PARAMETERS = localize('sql.migration.sku.parameters.edit', "Edit parameters");
+export const EDIT_RECOMMENDATION_PARAMETERS = localize('sql.migration.sku.parameters.edit.title', "Edit recommendation parameters");
+export const EDIT_PARAMETERS_TEXT = localize('sql.migration.sku.parameters.text', "Enter the information below to edit the recommendation parameters.");
+export const UPDATE = localize('sql.migration.sku.parameters.update', "Update");
+export const ENABLE_PREVIEW_SKU = localize('sql.migration.sku.parameters.enable.preview', "Enable preview SKU");
+export const SCALE_FACTOR = localize('sql.migration.sku.parameters.scale.factor', "Scale factor");
+export const INVALID_SCALE_FACTOR = localize('sql.migration.sku.parameters.scale.factor.invalid', "Invalid scale factor. Enter a positive integer value.");
+export const PERCENTAGE_UTILIZATION = localize('sql.migration.sku.parameters.percentage.utilization', "Percentage utilization");
+export function PERCENTAGE(val: number): string {
+	return localize('sql.migration.sku.percentage', "{0}%", val);
+}
+export function PERCENTILE(val: string): string {
+	return localize('sql.migration.sku.percentile', "{0}th percentile", val);
+}
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
 export function AZURE_SQL_TARGET_PAGE_DESCRIPTION(targetInstance: string = 'instance'): string {

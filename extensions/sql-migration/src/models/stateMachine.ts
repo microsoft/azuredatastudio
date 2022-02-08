@@ -194,6 +194,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _stopPerfDataCollectionApiResponse!: mssql.StopPerfDataCollectionResult;
 	public _perfDataCollectionStopDate!: Date;
 	public _perfDataCollectionStartDate!: Date;
+	public _skuScalingFactor!: number;
+	public _skuTargetPercentile!: number;
+	public _skuEnablePreview!: boolean;
 
 	public _vmDbs: string[] = [];
 	public _miDbs: string[] = [];
@@ -226,6 +229,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._databaseBackup.networkShares = [];
 		this._databaseBackup.blobs = [];
 		this.mementoString = 'sqlMigration.assessmentResults';
+
+		this._skuScalingFactor = 100;
+		this._skuTargetPercentile = 95;
+		this._skuEnablePreview = true;
 	}
 
 	public get sourceConnectionId(): string {

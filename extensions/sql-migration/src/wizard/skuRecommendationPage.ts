@@ -16,6 +16,7 @@ import { EOL } from 'os';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as styles from '../constants/styles';
+import { SkuEditParametersDialog } from '../dialog/skuRecommendationResults/skuEditParametersDialog';
 
 export interface Product {
 	type: MigrationTargetType;
@@ -43,6 +44,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _rootContainer!: azdata.FlexContainer;
 	private _viewAssessmentsHelperText!: azdata.TextComponent;
 	private _databaseSelectedHelperText!: azdata.TextComponent;
+
+	private _skuEditParametersContainer!: azdata.FlexContainer;
+	private _skuScaleFactorText!: azdata.TextComponent;
+	private _skuTargetPercentileText!: azdata.TextComponent;
+	private _skuEnablePreviewSkuText!: azdata.TextComponent;
+
 	private assessmentGroupContainer!: azdata.FlexContainer;
 	private _disposables: vscode.Disposable[] = [];
 
@@ -129,33 +136,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._disposables.push(refreshAssessmentButton.onDidClick(async () => {
 			// placeholder stop perf data collection entry point
-			// TO-DO: remove
-			if (this.migrationStateModel._perfDataCollectionStartDate) {
-				await this.migrationStateModel.stopPerfDataCollection();
-				const durationMins = Math.abs(new Date(this.migrationStateModel._perfDataCollectionStopDate).getTime() - new Date(this.migrationStateModel._perfDataCollectionStartDate).getTime()) / 60000;
-				console.log('data collected for ' + durationMins + ' minutes');
-
-				const perfQueryIntervalInSec = 30;
-				const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
-				const targetPercentile = 95;
-				const scalingFactor = 100;
-				const startTime = '1900-01-01 00:00:00';
-				const endTime = '2200-01-01 00:00:00';
-
-				await this.migrationStateModel.getSkuRecommendations(
-					this.migrationStateModel._skuRecommendationPerformanceLocation,
-					perfQueryIntervalInSec,
-					targetPlatforms,
-					targetPercentile,
-					scalingFactor,
-					startTime,
-					endTime,
-					this.migrationStateModel._databaseAssessment);
-
-				console.log('results - this.migrationStateModel._skuRecommendationResults:');
-				console.log(this.migrationStateModel._skuRecommendationResults);
-			}
-
+			await this.getSkuRecommendations();
 			await this.constructDetails();
 		}));
 
@@ -175,6 +156,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 		this._chooseTargetComponent = await this.createChooseTargetComponent(view);
+		this._skuEditParametersContainer = await this.createSkuEditParameters(view);
 		this.assessmentGroupContainer = await this.createViewAssessmentsContainer();
 		this._formContainer = view.modelBuilder.formContainer().withFormItems(
 			[
@@ -184,6 +166,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				},
 				{
 					component: this._chooseTargetComponent
+				},
+				{
+					component: this._skuEditParametersContainer
 				},
 				{
 					component: this.assessmentGroupContainer
@@ -714,6 +699,133 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 		return this._assessmentInfo;
+	}
+
+	private createSkuEditParameters(_view: azdata.ModelView): azdata.FlexContainer {
+		const container = _view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'margin': '8px 16px',
+				'flex-direction': 'column',
+			}
+		}).component();
+		const recommendationParametersSection = _view.modelBuilder.text().withProps({
+			value: constants.RECOMMENDATION_PARAMETERS,
+			CSSStyles: {
+				...styles.SECTION_HEADER_CSS,
+				'margin': '12px 0 8px'
+			}
+		}).component();
+
+		const editParametersButton = this._view.modelBuilder.button().withProps({
+			iconPath: IconPathHelper.edit,
+			label: constants.EDIT_PARAMETERS,
+			width: 130,
+			height: 24,
+			CSSStyles: {
+				...styles.BODY_CSS,
+			}
+		}).component();
+		let skuEditParametersDialog = new SkuEditParametersDialog(this, this.migrationStateModel);
+		this._disposables.push(editParametersButton.onDidClick(async () => {
+			await skuEditParametersDialog.openDialog();
+		}));
+
+		const createParameterGroup = (label: string, value: string): {
+			flexContainer: azdata.FlexContainer,
+			text: azdata.TextComponent,
+		} => {
+			const parameterGroup = this._view.modelBuilder.flexContainer().withProps({
+				CSSStyles: {
+					'flex-direction': 'row',
+					'align-content': 'left',
+					'width': 'fit-content',
+					'margin-right': '24px',
+				}
+			}).component();
+			const labelText = this._view.modelBuilder.text().withProps({
+				value: label + ':',
+				CSSStyles: {
+					...styles.LIGHT_LABEL_CSS,
+					'width': 'fit-content',
+					'margin-right': '4px',
+				}
+			}).component();
+			const valueText = this._view.modelBuilder.text().withProps({
+				value: value,
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'width': 'fit-content,',
+				}
+			}).component();
+			parameterGroup.addItems([
+				labelText,
+				valueText,
+			]);
+			return {
+				flexContainer: parameterGroup,
+				text: valueText,
+			};
+		};
+
+		const scaleFactorParameterGroup = createParameterGroup(constants.SCALE_FACTOR, this.migrationStateModel._skuScalingFactor.toString());
+		this._skuScaleFactorText = scaleFactorParameterGroup.text;
+
+		const skuTargetPercentileParameterGroup = createParameterGroup(constants.PERCENTAGE_UTILIZATION, constants.PERCENTAGE(this.migrationStateModel._skuTargetPercentile));
+		this._skuTargetPercentileText = skuTargetPercentileParameterGroup.text;
+
+		const skuEnablePreviewParameterGroup = createParameterGroup(constants.ENABLE_PREVIEW_SKU, this.migrationStateModel._skuEnablePreview.toString());
+		this._skuEnablePreviewSkuText = skuEnablePreviewParameterGroup.text;
+
+		const parametersContainer = _view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'margin': '8px 0',
+				'flex-direction': 'row',
+				'width': 'fit-content',
+			}
+		}).component();
+		parametersContainer.addItems([
+			scaleFactorParameterGroup.flexContainer,
+			skuTargetPercentileParameterGroup.flexContainer,
+			skuEnablePreviewParameterGroup.flexContainer,
+		]);
+
+		container.addItems([
+			recommendationParametersSection,
+			editParametersButton,
+			parametersContainer,
+		]);
+		return container;
+	}
+
+	private async getSkuRecommendations() {
+		if (this.migrationStateModel._perfDataCollectionStartDate) {
+			await this.migrationStateModel.stopPerfDataCollection();
+			const durationMins = Math.abs(new Date(this.migrationStateModel._perfDataCollectionStopDate).getTime() - new Date(this.migrationStateModel._perfDataCollectionStartDate).getTime()) / 60000;
+			console.log('data collected for ' + durationMins + ' minutes');
+			const perfQueryIntervalInSec = 30;
+			const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
+			const targetPercentile = this.migrationStateModel._skuTargetPercentile;
+			const scalingFactor = this.migrationStateModel._skuTargetPercentile;
+			const startTime = '1900-01-01 00:00:00';
+			const endTime = '2200-01-01 00:00:00';
+
+			await this.migrationStateModel.getSkuRecommendations(
+				this.migrationStateModel._skuRecommendationPerformanceLocation,
+				perfQueryIntervalInSec,
+				targetPlatforms,
+				targetPercentile,
+				scalingFactor,
+				startTime,
+				endTime,
+				this.migrationStateModel._databaseAssessment);
+		}
+	}
+
+	public async refreshSkuParameters(): Promise<void> {
+		this._skuScaleFactorText.value = this.migrationStateModel._skuScalingFactor.toString();
+		this._skuTargetPercentileText.value = constants.PERCENTAGE(this.migrationStateModel._skuTargetPercentile);
+		this._skuEnablePreviewSkuText.value = this.migrationStateModel._skuEnablePreview.toString();
+		await this.getSkuRecommendations();
 	}
 
 	private hasSavedInfo(): boolean {
