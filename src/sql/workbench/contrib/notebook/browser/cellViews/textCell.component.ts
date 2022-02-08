@@ -53,15 +53,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._activeCellId = value;
 	}
 
-	@HostListener('document:keydown.escape', ['$event'])
-	handleKeyboardEvent() {
-		if (this.isEditMode) {
-			this.toggleEditMode(false);
-		}
-		this.cellModel.active = false;
-		this._model.updateActiveCell(undefined);
-	}
-
 	// Double click to edit text cell in notebook
 	@HostListener('dblclick', ['$event']) onDblClick() {
 		this.enableActiveCellEditOnDoubleClick();
@@ -70,8 +61,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@HostListener('document:keydown', ['$event'])
 	onkeydown(e: KeyboardEvent) {
 		if (DOM.getActiveElement() === this.output?.nativeElement && this.isActive() && this.cellModel?.currentMode === CellEditModes.WYSIWYG) {
-			// Select all text
 			const keyEvent = new StandardKeyboardEvent(e);
+			// Select all text
 			if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_A) {
 				preventDefaultAndExecCommand(e, 'selectAll');
 			} else if ((keyEvent.metaKey && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_Z) || (keyEvent.ctrlKey && keyEvent.keyCode === KeyCode.KEY_Y) && !this.markdownMode) {
@@ -557,7 +548,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (!this.isEditMode && this.doubleClickEditEnabled) {
 			this.toggleEditMode(true);
 		}
-		this.cellModel.active = true;
 		this._model.updateActiveCell(this.cellModel);
 	}
 }
