@@ -65,6 +65,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			name: constants.SKU_RECOMMENDATION_VM_CARD_TEXT,
 			icon: IconPathHelper.sqlVmLogo
 		},
+		// TO-DO: remove SQL DB
 		{
 			type: MigrationTargetType.SQLDB,
 			name: constants.SKU_RECOMMENDATION_DB_CARD_TEXT,
@@ -704,7 +705,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private createSkuEditParameters(_view: azdata.ModelView): azdata.FlexContainer {
 		const container = _view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
-				'margin': '8px 16px',
 				'flex-direction': 'column',
 			}
 		}).component();
