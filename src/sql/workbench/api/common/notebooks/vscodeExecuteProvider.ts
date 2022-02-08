@@ -73,7 +73,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 
 	constructor(private readonly _controller: ADSNotebookController, private readonly _options: azdata.nb.ISessionOptions, languages: string[]) {
 		this._id = this._options.kernelId ?? (VSCodeKernel.kernelId++).toString();
-		this._name = this._options.kernelName ?? this._controller.notebookType;
+		this._name = this._controller.notebookType;
 		this._info = {
 			protocol_version: '',
 			implementation: '',
@@ -90,7 +90,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 			}]
 		};
 		this._kernelSpec = {
-			name: this._name,
+			name: this._controller.notebookType,
 			language: languages[0],
 			display_name: this._controller.label,
 			supportedLanguages: languages
