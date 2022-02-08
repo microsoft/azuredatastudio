@@ -40,6 +40,7 @@ export class IconPathHelper {
 	public static emptyTable: IconPath;
 	public static addAzureAccount: IconPath;
 	public static retry: IconPath;
+	public static edit: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -157,6 +158,10 @@ export class IconPathHelper {
 		IconPathHelper.retry = {
 			light: context.asAbsolutePath('images/retry.svg'),
 			dark: context.asAbsolutePath('images/retry.svg')
+		};
+		IconPathHelper.edit = {
+			light: context.asAbsolutePath('images/edit.svg'),
+			dark: context.asAbsolutePath('images/edit.svg')
 		};
 	}
 }
