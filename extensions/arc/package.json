@@ -1045,6 +1045,28 @@
                     "fields": [
                       {
                         "type": "options",
+                        "label": "%arc.sql.service.tier.label%",
+                        "variableName": "AZDATA_NB_VAR_SQL_SERVICE_TIER",
+                        "description": "%arc.sql.service.tier.description%",
+                        "required": true,
+                        "options": {
+                          "values": [
+                            "%arc.sql.service.tier.business.critical%",
+                            "%arc.sql.service.tier.general.purpose%"
+                          ],
+                          "defaultValue": "%arc.sql.service.tier.business.critical%",
+                          "optionsType": "radio"
+                        }
+                      },
+                      {
+                        "type": "checkbox",
+                        "label": "%arc.sql.dev.use.label%",
+                        "variableName": "AZDATA_NB_VAR_SQL_DEV_USE",
+                        "description": "%arc.sql.dev.use.description%",
+                        "defaultValue": false
+                      },
+                      {
+                        "type": "options",
                         "label": "%arc.sql.replicas%",
                         "description": "%arc.sql.high.availability.description%",
                         "required": true,
@@ -1070,6 +1092,13 @@
                             }
                           ]
                         }
+                      },
+                      {
+                        "type": "checkbox",
+                        "label": "%arc.sql.license.type.label%",
+                        "variableName": "AZDATA_NB_VAR_SQL_LICENSE_TYPE",
+                        "description": "%arc.sql.license.type.description%",
+                        "defaultValue": false
                       },
                       {
                         "label": "%arc.storage-class.data.label%",
@@ -1198,62 +1227,6 @@
                             "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
                           }
                         ]
-                      },
-                      {
-                        "type": "options",
-                        "label": "%arc.sql.service.tier.label%",
-                        "variableName": "AZDATA_NB_VAR_SQL_SERVICE_TIER",
-                        "description": "%arc.sql.service.tier.description%",
-                        "required": true,
-                        "options": {
-                          "values": [
-                            "%arc.sql.service.tier.business.critical%",
-                            "%arc.sql.service.tier.general.purpose%"
-                          ],
-                          "defaultValue": "%arc.sql.service.tier.business.critical%",
-                          "optionsType": "radio"
-                        }
-                      },
-                      {
-                        "type": "checkbox",
-                        "label": "%arc.sql.dev.use.label%",
-                        "variableName": "AZDATA_NB_VAR_SQL_DEV_USE",
-                        "description": "%arc.sql.dev.use.description%",
-                        "defaultValue": false
-                      },
-                      {
-                        "type": "checkbox",
-                        "label": "%arc.sql.license.type.label%",
-                        "variableName": "AZDATA_NB_VAR_SQL_LICENSE_TYPE",
-                        "description": "%arc.sql.license.type.description%",
-                        "defaultValue": false
-                      }
-                    ]
-                  },
-                  {
-                    "title": "%arc.sql.instance.retention.policy.title%",
-                    "fields": [
-                      {
-                        "type": "readonly_text",
-                        "label": "%arc.sql.pitr.retention.description%",
-                        "labelWidth": "600px",
-                        "enabled": true,
-                        "fieldHeight": "10px",
-                        "links": [
-                          {
-                            "text": "%arc.agreement.sql.help.text.learn.more%",
-                            "url": "https://docs.microsoft.com/azure/azure-arc/data/point-in-time-restore"
-                          }
-                        ]
-                      },
-                      {
-                        "label": "%arc.sql.retention.days.label%",
-                        "description": "%arc.sql.retention.days.description%",
-                        "variableName": "AZDATA_NB_VAR_SQL_RETENTION_DAYS",
-                        "type": "number",
-                        "min": 0,
-                        "max": 35,
-                        "required": false
                       }
                     ]
                   },
