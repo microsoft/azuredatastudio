@@ -1153,12 +1153,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		let oldLanguage = this._language;
 		this._language = language.toLowerCase();
 		this._cells?.forEach(cell => {
-			let oldLangNotSupported = false;
-			if (this._savedKernelInfo?.supportedLanguages) {
-				oldLangNotSupported = !this._savedKernelInfo.supportedLanguages.includes(oldLanguage);
-			}
-
-			if (!cell.language || cell.language === oldLanguage || oldLangNotSupported) {
+			if (!cell.language || cell.language === oldLanguage) {
 				cell.setOverrideLanguage(this._language);
 			}
 		});
