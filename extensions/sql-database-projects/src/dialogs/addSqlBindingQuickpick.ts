@@ -236,7 +236,6 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 										// open local.settings.json file
 										await vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(localSettingsPath));
 									}
-									continue;
 								} else {
 									// replace the default password with the user's password
 									await vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(localSettingsPath));
