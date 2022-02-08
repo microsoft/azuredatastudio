@@ -285,16 +285,18 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private scrollToActiveCell(): void {
-		const activeCellElement = document.querySelector(`.notebook-cell.active`);
+		// Get active cell from active notebook editor
+		const activeCellElement = document.querySelector(`.editor-group-container.active .notebook-cell.active`);
 		activeCellElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
 	}
 
 	private toggleEditMode(): void {
 		let selectedCell: TextCellComponent | CodeCellComponent = undefined;
 		if (this.model.activeCell.cellType !== CellTypes.Code) {
-			selectedCell = this.textCells.filter(c => c.cellModel.id === this.activeCellId)[0];
+			selectedCell = this.textCells.find(c => c.cellModel.id === this.activeCellId);
 		} else {
-			selectedCell = this.codeCells.filter(c => c.cellModel.id === this.activeCellId)[0];
+			selectedCell = this.codeCells.find(c => c.cellModel.id === this.activeCellId);
 		}
 		selectedCell.toggleEditMode();
 	}

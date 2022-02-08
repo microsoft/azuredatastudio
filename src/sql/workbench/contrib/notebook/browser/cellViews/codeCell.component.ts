@@ -37,7 +37,6 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private _activeCellId: string;
-	private isEditMode: boolean;
 
 	public inputDeferred: Deferred<string>;
 	public stdIn: nb.IStdinMessage;
@@ -50,7 +49,6 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 
 	ngOnInit() {
 		if (this.cellModel) {
-			this.isEditMode = this.cellModel.isEditMode;
 			this._register(this.cellModel.onCollapseStateChanged((state) => {
 				this._changeRef.detectChanges();
 			}));
@@ -61,7 +59,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 				this._changeRef.detectChanges();
 			}));
 			this._register(this.cellModel.onCellModeChanged(mode => {
-				if (mode !== this.isEditMode) {
+				if (mode !== this.cellModel.isEditMode) {
 					this._changeRef.detectChanges();
 				}
 			}));
@@ -105,8 +103,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	public toggleEditMode(): void {
-		this.isEditMode = this.isEditMode !== undefined ? !this.isEditMode : false;
-		this.cellModel.isEditMode = this.isEditMode;
+		this.cellModel.isEditMode = !this.cellModel.isEditMode;
 		this._changeRef.detectChanges();
 	}
 
