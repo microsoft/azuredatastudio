@@ -14,7 +14,7 @@ import * as azdata from 'azdata';
 import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledComponent';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
-import { textLinkForeground, textLinkActiveForeground } from 'vs/platform/theme/common/colorRegistry';
+import { textLinkForeground, textLinkActiveForeground, focusBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -119,6 +119,15 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		collector.addRule(`
 		modelview-hyperlink a:hover {
 			color: ${activeForeground};
+		}
+		`);
+	}
+
+	const outlineColor = theme.getColor(focusBorder);
+	if (outlineColor) {
+		collector.addRule(`
+		modelview-hyperlink a {
+			outline-color: ${outlineColor};
 		}
 		`);
 	}
