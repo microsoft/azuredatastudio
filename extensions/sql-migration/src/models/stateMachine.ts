@@ -192,8 +192,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _skuRecommendationPerformanceDataSource!: PerformanceDataSourceOptions;
 	private _startPerfDataCollectionApiResponse!: mssql.StartPerfDataCollectionResult;
 	private _stopPerfDataCollectionApiResponse!: mssql.StopPerfDataCollectionResult;
+	private _refreshPerfDataCollectionApiResponse!: mssql.RefreshPerfDataCollectionResult;
 	public _perfDataCollectionStopDate!: Date;
 	public _perfDataCollectionStartDate!: Date;
+	public _perfDataCollectionLastRefreshedDate!: Date;
+	public _perfDataCollectionMessages!: string[];
+	public _perfDataCollectionErrors!: string[];
+
 
 	public _vmDbs: string[] = [];
 	public _miDbs: string[] = [];
@@ -312,6 +317,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		scalingFactor: number,
 		startTime: string,
 		endTime: string,
+		includePreviewSkus: boolean,
 		databaseAllowList: string[]): Promise<SkuRecommendation> {
 		try {
 			const serverInfo = await azdata.connection.getServerInfo(this.sourceConnectionId);
@@ -326,6 +332,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				scalingFactor,
 				startTime,
 				endTime,
+				includePreviewSkus,
 				databaseAllowList))!;
 			this._skuRecommendationApiResponse = response;
 
@@ -405,6 +412,33 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			this._stopPerfDataCollectionApiResponse = response!;
 			this._perfDataCollectionStopDate = this._stopPerfDataCollectionApiResponse.dateTimeStopped;
+		}
+		catch (error) {
+			console.log('error:');
+			console.log(error);
+		}
+
+		return true;
+	}
+
+	public async refreshPerfDataCollection(): Promise<boolean> {
+		try {
+			console.log('stateMachine.refreshPerfDataCollection starting');
+
+			const response = await this.migrationService.refreshPerfDataCollection(this._perfDataCollectionLastRefreshedDate);
+			console.log('date: ' + response?.refreshTime.toString());
+			console.log('messages: ');
+			console.log(response?.messages);
+			console.log('errors: ');
+			console.log(response?.errors);
+
+			this._refreshPerfDataCollectionApiResponse = response!;
+			this._perfDataCollectionLastRefreshedDate = this._refreshPerfDataCollectionApiResponse.refreshTime;
+			this._perfDataCollectionMessages = this._refreshPerfDataCollectionApiResponse.messages;
+			this._perfDataCollectionErrors = this._refreshPerfDataCollectionApiResponse.errors;
+
+			void vscode.window.showInformationMessage('messages: ' + this._perfDataCollectionMessages.join(' - '));
+			void vscode.window.showInformationMessage('errors: ' + this._perfDataCollectionErrors.join(' - '));
 		}
 		catch (error) {
 			console.log('error:');

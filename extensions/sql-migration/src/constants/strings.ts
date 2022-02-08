@@ -37,7 +37,9 @@ export function ASSESSMENT_IN_PROGRESS_CONTENT(dbName: string) {
 export const SKU_RECOMMENDATION_ALL_SUCCESSFUL = (databaseCount: number): string => {
 	return localize('sql.migration.wizard.sku.all', "Based on the assessment results, all {0} of your databases in an online state can be migrated to Azure SQL.", databaseCount);
 };
-export const SKU_RECOMMENDATION_ERROR = localize('sql.migration.wizard.sku.error', "An error occurred while assessing your databases.");
+export const SKU_RECOMMENDATION_ERROR = (serverName: string): string => {
+	return localize('sql.migration.wizard.sku.error', "An error occurred while generating SKU recommendations for the server '{0}'.", serverName);
+};
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR = (serverName: string): string => {
 	return localize('sql.migration.wizard.sku.assessment.error', "An error occurred while assessing the server '{0}'.", serverName);
 };
@@ -49,6 +51,9 @@ export const SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR = (serverName: strin
 		error.message,
 		error.stack,
 		EOL);
+};
+export const PERF_DATA_COLLECTION_ERROR = (serverName: string): string => {
+	return localize('sql.migration.wizard.perfCollection.error', "An error occurred while collecting performance data for the server '{0}'.", serverName);
 };
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_BYPASS = localize('sql.migration.wizard.sku.assessment.error.bypass', 'Check this option to skip assessment and continue the migration.');
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_DETAIL = localize('sql.migration.wizard.sku.assessment.error.detail', '[There are no assessment results to validate readiness of your database migration. By checking this box, you acknowledge you want to proceed migrating your database to the desired Azure SQL target.]',);

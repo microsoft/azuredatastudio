@@ -10,6 +10,7 @@ import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 import * as utils from '../../api/utils';
 import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
+import { EOL } from 'os';
 
 
 export class GetAzureRecommendationDialog {
@@ -24,7 +25,7 @@ export class GetAzureRecommendationDialog {
 	private _openExistingContainer!: azdata.FlexContainer;
 
 
-	constructor(public skuRecommendationPage: SKURecommendationPage, public migrationStateModel: MigrationStateModel) {
+	constructor(public skuRecommendationPage: SKURecommendationPage, public wizard: azdata.window.Wizard, public migrationStateModel: MigrationStateModel) {
 		console.log('constructor GetAzureRecommendationDialog');
 	}
 
@@ -327,31 +328,56 @@ export class GetAzureRecommendationDialog {
 					staticQueryIntervalInSec,
 					numberOfIterations
 				);
+
+				this.skuRecommendationPage.setAutoRefreshPerfDataCollection();
+				this.skuRecommendationPage.setAutoRefreshGetSkuRecommendation();
+
 				break;
 			}
 			case PerformanceDataSourceOptions.OpenExisting: {
-				// get SKU recommendation entry point
-				// TO-DO: expose the rest of these in the UI
-				const perfQueryIntervalInSec = 30;
-				const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
-				const targetPercentile = 95;
-				const scalingFactor = 100;
-				const startTime = '1900-01-01 00:00:00';
-				const endTime = '2200-01-01 00:00:00';
+				const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+				const errors: string[] = [];
+				try {
+					// get SKU recommendation entry point
+					// TO-DO: expose the rest of these in the UI
+					const perfQueryIntervalInSec = 30;
+					const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
+					const targetPercentile = 95;
+					const scalingFactor = 100;
+					const startTime = '1900-01-01 00:00:00';
+					const endTime = '2200-01-01 00:00:00';
+					const includePreviewSkus = false;
 
-				await this.migrationStateModel.getSkuRecommendations(
-					this.migrationStateModel._skuRecommendationPerformanceLocation,
-					perfQueryIntervalInSec,
-					targetPlatforms,
-					targetPercentile,
-					scalingFactor,
-					startTime,
-					endTime,
-					this.migrationStateModel._databaseAssessment);
+					await this.migrationStateModel.getSkuRecommendations(
+						this.migrationStateModel._skuRecommendationPerformanceLocation,
+						perfQueryIntervalInSec,
+						targetPlatforms,
+						targetPercentile,
+						scalingFactor,
+						startTime,
+						endTime,
+						includePreviewSkus,
+						this.migrationStateModel._databaseAssessment);
 
-				console.log('results - this.migrationStateModel._skuRecommendationResults:');
-				console.log(this.migrationStateModel._skuRecommendationResults);
-				break;
+					console.log('results - this.migrationStateModel._skuRecommendationResults:');
+					console.log(this.migrationStateModel._skuRecommendationResults);
+
+					const skuRecommendationError = this.migrationStateModel._skuRecommendationResults?.recommendationError;
+					if (skuRecommendationError) {
+						errors.push(`message: ${skuRecommendationError.message}`);
+					}
+				} catch (e) {
+					console.log(e);
+					errors.push(constants.SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR(serverName, e));
+				} finally {
+					if (errors.length > 0) {
+						this.wizard.message = {
+							text: constants.SKU_RECOMMENDATION_ERROR(serverName),
+							description: errors.join(EOL),
+							level: azdata.window.MessageLevel.Error
+						};
+					}
+				}
 			}
 		}
 
