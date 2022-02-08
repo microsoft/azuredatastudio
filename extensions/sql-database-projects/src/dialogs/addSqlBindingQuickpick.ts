@@ -231,7 +231,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 								});
 								if (!userPassword) {
 									// User will have to manually enter password later
-									let openSettingsFile = await vscode.window.showInformationMessage(constants.userPasswordLater, constants.openFile, constants.closeButton);
+									let openSettingsFile = await vscode.window.showWarningMessage(constants.userPasswordLater, constants.openFile, constants.closeButton);
 									if (openSettingsFile === constants.openFile) {
 										// open local.settings.json file
 										await vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(localSettingsPath));
