@@ -1148,8 +1148,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			language = KernelsLanguage.Python;
 		}
 
-		// Update cell language if it was using the previous default.
-		// Skip updating the cell if it was using a more specific language besides that.
+		// Update cell language if it was using the previous default, but skip updating the cell
+		// if it was using a more specific language.
 		let oldLanguage = this._language;
 		this._language = language.toLowerCase();
 		this._cells?.forEach(cell => {
