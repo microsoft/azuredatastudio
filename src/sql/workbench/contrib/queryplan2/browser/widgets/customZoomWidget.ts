@@ -67,7 +67,7 @@ export class CustomZoomWidget extends QueryPlanWidgetBase {
 
 export class CustomZoomAction extends Action {
 	public static ID = 'qp.customZoomAction';
-	public static LABEL = localize('zoomAction', "Zoom(Enter)");
+	public static LABEL = localize('zoomAction', "Zoom (Enter)");
 
 	constructor() {
 		super(CustomZoomAction.ID, CustomZoomAction.LABEL, Codicon.zoomOut.classNames);
@@ -88,7 +88,7 @@ export class CustomZoomAction extends Action {
 
 export class CancelSearch extends Action {
 	public static ID = 'qp.cancelCustomZoomAction';
-	public static LABEL = localize('cancelCustomZoomAction', "close(Escape)");
+	public static LABEL = localize('cancelCustomZoomAction', "Close (Escape)");
 
 	constructor() {
 		super(CancelSearch.ID, CancelSearch.LABEL, Codicon.chromeClose.classNames);

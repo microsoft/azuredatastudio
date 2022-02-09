@@ -18,6 +18,7 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import type * as azdata from 'azdata';
 import { isString } from 'vs/base/common/types';
 
+const CONTAINS_DISPLAY_STRING = localize("queryPlanSearchTypeContains", 'Contains');
 export class NodeSearchWidget extends QueryPlanWidgetBase {
 
 	private _propertyNameSelectBoxContainer: HTMLElement;
@@ -58,7 +59,7 @@ export class NodeSearchWidget extends QueryPlanWidgetBase {
 		this.container.appendChild(this._searchTypeSelectBoxContainer);
 		this._searchTypeSelectBox = new SelectBox([
 			'=',
-			'Contains'
+			CONTAINS_DISPLAY_STRING
 		], '=', this.contextViewService, this._searchTypeSelectBoxContainer);
 		this._searchTypeSelectBox.render(this._searchTypeSelectBoxContainer);
 		attachSelectBoxStyler(this._searchTypeSelectBox, this.themeService);
@@ -126,7 +127,7 @@ export class NodeSearchWidget extends QueryPlanWidgetBase {
 					// If the search type is '=' we look for exact match and for 'contains' we look search string occurance in prop value
 					if (
 						this._searchTypeSelectBox.value === '=' && matchingProp.value === this._searchTextInputBox.value ||
-						this._searchTypeSelectBox.value === 'Contains' && matchingProp.value.includes(this._searchTextInputBox.value)
+						this._searchTypeSelectBox.value === CONTAINS_DISPLAY_STRING && matchingProp.value.includes(this._searchTextInputBox.value)
 					) {
 						this._searchResults.push(currentNode.id);
 					}

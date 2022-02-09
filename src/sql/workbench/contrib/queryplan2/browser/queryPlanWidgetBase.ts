@@ -4,15 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 export abstract class QueryPlanWidgetBase {
-	public container: HTMLElement;
-	public identifier: string;
-
 	/**
 	 *
 	 * @param container HTML Element that contains the UI for the plan action view.
 	 * @param identifier Uniquely identify the view to be added or removed. Note: Only 1 view with the same id can be added to the controller
 	 */
-	constructor(container: HTMLElement, identifier: string) {
+	constructor(public container: HTMLElement, public identifier: string) {
 		this.container = container;
 		this.identifier = identifier;
 	}
