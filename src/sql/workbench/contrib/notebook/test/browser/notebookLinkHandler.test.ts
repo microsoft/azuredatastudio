@@ -112,7 +112,7 @@ suite('Noteboook Link Handler', function (): void {
 
 		test('when given an already encoded URL with non-reserved characters', () => {
 			let notebookLinkHandler = new NotebookLinkHandler(notebookUri, 'https://github.com/search/advanced?q=test&r=(microsoft%2Fazuredatastudio)&type=Code', configurationService);
-			assert.strictEqual(notebookLinkHandler.getEncodedLinkUrl(), `https://github.com/search/advanced?q=test&r=(microsoft%2Fazuredatastudio)&type=Code`, '() in HTTP link failed to resolve');
+			assert.strictEqual(notebookLinkHandler.getEncodedLinkUrl(), `https://github.com/search/advanced?q=test&r=(microsoft%2Fazuredatastudio)&type=Code`, '() in HTTP link should not be encoded');
 		});
 
 		test('when given an unencoded URL with a space', () => {
