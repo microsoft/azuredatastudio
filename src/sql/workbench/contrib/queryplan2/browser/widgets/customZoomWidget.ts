@@ -44,9 +44,9 @@ export class CustomZoomWidget extends QueryPlanWidgetBase {
 
 		// Setting up keyboard shortcuts
 		const self = this;
-		this.customZoomInputBox.element.onkeydown = (ev) => {
+		this.customZoomInputBox.element.onkeydown = async (ev) => {
 			if (ev.key === 'Enter') {
-				new CustomZoomAction().run(self);
+				await new CustomZoomAction().run(self);
 			} else if (ev.key === 'Escape') {
 				queryPlanView.planActionView.removeWidget(self);
 			}

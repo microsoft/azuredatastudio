@@ -320,7 +320,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		return `element-${this.uniqueElementId}`;
 	}
 
-	private async createPlanDiagram(container: HTMLElement) {
+	private createPlanDiagram(container: HTMLElement) {
 		let diagramRoot: any = new Object();
 		let graphRoot: azdata.ExecutionPlanNode = this._graphModel.root;
 

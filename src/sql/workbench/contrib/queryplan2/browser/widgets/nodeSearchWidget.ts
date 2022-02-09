@@ -78,13 +78,13 @@ export class NodeSearchWidget extends QueryPlanWidgetBase {
 
 		// setting up key board shortcuts
 		const self = this;
-		this._searchTextInputBox.element.onkeydown = e => {
+		this._searchTextInputBox.element.onkeydown = async e => {
 			if (e.key === 'Enter' && e.shiftKey) {
-				new PreviousSearch().run(self);
+				await new PreviousSearch().run(self);
 			} else if (e.key === 'Enter') {
-				new NextSearch().run(self);
+				await new NextSearch().run(self);
 			} else if (e.key === 'Escape') {
-				new CancelSearch().run(self);
+				await new CancelSearch().run(self);
 			}
 		};
 
@@ -123,7 +123,6 @@ export class NodeSearchWidget extends QueryPlanWidgetBase {
 
 				// Searching only properties with string value.
 				if (isString(matchingProp?.value)) {
-
 					// If the search type is '=' we look for exact match and for 'contains' we look search string occurance in prop value
 					if (
 						this._searchTypeSelectBox.value === '=' && matchingProp.value === this._searchTextInputBox.value ||
@@ -131,13 +130,11 @@ export class NodeSearchWidget extends QueryPlanWidgetBase {
 					) {
 						this._searchResults.push(currentNode.id);
 					}
-
 				}
 
 				stack.push(...currentNode.children);
 			}
 		}
-
 		// Returning if no results found.
 		if (this._searchResults.length === 0) {
 			return;
