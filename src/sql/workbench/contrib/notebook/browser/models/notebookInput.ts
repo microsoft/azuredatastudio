@@ -545,7 +545,7 @@ export class NotebookEditorContentLoader implements IContentLoader {
 		let notebookContents = await this.contentManager.deserializeNotebook(notebookEditorModel.contentString);
 
 		// Special case .NET Interactive kernel spec
-		if (notebookContents.metadata.kernelspec?.display_name?.startsWith(DotnetInteractiveLabelPrefix)) {
+		if (notebookContents.metadata?.kernelspec?.display_name?.startsWith(DotnetInteractiveLabelPrefix)) {
 			notebookContents.metadata.kernelspec.oldDisplayName = notebookContents.metadata.kernelspec.display_name;
 			notebookContents.metadata.kernelspec.display_name = DotnetInteractiveLabel;
 		}
