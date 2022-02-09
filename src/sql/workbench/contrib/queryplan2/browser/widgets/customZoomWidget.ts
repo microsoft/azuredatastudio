@@ -56,7 +56,7 @@ export class CustomZoomWidget extends QueryPlanWidgetBase {
 		this._actionBar = new ActionBar(this.container);
 		this._actionBar.context = this;
 		this._actionBar.pushAction(new CustomZoomAction(), { label: false, icon: true });
-		this._actionBar.pushAction(new CancelSearch(), { label: false, icon: true });
+		this._actionBar.pushAction(new CancelZoom(), { label: false, icon: true });
 	}
 
 	// Setting initial focus to input box
@@ -86,12 +86,12 @@ export class CustomZoomAction extends Action {
 	}
 }
 
-export class CancelSearch extends Action {
+export class CancelZoom extends Action {
 	public static ID = 'qp.cancelCustomZoomAction';
 	public static LABEL = localize('cancelCustomZoomAction', "Close (Escape)");
 
 	constructor() {
-		super(CancelSearch.ID, CancelSearch.LABEL, Codicon.chromeClose.classNames);
+		super(CancelZoom.ID, CancelZoom.LABEL, Codicon.chromeClose.classNames);
 	}
 
 	public override async run(context: CustomZoomWidget): Promise<void> {
