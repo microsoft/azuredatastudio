@@ -200,9 +200,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _perfDataCollectionMessages!: string[];
 	public _perfDataCollectionErrors!: string[];
 
-	private refreshPerfDataCollectionFrequency: SupportedAutoRefreshIntervals = 15000;		// TO-DO: update value
+	public refreshPerfDataCollectionFrequency: SupportedAutoRefreshIntervals = 30000;		// TO-DO: update value
 	private _autoRefreshPerfDataCollectionHandle!: NodeJS.Timeout;
-	private refreshGetSkuRecommendationFrequency: SupportedAutoRefreshIntervals = 15000;	// TO-DO: update value
+	public refreshGetSkuRecommendationFrequency: SupportedAutoRefreshIntervals = 60000;	// TO-DO: update value
 	private _autoRefreshGetSkuRecommendationHandle!: NodeJS.Timeout;
 
 	public _skuScalingFactor!: number;
@@ -415,19 +415,24 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			if (this.refreshPerfDataCollectionFrequency !== -1) {
 				this._autoRefreshPerfDataCollectionHandle = setInterval(async function () {
 					await classVariable.refreshPerfDataCollection();
-					await page.refreshDataCollectionTimerStatus();				// update timer
+
+					if (await classVariable.isWaitingForFirstTimeRefresh()) {
+						await page.refreshSkuRecommendationComponents();	// update timer
+					}
 				}, this.refreshPerfDataCollectionFrequency);
 			}
 
-			console.log('starting auto refresh for get SKU recommendation with interval ' + this.refreshGetSkuRecommendationFrequency);
-			clearInterval(this._autoRefreshGetSkuRecommendationHandle);
+			console.log('starting one-time timer for get SKU recommendation with interval ' + this.refreshGetSkuRecommendationFrequency);
+			clearTimeout(this._autoRefreshGetSkuRecommendationHandle);
 			if (this.refreshGetSkuRecommendationFrequency !== -1) {
-				this._autoRefreshGetSkuRecommendationHandle = setInterval(async function () {
+				this._autoRefreshGetSkuRecommendationHandle = setTimeout(async function () {
 					const perfQueryIntervalInSec = 30;
 					const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
 					const startTime = '1900-01-01 00:00:00';
 					const endTime = '2200-01-01 00:00:00';
 
+					// to-do: change text to "Loading..."
+					await page.startCardLoading();
 					await classVariable.getSkuRecommendations(
 						classVariable._skuRecommendationPerformanceLocation,
 						perfQueryIntervalInSec,
@@ -438,6 +443,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						endTime,
 						classVariable._skuEnablePreview,
 						classVariable._databaseAssessment);
+					await page.refreshSkuRecommendationComponents();
 				}, this.refreshGetSkuRecommendationFrequency);
 			}
 		}
@@ -487,7 +493,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			this._perfDataCollectionMessages = this._refreshPerfDataCollectionApiResponse.messages;
 			this._perfDataCollectionErrors = this._refreshPerfDataCollectionApiResponse.errors;
 
-			void vscode.window.showInformationMessage('Errors during perf collection: ' + this._perfDataCollectionErrors.join(' - '));
+			if (this._perfDataCollectionErrors?.length > 0) {
+				void vscode.window.showInformationMessage(constants.PERF_DATA_COLLECTION_ERROR(this._assessmentApiResponse?.assessmentResult?.name, this._perfDataCollectionErrors));
+			}
 		}
 		catch (error) {
 			console.log('error:');
@@ -497,6 +505,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return true;
 	}
 
+	public async isWaitingForFirstTimeRefresh(): Promise<boolean> {
+		const elapsedTimeInMins = Math.abs(new Date().getTime() - new Date(this._perfDataCollectionStartDate).getTime()) / 60000;
+		const skuRecAutoRefreshTimeInMins = this.refreshGetSkuRecommendationFrequency / 60000;
+
+		return elapsedTimeInMins < skuRecAutoRefreshTimeInMins;
+	}
 
 	private async generateAssessmentTelemetry(): Promise<void> {
 		try {
