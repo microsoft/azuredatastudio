@@ -321,11 +321,9 @@ export class GetAzureRecommendationDialog {
 					this.migrationStateModel._skuRecommendationPerformanceLocation,
 					perfQueryIntervalInSec,
 					staticQueryIntervalInSec,
-					numberOfIterations
+					numberOfIterations,
+					this.skuRecommendationPage
 				);
-
-				this.skuRecommendationPage.setAutoRefreshPerfDataCollection();
-				this.skuRecommendationPage.setAutoRefreshGetSkuRecommendation();
 
 				break;
 			}
@@ -333,25 +331,20 @@ export class GetAzureRecommendationDialog {
 				const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 				const errors: string[] = [];
 				try {
-					// get SKU recommendation entry point
-					// TO-DO: expose the rest of these in the UI
 					const perfQueryIntervalInSec = 30;
 					const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
-					const targetPercentile = 95;
-					const scalingFactor = 100;
 					const startTime = '1900-01-01 00:00:00';
 					const endTime = '2200-01-01 00:00:00';
-					const includePreviewSkus = false;
 
 					await this.migrationStateModel.getSkuRecommendations(
 						this.migrationStateModel._skuRecommendationPerformanceLocation,
 						perfQueryIntervalInSec,
 						targetPlatforms,
-						targetPercentile,
-						scalingFactor,
+						this.migrationStateModel._skuTargetPercentile,
+						this.migrationStateModel._skuScalingFactor,
 						startTime,
 						endTime,
-						includePreviewSkus,
+						this.migrationStateModel._skuEnablePreview,
 						this.migrationStateModel._databaseAssessment);
 
 					console.log('results - this.migrationStateModel._skuRecommendationResults:');
@@ -376,7 +369,7 @@ export class GetAzureRecommendationDialog {
 			}
 		}
 
-		await this.skuRecommendationPage.refreshDataCollectionStatus();
+		await this.skuRecommendationPage.refreshDataCollectionTimerStatus();
 	}
 
 	public get isOpen(): boolean {

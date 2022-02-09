@@ -16,7 +16,6 @@ import { EOL } from 'os';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as styles from '../constants/styles';
-import { SupportedAutoRefreshIntervals } from '../api/utils';
 import { SkuEditParametersDialog } from '../dialog/skuRecommendationResults/skuEditParametersDialog';
 
 export interface Product {
@@ -58,11 +57,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	private assessmentGroupContainer!: azdata.FlexContainer;
 	private _disposables: vscode.Disposable[] = [];
-
-	private refreshPerfDataCollectionFrequency: SupportedAutoRefreshIntervals = 30000;
-	private _autoRefreshPerfDataCollectionHandle!: NodeJS.Timeout;
-	private refreshGetSkuRecommendationFrequency: SupportedAutoRefreshIntervals = 300000;
-	private _autoRefreshGetSkuRecommendationHandle!: NodeJS.Timeout;
 
 	private _supportedProducts: Product[] = [
 		{
@@ -582,59 +576,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
 	}
 
-	public setAutoRefreshPerfDataCollection(): void {
-		console.log('starting auto refresh for perf collection status update with interval ' + this.refreshPerfDataCollectionFrequency);
-		const classVariable = this;
-		clearInterval(this._autoRefreshPerfDataCollectionHandle);
-		if (this.refreshPerfDataCollectionFrequency !== -1) {
-			this._autoRefreshPerfDataCollectionHandle = setInterval(async function () {
-				await classVariable.migrationStateModel.refreshPerfDataCollection();
-
-				// TO-DO: state machine will create an ADS notification (bottom right corner)
-				// here we do a banner too - is that necessary?
-				// if (classVariable.migrationStateModel._perfDataCollectionErrors?.length > 0) {
-				// 	classVariable.wizard.message = {
-				// 		text: constants.PERF_DATA_COLLECTION_ERROR(classVariable.migrationStateModel.serverName),
-				// 		description: classVariable.migrationStateModel._perfDataCollectionErrors.join(EOL),
-				// 		level: azdata.window.MessageLevel.Error
-				// 	};
-				// }
-			}, this.refreshPerfDataCollectionFrequency);
-		}
-	}
-
-	public setAutoRefreshGetSkuRecommendation(): void {
-		console.log('starting auto refresh for get SKU recommendation with interval ' + this.refreshGetSkuRecommendationFrequency);
-		const classVariable = this;
-		clearInterval(this._autoRefreshGetSkuRecommendationHandle);
-		if (this.refreshGetSkuRecommendationFrequency !== -1) {
-			this._autoRefreshGetSkuRecommendationHandle = setInterval(async function () {
-
-				const perfQueryIntervalInSec = 30;
-				const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
-				const targetPercentile = 95;
-				const scalingFactor = 100;
-				const startTime = '1900-01-01 00:00:00';
-				const endTime = '2200-01-01 00:00:00';
-				const includePreviewSkus = false;
-
-				await classVariable.migrationStateModel.getSkuRecommendations(
-					classVariable.migrationStateModel._skuRecommendationPerformanceLocation,
-					perfQueryIntervalInSec,
-					targetPlatforms,
-					targetPercentile,
-					scalingFactor,
-					startTime,
-					endTime,
-					includePreviewSkus,
-					classVariable.migrationStateModel._databaseAssessment);
-
-				// TO-DO: state machine will create an ADS notification (bottom right corner)
-				// here we do a banner too - is that necessary?
-			}, this.refreshGetSkuRecommendationFrequency);
-		}
-	}
-
 	public async refreshCardText(): Promise<void> {
 		this._rbgLoader.loading = true;
 		if (this._rbg.selectedCardId === MigrationTargetType.SQLMI) {
@@ -929,16 +870,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private async getSkuRecommendations() {
-		// if (this.migrationStateModel._perfDataCollectionStartDate) {
-		// 	await this.migrationStateModel.stopPerfDataCollection();
-		// 	const durationMins = Math.abs(new Date(this.migrationStateModel._perfDataCollectionStopDate).getTime() - new Date(this.migrationStateModel._perfDataCollectionStartDate).getTime()) / 60000;
-		// 	console.log('data collected for ' + durationMins + ' minutes');
-		// }
-
 		const perfQueryIntervalInSec = 30;
 		const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
-		const targetPercentile = this.migrationStateModel._skuTargetPercentile;
-		const scalingFactor = this.migrationStateModel._skuTargetPercentile;
 		const startTime = '1900-01-01 00:00:00';
 		const endTime = '2200-01-01 00:00:00';
 
@@ -946,11 +879,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this.migrationStateModel._skuRecommendationPerformanceLocation,
 			perfQueryIntervalInSec,
 			targetPlatforms,
-			targetPercentile,
-			scalingFactor,
+			this.migrationStateModel._skuTargetPercentile,
+			this.migrationStateModel._skuScalingFactor,
 			startTime,
 			endTime,
-			true,
+			this.migrationStateModel._skuEnablePreview,
 			this.migrationStateModel._databaseAssessment);
 	}
 
@@ -959,15 +892,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._skuTargetPercentileText.value = constants.PERCENTAGE(this.migrationStateModel._skuTargetPercentile);
 		this._skuEnablePreviewSkuText.value = this.migrationStateModel._skuEnablePreview.toString();
 
-		if (!this.migrationStateModel._perfDataCollectionStartDate) {
-			await this.getSkuRecommendations();
-			await this.refreshCardText();
-		}
+		await this.getSkuRecommendations();
+		await this.refreshCardText();
 	}
 
-	public async refreshDataCollectionStatus(): Promise<void> {
-		// TO-DO: call function based on timer
-		console.log('refreshDataCollectionStatus');
+	public async refreshDataCollectionTimerStatus(): Promise<void> {
+		console.log('refreshDataCollectionTimerStatus');
 
 		// TO-DO: update text when initial timer starts
 		this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_IN_PROGRESS;
