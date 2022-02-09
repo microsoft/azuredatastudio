@@ -238,7 +238,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 									connectionString = connectionString.replace(constants.passwordPlaceholder, userPassword);
 								}
 							}
-							if ((includePassword !== constants.yesString) && !userPassword && connectionInfo?.authenticationType === 'SqlLogin') {
+							if (includePassword !== constants.yesString && !userPassword && connectionInfo?.authenticationType === 'SqlLogin') {
 								// if user does not want to include password or user does not enter password, show warning message that they will have to enter it manually later in local.settings.json
 								void vscode.window.showWarningMessage(constants.userPasswordLater, constants.openFile, constants.closeButton).then(async (result) => {
 									if (result === constants.openFile) {

@@ -571,9 +571,9 @@ export const connectionProfile = localize('connectionProfile', 'Select a connect
 export const userConnectionString = localize('userConnectionString', 'Enter connection string');
 export const selectConnectionString = localize('selectConnectionString', 'Select SQL connection string method');
 export const selectConnectionError = (err?: any) => err ? localize('selectConnectionError', "Failed to set connection string app setting: {0}", utils.getErrorMessage(err)) : localize('unableToSetConnectionString', "Failed to set connection string app setting");
-export const includePassword = localize('includePassword', 'Do you want to include the password from this connection in the local.settings.json?');
-export const enterPasswordPrompt = localize('enterPasswordPrompt', 'Enter password to be used for the connection string');
-export const enterPasswordManually = localize('enterPasswordManually', 'Enter password or escape to cancel');
-export const userPasswordLater = localize('userPasswordLater', 'In order to use SQL connection string later you will need to manually enter the password in local.settings.json.');
+export const includePassword = localize('includePassword', 'Do you want to include the password from this connection in your local.settings.json file?');
+export const enterPasswordPrompt = localize('enterPasswordPrompt', 'Enter the password to be used for the connection string');
+export const enterPasswordManually = localize('enterPasswordManually', 'Enter password or press escape to cancel');
+export const userPasswordLater = localize('userPasswordLater', 'In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.');
 export const openFile = localize('openFile', "Open File");
 export const closeButton = localize('closeButton', "Close");
