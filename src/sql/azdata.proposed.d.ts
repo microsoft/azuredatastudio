@@ -30,8 +30,13 @@ declare module 'azdata' {
 			setTrusted(state: boolean): void;
 		}
 
+		export interface ISessionOptions {
+			kernelSpec?: IKernelSpec;
+		}
+
 		export interface IKernelSpec {
 			supportedLanguages?: string[];
+			oldDisplayName?: string;
 		}
 
 		export interface ILanguageInfo {

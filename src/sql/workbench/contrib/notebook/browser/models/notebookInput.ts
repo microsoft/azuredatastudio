@@ -40,6 +40,7 @@ import { LocalContentManager } from 'sql/workbench/services/notebook/common/loca
 import { Registry } from 'vs/platform/registry/common/platform';
 import { Extensions as LanguageAssociationExtensions, ILanguageAssociationRegistry } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NotebookLanguage } from 'sql/workbench/common/constants';
+import { DotnetInteractiveLabel, DotnetInteractiveLabelPrefix } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
@@ -541,6 +542,13 @@ export class NotebookEditorContentLoader implements IContentLoader {
 
 	async loadContent(): Promise<azdata.nb.INotebookContents> {
 		let notebookEditorModel = await this.notebookInput.resolve();
-		return this.contentManager.deserializeNotebook(notebookEditorModel.contentString);
+		let notebookContents = await this.contentManager.deserializeNotebook(notebookEditorModel.contentString);
+
+		// Special case .NET Interactive kernel spec
+		if (notebookContents.metadata.kernelspec?.display_name?.startsWith(DotnetInteractiveLabelPrefix)) {
+			notebookContents.metadata.kernelspec.oldDisplayName = notebookContents.metadata.kernelspec.display_name;
+			notebookContents.metadata.kernelspec.display_name = DotnetInteractiveLabel;
+		}
+		return notebookContents;
 	}
 }

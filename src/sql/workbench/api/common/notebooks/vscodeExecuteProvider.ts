@@ -73,27 +73,27 @@ class VSCodeKernel implements azdata.nb.IKernel {
 
 	constructor(private readonly _controller: ADSNotebookController, private readonly _options: azdata.nb.ISessionOptions, languages: string[]) {
 		this._id = this._options.kernelId ?? (VSCodeKernel.kernelId++).toString();
-		this._name = this._controller.notebookType;
+		this._kernelSpec = this._options.kernelSpec ?? {
+			name: this._controller.notebookType,
+			language: languages[0],
+			display_name: this._controller.label,
+			supportedLanguages: languages
+		};
+
+		this._name = this._kernelSpec.name;
 		this._info = {
 			protocol_version: '',
 			implementation: '',
 			implementation_version: '',
 			language_info: {
-				name: languages[0],
-				supportedLanguages: languages,
-				version: '',
+				name: this._kernelSpec.language,
+				supportedLanguages: languages
 			},
 			banner: '',
 			help_links: [{
 				text: '',
 				url: ''
 			}]
-		};
-		this._kernelSpec = {
-			name: this._controller.notebookType,
-			language: languages[0],
-			display_name: this._controller.label,
-			supportedLanguages: languages
 		};
 	}
 
@@ -125,14 +125,18 @@ class VSCodeKernel implements azdata.nb.IKernel {
 		return this._info;
 	}
 
+	public get spec(): azdata.nb.IKernelSpec {
+		return this._kernelSpec;
+	}
+
 	getSpec(): Thenable<azdata.nb.IKernelSpec> {
-		return Promise.resolve(this._kernelSpec);
+		return Promise.resolve(this.spec);
 	}
 
 	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
 		let executePromise: Promise<void>;
 		if (this._controller.executeHandler) {
-			let cell = convertToVSCodeNotebookCell(content.code, 'code', content.cellIndex, content.cellUri, content.notebookUri, content.language ?? this._info.language_info.name);
+			let cell = convertToVSCodeNotebookCell(content.code, 'code', content.cellIndex, content.cellUri, content.notebookUri, content.language ?? this._kernelSpec.language);
 			executePromise = Promise.resolve(this._controller.executeHandler([cell], cell.notebook, this._controller));
 		} else {
 			executePromise = Promise.resolve();
@@ -190,8 +194,12 @@ class VSCodeSession implements azdata.nb.ISession {
 		return 'connected';
 	}
 
-	public get kernel(): azdata.nb.IKernel {
+	public get vsKernel(): VSCodeKernel {
 		return this._kernel;
+	}
+
+	public get kernel(): azdata.nb.IKernel {
+		return this.vsKernel;
 	}
 
 	changeKernel(kernelInfo: azdata.nb.IKernelSpec): Thenable<azdata.nb.IKernel> {
@@ -208,7 +216,7 @@ class VSCodeSession implements azdata.nb.ISession {
 }
 
 class VSCodeSessionManager implements azdata.nb.SessionManager {
-	private _sessions: azdata.nb.ISession[] = [];
+	private _sessions: VSCodeSession[] = [];
 
 	constructor(private readonly _controller: ADSNotebookController) {
 	}
@@ -222,15 +230,10 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 	}
 
 	public get specs(): azdata.nb.IAllKernels {
-		let kernel: azdata.nb.IKernelSpec = {
-			name: this._controller.notebookType,
-			language: this._controller.supportedLanguages[0],
-			display_name: this._controller.label,
-			supportedLanguages: this._controller.supportedLanguages
-		};
+		let kernels = this._sessions.map(session => session.vsKernel.spec);
 		return {
-			defaultKernel: kernel.name,
-			kernels: [kernel]
+			defaultKernel: kernels[0]?.name,
+			kernels: kernels
 		};
 	}
 
@@ -238,8 +241,7 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 		if (!this.isReady) {
 			return Promise.reject(new Error(nls.localize('errorStartBeforeReady', "Cannot start a session, the manager is not yet initialized")));
 		}
-		let targetKernel = this.specs.kernels.find(kernel => kernel.name === this.specs.defaultKernel);
-		let session: azdata.nb.ISession = new VSCodeSession(this._controller, options, targetKernel.supportedLanguages);
+		let session = new VSCodeSession(this._controller, options, options.kernelSpec?.supportedLanguages);
 		let index = this._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
 			this._sessions.splice(index);

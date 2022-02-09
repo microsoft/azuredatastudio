@@ -1563,7 +1563,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		let metadata = Object.create(null) as nb.INotebookMetadata;
 		// TODO update language and kernel when these change
 		metadata.kernelspec = this._savedKernelInfo;
-		delete (metadata.kernelspec as nb.IKernelSpec)?.supportedLanguages;
+		delete metadata.kernelspec?.supportedLanguages;
+
+		// Undo special casing for .NET Interactive
+		if (metadata.kernelspec?.oldDisplayName) {
+			metadata.kernelspec.display_name = metadata.kernelspec.oldDisplayName;
+			delete metadata.kernelspec.oldDisplayName;
+		}
 
 		metadata.language_info = this.languageInfo;
 		delete metadata.language_info?.supportedLanguages;

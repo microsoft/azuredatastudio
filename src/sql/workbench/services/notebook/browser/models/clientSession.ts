@@ -99,25 +99,25 @@ export class ClientSession implements IClientSession {
 				await this._executeManager.sessionManager.ready;
 			}
 			if (this._defaultKernel) {
-				await this.startSessionInstance(this._defaultKernel.name);
+				await this.startSessionInstance(this._defaultKernel);
 			}
 		}
 	}
 
-	private async startSessionInstance(kernelName: string): Promise<void> {
+	private async startSessionInstance(kernelSpec: nb.IKernelSpec): Promise<void> {
 		let session: nb.ISession;
 		try {
 			// TODO #3164 should use URI instead of path for startNew
 			session = await this._executeManager.sessionManager.startNew({
 				path: this.notebookUri.fsPath,
-				kernelName: kernelName
-				// TODO add kernel name if saved in the document
+				kernelName: kernelSpec.name,
+				kernelSpec: kernelSpec
 			});
 			session.defaultKernelLoaded = true;
 		} catch (err) {
 			// TODO move registration
 			if (err && err.response && err.response.status === 501) {
-				this.options.notificationService.warn(localize('kernelRequiresConnection', "Kernel {0} was not found. The default kernel will be used instead.", kernelName));
+				this.options.notificationService.warn(localize('kernelRequiresConnection', "Kernel {0} was not found. The default kernel will be used instead.", kernelSpec.name));
 				session = await this._executeManager.sessionManager.startNew({
 					path: this.notebookUri.fsPath,
 					kernelName: undefined
@@ -128,7 +128,7 @@ export class ClientSession implements IClientSession {
 			}
 		}
 		this._session = session;
-		await this.runKernelConfigActions(kernelName);
+		await this.runKernelConfigActions(kernelSpec.name);
 		this._statusChangedEmitter.fire(session);
 	}
 
@@ -222,12 +222,12 @@ export class ClientSession implements IClientSession {
 	/**
 	 * Change the current kernel associated with the document.
 	 */
-	async changeKernel(options: nb.IKernelSpec, oldValue?: nb.IKernel): Promise<nb.IKernel | undefined> {
+	async changeKernel(kernelSpec: nb.IKernelSpec, oldValue?: nb.IKernel): Promise<nb.IKernel | undefined> {
 		this._kernelChangeCompleted = new Deferred<void>();
 		this._isReady = false;
 		let oldKernel = oldValue ? oldValue : this.kernel;
 
-		let kernel = await this.doChangeKernel(options);
+		let kernel = await this.doChangeKernel(kernelSpec);
 		try {
 			await kernel?.ready;
 		} catch (error) {
@@ -272,13 +272,13 @@ export class ClientSession implements IClientSession {
 	/**
 	 * Helper method to either call ChangeKernel on current session, or start a new session
 	 */
-	private async doChangeKernel(options: nb.IKernelSpec): Promise<nb.IKernel | undefined> {
+	private async doChangeKernel(kernelSpec: nb.IKernelSpec): Promise<nb.IKernel | undefined> {
 		let kernel: nb.IKernel | undefined;
 		if (this._session) {
-			kernel = await this._session.changeKernel(options);
+			kernel = await this._session.changeKernel(kernelSpec);
 			await this.runKernelConfigActions(kernel.name);
 		} else {
-			kernel = await this.startSessionInstance(options.name).then(() => this.kernel);
+			kernel = await this.startSessionInstance(kernelSpec).then(() => this.kernel);
 		}
 		return kernel;
 	}
