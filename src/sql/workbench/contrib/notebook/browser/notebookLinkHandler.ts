@@ -8,6 +8,7 @@ import * as path from 'vs/base/common/path';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 import { isWindows } from 'vs/base/common/platform';
+import { containsEncodedUriComponentReservedCharacters } from 'sql/base/common/network';
 
 const useAbsolutePathConfigName = 'notebook.useAbsoluteFilePaths';
 
@@ -119,31 +120,21 @@ export class NotebookLinkHandler {
 	}
 
 	/**
-	* Function to get encoded url,
-	* checks the url if it's already encoded before encoding it
+	* Function to get encoded url, Gets the link URI-encoded link URL
+	* (https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
 	* @returns the encoded url
 	*/
 	public getEncodedLinkUrl(): string | undefined {
-		// since we only handle strings that come from call out dialogs
 		if (typeof this._link === 'string') {
 			// Need to encode URI here in order for user to click the proper encoded link in WYSIWYG
 			// skip encoding it if it's already encoded
-			if (!this.containsEncodedComponents(this._link)) {
+			if (!containsEncodedUriComponentReservedCharacters(this._link)) {
 				return encodeURI(this._link);
 			}
 			return this._link;
 		}
+		// since we only handle strings that come from call out dialogs
 		return undefined;
-	}
-
-	/**
-	* Function to check if a string url has encoded characters
-	* space gets encoded as %20 and ;,/?:@&=+$ -> %3B%2C%2F%3F%3A%40%26%3D%2B%24
-	* @returns true if the passed in url has encoded strings:
-	*/
-	containsEncodedComponents(url): boolean {
-		// ie ?,=,&,/ etc
-		return (decodeURI(url) !== decodeURIComponent(url));
 	}
 
 	/**
