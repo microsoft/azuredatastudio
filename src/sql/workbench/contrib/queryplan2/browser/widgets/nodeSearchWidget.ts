@@ -81,9 +81,9 @@ export class NodeSearchWidget extends QueryPlanWidgetBase {
 		const self = this;
 		this._searchTextInputBox.element.onkeydown = async e => {
 			if (e.key === 'Enter' && e.shiftKey) {
-				await new PreviousSearch().run(self);
+				await new GoToPreviousMatchAction().run(self);
 			} else if (e.key === 'Enter') {
-				await new NextSearch().run(self);
+				await new GoToNextMatchAction().run(self);
 			} else if (e.key === 'Escape') {
 				await new CancelSearch().run(self);
 			}
@@ -92,8 +92,8 @@ export class NodeSearchWidget extends QueryPlanWidgetBase {
 		// Adding action bar
 		this._actionBar = new ActionBar(this.container);
 		this._actionBar.context = this;
-		this._actionBar.pushAction(new PreviousSearch(), { label: false, icon: true });
-		this._actionBar.pushAction(new NextSearch(), { label: false, icon: true });
+		this._actionBar.pushAction(new GoToPreviousMatchAction(), { label: false, icon: true });
+		this._actionBar.pushAction(new GoToNextMatchAction(), { label: false, icon: true });
 		this._actionBar.pushAction(new CancelSearch(), { label: false, icon: true });
 	}
 
@@ -205,12 +205,12 @@ interface Point {
 	y: number;
 }
 
-export class NextSearch extends Action {
+export class GoToNextMatchAction extends Action {
 	public static ID = 'qp.NextSearchAction';
 	public static LABEL = localize('nextSearchItemAction', "Next Match (Enter)");
 
 	constructor() {
-		super(NextSearch.ID, NextSearch.LABEL, Codicon.arrowDown.classNames);
+		super(GoToNextMatchAction.ID, GoToNextMatchAction.LABEL, Codicon.arrowDown.classNames);
 	}
 
 	public override async run(context: NodeSearchWidget): Promise<void> {
@@ -218,12 +218,12 @@ export class NextSearch extends Action {
 	}
 }
 
-export class PreviousSearch extends Action {
+export class GoToPreviousMatchAction extends Action {
 	public static ID = 'qp.PreviousSearchAction';
 	public static LABEL = localize('previousSearchItemAction', "Previous Match (Shift+Enter)");
 
 	constructor() {
-		super(PreviousSearch.ID, PreviousSearch.LABEL, Codicon.arrowUp.classNames);
+		super(GoToPreviousMatchAction.ID, GoToPreviousMatchAction.LABEL, Codicon.arrowUp.classNames);
 	}
 
 	public override async run(context: NodeSearchWidget): Promise<void> {
