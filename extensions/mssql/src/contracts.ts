@@ -1047,6 +1047,7 @@ export interface SqlMigrationSkuRecommendationsParams {
 	scalingFactor: number;
 	startTime: string;
 	endTime: string;
+	includePreviewSkus: boolean;
 	databaseAllowList: string[];
 }
 
@@ -1071,6 +1072,14 @@ export interface SqlMigrationStopPerfDataCollectionParams {
 
 export namespace SqlMigrationStopPerfDataCollectionRequest {
 	export const type = new RequestType<SqlMigrationStopPerfDataCollectionParams, mssql.StopPerfDataCollectionResult, void, void>('migration/stopperfdatacollection');
+}
+
+export interface SqlMigrationRefreshPerfDataCollectionParams {
+	lastRefreshTime: Date
+}
+
+export namespace SqlMigrationRefreshPerfDataCollectionRequest {
+	export const type = new RequestType<SqlMigrationRefreshPerfDataCollectionParams, mssql.RefreshPerfDataCollectionResult, void, void>('migration/refreshperfdatacollection');
 }
 
 // ------------------------------- <Sql Migration> -----------------------------

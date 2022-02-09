@@ -50,6 +50,7 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 		scalingFactor: number,
 		startTime: string,
 		endTime: string,
+		includePreviewSkus: boolean,
 		databaseAllowList: string[]): Promise<mssql.SkuRecommendationResult | undefined> {
 		let params: contracts.SqlMigrationSkuRecommendationsParams = {
 			dataFolder,
@@ -60,6 +61,7 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 			scalingFactor,
 			startTime,
 			endTime,
+			includePreviewSkus,
 			databaseAllowList
 		};
 
@@ -105,6 +107,21 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 		}
 		catch (e) {
 			this.client.logFailedRequest(contracts.SqlMigrationStopPerfDataCollectionRequest.type, e);
+		}
+
+		return undefined;
+	}
+
+	async refreshPerfDataCollection(lastRefreshedTime: Date): Promise<mssql.RefreshPerfDataCollectionResult | undefined> {
+		let params: contracts.SqlMigrationStopPerfDataCollectionParams = {
+			lastRefreshedTime
+		};
+
+		try {
+			return this.client.sendRequest(contracts.SqlMigrationRefreshPerfDataCollectionRequest.type, params);
+		}
+		catch (e) {
+			this.client.logFailedRequest(contracts.SqlMigrationRefreshPerfDataCollectionRequest.type, e);
 		}
 
 		return undefined;
