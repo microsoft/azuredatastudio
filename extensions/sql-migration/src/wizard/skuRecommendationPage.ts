@@ -614,7 +614,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlMiRecommendationResults[0];
 
 							if (!recommendation.targetSku) {	// result returned but no SKU recommended
-								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = 'No recommendation';
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.SKU_RECOMMENDATION_NO_RECOMMENDATION;
 							}
 							else {
 								const serviceTier = recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.GeneralPurpose
@@ -637,7 +637,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						if (this.hasRecommendations()) {
 							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlVmRecommendationResults[0];
 							if (!recommendation.targetSku) {	// result returned but no SKU recommended
-								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = 'No recommendation';
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.SKU_RECOMMENDATION_NO_RECOMMENDATION;
 							}
 							else {
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.VM_CONFIGURATION_PREVIEW(recommendation.targetSku.virtualMachineSize!.sizeName, recommendation.targetSku.virtualMachineSize!.vCPUsAvailable, recommendation.targetSku.dataDiskSizes!.length, recommendation.targetSku.dataDiskSizes![0].size);
@@ -845,7 +845,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const skuTargetPercentileParameterGroup = createParameterGroup(constants.PERCENTAGE_UTILIZATION, constants.PERCENTAGE(this.migrationStateModel._skuTargetPercentile));
 		this._skuTargetPercentileText = skuTargetPercentileParameterGroup.text;
 
-		const skuEnablePreviewParameterGroup = createParameterGroup(constants.ENABLE_PREVIEW_SKU, this.migrationStateModel._skuEnablePreview.toString());
+		const skuEnablePreviewParameterGroup = createParameterGroup(constants.ENABLE_PREVIEW_SKU, this.migrationStateModel._skuEnablePreview ? constants.YES : constants.NO);
 		this._skuEnablePreviewSkuText = skuEnablePreviewParameterGroup.text;
 
 		const parametersContainer = _view.modelBuilder.flexContainer().withProps({
@@ -919,7 +919,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				await this._skuDataCollectionTimerText.updateCssStyles({ 'display': 'block' });
 				// TO-DO: update timer text here
 				const durationMins = Math.abs(new Date().getTime() - new Date(this.migrationStateModel._perfDataCollectionStartDate).getTime()) / 60000;
-				this._skuDataCollectionTimerText.value = 'Data collected for ' + durationMins + ' minutes';
+				this._skuDataCollectionTimerText.value = 'Data collected for ' + durationMins.toFixed(2) + ' minutes';
 			}
 		}
 

@@ -40,6 +40,7 @@ export const SKU_RECOMMENDATION_ALL_SUCCESSFUL = (databaseCount: number): string
 export const SKU_RECOMMENDATION_ERROR = (serverName: string): string => {
 	return localize('sql.migration.wizard.sku.error', "An error occurred while generating SKU recommendations for the server '{0}'.", serverName);
 };
+export const SKU_RECOMMENDATION_NO_RECOMMENDATION = localize('sql.migration.wizard.sku.error.noRecommendation', 'No recommendation available');
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR = (serverName: string): string => {
 	return localize('sql.migration.wizard.sku.assessment.error', "An error occurred while assessing the server '{0}'.", serverName);
 };
@@ -195,7 +196,7 @@ export const EDIT_PARAMETERS = localize('sql.migration.sku.parameters.edit', "Ed
 export const EDIT_RECOMMENDATION_PARAMETERS = localize('sql.migration.sku.parameters.edit.title', "Edit recommendation parameters");
 export const EDIT_PARAMETERS_TEXT = localize('sql.migration.sku.parameters.text', "Enter the information below to edit the recommendation parameters.");
 export const UPDATE = localize('sql.migration.sku.parameters.update', "Update");
-export const ENABLE_PREVIEW_SKU = localize('sql.migration.sku.parameters.enable.preview', "Enable preview SKU");
+export const ENABLE_PREVIEW_SKU = localize('sql.migration.sku.parameters.enable.preview', "Enable preview SKUs");
 export const SCALE_FACTOR = localize('sql.migration.sku.parameters.scale.factor', "Scale factor");
 export const INVALID_SCALE_FACTOR = localize('sql.migration.sku.parameters.scale.factor.invalid', "Invalid scale factor. Enter a positive integer value.");
 export const PERCENTAGE_UTILIZATION = localize('sql.migration.sku.parameters.percentage.utilization', "Percentage utilization");
@@ -516,6 +517,7 @@ export const DETAILS_COPIED = localize('sql.migration.details.copied', "Details 
 export const CANCEL_MIGRATION_CONFIRMATION = localize('sql.cancel.migration.confirmation', "Are you sure you want to cancel this migration?");
 export const YES = localize('sql.migration.yes', "Yes");
 export const NO = localize('sql.migration.no', "No");
+export const NA = localize('sql.migration.na', "N/A");
 export const EMPTY_TABLE_TEXT = localize('sql.migration.empty.table.text', "No backup files");
 export const EMPTY_TABLE_SUBTEXT = localize('sql.migration.empty.table.subtext', "If results were expected, verify the connection to the SQL Server instance.");
 export const MIGRATION_CUTOVER_ERROR = localize('sql.migration.cutover.error', 'An error occurred while initiating cutover.');

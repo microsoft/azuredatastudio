@@ -415,16 +415,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				this._autoRefreshPerfDataCollectionHandle = setInterval(async function () {
 					await classVariable.refreshPerfDataCollection();
 					await page.refreshDataCollectionTimerStatus();				// update timer
-
-					// TO-DO: state machine will create an ADS notification (bottom right corner)
-					// here we do a banner too - is that necessary?
-					// if (classVariable.migrationStateModel._perfDataCollectionErrors?.length > 0) {
-					// 	classVariable.wizard.message = {
-					// 		text: constants.PERF_DATA_COLLECTION_ERROR(classVariable.migrationStateModel.serverName),
-					// 		description: classVariable.migrationStateModel._perfDataCollectionErrors.join(EOL),
-					// 		level: azdata.window.MessageLevel.Error
-					// 	};
-					// }
 				}, this.refreshPerfDataCollectionFrequency);
 			}
 

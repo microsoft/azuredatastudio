@@ -437,7 +437,7 @@ export class SkuRecommendationResultsDialog {
 		const logStorageRow = createRow(constants.LOG_STORAGE_REQUIREMENT, constants.GB(instanceRequirements?.logStorageRequirementInMB! / 1024));
 		const dataIOPSRow = createRow(constants.DATA_IOPS_REQUIREMENT, constants.IOPS(instanceRequirements?.dataIOPSRequirement!));
 		const logsIOPSRow = createRow(constants.LOGS_IOPS_REQUIREMENT, constants.IOPS(instanceRequirements?.logIOPSRequirement!));
-		const ioLatencyRow = createRow(constants.IO_LATENCY_REQUIREMENT, instanceRequirements?.ioThroughputRequirementInMBps! < 5 ? 'N/A' : constants.MS(instanceRequirements?.ioLatencyRequirementInMs!));
+		const ioLatencyRow = createRow(constants.IO_LATENCY_REQUIREMENT, instanceRequirements?.ioThroughputRequirementInMBps! < 5 ? constants.NA : constants.MS(instanceRequirements?.ioLatencyRequirementInMs!));
 		const storagePropertiesTableRows: azdata.DeclarativeTableCellValue[][] = [
 			cpuRow,
 			memoryRow,
