@@ -19,6 +19,8 @@ import type * as azdata from 'azdata';
 import { isString } from 'vs/base/common/types';
 
 const CONTAINS_DISPLAY_STRING = localize("queryPlanSearchTypeContains", 'Contains');
+const EQUALS_DISPLAY_STRING = localize("queryPlanSearchTypeEquals", 'Equals');
+
 export class NodeSearchWidget extends QueryPlanWidgetBase {
 
 	private _propertyNameSelectBoxContainer: HTMLElement;
@@ -58,9 +60,9 @@ export class NodeSearchWidget extends QueryPlanWidgetBase {
 		this._searchTypeSelectBoxContainer = DOM.$('.search-widget-search-type-select-box .dropdown-container');
 		this.container.appendChild(this._searchTypeSelectBoxContainer);
 		this._searchTypeSelectBox = new SelectBox([
-			'=',
+			EQUALS_DISPLAY_STRING,
 			CONTAINS_DISPLAY_STRING
-		], '=', this.contextViewService, this._searchTypeSelectBoxContainer);
+		], EQUALS_DISPLAY_STRING, this.contextViewService, this._searchTypeSelectBoxContainer);
 		this._searchTypeSelectBox.render(this._searchTypeSelectBoxContainer);
 		attachSelectBoxStyler(this._searchTypeSelectBox, this.themeService);
 		this._searchTypeSelectBoxContainer.style.width = '100px';
@@ -126,7 +128,7 @@ export class NodeSearchWidget extends QueryPlanWidgetBase {
 				if (isString(matchingProp?.value)) {
 					// If the search type is '=' we look for exact match and for 'contains' we look search string occurance in prop value
 					if (
-						this._searchTypeSelectBox.value === '=' && matchingProp.value === this._searchTextInputBox.value ||
+						this._searchTypeSelectBox.value === EQUALS_DISPLAY_STRING && matchingProp.value === this._searchTextInputBox.value ||
 						this._searchTypeSelectBox.value === CONTAINS_DISPLAY_STRING && matchingProp.value.includes(this._searchTextInputBox.value)
 					) {
 						this._searchResults.push(currentNode.id);
