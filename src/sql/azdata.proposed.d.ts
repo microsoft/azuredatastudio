@@ -1544,7 +1544,7 @@ declare module 'azdata' {
 		/**
 		 * Flag to show/hide props in tooltip
 		 */
-		showInToolTip: boolean;
+		showInTooltip: boolean;
 		/**
 		 * Display order of property
 		 */

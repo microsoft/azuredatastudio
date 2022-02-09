@@ -247,7 +247,6 @@ export class QueryPlan2 implements ISashLayoutProvider {
 				});
 			}
 		};
-
 	}
 
 	getHorizontalSashTop(sash: Sash): number {
@@ -305,12 +304,14 @@ export class QueryPlan2 implements ISashLayoutProvider {
 	}
 
 	private populateProperties(props: azdata.ExecutionPlanGraphElementProperty[]) {
-		return props.filter(e => isString(e.value))
+		return props.filter(e => isString(e.value) && e.showInTooltip)
+			.sort(e => e.displayOrder)
 			.map(e => {
 				this.graphElementPropertiesSet.add(e.name);
 				return {
 					name: e.name,
-					value: e.value.toString().substring(0, 75)
+					value: e.value,
+					isLongString: e.isLongString
 				};
 			});
 	}
