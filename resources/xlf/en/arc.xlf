@@ -1293,7 +1293,7 @@
       <source xml:lang="en">Provide Azure enabled PostgreSQL Hyperscale server group parameters</source>
     </trans-unit>
     <trans-unit id="arc.postgres.wizard.title">
-      <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group (Preview)</source>
+      <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group</source>
     </trans-unit>
     <trans-unit id="arc.sql.connection.settings.section.title">
       <source xml:lang="en">SQL Connection information</source>
@@ -1494,7 +1494,7 @@
       <source xml:lang="en">Provide Azure SQL managed instance parameters</source>
     </trans-unit>
     <trans-unit id="arc.sql.wizard.title">
-      <source xml:lang="en">Deploy Azure SQL managed instance - Azure Arc (preview)</source>
+      <source xml:lang="en">Deploy Azure SQL managed instance - Azure Arc</source>
     </trans-unit>
     <trans-unit id="arc.storage-class.backups.label">
       <source xml:lang="en">Storage Class (Backups)</source>
@@ -1564,13 +1564,13 @@
       <source xml:lang="en">Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment</source>
     </trans-unit>
     <trans-unit id="resource.type.arc.postgres.display.name">
-      <source xml:lang="en">PostgreSQL Hyperscale server groups - Azure Arc (preview)</source>
+      <source xml:lang="en">PostgreSQL Hyperscale server groups - Azure Arc</source>
     </trans-unit>
     <trans-unit id="resource.type.arc.sql.description">
       <source xml:lang="en">Managed SQL Instance service for app developers in a customer-managed environment</source>
     </trans-unit>
     <trans-unit id="resource.type.arc.sql.display.name">
-      <source xml:lang="en">Azure SQL managed instance - Azure Arc (preview)</source>
+      <source xml:lang="en">Azure SQL managed instance - Azure Arc</source>
     </trans-unit>
     <trans-unit id="resource.type.azure.arc.description">
       <source xml:lang="en">Creates an Azure Arc data controller</source>
