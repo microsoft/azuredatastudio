@@ -38,6 +38,7 @@ import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { AddCellEdit, CellOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, CellOutputDataEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
+import { DotnetInteractiveLabel } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -1351,6 +1352,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName || displayName.startsWith(kernel.displayName));
 			if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
+				// Special case .NET Interactive kernel name
+				if (this._savedKernelInfo.display_name === DotnetInteractiveLabel) {
+					this._savedKernelInfo.oldName = this._savedKernelInfo.name;
+				}
+
 				this._savedKernelInfo.name = standardKernel.name;
 				this._savedKernelInfo.display_name = standardKernel.displayName;
 			}
@@ -1437,7 +1443,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					name: kernel.name,
 					display_name: spec.display_name,
 					language: spec.language,
-					supportedLanguages: spec.supportedLanguages
+					supportedLanguages: spec.supportedLanguages,
+					oldName: spec.oldName,
+					oldDisplayName: spec.oldDisplayName
 				};
 				this.clientSession?.configureKernel(this._savedKernelInfo);
 			} catch (err) {
@@ -1566,6 +1574,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		delete metadata.kernelspec?.supportedLanguages;
 
 		// Undo special casing for .NET Interactive
+		if (metadata.kernelspec?.oldName) {
+			metadata.kernelspec.name = metadata.kernelspec.oldName;
+			delete metadata.kernelspec.oldName;
+		}
 		if (metadata.kernelspec?.oldDisplayName) {
 			metadata.kernelspec.display_name = metadata.kernelspec.oldDisplayName;
 			delete metadata.kernelspec.oldDisplayName;

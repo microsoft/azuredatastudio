@@ -36,6 +36,7 @@ declare module 'azdata' {
 
 		export interface IKernelSpec {
 			supportedLanguages?: string[];
+			oldName?: string;
 			oldDisplayName?: string;
 		}
 
