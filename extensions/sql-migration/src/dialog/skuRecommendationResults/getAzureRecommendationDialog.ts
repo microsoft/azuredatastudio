@@ -20,7 +20,7 @@ export class GetAzureRecommendationDialog {
 
 	private _disposables: vscode.Disposable[] = [];
 
-	private _skuRecommendationPerformanceDataSource!: PerformanceDataSourceOptions;
+	private _performanceDataSource!: PerformanceDataSourceOptions;
 
 	private _collectDataContainer!: azdata.FlexContainer;
 	private _collectDataFolderInput!: azdata.InputBoxComponent;
@@ -29,7 +29,7 @@ export class GetAzureRecommendationDialog {
 	private _openExistingFolderInput!: azdata.InputBoxComponent;
 
 	constructor(public skuRecommendationPage: SKURecommendationPage, public migrationStateModel: MigrationStateModel) {
-		this._skuRecommendationPerformanceDataSource = PerformanceDataSourceOptions.CollectData;
+		this._performanceDataSource = PerformanceDataSourceOptions.CollectData;
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
@@ -112,7 +112,7 @@ export class GetAzureRecommendationDialog {
 					...styles.BODY_CSS,
 					'margin': '0'
 				},
-				checked: this._skuRecommendationPerformanceDataSource === PerformanceDataSourceOptions.CollectData,
+				checked: this._performanceDataSource === PerformanceDataSourceOptions.CollectData,
 			}).component();
 		this._disposables.push(collectDataButton.onDidChangeCheckedState(async (e) => {
 			if (e) {
@@ -179,7 +179,7 @@ export class GetAzureRecommendationDialog {
 		}).component();
 
 		this._collectDataFolderInput = _view.modelBuilder.inputBox().withProps({
-			required: this._skuRecommendationPerformanceDataSource === PerformanceDataSourceOptions.CollectData,
+			required: this._performanceDataSource === PerformanceDataSourceOptions.CollectData,
 			placeHolder: constants.FOLDER_NAME,
 			CSSStyles: {
 				'margin-right': '12px'
@@ -241,7 +241,7 @@ export class GetAzureRecommendationDialog {
 		}).component();
 
 		this._openExistingFolderInput = _view.modelBuilder.inputBox().withProps({
-			required: this._skuRecommendationPerformanceDataSource === PerformanceDataSourceOptions.OpenExisting,
+			required: this._performanceDataSource === PerformanceDataSourceOptions.OpenExisting,
 			placeHolder: constants.FOLDER_NAME,
 			CSSStyles: {
 				'margin-right': '12px'
@@ -251,7 +251,6 @@ export class GetAzureRecommendationDialog {
 		}).component();
 		this._disposables.push(this._openExistingFolderInput.onTextChanged(async (value) => {
 			this.migrationStateModel._skuRecommendationPerformanceLocation = value.trim();
-			console.log('this.migrationStateModel._skuRecommendationPerformanceLocation', this.migrationStateModel._skuRecommendationPerformanceLocation);
 		}));
 
 		const openButton = _view.modelBuilder.button().withProps({
@@ -280,7 +279,7 @@ export class GetAzureRecommendationDialog {
 	}
 
 	private async switchDataSourceContainerFields(containerType: PerformanceDataSourceOptions): Promise<void> {
-		this._skuRecommendationPerformanceDataSource = containerType;
+		this._performanceDataSource = containerType;
 		await this._collectDataContainer.updateCssStyles({ 'display': (containerType === PerformanceDataSourceOptions.CollectData) ? 'inline' : 'none' });
 		await this._openExistingContainer.updateCssStyles({ 'display': (containerType === PerformanceDataSourceOptions.OpenExisting) ? 'inline' : 'none' });
 		this._collectDataFolderInput.required = containerType === PerformanceDataSourceOptions.CollectData;
@@ -306,9 +305,9 @@ export class GetAzureRecommendationDialog {
 
 	protected async execute() {
 		this._isOpen = false;
-		console.log('Start button');
 
-		switch (this._skuRecommendationPerformanceDataSource) {
+		this.migrationStateModel._skuRecommendationPerformanceDataSource = this._performanceDataSource;
+		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
 			case PerformanceDataSourceOptions.CollectData: {
 				// start data collection entry point
 				// TO-DO: expose the rest of these in the UI
@@ -350,7 +349,7 @@ export class GetAzureRecommendationDialog {
 			}
 		}
 
-		await this.skuRecommendationPage.refreshDataCollectionStatus();
+		await this.skuRecommendationPage.refreshSkuRecommendationComponents();
 	}
 
 	public get isOpen(): boolean {

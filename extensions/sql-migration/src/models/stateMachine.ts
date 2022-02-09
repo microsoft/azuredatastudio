@@ -187,6 +187,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public mementoString: string;
 
 	public _skuRecommendationResults!: SkuRecommendation;
+	public _skuRecommendationPerformanceDataSource!: PerformanceDataSourceOptions;
 	private _skuRecommendationApiResponse!: mssql.SkuRecommendationResult;
 	public _skuRecommendationPerformanceLocation!: string;
 	private _startPerfDataCollectionApiResponse!: mssql.StartPerfDataCollectionResult;

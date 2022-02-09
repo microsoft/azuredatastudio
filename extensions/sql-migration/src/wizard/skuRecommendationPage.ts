@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, MigrationTargetType, Page, ServerAssessment, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType, Page, PerformanceDataSourceOptions, ServerAssessment, StateChangeEvent } from '../models/stateMachine';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
 import { SkuRecommendationResultsDialog } from '../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
 import { GetAzureRecommendationDialog } from '../dialog/skuRecommendationResults/getAzureRecommendationDialog';
@@ -45,12 +45,17 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _viewAssessmentsHelperText!: azdata.TextComponent;
 	private _databaseSelectedHelperText!: azdata.TextComponent;
 
+	private _skuGetRecommendationContainer!: azdata.FlexContainer;
+	private _azureRecommendationInfoText!: azdata.TextComponent;
 	private _getAzureRecommendationButton!: azdata.ButtonComponent;
-	private _azureRecommendationsButtonContainer!: azdata.FlexContainer;
-	private _refreshAzureRecommendationButton!: azdata.ButtonComponent;
-	private _stopPerformanceCollectionButton!: azdata.ButtonComponent;
+
+	private _skuDataCollectionStatusContainer!: azdata.FlexContainer;
 	private _skuDataCollectionStatusText!: azdata.TextComponent;
 	private _skuDataCollectionTimerText!: azdata.TextComponent;
+
+	private _skuStopRefreshButtonContainer!: azdata.FlexContainer;
+	private _refreshAzureRecommendationButton!: azdata.ButtonComponent;
+	private _stopDataCollectionButton!: azdata.ButtonComponent;
 
 	private _skuEditParametersContainer!: azdata.FlexContainer;
 	private _skuScaleFactorText!: azdata.TextComponent;
@@ -504,7 +509,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}
 
-		await this.refreshCardText();
+		await this.refreshSkuRecommendationComponents();
 		await this._setAssessmentState(false, this.migrationStateModel._runAssessments);
 	}
 
@@ -709,23 +714,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		this._skuDataCollectionStatusText = _view.modelBuilder.text().withProps({
+
+		this._azureRecommendationInfoText = _view.modelBuilder.text().withProps({
 			value: constants.AZURE_RECOMMENDATION_STATUS_NOT_ENABLED,
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin': '0 0 8px'
 			}
 		}).component();
-
-		this._skuDataCollectionTimerText = _view.modelBuilder.text().withProps({
-			value: '',
-			CSSStyles: {
-				...styles.LIGHT_LABEL_CSS,
-				'margin': '0 0 8px',
-				'display': 'none'
-			}
-		}).component();
-
 		this._getAzureRecommendationButton = this._view.modelBuilder.button().withProps({
 			label: constants.GET_AZURE_RECOMMENDATION,
 			width: 180,
@@ -737,10 +733,54 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const getAzureRecommendationDialog = new GetAzureRecommendationDialog(this, this.migrationStateModel);
 		this._disposables.push(this._getAzureRecommendationButton.onDidClick(async (e) => {
 			await getAzureRecommendationDialog.openDialog();
-			await this.refreshDataCollectionStatus();
 		}));
 
-		this._stopPerformanceCollectionButton = this._view.modelBuilder.button().withProps({
+		this._skuGetRecommendationContainer = _view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'flex-direction': 'column',
+			}
+		}).component();
+		this._skuGetRecommendationContainer.addItems([
+			this._azureRecommendationInfoText,
+			this._getAzureRecommendationButton,
+		]);
+
+		this._skuDataCollectionStatusContainer = this.createPerformanceCollectionStatusContainer(_view);
+		this._skuEditParametersContainer = this.createSkuEditParameters(_view);
+		container.addItems([
+			recommendationSection,
+			this._skuDataCollectionStatusContainer,
+			this._skuGetRecommendationContainer,
+			this._skuEditParametersContainer,
+		]);
+		return container;
+	}
+
+	private createPerformanceCollectionStatusContainer(_view: azdata.ModelView): azdata.FlexContainer {
+		const container = _view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'flex-direction': 'column',
+				'display': this.performanceCollectionNotStarted() ? 'none' : 'block',
+			}
+		}).component();
+
+		this._skuDataCollectionStatusText = _view.modelBuilder.text().withProps({
+			value: '',
+			CSSStyles: {
+				...styles.BODY_CSS,
+				'margin': '0 0 8px'
+			}
+		}).component();
+
+		this._skuDataCollectionTimerText = _view.modelBuilder.text().withProps({
+			value: '',
+			CSSStyles: {
+				...styles.LIGHT_LABEL_CSS,
+				'margin': '0 0 8px',
+			}
+		}).component();
+
+		this._stopDataCollectionButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.cancel,
 			label: constants.STOP_PERFORMANCE_COLLECTION,
 			width: 120,
@@ -750,9 +790,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				'margin': '0 0 8px 0',
 			}
 		}).component();
-		this._disposables.push(this._stopPerformanceCollectionButton.onDidClick(async (e) => {
+		this._disposables.push(this._stopDataCollectionButton.onDidClick(async (e) => {
 			// TO-DO: should we allow user to restart performance collection?
 			await this.migrationStateModel.stopPerfDataCollection();
+			await this.refreshSkuRecommendationComponents();
 		}));
 
 		this._refreshAzureRecommendationButton = this._view.modelBuilder.button().withProps({
@@ -766,30 +807,25 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 		this._disposables.push(this._refreshAzureRecommendationButton.onDidClick(async (e) => {
-			await this.refreshDataCollectionStatus();
+			await this.refreshSkuRecommendationComponents();
 		}));
 
-		this._azureRecommendationsButtonContainer = _view.modelBuilder.flexContainer()
+		this._skuStopRefreshButtonContainer = _view.modelBuilder.flexContainer()
 			.withProps({
 				CSSStyles: {
 					'flex-direction': 'row',
 					'width': 'fit-content',
-					'display': this.performanceCollectionNotStarted() ? 'none' : 'flex',
 				}
 			}).component();
-		this._azureRecommendationsButtonContainer.addItems([
-			this._stopPerformanceCollectionButton,
+		this._skuStopRefreshButtonContainer.addItems([
+			this._stopDataCollectionButton,
 			this._refreshAzureRecommendationButton,
 		]);
 
-		this._skuEditParametersContainer = this.createSkuEditParameters(_view);
 		container.addItems([
-			recommendationSection,
-			this._azureRecommendationsButtonContainer,
+			this._skuStopRefreshButtonContainer,
 			this._skuDataCollectionStatusText,
 			this._skuDataCollectionTimerText,
-			this._getAzureRecommendationButton,
-			this._skuEditParametersContainer,
 		]);
 		return container;
 	}
@@ -798,6 +834,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const container = _view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'flex-direction': 'column',
+				'display': this.performanceCollectionNotStarted() ? 'none' : 'block',
 			}
 		}).component();
 		const recommendationParametersSection = _view.modelBuilder.text().withProps({
@@ -822,7 +859,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		let skuEditParametersDialog = new SkuEditParametersDialog(this, this.migrationStateModel);
 		this._disposables.push(editParametersButton.onDidClick(async () => {
 			await skuEditParametersDialog.openDialog();
-			await this.refreshDataCollectionStatus();
+			await this.refreshSkuRecommendationComponents();
 		}));
 
 		const createParameterGroup = (label: string, value: string): {
@@ -921,42 +958,63 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._skuTargetPercentileText.value = constants.PERCENTAGE(this.migrationStateModel._skuTargetPercentile);
 		this._skuEnablePreviewSkuText.value = this.migrationStateModel._skuEnablePreview.toString();
 		await this.getSkuRecommendations();
-		await this.refreshDataCollectionStatus();
+		await this.refreshSkuRecommendationComponents();
 	}
 
-	public async refreshDataCollectionStatus(): Promise<void> {
+	public async refreshSkuRecommendationComponents(): Promise<void> {
 		// TO-DO: call function based on timer
-		console.log('refreshDataCollectionStatus');
+		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
+			case PerformanceDataSourceOptions.CollectData: {
+				if (this.performanceCollectionInProgress()) {
+					this._stopDataCollectionButton.enabled = true;
+					this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_IN_PROGRESS;
 
-		// TO-DO: update text when initial timer starts
-		this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_IN_PROGRESS;
+					// TO-DO: update timer text here
+					const durationMins = Math.abs(new Date().getTime() - new Date(this.migrationStateModel._perfDataCollectionStartDate).getTime()) / 60000;
+					this._skuDataCollectionTimerText.value = 'Data collected for ' + durationMins + ' minutes';
 
-		if (this.hasRecommendations()) {
-			this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_REFINING;
-		}
+					await this._skuGetRecommendationContainer.updateCssStyles({ 'display': 'none' });
+					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'block' });
+					await this._skuEditParametersContainer.updateCssStyles({ 'display': 'block' });
+				}
 
-		if (this.performanceCollectionNotStarted()) {
-			await this._getAzureRecommendationButton.updateCssStyles({ 'display': 'block' });
-			await this._azureRecommendationsButtonContainer.updateCssStyles({ 'display': 'none' });
-			await this._skuDataCollectionTimerText.updateCssStyles({ 'display': 'none' });
-		}
+				else if (this.performanceCollectionStopped()) {
+					this._stopDataCollectionButton.enabled = false;
+					this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_STOPPED;
 
-		if (this.performanceCollectionInProgress()) {
-			this._stopPerformanceCollectionButton.enabled = true;
-			await this._getAzureRecommendationButton.updateCssStyles({ 'display': 'none' });
-			await this._azureRecommendationsButtonContainer.updateCssStyles({ 'display': 'flex' });
-			await this._skuDataCollectionTimerText.updateCssStyles({ 'display': 'block' });
+					await this._skuGetRecommendationContainer.updateCssStyles({ 'display': 'none' });
+					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'block' });
+					await this._skuEditParametersContainer.updateCssStyles({ 'display': 'block' });
+				}
 
-			// TO-DO: update timer text here
-			const durationMins = Math.abs(new Date().getTime() - new Date(this.migrationStateModel._perfDataCollectionStartDate).getTime()) / 60000;
-			this._skuDataCollectionTimerText.value = 'Data collected for ' + durationMins + ' minutes';
-		}
+				if (this.hasRecommendations()) {
+					this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_REFINING;
+				}
+				break;
+			}
 
-		if (this.performanceCollectionStopped()) {
-			this._stopPerformanceCollectionButton.enabled = false;
-			await this._getAzureRecommendationButton.updateCssStyles({ 'display': 'none' });
-			await this._azureRecommendationsButtonContainer.updateCssStyles({ 'display': 'flex' });
-			await this._skuDataCollectionTimerText.updateCssStyles({ 'display': 'block' });
+			case PerformanceDataSourceOptions.OpenExisting: {
+				if (this.hasRecommendations()) {
+					this._azureRecommendationInfoText.value = constants.AZURE_RECOMMENDATION_STATUS_DATA_IMPORTED;
+					this._getAzureRecommendationButton.label = constants.GET_AZURE_RECOMMENDATION_AGAIN;
+					this._getAzureRecommendationButton.width = 200;
+
+					await this._skuGetRecommendationContainer.updateCssStyles({ 'display': 'block' });
+					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'none' });
+					await this._skuEditParametersContainer.updateCssStyles({ 'display': 'block' });
+				}
+				break;
+			}
+
+			// initial state before "Get Azure recommendation" dialog
+			default: {
+				if (this.performanceCollectionNotStarted()) {
+					await this._skuGetRecommendationContainer.updateCssStyles({ 'display': 'block' });
+					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'none' });
+					await this._skuEditParametersContainer.updateCssStyles({ 'display': 'none' });
+				}
+				break;
+			}
 		}
 
 		await this.refreshCardText();
