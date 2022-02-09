@@ -163,6 +163,13 @@ suite('Notebook Serializer', () => {
 			}],
 			executionSummary: {
 				executionOrder: 1
+			},
+			metadata: {
+				custom: {
+					metadata: {
+						language: 'python'
+					}
+				}
 			}
 		}, {
 			kind: NotebookCellKind.Code,
@@ -178,6 +185,13 @@ suite('Notebook Serializer', () => {
 			}],
 			executionSummary: {
 				executionOrder: 2
+			},
+			metadata: {
+				custom: {
+					metadata: {
+						language: 'python'
+					}
+				}
 			}
 		}],
 		metadata: {
@@ -353,7 +367,10 @@ suite('Notebook Serializer', () => {
 		cells: [{
 			contents: {
 				cell_type: 'code',
-				source: '1+1'
+				source: '1+1',
+				metadata: {
+					language: 'python'
+				}
 			}
 		}, {
 			contents: {
