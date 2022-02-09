@@ -37,7 +37,10 @@ export function ASSESSMENT_IN_PROGRESS_CONTENT(dbName: string) {
 export const SKU_RECOMMENDATION_ALL_SUCCESSFUL = (databaseCount: number): string => {
 	return localize('sql.migration.wizard.sku.all', "Based on the assessment results, all {0} of your databases in an online state can be migrated to Azure SQL.", databaseCount);
 };
-export const SKU_RECOMMENDATION_ERROR = localize('sql.migration.wizard.sku.error', "An error occurred while assessing your databases.");
+export const SKU_RECOMMENDATION_ERROR = (serverName: string): string => {
+	return localize('sql.migration.wizard.sku.error', "An error occurred while generating SKU recommendations for the server '{0}'.", serverName);
+};
+export const SKU_RECOMMENDATION_NO_RECOMMENDATION = localize('sql.migration.wizard.sku.error.noRecommendation', 'No recommendation available');
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR = (serverName: string): string => {
 	return localize('sql.migration.wizard.sku.assessment.error', "An error occurred while assessing the server '{0}'.", serverName);
 };
@@ -49,6 +52,9 @@ export const SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR = (serverName: strin
 		error.message,
 		error.stack,
 		EOL);
+};
+export const PERF_DATA_COLLECTION_ERROR = (serverName: string): string => {
+	return localize('sql.migration.wizard.perfCollection.error', "An error occurred while collecting performance data for the server '{0}'.", serverName);
 };
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_BYPASS = localize('sql.migration.wizard.sku.assessment.error.bypass', 'Check this option to skip assessment and continue the migration.');
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_DETAIL = localize('sql.migration.wizard.sku.assessment.error.detail', '[There are no assessment results to validate readiness of your database migration. By checking this box, you acknowledge you want to proceed migrating your database to the desired Azure SQL target.]',);
@@ -163,24 +169,26 @@ export const CACHING_NONE = localize('sql.migration.sku.targetStorageConfigurati
 export const CACHING_READ_ONLY = localize('sql.migration.sku.targetStorageConfiguration.caching.readOnly', "Read-only");
 export const CACHING_READ_WRITE = localize('sql.migration.sku.targetStorageConfiguration.caching.readWrite', "Read/write");
 
-export const STORAGE_PROPERTIES = localize('sql.migration.sku.storage.properties', "Storage properties");
 export const DIMENSION = localize('sql.migration.sku.storage.dimension', "Dimension");
-export const RECOMMENDED_VALUE = localize('sql.migration.sku.recommended.value', "Recommended value");
+export const VALUE = localize('sql.migration.sku.recommended.value', "Value");
 export const CPU_REQUIREMENT = localize('sql.migration.sku.cpu.requirement', "CPU requirement");
-export function CPU_CORES(cpu: number): string {
-	return localize('sql.migration.sku.cpu', "{0} cores", cpu);
-}
 export const MEMORY_REQUIREMENT = localize('sql.migration.sku.memory.requirement', "Memory requirement");
 export const DATA_STORAGE_REQUIREMENT = localize('sql.migration.sku.data.storage.requirement', "Data storage requirement");
 export const LOG_STORAGE_REQUIREMENT = localize('sql.migration.sku.log.storage.requirement', "Log storage requirement");
 export const DATA_IOPS_REQUIREMENT = localize('sql.migration.sku.data.iops.requirement', "Data IOPS requirement");
 export const LOGS_IOPS_REQUIREMENT = localize('sql.migration.sku.logs.iops.requirement', "Logs IOPS requirement");
-export const IO_LATENCY_REQUIREMENT = localize('sql.migration.sku.io.memory.requirement', "IO Latency requirement");
+export const IO_LATENCY_REQUIREMENT = localize('sql.migration.sku.io.memory.requirement', "IO latency requirement");
+export function CPU_CORES(cpu: number): string {
+	return localize('sql.migration.sku.cpu', "{0} cores", cpu.toFixed(2));
+}
+export function GB(gb: number): string {
+	return localize('sql.migration.sku.gb', "{0} GB", gb.toFixed(2));
+}
 export function IOPS(iops: number): string {
-	return localize('sql.migration.sku.iops', "{0} IOPS", iops);
+	return localize('sql.migration.sku.iops', "{0} IOPS", iops.toFixed(2));
 }
 export function MS(ms: number): string {
-	return localize('sql.migration.sku.ms', "{0} ms", ms);
+	return localize('sql.migration.sku.ms', "{0} ms", ms.toFixed(2));
 }
 
 export const RECOMMENDATION_PARAMETERS = localize('sql.migration.sku.parameters', "Recommendation parameters");
@@ -188,7 +196,7 @@ export const EDIT_PARAMETERS = localize('sql.migration.sku.parameters.edit', "Ed
 export const EDIT_RECOMMENDATION_PARAMETERS = localize('sql.migration.sku.parameters.edit.title', "Edit recommendation parameters");
 export const EDIT_PARAMETERS_TEXT = localize('sql.migration.sku.parameters.text', "Enter the information below to edit the recommendation parameters.");
 export const UPDATE = localize('sql.migration.sku.parameters.update', "Update");
-export const ENABLE_PREVIEW_SKU = localize('sql.migration.sku.parameters.enable.preview', "Enable preview SKU");
+export const ENABLE_PREVIEW_SKU = localize('sql.migration.sku.parameters.enable.preview', "Enable preview SKUs");
 export const SCALE_FACTOR = localize('sql.migration.sku.parameters.scale.factor', "Scale factor");
 export const INVALID_SCALE_FACTOR = localize('sql.migration.sku.parameters.scale.factor.invalid', "Invalid scale factor. Enter a positive integer value.");
 export const PERCENTAGE_UTILIZATION = localize('sql.migration.sku.parameters.percentage.utilization', "Percentage utilization");
@@ -509,6 +517,7 @@ export const DETAILS_COPIED = localize('sql.migration.details.copied', "Details 
 export const CANCEL_MIGRATION_CONFIRMATION = localize('sql.cancel.migration.confirmation', "Are you sure you want to cancel this migration?");
 export const YES = localize('sql.migration.yes', "Yes");
 export const NO = localize('sql.migration.no', "No");
+export const NA = localize('sql.migration.na', "N/A");
 export const EMPTY_TABLE_TEXT = localize('sql.migration.empty.table.text', "No backup files");
 export const EMPTY_TABLE_SUBTEXT = localize('sql.migration.empty.table.subtext', "If results were expected, verify the connection to the SQL Server instance.");
 export const MIGRATION_CUTOVER_ERROR = localize('sql.migration.cutover.error', 'An error occurred while initiating cutover.');

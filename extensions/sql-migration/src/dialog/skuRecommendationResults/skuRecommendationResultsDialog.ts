@@ -380,7 +380,7 @@ export class SkuRecommendationResultsDialog {
 		}
 
 		const storagePropertiesSection = _view.modelBuilder.text().withProps({
-			value: constants.STORAGE_PROPERTIES,
+			value: constants.SOURCE_PROPERTIES,
 			CSSStyles: {
 				...styles.SECTION_HEADER_CSS,
 				'margin-top': '12px'
@@ -416,7 +416,7 @@ export class SkuRecommendationResultsDialog {
 			},
 			{
 				valueType: azdata.DeclarativeDataType.string,
-				displayName: constants.RECOMMENDED_VALUE,
+				displayName: constants.VALUE,
 				isReadOnly: true,
 				width: columnWidth,
 				rowCssStyles: rowCssStyle,
@@ -432,12 +432,12 @@ export class SkuRecommendationResultsDialog {
 			return row;
 		};
 		const cpuRow = createRow(constants.CPU_REQUIREMENT, constants.CPU_CORES(instanceRequirements?.cpuRequirementInCores!));
-		const memoryRow = createRow(constants.MEMORY_REQUIREMENT, constants.STORAGE_GB(instanceRequirements?.memoryRequirementInMB! / 1024));
-		const dataStorageRow = createRow(constants.DATA_STORAGE_REQUIREMENT, constants.STORAGE_GB(instanceRequirements?.dataStorageRequirementInMB! / 1024));
-		const logStorageRow = createRow(constants.LOG_STORAGE_REQUIREMENT, constants.STORAGE_GB(instanceRequirements?.logStorageRequirementInMB! / 1024));
+		const memoryRow = createRow(constants.MEMORY_REQUIREMENT, constants.GB(instanceRequirements?.memoryRequirementInMB! / 1024));
+		const dataStorageRow = createRow(constants.DATA_STORAGE_REQUIREMENT, constants.GB(instanceRequirements?.dataStorageRequirementInMB! / 1024));
+		const logStorageRow = createRow(constants.LOG_STORAGE_REQUIREMENT, constants.GB(instanceRequirements?.logStorageRequirementInMB! / 1024));
 		const dataIOPSRow = createRow(constants.DATA_IOPS_REQUIREMENT, constants.IOPS(instanceRequirements?.dataIOPSRequirement!));
 		const logsIOPSRow = createRow(constants.LOGS_IOPS_REQUIREMENT, constants.IOPS(instanceRequirements?.logIOPSRequirement!));
-		const ioLatencyRow = createRow(constants.IO_LATENCY_REQUIREMENT, constants.MS(instanceRequirements?.ioLatencyRequirementInMs!));
+		const ioLatencyRow = createRow(constants.IO_LATENCY_REQUIREMENT, instanceRequirements?.ioThroughputRequirementInMBps! < 5 ? constants.NA : constants.MS(instanceRequirements?.ioLatencyRequirementInMs!));
 		const storagePropertiesTableRows: azdata.DeclarativeTableCellValue[][] = [
 			cpuRow,
 			memoryRow,
