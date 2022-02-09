@@ -208,7 +208,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 									connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, true, false);
 								}
 							}
-							// set connection string to not include the password if connection info does not include password, or user choses to not include password, or authentication type is not sql login
+							// set connection string to not include the password if connection info does not include password, or user chooses to not include password, or authentication type is not sql login
 							if (includePassword !== constants.yesString) {
 								connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, false, false);
 							}
@@ -234,7 +234,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 									validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
 								});
 								if (userPassword) {
-									// if user enters password replace password placeholder with users enter password
+									// if user enters password replace password placeholder with user entered password
 									connectionString = connectionString.replace(constants.passwordPlaceholder, userPassword);
 								}
 							}
