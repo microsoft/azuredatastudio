@@ -1495,6 +1495,10 @@ declare module 'azdata' {
 		 * Edges corresponding to the children.
 		 */
 		edges: ExecutionPlanEdge[];
+		/**
+		 * Unique internal id given to graph node by ADS.
+		 */
+		id?: string;
 	}
 
 	export interface ExecutionPlanEdge {
@@ -1510,6 +1514,10 @@ declare module 'azdata' {
 		 * Edge properties to be shown in the tooltip.
 		 */
 		properties: ExecutionPlanGraphElementProperty[]
+		/**
+		 * Unique internal id given to graph edge by ADS.
+		 */
+		id?: string;
 	}
 
 	export interface ExecutionPlanGraphElementProperty {
