@@ -97,6 +97,7 @@ import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/ext
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
 import { IdGenerator } from 'vs/base/common/idGenerator';
+import { convertToADSNotebookContents } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -890,18 +891,21 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				return extHostNotebookDocumentsAndEditors.getAllDocuments().map(doc => new VSCodeNotebookDocument(doc.document));
 			},
 			async openNotebookDocument(uriOrType?: URI | string, content?: vscode.NotebookData): Promise<vscode.NotebookDocument> {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// let uri: URI;
-				// if (URI.isUri(uriOrType)) {
-				// 	uri = uriOrType;
-				// 	await extHostNotebook.openNotebookDocument(uriOrType);
-				// } else if (typeof uriOrType === 'string') {
-				// 	uri = URI.revive(await extHostNotebook.createNotebookDocument({ viewType: uriOrType, content }));
-				// } else {
-				// 	throw new Error('Invalid arguments');
-				// }
-				// return extHostNotebook.getNotebookDocument(uri).apiNotebook;
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				let uri: URI;
+				if (URI.isUri(uriOrType)) {
+					uri = uriOrType;
+					await extHostNotebookDocumentsAndEditors.openNotebookDocument(uriOrType);
+				} else if (typeof uriOrType === 'string') {
+					uri = URI.revive(await extHostNotebookDocumentsAndEditors.createNotebookDocument(uriOrType, convertToADSNotebookContents(content)));
+				} else {
+					throw new Error('Invalid arguments');
+				}
+				let doc = extHostNotebookDocumentsAndEditors.getDocument(uri.toString())?.document;
+				if (!doc) {
+					throw new Error(`Failed to create notebook document.`);
+				}
+				return new VSCodeNotebookDocument(doc);
 			},
 			get onDidOpenNotebookDocument(): Event<vscode.NotebookDocument> {
 				// {{SQL CARBON EDIT}} Use our own notebooks

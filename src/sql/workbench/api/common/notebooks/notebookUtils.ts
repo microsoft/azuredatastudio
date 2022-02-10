@@ -88,7 +88,7 @@ export function convertToVSCodeCellOutput(output: azdata.nb.ICellOutput): vscode
 
 export function convertToADSNotebookContents(notebookData: vscode.NotebookData): azdata.nb.INotebookContents {
 	let result = {
-		cells: notebookData.cells?.map<azdata.nb.ICellContents>(cell => {
+		cells: notebookData?.cells?.map<azdata.nb.ICellContents>(cell => {
 			let executionOrder = cell.executionSummary?.executionOrder;
 			let convertedCell: azdata.nb.ICellContents = {
 				cell_type: cell.kind === NotebookCellKind.Code ? 'code' : 'markdown',
@@ -102,9 +102,9 @@ export function convertToADSNotebookContents(notebookData: vscode.NotebookData):
 			}
 			return convertedCell;
 		}),
-		metadata: notebookData.metadata?.custom?.metadata ?? {},
-		nbformat: notebookData.metadata?.custom?.nbformat ?? NBFORMAT,
-		nbformat_minor: notebookData.metadata?.custom?.nbformat_minor ?? NBFORMAT_MINOR
+		metadata: notebookData?.metadata?.custom?.metadata ?? {},
+		nbformat: notebookData?.metadata?.custom?.nbformat ?? NBFORMAT,
+		nbformat_minor: notebookData?.metadata?.custom?.nbformat_minor ?? NBFORMAT_MINOR
 	};
 	return result;
 }

@@ -342,6 +342,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 	}
 
+	async $tryCreateNotebookDocument(options: INotebookShowOptions): Promise<UriComponents> {
+		let input = await this._notebookService.createNotebookInput(options);
+		return input?.resource;
+	}
+
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
 		return Promise.resolve(this.doOpenEditor(resource, options));
 	}

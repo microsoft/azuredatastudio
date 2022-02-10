@@ -248,13 +248,20 @@ export class NotebookService extends Disposable implements INotebookService {
 		lifecycleService.onWillShutdown(() => this.shutdown());
 	}
 
-	public async openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined> {
-		const uri = URI.revive(resource);
-
-		const editorOptions: ITextEditorOptions = {
-			preserveFocus: options.preserveFocus,
-			pinned: !options.preview
-		};
+	public async createNotebookInput(options: INotebookShowOptions, resource?: UriComponents): Promise<IEditorInput | undefined> {
+		let uri: URI;
+		if (resource) {
+			uri = URI.revive(resource);
+		} else {
+			// Need to create a new untitled URI, so find the lowest numbered one that's available
+			let untitledEditorURIs = this.listNotebookEditors().filter(editor => editor.notebookParams.notebookUri.scheme === Schemas.untitled).map(editor => editor.notebookParams.notebookUri);
+			let untitledUriSet = new Set(untitledEditorURIs);
+			let counter = 1;
+			do {
+				uri = URI.from({ scheme: Schemas.untitled, path: `Untitled-${counter}` });
+				counter++;
+			} while (untitledUriSet.has(uri));
+		}
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
 		let fileInput: IEditorInput;
@@ -269,6 +276,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: 'notebook' });
 			}
 		}
+
 		// We only need to get the Notebook language association as such we only need to use ipynb
 		const inputCreator = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
 		if (inputCreator) {
@@ -286,7 +294,17 @@ export class NotebookService extends Disposable implements INotebookService {
 				}
 			}
 		}
-		return await this._editorService.openEditor(fileInput, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
+
+		return fileInput;
+	}
+
+	public async openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined> {
+		const editorOptions: ITextEditorOptions = {
+			preserveFocus: options.preserveFocus,
+			pinned: !options.preview
+		};
+		let input = await this.createNotebookInput(options, resource);
+		return await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
 	}
 
 	/**

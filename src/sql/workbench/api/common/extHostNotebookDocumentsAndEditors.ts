@@ -220,6 +220,25 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	//#endregion
 
 	//#region Extension accessible methods
+	async createNotebookDocument(providerId: string, contents?: azdata.nb.INotebookContents): Promise<URI> {
+		let options: INotebookShowOptions = {};
+		if (contents) {
+			options.providerId = providerId;
+			options.initialContent = JSON.stringify(contents);
+		}
+		let uri = await this._proxy.$tryCreateNotebookDocument(options);
+		if (uri) {
+			return URI.revive(uri);
+		} else {
+			throw new Error(`Failed to create notebook document ${uri.toString()}.`);
+		}
+	}
+
+	async openNotebookDocument(uri: vscode.Uri): Promise<azdata.nb.NotebookDocument> {
+		let docData = this._documents.get(uri.toString());
+		return docData?.document;
+	}
+
 	showNotebookDocument(uri: vscode.Uri, showOptions: azdata.nb.NotebookShowOptions): Thenable<azdata.nb.NotebookEditor> {
 		return this.doShowNotebookDocument(uri, showOptions);
 	}
@@ -288,10 +307,6 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		return new Disposable(() => {
 			this._adapters.delete(handle);
 		});
-	}
-
-	openNotebookDocument(providerId: string, contents: azdata.nb.INotebookContents): Promise<azdata.nb.NotebookDocument> {
-		return this._proxy.$openNotebookDocument(providerId, contents);
 	}
 	//#endregion
 }
