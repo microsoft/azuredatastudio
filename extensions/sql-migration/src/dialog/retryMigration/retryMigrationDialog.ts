@@ -42,6 +42,10 @@ export class RetryMigrationDialog {
 			databaseList: [sourceDatabaseName],
 			migrationDatabases: [],
 			serverAssessment: null,
+			skuRecommendationPerformanceDataSource: null,
+			skuRecommendationPerformanceLocation: null,
+			perfDataCollectionStartDate: undefined,
+			perfDataCollectionStopDate: undefined,
 
 			migrationTargetType: getMigrationTargetTypeEnum(migration)!,
 			subscription: migration.subscription,
