@@ -387,10 +387,93 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				},
 				recommendationError: error
 			};
-		}
+		}		// Generating all the telemetry asynchronously as we don't need to block the user for it.
+		this.generateSkuRecommendationTelemetry().catch(e => console.error(e));
 
-		// this.generateAssessmentTelemetry().catch(e => console.error(e));
 		return this._skuRecommendationResults;
+	}
+
+	private async generateSkuRecommendationTelemetry(): Promise<void> {
+		try {
+
+			this._skuRecommendationResults?.recommendations?.sqlMiRecommendationResults?.forEach(resultItem => {
+				// Send telemetry for recommended MI SKU
+				sendSqlMigrationActionEvent(
+					TelemetryViews.SkuRecommendationWizard,
+					TelemetryAction.GetMISkuRecommendation,
+					{
+						'sessionId': this._sessionId,
+						'RecommendedSku': JSON.stringify(resultItem?.targetSku)
+					},
+					{}
+				);
+			});
+
+			this._skuRecommendationResults?.recommendations?.sqlVmRecommendationResults?.forEach(resultItem => {
+				// Send telemetry for recommended VM SKU
+				sendSqlMigrationActionEvent(
+					TelemetryViews.SkuRecommendationWizard,
+					TelemetryAction.GetVMSkuRecommendation,
+					{
+						'sessionId': this._sessionId,
+						'RecommendedSku': JSON.stringify(resultItem?.targetSku)
+					},
+					{}
+				);
+			});
+
+			// Send Instance requirements used for calculating recommendations
+			sendSqlMigrationActionEvent(
+				TelemetryViews.SkuRecommendationWizard,
+				TelemetryAction.GetInstanceRequirements,
+				{
+					'sessionId': this._sessionId,
+					'cpuRequirementInCores': this._skuRecommendationResults?.recommendations?.instanceRequirements?.cpuRequirementInCores?.toString(),
+					'dataStorageRequirementInMB': this._skuRecommendationResults?.recommendations?.instanceRequirements?.dataStorageRequirementInMB?.toString(),
+					'logStorageRequirementInMB': this._skuRecommendationResults?.recommendations?.instanceRequirements?.logStorageRequirementInMB?.toString(),
+					'memoryRequirementInMB': this._skuRecommendationResults?.recommendations?.instanceRequirements?.memoryRequirementInMB.toString(),
+					'dataIOPSRequirement': this._skuRecommendationResults?.recommendations?.instanceRequirements?.dataIOPSRequirement?.toString(),
+					'logIOPSRequirement': this._skuRecommendationResults?.recommendations?.instanceRequirements?.logIOPSRequirement?.toString(),
+					'ioLatencyRequirementInMs': this._skuRecommendationResults?.recommendations?.instanceRequirements?.ioLatencyRequirementInMs?.toString(),
+					'ioThroughputRequirementInMBps': this._skuRecommendationResults?.recommendations?.instanceRequirements?.ioThroughputRequirementInMBps?.toString(),
+					'tempDBSizeInMB': this._skuRecommendationResults?.recommendations?.instanceRequirements?.tempDBSizeInMB?.toString(),
+					'aggregationTargetPercentile': this._skuRecommendationResults?.recommendations?.instanceRequirements?.aggregationTargetPercentile?.toString(),
+					'numberOfDataPointsAnalyzed': this._skuRecommendationResults?.recommendations?.instanceRequirements?.numberOfDataPointsAnalyzed?.toString(),
+					'databaseLevelRequirements': JSON.stringify(this._skuRecommendationResults?.recommendations?.instanceRequirements?.databaseLevelRequirements?.map(i => {
+						return {
+							cpuRequirementInCores: i.cpuRequirementInCores,
+							dataIOPSRequirement: i.dataIOPSRequirement,
+							logIOPSRequirement: i.logIOPSRequirement,
+							ioLatencyRequirementInMs: i.ioLatencyRequirementInMs,
+							ioThroughputRequirementInMBps: i.ioThroughputRequirementInMBps,
+							dataStorageRequirementInMB: i.dataStorageRequirementInMB,
+							logStorageRequirementInMB: i.logStorageRequirementInMB,
+							databaseName: hashString(i.databaseName),
+							memoryRequirementInMB: i.memoryRequirementInMB,
+							cpuRequirementInPercentageOfTotalInstance: i.cpuRequirementInPercentageOfTotalInstance,
+							numberOfDataPointsAnalyzed: i.numberOfDataPointsAnalyzed,
+							fileLevelRequirements: i.fileLevelRequirements?.map(file => {
+								return {
+									fileName: hashString(file.fileName),
+									fileType: file.fileType,
+									sizeInMB: file.sizeInMB,
+									readLatencyInMs: file.readLatencyInMs,
+									writeLatencyInMs: file.writeLatencyInMs,
+									iopsRequirement: file.iopsRequirement,
+									ioThroughputRequirementInMBps: file.ioThroughputRequirementInMBps,
+									numberOfDataPointsAnalyzed: file.numberOfDataPointsAnalyzed
+								};
+							})
+						};
+					}))
+				},
+				{}
+			);
+
+		} catch (e) {
+			console.log('error during get sku recommendation telemetry:');
+			console.log(e);
+		}
 	}
 
 	public async startPerfDataCollection(
@@ -446,7 +529,28 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			console.log(error);
 		}
 
+		// Generate telemetry for start data collection request
+		this.generateStartDataCollectionTelemetry().catch(e => console.error(e));
+
 		return true;
+	}
+
+	private async generateStartDataCollectionTelemetry(): Promise<void> {
+		try {
+			sendSqlMigrationActionEvent(
+				TelemetryViews.DataCollectionWizard,
+				TelemetryAction.StartDataCollection,
+				{
+					'sessionId': this._sessionId,
+					'TimeDataCollectionStarted': this._perfDataCollectionStartDate?.toString()
+				},
+				{}
+			);
+
+		} catch (e) {
+			console.log('error during start perf data collection telemetry:');
+			console.log(e);
+		}
 	}
 
 	public async stopPerfDataCollection(): Promise<boolean> {
@@ -468,7 +572,27 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			console.log(error);
 		}
 
+		// Generate telemetry for stop data collection request
+		this.generateStopDataCollectionTelemetry().catch(e => console.error(e));
 		return true;
+	}
+
+	private async generateStopDataCollectionTelemetry(): Promise<void> {
+		try {
+			sendSqlMigrationActionEvent(
+				TelemetryViews.DataCollectionWizard,
+				TelemetryAction.StopDataCollection,
+				{
+					'sessionId': this._sessionId,
+					'TimeDataCollectionStopped': this._perfDataCollectionStopDate?.toString()
+				},
+				{}
+			);
+
+		} catch (e) {
+			console.log('error during stop perf data collection telemetry:');
+			console.log(e);
+		}
 	}
 
 	public async refreshPerfDataCollection(): Promise<boolean> {
@@ -531,9 +655,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.ServerAssessment,
 				{
 					'sessionId': this._sessionId,
-					'tenantId': this._azureAccount.properties.tenants[0].id,
-					'subscriptionId': this._targetSubscription?.id,
-					'resourceGroup': this._resourceGroup?.name,
 					'hashedServerName': hashString(this._assessmentApiResponse?.assessmentResult?.name),
 					'startTime': startTime.toString(),
 					'endTime': endTime.toString(),
@@ -567,8 +688,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					TelemetryAction.DatabaseAssessment,
 					{
 						'sessionId': this._sessionId,
-						'subscriptionId': this._targetSubscription?.id,
-						'resourceGroup': this._resourceGroup?.name,
 						'hashedDatabaseName': hashString(d.name),
 						'compatibilityLevel': d.compatibilityLevel
 					},
@@ -605,8 +724,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.DatabaseAssessmentWarning,
 				{
 					'sessionId': this._sessionId,
-					'subscriptionId': this._targetSubscription?.id,
-					'resourceGroup': this._resourceGroup?.name,
 					'warnings': JSON.stringify(databaseWarnings)
 				},
 				{}
@@ -625,14 +742,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.DatabaseAssessmentError,
 				{
 					'sessionId': this._sessionId,
-					'subscriptionId': this._targetSubscription?.id,
-					'resourceGroup': this._resourceGroup?.name,
 					'errors': JSON.stringify(databaseErrors)
 				},
 				{}
 			);
 
 		} catch (e) {
+			console.log('error during assessment telemetry:');
 			console.log(e);
 		}
 	}
