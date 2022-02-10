@@ -926,7 +926,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		let skuEditParametersDialog = new SkuEditParametersDialog(this, this.migrationStateModel);
 		this._disposables.push(editParametersButton.onDidClick(async () => {
 			await skuEditParametersDialog.openDialog();
-			await this.refreshSkuRecommendationComponents();
+			// await this.refreshSkuRecommendationComponents();
 		}));
 
 		const createParameterGroup = (label: string, value: string): {
@@ -1017,7 +1017,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	public async refreshSkuParameters(): Promise<void> {
 		this._skuScaleFactorText.value = this.migrationStateModel._skuScalingFactor.toString();
 		this._skuTargetPercentileText.value = constants.PERCENTAGE(this.migrationStateModel._skuTargetPercentile);
-		this._skuEnablePreviewSkuText.value = this.migrationStateModel._skuEnablePreview.toString();
+		this._skuEnablePreviewSkuText.value = this.migrationStateModel._skuEnablePreview ? constants.YES : constants.NO;
 
 		await this.startCardLoading();
 		await this.getSkuRecommendations();
@@ -1031,8 +1031,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 				if (this.migrationStateModel.performanceCollectionInProgress()) {
 					this._skuDataCollectionStatusText.value = this.hasRecommendations()
-						? constants.AZURE_RECOMMENDATION_STATUS_IN_PROGRESS
-						: constants.AZURE_RECOMMENDATION_STATUS_REFINING;
+						? constants.AZURE_RECOMMENDATION_STATUS_REFINING
+						: constants.AZURE_RECOMMENDATION_STATUS_IN_PROGRESS;
 
 					if (await this.migrationStateModel.isWaitingForFirstTimeRefresh()) {
 						const elapsedTimeInMins = Math.abs(new Date().getTime() - new Date(this.migrationStateModel._perfDataCollectionStartDate!).getTime()) / 60000;
