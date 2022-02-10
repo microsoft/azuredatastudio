@@ -714,8 +714,4 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			}
 		});
 	}
-
-	$openNotebookDocument(providerId: string, contents: azdata.nb.INotebookContents): Promise<azdata.nb.NotebookDocument> {
-		throw new Error('Method not implemented');
-	}
 }

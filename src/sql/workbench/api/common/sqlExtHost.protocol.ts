@@ -1010,7 +1010,6 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$clearAllOutputs(id: string): Promise<boolean>;
 	$changeKernel(id: string, kernel: azdata.nb.IKernelSpec): Promise<boolean>;
 	$registerNavigationProvider(providerId: string, handle: number);
-	$openNotebookDocument(providerId: string, contents: azdata.nb.INotebookContents): Promise<azdata.nb.NotebookDocument>;
 }
 
 export interface ExtHostExtensionManagementShape {
