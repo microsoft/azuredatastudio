@@ -53,8 +53,8 @@ export const SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR = (serverName: strin
 		error.stack,
 		EOL);
 };
-export const PERF_DATA_COLLECTION_ERROR = (serverName: string): string => {
-	return localize('sql.migration.wizard.perfCollection.error', "An error occurred while collecting performance data for the server '{0}'.", serverName);
+export const PERF_DATA_COLLECTION_ERROR = (serverName: string, errors: string[]): string => {
+	return localize('sql.migration.wizard.perfCollection.error', "Error(s) occurred while collecting performance data for the server '{0}': {1}\n\nIf these issues persist, try restarting the data collection process.", serverName, errors.join('\n'));
 };
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_BYPASS = localize('sql.migration.wizard.sku.assessment.error.bypass', 'Check this option to skip assessment and continue the migration.');
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_DETAIL = localize('sql.migration.wizard.sku.assessment.error.detail', '[There are no assessment results to validate readiness of your database migration. By checking this box, you acknowledge you want to proceed migrating your database to the desired Azure SQL target.]',);
@@ -105,9 +105,13 @@ export const RESTART_PERFORMANCE_COLLECTION = localize('sql.migration.sku.restar
 export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click “Get Azure recommendation” button below");
 export const AZURE_RECOMMENDATION_CARD_IN_PROGRESS = localize('sql.migration.sku.card.azureRecommendation.inProgress', "Azure recommendation will be displayed once data collection is complete.");
 export const AZURE_RECOMMENDATION_STATUS_NOT_ENABLED = localize('sql.migration.sku.azureRecommendation.status.notEnabled', "Azure recommendation collects and analyzes performance data and then recommends an appropriate sized database in Azure for your workload.");
-export const AZURE_RECOMMENDATION_STATUS_IN_PROGRESS = localize('sql.migration.sku.azureRecommendation.status.inProgress', "Data collection in progress. Generating first set of recommendations...");
-export const AZURE_RECOMMENDATION_STATUS_REFINING = localize('sql.migration.sku.azureRecommendation.status.refining', "Data collection in progress. Refining existing recommendations...");
+export const AZURE_RECOMMENDATION_STATUS_IN_PROGRESS = localize('sql.migration.sku.azureRecommendation.status.inProgress', "Data collection in progress. Generating initial recommendations...");
+export const AZURE_RECOMMENDATION_STATUS_REFINING = localize('sql.migration.sku.azureRecommendation.status.refining', "Data collection still in progress. Refining existing recommendations...");
 export const AZURE_RECOMMENDATION_STATUS_STOPPED = localize('sql.migration.sku.azureRecommendation.status.stopped', "Data collection for Azure recommendations has been stopped.");
+export function AZURE_RECOMMENDATION_STATUS_AUTO_REFRESH_TIMER(mins: number): string {
+	return localize('sql.migration.sku.azureRecommendation.status.autoRefreshTimer', "Initial recommendations will automatically refresh in approximately {0} minute(s).", mins.toFixed(0));
+}
+export const AZURE_RECOMMENDATION_STATUS_MANUAL_REFRESH_TIMER = localize('sql.migration.sku.azureRecommendation.status.manualRefreshTimer', "Check back periodically for updated recommendations by pressing the 'Refresh recommendation' button.");
 export const AZURE_RECOMMENDATION_STATUS_DATA_IMPORTED = localize('sql.migration.sku.azureRecommendation.status.imported', "Azure recommendation has been applied using the provided data. Import or collect additional data to refine the recommendation.");
 export const AZURE_RECOMMENDATION_TOOLTIP_IN_PROGRESS = localize('sql.migration.sku.azureRecommendation.tooltip.inProgress', "Running the performance collection for a longer period of time helps ensure a more accurate recommendation.");
 
@@ -138,9 +142,12 @@ export const AZURE_CONFIGURATION = localize('sql.migration.sku.azureConfiguratio
 export function VM_CONFIGURATION(vmSize: string, vCPU: number): string {
 	return localize('sql.migration.sku.azureConfiguration.vm', "{0} ({1} vCPU)", vmSize, vCPU);
 }
-export function VM_CONFIGURATION_PREVIEW(dataDisk: string, logDisk: string, temp: string): string {
-	return localize('sql.migration.sku.azureConfiguration.vmPreview', "Data disk - {0}, Log disk - {1}, Temp - {2}", dataDisk, logDisk, temp);
+export function VM_CONFIGURATION_PREVIEW(vmSize: string, vCPU: number, diskCount: number, diskName: string): string {
+	return localize('sql.migration.sku.azureConfiguration.vmPreview', "{0} ({1} vCPU) - {2}x {3}", vmSize, vCPU, diskCount, diskName);
 }
+// export function VM_CONFIGURATION_PREVIEW(dataDisk: string, logDisk: string, temp: string): string {												// to-do: this is the new one, wasn't sure how to use it
+// 	return localize('sql.migration.sku.azureConfiguration.vmPreview', "Data disk - {0}, Log disk - {1}, Temp - {2}", dataDisk, logDisk, temp);
+// }
 export function DB_CONFIGURATION(computeTier: string, vCore: number): string {
 	return localize('sql.migration.sku.azureConfiguration.db', "{0} - {1} vCore", computeTier, vCore);
 }
@@ -531,6 +538,7 @@ export const CANCEL_MIGRATION_CONFIRMATION = localize('sql.cancel.migration.conf
 export const YES = localize('sql.migration.yes', "Yes");
 export const NO = localize('sql.migration.no', "No");
 export const NA = localize('sql.migration.na', "N/A");
+export const EMPTY = localize('sql.migration.empty', "");
 export const EMPTY_TABLE_TEXT = localize('sql.migration.empty.table.text', "No backup files");
 export const EMPTY_TABLE_SUBTEXT = localize('sql.migration.empty.table.subtext', "If results were expected, verify the connection to the SQL Server instance.");
 export const MIGRATION_CUTOVER_ERROR = localize('sql.migration.cutover.error', 'An error occurred while initiating cutover.');
