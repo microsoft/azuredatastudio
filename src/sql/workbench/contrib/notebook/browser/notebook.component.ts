@@ -156,14 +156,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					else if (event.keyCode === KeyCode.Enter) {
 						// prevents adding a newline to the cell source
 						e.preventDefault();
-						// show edit toolbar
-						this.setActiveCellEditActionMode(true);
 						this.toggleEditMode();
 					}
 				} else if (event.keyCode === KeyCode.Escape) {
 					// first time hitting escape removes the cursor from code cell and changes toolbar in text cells and changes edit mode to false
 					this.toggleEditMode();
-					this.setActiveCellEditActionMode(false);
 				}
 			}
 		}));
@@ -274,10 +271,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		toolbarEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
-	public selectCell(cell: ICellModel, event?: Event) {
-		if (event) {
-			event.stopPropagation();
-		}
+	public selectCell(cell: ICellModel) {
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
 			this.model.updateActiveCell(cell);
 			this.detectChanges();
@@ -299,12 +293,34 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			selectedCell = this.codeCells.find(c => c.cellModel.id === this.activeCellId);
 		}
 		selectedCell.toggleEditMode();
+		this.setActiveCellEditActionMode(selectedCell.cellModel.isEditMode);
 	}
 
 	//Saves scrollTop value on scroll change
 	public scrollHandler(event: Event) {
 		this._scrollTop = (<HTMLElement>event.srcElement).scrollTop;
 		this.model.onScroll.fire();
+	}
+
+	public unclickActiveCell() {
+		if (this.model.activeCell?.isEditMode) {
+			// when clicking outside of code cells toggle edit mode to false
+			this.toggleEditMode();
+		} else {
+			this.unselectActiveCell();
+		}
+	}
+
+	public clickActiveCell(cell: ICellModel, event?: Event) {
+		if (event) {
+			event.stopPropagation();
+		}
+		if (this.model.activeCell?.isEditMode && this.model.activeCell.id !== cell.id) {
+			// before activating the new cell, change the edit mode of the current active cell
+			this.toggleEditMode();
+		}
+		this.selectCell(cell);
+		this.toggleEditMode();
 	}
 
 	public unselectActiveCell() {
