@@ -344,8 +344,16 @@ export class QueryPlan2 implements ISashLayoutProvider {
 
 		this.azdataGraphDiagram.graph.addListener('click', (sender, evt) => {
 			// Updating properties view table on node clicks
-			if (evt.properties['cell']?.value.id) {
-				this.propertiesView.graphElement = this.searchNodes(evt.properties['cell']?.value.id);
+			const cell = evt.properties['cell'];
+			if (cell) {
+				this.propertiesView.graphElement = this.searchNodes(cell.id);
+			} else if (!this.azdataGraphDiagram.graph.getSelectionCell()) {
+				const root = this.azdataGraphDiagram.graph.model.getCell(diagramRoot.id);
+				this.azdataGraphDiagram.graph.getSelectionModel().setCell(root);
+				this.propertiesView.graphElement = this.searchNodes(diagramRoot.id);
+				evt.consume();
+			} else {
+				evt.consume();
 			}
 		});
 

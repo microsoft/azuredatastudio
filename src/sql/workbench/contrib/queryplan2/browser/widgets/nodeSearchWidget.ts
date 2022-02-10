@@ -146,6 +146,7 @@ export class NodeSearchWidget extends QueryPlanWidgetBase {
 		const resultCell = this.queryPlanView.azdataGraphDiagram.graph.model.getCell(this._searchResults[this._currentSearchResultIndex]);
 		// Selecting the node on graph diagram
 		this.queryPlanView.azdataGraphDiagram.graph.setSelectionCell(resultCell);
+		this.queryPlanView.propertiesView.graphElement = this.queryPlanView.searchNodes(resultCell.id);
 
 		/**
 		 * The selected graph node might be hidden/partially visible if the graph is overflowing the parent container.
