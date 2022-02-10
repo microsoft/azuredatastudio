@@ -285,7 +285,7 @@ export interface IOptionsSource {
 export interface OptionsInfo {
 	values?: string[] | azdata.CategoryValue[],
 	source?: IOptionsSource,
-	defaultValue: string | azdata.CategoryValue,
+	defaultValue: string,
 	optionsType?: OptionsType
 }
 
@@ -302,7 +302,7 @@ export interface DynamicOptionsInfo {
 export interface DynamicOptionsAlternates {
 	selection: string | azdata.CategoryValue,
 	alternateValues: string[] | azdata.CategoryValue[],
-	defaultValue: string | azdata.CategoryValue
+	defaultValue: string
 }
 
 export interface ValueProviderInfo {

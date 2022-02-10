@@ -1060,10 +1060,7 @@
                               "displayName": "%arc.sql.service.tier.general.purpose%"
                             }
                           ],
-                          "defaultValue": {
-                            "name": "BusinessCritical",
-                            "displayName": "%arc.sql.service.tier.business.critical%"
-                          },
+                          "defaultValue": "BusinessCritical",
                           "optionsType": "radio"
                         }
                       },
@@ -1091,10 +1088,7 @@
                               "displayName": "%arc.sql.three.replicas%"
                             }
                           ],
-                          "defaultValue": {
-                            "name": "2",
-                            "displayName": "%arc.sql.two.replicas%"
-                          },
+                          "defaultValue": "2",
                           "optionsType": "radio"
                         },
                         "dynamicOptions":
@@ -1112,10 +1106,7 @@
                                   "displayName": "%arc.sql.one.replica%"
                                 }
                               ],
-                              "defaultValue": {
-                                "name": "1",
-                                "displayName": "%arc.sql.one.replica%"
-                              }
+                              "defaultValue": "1"
                             }
                           ]
                         }

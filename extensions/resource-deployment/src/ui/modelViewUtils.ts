@@ -438,7 +438,12 @@ async function hookUpDynamicOptions(context: WizardPageContext): Promise<void> {
 				const updateOptions = async () => {
 					const currentValue = await targetComponent.getValue();
 					if (field.dynamicOptions && field.options && fieldComponent && fieldComponent.setOptions) {
-						const targetValueFound = field.dynamicOptions.alternates.find(item => item.selection === currentValue || (<azdata.CategoryValue>item.selection).name === currentValue);
+						let targetValueFound;
+						if (typeof (field.dynamicOptions.alternates[0]) === 'object') {
+							targetValueFound = field.dynamicOptions.alternates.find(item => (<azdata.CategoryValue>item.selection).name === currentValue);
+						} else {
+							targetValueFound = field.dynamicOptions.alternates.find(item => item.selection === currentValue);
+						}
 						if (targetValueFound) {
 							fieldComponent.setOptions(<OptionsInfo>{
 								values: targetValueFound.alternateValues,
@@ -1646,8 +1651,8 @@ export function getPasswordMismatchMessage(fieldName: string): string {
 export async function setModelValues(inputComponents: InputComponents, model: Model): Promise<void> {
 	await Promise.all(Object.keys(inputComponents).map(async key => {
 		const value = await inputComponents[key].getValue();
-		if (typeof (value) !== 'string' && typeof (value) !== 'boolean' && typeof (value) !== 'number' && typeof (value) !== 'undefined') {
-			model.setPropertyValue(key, (<azdata.CategoryValue>value).name);
+		if (typeof (value) === 'object') {
+			model.setPropertyValue(key, value.name);
 		} else {
 			model.setPropertyValue(key, value);
 		}
