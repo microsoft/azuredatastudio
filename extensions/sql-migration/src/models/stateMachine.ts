@@ -403,7 +403,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					TelemetryAction.GetMISkuRecommendation,
 					{
 						'sessionId': this._sessionId,
-						'RecommendedSku': JSON.stringify(resultItem?.targetSku)
+						'recommendedSku': JSON.stringify(resultItem?.targetSku)
 					},
 					{}
 				);
@@ -416,7 +416,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					TelemetryAction.GetVMSkuRecommendation,
 					{
 						'sessionId': this._sessionId,
-						'RecommendedSku': JSON.stringify(resultItem?.targetSku)
+						'recommendedSku': JSON.stringify(resultItem?.targetSku)
 					},
 					{}
 				);
@@ -428,6 +428,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.GetInstanceRequirements,
 				{
 					'sessionId': this._sessionId,
+					'performanceDataSource': this._skuRecommendationPerformanceDataSource,
 					'cpuRequirementInCores': this._skuRecommendationResults?.recommendations?.instanceRequirements?.cpuRequirementInCores?.toString(),
 					'dataStorageRequirementInMB': this._skuRecommendationResults?.recommendations?.instanceRequirements?.dataStorageRequirementInMB?.toString(),
 					'logStorageRequirementInMB': this._skuRecommendationResults?.recommendations?.instanceRequirements?.logStorageRequirementInMB?.toString(),
@@ -471,7 +472,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			);
 
 		} catch (e) {
-			console.log('error during get sku recommendation telemetry:');
 			console.log(e);
 		}
 	}
@@ -542,13 +542,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.StartDataCollection,
 				{
 					'sessionId': this._sessionId,
-					'TimeDataCollectionStarted': this._perfDataCollectionStartDate?.toString()
+					'timeDataCollectionStarted': this._perfDataCollectionStartDate?.toString()
 				},
 				{}
 			);
 
 		} catch (e) {
-			console.log('error during start perf data collection telemetry:');
 			console.log(e);
 		}
 	}
@@ -584,13 +583,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.StopDataCollection,
 				{
 					'sessionId': this._sessionId,
-					'TimeDataCollectionStopped': this._perfDataCollectionStopDate?.toString()
+					'timeDataCollectionStopped': this._perfDataCollectionStopDate?.toString()
 				},
 				{}
 			);
 
 		} catch (e) {
-			console.log('error during stop perf data collection telemetry:');
 			console.log(e);
 		}
 	}

@@ -46,6 +46,7 @@ export enum TelemetryAction {
 	Next = 'next',
 	Done = 'done',
 	Cancel = 'cancel',
+	OnPageLeave = 'OnPageLeave',
 	GetMISkuRecommendation = 'GetMISkuRecommendation',
 	GetVMSkuRecommendation = 'GetVMSkuRecommendation',
 	GetInstanceRequirements = 'GetInstanceRequirements',
