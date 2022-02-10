@@ -37,6 +37,7 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IUrlBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/urlBrowserDialogController';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -213,6 +214,7 @@ export class BackupComponent extends AngularDisposable {
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IFileBrowserDialogController) private fileBrowserDialogService: IFileBrowserDialogController,
+		@Inject(IUrlBrowserDialogController) private urlBrowserDialogService: IUrlBrowserDialogController,
 		@Inject(IBackupUiService) private _backupUiService: IBackupUiService,
 		@Inject(IBackupService) private _backupService: IBackupService,
 		//@Inject(IClipboardService) private clipboardService: IClipboardService,
@@ -715,13 +717,22 @@ export class BackupComponent extends AngularDisposable {
 	}
 
 	private onAddClick(): void {
-		this.fileBrowserDialogService.showDialog(this._uri!,
-			this.defaultNewBackupFolder!,
-			fileFiltersSet,
-			FileValidationConstants.backup,
-			false,
-			false,
-			(filepath => this.handlePathAdded(filepath)));
+		if (this.toUrlCheckBox.checked) {
+			this.urlBrowserDialogService.showDialog(this._uri!,
+				this.defaultNewBackupFolder!,
+				fileFiltersSet,
+				FileValidationConstants.backup,
+				false,
+				false,
+				(filepath => this.handlePathAdded(filepath)));
+		} else {
+			this.fileBrowserDialogService.showDialog(this._uri!,
+				this.defaultNewBackupFolder!,
+				fileFiltersSet,
+				FileValidationConstants.backup,
+				false,
+				(filepath => this.handlePathAdded(filepath)));
+		}
 	}
 
 	private handlePathAdded(filepath: string) {
