@@ -1051,10 +1051,19 @@
                         "required": true,
                         "options": {
                           "values": [
-                            "%arc.sql.service.tier.business.critical%",
-                            "%arc.sql.service.tier.general.purpose%"
+                            {
+                              "name": "BusinessCritical",
+                              "displayName": "%arc.sql.service.tier.business.critical%"
+                            },
+                            {
+                              "name": "GeneralPurpose",
+                              "displayName": "%arc.sql.service.tier.general.purpose%"
+                            }
                           ],
-                          "defaultValue": "%arc.sql.service.tier.business.critical%",
+                          "defaultValue": {
+                            "name": "BusinessCritical",
+                            "displayName": "%arc.sql.service.tier.business.critical%"
+                          },
                           "optionsType": "radio"
                         }
                       },
@@ -1067,16 +1076,25 @@
                       },
                       {
                         "type": "options",
-                        "label": "%arc.sql.replicas%",
+                        "label": "%arc.sql.high.availability%",
                         "description": "%arc.sql.high.availability.description%",
                         "required": true,
                         "variableName": "AZDATA_NB_VAR_SQL_REPLICAS",
                         "options": {
                           "values": [
-                            "%arc.sql.two.replicas%",
-                            "%arc.sql.three.replicas%"
+                            {
+                              "name": "2",
+                              "displayName": "%arc.sql.two.replicas%"
+                            },
+                            {
+                              "name": "3",
+                              "displayName": "%arc.sql.three.replicas%"
+                            }
                           ],
-                          "defaultValue": "%arc.sql.two.replicas%",
+                          "defaultValue": {
+                            "name": "2",
+                            "displayName": "%arc.sql.two.replicas%"
+                          },
                           "optionsType": "radio"
                         },
                         "dynamicOptions":
@@ -1084,11 +1102,20 @@
                           "target": "AZDATA_NB_VAR_SQL_SERVICE_TIER",
                           "alternates": [
                             {
-                              "selection": "%arc.sql.service.tier.general.purpose%",
+                              "selection": {
+                                "name": "GeneralPurpose",
+                                "displayName": "%arc.sql.service.tier.general.purpose%"
+                              },
                               "alternateValues": [
-                                "%arc.sql.one.replica%"
+                                {
+                                  "name": "1",
+                                  "displayName": "%arc.sql.one.replica%"
+                                }
                               ],
-                              "defaultValue": "%arc.sql.one.replica%"
+                              "defaultValue": {
+                                "name": "1",
+                                "displayName": "%arc.sql.one.replica%"
+                              }
                             }
                           ]
                         }
