@@ -716,22 +716,22 @@ export class DashboardWidget {
 			{
 				title: localize('sql.migration.dashboard.help.link.migrateUsingADS', 'Migrate databases using Azure Data Studio'),
 				description: localize('sql.migration.dashboard.help.description.migrateUsingADS', 'The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.'),
-				link: 'https://docs.microsoft.com/en-us/azure/dms/migration-using-azure-data-studio'
+				link: 'https://docs.microsoft.com/azure/dms/migration-using-azure-data-studio'
 			},
 			{
 				title: localize('sql.migration.dashboard.help.link.mi', 'Tutorial:  Migrate to Azure SQL Managed Instance (online)'),
 				description: localize('sql.migration.dashboard.help.description.mi', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Managed Instance with minimal downtime.'),
-				link: 'https://docs.microsoft.com/en-us/azure/dms/tutorial-sql-server-managed-instance-online-ads'
+				link: 'https://docs.microsoft.com/azure/dms/tutorial-sql-server-managed-instance-online-ads'
 			},
 			{
 				title: localize('sql.migration.dashboard.help.link.vm', 'Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)'),
 				description: localize('sql.migration.dashboard.help.description.vm', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.'),
-				link: 'https://docs.microsoft.com/en-us/azure/dms/tutorial-sql-server-to-virtual-machine-online-ads'
+				link: 'https://docs.microsoft.com/azure/dms/tutorial-sql-server-to-virtual-machine-online-ads'
 			},
 			{
 				title: localize('sql.migration.dashboard.help.link.dmsGuide', 'Azure Database Migration Guides'),
 				description: localize('sql.migration.dashboard.help.description.dmsGuide', 'A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.'),
-				link: 'https://docs.microsoft.com/en-us/data-migration/'
+				link: 'https://docs.microsoft.com/data-migration/'
 			},
 		];
 
