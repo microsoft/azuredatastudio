@@ -1651,6 +1651,7 @@ export function getPasswordMismatchMessage(fieldName: string): string {
 export async function setModelValues(inputComponents: InputComponents, model: Model): Promise<void> {
 	await Promise.all(Object.keys(inputComponents).map(async key => {
 		const value = await inputComponents[key].getValue();
+		// Check if value is of type CategoryValue. If so, we need to get the name from the CategoryValue object.
 		if (typeof (value) === 'object') {
 			model.setPropertyValue(key, value.name);
 		} else {

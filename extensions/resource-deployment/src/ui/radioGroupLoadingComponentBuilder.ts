@@ -42,7 +42,7 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 			}
 
 			let options: (string[] | azdata.CategoryValue[]) = optionsInfo.values!;
-			let defaultValue: (string | azdata.CategoryValue) = optionsInfo.defaultValue!;
+			let defaultValue: (string) = optionsInfo.defaultValue!;
 			options.forEach((op: string | azdata.CategoryValue) => {
 				const option: azdata.CategoryValue = (typeof op === 'string')
 					? { name: op, displayName: op }
