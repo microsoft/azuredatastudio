@@ -80,14 +80,14 @@
 	"deploy.script.action":"Script to notebook",
 	"deploy.done.action":"Deploy",
 
-	"resource.type.arc.sql.display.name": "Azure SQL managed instance - Azure Arc (preview)",
-	"resource.type.arc.postgres.display.name": "PostgreSQL Hyperscale server groups - Azure Arc (preview)",
+	"resource.type.arc.sql.display.name": "Azure SQL managed instance - Azure Arc",
+	"resource.type.arc.postgres.display.name": "PostgreSQL Hyperscale server groups - Azure Arc",
 	"resource.type.arc.sql.description": "Managed SQL Instance service for app developers in a customer-managed environment",
 	"resource.type.arc.postgres.description": "Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment",
 	"arc.controller": "Target Azure Arc Controller",
 
 
-	"arc.sql.wizard.title": "Deploy Azure SQL managed instance - Azure Arc (preview)",
+	"arc.sql.wizard.title": "Deploy Azure SQL managed instance - Azure Arc",
 	"arc.sql.wizard.page1.title": "Provide Azure SQL managed instance parameters",
 	"arc.sql.connection.settings.section.title": "SQL Connection information",
 	"arc.sql.instance.settings.section.title": "SQL Instance settings",
@@ -172,7 +172,7 @@
 	"arc.azure.subscription": "Azure subscription",
 	"arc.azure.resource.group": "Azure resource group",
 	"arc.azure.location": "Azure location",
-	"arc.postgres.wizard.title": "Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group (Preview)",
+	"arc.postgres.wizard.title": "Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group",
 	"arc.postgres.wizard.page1.title": "Provide Azure enabled PostgreSQL Hyperscale server group parameters",
 	"arc.postgres.settings.section.title": "General settings",
 	"arc.postgres.settings.resource.worker.title": "Worker Nodes Compute Configuration",

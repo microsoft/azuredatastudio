@@ -124,6 +124,9 @@
     <trans-unit id="cleaningDockerImagesMessage">
       <source xml:lang="en">Cleaning existing deployments...</source>
     </trans-unit>
+    <trans-unit id="closeButton">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
     <trans-unit id="compareActionRadiButtonLabel">
       <source xml:lang="en">View changes in Schema Compare</source>
     </trans-unit>
@@ -358,6 +361,12 @@
     <trans-unit id="enterPassword">
       <source xml:lang="en">Enter SQL Server admin password</source>
     </trans-unit>
+    <trans-unit id="enterPasswordManually">
+      <source xml:lang="en">Enter password or press escape to cancel</source>
+    </trans-unit>
+    <trans-unit id="enterPasswordPrompt">
+      <source xml:lang="en">Enter the password to be used for the connection string</source>
+    </trans-unit>
     <trans-unit id="enterPortNumber">
       <source xml:lang="en">Enter SQL server port number or press enter to use the default value</source>
     </trans-unit>
@@ -458,6 +467,9 @@
     </trans-unit>
     <trans-unit id="importElements">
       <source xml:lang="en">Import Elements</source>
+    </trans-unit>
+    <trans-unit id="includePassword">
+      <source xml:lang="en">Do you want to include the password from this connection in your local.settings.json file?</source>
     </trans-unit>
     <trans-unit id="input">
       <source xml:lang="en">Input</source>
@@ -587,6 +599,9 @@
     </trans-unit>
     <trans-unit id="openEulaString">
       <source xml:lang="en">Open License Agreement</source>
+    </trans-unit>
+    <trans-unit id="openFile">
+      <source xml:lang="en">Open File</source>
     </trans-unit>
     <trans-unit id="output">
       <source xml:lang="en">Output</source>
@@ -935,6 +950,9 @@
     </trans-unit>
     <trans-unit id="userConnectionString">
       <source xml:lang="en">Enter connection string</source>
+    </trans-unit>
+    <trans-unit id="userPasswordLater">
+      <source xml:lang="en">In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.</source>
     </trans-unit>
     <trans-unit id="userSelectionCancelled">
       <source xml:lang="en">User has cancelled selection for how to run autorest.</source>
