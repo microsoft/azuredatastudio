@@ -5,7 +5,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
-import { MigrationStateModel, Page } from '../models/stateMachine';
+import { MigrationStateModel, NetworkContainerType, Page } from '../models/stateMachine';
 import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SKURecommendationPage } from './skuRecommendationPage';
@@ -68,6 +68,14 @@ export class WizardController {
 			if (this._model.savedInfo.closedPage >= Page.MigrationMode) {
 				this._model.refreshDatabaseBackupPage = true;
 			}
+
+			// if the user selected network share and selected save & close afterwards, it should always return to the database backup page so that
+			// the user can input their password again
+			if (this._model.savedInfo.closedPage >= Page.DatabaseBackup && this._model.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
+				wizardSetupPromises.push(this._wizardObject.setCurrentPage(Page.DatabaseBackup));
+			} else {
+				wizardSetupPromises.push(this._wizardObject.setCurrentPage(this._model.savedInfo.closedPage));
+			}
 		}
 
 		this._model.extensionContext.subscriptions.push(this._wizardObject.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
@@ -99,6 +107,10 @@ export class WizardController {
 		saveAndCloseButton.onClick(async () => {
 			await stateModel.saveInfo(serverName, this._wizardObject.currentPage);
 			await this._wizardObject.close();
+
+			if (stateModel.performanceCollectionInProgress()) {
+				void vscode.window.showInformationMessage(loc.SAVE_AND_CLOSE_POPUP);
+			}
 		});
 
 		this._wizardObject.cancelButton.onClick(e => {

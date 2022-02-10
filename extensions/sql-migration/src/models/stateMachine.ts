@@ -139,6 +139,10 @@ export interface SavedInfo {
 	blobs: Blob[];
 	targetDatabaseNames: string[];
 	migrationServiceId: string | null;
+	skuRecommendationPerformanceDataSource: PerformanceDataSourceOptions | null;
+	skuRecommendationPerformanceLocation: string | null;
+	perfDataCollectionStartDate: Date | undefined;
+	perfDataCollectionStopDate: Date | undefined;
 }
 
 
@@ -194,8 +198,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _startPerfDataCollectionApiResponse!: mssql.StartPerfDataCollectionResult;
 	private _stopPerfDataCollectionApiResponse!: mssql.StopPerfDataCollectionResult;
 	private _refreshPerfDataCollectionApiResponse!: mssql.RefreshPerfDataCollectionResult;
-	public _perfDataCollectionStopDate!: Date;
-	public _perfDataCollectionStartDate!: Date;
+	public _perfDataCollectionStartDate!: Date | undefined;
+	public _perfDataCollectionStopDate!: Date | undefined;
 	public _perfDataCollectionLastRefreshedDate!: Date;
 	public _perfDataCollectionMessages!: string[];
 	public _perfDataCollectionErrors!: string[];
@@ -408,6 +412,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			this._startPerfDataCollectionApiResponse = response!;
 			this._perfDataCollectionStartDate = this._startPerfDataCollectionApiResponse.dateTimeStarted;
+			this._perfDataCollectionStopDate = undefined;
+
+			void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_START_POPUP);
 
 			const classVariable = this;
 			console.log('starting auto refresh for perf collection status update with interval ' + this.refreshPerfDataCollectionFrequency);
@@ -415,7 +422,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			if (this.refreshPerfDataCollectionFrequency !== -1) {
 				this._autoRefreshPerfDataCollectionHandle = setInterval(async function () {
 					await classVariable.refreshPerfDataCollection();
-					await page.refreshDataCollectionTimerStatus();				// update timer
+					// await page.refreshDataCollectionTimerStatus();				// update timer
 				}, this.refreshPerfDataCollectionFrequency);
 			}
 
@@ -451,9 +458,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async stopPerfDataCollection(): Promise<boolean> {
 		try {
-			console.log('stateMachine.stopPerfDataCollection starting');
-
 			const response = await this.migrationService.stopPerfDataCollection();
+			void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_STOP_POPUP);
+
 			console.log('date: ' + response?.dateTimeStopped.toString());
 
 			this._stopPerfDataCollectionApiResponse = response!;
@@ -473,8 +480,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async refreshPerfDataCollection(): Promise<boolean> {
 		try {
-			console.log('stateMachine.refreshPerfDataCollection starting');
-
 			const response = await this.migrationService.refreshPerfDataCollection(this._perfDataCollectionLastRefreshedDate);
 			console.log('date: ' + response?.refreshTime.toString());
 			console.log('messages: ');
@@ -497,6 +502,29 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return true;
 	}
 
+	public performanceCollectionNotStarted(): boolean {
+		if (!this._perfDataCollectionStartDate
+			&& !this._perfDataCollectionStopDate) {
+			return true;
+		}
+		return false;
+	}
+
+	public performanceCollectionInProgress(): boolean {
+		if (this._perfDataCollectionStartDate
+			&& !this._perfDataCollectionStopDate) {
+			return true;
+		}
+		return false;
+	}
+
+	public performanceCollectionStopped(): boolean {
+		if (this._perfDataCollectionStartDate
+			&& this._perfDataCollectionStopDate) {
+			return true;
+		}
+		return false;
+	}
 
 	private async generateAssessmentTelemetry(): Promise<void> {
 		try {
@@ -1275,6 +1303,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			blobs: [],
 			targetDatabaseNames: [],
 			migrationServiceId: null,
+			skuRecommendationPerformanceDataSource: null,
+			skuRecommendationPerformanceLocation: null,
+			perfDataCollectionStartDate: undefined,
+			perfDataCollectionStopDate: undefined,
 		};
 		switch (currentPage) {
 			case Page.Summary:
@@ -1306,6 +1338,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				saveInfo.serverAssessment = this._assessmentResults;
 				saveInfo.migrationDatabases = this._databaseSelection;
 				saveInfo.databaseList = this._migrationDbs;
+
+				saveInfo.skuRecommendationPerformanceDataSource = this._skuRecommendationPerformanceDataSource;
+				saveInfo.skuRecommendationPerformanceLocation = this._skuRecommendationPerformanceLocation;
+				saveInfo.perfDataCollectionStartDate = this._perfDataCollectionStartDate;
+				saveInfo.perfDataCollectionStopDate = this._perfDataCollectionStopDate;
 
 			case Page.DatabaseSelector:
 				saveInfo.selectedDatabases = this.databaseSelectorTableValues;

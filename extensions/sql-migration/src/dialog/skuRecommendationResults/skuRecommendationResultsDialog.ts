@@ -13,7 +13,7 @@ import * as mssql from '../../../../mssql';
 export class SkuRecommendationResultsDialog {
 
 	private static readonly OpenButtonText: string = 'Close';
-	private static readonly CreateTargetButtonText: string = 'Create target in portal';
+	// private static readonly CreateTargetButtonText: string = 'Create target in portal';
 
 	private _isOpen: boolean = false;
 	private dialog: azdata.window.Dialog | undefined;
@@ -73,7 +73,12 @@ export class SkuRecommendationResultsDialog {
 			}
 		}).component();
 
-		this.targetRecommendations?.forEach(recommendation => {
+		this.targetRecommendations?.forEach((recommendation, index) => {
+			if (index > 0) {
+				const separator = _view.modelBuilder.separator().withProps({ width: 750 }).component();
+				container.addItem(separator);
+			}
+
 			container.addItem(this.createRecommendation(_view, recommendation));
 		});
 		return container;
@@ -135,7 +140,7 @@ export class SkuRecommendationResultsDialog {
 		}
 		const recommendationContainer = _view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
-				'margin-bottom': '24px',
+				'margin-bottom': '20px',
 				'flex-direction': 'column',
 			}
 		}).component();
@@ -149,14 +154,6 @@ export class SkuRecommendationResultsDialog {
 			}).component();
 			recommendationContainer.addItem(databaseNameLabel);
 		}
-
-		// const recommendationsSection = _view.modelBuilder.text().withProps({
-		// 	value: constants.RECOMMENDATIONS,
-		// 	CSSStyles: {
-		// 		...styles.SECTION_HEADER_CSS,
-		// 		'margin-top': '4px'
-		// 	}
-		// }).component();
 
 		const targetDeploymentTypeLabel = _view.modelBuilder.text().withProps({
 			value: constants.TARGET_DEPLOYMENT_TYPE,
@@ -296,7 +293,7 @@ export class SkuRecommendationResultsDialog {
 			{ value: constants.SQL_TEMPDB },
 			{
 				value: recommendation.targetSku.tempDbDiskSizes!.length > 0
-					? recommendation.targetSku.logDiskSizes!.length + ' x ' + recommendation.targetSku.logDiskSizes![0].size
+					? constants.STORAGE_CONFIGURATION(recommendation.targetSku.logDiskSizes![0].size, recommendation.targetSku.logDiskSizes!.length)
 					: constants.EPHEMERAL_TEMPDB
 			},
 			{
@@ -308,13 +305,13 @@ export class SkuRecommendationResultsDialog {
 
 		const dataDiskTableRow: azdata.DeclarativeTableCellValue[] = [
 			{ value: constants.SQL_DATA_FILES },
-			{ value: recommendation.targetSku.dataDiskSizes!.length + ' x ' + recommendation.targetSku.dataDiskSizes![0].size },
+			{ value: constants.STORAGE_CONFIGURATION(recommendation.targetSku.dataDiskSizes![0].size, recommendation.targetSku.dataDiskSizes!.length) },
 			{ value: this.getCachingText(recommendation.targetSku.dataDiskSizes![0].caching) }
 		];
 
 		const logDiskTableRow: azdata.DeclarativeTableCellValue[] = [
 			{ value: constants.SQL_LOG_FILES },
-			{ value: recommendation.targetSku.logDiskSizes!.length + ' x ' + recommendation.targetSku.logDiskSizes![0].size },
+			{ value: constants.STORAGE_CONFIGURATION(recommendation.targetSku.logDiskSizes![0].size, recommendation.targetSku.logDiskSizes!.length) },
 			{ value: this.getCachingText(recommendation.targetSku.logDiskSizes![0].caching) }
 		];
 
@@ -452,7 +449,7 @@ export class SkuRecommendationResultsDialog {
 			ariaLabel: constants.RECOMMENDED_TARGET_STORAGE_CONFIGURATION,
 			columns: columns,
 			dataValues: storagePropertiesTableRows,
-			width: 700
+			width: 300
 		}).component();
 
 		const container = _view.modelBuilder.flexContainer().withLayout({
@@ -488,8 +485,9 @@ export class SkuRecommendationResultsDialog {
 			this.dialog.okButton.label = SkuRecommendationResultsDialog.OpenButtonText;
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 
-			this.dialog.cancelButton.label = SkuRecommendationResultsDialog.CreateTargetButtonText;
-			this._disposables.push(this.dialog.okButton.onClick(async () => console.log(SkuRecommendationResultsDialog.CreateTargetButtonText)));
+			this.dialog.cancelButton.hidden = true;
+			// this.dialog.cancelButton.label = SkuRecommendationResultsDialog.CreateTargetButtonText;
+			// this._disposables.push(this.dialog.okButton.onClick(async () => console.log(SkuRecommendationResultsDialog.CreateTargetButtonText)));
 
 			const dialogSetupPromises: Thenable<void>[] = [];
 			dialogSetupPromises.push(this.initializeDialog(this.dialog));

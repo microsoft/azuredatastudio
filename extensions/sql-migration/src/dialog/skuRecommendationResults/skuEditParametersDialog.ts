@@ -67,6 +67,7 @@ export class SkuEditParametersDialog {
 		const WIZARD_INPUT_COMPONENT_WIDTH = '300px';
 		const scaleFactorLabel = _view.modelBuilder.text().withProps({
 			value: constants.SCALE_FACTOR,
+			description: constants.SCALE_FACTOR_TOOLTIP,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
@@ -78,7 +79,8 @@ export class SkuEditParametersDialog {
 			validationErrorMessage: constants.INVALID_SCALE_FACTOR,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				'margin-top': '-1em'
+				'margin-top': '-1em',
+				'margin-bottom': '8px',
 			},
 		}).withValidation(c => {
 			if (Number(c.value) && Number(c.value) > 0) {
@@ -89,10 +91,11 @@ export class SkuEditParametersDialog {
 
 		const targetPercentileLabel = _view.modelBuilder.text().withProps({
 			value: constants.PERCENTAGE_UTILIZATION,
+			description: constants.PERCENTAGE_UTILIZATION_TOOLTIP,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				...styles.LABEL_CSS
+				...styles.LABEL_CSS,
 			}
 		}).component();
 		const createPercentageValues = () => {
@@ -114,7 +117,8 @@ export class SkuEditParametersDialog {
 			required: true,
 			fireOnTextChange: true,
 			CSSStyles: {
-				'margin-top': '-1em'
+				'margin-top': '-1em',
+				'margin-bottom': '8px',
 			},
 		}).component();
 
@@ -123,7 +127,7 @@ export class SkuEditParametersDialog {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				...styles.LABEL_CSS
+				...styles.LABEL_CSS,
 			}
 		}).component();
 		const buttonGroup = 'enablePreviewSKUs';
@@ -133,6 +137,7 @@ export class SkuEditParametersDialog {
 					'flex-direction': 'row',
 					'width': 'fit-content',
 					'margin-top': '-1em',
+					'margin-bottom': '8px',
 				}
 			}).component();
 		const enablePreviewButton = _view.modelBuilder.radioButton()
@@ -172,6 +177,16 @@ export class SkuEditParametersDialog {
 			disablePreviewButton
 		]);
 
+		const enablePreviewInfoBox = _view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.ENABLE_PREVIEW_SKU_INFO,
+				style: 'information',
+				CSSStyles: {
+					...styles.BODY_CSS,
+					// 'margin-top': '8px',
+				}
+			}).component();
+
 		container.addItems([
 			description,
 			scaleFactorLabel,
@@ -180,6 +195,7 @@ export class SkuEditParametersDialog {
 			this._targetPercentileDropdown,
 			enablePreviewLabel,
 			enablePreviewRadioButtonContainer,
+			enablePreviewInfoBox,
 		]);
 		return container;
 	}
