@@ -34,7 +34,7 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 			try {
 				const token = await azdata.accounts.getAccountSecurityToken(account, tenantId, azdata.AzureResource.ResourceManagement);
 				if (token) {
-					const subClient = new SubscriptionClient(new TokenCredentials(token.token, token.tokenType), {baseUri: account.properties.providerSettings.settings.armResource.endpoint});
+					const subClient = new SubscriptionClient(new TokenCredentials(token.token, token.tokenType), { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 					const newSubs = await subClient.subscriptions.list();
 					subscriptions.push(...newSubs.map(newSub => {
 						return {
