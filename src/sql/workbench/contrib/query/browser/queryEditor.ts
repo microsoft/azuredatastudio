@@ -86,7 +86,7 @@ export class QueryEditor extends EditorPane {
 
 	private editorMemento: IEditorMemento<IQueryEditorViewState>;
 
-	private resultsWriterStatus: QueryResultsWriterStatus;
+	private resultsWriterStatus: { [uri: string]: QueryResultsWriterStatus } = {};
 
 	//actions
 	private _runQueryAction: actions.RunQueryAction;
@@ -119,8 +119,6 @@ export class QueryEditor extends EditorPane {
 		this.editorMemento = this.getEditorMemento<IQueryEditorViewState>(editorGroupService, QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY, 100);
 
 		this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
-
-		this.resultsWriterStatus = new QueryResultsWriterStatus();
 
 		// Clear view state for deleted files
 		this._register(fileService.onDidFilesChange(e => this.onFilesChanged(e)));
@@ -661,10 +659,23 @@ export class QueryEditor extends EditorPane {
 	}
 
 	public get queryResultsWriterStatus() {
-		return this.resultsWriterStatus;
+		let writerStatus = this.resultsWriterStatus[this.input.uri];
+		if (writerStatus === undefined) {
+			writerStatus = new QueryResultsWriterStatus();
+			this.resultsWriterStatus[this.input.uri] = writerStatus;
+		}
+
+		return writerStatus;
 	}
 
 	public set queryResultsWriterMode(mode: QueryResultsWriterMode) {
-		this.resultsWriterStatus.mode = mode;
+		let writerStatus = this.resultsWriterStatus[this.input.uri];
+		if (writerStatus === undefined) {
+			writerStatus = new QueryResultsWriterStatus(mode);
+			this.resultsWriterStatus[this.input.uri] = writerStatus;
+		}
+		else {
+			this.resultsWriterStatus[this.input.uri].mode = mode;
+		}
 	}
 }
