@@ -40,7 +40,7 @@ import { NodeSearchWidget } from 'sql/workbench/contrib/queryplan2/browser/widge
 let azdataGraph = azdataGraphModule();
 
 export class QueryPlan2Tab implements IPanelTab {
-	public readonly title = localize('queryPlanTitle', "Query Plan");
+	public readonly title = localize('queryPlanTitle', "Query Plan (Preview)");
 	public readonly identifier = 'QueryPlan2Tab';
 	public readonly view: QueryPlan2View;
 
@@ -304,14 +304,14 @@ export class QueryPlan2 implements ISashLayoutProvider {
 	}
 
 	private populateProperties(props: azdata.ExecutionPlanGraphElementProperty[]) {
-		return props.filter(e => isString(e.value) && e.showInTooltip)
-			.sort(e => e.displayOrder)
+		return props.filter(e => isString(e.displayValue) && e.showInTooltip)
+			.sort((a, b) => a.displayOrder - b.displayOrder)
 			.map(e => {
 				this.graphElementPropertiesSet.add(e.name);
 				return {
 					name: e.name,
-					value: e.value,
-					isLongString: e.isLongString
+					value: e.displayValue,
+					isLongString: e.positionAtBottom
 				};
 			});
 	}
@@ -493,7 +493,6 @@ class SavePlanFile extends Action {
 	public override async run(context: QueryPlan2): Promise<void> {
 	}
 }
-
 
 class CustomZoomAction extends Action {
 	public static ID = 'qp.customZoom';

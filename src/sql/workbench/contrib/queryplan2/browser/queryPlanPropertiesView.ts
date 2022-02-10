@@ -13,10 +13,10 @@ import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
-import { isString } from 'vs/base/common/types';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { removeLineBreaks } from 'sql/base/common/strings';
+import { isString } from 'vs/base/common/types';
 
 
 export class QueryPlanPropertiesView {
@@ -200,13 +200,13 @@ export class QueryPlanPropertiesView {
 			let row = {};
 			row['name'] = '\t'.repeat(indent) + p.name;
 			row['parent'] = parentIndex;
-			rows.push(row);
 			if (!isString(p.value)) {
 				row['value'] = '';
 				this.convertPropertiesToTableRows(p.value, rows.length - 1, indent + 2, rows);
 			} else {
 				row['value'] = p.value;
 			}
+			rows.push(row);
 		});
 		return rows;
 	}
