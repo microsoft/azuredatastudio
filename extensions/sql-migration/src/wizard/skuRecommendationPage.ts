@@ -230,12 +230,15 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this.migrationStateModel._vmDbs = this.migrationStateModel.savedInfo.databaseList;
 			}
 
-			// performance data was collected
-			if (this.migrationStateModel.savedInfo.skuRecommendationPerformanceDataSource) {
+			// restore data collection in progress state only if data collection is actually in progress
+			await this.migrationStateModel.refreshPerfDataCollection();
+			if (this.migrationStateModel._perfDataCollectionIsCollecting) {
 				this.migrationStateModel._skuRecommendationPerformanceDataSource = this.migrationStateModel.savedInfo.skuRecommendationPerformanceDataSource!;
 				this.migrationStateModel._skuRecommendationPerformanceLocation = this.migrationStateModel.savedInfo.skuRecommendationPerformanceLocation!;
 				this.migrationStateModel._perfDataCollectionStartDate = this.migrationStateModel.savedInfo.perfDataCollectionStartDate;
 				this.migrationStateModel._perfDataCollectionStopDate = this.migrationStateModel.savedInfo.perfDataCollectionStopDate;
+
+				// to-do: setup a timer
 			}
 		}
 	}

@@ -203,6 +203,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _perfDataCollectionLastRefreshedDate!: Date;
 	public _perfDataCollectionMessages!: string[];
 	public _perfDataCollectionErrors!: string[];
+	public _perfDataCollectionIsCollecting!: boolean;
 
 	public refreshPerfDataCollectionFrequency: SupportedAutoRefreshIntervals = 30000;		// TO-DO: update value
 	private _autoRefreshPerfDataCollectionHandle!: NodeJS.Timeout;
@@ -497,6 +498,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			this._perfDataCollectionLastRefreshedDate = this._refreshPerfDataCollectionApiResponse.refreshTime;
 			this._perfDataCollectionMessages = this._refreshPerfDataCollectionApiResponse.messages;
 			this._perfDataCollectionErrors = this._refreshPerfDataCollectionApiResponse.errors;
+			this._perfDataCollectionIsCollecting = this._refreshPerfDataCollectionApiResponse.isCollecting;
 
 			if (this._perfDataCollectionErrors?.length > 0) {
 				void vscode.window.showInformationMessage(constants.PERF_DATA_COLLECTION_ERROR(this._assessmentApiResponse?.assessmentResult?.name, this._perfDataCollectionErrors));
