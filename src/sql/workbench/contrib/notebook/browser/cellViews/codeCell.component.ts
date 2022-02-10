@@ -33,7 +33,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 
 	// On click to edit code cell in notebook
 	@HostListener('click', ['$event']) onClick() {
-		this.toggleEditMode();
+		this.toggleEditMode(true);
 	}
 
 	private _activeCellId: string;
@@ -102,8 +102,8 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 
 	}
 
-	public toggleEditMode(): void {
-		this.cellModel.isEditMode = !this.cellModel.isEditMode;
+	public toggleEditMode(isEditMode?: boolean): void {
+		this.cellModel.isEditMode = isEditMode ? isEditMode : !this.cellModel.isEditMode;
 		this._changeRef.detectChanges();
 	}
 
