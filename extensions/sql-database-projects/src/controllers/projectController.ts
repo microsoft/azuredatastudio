@@ -1261,7 +1261,7 @@ export class ProjectsController {
 			const newProjFilePath = await this.createNewProject({
 				newProjName: model.projName,
 				folderUri: vscode.Uri.file(newProjFolderUri),
-				projectTypeId: constants.emptySqlDatabaseProjectTypeId
+				projectTypeId: model.sdkStyle ? constants.emptySqlDatabaseSdkProjectTypeId : constants.emptySqlDatabaseProjectTypeId
 			});
 
 			model.filePath = path.dirname(newProjFilePath);
@@ -1271,7 +1271,9 @@ export class ProjectsController {
 			await this.createProjectFromDatabaseApiCall(model); // Call ExtractAPI in DacFx Service
 			let fileFolderList: vscode.Uri[] = model.extractTarget === mssql.ExtractTarget.file ? [vscode.Uri.file(model.filePath)] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
 
-			await project.addToProject(fileFolderList); // Add generated file structure to the project
+			if (!model.sdkStyle) {
+				await project.addToProject(fileFolderList); // Add generated file structure to the project
+			}
 
 			// add project to workspace
 			const workspaceApi = utils.getDataWorkspaceExtensionApi();
