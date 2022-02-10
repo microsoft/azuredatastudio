@@ -113,17 +113,19 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		if (delta.addedDocuments) {
 			for (const data of delta.addedDocuments) {
 				const resource = URI.revive(data.uri);
-				ok(!this._documents.has(resource.toString()), `document '${resource} already exists!'`);
-
-				const documentData = new ExtHostNotebookDocumentData(
-					this._proxy,
-					resource,
-					data.providerId,
-					data.isDirty,
-					data.cells
-				);
-				this._documents.set(resource.toString(), documentData);
-				addedDocuments.push(documentData);
+				// Can potentially have a document with this URI already if it was created
+				// separately from the notebook editor.
+				if (!this._documents.has(resource.toString())) {
+					const documentData = new ExtHostNotebookDocumentData(
+						this._proxy,
+						resource,
+						data.providerId,
+						data.isDirty,
+						data.cells
+					);
+					this._documents.set(resource.toString(), documentData);
+					addedDocuments.push(documentData);
+				}
 			}
 		}
 
