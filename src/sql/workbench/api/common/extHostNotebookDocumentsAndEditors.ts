@@ -226,11 +226,29 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 			options.providerId = providerId;
 			options.initialContent = JSON.stringify(contents);
 		}
-		let uri = await this._proxy.$tryCreateNotebookDocument(options);
-		if (uri) {
-			return URI.revive(uri);
+		let uriComps = await this._proxy.$tryCreateNotebookDocument(options);
+		if (uriComps) {
+			let uri = URI.revive(uriComps);
+			let notebookCells = contents?.cells?.map<azdata.nb.NotebookCell>(cellContents => {
+				return {
+					contents: cellContents,
+					uri: undefined
+				};
+			});
+
+			let documentData = new ExtHostNotebookDocumentData(
+				this._proxy,
+				uri,
+				providerId,
+				false,
+				notebookCells ?? []
+			);
+			this._documents.set(uri.toString(), documentData);
+			this._onDidOpenNotebook.fire(documentData.document);
+
+			return URI.revive(uriComps);
 		} else {
-			throw new Error(`Failed to create notebook document ${uri.toString()}.`);
+			throw new Error(`Failed to create notebook document for provider "${providerId}".`);
 		}
 	}
 
