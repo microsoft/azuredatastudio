@@ -765,6 +765,9 @@
     <trans-unit id="scriptFriendlyName">
       <source xml:lang="en">Script</source>
     </trans-unit>
+    <trans-unit id="sdkStyleProject">
+      <source xml:lang="en">SDK-style project</source>
+    </trans-unit>
     <trans-unit id="sec">
       <source xml:lang="en">sec</source>
     </trans-unit>

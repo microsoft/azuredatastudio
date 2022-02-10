@@ -4456,12 +4456,6 @@ Error: {1}</source>
     <trans-unit id="welcomePage.name">
       <source xml:lang="en">Name</source>
     </trans-unit>
-    <trans-unit id="welcomePage.preview">
-      <source xml:lang="en">Preview</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.previewBody">
-      <source xml:lang="en">This feature page is in preview. Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development.</source>
-    </trans-unit>
     <trans-unit id="welcomePage.resources">
       <source xml:lang="en">Resources</source>
     </trans-unit>
@@ -4678,107 +4672,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="welcomePage.willReloadAfterInstallingExtensionPack">
       <source xml:lang="en">The window will reload after installing additional support for {0}.</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="welcomePage.azdata">
-      <source xml:lang="en">Azure Data Studio</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.azdataBlog">
-      <source xml:lang="en">Discover what's new in the latest release</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.azdataBlogDescription">
-      <source xml:lang="en">New monthly blog posts each month showcasing our new features</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.colorTheme">
-      <source xml:lang="en">Color theme</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.colorThemeDescription">
-      <source xml:lang="en">Make the editor and your code look the way you love</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.customize">
-      <source xml:lang="en">Customize</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.deploy">
-      <source xml:lang="en">Deploy</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.extensionDescription">
-      <source xml:lang="en">Download extensions that you need, including the SQL Server Admin pack and more</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.extensions">
-      <source xml:lang="en">Extensions</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.followTwitter">
-      <source xml:lang="en">Follow us on Twitter</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.followTwitterDescription">
-      <source xml:lang="en">Keep up to date with how the community is using Azure Data Studio and to talk directly with the engineers.</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.gettingStarted">
-      <source xml:lang="en">Getting started</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.gitHubRepository">
-      <source xml:lang="en">GitHub repository</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.help">
-      <source xml:lang="en">Help</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.keyboardShortcut">
-      <source xml:lang="en">Keyboard Shortcuts</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.keyboardShortcutDescription">
-      <source xml:lang="en">Find your favorite commands and customize them</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.learn">
-      <source xml:lang="en">Learn</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.moreRecent">
-      <source xml:lang="en">More...</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.newConnection">
-      <source xml:lang="en">New connection</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.newDeployment">
-      <source xml:lang="en">New Deployment…</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.newNotebook">
-      <source xml:lang="en">New notebook</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.newQuery">
-      <source xml:lang="en">New query</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.noRecentFolders">
-      <source xml:lang="en">No recent folders</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.openFileLinuxPC">
-      <source xml:lang="en">Open file</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.openFileMac">
-      <source xml:lang="en">Open file</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.productDocumentation">
-      <source xml:lang="en">Documentation</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.recent">
-      <source xml:lang="en">Recent</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.releaseNotes">
-      <source xml:lang="en">Release notes</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.reportIssue">
-      <source xml:lang="en">Report issue or feature request</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.showCommands">
-      <source xml:lang="en">Find and run all commands</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.showCommandsDescription">
-      <source xml:lang="en">Rapidly access and search commands from the Command Palette ({0})</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.showOnStartup">
-      <source xml:lang="en">Show welcome page on startup</source>
-    </trans-unit>
-    <trans-unit id="welcomePage.start">
-      <source xml:lang="en">Start</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/accountManagement/browser/accountDialog" source-language="en" datatype="plaintext"><body>
