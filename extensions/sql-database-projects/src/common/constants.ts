@@ -256,6 +256,7 @@ export const folderStructureLabel = localize('folderStructureLabel', "Folder str
 export const WorkspaceFileExtension = '.code-workspace';
 export const browseEllipsisWithIcon = `$(folder) ${localize('browseEllipsis', "Browse...")}`;
 export const selectProjectLocation = localize('selectProjectLocation', "Select project location");
+export const sdkStyleProject = localize('sdkStyleProject', 'SDK-style project');
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
 
@@ -538,6 +539,7 @@ export const hostFileName = 'host.json';
 export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
 export const placeHolderObject = '[dbo].[table1]';
 export const sqlBindingsHelpLink = 'https://github.com/Azure/azure-functions-sql-extension/blob/main/README.md';
+export const passwordPlaceholder = '******';
 
 export const input = localize('input', "Input");
 export const output = localize('output', "Output");
@@ -570,4 +572,9 @@ export const connectionProfile = localize('connectionProfile', 'Select a connect
 export const userConnectionString = localize('userConnectionString', 'Enter connection string');
 export const selectConnectionString = localize('selectConnectionString', 'Select SQL connection string method');
 export const selectConnectionError = (err?: any) => err ? localize('selectConnectionError', "Failed to set connection string app setting: {0}", utils.getErrorMessage(err)) : localize('unableToSetConnectionString', "Failed to set connection string app setting");
-
+export const includePassword = localize('includePassword', 'Do you want to include the password from this connection in your local.settings.json file?');
+export const enterPasswordPrompt = localize('enterPasswordPrompt', 'Enter the password to be used for the connection string');
+export const enterPasswordManually = localize('enterPasswordManually', 'Enter password or press escape to cancel');
+export const userPasswordLater = localize('userPasswordLater', 'In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.');
+export const openFile = localize('openFile', "Open File");
+export const closeButton = localize('closeButton', "Close");

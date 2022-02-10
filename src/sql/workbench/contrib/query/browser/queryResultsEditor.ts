@@ -146,8 +146,8 @@ export class QueryResultsEditor extends EditorPane {
 		this.resultsView.chartData(dataId);
 	}
 
-	public showQueryPlan(xml: string) {
-		this.resultsView.showPlan(xml);
+	public showTopOperation(xml: string) {
+		this.resultsView.showTopOperations(xml);
 	}
 
 	public registerQueryModelViewTab(title: string, componentId: string): void {

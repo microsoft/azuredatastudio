@@ -231,7 +231,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._register(this._editorInput);
 		this._register(this._editorModel.onDidChangeContent(e => {
 			this.cellModel.modelContentChangedEvent = e;
-
 			let originalSourceLength = this.cellModel.source.length;
 			this.cellModel.source = this._editorModel.getValue();
 			if (this._cellModel.isCollapsed && originalSourceLength !== this.cellModel.source.length) {
@@ -269,6 +268,10 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			}
 			this._layoutEmitter.fire();
 		}));
+		this._register(this.cellModel.onCellModeChanged((isEditMode) => {
+			this.onCellModeChanged(isEditMode);
+		}));
+
 		this.layout();
 
 		if (this._cellModel.isCollapsed) {
@@ -420,5 +423,17 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			editorWidget.setHiddenAreas([]);
 		}
 		this._editor.setHeightToScrollHeight(false, isCollapsed);
+	}
+
+	private onCellModeChanged(isEditMode: boolean): void {
+		if (this.cellModel.id === this._activeCellId || this._activeCellId === '') {
+			if (isEditMode) {
+				this._editor.getContainer().contentEditable = 'true';
+				this._editor.getControl().focus();
+			} else {
+				this._editor.getContainer().contentEditable = 'false';
+				(document.activeElement as HTMLElement).blur();
+			}
+		}
 	}
 }
