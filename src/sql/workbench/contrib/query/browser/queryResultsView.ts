@@ -182,7 +182,7 @@ export class QueryResultsView extends Disposable {
 		this.chartTab = this._register(new ChartTab(instantiationService));
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: true }));
 		this._register(attachTabbedPanelStyler(this._panelView, themeService));
-		this.qp2Tab = this._register(new QueryPlan2Tab());
+		this.qp2Tab = this._register(this.instantiationService.createInstance(QueryPlan2Tab));
 		this.topOperationsTab = this._register(new TopOperationsTab(instantiationService));
 
 		this._panelView.pushTab(this.resultsTab);
@@ -251,6 +251,8 @@ export class QueryResultsView extends Disposable {
 				if (!this.input.state.visibleTabs.has(this.qp2Tab.identifier)) {
 					this.showPlan2();
 				}
+				// Adding graph to state and tab as they become available
+				this.input.state.queryPlan2State.graphs.push(...e.planGraphs);
 				this.qp2Tab.view.addGraphs(e.planGraphs);
 			}
 		}));
@@ -324,6 +326,7 @@ export class QueryResultsView extends Disposable {
 
 			if (input) {
 				this.resultsTab.view.state = input.state.gridPanelState;
+				this.qp2Tab.view.addGraphs(input.state.queryPlan2State.graphs);
 				this.topOperationsTab.view.setState(input.state.topOperationsState);
 				this.chartTab.view.state = input.state.chartState;
 				this.dynamicModelViewTabs.forEach((dynamicTab: QueryModelViewTab) => {
@@ -432,6 +435,7 @@ export class QueryResultsView extends Disposable {
 	public hidePlan2() {
 		if (this._panelView.contains(this.qp2Tab)) {
 			this.qp2Tab.clear();
+			this.input.state.queryPlan2State.clearQueryPlan2State();
 			this._panelView.removeTab(this.qp2Tab.identifier);
 		}
 	}

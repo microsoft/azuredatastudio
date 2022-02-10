@@ -6,16 +6,33 @@
 import 'vs/css!./media/queryPlan2';
 import type * as azdata from 'azdata';
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
-import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 import { dispose } from 'vs/base/common/lifecycle';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import * as DOM from 'vs/base/browser/dom';
-import { PropertiesAction } from 'sql/workbench/contrib/queryplan2/browser/actions/propertiesAction';
 import * as azdataGraphModule from 'azdataGraph';
-import { escape } from 'sql/base/common/strings';
+import { queryPlanNodeIconPaths } from 'sql/workbench/contrib/queryplan2/browser/constants';
+import { isString } from 'vs/base/common/types';
+import { PlanHeader } from 'sql/workbench/contrib/queryplan2/browser/planHeader';
+import { GraphElementPropertiesView } from 'sql/workbench/contrib/queryplan2/browser/graphElementPropertiesView';
+import { Action } from 'vs/base/common/actions';
+import { Codicon } from 'vs/base/common/codicons';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
+import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
+import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { editorBackground, foreground, textLinkForeground } from 'vs/platform/theme/common/colorRegistry';
+import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { ISashEvent, ISashLayoutProvider, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
+import { Progress } from 'vs/platform/progress/common/progress';
+import { CancellationToken } from 'vs/base/common/cancellation';
+
 let azdataGraph = azdataGraphModule();
 
 export class QueryPlan2Tab implements IPanelTab {
@@ -23,8 +40,10 @@ export class QueryPlan2Tab implements IPanelTab {
 	public readonly identifier = 'QueryPlan2Tab';
 	public readonly view: QueryPlan2View;
 
-	constructor() {
-		this.view = new QueryPlan2View();
+	constructor(
+		@IInstantiationService instantiationService: IInstantiationService,
+	) {
+		this.view = instantiationService.createInstance(QueryPlan2View);
 	}
 
 	public dispose() {
@@ -34,12 +53,18 @@ export class QueryPlan2Tab implements IPanelTab {
 	public clear() {
 		this.view.clear();
 	}
+
 }
 
 export class QueryPlan2View implements IPanelView {
 	private _qps?: QueryPlan2[] = [];
-	private _graphs?: azdata.QueryPlanGraph[] = [];
-	private _container = DOM.$('.qp-container');
+	private _graphs?: azdata.ExecutionPlanGraph[] = [];
+	private _container = DOM.$('.qps-container');
+
+	constructor(
+		@IInstantiationService private instantiationService: IInstantiationService,
+	) {
+	}
 
 	public render(container: HTMLElement): void {
 		container.appendChild(this._container);
@@ -63,14 +88,16 @@ export class QueryPlan2View implements IPanelView {
 		DOM.clearNode(this._container);
 	}
 
-	public addGraphs(newGraphs: azdata.QueryPlanGraph[]) {
-		newGraphs.forEach(g => {
-			const qp2 = new QueryPlan2(this._container, this._qps.length + 1);
-			qp2.graph = g;
-			this._qps.push(qp2);
-			this._graphs.push(g);
-			this.updateRelativeCosts();
-		});
+	public addGraphs(newGraphs: azdata.ExecutionPlanGraph[] | undefined) {
+		if (newGraphs) {
+			newGraphs.forEach(g => {
+				const qp2 = this.instantiationService.createInstance(QueryPlan2, this._container, this._qps.length + 1);
+				qp2.graph = g;
+				this._qps.push(qp2);
+				this._graphs.push(g);
+				this.updateRelativeCosts();
+			});
+		}
 	}
 
 	private updateRelativeCosts() {
@@ -80,420 +107,130 @@ export class QueryPlan2View implements IPanelView {
 
 		if (sum > 0) {
 			this._qps.forEach(qp => {
-				qp.relativeCost = ((qp.graph.root.subTreeCost + qp.graph.root.cost) / sum) * 100;
+				qp.planHeader.relativeCost = ((qp.graph.root.subTreeCost + qp.graph.root.cost) / sum) * 100;
 			});
 		}
 	}
 }
 
-export class QueryPlan2 {
-	private _graph?: azdata.QueryPlanGraph;
-	private _relativeCost?: globalThis.Text;
-	private _actionBar: ActionBar;
-	private _table: Slick.Grid<any>;
-	private _dataView: Slick.Data.DataView<any>;
-	private _container: HTMLElement;
-	private _actionBarContainer: HTMLElement;
-	private _data: any[];
-	private _iconMap: any = new Object();
-	private _iconPaths: any = new Object();
+export class QueryPlan2 implements ISashLayoutProvider {
+	private _graph?: azdata.ExecutionPlanGraph;
 
-	public propContainer: HTMLElement;
+	private _container: HTMLElement;
+
+	private _actionBarContainer: HTMLElement;
+	private _actionBar: ActionBar;
+
+	public planHeader: PlanHeader;
+	private _planContainer: HTMLElement;
+	private _planHeaderContainer: HTMLElement;
+
+	public propertiesView: GraphElementPropertiesView;
+	private _propContainer: HTMLElement;
+
+	private _azdataGraphDiagram: any;
 
 	constructor(
 		parent: HTMLElement,
 		private _graphIndex: number,
-
+		@IInstantiationService public readonly _instantiationService: IInstantiationService,
+		@IThemeService private readonly _themeService: IThemeService,
+		@IContextViewService public readonly contextViewService: IContextViewService,
+		@IUntitledTextEditorService private readonly _untitledEditorService: IUntitledTextEditorService,
+		@IEditorService private readonly editorService: IEditorService
 	) {
+		// parent container for query plan.
 		this._container = DOM.$('.query-plan');
 		parent.appendChild(this._container);
+		const sashContainer = DOM.$('.query-plan-sash');
+		parent.appendChild(sashContainer);
 
+		const sash = new Sash(sashContainer, this, { orientation: Orientation.HORIZONTAL });
+		let originalHeight = this._container.offsetHeight;
+		let originalTableHeight = 0;
+		let change = 0;
+		sash.onDidStart((e: ISashEvent) => {
+			originalHeight = this._container.offsetHeight;
+			originalTableHeight = this.propertiesView.tableHeight;
+		});
 
-		this._actionBarContainer = DOM.$('.actionbar-container');
+		/**
+		 * Using onDidChange for the smooth resizing of the graph diagram
+		 */
+		sash.onDidChange((evt: ISashEvent) => {
+			change = evt.startY - evt.currentY;
+			const newHeight = originalHeight - change;
+			if (newHeight < 200) {
+				return;
+			}
+			this._container.style.height = `${newHeight}px`;
+		});
+
+		/**
+		 * Resizing properties window table only once at the end as it is a heavy operation and worsens the smooth resizing experience
+		 */
+		sash.onDidEnd(() => {
+			this.propertiesView.tableHeight = originalTableHeight - change;
+		});
+
+		this._planContainer = DOM.$('.plan');
+		this._container.appendChild(this._planContainer);
+
+		// container that holds plan header info
+		this._planHeaderContainer = DOM.$('.header');
+		this._planContainer.appendChild(this._planHeaderContainer);
+		this.planHeader = this._instantiationService.createInstance(PlanHeader, this._planHeaderContainer, {
+			planIndex: this._graphIndex,
+		});
+
+		// container properties
+		this._propContainer = DOM.$('.properties');
+		this._container.appendChild(this._propContainer);
+		this.propertiesView = new GraphElementPropertiesView(this._propContainer, this._themeService);
+
+		// container that holds actionbar icons
+		this._actionBarContainer = DOM.$('.action-bar-container');
+		this._container.appendChild(this._actionBarContainer);
 		this._actionBar = new ActionBar(this._actionBarContainer, {
 			orientation: ActionsOrientation.VERTICAL, context: this
 		});
 
-		this.propContainer = DOM.$('.properties-container');
-		const propHeader = document.createElement('div');
-		propHeader.className = 'properties-header';
-		propHeader.innerText = 'Properties';
-		this.propContainer.appendChild(propHeader);
-
-		this.propContainer.style.visibility = 'hidden';
-
-		this._dataView = new Slick.Data.DataView({ inlineFilters: false });
-		let self = this;
-		this._data = [];
-		const TaskNameFormatter = function (row, cell, value, columnDef, dataContext) {
-			value = escape(value);
-			const spacer = '<span style="display:inline-block;height:1px;width' + (15 * dataContext['indent']) + 'px"></span>';
-			const idx = self._dataView.getIdxById(dataContext.id);
-			if (self._data[idx + 1] && self._data[idx + 1].indent > self._data[idx].indent) {
-				if (dataContext._collapsed) {
-					return spacer + '<span class="properties-toggle expand"></span>&nbsp;' + value;
-				} else {
-					return spacer + '<span class="properties-toggle collapse"></span>&nbsp;' + value;
-				}
-			} else {
-				return spacer + '<span class="properties-toggle"></span>&nbsp;' + value;
-			}
-		};
-
-		const columns: Slick.Column<any>[] = [
-			{
-				id: 'name',
-				name: 'Name',
-				field: 'name',
-				width: 250,
-				editor: Slick.Editors.Text,
-				formatter: TaskNameFormatter,
-				headerCssClass: 'prop-table-header'
-			},
-			{
-				id: 'value',
-				name: 'Value',
-				field: 'propValue',
-				width: 250,
-				editor: Slick.Editors.Text,
-				headerCssClass: 'prop-table-header'
-			}
-		];
-
-		const options: Slick.GridOptions<any> = {
-			editable: false,
-			enableAddRow: false,
-			enableCellNavigation: true,
-			autoHeight: true
-		};
-
-		const tableContainer = DOM.$('.table-container');
-		tableContainer.style.height = '500px';
-		tableContainer.style.width = '490px';
-		this.propContainer.appendChild(tableContainer);
-		this._table = new Slick.Grid(tableContainer, this._dataView, columns, options);
-
-		this._table.onClick.subscribe((e: any, args) => {
-
-			const item = this._dataView.getItem(args.row);
-			if (item) {
-				item._collapsed = !item._collapsed;
-				this._dataView.updateItem(item.id, item);
-			}
-			e.stopImmediatePropagation();
-		});
-
-		this._dataView.setFilter((item) => {
-			if (item.parent !== null) {
-				let parent = this._data[item.parent];
-				while (parent) {
-					if (parent._collapsed) {
-						return false;
-					}
-
-					parent = this._data[parent.parent];
-				}
-			}
-			return true;
-		});
-
-
-		// wire up model events to drive the grid
-		this._dataView.onRowCountChanged.subscribe((e, args) => {
-			this._table.updateRowCount();
-			this._table.render();
-		});
-
-		this._dataView.onRowsChanged.subscribe((e, args) => {
-			this._table.invalidateRows(args.rows);
-			this._table.render();
-		});
 
 		const actions = [
-			new PropertiesAction()
+			new SaveXml(),
+			new OpenGraphFile(),
+			new OpenQueryAction(),
+			new SearchNodeAction(),
+			new ZoomInAction(),
+			new ZoomOutAction(),
+			new ZoomToFitAction(),
+			new CustomZoomAction(),
+			new PropertiesAction(),
 		];
-		this._actionBar.push(actions, { icon: true, label: false });
+		this._actionBar.pushAction(actions, { icon: true, label: false });
 
-		this._iconMap['Adaptive_Join_32x.ico'] = 'adaptiveJoin';
-		this._iconMap['Assert_32x.ico'] = 'assert';
-		this._iconMap['Bitmap_32x.ico'] = 'bitmap';
-		this._iconMap['Clustered_index_delete_32x.ico'] = 'clusteredIndexDelete';
-		this._iconMap['Clustered_index_insert_32x.ico'] = 'ClusteredIndexInsert';
-		this._iconMap['Clustered_index_scan_32x.ico'] = 'ClusteredIndexScan';
-		this._iconMap['Clustered_index_seek_32x.ico'] = 'ClusteredIndexSeek';
-		this._iconMap['Clustered_index_update_32x.ico'] = 'ClusteredIndexUpdate';
-		this._iconMap['Clustered_index_merge_32x.icoo'] = 'ClusteredIndexMerge';
 
-
-		this._iconMap['Filter_32x.ico'] = 'filter';
-		this._iconMap['Clustered_index_scan_32x.ico'] = 'clusteredIndexScan';
-		this._iconMap['Clustered_index_seek_32x.ico'] = 'clusteredIndexSeek';
-		this._iconMap['Compute_scalar_32x.ico'] = 'computeScalar';
-		this._iconMap['Concatenation_32x.ico'] = 'concatenation';
-
-		this._iconMap['Concatenation_32x.ico'] = 'concatenation';
-
-		this._iconMap['Nested_loops_32x.ico'] = 'nestedLoops';
-		this._iconMap['Result_32x.ico'] = 'result';
-		this._iconMap['Table_spool_32x.ico'] = 'tableSpool';
-		this._iconMap['Top_32x.ico'] = 'top';
-		let imageBasePath = URI.parse(decodeURI(require.toUrl('./images/icons/'))).fsPath;
-		this._iconPaths =
-		{
-			// generic icons
-			iteratorCatchAll: imageBasePath + 'iterator_catch_all.png',
-
-			cursorCatchAll: imageBasePath + 'cursor_catch_all.png',
-
-			languageConstructCatchAll: imageBasePath + 'language_construct_catch_all.png',
-
-			// operator icons
-			adaptiveJoin: imageBasePath + 'adaptive_join.png',
-
-			assert: imageBasePath + 'assert.png',
-
-			bitmap: imageBasePath + 'bitmap.png',
-
-			clusteredIndexDelete: imageBasePath + 'clustered_index_delete.png',
-
-			clusteredIndexInsert: imageBasePath + 'clustered_index_insert.png',
-
-			clusteredIndexScan: imageBasePath + 'clustered_index_scan.png',
-
-			clusteredIndexSeek: imageBasePath + 'clustered_index_seek.png',
-
-			clusteredIndexUpdate: imageBasePath + 'clustered_index_update.png',
-
-			clusteredIndexMerge: imageBasePath + 'clustered_index_merge.png',
-
-			clusteredUpdate: imageBasePath + 'clustered_update.png',
-
-			collapse: imageBasePath + 'collapse.png',
-
-			computeScalar: imageBasePath + 'compute_scalar.png',
-
-			concatenation: imageBasePath + 'concatenation.png',
-
-			constantScan: imageBasePath + 'constant_scan.png',
-
-			deletedScan: imageBasePath + 'deleted_scan.png',
-
-			filter: imageBasePath + 'filter.png',
-
-			hashMatch: imageBasePath + 'hash_match.png',
-
-			indexDelete: imageBasePath + 'index_delete.png',
-
-			indexInsert: imageBasePath + 'index_insert.png',
-
-			indexScan: imageBasePath + 'index_scan.png',
-
-			columnstoreIndexDelete: imageBasePath + 'columnstore_index_delete.png',
-
-			columnstoreIndexInsert: imageBasePath + 'columnstore_index_insert.png',
-
-			columnstoreIndexMerge: imageBasePath + 'columnstore_index_merge.png',
-
-			columnstoreIndexScan: imageBasePath + 'columnstore_index_scan.png',
-
-			columnstoreIndexUpdate: imageBasePath + 'columnstore_index_update.png',
-
-			indexSeek: imageBasePath + 'index_seek.png',
-
-			indexSpool: imageBasePath + 'index_spool.png',
-
-			indexUpdate: imageBasePath + 'index_update.png',
-
-			insertedScan: imageBasePath + 'inserted_scan.png',
-
-			logRowScan: imageBasePath + 'log_row_scan.png',
-
-			mergeInterval: imageBasePath + 'merge_interval.png',
-
-			mergeJoin: imageBasePath + 'merge_join.png',
-
-			nestedLoops: imageBasePath + 'nested_loops.png',
-
-			parallelism: imageBasePath + 'parallelism.png',
-
-			parameterTableScan: imageBasePath + 'parameter_table_scan.png',
-
-			print: imageBasePath + 'print.png',
-
-			rank: imageBasePath + 'rank.png',
-
-			foreignKeyReferencesCheck: imageBasePath + 'foreign_key_references_check.png',
-
-			remoteDelete: imageBasePath + 'remote_delete.png',
-
-			remoteIndexScan: imageBasePath + 'remote_index_scan.png',
-
-			remoteIndexSeek: imageBasePath + 'remote_index_seek.png',
-
-			remoteInsert: imageBasePath + 'remote_insert.png',
-
-			remoteQuery: imageBasePath + 'remote_query.png',
-
-			remoteScan: imageBasePath + 'remote_scan.png',
-
-			remoteUpdate: imageBasePath + 'remote_update.png',
-
-			ridLookup: imageBasePath + 'rid_lookup.png',
-
-			rowCountSpool: imageBasePath + 'row_count_spool.png',
-
-			segment: imageBasePath + 'segment.png',
-
-			sequence: imageBasePath + 'sequence.png',
-
-			sequenceProject: imageBasePath + 'sequence_project.png',
-
-			sort: imageBasePath + 'sort.png',
-
-			split: imageBasePath + 'split.png',
-
-			streamAggregate: imageBasePath + 'stream_aggregate.png',
-
-			switchStatement: imageBasePath + 'switch.png',
-
-			tableValuedFunction: imageBasePath + 'table_valued_function.png',
-
-			tableDelete: imageBasePath + 'table_delete.png',
-
-			tableInsert: imageBasePath + 'table_insert.png',
-
-			tableScan: imageBasePath + 'table_scan.png',
-
-			tableSpool: imageBasePath + 'table_spool.png',
-
-			tableUpdate: imageBasePath + 'table_update.png',
-
-			tableMerge: imageBasePath + 'table_merge.png',
-
-			tfp: imageBasePath + 'predict.png',
-
-			top: imageBasePath + 'top.png',
-
-			udx: imageBasePath + 'udx.png',
-
-			batchHashTableBuild: imageBasePath + 'batch_hash_table_build.png',
-
-			windowSpool: imageBasePath + 'table_spool.png',
-
-			windowAggregate: imageBasePath + 'window_aggregate.png',
-
-			// cursor operators
-			fetchQuery: imageBasePath + 'fetch_query.png',
-
-			populateQuery: imageBasePath + 'population_query.png',
-
-			refreshQuery: imageBasePath + 'refresh_query.png',
-
-			// shiloh operators
-			result: imageBasePath + 'result.png',
-
-			aggregate: imageBasePath + 'aggregate.png',
-
-			assign: imageBasePath + 'assign.png',
-
-			arithmeticExpression: imageBasePath + 'arithmetic_expression.png',
-
-			bookmarkLookup: imageBasePath + 'bookmark_lookup.png',
-
-			convert: imageBasePath + 'convert.png',
-
-			declare: imageBasePath + 'declare.png',
-
-			deleteOperator: imageBasePath + 'delete.png',
-
-			dynamic: imageBasePath + 'dynamic.png',
-
-			hashMatchRoot: imageBasePath + 'hash_match_root.png',
-
-			hashMatchTeam: imageBasePath + 'hash_match_team.png',
-
-			ifOperator: imageBasePath + 'if.png',
-
-			insert: imageBasePath + 'insert.png',
-
-			intrinsic: imageBasePath + 'intrinsic.png',
-
-			keyset: imageBasePath + 'keyset.png',
-
-			locate: imageBasePath + 'locate.png',
-
-			populationQuery: imageBasePath + 'population_query.png',
-
-			setFunction: imageBasePath + 'set_function.png',
-
-			snapshot: imageBasePath + 'snapshot.png',
-
-			spool: imageBasePath + 'spool.png',
-
-			tsql: imageBasePath + 'sql.png',
-
-			update: imageBasePath + 'update.png',
-
-			// fake operators
-			keyLookup: imageBasePath + 'bookmark_lookup.png',
-
-			// PDW operators
-			apply: imageBasePath + 'apply.png',
-
-			broadcast: imageBasePath + 'broadcast.png',
-
-			computeToControlNode: imageBasePath + 'compute_to_control_node.png',
-
-			constTableGet: imageBasePath + 'const_table_get.png',
-
-			controlToComputeNodes: imageBasePath + 'control_to_compute_nodes.png',
-
-			externalBroadcast: imageBasePath + 'external_broadcast.png',
-
-			externalExport: imageBasePath + 'external_export.png',
-
-			externalLocalStreaming: imageBasePath + 'external_local_streaming.png',
-
-			externalRoundRobin: imageBasePath + 'external_round_robin.png',
-
-			externalShuffle: imageBasePath + 'external_shuffle.png',
-
-			get: imageBasePath + 'get.png',
-
-			groupByApply: imageBasePath + 'apply.png',
-
-			groupByAggregate: imageBasePath + 'group_by_aggregate.png',
-
-			join: imageBasePath + 'join.png',
-
-			localCube: imageBasePath + 'intrinsic.png',
-
-			project: imageBasePath + 'project.png',
-
-			shuffle: imageBasePath + 'shuffle.png',
-
-			singleSourceRoundRobin: imageBasePath + 'single_source_round_robin.png',
-
-			singleSourceShuffle: imageBasePath + 'single_source_shuffle.png',
-
-			trim: imageBasePath + 'trim.png',
-
-			union: imageBasePath + 'union.png',
-
-			unionAll: imageBasePath + 'union_all.png'
-		};
 	}
 
-	private populate(node: azdata.QueryPlanGraphNode, diagramNode: any): any {
+	getHorizontalSashTop(sash: Sash): number {
+		return 0;
+	}
+	getHorizontalSashLeft?(sash: Sash): number {
+		return 0;
+	}
+	getHorizontalSashWidth?(sash: Sash): number {
+		return this._container.clientWidth;
+	}
 
+	private populate(node: azdata.ExecutionPlanNode, diagramNode: any): any {
 		diagramNode.label = node.name;
+
 		if (node.properties && node.properties.length > 0) {
-			diagramNode.metrics = node.properties.map(e => { return { name: e.name, value: e.formattedValue.substring(0, 75) }; });
+			diagramNode.metrics = this.populateProperties(node.properties);
 		}
 
-		let icon = this._iconMap[node.type];
-		if (icon) {
-			diagramNode.icon = icon;
+		if (node.type) {
+			diagramNode.icon = node.type;
 		}
 
 		if (node.children) {
@@ -502,64 +239,217 @@ export class QueryPlan2 {
 				diagramNode.children.push(this.populate(node.children[i], new Object()));
 			}
 		}
+
+		if (node.edges) {
+			diagramNode.edges = [];
+			for (let i = 0; i < node.edges.length; i++) {
+				diagramNode.edges.push(this.populateEdges(node.edges[i], new Object()));
+			}
+		}
 		return diagramNode;
 	}
 
-	private createPlanDiagram(container: HTMLDivElement): void {
-		let diagramRoot: any = new Object();
-		let graphRoot: azdata.QueryPlanGraphNode = this._graph.root;
-		this.populate(graphRoot, diagramRoot);
+	private populateEdges(edge: azdata.ExecutionPlanEdge, diagramEdge: any) {
+		diagramEdge.label = '';
+		diagramEdge.metrics = this.populateProperties(edge.properties);
+		diagramEdge.weight = Math.max(0.5, Math.min(0.5 + 0.75 * Math.log10(edge.rowCount), 6));
+		return diagramEdge;
+	}
 
-		new azdataGraph.azdataQueryPlan(container, diagramRoot, this._iconPaths);
+	private populateProperties(props: azdata.ExecutionPlanGraphElementProperty[]) {
+		return props.filter(e => isString(e.value))
+			.map(e => {
+				return {
+					name: e.name,
+					value: e.value.toString().substring(0, 75)
+				};
+			});
+	}
+
+	private createPlanDiagram(container: HTMLElement): void {
+		let diagramRoot: any = new Object();
+		let graphRoot: azdata.ExecutionPlanNode = this._graph.root;
+		this.populate(graphRoot, diagramRoot);
+		this._azdataGraphDiagram = new azdataGraph.azdataQueryPlan(container, diagramRoot, queryPlanNodeIconPaths);
+
+		registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+			const iconBackground = theme.getColor(editorBackground);
+			if (iconBackground) {
+				this._azdataGraphDiagram.setIconBackgroundColor(iconBackground);
+			}
+
+			const iconLabelColor = theme.getColor(foreground);
+			if (iconLabelColor) {
+				this._azdataGraphDiagram.setTextFontColor(iconLabelColor);
+			}
+		});
 	}
 
 
-	public set graph(graph: azdata.QueryPlanGraph | undefined) {
+	public set graph(graph: azdata.ExecutionPlanGraph | undefined) {
 		this._graph = graph;
 		if (this._graph) {
-			this._container.appendChild(document.createTextNode(localize('queryIndex', "Query {0}: ", this._graphIndex)));
-			this._relativeCost = document.createTextNode(localize('relativeToTheScript', "(relative to the script):"));
-			this._container.appendChild(this._relativeCost);
-			this._container.appendChild(document.createElement('br'));
-			this._container.appendChild(document.createTextNode(`${graph.query}`));
-			let diagramContainer = document.createElement('div');
+			this.planHeader.graphIndex = this._graphIndex;
+			this.planHeader.query = graph.query;
+			if (graph.recommendations) {
+				this.planHeader.recommendations = graph.recommendations;
+			}
+			let diagramContainer = DOM.$('.diagram');
 			this.createPlanDiagram(diagramContainer);
-			this._container.appendChild(diagramContainer);
+			this._planContainer.appendChild(diagramContainer);
 
-			this._container.appendChild(this.propContainer);
-			this.setData(this._graph.root.properties);
-			this._container.appendChild(this._actionBarContainer);
+			this.propertiesView.graphElement = this._graph.root;
 		}
 	}
 
-	public get graph(): azdata.QueryPlanGraph | undefined {
+	public get graph(): azdata.ExecutionPlanGraph | undefined {
 		return this._graph;
 	}
 
-	public set relativeCost(newCost: number) {
-		this._relativeCost.nodeValue = localize('relativeToTheScriptWithCost', "(relative to the script): {0}%", newCost.toFixed(2));
+	public openQuery() {
+		return this._instantiationService.invokeFunction(openNewQuery, undefined, this.graph.query, RunQueryOnConnectionMode.none).then();
 	}
 
-	public setData(props: azdata.QueryPlanGraphElementProperty[]): void {
-		this._data = [];
-		props.forEach((p, i) => {
-			this._data.push({
-				id: p.name,
-				name: p.name,
-				propValue: p.formattedValue,
-				_collapsed: true
-			});
-		});
-		this._dataView.beginUpdate();
-		this._dataView.setItems(this._data);
-		this._dataView.endUpdate();
-		this._dataView.refresh();
-		this._table.autosizeColumns();
-		this._table.updateRowCount();
-		this._table.resizeCanvas();
-		this._table.render();
+	public async openGraphFile() {
+		const input = this._untitledEditorService.create({ mode: this.graph.graphFile.graphFileType, initialValue: this.graph.graphFile.graphFileContent });
+		await input.resolve();
+		await this._instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
+		input.setDirty(false);
+		this.editorService.openEditor(input);
 	}
 }
+
+class OpenQueryAction extends Action {
+	public static ID = 'qp.OpenQueryAction';
+	public static LABEL = localize('openQueryAction', "Open Query");
+
+	constructor() {
+		super(OpenQueryAction.ID, OpenQueryAction.LABEL, Codicon.dash.classNames);
+	}
+
+	public override async run(context: QueryPlan2): Promise<void> {
+		context.openQuery();
+	}
+}
+
+class PropertiesAction extends Action {
+	public static ID = 'qp.propertiesAction';
+	public static LABEL = localize('queryPlanPropertiesActionLabel', "Properties");
+
+	constructor() {
+		super(PropertiesAction.ID, PropertiesAction.LABEL, Codicon.book.classNames);
+	}
+
+	public override async run(context: QueryPlan2): Promise<void> {
+		context.propertiesView.toggleVisibility();
+	}
+}
+
+class ZoomInAction extends Action {
+	public static ID = 'qp.ZoomInAction';
+	public static LABEL = localize('queryPlanZoomInActionLabel', "Zoom In");
+
+	constructor() {
+		super(ZoomInAction.ID, ZoomInAction.LABEL, Codicon.zoomIn.classNames);
+	}
+
+	public override async run(context: QueryPlan2): Promise<void> {
+	}
+}
+
+class ZoomOutAction extends Action {
+	public static ID = 'qp.ZoomOutAction';
+	public static LABEL = localize('queryPlanZoomOutActionLabel', "Zoom Out");
+
+	constructor() {
+		super(ZoomOutAction.ID, ZoomOutAction.LABEL, Codicon.zoomOut.classNames);
+	}
+
+	public override async run(context: QueryPlan2): Promise<void> {
+	}
+}
+
+class ZoomToFitAction extends Action {
+	public static ID = 'qp.FitGraph';
+	public static LABEL = localize('queryPlanFitGraphLabel', "Zoom to fit");
+
+	constructor() {
+		super(ZoomToFitAction.ID, ZoomToFitAction.LABEL, Codicon.debugStop.classNames);
+	}
+
+	public override async run(context: QueryPlan2): Promise<void> {
+	}
+}
+
+class SaveXml extends Action {
+	public static ID = 'qp.saveXML';
+	public static LABEL = localize('queryPlanSavePlanXML', "Save XML");
+
+	constructor() {
+		super(SaveXml.ID, SaveXml.LABEL, Codicon.save.classNames);
+	}
+
+	public override async run(context: QueryPlan2): Promise<void> {
+	}
+}
+
+
+class CustomZoomAction extends Action {
+	public static ID = 'qp.customZoom';
+	public static LABEL = localize('queryPlanCustomZoom', "Custom Zoom");
+
+	constructor() {
+		super(CustomZoomAction.ID, CustomZoomAction.LABEL, Codicon.searchStop.classNames);
+	}
+
+	public override async run(context: QueryPlan2): Promise<void> {
+	}
+}
+
+class SearchNodeAction extends Action {
+	public static ID = 'qp.searchNode';
+	public static LABEL = localize('queryPlanSearchNodeAction', "SearchNode");
+
+	constructor() {
+		super(SearchNodeAction.ID, SearchNodeAction.LABEL, Codicon.search.classNames);
+	}
+
+	public override async run(context: QueryPlan2): Promise<void> {
+	}
+}
+
+class OpenGraphFile extends Action {
+	public static ID = 'qp.openGraphFile';
+	public static Label = localize('queryPlanOpenGraphFile', "Open Graph File");
+
+	constructor() {
+		super(OpenGraphFile.ID, OpenGraphFile.Label, Codicon.output.classNames);
+	}
+
+	public override async run(context: QueryPlan2): Promise<void> {
+		await context.openGraphFile();
+	}
+}
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const menuBackgroundColor = theme.getColor(editorBackground);
+	if (menuBackgroundColor) {
+		collector.addRule(`
+		.qps-container .query-plan .plan .plan-action-container .child {
+			background-color: ${menuBackgroundColor};
+		}
+		`);
+	}
+	const recommendationsColor = theme.getColor(textLinkForeground);
+	if (recommendationsColor) {
+		collector.addRule(`
+		.qps-container .query-plan .plan .header .recommendations {
+			color: ${recommendationsColor};
+		}
+		`);
+	}
+});
+
 
 /**
  * Registering a feature flag for query plan.

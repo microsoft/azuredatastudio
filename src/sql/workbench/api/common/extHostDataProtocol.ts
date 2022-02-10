@@ -901,7 +901,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).processTableEdit(table, edit);
 	}
 
-	public override $publishTableDesignerChanges(handle: number, table: azdata.designers.TableInfo): Thenable<void> {
+	public override $publishTableDesignerChanges(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.PublishChangesResult> {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).publishChanges(table);
 	}
 

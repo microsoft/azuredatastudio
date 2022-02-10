@@ -279,3 +279,4 @@ function updatePiiLoggingLevel() {
 	const piiLogging: boolean = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('piiLogging');
 	Logger.piiLogging = piiLogging;
 }
+

@@ -915,9 +915,9 @@ declare module 'azdata' {
 
 	export interface QueryExecuteResultSetNotificationParams {
 		/**
-		 * Contains query plans returned by the database in ResultSets.
+		 * Contains execution plans returned by the database in ResultSets.
 		 */
-		executionPlans: QueryPlanGraph[];
+		executionPlans: ExecutionPlanGraph[];
 	}
 
 	export interface ResultSetSummary {
@@ -925,10 +925,6 @@ declare module 'azdata' {
 		 * The visualization options for the result set.
 		 */
 		visualization?: VisualizationOptions;
-		/**
-		 * Generic query plan graph to be displayed in the results view.
-		 */
-		showplangraph?: QueryPlanGraph;
 	}
 
 	/**
@@ -1046,7 +1042,7 @@ declare module 'azdata' {
 			 * Publish the changes.
 			 * @param table the table information
 			 */
-			publishChanges(table: TableInfo): Thenable<void>;
+			publishChanges(table: TableInfo): Thenable<PublishChangesResult>;
 
 			/**
 			 * Generate script for the changes.
@@ -1158,7 +1154,7 @@ declare module 'azdata' {
 		 */
 		export enum TableForeignKeyProperty {
 			Name = 'name',
-			PrimaryKeyTable = 'primaryKeyTable',
+			ForeignTable = 'foreignTable',
 			OnDeleteAction = 'onDeleteAction',
 			OnUpdateAction = 'onUpdateAction',
 			Columns = 'columns'
@@ -1168,8 +1164,8 @@ declare module 'azdata' {
 		 * Name of the columns mapping properties for foreign key.
 		 */
 		export enum ForeignKeyColumnMappingProperty {
-			PrimaryKeyColumn = 'primaryKeyColumn',
-			ForeignKeyColumn = 'foreignKeyColumn'
+			Column = 'column',
+			ForeignColumn = 'foreignColumn'
 		}
 
 		/**
@@ -1242,7 +1238,7 @@ declare module 'azdata' {
 			indexColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
 		}
 
-		export interface TableDesignerBuiltInTableViewOptions {
+		export interface TableDesignerBuiltInTableViewOptions extends DesignerTablePropertiesBase {
 			/**
 			 * Whether to show the table. Default value is false.
 			 */
@@ -1251,14 +1247,6 @@ declare module 'azdata' {
 			 * Properties to be displayed in the table, other properties can be accessed in the properties view.
 			 */
 			propertiesToDisplay?: string[];
-			/**
-			 * Whether adding new rows is supported.
-			 */
-			canAddRows?: boolean;
-			/**
-			 * Whether removing rows is supported.
-			 */
-			canRemoveRows?: boolean;
 			/**
 			 * Additional properties for the entity.
 			 */
@@ -1321,39 +1309,45 @@ declare module 'azdata' {
 		 */
 		export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
 
-		/**
-		 * The properties for the table component in the designer.
-		 */
-		export interface DesignerTableProperties extends ComponentProperties {
-			/**
-			 * the name of the properties to be displayed, properties not in this list will be accessible in properties pane.
-			 */
-			columns?: string[];
-
-			/**
-			 * The display name of the object type.
-			 */
-			objectTypeDisplayName: string;
-
-			/**
-			 * the properties of the table data item.
-			 */
-			itemProperties?: DesignerDataPropertyInfo[];
-
-			/**
-			 * The data to be displayed.
-			 */
-			data?: DesignerTableComponentDataItem[];
-
+		export interface DesignerTablePropertiesBase {
 			/**
 			 * Whether user can add new rows to the table. The default value is true.
 			 */
 			canAddRows?: boolean;
-
 			/**
 			 * Whether user can remove rows from the table. The default value is true.
 			 */
 			canRemoveRows?: boolean;
+			/**
+			 * Whether to show confirmation when user removes a row. The default value is false.
+			 */
+			showRemoveRowConfirmation?: boolean;
+			/**
+			 * The confirmation message to be displayed when user removes a row.
+			 */
+			removeRowConfirmationMessage?: string;
+		}
+
+		/**
+		 * The properties for the table component in the designer.
+		 */
+		export interface DesignerTableProperties extends ComponentProperties, DesignerTablePropertiesBase {
+			/**
+			 * the name of the properties to be displayed, properties not in this list will be accessible in properties pane.
+			 */
+			columns?: string[];
+			/**
+			 * The display name of the object type.
+			 */
+			objectTypeDisplayName: string;
+			/**
+			 * the properties of the table data item.
+			 */
+			itemProperties?: DesignerDataPropertyInfo[];
+			/**
+			 * The data to be displayed.
+			 */
+			data?: DesignerTableComponentDataItem[];
 		}
 
 		/**
@@ -1433,20 +1427,42 @@ declare module 'azdata' {
 			 */
 			errors?: { message: string, property?: DesignerEditPath }[];
 		}
+
+		/**
+		 * The result returned by the table designer provider after handling the publish changes request.
+		 */
+		export interface PublishChangesResult {
+			/**
+			 * The new table information after the changes are published.
+			 */
+			newTableInfo: TableInfo;
+			/**
+			 * The new view model.
+			 */
+			viewModel: DesignerViewModel;
+		}
 	}
 
-	export interface QueryPlanGraph {
+	export interface ExecutionPlanGraph {
 		/**
-		 * Root of the query plan tree
+		 * Root of the execution plan tree
 		 */
-		root: QueryPlanGraphNode;
+		root: ExecutionPlanNode;
 		/**
-		 * Underlying query for the query plan graph.
+		 * Underlying query for the execution plan graph.
 		 */
 		query: string;
+		/**
+		 * String representation of graph
+		 */
+		graphFile: ExecutionPlanGraphFile;
+		/**
+		 * Query recommendations for optimizing performance
+		 */
+		recommendations: ExecutionPlanRecommendations[];
 	}
 
-	export interface QueryPlanGraphNode {
+	export interface ExecutionPlanNode {
 		/**
 		 * Type of the node. This property determines the icon that is displayed for it
 		 */
@@ -1470,7 +1486,7 @@ declare module 'azdata' {
 		/**
 		 * Node properties to be shown in the tooltip
 		 */
-		properties: QueryPlanGraphElementProperty[];
+		properties: ExecutionPlanGraphElementProperty[];
 		/**
 		 * Display name for the node
 		 */
@@ -1486,14 +1502,14 @@ declare module 'azdata' {
 		/**
 		 * Direct children of the nodes.
 		 */
-		children: QueryPlanGraphNode[];
+		children: ExecutionPlanNode[];
 		/**
 		 * Edges corresponding to the children.
 		 */
-		edges: QueryGraphEdge[];
+		edges: ExecutionPlanEdge[];
 	}
 
-	export interface QueryGraphEdge {
+	export interface ExecutionPlanEdge {
 		/**
 		 * Count of the rows returned by the subtree of the edge.
 		 */
@@ -1505,18 +1521,18 @@ declare module 'azdata' {
 		/**
 		 * Edge properties to be shown in the tooltip.
 		 */
-		properties: QueryPlanGraphElementProperty[]
+		properties: ExecutionPlanGraphElementProperty[]
 	}
 
-	export interface QueryPlanGraphElementProperty {
+	export interface ExecutionPlanGraphElementProperty {
 		/**
 		 * Name of the property
 		 */
 		name: string;
 		/**
-		 * Formatted value for the property
+		 * value for the property
 		 */
-		formattedValue: string;
+		value: string | ExecutionPlanGraphElementProperty[];
 		/**
 		 * Flag to show/hide props in tooltip
 		 */
@@ -1529,5 +1545,31 @@ declare module 'azdata' {
 		 *  Flag to indicate if the property has a longer value so that it will be shown at the bottom of the tooltip
 		 */
 		isLongString: boolean;
+	}
+
+	export interface ExecutionPlanRecommendations {
+		/**
+		 * Text displayed in the show plan graph control description
+		 */
+		displayString: string;
+		/**
+		 * Query that is recommended to the user
+		 */
+		queryText: string;
+		/**
+		 * Query that will be opened in a new file once the user click on the recommendation
+		 */
+		queryWithDescription: string;
+	}
+
+	export interface ExecutionPlanGraphFile {
+		/**
+		 * File contents
+		 */
+		graphFileContent: string;
+		/**
+		 * File type for execution plan. This will be the file type of the editor when the user opens the graph file
+		 */
+		graphFileType: string;
 	}
 }
