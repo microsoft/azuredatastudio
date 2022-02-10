@@ -1052,7 +1052,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 				else if (this.migrationStateModel.performanceCollectionStopped()) {
 					this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_STOPPED;
-					this._skuDataCollectionTimerText.value = constants.EMPTY;
+					this._skuDataCollectionTimerText.value = '';	// TO-DO: maybe a better way to clear the text, just DON'T create a empty constant or that'll break the build
 
 					await this._skuGetRecommendationContainer.updateCssStyles({ 'display': 'none' });
 					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'block' });

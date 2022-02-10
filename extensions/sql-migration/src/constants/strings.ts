@@ -538,7 +538,6 @@ export const CANCEL_MIGRATION_CONFIRMATION = localize('sql.cancel.migration.conf
 export const YES = localize('sql.migration.yes', "Yes");
 export const NO = localize('sql.migration.no', "No");
 export const NA = localize('sql.migration.na', "N/A");
-export const EMPTY = localize('sql.migration.empty', "");
 export const EMPTY_TABLE_TEXT = localize('sql.migration.empty.table.text', "No backup files");
 export const EMPTY_TABLE_SUBTEXT = localize('sql.migration.empty.table.subtext', "If results were expected, verify the connection to the SQL Server instance.");
 export const MIGRATION_CUTOVER_ERROR = localize('sql.migration.cutover.error', 'An error occurred while initiating cutover.');
