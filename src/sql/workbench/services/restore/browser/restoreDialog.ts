@@ -46,6 +46,7 @@ import { fileFiltersSet } from 'sql/workbench/services/restore/common/constants'
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
+import { IUrlBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/urlBrowserDialogController';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -148,6 +149,7 @@ export class RestoreDialog extends Modal {
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IFileBrowserDialogController private fileBrowserDialogService: IFileBrowserDialogController,
+		@IUrlBrowserDialogController private urlBrowserDialogService: IUrlBrowserDialogController,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
@@ -645,7 +647,7 @@ export class RestoreDialog extends Modal {
 		});
 
 		this._browseUrlButton!.onDidClick(() => {
-			this.onFileBrowserRequested();
+			this.onUrlBrowserRequested();
 		});
 
 		this._register(this._sourceDatabaseSelectBox!.onDidSelect(selectedDatabase => {
@@ -663,9 +665,19 @@ export class RestoreDialog extends Modal {
 			fileFiltersSet,
 			FileValidationConstants.restore,
 			true,
+			filepath => this.onFileBrowsed(filepath));
+	}
+
+	private onUrlBrowserRequested(): void {
+		this.urlBrowserDialogService.showDialog(this._ownerUri!,
+			this.viewModel.defaultBackupFolder!,
+			fileFiltersSet,
+			FileValidationConstants.restore,
+			true,
 			true,
 			filepath => this.onFileBrowsed(filepath));
 	}
+
 
 	private onFileBrowsed(filepath: string) {
 		const oldFilePath = this._filePathInputBox!.value;
