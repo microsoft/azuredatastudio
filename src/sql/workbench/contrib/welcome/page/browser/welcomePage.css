@@ -270,14 +270,6 @@
 	cursor: default
 }
 
-.ads-homepage .preview-link {
-	padding: 4px
-}
-
-.ads-homepage .preview-link i {
-	margin-right: 4px
-}
-
 .ads-homepage .preview-text {
 	display: flex;
 	justify-content: flex-end;
