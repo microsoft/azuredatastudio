@@ -8,14 +8,13 @@ import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import * as DOM from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import { Codicon } from 'vs/base/common/codicons';
-import { QueryPlan2 } from 'sql/workbench/contrib/queryplan2/browser/queryPlan';
+import { InternalExecutionPlanNode, QueryPlan2 } from 'sql/workbench/contrib/queryplan2/browser/queryPlan';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { attachInputBoxStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Action } from 'vs/base/common/actions';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import type * as azdata from 'azdata';
 import { isString } from 'vs/base/common/types';
 
 const CONTAINS_DISPLAY_STRING = localize("queryPlanSearchTypeContains", 'Contains');
@@ -116,7 +115,7 @@ export class NodeSearchWidget extends QueryPlanWidgetBase {
 
 			// Doing depth first search in the graphModel to find nodes with matching prop values.
 			const graphModel = this.queryPlanView.graphModel;
-			const stack: azdata.ExecutionPlanNode[] = [];
+			const stack: InternalExecutionPlanNode[] = [];
 			stack.push(graphModel.root);
 
 			while (stack.length !== 0) {

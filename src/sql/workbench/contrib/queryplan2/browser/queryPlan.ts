@@ -39,6 +39,20 @@ import { NodeSearchWidget } from 'sql/workbench/contrib/queryplan2/browser/widge
 
 let azdataGraph = azdataGraphModule();
 
+export interface InternalExecutionPlanNode extends azdata.ExecutionPlanNode {
+	/**
+	 * Unique internal id given to graph node by ADS.
+	 */
+	id?: string;
+}
+
+export interface InternalExecutionPlanEdge extends azdata.ExecutionPlanEdge {
+	/**
+	 * Unique internal id given to graph edge by ADS.
+	 */
+	id?: string;
+}
+
 export class QueryPlan2Tab implements IPanelTab {
 	public readonly title = localize('queryPlanTitle', "Query Plan (Preview)");
 	public readonly identifier = 'QueryPlan2Tab';
@@ -259,7 +273,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		return this._container.clientWidth;
 	}
 
-	private populate(node: azdata.ExecutionPlanNode, diagramNode: any): any {
+	private populate(node: InternalExecutionPlanNode, diagramNode: any): any {
 		diagramNode.label = node.name;
 		const nodeId = this.createGraphElementId();
 		diagramNode.id = nodeId;
@@ -293,7 +307,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		return diagramNode;
 	}
 
-	private populateEdges(edge: azdata.ExecutionPlanEdge, diagramEdge: any) {
+	private populateEdges(edge: InternalExecutionPlanEdge, diagramEdge: any) {
 		diagramEdge.label = '';
 		const edgeId = this.createGraphElementId();
 		diagramEdge.id = edgeId;
@@ -397,16 +411,16 @@ export class QueryPlan2 implements ISashLayoutProvider {
 	}
 
 
-	public searchNodes(searchId: string): azdata.ExecutionPlanNode | azdata.ExecutionPlanEdge | undefined {
-		let stack: (azdata.ExecutionPlanNode | azdata.ExecutionPlanEdge)[] = [];
+	public searchNodes(searchId: string): InternalExecutionPlanNode | InternalExecutionPlanEdge | undefined {
+		let stack: InternalExecutionPlanNode[] = [];
 		stack.push(this._graphModel.root);
 		while (stack.length !== 0) {
-			const currentNode = <azdata.ExecutionPlanNode>stack.pop();
+			const currentNode = stack.pop();
 			if (currentNode.id === searchId) {
 				return currentNode;
 			}
 			stack.push(...currentNode.children);
-			const resultEdge = currentNode.edges.find(e => e.id === searchId);
+			const resultEdge = currentNode.edges.find(e => (<InternalExecutionPlanEdge>e).id === searchId);
 			if (resultEdge) {
 				return resultEdge;
 			}
