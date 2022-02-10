@@ -21,7 +21,6 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { GettingStartedInput, gettingStartedInputTypeId } from 'vs/workbench/contrib/welcome/gettingStarted/browser/gettingStartedInput';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
-import 'sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
 
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
