@@ -55,6 +55,8 @@ import { MaskedLabeledMenuItemActionItem } from 'sql/platform/actions/browser/me
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Emitter } from 'vs/base/common/event';
 import { RedoCommand, UndoCommand } from 'vs/editor/browser/editorExtensions';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 const PRIORITY = 105;
@@ -134,6 +136,45 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	ngOnInit() {
+		// We currently have to hook this onto window because the Notebook component currently doesn't support having document focus
+		// on its elements (we have a "virtual" focus that is updated as users click or navigate through cells). So some of the keyboard
+		// events we care about are fired when the document focus is on something else - typically the root window.
+		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+			// Make sure that the current active element is an ancestor - this is to prevent us from handling events when the focus is
+			// on some other dialog or part of the app. 
+			if (DOM.isAncestor(this.container.nativeElement, document.activeElement) && this.isActive() && this.model.activeCell) {
+				const event = new StandardKeyboardEvent(e);
+				if (!this.model.activeCell?.isEditMode) {
+					if (event.keyCode === KeyCode.DownArrow) {
+						let next = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
+						this.selectCell(this.cells[next]);
+						this.scrollToActiveCell();
+					} else if (event.keyCode === KeyCode.UpArrow) {
+						let index = this.findCellIndex(this.model.activeCell);
+						if (index === 0) {
+							index = this.cells.length;
+						}
+						this.selectCell(this.cells[--index]);
+						this.scrollToActiveCell();
+					} else if (event.keyCode === KeyCode.Escape) {
+						// unselects active cell and removes the focus from code cells
+						this.unselectActiveCell();
+						(document.activeElement as HTMLElement).blur();
+					}
+					else if (event.keyCode === KeyCode.Enter) {
+						// prevents adding a newline to the cell source
+						e.preventDefault();
+						// show edit toolbar
+						this.setActiveCellEditActionMode(true);
+						this.toggleEditMode();
+					}
+				} else if (event.keyCode === KeyCode.Escape) {
+					// first time hitting escape removes the cursor from code cell and changes toolbar in text cells and changes edit mode to false
+					this.toggleEditMode();
+					this.setActiveCellEditActionMode(false);
+				}
+			}
+		}));
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
@@ -248,6 +289,23 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
+	private scrollToActiveCell(): void {
+		// Get active cell from active notebook editor
+		const activeCellElement = document.querySelector(`.editor-group-container.active .notebook-cell.active`);
+		activeCellElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+	}
+
+	private toggleEditMode(): void {
+		let selectedCell: TextCellComponent | CodeCellComponent = undefined;
+		if (this.model.activeCell.cellType !== CellTypes.Code) {
+			selectedCell = this.textCells.find(c => c.cellModel.id === this.activeCellId);
+		} else {
+			selectedCell = this.codeCells.find(c => c.cellModel.id === this.activeCellId);
+		}
+		selectedCell.toggleEditMode();
+	}
+
 	//Saves scrollTop value on scroll change
 	public scrollHandler(event: Event) {
 		this._scrollTop = (<HTMLElement>event.srcElement).scrollTop;
@@ -261,14 +319,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	// Handles double click to edit icon change
 	// See textcell.component.ts for changing edit behavior
-	public enableActiveCellIconOnDoubleClick() {
+	public enableActiveCellEditIconOnDoubleClick() {
 		if (this.doubleClickEditEnabled) {
-			const toolbarComponent = (<CellToolbarComponent>this.cellToolbar.first);
-			const toolbarEditCellAction = toolbarComponent.getEditCellAction();
-			if (!toolbarEditCellAction.editMode) {
-				toolbarEditCellAction.editMode = !toolbarEditCellAction.editMode;
-			}
+			this.setActiveCellEditActionMode(true);
 		}
+	}
+
+	public setActiveCellEditActionMode(editMode: boolean) {
+		const toolbarComponent = (<CellToolbarComponent>this.cellToolbar.first);
+		const toolbarEditCellAction = toolbarComponent.getEditCellAction();
+		toolbarEditCellAction.editMode = editMode;
 	}
 
 	// Add cell based on cell type

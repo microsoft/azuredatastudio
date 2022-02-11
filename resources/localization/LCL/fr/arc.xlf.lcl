@@ -363,10 +363,13 @@
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerDashboard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Arc Data Controller Dashboard (Preview) - {0}]]></Val>
+          <Val><![CDATA[Azure Arc Data Controller Dashboard - {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Tableau de bord du contrôleur de données Azure Arc (préversion) - {0}]]></Val>
+            <Val><![CDATA[Tableau de bord du contrôleur de données Azure Arc - {0}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Arc Data Controller Dashboard (Preview) - {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1374,10 +1377,13 @@
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.miaaDashboard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[SQL managed instance - Azure Arc Dashboard (Preview) - {0}]]></Val>
+          <Val><![CDATA[SQL managed instance - Azure Arc Dashboard - {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL Managed Instance : tableau de bord Azure Arc (préversion) : {0}]]></Val>
+            <Val><![CDATA[Instance managée SQL - Tableau de bord Azure Arc - {0}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[SQL managed instance - Azure Arc Dashboard (Preview) - {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1899,10 +1905,13 @@
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.postgresDashboard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[PostgreSQL Hyperscale - Azure Arc Dashboard (Preview) - {0}]]></Val>
+          <Val><![CDATA[PostgreSQL Hyperscale - Azure Arc Dashboard - {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[PostgreSQL Hyperscale : tableau de bord Azure Arc (préversion) - {0}]]></Val>
+            <Val><![CDATA[PostgreSQL Hyperscale - tableau de bord Azure Arc - {0}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[PostgreSQL Hyperscale - Azure Arc Dashboard (Preview) - {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3894,10 +3903,13 @@
       </Item>
       <Item ItemId=";extensions/arc/package.arc.postgres.wizard.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group (Preview)]]></Val>
+          <Val><![CDATA[Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Déployer un groupe de serveurs PostgreSQL Hyperscale compatibles avec Azure Arc (préversion)]]></Val>
+            <Val><![CDATA[Déployer un groupe de serveurs PostgreSQL Hyperscale compatibles avec Azure Arc]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group (Preview)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4524,10 +4536,13 @@
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.wizard.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Deploy Azure SQL managed instance - Azure Arc (preview)]]></Val>
+          <Val><![CDATA[Deploy Azure SQL managed instance - Azure Arc]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Déployer Azure SQL Managed Instance : Azure Arc (préversion)]]></Val>
+            <Val><![CDATA[Déployer une instance managée Azure SQL - Azure Arc]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Deploy Azure SQL managed instance - Azure Arc (preview)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4731,10 +4746,13 @@
       </Item>
       <Item ItemId=";extensions/arc/package.resource.type.arc.postgres.display.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[PostgreSQL Hyperscale server groups - Azure Arc (preview)]]></Val>
+          <Val><![CDATA[PostgreSQL Hyperscale server groups - Azure Arc]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Groupes de serveurs PostgreSQL Hyperscale : Azure Arc (préversion)]]></Val>
+            <Val><![CDATA[Groupes de serveurs PostgreSQL Hyperscale : Azure Arc]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[PostgreSQL Hyperscale server groups - Azure Arc (preview)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4749,10 +4767,13 @@
       </Item>
       <Item ItemId=";extensions/arc/package.resource.type.arc.sql.display.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL managed instance - Azure Arc (preview)]]></Val>
+          <Val><![CDATA[Azure SQL managed instance - Azure Arc]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL Managed Instance : Azure Arc (préversion)]]></Val>
+            <Val><![CDATA[Azure SQL Managed Instance - Azure Arc]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure SQL managed instance - Azure Arc (preview)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4767,10 +4788,13 @@
       </Item>
       <Item ItemId=";extensions/arc/package.resource.type.azure.arc.display.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Arc data controller (preview)]]></Val>
+          <Val><![CDATA[Azure Arc data controller]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Contrôleur de données Azure Arc (préversion)]]></Val>
+            <Val><![CDATA[Contrôleur de données Azure Arc]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Arc data controller (preview)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

@@ -913,6 +913,13 @@ declare module 'azdata' {
 		action: ActionOnCellCheckboxCheck;
 	}
 
+	export interface QueryExecuteResultSetNotificationParams {
+		/**
+		 * Contains execution plans returned by the database in ResultSets.
+		 */
+		executionPlans: ExecutionPlanGraph[];
+	}
+
 	export interface ResultSetSummary {
 		/**
 		 * The visualization options for the result set.
@@ -1010,8 +1017,9 @@ declare module 'azdata' {
 		 * Open a table designer window.
 		 * @param providerId The table designer provider Id.
 		 * @param tableInfo The table information. The object will be passed back to the table designer provider as the unique identifier for the table.
+		 * @param telemetryInfo: Optional Key-value pair containing any extra information that needs to be sent via telemetry
 		 */
-		export function openTableDesigner(providerId: string, tableInfo: TableInfo): Thenable<void>;
+		export function openTableDesigner(providerId: string, tableInfo: TableInfo, telemetryInfo?: { [key: string]: string }): Thenable<void>;
 
 		/**
 		 * Definition for the table designer provider.
@@ -1034,7 +1042,7 @@ declare module 'azdata' {
 			 * Publish the changes.
 			 * @param table the table information
 			 */
-			publishChanges(table: TableInfo): Thenable<void>;
+			publishChanges(table: TableInfo): Thenable<PublishChangesResult>;
 
 			/**
 			 * Generate script for the changes.
@@ -1123,6 +1131,7 @@ declare module 'azdata' {
 			Script = 'script',
 			ForeignKeys = 'foreignKeys',
 			CheckConstraints = 'checkConstraints',
+			Indexes = 'indexes'
 		}
 		/**
 		 * Name of the common table column properties.
@@ -1145,7 +1154,7 @@ declare module 'azdata' {
 		 */
 		export enum TableForeignKeyProperty {
 			Name = 'name',
-			PrimaryKeyTable = 'primaryKeyTable',
+			ForeignTable = 'foreignTable',
 			OnDeleteAction = 'onDeleteAction',
 			OnUpdateAction = 'onUpdateAction',
 			Columns = 'columns'
@@ -1155,8 +1164,8 @@ declare module 'azdata' {
 		 * Name of the columns mapping properties for foreign key.
 		 */
 		export enum ForeignKeyColumnMappingProperty {
-			PrimaryKeyColumn = 'primaryKeyColumn',
-			ForeignKeyColumn = 'foreignKeyColumn'
+			Column = 'column',
+			ForeignColumn = 'foreignColumn'
 		}
 
 		/**
@@ -1166,6 +1175,22 @@ declare module 'azdata' {
 		export enum TableCheckConstraintProperty {
 			Name = 'name',
 			Expression = 'expression'
+		}
+
+		/**
+		 * Name of the common index properties.
+		 * Extensions can use the name to access the designer view model.
+		 */
+		export enum TableIndexProperty {
+			Name = 'name',
+			Columns = 'columns'
+		}
+
+		/**
+		 * Name of the common properties of table index column specification.
+		 */
+		export enum TableIndexColumnSpecificationProperty {
+			Column = 'column'
 		}
 
 		/**
@@ -1198,9 +1223,22 @@ declare module 'azdata' {
 			 * Default columns to display values are: Name, Expression.
 			 */
 			checkConstraintTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			 * Indexes table options.
+			 * Common index properties are handled by Azure Data Studio. see {@link TableIndexProperty}
+			 * Default columns to display values are: Name.
+			 */
+			indexTableOptions?: TableDesignerBuiltInTableViewOptions;
+
+			/**
+			* Index column specification table options.
+			* Common index properties are handled by Azure Data Studio. see {@link TableIndexColumnSpecificationProperty}
+			* Default columns to display values are: Column.
+			*/
+			indexColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
 		}
 
-		export interface TableDesignerBuiltInTableViewOptions {
+		export interface TableDesignerBuiltInTableViewOptions extends DesignerTablePropertiesBase {
 			/**
 			 * Whether to show the table. Default value is false.
 			 */
@@ -1209,14 +1247,6 @@ declare module 'azdata' {
 			 * Properties to be displayed in the table, other properties can be accessed in the properties view.
 			 */
 			propertiesToDisplay?: string[];
-			/**
-			 * Whether adding new rows is supported.
-			 */
-			canAddRows?: boolean;
-			/**
-			 * Whether removing rows is supported.
-			 */
-			canRemoveRows?: boolean;
 			/**
 			 * Additional properties for the entity.
 			 */
@@ -1279,39 +1309,45 @@ declare module 'azdata' {
 		 */
 		export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
 
-		/**
-		 * The properties for the table component in the designer.
-		 */
-		export interface DesignerTableProperties extends ComponentProperties {
-			/**
-			 * the name of the properties to be displayed, properties not in this list will be accessible in properties pane.
-			 */
-			columns?: string[];
-
-			/**
-			 * The display name of the object type.
-			 */
-			objectTypeDisplayName: string;
-
-			/**
-			 * the properties of the table data item.
-			 */
-			itemProperties?: DesignerDataPropertyInfo[];
-
-			/**
-			 * The data to be displayed.
-			 */
-			data?: DesignerTableComponentDataItem[];
-
+		export interface DesignerTablePropertiesBase {
 			/**
 			 * Whether user can add new rows to the table. The default value is true.
 			 */
 			canAddRows?: boolean;
-
 			/**
 			 * Whether user can remove rows from the table. The default value is true.
 			 */
 			canRemoveRows?: boolean;
+			/**
+			 * Whether to show confirmation when user removes a row. The default value is false.
+			 */
+			showRemoveRowConfirmation?: boolean;
+			/**
+			 * The confirmation message to be displayed when user removes a row.
+			 */
+			removeRowConfirmationMessage?: string;
+		}
+
+		/**
+		 * The properties for the table component in the designer.
+		 */
+		export interface DesignerTableProperties extends ComponentProperties, DesignerTablePropertiesBase {
+			/**
+			 * the name of the properties to be displayed, properties not in this list will be accessible in properties pane.
+			 */
+			columns?: string[];
+			/**
+			 * The display name of the object type.
+			 */
+			objectTypeDisplayName: string;
+			/**
+			 * the properties of the table data item.
+			 */
+			itemProperties?: DesignerDataPropertyInfo[];
+			/**
+			 * The data to be displayed.
+			 */
+			data?: DesignerTableComponentDataItem[];
 		}
 
 		/**
@@ -1391,5 +1427,153 @@ declare module 'azdata' {
 			 */
 			errors?: { message: string, property?: DesignerEditPath }[];
 		}
+
+		/**
+		 * The result returned by the table designer provider after handling the publish changes request.
+		 */
+		export interface PublishChangesResult {
+			/**
+			 * The new table information after the changes are published.
+			 */
+			newTableInfo: TableInfo;
+			/**
+			 * The new view model.
+			 */
+			viewModel: DesignerViewModel;
+		}
+	}
+
+	export interface ExecutionPlanGraph {
+		/**
+		 * Root of the execution plan tree
+		 */
+		root: ExecutionPlanNode;
+		/**
+		 * Underlying query for the execution plan graph.
+		 */
+		query: string;
+		/**
+		 * String representation of graph
+		 */
+		graphFile: ExecutionPlanGraphFile;
+		/**
+		 * Query recommendations for optimizing performance
+		 */
+		recommendations: ExecutionPlanRecommendations[];
+	}
+
+	export interface ExecutionPlanNode {
+		/**
+		 * Type of the node. This property determines the icon that is displayed for it
+		 */
+		type: string;
+		/**
+		 * Cost associated with the node
+		 */
+		cost: number;
+		/**
+		 * Cost of the node subtree
+		 */
+		subTreeCost: number;
+		/**
+		 * Relative cost of the node compared to its siblings.
+		 */
+		relativeCost: number;
+		/**
+		 * Time take by the node operation in milliseconds
+		 */
+		elapsedTimeInMs: number;
+		/**
+		 * Node properties to be shown in the tooltip
+		 */
+		properties: ExecutionPlanGraphElementProperty[];
+		/**
+		 * Display name for the node
+		 */
+		name: string;
+		/**
+		 * Description associated with the node.
+		 */
+		description: string;
+		/**
+		 * Subtext displayed under the node name
+		 */
+		subtext: string[];
+		/**
+		 * Direct children of the nodes.
+		 */
+		children: ExecutionPlanNode[];
+		/**
+		 * Edges corresponding to the children.
+		 */
+		edges: ExecutionPlanEdge[];
+	}
+
+	export interface ExecutionPlanEdge {
+		/**
+		 * Count of the rows returned by the subtree of the edge.
+		 */
+		rowCount: number;
+		/**
+		 * Size of the rows returned by the subtree of the edge.
+		 */
+		rowSize: number;
+		/**
+		 * Edge properties to be shown in the tooltip.
+		 */
+		properties: ExecutionPlanGraphElementProperty[]
+	}
+
+	export interface ExecutionPlanGraphElementProperty {
+		/**
+		 * Name of the property
+		 */
+		name: string;
+		/**
+		 * value for the property
+		 */
+		value: string | ExecutionPlanGraphElementProperty[];
+		/**
+		 * Flag to show/hide props in tooltip
+		 */
+		showInTooltip: boolean;
+		/**
+		 * Display order of property
+		 */
+		displayOrder: number;
+		/**
+		 *  Flag to indicate if the property has a longer value so that it will be shown at the bottom of the tooltip
+		 */
+		positionAtBottom: boolean;
+		/**
+		 * Display value of property to show in tooltip and other UI element.
+		 */
+		displayValue: string;
+	}
+
+	export interface ExecutionPlanRecommendations {
+		/**
+		 * Text displayed in the show plan graph control description
+		 */
+		displayString: string;
+		/**
+		 * Query that is recommended to the user
+		 */
+		queryText: string;
+		/**
+		 * Query that will be opened in a new file once the user click on the recommendation
+		 */
+		queryWithDescription: string;
+	}
+
+	export interface ExecutionPlanGraphFile {
+		/**
+		 * File contents
+		 */
+		graphFileContent: string;
+		/**
+		 * File type for execution plan. This will be the file type of the editor when the user opens the graph file
+		 */
+		graphFileType: string;
 	}
 }

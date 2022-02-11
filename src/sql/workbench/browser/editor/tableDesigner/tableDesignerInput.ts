@@ -14,6 +14,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { Schemas } from 'sql/base/common/schemas';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 const NewTable: string = localize('tableDesigner.newTable', "New Table");
 
@@ -25,28 +26,23 @@ export class TableDesignerInput extends EditorInput {
 
 	constructor(
 		private _provider: TableDesignerProvider,
-		private _tableInfo: azdata.designers.TableInfo,
+		tableInfo: azdata.designers.TableInfo,
+		telemetryInfo: { [key: string]: string },
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
-		@IEditorService editorService: IEditorService) {
+		@IEditorService private readonly _editorService: IEditorService,
+		@INotificationService private readonly _notificationService: INotificationService) {
 		super();
-		this._designerComponentInput = this._instantiationService.createInstance(TableDesignerComponentInput, this._provider, this._tableInfo);
+		this._designerComponentInput = this._instantiationService.createInstance(TableDesignerComponentInput, this._provider, tableInfo, telemetryInfo);
 		this._register(this._designerComponentInput.onStateChange((e) => {
+			if (e.previousState.pendingAction === 'publish') {
+				this.setEditorLabel();
+				this._onDidChangeLabel.fire();
+			}
 			if (e.currentState.dirty !== e.previousState.dirty) {
 				this._onDidChangeDirty.fire();
 			}
 		}));
-		if (this._tableInfo.isNewTable) {
-			const existingNames = editorService.editors.map(editor => editor.getName());
-			// Find the next available unique name for the new table designer
-			let idx = 1;
-			do {
-				this._name = `${NewTable} ${idx}`;
-				idx++;
-			} while (existingNames.indexOf(this._name) !== -1);
-		} else {
-			this._name = `${this._tableInfo.schema}.${this._tableInfo.name}`;
-		}
-		this._title = `${this._tableInfo.server}.${this._tableInfo.database} - ${this._name}`;
+		this.setEditorLabel();
 	}
 
 	get typeId(): string {
@@ -77,11 +73,15 @@ export class TableDesignerInput extends EditorInput {
 	}
 
 	override isSaving(): boolean {
-		return this._designerComponentInput.pendingAction === 'save';
+		return this._designerComponentInput.pendingAction === 'publish';
 	}
 
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		await this._designerComponentInput.openPublishDialog();
+		if (this._designerComponentInput.pendingAction) {
+			this._notificationService.warn(localize('tableDesigner.OperationInProgressWarning', "The operation cannot be performed while another operation is in progress."));
+		} else {
+			await this._designerComponentInput.openPublishDialog();
+		}
 		return this;
 	}
 
@@ -92,11 +92,27 @@ export class TableDesignerInput extends EditorInput {
 	override matches(otherInput: any): boolean {
 		return otherInput instanceof TableDesignerInput
 			&& this._provider.providerId === otherInput._provider.providerId
-			&& this._tableInfo.id === otherInput._tableInfo.id;
+			&& this._designerComponentInput.tableInfo.id === otherInput._designerComponentInput.tableInfo.id;
 	}
 
 	override dispose(): void {
 		super.dispose();
-		this._provider.disposeTableDesigner(this._tableInfo).then(undefined, err => onUnexpectedError(err));
+		this._provider.disposeTableDesigner(this._designerComponentInput.tableInfo).then(undefined, err => onUnexpectedError(err));
+	}
+
+	private setEditorLabel(): void {
+		const tableInfo = this._designerComponentInput.tableInfo;
+		if (tableInfo.isNewTable) {
+			const existingNames = this._editorService.editors.map(editor => editor.getName());
+			// Find the next available unique name for the new table designer
+			let idx = 1;
+			do {
+				this._name = `${NewTable} ${idx}`;
+				idx++;
+			} while (existingNames.indexOf(this._name) !== -1);
+		} else {
+			this._name = `${tableInfo.schema}.${tableInfo.name}`;
+		}
+		this._title = `${tableInfo.server}.${tableInfo.database} - ${this._name}`;
 	}
 }

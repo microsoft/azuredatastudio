@@ -9,10 +9,8 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { WelcomePageContribution, WelcomePageAction, WelcomeInputSerializer } from 'sql/workbench/contrib/welcome/page/browser/welcomePage'; // {{SQL CARBON EDIT}} use our welcome page
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions, CATEGORIES } from 'vs/workbench/common/actions'; // {{SQL CARBON EDIT}}
 import { MenuId, MenuRegistry, SyncActionDescriptor } from 'vs/platform/actions/common/actions'; // {{SQL CARBON EDIT}}
-import { WelcomePageContribution as WelcomePageContributionVs } from 'vs/workbench/contrib/welcome/page/browser/welcomePage'; // {{SQL CARBON EDIT}} use our welcome page
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration'; // {{SQL CARBON EDIT}} - use our welcome page
 import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuration';
 import { EditorExtensions, IEditorFactoryRegistry } from 'vs/workbench/common/editor';
 
@@ -38,33 +36,22 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 		}
 	});
 
-// {{SQL CARBON EDIT}} - determine whether to show preview or stable welcome page
+// {{SQL CARBON EDIT}}
 class WelcomeContributions {
-	constructor(
-		@IConfigurationService configurationService: IConfigurationService,
-	) {
-		const previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
-		if (previewFeaturesEnabled) {
+	constructor() {
+		Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
+			.registerWorkbenchContribution(WelcomePageContribution, LifecyclePhase.Restored);
 
+		Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
+			.registerWorkbenchAction(SyncActionDescriptor.create(WelcomePageAction, WelcomePageAction.ID, WelcomePageAction.LABEL), 'Help: Welcome', CATEGORIES.Help.value);
 
-			Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-				.registerWorkbenchContribution(WelcomePageContribution, LifecyclePhase.Restored);
-
-			Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
-				.registerWorkbenchAction(SyncActionDescriptor.create(WelcomePageAction, WelcomePageAction.ID, WelcomePageAction.LABEL), 'Help: Welcome', CATEGORIES.Help.value);
-
-			Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).registerEditorSerializer(WelcomeInputSerializer.ID, WelcomeInputSerializer);
-
-		} else {
-			Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-				.registerWorkbenchContribution(WelcomePageContributionVs, LifecyclePhase.Restored);
-		}
+		Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).registerEditorSerializer(WelcomeInputSerializer.ID, WelcomeInputSerializer);
 	}
 }
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 	.registerWorkbenchContribution(WelcomeContributions, LifecyclePhase.Starting);
-// {{SQL CARBON EDIT}} - end preview startup customization
+// {{SQL CARBON EDIT}}
 
 // {{SQL CARBON EDIT}} We still use legacy welcome page - not walkthrough
 MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {

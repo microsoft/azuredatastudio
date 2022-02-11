@@ -47,7 +47,7 @@ function registerCommands(context: vscode.ExtensionContext): void {
 
 /**
  * Handler for command to launch SSMS Server Properties dialog
- * @param connectionId The connection context from the command
+ * @param connectionContext The connection context from the command
  */
 async function handleLaunchSsmsMinPropertiesDialogCommand(connectionContext?: azdata.ObjectExplorerContext): Promise<void> {
 	if (!connectionContext) {
@@ -75,7 +75,7 @@ async function handleLaunchSsmsMinPropertiesDialogCommand(connectionContext?: az
 
 /**
  * Handler for command to launch SSMS "Generate Script Wizard" dialog
- * @param connectionId The connection context from the command
+ * @param connectionContext The connection context from the command
  */
 async function handleLaunchSsmsMinGswDialogCommand(connectionContext?: azdata.ObjectExplorerContext): Promise<void> {
 	const action = 'GenerateScripts';
@@ -92,8 +92,7 @@ async function handleLaunchSsmsMinGswDialogCommand(connectionContext?: azdata.Ob
 /**
  * Launches SsmsMin with parameters from the specified connection
  * @param action The action to launch
- * @param params The params used to construct the command
- * @param urn The URN to pass to SsmsMin
+ * @param connectionContext The connection context from the command
  */
 async function launchSsmsDialog(action: string, connectionContext: azdata.ObjectExplorerContext): Promise<void> {
 	if (!connectionContext.connectionProfile) {

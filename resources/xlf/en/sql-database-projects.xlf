@@ -37,6 +37,9 @@
     <trans-unit id="Time">
       <source xml:lang="en">Time</source>
     </trans-unit>
+    <trans-unit id="actionLabel">
+      <source xml:lang="en">Action</source>
+    </trans-unit>
     <trans-unit id="addDatabaseReferenceOkButtonText">
       <source xml:lang="en">Add reference</source>
     </trans-unit>
@@ -57,6 +60,15 @@
     </trans-unit>
     <trans-unit id="appSettingPrompt">
       <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
+    </trans-unit>
+    <trans-unit id="applyConfirmation">
+      <source xml:lang="en">Are you sure you want to update the target project?</source>
+    </trans-unit>
+    <trans-unit id="applyError">
+      <source xml:lang="en">There was an error updating the project: {0}</source>
+    </trans-unit>
+    <trans-unit id="applySuccess">
+      <source xml:lang="en">Project was successfully updated.</source>
     </trans-unit>
     <trans-unit id="at">
       <source xml:lang="en">at</source>
@@ -112,6 +124,12 @@
     <trans-unit id="cleaningDockerImagesMessage">
       <source xml:lang="en">Cleaning existing deployments...</source>
     </trans-unit>
+    <trans-unit id="closeButton">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="compareActionRadiButtonLabel">
+      <source xml:lang="en">View changes in Schema Compare</source>
+    </trans-unit>
     <trans-unit id="confirmPassword">
       <source xml:lang="en">Confirm SQL server admin password</source>
     </trans-unit>
@@ -124,6 +142,9 @@
     <trans-unit id="connectionFailedError">
       <source xml:lang="en">Connection failed error: '{0}'</source>
     </trans-unit>
+    <trans-unit id="connectionProfile">
+      <source xml:lang="en">Select a connection profile</source>
+    </trans-unit>
     <trans-unit id="connectionRadioButtonLabel">
       <source xml:lang="en">Connections</source>
     </trans-unit>
@@ -134,7 +155,7 @@
       <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
     </trans-unit>
     <trans-unit id="containerAlreadyExistForProject">
-      <source xml:lang="en">Other servers on container already exist for the project. Do you want to delete them?</source>
+      <source xml:lang="en">Containers already exist for this project. Do you want to delete them before deploying a new one?</source>
     </trans-unit>
     <trans-unit id="createNew">
       <source xml:lang="en">Create New</source>
@@ -307,6 +328,12 @@
     <trans-unit id="emptyProjectTypeDisplayName">
       <source xml:lang="en">SQL Database</source>
     </trans-unit>
+    <trans-unit id="emptySdkProjectTypeDescription">
+      <source xml:lang="en">Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.</source>
+    </trans-unit>
+    <trans-unit id="emptySdkProjectTypeDisplayName">
+      <source xml:lang="en">SQL Database (SDK)</source>
+    </trans-unit>
     <trans-unit id="enterConnStringTemplateDescription">
       <source xml:lang="en">Enter a template for SQL connection string</source>
     </trans-unit>
@@ -334,11 +361,20 @@
     <trans-unit id="enterPassword">
       <source xml:lang="en">Enter SQL Server admin password</source>
     </trans-unit>
+    <trans-unit id="enterPasswordManually">
+      <source xml:lang="en">Enter password or press escape to cancel</source>
+    </trans-unit>
+    <trans-unit id="enterPasswordPrompt">
+      <source xml:lang="en">Enter the password to be used for the connection string</source>
+    </trans-unit>
     <trans-unit id="enterPortNumber">
       <source xml:lang="en">Enter SQL server port number or press enter to use the default value</source>
     </trans-unit>
     <trans-unit id="enterSystemDbName">
       <source xml:lang="en">Enter a database name for this system database</source>
+    </trans-unit>
+    <trans-unit id="equalComparison">
+      <source xml:lang="en">The project is already up to date with the database.</source>
     </trans-unit>
     <trans-unit id="errorFindingBuildFilesLocation">
       <source xml:lang="en">Error finding build files location: {0}</source>
@@ -374,6 +410,9 @@
     </trans-unit>
     <trans-unit id="extractTargetRequired">
       <source xml:lang="en">Target information for extract is required to create database project.</source>
+    </trans-unit>
+    <trans-unit id="failedToGetConnectionString">
+      <source xml:lang="en">An error occurred generating the connection string for the selected connection</source>
     </trans-unit>
     <trans-unit id="failedToParse">
       <source xml:lang="en">Failed to parse "{0}": {1}.</source>
@@ -429,6 +468,9 @@
     <trans-unit id="importElements">
       <source xml:lang="en">Import Elements</source>
     </trans-unit>
+    <trans-unit id="includePassword">
+      <source xml:lang="en">Do you want to include the password from this connection in your local.settings.json file?</source>
+    </trans-unit>
     <trans-unit id="input">
       <source xml:lang="en">Input</source>
     </trans-unit>
@@ -464,6 +506,9 @@
     </trans-unit>
     <trans-unit id="jsonParseError">
       <source xml:lang="en">{0} near line "{1}", column "{2}"</source>
+    </trans-unit>
+    <trans-unit id="learnMore">
+      <source xml:lang="en">Learn More</source>
     </trans-unit>
     <trans-unit id="loadProfilePlaceholderText">
       <source xml:lang="en">Load profile...</source>
@@ -513,8 +558,14 @@
     <trans-unit id="noFileExist">
       <source xml:lang="en">File {0} doesn't exist</source>
     </trans-unit>
+    <trans-unit id="noSchemaCompareExtension">
+      <source xml:lang="en">The Schema Compare extension must be installed to a update a project from a database.</source>
+    </trans-unit>
     <trans-unit id="noSqlFilesGenerated">
       <source xml:lang="en">No .sql files were generated by Autorest. Please confirm that your spec contains model definitions, or check the output log for details.</source>
+    </trans-unit>
+    <trans-unit id="noSqlProjFile">
+      <source xml:lang="en">The selected project file does not exist</source>
     </trans-unit>
     <trans-unit id="noSqlProjFilesSelected">
       <source xml:lang="en">No .sqlproj file selected; please select one.</source>
@@ -548,6 +599,9 @@
     </trans-unit>
     <trans-unit id="openEulaString">
       <source xml:lang="en">Open License Agreement</source>
+    </trans-unit>
+    <trans-unit id="openFile">
+      <source xml:lang="en">Open File</source>
     </trans-unit>
     <trans-unit id="output">
       <source xml:lang="en">Output</source>
@@ -597,6 +651,9 @@
     <trans-unit id="projectLocString">
       <source xml:lang="en">Project</source>
     </trans-unit>
+    <trans-unit id="projectLocationLabel">
+      <source xml:lang="en">Location</source>
+    </trans-unit>
     <trans-unit id="projectLocationPlaceholderText">
       <source xml:lang="en">Select location to create project</source>
     </trans-unit>
@@ -611,6 +668,9 @@
     </trans-unit>
     <trans-unit id="projectReferenceNameElement">
       <source xml:lang="en">Project reference name element</source>
+    </trans-unit>
+    <trans-unit id="projectToUpdatePlaceholderText">
+      <source xml:lang="en">Select project file</source>
     </trans-unit>
     <trans-unit id="publish">
       <source xml:lang="en">Publish</source>
@@ -690,6 +750,9 @@
     <trans-unit id="schema">
       <source xml:lang="en">Schema</source>
     </trans-unit>
+    <trans-unit id="schemaCompare.compareErrorMessage">
+      <source xml:lang="en">Schema Compare failed: {0}</source>
+    </trans-unit>
     <trans-unit id="schemaCompareAction">
       <source xml:lang="en">Schema Compare</source>
     </trans-unit>
@@ -701,6 +764,9 @@
     </trans-unit>
     <trans-unit id="scriptFriendlyName">
       <source xml:lang="en">Script</source>
+    </trans-unit>
+    <trans-unit id="sdkStyleProject">
+      <source xml:lang="en">SDK-style project</source>
     </trans-unit>
     <trans-unit id="sec">
       <source xml:lang="en">sec</source>
@@ -716,6 +782,12 @@
     </trans-unit>
     <trans-unit id="selectConnection">
       <source xml:lang="en">Select connection</source>
+    </trans-unit>
+    <trans-unit id="selectConnectionError">
+      <source xml:lang="en">Failed to set connection string app setting: {0}</source>
+    </trans-unit>
+    <trans-unit id="selectConnectionString">
+      <source xml:lang="en">Select SQL connection string method</source>
     </trans-unit>
     <trans-unit id="selectDacpac">
       <source xml:lang="en">Select .dacpac</source>
@@ -846,6 +918,9 @@
     <trans-unit id="unableToPerformAction">
       <source xml:lang="en">Unable to locate '{0}' target: '{1}'</source>
     </trans-unit>
+    <trans-unit id="unableToSetConnectionString">
+      <source xml:lang="en">Failed to set connection string app setting</source>
+    </trans-unit>
     <trans-unit id="unexpectedProjectContext">
       <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
     </trans-unit>
@@ -855,11 +930,32 @@
     <trans-unit id="unrecognizedDataSourcesVersion">
       <source xml:lang="en">Unrecognized version: </source>
     </trans-unit>
+    <trans-unit id="updateAction">
+      <source xml:lang="en">Update action</source>
+    </trans-unit>
+    <trans-unit id="updateActionRadiButtonLabel">
+      <source xml:lang="en">Apply all changes</source>
+    </trans-unit>
     <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
       <source xml:lang="en">The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
     </trans-unit>
     <trans-unit id="updateProjectForRoundTrip">
       <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+    </trans-unit>
+    <trans-unit id="updateProjectFromDatabaseDialogName">
+      <source xml:lang="en">Update project from database</source>
+    </trans-unit>
+    <trans-unit id="updateText">
+      <source xml:lang="en">Update</source>
+    </trans-unit>
+    <trans-unit id="updatingProjectFromDatabase">
+      <source xml:lang="en">Updating {0} from {1}...</source>
+    </trans-unit>
+    <trans-unit id="userConnectionString">
+      <source xml:lang="en">Enter connection string</source>
+    </trans-unit>
+    <trans-unit id="userPasswordLater">
+      <source xml:lang="en">In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.</source>
     </trans-unit>
     <trans-unit id="userSelectionCancelled">
       <source xml:lang="en">User has cancelled selection for how to run autorest.</source>
@@ -998,6 +1094,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.schemaCompare">
       <source xml:lang="en">Schema Compare</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.updateProjectFromDatabase">
+      <source xml:lang="en">Update Project From Database</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.validateExternalStreamingJob">
       <source xml:lang="en">Validate External Streaming Job</source>

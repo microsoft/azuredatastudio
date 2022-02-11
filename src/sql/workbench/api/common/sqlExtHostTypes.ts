@@ -953,6 +953,7 @@ export namespace designers {
 		Script = 'script',
 		ForeignKeys = 'foreignKeys',
 		CheckConstraints = 'checkConstraints',
+		Indexes = 'indexes'
 	}
 
 	export enum TableColumnProperty {
@@ -968,20 +969,29 @@ export namespace designers {
 
 	export enum TableForeignKeyProperty {
 		Name = 'name',
-		PrimaryKeyTable = 'primaryKeyTable',
+		ForeignTable = 'foreignTable',
 		OnDeleteAction = 'onDeleteAction',
 		OnUpdateAction = 'onUpdateAction',
 		Columns = 'columns'
 	}
 
 	export enum ForeignKeyColumnMappingProperty {
-		PrimaryKeyColumn = 'primaryKeyColumn',
-		ForeignKeyColumn = 'foreignKeyColumn'
+		Column = 'column',
+		ForeignColumn = 'foreignColumn'
 	}
 
 	export enum TableCheckConstraintProperty {
 		Name = 'name',
 		Expression = 'expression'
+	}
+
+	export enum TableIndexProperty {
+		Name = 'name',
+		Columns = 'columns'
+	}
+
+	export enum TableIndexColumnSpecificationProperty {
+		Column = 'column'
 	}
 
 	export enum DesignerEditType {

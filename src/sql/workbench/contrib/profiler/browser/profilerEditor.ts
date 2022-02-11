@@ -117,6 +117,8 @@ export interface IDetailData {
 	value: string;
 }
 
+let ProfilerEditorInstanceId = 0;
+
 export class ProfilerEditor extends EditorPane {
 	public static readonly ID: string = 'workbench.editor.profiler';
 
@@ -449,7 +451,7 @@ export class ProfilerEditor extends EditorPane {
 		editorContainer.className = 'profiler-editor';
 		this._editor.create(editorContainer);
 		this._editor.setVisible(true);
-		this._untitledTextEditorModel = this._instantiationService.createInstance(UntitledTextEditorModel, URI.from({ scheme: Schemas.untitled }), false, undefined, 'sql', undefined);
+		this._untitledTextEditorModel = this._instantiationService.createInstance(UntitledTextEditorModel, URI.from({ scheme: Schemas.untitled, path: `ProfilerTextEditor-${ProfilerEditorInstanceId++}` }), false, undefined, 'sql', undefined);
 		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, this._untitledTextEditorModel);
 		this._editor.setInput(this._editorInput, undefined, undefined);
 		this._editorInput.resolve().then(model => this._editorModel = model.textEditorModel);

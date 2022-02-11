@@ -50,6 +50,7 @@ import { throwProposedApiError, checkProposedApiEnabled } from 'vs/workbench/ser
 import { ProxyIdentifier } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/common/extensionDescriptionRegistry';
 import type * as vscode from 'vscode';
+import type * as azdata from 'azdata';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { values } from 'vs/base/common/collections';
 import { ExtHostEditorInsets } from 'vs/workbench/api/common/extHostCodeInsets';
@@ -92,10 +93,12 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 // import { ExtHostNotebookDocuments } from 'vs/workbench/api/common/extHostNotebookDocuments'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 // import { ExtHostInteractive } from 'vs/workbench/api/common/extHostInteractive'; {{SQL CARBON EDIT}} Remove until we need it
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
-import { functionalityNotSupportedError } from 'sql/base/common/locConstants';
+import { functionalityNotSupportedError, invalidArgumentsError } from 'sql/base/common/locConstants';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
-import { VSCodeNotebookDocument } from 'sql/workbench/api/common/vscodeNotebookDocument';
-import { VSCodeNotebookEditor } from 'sql/workbench/api/common/vscodeNotebookEditor';
+import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
+import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
+import { convertToADSNotebookContents } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { IdGenerator } from 'vs/base/common/idGenerator';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -208,6 +211,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 
 	// Register API-ish commands
 	ExtHostApiCommands.register(extHostCommands);
+
+	// {{SQL CARBON EDIT}} Used for creating stubbed out DecorationTypes for compatibility purposes
+	const DecorationTypeKeys = new IdGenerator('VSCodeNotebookEditorDecorationType');
 
 	return function (extension: IExtensionDescription, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode {
 
@@ -722,40 +728,38 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				return new VSCodeNotebookEditor(extHostNotebookDocumentsAndEditors.getActiveEditor());
 			},
 			onDidChangeActiveNotebookEditor(listener, thisArgs?, disposables?) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebook.onDidChangeActiveNotebookEditor(listener, thisArgs, disposables);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.onDidChangeActiveVSCodeEditor(listener, thisArgs, disposables);
 			},
 			get visibleNotebookEditors() {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				return undefined;
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebook.visibleNotebookEditors;
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.getAllEditors().map(editor => new VSCodeNotebookEditor(editor));
 			},
 			get onDidChangeVisibleNotebookEditors() {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				return undefined;
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebook.onDidChangeVisibleNotebookEditors;
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.onDidChangeVisibleVSCodeEditors;
 			},
 			onDidChangeNotebookEditorSelection(listener, thisArgs?, disposables?) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebookEditors.onDidChangeNotebookEditorSelection(listener, thisArgs, disposables);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.onDidChangeVSCodeEditorSelection(listener, thisArgs, disposables);
 			},
 			onDidChangeNotebookEditorVisibleRanges(listener, thisArgs?, disposables?) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebookEditors.onDidChangeNotebookEditorVisibleRanges(listener, thisArgs, disposables);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.onDidChangeVSCodeEditorRanges(listener, thisArgs, disposables);
 			},
-			showNotebookDocument(uriOrDocument, options?) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebook.showNotebookDocument(uriOrDocument, options);
+			showNotebookDocument(uriOrDocument: URI | vscode.NotebookDocument, options?: vscode.NotebookDocumentShowOptions): Thenable<vscode.NotebookEditor> {
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				let targetUri: URI;
+				if (URI.isUri(uriOrDocument)) {
+					targetUri = uriOrDocument;
+				} else {
+					targetUri = uriOrDocument.uri;
+				}
+				return extHostNotebookDocumentsAndEditors.showNotebookDocument(targetUri, {
+					viewColumn: options?.viewColumn,
+					preserveFocus: options?.preserveFocus,
+					preview: options?.preview
+				}).then(editor => new VSCodeNotebookEditor(editor));
 			},
 			registerExternalUriOpener(id: string, opener: vscode.ExternalUriOpener, metadata: vscode.ExternalUriOpenerMetadata) {
 				checkProposedApiEnabled(extension);
@@ -887,19 +891,19 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				// {{SQL CARBON EDIT}} Use our own notebooks
 				return extHostNotebookDocumentsAndEditors.getAllDocuments().map(doc => new VSCodeNotebookDocument(doc.document));
 			},
-			async openNotebookDocument(uriOrType?: URI | string, content?: vscode.NotebookData) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// let uri: URI;
-				// if (URI.isUri(uriOrType)) {
-				// 	uri = uriOrType;
-				// 	await extHostNotebook.openNotebookDocument(uriOrType);
-				// } else if (typeof uriOrType === 'string') {
-				// 	uri = URI.revive(await extHostNotebook.createNotebookDocument({ viewType: uriOrType, content }));
-				// } else {
-				// 	throw new Error('Invalid arguments');
-				// }
-				// return extHostNotebook.getNotebookDocument(uri).apiNotebook;
+			async openNotebookDocument(uriOrType?: URI | string, content?: vscode.NotebookData): Promise<vscode.NotebookDocument> {
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				let doc: azdata.nb.NotebookDocument;
+				if (URI.isUri(uriOrType)) {
+					let editor = await extHostNotebookDocumentsAndEditors.showNotebookDocument(uriOrType, {});
+					doc = editor.document;
+				} else if (typeof uriOrType === 'string') {
+					let convertedContents = convertToADSNotebookContents(content);
+					doc = await extHostNotebookDocumentsAndEditors.createNotebookDocument(uriOrType, convertedContents);
+				} else {
+					throw new Error(invalidArgumentsError);
+				}
+				return new VSCodeNotebookDocument(doc);
 			},
 			get onDidOpenNotebookDocument(): Event<vscode.NotebookDocument> {
 				// {{SQL CARBON EDIT}} Use our own notebooks
@@ -1160,52 +1164,46 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				// return extHostNotebook.registerNotebookCellStatusBarItemProvider(extension, notebookType, provider);
 			},
 			get onDidSaveNotebookDocument(): Event<vscode.NotebookDocument> {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebookDocuments.onDidSaveNotebookDocument;
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.onDidSaveVSCodeNotebookDocument;
 			},
 			createNotebookEditorDecorationType(options: vscode.NotebookDecorationRenderOptions): vscode.NotebookEditorDecorationType {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebookEditors.createNotebookEditorDecorationType(options);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				// Returning this stub class for now, since we don't support renderer contributions yet
+				return {
+					key: DecorationTypeKeys.nextId(),
+					dispose: () => undefined
+				};
 			},
 			createRendererMessaging(rendererId) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebookRenderers.createRendererMessaging(extension, rendererId);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				// Returning this stub class for now, since we don't support renderer contributions yet
+				let receivedMessage = new Emitter<{ editor: vscode.NotebookEditor, message: any }>();
+				let rendererMessaging: vscode.NotebookRendererMessaging = {
+					onDidReceiveMessage: (listener, thisArg, disposables) => receivedMessage.event(listener, thisArg, disposables),
+					postMessage: () => Promise.resolve(false)
+				};
+				return rendererMessaging;
 			},
 			onDidChangeNotebookDocumentMetadata(listener, thisArgs?, disposables?) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebookDocuments.onDidChangeNotebookDocumentMetadata(listener, thisArgs, disposables);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.onDidChangeVSCodeDocumentMetadata(listener, thisArgs, disposables);
 			},
 			onDidChangeNotebookCells(listener, thisArgs?, disposables?) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebook.onDidChangeNotebookCells(listener, thisArgs, disposables);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.onDidChangeVSCodeNotebookCells(listener, thisArgs, disposables);
 			},
 			onDidChangeNotebookCellExecutionState(listener, thisArgs?, disposables?) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebook.onDidChangeNotebookCellExecutionState(listener, thisArgs, disposables);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.onDidChangeVSCodeExecutionState(listener, thisArgs, disposables);
 			},
 			onDidChangeCellOutputs(listener, thisArgs?, disposables?) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebook.onDidChangeCellOutputs(listener, thisArgs, disposables);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.onDidChangeVSCodeCellOutputs(listener, thisArgs, disposables);
 			},
 			onDidChangeCellMetadata(listener, thisArgs?, disposables?) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebook.onDidChangeCellMetadata(listener, thisArgs, disposables);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.onDidChangeVSCodeCellMetadata(listener, thisArgs, disposables);
 			},
 			createConcatTextDocument(notebook, selector) {
 				// {{SQL CARBON EDIT}} Disable VS Code notebooks

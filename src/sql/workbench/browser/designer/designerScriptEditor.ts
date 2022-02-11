@@ -33,6 +33,8 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 class DesignerCodeEditor extends CodeEditorWidget {
 }
 
+let DesignerScriptEditorInstanceId = 0;
+
 export class DesignerScriptEditor extends BaseTextEditor implements DesignerTextEditor {
 	private _content: string;
 	private _contentChangeEventEmitter: Emitter<string> = new Emitter<string>();
@@ -57,11 +59,12 @@ export class DesignerScriptEditor extends BaseTextEditor implements DesignerText
 		super(DesignerScriptEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, editorService, editorGroupService);
 		this.create(this._container);
 		this.setVisible(true);
-		this._untitledTextEditorModel = this.instantiationService.createInstance(UntitledTextEditorModel, URI.from({ scheme: Schemas.untitled }), false, undefined, 'sql', undefined);
+		this._untitledTextEditorModel = this.instantiationService.createInstance(UntitledTextEditorModel, URI.from({ scheme: Schemas.untitled, path: `DesignerScriptEditor-${DesignerScriptEditorInstanceId++}` }), false, undefined, 'sql', undefined);
 		this._editorInput = this.instantiationService.createInstance(UntitledTextEditorInput, this._untitledTextEditorModel);
 		this.setInput(this._editorInput, undefined, undefined).catch(onUnexpectedError);
 		this._editorInput.resolve().then((model) => {
 			this._editorModel = model.textEditorModel;
+			this.updateEditor();
 		});
 	}
 
@@ -109,8 +112,14 @@ export class DesignerScriptEditor extends BaseTextEditor implements DesignerText
 
 	set content(val: string) {
 		this._content = val;
-		this._modelService.updateModel(this._editorModel, this._content);
-		this._untitledTextEditorModel.setDirty(false);
-		this.layout(new DOM.Dimension(this._container.clientWidth, this._container.clientHeight));
+		this.updateEditor();
+	}
+
+	private updateEditor(): void {
+		if (this._editorModel) {
+			this._modelService.updateModel(this._editorModel, this._content);
+			this._untitledTextEditorModel.setDirty(false);
+			this.layout(new DOM.Dimension(this._container.clientWidth, this._container.clientHeight));
+		}
 	}
 }

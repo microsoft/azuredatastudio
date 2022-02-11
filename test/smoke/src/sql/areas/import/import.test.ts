@@ -16,7 +16,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			const app = this.app as Application;
 			await app.workbench.quickaccess.runCommand('Flat File Import: Import Wizard');
 			// Wait for the service to be downloaded and installed. This can take a while so set timeout to 5min (retryInterval default is 100ms)
-			await app.workbench.statusbar.waitForStatusbarText('', 'Flat File Import Service Started', 5 * 60 * 10);
+			await app.workbench.statusbar.waitForStatusbarText('Microsoft.import', 'Flat File Import Service Started', 5 * 60 * 10);
 			await app.workbench.connectionDialog.waitForConnectionDialog();
 		});
 	});
