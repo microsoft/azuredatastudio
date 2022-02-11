@@ -8,8 +8,6 @@ import type * as azdata from 'azdata';
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { localize } from 'vs/nls';
 import { dispose } from 'vs/base/common/lifecycle';
-import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
-import { Registry } from 'vs/platform/registry/common/platform';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import * as DOM from 'vs/base/browser/dom';
 import * as azdataGraphModule from 'azdataGraph';
@@ -620,24 +618,3 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		`);
 	}
 });
-
-
-/**
- * Registering a feature flag for query plan.
- * TODO: This should be removed before taking the feature to public preview.
- */
-const QUERYPLAN2_CONFIG_ID = 'queryPlan2';
-Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConfiguration({
-	id: QUERYPLAN2_CONFIG_ID,
-	title: localize('queryPlan2.configTitle', "Query Plan"),
-	type: 'object',
-	properties: {
-		'queryPlan2.enableFeature': {
-			'type': 'boolean',
-			'default': false,
-			'description': localize('queryPlan2.featureEnabledDescription', "Controls whether the new query plan feature is enabled. Default value is false.")
-		}
-	}
-});
-
-
