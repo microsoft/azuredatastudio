@@ -1403,7 +1403,7 @@ export function safeInnerHtml(node: HTMLElement, value: string): void {
 			'span': ['data-command', 'role'],
 			'textarea': ['name', 'placeholder', 'required'],
 		},
-		allowedSchemes: ['http', 'https', 'command', 'file'] // {{SQL CARBON EDIT}} Add allowed schema for welcome page support
+		allowedSchemes: ['http', 'https', 'command', 'vscode-file'] // {{SQL CARBON EDIT}} Add allowed schema for welcome page support
 	}, ['class', 'id', 'role', 'tabindex']);
 
 	const html = _ttpSafeInnerHtml?.createHTML(value, options) ?? insane(value, options);

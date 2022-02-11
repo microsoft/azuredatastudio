@@ -33,7 +33,7 @@ describe('Autorest tests', function (): void {
 		should(executable === 'autorest' || executable === 'npx autorest').equal(true, 'autorest command should be found in default path during unit tests');
 	});
 
-	it('Should run an autorest command successfully', async function (): Promise<void> {
+	it.skip('Should run an autorest command successfully', async function (): Promise<void> {
 		sinon.stub(window, 'showInformationMessage').returns(<any>Promise.resolve(runViaNpx)); // stub a selection in case test runner doesn't have autorest installed
 
 		const autorestHelper = new AutorestHelper(testContext.outputChannel);

@@ -663,7 +663,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "mocha": "^5.2.0",
     "should": "^13.2.1",
-    "vscodetestcover": "^1.1.0",
+    "@microsoft/vscodetestcover": "^1.2.0",
     "typemoq": "^2.1.0"
   },
   "__metadata": {

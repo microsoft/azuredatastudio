@@ -28,6 +28,11 @@ export interface IActivityBarService {
 	getVisibleViewContainerIds(): string[];
 
 	/**
+	 * Hides View container.
+	 */
+	hideViewContainer(string): void;	// {{SQL CARBON EDIT}}
+
+	/**
 	 * Focuses the activity bar.
 	 */
 	focusActivityBar(): void;

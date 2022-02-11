@@ -1131,7 +1131,7 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 			}
 		};
 
-		const publishChanges = (tableInfo: azdata.designers.TableInfo): Thenable<void> => {
+		const publishChanges = (tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.PublishChangesResult> => {
 			try {
 				return client.sendRequest(contracts.PublishTableDesignerChangesRequest.type, tableInfo);
 			}

@@ -459,7 +459,6 @@ suite('Notebook Serializer', () => {
 		assert.throws(() => vscodeEditor.visibleRanges);
 		assert.throws(() => vscodeEditor.viewColumn);
 		assert.throws(() => vscodeEditor.revealRange(undefined));
-		assert.throws(() => vscodeEditor.setDecorations(undefined, undefined));
 		await assert.rejects(() => vscodeEditor.edit(() => undefined));
 	});
 });

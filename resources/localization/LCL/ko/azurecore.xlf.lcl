@@ -281,12 +281,12 @@
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.responseError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Token retrieval failed with an error. Open developer tools to view the error]]></Val>
+          <Val><![CDATA[Token retrieval failed with an error. [Open developer tools]5D;({0}) for more details.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[오류로 인해 토큰 검색에 실패했습니다. 개발자 도구를 열어 오류 확인]]></Val>
+            <Val><![CDATA[오류로 인해 토큰 검색에 실패했습니다. 자세한 내용은 [개발자 도구 열기]5D;({0})를 참조하세요.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Token retrival failed with an error. Open developer tools to view the error]]></Val>
+            <Val><![CDATA[Token retrieval failed with an error. Open developer tools to view the error]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1614,6 +1614,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/package.config.loggingLevel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[[Optional]5D; The verbosity of logging for the Azure Accounts extension.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[선택 사항]5D; Azure 계정 확장에 대한 로깅의 자세한 정도입니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/package.config.noSystemKeychain" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.]]></Val>
@@ -1625,10 +1634,13 @@
       </Item>
       <Item ItemId=";extensions/azurecore/package.config.piiLogging" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Should Personally Identifiable Information (PII) be logged in the console view locally]]></Val>
+          <Val><![CDATA[Should Personally Identifiable Information (PII) be logged in the Azure Accounts output channel and the output channel log file.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[PII(개인 식별 정보)를 콘솔 보기에 로컬로 기록되는지 여부]]></Val>
+            <Val><![CDATA[개인 식별 정보(PII)는 Azure 계정 출력 채널 및 출력 채널 로그 파일에 기록되어야 합니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Should Personally Identifiable Information (PII) be logged in the console view locally]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

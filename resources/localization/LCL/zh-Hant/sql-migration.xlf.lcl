@@ -728,7 +728,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Perform the following steps before you complete cutover.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[完成切換前，請執行下列步驟。]]></Val>
+            <Val><![CDATA[完成完全移轉前，請執行下列步驟。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[When you are ready to do the migration cutover, perform the following steps to complete the database migration. Please note that the database is ready for cutover only after a full backup has been restored on the target Azure SQL Database Managed Instance.]]></Val>
@@ -1019,7 +1019,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Application downtime is limited to cutover at the end of migration.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[應用程式停機只限於在移轉結束時的完全移轉。]]></Val>
+            <Val><![CDATA[應用程式停機的情況只會發生於移轉結束時的完全移轉期間。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Application downtime is limited to cut over at the end of migration.]]></Val>

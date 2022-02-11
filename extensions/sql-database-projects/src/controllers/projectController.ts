@@ -150,9 +150,7 @@ export class ProjectsController {
 
 	/**
 	 * Creates a new folder with the project name in the specified location, and places the new .sqlproj inside it
-	 * @param newProjName
-	 * @param folderUri
-	 * @param projectGuid
+	 * @param creationParams
 	 */
 	public async createNewProject(creationParams: NewProjectParams): Promise<string> {
 		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.createNewProject)
@@ -173,7 +171,7 @@ export class ProjectsController {
 			'PROJECT_DSP': creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP
 		};
 
-		let newProjFileContents = templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
+		let newProjFileContents = creationParams.projectTypeId === constants.emptySqlDatabaseSdkProjectTypeId ? templates.macroExpansion(templates.newSdkSqlProjectTemplate, macroDict) : templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
 
 		let newProjFileName = creationParams.newProjName;
 
@@ -266,7 +264,8 @@ export class ProjectsController {
 
 	/**
 	 * Publishes a project to docker container
-	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project or the Project itself
+	 * @param deployProfile
 	 */
 	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: IDeployProfile): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
@@ -324,7 +323,7 @@ export class ProjectsController {
 
 			return publishDatabaseDialog.waitForClose();
 		} else {
-			void this.publishDatabase(project);
+			return this.publishDatabase(project);
 		}
 	}
 
@@ -795,7 +794,7 @@ export class ProjectsController {
 
 	/**
 	 * Reloads the given project. Throws an error if given project is not a valid open project.
-	 * @param projectFileUri the uri of the project to be reloaded
+	 * @param context
 	 */
 	public async reloadProject(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
@@ -1262,7 +1261,7 @@ export class ProjectsController {
 			const newProjFilePath = await this.createNewProject({
 				newProjName: model.projName,
 				folderUri: vscode.Uri.file(newProjFolderUri),
-				projectTypeId: constants.emptySqlDatabaseProjectTypeId
+				projectTypeId: model.sdkStyle ? constants.emptySqlDatabaseSdkProjectTypeId : constants.emptySqlDatabaseProjectTypeId
 			});
 
 			model.filePath = path.dirname(newProjFilePath);
@@ -1272,7 +1271,9 @@ export class ProjectsController {
 			await this.createProjectFromDatabaseApiCall(model); // Call ExtractAPI in DacFx Service
 			let fileFolderList: vscode.Uri[] = model.extractTarget === mssql.ExtractTarget.file ? [vscode.Uri.file(model.filePath)] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
 
-			await project.addToProject(fileFolderList); // Add generated file structure to the project
+			if (!model.sdkStyle) {
+				await project.addToProject(fileFolderList); // Add generated file structure to the project
+			}
 
 			// add project to workspace
 			const workspaceApi = utils.getDataWorkspaceExtensionApi();

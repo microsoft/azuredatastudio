@@ -206,6 +206,8 @@ This defines the set of options for this field to display. There are a number of
 
 * [OptionsInfo](#optionsinfo) - An object allowing more control over the option values.
 
+* [Dynamic Options](#dynamicoptions) - Change the options available for one field based on the option selected in another. Radio buttons only. Can use CategoryValue type as values.
+
 See [sample-options](https://github.com/microsoft/azuredatastudio/blob/main/samples/sample-resource-deployment/package.json) for example implementations.
 
 ##### OptionsInfo
@@ -216,6 +218,44 @@ This object defines a set of options for a field, similar to the arrays that can
 `defaultValue` - The string value of the default option to have selected
 `optionsType` - How to display the options, either `radio` or `dropdown`
 `source` - OPTIONAL If set defines the [Options Source Provider](#options-source-provider) to use for populating the options dynamically.
+
+### Dynamic Options
+This enables you to dynamically change what options for a field are displayed to the user based on a previous selection they made. 
+For example, if a user selects "Cookies" over "Cakes" in the first field, the second field will show options ["Chocolate chip", "Snickerdoodle"] instead of ["Red velvet", "Cheesecake", "Black forest"], and vice versa.
+
+**NOTE** This is currently only enabled for radio buttons. This works with [CategoryValue](#fieldinfo) values as well.
+
+Placement of the `dynamicOptions` object in the package.json should be in the field whose values are doing the changing, **not** in the field whose value **determines** the other fields' options.
+
+`target` - The *variable name* of the field to look at in order to detemine what options the current field should use.
+
+`alternates` - An array of objects in which the objects represent the *alternate* options of the current field. An object has three values: `selection`, `alternateValues`, and `defaultValue`. `selection` is the variable name of a value in the target field that was not selected by default. `alternateValues` is an array of values that will be shown as options *if* the value in `selection` is chosen in the target field. `defaultValue` is simply the value that is selected by default out of the array of `alternateValues`.
+
+``` json
+			...
+			"variableName": "AZDATA_NB_VAR_COOKIE_TYPES", // Our current field's name
+                        "options": {
+                          "values": ["Chocolate chip", "Snickerdoodle"], // Since Cookies is the default selection for the target field, these will be the values shown for this current field.
+                          "defaultValue": "Chocolate chip",
+                          "optionsType": "radio"
+                        },
+                        "dynamicOptions":
+                        {
+                          "target": "AZDATA_NB_VAR_DESSERT_TYPES", // The field that determines what options our current field will show
+                          "alternates": [
+                            {
+                              "selection": "Cakes", // If the user selected Cakes previously, the options shown will be as follows:
+                              "alternateValues": [
+                                "Red velvet",
+				"Cheesecake",
+				"Black forest"
+                              ],
+                              "defaultValue": "Red velvet"
+                            }
+                          ]
+                        }
+```
+
 
 ### Options Source Provider
 

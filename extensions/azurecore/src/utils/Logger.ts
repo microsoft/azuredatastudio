@@ -6,21 +6,48 @@
 import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
 
+export enum LogLevel {
+	'Pii',
+	'Off',
+	'Critical',
+	'Error',
+	'Warning',
+	'Information',
+	'Verbose',
+	'All',
+}
+
 export class Logger {
 
+
 	public static channel: vscode.OutputChannel = vscode.window.createOutputChannel(loc.extensionName);
-
 	private static _piiLogging: boolean = false;
+	public static config = vscode.workspace.getConfiguration('azure');
 
-	static log(msg: any, ...vals: any[]) {
-		const fullMessage = `${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
-		this.channel.appendLine(fullMessage);
+	public static shouldLog(logLevel: LogLevel): Boolean {
+		return logLevel <= LogLevel[Logger.config.loggingLevel as keyof typeof LogLevel];
 	}
 
-	static error(msg: any, ...vals: any[]) {
-		const fullMessage = `${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
-		this.channel.appendLine(fullMessage);
+	private static write(logLevel: LogLevel, msg: any, ...vals: any[]) {
+		if (this.shouldLog(logLevel) || logLevel === LogLevel.Pii) {
+			const fullMessage = `[${LogLevel[logLevel]}]: ${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
+			this.channel.appendLine(fullMessage);
+		}
 	}
+
+	public static error(msg: any, ...vals: any[]) {
+		this.write(LogLevel.Error, msg, vals);
+	}
+
+	public static info(msg: any, ...vals: any[]) {
+		this.write(LogLevel.Information, msg, vals);
+	}
+
+	public static verbose(msg: any, ...vals: any[]) {
+		this.write(LogLevel.Verbose, msg, vals);
+	}
+
+
 
 	/**
 	 * Logs a message containing PII (when enabled). Provides the ability to sanitize or shorten values to hide information or reduce the amount logged.
@@ -36,7 +63,7 @@ export class Logger {
 				...objsToSanitize.map(obj => `${obj.name}=${sanitize(obj.objOrArray)}`),
 				...stringsToShorten.map(str => `${str.name}=${shorten(str.value)}`)
 			].join(' ');
-			Logger.log(msg, vals);
+			Logger.write(LogLevel.Pii, msg, vals);
 		}
 	}
 
@@ -69,6 +96,8 @@ function sanitizeImpl(obj: any): string {
 	shortenIfExists(obj, 'token');
 	shortenIfExists(obj, 'refresh_token');
 	shortenIfExists(obj, 'access_token');
+	shortenIfExists(obj, 'code');
+	shortenIfExists(obj, 'id_token');
 	return JSON.stringify(obj);
 }
 
