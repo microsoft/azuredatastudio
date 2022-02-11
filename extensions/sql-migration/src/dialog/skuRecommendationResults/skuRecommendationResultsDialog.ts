@@ -88,54 +88,58 @@ export class SkuRecommendationResultsDialog {
 
 		let recommendation: mssql.IaaSSkuRecommendationResultItem | mssql.PaaSSkuRecommendationResultItem;
 
-		let configuration;
-		let storageSection;
+		let configuration = constants.NA;
+		let storageSection = _view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column'
+		}).component();
 		switch (this._targetType) {
 			case MigrationTargetType.SQLVM:
 				recommendation = <mssql.IaaSSkuRecommendationResultItem>recommendationItem;
 
-				configuration = constants.VM_CONFIGURATION(recommendation.targetSku.virtualMachineSize!.azureSkuName, recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
+				if (recommendation.targetSku) {
+					configuration = constants.VM_CONFIGURATION(recommendation.targetSku.virtualMachineSize!.azureSkuName, recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
 
-				storageSection = this.createSqlVmTargetStorageSection(_view, recommendation);
+					storageSection = this.createSqlVmTargetStorageSection(_view, recommendation);
+				}
 				break;
 
 			case MigrationTargetType.SQLMI:
 			case MigrationTargetType.SQLDB:
 				recommendation = <mssql.PaaSSkuRecommendationResultItem>recommendationItem;
 
-				const serviceTier = recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.GeneralPurpose
-					? constants.GENERAL_PURPOSE
-					: constants.BUSINESS_CRITICAL;
+				if (recommendation.targetSku) {
+					const serviceTier = recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.GeneralPurpose
+						? constants.GENERAL_PURPOSE
+						: constants.BUSINESS_CRITICAL;
 
-				const hardwareType = recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.Gen5
-					? constants.GEN5
-					: recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.PremiumSeries
-						? constants.PREMIUM_SERIES
-						: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
+					const hardwareType = recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.Gen5
+						? constants.GEN5
+						: recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.PremiumSeries
+							? constants.PREMIUM_SERIES
+							: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
 
-				configuration = this._targetType === MigrationTargetType.SQLDB
-					? constants.DB_CONFIGURATION(serviceTier, recommendation.targetSku.computeSize!)
-					: constants.MI_CONFIGURATION(hardwareType, serviceTier, recommendation.targetSku.computeSize!);
+					configuration = this._targetType === MigrationTargetType.SQLDB
+						? constants.DB_CONFIGURATION(serviceTier, recommendation.targetSku.computeSize!)
+						: constants.MI_CONFIGURATION(hardwareType, serviceTier, recommendation.targetSku.computeSize!);
 
-				const storageLabel = _view.modelBuilder.text().withProps({
-					value: constants.STORAGE_HEADER,
-					CSSStyles: {
-						...styles.LABEL_CSS,
-					}
-				}).component();
-				const storageValue = _view.modelBuilder.text().withProps({
-					value: constants.STORAGE_GB(recommendation.targetSku.storageMaxSizeInMb! / 1024),
-					CSSStyles: {
-						...styles.BODY_CSS,
-					}
-				}).component();
+					const storageLabel = _view.modelBuilder.text().withProps({
+						value: constants.STORAGE_HEADER,
+						CSSStyles: {
+							...styles.LABEL_CSS,
+						}
+					}).component();
+					const storageValue = _view.modelBuilder.text().withProps({
+						value: constants.STORAGE_GB(recommendation.targetSku.storageMaxSizeInMb! / 1024),
+						CSSStyles: {
+							...styles.BODY_CSS,
+						}
+					}).component();
 
-				storageSection = _view.modelBuilder.flexContainer().withLayout({
-					flexFlow: 'column'
-				}).withItems([
-					storageLabel,
-					storageValue,
-				]).component();
+					storageSection.addItems([
+						storageLabel,
+						storageValue,
+					]);
+				}
 				break;
 		}
 		const recommendationContainer = _view.modelBuilder.flexContainer().withProps({
@@ -159,12 +163,14 @@ export class SkuRecommendationResultsDialog {
 			value: constants.TARGET_DEPLOYMENT_TYPE,
 			CSSStyles: {
 				...styles.LABEL_CSS,
+				'margin': '0',
 			}
 		}).component();
 		const targetDeploymentTypeValue = _view.modelBuilder.text().withProps({
 			value: this.targetName,
 			CSSStyles: {
 				...styles.BODY_CSS,
+				'margin': '0',
 			}
 		}).component();
 
@@ -172,17 +178,18 @@ export class SkuRecommendationResultsDialog {
 			value: constants.AZURE_CONFIGURATION,
 			CSSStyles: {
 				...styles.LABEL_CSS,
+				'margin': '12px 0 0',
 			}
 		}).component();
 		const azureConfigurationValue = _view.modelBuilder.text().withProps({
 			value: configuration,
 			CSSStyles: {
 				...styles.BODY_CSS,
+				'margin': '0',
 			}
 		}).component();
 
 		recommendationContainer.addItems([
-			// recommendationsSection,
 			targetDeploymentTypeLabel,
 			targetDeploymentTypeValue,
 
@@ -199,15 +206,15 @@ export class SkuRecommendationResultsDialog {
 			value: constants.RECOMMENDATION_REASON,
 			CSSStyles: {
 				...styles.SECTION_HEADER_CSS,
-				'margin-top': '12px'
+				'margin': '12px 0 0'
 			}
 		}).component();
 
 		const reasonsContainer = _view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
 		}).component();
-		const justifications: string[] = recommendation.positiveJustifications.concat(recommendation.negativeJustifications);
-		justifications.forEach(text => {
+		const justifications: string[] = recommendation?.positiveJustifications?.concat(recommendation?.negativeJustifications) || [constants.SKU_RECOMMENDATION_NO_RECOMMENDATION_REASON];
+		justifications?.forEach(text => {
 			reasonsContainer.addItem(
 				_view.modelBuilder.text().withProps({
 					value: text,
@@ -218,7 +225,7 @@ export class SkuRecommendationResultsDialog {
 			);
 		});
 
-		const storagePropertiesContainer = this.createStoragePropertiesTable(_view, recommendation.databaseName);
+		const storagePropertiesContainer = this.createStoragePropertiesTable(_view, recommendation?.databaseName);
 
 		recommendationContainer.addItems([
 			recommendationsReasonSection,

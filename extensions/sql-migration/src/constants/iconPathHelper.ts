@@ -42,6 +42,7 @@ export class IconPathHelper {
 	public static retry: IconPath;
 	public static edit: IconPath;
 	public static restartDataCollection: IconPath;
+	public static stop: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -167,6 +168,10 @@ export class IconPathHelper {
 		IconPathHelper.restartDataCollection = {
 			light: context.asAbsolutePath('images/restartDataCollection.svg'),
 			dark: context.asAbsolutePath('images/restartDataCollection.svg')
+		};
+		IconPathHelper.stop = {
+			light: context.asAbsolutePath('images/stop.svg'),
+			dark: context.asAbsolutePath('images/stop.svg')
 		};
 	}
 }

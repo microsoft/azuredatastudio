@@ -41,6 +41,7 @@ export const SKU_RECOMMENDATION_ERROR = (serverName: string): string => {
 	return localize('sql.migration.wizard.sku.error', "An error occurred while generating SKU recommendations for the server '{0}'.", serverName);
 };
 export const SKU_RECOMMENDATION_NO_RECOMMENDATION = localize('sql.migration.wizard.sku.error.noRecommendation', 'No recommendation available');
+export const SKU_RECOMMENDATION_NO_RECOMMENDATION_REASON = localize('sql.migration.wizard.sku.error.noRecommendation.reason', 'No SKU recommendations were generated, as there were no SKUs which could satisfy the performance characteristics of your source. Try selecting a different target platform, adjusting recommendation parameters, or selecting a different set of databases to assess.');
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR = (serverName: string): string => {
 	return localize('sql.migration.wizard.sku.assessment.error', "An error occurred while assessing the server '{0}'.", serverName);
 };
@@ -100,8 +101,8 @@ export const RECOMMENDED_CONFIGURATION = localize('sql.migration.sku.recommended
 export const GET_AZURE_RECOMMENDATION = localize('sql.migration.sku.get.recommendation', "Get Azure recommendation");
 export const REFINE_AZURE_RECOMMENDATION = localize('sql.migration.sku.refine.recommendation', "Refine Azure recommendation");
 export const REFRESH_AZURE_RECOMMENDATION = localize('sql.migration.sku.refresh.recommendation', "Refresh recommendation");
-export const STOP_PERFORMANCE_COLLECTION = localize('sql.migration.sku.stop.performance.collection', "Stop collection");
-export const RESTART_PERFORMANCE_COLLECTION = localize('sql.migration.sku.restart.performance.collection', "Restart collection");
+export const STOP_PERFORMANCE_COLLECTION = localize('sql.migration.sku.stop.performance.collection', "Stop data collection");
+export const RESTART_PERFORMANCE_COLLECTION = localize('sql.migration.sku.restart.performance.collection', "Restart data collection");
 export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click “Get Azure recommendation” button below");
 export const AZURE_RECOMMENDATION_CARD_IN_PROGRESS = localize('sql.migration.sku.card.azureRecommendation.inProgress', "Azure recommendation will be displayed once data collection is complete.");
 export const AZURE_RECOMMENDATION_STATUS_NOT_ENABLED = localize('sql.migration.sku.azureRecommendation.status.notEnabled', "Azure recommendation collects and analyzes performance data and then recommends an appropriate sized database in Azure for your workload.");
@@ -113,10 +114,12 @@ export function AZURE_RECOMMENDATION_STATUS_AUTO_REFRESH_TIMER(mins: number): st
 }
 export const AZURE_RECOMMENDATION_STATUS_MANUAL_REFRESH_TIMER = localize('sql.migration.sku.azureRecommendation.status.manualRefreshTimer', "Check back periodically for updated recommendations by pressing the 'Refresh recommendation' button.");
 export const AZURE_RECOMMENDATION_STATUS_DATA_IMPORTED = localize('sql.migration.sku.azureRecommendation.status.imported', "Azure recommendation has been applied using the provided data. Import or collect additional data to refine the recommendation.");
+export const AZURE_RECOMMENDATION_TOOLTIP_NOT_STARTED = localize('sql.migration.sku.azureRecommendation.tooltip.notStarted', "Click the button below to import or collect database performance data.");
 export const AZURE_RECOMMENDATION_TOOLTIP_IN_PROGRESS = localize('sql.migration.sku.azureRecommendation.tooltip.inProgress', "Running the performance collection for a longer period of time helps ensure a more accurate recommendation.");
 
 export const AZURE_RECOMMENDATION_START = localize('sql.migration.sku.azureRecommendation.start', "Start");
 export const AZURE_RECOMMENDATION_START_POPUP = localize('sql.migration.sku.azureRecommendation.start.popup', "Starting performance data collection...");
+export const AZURE_RECOMMENDATION_OPEN_EXISTING_POPUP = localize('sql.migration.sku.azureRecommendation.openExisting.popup', "Generating Azure recommendations using provided performance data...");
 export const AZURE_RECOMMENDATION_STOP_POPUP = localize('sql.migration.sku.azureRecommendation.stop.popup', "Stopping performance data collection...");
 export const AZURE_RECOMMENDATION_DESCRIPTION = localize('sql.migration.sku.azureRecommendation.description', "Azure recommendation requires performance data of SQL server instance to provide target recommendation. Enable performance data collection to receive the target recommendation for the databases you want to migrate. The longer this will be enabled the better the recommendation. You can disable performance data collection at any time.");
 export const AZURE_RECOMMENDATION_DESCRIPTION2 = localize('sql.migration.sku.azureRecommendation.description2', "You can also choose to select this data from an existing folder, if you have already collected it previously.");
@@ -137,17 +140,15 @@ export function RECOMMENDATIONS_AVAILABLE(totalDbs: number): string {
 	return localize('sql.migration.sku.available.recommendations', "{0} recommendations available", totalDbs);
 }
 export const RECOMMENDATIONS = localize('sql.migration.sku.recommendations', "Recommendations");
+export const LOADING_RECOMMENDATIONS = localize('sql.migration.sku.recommendations.loading', "Loading...");
 export const TARGET_DEPLOYMENT_TYPE = localize('sql.migration.sku.targetDeploymentType', "Target deployment type");
 export const AZURE_CONFIGURATION = localize('sql.migration.sku.azureConfiguration', "Azure configuration");
 export function VM_CONFIGURATION(vmSize: string, vCPU: number): string {
 	return localize('sql.migration.sku.azureConfiguration.vm', "{0} ({1} vCPU)", vmSize, vCPU);
 }
-export function VM_CONFIGURATION_PREVIEW(vmSize: string, vCPU: number, diskCount: number, diskName: string): string {
-	return localize('sql.migration.sku.azureConfiguration.vmPreview', "{0} ({1} vCPU) - {2}x {3}", vmSize, vCPU, diskCount, diskName);
+export function VM_CONFIGURATION_PREVIEW(dataDisk: string, logDisk: string, temp: string): string {
+	return localize('sql.migration.sku.azureConfiguration.vmPreview', "Data: {0}, Log: {1}, tempdb: {2}", dataDisk, logDisk, temp);
 }
-// export function VM_CONFIGURATION_PREVIEW(dataDisk: string, logDisk: string, temp: string): string {												// to-do: this is the new one, wasn't sure how to use it
-// 	return localize('sql.migration.sku.azureConfiguration.vmPreview', "Data disk - {0}, Log disk - {1}, Temp - {2}", dataDisk, logDisk, temp);
-// }
 export function DB_CONFIGURATION(computeTier: string, vCore: number): string {
 	return localize('sql.migration.sku.azureConfiguration.db', "{0} - {1} vCore", computeTier, vCore);
 }
@@ -180,6 +181,7 @@ export function STORAGE_GB(storage: number): string {
 }
 export const RECOMMENDED_STORAGE_CONFIGURATION = localize('sql.migration.sku.targetStorageConfiguration.recommendedStorageConfiguration', "Recommended storage configuration");
 export const EPHEMERAL_TEMPDB = localize('sql.migration.sku.targetStorageConfiguration.ephemeralTempdb', "Place tempdb on the local ephemeral SSD (default D:\\) drive");
+export const LOCAL_SSD = localize('sql.migration.sku.targetStorageConfiguration.local.SSD', "Local SSD");
 export const CACHING = localize('sql.migration.sku.targetStorageConfiguration.caching', "Host caching");
 export const CACHING_NA = localize('sql.migration.sku.targetStorageConfiguration.caching.na', "Not applicable");
 export const CACHING_NONE = localize('sql.migration.sku.targetStorageConfiguration.caching.none', "None");

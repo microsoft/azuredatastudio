@@ -181,18 +181,18 @@ export class GetAzureRecommendationDialog {
 		}).component();
 
 		this._collectDataFolderInput = _view.modelBuilder.inputBox().withProps({
-			required: this._performanceDataSource === PerformanceDataSourceOptions.CollectData,
 			placeHolder: constants.FOLDER_NAME,
-			// readOnly: true,
+			readOnly: true,
 			width: 320,
 			CSSStyles: {
 				'margin-right': '12px'
 			},
-			// validationErrorMessage: "invalid location??",
-		})
-			.component();
+		}).component();
 		this._disposables.push(this._collectDataFolderInput.onTextChanged(async (value) => {
-			this.migrationStateModel._skuRecommendationPerformanceLocation = value.trim();
+			if (value) {
+				this.migrationStateModel._skuRecommendationPerformanceLocation = value.trim();
+				this.dialog!.okButton.enabled = true;
+			}
 		}));
 
 		const browseButton = _view.modelBuilder.button().withProps({
@@ -243,16 +243,18 @@ export class GetAzureRecommendationDialog {
 		}).component();
 
 		this._openExistingFolderInput = _view.modelBuilder.inputBox().withProps({
-			required: this._performanceDataSource === PerformanceDataSourceOptions.OpenExisting,
 			placeHolder: constants.FOLDER_NAME,
-			// readOnly: true,
+			readOnly: true,
 			width: 320,
 			CSSStyles: {
 				'margin-right': '12px'
 			},
 		}).component();
 		this._disposables.push(this._openExistingFolderInput.onTextChanged(async (value) => {
-			this.migrationStateModel._skuRecommendationPerformanceLocation = value.trim();
+			if (value) {
+				this.migrationStateModel._skuRecommendationPerformanceLocation = value.trim();
+				this.dialog!.okButton.enabled = true;
+			}
 		}));
 
 		const openButton = _view.modelBuilder.button().withProps({
@@ -280,10 +282,29 @@ export class GetAzureRecommendationDialog {
 
 	private async switchDataSourceContainerFields(containerType: PerformanceDataSourceOptions): Promise<void> {
 		this._performanceDataSource = containerType;
-		await this._collectDataContainer.updateCssStyles({ 'display': (containerType === PerformanceDataSourceOptions.CollectData) ? 'inline' : 'none' });
-		await this._openExistingContainer.updateCssStyles({ 'display': (containerType === PerformanceDataSourceOptions.OpenExisting) ? 'inline' : 'none' });
-		this._collectDataFolderInput.required = containerType === PerformanceDataSourceOptions.CollectData;
-		this._openExistingFolderInput.required = containerType === PerformanceDataSourceOptions.OpenExisting;
+
+		let okButtonEnabled = false;
+		switch (containerType) {
+			case PerformanceDataSourceOptions.CollectData: {
+				await this._collectDataContainer.updateCssStyles({ 'display': 'inline' });
+				await this._openExistingContainer.updateCssStyles({ 'display': 'none' });
+
+				if (this._collectDataFolderInput.value) {
+					okButtonEnabled = true;
+				}
+				break;
+			}
+			case PerformanceDataSourceOptions.OpenExisting: {
+				await this._collectDataContainer.updateCssStyles({ 'display': 'none' });
+				await this._openExistingContainer.updateCssStyles({ 'display': 'inline' });
+
+				if (this._openExistingFolderInput.value) {
+					okButtonEnabled = true;
+				}
+				break;
+			}
+		}
+		this.dialog!.okButton.enabled = okButtonEnabled;
 	}
 
 	public async openDialog(dialogName?: string) {
@@ -310,7 +331,6 @@ export class GetAzureRecommendationDialog {
 		this.migrationStateModel._skuRecommendationPerformanceDataSource = this._performanceDataSource;
 		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
 			case PerformanceDataSourceOptions.CollectData: {
-				// start data collection entry point
 				await this.migrationStateModel.startPerfDataCollection(
 					this.migrationStateModel._skuRecommendationPerformanceLocation,
 					this.migrationStateModel._performanceDataQueryIntervalInSeconds,
@@ -324,11 +344,10 @@ export class GetAzureRecommendationDialog {
 				const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 				const errors: string[] = [];
 				try {
+					void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_OPEN_EXISTING_POPUP);
+
 					await this.skuRecommendationPage.startCardLoading();
 					await this.migrationStateModel.getSkuRecommendations();
-
-					console.log('results - this.migrationStateModel._skuRecommendationResults:');
-					console.log(this.migrationStateModel._skuRecommendationResults);
 
 					const skuRecommendationError = this.migrationStateModel._skuRecommendationResults?.recommendationError;
 					if (skuRecommendationError) {
