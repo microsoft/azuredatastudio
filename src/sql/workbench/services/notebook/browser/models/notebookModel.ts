@@ -1050,7 +1050,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._providerId = SQL_NOTEBOOK_PROVIDER;
 		}
 
-		// update default language
 		if (!this._defaultLanguageInfo?.name) {
 			// update default language
 			this._defaultLanguageInfo = {
@@ -1125,21 +1124,19 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					language = codeMirrorMode.name;
 				}
 			}
-			if (!language) {
-				if (languageInfo.name) {
-					language = languageInfo.name;
-				} else if (languageInfo.mimetype) {
-					language = languageInfo.mimetype;
-					let mimeTypePrefix = 'x-';
-					if (language.indexOf(mimeTypePrefix) > -1) {
-						language = language.replace(mimeTypePrefix, '');
-					}
-				}
+			if (!language && languageInfo.name) {
+				language = languageInfo.name;
+			}
+			if (!language && languageInfo.mimetype) {
+				language = languageInfo.mimetype;
 			}
 		}
 
 		if (language) {
-			if (language.toLowerCase() === 'ipython') {
+			let mimeTypePrefix = 'x-';
+			if (language.indexOf(mimeTypePrefix) > -1) {
+				language = language.replace(mimeTypePrefix, '');
+			} else if (language.toLowerCase() === 'ipython') {
 				// Special case ipython because in many cases this is defined as the code mirror mode for python notebooks
 				language = KernelsLanguage.Python;
 			} else if (language.toLowerCase() === 'c#') {
