@@ -133,6 +133,20 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			}
 			return false;
 		}));
+		this._register(DOM.addDisposableListener(window, DOM.EventType.FOCUS_IN, () => {
+			if (document.activeElement.classList.contains('notebook-cell')) {
+				let focusedCell = this.cells[+document.activeElement.id];
+				if (this.model.activeCell && this.model.activeCell.id !== focusedCell.id) {
+					if (this.model.activeCell.isEditMode) {
+						this.toggleEditMode();
+					}
+				}
+				this.selectCell(focusedCell);
+			}
+			if (document.activeElement.classList.contains('inputarea') && document.activeElement.closest('.notebook-cell.active')) {
+				this.toggleEditMode();
+			}
+		}));
 		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
 			if (this.isActive() && this.model.activeCell) {
