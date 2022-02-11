@@ -1141,6 +1141,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				language = KernelsLanguage.Python;
 			} else if (language.toLowerCase() === 'c#') {
 				language = KernelsLanguage.CSharp;
+			} else if (language.toLowerCase() === 'f#') {
+				language = KernelsLanguage.FSharp;
 			}
 		} else {
 			language = KernelsLanguage.Python;
