@@ -13,18 +13,17 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import * as DOM from 'vs/base/browser/dom';
 import * as azdataGraphModule from 'azdataGraph';
-import { queryPlanNodeIconPaths } from 'sql/workbench/contrib/queryplan2/browser/constants';
+import { customZoomIconClassNames, openPlanFileIconClassNames, openPropertiesIconClassNames, openQueryIconClassNames, queryPlanNodeIconPaths, savePlanIconClassNames, searchIconClassNames, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/queryplan2/browser/constants';
 import { isString } from 'vs/base/common/types';
 import { PlanHeader } from 'sql/workbench/contrib/queryplan2/browser/planHeader';
 import { QueryPlanPropertiesView } from 'sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView';
 import { Action } from 'vs/base/common/actions';
-import { Codicon } from 'vs/base/common/codicons';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { editorBackground, editorWidgetBackground, foreground, textLinkForeground, widgetShadow } from 'vs/platform/theme/common/colorRegistry';
+import { contrastBorder, editorBackground, editorWidgetBackground, foreground, listHoverBackground, textLinkForeground, widgetShadow } from 'vs/platform/theme/common/colorRegistry';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { ISashEvent, ISashLayoutProvider, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -234,7 +233,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 
 		const actions = [
 			new SavePlanFile(),
-			new OpenGraphFile(),
+			new OpenPlanFile(),
 			new OpenQueryAction(),
 			new SearchNodeAction(),
 			new ZoomInAction(),
@@ -442,7 +441,7 @@ class OpenQueryAction extends Action {
 	public static LABEL = localize('openQueryAction', "Open Query");
 
 	constructor() {
-		super(OpenQueryAction.ID, OpenQueryAction.LABEL, Codicon.dash.classNames);
+		super(OpenQueryAction.ID, OpenQueryAction.LABEL, openQueryIconClassNames);
 	}
 
 	public override async run(context: QueryPlan2): Promise<void> {
@@ -455,7 +454,7 @@ class PropertiesAction extends Action {
 	public static LABEL = localize('queryPlanPropertiesActionLabel', "Properties");
 
 	constructor() {
-		super(PropertiesAction.ID, PropertiesAction.LABEL, Codicon.book.classNames);
+		super(PropertiesAction.ID, PropertiesAction.LABEL, openPropertiesIconClassNames);
 	}
 
 	public override async run(context: QueryPlan2): Promise<void> {
@@ -468,7 +467,7 @@ class ZoomInAction extends Action {
 	public static LABEL = localize('queryPlanZoomInActionLabel', "Zoom In");
 
 	constructor() {
-		super(ZoomInAction.ID, ZoomInAction.LABEL, Codicon.zoomIn.classNames);
+		super(ZoomInAction.ID, ZoomInAction.LABEL, zoomInIconClassNames);
 	}
 
 	public override async run(context: QueryPlan2): Promise<void> {
@@ -481,7 +480,7 @@ class ZoomOutAction extends Action {
 	public static LABEL = localize('queryPlanZoomOutActionLabel', "Zoom Out");
 
 	constructor() {
-		super(ZoomOutAction.ID, ZoomOutAction.LABEL, Codicon.zoomOut.classNames);
+		super(ZoomOutAction.ID, ZoomOutAction.LABEL, zoomOutIconClassNames);
 	}
 
 	public override async run(context: QueryPlan2): Promise<void> {
@@ -494,7 +493,7 @@ class ZoomToFitAction extends Action {
 	public static LABEL = localize('queryPlanFitGraphLabel', "Zoom to fit");
 
 	constructor() {
-		super(ZoomToFitAction.ID, ZoomToFitAction.LABEL, Codicon.debugStop.classNames);
+		super(ZoomToFitAction.ID, ZoomToFitAction.LABEL, zoomToFitIconClassNames);
 	}
 
 	public override async run(context: QueryPlan2): Promise<void> {
@@ -509,7 +508,7 @@ class SavePlanFile extends Action {
 	public static LABEL = localize('queryPlanSavePlanXML', "Save Plan File");
 
 	constructor() {
-		super(SavePlanFile.ID, SavePlanFile.LABEL, Codicon.save.classNames);
+		super(SavePlanFile.ID, SavePlanFile.LABEL, savePlanIconClassNames);
 	}
 
 	public override async run(context: QueryPlan2): Promise<void> {
@@ -521,7 +520,7 @@ class CustomZoomAction extends Action {
 	public static LABEL = localize('queryPlanCustomZoom', "Custom Zoom");
 
 	constructor() {
-		super(CustomZoomAction.ID, CustomZoomAction.LABEL, Codicon.searchStop.classNames);
+		super(CustomZoomAction.ID, CustomZoomAction.LABEL, customZoomIconClassNames);
 	}
 
 	public override async run(context: QueryPlan2): Promise<void> {
@@ -534,7 +533,7 @@ class SearchNodeAction extends Action {
 	public static LABEL = localize('queryPlanSearchNodeAction', "SearchNode");
 
 	constructor() {
-		super(SearchNodeAction.ID, SearchNodeAction.LABEL, Codicon.search.classNames);
+		super(SearchNodeAction.ID, SearchNodeAction.LABEL, searchIconClassNames);
 	}
 
 	public override async run(context: QueryPlan2): Promise<void> {
@@ -542,12 +541,12 @@ class SearchNodeAction extends Action {
 	}
 }
 
-class OpenGraphFile extends Action {
+class OpenPlanFile extends Action {
 	public static ID = 'qp.openGraphFile';
-	public static Label = localize('queryPlanOpenGraphFile', "Open Graph File");
+	public static Label = localize('queryPlanOpenGraphFile', "Open Plan File");
 
 	constructor() {
-		super(OpenGraphFile.ID, OpenGraphFile.Label, Codicon.output.classNames);
+		super(OpenPlanFile.ID, OpenPlanFile.Label, openPlanFileIconClassNames);
 	}
 
 	public override async run(context: QueryPlan2): Promise<void> {
@@ -556,14 +555,6 @@ class OpenGraphFile extends Action {
 }
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
-	const menuBackgroundColor = theme.getColor(editorBackground);
-	if (menuBackgroundColor) {
-		collector.addRule(`
-		.qps-container .query-plan .plan .plan-action-container .child {
-			background-color: ${menuBackgroundColor};
-		}
-		`);
-	}
 	const recommendationsColor = theme.getColor(textLinkForeground);
 	if (recommendationsColor) {
 		collector.addRule(`
@@ -573,23 +564,53 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		`);
 	}
 	const shadow = theme.getColor(widgetShadow);
-	const widgetBackgroundColor = theme.getColor(editorWidgetBackground);
-
 	if (shadow) {
 		collector.addRule(`
 		.qps-container .query-plan .plan .plan-action-container .child {
 			box-shadow: 0 0 8px 2px ${shadow};
+		}
+		`);
+	}
+
+	const menuBackgroundColor = theme.getColor(listHoverBackground);
+	if (menuBackgroundColor) {
+		collector.addRule(`
+		.qps-container .query-plan .plan .header,
+		.qps-container .query-plan .properties .title,
+		.qps-container .query-plan .properties .table-action-bar {
+			background-color: ${menuBackgroundColor};
+		}
+		`);
+	}
+
+	const widgetBackgroundColor = theme.getColor(editorWidgetBackground);
+	if (widgetBackgroundColor) {
+		collector.addRule(`
+		.qps-container .query-plan .plan .plan-action-container .child,
+		.mxTooltip {
 			background-color: ${widgetBackgroundColor};
 		}
 		`);
 	}
 
+	const widgetBorderColor = theme.getColor(contrastBorder);
+	if (widgetBorderColor) {
+		collector.addRule(`
+		.qps-container .query-plan .plan .plan-action-container .child,
+		.qps-container .query-plan .plan .header,
+		.qps-container .query-plan .properties .title,
+		.qps-container .query-plan .properties .table-action-bar,
+		.mxTooltip {
+			border: 1px solid ${widgetBorderColor};
+		}
+		`);
+	}
+
 	const textColor = theme.getColor(foreground);
-	if (widgetBackgroundColor && foreground) {
+	if (textColor) {
 		collector.addRule(`
 		.mxTooltip  {
 			color: ${textColor};
-			background-color: ${widgetBackgroundColor};
 		}
 		`);
 	}
