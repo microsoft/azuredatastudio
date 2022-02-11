@@ -109,11 +109,11 @@ export class GetAzureRecommendationDialog {
 			.withProps({
 				name: buttonGroup,
 				label: constants.AZURE_RECOMMENDATION_COLLECT_DATA,
+				checked: this._performanceDataSource === PerformanceDataSourceOptions.CollectData,
 				CSSStyles: {
 					...styles.BODY_CSS,
 					'margin': '0'
 				},
-				checked: this._performanceDataSource === PerformanceDataSourceOptions.CollectData,
 			}).component();
 		this._disposables.push(collectDataButton.onDidChangeCheckedState(async (e) => {
 			if (e) {
@@ -125,6 +125,7 @@ export class GetAzureRecommendationDialog {
 			.withProps({
 				name: buttonGroup,
 				label: constants.AZURE_RECOMMENDATION_OPEN_EXISTING,
+				checked: this._performanceDataSource === PerformanceDataSourceOptions.OpenExisting,
 				CSSStyles: {
 					...styles.BODY_CSS,
 					'margin': '0 12px',
@@ -182,12 +183,14 @@ export class GetAzureRecommendationDialog {
 		this._collectDataFolderInput = _view.modelBuilder.inputBox().withProps({
 			required: this._performanceDataSource === PerformanceDataSourceOptions.CollectData,
 			placeHolder: constants.FOLDER_NAME,
+			// readOnly: true,
+			width: 320,
 			CSSStyles: {
 				'margin-right': '12px'
 			},
 			// validationErrorMessage: "invalid location??",
-			width: '300px'
-		}).component();
+		})
+			.component();
 		this._disposables.push(this._collectDataFolderInput.onTextChanged(async (value) => {
 			this.migrationStateModel._skuRecommendationPerformanceLocation = value.trim();
 		}));
@@ -200,10 +203,8 @@ export class GetAzureRecommendationDialog {
 			}
 		}).component();
 		this._disposables.push(browseButton.onDidClick(async (e) => {
-			console.log('on click BROWSE');
-
 			let folder = await this.handleBrowse();
-			this._collectDataFolderInput.value = folder;			// update value of textbox, which in turn will update this.migrationStateModel._skuRecommendationPerformanceLocation via onTextChanged()
+			this._collectDataFolderInput.value = folder;
 		}));
 
 		selectFolderContainer.addItems([
@@ -244,28 +245,26 @@ export class GetAzureRecommendationDialog {
 		this._openExistingFolderInput = _view.modelBuilder.inputBox().withProps({
 			required: this._performanceDataSource === PerformanceDataSourceOptions.OpenExisting,
 			placeHolder: constants.FOLDER_NAME,
+			// readOnly: true,
+			width: 320,
 			CSSStyles: {
 				'margin-right': '12px'
 			},
-			// validationErrorMessage: "invalid location??",
-			width: '300px'
 		}).component();
 		this._disposables.push(this._openExistingFolderInput.onTextChanged(async (value) => {
 			this.migrationStateModel._skuRecommendationPerformanceLocation = value.trim();
 		}));
 
 		const openButton = _view.modelBuilder.button().withProps({
-			label: constants.OPEN, // TODO: rename as import?
+			label: constants.OPEN,
 			width: 100,
 			CSSStyles: {
-				// 'margin': '12px 0',
+				'margin': '0'
 			}
 		}).component();
 		this._disposables.push(openButton.onDidClick(async (e) => {
-			console.log('on click OPEN/IMPORT');
-
 			let folder = await this.handleBrowse();
-			this._openExistingFolderInput.value = folder;			// update value of textbox, which in turn will update this.migrationStateModel._skuRecommendationPerformanceLocation via onTextChanged()
+			this._openExistingFolderInput.value = folder;
 		}));
 
 		selectFolderContainer.addItems([
@@ -301,6 +300,8 @@ export class GetAzureRecommendationDialog {
 			dialogSetupPromises.push(this.initializeDialog(this.dialog));
 			azdata.window.openDialog(this.dialog);
 			await Promise.all(dialogSetupPromises);
+
+			await this.switchDataSourceContainerFields(this._performanceDataSource);
 		}
 	}
 
@@ -323,7 +324,6 @@ export class GetAzureRecommendationDialog {
 					numberOfIterations,
 					this.skuRecommendationPage
 				);
-
 				break;
 			}
 			case PerformanceDataSourceOptions.OpenExisting: {
@@ -335,6 +335,7 @@ export class GetAzureRecommendationDialog {
 					const startTime = '1900-01-01 00:00:00';
 					const endTime = '2200-01-01 00:00:00';
 
+					await this.skuRecommendationPage.startCardLoading();
 					await this.migrationStateModel.getSkuRecommendations(
 						this.migrationStateModel._skuRecommendationPerformanceLocation,
 						perfQueryIntervalInSec,

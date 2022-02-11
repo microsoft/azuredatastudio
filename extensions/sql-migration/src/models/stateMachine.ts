@@ -139,8 +139,14 @@ export interface SavedInfo {
 	blobs: Blob[];
 	targetDatabaseNames: string[];
 	migrationServiceId: string | null;
+	skuRecommendationPerformanceDataSource: PerformanceDataSourceOptions | null;
+	skuRecommendationPerformanceLocation: string | null;
+	perfDataCollectionStartDate: Date | undefined;
+	perfDataCollectionStopDate: Date | undefined;
+	skuTargetPercentile: number | null;
+	skuScalingFactor: number | null;
+	skuEnablePreview: boolean | null;
 }
-
 
 export class MigrationStateModel implements Model, vscode.Disposable {
 	public _azureAccounts!: azdata.Account[];
@@ -194,15 +200,16 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _startPerfDataCollectionApiResponse!: mssql.StartPerfDataCollectionResult;
 	private _stopPerfDataCollectionApiResponse!: mssql.StopPerfDataCollectionResult;
 	private _refreshPerfDataCollectionApiResponse!: mssql.RefreshPerfDataCollectionResult;
-	public _perfDataCollectionStopDate!: Date;
-	public _perfDataCollectionStartDate!: Date;
+	public _perfDataCollectionStartDate!: Date | undefined;
+	public _perfDataCollectionStopDate!: Date | undefined;
 	public _perfDataCollectionLastRefreshedDate!: Date;
 	public _perfDataCollectionMessages!: string[];
 	public _perfDataCollectionErrors!: string[];
+	public _perfDataCollectionIsCollecting!: boolean;
 
-	private refreshPerfDataCollectionFrequency: SupportedAutoRefreshIntervals = 15000;		// TO-DO: update value
+	public refreshPerfDataCollectionFrequency: SupportedAutoRefreshIntervals = 30000;		// TO-DO: update value
 	private _autoRefreshPerfDataCollectionHandle!: NodeJS.Timeout;
-	private refreshGetSkuRecommendationFrequency: SupportedAutoRefreshIntervals = 15000;	// TO-DO: update value
+	public refreshGetSkuRecommendationFrequency: SupportedAutoRefreshIntervals = 60000;	// TO-DO: update value
 	private _autoRefreshGetSkuRecommendationHandle!: NodeJS.Timeout;
 
 	public _skuScalingFactor!: number;
@@ -491,38 +498,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			this._startPerfDataCollectionApiResponse = response!;
 			this._perfDataCollectionStartDate = this._startPerfDataCollectionApiResponse.dateTimeStarted;
+			this._perfDataCollectionStopDate = undefined;
 
-			const classVariable = this;
-			console.log('starting auto refresh for perf collection status update with interval ' + this.refreshPerfDataCollectionFrequency);
-			clearInterval(this._autoRefreshPerfDataCollectionHandle);
-			if (this.refreshPerfDataCollectionFrequency !== -1) {
-				this._autoRefreshPerfDataCollectionHandle = setInterval(async function () {
-					await classVariable.refreshPerfDataCollection();
-					await page.refreshDataCollectionTimerStatus();				// update timer
-				}, this.refreshPerfDataCollectionFrequency);
-			}
+			void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_START_POPUP);
 
-			console.log('starting auto refresh for get SKU recommendation with interval ' + this.refreshGetSkuRecommendationFrequency);
-			clearInterval(this._autoRefreshGetSkuRecommendationHandle);
-			if (this.refreshGetSkuRecommendationFrequency !== -1) {
-				this._autoRefreshGetSkuRecommendationHandle = setInterval(async function () {
-					const perfQueryIntervalInSec = 30;
-					const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
-					const startTime = '1900-01-01 00:00:00';
-					const endTime = '2200-01-01 00:00:00';
-
-					await classVariable.getSkuRecommendations(
-						classVariable._skuRecommendationPerformanceLocation,
-						perfQueryIntervalInSec,
-						targetPlatforms,
-						classVariable._skuTargetPercentile,
-						classVariable._skuScalingFactor,
-						startTime,
-						endTime,
-						classVariable._skuEnablePreview,
-						classVariable._databaseAssessment);
-				}, this.refreshGetSkuRecommendationFrequency);
-			}
+			await this.startSkuTimers(page, this.refreshPerfDataCollectionFrequency);
 		}
 		catch (error) {
 			console.log('error:');
@@ -533,6 +513,51 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this.generateStartDataCollectionTelemetry().catch(e => console.error(e));
 
 		return true;
+	}
+
+	public async startSkuTimers(page: SKURecommendationPage, refreshIntervalInMs: number): Promise<void> {
+		const classVariable = this;
+
+		if (!this._autoRefreshPerfDataCollectionHandle) {
+			console.log('starting auto refresh for perf collection status update with interval ' + refreshIntervalInMs);
+			clearInterval(this._autoRefreshPerfDataCollectionHandle);
+			if (this.refreshPerfDataCollectionFrequency !== -1) {
+				this._autoRefreshPerfDataCollectionHandle = setInterval(async function () {
+					await classVariable.refreshPerfDataCollection();
+
+					if (await classVariable.isWaitingForFirstTimeRefresh()) {
+						await page.refreshSkuRecommendationComponents();	// update timer
+					}
+				}, refreshIntervalInMs);
+			}
+		}
+
+		if (!this._autoRefreshGetSkuRecommendationHandle) {
+			console.log('starting one-time timer for get SKU recommendation with interval ' + this.refreshGetSkuRecommendationFrequency);
+			clearTimeout(this._autoRefreshGetSkuRecommendationHandle);
+			if (this.refreshGetSkuRecommendationFrequency !== -1) {
+				this._autoRefreshGetSkuRecommendationHandle = setTimeout(async function () {
+					const perfQueryIntervalInSec = 30;
+					const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
+					const startTime = '1900-01-01 00:00:00';
+					const endTime = '2200-01-01 00:00:00';
+
+					// to-do: change text to "Loading..."
+					await page.startCardLoading();
+					await classVariable.getSkuRecommendations(
+						classVariable._skuRecommendationPerformanceLocation,
+						perfQueryIntervalInSec,
+						targetPlatforms,
+						classVariable._skuTargetPercentile,
+						classVariable._skuScalingFactor,
+						startTime,
+						endTime,
+						classVariable._skuEnablePreview,
+						classVariable._databaseAssessment);
+					await page.refreshSkuRecommendationComponents();
+				}, this.refreshGetSkuRecommendationFrequency);
+			}
+		}
 	}
 
 	private async generateStartDataCollectionTelemetry(): Promise<void> {
@@ -554,9 +579,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async stopPerfDataCollection(): Promise<boolean> {
 		try {
-			console.log('stateMachine.stopPerfDataCollection starting');
-
 			const response = await this.migrationService.stopPerfDataCollection();
+			void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_STOP_POPUP);
+
 			console.log('date: ' + response?.dateTimeStopped.toString());
 
 			this._stopPerfDataCollectionApiResponse = response!;
@@ -595,21 +620,24 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async refreshPerfDataCollection(): Promise<boolean> {
 		try {
-			console.log('stateMachine.refreshPerfDataCollection starting');
-
 			const response = await this.migrationService.refreshPerfDataCollection(this._perfDataCollectionLastRefreshedDate);
 			console.log('date: ' + response?.refreshTime.toString());
 			console.log('messages: ');
 			console.log(response?.messages);
 			console.log('errors: ');
 			console.log(response?.errors);
+			console.log('isCollecting');
+			console.log(response?.isCollecting);
 
 			this._refreshPerfDataCollectionApiResponse = response!;
 			this._perfDataCollectionLastRefreshedDate = this._refreshPerfDataCollectionApiResponse.refreshTime;
 			this._perfDataCollectionMessages = this._refreshPerfDataCollectionApiResponse.messages;
 			this._perfDataCollectionErrors = this._refreshPerfDataCollectionApiResponse.errors;
+			this._perfDataCollectionIsCollecting = this._refreshPerfDataCollectionApiResponse.isCollecting;
 
-			void vscode.window.showInformationMessage('Errors during perf collection: ' + this._perfDataCollectionErrors.join(' - '));
+			if (this._perfDataCollectionErrors?.length > 0) {
+				void vscode.window.showInformationMessage(constants.PERF_DATA_COLLECTION_ERROR(this._assessmentApiResponse?.assessmentResult?.name, this._perfDataCollectionErrors));
+			}
 		}
 		catch (error) {
 			console.log('error:');
@@ -619,6 +647,36 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return true;
 	}
 
+	public async isWaitingForFirstTimeRefresh(): Promise<boolean> {
+		const elapsedTimeInMins = Math.abs(new Date().getTime() - new Date(this._perfDataCollectionStartDate!).getTime()) / 60000;
+		const skuRecAutoRefreshTimeInMins = this.refreshGetSkuRecommendationFrequency / 60000;
+
+		return elapsedTimeInMins < skuRecAutoRefreshTimeInMins;
+	}
+
+	public performanceCollectionNotStarted(): boolean {
+		if (!this._perfDataCollectionStartDate
+			&& !this._perfDataCollectionStopDate) {
+			return true;
+		}
+		return false;
+	}
+
+	public performanceCollectionInProgress(): boolean {
+		if (this._perfDataCollectionStartDate
+			&& !this._perfDataCollectionStopDate) {
+			return true;
+		}
+		return false;
+	}
+
+	public performanceCollectionStopped(): boolean {
+		if (this._perfDataCollectionStartDate
+			&& this._perfDataCollectionStopDate) {
+			return true;
+		}
+		return false;
+	}
 
 	private async generateAssessmentTelemetry(): Promise<void> {
 		try {
@@ -1389,6 +1447,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			blobs: [],
 			targetDatabaseNames: [],
 			migrationServiceId: null,
+			skuRecommendationPerformanceDataSource: null,
+			skuRecommendationPerformanceLocation: null,
+			perfDataCollectionStartDate: undefined,
+			perfDataCollectionStopDate: undefined,
+			skuTargetPercentile: null,
+			skuScalingFactor: null,
+			skuEnablePreview: null,
 		};
 		switch (currentPage) {
 			case Page.Summary:
@@ -1420,6 +1485,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				saveInfo.serverAssessment = this._assessmentResults;
 				saveInfo.migrationDatabases = this._databaseSelection;
 				saveInfo.databaseList = this._migrationDbs;
+
+				saveInfo.skuRecommendationPerformanceDataSource = this._skuRecommendationPerformanceDataSource;
+				saveInfo.skuRecommendationPerformanceLocation = this._skuRecommendationPerformanceLocation;
+				saveInfo.perfDataCollectionStartDate = this._perfDataCollectionStartDate;
+				saveInfo.perfDataCollectionStopDate = this._perfDataCollectionStopDate;
+				saveInfo.skuScalingFactor = this._skuScalingFactor;
+				saveInfo.skuTargetPercentile = this._skuTargetPercentile;
+				saveInfo.skuEnablePreview = this._skuEnablePreview;
 
 			case Page.DatabaseSelector:
 				saveInfo.selectedDatabases = this.databaseSelectorTableValues;
