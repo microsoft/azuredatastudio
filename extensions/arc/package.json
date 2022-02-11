@@ -1096,10 +1096,7 @@
                           "target": "AZDATA_NB_VAR_SQL_SERVICE_TIER",
                           "alternates": [
                             {
-                              "selection": {
-                                "name": "GeneralPurpose",
-                                "displayName": "%arc.sql.service.tier.general.purpose%"
-                              },
+                              "selection": "GeneralPurpose",
                               "alternateValues": [
                                 {
                                   "name": "1",

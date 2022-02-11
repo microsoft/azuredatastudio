@@ -438,12 +438,7 @@ async function hookUpDynamicOptions(context: WizardPageContext): Promise<void> {
 				const updateOptions = async () => {
 					const currentValue = await targetComponent.getValue();
 					if (field.dynamicOptions && field.options && fieldComponent && fieldComponent.setOptions) {
-						let targetValueFound;
-						if (typeof (field.dynamicOptions.alternates[0]) === 'object') {
-							targetValueFound = field.dynamicOptions.alternates.find(item => (<azdata.CategoryValue>item.selection).name === currentValue);
-						} else {
-							targetValueFound = field.dynamicOptions.alternates.find(item => item.selection === currentValue);
-						}
+						let targetValueFound = field.dynamicOptions.alternates.find(item => item.selection === currentValue);
 						if (targetValueFound) {
 							fieldComponent.setOptions(<OptionsInfo>{
 								values: targetValueFound.alternateValues,
