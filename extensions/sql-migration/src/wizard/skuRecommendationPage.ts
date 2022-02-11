@@ -223,24 +223,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		await this._view.initializeModel(this._rootContainer);
 
-		if (this.hasSavedInfo()) {
-			if (this.migrationStateModel.savedInfo.migrationTargetType === MigrationTargetType.SQLMI) {
-				this.migrationStateModel._miDbs = this.migrationStateModel.savedInfo.databaseList;
-			} else {
-				this.migrationStateModel._vmDbs = this.migrationStateModel.savedInfo.databaseList;
-			}
+		// if (this.hasSavedInfo()) {
 
-			// restore data collection in progress state only if data collection is actually in progress
-			await this.migrationStateModel.refreshPerfDataCollection();
-			if (this.migrationStateModel._perfDataCollectionIsCollecting) {
-				this.migrationStateModel._skuRecommendationPerformanceDataSource = this.migrationStateModel.savedInfo.skuRecommendationPerformanceDataSource!;
-				this.migrationStateModel._skuRecommendationPerformanceLocation = this.migrationStateModel.savedInfo.skuRecommendationPerformanceLocation!;
-				this.migrationStateModel._perfDataCollectionStartDate = this.migrationStateModel.savedInfo.perfDataCollectionStartDate;
-				this.migrationStateModel._perfDataCollectionStopDate = this.migrationStateModel.savedInfo.perfDataCollectionStopDate;
-
-				// to-do: setup a timer
-			}
-		}
+		// }
 	}
 
 	private createStatusComponent(view: azdata.ModelView): azdata.TextComponent {
@@ -514,6 +499,51 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (this.migrationStateModel.savedInfo.migrationTargetType) {
 				this._rbg.selectedCardId = this.migrationStateModel.savedInfo.migrationTargetType;
 				await this.refreshCardText();
+			}
+
+			if (this.migrationStateModel.savedInfo.migrationTargetType === MigrationTargetType.SQLMI) {
+				this.migrationStateModel._miDbs = this.migrationStateModel.savedInfo.databaseList;
+			} else {
+				this.migrationStateModel._vmDbs = this.migrationStateModel.savedInfo.databaseList;
+			}
+
+			this.migrationStateModel._databaseAssessment = this.migrationStateModel.savedInfo.databaseAssessment!;
+
+			if (this.migrationStateModel.savedInfo.skuRecommendationPerformanceDataSource) {
+				this.migrationStateModel._skuRecommendationPerformanceDataSource = this.migrationStateModel.savedInfo.skuRecommendationPerformanceDataSource!;
+				this.migrationStateModel._skuRecommendationPerformanceLocation = this.migrationStateModel.savedInfo.skuRecommendationPerformanceLocation!;
+				this.migrationStateModel._skuScalingFactor = this.migrationStateModel.savedInfo.skuScalingFactor!;
+				this.migrationStateModel._skuTargetPercentile = this.migrationStateModel.savedInfo.skuTargetPercentile!;
+				this.migrationStateModel._skuEnablePreview = this.migrationStateModel.savedInfo.skuEnablePreview!;
+
+				if (this.migrationStateModel._skuRecommendationPerformanceDataSource === PerformanceDataSourceOptions.CollectData) {
+					await this.migrationStateModel.refreshPerfDataCollection();
+					if (this.migrationStateModel._perfDataCollectionIsCollecting) {
+						// user started collecting data, and the collector is still running
+						this.migrationStateModel._perfDataCollectionStartDate = this.migrationStateModel.savedInfo.perfDataCollectionStartDate;
+						// this.migrationStateModel._perfDataCollectionStopDate = this.migrationStateModel.savedInfo.perfDataCollectionStopDate;
+
+						const collectionStartTime = new Date(this.migrationStateModel._perfDataCollectionStartDate!);
+						const expectedRefreshTime = new Date(collectionStartTime.getTime() + this.migrationStateModel.refreshGetSkuRecommendationFrequency);
+						const timeLeft = Math.abs(new Date().getTime() - expectedRefreshTime.getTime());
+						await this.migrationStateModel.startSkuTimers(this, timeLeft);
+
+					} else {
+						// user started collecting data, but collector is stopped
+						this.migrationStateModel._perfDataCollectionStartDate = this.migrationStateModel.savedInfo.perfDataCollectionStartDate;
+						this.migrationStateModel._perfDataCollectionStopDate = this.migrationStateModel.savedInfo.perfDataCollectionStopDate;
+
+						if (!this.migrationStateModel._perfDataCollectionStopDate) {
+							this.migrationStateModel._perfDataCollectionStopDate = new Date();
+						}
+
+						await this.getSkuRecommendations();
+					}
+
+					// importing data
+				} else {
+					await this.getSkuRecommendations();
+				}
 			}
 		}
 
