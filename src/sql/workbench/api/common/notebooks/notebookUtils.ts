@@ -8,7 +8,7 @@ import type * as azdata from 'azdata';
 import { URI } from 'vs/base/common/uri';
 import { asArray } from 'vs/base/common/arrays';
 import { VSBuffer } from 'vs/base/common/buffer';
-import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { CellTypes, OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 
@@ -17,7 +17,7 @@ export const DotnetInteractiveLabel = '.NET Interactive';
 
 export function convertToVSCodeNotebookCell(cellSource: string | string[], cellKind: azdata.nb.CellType, cellIndex: number, cellUri: URI, docUri: URI, cellLanguage: string): vscode.NotebookCell {
 	return <vscode.NotebookCell>{
-		kind: cellKind === 'code' ? NotebookCellKind.Code : NotebookCellKind.Markup,
+		kind: cellKind === CellTypes.Code ? NotebookCellKind.Code : NotebookCellKind.Markup,
 		index: cellIndex,
 		document: <vscode.TextDocument>{
 			uri: cellUri,
@@ -91,7 +91,7 @@ export function convertToADSNotebookContents(notebookData: vscode.NotebookData):
 		cells: notebookData?.cells?.map<azdata.nb.ICellContents>(cell => {
 			let executionOrder = cell.executionSummary?.executionOrder;
 			let convertedCell: azdata.nb.ICellContents = {
-				cell_type: cell.kind === NotebookCellKind.Code ? 'code' : 'markdown',
+				cell_type: cell.kind === NotebookCellKind.Code ? CellTypes.Code : CellTypes.Markdown,
 				source: cell.value,
 				execution_count: executionOrder,
 				outputs: cell.outputs ? convertToADSCellOutput(cell.outputs, executionOrder) : undefined
@@ -113,7 +113,7 @@ export function convertToVSCodeNotebookData(notebook: azdata.nb.INotebookContent
 	let result: vscode.NotebookData = {
 		cells: notebook.cells?.map<vscode.NotebookCellData>(cell => {
 			return {
-				kind: cell.cell_type === 'code' ? NotebookCellKind.Code : NotebookCellKind.Markup,
+				kind: cell.cell_type === CellTypes.Code ? NotebookCellKind.Code : NotebookCellKind.Markup,
 				value: Array.isArray(cell.source) ? cell.source.join('') : cell.source,
 				languageId: cell.metadata?.language ?? notebook.metadata.language_info?.name,
 				outputs: cell.outputs?.map<vscode.NotebookCellOutput>(output => convertToVSCodeCellOutput(output)),

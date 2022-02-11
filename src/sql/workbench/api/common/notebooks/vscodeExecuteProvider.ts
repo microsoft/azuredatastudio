@@ -8,6 +8,7 @@ import type * as azdata from 'azdata';
 import { ADSNotebookController } from 'sql/workbench/api/common/notebooks/adsNotebookController';
 import * as nls from 'vs/nls';
 import { convertToVSCodeNotebookCell } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 
 class VSCodeFuture implements azdata.nb.IFuture {
 	private _inProgress = true;
@@ -136,7 +137,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
 		let executePromise: Promise<void>;
 		if (this._controller.executeHandler) {
-			let cell = convertToVSCodeNotebookCell(content.code, 'code', content.cellIndex, content.cellUri, content.notebookUri, content.language ?? this._kernelSpec.language);
+			let cell = convertToVSCodeNotebookCell(content.code, CellTypes.Code, content.cellIndex, content.cellUri, content.notebookUri, content.language ?? this._kernelSpec.language);
 			executePromise = Promise.resolve(this._controller.executeHandler([cell], cell.notebook, this._controller));
 		} else {
 			executePromise = Promise.resolve();
