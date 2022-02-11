@@ -4100,29 +4100,6 @@ Error: {1}</source>
       <source xml:lang="en">Top Operations</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/queryplan2/browser/graphElementPropertiesView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="nodePropertyViewNameNameColumnHeader">
-      <source xml:lang="en">Name</source>
-    </trans-unit>
-    <trans-unit id="nodePropertyViewNameValueColumnHeader">
-      <source xml:lang="en">Value</source>
-    </trans-unit>
-    <trans-unit id="nodePropertyViewTitle">
-      <source xml:lang="en">Properties</source>
-    </trans-unit>
-    <trans-unit id="queryPlanPropertiesEdgeOperationName">
-      <source xml:lang="en">Edge</source>
-    </trans-unit>
-    <trans-unit id="queryPlanPropertyViewClose">
-      <source xml:lang="en">Close</source>
-    </trans-unit>
-    <trans-unit id="queryPlanPropertyViewSortAlphabetically">
-      <source xml:lang="en">Alphabetical</source>
-    </trans-unit>
-    <trans-unit id="queryPlanPropertyViewSortByDisplayOrde">
-      <source xml:lang="en">Categorized</source>
-    </trans-unit>
-</body></file>
   <file original="src/sql/workbench/contrib/queryplan2/browser/planHeader" source-language="en" datatype="plaintext"><body>
     <trans-unit id="planHeaderIndexAndCost">
       <source xml:lang="en">Query {0}: Query cost (relative to the script): {1}%</source>
@@ -4153,19 +4130,73 @@ Error: {1}</source>
       <source xml:lang="en">Properties</source>
     </trans-unit>
     <trans-unit id="queryPlanSavePlanXML">
-      <source xml:lang="en">Save XML</source>
+      <source xml:lang="en">Save Plan File</source>
     </trans-unit>
     <trans-unit id="queryPlanSearchNodeAction">
       <source xml:lang="en">SearchNode</source>
     </trans-unit>
     <trans-unit id="queryPlanTitle">
-      <source xml:lang="en">Query Plan</source>
+      <source xml:lang="en">Query Plan (Preview)</source>
     </trans-unit>
     <trans-unit id="queryPlanZoomInActionLabel">
       <source xml:lang="en">Zoom In</source>
     </trans-unit>
     <trans-unit id="queryPlanZoomOutActionLabel">
       <source xml:lang="en">Zoom Out</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="nodePropertyViewNameNameColumnHeader">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameValueColumnHeader">
+      <source xml:lang="en">Value</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewTitle">
+      <source xml:lang="en">Properties</source>
+    </trans-unit>
+    <trans-unit id="queryPlanPropertiesEdgeOperationName">
+      <source xml:lang="en">Edge</source>
+    </trans-unit>
+    <trans-unit id="queryPlanPropertyViewClose">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="queryPlanPropertyViewSortAlphabetically">
+      <source xml:lang="en">Alphabetical</source>
+    </trans-unit>
+    <trans-unit id="queryPlanPropertyViewSortByDisplayOrde">
+      <source xml:lang="en">Categorized</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="cancelCustomZoomAction">
+      <source xml:lang="en">Close (Escape)</source>
+    </trans-unit>
+    <trans-unit id="invalidCustomZoomError">
+      <source xml:lang="en">Select a zoom value between 1 to 200</source>
+    </trans-unit>
+    <trans-unit id="qpZoomValueLabel">
+      <source xml:lang="en">Zoom (percent)</source>
+    </trans-unit>
+    <trans-unit id="zoomAction">
+      <source xml:lang="en">Zoom (Enter)</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="cancelSearchAction">
+      <source xml:lang="en">Close (Escape)</source>
+    </trans-unit>
+    <trans-unit id="nextSearchItemAction">
+      <source xml:lang="en">Next Match (Enter)</source>
+    </trans-unit>
+    <trans-unit id="previousSearchItemAction">
+      <source xml:lang="en">Previous Match (Shift+Enter)</source>
+    </trans-unit>
+    <trans-unit id="queryPlanSearchTypeContains">
+      <source xml:lang="en">Contains</source>
+    </trans-unit>
+    <trans-unit id="queryPlanSearchTypeEquals">
+      <source xml:lang="en">Equals</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext"><body>
@@ -5841,6 +5872,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="designer.table.description.schema">
       <source xml:lang="en">The schema that contains the table.</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.ErrorDialogTitle">
+      <source xml:lang="en">Table Designer Error</source>
     </trans-unit>
     <trans-unit id="tableDesigner.ForeignKeyTypeName">
       <source xml:lang="en">Foreign Key</source>
