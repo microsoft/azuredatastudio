@@ -515,6 +515,23 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return true;
 	}
 
+	private async generateStartDataCollectionTelemetry(): Promise<void> {
+		try {
+			sendSqlMigrationActionEvent(
+				TelemetryViews.DataCollectionWizard,
+				TelemetryAction.StartDataCollection,
+				{
+					'sessionId': this._sessionId,
+					'timeDataCollectionStarted': this._perfDataCollectionStartDate?.toString() || ''
+				},
+				{}
+			);
+
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
 	public async startSkuTimers(page: SKURecommendationPage, refreshIntervalInMs: number): Promise<void> {
 		const classVariable = this;
 
@@ -560,23 +577,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		}
 	}
 
-	private async generateStartDataCollectionTelemetry(): Promise<void> {
-		try {
-			sendSqlMigrationActionEvent(
-				TelemetryViews.DataCollectionWizard,
-				TelemetryAction.StartDataCollection,
-				{
-					'sessionId': this._sessionId,
-					'timeDataCollectionStarted': this._perfDataCollectionStartDate?.toString()
-				},
-				{}
-			);
-
-		} catch (e) {
-			console.log(e);
-		}
-	}
-
 	public async stopPerfDataCollection(): Promise<boolean> {
 		try {
 			const response = await this.migrationService.stopPerfDataCollection();
@@ -608,7 +608,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.StopDataCollection,
 				{
 					'sessionId': this._sessionId,
-					'timeDataCollectionStopped': this._perfDataCollectionStopDate?.toString()
+					'timeDataCollectionStopped': this._perfDataCollectionStopDate?.toString() || ''
 				},
 				{}
 			);
