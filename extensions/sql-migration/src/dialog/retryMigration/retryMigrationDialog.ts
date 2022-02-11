@@ -46,6 +46,9 @@ export class RetryMigrationDialog {
 			skuRecommendationPerformanceLocation: null,
 			perfDataCollectionStartDate: undefined,
 			perfDataCollectionStopDate: undefined,
+			skuTargetPercentile: null,
+			skuScalingFactor: null,
+			skuEnablePreview: null,
 
 			migrationTargetType: getMigrationTargetTypeEnum(migration)!,
 			subscription: migration.subscription,
