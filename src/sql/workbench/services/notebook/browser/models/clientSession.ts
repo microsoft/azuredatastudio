@@ -222,12 +222,12 @@ export class ClientSession implements IClientSession {
 	/**
 	 * Change the current kernel associated with the document.
 	 */
-	async changeKernel(kernelSpec: nb.IKernelSpec, oldValue?: nb.IKernel): Promise<nb.IKernel | undefined> {
+	async changeKernel(options: nb.IKernelSpec, oldValue?: nb.IKernel): Promise<nb.IKernel | undefined> {
 		this._kernelChangeCompleted = new Deferred<void>();
 		this._isReady = false;
 		let oldKernel = oldValue ? oldValue : this.kernel;
 
-		let kernel = await this.doChangeKernel(kernelSpec);
+		let kernel = await this.doChangeKernel(options);
 		try {
 			await kernel?.ready;
 		} catch (error) {
@@ -272,13 +272,13 @@ export class ClientSession implements IClientSession {
 	/**
 	 * Helper method to either call ChangeKernel on current session, or start a new session
 	 */
-	private async doChangeKernel(kernelSpec: nb.IKernelSpec): Promise<nb.IKernel | undefined> {
+	private async doChangeKernel(options: nb.IKernelSpec): Promise<nb.IKernel | undefined> {
 		let kernel: nb.IKernel | undefined;
 		if (this._session) {
-			kernel = await this._session.changeKernel(kernelSpec);
+			kernel = await this._session.changeKernel(options);
 			await this.runKernelConfigActions(kernel.name);
 		} else {
-			kernel = await this.startSessionInstance(kernelSpec).then(() => this.kernel);
+			kernel = await this.startSessionInstance(options).then(() => this.kernel);
 		}
 		return kernel;
 	}
