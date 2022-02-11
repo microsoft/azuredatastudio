@@ -147,8 +147,7 @@ export function VM_CONFIGURATION(vmSize: string, vCPU: number): string {
 	return localize('sql.migration.sku.azureConfiguration.vm', "{0} ({1} vCPU)", vmSize, vCPU);
 }
 export function VM_CONFIGURATION_PREVIEW(dataDisk: string, logDisk: string, temp: string): string {
-	return localize('sql.migration.sku.azureConfiguration.vmPreview', "Data - {1}, Log - {2}, tempdb - {3}", dataDisk, logDisk, temp);
-	// return localize('sql.migration.sku.azureConfiguration.vmPreview', "{0} ({1} vCPU) - {2} x {3}", vmSize, vCPU, diskCount, diskName);
+	return localize('sql.migration.sku.azureConfiguration.vmPreview', "Data: {0}, Log: {1}, tempdb: {2}", dataDisk, logDisk, temp);
 }
 export function DB_CONFIGURATION(computeTier: string, vCore: number): string {
 	return localize('sql.migration.sku.azureConfiguration.db', "{0} - {1} vCore", computeTier, vCore);

@@ -320,7 +320,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						// 6 - CardDescriptionIndex.VM_CONFIGURATIONS
 						textValue: '',
 						textStyles: {
-							...styles.BODY_CSS,
+							...styles.SMALL_NOTE_CSS,
 						}
 					},
 					{
@@ -693,7 +693,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 										: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.MI_CONFIGURATION_PREVIEW(hardwareType, serviceTier, recommendation.targetSku.computeSize!, recommendation.targetSku.storageMaxSizeInMb! / 1024);
 							}
-
 						}
 						break;
 

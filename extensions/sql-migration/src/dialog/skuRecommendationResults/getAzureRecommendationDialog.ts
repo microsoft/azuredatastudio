@@ -357,6 +357,7 @@ export class GetAzureRecommendationDialog {
 					const startTime = '1900-01-01 00:00:00';
 					const endTime = '2200-01-01 00:00:00';
 
+					await this.skuRecommendationPage.startCardLoading();
 					await this.migrationStateModel.getSkuRecommendations(
 						this.migrationStateModel._skuRecommendationPerformanceLocation,
 						perfQueryIntervalInSec,
