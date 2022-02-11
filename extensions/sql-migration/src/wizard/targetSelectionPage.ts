@@ -139,7 +139,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					'sessionId': this.migrationStateModel?._sessionId,
 					'subscriptionId': this.migrationStateModel?._targetSubscription?.id,
 					'resourceGroup': this.migrationStateModel?._resourceGroup?.name,
-					'tenantId': this.migrationStateModel?._accountTenants[0]?.id
+					'tenantId': this.migrationStateModel?._azureTenant?.id || this.migrationStateModel?._azureAccount?.properties?.tenants[0]?.id
 				}, {});
 
 			return true;
