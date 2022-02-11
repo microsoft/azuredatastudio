@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { MigrationStateModel, PerformanceDataSourceOptions, MigrationTargetType } from '../../models/stateMachine';
+import { MigrationStateModel, PerformanceDataSourceOptions } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 import * as utils from '../../api/utils';
@@ -314,7 +314,6 @@ export class GetAzureRecommendationDialog {
 
 			this.dialog.okButton.label = GetAzureRecommendationDialog.StartButtonText;
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
-
 			this.dialog.cancelButton.onClick(() => this._isOpen = false);
 
 			const dialogSetupPromises: Thenable<void>[] = [];
@@ -332,16 +331,11 @@ export class GetAzureRecommendationDialog {
 		this.migrationStateModel._skuRecommendationPerformanceDataSource = this._performanceDataSource;
 		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
 			case PerformanceDataSourceOptions.CollectData: {
-				// TO-DO: expose the rest of these in the UI
-				const perfQueryIntervalInSec = 3;
-				const staticQueryIntervalInSec = 30;
-				const numberOfIterations = 5;
-
 				await this.migrationStateModel.startPerfDataCollection(
 					this.migrationStateModel._skuRecommendationPerformanceLocation,
-					perfQueryIntervalInSec,
-					staticQueryIntervalInSec,
-					numberOfIterations,
+					this.migrationStateModel._performanceDataQueryIntervalInSeconds,
+					this.migrationStateModel._staticDataQueryIntervalInSeconds,
+					this.migrationStateModel._numberOfPerformanceDataQueryIterations,
 					this.skuRecommendationPage
 				);
 				break;
@@ -352,22 +346,8 @@ export class GetAzureRecommendationDialog {
 				try {
 					void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_OPEN_EXISTING_POPUP);
 
-					const perfQueryIntervalInSec = 30;
-					const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
-					const startTime = '1900-01-01 00:00:00';
-					const endTime = '2200-01-01 00:00:00';
-
 					await this.skuRecommendationPage.startCardLoading();
-					await this.migrationStateModel.getSkuRecommendations(
-						this.migrationStateModel._skuRecommendationPerformanceLocation,
-						perfQueryIntervalInSec,
-						targetPlatforms,
-						this.migrationStateModel._skuTargetPercentile,
-						this.migrationStateModel._skuScalingFactor,
-						startTime,
-						endTime,
-						this.migrationStateModel._skuEnablePreview,
-						this.migrationStateModel._databaseAssessment);
+					await this.migrationStateModel.getSkuRecommendations();
 
 					const skuRecommendationError = this.migrationStateModel._skuRecommendationResults?.recommendationError;
 					if (skuRecommendationError) {

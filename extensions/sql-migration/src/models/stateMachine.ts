@@ -9,7 +9,6 @@ import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs } from '../api/azure';
-import { SKURecommendations } from './externalContract';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
@@ -108,7 +107,6 @@ export interface Model {
 	readonly sourceConnectionId: string;
 	readonly currentState: State;
 	gatheringInformationError: string | undefined;
-	skuRecommendations: SKURecommendations | undefined;
 	_azureAccount: azdata.Account | undefined;
 	_databaseBackup: DatabaseBackupModel | undefined;
 }
@@ -191,7 +189,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _currentState: State;
 	private _gatheringInformationError: string | undefined;
 
-	private _skuRecommendations: SKURecommendations | undefined;		// TO-DO: old, can this be removed?
 	public _assessmentResults!: ServerAssessment;
 	public _runAssessments: boolean = true;
 	private _assessmentApiResponse!: mssql.AssessmentResult;
@@ -201,6 +198,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _skuRecommendationPerformanceDataSource!: PerformanceDataSourceOptions;
 	private _skuRecommendationApiResponse!: mssql.SkuRecommendationResult;
 	public _skuRecommendationPerformanceLocation!: string;
+	private _skuRecommendationRecommendedDatabaseList!: string[];
 	private _startPerfDataCollectionApiResponse!: mssql.StartPerfDataCollectionResult;
 	private _stopPerfDataCollectionApiResponse!: mssql.StopPerfDataCollectionResult;
 	private _refreshPerfDataCollectionApiResponse!: mssql.RefreshPerfDataCollectionResult;
@@ -211,7 +209,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _perfDataCollectionErrors!: string[];
 	public _perfDataCollectionIsCollecting!: boolean;
 
-	public refreshPerfDataCollectionFrequency: SupportedAutoRefreshIntervals = 30000;		// TO-DO: update value
+	public readonly _performanceDataQueryIntervalInSeconds = 5;		// TO-DO: update value
+	public readonly _staticDataQueryIntervalInSeconds = 30;			// TO-DO: update value
+	public readonly _numberOfPerformanceDataQueryIterations = 11;	// TO-DO: update value
+	public readonly _defaultDataPointStartTime = '1900-01-01 00:00:00';
+	public readonly _defaultDataPointEndTime = '2200-01-01 00:00:00';
+	public readonly _recommendationTargetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
+
+	public refreshPerfDataCollectionFrequency: SupportedAutoRefreshIntervals = 30000;
 	private _autoRefreshPerfDataCollectionHandle!: NodeJS.Timeout;
 	public refreshGetSkuRecommendationFrequency: SupportedAutoRefreshIntervals = 60000;	// TO-DO: update value
 	private _autoRefreshGetSkuRecommendationHandle!: NodeJS.Timeout;
@@ -275,6 +280,17 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		let finalResult = temp.filter((name) => !this.excludeDbs.includes(name));
 		return finalResult;
 	}
+	public hasRecommendedDatabaseListChanged(): boolean {
+		const oldDbList = this._skuRecommendationRecommendedDatabaseList;
+		const newDbList = this._databaseAssessment;
+
+		if (!oldDbList || !newDbList) {
+			return false;
+		}
+		return !((oldDbList.length === newDbList.length) && oldDbList.every(function (element, index) {
+			return element === newDbList[index];
+		}));
+	}
 
 	public async getDatabaseAssessments(targetType: MigrationTargetType): Promise<ServerAssessment> {
 		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
@@ -333,32 +349,29 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._assessmentResults;
 	}
 
-	public async getSkuRecommendations(
-		dataFolder: string,
-		perfQueryIntervalInSec: number,
-		targetPlatforms: MigrationTargetType[],
-		targetPercentile: number,
-		scalingFactor: number,
-		startTime: string,
-		endTime: string,
-		includePreviewSkus: boolean,
-		databaseAllowList: string[]): Promise<SkuRecommendation> {
+	public async getSkuRecommendations(): Promise<SkuRecommendation> {
 		try {
 			const serverInfo = await azdata.connection.getServerInfo(this.sourceConnectionId);
 			const machineName = (<any>serverInfo)['machineName'];		// get actual machine name instead of whatever the user entered as the server name (e.g. DESKTOP-xxx instead of localhost)
 
 			const response = (await this.migrationService.getSkuRecommendations(
-				dataFolder,
-				perfQueryIntervalInSec,
-				targetPlatforms.map(p => p.toString()),
+				this._skuRecommendationPerformanceLocation,
+				this._performanceDataQueryIntervalInSeconds,
+				this._recommendationTargetPlatforms.map(p => p.toString()),
 				machineName,
-				targetPercentile,
-				scalingFactor,
-				startTime,
-				endTime,
-				includePreviewSkus,
-				databaseAllowList))!;
+				this._skuTargetPercentile,
+				this._skuScalingFactor,
+				this._defaultDataPointStartTime,
+				this._defaultDataPointEndTime,
+				this._skuEnablePreview,
+				this._databaseAssessment))!;
 			this._skuRecommendationApiResponse = response;
+
+			// clone list of databases currently being assessed and store them, so that if the user ever changes the list we can refresh new recommendations
+			this._skuRecommendationRecommendedDatabaseList = this._databaseAssessment.slice();
+
+			console.log('sqlinstancerequirements: ');
+			console.log(this._skuRecommendationApiResponse.instanceRequirements);
 
 			if (response?.sqlDbRecommendationResults || response?.sqlMiRecommendationResults || response?.sqlVmRecommendationResults) {
 				this._skuRecommendationResults = {
@@ -446,22 +459,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			clearTimeout(this._autoRefreshGetSkuRecommendationHandle);
 			if (this.refreshGetSkuRecommendationFrequency !== -1) {
 				this._autoRefreshGetSkuRecommendationHandle = setTimeout(async function () {
-					const perfQueryIntervalInSec = 30;
-					const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
-					const startTime = '1900-01-01 00:00:00';
-					const endTime = '2200-01-01 00:00:00';
-
 					await page.startCardLoading();
-					await classVariable.getSkuRecommendations(
-						classVariable._skuRecommendationPerformanceLocation,
-						perfQueryIntervalInSec,
-						targetPlatforms,
-						classVariable._skuTargetPercentile,
-						classVariable._skuScalingFactor,
-						startTime,
-						endTime,
-						classVariable._skuEnablePreview,
-						classVariable._databaseAssessment);
+					await classVariable.getSkuRecommendations();
 					await page.refreshSkuRecommendationComponents();
 				}, this.refreshGetSkuRecommendationFrequency);
 			}
@@ -683,14 +682,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public set gatheringInformationError(error: string | undefined) {
 		this._gatheringInformationError = error;
-	}
-
-	public get skuRecommendations(): SKURecommendations | undefined {
-		return this._skuRecommendations;
-	}
-
-	public set skuRecommendations(recommendations: SKURecommendations | undefined) {
-		this._skuRecommendations = recommendations;
 	}
 
 	public get stateChangeEvent(): vscode.Event<StateChangeEvent> {

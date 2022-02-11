@@ -74,7 +74,7 @@ export const VIEW_SELECT_BUTTON_LABEL = localize('sql.migration.view.select.butt
 export function TOTAL_DATABASES_SELECTED(selectedDbCount: number, totalDbCount: number): string {
 	return localize('total.databases.selected', "{0} of {1} databases selected.", selectedDbCount, totalDbCount);
 }
-export const SELECT_TARGET_TO_CONTINUE = localize('sql.migration.select.target.to.continue', "To continue, select a target database.");
+export const SELECT_TARGET_TO_CONTINUE = localize('sql.migration.select.target.to.continue', "To continue, select a target.");
 export const SELECT_DATABASE_TO_MIGRATE = localize('sql.migration.select.database.to.migrate', "Select the databases to migrate.");
 export const ASSESSMENT_COMPLETED = (serverName: string): string => {
 	return localize('sql.migration.generic.congratulations', "We have completed the assessment of your SQL Server instance '{0}'.", serverName);
@@ -122,7 +122,7 @@ export const AZURE_RECOMMENDATION_START_POPUP = localize('sql.migration.sku.azur
 export const AZURE_RECOMMENDATION_OPEN_EXISTING_POPUP = localize('sql.migration.sku.azureRecommendation.openExisting.popup', "Generating Azure recommendations using provided performance data...");
 export const AZURE_RECOMMENDATION_STOP_POPUP = localize('sql.migration.sku.azureRecommendation.stop.popup', "Stopping performance data collection...");
 export const AZURE_RECOMMENDATION_DESCRIPTION = localize('sql.migration.sku.azureRecommendation.description', "Azure recommendation requires performance data of SQL server instance to provide target recommendation. Enable performance data collection to receive the target recommendation for the databases you want to migrate. The longer this will be enabled the better the recommendation. You can disable performance data collection at any time.");
-export const AZURE_RECOMMENDATION_DESCRIPTION2 = localize('sql.migration.sku.azureRecommendation.description2', "You can also choose to select this data from an existing folder, if you have already collected it using Data Migration Assistant.");
+export const AZURE_RECOMMENDATION_DESCRIPTION2 = localize('sql.migration.sku.azureRecommendation.description2', "You can also choose to select this data from an existing folder, if you have already collected it previously.");
 export const AZURE_RECOMMENDATION_CHOOSE_METHOD = localize('sql.migration.sku.azureRecommendation.chooseMethod.instructions', "Choose how you want to provide performance data");
 export const AZURE_RECOMMENDATION_COLLECT_DATA = localize('sql.migration.sku.azureRecommendation.collectData.method', "Collect performance data now");
 export const AZURE_RECOMMENDATION_OPEN_EXISTING = localize('sql.migration.sku.azureRecommendation.openExisting.method', "I already have the performance data");
@@ -216,7 +216,7 @@ export const EDIT_RECOMMENDATION_PARAMETERS = localize('sql.migration.sku.parame
 export const EDIT_PARAMETERS_TEXT = localize('sql.migration.sku.parameters.text', "Enter the information below to edit the recommendation parameters.");
 export const UPDATE = localize('sql.migration.sku.parameters.update', "Update");
 export const ENABLE_PREVIEW_SKU = localize('sql.migration.sku.parameters.enable.preview', "Enable preview features");
-export const ENABLE_PREVIEW_SKU_INFO = localize('sql.migration.sku.parameters.enable.preview.info', "This option wil include the latest hardware generations that have significantly improved performance and scalability. These SKU's are currently in Preview and not yet available in all regions.");
+export const ENABLE_PREVIEW_SKU_INFO = localize('sql.migration.sku.parameters.enable.preview.info', "Enabling this option will include the latest hardware generations that have significantly improved performance and scalability. These SKUs are currently in Preview and may not yet be available in all regions.");
 export const SCALE_FACTOR = localize('sql.migration.sku.parameters.scale.factor', "Scale factor");
 export const SCALE_FACTOR_TOOLTIP = localize('sql.migration.sku.parameters.scale.factor.tooltip', "Change scale factor if you want the Azure recommendation to be a percentage larger or smaller than you current workload.");
 export const INVALID_SCALE_FACTOR = localize('sql.migration.sku.parameters.scale.factor.invalid', "Invalid scale factor. Enter a positive integer value.");
