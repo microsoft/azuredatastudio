@@ -311,7 +311,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
-	public clickActiveCell(cell: ICellModel, event?: Event) {
+	public clickOnCell(cell: ICellModel, event?: MouseEvent) {
 		if (event) {
 			event.stopPropagation();
 		}
