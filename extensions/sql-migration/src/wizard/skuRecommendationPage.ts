@@ -52,6 +52,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _getAzureRecommendationButton!: azdata.ButtonComponent;
 
 	private _skuDataCollectionStatusContainer!: azdata.FlexContainer;
+	private _skuDataCollectionStatusIcon!: azdata.ImageComponent;
 	private _skuDataCollectionStatusText!: azdata.TextComponent;
 	private _skuDataCollectionTimerText!: azdata.TextComponent;
 
@@ -304,7 +305,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						// 2 - CardDescriptionIndex.ASSESSMENT_STATUS
 						textValue: '',
 						textStyles: {
-							...styles.BODY_CSS
+							...styles.BODY_CSS,
+							'font-weight': '500'
 						}
 					},
 					{
@@ -327,7 +329,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						textValue: constants.AZURE_RECOMMENDATION_CARD_NOT_ENABLED,
 						textStyles: {
 							...styles.BODY_CSS,
-							'font-weight': '600px'
 						}
 					},
 					{
@@ -607,11 +608,19 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (!this.migrationStateModel._assessmentResults) {
 				this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = '';
 			} else {
+				// TO-DO: add the assessed db counts
 				// this._rbg.cards[index].descriptions[5].textValue = constants.ASSESSED_DBS(dbCount);
 				if (this.hasRecommendations()) {
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
+					this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
+						...styles.BODY_CSS,
+						'font-weight': '500',
+					};
 				} else {
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = '';
+					this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
+						...styles.BODY_CSS,
+					};
 
 					if (this.migrationStateModel._perfDataCollectionStartDate) {
 						this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
@@ -660,7 +669,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.SKU_RECOMMENDATION_NO_RECOMMENDATION;
 							}
 							else {
-								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.VM_CONFIGURATION_PREVIEW(recommendation.targetSku.virtualMachineSize!.sizeName, recommendation.targetSku.virtualMachineSize!.vCPUsAvailable, recommendation.targetSku.dataDiskSizes!.length, recommendation.targetSku.dataDiskSizes![0].size);
+								// const configuration = constants.VM_CONFIGURATION(recommendation.targetSku.virtualMachineSize!.sizeName, recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
+								const dataDisk = constants.STORAGE_CONFIGURATION(recommendation.targetSku.dataDiskSizes![0].size, recommendation.targetSku.dataDiskSizes!.length);
+								const storageDisk = constants.STORAGE_CONFIGURATION(recommendation.targetSku.logDiskSizes![0].size, recommendation.targetSku.logDiskSizes!.length);
+								const tempDb = recommendation.targetSku.tempDbDiskSizes!.length > 0
+									? constants.STORAGE_CONFIGURATION(recommendation.targetSku.logDiskSizes![0].size, recommendation.targetSku.logDiskSizes!.length)
+									: constants.LOCAL_SSD;
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.VM_CONFIGURATION_PREVIEW(dataDisk, storageDisk, tempDb);
 							}
 						}
 						break;
@@ -729,10 +744,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._azureRecommendationSectionText = _view.modelBuilder.text().withProps({
 			value: constants.AZURE_RECOMMENDATION,
 			// TO-DO: update this based on data collection progress
-			description: constants.AZURE_RECOMMENDATION_TOOLTIP_IN_PROGRESS,
+			description: '',
 			CSSStyles: {
 				...styles.SECTION_HEADER_CSS,
-				'margin': '12px 0 8px'
+				'margin': '12px 0 8px',
+				'max-width': '700px'
 			}
 		}).component();
 
@@ -786,26 +802,49 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 
+		this._skuDataCollectionStatusIcon = _view.modelBuilder.image().withProps({
+			iconPath: IconPathHelper.inProgressMigration,
+			iconHeight: 16,
+			iconWidth: 16,
+			width: 16,
+			height: 16,
+			CSSStyles: {
+				'margin-right': '4px',
+			}
+		}).component();
 		this._skuDataCollectionStatusText = _view.modelBuilder.text().withProps({
 			value: '',
 			CSSStyles: {
 				...styles.BODY_CSS,
-				'margin': '0 0 8px'
+				'margin': '0'
 			}
 		}).component();
+
+		const statusIconTextContainer = _view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'flex-direction': 'row',
+				'width': 'fit-content',
+				'align-items': 'center',
+				'margin': '0',
+			}
+		}).component();
+		statusIconTextContainer.addItems([
+			this._skuDataCollectionStatusIcon,
+			this._skuDataCollectionStatusText,
+		]);
 
 		this._skuDataCollectionTimerText = _view.modelBuilder.text().withProps({
 			value: '',
 			CSSStyles: {
 				...styles.LIGHT_LABEL_CSS,
-				'margin': '0 0 8px',
+				'margin': '0 0 8px 20px',
 			}
 		}).component();
 
 		this._skuStopDataCollectionButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.cancel,
 			label: constants.STOP_PERFORMANCE_COLLECTION,
-			width: 120,
+			width: 150,
 			height: 24,
 			CSSStyles: {
 				...styles.BODY_CSS,
@@ -819,10 +858,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}));
 
 		this._skuRestartDataCollectionButton = this._view.modelBuilder.button().withProps({
-			// TO-DO: update temp icon
 			iconPath: IconPathHelper.restartDataCollection,
 			label: constants.RESTART_PERFORMANCE_COLLECTION,
-			width: 130,
+			width: 160,
 			height: 24,
 			CSSStyles: {
 				...styles.BODY_CSS,
@@ -874,7 +912,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		container.addItems([
 			this._skuStopRefreshButtonContainer,
-			this._skuDataCollectionStatusText,
+			statusIconTextContainer,
 			this._skuDataCollectionTimerText,
 		]);
 		return container;
@@ -1010,9 +1048,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		// TO-DO: call function based on timer
 		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
 			case PerformanceDataSourceOptions.CollectData: {
-				this._azureRecommendationSectionText.description = constants.AZURE_RECOMMENDATION_TOOLTIP_IN_PROGRESS;
+				await this._azureRecommendationSectionText.updateProperties({
+					description: constants.AZURE_RECOMMENDATION_TOOLTIP_IN_PROGRESS
+				});
 
 				if (this.migrationStateModel.performanceCollectionInProgress()) {
+					await this._skuDataCollectionStatusIcon.updateProperties({
+						iconPath: IconPathHelper.inProgressMigration
+					});
 					this._skuDataCollectionStatusText.value = this.hasRecommendations()
 						? constants.AZURE_RECOMMENDATION_STATUS_IN_PROGRESS
 						: constants.AZURE_RECOMMENDATION_STATUS_REFINING;
@@ -1025,22 +1068,31 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'block' });
 					await this._skuStopDataCollectionButton.updateCssStyles({ 'display': 'block' });
 					await this._skuRestartDataCollectionButton.updateCssStyles({ 'display': 'none' });
+					await this._refreshAzureRecommendationButton.updateCssStyles({ 'display': 'block' });
 					await this._skuEditParametersContainer.updateCssStyles({ 'display': 'block' });
 				}
 
 				else if (this.migrationStateModel.performanceCollectionStopped()) {
+					await this._skuDataCollectionStatusIcon.updateProperties({
+						iconPath: IconPathHelper.stop
+					});
 					this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_STOPPED;
 
 					await this._skuGetRecommendationContainer.updateCssStyles({ 'display': 'none' });
 					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'block' });
 					await this._skuStopDataCollectionButton.updateCssStyles({ 'display': 'none' });
 					await this._skuRestartDataCollectionButton.updateCssStyles({ 'display': 'block' });
+					await this._refreshAzureRecommendationButton.updateCssStyles({ 'display': 'none' });
 					await this._skuEditParametersContainer.updateCssStyles({ 'display': 'block' });
 				}
 				break;
 			}
 
 			case PerformanceDataSourceOptions.OpenExisting: {
+				await this._azureRecommendationSectionText.updateProperties({
+					description: ''
+				});
+
 				if (this.hasRecommendations()) {
 					this._azureRecommendationInfoText.value = constants.AZURE_RECOMMENDATION_STATUS_DATA_IMPORTED;
 					this._getAzureRecommendationButton.label = constants.REFINE_AZURE_RECOMMENDATION;
@@ -1059,6 +1111,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					await this._skuGetRecommendationContainer.updateCssStyles({ 'display': 'block' });
 					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'none' });
 					await this._skuEditParametersContainer.updateCssStyles({ 'display': 'none' });
+					await this._azureRecommendationSectionText.updateProperties({
+						description: constants.AZURE_RECOMMENDATION_TOOLTIP_NOT_STARTED
+					});
 				}
 				break;
 			}
