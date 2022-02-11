@@ -13,6 +13,8 @@ import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatus
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
 import { filterMigrations, SupportedAutoRefreshIntervals } from '../api/utils';
 import * as styles from '../constants/styles';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
 interface IActionMetadata {
 	title?: string,
@@ -448,7 +450,7 @@ export class DashboardWidget {
 		const statusContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '400px',
-			height: '350px',
+			height: '360px',
 			justifyContent: 'flex-start',
 		}).withProps({
 			CSSStyles: {
@@ -688,12 +690,13 @@ export class DashboardWidget {
 		const linksContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '400px',
-			height: '350px',
+			height: '360px',
 			justifyContent: 'flex-start',
 		}).withProps({
 			CSSStyles: {
 				'border': '1px solid rgba(0, 0, 0, 0.1)',
-				'padding': '16px'
+				'padding': '16px',
+				'overflow': 'scroll',
 			}
 		}).component();
 		const titleComponent = view.modelBuilder.text().withProps({
@@ -709,24 +712,38 @@ export class DashboardWidget {
 			}
 		});
 
-		const links = [{
-			title: loc.HELP_LINK1_TITLE,
-			description: loc.HELP_LINK1_DESCRIPTION,
-			link: 'https://docs.microsoft.com/azure/azure-sql/migration-guides/managed-instance/sql-server-to-sql-managed-instance-assessment-rules'
-		}];
+		const links = [
+			{
+				title: localize('sql.migration.dashboard.help.link.migrateUsingADS', 'Migrate databases using Azure Data Studio'),
+				description: localize('sql.migration.dashboard.help.description.migrateUsingADS', 'The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.'),
+				link: 'https://docs.microsoft.com/azure/dms/migration-using-azure-data-studio'
+			},
+			{
+				title: localize('sql.migration.dashboard.help.link.mi', 'Tutorial:  Migrate to Azure SQL Managed Instance (online)'),
+				description: localize('sql.migration.dashboard.help.description.mi', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Managed Instance with minimal downtime.'),
+				link: 'https://docs.microsoft.com/azure/dms/tutorial-sql-server-managed-instance-online-ads'
+			},
+			{
+				title: localize('sql.migration.dashboard.help.link.vm', 'Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)'),
+				description: localize('sql.migration.dashboard.help.description.vm', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.'),
+				link: 'https://docs.microsoft.com/azure/dms/tutorial-sql-server-to-virtual-machine-online-ads'
+			},
+			{
+				title: localize('sql.migration.dashboard.help.link.dmsGuide', 'Azure Database Migration Guides'),
+				description: localize('sql.migration.dashboard.help.description.dmsGuide', 'A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.'),
+				link: 'https://docs.microsoft.com/data-migration/'
+			},
+		];
 
-		linksContainer.addItems(links.map(l => this.createLink(view, l)), {
-			CSSStyles: {
-				'margin-bottom': '8px'
-			}
-		});
+		linksContainer.addItems(links.map(l => this.createLink(view, l)), {});
 
-		const videosContainer = this.createVideoLinkContainers(view, []);
-		linksContainer.addItem(videosContainer, {
-			CSSStyles: {
-				'margin-bottom': '8px'
-			}
-		});
+		const videoLinks: IActionMetadata[] = [];
+		const videosContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row',
+			width: maxWidth,
+		}).component();
+		videosContainer.addItems(videoLinks.map(l => this.createVideoLink(view, l)), {});
+		linksContainer.addItem(videosContainer);
 
 		return linksContainer;
 	}
@@ -737,13 +754,14 @@ export class DashboardWidget {
 			CSSStyles: {
 				'flex-direction': 'column',
 				'width': `${maxWidth}px`,
-				'justify-content': 'flex-start'
+				'justify-content': 'flex-start',
+				'margin-bottom': '12px'
 			}
 		}).component();
 		const linkContainer = view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'flex-direction': 'row',
-				'width': `${maxWidth + 10}px`,
+				'width': `${maxWidth}px`,
 				'justify-content': 'flex-start',
 				'margin-bottom': '4px'
 			}
@@ -767,19 +785,6 @@ export class DashboardWidget {
 		linkContainer.addItem(linkComponent);
 		labelsContainer.addItems([linkContainer, descriptionComponent]);
 		return labelsContainer;
-	}
-
-	private createVideoLinkContainers(view: azdata.ModelView, links: IActionMetadata[]): azdata.Component {
-		const maxWidth = 400;
-		const videosContainer = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'row',
-			width: maxWidth,
-		}).component();
-		links.forEach(link => {
-			const videoContainer = this.createVideoLink(view, link);
-			videosContainer.addItem(videoContainer);
-		});
-		return videosContainer;
 	}
 
 	private createVideoLink(view: azdata.ModelView, linkMetaData: IActionMetadata): azdata.Component {
