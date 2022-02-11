@@ -150,9 +150,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}).component();
 
 		this._disposables.push(refreshAssessmentButton.onDidClick(async () => {
-			// TO-DO: close on what the refresh assessment button should do now
 			await this.startCardLoading();
-			await this.getSkuRecommendations();
+			await this.migrationStateModel.getSkuRecommendations();
 			await this.constructDetails();
 		}));
 
@@ -495,6 +494,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}
 
+		if (this.hasRecommendations() && this.migrationStateModel.hasRecommendedDatabaseListChanged()) {
+			await this.migrationStateModel.getSkuRecommendations();
+		}
+
 		if (this.hasSavedInfo()) {
 			if (this.migrationStateModel.savedInfo.migrationTargetType) {
 				this._rbg.selectedCardId = this.migrationStateModel.savedInfo.migrationTargetType;
@@ -537,12 +540,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 							this.migrationStateModel._perfDataCollectionStopDate = new Date();
 						}
 
-						await this.getSkuRecommendations();
+						await this.migrationStateModel.getSkuRecommendations();
 					}
 
 					// importing data
 				} else {
-					await this.getSkuRecommendations();
+					await this.migrationStateModel.getSkuRecommendations();
 				}
 			}
 		}
@@ -879,15 +882,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 		this._disposables.push(this._skuRestartDataCollectionButton.onDidClick(async (e) => {
-			const perfQueryIntervalInSec = 3;
-			const staticQueryIntervalInSec = 30;
-			const numberOfIterations = 5;
-
 			await this.migrationStateModel.startPerfDataCollection(
 				this.migrationStateModel._skuRecommendationPerformanceLocation,
-				perfQueryIntervalInSec,
-				staticQueryIntervalInSec,
-				numberOfIterations,
+				this.migrationStateModel._performanceDataQueryIntervalInSeconds,
+				this.migrationStateModel._staticDataQueryIntervalInSeconds,
+				this.migrationStateModel._numberOfPerformanceDataQueryIterations,
 				this
 			);
 			await this.refreshSkuRecommendationComponents();
@@ -905,7 +904,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}).component();
 		this._disposables.push(this._refreshAzureRecommendationButton.onDidClick(async (e) => {
 			await this.startCardLoading();
-			await this.getSkuRecommendations();
+			await this.migrationStateModel.getSkuRecommendations();
 			await this.refreshSkuRecommendationComponents();
 		}));
 
@@ -1029,31 +1028,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		return container;
 	}
 
-	private async getSkuRecommendations() {
-		const perfQueryIntervalInSec = 30;
-		const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
-		const startTime = '1900-01-01 00:00:00';
-		const endTime = '2200-01-01 00:00:00';
-
-		await this.migrationStateModel.getSkuRecommendations(
-			this.migrationStateModel._skuRecommendationPerformanceLocation,
-			perfQueryIntervalInSec,
-			targetPlatforms,
-			this.migrationStateModel._skuTargetPercentile,
-			this.migrationStateModel._skuScalingFactor,
-			startTime,
-			endTime,
-			this.migrationStateModel._skuEnablePreview,
-			this.migrationStateModel._databaseAssessment);
-	}
-
 	public async refreshSkuParameters(): Promise<void> {
 		this._skuScaleFactorText.value = this.migrationStateModel._skuScalingFactor.toString();
 		this._skuTargetPercentileText.value = constants.PERCENTAGE(this.migrationStateModel._skuTargetPercentile);
 		this._skuEnablePreviewSkuText.value = this.migrationStateModel._skuEnablePreview ? constants.YES : constants.NO;
 
 		await this.startCardLoading();
-		await this.getSkuRecommendations();
+		await this.migrationStateModel.getSkuRecommendations();
 		await this.refreshSkuRecommendationComponents();
 	}
 
