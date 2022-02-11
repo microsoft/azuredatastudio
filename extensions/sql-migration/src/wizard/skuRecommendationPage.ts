@@ -223,10 +223,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}));
 
 		await this._view.initializeModel(this._rootContainer);
-
-		// if (this.hasSavedInfo()) {
-
-		// }
 	}
 
 	private createStatusComponent(view: azdata.ModelView): azdata.TextComponent {
@@ -263,7 +259,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			iconHeight: '35px',
 			iconWidth: '35px',
 			cardWidth: '250px',
-			cardHeight: '300px',
+			cardHeight: '340px',
 			iconPosition: 'left',
 			CSSStyles: {
 				'margin-top': '0px',
@@ -321,7 +317,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						}
 					},
 					{
-						// 6 - CardDescriptionIndex.VIEW_SKU_DETAILS
+						// 6 - CardDescriptionIndex.VM_CONFIGURATIONS
+						textValue: '',
+						textStyles: {
+							...styles.BODY_CSS,
+						}
+					},
+					{
+						// 7 - CardDescriptionIndex.VIEW_SKU_DETAILS
 						textValue: '',
 						linkDisplayValue: '',
 						linkStyles: {
@@ -336,6 +339,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this._disposables.push(this._rbg.onLinkClick(async (e: azdata.RadioCardLinkClickEvent) => {
 				if (this.hasRecommendations()) {
 					if (e.cardId === skuRecommendationResultsDialog._targetType) {
+						// console.log("onclick skuRecommendationResultsDialog")
 						await skuRecommendationResultsDialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
 					}
 				}
@@ -510,40 +514,42 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 			this.migrationStateModel._databaseAssessment = this.migrationStateModel.savedInfo.databaseAssessment!;
 
-			if (this.migrationStateModel.savedInfo.skuRecommendationPerformanceDataSource) {
-				this.migrationStateModel._skuRecommendationPerformanceDataSource = this.migrationStateModel.savedInfo.skuRecommendationPerformanceDataSource!;
-				this.migrationStateModel._skuRecommendationPerformanceLocation = this.migrationStateModel.savedInfo.skuRecommendationPerformanceLocation!;
-				this.migrationStateModel._skuScalingFactor = this.migrationStateModel.savedInfo.skuScalingFactor!;
-				this.migrationStateModel._skuTargetPercentile = this.migrationStateModel.savedInfo.skuTargetPercentile!;
-				this.migrationStateModel._skuEnablePreview = this.migrationStateModel.savedInfo.skuEnablePreview!;
+			if (this.migrationStateModel.savedInfo.skuRecommendation) {
+				const skuRecommendationSavedInfo = this.migrationStateModel.savedInfo.skuRecommendation;
+				this.migrationStateModel._skuRecommendationPerformanceDataSource = skuRecommendationSavedInfo.skuRecommendationPerformanceDataSource!;
+				this.migrationStateModel._skuRecommendationPerformanceLocation = skuRecommendationSavedInfo.skuRecommendationPerformanceLocation!;
 
-				if (this.migrationStateModel._skuRecommendationPerformanceDataSource === PerformanceDataSourceOptions.CollectData) {
-					await this.migrationStateModel.refreshPerfDataCollection();
-					if (this.migrationStateModel._perfDataCollectionIsCollecting) {
-						// user started collecting data, and the collector is still running
-						this.migrationStateModel._perfDataCollectionStartDate = this.migrationStateModel.savedInfo.perfDataCollectionStartDate;
-						// this.migrationStateModel._perfDataCollectionStopDate = this.migrationStateModel.savedInfo.perfDataCollectionStopDate;
+				this.migrationStateModel._skuScalingFactor = skuRecommendationSavedInfo.skuScalingFactor!;
+				this.migrationStateModel._skuTargetPercentile = skuRecommendationSavedInfo.skuTargetPercentile!;
+				this.migrationStateModel._skuEnablePreview = skuRecommendationSavedInfo.skuEnablePreview!;
+				await this.refreshSkuParameters();
 
-						const collectionStartTime = new Date(this.migrationStateModel._perfDataCollectionStartDate!);
-						const expectedRefreshTime = new Date(collectionStartTime.getTime() + this.migrationStateModel.refreshGetSkuRecommendationFrequency);
-						const timeLeft = Math.abs(new Date().getTime() - expectedRefreshTime.getTime());
-						await this.migrationStateModel.startSkuTimers(this, timeLeft);
+				switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
+					case PerformanceDataSourceOptions.CollectData: {
+						this.migrationStateModel._perfDataCollectionStartDate = skuRecommendationSavedInfo.perfDataCollectionStartDate;
 
-					} else {
-						// user started collecting data, but collector is stopped
-						this.migrationStateModel._perfDataCollectionStartDate = this.migrationStateModel.savedInfo.perfDataCollectionStartDate;
-						this.migrationStateModel._perfDataCollectionStopDate = this.migrationStateModel.savedInfo.perfDataCollectionStopDate;
+						// check if collector is still running
+						await this.migrationStateModel.refreshPerfDataCollection();
+						if (this.migrationStateModel._perfDataCollectionIsCollecting) {
+							// user started collecting data, and the collector is still running
+							const collectionStartTime = new Date(this.migrationStateModel._perfDataCollectionStartDate!);
+							const expectedRefreshTime = new Date(collectionStartTime.getTime() + this.migrationStateModel.refreshGetSkuRecommendationFrequency);
+							const timeLeft = Math.abs(new Date().getTime() - expectedRefreshTime.getTime());
+							await this.migrationStateModel.startSkuTimers(this, timeLeft);
 
-						if (!this.migrationStateModel._perfDataCollectionStopDate) {
-							this.migrationStateModel._perfDataCollectionStopDate = new Date();
+						} else {
+							// user started collecting data, but collector is stopped
+							// set stop date to some date value
+							this.migrationStateModel._perfDataCollectionStopDate = this.migrationStateModel._perfDataCollectionStopDate || new Date();
+							await this.getSkuRecommendations();
 						}
-
-						await this.getSkuRecommendations();
+						break;
 					}
 
-					// importing data
-				} else {
-					await this.getSkuRecommendations();
+					case PerformanceDataSourceOptions.OpenExisting: {
+						await this.getSkuRecommendations();
+						break;
+					}
 				}
 			}
 		}
@@ -701,15 +707,17 @@ export class SKURecommendationPage extends MigrationWizardPage {
 							// result returned but no SKU recommended
 							if (!recommendation.targetSku) {
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.SKU_RECOMMENDATION_NO_RECOMMENDATION;
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VM_CONFIGURATIONS].textValue = '';
 							}
 							else {
-								// const configuration = constants.VM_CONFIGURATION(recommendation.targetSku.virtualMachineSize!.sizeName, recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.VM_CONFIGURATION(recommendation.targetSku.virtualMachineSize!.sizeName, recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
+
 								const dataDisk = constants.STORAGE_CONFIGURATION(recommendation.targetSku.dataDiskSizes![0].size, recommendation.targetSku.dataDiskSizes!.length);
 								const storageDisk = constants.STORAGE_CONFIGURATION(recommendation.targetSku.logDiskSizes![0].size, recommendation.targetSku.logDiskSizes!.length);
 								const tempDb = recommendation.targetSku.tempDbDiskSizes!.length > 0
 									? constants.STORAGE_CONFIGURATION(recommendation.targetSku.logDiskSizes![0].size, recommendation.targetSku.logDiskSizes!.length)
 									: constants.LOCAL_SSD;
-								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.VM_CONFIGURATION_PREVIEW(dataDisk, storageDisk, tempDb);
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VM_CONFIGURATIONS].textValue = constants.VM_CONFIGURATION_PREVIEW(dataDisk, storageDisk, tempDb);
 							}
 						}
 						break;
@@ -741,7 +749,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		// TO-DO: ideally the short SKU recommendation loading time should have a spinning indicator,
 		// but updating the card text will do for now
 		this._supportedProducts.forEach((product, index) => {
-			this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = 'Loading...';
+			this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.LOADING_RECOMMENDATIONS;
+			this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
+				...styles.BODY_CSS,
+			};
+			this._rbg.cards[index].descriptions[CardDescriptionIndex.VM_CONFIGURATIONS].textValue = '';
 		});
 
 		await this._rbg.updateProperties({ cards: this._rbg.cards });
@@ -787,6 +799,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const container = _view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'flex-direction': 'column',
+				'max-width': '700px',
+				'margin-bottom': '1em',
 			}
 		}).component();
 		this._azureRecommendationSectionText = _view.modelBuilder.text().withProps({
@@ -796,7 +810,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			CSSStyles: {
 				...styles.SECTION_HEADER_CSS,
 				'margin': '12px 0 8px',
-				'max-width': '700px'
 			}
 		}).component();
 
@@ -997,7 +1010,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		let skuEditParametersDialog = new SkuEditParametersDialog(this, this.migrationStateModel);
 		this._disposables.push(editParametersButton.onDidClick(async () => {
 			await skuEditParametersDialog.openDialog();
-			// await this.refreshSkuRecommendationComponents();
 		}));
 
 		const createParameterGroup = (label: string, value: string): {
@@ -1194,5 +1206,6 @@ export enum CardDescriptionIndex {
 	ASSESSED_DBS = 3,
 	RECOMMENDATION_RESULTS_SECTION = 4,
 	SKU_RECOMMENDATION = 5,
-	VIEW_SKU_DETAILS = 6,
+	VM_CONFIGURATIONS = 6,
+	VIEW_SKU_DETAILS = 7,
 }

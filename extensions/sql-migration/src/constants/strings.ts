@@ -41,6 +41,7 @@ export const SKU_RECOMMENDATION_ERROR = (serverName: string): string => {
 	return localize('sql.migration.wizard.sku.error', "An error occurred while generating SKU recommendations for the server '{0}'.", serverName);
 };
 export const SKU_RECOMMENDATION_NO_RECOMMENDATION = localize('sql.migration.wizard.sku.error.noRecommendation', 'No recommendation available');
+export const SKU_RECOMMENDATION_NO_RECOMMENDATION_REASON = localize('sql.migration.wizard.sku.error.noRecommendation.reason', 'No SKU recommendations were generated, as there were no SKUs which could satisfy the performance characteristics of your source. Try selecting a different target platform, adjusting recommendation parameters, or selecting a different set of databases to assess.');
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR = (serverName: string): string => {
 	return localize('sql.migration.wizard.sku.assessment.error', "An error occurred while assessing the server '{0}'.", serverName);
 };
@@ -138,17 +139,16 @@ export function RECOMMENDATIONS_AVAILABLE(totalDbs: number): string {
 	return localize('sql.migration.sku.available.recommendations', "{0} recommendations available", totalDbs);
 }
 export const RECOMMENDATIONS = localize('sql.migration.sku.recommendations', "Recommendations");
+export const LOADING_RECOMMENDATIONS = localize('sql.migration.sku.recommendations.loading', "Loading...");
 export const TARGET_DEPLOYMENT_TYPE = localize('sql.migration.sku.targetDeploymentType', "Target deployment type");
 export const AZURE_CONFIGURATION = localize('sql.migration.sku.azureConfiguration', "Azure configuration");
 export function VM_CONFIGURATION(vmSize: string, vCPU: number): string {
 	return localize('sql.migration.sku.azureConfiguration.vm', "{0} ({1} vCPU)", vmSize, vCPU);
 }
 export function VM_CONFIGURATION_PREVIEW(dataDisk: string, logDisk: string, temp: string): string {
-	return localize('sql.migration.sku.azureConfiguration.vmPreview', "Data: {0} - Log: {1} - tempdb: {2}", dataDisk, logDisk, temp);
+	return localize('sql.migration.sku.azureConfiguration.vmPreview', "Data - {1}, Log - {2}, tempdb - {3}", dataDisk, logDisk, temp);
+	// return localize('sql.migration.sku.azureConfiguration.vmPreview', "{0} ({1} vCPU) - {2} x {3}", vmSize, vCPU, diskCount, diskName);
 }
-// export function VM_CONFIGURATION_PREVIEW(dataDisk: string, logDisk: string, temp: string): string {												// to-do: this is the new one, wasn't sure how to use it
-// 	return localize('sql.migration.sku.azureConfiguration.vmPreview', "Data disk - {0}, Log disk - {1}, Temp - {2}", dataDisk, logDisk, temp);
-// }
 export function DB_CONFIGURATION(computeTier: string, vCore: number): string {
 	return localize('sql.migration.sku.azureConfiguration.db', "{0} - {1} vCore", computeTier, vCore);
 }
