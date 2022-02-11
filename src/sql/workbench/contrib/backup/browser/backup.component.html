@@ -26,20 +26,34 @@
 			</div>
 			<div class="input-divider check" #toUrlContainer>
 			</div>
-			<div class="dialog-label" #pathContainerLabel>
+			<div class="dialog-label" #filePathContainerLabel>
+				{{localizedStrings.BACKUP_DEVICE}}
+			</div>
+			<div class="dialog-label" #urlPathContainerLabel hidden="true">
 				{{localizedStrings.BACKUP_URL}}
 			</div>
 			<div class="backup-path-list">
-				<div #pathContainer>
+				<div #urlPathContainer hidden="true">
 				</div>
 			</div>
-			<table class="backup-path-table">
+			<div class="backup-path-list">
+				<div #filePathContainer hidden="true">
+				</div>
+			</div>
+			<table class="backup-path-table" #filePathButtonsContainer>
 				<tr>
 					<td style="padding-left: 0px; padding-right: 0px;">
-						<div class="browse-button" #addPathContainer></div>
+						<div class="backup-path-button" #addFilePathContainer></div>
 					</td>
 					<td>
-						<div class="backup-path-button" #removePathContainer></div>
+						<div class="backup-path-button" #removeFilePathContainer></div>
+					</td>
+				</tr>
+			</table>
+			<table class="backup-path-table" #urlPathButtonsContainer hidden="true">
+				<tr>
+					<td style="padding-left: 0px; padding-right: 0px;">
+						<div class="browse-button" #addUrlPathContainer></div>
 					</td>
 				</tr>
 			</table>
@@ -105,7 +119,7 @@
 						</div>
 
 						<div class="option">
-							<input role="radio" type="radio" name="media-option" value="format" [checked]="isFormatChecked" (change)="onChangeMediaFormat()" [disabled]="true" aria-labelledby="mediaOptionFormat"><span id="mediaOptionFormat">{{localizedStrings.MEDIA_OPTION_FORMAT}}</span>
+							<input role="radio" type="radio" name="media-option" value="format" [checked]="isFormatChecked" (change)="onChangeMediaFormat()" [disabled]="disableMedia" aria-labelledby="mediaOptionFormat"><span id="mediaOptionFormat">{{localizedStrings.MEDIA_OPTION_FORMAT}}</span>
 						</div>
 						<div style="margin-left: 22px">
 							<div class="dialog-label">
