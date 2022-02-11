@@ -915,6 +915,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}).component();
 		this._disposables.push(this._skuStopDataCollectionButton.onDidClick(async (e) => {
 			await this.migrationStateModel.stopPerfDataCollection();
+			await this.migrationStateModel.getSkuRecommendations();
 			await this.refreshSkuRecommendationComponents();
 		}));
 
