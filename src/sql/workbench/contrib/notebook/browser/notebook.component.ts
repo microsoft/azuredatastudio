@@ -136,6 +136,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
 			if (this.isActive() && this.model.activeCell) {
+				if (e.repeat) {
+					return;
+				}
 				if (!this.model.activeCell?.isEditMode) {
 					if (event.keyCode === KeyCode.DownArrow) {
 						let next = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
