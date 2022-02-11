@@ -8,7 +8,7 @@ import type * as azdata from 'azdata';
 import { URI } from 'vs/base/common/uri';
 import { asArray } from 'vs/base/common/arrays';
 import { VSBuffer } from 'vs/base/common/buffer';
-import { CellTypes, OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { CellTypes, MimeTypes, OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 
@@ -40,7 +40,7 @@ export function convertToADSCellOutput(outputs: vscode.NotebookCellOutput | vsco
 			outputData[item.mime] = VSBuffer.wrap(item.data).toString();
 		}
 		return {
-			output_type: 'execute_result',
+			output_type: OutputTypes.ExecuteResult,
 			data: outputData,
 			execution_count: executionOrder,
 			metadata: output.metadata,
@@ -66,7 +66,7 @@ export function convertToVSCodeCellOutput(output: azdata.nb.ICellOutput): vscode
 		case OutputTypes.Stream:
 			let streamOutput = output as azdata.nb.IStreamResult;
 			convertedOutputItems = [{
-				mime: 'text/html',
+				mime: MimeTypes.HTML,
 				data: VSBuffer.fromString(Array.isArray(streamOutput.text) ? streamOutput.text.join('') : streamOutput.text).buffer
 			}];
 			break;
@@ -74,7 +74,7 @@ export function convertToVSCodeCellOutput(output: azdata.nb.ICellOutput): vscode
 			let errorOutput = output as azdata.nb.IErrorResult;
 			let errorString = errorOutput.ename + ': ' + errorOutput.evalue + (errorOutput.traceback ? '\n' + errorOutput.traceback?.join('\n') : '');
 			convertedOutputItems = [{
-				mime: 'text/html',
+				mime: MimeTypes.HTML,
 				data: VSBuffer.fromString(errorString).buffer
 			}];
 			break;
