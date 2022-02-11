@@ -60,7 +60,7 @@ export function setup(opts: minimist.ParsedArgs) {
 
 		// Python Notebooks
 
-		it.skip('can open new notebook, configure Python, and execute one cell', async function () {
+		it('can open new notebook, configure Python, and execute one cell', async function () {
 			this.timeout(600000); // set timeout to 10 minutes to ensure test does not timeout during python installation
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
@@ -80,17 +80,17 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.waitForActiveCellResults();
 		});
 
-		it.skip('can open ipynb file, run all, and save notebook with outputs', async function () {
+		it('can open ipynb file, run all, and save notebook with outputs', async function () {
 			const app = this.app as Application;
 			await openAndRunNotebook(app, 'hello.ipynb');
 		});
 
-		it.skip('can open ipynb file from path with spaces, run all, and save notebook with outputs', async function () {
+		it('can open ipynb file from path with spaces, run all, and save notebook with outputs', async function () {
 			const app = this.app as Application;
 			await openAndRunNotebook(app, 'helloWithSpaces.ipynb');
 		});
 
-		it.skip('can open ipynb file from path with escaped spaces, run all, and save notebook with outputs', async function () {
+		it('can open ipynb file from path with escaped spaces, run all, and save notebook with outputs', async function () {
 			const app = this.app as Application;
 			await openAndRunNotebook(app, 'helloWithEscapedSpaces.ipynb');
 		});

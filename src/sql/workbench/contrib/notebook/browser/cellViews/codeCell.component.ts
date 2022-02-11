@@ -97,8 +97,8 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 
 	}
 
-	public toggleEditMode(isEditMode?: boolean): void {
-		this.cellModel.isEditMode = isEditMode ? isEditMode : !this.cellModel.isEditMode;
+	public toggleEditMode(): void {
+		this.cellModel.isEditMode = !this.cellModel.isEditMode;
 		this._changeRef.detectChanges();
 	}
 
