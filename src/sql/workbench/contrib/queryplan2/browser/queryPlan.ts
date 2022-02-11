@@ -23,7 +23,7 @@ import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { editorBackground, editorWidgetBackground, editorWidgetBorder, foreground, listHoverBackground, textLinkForeground, widgetShadow } from 'vs/platform/theme/common/colorRegistry';
+import { contrastBorder, editorBackground, editorWidgetBackground, foreground, listHoverBackground, textLinkForeground, widgetShadow } from 'vs/platform/theme/common/colorRegistry';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { ISashEvent, ISashLayoutProvider, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -577,8 +577,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		collector.addRule(`
 		.qps-container .query-plan .plan .header,
 		.qps-container .query-plan .properties .title,
-		.qps-container .query-plan .properties .table-action-bar,
-		.mxTooltip {
+		.qps-container .query-plan .properties .table-action-bar {
 			background-color: ${menuBackgroundColor};
 		}
 		`);
@@ -587,19 +586,22 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	const widgetBackgroundColor = theme.getColor(editorWidgetBackground);
 	if (widgetBackgroundColor) {
 		collector.addRule(`
-		.qps-container .query-plan .plan .plan-action-container .child {
+		.qps-container .query-plan .plan .plan-action-container .child,
+		.mxTooltip {
 			background-color: ${widgetBackgroundColor};
 		}
 		`);
 	}
 
-	const widgetBorderColor = theme.getColor(editorWidgetBorder);
+	const widgetBorderColor = theme.getColor(contrastBorder);
 	if (widgetBorderColor) {
 		collector.addRule(`
 		.qps-container .query-plan .plan .plan-action-container .child,
 		.qps-container .query-plan .plan .header,
+		.qps-container .query-plan .properties .title,
+		.qps-container .query-plan .properties .table-action-bar,
 		.mxTooltip {
-			border-color: 1px solid ${widgetBorderColor};
+			border: 1px solid ${widgetBorderColor};
 		}
 		`);
 	}
