@@ -302,7 +302,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.model.onScroll.fire();
 	}
 
-	public unclickActiveCell() {
+	public clickOffCell(e: MouseEvent) {
 		if (this.model.activeCell?.isEditMode) {
 			// when clicking outside of code cells toggle edit mode to false
 			this.toggleEditMode();
@@ -315,13 +315,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (event) {
 			event.stopPropagation();
 		}
-		if (this.model.activeCell?.isEditMode && this.model.activeCell.id !== cell.id) {
-			// before activating the new cell, change the edit mode of the current active cell
-			this.toggleEditMode();
-		}
-		this.selectCell(cell);
-		if (cell.cellType === CellTypes.Code) {
-			this.toggleEditMode();
+		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
+			if (this.model.activeCell?.isEditMode) {
+				// before activating the new cell, change the edit mode of the current active cell
+				this.toggleEditMode();
+			}
+			this.selectCell(cell);
+			if (cell.cellType === CellTypes.Code) {
+				// toggleEditMode on single click for code cells
+				this.toggleEditMode();
+			}
 		}
 	}
 
