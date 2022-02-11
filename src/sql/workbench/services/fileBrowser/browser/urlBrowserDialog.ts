@@ -136,16 +136,19 @@ export class UrlBrowserDialog extends Modal {
 		DialogHelper.appendInputSelectBox(blobContainerSelector, this._blobContainerSelectorBox);
 		this._blobContainerSelectorBox.setOptions(['Blob container 1', 'Blob container 2']);
 		this._blobContainerSelectorBox.select(0);
+		this._blobContainerSelectorBox.onDidSelect(() => this.enableOkButton());
 
 
 		let sharedAccessSignatureLabel = localize('azurebrowser.sharedAccessSignature', "Shared access signature generated");
 		let sasInput = DialogHelper.appendRow(tableContainer, sharedAccessSignatureLabel, 'file-input-label', 'file-input-box');
 		this._sasInputBox = new InputBox(sasInput, this._contextViewService, { flexibleHeight: true });
+		this._sasInputBox.onDidChange(() => this.enableOkButton());
 
 		let sasButtonLabel = DialogHelper.appendRow(tableContainer, '', 'file-input-label', 'file-input-box');
 		this._sasButton = new Button(sasButtonLabel, { title: 'Create Credentials' });
 		this._sasButton.label = 'Create Credentials';
 		this._sasButton.title = 'Create Credentials';
+		this._sasButton.onDidClick(e => this.generateSharedAccessSignature());
 
 		let backupFileLabel = localize('azurebrowser.backupFile', "Backup file");
 		this._backupFileSelectorBox = new SelectBox(['*'], '*', this._contextViewService);
@@ -225,8 +228,7 @@ export class UrlBrowserDialog extends Modal {
 
 
 	private enableOkButton() {
-		//if (strings.isFalsyOrWhitespace(this._selectedFilePath) || this._isFolderSelected === true) {
-		if (strings.isFalsyOrWhitespace(this._blobContainerSelectorBox.value)) {
+		if (strings.isFalsyOrWhitespace(this._blobContainerSelectorBox.value) || strings.isFalsyOrWhitespace(this._sasInputBox.value)) {
 			this._okButton.enabled = false;
 		} else {
 			this._okButton.enabled = true;
@@ -244,7 +246,9 @@ export class UrlBrowserDialog extends Modal {
 		this.hide(hideReason);
 	}
 
-
+	private generateSharedAccessSignature() {
+		this._sasInputBox.value = 'mocked shared access signature';
+	}
 
 	private registerListeners(): void {
 		this._register(this._accountSelectorBox.onDidSelect(e => this.onAccountSelectorBoxChanged(e.index)));
