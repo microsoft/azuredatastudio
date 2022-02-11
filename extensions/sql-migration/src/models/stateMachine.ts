@@ -451,7 +451,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					const startTime = '1900-01-01 00:00:00';
 					const endTime = '2200-01-01 00:00:00';
 
-					// to-do: change text to "Loading..."
 					await page.startCardLoading();
 					await classVariable.getSkuRecommendations(
 						classVariable._skuRecommendationPerformanceLocation,

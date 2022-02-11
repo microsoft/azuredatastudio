@@ -339,7 +339,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this._disposables.push(this._rbg.onLinkClick(async (e: azdata.RadioCardLinkClickEvent) => {
 				if (this.hasRecommendations()) {
 					if (e.cardId === skuRecommendationResultsDialog._targetType) {
-						// console.log("onclick skuRecommendationResultsDialog")
 						await skuRecommendationResultsDialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
 					}
 				}
@@ -805,7 +804,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}).component();
 		this._azureRecommendationSectionText = _view.modelBuilder.text().withProps({
 			value: constants.AZURE_RECOMMENDATION,
-			// TO-DO: update this based on data collection progress
 			description: '',
 			CSSStyles: {
 				...styles.SECTION_HEADER_CSS,
@@ -1144,7 +1142,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						iconPath: IconPathHelper.stop
 					});
 					this._skuDataCollectionStatusText.value = constants.AZURE_RECOMMENDATION_STATUS_STOPPED;
-					this._skuDataCollectionTimerText.value = '';	// TO-DO: maybe a better way to clear the text, just DON'T create a empty constant or that'll break the build
+					this._skuDataCollectionTimerText.value = '';
 
 					await this._skuGetRecommendationContainer.updateCssStyles({ 'display': 'none' });
 					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'block' });

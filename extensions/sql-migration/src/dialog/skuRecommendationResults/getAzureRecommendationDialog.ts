@@ -284,7 +284,7 @@ export class GetAzureRecommendationDialog {
 		this._performanceDataSource = containerType;
 
 		let okButtonEnabled = false;
-		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
+		switch (containerType) {
 			case PerformanceDataSourceOptions.CollectData: {
 				await this._collectDataContainer.updateCssStyles({ 'display': 'inline' });
 				await this._openExistingContainer.updateCssStyles({ 'display': 'none' });
@@ -350,6 +350,8 @@ export class GetAzureRecommendationDialog {
 				const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 				const errors: string[] = [];
 				try {
+					void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_OPEN_EXISTING_POPUP);
+
 					const perfQueryIntervalInSec = 30;
 					const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
 					const startTime = '1900-01-01 00:00:00';
