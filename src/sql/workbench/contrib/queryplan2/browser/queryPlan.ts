@@ -390,9 +390,14 @@ export class QueryPlan2 implements ISashLayoutProvider {
 			 * use the scroll bars.
 			 */
 			diagramContainer.addEventListener('wheel', e => {
+				this._parent.scrollTop += e.deltaY;
+				//Hiding all tooltips when we scroll.
+				const element = document.getElementsByClassName('mxTooltip');
+				for (let i = 0; i < element.length; i++) {
+					(<HTMLElement>element[i]).style.visibility = 'hidden';
+				}
 				e.preventDefault();
 				e.stopPropagation();
-				this._parent.scrollTop += e.deltaY;
 			});
 
 			this._planContainer.appendChild(diagramContainer);
