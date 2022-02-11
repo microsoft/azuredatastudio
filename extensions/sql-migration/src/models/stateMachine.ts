@@ -9,7 +9,6 @@ import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs } from '../api/azure';
-import { SKURecommendations } from './externalContract';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
@@ -108,7 +107,6 @@ export interface Model {
 	readonly sourceConnectionId: string;
 	readonly currentState: State;
 	gatheringInformationError: string | undefined;
-	skuRecommendations: SKURecommendations | undefined;
 	_azureAccount: azdata.Account | undefined;
 	_databaseBackup: DatabaseBackupModel | undefined;
 }
@@ -191,7 +189,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _currentState: State;
 	private _gatheringInformationError: string | undefined;
 
-	private _skuRecommendations: SKURecommendations | undefined;		// TO-DO: old, can this be removed?
 	public _assessmentResults!: ServerAssessment;
 	public _runAssessments: boolean = true;
 	private _assessmentApiResponse!: mssql.AssessmentResult;
@@ -685,14 +682,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public set gatheringInformationError(error: string | undefined) {
 		this._gatheringInformationError = error;
-	}
-
-	public get skuRecommendations(): SKURecommendations | undefined {
-		return this._skuRecommendations;
-	}
-
-	public set skuRecommendations(recommendations: SKURecommendations | undefined) {
-		this._skuRecommendations = recommendations;
 	}
 
 	public get stateChangeEvent(): vscode.Event<StateChangeEvent> {
