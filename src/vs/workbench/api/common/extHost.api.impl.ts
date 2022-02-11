@@ -92,7 +92,7 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 // import { ExtHostNotebookDocuments } from 'vs/workbench/api/common/extHostNotebookDocuments'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 // import { ExtHostInteractive } from 'vs/workbench/api/common/extHostInteractive'; {{SQL CARBON EDIT}} Remove until we need it
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
-import { functionalityNotSupportedError } from 'sql/base/common/locConstants';
+import { docCreationFailedError, functionalityNotSupportedError, invalidArgumentsError } from 'sql/base/common/locConstants';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
@@ -899,11 +899,11 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				} else if (typeof uriOrType === 'string') {
 					uri = URI.revive(await extHostNotebookDocumentsAndEditors.createNotebookDocument(uriOrType, convertToADSNotebookContents(content)));
 				} else {
-					throw new Error('Invalid arguments');
+					throw new Error(invalidArgumentsError);
 				}
 				let doc = extHostNotebookDocumentsAndEditors.getDocument(uri.toString())?.document;
 				if (!doc) {
-					throw new Error(`Failed to create notebook document.`);
+					throw new Error(docCreationFailedError);
 				}
 				return new VSCodeNotebookDocument(doc);
 			},
