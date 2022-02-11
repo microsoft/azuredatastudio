@@ -1562,7 +1562,7 @@ declare module 'azdata' {
 		/**
 		 * Flag to show/hide props in tooltip
 		 */
-		showInToolTip: boolean;
+		showInTooltip: boolean;
 		/**
 		 * Display order of property
 		 */
@@ -1570,7 +1570,11 @@ declare module 'azdata' {
 		/**
 		 *  Flag to indicate if the property has a longer value so that it will be shown at the bottom of the tooltip
 		 */
-		isLongString: boolean;
+		positionAtBottom: boolean;
+		/**
+		 * Display value of property to show in tooltip and other UI element.
+		 */
+		displayValue: string;
 	}
 
 	export interface ExecutionPlanRecommendations {
