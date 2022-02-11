@@ -131,10 +131,12 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 	private _onNewDescriptionRegistration = new Emitter<{ id: string, registration: ProviderDescriptionRegistration }>();
 	public readonly onNewDescriptionRegistration: Event<{ id: string, registration: ProviderDescriptionRegistration }> = this._onNewDescriptionRegistration.event;
 
+	private readonly providerNotInRegistryError = (providerId: string): string => localize('providerNotInRegistryError', "The specified provider '{0}' is not present in the notebook registry.", providerId);
+
 	updateProviderKernels(providerId: string, kernels: azdata.nb.IStandardKernel[]): void {
 		let registration = this._providerDescriptionRegistration.get(providerId);
 		if (!registration) {
-			throw new Error(localize('providerNotInRegistryError', "The specified provider '{0}' is not present in the notebook registry.", providerId));
+			throw new Error(this.providerNotInRegistryError(providerId));
 		}
 		registration.standardKernels = kernels;
 
@@ -145,7 +147,7 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 	updateKernelLanguages(providerId: string, kernelName: string, languages: string[]): void {
 		let registration = this._providerDescriptionRegistration.get(providerId);
 		if (!registration) {
-			throw new Error(localize('providerNotInRegistryError', "The specified provider '{0}' is not present in the notebook registry.", providerId));
+			throw new Error(this.providerNotInRegistryError(providerId));
 		}
 		let kernel = registration.standardKernels?.find(kernel => kernel.name === kernelName);
 		if (kernel) {
