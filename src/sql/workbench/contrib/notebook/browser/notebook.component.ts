@@ -304,7 +304,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	public clickOffCell(e: MouseEvent) {
 		if (this.model.activeCell?.isEditMode) {
-			// when clicking outside of code cells toggle edit mode to false
+			// when clicking outside of cells toggle edit mode to false
 			this.toggleEditMode();
 		} else {
 			this.unselectActiveCell();
