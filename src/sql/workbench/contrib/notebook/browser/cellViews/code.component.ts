@@ -428,10 +428,8 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	private onCellModeChanged(isEditMode: boolean): void {
 		if (this.cellModel.id === this._activeCellId || this._activeCellId === '') {
 			if (isEditMode) {
-				this._editor.getContainer().contentEditable = 'true';
 				this._editor.getControl().focus();
 			} else {
-				this._editor.getContainer().contentEditable = 'false';
 				(document.activeElement as HTMLElement).blur();
 			}
 		}

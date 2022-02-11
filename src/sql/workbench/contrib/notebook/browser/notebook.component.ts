@@ -320,7 +320,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.toggleEditMode();
 		}
 		this.selectCell(cell);
-		this.toggleEditMode();
+		if (cell.cellType === CellTypes.Code) {
+			this.toggleEditMode();
+		}
 	}
 
 	public unselectActiveCell() {
