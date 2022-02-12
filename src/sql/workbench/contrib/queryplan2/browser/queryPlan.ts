@@ -36,6 +36,7 @@ import { NodeSearchWidget } from 'sql/workbench/contrib/queryplan2/browser/widge
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IFileService } from 'vs/platform/files/common/files';
 import { VSBuffer } from 'vs/base/common/buffer';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 
 let azdataGraph = azdataGraphModule();
 
@@ -165,7 +166,8 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		@IEditorService private readonly editorService: IEditorService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IFileDialogService public fileDialogService: IFileDialogService,
-		@IFileService public fileService: IFileService
+		@IFileService public fileService: IFileService,
+		@IWorkspaceContextService public workspaceContextService: IWorkspaceContextService
 	) {
 		// parent container for query plan.
 		this._container = DOM.$('.query-plan');
@@ -520,16 +522,23 @@ class SavePlanFile extends Action {
 	}
 
 	public override async run(context: QueryPlan2): Promise<void> {
+		const workspaceFolders = await context.workspaceContextService.getWorkspace().folders;
+		let currentWorkSpaceFolder;
+		if (workspaceFolders.length !== 0) {
+			currentWorkSpaceFolder = workspaceFolders[0].uri;
+		}
 		const saveFileUri = await context.fileDialogService.showSaveDialog({
 			filters: [
 				{
 					extensions: ['sqlplan'], //TODO: Get this extension from provider
 					name: localize('queryPlan.SaveFileDescription', 'Execution Plan Files')
 				}
-			]
+			],
+			defaultUri: currentWorkSpaceFolder
 		});
-
-		await context.fileService.writeFile(saveFileUri, VSBuffer.fromString(context.graphModel.graphFile.graphFileContent));
+		if (saveFileUri) {
+			await context.fileService.writeFile(saveFileUri, VSBuffer.fromString(context.graphModel.graphFile.graphFileContent));
+		}
 	}
 }
 
