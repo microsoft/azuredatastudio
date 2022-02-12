@@ -12,7 +12,6 @@ import * as utils from '../../api/utils';
 import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
 import { EOL } from 'os';
 
-
 export class GetAzureRecommendationDialog {
 	private static readonly StartButtonText: string = constants.AZURE_RECOMMENDATION_START;
 
@@ -60,7 +59,6 @@ export class GetAzureRecommendationDialog {
 				'flex-direction': 'column',
 			}
 		}).component();
-
 		const description1 = _view.modelBuilder.text().withProps({
 			value: constants.AZURE_RECOMMENDATION_DESCRIPTION,
 			CSSStyles: {
@@ -74,14 +72,10 @@ export class GetAzureRecommendationDialog {
 				'margin-top': '8px',
 			}
 		}).component();
-
-
 		const selectDataSourceRadioButtons = this.createDataSourceContainer(_view);
-
 		container.addItems([
 			description1,
 			description2,
-
 			selectDataSourceRadioButtons,
 		]);
 		return container;
@@ -320,6 +314,18 @@ export class GetAzureRecommendationDialog {
 			dialogSetupPromises.push(this.initializeDialog(this.dialog));
 			azdata.window.openDialog(this.dialog);
 			await Promise.all(dialogSetupPromises);
+
+			// if data source was previously selected, default folder value to previously selected
+			switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
+				case PerformanceDataSourceOptions.CollectData: {
+					this._collectDataFolderInput.value = this.migrationStateModel._skuRecommendationPerformanceLocation;
+					break;
+				}
+				case PerformanceDataSourceOptions.OpenExisting: {
+					this._openExistingFolderInput.value = this.migrationStateModel._skuRecommendationPerformanceLocation;
+					break;
+				}
+			}
 
 			await this.switchDataSourceContainerFields(this._performanceDataSource);
 		}

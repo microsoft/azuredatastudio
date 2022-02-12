@@ -183,7 +183,6 @@ export class SkuEditParametersDialog {
 				style: 'information',
 				CSSStyles: {
 					...styles.BODY_CSS,
-					// 'margin-top': '8px',
 				}
 			}).component();
 
