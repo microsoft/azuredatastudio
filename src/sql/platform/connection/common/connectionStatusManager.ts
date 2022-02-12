@@ -16,6 +16,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { values } from 'vs/base/common/collections';
+import { Schemas } from 'vs/base/common/network';
 
 export class ConnectionStatusManager {
 
@@ -226,7 +227,7 @@ export class ConnectionStatusManager {
 	}
 
 	public isEditorTypeUri(uri: string): boolean {
-		return !!(uri && (uri.startsWith('untitled:') || uri.startsWith('file:')));
+		return !!(uri && (uri.startsWith(Schemas.untitled) || uri.startsWith(Schemas.file)));
 	}
 
 	public getProviderIdFromUri(ownerUri: string): string {
