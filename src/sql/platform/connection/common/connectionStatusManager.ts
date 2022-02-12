@@ -225,6 +225,10 @@ export class ConnectionStatusManager {
 		return !!(uri && uri.startsWith(Utils.uriPrefixes.default));
 	}
 
+	public isEditorTypeUri(uri: string): boolean {
+		return !!(uri && (uri.startsWith('untitled:') || uri.startsWith('file:')));
+	}
+
 	public getProviderIdFromUri(ownerUri: string): string {
 		let providerId: string = '';
 		let connection = this.findConnection(ownerUri);
