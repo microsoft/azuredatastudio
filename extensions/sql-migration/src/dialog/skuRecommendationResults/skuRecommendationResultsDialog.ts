@@ -126,6 +126,7 @@ export class SkuRecommendationResultsDialog {
 						value: constants.STORAGE_HEADER,
 						CSSStyles: {
 							...styles.LABEL_CSS,
+							'margin': '12px 0 0',
 						}
 					}).component();
 					const storageValue = _view.modelBuilder.text().withProps({
@@ -470,6 +471,7 @@ export class SkuRecommendationResultsDialog {
 
 	public async openDialog(dialogName?: string, recommendations?: mssql.SkuRecommendationResult) {
 		if (!this._isOpen) {
+			this._isOpen = true;
 			this.instanceRequirements = recommendations?.instanceRequirements;
 
 			switch (this._targetType) {
@@ -486,15 +488,15 @@ export class SkuRecommendationResultsDialog {
 					break;
 			}
 
-			this._isOpen = true;
 			this.dialog = azdata.window.createModelViewDialog(this.title!, 'SkuRecommendationResultsDialog', 'medium');
 
 			this.dialog.okButton.label = SkuRecommendationResultsDialog.OpenButtonText;
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 
 			this.dialog.cancelButton.hidden = true;
+			// TO-DO: When "Create target in Portal" feature is ready, unhide cancel button and use cancelButton to direct user to Portal
 			// this.dialog.cancelButton.label = SkuRecommendationResultsDialog.CreateTargetButtonText;
-			// this._disposables.push(this.dialog.okButton.onClick(async () => console.log(SkuRecommendationResultsDialog.CreateTargetButtonText)));
+			// this._disposables.push(this.dialog.cancelButton.onClick(async () => console.log(SkuRecommendationResultsDialog.CreateTargetButtonText)));
 
 			const dialogSetupPromises: Thenable<void>[] = [];
 			dialogSetupPromises.push(this.initializeDialog(this.dialog));

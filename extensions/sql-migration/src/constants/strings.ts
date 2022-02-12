@@ -72,7 +72,7 @@ export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI = localize('sql.migration.sku
 export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM = localize('sql.migration.sku.recommendation.view.assessment.vm', "To migrate to SQL Server on Azure Virtual Machine (IaaS), view assessment results and select one or more databases.");
 export const VIEW_SELECT_BUTTON_LABEL = localize('sql.migration.view.select.button.label', "View/Select");
 export function TOTAL_DATABASES_SELECTED(selectedDbCount: number, totalDbCount: number): string {
-	return localize('total.databases.selected', "{0} of {1} databases selected.", selectedDbCount, totalDbCount);
+	return localize('total.databases.selected', "{0} of {1} databases selected", selectedDbCount, totalDbCount);
 }
 export const SELECT_TARGET_TO_CONTINUE = localize('sql.migration.select.target.to.continue', "To continue, select a target.");
 export const SELECT_DATABASE_TO_MIGRATE = localize('sql.migration.select.database.to.migrate', "Select the databases to migrate.");
@@ -228,6 +228,11 @@ export function PERCENTAGE(val: number): string {
 export function PERCENTILE(val: string): string {
 	return localize('sql.migration.sku.percentile', "{0}th percentile", val);
 }
+export const EMPTY_TIME = localize('sql.migration.sku.recommendations.empty.time', "-");
+export function LAST_REFRESHED_TIME(d: string = EMPTY_TIME): string {
+	return localize('sql.migration.sku.recommendations.lastRefreshed', "Last refreshed: {0}", d);
+}
+
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
 export function AZURE_SQL_TARGET_PAGE_DESCRIPTION(targetInstance: string = 'instance'): string {
@@ -363,7 +368,6 @@ export const AUTHENTICATION_KEYS = localize('sql.migration.authentication.types'
 export function SQL_MIGRATION_SERVICE_DETAILS_HEADER(sqlMigrationServiceName: string) {
 	return localize('sql.migration.service.header', "Azure Database Migration Service \"{0}\" details:`", sqlMigrationServiceName);
 }
-export const DMS_PORTAL_INFO = localize('sql.migration.dms.portal.info', "Any existing Azure Database Migration Service in the Azure portal do not appear in Azure Data Studio. Any Database Migration Service created in Azure Data Studio will not be visible in the Azure portal yet.");
 export const DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS = localize('sql.migration.database.migration.service.authentication.keys', "Database Migration Service authentication keys");
 // create migration service dialog
 export const CREATE_MIGRATION_SERVICE_TITLE = localize('sql.migration.services.dialog.title', "Create Azure Database Migration Service");

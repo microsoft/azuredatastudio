@@ -56,10 +56,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _skuDataCollectionStatusText!: azdata.TextComponent;
 	private _skuDataCollectionTimerText!: azdata.TextComponent;
 
-	private _skuStopRefreshButtonContainer!: azdata.FlexContainer;
-	private _refreshAzureRecommendationButton!: azdata.ButtonComponent;
+	private _skuControlButtonsContainer!: azdata.FlexContainer;
 	private _skuStopDataCollectionButton!: azdata.ButtonComponent;
 	private _skuRestartDataCollectionButton!: azdata.ButtonComponent;
+	private _refreshAzureRecommendationButton!: azdata.ButtonComponent;
+	private _skuLastRefreshTimeText!: azdata.TextComponent;
 
 	private _skuEditParametersContainer!: azdata.FlexContainer;
 	private _skuScaleFactorText!: azdata.TextComponent;
@@ -334,9 +335,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				]
 			});
 
-			let skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, product.type);
 			this._disposables.push(this._rbg.onLinkClick(async (e: azdata.RadioCardLinkClickEvent) => {
 				if (this.hasRecommendations()) {
+					const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, product.type);
 					if (e.cardId === skuRecommendationResultsDialog._targetType) {
 						await skuRecommendationResultsDialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
 					}
@@ -514,8 +515,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this.migrationStateModel._vmDbs = this.migrationStateModel.savedInfo.databaseList;
 			}
 
-			this.migrationStateModel._databaseAssessment = this.migrationStateModel.savedInfo.databaseAssessment!;
-
 			if (this.migrationStateModel.savedInfo.skuRecommendation) {
 				const skuRecommendationSavedInfo = this.migrationStateModel.savedInfo.skuRecommendation;
 				this.migrationStateModel._skuRecommendationPerformanceDataSource = skuRecommendationSavedInfo.skuRecommendationPerformanceDataSource!;
@@ -636,8 +635,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
 	}
 
-	public async refreshCardText(): Promise<void> {
-		this._rbgLoader.loading = true;
+	public async refreshCardText(showLoadingIcon: boolean = true): Promise<void> {
+		this._rbgLoader.loading = showLoadingIcon && true;
 		if (this._rbg.selectedCardId === MigrationTargetType.SQLMI) {
 			this.migrationStateModel._migrationDbs = this.migrationStateModel._miDbs;
 		} else {
@@ -667,7 +666,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					if (this.migrationStateModel._perfDataCollectionStartDate) {
 						this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
 							constants.AZURE_RECOMMENDATION_CARD_IN_PROGRESS;
-						// 'Data collection in progress, started at ' + new Date(this.migrationStateModel._perfDataCollectionStartDate).toLocaleString();
 					} else {
 						this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.AZURE_RECOMMENDATION_CARD_NOT_ENABLED;
 					}
@@ -741,12 +739,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			await this.changeTargetType(this._rbg.selectedCardId);
 		}
 
-		this._rbgLoader.loading = false;
+		this._rbgLoader.loading = showLoadingIcon && false;
 	}
 
 	public async startCardLoading(): Promise<void> {
-		this._rbgLoader.loading = true;
-
 		// TO-DO: ideally the short SKU recommendation loading time should have a spinning indicator,
 		// but updating the card text will do for now
 		this._supportedProducts.forEach((product, index) => {
@@ -758,8 +754,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		});
 
 		await this._rbg.updateProperties({ cards: this._rbg.cards });
-		this._rbgLoader.loading = false;
-
 	}
 
 	private createAssessmentProgress(): azdata.FlexContainer {
@@ -812,15 +806,30 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				'margin': '12px 0 8px',
 			}
 		}).component();
-
-
 		this._azureRecommendationInfoText = _view.modelBuilder.text().withProps({
 			value: constants.AZURE_RECOMMENDATION_STATUS_NOT_ENABLED,
 			CSSStyles: {
 				...styles.BODY_CSS,
-				'margin': '0 0 8px'
+				'margin': '0',
 			}
 		}).component();
+		const learnMoreLink = _view.modelBuilder.hyperlink().withProps({
+			label: constants.LEARN_MORE,
+			ariaLabel: constants.LEARN_MORE,
+			url: 'https://aka.ms/ads-sql-sku-recommend',
+			showLinkIcon: true,
+		}).component();
+		const azureRecommendationsInfoContainer = _view.modelBuilder.flexContainer()
+			.withItems([
+				this._azureRecommendationInfoText,
+				learnMoreLink,
+			]).withProps({
+				CSSStyles: {
+					'flex-direction': 'column',
+					'margin-top': '-0.5em',
+					'margin-bottom': '12px',
+				}
+			}).component();
 		this._getAzureRecommendationButton = this._view.modelBuilder.button().withProps({
 			label: constants.GET_AZURE_RECOMMENDATION,
 			width: 180,
@@ -840,7 +849,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 		this._skuGetRecommendationContainer.addItems([
-			this._azureRecommendationInfoText,
+			azureRecommendationsInfoContainer,
 			this._getAzureRecommendationButton,
 		]);
 
@@ -881,18 +890,19 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		const statusIconTextContainer = _view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'flex-direction': 'row',
-				'width': 'fit-content',
-				'align-items': 'center',
-				'margin': '0',
-			}
-		}).component();
-		statusIconTextContainer.addItems([
-			this._skuDataCollectionStatusIcon,
-			this._skuDataCollectionStatusText,
-		]);
+		const statusIconTextContainer = _view.modelBuilder.flexContainer()
+			.withItems([
+				this._skuDataCollectionStatusIcon,
+				this._skuDataCollectionStatusText,
+			])
+			.withProps({
+				CSSStyles: {
+					'flex-direction': 'row',
+					'width': 'fit-content',
+					'align-items': 'center',
+					'margin': '0',
+				}
+			}).component();
 
 		this._skuDataCollectionTimerText = _view.modelBuilder.text().withProps({
 			value: '',
@@ -909,13 +919,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			height: 24,
 			CSSStyles: {
 				...styles.BODY_CSS,
-				'margin': '0 0 8px 0',
+				'margin': '0',
 				'display': this.migrationStateModel.performanceCollectionInProgress() ? 'block' : 'none',
 			}
 		}).component();
 		this._disposables.push(this._skuStopDataCollectionButton.onDidClick(async (e) => {
 			await this.migrationStateModel.stopPerfDataCollection();
-			await this.refreshSkuRecommendationComponents();
+			await this.refreshAzureRecommendation();
 		}));
 
 		this._skuRestartDataCollectionButton = this._view.modelBuilder.button().withProps({
@@ -925,7 +935,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			height: 24,
 			CSSStyles: {
 				...styles.BODY_CSS,
-				'margin': '0 0 8px 0',
+				'margin': '0',
 				'display': this.migrationStateModel.performanceCollectionStopped() ? 'block' : 'none',
 			}
 		}).component();
@@ -947,30 +957,37 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			height: 24,
 			CSSStyles: {
 				...styles.BODY_CSS,
-				'margin': '0 0 8px 12px',
+				'margin': '0 0 0 12px',
 			}
 		}).component();
 		this._disposables.push(this._refreshAzureRecommendationButton.onDidClick(async (e) => {
-			await this.startCardLoading();
-			await this.migrationStateModel.getSkuRecommendations();
-			await this.refreshSkuRecommendationComponents();
+			await this.refreshAzureRecommendation();
 		}));
-
-		this._skuStopRefreshButtonContainer = _view.modelBuilder.flexContainer()
+		this._skuLastRefreshTimeText = this._view.modelBuilder.text().withProps({
+			value: constants.LAST_REFRESHED_TIME(),
+			CSSStyles: {
+				...styles.SMALL_NOTE_CSS,
+				'margin': '0 0 4px 4px',
+			},
+		}).component();
+		this._skuControlButtonsContainer = _view.modelBuilder.flexContainer()
 			.withProps({
 				CSSStyles: {
 					'flex-direction': 'row',
 					'width': 'fit-content',
+					'align-items': 'flex-end',
+					'margin-bottom': '12px',
 				}
 			}).component();
-		this._skuStopRefreshButtonContainer.addItems([
+		this._skuControlButtonsContainer.addItems([
 			this._skuStopDataCollectionButton,
 			this._skuRestartDataCollectionButton,
 			this._refreshAzureRecommendationButton,
+			this._skuLastRefreshTimeText,
 		]);
 
 		container.addItems([
-			this._skuStopRefreshButtonContainer,
+			this._skuControlButtonsContainer,
 			statusIconTextContainer,
 			this._skuDataCollectionTimerText,
 		]);
@@ -1079,10 +1096,15 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._skuScaleFactorText.value = this.migrationStateModel._skuScalingFactor.toString();
 		this._skuTargetPercentileText.value = constants.PERCENTAGE(this.migrationStateModel._skuTargetPercentile);
 		this._skuEnablePreviewSkuText.value = this.migrationStateModel._skuEnablePreview ? constants.YES : constants.NO;
+		await this.refreshAzureRecommendation();
+	}
 
+	public async refreshAzureRecommendation(): Promise<void> {
 		await this.startCardLoading();
+		this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME();
 		await this.migrationStateModel.getSkuRecommendations();
 		await this.refreshSkuRecommendationComponents();
+		this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME(new Date().toLocaleString());
 	}
 
 	public async refreshSkuRecommendationComponents(): Promise<void> {
@@ -1136,7 +1158,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 			case PerformanceDataSourceOptions.OpenExisting: {
 				await this._azureRecommendationSectionText.updateProperties({
-					description: ''
+					description: constants.AZURE_RECOMMENDATION_TOOLTIP_NOT_STARTED
 				});
 
 				if (this.hasRecommendations()) {
@@ -1163,7 +1185,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}
 
-		await this.refreshCardText();
+		await this.refreshCardText(false);
 	}
 
 	private hasSavedInfo(): boolean {

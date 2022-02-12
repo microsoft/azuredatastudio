@@ -381,7 +381,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						sqlVmRecommendationResults: response?.sqlVmRecommendationResults ?? [],
 						instanceRequirements: response?.instanceRequirements
 					},
-					// recommendationError:
 				};
 			} else {
 				this._skuRecommendationResults = {
@@ -391,7 +390,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						sqlVmRecommendationResults: [],
 						instanceRequirements: response?.instanceRequirements
 					},
-					// recommendationError:
 				};
 			}
 
@@ -564,9 +562,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			clearTimeout(this._autoRefreshGetSkuRecommendationHandle);
 			if (this.refreshGetSkuRecommendationFrequency !== -1) {
 				this._autoRefreshGetSkuRecommendationHandle = setTimeout(async function () {
-					await page.startCardLoading();
-					await classVariable.getSkuRecommendations();
-					await page.refreshSkuRecommendationComponents();
+					await page.refreshAzureRecommendation();
 				}, this.refreshGetSkuRecommendationFrequency);
 			}
 		}
