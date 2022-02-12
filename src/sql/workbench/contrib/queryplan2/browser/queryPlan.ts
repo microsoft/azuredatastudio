@@ -534,7 +534,7 @@ class SavePlanFile extends Action {
 					name: localize('queryPlan.SaveFileDescription', 'Execution Plan Files')
 				}
 			],
-			defaultUri: currentWorkSpaceFolder
+			defaultUri: currentWorkSpaceFolder // If no workspaces are opened this will be undefined
 		});
 		if (saveFileUri) {
 			await context.fileService.writeFile(saveFileUri, VSBuffer.fromString(context.graphModel.graphFile.graphFileContent));
