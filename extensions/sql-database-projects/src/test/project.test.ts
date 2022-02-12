@@ -5,6 +5,7 @@
 
 import * as should from 'should';
 import * as path from 'path';
+import * as os from 'os';
 import * as sinon from 'sinon';
 import * as baselines from './baselines/baselines';
 import * as templates from '../templates/templates';
@@ -1473,6 +1474,14 @@ describe('Project: sdk style project content operations', function (): void {
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'test.txt')).not.equal(undefined);
 		projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText.includes('<None Include="test.txt" />')).equal(true, projFileText);
+
+		// Test with a sql file that's outside project root
+		const externalSqlFile = path.join(os.tmpdir(), `Test_${new Date().getTime()}.sql`);
+		await fs.writeFile(externalSqlFile, '');
+		await project.addExistingItem(externalSqlFile);
+		should(project.files.find(f => f.type === EntryType.File && f.relativePath === externalSqlFile)).not.equal(undefined);
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes(`<Build Include="${externalSqlFile}" />`)).equal(true, projFileText);
 	});
 });
 

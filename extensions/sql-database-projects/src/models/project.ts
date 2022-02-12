@@ -970,7 +970,7 @@ export class Project implements ISqlProject {
 
 	private async addFileToProjFile(filePath: string, xmlTag: string, attributes?: Map<string, string>): Promise<void> {
 
-		// determine if the file has been previously excluded
+		// delete Remove node if a file has been previously excluded
 		await this.undoExcludeFileFromProjFile(xmlTag, filePath);
 
 		let itemGroup;
@@ -1074,17 +1074,27 @@ export class Project implements ISqlProject {
 		throw new Error(constants.unableToFindObject(path, constants.fileObject));
 	}
 
-	private removeNode(includeString: string, nodes: HTMLCollectionOf<Element>): boolean {
+	/**
+	 * Deletes a node from the project file similar to <Compile Include="{includeString}" />
+	 * @param includeString Path of the file that matches the Include portion of the node
+	 * @param nodes The collection of XML nodes to search from
+	 * @param undoRemove When true, will remove a node similar to <Compile Remove="{includeString}" />
+	 * @returns True when a node has been removed, false otherwise.
+	 */
+	private removeNode(includeString: string, nodes: HTMLCollectionOf<Element>, undoRemove: boolean = false): boolean {
+		// Default function behavior removes nodes like <Compile Include="..." />
+		// However when undoRemove is true, this function removes <Compile Remov="..." />
+		const xmlAttribute = undoRemove ? constants.Remove : constants.Include;
 		for (let i = 0; i < nodes.length; i++) {
 			const parent = nodes[i].parentNode;
 
 			if (parent) {
-				if (nodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(includeString)) {
+				if (nodes[i].getAttribute(xmlAttribute) === utils.convertSlashesForSqlProj(includeString)) {
 					parent.removeChild(nodes[i]);
 
 					// delete ItemGroup if this was the only entry
 					// only want element nodes, not text nodes
-					const otherChildren = Array.from(parent.childNodes).filter((c: ChildNode) => c.childNodes);
+					const otherChildren = Array.from(parent.childNodes).filter(c => c.childNodes);
 
 					if (otherChildren.length === 0) {
 						parent.parentNode?.removeChild(parent);
@@ -1105,23 +1115,8 @@ export class Project implements ISqlProject {
 	 */
 	private async undoExcludeFileFromProjFile(xmlTag: string, relativePath: string): Promise<void> {
 		const nodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(xmlTag);
-		for (let i = 0; i < nodes.length; i++) {
-			const parent = nodes[i].parentNode;
-			if (parent && nodes[i].getAttribute(constants.Remove) === utils.convertSlashesForSqlProj(relativePath)) {
-				parent.removeChild(nodes[i]);
-
-				// delete ItemGroup if this was the only entry
-				// only want element nodes, not text nodes
-				const otherChildren = Array.from(parent.childNodes).filter((c: any) => c.childNodes);
-
-				if (otherChildren.length === 0) {
-					parent.parentNode?.removeChild(parent);
-				}
-
-				await this.serializeToProjFile(this.projFileXmlDoc);
-
-				return;
-			}
+		if (await this.removeNode(relativePath, nodes, true)) {
+			await this.serializeToProjFile(this.projFileXmlDoc!);
 		}
 	}
 
