@@ -37,6 +37,7 @@ import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IFileService } from 'vs/platform/files/common/files';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { URI } from 'vs/base/common/uri';
 
 let azdataGraph = azdataGraphModule();
 
@@ -523,15 +524,19 @@ class SavePlanFile extends Action {
 
 	public override async run(context: QueryPlan2): Promise<void> {
 		const workspaceFolders = await context.workspaceContextService.getWorkspace().folders;
-		let currentWorkSpaceFolder;
+		const defaultFileName = 'plan';
+		let currentWorkSpaceFolder: URI;
 		if (workspaceFolders.length !== 0) {
 			currentWorkSpaceFolder = workspaceFolders[0].uri;
+			currentWorkSpaceFolder = URI.joinPath(currentWorkSpaceFolder, defaultFileName); //appending default file name to workspace uri
+		} else {
+			currentWorkSpaceFolder = URI.parse(defaultFileName); // giving default name
 		}
 		const saveFileUri = await context.fileDialogService.showSaveDialog({
 			filters: [
 				{
 					extensions: ['sqlplan'], //TODO: Get this extension from provider
-					name: localize('queryPlan.SaveFileDescription', 'Execution Plan Files')
+					name: localize('queryPlan.SaveFileDescription', 'Execution Plan Files') //TODO: Get the names from providers.
 				}
 			],
 			defaultUri: currentWorkSpaceFolder // If no workspaces are opened this will be undefined
