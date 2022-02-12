@@ -14,7 +14,7 @@ import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
-import { hashString, deepClone, SupportedAutoRefreshIntervals } from '../api/utils';
+import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 const localize = nls.loadMessageBundle();
 
@@ -209,16 +209,16 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _perfDataCollectionErrors!: string[];
 	public _perfDataCollectionIsCollecting!: boolean;
 
-	public readonly _performanceDataQueryIntervalInSeconds = 5;		// TO-DO: update value
-	public readonly _staticDataQueryIntervalInSeconds = 30;			// TO-DO: update value
-	public readonly _numberOfPerformanceDataQueryIterations = 11;	// TO-DO: update value
+	public readonly _performanceDataQueryIntervalInSeconds = 30;
+	public readonly _staticDataQueryIntervalInSeconds = 60;
+	public readonly _numberOfPerformanceDataQueryIterations = 19;
 	public readonly _defaultDataPointStartTime = '1900-01-01 00:00:00';
 	public readonly _defaultDataPointEndTime = '2200-01-01 00:00:00';
 	public readonly _recommendationTargetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
 
-	public refreshPerfDataCollectionFrequency: SupportedAutoRefreshIntervals = 30000;
+	public refreshPerfDataCollectionFrequency = this._performanceDataQueryIntervalInSeconds * 1000;
 	private _autoRefreshPerfDataCollectionHandle!: NodeJS.Timeout;
-	public refreshGetSkuRecommendationFrequency: SupportedAutoRefreshIntervals = 60000;	// TO-DO: update value
+	public refreshGetSkuRecommendationFrequency = 600000;	// 10 minutes
 	private _autoRefreshGetSkuRecommendationHandle!: NodeJS.Timeout;
 
 	public _skuScalingFactor!: number;
@@ -503,16 +503,18 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		numberOfIterations: number,
 		page: SKURecommendationPage): Promise<boolean> {
 		try {
-			const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
-			const response = await this.migrationService.startPerfDataCollection(ownerUri, dataFolder, perfQueryIntervalInSec, staticQueryIntervalInSec, numberOfIterations);
+			if (!this.performanceCollectionInProgress()) {
+				const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
+				const response = await this.migrationService.startPerfDataCollection(ownerUri, dataFolder, perfQueryIntervalInSec, staticQueryIntervalInSec, numberOfIterations);
 
-			this._startPerfDataCollectionApiResponse = response!;
-			this._perfDataCollectionStartDate = this._startPerfDataCollectionApiResponse.dateTimeStarted;
-			this._perfDataCollectionStopDate = undefined;
+				this._startPerfDataCollectionApiResponse = response!;
+				this._perfDataCollectionStartDate = this._startPerfDataCollectionApiResponse.dateTimeStarted;
+				this._perfDataCollectionStopDate = undefined;
 
-			void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_START_POPUP);
+				void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_START_POPUP);
 
-			await this.startSkuTimers(page, this.refreshPerfDataCollectionFrequency);
+				await this.startSkuTimers(page, this.refreshPerfDataCollectionFrequency);
+			}
 		}
 		catch (error) {
 			console.log(error);
@@ -610,7 +612,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async refreshPerfDataCollection(): Promise<boolean> {
 		try {
-			const response = await this.migrationService.refreshPerfDataCollection(this._perfDataCollectionLastRefreshedDate);
+			const response = await this.migrationService.refreshPerfDataCollection(this._perfDataCollectionLastRefreshedDate ?? new Date());
 			this._refreshPerfDataCollectionApiResponse = response!;
 			this._perfDataCollectionLastRefreshedDate = this._refreshPerfDataCollectionApiResponse.refreshTime;
 			this._perfDataCollectionMessages = this._refreshPerfDataCollectionApiResponse.messages;

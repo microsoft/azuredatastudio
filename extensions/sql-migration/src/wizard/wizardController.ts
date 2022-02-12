@@ -61,6 +61,13 @@ export class WizardController {
 
 		this._wizardObject.pages = pages.map(p => p.getwizardPage());
 
+		// kill existing data collection if user relaunches the wizard via new migration or retry existing migration
+		await this._model.refreshPerfDataCollection();
+		if ((!this._model.resumeAssessment || this._model.retryMigration) && this._model._perfDataCollectionIsCollecting) {
+			void this._model.stopPerfDataCollection();
+			void vscode.window.showInformationMessage(loc.AZURE_RECOMMENDATION_STOP_POPUP);
+		}
+
 		const wizardSetupPromises: Thenable<void>[] = [];
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(this._wizardObject.open());

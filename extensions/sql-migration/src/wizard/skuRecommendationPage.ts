@@ -1153,14 +1153,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 			// initial state before "Get Azure recommendation" dialog
 			default: {
-				if (this.migrationStateModel.performanceCollectionNotStarted()) {
-					await this._skuGetRecommendationContainer.updateCssStyles({ 'display': 'block' });
-					await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'none' });
-					await this._skuEditParametersContainer.updateCssStyles({ 'display': 'none' });
-					await this._azureRecommendationSectionText.updateProperties({
-						description: constants.AZURE_RECOMMENDATION_TOOLTIP_NOT_STARTED
-					});
-				}
+				await this._skuGetRecommendationContainer.updateCssStyles({ 'display': 'block' });
+				await this._skuDataCollectionStatusContainer.updateCssStyles({ 'display': 'none' });
+				await this._skuEditParametersContainer.updateCssStyles({ 'display': 'none' });
+				await this._azureRecommendationSectionText.updateProperties({
+					description: constants.AZURE_RECOMMENDATION_TOOLTIP_NOT_STARTED
+				});
 				break;
 			}
 		}
