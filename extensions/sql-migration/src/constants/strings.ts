@@ -55,7 +55,7 @@ export const SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR = (serverName: strin
 		EOL);
 };
 export const PERF_DATA_COLLECTION_ERROR = (serverName: string, errors: string[]): string => {
-	return localize('sql.migration.wizard.perfCollection.error', "Error(s) occurred while collecting performance data for the server '{0}': {1}\n\nIf these issues persist, try restarting the data collection process.", serverName, errors.join('\n'));
+	return localize('sql.migration.wizard.perfCollection.error', "Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:\n\n{1}", serverName, errors.join('\n'));
 };
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_BYPASS = localize('sql.migration.wizard.sku.assessment.error.bypass', 'Check this option to skip assessment and continue the migration.');
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_DETAIL = localize('sql.migration.wizard.sku.assessment.error.detail', '[There are no assessment results to validate readiness of your database migration. By checking this box, you acknowledge you want to proceed migrating your database to the desired Azure SQL target.]',);

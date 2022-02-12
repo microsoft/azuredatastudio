@@ -347,26 +347,19 @@ export class SkuRecommendationResultsDialog {
 	}
 
 	private getCachingText(caching: mssql.AzureManagedDiskCaching): string {
-		let text;
 		switch (caching) {
 			case mssql.AzureManagedDiskCaching.NotApplicable:
-				text = constants.CACHING_NA;
-				break;
+				return constants.CACHING_NA;
 
 			case mssql.AzureManagedDiskCaching.None:
-				text = constants.CACHING_NONE;
-				break;
+				return constants.CACHING_NONE;
 
 			case mssql.AzureManagedDiskCaching.ReadOnly:
-				text = constants.CACHING_READ_ONLY;
-				break;
+				return constants.CACHING_READ_ONLY;
 
 			case mssql.AzureManagedDiskCaching.ReadWrite:
-				text = constants.CACHING_READ_WRITE;
-				break;
+				return constants.CACHING_READ_WRITE;
 		}
-
-		return text;
 	}
 
 	private createStoragePropertiesTable(_view: azdata.ModelView, databaseName?: string): azdata.FlexContainer {
