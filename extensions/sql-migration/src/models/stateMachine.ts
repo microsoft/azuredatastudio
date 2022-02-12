@@ -14,7 +14,7 @@ import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
-import { hashString, deepClone, SupportedAutoRefreshIntervals } from '../api/utils';
+import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 const localize = nls.loadMessageBundle();
 
