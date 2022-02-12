@@ -13,7 +13,7 @@ import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
-import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
+import { logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 const localize = nls.loadMessageBundle();
@@ -394,7 +394,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 
 		} catch (error) {
-			console.log(error);
+			logError(TelemetryViews.SkuRecommendationWizard, 'GetSKURecommendationCollectionFailed', error);
 
 			this._skuRecommendationResults = {
 				recommendations: {
@@ -490,7 +490,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			);
 
 		} catch (e) {
-			console.log(e);
+			logError(TelemetryViews.SkuRecommendationWizard, 'GetSkuRecommendationTelemetryFailed', e);
 		}
 	}
 
@@ -515,7 +515,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 		}
 		catch (error) {
-			console.log(error);
+			logError(TelemetryViews.DataCollectionWizard, 'StartDataCollectionFailed', error);
 		}
 
 		// Generate telemetry for start data collection request
@@ -537,7 +537,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			);
 
 		} catch (e) {
-			console.log(e);
+			logError(TelemetryViews.DataCollectionWizard, 'StartDataCollectionTelemetryFailed', e);
 		}
 	}
 
@@ -581,7 +581,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			clearInterval(this._autoRefreshGetSkuRecommendationHandle);
 		}
 		catch (error) {
-			console.log(error);
+			logError(TelemetryViews.DataCollectionWizard, 'StopDataCollectionFailed', error);
 		}
 
 		// Generate telemetry for stop data collection request
@@ -602,7 +602,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			);
 
 		} catch (e) {
-			console.log(e);
+			logError(TelemetryViews.DataCollectionWizard, 'StopDataCollectionTelemetryFailed', e);
 		}
 	}
 
@@ -620,7 +620,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 		}
 		catch (error) {
-			console.log(error);
+			logError(TelemetryViews.DataCollectionWizard, 'RefreshDataCollectionFailed', error);
 		}
 
 		return true;
