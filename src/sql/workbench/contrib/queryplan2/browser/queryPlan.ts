@@ -33,6 +33,9 @@ import { EDITOR_FONT_DEFAULTS } from 'vs/editor/common/config/editorOptions';
 import { QueryPlanWidgetController } from 'sql/workbench/contrib/queryplan2/browser/queryPlanWidgetController';
 import { CustomZoomWidget } from 'sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget';
 import { NodeSearchWidget } from 'sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget';
+import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IFileService } from 'vs/platform/files/common/files';
+import { VSBuffer } from 'vs/base/common/buffer';
 
 let azdataGraph = azdataGraphModule();
 
@@ -161,6 +164,8 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		@IUntitledTextEditorService private readonly _untitledEditorService: IUntitledTextEditorService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
+		@IFileDialogService public fileDialogService: IFileDialogService,
+		@IFileService public fileService: IFileService
 	) {
 		// parent container for query plan.
 		this._container = DOM.$('.query-plan');
@@ -515,6 +520,16 @@ class SavePlanFile extends Action {
 	}
 
 	public override async run(context: QueryPlan2): Promise<void> {
+		const saveFileUri = await context.fileDialogService.showSaveDialog({
+			filters: [
+				{
+					extensions: ['sqlplan'], //TODO: Get this extension from provider
+					name: localize('queryPlan.SaveFileDescription', 'Execution Plan Files')
+				}
+			]
+		});
+
+		await context.fileService.writeFile(saveFileUri, VSBuffer.fromString(context.graphModel.graphFile.graphFileContent));
 	}
 }
 
