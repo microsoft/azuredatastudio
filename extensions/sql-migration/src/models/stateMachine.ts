@@ -420,16 +420,18 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		numberOfIterations: number,
 		page: SKURecommendationPage): Promise<boolean> {
 		try {
-			const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
-			const response = await this.migrationService.startPerfDataCollection(ownerUri, dataFolder, perfQueryIntervalInSec, staticQueryIntervalInSec, numberOfIterations);
+			if (!this.performanceCollectionInProgress()) {
+				const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
+				const response = await this.migrationService.startPerfDataCollection(ownerUri, dataFolder, perfQueryIntervalInSec, staticQueryIntervalInSec, numberOfIterations);
 
-			this._startPerfDataCollectionApiResponse = response!;
-			this._perfDataCollectionStartDate = this._startPerfDataCollectionApiResponse.dateTimeStarted;
-			this._perfDataCollectionStopDate = undefined;
+				this._startPerfDataCollectionApiResponse = response!;
+				this._perfDataCollectionStartDate = this._startPerfDataCollectionApiResponse.dateTimeStarted;
+				this._perfDataCollectionStopDate = undefined;
 
-			void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_START_POPUP);
+				void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_START_POPUP);
 
-			await this.startSkuTimers(page, this.refreshPerfDataCollectionFrequency);
+				await this.startSkuTimers(page, this.refreshPerfDataCollectionFrequency);
+			}
 		}
 		catch (error) {
 			console.log(error);
@@ -488,7 +490,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async refreshPerfDataCollection(): Promise<boolean> {
 		try {
-			const response = await this.migrationService.refreshPerfDataCollection(this._perfDataCollectionLastRefreshedDate);
+			const response = await this.migrationService.refreshPerfDataCollection(this._perfDataCollectionLastRefreshedDate ?? new Date());
 			this._refreshPerfDataCollectionApiResponse = response!;
 			this._perfDataCollectionLastRefreshedDate = this._refreshPerfDataCollectionApiResponse.refreshTime;
 			this._perfDataCollectionMessages = this._refreshPerfDataCollectionApiResponse.messages;
