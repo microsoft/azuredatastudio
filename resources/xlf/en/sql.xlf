@@ -4111,6 +4111,9 @@ Error: {1}</source>
     <trans-unit id="openQueryAction">
       <source xml:lang="en">Open Query</source>
     </trans-unit>
+    <trans-unit id="queryPlan.SaveFileDescription">
+      <source xml:lang="en">Execution Plan Files</source>
+    </trans-unit>
     <trans-unit id="queryPlanCustomZoom">
       <source xml:lang="en">Custom Zoom</source>
     </trans-unit>
