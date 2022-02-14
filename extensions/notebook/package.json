@@ -712,7 +712,7 @@
             "connectionProviderIds": [
               "MSSQL"
             ],
-            "supportedLanguages": ["python"],
+            "supportedLanguages": ["scala"],
             "blockedOnSAW": true
           },
           {
@@ -721,7 +721,7 @@
             "connectionProviderIds": [
               "MSSQL"
             ],
-            "supportedLanguages": ["python"],
+            "supportedLanguages": ["r"],
             "blockedOnSAW": true
           },
           {
