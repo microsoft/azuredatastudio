@@ -142,7 +142,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			// For DownArrow, UpArrow and Enter - Make sure that the current active element is an ancestor - this is to prevent us from handling events when the focus is
 			// on some other dialog or part of the app.
-			// For Escape - the focused element is the div.notebook-preview or textarea.inputarea of the cell, so we need to make sure that it is a descendant of the current active cel;
+			// For Escape - the focused element is the div.notebook-preview or textarea.inputarea of the cell, so we need to make sure that it is a descendant of the current active cell
 			//  on the current active editor.
 			const activeCellElement = document.querySelector(`.editor-group-container.active .notebook-cell.active`);
 			if ((DOM.isAncestor(this.container.nativeElement, document.activeElement) || activeCellElement?.contains(document.activeElement)) && this.isActive() && this.model.activeCell) {
