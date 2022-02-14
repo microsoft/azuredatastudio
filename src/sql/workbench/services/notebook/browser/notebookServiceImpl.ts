@@ -295,6 +295,10 @@ export class NotebookService extends Disposable implements INotebookService {
 			}
 		}
 
+		if (!fileInput) {
+			throw new Error(localize('failedToCreateNotebookInput', "Failed to create notebook input for provider '{0}'", options.providerId));
+		}
+
 		return fileInput;
 	}
 
