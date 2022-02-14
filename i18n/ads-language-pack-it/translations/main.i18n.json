@@ -9992,6 +9992,7 @@
 			"miinstallVsix": "Installare l'estensione dal pacchetto VSIX",
 			"newQuery": "Nuova query",
 			"notebook.cellTitle": "Menu del titolo della cella del notebook",
+			"notebook.cellToolbarLocation.compatibilityDescription": "Indica la posizione in cui deve essere visualizzata la barra degli strumenti della cella o se deve essere nascosta. Nota: questa impostazione è abilitata solo per ragioni di compatibilità delle estensioni e pertanto non produce alcun effetto.",
 			"notebook.title": "Menu del titolo del notebook",
 			"notebook.toolbar": "Menu della barra degli strumenti del notebook",
 			"objectExplorer.context": "Menu di scelta rapida elemento Esplora oggetti",
@@ -10002,8 +10003,11 @@
 			"recommendedExtensions": "Marketplace",
 			"scenarioTypeUndefined": "È necessario specificare il tipo di scenario per le estensioni consigliate.",
 			"showReleaseNotes": "Mostra le note sulla versione dopo un aggiornamento. Le note sulla versione vengono aperte in una nuova finestra del Web browser.",
+			"sql.watcherExclude": "Consente di configurare i criteri GLOB dei percorsi file da escludere dal controllo dei file. I criteri devono corrispondere a percorsi assoluti, ad esempio aggiungere come prefisso `**/` oppure il percorso completo per una corretta corrispondenza e il suffisso `/**` per trovare i file in un percorso (ad esempio `**/build/output/**` o `/Users/name/workspaces/project/build/output/**`). Se si modifica questa impostazione è necessario riavviare il sistema. Quando si nota che Azure Data Studio consuma troppo tempo della CPU all'avvio, è possibile escludere le cartelle di grandi dimensioni per ridurre il carico iniziale.",
 			"uninstallExtensionComplete": "Ricaricare Azure Data Studio per completare la disinstallazione dell’estensione {0}.",
 			"updateLocale": "Cambiare la lingua dell'interfaccia utente di Azure Data Studio in {0} e riavviare?",
+			"vscodeFunctionalityNotSupportedError": "Questa funzionalità VS Code non è supportata in Azure Data Studio.",
+			"vscodeInvalidArgumentsError": "Argomenti non validi",
 			"watermark.newNotebook": "Nuovo notebook",
 			"watermark.newSqlFile": "Nuovo file SQL",
 			"workspace.trust.description": "Controlla se l'attendibilità dell'area di lavoro è abilitata all'interno di Azure Data Studio.",
@@ -10165,15 +10169,18 @@
 			"showConnectDialogOnStartup": "Mostra la finestra di dialogo della connessione all'avvio"
 		},
 		"sql/workbench/browser/designer/designer": {
+			"designer.defaultRemoveRowConfirmationMessage": "Rimuovere la riga?",
 			"designer.generalGroupName": "Generale",
 			"designer.loadingDesigner": "Caricamento della finestra di progettazione in corso",
 			"designer.loadingDesignerCompleted": "La finestra di progettazione è caricata",
 			"designer.newRowText": "Aggiungi nuovo",
+			"designer.processing": "Elaborazione...",
 			"designer.processingChanges": "Elaborazione delle modifiche in corso...",
 			"designer.processingChangesCompleted": "Le modifiche sono state elaborate",
+			"designer.processingCompleted": "Elaborazione completata",
+			"designer.publishChangesCompleted": "Le modifiche sono state pubblicate",
+			"designer.publishingChanges": "Pubblicazione modifiche...",
 			"designer.removeRowText": "Rimuovi",
-			"designer.savingChanges": "Salvataggio modifiche in corso...",
-			"designer.savingChangesCompleted": "Le modifiche sono state salvate.",
 			"tableDesigner.unknownComponentType": "Il tipo di componente: {0} non è supportato"
 		},
 		"sql/workbench/browser/designer/designerPropertiesPane": {
@@ -10198,6 +10205,7 @@
 			"resourceViewerInput.resourceViewer": "Visualizzatore risorse"
 		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
+			"tableDesigner.OperationInProgressWarning": "Impossibile eseguire l'operazione mentre è in corso un'altra operazione.",
 			"tableDesigner.newTable": "Nuova tabella"
 		},
 		"sql/workbench/browser/modal/modal": {
@@ -11176,7 +11184,7 @@
 			"clearResults": "Cancella risultati",
 			"collapseAllCells": "Comprimi celle",
 			"expandAllCells": "Espandi celle",
-			"kernelNotSupported": "Questo notebook non può essere eseguito con parametri perché il kernel non è supportato. Usare i kernel e il formato supportati. [Altre informazioni] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
+			"kernelNotSupported": "This notebook cannot run with parameters as the kernel is not supported. Please use the supported kernels and format. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"loading": "Caricamento dei kernel...",
 			"loadingContexts": "Caricamento dei contesti...",
 			"localhost": "localhost",
@@ -11184,8 +11192,8 @@
 			"newViewLabel": "Crea nuova visualizzazione",
 			"noContextAvailable": "Nessuno",
 			"noKernel": "Nessun kernel",
-			"noParametersCell": "Il notebook non può essere eseguito con parametri finché non viene aggiunta una cella di parametri. [Altre informazioni] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
-			"noParametersInCell": "Il notebook non può essere eseguito con parametri finché non vengono aggiunti parametri alla cella dei parametri. [Altre informazioni] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
+			"noParametersCell": "This notebook cannot run with parameters until a parameter cell is added. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
+			"noParametersInCell": "This notebook cannot run with parameters until there are parameters added to the parameter cell. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"notebook.findNext": "Trova stringa successiva",
 			"notebook.findPrevious": "Trova stringa precedente",
 			"notebookViewLabel": "Editor",
@@ -11581,11 +11589,8 @@
 			"refreshError": "Si è verificato un errore durante l'aggiornamento del nodo '{0}': {1}"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/actions": {
-			"tableDesigner.saveTableChanges": "Salva modifiche"
-		},
-		"sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution": {
-			"tableDesigner.configTitle": "Progettazione tabelle",
-			"tableDesigner.featureEnabledDescription": "Controllare se la funzionalità Progettazione tabelle è abilitata. Il valore predefinito è false."
+			"tableDesigner.generateScript": "Genera script",
+			"tableDesigner.publishTableChanges": "Pubblica modifiche..."
 		},
 		"sql/workbench/contrib/tasks/browser/tasks.contribution": {
 			"inProgressTasksChangesBadge": "{0} attività in corso",
@@ -11647,8 +11652,6 @@
 			"welcomePage.location": "Posizione",
 			"welcomePage.moreRecent": "Mostra di più",
 			"welcomePage.name": "Nome",
-			"welcomePage.preview": "Anteprima",
-			"welcomePage.previewBody": "Questa pagina delle funzionalità è in anteprima. Le funzionalità in anteprima introducono nuove funzionalità che stanno per diventare una parte permanente del prodotto. Sono stabili, ma richiedono ulteriori miglioramenti per l'accessibilità. Apprezziamo il feedback iniziale degli utenti mentre sono in fase di sviluppo.",
 			"welcomePage.resources": "Risorse",
 			"welcomePage.runQuery": "Esegui una query",
 			"welcomePage.runQueryBody": "Interagire con i dati tramite un editor di query.",
@@ -11724,41 +11727,6 @@
 			"welcomePage.sqlServerProfiler": "SQL Server Profiler",
 			"welcomePage.startTour": "Inizia la presentazione",
 			"welcomePage.willReloadAfterInstallingExtensionPack": "La finestra verrà ricaricata dopo l'installazione di supporto aggiuntivo per {0}."
-		},
-		"sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page": {
-			"welcomePage.azdata": "Azure Data Studio",
-			"welcomePage.azdataBlog": "Novità della release più recente",
-			"welcomePage.azdataBlogDescription": "Ogni mese nuovi post di blog che illustrano le nuove funzionalità",
-			"welcomePage.colorTheme": "Tema colori",
-			"welcomePage.colorThemeDescription": "Tutto quel che serve per configurare editor e codice nel modo desiderato",
-			"welcomePage.customize": "Personalizza",
-			"welcomePage.deploy": "Distribuisci",
-			"welcomePage.extensionDescription": "Download delle estensioni necessarie, tra cui il pacchetto di amministrazione di SQL Server",
-			"welcomePage.extensions": "Estensioni",
-			"welcomePage.followTwitter": "Seguici su Twitter",
-			"welcomePage.followTwitterDescription": "È possibile tenersi aggiornati sull'utilizzo di Azure Data Studio nella community e parlare direttamente con i tecnici.",
-			"welcomePage.gettingStarted": "Attività iniziali",
-			"welcomePage.gitHubRepository": "Repository GitHub",
-			"welcomePage.help": "Guida",
-			"welcomePage.keyboardShortcut": "Tasti di scelta rapida",
-			"welcomePage.keyboardShortcutDescription": "Ricerca e personalizzazione dei comandi preferiti",
-			"welcomePage.learn": "Informazioni",
-			"welcomePage.moreRecent": "Altro...",
-			"welcomePage.newConnection": "Nuova connessione",
-			"welcomePage.newDeployment": "Nuova distribuzione…",
-			"welcomePage.newNotebook": "Nuovo notebook",
-			"welcomePage.newQuery": "Nuova query",
-			"welcomePage.noRecentFolders": "Non ci sono cartelle recenti",
-			"welcomePage.openFileLinuxPC": "Apri file",
-			"welcomePage.openFileMac": "Apri file",
-			"welcomePage.productDocumentation": "Documentazione",
-			"welcomePage.recent": "Recenti",
-			"welcomePage.releaseNotes": "Note sulla versione",
-			"welcomePage.reportIssue": "Segnala problema o invia richiesta di funzionalità",
-			"welcomePage.showCommands": "Trova ed esegui tutti i comandi",
-			"welcomePage.showCommandsDescription": "Accesso e ricerca rapida di comandi dal riquadro comandi ({0})",
-			"welcomePage.showOnStartup": "Mostra la pagina iniziale all'avvio",
-			"welcomePage.start": "Avvia"
 		},
 		"sql/workbench/services/accountManagement/browser/accountDialog": {
 			"accountDialog.addConnection": "Aggiungi un account",
@@ -11995,6 +11963,7 @@
 			"splitCellEdit": "Dividi cella"
 		},
 		"sql/workbench/services/notebook/browser/models/clientSession": {
+			"NoExecuteManager": "Impossibile avviare il server. Provider non definito per questo tipo di file notebook.",
 			"ServerNotStarted": "Il server non è stato avviato per motivi sconosciuti",
 			"clientSession.unknownError": "Si è verificato un errore durante l'avvio della sessione del notebook",
 			"kernelRequiresConnection": "Il kernel {0} non è stato trovato. Verrà usato il kernel predefinito."
@@ -12015,8 +11984,11 @@
 			"startSessionFailed": "Non è stato possibile avviare la sessione: {0}"
 		},
 		"sql/workbench/services/notebook/browser/notebookServiceImpl": {
+			"executeProviderTimeout": "L'attesa per la disponibilità del provider di esecuzione è scaduta per il provider di notebook '{0}'",
 			"notebookServiceNoProvider": "Il provider di notebook non esiste",
-			"notebookUriNotDefined": "Non è stato passato alcun URI durante la creazione di un gestore di notebook"
+			"notebookUriNotDefined": "Non è stato passato alcun URI durante la creazione di un gestore di notebook",
+			"serializationProviderTimeout": "L'attesa per la disponibilità del provider di serializzazione è scaduta per il provider di notebook '{0}'",
+			"standardKernelsTimeout": "L'attesa per la disponibilità dei kernel standard è scaduta per il provider di notebook '{0}'"
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewModel": {
 			"notebookView.nameTaken": "Una vista con il nome {0} esiste già in questo notebook."
@@ -12050,6 +12022,7 @@
 			"carbon.extension.contributes.notebook.magic": "Nome del comando magic per la cella, ad esempio '%%sql'.",
 			"carbon.extension.contributes.notebook.provider": "Identificatore del provider di notebook.",
 			"carbon.extension.contributes.notebook.standardKernels": "Indica i kernel che devono essere standard con questo provider di notebook",
+			"providerNotInRegistryError": "Il provider specificato '{0}' non è presente nel registro di sistema del notebook.",
 			"vscode.extension.contributes.notebook.languagemagics": "Aggiunge come contributo la lingua del notebook.",
 			"vscode.extension.contributes.notebook.providersDescriptions": "Aggiunge come contributo le descrizioni del provider di notebook."
 		},
@@ -12119,7 +12092,6 @@
 		"sql/workbench/services/query/common/queryModelService": {
 			"commitEditFailed": "Commit della riga non riuscito: ",
 			"msgCancelQueryFailed": "Annullamento della query non riuscito: {0}",
-			"queryModelService.noQueryFoundForUri": "Non sono state trovate query per {0}",
 			"queryModelService.uriAlreadyHasQuery": "{0} esiste già una query esistente",
 			"runQueryBatchStartLine": "Riga {0}",
 			"runQueryBatchStartMessage": "Esecuzione della query iniziata a ",
@@ -12227,11 +12199,16 @@
 			"designer.foreignkey.description.onDeleteAction": "Comportamento applicato quando un utente tenta di eliminare una riga contenente dati che interessano una relazione di chiave esterna.",
 			"designer.foreignkey.description.onUpdateAction": "Comportamento applicato quando un utente tenta di aggiornare una riga contenente dati che interessano una relazione di chiave esterna.",
 			"designer.foreignkey.description.primaryKeyTable": "Tabella contenente la colonna chiave univoca o primaria.",
+			"designer.index.column.description.name": "Il nome della colonna.",
+			"designer.index.description.columns": "Colonne dell'indice.",
+			"designer.index.description.name": "Nome dell'indice.",
 			"designer.table.description.description": "Descrizione della tabella.",
 			"designer.table.description.name": "Il nome dell’oggetto tabella.",
 			"designer.table.description.schema": "Schema che contiene la tabella.",
+			"tableDesigner.ErrorDialogTitle": "Table Designer Error",
 			"tableDesigner.ForeignKeyTypeName": "Chiave esterna",
-			"tableDesigner.PrimaryKeyTableName": "Tabella chiave primaria",
+			"tableDesigner.ForeignTableName": "Tabella della chiave esterna*",
+			"tableDesigner.IndexTypeName": "Indice",
 			"tableDesigner.checkConstraintExpressionTitle": "Espressione",
 			"tableDesigner.checkConstraintNameTitle": "Nome",
 			"tableDesigner.checkConstraintTypeName": "Vincolo CHECK",
@@ -12249,18 +12226,27 @@
 			"tableDesigner.descriptionTitle": "Descrizione",
 			"tableDesigner.errorInitializingTableDesigner": "Errore durante l'inizializzazione della progettazione tabelle: {0}",
 			"tableDesigner.errorProcessingEdit": "Errore durante l'elaborazione della modifica: {0}",
-			"tableDesigner.foreignKeyColumn": "Colonna chiave esterna",
-			"tableDesigner.foreignKeyColumns": "Mapping colonne",
+			"tableDesigner.foreignKey.column": "Colonna",
+			"tableDesigner.foreignKey.foreignColumn": "Colonna esterna",
+			"tableDesigner.foreignKeyColumns": "Colonne",
 			"tableDesigner.foreignKeyNameTitle": "Nome",
 			"tableDesigner.foreignKeyOnDeleteAction": "Azione di eliminazione",
 			"tableDesigner.foreignKeyOnUpdateAction": "Azione di aggiornamento",
 			"tableDesigner.foreignKeysTabTitle": "Chiavi esterne",
 			"tableDesigner.generalTab": "Generale",
+			"tableDesigner.generatePreviewReportError": "Si è verificato un errore durante la generazione del report di anteprima: {0}",
+			"tableDesigner.generateScriptError": "Si è verificato un errore durante la generazione dello script: {0}",
+			"tableDesigner.generatingPreviewReport": "Generazione del report di anteprima...",
+			"tableDesigner.generatingScript": "Generazione script...",
+			"tableDesigner.generatingScriptCompleted": "Script generato.",
+			"tableDesigner.index.column.name": "Colonna",
+			"tableDesigner.indexColumns": "Colonne",
+			"tableDesigner.indexName": "Nome",
+			"tableDesigner.indexesTabTitle": "Indici",
 			"tableDesigner.nameTitle": "Nome della tabella",
-			"tableDesigner.primaryKeyColumn": "Colonna chiave primaria",
-			"tableDesigner.saveChangeError": "Si è verificato un errore durante il salvataggio delle modifiche: {0}",
-			"tableDesigner.savedChangeSuccess": "Le modifiche sono state salvate.",
-			"tableDesigner.savingChanges": "Salvataggio delle modifiche di Progettazione tabelle in corso...",
+			"tableDesigner.publishChangeError": "Si è verificato un errore durante la pubblicazione delle modifiche: {0}",
+			"tableDesigner.publishChangeSuccess": "Le modifiche sono state pubblicate.",
+			"tableDesigner.savingChanges": "Pubblicazione delle modifiche di Progettazione tabelle in corso...",
 			"tableDesigner.schemaTitle": "Schema",
 			"tableDesigner.tableObjectType": "Tabella"
 		},
@@ -12272,6 +12258,60 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "&&Introduzione",
 			"showReleaseNotes": "Mostra introduzione"
+		},
+		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
+			"errorStartBeforeReady": "Non è possibile avviare una sessione. Il gestore non è ancora inizializzato"
+		},
+		"sql/workbench/contrib/queryplan2/browser/planHeader": {
+			"planHeaderIndexAndCost": "Query {0}: costo della query (relativo allo script): % {1}"
+		},
+		"sql/workbench/contrib/queryplan2/browser/queryPlan": {
+			"openQueryAction": "Apri query",
+			"queryPlanCustomZoom": "Personalizza zoom",
+			"queryPlanFitGraphLabel": "Adatta alla finestra",
+			"queryPlanOpenGraphFile": "Open Plan File",
+			"queryPlanPropertiesActionLabel": "Proprietà",
+			"queryPlanSavePlanXML": "Save Plan File",
+			"queryPlanSearchNodeAction": "SearchNode",
+			"queryPlanTitle": "Query Plan (Preview)",
+			"queryPlanZoomInActionLabel": "Zoom avanti",
+			"queryPlanZoomOutActionLabel": "Zoom indietro"
+		},
+		"sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView": {
+			"nodePropertyViewNameNameColumnHeader": "Name",
+			"nodePropertyViewNameValueColumnHeader": "Value",
+			"nodePropertyViewTitle": "Properties",
+			"queryPlanPropertiesEdgeOperationName": "Edge",
+			"queryPlanPropertyViewClose": "Close",
+			"queryPlanPropertyViewSortAlphabetically": "Alphabetical",
+			"queryPlanPropertyViewSortByDisplayOrde": "Categorized"
+		},
+		"sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget": {
+			"cancelCustomZoomAction": "Close (Escape)",
+			"invalidCustomZoomError": "Select a zoom value between 1 to 200",
+			"qpZoomValueLabel": "Zoom (percent)",
+			"zoomAction": "Zoom (Enter)"
+		},
+		"sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget": {
+			"cancelSearchAction": "Close (Escape)",
+			"nextSearchItemAction": "Next Match (Enter)",
+			"previousSearchItemAction": "Previous Match (Shift+Enter)",
+			"queryPlanSearchTypeContains": "Contains",
+			"queryPlanSearchTypeEquals": "Equals"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
+			"tableDesigner.PreviewFeature": "Funzionalità in anteprima"
+		},
+		"sql/workbench/contrib/tsgops/browser/tsgopsActions": {
+			"hideActivityBarViewContainers": "Nascondi il viewlet dell'estensione",
+			"hidePanel": "Nascondi il pannello",
+			"hideSettings": "Nascondi l'icona delle impostazioni"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerPublishDialog": {
+			"tableDesigner.UpdateDatabase": "Aggiorna database",
+			"tableDesigner.cancel": "Annulla",
+			"tableDesigner.generateScript": "Genera script",
+			"tableDesigner.previewDatabaseUpdates": "Anteprima aggiornamenti database"
 		}
 	}
 }
