@@ -414,8 +414,10 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public setOverrideLanguage(newLanguage: string) {
-		this._language = newLanguage;
-		this._onLanguageChanged.fire(newLanguage);
+		if (newLanguage !== this._language) {
+			this._language = newLanguage;
+			this._onLanguageChanged.fire(newLanguage);
+		}
 	}
 
 	public get onExecutionStateChange(): Event<CellExecutionState> {
