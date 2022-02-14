@@ -37,7 +37,7 @@ export class CustomZoomWidget extends QueryPlanWidgetBase {
 		});
 		attachInputBoxStyler(this.customZoomInputBox, this.themeService);
 
-		const currentZoom = queryPlanView.azdataGraphDiagram.graph.view.getScale();
+		const currentZoom = queryPlanView.azdataGraphDiagram.graph.view.getScale() * 100;
 
 		// Setting initial value to graph's current zoom
 		this.customZoomInputBox.value = Math.round(currentZoom).toString();
