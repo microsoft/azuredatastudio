@@ -141,8 +141,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		// events we care about are fired when the document focus is on something else - typically the root window.
 		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			// Make sure that the current active element is an ancestor - this is to prevent us from handling events when the focus is
-			// on some other dialog or part of the app. 
-			if (DOM.isAncestor(this.container.nativeElement, document.activeElement) && this.isActive() && this.model.activeCell) {
+			// on some other dialog or part of the app.
+			const activeCellElement = document.querySelector(`.editor-group-container.active .notebook-cell.active`);
+			if ((DOM.isAncestor(this.container.nativeElement, document.activeElement) || activeCellElement?.contains(document.activeElement)) && this.isActive() && this.model.activeCell) {
 				const event = new StandardKeyboardEvent(e);
 				if (!this.model.activeCell?.isEditMode) {
 					if (event.keyCode === KeyCode.DownArrow) {
@@ -162,8 +163,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 						(document.activeElement as HTMLElement).blur();
 					}
 					else if (event.keyCode === KeyCode.Enter) {
-						// prevents adding a newline to the cell source
 						e.preventDefault();
+						// prevents adding a newline to the cell source
 						this.toggleEditMode();
 					}
 				} else if (event.keyCode === KeyCode.Escape) {
@@ -307,13 +308,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.model.onScroll.fire();
 	}
 
-	public clickOffCell(e: MouseEvent) {
-		if (this.model.activeCell?.isEditMode) {
-			// when clicking outside of cells toggle edit mode to false
-			this.toggleEditMode();
-		} else {
-			this.unselectActiveCell();
+	public clickOffCell(event: MouseEvent) {
+		if (event) {
+			event.stopPropagation();
 		}
+		this.unselectActiveCell();
 	}
 
 	public clickOnCell(cell: ICellModel, event?: MouseEvent) {
@@ -323,12 +322,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
 			if (this.model.activeCell?.isEditMode) {
 				// before activating the new cell, change the edit mode of the current active cell
-				this.toggleEditMode();
+				this.model.activeCell.isEditMode = false;
 			}
 			this.selectCell(cell);
 			if (cell.cellType === CellTypes.Code) {
 				// toggleEditMode on single click for code cells
-				this.toggleEditMode();
+				cell.isEditMode = true;
 			}
 		}
 	}
