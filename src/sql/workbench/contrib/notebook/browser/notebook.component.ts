@@ -144,8 +144,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			// on some other dialog or part of the app.
 			// For Escape - the focused element is the div.notebook-preview or textarea.inputarea of the cell, so we need to make sure that it is a descendant of the current active cell
 			//  on the current active editor.
-			const activeCellElement = document.querySelector(`.editor-group-container.active .notebook-cell.active`);
-			if ((DOM.isAncestor(this.container.nativeElement, document.activeElement) || activeCellElement?.contains(document.activeElement)) && this.isActive() && this.model.activeCell) {
+			const activeCellElement = this.container.nativeElement.querySelector(`.editor-group-container.active .notebook-cell.active`);
+			if (DOM.isAncestor(this.container.nativeElement, document.activeElement) && this.isActive() && this.model.activeCell) {
 				const event = new StandardKeyboardEvent(e);
 				if (!this.model.activeCell?.isEditMode) {
 					if (event.keyCode === KeyCode.DownArrow) {
@@ -159,15 +159,20 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 						}
 						this.selectCell(this.cells[--index]);
 						this.scrollToActiveCell();
-					} else if (event.keyCode === KeyCode.Escape) {
-						// unselects active cell and removes the focus from code cells
-						this.unselectActiveCell();
-						(document.activeElement as HTMLElement).blur();
 					}
 					else if (event.keyCode === KeyCode.Enter) {
 						// prevents adding a newline to the cell source
 						e.preventDefault();
 						this.toggleEditMode();
+					}
+				}
+			} else if (DOM.isAncestor(document.activeElement, activeCellElement) && this.isActive() && this.model.activeCell) {
+				const event = new StandardKeyboardEvent(e);
+				if (!this.model.activeCell?.isEditMode) {
+					if (event.keyCode === KeyCode.Escape) {
+						// unselects active cell and removes the focus from code cells
+						this.unselectActiveCell();
+						(document.activeElement as HTMLElement).blur();
 					}
 				} else if (event.keyCode === KeyCode.Escape) {
 					// first time hitting escape removes the cursor from code cell and changes toolbar in text cells and changes edit mode to false
@@ -311,9 +316,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public clickOffCell(event: MouseEvent) {
-		if (event) {
-			event.stopPropagation();
-		}
+		event?.stopPropagation();
+		this.model.activeCell.isEditMode = false;
 		this.unselectActiveCell();
 	}
 

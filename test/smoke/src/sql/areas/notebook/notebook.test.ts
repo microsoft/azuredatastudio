@@ -40,7 +40,6 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.waitForPlaceholderGone();
 
 			const text1: string = 'SEL';
-			await app.workbench.sqlNotebook.clickOnCodeCell();
 			await app.workbench.sqlNotebook.waitForTypeInEditor(text1);
 			await app.code.dispatchKeybinding('ctrl+space bar');
 
