@@ -165,16 +165,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 						e.preventDefault();
 						this.toggleEditMode();
 					}
-				}
-			} else if (DOM.isAncestor(document.activeElement, activeCellElement) && this.isActive() && this.model.activeCell) {
-				const event = new StandardKeyboardEvent(e);
-				if (!this.model.activeCell?.isEditMode) {
-					if (event.keyCode === KeyCode.Escape) {
+					else if (event.keyCode === KeyCode.Escape) {
 						// unselects active cell and removes the focus from code cells
 						this.unselectActiveCell();
 						(document.activeElement as HTMLElement).blur();
 					}
-				} else if (event.keyCode === KeyCode.Escape) {
+				}
+			} else if (DOM.isAncestor(document.activeElement, activeCellElement) && this.isActive() && this.model.activeCell) {
+				const event = new StandardKeyboardEvent(e);
+				if (event.keyCode === KeyCode.Escape) {
 					// first time hitting escape removes the cursor from code cell and changes toolbar in text cells and changes edit mode to false
 					this.toggleEditMode();
 				}
@@ -317,7 +316,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	public clickOffCell(event: MouseEvent) {
 		event?.stopPropagation();
-		this.model.activeCell.isEditMode = false;
 		this.unselectActiveCell();
 	}
 
@@ -326,10 +324,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			event.stopPropagation();
 		}
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
-			if (this.model.activeCell?.isEditMode) {
-				// before activating the new cell, change the edit mode of the current active cell
-				this.model.activeCell.isEditMode = false;
-			}
 			this.selectCell(cell);
 			if (cell.cellType === CellTypes.Code) {
 				// toggleEditMode on single click for code cells

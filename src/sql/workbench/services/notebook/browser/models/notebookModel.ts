@@ -662,9 +662,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					this.undoService.pushElement(new SplitCellEdit(this, splitCells));
 				}
 				//make new cell Active
-				this.updateActiveCell(activeCell);
-				activeCell.isEditMode = true;
-
+				this.updateActiveCell(activeCell, true);
 				this._contentChangedEmitter.fire({
 					changeType: NotebookChangeType.CellsModified,
 					cells: [activeCell],
@@ -686,9 +684,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		for (let i = 1; i < cells.length; i++) {
 			firstCell.source = cells[i].prefix ? [...firstCell.source, ...cells[i].prefix, ...cells[i].cell.source] : [...firstCell.source, ...cells[i].cell.source];
 		}
-		firstCell.isEditMode = true;
 		// Set newly created cell as active cell
-		this.updateActiveCell(firstCell);
+		this.updateActiveCell(firstCell, true);
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsModified,
 			cells: [firstCell],
@@ -701,8 +698,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public splitCells(cells: SplitCell[], firstCellOriginalSource: string | string[]): void {
 		cells[0].cell.source = firstCellOriginalSource;
-		cells[0].cell.isEditMode = true;
-		this.updateActiveCell(cells[0].cell);
+		this.updateActiveCell(cells[0].cell, true);
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsModified,
 			cells: [cells[0].cell],
@@ -724,11 +720,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._cells.push(cell);
 			index = undefined;
 		}
-		cell.isEditMode = true;
 		if (addToUndoStack) {
 			// Only make cell active when inserting the cell. If we update the active cell when undoing/redoing, the user would have to deselect the cell first
 			// and to undo multiple times.
-			this.updateActiveCell(cell);
+			this.updateActiveCell(cell, true);
 			this.undoService.pushElement(new AddCellEdit(this, cell, index));
 		}
 
