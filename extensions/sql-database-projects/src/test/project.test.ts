@@ -1477,11 +1477,12 @@ describe('Project: sdk style project content operations', function (): void {
 
 		// Test with a sql file that's outside project root
 		const externalSqlFile = path.join(os.tmpdir(), `Test_${new Date().getTime()}.sql`);
+		const externalFileRelativePath = path.relative(projectFolder, externalSqlFile);
 		await fs.writeFile(externalSqlFile, '');
 		await project.addExistingItem(externalSqlFile);
-		should(project.files.find(f => f.type === EntryType.File && f.relativePath === externalSqlFile)).not.equal(undefined);
+		should(project.files.find(f => f.type === EntryType.File && f.relativePath === externalFileRelativePath)).not.equal(undefined);
 		projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText.includes(`<Build Include="${externalSqlFile}" />`)).equal(true, projFileText);
+		should(projFileText.includes(`<Build Include="${externalFileRelativePath}" />`)).equal(true, projFileText);
 	});
 });
 

@@ -1083,7 +1083,7 @@ export class Project implements ISqlProject {
 	 */
 	private removeNode(includeString: string, nodes: HTMLCollectionOf<Element>, undoRemove: boolean = false): boolean {
 		// Default function behavior removes nodes like <Compile Include="..." />
-		// However when undoRemove is true, this function removes <Compile Remov="..." />
+		// However when undoRemove is true, this function removes <Compile Remove="..." />
 		const xmlAttribute = undoRemove ? constants.Remove : constants.Include;
 		for (let i = 0; i < nodes.length; i++) {
 			const parent = nodes[i].parentNode;
@@ -1094,7 +1094,7 @@ export class Project implements ISqlProject {
 
 					// delete ItemGroup if this was the only entry
 					// only want element nodes, not text nodes
-					const otherChildren = Array.from(parent.childNodes).filter(c => c.childNodes);
+					const otherChildren = Array.from(parent.childNodes).filter((c: ChildNode) => c.childNodes);
 
 					if (otherChildren.length === 0) {
 						parent.parentNode?.removeChild(parent);
