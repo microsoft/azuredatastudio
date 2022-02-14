@@ -33,7 +33,6 @@ However we always want it to be the width of the container it is resizing.
 	display: flex;
 	flex-direction: column;
 	position: relative;
-	border: 1px solid;
 }
 
 /* Container that contains views made by the action-bar actions */
@@ -81,8 +80,6 @@ However we always want it to be the width of the container it is resizing.
 /* query plan header that contains the relative query cost, query statement and recommendations */
 .qps-container .query-plan .plan .header {
 	padding: 5px;
-	border-top: 1px solid;
-	border-bottom: 1px solid;
 	font-weight: bolder;
 }
 
@@ -106,15 +103,14 @@ However we always want it to be the width of the container it is resizing.
 	overflow: hidden;
 	width: 500px;
 	height: calc( 100% - 2px );
-	border: 1px solid;
 	display: flex;
 	flex-direction: column;
-	border: 1px solid;
+	border-left: 1px solid;
 }
 
 /* Title container of the properties view */
 .qps-container .query-plan .properties .title {
-	line-height: 22px;
+	line-height: 30px;
 	height: 22px;
 	font-size: 11px;
 	font-weight: bold;
@@ -123,11 +119,9 @@ However we always want it to be the width of the container it is resizing.
 	display: flex;
 	align-items: center;
 	box-sizing: border-box;
-	margin-top: 3px;
 	margin-bottom: 5px;
 	padding-left: 5px;
-	border-bottom: solid 1px;
-	flex: 0 0 25px;
+	flex: 0 0 30px;
 }
 
 /* text in title container of properties view */
@@ -150,6 +144,7 @@ However we always want it to be the width of the container it is resizing.
 	-webkit-margin-before: 0;
 	-webkit-margin-after: 0;
 	flex: 0 0 30px;
+	margin-top: 5px;
 }
 
 /* Operation name styling in the properties view. */
@@ -171,7 +166,6 @@ However we always want it to be the width of the container it is resizing.
 	overflow-y: scroll;
 	flex: 1;
 	flex-grow: 1;
-	border-top: 1px solid;
 }
 
 /* Action bar for the query plan */
@@ -220,3 +214,82 @@ However we always want it to be the width of the container it is resizing.
 	padding: 4px;
 	z-index: 3;
 }
+
+.qps-container .save-plan-icon {
+	background-image: url(../images/actionIcons/save.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.qps-container .open-properties-icon {
+	background-image: url(../images/actionIcons/openProperties.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.qps-container .open-query-icon {
+	background-image: url(../images/actionIcons/openQuery.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.qps-container .open-plan-file-icon {
+	background-image: url(../images/actionIcons/openPlanFile.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.qps-container .search-icon {
+	background-image: url(../images/actionIcons/search.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.qps-container .sort-alphabetically-icon {
+	background-image: url(../images/actionIcons/sortAlphabetically.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.qps-container .sort-display-order-icon {
+	background-image: url(../images/actionIcons/sortByDisplayOrder.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.qps-container .zoom-in-icon {
+	background-image: url(../images/actionIcons/zoomIn.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.qps-container .zoom-out-icon {
+	background-image: url(../images/actionIcons/zoomOut.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.qps-container .custom-zoom-icon {
+	background-image: url(../images/actionIcons/customZoom.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.qps-container .zoom-to-fit-icon {
+	background-image: url(../images/actionIcons/zoomToFit.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+

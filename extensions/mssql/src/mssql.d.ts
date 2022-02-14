@@ -885,6 +885,7 @@ export interface StopPerfDataCollectionResult {
 }
 
 export interface RefreshPerfDataCollectionResult {
+	isCollecting: boolean;
 	messages: string[];
 	errors: string[];
 	refreshTime: Date;
