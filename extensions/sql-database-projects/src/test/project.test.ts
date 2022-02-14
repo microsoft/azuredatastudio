@@ -1477,7 +1477,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		// Test with a sql file that's outside project root
 		const externalSqlFile = path.join(os.tmpdir(), `Test_${new Date().getTime()}.sql`);
-		const externalFileRelativePath = path.relative(projectFolder, externalSqlFile);
+		const externalFileRelativePath = convertSlashesForSqlProj(path.relative(projectFolder, externalSqlFile));
 		await fs.writeFile(externalSqlFile, '');
 		await project.addExistingItem(externalSqlFile);
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === externalFileRelativePath)).not.equal(undefined);
