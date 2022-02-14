@@ -544,7 +544,7 @@ export class NotebookEditorContentLoader implements IContentLoader {
 		let notebookEditorModel = await this.notebookInput.resolve();
 		let notebookContents = await this.contentManager.deserializeNotebook(notebookEditorModel.contentString);
 
-		// Special case .NET Interactive kernel spec
+		// Special case .NET Interactive kernel spec to handle inconsistencies between notebook providers and jupyter kernel specs
 		if (notebookContents.metadata?.kernelspec?.display_name?.startsWith(DotnetInteractiveLabelPrefix)) {
 			notebookContents.metadata.kernelspec.oldDisplayName = notebookContents.metadata.kernelspec.display_name;
 			notebookContents.metadata.kernelspec.display_name = DotnetInteractiveLabel;

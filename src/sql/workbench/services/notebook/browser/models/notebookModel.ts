@@ -1351,7 +1351,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName || displayName.startsWith(kernel.displayName));
 			if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
-				// Special case .NET Interactive kernel name
+				// Special case .NET Interactive kernel name to handle inconsistencies between notebook providers and jupyter kernel specs
 				if (this._savedKernelInfo.display_name === DotnetInteractiveLabel) {
 					this._savedKernelInfo.oldName = this._savedKernelInfo.name;
 				}
