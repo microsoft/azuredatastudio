@@ -394,7 +394,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 
 		} catch (error) {
-			console.log(error);
+			logError(TelemetryViews.SkuRecommendationWizard, 'GetSkuRecommendationFailed', error);
 
 			this._skuRecommendationResults = {
 				recommendations: {
