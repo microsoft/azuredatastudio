@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as mssql from '../../../../mssql';
 import { azureResource } from 'azureResource';
 import { getLocations, getResourceGroupFromId, getBlobContainerId, getFullResourceGroupFromId, getResourceName } from '../../api/azure';
-import { MigrationMode, MigrationStateModel, NetworkContainerType, SavedInfo, Page } from '../../models/stateMachine';
+import { MigrationMode, MigrationStateModel, NetworkContainerType, SavedInfo } from '../../models/stateMachine';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { WizardController } from '../../wizard/wizardController';
 import { getMigrationModeEnum, getMigrationTargetTypeEnum } from '../../constants/helper';
@@ -28,7 +28,7 @@ export class RetryMigrationDialog {
 		const sourceDatabaseName = migration.migrationContext.properties.sourceDatabaseName;
 		let savedInfo: SavedInfo;
 		savedInfo = {
-			closedPage: Page.AzureAccount,
+			closedPage: 0,
 
 			// AzureAccount
 			azureAccount: migration.azureAccount,
@@ -42,6 +42,7 @@ export class RetryMigrationDialog {
 			databaseList: [sourceDatabaseName],
 			migrationDatabases: [],
 			serverAssessment: null,
+			skuRecommendation: null,
 
 			migrationTargetType: getMigrationTargetTypeEnum(migration)!,
 			subscription: migration.subscription,

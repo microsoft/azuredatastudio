@@ -40,4 +40,90 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 
 		return undefined;
 	}
+
+	async getSkuRecommendations(
+		dataFolder: string,
+		perfQueryIntervalInSec: number,
+		targetPlatforms: string[],
+		targetSqlInstance: string,
+		targetPercentile: number,
+		scalingFactor: number,
+		startTime: string,
+		endTime: string,
+		includePreviewSkus: boolean,
+		databaseAllowList: string[]): Promise<mssql.SkuRecommendationResult | undefined> {
+		let params: contracts.SqlMigrationSkuRecommendationsParams = {
+			dataFolder,
+			perfQueryIntervalInSec,
+			targetPlatforms,
+			targetSqlInstance,
+			targetPercentile,
+			scalingFactor,
+			startTime,
+			endTime,
+			includePreviewSkus,
+			databaseAllowList
+		};
+
+		try {
+			return this.client.sendRequest(contracts.GetSqlMigrationSkuRecommendationsRequest.type, params);
+		}
+		catch (e) {
+			this.client.logFailedRequest(contracts.GetSqlMigrationSkuRecommendationsRequest.type, e);
+		}
+
+		return undefined;
+	}
+
+	async startPerfDataCollection(
+		ownerUri: string,
+		dataFolder: string,
+		perfQueryIntervalInSec: number,
+		staticQueryIntervalInSec: number,
+		numberOfIterations: number): Promise<mssql.StartPerfDataCollectionResult | undefined> {
+		let params: contracts.SqlMigrationStartPerfDataCollectionParams = {
+			ownerUri,
+			dataFolder,
+			perfQueryIntervalInSec,
+			staticQueryIntervalInSec,
+			numberOfIterations
+		};
+
+		try {
+			return this.client.sendRequest(contracts.SqlMigrationStartPerfDataCollectionRequest.type, params);
+		}
+		catch (e) {
+			this.client.logFailedRequest(contracts.SqlMigrationStartPerfDataCollectionRequest.type, e);
+		}
+
+		return undefined;
+	}
+
+	async stopPerfDataCollection(): Promise<mssql.StopPerfDataCollectionResult | undefined> {
+		let params: contracts.SqlMigrationStopPerfDataCollectionParams = {};
+
+		try {
+			return this.client.sendRequest(contracts.SqlMigrationStopPerfDataCollectionRequest.type, params);
+		}
+		catch (e) {
+			this.client.logFailedRequest(contracts.SqlMigrationStopPerfDataCollectionRequest.type, e);
+		}
+
+		return undefined;
+	}
+
+	async refreshPerfDataCollection(lastRefreshedTime: Date): Promise<mssql.RefreshPerfDataCollectionResult | undefined> {
+		let params: contracts.SqlMigrationStopPerfDataCollectionParams = {
+			lastRefreshedTime
+		};
+
+		try {
+			return this.client.sendRequest(contracts.SqlMigrationRefreshPerfDataCollectionRequest.type, params);
+		}
+		catch (e) {
+			this.client.logFailedRequest(contracts.SqlMigrationRefreshPerfDataCollectionRequest.type, e);
+		}
+
+		return undefined;
+	}
 }
