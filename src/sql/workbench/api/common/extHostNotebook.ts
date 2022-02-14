@@ -285,13 +285,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	private findExecuteManagersForUri(uriString: string): ExecuteManagerAdapter[] {
-		let managers = [];
-		for (let manager of this.getAdapters(ExecuteManagerAdapter)) {
-			if (manager.uriString === uriString) {
-				managers.push(manager);
-			}
-		}
-		return managers;
+		return this.getAdapters(ExecuteManagerAdapter).filter(adapter => adapter.uriString === uriString);
 	}
 
 	private async getOrCreateSerializationManager(provider: azdata.nb.NotebookSerializationProvider, notebookUri: URI): Promise<SerializationManagerAdapter> {
