@@ -49,7 +49,7 @@
 						"path": "./translations/extensions/git-ui.i18n.json"
 					},
 					{
-						"id": "vscode.git",
+						"id": "Microsoft.git",
 						"path": "./translations/extensions/git.i18n.json"
 					},
 					{
@@ -263,6 +263,10 @@
 					{
 						"id": "Microsoft.xml-language-features",
 						"path": "./translations/extensions/xml-language-features.i18n.json"
+					},
+					{
+						"id": "Microsoft.azcli",
+						"path": "./translations/extensions/azcli.i18n.json"
 					}
 				]
 			}
