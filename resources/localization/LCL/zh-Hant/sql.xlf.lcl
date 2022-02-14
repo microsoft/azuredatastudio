@@ -11679,69 +11679,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/graphElementPropertiesView.nodePropertyViewNameNameColumnHeader" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Name]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[名稱]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/graphElementPropertiesView.nodePropertyViewNameValueColumnHeader" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Value]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[值]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/graphElementPropertiesView.nodePropertyViewTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Properties]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[屬性]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/graphElementPropertiesView.queryPlanPropertiesEdgeOperationName" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Edge]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[邊緣]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/graphElementPropertiesView.queryPlanPropertyViewClose" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Close]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[關閉]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/graphElementPropertiesView.queryPlanPropertyViewSortAlphabetically" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Alphabetical]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[字母順序]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/graphElementPropertiesView.queryPlanPropertyViewSortByDisplayOrde" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Categorized]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[已分類]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/planHeader.planHeaderIndexAndCost" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Query {0}: Query cost (relative to the script): {1}%]]></Val>
@@ -11756,24 +11693,6 @@
           <Val><![CDATA[Open Query]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[開啟查詢]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlan.queryPlan2.configTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Query Plan]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[查詢計劃]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlan.queryPlan2.featureEnabledDescription" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Controls whether the new query plan feature is enabled. Default value is false.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[控制是否啟用新的查詢計劃功能。預設值為 False。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -11798,10 +11717,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlan.queryPlanOpenGraphFile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Open Graph File]]></Val>
+          <Val><![CDATA[Open Plan File]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Open Graph 檔案]]></Val>
+            <Val><![CDATA[開啟計畫檔案]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Open Graph File]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -11816,10 +11738,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlan.queryPlanSavePlanXML" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Save XML]]></Val>
+          <Val><![CDATA[Save Plan File]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[儲存 XML]]></Val>
+            <Val><![CDATA[儲存計畫檔案]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Save XML]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -11834,10 +11759,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlan.queryPlanTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Query Plan]]></Val>
+          <Val><![CDATA[Query Plan (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[查詢計劃]]></Val>
+            <Val><![CDATA[查詢計劃 (預覽)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Query Plan]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -11855,6 +11783,150 @@
           <Val><![CDATA[Zoom Out]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[縮小]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView.nodePropertyViewNameNameColumnHeader" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[名稱]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView.nodePropertyViewNameValueColumnHeader" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Value]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[值]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView.nodePropertyViewTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Properties]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[屬性]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView.queryPlanPropertiesEdgeOperationName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Edge]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[邊緣]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView.queryPlanPropertyViewClose" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Close]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[關閉]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView.queryPlanPropertyViewSortAlphabetically" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Alphabetical]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[字母順序]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView.queryPlanPropertyViewSortByDisplayOrde" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Categorized]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已分類]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget.cancelCustomZoomAction" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Close (Escape)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[關閉 (逸出)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget.invalidCustomZoomError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select a zoom value between 1 to 200]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[選取介於 1 到 200 之間的縮放值]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget.qpZoomValueLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Zoom (percent)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[顯示比例 (百分比)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget.zoomAction" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Zoom (Enter)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[縮放 (輸入)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget.cancelSearchAction" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Close (Escape)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[關閉 (逸出)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget.nextSearchItemAction" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Next Match (Enter)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[下一個相符項目 (Enter)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget.previousSearchItemAction" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Previous Match (Shift+Enter)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[上一個相符項目 (Shift+Enter)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget.queryPlanSearchTypeContains" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Contains]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[包含]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget.queryPlanSearchTypeEquals" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Equals]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[等於]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -12552,24 +12624,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page.welcomePage.preview" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Preview]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[預覽]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page.welcomePage.previewBody" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[This feature page is in preview. Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[這個功能頁面仍在預覽階段。預覽功能會引進新功能，並逐步成為產品中永久的一部分。這些功能雖然穩定，但在使用上仍需要改善。歡迎您在功能開發期間提供早期的意見反應。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page.welcomePage.resources" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Resources]]></Val>
@@ -13205,303 +13259,6 @@
           <Val><![CDATA[The window will reload after installing additional support for {0}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[{0} 的其他支援安裝完成後，將會重新載入此視窗。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.azdata" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Data Studio]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Data Studio]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.azdataBlog" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Discover what's new in the latest release]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[探索最新版本中的新功能]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.azdataBlogDescription" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New monthly blog posts each month showcasing our new features]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[展示新功能的新每月部落格文章]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.colorTheme" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Color theme]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[色彩佈景主題]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.colorThemeDescription" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Make the editor and your code look the way you love]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[將編輯器和您的程式碼設定成您喜愛的外觀]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.customize" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Customize]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[自訂]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.deploy" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Deploy]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[部署]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.extensionDescription" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Download extensions that you need, including the SQL Server Admin pack and more]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[下載所需延伸模組，包括 SQL Server 系統管理員套件等]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.extensions" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Extensions]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[延伸模組]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.followTwitter" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Follow us on Twitter]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[追蹤我們的 Twitter]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.followTwitterDescription" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Keep up to date with how the community is using Azure Data Studio and to talk directly with the engineers.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[掌握社群如何使用 Azure Data Studio 的最新消息，並可直接與工程師對話。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.gettingStarted" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Getting started]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[使用者入門]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.gitHubRepository" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[GitHub repository]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[GitHub 存放庫]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.help" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Help]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[說明]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.keyboardShortcut" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Keyboard Shortcuts]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[鍵盤快速鍵]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.keyboardShortcutDescription" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Find your favorite commands and customize them]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[尋找您最愛的命令並予加自訂]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.learn" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Learn]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[了解]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.moreRecent" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[More...]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[更多...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.newConnection" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New connection]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[新增連線]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.newDeployment" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New Deployment…]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[新增部署…]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.newNotebook" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New notebook]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[新增筆記本]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.newQuery" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New query]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[新增查詢]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.noRecentFolders" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[No recent folders]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[沒有最近使用的資料夾]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.openFileLinuxPC" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Open file]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[開啟檔案]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.openFileMac" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Open file]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[開啟檔案]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.productDocumentation" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Documentation]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[文件]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.recent" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Recent]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[最近使用]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.releaseNotes" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Release notes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[版本資訊]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.reportIssue" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Report issue or feature request]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[回報問題或功能要求]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.showCommands" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Find and run all commands]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[尋找及執行所有命令]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.showCommandsDescription" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Rapidly access and search commands from the Command Palette ({0})]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[從命令選擇區快速存取及搜尋命令 ({0})]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.showOnStartup" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Show welcome page on startup]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[啟動時顯示歡迎頁面]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.start" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Start]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[開始]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -16460,6 +16217,15 @@
           <Val><![CDATA[The schema that contains the table.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[包含資料表的結構描述。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.ErrorDialogTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Table Designer Error]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[資料表設計工具錯誤]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
