@@ -98,7 +98,10 @@ describe('Jupyter Session', function (): void {
 		// When I request execute
 		let future = kernel.requestExecute({
 			code: code,
-			cellIndex: 0
+			cellIndex: 0,
+			cellUri: undefined,
+			notebookUri: undefined,
+			language: ''
 		}, true);
 
 		// Then expect wrapper to be returned
