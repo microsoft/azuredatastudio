@@ -121,7 +121,6 @@ export class Notebook {
 	}
 
 	// Code Cell Actions
-	private static readonly codeCellSelector = 'code-component div.editor';
 
 	async waitForSuggestionWidget(): Promise<void> {
 		const suggestionWidgetSelector = 'div.editor-widget.suggest-widget';
@@ -131,10 +130,6 @@ export class Notebook {
 	async waitForSuggestionResult(expectedResult: string): Promise<void> {
 		const expectedResultSelector = `div.editor-widget.suggest-widget div.monaco-list-row.focused[aria-label="${expectedResult}"]`;
 		await this.code.waitForElement(expectedResultSelector, undefined, 600);
-	}
-
-	async clickOnCodeCell(): Promise<void> {
-		await this.code.waitAndClick(Notebook.codeCellSelector);
 	}
 
 	// Text Cell Actions
