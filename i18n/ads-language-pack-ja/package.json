@@ -49,7 +49,7 @@
 						"path": "./translations/extensions/git-ui.i18n.json"
 					},
 					{
-						"id": "Microsoft.git",
+						"id": "vscode.git",
 						"path": "./translations/extensions/git.i18n.json"
 					},
 					{
