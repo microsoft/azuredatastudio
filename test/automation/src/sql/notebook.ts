@@ -129,7 +129,7 @@ export class Notebook {
 
 	async waitForSuggestionResult(expectedResult: string): Promise<void> {
 		const expectedResultSelector = `div.editor-widget.suggest-widget div.monaco-list-row.focused[aria-label="${expectedResult}"]`;
-		await this.code.waitForElement(expectedResultSelector, undefined, 600);
+		await this.code.waitForElement(expectedResultSelector);
 	}
 
 	// Text Cell Actions
