@@ -327,6 +327,7 @@
 		"package": {
 			"description": "Azure Data Studio 用 SQL Server Schema Compare では、データベースと dacpac のスキーマを比較できます。",
 			"displayName": "SQL Server Schema Compare",
+			"schemaCompare.runComparison": "スキーマ比較の実行",
 			"schemaCompare.start": "Schema Compare"
 		}
 	}

@@ -81,6 +81,7 @@ export const noString = localize('noString', "No");
 export const noStringDefault = localize('noStringDefault', "No (default)");
 export const okString = localize('okString', "Ok");
 export const selectString = localize('selectString', "Select");
+export const selectFileString = localize('selectFileString', "Select File");
 export const dacpacFiles = localize('dacpacFiles', "dacpac Files");
 export const publishSettingsFiles = localize('publishSettingsFiles', "Publish Settings File");
 export const file = localize('file', "File");

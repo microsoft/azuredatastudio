@@ -327,6 +327,7 @@
 		"package": {
 			"description": "La comparación de esquemas de SQL Server para Azure Data Studio admite la comparación de los esquemas de bases de datos y paquetes DAC.",
 			"displayName": "Comparación de esquemas de SQL Server",
+			"schemaCompare.runComparison": "Ejecutar Comparación de esquemas",
 			"schemaCompare.start": "Comparación de esquemas"
 		}
 	}

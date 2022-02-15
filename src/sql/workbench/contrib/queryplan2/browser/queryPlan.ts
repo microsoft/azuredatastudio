@@ -347,6 +347,9 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		this.populate(graphRoot, diagramRoot);
 		this.azdataGraphDiagram = new azdataGraph.azdataQueryPlan(container, diagramRoot, queryPlanNodeIconPaths);
 
+		this.azdataGraphDiagram.graph.setCellsMovable(false); // preventing drag and drop of graph nodes.
+		this.azdataGraphDiagram.graph.setCellsDisconnectable(false); // preventing graph edges to be disconnected from source and target nodes.
+
 		this.azdataGraphDiagram.graph.addListener('click', (sender, evt) => {
 			// Updating properties view table on node clicks
 			const cell = evt.properties['cell'];

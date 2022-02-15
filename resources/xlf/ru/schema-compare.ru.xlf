@@ -1270,6 +1270,10 @@
         <source xml:lang="en">SQL Server Schema Compare</source>
         <target state="translated">Сравнение схем SQL Server</target>
       </trans-unit>
+      <trans-unit id="schemaCompare.runComparison">
+        <source xml:lang="en">Run Schema Comparison</source>
+        <target state="translated">Запустить сравнение схем...</target>
+      </trans-unit>
       <trans-unit id="schemaCompare.start">
         <source xml:lang="en">Schema Compare</source>
         <target state="translated">Сравнение схем</target>
