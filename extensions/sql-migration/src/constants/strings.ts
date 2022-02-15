@@ -232,6 +232,9 @@ export const EMPTY_TIME = localize('sql.migration.sku.recommendations.empty.time
 export function LAST_REFRESHED_TIME(d: string = EMPTY_TIME): string {
 	return localize('sql.migration.sku.recommendations.lastRefreshed', "Last refreshed: {0}", d);
 }
+export function TIME_IN_MINUTES(val: number): number {
+	return val * 60000;
+}
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");

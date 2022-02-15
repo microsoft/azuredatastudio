@@ -22,6 +22,7 @@ export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
 	private _wizardObject!: azdata.window.Wizard;
 	private _model!: MigrationStateModel;
+	private _disposables: vscode.Disposable[] = [];
 	constructor(private readonly extensionContext: vscode.ExtensionContext, model: MigrationStateModel) {
 		this._model = model;
 	}
@@ -111,14 +112,14 @@ export class WizardController {
 		this._model.extensionContext.subscriptions.push(this._wizardObject.doneButton.onClick(async (e) => {
 			await stateModel.startMigration();
 		}));
-		saveAndCloseButton.onClick(async () => {
+		this._disposables.push(saveAndCloseButton.onClick(async () => {
 			await stateModel.saveInfo(serverName, this._wizardObject.currentPage);
 			await this._wizardObject.close();
 
 			if (stateModel.performanceCollectionInProgress()) {
 				void vscode.window.showInformationMessage(loc.SAVE_AND_CLOSE_POPUP);
 			}
-		});
+		}));
 
 		this._wizardObject.cancelButton.onClick(e => {
 			sendSqlMigrationActionEvent(

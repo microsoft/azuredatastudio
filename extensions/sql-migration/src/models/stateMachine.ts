@@ -218,7 +218,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public refreshPerfDataCollectionFrequency = this._performanceDataQueryIntervalInSeconds * 1000;
 	private _autoRefreshPerfDataCollectionHandle!: NodeJS.Timeout;
-	public refreshGetSkuRecommendationFrequency = 600000;	// 10 minutes
+	public refreshGetSkuRecommendationFrequency = constants.TIME_IN_MINUTES(10);
 	private _autoRefreshGetSkuRecommendationHandle!: NodeJS.Timeout;
 
 	public _skuScalingFactor!: number;
@@ -627,8 +627,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 	public async isWaitingForFirstTimeRefresh(): Promise<boolean> {
-		const elapsedTimeInMins = Math.abs(new Date().getTime() - new Date(this._perfDataCollectionStartDate!).getTime()) / 60000;
-		const skuRecAutoRefreshTimeInMins = this.refreshGetSkuRecommendationFrequency / 60000;
+		const elapsedTimeInMins = Math.abs(new Date().getTime() - new Date(this._perfDataCollectionStartDate!).getTime()) / constants.TIME_IN_MINUTES(1);
+		const skuRecAutoRefreshTimeInMins = this.refreshGetSkuRecommendationFrequency / constants.TIME_IN_MINUTES(1);
 
 		return elapsedTimeInMins < skuRecAutoRefreshTimeInMins;
 	}
