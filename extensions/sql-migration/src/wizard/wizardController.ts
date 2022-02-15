@@ -121,7 +121,7 @@ export class WizardController {
 			}
 		}));
 
-		this._wizardObject.cancelButton.onClick(e => {
+		this._disposables.push(this._wizardObject.cancelButton.onClick(e => {
 			sendSqlMigrationActionEvent(
 				TelemetryViews.SqlMigrationWizard,
 				TelemetryAction.PageButtonClick,
@@ -130,11 +130,11 @@ export class WizardController {
 					'buttonPressed': TelemetryAction.Cancel,
 					'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 				}, {});
-		});
+		}));
 
 		this._wizardObject.doneButton.label = loc.START_MIGRATION_TEXT;
 
-		this._wizardObject.doneButton.onClick(e => {
+		this._disposables.push(this._wizardObject.doneButton.onClick(e => {
 			sendSqlMigrationActionEvent(
 				TelemetryViews.SqlMigrationWizard,
 				TelemetryAction.PageButtonClick,
@@ -143,7 +143,7 @@ export class WizardController {
 					'buttonPressed': TelemetryAction.Done,
 					'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 				}, {});
-		});
+		}));
 	}
 
 	private async sendPageButtonClickEvent(pageChangeInfo: azdata.window.WizardPageChangeInfo) {
