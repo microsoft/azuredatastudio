@@ -72,14 +72,16 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	private readonly _info: azdata.nb.IInfoReply;
 	private readonly _kernelSpec: azdata.nb.IKernelSpec;
 
-	constructor(private readonly _controller: ADSNotebookController, private readonly _options: azdata.nb.ISessionOptions, languages: string[]) {
+	constructor(private readonly _controller: ADSNotebookController, private readonly _options: azdata.nb.ISessionOptions) {
 		this._id = this._options.kernelId ?? (VSCodeKernel.kernelId++).toString();
 		this._kernelSpec = this._options.kernelSpec ?? {
 			name: this._controller.notebookType,
-			language: languages[0],
 			display_name: this._controller.label,
-			supportedLanguages: languages
 		};
+		if (!this._kernelSpec.language) {
+			this._kernelSpec.language = this._controller.supportedLanguages[0];
+			this._kernelSpec.supportedLanguages = this._controller.supportedLanguages;
+		}
 
 		this._name = this._kernelSpec.name;
 		this._info = {
@@ -88,7 +90,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 			implementation_version: '',
 			language_info: {
 				name: this._kernelSpec.language,
-				supportedLanguages: languages
+				supportedLanguages: this._kernelSpec.supportedLanguages
 			},
 			banner: '',
 			help_links: [{
@@ -159,8 +161,8 @@ class VSCodeKernel implements azdata.nb.IKernel {
 class VSCodeSession implements azdata.nb.ISession {
 	private _kernel: VSCodeKernel;
 	private _defaultKernelLoaded = false;
-	constructor(controller: ADSNotebookController, private readonly _options: azdata.nb.ISessionOptions, languages: string[]) {
-		this._kernel = new VSCodeKernel(controller, this._options, languages);
+	constructor(controller: ADSNotebookController, private readonly _options: azdata.nb.ISessionOptions) {
+		this._kernel = new VSCodeKernel(controller, this._options);
 	}
 
 	public set defaultKernelLoaded(value) {
@@ -247,7 +249,7 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 		if (!this.isReady) {
 			return Promise.reject(new Error(nls.localize('errorStartBeforeReady', "Cannot start a session, the manager is not yet initialized")));
 		}
-		let session = new VSCodeSession(this._controller, options, options.kernelSpec?.supportedLanguages);
+		let session = new VSCodeSession(this._controller, options);
 		let index = this._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
 			this._sessions.splice(index);
