@@ -39,8 +39,8 @@
         <target state="translated">У пользователя нет уникального идентификатора в AAD</target>
       </trans-unit>
       <trans-unit id="azure.responseError">
-        <source xml:lang="en">Token retrieval failed with an error. Open developer tools to view the error</source>
-        <target state="translated">Не удалось получить токен из-за ошибки. Откройте Инструменты разработчика, чтобы просмотреть ошибку</target>
+        <source xml:lang="en">Token retrieval failed with an error. [Open developer tools]({0}) for more details.</source>
+        <target state="translated">Не удалось получить токен из-за ошибки. [Откройте инструменты разработчика]({0}), чтобы узнать подробности.</target>
       </trans-unit>
       <trans-unit id="azure.tenantNotFound">
         <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
@@ -795,13 +795,17 @@
         <source xml:lang="en">Should US National Azure cloud integration be enabled</source>
         <target state="translated">Следует ли включить интеграцию с национальным облаком Azure для США</target>
       </trans-unit>
+      <trans-unit id="config.loggingLevel">
+        <source xml:lang="en">[Optional] The verbosity of logging for the Azure Accounts extension.</source>
+        <target state="translated">[Необязательно] Уровень детализации ведения журнала для расширения "Учетные записи Azure".</target>
+      </trans-unit>
       <trans-unit id="config.noSystemKeychain">
         <source xml:lang="en">Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.</source>
         <target state="translated">Отключение интеграции с цепочкой ключей системы. Учетные данные будут храниться в неструктурированном файле в основном каталоге пользователя.</target>
       </trans-unit>
       <trans-unit id="config.piiLogging">
-        <source xml:lang="en">Should Personally Identifiable Information (PII) be logged in the console view locally</source>
-        <target state="translated">Должны ли личные сведения (PII) выводиться в представление консоли локально</target>
+        <source xml:lang="en">Should Personally Identifiable Information (PII) be logged in the Azure Accounts output channel and the output channel log file.</source>
+        <target state="translated">Следует ли регистрировать идентифицирующие данные конечного пользователя (PII) в выходном канале учетных записей Azure и файле журнала выходного канала.</target>
       </trans-unit>
     </body>
   </file>

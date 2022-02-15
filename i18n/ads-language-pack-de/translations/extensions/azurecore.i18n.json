@@ -18,7 +18,7 @@
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Bei der Authentifizierung ist ein Fehler aufgetreten, oder Ihre Token wurden aus dem System gelöscht. Versuchen Sie erneut, Ihr Konto in Azure Data Studio hinzuzufügen.",
 			"azure.noUniqueIdentifier": "Der Benutzer wies in AAD keinen eindeutigen Bezeichner auf.",
-			"azure.responseError": "Fehler beim Tokenabruf. Öffnen Sie die Entwicklertools, um den Fehler anzuzeigen.",
+			"azure.responseError": "Fehler beim Abrufen des Tokens. [Entwicklertools öffnen] ({0}) für weitere Details.",
 			"azure.tenantNotFound": "Der angegebene Mandant mit der ID \"{0}\" wurde nicht gefunden.",
 			"azureAuth.unidentifiedError": "Unbekannter Fehler bei der Azure-Authentifizierung.",
 			"azureWorkAccountDisplayName": "Geschäfts-, Schul- oder Unikonto",
@@ -233,8 +233,9 @@
 			"config.enablePublicCloudDescription": "Hiermit wird festgelegt, ob die Integration der öffentlichen Azure-Cloud aktiviert werden soll.",
 			"config.enableUsGovCloudDescription": "Hiermit wird festgelegt, ob die Integration der Azure-Cloud für US-Behörden (Fairfax) aktiviert werden soll.",
 			"config.enableUsNatCloudDescription": "Hiermit wird festgelegt, ob die Integration der Azure-Cloud (USA, national) aktiviert werden soll.",
+			"config.loggingLevel": "[Optional] Die Ausführlichkeitsprotokollierung für die Azure-Konten-Erweiterung.",
 			"config.noSystemKeychain": "Hiermit wird die Keychain-Systemintegration deaktiviert. Die Anmeldeinformationen werden in einer Flatfile im Basisverzeichnis des Benutzers gespeichert.",
-			"config.piiLogging": "Hiermit wird festgelegt, ob personenbezogene Informationen (PII) lokal in der Konsolenansicht protokolliert werden sollen."
+			"config.piiLogging": "Hiermit wird festgelegt, ob personenbezogene Informationen (PII) im Ausgangskanal und in der Protokolldatei des Ausgangskanals von Azure-Konten protokolliert werden sollen."
 		}
 	}
 }

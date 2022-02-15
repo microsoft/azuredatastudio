@@ -87,9 +87,9 @@
         <target state="translated">Crear</target>
       </trans-unit>
       <trans-unit id="duplicateFileError">
-        <source xml:lang="en">File {0} already exists in the destination folder {1}
+        <source xml:lang="en">File {0} already exists in the destination folder {1} 
  The file has been renamed to {2} to prevent data loss.</source>
-        <target state="translated">El archivo {0} ya existe en la carpeta de destino {1}.
+        <target state="translated">El archivo {0} ya existe en la carpeta de destino {1}. 
  Se ha cambiado el nombre del archivo a {2} para evitar la pérdida de datos.</target>
       </trans-unit>
       <trans-unit id="editBookError">

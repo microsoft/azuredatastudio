@@ -228,10 +228,10 @@
 [Open existing](command:projects.openExisting)
 To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).
 </source>
-        <target state="translated">Nessun progetto aperto nell'area di lavoro corrente.
-[Crea nuovo] (comando: projects.new)
-[Apri esistente] (comando: projects.openExisting)
-Per altre informazioni sui progetti [vedere la documentazione] (https://aka.ms/azuredatastudio-projects).
+        <target state="new">No projects open in current workspace.
+[Create new](command:projects.new)
+[Open existing](command:projects.openExisting)
+To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).
 </target>
       </trans-unit>
       <trans-unit id="projects-view-no-workspace-content">
@@ -239,10 +239,10 @@ Per altre informazioni sui progetti [vedere la documentazione] (https://aka.ms/a
 [Create new](command:projects.new)
 [Open existing](command:projects.openExisting)
 To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).</source>
-        <target state="translated">Per iniziare, creare un nuovo progetto o aprirne uno esistente.
-[Crea nuovo] (comando: projects.new)
-[Apri esistente] (comando: projects.openExisting)
-Per altre informazioni sui progetti [vedere la documentazione] (https://aka.ms/azuredatastudio-projects).</target>
+        <target state="new">Create new or open existing to get started.
+[Create new](command:projects.new)
+[Open existing](command:projects.openExisting)
+To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).</target>
       </trans-unit>
       <trans-unit id="projects.defaultProjectSaveLocation">
         <source xml:lang="en">Full path to folder where new projects are saved by default.</source>

@@ -651,6 +651,29 @@ export class ProjectsController {
 		}
 	}
 
+	public async addExistingItemPrompt(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(treeNode);
+
+		const uris = await vscode.window.showOpenDialog({
+			canSelectFiles: true,
+			canSelectFolders: false,
+			canSelectMany: false,
+			openLabel: constants.selectString,
+			title: constants.selectFileString
+		});
+
+		if (!uris) {
+			return;	// user cancelled
+		}
+
+		try {
+			await project.addExistingItem(uris[0].fsPath);
+			this.refreshProjectsTree(treeNode);
+		} catch (err) {
+			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
 	public async exclude(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const node = context.element as BaseProjectTreeItem;
 		const project = this.getProjectFromContext(node);

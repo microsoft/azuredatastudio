@@ -1270,6 +1270,10 @@
         <source xml:lang="en">SQL Server Schema Compare</source>
         <target state="translated">SQL Server 스키마 비교</target>
       </trans-unit>
+      <trans-unit id="schemaCompare.runComparison">
+        <source xml:lang="en">Run Schema Comparison</source>
+        <target state="translated">스키마 비교 실행</target>
+      </trans-unit>
       <trans-unit id="schemaCompare.start">
         <source xml:lang="en">Schema Compare</source>
         <target state="translated">스키마 비교</target>
