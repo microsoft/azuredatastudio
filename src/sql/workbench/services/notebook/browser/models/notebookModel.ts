@@ -547,7 +547,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			return undefined;
 		}
 		let cell = this.createCell(cellType);
-		return this.insertCell(cell, index);
+		return this.insertCell(cell, index, true);
 	}
 
 	public splitCell(cellType: CellType, notebookService: INotebookService, index?: number, addToUndoStack: boolean = true): ICellModel | undefined {

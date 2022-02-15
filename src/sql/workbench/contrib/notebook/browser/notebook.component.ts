@@ -320,9 +320,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public clickOnCell(cell: ICellModel, event?: MouseEvent) {
-		if (event) {
-			event.stopPropagation();
-		}
+		event?.stopPropagation();
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
 			this.selectCell(cell);
 			if (cell.cellType === CellTypes.Code) {
