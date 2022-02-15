@@ -327,6 +327,7 @@
 		"package": {
 			"description": "Comparer les schémas SQL Server pour Azure Data Studio prend en charge la comparaison des schémas de bases de données et de fichiers dacpac.",
 			"displayName": "Comparer les schémas SQL Server",
+			"schemaCompare.runComparison": "Exécuter la comparaison de schémas",
 			"schemaCompare.start": "Comparer les schémas"
 		}
 	}

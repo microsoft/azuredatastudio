@@ -87,7 +87,7 @@
         <target state="translated">Создать</target>
       </trans-unit>
       <trans-unit id="duplicateFileError">
-        <source xml:lang="en">File {0} already exists in the destination folder {1}
+        <source xml:lang="en">File {0} already exists in the destination folder {1} 
  The file has been renamed to {2} to prevent data loss.</source>
         <target state="translated">Файл {0} уже существует в конечной папке {1}.
 Имя файла было изменено на {2} для предотвращения потери данных.</target>

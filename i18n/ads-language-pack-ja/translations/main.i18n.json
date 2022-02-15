@@ -9992,6 +9992,7 @@
 			"miinstallVsix": "VSIX パッケージから拡張機能をインストールする",
 			"newQuery": "新しいクエリ",
 			"notebook.cellTitle": "ノートブックのセル タイトル メニュー",
+			"notebook.cellToolbarLocation.compatibilityDescription": "セル ツール バーを表示すべき場所、または非表示にする必要があるかどうか。注: この設定は拡張機能の互換性の目的のみで有効で、何も影響しません。",
 			"notebook.title": "ノートブックのタイトル メニュー",
 			"notebook.toolbar": "ノートブックのツール バー メニュー",
 			"objectExplorer.context": "オブジェクト エクスプローラー項目のコンテキスト メニュー",
@@ -10002,8 +10003,11 @@
 			"recommendedExtensions": "マーケット プレース",
 			"scenarioTypeUndefined": "拡張機能の推奨事項のシナリオの種類を指定する必要があります。",
 			"showReleaseNotes": "更新後にリリース ノートを表示します。リリース ノートが新しい Web ブラウザー ウィンドウで開きます。",
+			"sql.watcherExclude": "ファイル監視から除外するファイル パスの glob パターンを構成します。パターンは絶対パスで一致する必要があります。つまり、パス内のファイル (`**/build/output/**` や `/Users/name/workspaces/project/build/output/**` など) と一致するには、プレフィックスに `**/` または完全なパスが正しく一致し、サフィックスが `/**` である必要があります。この設定を変更するには、再起動が必要です。起動時に Azure Data Stuidio が多くの CPU 時間を消費する場合は、大きなフォルダーを除外して初期負荷を減らすことができます。",
 			"uninstallExtensionComplete": "拡張機能 {0}のアンインストールを完了するには、Azure Data Studio を再度読み込んでください。",
 			"updateLocale": "Azure Data Studio の UI 言語を {0} に変更して再起動しますか?",
+			"vscodeFunctionalityNotSupportedError": "この VS Code 機能は、Azure Data Studio ではサポートされていません。",
+			"vscodeInvalidArgumentsError": "引数が無効です。",
 			"watermark.newNotebook": "新しいノートブック",
 			"watermark.newSqlFile": "新しい SQL ファイル",
 			"workspace.trust.description": "Azure Data Studio 内でワークスペースの信頼を有効にするかどうかを制御します。",
@@ -10165,15 +10169,18 @@
 			"showConnectDialogOnStartup": "起動時に接続ダイアログを表示"
 		},
 		"sql/workbench/browser/designer/designer": {
+			"designer.defaultRemoveRowConfirmationMessage": "この行を削除しますか?",
 			"designer.generalGroupName": "全般",
 			"designer.loadingDesigner": "デザイナーの読み込み中...",
 			"designer.loadingDesignerCompleted": "デザイナーが読み込まれます",
 			"designer.newRowText": "新規追加",
+			"designer.processing": "処理中...",
 			"designer.processingChanges": "変更の処理中...",
 			"designer.processingChangesCompleted": "変更が処理されました",
+			"designer.processingCompleted": "処理が完了しました",
+			"designer.publishChangesCompleted": "変更が公開されました",
+			"designer.publishingChanges": "変更をパブリッシュしています...",
 			"designer.removeRowText": "削除",
-			"designer.savingChanges": "変更を保存しています...",
-			"designer.savingChangesCompleted": "変更が保存されました。",
 			"tableDesigner.unknownComponentType": "コンポーネントの種類: {0} はサポートされていません"
 		},
 		"sql/workbench/browser/designer/designerPropertiesPane": {
@@ -10198,6 +10205,7 @@
 			"resourceViewerInput.resourceViewer": "リソース ビューアー"
 		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
+			"tableDesigner.OperationInProgressWarning": "別の操作が進行中の間は、操作を実行できません。",
 			"tableDesigner.newTable": "新しいテーブル"
 		},
 		"sql/workbench/browser/modal/modal": {
@@ -11185,7 +11193,7 @@
 			"noContextAvailable": "なし",
 			"noKernel": "カーネルなし",
 			"noParametersCell": "パラメーター セルが追加されるまで、パラメーターを指定してこのノートブックを実行することはできません。[詳細情報](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
-			"noParametersInCell": "パラメーター セルにパラメーターが追加されるまで、パラメーターを指定してこのノートブックを実行することはできません。[詳細情報] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
+			"noParametersInCell": "This notebook cannot run with parameters until there are parameters added to the parameter cell. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"notebook.findNext": "次の文字列を検索",
 			"notebook.findPrevious": "前の文字列を検索",
 			"notebookViewLabel": "エディター",
@@ -11581,11 +11589,8 @@
 			"refreshError": "ノード '{0}' の更新でエラーが発生しました: {1}"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/actions": {
-			"tableDesigner.saveTableChanges": "変更内容を保存"
-		},
-		"sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution": {
-			"tableDesigner.configTitle": "テーブル デザイナー",
-			"tableDesigner.featureEnabledDescription": "テーブル デザイナー機能を有効にするかどうかを制御します。既定値は false です。"
+			"tableDesigner.generateScript": "スクリプトの生成",
+			"tableDesigner.publishTableChanges": "変更の発行..."
 		},
 		"sql/workbench/contrib/tasks/browser/tasks.contribution": {
 			"inProgressTasksChangesBadge": "{0} 個のタスクが進行中です",
@@ -11647,8 +11652,6 @@
 			"welcomePage.location": "場所",
 			"welcomePage.moreRecent": "さらに表示",
 			"welcomePage.name": "名前",
-			"welcomePage.preview": "プレビュー",
-			"welcomePage.previewBody": "この機能ページはプレビュー段階です。プレビュー機能では、製品の永続的な部分になる予定の新しい機能が導入されています。これらは安定していますが、追加のアクセシビリティの改善が必要です。開発中の早期のフィードバックを歓迎しています。",
 			"welcomePage.resources": "リソース",
 			"welcomePage.runQuery": "クエリの実行",
 			"welcomePage.runQueryBody": "クエリ エディターを使用してデータを操作します。",
@@ -11724,41 +11727,6 @@
 			"welcomePage.sqlServerProfiler": "SQL Server Profiler",
 			"welcomePage.startTour": "ツアーの開始",
 			"welcomePage.willReloadAfterInstallingExtensionPack": "{0} に追加のサポートをインストールしたあと、ウィンドウが再度読み込まれます。"
-		},
-		"sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page": {
-			"welcomePage.azdata": "Azure Data Studio",
-			"welcomePage.azdataBlog": "最新リリースの新機能を見る",
-			"welcomePage.azdataBlogDescription": "毎月新機能を紹介する新しいブログ記事",
-			"welcomePage.colorTheme": "配色テーマ",
-			"welcomePage.colorThemeDescription": "エディターとコードの外観を自由に設定します",
-			"welcomePage.customize": "カスタマイズ",
-			"welcomePage.deploy": "デプロイ",
-			"welcomePage.extensionDescription": "SQL Server 管理パックなど、必要な拡張機能をダウンロードする",
-			"welcomePage.extensions": "拡張",
-			"welcomePage.followTwitter": "Twitter でフォローする",
-			"welcomePage.followTwitterDescription": "コミュニティがどのように Azure Data Studio を使用しているかについて、最新情報を把握し、エンジニアと直接話し合います。",
-			"welcomePage.gettingStarted": "はじめに",
-			"welcomePage.gitHubRepository": "GitHub リポジトリ",
-			"welcomePage.help": "ヘルプ",
-			"welcomePage.keyboardShortcut": "キーボード ショートカット",
-			"welcomePage.keyboardShortcutDescription": "お気に入りのコマンドを見つけてカスタマイズする",
-			"welcomePage.learn": "詳細",
-			"welcomePage.moreRecent": "その他...",
-			"welcomePage.newConnection": "新しい接続",
-			"welcomePage.newDeployment": "新しいデプロイ…",
-			"welcomePage.newNotebook": "新しいノートブック",
-			"welcomePage.newQuery": "新しいクエリ",
-			"welcomePage.noRecentFolders": "最近使用したフォルダーなし",
-			"welcomePage.openFileLinuxPC": "ファイルを開く",
-			"welcomePage.openFileMac": "ファイルを開く",
-			"welcomePage.productDocumentation": "ドキュメント",
-			"welcomePage.recent": "最近",
-			"welcomePage.releaseNotes": "リリース ノート",
-			"welcomePage.reportIssue": "問題または機能要求を報告する",
-			"welcomePage.showCommands": "すべてのコマンドの検索と実行",
-			"welcomePage.showCommandsDescription": "コマンド パレット ({0}) にすばやくアクセスしてコマンドを検索します",
-			"welcomePage.showOnStartup": "起動時にウェルカム ページを表示する",
-			"welcomePage.start": "開始"
 		},
 		"sql/workbench/services/accountManagement/browser/accountDialog": {
 			"accountDialog.addConnection": "アカウントを追加する",
@@ -11995,6 +11963,7 @@
 			"splitCellEdit": "セルの分割"
 		},
 		"sql/workbench/services/notebook/browser/models/clientSession": {
+			"NoExecuteManager": "このノートブック ファイルの種類にプロバイダーが定義されていないため、サーバーを起動できませんでした。",
 			"ServerNotStarted": "不明な理由によりサーバーが起動しませんでした",
 			"clientSession.unknownError": "ノートブック セッションの開始中にエラーが発生しました。",
 			"kernelRequiresConnection": "カーネル {0} が見つかりませんでした。既定のカーネルが代わりに使用されます。"
@@ -12015,8 +11984,11 @@
 			"startSessionFailed": "セッションを開始できませんでした: {0}"
 		},
 		"sql/workbench/services/notebook/browser/notebookServiceImpl": {
+			"executeProviderTimeout": "ノートブック プロバイダー '{0}' の実行プロバイダーの可用性待機がタイムアウトしました",
 			"notebookServiceNoProvider": "ノートブック プロバイダーが存在しません",
-			"notebookUriNotDefined": "ノートブック マネージャーを作成するときに URI が渡されませんでした"
+			"notebookUriNotDefined": "ノートブック マネージャーを作成するときに URI が渡されませんでした",
+			"serializationProviderTimeout": "ノートブック プロバイダー '{0}' のシリアル化プロバイダーの可用性待機がタイムアウトしました",
+			"standardKernelsTimeout": "ノートブック プロバイダー '{0}' の標準カーネルの可用性待機がタイムアウトしました"
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewModel": {
 			"notebookView.nameTaken": "このノートブックには、 {0} という名前のビューが既に存在します。"
@@ -12050,6 +12022,7 @@
 			"carbon.extension.contributes.notebook.magic": "'%%sql' などのセル マジックの名前。",
 			"carbon.extension.contributes.notebook.provider": "ノートブック プロバイダーの識別子。",
 			"carbon.extension.contributes.notebook.standardKernels": "このノートブック プロバイダーへの標準装備が必要なカーネル",
+			"providerNotInRegistryError": "指定されたプロバイダー '{0}' がノートブック レジストリに存在しません。",
 			"vscode.extension.contributes.notebook.languagemagics": "ノートブックの言語を提供します。",
 			"vscode.extension.contributes.notebook.providersDescriptions": "ノートブック プロバイダーの説明を提供します。"
 		},
@@ -12119,7 +12092,6 @@
 		"sql/workbench/services/query/common/queryModelService": {
 			"commitEditFailed": "行のコミットに失敗しました: ",
 			"msgCancelQueryFailed": "失敗したクエリのキャンセル中: {0}",
-			"queryModelService.noQueryFoundForUri": "{0}のクエリがありません",
 			"queryModelService.uriAlreadyHasQuery": "{0} には既存のクエリが既に存在します",
 			"runQueryBatchStartLine": "行 {0}",
 			"runQueryBatchStartMessage": "次の場所でクエリの実行を開始しました: ",
@@ -12227,11 +12199,16 @@
 			"designer.foreignkey.description.onDeleteAction": "外部キー リレーションシップに含まれるデータのある行をユーザーが削除しようとしたときの動作です。",
 			"designer.foreignkey.description.onUpdateAction": "外部キー リレーションシップに含まれるデータのある行をユーザーが更新しようとしたときの動作です。",
 			"designer.foreignkey.description.primaryKeyTable": "主キー列または一意キー列を含むテーブルです。",
+			"designer.index.column.description.name": "列の名前です。",
+			"designer.index.description.columns": "インデックスの列。",
+			"designer.index.description.name": "インデックスの名前です。",
 			"designer.table.description.description": "テーブルの説明です。",
 			"designer.table.description.name": "テーブル オブジェクトの名前です。",
 			"designer.table.description.schema": "テーブルを含むスキーマです。",
+			"tableDesigner.ErrorDialogTitle": "Table Designer Error",
 			"tableDesigner.ForeignKeyTypeName": "外部キー",
-			"tableDesigner.PrimaryKeyTableName": "主キー テーブル",
+			"tableDesigner.ForeignTableName": "外部テーブル",
+			"tableDesigner.IndexTypeName": "インデックス",
 			"tableDesigner.checkConstraintExpressionTitle": "式",
 			"tableDesigner.checkConstraintNameTitle": "名前",
 			"tableDesigner.checkConstraintTypeName": "制約のチェック",
@@ -12249,18 +12226,27 @@
 			"tableDesigner.descriptionTitle": "説明",
 			"tableDesigner.errorInitializingTableDesigner": "テーブル デザイナーの初期化中にエラーが発生しました: {0}",
 			"tableDesigner.errorProcessingEdit": "変更の処理中にエラーが発生しました: {0}",
-			"tableDesigner.foreignKeyColumn": "外部キー列",
-			"tableDesigner.foreignKeyColumns": "列マッピング",
+			"tableDesigner.foreignKey.column": "列",
+			"tableDesigner.foreignKey.foreignColumn": "外部列",
+			"tableDesigner.foreignKeyColumns": "列",
 			"tableDesigner.foreignKeyNameTitle": "名前",
 			"tableDesigner.foreignKeyOnDeleteAction": "削除アクション時に",
 			"tableDesigner.foreignKeyOnUpdateAction": "更新アクション時に",
 			"tableDesigner.foreignKeysTabTitle": "外部キー",
 			"tableDesigner.generalTab": "全般",
+			"tableDesigner.generatePreviewReportError": "プレビュー レポートの生成中にエラーが発生しました: {0}",
+			"tableDesigner.generateScriptError": "スクリプトの生成中にエラーが発生しました: {0}",
+			"tableDesigner.generatingPreviewReport": "プレビュー レポートを生成しています...",
+			"tableDesigner.generatingScript": "スクリプトを生成しています...",
+			"tableDesigner.generatingScriptCompleted": "スクリプトが生成されました。",
+			"tableDesigner.index.column.name": "列",
+			"tableDesigner.indexColumns": "列",
+			"tableDesigner.indexName": "名前",
+			"tableDesigner.indexesTabTitle": "インデックス",
 			"tableDesigner.nameTitle": "テーブル名",
-			"tableDesigner.primaryKeyColumn": "主キー列",
-			"tableDesigner.saveChangeError": "変更の保存中にエラーが発生しました: {0}",
-			"tableDesigner.savedChangeSuccess": "変更が正常に保存されました。",
-			"tableDesigner.savingChanges": "テーブル デザイナーの変更を保存しています...",
+			"tableDesigner.publishChangeError": "変更の発行中にエラーが発生しました: {0}",
+			"tableDesigner.publishChangeSuccess": "変更が正常に公開されました。",
+			"tableDesigner.savingChanges": "テーブル デザイナーの変更点をパブリッシュしています...",
 			"tableDesigner.schemaTitle": "スキーマ",
 			"tableDesigner.tableObjectType": "テーブル"
 		},
@@ -12272,6 +12258,60 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "はじめに(&&S)",
 			"showReleaseNotes": "「はじめに」を表示する"
+		},
+		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
+			"errorStartBeforeReady": "セッションを開始できません。マネージャーがまだ初期化されていません"
+		},
+		"sql/workbench/contrib/queryplan2/browser/planHeader": {
+			"planHeaderIndexAndCost": "クエリ {0}: クエリ コスト (スクリプトに対する相対): {1}%"
+		},
+		"sql/workbench/contrib/queryplan2/browser/queryPlan": {
+			"openQueryAction": "クエリを開く",
+			"queryPlanCustomZoom": "ズームの指定",
+			"queryPlanFitGraphLabel": "ウィンドウのサイズに合わせて拡大",
+			"queryPlanOpenGraphFile": "Open Plan File",
+			"queryPlanPropertiesActionLabel": "プロパティ",
+			"queryPlanSavePlanXML": "Save Plan File",
+			"queryPlanSearchNodeAction": "SearchNode",
+			"queryPlanTitle": "Query Plan (Preview)",
+			"queryPlanZoomInActionLabel": "拡大",
+			"queryPlanZoomOutActionLabel": "縮小"
+		},
+		"sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView": {
+			"nodePropertyViewNameNameColumnHeader": "Name",
+			"nodePropertyViewNameValueColumnHeader": "Value",
+			"nodePropertyViewTitle": "Properties",
+			"queryPlanPropertiesEdgeOperationName": "Edge",
+			"queryPlanPropertyViewClose": "Close",
+			"queryPlanPropertyViewSortAlphabetically": "Alphabetical",
+			"queryPlanPropertyViewSortByDisplayOrde": "Categorized"
+		},
+		"sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget": {
+			"cancelCustomZoomAction": "Close (Escape)",
+			"invalidCustomZoomError": "Select a zoom value between 1 to 200",
+			"qpZoomValueLabel": "Zoom (percent)",
+			"zoomAction": "Zoom (Enter)"
+		},
+		"sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget": {
+			"cancelSearchAction": "Close (Escape)",
+			"nextSearchItemAction": "Next Match (Enter)",
+			"previousSearchItemAction": "Previous Match (Shift+Enter)",
+			"queryPlanSearchTypeContains": "Contains",
+			"queryPlanSearchTypeEquals": "Equals"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
+			"tableDesigner.PreviewFeature": "プレビュー機能"
+		},
+		"sql/workbench/contrib/tsgops/browser/tsgopsActions": {
+			"hideActivityBarViewContainers": "拡張機能ビューレットを非表示にする",
+			"hidePanel": "パネルを非表示にする",
+			"hideSettings": "設定アイコンを非表示にする"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerPublishDialog": {
+			"tableDesigner.UpdateDatabase": "データベースの更新",
+			"tableDesigner.cancel": "取り消す",
+			"tableDesigner.generateScript": "スクリプトの生成",
+			"tableDesigner.previewDatabaseUpdates": "データベース更新のプレビュー"
 		}
 	}
 }
