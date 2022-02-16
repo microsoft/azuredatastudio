@@ -137,7 +137,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let event = new StandardKeyboardEvent(e);
 			if (this.isActive() && this.model.activeCell) {
 				if (e.repeat) {
-					return;
+					e.stopImmediatePropagation();
 				}
 				if (!this.model.activeCell?.isEditMode) {
 					if (event.keyCode === KeyCode.DownArrow) {
@@ -290,7 +290,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private scrollToActiveCell(): void {
 		// Get active cell from active notebook editor
 		const activeCellElement = document.querySelector(`.editor-group-container.active .notebook-cell.active`);
-		activeCellElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+		activeCellElement.scrollIntoView({ behavior: 'auto', block: 'nearest' });
 
 	}
 
