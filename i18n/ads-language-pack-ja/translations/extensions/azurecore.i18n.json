@@ -18,7 +18,7 @@
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "認証で何かが失敗したか、またはトークンがシステムから削除されています。アカウントを Azure Data Studio にもう一度追加してください。",
 			"azure.noUniqueIdentifier": "ユーザーの AAD 内に一意識別子がありませんでした",
-			"azure.responseError": "トークンの取得がエラーで失敗しました。開発者ツールを開いてエラーを表示してください",
+			"azure.responseError": "トークンの取得がエラーで失敗しました。詳細は、[開発者ツールを開く]({0})。",
 			"azure.tenantNotFound": "ID '{0}' の指定されたテナントが見つかりません。",
 			"azureAuth.unidentifiedError": "Azure 認証で不明なエラーが発生しました",
 			"azureWorkAccountDisplayName": "職場または学校アカウント",
@@ -233,8 +233,9 @@
 			"config.enablePublicCloudDescription": "Azure パブリック クラウド統合を有効にするかどうか",
 			"config.enableUsGovCloudDescription": "米国政府向け Azure クラウド (Fairfax) 統合を有効にするかどうか",
 			"config.enableUsNatCloudDescription": "US National Azure クラウド統合を有効にするかどうか",
+			"config.loggingLevel": "[オプション] Azure アカウント拡張機能のログ記録の詳細。",
 			"config.noSystemKeychain": "システムのキーチェーン統合を無効にします。資格情報は、ユーザーのホーム ディレクトリ内のフラット ファイルに保存されます。",
-			"config.piiLogging": "PII (Personally Identifiable Information) をコンソール ビューにローカルに記録するかどうか"
+			"config.piiLogging": "個人を特定できる情報 (PII) を Azure アカウントの出力チャネルと出力チャネルのログ ファイルにログ記録してしまった場合。"
 		}
 	}
 }

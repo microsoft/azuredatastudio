@@ -50,6 +50,10 @@
         <source xml:lang="en">Time</source>
         <target state="translated">时间</target>
       </trans-unit>
+      <trans-unit id="actionLabel">
+        <source xml:lang="en">Action</source>
+        <target state="translated">操作</target>
+      </trans-unit>
       <trans-unit id="addDatabaseReferenceOkButtonText">
         <source xml:lang="en">Add reference</source>
         <target state="translated">添加引用</target>
@@ -77,6 +81,18 @@
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
         <target state="translated">是否要使用新的连接字符串更新 Azure 函数 local.settings.json?</target>
+      </trans-unit>
+      <trans-unit id="applyConfirmation">
+        <source xml:lang="en">Are you sure you want to update the target project?</source>
+        <target state="translated">是否确定要更新目标项目?</target>
+      </trans-unit>
+      <trans-unit id="applyError">
+        <source xml:lang="en">There was an error updating the project: {0}</source>
+        <target state="translated">更新项目时出错: {0}</target>
+      </trans-unit>
+      <trans-unit id="applySuccess">
+        <source xml:lang="en">Project was successfully updated.</source>
+        <target state="translated">已成功更新项目。</target>
       </trans-unit>
       <trans-unit id="at">
         <source xml:lang="en">at</source>
@@ -150,6 +166,14 @@
         <source xml:lang="en">Cleaning existing deployments...</source>
         <target state="translated">正在清理现有部署...</target>
       </trans-unit>
+      <trans-unit id="closeButton">
+        <source xml:lang="en">Close</source>
+        <target state="translated">关闭</target>
+      </trans-unit>
+      <trans-unit id="compareActionRadiButtonLabel">
+        <source xml:lang="en">View changes in Schema Compare</source>
+        <target state="translated">查看架构比较中的更改</target>
+      </trans-unit>
       <trans-unit id="confirmPassword">
         <source xml:lang="en">Confirm SQL server admin password</source>
         <target state="translated">确认 SQL Server 管理员密码</target>
@@ -166,6 +190,10 @@
         <source xml:lang="en">Connection failed error: '{0}'</source>
         <target state="translated">连接失败错误: "{0}"</target>
       </trans-unit>
+      <trans-unit id="connectionProfile">
+        <source xml:lang="en">Select a connection profile</source>
+        <target state="translated">选择连接配置文件</target>
+      </trans-unit>
       <trans-unit id="connectionRadioButtonLabel">
         <source xml:lang="en">Connections</source>
         <target state="translated">连接</target>
@@ -179,8 +207,8 @@
         <target state="translated">"local.settings.json" 中指定的连接字符串设置</target>
       </trans-unit>
       <trans-unit id="containerAlreadyExistForProject">
-        <source xml:lang="en">Other servers on container already exist for the project. Do you want to delete them?</source>
-        <target state="translated">容器上已存在此项目的其他服务器。是否要删除它们?</target>
+        <source xml:lang="en">Containers already exist for this project. Do you want to delete them before deploying a new one?</source>
+        <target state="translated">此项目的容器已存在。是否要在部署新文件之前删除它们?</target>
       </trans-unit>
       <trans-unit id="createNew">
         <source xml:lang="en">Create New</source>
@@ -410,6 +438,14 @@
         <source xml:lang="en">SQL Database</source>
         <target state="translated">SQL 数据库</target>
       </trans-unit>
+      <trans-unit id="emptySdkProjectTypeDescription">
+        <source xml:lang="en">Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.</source>
+        <target state="translated">使用 Microsoft.Build.Sql（预览版）为 SQL 数据库开发和发布架构，从空的 SDK 样式项目开始。</target>
+      </trans-unit>
+      <trans-unit id="emptySdkProjectTypeDisplayName">
+        <source xml:lang="en">SQL Database (SDK)</source>
+        <target state="translated">SQL 数据库 (SDK)</target>
+      </trans-unit>
       <trans-unit id="enterConnStringTemplateDescription">
         <source xml:lang="en">Enter a template for SQL connection string</source>
         <target state="translated">输入 SQL 连接字符串的模板</target>
@@ -446,6 +482,14 @@
         <source xml:lang="en">Enter SQL Server admin password</source>
         <target state="translated">输入 SQL Server 管理员密码</target>
       </trans-unit>
+      <trans-unit id="enterPasswordManually">
+        <source xml:lang="en">Enter password or press escape to cancel</source>
+        <target state="translated">输入密码或按 Esc 取消</target>
+      </trans-unit>
+      <trans-unit id="enterPasswordPrompt">
+        <source xml:lang="en">Enter the password to be used for the connection string</source>
+        <target state="translated">输入要用于连接字符串的密码</target>
+      </trans-unit>
       <trans-unit id="enterPortNumber">
         <source xml:lang="en">Enter SQL server port number or press enter to use the default value</source>
         <target state="translated">输入 SQL Server 端口号或按 Enter 以使用默认值</target>
@@ -453,6 +497,10 @@
       <trans-unit id="enterSystemDbName">
         <source xml:lang="en">Enter a database name for this system database</source>
         <target state="translated">输入此系统数据库的数据库名</target>
+      </trans-unit>
+      <trans-unit id="equalComparison">
+        <source xml:lang="en">The project is already up to date with the database.</source>
+        <target state="translated">项目已与数据库保持最新。</target>
       </trans-unit>
       <trans-unit id="errorFindingBuildFilesLocation">
         <source xml:lang="en">Error finding build files location: {0}</source>
@@ -499,6 +547,10 @@
       <trans-unit id="extractTargetRequired">
         <source xml:lang="en">Target information for extract is required to create database project.</source>
         <target state="translated">必须提供用于提取的目标信息才能创建数据库项目。</target>
+      </trans-unit>
+      <trans-unit id="failedToGetConnectionString">
+        <source xml:lang="en">An error occurred generating the connection string for the selected connection</source>
+        <target state="translated">生成所选连接的连接字符串时出错</target>
       </trans-unit>
       <trans-unit id="failedToParse">
         <source xml:lang="en">Failed to parse "{0}": {1}.</source>
@@ -572,6 +624,10 @@
         <source xml:lang="en">Import Elements</source>
         <target state="translated">导入元素</target>
       </trans-unit>
+      <trans-unit id="includePassword">
+        <source xml:lang="en">Do you want to include the password from this connection in your local.settings.json file?</source>
+        <target state="translated">是否要将此连接中的密码包含在 local.settings.json 文件中?</target>
+      </trans-unit>
       <trans-unit id="input">
         <source xml:lang="en">Input</source>
         <target state="translated">输入</target>
@@ -619,6 +675,10 @@
       <trans-unit id="jsonParseError">
         <source xml:lang="en">{0} near line "{1}", column "{2}"</source>
         <target state="translated">第“{1}”行第“{2}”列附近的 {0}。</target>
+      </trans-unit>
+      <trans-unit id="learnMore">
+        <source xml:lang="en">Learn More</source>
+        <target state="translated">了解详细信息</target>
       </trans-unit>
       <trans-unit id="loadProfilePlaceholderText">
         <source xml:lang="en">Load profile...</source>
@@ -684,9 +744,17 @@
         <source xml:lang="en">File {0} doesn't exist</source>
         <target state="translated">文件 {0} 不存在</target>
       </trans-unit>
+      <trans-unit id="noSchemaCompareExtension">
+        <source xml:lang="en">The Schema Compare extension must be installed to a update a project from a database.</source>
+        <target state="translated">架构比较扩展必须从数据库安装到更新项目。</target>
+      </trans-unit>
       <trans-unit id="noSqlFilesGenerated">
         <source xml:lang="en">No .sql files were generated by Autorest. Please confirm that your spec contains model definitions, or check the output log for details.</source>
         <target state="translated">Autorest 未生成任何 .sql 文件。请确认规范包含模型定义，或查看输出日志以了解详细信息。</target>
+      </trans-unit>
+      <trans-unit id="noSqlProjFile">
+        <source xml:lang="en">The selected project file does not exist</source>
+        <target state="translated">所选项目文件不存在</target>
       </trans-unit>
       <trans-unit id="noSqlProjFilesSelected">
         <source xml:lang="en">No .sqlproj file selected; please select one.</source>
@@ -731,6 +799,10 @@
       <trans-unit id="openEulaString">
         <source xml:lang="en">Open License Agreement</source>
         <target state="translated">打开许可协议</target>
+      </trans-unit>
+      <trans-unit id="openFile">
+        <source xml:lang="en">Open File</source>
+        <target state="translated">打开文件</target>
       </trans-unit>
       <trans-unit id="output">
         <source xml:lang="en">Output</source>
@@ -796,6 +868,10 @@
         <source xml:lang="en">Project</source>
         <target state="translated">项目</target>
       </trans-unit>
+      <trans-unit id="projectLocationLabel">
+        <source xml:lang="en">Location</source>
+        <target state="translated">位置</target>
+      </trans-unit>
       <trans-unit id="projectLocationPlaceholderText">
         <source xml:lang="en">Select location to create project</source>
         <target state="translated">选择要创建项目的位置</target>
@@ -815,6 +891,10 @@
       <trans-unit id="projectReferenceNameElement">
         <source xml:lang="en">Project reference name element</source>
         <target state="translated">项目引用名称元素</target>
+      </trans-unit>
+      <trans-unit id="projectToUpdatePlaceholderText">
+        <source xml:lang="en">Select project file</source>
+        <target state="translated">选择项目文件</target>
       </trans-unit>
       <trans-unit id="publish">
         <source xml:lang="en">Publish</source>
@@ -920,6 +1000,10 @@
         <source xml:lang="en">Schema</source>
         <target state="translated">架构</target>
       </trans-unit>
+      <trans-unit id="schemaCompare.compareErrorMessage">
+        <source xml:lang="en">Schema Compare failed: {0}</source>
+        <target state="translated">架构比较失败: {0}</target>
+      </trans-unit>
       <trans-unit id="schemaCompareAction">
         <source xml:lang="en">Schema Compare</source>
         <target state="translated">架构比较</target>
@@ -935,6 +1019,10 @@
       <trans-unit id="scriptFriendlyName">
         <source xml:lang="en">Script</source>
         <target state="translated">脚本</target>
+      </trans-unit>
+      <trans-unit id="sdkStyleProject">
+        <source xml:lang="en">SDK-style project</source>
+        <target state="new">SDK-style project</target>
       </trans-unit>
       <trans-unit id="sec">
         <source xml:lang="en">sec</source>
@@ -955,6 +1043,14 @@
       <trans-unit id="selectConnection">
         <source xml:lang="en">Select connection</source>
         <target state="translated">选择连接</target>
+      </trans-unit>
+      <trans-unit id="selectConnectionError">
+        <source xml:lang="en">Failed to set connection string app setting: {0}</source>
+        <target state="translated">无法设置连接字符串应用设置: {0}</target>
+      </trans-unit>
+      <trans-unit id="selectConnectionString">
+        <source xml:lang="en">Select SQL connection string method</source>
+        <target state="translated">选择 SQL 连接字符串方法</target>
       </trans-unit>
       <trans-unit id="selectDacpac">
         <source xml:lang="en">Select .dacpac</source>
@@ -1128,6 +1224,10 @@
         <source xml:lang="en">Unable to locate '{0}' target: '{1}'</source>
         <target state="translated">无法定位“{0}”目标:“{1}”</target>
       </trans-unit>
+      <trans-unit id="unableToSetConnectionString">
+        <source xml:lang="en">Failed to set connection string app setting</source>
+        <target state="translated">无法设置连接字符串应用设置</target>
+      </trans-unit>
       <trans-unit id="unexpectedProjectContext">
         <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
         <target state="translated">无法建立项目上下文。从意外位置调用了命令: {0}</target>
@@ -1140,6 +1240,14 @@
         <source xml:lang="en">Unrecognized version: </source>
         <target state="translated">无法识别的版本: </target>
       </trans-unit>
+      <trans-unit id="updateAction">
+        <source xml:lang="en">Update action</source>
+        <target state="translated">更新操作</target>
+      </trans-unit>
+      <trans-unit id="updateActionRadiButtonLabel">
+        <source xml:lang="en">Apply all changes</source>
+        <target state="translated">应用所有更改</target>
+      </trans-unit>
       <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
         <source xml:lang="en">The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
         <target state="translated">需要更新系统数据库引用才能生成此项目“{0}”。如果项目是在 SSDT 中创建的，它将继续在这两个工具中工作。是否要更新项目?</target>
@@ -1147,6 +1255,26 @@
       <trans-unit id="updateProjectForRoundTrip">
         <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
         <target state="translated">需要更新目标、引用、系统数据库引用才能生成此项目“{0}”。如果项目是在 SSDT 中创建的，它将继续在这两个工具中工作。是否要更新项目?</target>
+      </trans-unit>
+      <trans-unit id="updateProjectFromDatabaseDialogName">
+        <source xml:lang="en">Update project from database</source>
+        <target state="translated">从数据库更新项目</target>
+      </trans-unit>
+      <trans-unit id="updateText">
+        <source xml:lang="en">Update</source>
+        <target state="translated">更新</target>
+      </trans-unit>
+      <trans-unit id="updatingProjectFromDatabase">
+        <source xml:lang="en">Updating {0} from {1}...</source>
+        <target state="translated">正在从 {1} 更新 {0}...</target>
+      </trans-unit>
+      <trans-unit id="userConnectionString">
+        <source xml:lang="en">Enter connection string</source>
+        <target state="translated">输入连接字符串</target>
+      </trans-unit>
+      <trans-unit id="userPasswordLater">
+        <source xml:lang="en">In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.</source>
+        <target state="translated">若要在以后使用 SQL 连接字符串，需要在 local.settings.json 文件中手动输入密码。</target>
       </trans-unit>
       <trans-unit id="userSelectionCancelled">
         <source xml:lang="en">User has cancelled selection for how to run autorest.</source>
@@ -1335,6 +1463,10 @@
       <trans-unit id="sqlDatabaseProjects.schemaCompare">
         <source xml:lang="en">Schema Compare</source>
         <target state="translated">架构比较</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.updateProjectFromDatabase">
+        <source xml:lang="en">Update Project From Database</source>
+        <target state="translated">从数据库更新项目</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.validateExternalStreamingJob">
         <source xml:lang="en">Validate External Streaming Job</source>

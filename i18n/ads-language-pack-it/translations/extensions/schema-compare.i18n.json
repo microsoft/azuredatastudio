@@ -327,6 +327,7 @@
 		"package": {
 			"description": "La funzionalità Confronto schemi di SQL Server per Azure Data Studio supporta il confronto degli schemi di database e pacchetti di applicazione livello dati.",
 			"displayName": "Confronto schemi di SQL Server",
+			"schemaCompare.runComparison": "Esegui confronto schemi",
 			"schemaCompare.start": "Confronto schemi"
 		}
 	}
