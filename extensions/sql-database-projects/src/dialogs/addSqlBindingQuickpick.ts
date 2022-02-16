@@ -181,18 +181,9 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 						) ?? '';
 					} else {
 						// Let user choose from existing connections to create connection string from
-						let connectionUri: string = '';
 						connectionInfo = await vscodeMssqlApi.promptForConnection(true);
 						if (!connectionInfo) {
 							// User cancelled return to selectedConnectionStringMethod prompt
-							continue;
-						}
-						try {
-							// TO DO: https://github.com/microsoft/azuredatastudio/issues/18012
-							connectionUri = await vscodeMssqlApi.connect(connectionInfo);
-						} catch (e) {
-							// display an mssql error due to connection request failing and go back to prompt for connection string methods
-							console.warn(e);
 							continue;
 						}
 						try {
@@ -205,12 +196,12 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 								});
 								if (includePassword === constants.yesString) {
 									// set connection string to include password
-									connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, true, false);
+									connectionString = await vscodeMssqlApi.getConnectionString(undefined, connectionInfo, true, false);
 								}
 							}
 							// set connection string to not include the password if connection info does not include password, or user chooses to not include password, or authentication type is not sql login
 							if (includePassword !== constants.yesString) {
-								connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, false, false);
+								connectionString = await vscodeMssqlApi.getConnectionString(undefined, connectionInfo, false, false);
 							}
 						} catch (e) {
 							// failed to get connection string for selected connection and will go back to prompt for connection string methods

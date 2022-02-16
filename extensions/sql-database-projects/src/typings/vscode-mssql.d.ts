@@ -77,13 +77,14 @@ declare module 'vscode-mssql' {
 		getDatabaseNameFromTreeNode(node: ITreeNodeInfo): string;
 
 		/**
-		 * Get the connection string for the provided connection Uri
-		 * @param connectionUri The URI of the connection to get the connection string for.
-		 * @param includePassword Whether the Password is included in the connection string. Default is false.
-		 * @param includeApplicationName Whether the Application Name is included in the connection string. Default is true
-		 * @returns connection string
+		 * Get the connection string for the provided connection Uri or connection details.
+		 * @param connectionUri The connection Uri for the connection. If undefined then a ConnectionDetails should be specified.
+		 * @param connectionDetails The connection details for the connection. If undefined then a connection URI should be specified.
+		 * @param includePassword (optional) if password should be included in connection string.
+		 * @param includeApplicationName (optional) if application name should be included in connection string.
+		 * @returns connection string for the connection
 		 */
-		getConnectionString(connectionUri: String, includePassword?: boolean, includeApplicationName?: boolean): Promise<string>;
+		getConnectionString(connectionUri?: string, connectionDetails?: { [name: string]: any }, includePassword?: boolean, includeApplicationName?: boolean): Promise<string>;
 	}
 
 	/**
