@@ -550,7 +550,11 @@ export class NotebookEditorContentLoader implements IContentLoader {
 			notebookContents.metadata.kernelspec.display_name = DotnetInteractiveLabel;
 
 			let kernelName = notebookContents.metadata.kernelspec.name;
-			let languageName = kernelName.replace(DotnetInteractiveJupyterLanguagePrefix, DotnetInteractiveLanguagePrefix);
+			let baseLanguageName = kernelName.replace(DotnetInteractiveJupyterLanguagePrefix, '');
+			if (baseLanguageName === 'powershell') {
+				baseLanguageName = 'pwsh';
+			}
+			let languageName = `${DotnetInteractiveLanguagePrefix}${baseLanguageName}`;
 
 			notebookContents.metadata.kernelspec.oldLanguage = notebookContents.metadata.kernelspec.language;
 			notebookContents.metadata.kernelspec.language = languageName;
