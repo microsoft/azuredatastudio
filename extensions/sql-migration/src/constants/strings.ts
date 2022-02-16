@@ -724,7 +724,7 @@ export const REFRESH_BUTTON_LABEL = localize('sql.migration.status.refresh.label
 // Saved Assessment Dialog
 export const NEXT_LABEL = localize('sql.migration.saved.assessment.next', "Next");
 export const CANCEL_LABEL = localize('sql.migration.saved.assessment.cancel', "Cancel");
-export const SAVED_ASSESSMENT_RESULT = localize('sql.migration.saved.assessment.result', "Saved assessment result");
+export const SAVED_ASSESSMENT_RESULT = localize('sql.migration.saved.assessment.result', "Saved session");
 
 // Retry Migration
 export const MIGRATION_CANNOT_RETRY = localize('sql.migration.cannot.retry', 'Migration cannot be retried.');

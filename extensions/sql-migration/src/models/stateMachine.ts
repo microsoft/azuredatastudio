@@ -370,9 +370,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			// clone list of databases currently being assessed and store them, so that if the user ever changes the list we can refresh new recommendations
 			this._skuRecommendationRecommendedDatabaseList = this._databaseAssessment.slice();
 
-			console.log('sqlinstancerequirements: ');
-			console.log(this._skuRecommendationApiResponse.instanceRequirements);
-
 			if (response?.sqlDbRecommendationResults || response?.sqlMiRecommendationResults || response?.sqlVmRecommendationResults) {
 				this._skuRecommendationResults = {
 					recommendations: {
@@ -1391,6 +1388,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				void vscode.window.showErrorMessage(
 					localize('sql.migration.starting.migration.error', "An error occurred while starting the migration: '{0}'", e.message));
 				console.log(e);
+			}
+			finally {
+				// kill existing data collection if user start migration
+				await this.refreshPerfDataCollection();
+				if ((!this.resumeAssessment || this.retryMigration) && this._perfDataCollectionIsCollecting) {
+					void this.stopPerfDataCollection();
+					void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_STOP_POPUP);
+				}
 			}
 		}
 	}

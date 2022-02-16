@@ -89,14 +89,6 @@ export class SavedAssessmentDialog {
 	public initializePageContent(view: azdata.ModelView): azdata.FlexContainer {
 		const buttonGroup = 'resumeMigration';
 
-		const pageTitle = view.modelBuilder.text().withProps({
-			CSSStyles: {
-				...styles.PAGE_TITLE_CSS,
-				'margin-bottom': '12px'
-			},
-			value: constants.RESUME_TITLE
-		}).component();
-
 		const radioStart = view.modelBuilder.radioButton().withProps({
 			label: constants.START_MIGRATION,
 			name: buttonGroup,
@@ -137,7 +129,6 @@ export class SavedAssessmentDialog {
 					'margin': '20px 15px',
 				}
 			}).component();
-		flex.addItem(pageTitle, { flex: '0 0 auto' });
 		flex.addItem(radioStart, { flex: '0 0 auto' });
 		flex.addItem(radioContinue, { flex: '0 0 auto' });
 
