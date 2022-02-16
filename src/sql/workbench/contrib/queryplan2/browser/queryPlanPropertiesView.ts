@@ -44,7 +44,7 @@ export class QueryPlanPropertiesView {
 
 	// Table dimensions.
 	private _tableWidth = 485;
-	private _tableHeight = 420;
+	private _tableHeight;
 
 	public constructor(
 		private _parentContainer: HTMLElement,
@@ -189,6 +189,7 @@ export class QueryPlanPropertiesView {
 		this._table.setData(this._dataView);
 		this._table.autosizeColumns();
 		this._table.updateRowCount();
+		this.tableHeight = (this._parentContainer.getBoundingClientRect().height - 80); //80px is the space taken by the title and toolbar
 		this._table.layout(new DOM.Dimension(this._tableWidth, this._tableHeight));
 		this._table.resizeCanvas();
 	}

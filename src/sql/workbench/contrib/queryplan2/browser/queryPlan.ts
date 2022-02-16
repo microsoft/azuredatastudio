@@ -116,6 +116,14 @@ export class QueryPlan2View implements IPanelView {
 				this._qps.push(qp2);
 				this._graphs.push(g);
 				this.updateRelativeCosts();
+
+				// If there is only one query plan, set the height of the query plan to 100%
+				// Later on, if other plans are added we decrease the height to 500px
+				if (this._qps.length === 1) {
+					this._qps[0].container.style.height = '100%';
+				} else if (this._qps.length > 1) {
+					this._qps[0].container.style.height = '500px';
+				}
 			});
 		}
 	}
@@ -136,7 +144,7 @@ export class QueryPlan2View implements IPanelView {
 export class QueryPlan2 implements ISashLayoutProvider {
 	private _graphModel?: azdata.ExecutionPlanGraph;
 
-	private _container: HTMLElement;
+	public container: HTMLElement;
 
 	private _actionBarContainer: HTMLElement;
 	private _actionBar: ActionBar;
@@ -171,17 +179,17 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		@IWorkspaceContextService public workspaceContextService: IWorkspaceContextService
 	) {
 		// parent container for query plan.
-		this._container = DOM.$('.query-plan');
-		this._parent.appendChild(this._container);
+		this.container = DOM.$('.query-plan');
+		this._parent.appendChild(this.container);
 		const sashContainer = DOM.$('.query-plan-sash');
 		this._parent.appendChild(sashContainer);
 
 		const sash = new Sash(sashContainer, this, { orientation: Orientation.HORIZONTAL });
-		let originalHeight = this._container.offsetHeight;
+		let originalHeight = this.container.offsetHeight;
 		let originalTableHeight = 0;
 		let change = 0;
 		sash.onDidStart((e: ISashEvent) => {
-			originalHeight = this._container.offsetHeight;
+			originalHeight = this.container.offsetHeight;
 			originalTableHeight = this.propertiesView.tableHeight;
 		});
 
@@ -194,7 +202,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 			if (newHeight < 200) {
 				return;
 			}
-			this._container.style.height = `${newHeight}px`;
+			this.container.style.height = `${newHeight}px`;
 		});
 
 		/**
@@ -205,7 +213,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		});
 
 		this._planContainer = DOM.$('.plan');
-		this._container.appendChild(this._planContainer);
+		this.container.appendChild(this._planContainer);
 
 		// container that holds plan header info
 		this._planHeaderContainer = DOM.$('.header');
@@ -222,7 +230,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 
 		// container properties
 		this._propContainer = DOM.$('.properties');
-		this._container.appendChild(this._propContainer);
+		this.container.appendChild(this._propContainer);
 		this.propertiesView = new QueryPlanPropertiesView(this._propContainer, this._themeService);
 
 		this._planActionContainer = DOM.$('.plan-action-container');
@@ -231,7 +239,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 
 		// container that holds actionbar icons
 		this._actionBarContainer = DOM.$('.action-bar-container');
-		this._container.appendChild(this._actionBarContainer);
+		this.container.appendChild(this._actionBarContainer);
 		this._actionBar = new ActionBar(this._actionBarContainer, {
 			orientation: ActionsOrientation.VERTICAL, context: this
 		});
@@ -252,7 +260,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 
 		// Setting up context menu
 		const self = this;
-		this._container.oncontextmenu = (e: MouseEvent) => {
+		this.container.oncontextmenu = (e: MouseEvent) => {
 			if (actions) {
 				this._contextMenuService.showContextMenu({
 					getAnchor: () => {
@@ -275,7 +283,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		return 0;
 	}
 	getHorizontalSashWidth?(sash: Sash): number {
-		return this._container.clientWidth;
+		return this.container.clientWidth;
 	}
 
 	private populate(node: InternalExecutionPlanNode, diagramNode: any): any {
