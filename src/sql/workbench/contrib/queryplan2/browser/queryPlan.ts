@@ -578,7 +578,7 @@ class SearchNodeAction extends Action {
 
 class OpenPlanFile extends Action {
 	public static ID = 'qp.openGraphFile';
-	public static Label = localize('queryPlanOpenGraphFile', "Show Execution Plan XML"); //TODO: add a contribution point for providers to set this text
+	public static Label = localize('queryPlanOpenGraphFile', "Show Query Plan XML"); //TODO: add a contribution point for providers to set this text
 
 	constructor() {
 		super(OpenPlanFile.ID, OpenPlanFile.Label, openPlanFileIconClassNames);
