@@ -11697,6 +11697,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlan.queryPlan.SaveFileDescription" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Execution Plan Files]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[実行プラン ファイル]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlan.queryPlanCustomZoom" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Custom Zoom]]></Val>
@@ -11729,9 +11738,9 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlan.queryPlanPropertiesActionLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Custom Zoom]]></Val>
+          <Val><![CDATA[Properties]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ズームの指定]]></Val>
+            <Val><![CDATA[プロパティ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -11754,9 +11763,6 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[SearchNode]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Open Graph File]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -11778,9 +11784,6 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[拡大]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Save XML]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -11799,9 +11802,6 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[名前]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Query Plan]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
