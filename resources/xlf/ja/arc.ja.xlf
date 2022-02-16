@@ -160,8 +160,8 @@
         <target state="translated">クラスター コンテキスト</target>
       </trans-unit>
       <trans-unit id="arc.controllerDashboard">
-        <source xml:lang="en">Azure Arc Data Controller Dashboard (Preview) - {0}</source>
-        <target state="translated">Azure Arc データ コントラクター ダッシュボード (プレビュー) -{0}</target>
+        <source xml:lang="en">Azure Arc Data Controller Dashboard - {0}</source>
+        <target state="translated">Azure Arc データ コントラクター ダッシュボード - {0}</target>
       </trans-unit>
       <trans-unit id="arc.controllerKubeConfig">
         <source xml:lang="en">Kube Config File Path</source>
@@ -606,8 +606,8 @@
         <target state="translated">このインスタンスのデータベースを一覧表示するには接続する必要があります。</target>
       </trans-unit>
       <trans-unit id="arc.miaaDashboard">
-        <source xml:lang="en">SQL managed instance - Azure Arc Dashboard (Preview) - {0}</source>
-        <target state="translated">SQL Managed Instance - Azure Arc ダッシュボード (プレビュー) - {0}</target>
+        <source xml:lang="en">SQL managed instance - Azure Arc Dashboard - {0}</source>
+        <target state="translated">SQL Managed Instance - Azure Arc ダッシュボード - {0}</target>
       </trans-unit>
       <trans-unit id="arc.miaaProviderName">
         <source xml:lang="en">MSSQL</source>
@@ -838,8 +838,8 @@
         <target state="translated">Azure Arc に対応した拡張ができます</target>
       </trans-unit>
       <trans-unit id="arc.postgresDashboard">
-        <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc Dashboard (Preview) - {0}</source>
-        <target state="translated">PostgreSQL Hyperscale - Azure Arc ダッシュボード (プレビュー) - {0}</target>
+        <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc Dashboard - {0}</source>
+        <target state="translated">PostgreSQL Hyperscale - Azure Arc ダッシュボード - {0}</target>
       </trans-unit>
       <trans-unit id="arc.postgresExtension">
         <source xml:lang="en">microsoft.azuredatastudio-postgresql</source>
@@ -1309,22 +1309,6 @@
         <source xml:lang="en">Cores Request</source>
         <target state="translated">コア要求</target>
       </trans-unit>
-      <trans-unit id="arc.data.controller.admin.account.confirm.password">
-        <source xml:lang="en">Confirm password</source>
-        <target state="translated">パスワードの確認</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.admin.account.name">
-        <source xml:lang="en">Data controller login</source>
-        <target state="translated">データ コントローラーのログイン</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.admin.account.password">
-        <source xml:lang="en">Password</source>
-        <target state="translated">パスワード</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.admin.account.title">
-        <source xml:lang="en">Administrator account</source>
-        <target state="translated">管理者アカウント</target>
-      </trans-unit>
       <trans-unit id="arc.data.controller.agreement">
         <source xml:lang="en">I accept {0} and {1}.</source>
         <target state="translated">{0} および {1} に同意します。</target>
@@ -1408,6 +1392,30 @@
       <trans-unit id="arc.data.controller.location">
         <source xml:lang="en">Location</source>
         <target state="translated">場所</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.confirm.password">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">パスワードの確認</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.password">
+        <source xml:lang="en">Password</source>
+        <target state="translated">パスワード</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.password.description">
+        <source xml:lang="en">Enter the password that will be used to log in to the metrics and logs dashboards.</source>
+        <target state="translated">メトリックとログ ダッシュボードへのログインに使用するパスワードを入力します。</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.title">
+        <source xml:lang="en">Metrics and Logs Dashboard Credentials</source>
+        <target state="translated">メトリックとログ ダッシュボードの資格情報</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.username">
+        <source xml:lang="en">Username</source>
+        <target state="translated">ユーザー名</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.username.description">
+        <source xml:lang="en">Enter the username that will be used for the metrics and logs dashboards.</source>
+        <target state="translated">メトリックとログダッシュボードに使用するユーザー名を入力します。</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.name">
         <source xml:lang="en">Data controller name</source>
@@ -1718,8 +1726,8 @@
         <target state="translated">Azure enabled PostgreSQL Hyperscale サーバー グループのパラメーターを指定する</target>
       </trans-unit>
       <trans-unit id="arc.postgres.wizard.title">
-        <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group (Preview)</source>
-        <target state="translated">Azure Arc 対応 PostgreSQL Hyperscale サーバー グループの展開 (プレビュー)</target>
+        <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group</source>
+        <target state="new">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group</target>
       </trans-unit>
       <trans-unit id="arc.sql.connection.settings.section.title">
         <source xml:lang="en">SQL Connection information</source>
@@ -1794,8 +1802,8 @@
         <target state="translated">サービス レベル</target>
       </trans-unit>
       <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.description">
-        <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
-        <target state="translated">SQL Managed Instance に使用可能な最新の仮想コア サービス レベルから General Purpose と Business Critical を含む Azure Arc を選択します。{0}</target>
+        <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>
+        <target state="new">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</target>
       </trans-unit>
       <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.text">
         <source xml:lang="en">Learn more</source>
@@ -1833,9 +1841,13 @@
         <source xml:lang="en">For development use only</source>
         <target state="translated">開発用途のみ</target>
       </trans-unit>
+      <trans-unit id="arc.sql.high.availability">
+        <source xml:lang="en">High availability</source>
+        <target state="new">High availability</target>
+      </trans-unit>
       <trans-unit id="arc.sql.high.availability.description">
-        <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas. Choose from: General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability) or [PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability).</source>
-        <target state="translated">高可用性のために追加のレプリカを有効にします。以下で選択したコンピューティングとストレージの構成は、すべてのレプリカに適用されます。General Purpose (最大 24 個の仮想コアと 128 Gi の RAM、標準的な高可用性)、または [プレビュー] Business Critical (無制限の仮想コアと RAM、詳細な高可用性) のいずれかを選択します。</target>
+        <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</source>
+        <target state="new">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</target>
       </trans-unit>
       <trans-unit id="arc.sql.instance.name">
         <source xml:lang="en">Instance name</source>
@@ -1874,8 +1886,8 @@
         <target state="translated">マネージド インスタンスの容量を要求して、整数のメモリ量 (GB) で指定します。</target>
       </trans-unit>
       <trans-unit id="arc.sql.one.replica">
-        <source xml:lang="en">1</source>
-        <target state="translated">1</target>
+        <source xml:lang="en">1 replica</source>
+        <target state="new">1 replica</target>
       </trans-unit>
       <trans-unit id="arc.sql.pitr.description">
         <source xml:lang="en">Point in time restore</source>
@@ -1884,10 +1896,6 @@
       <trans-unit id="arc.sql.pitr.retention.description">
         <source xml:lang="en">Configure retention for point-in-time backups. {0}</source>
         <target state="translated">ポイントインタイム バックアップのための保有期間を構成します。{0}</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.replicas">
-        <source xml:lang="en">Replicas</source>
-        <target state="translated">レプリカ</target>
       </trans-unit>
       <trans-unit id="arc.sql.retention.days.description">
         <source xml:lang="en">Specify how long you want to keep your point-in-time backups.</source>
@@ -1898,16 +1906,16 @@
         <target state="translated">特定の時点のリテンション期間 (日数)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.business.critical">
-        <source xml:lang="en">BusinessCritical</source>
-        <target state="translated">BusinessCritical</target>
+        <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
+        <target state="new">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.description">
-        <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
-        <target state="translated">SQL Managed Instance に使用可能な最新の仮想コア サービス レベルから General Purpose と Business Critical を含む Azure Arc を選択します。{0}</target>
+        <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>
+        <target state="new">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.general.purpose">
-        <source xml:lang="en">GeneralPurpose</source>
-        <target state="translated">GeneralPurpose</target>
+        <source xml:lang="en">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</source>
+        <target state="new">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.label">
         <source xml:lang="en">Service Tier</source>
@@ -1938,12 +1946,12 @@
         <target state="translated">Microsoft 提供</target>
       </trans-unit>
       <trans-unit id="arc.sql.three.replicas">
-        <source xml:lang="en">3</source>
-        <target state="translated">3</target>
+        <source xml:lang="en">3 replicas</source>
+        <target state="new">3 replicas</target>
       </trans-unit>
       <trans-unit id="arc.sql.two.replicas">
-        <source xml:lang="en">2</source>
-        <target state="translated">2</target>
+        <source xml:lang="en">2 replicas</source>
+        <target state="new">2 replicas</target>
       </trans-unit>
       <trans-unit id="arc.sql.username">
         <source xml:lang="en">Username</source>
@@ -1986,8 +1994,8 @@
         <target state="translated">Azure SQL Managed Instance のパラメーターを指定します</target>
       </trans-unit>
       <trans-unit id="arc.sql.wizard.title">
-        <source xml:lang="en">Deploy Azure SQL managed instance - Azure Arc (preview)</source>
-        <target state="translated">Azure SQL Managed Instance - Azure Arc を展開 - Azure Arc (プレビュー)</target>
+        <source xml:lang="en">Deploy Azure SQL managed instance - Azure Arc</source>
+        <target state="new">Deploy Azure SQL managed instance - Azure Arc</target>
       </trans-unit>
       <trans-unit id="arc.storage-class.backups.label">
         <source xml:lang="en">Storage Class (Backups)</source>
@@ -2016,8 +2024,8 @@
       <trans-unit id="arc.view.welcome.connect">
         <source xml:lang="en">No Azure Arc controllers registered. [Learn More](https://azure.microsoft.com/services/azure-arc/)
 [Connect Controller](command:arc.connectToController)</source>
-        <target state="translated">Azure Arc コントローラーが登録されていません。[詳細情報] (https://azure.microsoft.com/services/azure-arc/)
-[接続コントローラー] (command:arc.connect ToController)</target>
+        <target state="new">No Azure Arc controllers registered. [Learn More](https://azure.microsoft.com/services/azure-arc/)
+[Connect Controller](command:arc.connectToController)</target>
       </trans-unit>
       <trans-unit id="arc.view.welcome.loading">
         <source xml:lang="en">Loading controllers...</source>
@@ -2080,24 +2088,24 @@
         <target state="translated">Azure Arc 環境に PostgreSQL Hyperscale サーバー グループを展開する</target>
       </trans-unit>
       <trans-unit id="resource.type.arc.postgres.display.name">
-        <source xml:lang="en">PostgreSQL Hyperscale server groups - Azure Arc (preview)</source>
-        <target state="translated">PostgreSQL Hyperscale サーバー グループ - Azure Arc (プレビュー) </target>
+        <source xml:lang="en">PostgreSQL Hyperscale server groups - Azure Arc</source>
+        <target state="new">PostgreSQL Hyperscale server groups - Azure Arc</target>
       </trans-unit>
       <trans-unit id="resource.type.arc.sql.description">
         <source xml:lang="en">Managed SQL Instance service for app developers in a customer-managed environment</source>
         <target state="translated">ユーザーが管理する環境内のアプリ開発者向けのマネージド SQL インスタンス サービス</target>
       </trans-unit>
       <trans-unit id="resource.type.arc.sql.display.name">
-        <source xml:lang="en">Azure SQL managed instance - Azure Arc (preview)</source>
-        <target state="translated">Azure SQL Managed Instance - Azure Arc (プレビュー)</target>
+        <source xml:lang="en">Azure SQL managed instance - Azure Arc</source>
+        <target state="new">Azure SQL managed instance - Azure Arc</target>
       </trans-unit>
       <trans-unit id="resource.type.azure.arc.description">
         <source xml:lang="en">Creates an Azure Arc data controller</source>
         <target state="translated">Azure Arc データ コントローラーの作成</target>
       </trans-unit>
       <trans-unit id="resource.type.azure.arc.display.name">
-        <source xml:lang="en">Azure Arc data controller (preview)</source>
-        <target state="translated">Azure Arc データ コントローラー (プレビュー)</target>
+        <source xml:lang="en">Azure Arc data controller</source>
+        <target state="translated">Azure Arc データ コントローラー</target>
       </trans-unit>
       <trans-unit id="should.be.integer">
         <source xml:lang="en">Value must be an integer</source>
