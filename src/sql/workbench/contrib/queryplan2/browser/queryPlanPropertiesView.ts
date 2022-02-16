@@ -116,6 +116,10 @@ export class QueryPlanPropertiesView {
 			defaultColumnWidth: 120
 		});
 
+		new ResizeObserver((e) => {
+			this.tableHeight = (this._parentContainer.getBoundingClientRect().height - 80);
+		}).observe(this._parentContainer);
+
 		attachTableStyler(this._table, this._themeService);
 	}
 
