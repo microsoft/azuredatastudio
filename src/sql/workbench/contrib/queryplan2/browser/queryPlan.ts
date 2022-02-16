@@ -565,7 +565,7 @@ class CustomZoomAction extends Action {
 
 class SearchNodeAction extends Action {
 	public static ID = 'qp.searchNode';
-	public static LABEL = localize('queryPlanSearchNodeAction', "SearchNode");
+	public static LABEL = localize('queryPlanSearchNodeAction', "Find Node");
 
 	constructor() {
 		super(SearchNodeAction.ID, SearchNodeAction.LABEL, searchIconClassNames);
@@ -578,7 +578,7 @@ class SearchNodeAction extends Action {
 
 class OpenPlanFile extends Action {
 	public static ID = 'qp.openGraphFile';
-	public static Label = localize('queryPlanOpenGraphFile', "Open Plan File");
+	public static Label = localize('queryPlanOpenGraphFile', "Show Query Plan XML"); //TODO: add a contribution point for providers to set this text
 
 	constructor() {
 		super(OpenPlanFile.ID, OpenPlanFile.Label, openPlanFileIconClassNames);
