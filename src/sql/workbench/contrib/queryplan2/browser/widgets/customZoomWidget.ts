@@ -55,7 +55,7 @@ export class CustomZoomWidget extends QueryPlanWidgetBase {
 		};
 
 		const applyButton = new Button(this.container, {
-			title: localize('customZoomApplyButtonTitle', "Zoom (Enter)")
+			title: localize('customZoomApplyButtonTitle', "Apply Zoom (Enter)")
 		});
 		applyButton.setWidth('60px');
 		applyButton.label = localize('customZoomApplyButton', "Apply");
