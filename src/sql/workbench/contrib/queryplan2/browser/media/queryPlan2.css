@@ -74,7 +74,7 @@ However we always want it to be the width of the container it is resizing.
 	flex-direction: row;
 	padding: 5px;
 	height: auto;
-	width: 180px;
+	width: 240px;
 }
 
 /* query plan header that contains the relative query cost, query statement and recommendations */
