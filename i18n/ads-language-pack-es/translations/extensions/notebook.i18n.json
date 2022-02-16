@@ -31,7 +31,7 @@
 			"contentFolder": "Carpeta de contenido",
 			"contentFolderOptional": "Carpeta de contenido (opcional)",
 			"create": "Crear",
-			"duplicateFileError": "El archivo {0} ya existe en la carpeta de destino {1}.\r\n Se ha cambiado el nombre del archivo a {2} para evitar la pérdida de datos.",
+			"duplicateFileError": "El archivo {0} ya existe en la carpeta de destino {1}. \r\n Se ha cambiado el nombre del archivo a {2} para evitar la pérdida de datos.",
 			"editBookError": "Error al editar el libro de Jupyter {0}: {1}",
 			"fileExtension": "Extensión de archivo",
 			"fileName": "Nombre de archivo",

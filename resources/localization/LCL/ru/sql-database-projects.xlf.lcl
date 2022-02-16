@@ -1141,12 +1141,18 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.enterPasswordManually" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter password or press escape to cancel]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Введите пароль или нажмите клавишу ESC, чтобы отменить]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.enterPasswordPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter the password to be used for the connection string]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Введите пароль, используемый для строки подключения]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1456,6 +1462,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.includePassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Do you want to include the password from this connection in your local.settings.json file?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Вы хотите добавить пароль этого подключения в файл local.settings.json?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1856,7 +1865,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Open File]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Открытие файла]]></Val>
+            <Val><![CDATA[Открыть файл]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2352,6 +2361,15 @@
           <Val><![CDATA[Script]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Сценарий]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.sdkStyleProject" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[SDK-style project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Проект в стиле SDK]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2917,6 +2935,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.userPasswordLater" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Чтобы позже использовать строку подключения SQL, необходимо вручную ввести пароль в файле local.settings.json.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

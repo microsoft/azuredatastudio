@@ -8,8 +8,6 @@ import type * as azdata from 'azdata';
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { localize } from 'vs/nls';
 import { dispose } from 'vs/base/common/lifecycle';
-import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
-import { Registry } from 'vs/platform/registry/common/platform';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import * as DOM from 'vs/base/browser/dom';
 import * as azdataGraphModule from 'azdataGraph';
@@ -35,6 +33,11 @@ import { EDITOR_FONT_DEFAULTS } from 'vs/editor/common/config/editorOptions';
 import { QueryPlanWidgetController } from 'sql/workbench/contrib/queryplan2/browser/queryPlanWidgetController';
 import { CustomZoomWidget } from 'sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget';
 import { NodeSearchWidget } from 'sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget';
+import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IFileService } from 'vs/platform/files/common/files';
+import { VSBuffer } from 'vs/base/common/buffer';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { URI } from 'vs/base/common/uri';
 
 let azdataGraph = azdataGraphModule();
 
@@ -163,6 +166,9 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		@IUntitledTextEditorService private readonly _untitledEditorService: IUntitledTextEditorService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
+		@IFileDialogService public fileDialogService: IFileDialogService,
+		@IFileService public fileService: IFileService,
+		@IWorkspaceContextService public workspaceContextService: IWorkspaceContextService
 	) {
 		// parent container for query plan.
 		this._container = DOM.$('.query-plan');
@@ -341,6 +347,9 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		this.populate(graphRoot, diagramRoot);
 		this.azdataGraphDiagram = new azdataGraph.azdataQueryPlan(container, diagramRoot, queryPlanNodeIconPaths);
 
+		this.azdataGraphDiagram.graph.setCellsMovable(false); // preventing drag and drop of graph nodes.
+		this.azdataGraphDiagram.graph.setCellsDisconnectable(false); // preventing graph edges to be disconnected from source and target nodes.
+
 		this.azdataGraphDiagram.graph.addListener('click', (sender, evt) => {
 			// Updating properties view table on node clicks
 			const cell = evt.properties['cell'];
@@ -390,9 +399,14 @@ export class QueryPlan2 implements ISashLayoutProvider {
 			 * use the scroll bars.
 			 */
 			diagramContainer.addEventListener('wheel', e => {
+				this._parent.scrollTop += e.deltaY;
+				//Hiding all tooltips when we scroll.
+				const element = document.getElementsByClassName('mxTooltip');
+				for (let i = 0; i < element.length; i++) {
+					(<HTMLElement>element[i]).style.visibility = 'hidden';
+				}
 				e.preventDefault();
 				e.stopPropagation();
-				this._parent.scrollTop += e.deltaY;
 			});
 
 			this._planContainer.appendChild(diagramContainer);
@@ -512,6 +526,27 @@ class SavePlanFile extends Action {
 	}
 
 	public override async run(context: QueryPlan2): Promise<void> {
+		const workspaceFolders = await context.workspaceContextService.getWorkspace().folders;
+		const defaultFileName = 'plan';
+		let currentWorkSpaceFolder: URI;
+		if (workspaceFolders.length !== 0) {
+			currentWorkSpaceFolder = workspaceFolders[0].uri;
+			currentWorkSpaceFolder = URI.joinPath(currentWorkSpaceFolder, defaultFileName); //appending default file name to workspace uri
+		} else {
+			currentWorkSpaceFolder = URI.parse(defaultFileName); // giving default name
+		}
+		const saveFileUri = await context.fileDialogService.showSaveDialog({
+			filters: [
+				{
+					extensions: ['sqlplan'], //TODO: Get this extension from provider
+					name: localize('queryPlan.SaveFileDescription', 'Execution Plan Files') //TODO: Get the names from providers.
+				}
+			],
+			defaultUri: currentWorkSpaceFolder // If no workspaces are opened this will be undefined
+		});
+		if (saveFileUri) {
+			await context.fileService.writeFile(saveFileUri, VSBuffer.fromString(context.graphModel.graphFile.graphFileContent));
+		}
 	}
 }
 
@@ -615,24 +650,3 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		`);
 	}
 });
-
-
-/**
- * Registering a feature flag for query plan.
- * TODO: This should be removed before taking the feature to public preview.
- */
-const QUERYPLAN2_CONFIG_ID = 'queryPlan2';
-Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConfiguration({
-	id: QUERYPLAN2_CONFIG_ID,
-	title: localize('queryPlan2.configTitle', "Query Plan"),
-	type: 'object',
-	properties: {
-		'queryPlan2.enableFeature': {
-			'type': 'boolean',
-			'default': false,
-			'description': localize('queryPlan2.featureEnabledDescription', "Controls whether the new query plan feature is enabled. Default value is false.")
-		}
-	}
-});
-
-
