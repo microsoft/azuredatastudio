@@ -38,10 +38,12 @@ declare module 'azdata' {
 			supportedLanguages?: string[];
 			oldName?: string;
 			oldDisplayName?: string;
+			oldLanguage?: string;
 		}
 
 		export interface ILanguageInfo {
 			supportedLanguages?: string[];
+			oldName?: string;
 		}
 
 		export interface IStandardKernel {

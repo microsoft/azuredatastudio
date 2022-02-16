@@ -1444,7 +1444,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					language: spec.language,
 					supportedLanguages: spec.supportedLanguages,
 					oldName: spec.oldName,
-					oldDisplayName: spec.oldDisplayName
+					oldDisplayName: spec.oldDisplayName,
+					oldLanguage: spec.oldLanguage
 				};
 				this.clientSession?.configureKernel(this._savedKernelInfo);
 			} catch (err) {
@@ -1572,6 +1573,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		metadata.kernelspec = this._savedKernelInfo;
 		delete metadata.kernelspec?.supportedLanguages;
 
+		metadata.language_info = this.languageInfo;
+		delete metadata.language_info?.supportedLanguages;
+
 		// Undo special casing for .NET Interactive
 		if (metadata.kernelspec?.oldName) {
 			metadata.kernelspec.name = metadata.kernelspec.oldName;
@@ -1581,9 +1585,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			metadata.kernelspec.display_name = metadata.kernelspec.oldDisplayName;
 			delete metadata.kernelspec.oldDisplayName;
 		}
+		if (metadata.kernelspec?.oldLanguage) {
+			metadata.kernelspec.language = metadata.kernelspec.oldLanguage;
+			delete metadata.kernelspec.oldLanguage;
+		}
+		if (metadata.language_info?.oldName) {
+			metadata.language_info.name = metadata.language_info?.oldName;
+			delete metadata.language_info?.oldName;
+		}
 
-		metadata.language_info = this.languageInfo;
-		delete metadata.language_info?.supportedLanguages;
 
 		metadata.tags = this._tags;
 		metadata.multi_connection_mode = this._multiConnectionMode ? this._multiConnectionMode : undefined;
