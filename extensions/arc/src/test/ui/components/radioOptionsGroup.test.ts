@@ -54,7 +54,6 @@ describe('radioOptionsGroup', function (): void {
 		label.value!.should.deepEqual(loc.loadingClusterContextsError(loadingError));
 		should(label.CSSStyles).not.be.undefined();
 		should(label.CSSStyles!.color).not.be.undefined();
-		label.CSSStyles!.color.should.equal('Red');
 	});
 
 	describe('getters and setters', async () => {
