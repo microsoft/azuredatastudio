@@ -1,7 +1,8 @@
 # Azure SQL Migration
 The Azure SQL Migration extension in Azure Data Studio brings together a simplified assessment and migration experience that delivers the following capabilities:
-- A responsive user interface that provides an easy-to-navigate step-by-step wizard to deliver an integrated assessment and migration experience.
+- A responsive user interface that provides an easy-to-navigate step-by-step wizard to deliver an integrated assessment, Azure recommendation and migration experience.
 - An enhanced assessment engine that can assess SQL Server instances and identify databases that are ready for migration to Azure SQL Managed Instance or SQL Server on Azure Virtual Machines.
+- SKU recommender to collect performance data from the source SQL Server instance to generate right-sized Azure SQL recommendation.
 - A reliable Azure service powered by Azure Database Migration service that orchestrates data movement activities to deliver a seamless migration experience with minimal downtime.
 - The ability to run migrations in either online (for migrations that require minimal downtime) or offline (for migrations where downtime persists through the duration of the migration) modes to suit your business requirements.
 - The flexibility to create and configure a self-hosted integration runtime to provide your own compute for access to source SQL Server and backups in your on-premises environment.
@@ -13,15 +14,20 @@ From Azure Data Studio marketplace, install the latest version of “Azure SQL M
 
 
 ## Things you need before starting Azure SQL migration
-- an Azure account
+- an Azure account for migration (not required for assessment or SKU recommendation features)
 - an Azure SQL Managed Instance or SQL Server on Azure Virtual Machine to migrate your database(s) to
 - your database backup location details
 
 ## Getting started
 Refer to [Migrate databases using the Azure SQL Migration extension for Azure Data Studio](https://docs.microsoft.com/azure/dms/migration-using-azure-data-studio) for detailed documentation on capabilities and concepts.
 
+## Assessment and SKU recommendation
+The assessment and SKU recommendation feature
+- evaluates the source SQL Server database(s) for migration readiness.
+- generates right-sized SKU recommendations in Azure to meet the performance requirements of the source database(s) with minimal cost. [Learn more.](https://aka.ms/ads-sql-sku-recommend)
+
 ## Azure SQL targets
-The Azure SQL Migration extension supports database target readiness assessments and migrations to the following Azure SQL targets.
+The Azure SQL Migration extension supports database migrations to the following Azure SQL targets.
 - [SQL on Azure Virtual Machines (Windows)](https://docs.microsoft.com/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview)
 - [Azure SQL Managed Instance](https://docs.microsoft.com/azure/azure-sql/managed-instance/sql-managed-instance-paas-overview)
 

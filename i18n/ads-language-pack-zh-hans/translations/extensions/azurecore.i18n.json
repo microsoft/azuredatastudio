@@ -18,7 +18,7 @@
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "身份验证失败，或者你的令牌已从系统中删除。请尝试再次将帐户添加到 Azure Data Studio。",
 			"azure.noUniqueIdentifier": "用户在 AAD 中没有唯一标识符",
-			"azure.responseError": "令牌检索失败，出现错误。请打开开发人员工具以查看错误",
+			"azure.responseError": "令牌检索失败，出现错误。[打开开发人员工具]({0})了解更多详细信息。",
 			"azure.tenantNotFound": "找不到带有 ID '{0}' 的指定租户。",
 			"azureAuth.unidentifiedError": "使用 Azure 身份验证时出现不明错误",
 			"azureWorkAccountDisplayName": "工作或学校帐户",
@@ -233,8 +233,9 @@
 			"config.enablePublicCloudDescription": "是否应启用 Azure 公有云集成",
 			"config.enableUsGovCloudDescription": "是否应启用美国政府 Azure 云(Fairfax)集成",
 			"config.enableUsNatCloudDescription": "是否应启用美国国家 Azure 云集成",
+			"config.loggingLevel": "[可选] Azure 帐户扩展的日志记录详细程度。",
 			"config.noSystemKeychain": "禁用系统密钥链集成。凭据将存储在用户主目录的平面文件中。",
-			"config.piiLogging": "应在控制台视图中本地记录个人身份信息(PII)"
+			"config.piiLogging": "是否应在 Azure 帐户输出通道和输出通道日志文件中记录个人身份信息 (PII)。"
 		}
 	}
 }

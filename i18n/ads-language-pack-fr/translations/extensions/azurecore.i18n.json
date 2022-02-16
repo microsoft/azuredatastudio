@@ -18,7 +18,7 @@
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Une erreur s'est produite pendant l'authentification ou vos jetons ont été supprimés du système. Essayez de rajouter votre compte à Azure Data Studio.",
 			"azure.noUniqueIdentifier": "L'utilisateur n'a pas d'identificateur unique dans AAD",
-			"azure.responseError": "La récupération du jeton a échoué avec une erreur. Ouvrir les outils de développement pour voir l'erreur",
+			"azure.responseError": "La récupération du jeton a échoué avec une erreur. [Ouvrir les outils de développement]({0}) pour plus de détails.",
 			"azure.tenantNotFound": "Le locataire spécifié avec l'ID « {0} » est introuvable.",
 			"azureAuth.unidentifiedError": "Erreur non identifiée avec l'authentification Azure",
 			"azureWorkAccountDisplayName": "Compte professionnel ou scolaire",
@@ -233,8 +233,9 @@
 			"config.enablePublicCloudDescription": "Spécifie si l'intégration du cloud Azure public doit être activée",
 			"config.enableUsGovCloudDescription": "Spécifie si l'intégration du cloud Azure US Government (Fairfax) doit être activée",
 			"config.enableUsNatCloudDescription": "Spécifie si l'intégration du cloud Azure US National doit être activée",
+			"config.loggingLevel": "[Optional] La verbosité de la journalisation de l’extension Comptes Azure",
 			"config.noSystemKeychain": "Désactivez l'intégration du trousseau système. Les informations d'identification sont stockées dans un fichier plat dans le dossier de base de l'utilisateur.",
-			"config.piiLogging": "Les informations d'identification personnelle (PII) doivent-elles être journalisées localement dans la vue de console"
+			"config.piiLogging": "Si les informations d’identification personnelles (PII) doivent être journalisées dans le canal de sortie comptes Azure et le fichier journal du canal de sortie."
 		}
 	}
 }

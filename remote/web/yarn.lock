@@ -140,19 +140,19 @@ ansi-styles@^3.2.1:
   dependencies:
     color-convert "^1.9.0"
 
-ansi_up@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/ansi_up/-/ansi_up-3.0.0.tgz#27f45d8f457d9ceff59e4ea03c8e6f13c1a303e8"
-  integrity sha1-J/Rdj0V9nO/1nk6gPI5vE8GjA+g=
+ansi_up@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/ansi_up/-/ansi_up-5.1.0.tgz#9cf10e6d359bb434bdcfab5ae4c3abfe1617b6db"
+  integrity sha512-3wwu+nJCKBVBwOCurm0uv91lMoVkhFB+3qZQz3U11AmAdDJ4tkw1sNPWJQcVxMVYwe0pGEALOjSBOxdxNc+pNQ==
 
 array-uniq@^1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/array-uniq/-/array-uniq-1.0.3.tgz#af6ac877a25cc7f74e058894753858dfdb24fdb6"
   integrity sha1-r2rId6Jcx/dOBYiUdThY39sk/bY=
 
-"azdataGraph@github:Microsoft/azdataGraph#0.0.14":
-  version "0.0.14"
-  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/1fba9e94e5520ef78121f6dc23a5a2cdee20c8a4"
+"azdataGraph@github:Microsoft/azdataGraph#0.0.15":
+  version "0.0.15"
+  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/361a477943e7f0154693a0d4ba09efad7e15b926"
 
 chalk@^2.3.0, chalk@^2.4.1:
   version "2.4.2"

@@ -18,7 +18,7 @@
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Si è verificato un errore durante l'autenticazione oppure i token sono stati eliminati dal sistema. Provare ad aggiungere di nuovo l'account ad Azure Data Studio.",
 			"azure.noUniqueIdentifier": "L'utente non ha un identificatore univoco in AAD",
-			"azure.responseError": "Il recupero del token non è riuscito con un errore. Aprire gli strumenti di sviluppo per visualizzare l'errore",
+			"azure.responseError": "Il recupero del token non è riuscito generando un errore. [Aprire gli strumenti di sviluppo] ({0}) per ulteriori dettagli.",
 			"azure.tenantNotFound": "Il tenant specificato con ID '{0}' non è stato trovato.",
 			"azureAuth.unidentifiedError": "Errore non identificato con l'autenticazione di Azure",
 			"azureWorkAccountDisplayName": "Account aziendale o dell'istituto di istruzione",
@@ -233,8 +233,9 @@
 			"config.enablePublicCloudDescription": "Consente di indicare se l'integrazione del cloud pubblico di Azure deve essere abilitata",
 			"config.enableUsGovCloudDescription": "Consente di indicare se l'integrazione del cloud US Government Azure (Fairfax) deve essere abilitata",
 			"config.enableUsNatCloudDescription": "Consente di indicare se l'integrazione del cloud Azure US National deve essere abilitata",
+			"config.loggingLevel": "[Optional] Livello di dettaglio della registrazione per l'estensione Account di Azure.",
 			"config.noSystemKeychain": "Disabilitare l'integrazione del keychain di sistema. Le credenziali verranno archiviate in un file flat nella home directory dell'utente.",
-			"config.piiLogging": "Indicare se le informazioni personali devono essere registrate nella visualizzazione della console in locale"
+			"config.piiLogging": "Le informazioni personali (PII) devono essere registrate nel canale di output degli account di Azure e nel file di log del canale di output."
 		}
 	}
 }

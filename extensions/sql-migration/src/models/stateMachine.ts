@@ -9,13 +9,13 @@ import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs } from '../api/azure';
-import { SKURecommendations } from './externalContract';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
 import { hashString, deepClone } from '../api/utils';
+import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 const localize = nls.loadMessageBundle();
 
 export enum State {
@@ -59,9 +59,9 @@ export enum NetworkContainerType {
 }
 
 export enum Page {
-	AzureAccount,
 	DatabaseSelector,
 	SKURecommendation,
+	TargetSelection,
 	MigrationMode,
 	DatabaseBackup,
 	IntegrationRuntime,
@@ -74,6 +74,10 @@ export enum WizardEntryPoint {
 	RetryMigration = 'RetryMigration',
 }
 
+export enum PerformanceDataSourceOptions {
+	CollectData = 'CollectData',
+	OpenExisting = 'OpenExisting',
+}
 export interface DatabaseBackupModel {
 	migrationMode: MigrationMode;
 	networkContainerType: NetworkContainerType;
@@ -103,7 +107,6 @@ export interface Model {
 	readonly sourceConnectionId: string;
 	readonly currentState: State;
 	gatheringInformationError: string | undefined;
-	skuRecommendations: SKURecommendations | undefined;
 	_azureAccount: azdata.Account | undefined;
 	_databaseBackup: DatabaseBackupModel | undefined;
 }
@@ -134,8 +137,18 @@ export interface SavedInfo {
 	blobs: Blob[];
 	targetDatabaseNames: string[];
 	migrationServiceId: string | null;
+	skuRecommendation: SkuRecommendationSavedInfo | null;
 }
 
+export interface SkuRecommendationSavedInfo {
+	skuRecommendationPerformanceDataSource: PerformanceDataSourceOptions;
+	skuRecommendationPerformanceLocation: string;
+	perfDataCollectionStartDate?: Date;
+	perfDataCollectionStopDate?: Date;
+	skuTargetPercentile: number;
+	skuScalingFactor: number;
+	skuEnablePreview: boolean;
+}
 
 export class MigrationStateModel implements Model, vscode.Disposable {
 	public _azureAccounts!: azdata.Account[];
@@ -176,11 +189,41 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _currentState: State;
 	private _gatheringInformationError: string | undefined;
 
-	private _skuRecommendations: SKURecommendations | undefined;
 	public _assessmentResults!: ServerAssessment;
 	public _runAssessments: boolean = true;
 	private _assessmentApiResponse!: mssql.AssessmentResult;
 	public mementoString: string;
+
+	public _skuRecommendationResults!: SkuRecommendation;
+	public _skuRecommendationPerformanceDataSource!: PerformanceDataSourceOptions;
+	private _skuRecommendationApiResponse!: mssql.SkuRecommendationResult;
+	public _skuRecommendationPerformanceLocation!: string;
+	private _skuRecommendationRecommendedDatabaseList!: string[];
+	private _startPerfDataCollectionApiResponse!: mssql.StartPerfDataCollectionResult;
+	private _stopPerfDataCollectionApiResponse!: mssql.StopPerfDataCollectionResult;
+	private _refreshPerfDataCollectionApiResponse!: mssql.RefreshPerfDataCollectionResult;
+	public _perfDataCollectionStartDate!: Date | undefined;
+	public _perfDataCollectionStopDate!: Date | undefined;
+	public _perfDataCollectionLastRefreshedDate!: Date;
+	public _perfDataCollectionMessages!: string[];
+	public _perfDataCollectionErrors!: string[];
+	public _perfDataCollectionIsCollecting!: boolean;
+
+	public readonly _performanceDataQueryIntervalInSeconds = 30;
+	public readonly _staticDataQueryIntervalInSeconds = 60;
+	public readonly _numberOfPerformanceDataQueryIterations = 19;
+	public readonly _defaultDataPointStartTime = '1900-01-01 00:00:00';
+	public readonly _defaultDataPointEndTime = '2200-01-01 00:00:00';
+	public readonly _recommendationTargetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
+
+	public refreshPerfDataCollectionFrequency = this._performanceDataQueryIntervalInSeconds * 1000;
+	private _autoRefreshPerfDataCollectionHandle!: NodeJS.Timeout;
+	public refreshGetSkuRecommendationFrequency = 600000;	// 10 minutes
+	private _autoRefreshGetSkuRecommendationHandle!: NodeJS.Timeout;
+
+	public _skuScalingFactor!: number;
+	public _skuTargetPercentile!: number;
+	public _skuEnablePreview!: boolean;
 
 	public _vmDbs: string[] = [];
 	public _miDbs: string[] = [];
@@ -213,6 +256,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._databaseBackup.networkShares = [];
 		this._databaseBackup.blobs = [];
 		this.mementoString = 'sqlMigration.assessmentResults';
+
+		this._skuScalingFactor = 100;
+		this._skuTargetPercentile = 95;
+		this._skuEnablePreview = true;
 	}
 
 	public get sourceConnectionId(): string {
@@ -232,6 +279,17 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		let temp = await azdata.connection.listDatabases(this.sourceConnectionId);
 		let finalResult = temp.filter((name) => !this.excludeDbs.includes(name));
 		return finalResult;
+	}
+	public hasRecommendedDatabaseListChanged(): boolean {
+		const oldDbList = this._skuRecommendationRecommendedDatabaseList;
+		const newDbList = this._databaseAssessment;
+
+		if (!oldDbList || !newDbList) {
+			return false;
+		}
+		return !((oldDbList.length === newDbList.length) && oldDbList.every(function (element, index) {
+			return element === newDbList[index];
+		}));
 	}
 
 	public async getDatabaseAssessments(targetType: MigrationTargetType): Promise<ServerAssessment> {
@@ -291,6 +349,314 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._assessmentResults;
 	}
 
+	public async getSkuRecommendations(): Promise<SkuRecommendation> {
+		try {
+			const serverInfo = await azdata.connection.getServerInfo(this.sourceConnectionId);
+			const machineName = (<any>serverInfo)['machineName'];		// get actual machine name instead of whatever the user entered as the server name (e.g. DESKTOP-xxx instead of localhost)
+
+			const response = (await this.migrationService.getSkuRecommendations(
+				this._skuRecommendationPerformanceLocation,
+				this._performanceDataQueryIntervalInSeconds,
+				this._recommendationTargetPlatforms.map(p => p.toString()),
+				machineName,
+				this._skuTargetPercentile,
+				this._skuScalingFactor,
+				this._defaultDataPointStartTime,
+				this._defaultDataPointEndTime,
+				this._skuEnablePreview,
+				this._databaseAssessment))!;
+			this._skuRecommendationApiResponse = response;
+
+			// clone list of databases currently being assessed and store them, so that if the user ever changes the list we can refresh new recommendations
+			this._skuRecommendationRecommendedDatabaseList = this._databaseAssessment.slice();
+
+			console.log('sqlinstancerequirements: ');
+			console.log(this._skuRecommendationApiResponse.instanceRequirements);
+
+			if (response?.sqlDbRecommendationResults || response?.sqlMiRecommendationResults || response?.sqlVmRecommendationResults) {
+				this._skuRecommendationResults = {
+					recommendations: {
+						sqlDbRecommendationResults: response?.sqlDbRecommendationResults ?? [],
+						sqlMiRecommendationResults: response?.sqlMiRecommendationResults ?? [],
+						sqlVmRecommendationResults: response?.sqlVmRecommendationResults ?? [],
+						instanceRequirements: response?.instanceRequirements
+					},
+				};
+			} else {
+				this._skuRecommendationResults = {
+					recommendations: {
+						sqlDbRecommendationResults: [],
+						sqlMiRecommendationResults: [],
+						sqlVmRecommendationResults: [],
+						instanceRequirements: response?.instanceRequirements
+					},
+				};
+			}
+
+		} catch (error) {
+			console.log(error);
+
+			this._skuRecommendationResults = {
+				recommendations: {
+					sqlDbRecommendationResults: this._skuRecommendationApiResponse?.sqlDbRecommendationResults ?? [],
+					sqlMiRecommendationResults: this._skuRecommendationApiResponse?.sqlMiRecommendationResults ?? [],
+					sqlVmRecommendationResults: this._skuRecommendationApiResponse?.sqlVmRecommendationResults ?? [],
+					instanceRequirements: this._skuRecommendationApiResponse?.instanceRequirements
+				},
+				recommendationError: error
+			};
+		}		// Generating all the telemetry asynchronously as we don't need to block the user for it.
+		this.generateSkuRecommendationTelemetry().catch(e => console.error(e));
+
+		return this._skuRecommendationResults;
+	}
+
+	private async generateSkuRecommendationTelemetry(): Promise<void> {
+		try {
+
+			this._skuRecommendationResults?.recommendations?.sqlMiRecommendationResults?.forEach(resultItem => {
+				// Send telemetry for recommended MI SKU
+				sendSqlMigrationActionEvent(
+					TelemetryViews.SkuRecommendationWizard,
+					TelemetryAction.GetMISkuRecommendation,
+					{
+						'sessionId': this._sessionId,
+						'recommendedSku': JSON.stringify(resultItem?.targetSku)
+					},
+					{}
+				);
+			});
+
+			this._skuRecommendationResults?.recommendations?.sqlVmRecommendationResults?.forEach(resultItem => {
+				// Send telemetry for recommended VM SKU
+				sendSqlMigrationActionEvent(
+					TelemetryViews.SkuRecommendationWizard,
+					TelemetryAction.GetVMSkuRecommendation,
+					{
+						'sessionId': this._sessionId,
+						'recommendedSku': JSON.stringify(resultItem?.targetSku)
+					},
+					{}
+				);
+			});
+
+			// Send Instance requirements used for calculating recommendations
+			sendSqlMigrationActionEvent(
+				TelemetryViews.SkuRecommendationWizard,
+				TelemetryAction.GetInstanceRequirements,
+				{
+					'sessionId': this._sessionId,
+					'performanceDataSource': this._skuRecommendationPerformanceDataSource,
+					'databaseLevelRequirements': JSON.stringify(this._skuRecommendationResults?.recommendations?.instanceRequirements?.databaseLevelRequirements?.map(i => {
+						return {
+							cpuRequirementInCores: i.cpuRequirementInCores,
+							dataIOPSRequirement: i.dataIOPSRequirement,
+							logIOPSRequirement: i.logIOPSRequirement,
+							ioLatencyRequirementInMs: i.ioLatencyRequirementInMs,
+							ioThroughputRequirementInMBps: i.ioThroughputRequirementInMBps,
+							dataStorageRequirementInMB: i.dataStorageRequirementInMB,
+							logStorageRequirementInMB: i.logStorageRequirementInMB,
+							databaseName: hashString(i.databaseName),
+							memoryRequirementInMB: i.memoryRequirementInMB,
+							cpuRequirementInPercentageOfTotalInstance: i.cpuRequirementInPercentageOfTotalInstance,
+							numberOfDataPointsAnalyzed: i.numberOfDataPointsAnalyzed,
+							fileLevelRequirements: i.fileLevelRequirements?.map(file => {
+								return {
+									fileType: file.fileType,
+									sizeInMB: file.sizeInMB,
+									readLatencyInMs: file.readLatencyInMs,
+									writeLatencyInMs: file.writeLatencyInMs,
+									iopsRequirement: file.iopsRequirement,
+									ioThroughputRequirementInMBps: file.ioThroughputRequirementInMBps,
+									numberOfDataPointsAnalyzed: file.numberOfDataPointsAnalyzed
+								};
+							})
+						};
+					}))
+				},
+				{
+					'cpuRequirementInCores': this._skuRecommendationResults?.recommendations?.instanceRequirements?.cpuRequirementInCores,
+					'dataStorageRequirementInMB': this._skuRecommendationResults?.recommendations?.instanceRequirements?.dataStorageRequirementInMB,
+					'logStorageRequirementInMB': this._skuRecommendationResults?.recommendations?.instanceRequirements?.logStorageRequirementInMB,
+					'memoryRequirementInMB': this._skuRecommendationResults?.recommendations?.instanceRequirements?.memoryRequirementInMB,
+					'dataIOPSRequirement': this._skuRecommendationResults?.recommendations?.instanceRequirements?.dataIOPSRequirement,
+					'logIOPSRequirement': this._skuRecommendationResults?.recommendations?.instanceRequirements?.logIOPSRequirement,
+					'ioLatencyRequirementInMs': this._skuRecommendationResults?.recommendations?.instanceRequirements?.ioLatencyRequirementInMs,
+					'ioThroughputRequirementInMBps': this._skuRecommendationResults?.recommendations?.instanceRequirements?.ioThroughputRequirementInMBps,
+					'tempDBSizeInMB': this._skuRecommendationResults?.recommendations?.instanceRequirements?.tempDBSizeInMB,
+					'aggregationTargetPercentile': this._skuRecommendationResults?.recommendations?.instanceRequirements?.aggregationTargetPercentile,
+					'numberOfDataPointsAnalyzed': this._skuRecommendationResults?.recommendations?.instanceRequirements?.numberOfDataPointsAnalyzed,
+				}
+			);
+
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
+	public async startPerfDataCollection(
+		dataFolder: string,
+		perfQueryIntervalInSec: number,
+		staticQueryIntervalInSec: number,
+		numberOfIterations: number,
+		page: SKURecommendationPage): Promise<boolean> {
+		try {
+			if (!this.performanceCollectionInProgress()) {
+				const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
+				const response = await this.migrationService.startPerfDataCollection(ownerUri, dataFolder, perfQueryIntervalInSec, staticQueryIntervalInSec, numberOfIterations);
+
+				this._startPerfDataCollectionApiResponse = response!;
+				this._perfDataCollectionStartDate = this._startPerfDataCollectionApiResponse.dateTimeStarted;
+				this._perfDataCollectionStopDate = undefined;
+
+				void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_START_POPUP);
+
+				await this.startSkuTimers(page, this.refreshPerfDataCollectionFrequency);
+			}
+		}
+		catch (error) {
+			console.log(error);
+		}
+
+		// Generate telemetry for start data collection request
+		this.generateStartDataCollectionTelemetry().catch(e => console.error(e));
+
+		return true;
+	}
+
+	private async generateStartDataCollectionTelemetry(): Promise<void> {
+		try {
+			sendSqlMigrationActionEvent(
+				TelemetryViews.DataCollectionWizard,
+				TelemetryAction.StartDataCollection,
+				{
+					'sessionId': this._sessionId,
+					'timeDataCollectionStarted': this._perfDataCollectionStartDate?.toString() || ''
+				},
+				{}
+			);
+
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
+	public async startSkuTimers(page: SKURecommendationPage, refreshIntervalInMs: number): Promise<void> {
+		const classVariable = this;
+
+		if (!this._autoRefreshPerfDataCollectionHandle) {
+			clearInterval(this._autoRefreshPerfDataCollectionHandle);
+			if (this.refreshPerfDataCollectionFrequency !== -1) {
+				this._autoRefreshPerfDataCollectionHandle = setInterval(async function () {
+					await classVariable.refreshPerfDataCollection();
+
+					if (await classVariable.isWaitingForFirstTimeRefresh()) {
+						await page.refreshSkuRecommendationComponents();	// update timer
+					}
+				}, refreshIntervalInMs);
+			}
+		}
+
+		if (!this._autoRefreshGetSkuRecommendationHandle) {
+			// start one-time timer to get SKU recommendation
+			clearTimeout(this._autoRefreshGetSkuRecommendationHandle);
+			if (this.refreshGetSkuRecommendationFrequency !== -1) {
+				this._autoRefreshGetSkuRecommendationHandle = setTimeout(async function () {
+					await page.refreshAzureRecommendation();
+				}, this.refreshGetSkuRecommendationFrequency);
+			}
+		}
+	}
+
+	public async stopPerfDataCollection(): Promise<boolean> {
+		try {
+			const response = await this.migrationService.stopPerfDataCollection();
+			void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_STOP_POPUP);
+
+			this._stopPerfDataCollectionApiResponse = response!;
+			this._perfDataCollectionStopDate = this._stopPerfDataCollectionApiResponse.dateTimeStopped;
+
+			// stop auto refresh
+			clearInterval(this._autoRefreshPerfDataCollectionHandle);
+			clearInterval(this._autoRefreshGetSkuRecommendationHandle);
+		}
+		catch (error) {
+			console.log(error);
+		}
+
+		// Generate telemetry for stop data collection request
+		this.generateStopDataCollectionTelemetry().catch(e => console.error(e));
+		return true;
+	}
+
+	private async generateStopDataCollectionTelemetry(): Promise<void> {
+		try {
+			sendSqlMigrationActionEvent(
+				TelemetryViews.DataCollectionWizard,
+				TelemetryAction.StopDataCollection,
+				{
+					'sessionId': this._sessionId,
+					'timeDataCollectionStopped': this._perfDataCollectionStopDate?.toString() || ''
+				},
+				{}
+			);
+
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
+	public async refreshPerfDataCollection(): Promise<boolean> {
+		try {
+			const response = await this.migrationService.refreshPerfDataCollection(this._perfDataCollectionLastRefreshedDate ?? new Date());
+			this._refreshPerfDataCollectionApiResponse = response!;
+			this._perfDataCollectionLastRefreshedDate = this._refreshPerfDataCollectionApiResponse.refreshTime;
+			this._perfDataCollectionMessages = this._refreshPerfDataCollectionApiResponse.messages;
+			this._perfDataCollectionErrors = this._refreshPerfDataCollectionApiResponse.errors;
+			this._perfDataCollectionIsCollecting = this._refreshPerfDataCollectionApiResponse.isCollecting;
+
+			if (this._perfDataCollectionErrors?.length > 0) {
+				void vscode.window.showInformationMessage(constants.PERF_DATA_COLLECTION_ERROR(this._assessmentApiResponse?.assessmentResult?.name, this._perfDataCollectionErrors));
+			}
+		}
+		catch (error) {
+			console.log(error);
+		}
+
+		return true;
+	}
+
+	public async isWaitingForFirstTimeRefresh(): Promise<boolean> {
+		const elapsedTimeInMins = Math.abs(new Date().getTime() - new Date(this._perfDataCollectionStartDate!).getTime()) / 60000;
+		const skuRecAutoRefreshTimeInMins = this.refreshGetSkuRecommendationFrequency / 60000;
+
+		return elapsedTimeInMins < skuRecAutoRefreshTimeInMins;
+	}
+
+	public performanceCollectionNotStarted(): boolean {
+		if (!this._perfDataCollectionStartDate
+			&& !this._perfDataCollectionStopDate) {
+			return true;
+		}
+		return false;
+	}
+
+	public performanceCollectionInProgress(): boolean {
+		if (this._perfDataCollectionStartDate
+			&& !this._perfDataCollectionStopDate) {
+			return true;
+		}
+		return false;
+	}
+
+	public performanceCollectionStopped(): boolean {
+		if (this._perfDataCollectionStartDate
+			&& this._perfDataCollectionStopDate) {
+			return true;
+		}
+		return false;
+	}
+
 	private async generateAssessmentTelemetry(): Promise<void> {
 		try {
 
@@ -324,9 +690,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.ServerAssessment,
 				{
 					'sessionId': this._sessionId,
-					'tenantId': this._azureAccount.properties.tenants[0].id,
-					'subscriptionId': this._targetSubscription?.id,
-					'resourceGroup': this._resourceGroup?.name,
 					'hashedServerName': hashString(this._assessmentApiResponse?.assessmentResult?.name),
 					'startTime': startTime.toString(),
 					'endTime': endTime.toString(),
@@ -360,8 +723,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					TelemetryAction.DatabaseAssessment,
 					{
 						'sessionId': this._sessionId,
-						'subscriptionId': this._targetSubscription?.id,
-						'resourceGroup': this._resourceGroup?.name,
 						'hashedDatabaseName': hashString(d.name),
 						'compatibilityLevel': d.compatibilityLevel
 					},
@@ -398,8 +759,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.DatabaseAssessmentWarning,
 				{
 					'sessionId': this._sessionId,
-					'subscriptionId': this._targetSubscription?.id,
-					'resourceGroup': this._resourceGroup?.name,
 					'warnings': JSON.stringify(databaseWarnings)
 				},
 				{}
@@ -418,14 +777,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.DatabaseAssessmentError,
 				{
 					'sessionId': this._sessionId,
-					'subscriptionId': this._targetSubscription?.id,
-					'resourceGroup': this._resourceGroup?.name,
 					'errors': JSON.stringify(databaseErrors)
 				},
 				{}
 			);
 
 		} catch (e) {
+			console.log('error during assessment telemetry:');
 			console.log(e);
 		}
 	}
@@ -436,14 +794,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public set gatheringInformationError(error: string | undefined) {
 		this._gatheringInformationError = error;
-	}
-
-	public get skuRecommendations(): SKURecommendations | undefined {
-		return this._skuRecommendations;
-	}
-
-	public set skuRecommendations(recommendations: SKURecommendations | undefined) {
-		this._skuRecommendations = recommendations;
 	}
 
 	public get stateChangeEvent(): vscode.Event<StateChangeEvent> {
@@ -1068,6 +1418,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			blobs: [],
 			targetDatabaseNames: [],
 			migrationServiceId: null,
+			skuRecommendation: null,
 		};
 		switch (currentPage) {
 			case Page.Summary:
@@ -1081,23 +1432,40 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				saveInfo.targetSubscription = this._databaseBackup.subscription;
 				saveInfo.blobs = this._databaseBackup.blobs;
 				saveInfo.targetDatabaseNames = this._targetDatabaseNames;
+
 			case Page.MigrationMode:
 				saveInfo.migrationMode = this._databaseBackup.migrationMode;
+
+			case Page.TargetSelection:
+				saveInfo.azureAccount = deepClone(this._azureAccount);
+				saveInfo.azureTenant = deepClone(this._azureTenant);
+				saveInfo.subscription = this._targetSubscription;
+				saveInfo.location = this._location;
+				saveInfo.resourceGroup = this._resourceGroup;
+				saveInfo.targetServerInstance = this._targetServerInstance;
+
 			case Page.SKURecommendation:
 				saveInfo.migrationTargetType = this._targetType;
 				saveInfo.databaseAssessment = this._databaseAssessment;
 				saveInfo.serverAssessment = this._assessmentResults;
 				saveInfo.migrationDatabases = this._databaseSelection;
 				saveInfo.databaseList = this._migrationDbs;
-				saveInfo.subscription = this._targetSubscription;
-				saveInfo.location = this._location;
-				saveInfo.resourceGroup = this._resourceGroup;
-				saveInfo.targetServerInstance = this._targetServerInstance;
+
+				if (this._skuRecommendationPerformanceDataSource) {
+					let skuRecommendation: SkuRecommendationSavedInfo = {
+						skuRecommendationPerformanceDataSource: this._skuRecommendationPerformanceDataSource,
+						skuRecommendationPerformanceLocation: this._skuRecommendationPerformanceLocation,
+						perfDataCollectionStartDate: this._perfDataCollectionStartDate,
+						perfDataCollectionStopDate: this._perfDataCollectionStopDate,
+						skuTargetPercentile: this._skuTargetPercentile,
+						skuScalingFactor: this._skuScalingFactor,
+						skuEnablePreview: this._skuEnablePreview,
+					};
+					saveInfo.skuRecommendation = skuRecommendation;
+				}
+
 			case Page.DatabaseSelector:
 				saveInfo.selectedDatabases = this.databaseSelectorTableValues;
-			case Page.AzureAccount:
-				saveInfo.azureAccount = deepClone(this._azureAccount);
-				saveInfo.azureTenant = deepClone(this._azureTenant);
 				await this.extensionContext.globalState.update(`${this.mementoString}.${serverName}`, saveInfo);
 		}
 	}
@@ -1112,4 +1480,9 @@ export interface ServerAssessment {
 	}[];
 	errors?: mssql.ErrorModel[];
 	assessmentError?: Error;
+}
+
+export interface SkuRecommendation {
+	recommendations: mssql.SkuRecommendationResult;
+	recommendationError?: Error;
 }

@@ -128,7 +128,7 @@ Dies kann einige Zeit dauern.</target>
       </trans-unit>
       <trans-unit id="sql.migration.bc.info">
         <source xml:lang="en">A SQL Managed Instance migration cutover to the Business Critical service tier can take significantly longer than General Purpose because three secondary replicas have to be seeded for Always On High Availability group. The duration of the operation depends on the size of the data. Seeding speed in 90% of cases is 220 GB/hour or higher.</source>
-        <target state="translated">Eine SQL Managed Instance Übernahme der Migration zur Dienstebene "Unternehmenskritisch" kann erheblich länger dauern als "Universell", da für drei sekundäre Replikate für "Always-On-Hochverfügbarkeitsgruppe" ein Seeding ausgeführt werden muss. Die Dauer des Vorgangs hängt von der Größe der Daten ab. Die Seedinggeschwindigkeit in 90 % der Fälle beträgt 220 GB/Stunde oder höher.</target>
+        <target state="translated">Ein Cutover der Migration einer verwalteten SQL-Instanz kann auf der Dienstebene "Unternehmenskritisch" erheblich länger dauern als auf "Universell", da für drei sekundäre Replikate eine Always On-Hochverfügbarkeitsgruppe angelegt werden muss. Die Dauer des Vorgangs hängt von der Größe der Daten ab. Die Seedinggeschwindigkeit ist in 90 % der Fälle 220 GB/Stunde oder höher.</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.container.label">
         <source xml:lang="en">Blob container resource group</source>
@@ -200,7 +200,7 @@ Dies kann einige Zeit dauern.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cannot.cutover">
         <source xml:lang="en">Migration is not in progress and cannot be cutover.</source>
-        <target state="translated">Die Migration ist nicht in Bearbeitung und kann nicht überlappen.</target>
+        <target state="translated">Die Migration ist nicht in Bearbeitung, Cutover nicht möglich.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cannot.retry">
         <source xml:lang="en">Migration cannot be retried.</source>
@@ -208,7 +208,7 @@ Dies kann einige Zeit dauern.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cannot.start.cutover.error">
         <source xml:lang="en">The cutover process cannot start until all the migrations are done. To return the latest file status, refresh your browser window.</source>
-        <target state="translated">Der Übernahmevorgang kann erst gestartet werden, wenn alle Migrationen abgeschlossen sind. Aktualisieren Sie das Browserfenster, um den aktuellen Dateistatus zurückzugeben.</target>
+        <target state="translated">Der Cutover kann erst gestartet werden, wenn alle Migrationen abgeschlossen sind. Aktualisieren Sie das Browserfenster, um den aktuellen Dateistatus anzuzeigen.</target>
       </trans-unit>
       <trans-unit id="sql.migration.close">
         <source xml:lang="en">Close</source>
@@ -216,15 +216,15 @@ Dies kann einige Zeit dauern.</target>
       </trans-unit>
       <trans-unit id="sql.migration.complete.cutover">
         <source xml:lang="en">Complete cutover</source>
-        <target state="translated">Übernahme abschließen</target>
+        <target state="translated">Cutover abschließen</target>
       </trans-unit>
       <trans-unit id="sql.migration.completing.cutover.warning">
         <source xml:lang="en">Completing cutover without restoring all the backups may result in a data loss.</source>
-        <target state="translated">Das Abschließen der Übernahme ohne Wiederherstellung aller Sicherungen kann zu einem Datenverlust führen.</target>
+        <target state="translated">Ein Cutover ohne Wiederherstellung aller Sicherungen kann zu Datenverlusten führen.</target>
       </trans-unit>
       <trans-unit id="sql.migration.confirm.checkbox.message">
         <source xml:lang="en">I confirm there are no additional log backups to provide and want to complete cutover.</source>
-        <target state="translated">Ich bestätige, dass keine zusätzlichen Protokollsicherungen zur Verfügung stehen und die Übernahme abgeschlossen werden soll.</target>
+        <target state="translated">Ich bestätige, dass keine zusätzlichen Protokollsicherungen zur Verfügung stehen und der Cutover abgeschlossen werden soll.</target>
       </trans-unit>
       <trans-unit id="sql.migration.connection.status">
         <source xml:lang="en">Connection status</source>
@@ -276,23 +276,23 @@ Dies kann einige Zeit dauern.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover">
         <source xml:lang="en">Migration cutover</source>
-        <target state="translated">Übernahme der Migration</target>
+        <target state="translated">Cutover der Migration</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.card">
         <source xml:lang="en">Completing cutover</source>
-        <target state="translated">Übernahme wird abgeschlossen</target>
+        <target state="translated">Cutover wird abgeschlossen</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.error">
         <source xml:lang="en">An error occurred while initiating cutover.</source>
-        <target state="translated">Fehler beim Initiieren der Übernahme.</target>
+        <target state="translated">Fehler beim Initiieren des Cutovers.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.help.main">
         <source xml:lang="en">Perform the following steps before you complete cutover.</source>
-        <target state="translated">Führen Sie die folgenden Schritte aus, bevor Sie die Übernahme abschließen.</target>
+        <target state="translated">Führen Sie die folgenden Schritte aus, bevor Sie den Cutover abschließen.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.in.progress">
         <source xml:lang="en">Cutover in progress for database '{0}'</source>
-        <target state="translated">Übernahme für die Datenbank "{0}" in Bearbeitung</target>
+        <target state="translated">Cutover für Datenbank '{0}' in Bearbeitung</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.last.file.restored">
         <source xml:lang="en">Last file restored: {0}</source>
@@ -337,14 +337,6 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.dashboard.help.title">
         <source xml:lang="en">Help articles and video links</source>
         <target state="translated">Links zu Hilfeartikeln und Videos</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.dashboard.link1.description">
-        <source xml:lang="en">Assessment rules used to determine the feasibility of migrating your SQL Server instance to Azure SQL Managed Instance.</source>
-        <target state="translated">Bewertungsregeln, die verwendet werden, um die Empfindlichkeit der Migration Ihrer SQL Server-Instanz zu Azure SQL Managed Instance zu bestimmen.</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.dashboard.link1.title">
-        <source xml:lang="en">Assessment rules for Azure SQL Managed Instance</source>
-        <target state="translated">Bewertungsregeln für Azure SQL Managed Instance</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.migrate.task.button">
         <source xml:lang="en">Migrate to Azure SQL</source>
@@ -400,7 +392,7 @@ Dies kann einige Zeit dauern.</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.migration.mode.online.description">
         <source xml:lang="en">Application downtime is limited to cutover at the end of migration.</source>
-        <target state="translated">Die Anwendungsausfallzeit ist auf die Übernahme am Ende der Migration beschränkt.</target>
+        <target state="translated">Die Ausfallzeit der Anwendung ist auf den Cutover am Ende der Migration beschränkt.</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.migration.mode.online.label">
         <source xml:lang="en">Online migration</source>
@@ -1500,6 +1492,42 @@ Dies kann einige Zeit dauern.</target>
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/sql-migration/dist/dashboard/sqlServerDashboard" source-language="en" datatype="plaintext" target-language="de">
+    <body>
+      <trans-unit id="sql.migration.dashboard.help.description.dmsGuide">
+        <source xml:lang="en">A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.</source>
+        <target state="new">A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.description.mi">
+        <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Managed Instance with minimal downtime.</source>
+        <target state="new">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Managed Instance with minimal downtime.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.description.migrateUsingADS">
+        <source xml:lang="en">The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.</source>
+        <target state="new">The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.description.vm">
+        <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</source>
+        <target state="new">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.dmsGuide">
+        <source xml:lang="en">Azure Database Migration Guides</source>
+        <target state="new">Azure Database Migration Guides</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.mi">
+        <source xml:lang="en">Tutorial:  Migrate to Azure SQL Managed Instance (online)</source>
+        <target state="new">Tutorial:  Migrate to Azure SQL Managed Instance (online)</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.migrateUsingADS">
+        <source xml:lang="en">Migrate databases using Azure Data Studio</source>
+        <target state="new">Migrate databases using Azure Data Studio</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.vm">
+        <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</source>
+        <target state="new">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/sql-migration/dist/models/stateMachine" source-language="en" datatype="plaintext" target-language="de">
     <body>
       <trans-unit id="sql.migration.starting.migration.error">
@@ -1520,7 +1548,7 @@ Dies kann einige Zeit dauern.</target>
       </trans-unit>
       <trans-unit id="complete-cutover-menu">
         <source xml:lang="en">Complete cutover</source>
-        <target state="translated">Übernahme abschließen</target>
+        <target state="translated">Cutover abschließen</target>
       </trans-unit>
       <trans-unit id="copy-migration-menu">
         <source xml:lang="en">Copy migration details</source>

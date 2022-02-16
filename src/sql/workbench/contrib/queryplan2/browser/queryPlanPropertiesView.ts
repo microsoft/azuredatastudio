@@ -17,6 +17,8 @@ import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { removeLineBreaks } from 'sql/base/common/strings';
 import { isString } from 'vs/base/common/types';
+import { sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames } from 'sql/workbench/contrib/queryplan2/browser/constants';
+import { textFormatter } from 'sql/base/browser/ui/table/formatters';
 
 
 export class QueryPlanPropertiesView {
@@ -95,7 +97,8 @@ export class QueryPlanPropertiesView {
 				field: 'name',
 				width: 250,
 				editor: Slick.Editors.Text,
-				headerCssClass: 'prop-table-header'
+				headerCssClass: 'prop-table-header',
+				formatter: textFormatter
 			},
 			{
 				id: 'value',
@@ -103,7 +106,8 @@ export class QueryPlanPropertiesView {
 				field: 'value',
 				width: 250,
 				editor: Slick.Editors.Text,
-				headerCssClass: 'prop-table-header'
+				headerCssClass: 'prop-table-header',
+				formatter: textFormatter
 			}
 		];
 
@@ -198,15 +202,16 @@ export class QueryPlanPropertiesView {
 		}
 		props.forEach((p, i) => {
 			let row = {};
-			row['name'] = '\t'.repeat(indent) + p.name;
+			rows.push(row);
+			row['name'] = '  '.repeat(indent) + p.name;
 			row['parent'] = parentIndex;
 			if (!isString(p.value)) {
-				row['value'] = '';
+				row['value'] = removeLineBreaks(p.displayValue, ' ');
 				this.convertPropertiesToTableRows(p.value, rows.length - 1, indent + 2, rows);
 			} else {
-				row['value'] = p.value;
+				row['value'] = removeLineBreaks(p.value, ' ');
+				row['tooltip'] = p.value;
 			}
-			rows.push(row);
 		});
 		return rows;
 	}
@@ -239,7 +244,7 @@ export class SortPropertiesAlphabeticallyAction extends Action {
 	public static LABEL = localize('queryPlanPropertyViewSortAlphabetically', "Alphabetical");
 
 	constructor() {
-		super(SortPropertiesAlphabeticallyAction.ID, SortPropertiesAlphabeticallyAction.LABEL, Codicon.sortPrecedence.classNames);
+		super(SortPropertiesAlphabeticallyAction.ID, SortPropertiesAlphabeticallyAction.LABEL, sortAlphabeticallyIconClassNames);
 	}
 
 	public override async run(context: QueryPlanPropertiesView): Promise<void> {
@@ -252,7 +257,7 @@ export class SortPropertiesByDisplayOrderAction extends Action {
 	public static LABEL = localize('queryPlanPropertyViewSortByDisplayOrde', "Categorized");
 
 	constructor() {
-		super(SortPropertiesByDisplayOrderAction.ID, SortPropertiesByDisplayOrderAction.LABEL, Codicon.listOrdered.classNames);
+		super(SortPropertiesByDisplayOrderAction.ID, SortPropertiesByDisplayOrderAction.LABEL, sortByDisplayOrderIconClassNames);
 	}
 
 	public override async run(context: QueryPlanPropertiesView): Promise<void> {

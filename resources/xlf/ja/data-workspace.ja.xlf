@@ -228,10 +228,10 @@
 [Open existing](command:projects.openExisting)
 To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).
 </source>
-        <target state="translated">現在のワークスペースでプロジェクトが開かれていません。
-[新規作成] (command:projects.new)
-[既存のものを開く] (command:projects.openExisting)
-プロジェクトの詳細情報については、[ドキュメントを読む] ( https://aka.ms/azuredatastudio-projects) をご覧ください。
+        <target state="new">No projects open in current workspace.
+[Create new](command:projects.new)
+[Open existing](command:projects.openExisting)
+To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).
 </target>
       </trans-unit>
       <trans-unit id="projects-view-no-workspace-content">
@@ -239,10 +239,10 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
 [Create new](command:projects.new)
 [Open existing](command:projects.openExisting)
 To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).</source>
-        <target state="translated">新規作成するか、既存のものを開いて作業を開始します。
-[新規作成] (command:projects.new)
-[既存のものを開く] (command:projects.openExisting)
-プロジェクトの詳細情報については、[ドキュメントを読む] ( https://aka.ms/azuredatastudio-projects) をご覧ください。</target>
+        <target state="new">Create new or open existing to get started.
+[Create new](command:projects.new)
+[Open existing](command:projects.openExisting)
+To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).</target>
       </trans-unit>
       <trans-unit id="projects.defaultProjectSaveLocation">
         <source xml:lang="en">Full path to folder where new projects are saved by default.</source>
