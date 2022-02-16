@@ -262,6 +262,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			let nativeElement = <HTMLElement>this.languageElement.nativeElement;
 			nativeElement.innerText = this.cellModel.displayLanguage;
 			this.updateLanguageMode();
+			this._changeRef.detectChanges();
 		}));
 		this._register(this.cellModel.onCollapseStateChanged(isCollapsed => {
 			this.onCellCollapse(isCollapsed);
