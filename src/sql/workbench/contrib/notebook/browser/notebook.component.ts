@@ -153,7 +153,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					if (event.keyCode === KeyCode.DownArrow) {
 						let next = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
 						this.selectCell(this.cells[next]);
-						this.scrollToActiveCell();
+						this.scrollToActiveCell(activeCellElement);
 						handled = true;
 					} else if (event.keyCode === KeyCode.UpArrow) {
 						let index = this.findCellIndex(this.model.activeCell);
@@ -161,7 +161,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 							index = this.cells.length;
 						}
 						this.selectCell(this.cells[--index]);
-						this.scrollToActiveCell();
+						this.scrollToActiveCell(activeCellElement);
 						handled = true;
 					}
 					else if (event.keyCode === KeyCode.Enter) {
@@ -300,14 +300,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	@debounce(50)
-	private scrollToActiveCell(): void {
-		// Get active cell from active notebook editor
-		const activeCellElement = this.container.nativeElement.querySelector(`.editor-group-container.active .notebook-cell.active`);
+	private scrollToActiveCell(activeCellElement: HTMLElement): void {
 		let containerTop = this.container.nativeElement.scrollTop;
 		let containerBottom = this.container.nativeElement.clientHeight + containerTop;
 		let activeCellTop = activeCellElement.offsetTop;
 		let activeCellBottom = activeCellTop + activeCellElement.clientHeight;
 
+		// if the active cell is not in view then we need to scroll
 		if ((activeCellBottom >= containerBottom) && (activeCellTop >= containerBottom) || (containerTop > activeCellTop)) {
 			activeCellElement.scrollIntoView();
 		}
