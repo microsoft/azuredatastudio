@@ -266,7 +266,7 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 	getDatabaseNameFromTreeNode(_: vscodeMssql.ITreeNodeInfo): string {
 		throw new Error('Method not implemented.');
 	}
-	getConnectionString(_: string, __: { [name: string]: any }, ___?: boolean, _____?: boolean): Promise<string> {
+	getConnectionString(_: string | vscodeMssql.ConnectionDetails, ___?: boolean, _____?: boolean): Promise<string> {
 		throw new Error('Method not implemented.');
 	}
 }

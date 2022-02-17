@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { BindingType, IConnectionInfo } from 'vscode-mssql';
+import { BindingType, ConnectionDetails, IConnectionInfo } from 'vscode-mssql';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
@@ -169,6 +169,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					let connectionString: string = '';
 					let includePassword: string | undefined;
 					let connectionInfo: IConnectionInfo | undefined;
+					let connectionDetails: ConnectionDetails;
 					if (selectedConnectionStringMethod === constants.userConnectionString) {
 						// User chooses to enter connection string manually
 						connectionString = await vscode.window.showInputBox(
@@ -186,6 +187,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 							// User cancelled return to selectedConnectionStringMethod prompt
 							continue;
 						}
+						connectionDetails = { options: connectionInfo };
 						try {
 							// Prompt to include password in connection string if authentication type is SqlLogin and connection has password saved
 							if (connectionInfo.authenticationType === 'SqlLogin' && connectionInfo.password) {
@@ -196,12 +198,12 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 								});
 								if (includePassword === constants.yesString) {
 									// set connection string to include password
-									connectionString = await vscodeMssqlApi.getConnectionString(undefined, connectionInfo, true, false);
+									connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, true, false);
 								}
 							}
 							// set connection string to not include the password if connection info does not include password, or user chooses to not include password, or authentication type is not sql login
 							if (includePassword !== constants.yesString) {
-								connectionString = await vscodeMssqlApi.getConnectionString(undefined, connectionInfo, false, false);
+								connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
 							}
 						} catch (e) {
 							// failed to get connection string for selected connection and will go back to prompt for connection string methods

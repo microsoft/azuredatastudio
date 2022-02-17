@@ -78,13 +78,12 @@ declare module 'vscode-mssql' {
 
 		/**
 		 * Get the connection string for the provided connection Uri or connection details.
-		 * @param connectionUri The connection Uri for the connection. If undefined then a ConnectionDetails should be specified.
-		 * @param connectionDetails The connection details for the connection. If undefined then a connection URI should be specified.
+		 * @param connectionUriOrDetails Either the connection Uri for the connection or the connection details for the connection is required.
 		 * @param includePassword (optional) if password should be included in connection string.
 		 * @param includeApplicationName (optional) if application name should be included in connection string.
 		 * @returns connection string for the connection
 		 */
-		getConnectionString(connectionUri?: string, connectionDetails?: { [name: string]: any }, includePassword?: boolean, includeApplicationName?: boolean): Promise<string>;
+		getConnectionString(connectionUriOrDetails: string | ConnectionDetails, includePassword?: boolean, includeApplicationName?: boolean): Promise<string>;
 	}
 
 	/**
@@ -633,5 +632,13 @@ declare module 'vscode-mssql' {
 		 * Array of names of Azure functions in the file
 		 */
 		azureFunctions: string[];
+	}
+
+	/**
+	 * Parameters to initialize a connection to a database
+	 */
+	export interface ConnectionDetails {
+
+		options: { [name: string]: any };
 	}
 }
