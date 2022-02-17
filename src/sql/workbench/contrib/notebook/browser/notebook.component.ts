@@ -57,6 +57,7 @@ import { Emitter } from 'vs/base/common/event';
 import { RedoCommand, UndoCommand } from 'vs/editor/browser/editorExtensions';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { debounce } from 'vs/base/common/decorators';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 const PRIORITY = 105;
@@ -145,30 +146,32 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			// For Escape - the focused element is the div.notebook-preview or textarea.inputarea of the cell, so we need to make sure that it is a descendant of the current active cell
 			//  on the current active editor.
 			const activeCellElement = this.container.nativeElement.querySelector(`.editor-group-container.active .notebook-cell.active`);
+			let handled = false;
 			if (DOM.isAncestor(this.container.nativeElement, document.activeElement) && this.isActive() && this.model.activeCell) {
 				const event = new StandardKeyboardEvent(e);
 				if (!this.model.activeCell?.isEditMode) {
 					if (event.keyCode === KeyCode.DownArrow) {
 						let next = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
-						this.selectCell(this.cells[next]);
-						this.scrollToActiveCell();
+
+						this.navigateToCell(this.cells[next]);
+						handled = true;
 					} else if (event.keyCode === KeyCode.UpArrow) {
 						let index = this.findCellIndex(this.model.activeCell);
 						if (index === 0) {
 							index = this.cells.length;
 						}
-						this.selectCell(this.cells[--index]);
-						this.scrollToActiveCell();
+						this.navigateToCell(this.cells[--index]);
+						handled = true;
 					}
 					else if (event.keyCode === KeyCode.Enter) {
-						// prevents adding a newline to the cell source
-						e.preventDefault();
 						this.toggleEditMode();
+						handled = true;
 					}
 					else if (event.keyCode === KeyCode.Escape) {
 						// unselects active cell and removes the focus from code cells
 						this.unselectActiveCell();
 						(document.activeElement as HTMLElement).blur();
+						handled = true;
 					}
 				}
 			} else if (DOM.isAncestor(document.activeElement, activeCellElement) && this.isActive() && this.model.activeCell) {
@@ -176,8 +179,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				if (event.keyCode === KeyCode.Escape) {
 					// first time hitting escape removes the cursor from code cell and changes toolbar in text cells and changes edit mode to false
 					this.toggleEditMode();
+					handled = true;
 				}
 			}
+			if (handled) {
+				DOM.EventHelper.stop(e);
+			}
+
 		}));
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
@@ -283,6 +291,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		toolbarEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
+	@debounce(20)
+	public navigateToCell(cell: ICellModel) {
+		this.selectCell(cell);
+		this.scrollToActiveCell();
+	}
+
 	public selectCell(cell: ICellModel) {
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
 			this.model.updateActiveCell(cell);
@@ -291,10 +305,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private scrollToActiveCell(): void {
-		// Get active cell from active notebook editor
 		const activeCellElement = document.querySelector(`.editor-group-container.active .notebook-cell.active`);
-		activeCellElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
+		activeCellElement.scrollIntoView({ behavior: 'auto', block: 'nearest' });
 	}
 
 	private toggleEditMode(): void {
