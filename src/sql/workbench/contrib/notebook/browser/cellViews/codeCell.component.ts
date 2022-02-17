@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
-import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges, HostListener, ViewChildren, QueryList, ViewChild } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges, ViewChildren, QueryList, ViewChild } from '@angular/core';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
@@ -29,11 +29,6 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	}
 	@Input() set activeCellId(value: string) {
 		this._activeCellId = value;
-	}
-
-	// On click to edit code cell in notebook
-	@HostListener('click', ['$event']) onClick() {
-		this.toggleEditMode();
 	}
 
 	private _activeCellId: string;

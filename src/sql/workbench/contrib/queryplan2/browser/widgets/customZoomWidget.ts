@@ -15,6 +15,8 @@ import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { zoomIconClassNames } from 'sql/workbench/contrib/queryplan2/browser/constants';
+import { Button } from 'sql/base/browser/ui/button/button';
 
 export class CustomZoomWidget extends QueryPlanWidgetBase {
 	private _actionBar: ActionBar;
@@ -52,10 +54,19 @@ export class CustomZoomWidget extends QueryPlanWidgetBase {
 			}
 		};
 
+		const applyButton = new Button(this.container, {
+			title: localize('customZoomApplyButtonTitle', "Apply Zoom (Enter)")
+		});
+		applyButton.setWidth('60px');
+		applyButton.label = localize('customZoomApplyButton', "Apply");
+
+		applyButton.onDidClick(async e => {
+			await new CustomZoomAction().run(self);
+		});
+
 		// Adding action bar
 		this._actionBar = new ActionBar(this.container);
 		this._actionBar.context = this;
-		this._actionBar.pushAction(new CustomZoomAction(), { label: false, icon: true });
 		this._actionBar.pushAction(new CancelZoom(), { label: false, icon: true });
 	}
 
@@ -70,7 +81,7 @@ export class CustomZoomAction extends Action {
 	public static LABEL = localize('zoomAction', "Zoom (Enter)");
 
 	constructor() {
-		super(CustomZoomAction.ID, CustomZoomAction.LABEL, Codicon.zoomOut.classNames);
+		super(CustomZoomAction.ID, CustomZoomAction.LABEL, zoomIconClassNames);
 	}
 
 	public override async run(context: CustomZoomWidget): Promise<void> {

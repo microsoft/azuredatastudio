@@ -67,7 +67,7 @@ export class RadioOptionsGroup {
 			this.component().loadingCompletedText = this._loadingCompleteMessage;
 		}
 		catch (e) {
-			const errorLabel = this._modelBuilder.text().withProps({ value: loc.loadingClusterContextsError(e), CSSStyles: { 'color': 'Red' } }).component();
+			const errorLabel = this._modelBuilder.text().withProps({ value: loc.loadingClusterContextsError(e), textType: azdata.TextType.Error }).component();
 			this._divContainer.addItem(errorLabel);
 			this.component().loadingCompletedText = this._loadingCompleteErrorMessage(e);
 		}
