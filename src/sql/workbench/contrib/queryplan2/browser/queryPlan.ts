@@ -88,7 +88,6 @@ export class QueryPlan2View implements IPanelView {
 
 	public render(container: HTMLElement): void {
 		container.appendChild(this._container);
-		this._container.style.overflow = 'scroll';
 	}
 
 	dispose() {
@@ -98,8 +97,6 @@ export class QueryPlan2View implements IPanelView {
 	}
 
 	public layout(dimension: DOM.Dimension): void {
-		this._container.style.width = dimension.width + 'px';
-		this._container.style.height = dimension.height + 'px';
 	}
 
 	public clear() {
@@ -194,7 +191,12 @@ export class QueryPlan2 implements ISashLayoutProvider {
 			if (newHeight < 200) {
 				return;
 			}
-			this._container.style.height = `${newHeight}px`;
+			/**
+			 * Since the parent container is flex, we will have
+			 * to change the flex-basis property to change the height.
+			 */
+			this._container.style.minHeight = '200px';
+			this._container.style.flex = `0 0 ${newHeight}px`;
 		});
 
 		/**
@@ -565,7 +567,7 @@ class CustomZoomAction extends Action {
 
 class SearchNodeAction extends Action {
 	public static ID = 'qp.searchNode';
-	public static LABEL = localize('queryPlanSearchNodeAction', "SearchNode");
+	public static LABEL = localize('queryPlanSearchNodeAction', "Find Node");
 
 	constructor() {
 		super(SearchNodeAction.ID, SearchNodeAction.LABEL, searchIconClassNames);
@@ -578,7 +580,7 @@ class SearchNodeAction extends Action {
 
 class OpenPlanFile extends Action {
 	public static ID = 'qp.openGraphFile';
-	public static Label = localize('queryPlanOpenGraphFile', "Open Plan File");
+	public static Label = localize('queryPlanOpenGraphFile', "Show Query Plan XML"); //TODO: add a contribution point for providers to set this text
 
 	constructor() {
 		super(OpenPlanFile.ID, OpenPlanFile.Label, openPlanFileIconClassNames);
