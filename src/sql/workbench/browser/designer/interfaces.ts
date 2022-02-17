@@ -44,6 +44,11 @@ export interface DesignerComponentInput {
 	readonly viewModel: DesignerViewModel;
 
 	/**
+	 * Gets the validation errors.
+	 */
+	readonly validationErrors: DesignerValidationError[] | undefined;
+
+	/**
 	 * Start initilizing the designer input object.
 	 */
 	initialize(): void;
@@ -210,9 +215,11 @@ export interface DesignerEdit {
 export type DesignerEditPath = (string | number)[];
 export const DesignerRootObjectPath: DesignerEditPath = [];
 
+export type DesignerValidationError = { message: string, property?: DesignerEditPath };
+
 export interface DesignerEditResult {
 	isValid: boolean;
-	errors?: { message: string, property?: DesignerEditPath }[];
+	errors?: DesignerValidationError[];
 }
 
 export interface DesignerTextEditor {

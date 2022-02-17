@@ -6,7 +6,7 @@
 import {
 	DesignerComponentInput, DesignerEditType, DesignerTab, DesignerEdit, DesignerEditPath, DesignerViewModel, DesignerDataPropertyInfo,
 	DesignerTableComponentRowData, DesignerTableProperties, InputBoxProperties, DropDownProperties, CheckBoxProperties,
-	DesignerEditProcessedEventArgs, DesignerStateChangedEventArgs, DesignerAction, DesignerUIState, DesignerTextEditor, ScriptProperty, DesignerRootObjectPath
+	DesignerEditProcessedEventArgs, DesignerStateChangedEventArgs, DesignerAction, DesignerUIState, ScriptProperty, DesignerRootObjectPath
 }
 	from 'sql/workbench/browser/designer/interfaces';
 import { IPanelTab, ITabbedPanelStyles, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
@@ -34,9 +34,10 @@ import { Color } from 'vs/base/common/color';
 import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { DesignerScriptEditor } from 'sql/workbench/browser/designer/designerScriptEditor';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { DesignerMessagesTabPanelView } from 'sql/workbench/browser/designer/designerMessagesTabPanelView';
+import { DesignerScriptEditorTabPanelView } from 'sql/workbench/browser/designer/designerScriptEditorTabPanelView';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -56,6 +57,8 @@ export type SetComponentValueFunc = (definition: DesignerDataPropertyInfo, compo
 
 const TableRowHeight = 25;
 const TableHeaderRowHeight = 28;
+const ScriptTabId = 'scripts';
+const MessagesTabId = 'messages';
 
 type DesignerUIArea = 'PropertiesView' | 'ScriptView' | 'TopContentView' | 'TabsView';
 
@@ -67,7 +70,8 @@ export class Designer extends Disposable implements IThemable {
 	private _editorContainer: HTMLElement;
 	private _horizontalSplitView: SplitView;
 	private _verticalSplitView: SplitView;
-	private _tabbedPanel: TabbedPanel;
+	private _contentTabbedPanel: TabbedPanel;
+	private _scriptTabbedPannel: TabbedPanel;
 	private _contentContainer: HTMLElement;
 	private _topContentContainer: HTMLElement;
 	private _propertiesPaneContainer: HTMLElement;
@@ -81,7 +85,8 @@ export class Designer extends Disposable implements IThemable {
 	private _inputDisposable: DisposableStore;
 	private _loadingTimeoutHandle: any;
 	private _groupHeaders: HTMLElement[] = [];
-	private _textEditor: DesignerTextEditor;
+	private _messagesView: DesignerMessagesTabPanelView;
+	private _scriptEditorView: DesignerScriptEditorTabPanelView;
 
 	constructor(private readonly _container: HTMLElement,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
@@ -119,7 +124,7 @@ export class Designer extends Disposable implements IThemable {
 		this._propertiesPaneContainer = DOM.$('.properties-container');
 		this._verticalSplitView = new SplitView(this._verticalSplitViewContainer, { orientation: Orientation.VERTICAL });
 		this._horizontalSplitView = new SplitView(this._horizontalSplitViewContainer, { orientation: Orientation.HORIZONTAL });
-		this._tabbedPanel = new TabbedPanel(this._tabbedPanelContainer);
+		this._contentTabbedPanel = new TabbedPanel(this._tabbedPanelContainer);
 		this._container.appendChild(this._verticalSplitViewContainer);
 		this._contentContainer.appendChild(this._topContentContainer);
 		this._contentContainer.appendChild(this._tabbedPanelContainer);
@@ -132,11 +137,18 @@ export class Designer extends Disposable implements IThemable {
 			maximumSize: Number.POSITIVE_INFINITY,
 			onDidChange: Event.None
 		}, Sizing.Distribute);
-		this._textEditor = this._instantiationService.createInstance(DesignerScriptEditor, this._editorContainer);
+		this._scriptTabbedPannel = new TabbedPanel(this._editorContainer);
+		this._messagesView = new DesignerMessagesTabPanelView();
+		this._scriptEditorView = new DesignerScriptEditorTabPanelView(this._instantiationService);
+		this._scriptTabbedPannel.pushTab({
+			title: localize('designer.scriptTabTitle', "Scripts"),
+			identifier: ScriptTabId,
+			view: this._scriptEditorView
+		});
 		this._verticalSplitView.addView({
 			element: this._editorContainer,
 			layout: size => {
-				this._textEditor.layout(new DOM.Dimension(this._editorContainer.clientWidth, size));
+				this._scriptTabbedPannel.layout(new DOM.Dimension(this._editorContainer.clientWidth, size - this._scriptTabbedPannel.headersize));
 			},
 			minimumSize: 100,
 			maximumSize: Number.POSITIVE_INFINITY,
@@ -162,6 +174,7 @@ export class Designer extends Disposable implements IThemable {
 			maximumSize: Number.POSITIVE_INFINITY,
 			onDidChange: Event.None
 		}, Sizing.Distribute);
+
 
 		this._propertiesPane = new DesignerPropertiesPane(this._propertiesPaneContainer, (container, components, parentPath) => {
 			return this.createComponents(container, components, this._propertiesPane.componentMap, this._propertiesPane.groupHeaders, parentPath, 'PropertiesView');
@@ -244,7 +257,7 @@ export class Designer extends Disposable implements IThemable {
 		this._buttons = [];
 		this._componentMap.clear();
 		DOM.clearNode(this._topContentContainer);
-		this._tabbedPanel.clearTabs();
+		this._contentTabbedPanel.clearTabs();
 		this._propertiesPane.clear();
 		this._inputDisposable?.dispose();
 		this._groupHeaders = [];
@@ -287,7 +300,7 @@ export class Designer extends Disposable implements IThemable {
 			this.createComponents(this._topContentContainer, view.components, this._componentMap, this._groupHeaders, DesignerRootObjectPath, 'TopContentView');
 		}
 		view.tabs.forEach(tab => {
-			this._tabbedPanel.pushTab(this.createTabView(tab));
+			this._contentTabbedPanel.pushTab(this.createTabView(tab));
 		});
 		this.layoutTabbedPanel();
 		this.updateComponentValues();
@@ -297,42 +310,37 @@ export class Designer extends Disposable implements IThemable {
 
 	private handleEditProcessedEvent(args: DesignerEditProcessedEventArgs): void {
 		const edit = args.edit;
-		const result = args.result;
-		if (result.isValid) {
-			this._supressEditProcessing = true;
-			try {
-				this.updateComponentValues();
-				if (edit.type === DesignerEditType.Add) {
-					// For tables in the main view, move focus to the first cell of the newly added row, and the properties pane will be showing the new object.
-					if (edit.path.length === 1) {
-						const propertyName = edit.path[0] as string;
-						const tableData = this._input.viewModel[propertyName] as DesignerTableProperties;
-						const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
-						try {
-							table.setActiveCell(tableData.data.length - 1, 0);
-						}
-						catch {
-							// Ignore the slick grid error when setting active cell.
-						}
-					} else {
-						this.updatePropertiesPane(this._propertiesPane.objectPath);
+		this._supressEditProcessing = true;
+		try {
+			this.updateComponentValues();
+			if (edit.type === DesignerEditType.Add) {
+				// For tables in the main view, move focus to the first cell of the newly added row, and the properties pane will be showing the new object.
+				if (edit.path.length === 1) {
+					const propertyName = edit.path[0] as string;
+					const tableData = this._input.viewModel[propertyName] as DesignerTableProperties;
+					const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
+					try {
+						table.setActiveCell(tableData.data.length - 1, 0);
 					}
-				} else if (edit.type === DesignerEditType.Update) {
-					// for edit, update the properties pane with new values of current object.
+					catch {
+						// Ignore the slick grid error when setting active cell.
+					}
+				} else {
 					this.updatePropertiesPane(this._propertiesPane.objectPath);
-				} else if (edit.type === DesignerEditType.Remove) {
-					// removing the secondary level entities, the properties pane needs to be updated to reflect the changes.
-					if (edit.path.length === 4) {
-						this.updatePropertiesPane(this._propertiesPane.objectPath);
-					}
 				}
-			} catch (err) {
-				this._notificationService.error(err);
+			} else if (edit.type === DesignerEditType.Update) {
+				// for edit, update the properties pane with new values of current object.
+				this.updatePropertiesPane(this._propertiesPane.objectPath);
+			} else if (edit.type === DesignerEditType.Remove) {
+				// removing the secondary level entities, the properties pane needs to be updated to reflect the changes.
+				if (edit.path.length === 4) {
+					this.updatePropertiesPane(this._propertiesPane.objectPath);
+				}
 			}
-			this._supressEditProcessing = false;
-		} else {
-			this._notificationService.error(result.errors.map(e => e.message));
+		} catch (err) {
+			this._notificationService.error(err);
 		}
+		this._supressEditProcessing = false;
 	}
 
 	private handleInputStateChangedEvent(args: DesignerStateChangedEventArgs): void {
@@ -378,7 +386,7 @@ export class Designer extends Disposable implements IThemable {
 	}
 
 	private layoutTabbedPanel() {
-		this._tabbedPanel.layout(new DOM.Dimension(this._tabbedPanelContainer.clientWidth, this._tabbedPanelContainer.clientHeight));
+		this._contentTabbedPanel.layout(new DOM.Dimension(this._tabbedPanelContainer.clientWidth, this._tabbedPanelContainer.clientHeight));
 	}
 
 	private layoutPropertiesPane() {
@@ -431,14 +439,34 @@ export class Designer extends Disposable implements IThemable {
 	}
 
 	private updateComponentValues(): void {
+		this.updateMessagesTab();
 		const viewModel = this._input.viewModel;
 		const scriptProperty = viewModel[ScriptProperty] as InputBoxProperties;
 		if (scriptProperty) {
-			this._textEditor.content = scriptProperty.value || '';
+			this._scriptEditorView.content = scriptProperty.value || '';
 		}
 		this._componentMap.forEach((value) => {
 			this.setComponentValue(value.defintion, value.component, viewModel);
 		});
+	}
+
+	private updateMessagesTab(): void {
+		if (!this._input) {
+			return;
+		}
+		if (this._scriptTabbedPannel.contains(MessagesTabId)) {
+			this._scriptTabbedPannel.removeTab(MessagesTabId);
+		}
+		if (this._input.validationErrors === undefined || this._input.validationErrors.length === 0) {
+			return;
+		}
+		this._scriptTabbedPannel.pushTab({
+			title: localize('designer.messagesTabTitle', "Errors ({0})", this._input.validationErrors.length),
+			identifier: MessagesTabId,
+			view: this._messagesView
+		});
+		this._scriptTabbedPannel.showTab(MessagesTabId);
+		this._messagesView.updateMessages(this._input.validationErrors);
 	}
 
 	private handleEdit(edit: DesignerEdit): void {
@@ -791,13 +819,13 @@ export class Designer extends Disposable implements IThemable {
 
 	private getUIState(): DesignerUIState {
 		return {
-			activeTabId: this._tabbedPanel.activeTabId
+			activeTabId: this._contentTabbedPanel.activeTabId
 		};
 	}
 
 	private restoreUIState(): void {
 		if (this._input.designerUIState) {
-			this._tabbedPanel.showTab(this._input.designerUIState.activeTabId);
+			this._contentTabbedPanel.showTab(this._input.designerUIState.activeTabId);
 		}
 	}
 }
