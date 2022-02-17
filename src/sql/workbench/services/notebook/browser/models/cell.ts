@@ -1083,8 +1083,9 @@ export class CellModel extends Disposable implements ICellModel {
 			this._language = cell.metadata.language;
 		} else if (cell.metadata?.dotnet_interactive?.language) {
 			this._language = `dotnet-interactive.${cell.metadata.dotnet_interactive.language}`;
+		} else {
+			this._language = this._options.notebook.language;
 		}
-		// else skip, we set default language anyhow
 	}
 
 	private addOutput(output: nb.ICellOutput) {
