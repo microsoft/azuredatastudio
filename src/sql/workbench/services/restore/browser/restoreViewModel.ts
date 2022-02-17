@@ -46,6 +46,7 @@ export class RestoreViewModel {
 	public readHeaderFromMedia?: boolean;
 	public selectedBackupSets?: string[];
 	public defaultBackupFolder?: string;
+	public deviceType?: number;
 
 	private _onSetLastBackupTaken = new Emitter<string>();
 	public onSetLastBackupTaken: Event<string> = this._onSetLastBackupTaken.event;
