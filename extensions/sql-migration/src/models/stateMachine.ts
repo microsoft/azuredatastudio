@@ -13,7 +13,7 @@ import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
-import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
+import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 const localize = nls.loadMessageBundle();
@@ -218,7 +218,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public refreshPerfDataCollectionFrequency = this._performanceDataQueryIntervalInSeconds * 1000;
 	private _autoRefreshPerfDataCollectionHandle!: NodeJS.Timeout;
-	public refreshGetSkuRecommendationFrequency = 600000;	// 10 minutes
+	public refreshGetSkuRecommendationFrequency = constants.TIME_IN_MINUTES(10);
 	private _autoRefreshGetSkuRecommendationHandle!: NodeJS.Timeout;
 
 	public _skuScalingFactor!: number;
@@ -370,9 +370,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			// clone list of databases currently being assessed and store them, so that if the user ever changes the list we can refresh new recommendations
 			this._skuRecommendationRecommendedDatabaseList = this._databaseAssessment.slice();
 
-			console.log('sqlinstancerequirements: ');
-			console.log(this._skuRecommendationApiResponse.instanceRequirements);
-
 			if (response?.sqlDbRecommendationResults || response?.sqlMiRecommendationResults || response?.sqlVmRecommendationResults) {
 				this._skuRecommendationResults = {
 					recommendations: {
@@ -394,7 +391,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 
 		} catch (error) {
-			console.log(error);
+			logError(TelemetryViews.SkuRecommendationWizard, 'GetSkuRecommendationFailed', error);
 
 			this._skuRecommendationResults = {
 				recommendations: {
@@ -490,7 +487,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			);
 
 		} catch (e) {
-			console.log(e);
+			logError(TelemetryViews.SkuRecommendationWizard, 'GetSkuRecommendationTelemetryFailed', e);
 		}
 	}
 
@@ -537,7 +534,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			);
 
 		} catch (e) {
-			console.log(e);
+			logError(TelemetryViews.DataCollectionWizard, 'StartDataCollectionTelemetryFailed', e);
 		}
 	}
 
@@ -581,7 +578,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			clearInterval(this._autoRefreshGetSkuRecommendationHandle);
 		}
 		catch (error) {
-			console.log(error);
+			logError(TelemetryViews.DataCollectionWizard, 'StopDataCollectionFailed', error);
 		}
 
 		// Generate telemetry for stop data collection request
@@ -602,7 +599,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			);
 
 		} catch (e) {
-			console.log(e);
+			logError(TelemetryViews.DataCollectionWizard, 'StopDataCollectionTelemetryFailed', e);
 		}
 	}
 
@@ -620,15 +617,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 		}
 		catch (error) {
-			console.log(error);
+			logError(TelemetryViews.DataCollectionWizard, 'RefreshDataCollectionFailed', error);
 		}
 
 		return true;
 	}
 
 	public async isWaitingForFirstTimeRefresh(): Promise<boolean> {
-		const elapsedTimeInMins = Math.abs(new Date().getTime() - new Date(this._perfDataCollectionStartDate!).getTime()) / 60000;
-		const skuRecAutoRefreshTimeInMins = this.refreshGetSkuRecommendationFrequency / 60000;
+		const elapsedTimeInMins = Math.abs(new Date().getTime() - new Date(this._perfDataCollectionStartDate!).getTime()) / constants.TIME_IN_MINUTES(1);
+		const skuRecAutoRefreshTimeInMins = this.refreshGetSkuRecommendationFrequency / constants.TIME_IN_MINUTES(1);
 
 		return elapsedTimeInMins < skuRecAutoRefreshTimeInMins;
 	}
@@ -1391,6 +1388,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				void vscode.window.showErrorMessage(
 					localize('sql.migration.starting.migration.error', "An error occurred while starting the migration: '{0}'", e.message));
 				console.log(e);
+			}
+			finally {
+				// kill existing data collection if user start migration
+				await this.refreshPerfDataCollection();
+				if ((!this.resumeAssessment || this.retryMigration) && this._perfDataCollectionIsCollecting) {
+					void this.stopPerfDataCollection();
+					void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_STOP_POPUP);
+				}
 			}
 		}
 	}
