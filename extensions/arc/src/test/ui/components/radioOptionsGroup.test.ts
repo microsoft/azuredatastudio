@@ -52,9 +52,6 @@ describe('radioOptionsGroup', function (): void {
 		const label = radioOptionsGroup.items[0] as azdata.TextComponent;
 		should(label.value).not.be.undefined();
 		label.value!.should.deepEqual(loc.loadingClusterContextsError(loadingError));
-		should(label.CSSStyles).not.be.undefined();
-		should(label.CSSStyles!.color).not.be.undefined();
-		label.CSSStyles!.color.should.equal('Red');
 	});
 
 	describe('getters and setters', async () => {

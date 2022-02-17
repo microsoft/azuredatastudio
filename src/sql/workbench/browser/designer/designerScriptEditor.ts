@@ -116,7 +116,7 @@ export class DesignerScriptEditor extends BaseTextEditor implements DesignerText
 	}
 
 	private updateEditor(): void {
-		if (this._editorModel) {
+		if (this._editorModel && this._content) {
 			this._modelService.updateModel(this._editorModel, this._content);
 			this._untitledTextEditorModel.setDirty(false);
 			this.layout(new DOM.Dimension(this._container.clientWidth, this._container.clientHeight));
