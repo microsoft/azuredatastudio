@@ -34,7 +34,7 @@ import { attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachE
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/workbench/services/restore/browser/restoreViewModel';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
-import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
+import { IPanelTab, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
@@ -42,7 +42,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler, attachTabbedPanelStyler } from 'sql/workbench/common/styler';
-import { fileFiltersSet } from 'sql/workbench/services/restore/common/constants';
+import { fileFiltersSet, DeviceType } from 'sql/workbench/services/restore/common/constants';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
@@ -88,7 +88,11 @@ export class RestoreDialog extends Modal {
 	private _targetDatabaseInputBox: InputBox;
 
 	private _panel?: TabbedPanel;
-	private _generalTabId?: PanelTabIdentifier;
+	private _generalTab?: IPanelTab;
+	private _fileTab?: IPanelTab;
+	private _optionsTab?: IPanelTab;
+
+	private _isManagedInstance?: boolean;
 
 	// File option
 	private readonly _relocateDatabaseFilesOption = 'relocateDbFiles';
@@ -143,6 +147,7 @@ export class RestoreDialog extends Modal {
 
 	constructor(
 		optionsMetadata: azdata.ServiceOption[],
+		isManagedInstance: boolean,
 		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -155,7 +160,7 @@ export class RestoreDialog extends Modal {
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.ModalDialogName.Restore, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasErrors: true, width: 'wide', hasSpinner: true });
-
+		this._isManagedInstance = isManagedInstance;
 		// view model
 		this.viewModel = new RestoreViewModel(optionsMetadata);
 		this.viewModel.onSetLastBackupTaken((value) => this.updateLastBackupTaken(value));
@@ -177,6 +182,14 @@ export class RestoreDialog extends Modal {
 		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel(), 'right', true);
 		this.registerListeners();
 		this._destinationRestoreToInputBox!.disable();
+
+		if (this._isManagedInstance) {
+			const restoreFromUrlIndex = 2;
+			this._restoreFromSelectBox.select(restoreFromUrlIndex);
+			this._restoreFromSelectBox.disable();
+		} else {
+			this._restoreFromSelectBox.enable();
+		}
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -385,7 +398,7 @@ export class RestoreDialog extends Modal {
 		container.appendChild(restorePanel);
 		this._panel = new TabbedPanel(restorePanel);
 		attachTabbedPanelStyler(this._panel, this._themeService);
-		this._generalTabId = this._panel.pushTab({
+		this._generalTab = {
 			identifier: 'general',
 			title: localize('generalTitle', "General"),
 			view: {
@@ -394,9 +407,10 @@ export class RestoreDialog extends Modal {
 				},
 				layout: () => { }
 			}
-		});
+		};
+		this._panel.pushTab(this._generalTab);
 
-		const fileTab = this._panel.pushTab({
+		this._fileTab = {
 			identifier: 'fileContent',
 			title: localize('filesTitle', "Files"),
 			view: {
@@ -405,9 +419,10 @@ export class RestoreDialog extends Modal {
 					c.appendChild(fileContentElement);
 				}
 			}
-		});
+		};
+		this._panel.pushTab(this._fileTab);
 
-		this._panel.pushTab({
+		this._optionsTab = {
 			identifier: 'options',
 			title: localize('optionsTitle', "Options"),
 			view: {
@@ -416,14 +431,15 @@ export class RestoreDialog extends Modal {
 					c.appendChild(optionsContentElement);
 				}
 			}
-		});
+		};
+		this._panel.pushTab(this._optionsTab);
 
 		this._panel.onTabChange(c => {
-			if (c === fileTab && this._fileListTable) {
+			if (c === this._fileTab.identifier && this._fileListTable) {
 				this._fileListTable.resizeCanvas();
 				this._fileListTable.autosizeColumns();
 			}
-			if (c !== this._generalTabId) {
+			if (c !== this._generalTab.identifier) {
 				this._restoreFromSelectBox!.hideMessage();
 			}
 		});
@@ -720,13 +736,35 @@ export class RestoreDialog extends Modal {
 		if (selectedRestoreFrom === this._backupFileTitle) {
 			this._sourceDatabaseSelectBox.enable();
 			this.viewModel.onRestoreFromChanged(true);
+			DOM.show(this._destinationRestoreToContainer!);
+			DOM.show(this._sourceDatabasesElement!);
 			DOM.show(this._restoreFromBackupFileElement!);
 			DOM.hide(this._restoreFromUrlElement);
+			DOM.show(this._targetDatabaseElement!);
+			DOM.hide(this._targetDatabaseInputElement!);
+			if (!this._panel.contains(this._fileTab.identifier)) {
+				this._panel.pushTab(this._fileTab);
+			}
+			if (!this._panel.contains(this._optionsTab.identifier)) {
+				this._panel.pushTab(this._optionsTab);
+			}
+			this.viewModel.deviceType = DeviceType.file.valueOf();
 		} else if (selectedRestoreFrom === this._databaseTitle) {
 			this._sourceDatabaseSelectBox.enable();
 			this.viewModel.onRestoreFromChanged(false);
+			DOM.show(this._destinationRestoreToContainer!);
+			DOM.show(this._sourceDatabasesElement!);
 			DOM.hide(this._restoreFromBackupFileElement!);
 			DOM.hide(this._restoreFromUrlElement);
+			DOM.show(this._targetDatabaseElement!);
+			DOM.hide(this._targetDatabaseInputElement!);
+			if (!this._panel.contains(this._fileTab.identifier)) {
+				this._panel.pushTab(this._fileTab);
+			}
+			if (!this._panel.contains(this._optionsTab.identifier)) {
+				this._panel.pushTab(this._optionsTab);
+			}
+			this.viewModel.deviceType = DeviceType.file.valueOf();
 		} else if (selectedRestoreFrom === this._urlTitle) {
 			this.viewModel.onRestoreFromChanged(false);
 			DOM.hide(this._destinationRestoreToContainer!);
@@ -735,10 +773,10 @@ export class RestoreDialog extends Modal {
 			DOM.show(this._restoreFromUrlElement!);
 			DOM.hide(this._targetDatabaseElement!);
 			DOM.show(this._targetDatabaseInputElement!);
-			this._panel.removeTab('fileContent');
-			this._panel.removeTab('options');
-			this._restoreFromSelectBox.disable();
+			this._panel.removeTab(this._fileTab.identifier);
+			this._panel.removeTab(this._optionsTab.identifier);
 			this._databaseDropdown.value = '';
+			this.viewModel.deviceType = DeviceType.url.valueOf();
 		}
 		this.resetRestoreContent();
 	}
@@ -791,7 +829,7 @@ export class RestoreDialog extends Modal {
 		this._restoreFromSelectBox!.selectWithOptionName(this._databaseTitle);
 		this.onRestoreFromChanged(this._databaseTitle);
 		this._sourceDatabaseSelectBox!.select(0);
-		this._panel!.showTab(this._generalTabId!);
+		this._panel!.showTab(this._generalTab.identifier!);
 		this._isBackupFileCheckboxChanged = false;
 		this.removeErrorMessage();
 		this.resetRestoreContent();

@@ -23,6 +23,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { invalidProvider } from 'sql/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class RestoreService implements IRestoreService {
 
@@ -249,6 +250,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 				restoreInfo.targetDatabaseName = restoreDialog.viewModel.targetDatabaseName;
 			}
 			restoreInfo.overwriteTargetDatabase = overwriteTargetDatabase;
+			restoreInfo.deviceType = restoreDialog.viewModel.deviceType;
 
 			// Set other restore options
 			restoreDialog.viewModel.getRestoreAdvancedOptions(restoreInfo.options);
@@ -301,8 +303,9 @@ export class RestoreDialogController implements IRestoreDialogController {
 					if (!this._restoreDialogs[this._currentProvider]) {
 						let newRestoreDialog: RestoreDialog | OptionsDialog;
 						if (this._currentProvider === ConnectionConstants.mssqlProviderName) {
+							const engineEdition: number = this._connectionService.getConnectionInfo(this._ownerUri).serverInfo.engineEditionId;
 							let provider = this._currentProvider;
-							newRestoreDialog = this._instantiationService.createInstance(RestoreDialog, this.getRestoreOption());
+							newRestoreDialog = this._instantiationService.createInstance(RestoreDialog, this.getRestoreOption(), engineEdition === DatabaseEngineEdition.SqlManagedInstance);
 							newRestoreDialog.onCancel(() => this.handleOnCancel());
 							newRestoreDialog.onRestore((isScriptOnly) => this.handleOnRestore(isScriptOnly));
 							newRestoreDialog.onValidate((overwriteTargetDatabase) => this.handleMssqlOnValidateFile(overwriteTargetDatabase));

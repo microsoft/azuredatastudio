@@ -29,6 +29,14 @@ export class MssqlRestoreInfo implements azdata.RestoreInfo {
 		this.options['backupFilePaths'] = value;
 	}
 
+	public get deviceType(): number {
+		return this.options['deviceType'];
+	}
+
+	public set deviceType(value: number) {
+		this.options['deviceType'] = value;
+	}
+
 	public get targetDatabaseName(): string {
 		return this.options['targetDatabaseName'];
 	}
