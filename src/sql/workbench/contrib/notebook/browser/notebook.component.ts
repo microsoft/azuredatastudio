@@ -152,16 +152,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				if (!this.model.activeCell?.isEditMode) {
 					if (event.keyCode === KeyCode.DownArrow) {
 						let next = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
-						this.selectCell(this.cells[next]);
-						this.scrollToActiveCell();
+
+						this.navigateToCell(this.cells[next]);
 						handled = true;
 					} else if (event.keyCode === KeyCode.UpArrow) {
 						let index = this.findCellIndex(this.model.activeCell);
 						if (index === 0) {
 							index = this.cells.length;
 						}
-						this.selectCell(this.cells[--index]);
-						this.scrollToActiveCell();
+						this.navigateToCell(this.cells[--index]);
 						handled = true;
 					}
 					else if (event.keyCode === KeyCode.Enter) {
@@ -292,6 +291,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		toolbarEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
+	@debounce(20)
+	public navigateToCell(cell: ICellModel) {
+		this.selectCell(cell);
+		this.scrollToActiveCell();
+	}
+
 	public selectCell(cell: ICellModel) {
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
 			this.model.updateActiveCell(cell);
@@ -299,7 +304,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
-	@debounce(50)
 	private scrollToActiveCell(): void {
 		const activeCellElement = this.container.nativeElement.querySelector(`.editor-group-container.active .notebook-cell.active`);
 		let containerTop = this.container.nativeElement.scrollTop;
