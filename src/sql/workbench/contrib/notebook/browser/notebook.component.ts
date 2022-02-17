@@ -165,8 +165,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 						handled = true;
 					}
 					else if (event.keyCode === KeyCode.Enter) {
-						// prevents adding a newline to the cell source
-						e.preventDefault();
 						this.toggleEditMode();
 						handled = true;
 					}
