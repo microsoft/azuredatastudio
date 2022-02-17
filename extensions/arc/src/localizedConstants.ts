@@ -127,7 +127,7 @@ export const indirect = localize('arc.indirect', "Indirect");
 export const loading = localize('arc.loading', "Loading...");
 export const refreshToEnterCredentials = localize('arc.refreshToEnterCredentials', "Refresh node to enter credentials");
 export const noInstancesAvailable = localize('arc.noInstancesAvailable', "No instances available");
-export const connectToServer = localize('arc.connecToServer', "Connect to Server");
+export const connectToServer = localize('arc.connectToServer', "Connect to Server");
 export const connectToController = localize('arc.connectToController', "Connect to Existing Controller");
 export function connectToMSSql(name: string): string { return localize('arc.connectToMSSql', "Connect to SQL managed instance - Azure Arc ({0})", name); }
 export function connectToPGSql(name: string): string { return localize('arc.connectToPGSql', "Connect to PostgreSQL Hyperscale - Azure Arc ({0})", name); }
