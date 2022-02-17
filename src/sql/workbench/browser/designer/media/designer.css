@@ -29,6 +29,20 @@
 	height: 100%;
 }
 
+.designer-component .messages-container {
+	overflow: scroll;
+	height: 100%;
+	width: 100%;
+}
+
+.designer-component .messages-container .message-item {
+	padding: 0px 5px 0px 25px;
+	background-position: 5px center;
+	background-size: 16px 16px;
+	user-select: text;
+	line-height: 25px;
+}
+
 .designer-component .tabbed-panel-container {
 	flex: 1 1 auto;
 	overflow: hidden;
