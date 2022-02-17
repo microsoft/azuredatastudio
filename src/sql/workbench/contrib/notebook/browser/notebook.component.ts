@@ -142,6 +142,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			// For DownArrow, UpArrow and Enter - Make sure that the current active element is an ancestor - this is to prevent us from handling events when the focus is
 			// on some other dialog or part of the app.
+			// For Escape - the focused element is the div.notebook-preview or textarea.inputarea of the cell, so we need to make sure that it is a descendant of the current active cell
+			//  on the current active editor.
+			const activeCellElement = this.container.nativeElement.querySelector(`.editor-group-container.active .notebook-cell.active`);
 			if (DOM.isAncestor(this.container.nativeElement, document.activeElement) && this.isActive() && this.model.activeCell) {
 				const event = new StandardKeyboardEvent(e);
 				if (!this.model.activeCell?.isEditMode) {
@@ -156,22 +159,21 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 						}
 						this.selectCell(this.cells[--index]);
 						this.scrollToActiveCell();
-					} else if (event.keyCode === KeyCode.Escape) {
-						e.stopPropagation();
-						// unselects active cell and removes the focus from code cells
-						this.unselectActiveCell();
-						(document.activeElement as HTMLElement).blur();
 					}
 					else if (event.keyCode === KeyCode.Enter) {
 						// prevents adding a newline to the cell source
 						e.preventDefault();
-						e.stopPropagation();
-						// show edit toolbar
-						this.setActiveCellEditActionMode(true);
 						this.toggleEditMode();
 					}
-				} else if (event.keyCode === KeyCode.Escape) {
-					e.stopPropagation();
+					else if (event.keyCode === KeyCode.Escape) {
+						// unselects active cell and removes the focus from code cells
+						this.unselectActiveCell();
+						(document.activeElement as HTMLElement).blur();
+					}
+				}
+			} else if (DOM.isAncestor(document.activeElement, activeCellElement) && this.isActive() && this.model.activeCell) {
+				const event = new StandardKeyboardEvent(e);
+				if (event.keyCode === KeyCode.Escape) {
 					// first time hitting escape removes the cursor from code cell and changes toolbar in text cells and changes edit mode to false
 					this.toggleEditMode();
 				}
