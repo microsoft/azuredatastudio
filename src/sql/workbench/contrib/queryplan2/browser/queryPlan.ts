@@ -283,14 +283,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 	}
 
 	private populate(node: InternalExecutionPlanNode, diagramNode: any): any {
-		diagramNode.label = '';
-		node.subtext.forEach((str, index) => {
-			diagramNode.label += str;
-
-			if (index < node.subtext.length - 1) {
-				diagramNode.label += this.textResourcePropertiesService.getEOL(undefined);
-			}
-		});
+		diagramNode.label = node.subtext.join(this.textResourcePropertiesService.getEOL(undefined));
 		const nodeId = this.createGraphElementId();
 		diagramNode.id = nodeId;
 		node.id = nodeId;
