@@ -142,14 +142,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			// For DownArrow, UpArrow and Enter - Make sure that the current active element is an ancestor - this is to prevent us from handling events when the focus is
 			// on some other dialog or part of the app.
-			// For Escape - the focused element is the div.notebook-preview or textarea.inputarea of the cell, so we need to make sure that it is a descendant of the current active cell
-			//  on the current active editor.
-			const activeCellElement = this.container.nativeElement.querySelector(`.editor-group-container.active .notebook-cell.active`);
 			if (DOM.isAncestor(this.container.nativeElement, document.activeElement) && this.isActive() && this.model.activeCell) {
 				const event = new StandardKeyboardEvent(e);
-				if (e.repeat) {
-					e.stopImmediatePropagation();
-				}
 				if (!this.model.activeCell?.isEditMode) {
 					if (event.keyCode === KeyCode.DownArrow) {
 						let next = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
@@ -162,21 +156,22 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 						}
 						this.selectCell(this.cells[--index]);
 						this.scrollToActiveCell();
-					}
-					else if (event.keyCode === KeyCode.Enter) {
-						// prevents adding a newline to the cell source
-						e.preventDefault();
-						this.toggleEditMode();
-					}
-					else if (event.keyCode === KeyCode.Escape) {
+					} else if (event.keyCode === KeyCode.Escape) {
+						e.stopPropagation();
 						// unselects active cell and removes the focus from code cells
 						this.unselectActiveCell();
 						(document.activeElement as HTMLElement).blur();
 					}
-				}
-			} else if (DOM.isAncestor(document.activeElement, activeCellElement) && this.isActive() && this.model.activeCell) {
-				const event = new StandardKeyboardEvent(e);
-				if (event.keyCode === KeyCode.Escape) {
+					else if (event.keyCode === KeyCode.Enter) {
+						// prevents adding a newline to the cell source
+						e.preventDefault();
+						e.stopPropagation();
+						// show edit toolbar
+						this.setActiveCellEditActionMode(true);
+						this.toggleEditMode();
+					}
+				} else if (event.keyCode === KeyCode.Escape) {
+					e.stopPropagation();
 					// first time hitting escape removes the cursor from code cell and changes toolbar in text cells and changes edit mode to false
 					this.toggleEditMode();
 				}
@@ -295,9 +290,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private scrollToActiveCell(): void {
 		// Get active cell from active notebook editor
-		const activeCellElement = document.querySelector(`.editor-group-container.active .notebook-cell.active`);
-		activeCellElement.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+		const activeCellElement = this.container.nativeElement.querySelector(`.editor-group-container.active .notebook-cell.active`);
+		let containerTop = this.container.nativeElement.scrollTop;
+		let containerBottom = this.container.nativeElement.clientHeight + containerTop;
+		let activeCellTop = activeCellElement.offsetTop;
+		let activeCellBottom = activeCellTop + activeCellElement.clientHeight;
 
+		if ((activeCellBottom >= containerBottom) && (activeCellTop >= containerBottom) || (containerTop > activeCellTop)) {
+			activeCellElement.scrollIntoView();
+		}
 	}
 
 	private toggleEditMode(): void {
