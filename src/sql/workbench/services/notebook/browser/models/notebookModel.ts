@@ -1569,7 +1569,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			changeType: change,
 			cells: [cell]
 		};
-		if (!cell.active) {
+		if (!cell.active && change === NotebookChangeType.CellSourceUpdated) {
 			this.updateActiveCell(cell);
 		}
 		switch (change) {

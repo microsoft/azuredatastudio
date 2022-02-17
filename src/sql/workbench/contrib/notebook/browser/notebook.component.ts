@@ -137,6 +137,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	ngOnInit() {
+		this._register(DOM.addDisposableListener(window, DOM.EventType.FOCUS_IN, () => {
+			const activeCellElement = this.container.nativeElement.querySelector(`.editor-group-container.active .notebook-cell.active`);
+			if (document.activeElement.className === 'inputarea monaco-mouse-cursor-text' && !DOM.isAncestor(document.activeElement, activeCellElement)) {
+				let focusedCellElement = document.activeElement.closest('.notebook-cell');
+				let focusedCell = this.cells[+focusedCellElement.id];
+				this.selectCell(focusedCell);
+				this.toggleEditMode();
+			}
+		}));
 		// We currently have to hook this onto window because the Notebook component currently doesn't support having document focus
 		// on its elements (we have a "virtual" focus that is updated as users click or navigate through cells). So some of the keyboard
 		// events we care about are fired when the document focus is on something else - typically the root window.
