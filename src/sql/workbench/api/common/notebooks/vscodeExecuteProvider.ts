@@ -234,6 +234,7 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 	}
 
 	public get specs(): azdata.nb.IAllKernels {
+		// Have to return the default kernel here, since the manager specs are accessed before kernels get added
 		let defaultKernel: azdata.nb.IKernelSpec = {
 			name: this._controller.notebookType,
 			language: this._controller.supportedLanguages[0],
