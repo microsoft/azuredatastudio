@@ -159,4 +159,7 @@ import 'vs/workbench/contrib/issue/browser/issue.web.contribution';
 // Getting Started
 import 'sql/workbench/contrib/welcome/gettingStarted/browser/gettingStarted.contribution';
 
+// Telemetry Opt Out
+import 'vs/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut.contribution';
+
 //#endregion
