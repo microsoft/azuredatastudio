@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerEditPath, DesignerValidationError } from 'sql/workbench/browser/designer/interfaces';
+import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerPropertyPath, DesignerValidationError } from 'sql/workbench/browser/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -658,7 +658,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			b. ['propertyName1',index-1,'proper
 		The return values would be the propertyNames followed by slashes in level order. Eg.: propertyName1/propertyName2/...
 	 */
-	private getObjectTypeFromPath(path: DesignerEditPath): string {
+	private getObjectTypeFromPath(path: DesignerPropertyPath): string {
 		let typeArray = [];
 		for (let i = 0; i < path.length; i++) {
 			if (i % 2 === 0) {

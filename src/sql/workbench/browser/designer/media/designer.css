@@ -41,6 +41,7 @@
 	background-size: 16px 16px;
 	user-select: text;
 	line-height: 25px;
+	cursor: pointer;
 }
 
 .designer-component .tabbed-panel-container {

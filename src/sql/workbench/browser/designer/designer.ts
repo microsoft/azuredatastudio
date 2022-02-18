@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import {
-	DesignerComponentInput, DesignerEditType, DesignerTab, DesignerEdit, DesignerEditPath, DesignerViewModel, DesignerDataPropertyInfo,
+	DesignerComponentInput, DesignerEditType, DesignerTab, DesignerEdit, DesignerPropertyPath, DesignerViewModel, DesignerDataPropertyInfo,
 	DesignerTableComponentRowData, DesignerTableProperties, InputBoxProperties, DropDownProperties, CheckBoxProperties,
 	DesignerEditProcessedEventArgs, DesignerStateChangedEventArgs, DesignerAction, DesignerUIState, ScriptProperty, DesignerRootObjectPath
 }
@@ -38,6 +38,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { DesignerMessagesTabPanelView } from 'sql/workbench/browser/designer/designerMessagesTabPanelView';
 import { DesignerScriptEditorTabPanelView } from 'sql/workbench/browser/designer/designerScriptEditorTabPanelView';
+import { DesignerPropertyPathValidator } from 'sql/workbench/browser/designer/designerPropertyPathValidator';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -52,7 +53,7 @@ export interface IDesignerStyle {
 
 export type DesignerUIComponent = InputBox | Checkbox | Table<Slick.SlickData> | SelectBox;
 
-export type CreateComponentsFunc = (container: HTMLElement, components: DesignerDataPropertyInfo[], parentPath: DesignerEditPath) => DesignerUIComponent[];
+export type CreateComponentsFunc = (container: HTMLElement, components: DesignerDataPropertyInfo[], parentPath: DesignerPropertyPath) => DesignerUIComponent[];
 export type SetComponentValueFunc = (definition: DesignerDataPropertyInfo, component: DesignerUIComponent, data: DesignerViewModel) => void;
 
 const TableRowHeight = 25;
@@ -99,7 +100,7 @@ export class Designer extends Disposable implements IThemable {
 				valueGetter: (item, column): string => {
 					return item[column.field].value;
 				},
-				valueSetter: (parentPath: DesignerEditPath, row: number, item: DesignerTableComponentRowData, column: Slick.Column<Slick.SlickData>, value: string): void => {
+				valueSetter: (parentPath: DesignerPropertyPath, row: number, item: DesignerTableComponentRowData, column: Slick.Column<Slick.SlickData>, value: string): void => {
 					this.handleEdit({
 						type: DesignerEditType.Update,
 						path: [...parentPath, row, column.field],
@@ -139,6 +140,9 @@ export class Designer extends Disposable implements IThemable {
 		}, Sizing.Distribute);
 		this._scriptTabbedPannel = new TabbedPanel(this._editorContainer);
 		this._messagesView = new DesignerMessagesTabPanelView();
+		this._register(this._messagesView.onMessageSelected((path) => {
+			this.selectProperty(path);
+		}));
 		this._scriptEditorView = new DesignerScriptEditorTabPanelView(this._instantiationService);
 		this._scriptTabbedPannel.pushTab({
 			title: localize('designer.scriptTabTitle', "Scripts"),
@@ -407,7 +411,7 @@ export class Designer extends Disposable implements IThemable {
 		return rows * TableRowHeight + TableHeaderRowHeight;
 	}
 
-	private updatePropertiesPane(objectPath: DesignerEditPath): void {
+	private updatePropertiesPane(objectPath: DesignerPropertyPath): void {
 		let type: string;
 		let components: DesignerDataPropertyInfo[];
 		let objectViewModel: DesignerViewModel;
@@ -467,6 +471,56 @@ export class Designer extends Disposable implements IThemable {
 		});
 		this._scriptTabbedPannel.showTab(MessagesTabId);
 		this._messagesView.updateMessages(this._input.validationErrors);
+	}
+
+	private selectProperty(path: DesignerPropertyPath): void {
+		if (!DesignerPropertyPathValidator.validate(path, this._input.viewModel)) {
+			return;
+		}
+
+		// Find top level property
+		let found = false;
+		if (this._input.view.components) {
+			for (const component of this._input.view.components) {
+				if (path[0] === component.propertyName) {
+					found = true;
+					break;
+				}
+			}
+		}
+		if (this._input.view.tabs) {
+			for (const tab of this._input.view.tabs) {
+				if (tab) {
+					for (const component of tab.components) {
+						if (path[0] === component.propertyName) {
+							this._contentTabbedPanel.showTab(tab.title);
+							found = true;
+							break;
+						}
+					}
+				}
+				if (found) {
+					break;
+				}
+			}
+		}
+
+		if (found) {
+			const propertyInfo = this._componentMap.get(<string>path[0]);
+			if (propertyInfo.defintion.componentType !== 'table') {
+				propertyInfo.component.focus();
+				return;
+			} else {
+				const tableComponent = <Table<Slick.SlickData>>propertyInfo.component;
+				tableComponent.setActiveCell(<number>path[1], 0);
+				if (path.length > 2) {
+					const propertyPaneObjectPath = path.slice(0, 2);
+					const relativePath = path.slice(2);
+					this.updatePropertiesPane(propertyPaneObjectPath);
+					this._propertiesPane.selectProperty(relativePath);
+				}
+			}
+		}
 	}
 
 	private handleEdit(edit: DesignerEdit): void {
@@ -553,7 +607,7 @@ export class Designer extends Disposable implements IThemable {
 		components: DesignerDataPropertyInfo[],
 		componentMap: Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }>,
 		groupHeaders: HTMLElement[],
-		parentPath: DesignerEditPath,
+		parentPath: DesignerPropertyPath,
 		area: DesignerUIArea): DesignerUIComponent[] {
 		const uiComponents = [];
 		const groupNames = [];
@@ -589,7 +643,7 @@ export class Designer extends Disposable implements IThemable {
 
 	private createComponent(container: HTMLElement,
 		componentDefinition: DesignerDataPropertyInfo,
-		parentPath: DesignerEditPath,
+		parentPath: DesignerPropertyPath,
 		componentMap: Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }>,
 		view: DesignerUIArea): DesignerUIComponent {
 		const propertyPath = [...parentPath, componentDefinition.propertyName];
@@ -695,7 +749,8 @@ export class Designer extends Disposable implements IThemable {
 						}
 					},
 					rowHeight: TableRowHeight,
-					headerRowHeight: TableHeaderRowHeight
+					headerRowHeight: TableHeaderRowHeight,
+					editorLock: new Slick.EditorLock()
 				});
 				table.ariaLabel = tableProperties.ariaLabel;
 				const columns = tableProperties.columns.map(propName => {
@@ -819,13 +874,15 @@ export class Designer extends Disposable implements IThemable {
 
 	private getUIState(): DesignerUIState {
 		return {
-			activeTabId: this._contentTabbedPanel.activeTabId
+			activeContentTabId: this._contentTabbedPanel.activeTabId,
+			activeScriptTabId: this._scriptTabbedPannel.activeTabId
 		};
 	}
 
 	private restoreUIState(): void {
 		if (this._input.designerUIState) {
-			this._contentTabbedPanel.showTab(this._input.designerUIState.activeTabId);
+			this._contentTabbedPanel.showTab(this._input.designerUIState.activeContentTabId);
+			this._scriptTabbedPannel.showTab(this._input.designerUIState.activeScriptTabId);
 		}
 	}
 }

@@ -6,10 +6,14 @@
 import { IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
-import { DesignerValidationError } from 'sql/workbench/browser/designer/interfaces';
+import { DesignerPropertyPath, DesignerValidationError } from 'sql/workbench/browser/designer/interfaces';
+import { Emitter, Event } from 'vs/base/common/event';
 
 export class DesignerMessagesTabPanelView extends Disposable implements IPanelView {
 	private _container: HTMLElement;
+	private _onMessageSelected = new Emitter<DesignerPropertyPath>();
+
+	public readonly onMessageSelected: Event<DesignerPropertyPath> = this._onMessageSelected.event;
 
 	render(container: HTMLElement): void {
 		this._container = container.appendChild(DOM.$('.messages-container'));
@@ -24,6 +28,9 @@ export class DesignerMessagesTabPanelView extends Disposable implements IPanelVi
 			errors?.forEach(error => {
 				const messageItem = this._container.appendChild(DOM.$('.message-item.codicon.error'));
 				messageItem.innerText = error.message;
+				messageItem.onclick = () => {
+					this._onMessageSelected.fire(error.propertyPath);
+				};
 			});
 		}
 	}
