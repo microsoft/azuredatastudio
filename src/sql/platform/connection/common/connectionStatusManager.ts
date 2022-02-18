@@ -143,10 +143,6 @@ export class ConnectionStatusManager {
 		let connection = this._connections[summary.ownerUri];
 		if (!connection) {
 			this._logService.error(`OnConnectionComplete but no connection found '${summary.ownerUri}' Connections = [${Object.keys(this._connections)}]`);
-			this._notificationService.notify({
-				severity: Severity.Error,
-				message: `An unexpected error occurred while connecting. Please [file an issue](command:workbench.action.openIssueReporter) with the title 'Unexpected Error Occurred while Connecting' and include the log file [${join(this._environmentService.logsPath, 'renderer1.log')}](command:workbench.action.openLogsFolder)`
-			});
 			// Bail out at this point - there's nothing else we can do since this is an unexpected state.
 			throw new Error('Unexpected error occurred while connecting.');
 		}
