@@ -9,12 +9,9 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { StopWatch } from 'vs/base/common/stopwatch';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { join } from 'vs/base/common/path';
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
-import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { values } from 'vs/base/common/collections';
 import { Schemas } from 'vs/base/common/network';
 
@@ -24,9 +21,7 @@ export class ConnectionStatusManager {
 
 	constructor(
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@ILogService private _logService: ILogService,
-		@IEnvironmentService private _environmentService: IEnvironmentService,
-		@INotificationService private _notificationService: INotificationService) {
+		@ILogService private _logService: ILogService) {
 		this._connections = {};
 	}
 
