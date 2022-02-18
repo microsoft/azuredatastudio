@@ -271,6 +271,9 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.cellModel.onCellModeChanged((isEditMode) => {
 			this.onCellModeChanged(isEditMode);
 		}));
+		this._register(DOM.addDisposableListener(this.toolbarElement.nativeElement, DOM.EventType.FOCUS_IN, () => {
+			this._model.updateActiveCell(this.cellModel, true);
+		}));
 
 		this.layout();
 
