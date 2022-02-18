@@ -23,13 +23,13 @@ export class ControllerUpgradesPage extends DashboardPage {
 		// 	this._controllerModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated())),
 		// );
 	}
-	private _databasesContainer!: azdata.DivContainer;
+	private _upgradesContainer!: azdata.DivContainer;
 	private _configureRetentionPolicyButton!: azdata.ButtonComponent;
 	private _connectToServerLoading!: azdata.LoadingComponent;
-	private _connectToServerButton!: azdata.ButtonComponent;
-	private _databasesTableLoading!: azdata.LoadingComponent;
-	private _databasesTable!: azdata.DeclarativeTableComponent;
-	private _databasesMessage!: azdata.TextComponent;
+	// private _connectToServerButton!: azdata.ButtonComponent;
+	private _upgradesTableLoading!: azdata.LoadingComponent;
+	private _upgradesTable!: azdata.DeclarativeTableComponent;
+	private _upgradesMessage!: azdata.TextComponent;
 	// private readonly _azApi: azExt.IExtension;
 
 	// private _saveArgs: RPModel = {
@@ -66,7 +66,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 			.withProps({ CSSStyles: { 'margin': '18px' } })
 			.component();
 		const content = this.modelView.modelBuilder.divContainer().component();
-		this._databasesContainer = this.modelView.modelBuilder.divContainer().component();
+		this._upgradesContainer = this.modelView.modelBuilder.divContainer().component();
 		root.addItem(content, { CSSStyles: { 'margin': '5px' } });
 
 		// Upgrades title and description
@@ -103,27 +103,28 @@ export class ControllerUpgradesPage extends DashboardPage {
 		content.addItem(upgradesInfoAndLink, { CSSStyles: { 'min-height': '30px' } });
 
 		// Create loaded components
-		const connectToServerText = this.modelView.modelBuilder.text().withProps({
-			value: loc.miaaConnectionRequired
-		}).component();
 
-		this._connectToServerButton = this.modelView.modelBuilder.button().withProps({
-			label: loc.connectToServer,
-			enabled: false,
-			CSSStyles: { 'max-width': '125px', 'margin-left': '40%' }
-		}).component();
+		// const connectToServerText = this.modelView.modelBuilder.text().withProps({
+		// 	value: loc.miaaConnectionRequired
+		// }).component();
+
+		// this._connectToServerButton = this.modelView.modelBuilder.button().withProps({
+		// 	label: loc.connectToServer,
+		// 	enabled: false,
+		// 	CSSStyles: { 'max-width': '125px', 'margin-left': '40%' }
+		// }).component();
 
 		const connectToServerContainer = this.modelView.modelBuilder.divContainer().component();
 
-		connectToServerContainer.addItem(connectToServerText, { CSSStyles: { 'text-align': 'center', 'margin-top': '20px' } });
-		connectToServerContainer.addItem(this._connectToServerButton);
+		// connectToServerContainer.addItem(connectToServerText, { CSSStyles: { 'text-align': 'center', 'margin-top': '20px' } });
+		// connectToServerContainer.addItem(this._connectToServerButton);
 
 		this._connectToServerLoading = this.modelView.modelBuilder.loadingComponent().withItem(connectToServerContainer).component();
 
-		this._databasesContainer.addItem(this._connectToServerLoading, { CSSStyles: { 'margin-top': '20px' } });
+		this._upgradesContainer.addItem(this._connectToServerLoading, { CSSStyles: { 'margin-top': '20px' } });
 
-		this._databasesTableLoading = this.modelView.modelBuilder.loadingComponent().component();
-		this._databasesTable = this.modelView.modelBuilder.declarativeTable().withProps({
+		this._upgradesTableLoading = this.modelView.modelBuilder.loadingComponent().component();
+		this._upgradesTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
 			columns: [
 				{
@@ -162,12 +163,12 @@ export class ControllerUpgradesPage extends DashboardPage {
 			dataValues: []
 		}).component();
 
-		this._databasesMessage = this.modelView.modelBuilder.text()
+		this._upgradesMessage = this.modelView.modelBuilder.text()
 			.withProps({ CSSStyles: { 'text-align': 'center' } })
 			.component();
 
 		// this.handleDatabasesUpdated();
-		this._databasesTableLoading.component = this._databasesTable;
+		this._upgradesTableLoading.component = this._upgradesTable;
 		// this.disposables.push(
 		// 	this._connectToServerButton!.onDidClick(async () => {
 		// 		this._connectToServerButton!.enabled = false;
@@ -179,8 +180,8 @@ export class ControllerUpgradesPage extends DashboardPage {
 		// 		}
 		// 	})
 		// );
-		root.addItem(this._databasesContainer);
-		root.addItem(this._databasesMessage);
+		root.addItem(this._upgradesContainer);
+		root.addItem(this._upgradesMessage);
 
 		this.initialized = true;
 		return root;
