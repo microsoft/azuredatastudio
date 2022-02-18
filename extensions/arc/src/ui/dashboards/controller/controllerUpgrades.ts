@@ -184,6 +184,8 @@ export class ControllerUpgradesPage extends DashboardPage {
 		root.addItem(this._upgradesMessage);
 
 		this.initialized = true;
+		this._upgradesTableLoading.loading = false;
+		this._upgradesContainer.addItem(this._upgradesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
 		return root;
 	}
 
@@ -268,36 +270,36 @@ export class ControllerUpgradesPage extends DashboardPage {
 	}
 
 	// private handleDatabasesUpdated(): void {
-	// 	// If we were able to get the databases it means we have a good connection so update the username too
-	// 	let databaseDisplay = this._controllerModel.databases.map(d => [
-	// 		d.name,
-	// 		d.earliestBackup,
-	// 		d.lastBackup,
-	// 		this.createRestoreButton(d)]);
+	// // 	// If we were able to get the databases it means we have a good connection so update the username too
+	// // 	let databaseDisplay = this._controllerModel.databases.map(d => [
+	// // 		d.name,
+	// // 		d.earliestBackup,
+	// // 		d.lastBackup,
+	// // 		this.createRestoreButton(d)]);
 
-	// 	let databasesValues = databaseDisplay.map(d => {
-	// 		return d.map((value): azdata.DeclarativeTableCellValue => {
-	// 			return { value: value };
-	// 		});
-	// 	});
+	// // 	let databasesValues = databaseDisplay.map(d => {
+	// // 		return d.map((value): azdata.DeclarativeTableCellValue => {
+	// // 			return { value: value };
+	// // 		});
+	// // 	});
 
-	// 	this._databasesTable.setDataValues(databasesValues);
+	// // 	this._databasesTable.setDataValues(databasesValues);
 
-	// 	this._databasesTableLoading.loading = false;
+	// 	this._upgradesTableLoading.loading = false;
 
-	// 	if (this._miaaModel.databasesLastUpdated) {
-	// 		// We successfully connected so now can remove the button and replace it with the actual databases table
-	// 		this._databasesContainer.removeItem(this._connectToServerLoading);
-	// 		this._databasesContainer.addItem(this._databasesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
+	// // 	if (this._miaaModel.databasesLastUpdated) {
+	// // 		// We successfully connected so now can remove the button and replace it with the actual databases table
+	// // 		this._databasesContainer.removeItem(this._connectToServerLoading);
+	// 		this._upgradesContainer.addItem(this._upgradesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
 
-	// 	} else {
-	// 		// If we don't have an endpoint then there's no point in showing the connect button - but the logic
-	// 		// to display text informing the user of this is already handled by the handleMiaaConfigUpdated
-	// 		if (this._miaaModel?.config?.status.primaryEndpoint) {
-	// 			this._connectToServerLoading.loading = false;
-	// 			this._connectToServerButton.enabled = true;
-	// 		}
-	// 	}
+	// // 	} else {
+	// // 		// If we don't have an endpoint then there's no point in showing the connect button - but the logic
+	// // 		// to display text informing the user of this is already handled by the handleMiaaConfigUpdated
+	// // 		if (this._miaaModel?.config?.status.primaryEndpoint) {
+	// // 			this._connectToServerLoading.loading = false;
+	// // 			this._connectToServerButton.enabled = true;
+	// // 		}
+	// // 	}
 	// }
 
 	// private refreshRD(): void {
