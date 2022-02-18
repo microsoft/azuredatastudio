@@ -57,7 +57,6 @@ export class LinkHandlerDirective {
 
 	private async handleLink(content: string): Promise<void> {
 		let uri: URI | undefined;
-		let fragment: string = '';
 		try {
 			uri = URI.parse(content);
 		} catch {
@@ -74,9 +73,8 @@ export class LinkHandlerDirective {
 			}
 		}
 		if (uri && this.openerService) {
-			if (uri.fragment !== '') {
-				fragment = uri.fragment;
-			}
+			// Store fragment before converting, since asFileUri removes the uri fragment
+			const fragment = uri.fragment;
 			// Convert vscode-file protocol URIs to file since that's what Notebooks expect to work with
 			uri = FileAccess.asFileUri(uri);
 			if (this.isSupportedLink(uri)) {
