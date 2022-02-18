@@ -148,6 +148,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			const activeCellElement = this.container.nativeElement.querySelector(`.editor-group-container.active .notebook-cell.active`);
 			const findWidgetVisible = !!document.querySelector(`.editor-widget.find-widget.visible`);
 			let handled = false;
+			// check that the find widget is not opened before handling notebook cell events
 			if (!findWidgetVisible) {
 				if (DOM.isAncestor(this.container.nativeElement, document.activeElement) && this.isActive() && this.model.activeCell) {
 					const event = new StandardKeyboardEvent(e);
