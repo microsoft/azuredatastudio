@@ -139,11 +139,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	ngOnInit() {
 		/// For focusing the correct cell on tabbing, we hook into the focus_in and check if the active cell
 		/// is parent of the tabbed into element.
-		this._register(DOM.addDisposableListener(window, DOM.EventType.FOCUS_IN, () => {
+		this._register(DOM.addDisposableListener(this.container.nativeElement, DOM.EventType.FOCUS_IN, () => {
 			const activeCellElement = this.container.nativeElement.querySelector(`.editor-group-container.active .notebook-cell.active`);
-			if (document.activeElement.className === 'inputarea monaco-mouse-cursor-text' && !DOM.isAncestor(document.activeElement, activeCellElement)) {
-				let focusedCellElement = document.activeElement.closest('.notebook-cell');
-				let focusedCell = this.cells[+focusedCellElement.id];
+			if (!DOM.isAncestor(document.activeElement, activeCellElement)) {
+				let next = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
+				let focusedCell = this.cells[next];
 				this.selectCell(focusedCell);
 			}
 		}));
