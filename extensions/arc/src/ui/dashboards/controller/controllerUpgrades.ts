@@ -25,7 +25,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 	}
 	private _upgradesContainer!: azdata.DivContainer;
 	private _configureRetentionPolicyButton!: azdata.ButtonComponent;
-	private _connectToServerLoading!: azdata.LoadingComponent;
+	// private _connectToServerLoading!: azdata.LoadingComponent;
 	// private _connectToServerButton!: azdata.ButtonComponent;
 	private _upgradesTableLoading!: azdata.LoadingComponent;
 	private _upgradesTable!: azdata.DeclarativeTableComponent;
@@ -114,14 +114,14 @@ export class ControllerUpgradesPage extends DashboardPage {
 		// 	CSSStyles: { 'max-width': '125px', 'margin-left': '40%' }
 		// }).component();
 
-		const connectToServerContainer = this.modelView.modelBuilder.divContainer().component();
+		// const connectToServerContainer = this.modelView.modelBuilder.divContainer().component();
 
 		// connectToServerContainer.addItem(connectToServerText, { CSSStyles: { 'text-align': 'center', 'margin-top': '20px' } });
 		// connectToServerContainer.addItem(this._connectToServerButton);
 
-		this._connectToServerLoading = this.modelView.modelBuilder.loadingComponent().withItem(connectToServerContainer).component();
+		// this._connectToServerLoading = this.modelView.modelBuilder.loadingComponent().withItem(connectToServerContainer).component();
 
-		this._upgradesContainer.addItem(this._connectToServerLoading, { CSSStyles: { 'margin-top': '20px' } });
+		// this._upgradesContainer.addItem(this._connectToServerLoading, { CSSStyles: { 'margin-top': '20px' } });
 
 		this._upgradesTableLoading = this.modelView.modelBuilder.loadingComponent().component();
 		this._upgradesTable = this.modelView.modelBuilder.declarativeTable().withProps({
