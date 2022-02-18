@@ -155,7 +155,15 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			if (!shouldConnect && connectionService && connectionService.isConnected(cellUri)) {
 				connectionService.disconnect(cellUri).catch(e => this.logService.error(e));
 			} else if (shouldConnect && this._model.context && this._model.context.id !== DEFAULT_OR_LOCAL_CONTEXT_ID) {
-				connectionService.connect(this._model.context, cellUri).catch(e => this.logService.error(e));
+				// Don't connect immediately in case the user is switching cells quickly (such as holding down the arrow key to navigate through cells)
+				// Instead wait a small bit and then check if the cell is still active, and if it is at that point then connect so we aren't thrashing
+				// connections
+				setTimeout(() => {
+					if (this.isActive()) {
+						connectionService.connect(this._model.context, cellUri).catch(e => this.logService.error(e));
+					}
+				}, 250);
+
 			}
 		}
 	}
