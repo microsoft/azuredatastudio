@@ -3061,6 +3061,9 @@
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.addExistingItem" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Existing Item...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Добавить существующий элемент...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
