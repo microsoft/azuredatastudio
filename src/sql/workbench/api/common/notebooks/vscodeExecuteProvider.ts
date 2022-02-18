@@ -90,7 +90,6 @@ class VSCodeKernel implements azdata.nb.IKernel {
 			implementation_version: '',
 			language_info: {
 				name: this._kernelSpec.language,
-				supportedLanguages: this._kernelSpec.supportedLanguages,
 				oldName: this._kernelSpec.oldLanguage
 			},
 			banner: '',

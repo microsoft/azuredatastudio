@@ -1571,7 +1571,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		delete metadata.kernelspec?.supportedLanguages;
 
 		metadata.language_info = this.languageInfo;
-		delete metadata.language_info?.supportedLanguages;
 
 		// Undo special casing for .NET Interactive
 		if (metadata.kernelspec?.oldName) {
