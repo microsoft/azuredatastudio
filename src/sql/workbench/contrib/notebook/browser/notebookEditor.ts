@@ -450,6 +450,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 				this.setSelection(p);
 				this._updateFinderMatchState();
 				this._setCurrentFindMatch(p);
+				this._finder.focusFindInput();
 			}
 		} catch (er) {
 			onUnexpectedError(er);
