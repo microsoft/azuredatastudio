@@ -35,18 +35,35 @@ declare module 'azdata' {
 		}
 
 		export interface IKernelSpec {
+			/**
+			 * The list of languages that are supported for this kernel.
+			 */
 			supportedLanguages?: string[];
+			/**
+			 * The original name for this kernel. Used for .NET Interactive compatibility.
+			 */
 			oldName?: string;
+			/**
+			 * The original display name for this kernel. Used for .NET Interactive compatibility.
+			 */
 			oldDisplayName?: string;
+			/**
+			 * The original language name for this kernel. Used for .NET Interactive compatibility.
+			 */
 			oldLanguage?: string;
 		}
 
 		export interface ILanguageInfo {
-			supportedLanguages?: string[];
+			/**
+			 * The original name for this language. Used for .NET Interactive compatibility.
+			 */
 			oldName?: string;
 		}
 
 		export interface IStandardKernel {
+			/**
+			 * The list of languages that are supported for this kernel.
+			 */
 			supportedLanguages: string[];
 			readonly blockedOnSAW?: boolean;
 		}
@@ -98,6 +115,9 @@ declare module 'azdata' {
 
 		export interface ICellMetadata {
 			connection_name?: string;
+			/**
+			 * .NET Interactive metadata. This is only required for compatibility with the .NET Interactive extension.
+			 */
 			dotnet_interactive?: {
 				language: string;
 			}
