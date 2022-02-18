@@ -334,3 +334,13 @@ export const userCancelledError = localize('arc.userCancelledError', "User cance
 export const clusterContextConfigNoLongerValid = (configFile: string, clusterContext: string, error: any) => localize('clusterContextConfigNoLongerValid', "The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:\n\t{2}\n Do you want to update this information?", configFile, clusterContext, getErrorMessage(error));
 export const invalidConfigPath = localize('arc.invalidConfigPath', "Invalid config path");
 export const loadingClusterContextsError = (error: any): string => localize('arc.loadingClusterContextsError', "Error loading cluster contexts. {0}", getErrorMessage(error));
+
+// Upgrade
+export const upgradeManagement = localize('arc.upgradeManagement', "Upgrade Management");
+export const availableUpgrades = localize('arc.availableUpgrades', "Available Upgrades");
+export const availableUpgradesDescription = localize('arc.availableUpgradesDescription', "Available upgrades for this resource are listed below. You can apply upgrades by selecting an upgrade below.");
+export const onlyNextImmediateVersion = localize('arc.onlyNextImmediateVersion', "Currently, only upgrades to the next immediate version is supported.");
+export const version = localize('arc.version', "Version");
+export const releaseDate = localize('arc.releaseDate', "Release Date");
+export const releaseNotes = localize('arc.releaseNotes', "Release Notes");
+export const upgrade = localize('arc.upgrade', "Upgrade");
