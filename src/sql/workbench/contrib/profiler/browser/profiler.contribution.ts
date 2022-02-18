@@ -293,8 +293,8 @@ const profilerSessionTemplateSchema: IJSONSchema = {
 					ADD EVENT sqlserver.sql_batch_starting(
 						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.database_name,sqlserver.nt_username,sqlserver.query_hash,sqlserver.server_principal_name,sqlserver.session_id)
 						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0))))
-					ADD TARGET package0.ring_buffer(SET max_events_limit=(1000),max_memory=(51200))
-					WITH (MAX_MEMORY=8192 KB,EVENT_RETENTION_MODE=ALLOW_SINGLE_EVENT_LOSS,MAX_DISPATCH_LATENCY=5 SECONDS,MAX_EVENT_SIZE=0 KB,MEMORY_PARTITION_MODE=PER_CPU,TRACK_CAUSALITY=ON,STARTUP_STATE=OFF)`
+					ADD TARGET package0.ring_buffer(SET max_events_limit=(1000))
+					WITH (EVENT_RETENTION_MODE=ALLOW_SINGLE_EVENT_LOSS,MAX_DISPATCH_LATENCY=5 SECONDS,MAX_EVENT_SIZE=0 KB,MEMORY_PARTITION_MODE=PER_CPU,TRACK_CAUSALITY=ON,STARTUP_STATE=OFF)`
 		},
 		{
 			name: 'Standard_Azure',
@@ -320,8 +320,8 @@ const profilerSessionTemplateSchema: IJSONSchema = {
 					ADD EVENT sqlserver.sql_batch_starting(
 						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.username,sqlserver.query_hash,sqlserver.session_id)
 						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0))))
-					ADD TARGET package0.ring_buffer(SET max_events_limit=(1000),max_memory=(51200))
-					WITH (MAX_MEMORY=8192 KB,EVENT_RETENTION_MODE=ALLOW_SINGLE_EVENT_LOSS,MAX_DISPATCH_LATENCY=5 SECONDS,MAX_EVENT_SIZE=0 KB,MEMORY_PARTITION_MODE=PER_CPU,TRACK_CAUSALITY=ON,STARTUP_STATE=OFF)`
+					ADD TARGET package0.ring_buffer(SET max_events_limit=(1000))
+					WITH (EVENT_RETENTION_MODE=ALLOW_SINGLE_EVENT_LOSS,MAX_DISPATCH_LATENCY=5 SECONDS,MAX_EVENT_SIZE=0 KB,MEMORY_PARTITION_MODE=PER_CPU,TRACK_CAUSALITY=ON,STARTUP_STATE=OFF)`
 		},
 		{
 			name: 'TSQL_OnPrem',
@@ -341,8 +341,8 @@ const profilerSessionTemplateSchema: IJSONSchema = {
 					ADD EVENT sqlserver.sql_batch_starting(
 						ACTION(package0.event_sequence,sqlserver.session_id,sqlserver.database_id,sqlserver.database_name)
 						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0))))
-					ADD TARGET package0.ring_buffer(SET max_events_limit=(1000),max_memory=(51200))
-					WITH (MAX_MEMORY=8192 KB,EVENT_RETENTION_MODE=ALLOW_SINGLE_EVENT_LOSS,MAX_DISPATCH_LATENCY=5 SECONDS,MAX_EVENT_SIZE=0 KB,MEMORY_PARTITION_MODE=PER_CPU,TRACK_CAUSALITY=ON,STARTUP_STATE=OFF)`
+					ADD TARGET package0.ring_buffer(SET max_events_limit=(1000))
+					WITH (EVENT_RETENTION_MODE=ALLOW_SINGLE_EVENT_LOSS,MAX_DISPATCH_LATENCY=5 SECONDS,MAX_EVENT_SIZE=0 KB,MEMORY_PARTITION_MODE=PER_CPU,TRACK_CAUSALITY=ON,STARTUP_STATE=OFF)`
 		}
 	]
 };
