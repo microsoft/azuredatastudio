@@ -25,7 +25,6 @@ import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeServic
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { editorGutterAddedBackground } from 'vs/workbench/contrib/scm/browser/dirtydiffDecorator';
 
 const NLS_FIND_INPUT_LABEL = nls.localize('label.find', "Find");
 const NLS_FIND_INPUT_PLACEHOLDER = nls.localize('placeholder.find', "Find");

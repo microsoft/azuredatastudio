@@ -319,9 +319,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			selectedCell = this.codeCells.find(c => c.cellModel.id === this.activeCellId);
 		}
 		selectedCell.toggleEditMode();
-		if (this.model.activeCell.cellType !== CellTypes.Code) {
-			this.setActiveCellEditActionMode(selectedCell.cellModel.isEditMode);
-		}
+		this.setActiveCellEditActionMode(selectedCell.cellModel.isEditMode);
 	}
 
 	//Saves scrollTop value on scroll change
