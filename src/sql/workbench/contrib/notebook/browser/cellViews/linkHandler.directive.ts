@@ -73,11 +73,13 @@ export class LinkHandlerDirective {
 			}
 		}
 		if (uri && this.openerService) {
+			// Store fragment before converting, since asFileUri removes the uri fragment
+			const fragment = uri.fragment;
 			// Convert vscode-file protocol URIs to file since that's what Notebooks expect to work with
 			uri = FileAccess.asFileUri(uri);
 			if (this.isSupportedLink(uri)) {
-				if (uri.fragment && uri.fragment.length > 0 && uri.fsPath === this.workbenchFilePath.fsPath) {
-					this.notebookService.navigateTo(this.notebookUri, uri.fragment);
+				if (fragment && fragment.length > 0 && uri.fsPath === this.workbenchFilePath.fsPath) {
+					this.notebookService.navigateTo(this.notebookUri, fragment);
 				} else {
 					if (uri.scheme === 'file') {
 						let exists = await this.fileService.exists(uri);
