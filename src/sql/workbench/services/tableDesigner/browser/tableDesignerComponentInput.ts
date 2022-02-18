@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerEditPath } from 'sql/workbench/browser/designer/interfaces';
+import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerEditPath, DesignerValidationError } from 'sql/workbench/browser/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -22,6 +22,7 @@ const ErrorDialogTitle: string = localize('tableDesigner.ErrorDialogTitle', "Tab
 export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	private _viewModel: DesignerViewModel;
+	private _validationErrors?: DesignerValidationError[];
 	private _view: DesignerView;
 	private _valid: boolean = true;
 	private _dirty: boolean = false;
@@ -75,6 +76,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		return this._viewModel;
 	}
 
+	get validationErrors(): DesignerValidationError[] | undefined {
+		return this._validationErrors;
+	}
+
 	processEdit(edit: DesignerEdit): void {
 		const telemetryInfo = this.createTelemetryInfo();
 		telemetryInfo.tableObjectType = this.getObjectTypeFromPath(edit.path);
@@ -85,6 +90,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		this._provider.processTableEdit(this.tableInfo, edit).then(
 			result => {
 				this._viewModel = result.viewModel;
+				this._validationErrors = result.errors;
 				this.updateState(result.isValid, !equals(this._viewModel, this._originalViewModel), undefined);
 
 				this._onEditProcessed.fire({

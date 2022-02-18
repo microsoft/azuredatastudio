@@ -257,27 +257,27 @@ export class QueryResultsView extends Disposable {
 			}
 		}));
 
-		if (this.input?.state.visibleTabs.has(this.chartTab.identifier) && !this._panelView.contains(this.chartTab)) {
+		if (this.input?.state.visibleTabs.has(this.chartTab.identifier) && !this._panelView.contains(this.chartTab.identifier)) {
 			this._panelView.pushTab(this.chartTab);
-		} else if (!this.input?.state.visibleTabs.has(this.chartTab.identifier) && this._panelView.contains(this.chartTab)) {
+		} else if (!this.input?.state.visibleTabs.has(this.chartTab.identifier) && this._panelView.contains(this.chartTab.identifier)) {
 			this._panelView.removeTab(this.chartTab.identifier);
 		}
 
-		if (this.input?.state.visibleTabs.has(this.qp2Tab.identifier) && !this._panelView.contains(this.qp2Tab)) {
+		if (this.input?.state.visibleTabs.has(this.qp2Tab.identifier) && !this._panelView.contains(this.qp2Tab.identifier)) {
 			this._panelView.pushTab(this.qp2Tab);
-		} else if (!this.input?.state.visibleTabs.has(this.qp2Tab.identifier) && this._panelView.contains(this.qp2Tab)) {
+		} else if (!this.input?.state.visibleTabs.has(this.qp2Tab.identifier) && this._panelView.contains(this.qp2Tab.identifier)) {
 			this._panelView.removeTab(this.qp2Tab.identifier);
 		}
 
-		if (this.input?.state.visibleTabs.has(this.topOperationsTab.identifier) && !this._panelView.contains(this.topOperationsTab)) {
+		if (this.input?.state.visibleTabs.has(this.topOperationsTab.identifier) && !this._panelView.contains(this.topOperationsTab.identifier)) {
 			this._panelView.pushTab(this.topOperationsTab);
-		} else if (!this.input?.state.visibleTabs.has(this.topOperationsTab.identifier) && this._panelView.contains(this.topOperationsTab)) {
+		} else if (!this.input?.state.visibleTabs.has(this.topOperationsTab.identifier) && this._panelView.contains(this.topOperationsTab.identifier)) {
 			this._panelView.removeTab(this.topOperationsTab.identifier);
 		}
 
 		// restore query model view tabs
 		this.dynamicModelViewTabs.forEach(tab => {
-			if (this._panelView.contains(tab)) {
+			if (this._panelView.contains(tab.identifier)) {
 				this._panelView.removeTab(tab.identifier);
 			}
 		});
@@ -291,7 +291,7 @@ export class QueryResultsView extends Disposable {
 					let tab = this._register(new QueryModelViewTab(parts[1], this.instantiationService));
 					tab.view.componentId = parts[2];
 					this.dynamicModelViewTabs.push(tab);
-					if (!this._panelView.contains(tab)) {
+					if (!this._panelView.contains(tab.identifier)) {
 						this._panelView.pushTab(tab, undefined, true);
 					}
 				}
@@ -381,7 +381,7 @@ export class QueryResultsView extends Disposable {
 
 	public chartData(dataId: { resultId: number, batchId: number }): void {
 		this.input?.state.visibleTabs.add(this.chartTab.identifier);
-		if (!this._panelView.contains(this.chartTab)) {
+		if (!this._panelView.contains(this.chartTab.identifier)) {
 			this._panelView.pushTab(this.chartTab);
 		}
 
@@ -390,19 +390,19 @@ export class QueryResultsView extends Disposable {
 	}
 
 	public hideChart() {
-		if (this._panelView.contains(this.chartTab)) {
+		if (this._panelView.contains(this.chartTab.identifier)) {
 			this._panelView.removeTab(this.chartTab.identifier);
 		}
 	}
 
 	public hideResults() {
-		if (this._panelView.contains(this.resultsTab)) {
+		if (this._panelView.contains(this.resultsTab.identifier)) {
 			this._panelView.removeTab(this.resultsTab.identifier);
 		}
 	}
 
 	public showResults() {
-		if (!this._panelView.contains(this.resultsTab)) {
+		if (!this._panelView.contains(this.resultsTab.identifier)) {
 			this._panelView.pushTab(this.resultsTab, 0);
 		}
 		this._panelView.showTab(this.resultsTab.identifier);
@@ -410,16 +410,16 @@ export class QueryResultsView extends Disposable {
 
 	public showTopOperations(xml: string) {
 		this.input?.state.visibleTabs.add(this.topOperationsTab.identifier);
-		if (!this._panelView.contains(this.topOperationsTab)) {
+		if (!this._panelView.contains(this.topOperationsTab.identifier)) {
 			this._panelView.pushTab(this.topOperationsTab);
 		}
 		this.topOperationsTab.view.showPlan(xml);
 	}
 
 	public showPlan2() {
-		if (!this._panelView.contains(this.qp2Tab)) {
+		if (!this._panelView.contains(this.qp2Tab.identifier)) {
 			this.input?.state.visibleTabs.add(this.qp2Tab.identifier);
-			if (!this._panelView.contains(this.qp2Tab)) {
+			if (!this._panelView.contains(this.qp2Tab.identifier)) {
 				this._panelView.pushTab(this.qp2Tab);
 			}
 			this._panelView.showTab(this.qp2Tab.identifier);
@@ -427,13 +427,13 @@ export class QueryResultsView extends Disposable {
 	}
 
 	public hideTopOperations() {
-		if (this._panelView.contains(this.topOperationsTab)) {
+		if (this._panelView.contains(this.topOperationsTab.identifier)) {
 			this._panelView.removeTab(this.topOperationsTab.identifier);
 		}
 	}
 
 	public hidePlan2() {
-		if (this._panelView.contains(this.qp2Tab)) {
+		if (this._panelView.contains(this.qp2Tab.identifier)) {
 			this.qp2Tab.clear();
 			this.input.state.queryPlan2State.clearQueryPlan2State();
 			this._panelView.removeTab(this.qp2Tab.identifier);
@@ -442,7 +442,7 @@ export class QueryResultsView extends Disposable {
 
 	public hideDynamicViewModelTabs() {
 		this.dynamicModelViewTabs.forEach(tab => {
-			if (this._panelView.contains(tab)) {
+			if (this._panelView.contains(tab.identifier)) {
 				this._panelView.removeTab(tab.identifier);
 			}
 		});
@@ -462,7 +462,7 @@ export class QueryResultsView extends Disposable {
 		this.dynamicModelViewTabs.push(tab);
 
 		this.input?.state.visibleTabs.add('querymodelview;' + title + ';' + componentId);
-		if (!this._panelView.contains(tab)) {
+		if (!this._panelView.contains(tab.identifier)) {
 			this._panelView.pushTab(tab, undefined, true);
 		}
 
