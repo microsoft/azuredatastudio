@@ -146,9 +146,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			// For Escape - the focused element is the div.notebook-preview or textarea.inputarea of the cell, so we need to make sure that it is a descendant of the current active cell
 			//  on the current active editor.
 			const activeCellElement = this.container.nativeElement.querySelector(`.editor-group-container.active .notebook-cell.active`);
-			const findWidgetVisible = document.querySelector(`.editor-widget.find-widget.visible`);
+			const findWidgetVisible = !!document.querySelector(`.editor-widget.find-widget.visible`);
 			let handled = false;
-			if (isUndefinedOrNull(findWidgetVisible)) {
+			if (!findWidgetVisible) {
 				if (DOM.isAncestor(this.container.nativeElement, document.activeElement) && this.isActive() && this.model.activeCell) {
 					const event = new StandardKeyboardEvent(e);
 					if (!this.model.activeCell?.isEditMode) {
