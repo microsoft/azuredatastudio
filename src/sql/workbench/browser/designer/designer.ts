@@ -139,7 +139,7 @@ export class Designer extends Disposable implements IThemable {
 			onDidChange: Event.None
 		}, Sizing.Distribute);
 		this._scriptTabbedPannel = new TabbedPanel(this._editorContainer);
-		this._messagesView = new DesignerMessagesTabPanelView();
+		this._messagesView = this._instantiationService.createInstance(DesignerMessagesTabPanelView);
 		this._register(this._messagesView.onMessageSelected((path) => {
 			this.selectProperty(path);
 		}));
