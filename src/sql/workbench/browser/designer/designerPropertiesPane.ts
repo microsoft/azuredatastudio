@@ -111,5 +111,6 @@ export class DesignerPropertiesPane {
 			cell = table.columns.findIndex(c => c.field === colName);
 		}
 		table.setActiveCell(row, cell);
+		table.grid.scrollCellIntoView(row, cell, false);
 	}
 }

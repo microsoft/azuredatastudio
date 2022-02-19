@@ -39,6 +39,9 @@ import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { DesignerMessagesTabPanelView } from 'sql/workbench/browser/designer/designerMessagesTabPanelView';
 import { DesignerScriptEditorTabPanelView } from 'sql/workbench/browser/designer/designerScriptEditorTabPanelView';
 import { DesignerPropertyPathValidator } from 'sql/workbench/browser/designer/designerPropertyPathValidator';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { listActiveSelectionBackground, listActiveSelectionForeground } from 'vs/platform/theme/common/colorRegistry';
+import { alert } from 'vs/base/browser/ui/aria/aria';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -93,7 +96,8 @@ export class Designer extends Disposable implements IThemable {
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IContextViewService private readonly _contextViewProvider: IContextViewService,
 		@INotificationService private readonly _notificationService: INotificationService,
-		@IDialogService private readonly _dialogService: IDialogService) {
+		@IDialogService private readonly _dialogService: IDialogService,
+		@IThemeService private readonly _themeService: IThemeService) {
 		super();
 		this._tableCellEditorFactory = new TableCellEditorFactory(
 			{
@@ -315,6 +319,9 @@ export class Designer extends Disposable implements IThemable {
 	private handleEditProcessedEvent(args: DesignerEditProcessedEventArgs): void {
 		const edit = args.edit;
 		this._supressEditProcessing = true;
+		if (!args.result.isValid) {
+			alert(localize('designer.errorCountAlert', "{0} validation errors found.", args.result.errors.length));
+		}
 		try {
 			this.updateComponentValues();
 			if (edit.type === DesignerEditType.Add) {
@@ -512,7 +519,10 @@ export class Designer extends Disposable implements IThemable {
 				return;
 			} else {
 				const tableComponent = <Table<Slick.SlickData>>propertyInfo.component;
-				tableComponent.setActiveCell(<number>path[1], 0);
+				const targetRow = <number>path[1];
+				const targetCell = 0;
+				tableComponent.setActiveCell(targetRow, targetCell);
+				tableComponent.grid.scrollCellIntoView(targetRow, targetCell, false);
 				if (path.length > 2) {
 					const propertyPaneObjectPath = path.slice(0, 2);
 					const relativePath = path.slice(2);
@@ -520,6 +530,23 @@ export class Designer extends Disposable implements IThemable {
 					this._propertiesPane.selectProperty(relativePath);
 				}
 			}
+			this.highlightActiveElement();
+		}
+	}
+
+	private highlightActiveElement(): void {
+		const bgColor = this._themeService.getColorTheme().getColor(listActiveSelectionBackground);
+		const color = this._themeService.getColorTheme().getColor(listActiveSelectionForeground);
+		const currentElement = document.activeElement as HTMLElement;
+		if (currentElement) {
+			const originalBGColor = currentElement.style.backgroundColor;
+			const originalColor = currentElement.style.color;
+			currentElement.style.backgroundColor = bgColor.toString();
+			currentElement.style.color = color.toString();
+			setTimeout(() => {
+				currentElement.style.color = originalColor;
+				currentElement.style.backgroundColor = originalBGColor;
+			}, 500);
 		}
 	}
 
@@ -679,6 +706,7 @@ export class Designer extends Disposable implements IThemable {
 				const dropdownContainer = container.appendChild(DOM.$(''));
 				const dropdownProperties = componentDefinition.componentProperties as DropDownProperties;
 				const dropdown = new SelectBox(dropdownProperties.values as string[] || [], undefined, this._contextViewProvider, undefined);
+				dropdown.setAriaLabel(componentDefinition.componentProperties?.title);
 				dropdown.render(dropdownContainer);
 				dropdown.selectElem.style.height = '25px';
 				dropdown.onDidSelect((e) => {
@@ -733,6 +761,7 @@ export class Designer extends Disposable implements IThemable {
 					addRowButton.icon = {
 						id: `add-row-button new codicon`
 					};
+					addRowButton.ariaLabel = localize('designer.newRowButtonAriaLabel', "Add new row to '{0}' table", tableProperties.ariaLabel);
 					this._buttons.push(addRowButton);
 				}
 				const tableContainer = container.appendChild(DOM.$('.full-row'));
