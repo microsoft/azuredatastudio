@@ -524,9 +524,7 @@ export class Designer extends Disposable implements IThemable {
 				tableComponent.setActiveCell(targetRow, targetCell);
 				tableComponent.grid.scrollCellIntoView(targetRow, targetCell, false);
 				if (path.length > 2) {
-					const propertyPaneObjectPath = path.slice(0, 2);
 					const relativePath = path.slice(2);
-					this.updatePropertiesPane(propertyPaneObjectPath);
 					this._propertiesPane.selectProperty(relativePath);
 				}
 			}
