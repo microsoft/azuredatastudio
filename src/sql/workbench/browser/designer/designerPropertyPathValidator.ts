@@ -14,7 +14,19 @@ export class DesignerPropertyPathValidator {
 	 * @returns Whether the path is valid.
 	 */
 	static validate(path: DesignerPropertyPath, viewModel: DesignerViewModel): boolean {
-		// the path must have items and currently we support up to 5 items in the path.
+		/**
+		 * Path specification for all supported scenarios:
+		 * 1. 'Add' scenario
+		 *     a. ['propertyName1']. Example: add a column to the columns property: ['columns'].
+		 *     b. ['propertyName1',index-1,'propertyName2']. Example: add a column mapping to the first foreign key: ['foreignKeys',0,'mappings'].
+		 * 2. 'Update' scenario
+		 *     a. ['propertyName1']. Example: update the name of the table: ['name'].
+		 *     b. ['propertyName1',index-1,'propertyName2']. Example: update the name of a column: ['columns',0,'name'].
+		 *     c. ['propertyName1',index-1,'propertyName2',index-2,'propertyName3']. Example: update the source column of an entry in a foreign key's column mapping table: ['foreignKeys',0,'mappings',0,'source'].
+		 * 3. 'Remove' scenario
+		 *     a. ['propertyName1',index-1]. Example: remove a column from the columns property: ['columns',0'].
+		 *     b. ['propertyName1',index-1,'propertyName2',index-2]. Example: remove a column mapping from a foreign key's column mapping table: ['foreignKeys',0,'mappings',0].
+		 */
 		if (!path || path.length === 0 || path.length > 5) {
 			return false;
 		}
