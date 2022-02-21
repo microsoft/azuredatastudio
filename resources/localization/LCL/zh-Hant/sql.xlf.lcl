@@ -11726,12 +11726,12 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlan.queryPlanOpenGraphFile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Open Plan File]]></Val>
+          <Val><![CDATA[Show Query Plan XML]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[開啟計畫檔案]]></Val>
+            <Val><![CDATA[顯示查詢計劃 XML]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Open Graph File]]></Val>
+            <Val><![CDATA[Open Plan File]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -11759,10 +11759,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/queryPlan.queryPlanSearchNodeAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[SearchNode]]></Val>
+          <Val><![CDATA[Find Node]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SearchNode]]></Val>
+            <Val><![CDATA[尋找節點]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[SearchNode]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -11864,6 +11867,24 @@
           <Val><![CDATA[Close (Escape)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[關閉 (逸出)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget.customZoomApplyButton" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Apply]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[套用]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget.customZoomApplyButtonTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Apply Zoom (Enter)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[套用縮放 (輸入)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

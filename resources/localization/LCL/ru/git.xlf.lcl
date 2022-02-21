@@ -40,6 +40,9 @@
       <Item ItemId=";extensions/git/dist/autofetch.suggest auto fetch" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Would you like Azure Data Studio to [periodically run 'git fetch']5D;({0})?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Вы хотите, чтобы средство Azure Data Studio [периодически запускало \"git fetch\"]5D;({0})?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -172,6 +175,9 @@
       <Item ItemId=";extensions/git/dist/commands.cant push" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Can't push refs to remote. Try running 'Pull' first to integrate your changes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удается отправить ссылки в удаленный репозиторий. Сначала запустите операцию извлечения, чтобы интегрировать изменения.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -223,6 +229,9 @@
       <Item ItemId=";extensions/git/dist/commands.cloning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cloning git repository '{0}'...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Клонирование репозитория Git \"{0}\"...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -265,6 +274,9 @@
       <Item ItemId=";extensions/git/dist/commands.commitMessageWithHeadLabel2" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Message (commit on '{0}')]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Сообщение (фиксация: \"{0}\")]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -487,12 +499,18 @@
       <Item ItemId=";extensions/git/dist/commands.deleted by them" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File '{0}' was deleted by them and modified by us.]D;]A;]D;]A;What would you like to do?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Файл \"{0}\" был удален ими и изменен нами.]D;]A;]D;]A;Что вы хотели бы сделать?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/dist/commands.deleted by us" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File '{0}' was deleted by us and modified by them.]D;]A;]D;]A;What would you like to do?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Файл \"{0}\" был удален нами и изменен ими.]D;]A;]D;]A;Что вы хотели бы сделать?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -535,6 +553,9 @@
       <Item ItemId=";extensions/git/dist/commands.force push not allowed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Force push is not allowed, please enable it with the 'git.allowForcePush' setting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Принудительная отправка не разрешена. Включите ее, установив параметр \"git.allowForcePush\".]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -685,6 +706,9 @@
       <Item ItemId=";extensions/git/dist/commands.missing user info" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Make sure you configure your 'user.name' and 'user.email' in git.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Убедитесь, что вы настроили параметры \"user.name\" и \"user.email\" в git.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -826,6 +850,9 @@
       <Item ItemId=";extensions/git/dist/commands.no verify commit not allowed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Commits without verification are not allowed, please enable them with the 'git.allowNoVerifyCommit' setting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Фиксации без проверки не допускаются, включите их с помощью параметра \"git.allowNoVerifyCommit\".]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -895,12 +922,18 @@
       <Item ItemId=";extensions/git/dist/commands.pick provider" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Pick a provider to publish the branch '{0}' to:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите поставщика, в который необходимо опубликовать ветвь \"{0}\":]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/dist/commands.pick remote" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Pick a remote to publish the branch '{0}' to:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите удаленный сервер, на котором нужно опубликовать ветвь \"{0}\":]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1051,6 +1084,9 @@
       <Item ItemId=";extensions/git/dist/commands.remote already exists" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remote '{0}' already exists.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Удаленный репозиторий \"{0}\" уже существует.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1174,6 +1210,9 @@
       <Item ItemId=";extensions/git/dist/commands.select a ref to create a new branch from" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select a ref to create the '{0}' branch from]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите ссылку для создания ветви \"{0}\" из]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1270,6 +1309,9 @@
       <Item ItemId=";extensions/git/dist/commands.sync is unpredictable" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This action will push and pull commits to and from '{0}/{1}'.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Это действие отправит фиксации в \"{0}/{1}\" и извлечет их оттуда.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1447,6 +1489,9 @@
       <Item ItemId=";extensions/git/dist/model.not supported" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Absolute paths not supported in 'git.scanRepositories' setting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Абсолютные пути в параметре \"git.scanRepositories\" не поддерживаются.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1552,6 +1597,9 @@
       <Item ItemId=";extensions/git/dist/repository.add known" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Would you like to add '{0}' to .gitignore?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Вы хотите добавить \"{0}\" в GITIGNORE-файл?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1675,6 +1723,9 @@
       <Item ItemId=";extensions/git/dist/repository.commitMessageWithHeadLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Message ({0} to commit on '{1}')]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Сообщение ({0} для фиксации в \"{1}\")]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1888,6 +1939,9 @@
       <Item ItemId=";extensions/git/dist/repository.pull branch maybe rebased" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[It looks like the current branch '{0}' might have been rebased. Are you sure you still want to pull into it?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Похоже, изменения из текущей ветви \"{0}\" перемещены в другую. Все равно выполнить в нее вытягивание?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3037,6 +3091,9 @@
       <Item ItemId=";extensions/git/package.config.alwaysShowStagedChangesResourceGroup" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Always show the Staged Changes resource group.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Всегда показывать группу ресурсов \"Изменения в индексе\".]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3115,6 +3172,9 @@
       <Item ItemId=";extensions/git/package.config.autofetchPeriod" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Duration in seconds between each automatic git fetch, when `#git.autofetch#` is enabled.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Длительность в секундах между автоматическими извлечениями из git, если включен параметр \"#git.autofetch#\".]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3157,6 +3217,9 @@
       <Item ItemId=";extensions/git/package.config.checkoutType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls what type of git refs are listed when running `Checkout to...`.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Определяет, какие типы ссылок на GIT отображаются в списке при выполнении команды \"Извлечь в...\".]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3190,6 +3253,9 @@
       <Item ItemId=";extensions/git/package.config.confirmEmptyCommits" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Always confirm the creation of empty commits for the 'Git: Commit Empty' command.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Всегда подтверждайте создание пустых фиксаций для команды \"Git: Пустая фиксация\".]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3439,6 +3505,9 @@
       <Item ItemId=";extensions/git/package.config.inputValidationSubjectLength" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls the commit message subject length threshold for showing a warning. Unset it to inherit the value of `config.inputValidationLength`.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Управляет максимальной допустимой длиной темы сообщения фиксации, при превышении которой будет выдано предупреждение. Удалите это значение, чтобы использовалось значение параметра \"config.inputValidationLength\".]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3499,6 +3568,9 @@
       <Item ItemId=";extensions/git/package.config.path" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Path and filename of the git executable, e.g. `C:\Program Files\Git\bin\git.exe` (Windows). This can also be an array of string values containing multiple paths to look up.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Путь и имя исполняемого файла Git, например, \"C:\Program Files\Git\bin\git.exe\" (Windows). Это также может быть массив строковых значений, содержащий несколько путей для поиска.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3523,12 +3595,18 @@
       <Item ItemId=";extensions/git/package.config.postCommitCommand.push" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Run 'Git Push' after a successful commit.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выполните \"Git Push\" после успешной фиксации.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.config.postCommitCommand.sync" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Run 'Git Sync' after a successful commit.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выполните \"Git Sync\" после успешной фиксации.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3661,6 +3739,9 @@
       <Item ItemId=";extensions/git/package.config.showInlineOpenFileAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls whether to show an inline Open File action in the Git changes view.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Определяет, должно ли отображаться интерактивное действие \"Открыть файл\" в представлении \"Изменения Git\".]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3730,6 +3811,9 @@
       <Item ItemId=";extensions/git/package.config.terminalAuthentication" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls whether to enable Azure Data Studio to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Определяет, следует ли включить Azure Data Studio в качестве обработчика проверки подлинности для процессов Git, порожденных во встроенном терминале. Примечание. Для получения изменения в этом параметре необходимо перезапустить терминалы.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3934,48 +4018,72 @@
       <Item ItemId=";extensions/git/package.view.workbench.cloneRepository" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You can clone a repository locally.]D;]A;[Clone Repository]5D;(command:git.clone 'Clone a repository once the git extension has activated')]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Репозиторий можно клонировать локально.]D;]A;[Клонировать репозиторий]5D;(command:git.clone \"Клонировать репозиторий после активации расширения Git\")]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.learnMore" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Чтобы получить дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio, [изучите нашу документацию]5D;(https://aka.ms/vscode-scm).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.disabled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Если вы хотите использовать возможности Git, включите Git в своих [параметрах]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;Чтобы получить дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio, [изучите нашу документацию]5D;(https://aka.ms/vscode-scm).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.empty" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[In order to use git features, you can open a folder containing a git repository or clone from a URL.]D;]A;[Open Folder]5D;(command:vscode.openFolder)]D;]A;[Clone Repository]5D;(command:git.clone)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Чтобы использовать возможности Git, можно открыть папку, содержащую репозиторий Git, или клонировать из URL-адреса.]D;]A;[Открыть папку]5D;(command:vscode.openFolder)]D;]A;[Клонировать репозиторий]5D;(command:git.clone)]D;]A;Чтобы получить дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio, [изучите нашу документацию]5D;(https://aka.ms/vscode-scm).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.emptyWorkspace" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories.]D;]A;[Add Folder to Workspace]5D;(command:workbench.action.addRootFolder)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[В открытой сейчас рабочей области нет папок, содержащих репозитории Git.]D;]A;[Добавить папку в рабочую область]5D;(command:workbench.action.addRootFolder)]D;]A;Чтобы получить дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio, [изучите нашу документацию]5D;(https://aka.ms/vscode-scm).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.folder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The folder currently open doesn't have a git repository. You can initialize a repository which will enable source control features powered by git.]D;]A;[Initialize Repository]5D;(command:git.init?%5Btrue%5D)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[В открытой папке нет репозитория Git. Вы можете инициализировать репозиторий, что позволит получить доступ к возможностям системы управления версиями на платформе Git.]D;]A;[Инициализировать репозиторий]5D;(command:git.init?%5Btrue%5D)]D;]A;Чтобы получить дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio, [изучите нашу документацию]5D;(https://aka.ms/vscode-scm).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A valid git installation was not detected, more details can be found in the [git output]5D;(command:git.showOutput).]D;]A;Please [install git]5D;(https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs]5D;(https://aka.ms/vscode-scm).]D;]A;If you're using a different version control system, you can [search the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Допустимая установка Git не обнаружена, дополнительные сведения см. в [выходных данных Git]5D;(command:git.showOutput).]D;]A;[Установите Git]5D;(https://git-scm.com/) либо получите дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio в [нашей документации]5D;(https://aka.ms/vscode-scm).]D;]A;Если вы используете другую систему управления версиями, можете поискать дополнительные расширения [в Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.workspace" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.]D;]A;[Initialize Repository]5D;(command:git.init)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[В открытой рабочей области нет папок, содержащих репозитории Git. Вы можете инициализировать репозиторий в папке, что позволит получить доступ к возможностям системы управления версиями на платформе Git.]D;]A;[Инициализировать репозиторий]5D;(command:git.init)]D;]A;Чтобы получить дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio, [изучите нашу документацию]5D;(https://aka.ms/vscode-scm).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
