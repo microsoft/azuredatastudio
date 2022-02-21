@@ -84,10 +84,13 @@ import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboar
 import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/electron-browser/clipboardService';
 import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
 import { QueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryServiceImpl';
+import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
+import { AzureAccountService } from 'sql/workbench/services/azureAccount/browser/azureAccountService';
 
 registerSingleton(ISqlOAuthService, SqlOAuthService);
 registerSingleton(sqlIClipboardService, sqlClipboardService);
 registerSingleton(IQueryHistoryService, QueryHistoryService);
+registerSingleton(IAzureAccountService, AzureAccountService);
 // {{SQL CARBON EDIT}} - End
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

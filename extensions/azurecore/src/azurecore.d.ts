@@ -121,7 +121,7 @@ declare module 'azurecore' {
 		/**
 		 * Information that describes the Azure Kusto resource
 		 */
-		 azureKustoResource?: Resource;
+		azureKustoResource?: Resource;
 
 		/**
 		 * Information that describes the Azure Log Analytics resource
@@ -263,6 +263,12 @@ declare module 'azurecore' {
 	}
 
 	export interface IExtension {
+		/**
+		 * Gets the list of subscriptions for the specified AzureAccount
+		 * @param account The account to get the subscriptions for
+		 * @param ignoreErrors If true any errors are not thrown and instead collected and returned as part of the result
+		 * @param selectedOnly Whether to only list subscriptions the user has selected to filter to for this account
+		 */
 		getSubscriptions(account?: AzureAccount, ignoreErrors?: boolean, selectedOnly?: boolean): Promise<GetSubscriptionsResult>;
 		getResourceGroups(account?: AzureAccount, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<GetResourceGroupsResult>;
 		getLocations(account?: AzureAccount, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<GetLocationsResult>;
@@ -314,4 +320,7 @@ declare module 'azurecore' {
 	export type AzureRestResponse = { response: any, errors: Error[] };
 	export type GetBlobsResult = { blobs: azureResource.Blob[], errors: Error[] };
 	export type GetStorageAccountAccessKeyResult = { keyName1: string, keyName2: string, errors: Error[] };
+	export type AzureResourceSubscription = azureResource.AzureResourceSubscription;
+	export type AzureGraphResource = azureResource.AzureGraphResource;
+	export type BlobContainer = azureResource.BlobContainer;
 }

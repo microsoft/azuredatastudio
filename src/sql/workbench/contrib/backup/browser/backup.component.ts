@@ -771,6 +771,7 @@ export class BackupComponent extends AngularDisposable {
 	private handleUrlPathAdded(url: string) {
 		if (url && !this.backupPathTypePairs![url]) {
 			this.backupPathTypePairs![url] = BackupConstants.deviceTypeURL;
+			this.urlInputBox.value = url;
 			this.enableBackupButton();
 			this.enableAddRemoveButtons();
 
