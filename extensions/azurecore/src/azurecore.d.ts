@@ -121,7 +121,7 @@ declare module 'azurecore' {
 		/**
 		 * Information that describes the Azure Kusto resource
 		 */
-		 azureKustoResource?: Resource;
+		azureKustoResource?: Resource;
 
 		/**
 		 * Information that describes the Azure Log Analytics resource
@@ -320,4 +320,7 @@ declare module 'azurecore' {
 	export type AzureRestResponse = { response: any, errors: Error[] };
 	export type GetBlobsResult = { blobs: azureResource.Blob[], errors: Error[] };
 	export type GetStorageAccountAccessKeyResult = { keyName1: string, keyName2: string, errors: Error[] };
+	export type AzureResourceSubscription = azureResource.AzureResourceSubscription;
+	export type AzureGraphResource = azureResource.AzureGraphResource;
+	export type BlobContainer = azureResource.BlobContainer;
 }

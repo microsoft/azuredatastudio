@@ -15,8 +15,21 @@ export class ExtHostAzureAccount extends ExtHostAzureAccountShape {
 	}
 
 	public override $getSubscriptions(account: azurecore.AzureAccount, ignoreErrors?: boolean, selectedOnly?: boolean): Thenable<azurecore.GetSubscriptionsResult> {
-		const api = this._extHostExtensionService.getExtensionExports(new ExtensionIdentifier(azurecore.extension.name)) as azurecore.IExtension;
+		const api = this.getApi();
 		return api.getSubscriptions(account, ignoreErrors, selectedOnly);
 	}
-}
 
+	public override $getStorageAccounts(account: azurecore.AzureAccount, subscriptions: azurecore.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountResult> {
+		const api = this.getApi();
+		return api.getStorageAccounts(account, subscriptions, ignoreErrors);
+	}
+
+	public override $getBlobContainers(account: azurecore.AzureAccount, subscription: azurecore.AzureResourceSubscription, storageAccount: azurecore.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetBlobContainersResult> {
+		const api = this.getApi();
+		return api.getBlobContainers(account, subscription, storageAccount);
+	}
+
+	private getApi(): azurecore.IExtension {
+		return this._extHostExtensionService.getExtensionExports(new ExtensionIdentifier(azurecore.extension.name)) as azurecore.IExtension;
+	}
+}

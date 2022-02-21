@@ -28,9 +28,19 @@ import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Account } from 'azdata';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
+import { BlobContainer, AzureGraphResource, AzureResourceSubscription } from 'azurecore';
 
 export class UrlBrowserDialog extends Modal {
 	private _accounts: Account[];
+	private _selectedAccount: Account;
+	private _subscriptions: AzureResourceSubscription[];
+	private _selectedSubscription: AzureResourceSubscription;
+	private _storageAccounts: AzureGraphResource[];
+	private _selectedStorageAccount: AzureGraphResource;
+	private _blobContainers: BlobContainer[];
+	private _selectedBlobContainer: BlobContainer;
+
 	private _restoreDialog: boolean;
 	//private _viewModel: FileBrowserViewModel;
 	private _body: HTMLElement;
@@ -41,6 +51,7 @@ export class UrlBrowserDialog extends Modal {
 	private _blobContainerSelectorBox: SelectBox;
 	private _sasInputBox: InputBox;
 	private _sasButton: Button;
+	private _backupFileInputBox: InputBox;
 	private _backupFileSelectorBox: SelectBox;
 	private _okButton: Button;
 	private _cancelButton: Button;
@@ -59,7 +70,8 @@ export class UrlBrowserDialog extends Modal {
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
-		@IAccountManagementService private _accountManagementService: IAccountManagementService
+		@IAccountManagementService private _accountManagementService: IAccountManagementService,
+		@IAzureAccountService private _azureAccountService: IAzureAccountService
 	) {
 		super(title, TelemetryKeys.ModalDialogName.FileBrowser, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'flyout', hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
 		//this._viewModel = this._instantiationService.createInstance(FileBrowserViewModel);
@@ -102,7 +114,7 @@ export class UrlBrowserDialog extends Modal {
 		let anchorNode: HTMLAnchorElement = DOM.append(linkAccountButton, DOM.$('a.anchor'));
 		anchorNode.title = 'Link account';
 		anchorNode.text = 'Link account';
-		anchorNode.href = 'https://google.com';
+		anchorNode.href = '';
 		anchorNode.onclick = async (event) => {
 			await this._accountManagementService.openAccountListDialog();
 		};
@@ -118,16 +130,12 @@ export class UrlBrowserDialog extends Modal {
 		this._subscriptionSelectorBox.setAriaLabel(subscriptionLabel);
 		let subscriptionSelector = DialogHelper.appendRow(tableContainer, subscriptionLabel, 'file-input-label', 'file-input-box');
 		DialogHelper.appendInputSelectBox(subscriptionSelector, this._subscriptionSelectorBox);
-		this._subscriptionSelectorBox.setOptions(['Storage account 1', 'Storage account 2']);
-		this._subscriptionSelectorBox.select(0);
 
 		let storageAccountLabel = localize('azurebrowser.storageAccount', "Storage account");
 		this._storageAccountSelectorBox = new SelectBox(['*'], '*', this._contextViewService);
 		this._storageAccountSelectorBox.setAriaLabel(storageAccountLabel);
 		let storageAccountSelector = DialogHelper.appendRow(tableContainer, storageAccountLabel, 'file-input-label', 'file-input-box');
 		DialogHelper.appendInputSelectBox(storageAccountSelector, this._storageAccountSelectorBox);
-		this._storageAccountSelectorBox.setOptions(['Storage account 1', 'Storage account 2']);
-		this._storageAccountSelectorBox.select(0);
 
 		let blobContainerLabel = localize('azurebrowser.blobContainer', "Blob container");
 		this._blobContainerSelectorBox = new SelectBox(['*'], '*', this._contextViewService);
@@ -154,11 +162,17 @@ export class UrlBrowserDialog extends Modal {
 		this._backupFileSelectorBox = new SelectBox(['*'], '*', this._contextViewService);
 		this._backupFileSelectorBox.setAriaLabel(backupFileLabel);
 
+		let fileInput = DialogHelper.appendRow(tableContainer, backupFileLabel, 'file-input-label', 'file-input-box');
+		this._backupFileInputBox = new InputBox(fileInput, this._contextViewService, { flexibleHeight: true });
+
 		if (this._restoreDialog) {
 			let backupFileSelector = DialogHelper.appendRow(tableContainer, backupFileLabel, 'file-input-label', 'file-input-box');
 			DialogHelper.appendInputSelectBox(backupFileSelector, this._backupFileSelectorBox);
 			this._backupFileSelectorBox.setOptions(['backup-file.bak', 'backup-file2.bak']);
 			this._backupFileSelectorBox.select(0);
+			fileInput.hidden = true;
+		} else {
+			this.setBackupFileDefaultValue();
 		}
 
 		this._okButton = this.addFooterButton(localize('fileBrowser.ok', "OK"), () => this.ok());
@@ -189,23 +203,78 @@ export class UrlBrowserDialog extends Modal {
 		this._tenantSelectorBox.select(0);
 	}
 
-	/*private onTenantSelectorBoxChanged(checkedAccount: number) {
+	private onTenantSelectorBoxChanged(checkedAccount: number) {
 		if (this._accounts) {
-			const selectedAccount = this._accounts[checkedAccount];
-			this._azureApi.getSubscriptions(selectedAccount)
-				.then(getSubscriptionResult => this.changeSubscriptionSelectorBoxOptions(getSubscriptionResult.subscriptions))
-				.catch(getSubscriptionResult => this.printErrorInSubscriptionSelectorBox(getSubscriptionResult.error));
+			this._selectedAccount = this._accounts[checkedAccount];
+			this._azureAccountService.getSubscriptions(this._selectedAccount)
+				.then(getSubscriptionResult => this.setSubscriptionsSelectorBoxOptions(getSubscriptionResult.subscriptions))
+				.catch(getSubscriptionResult => this.setSubscriptionSelectorBoxError(getSubscriptionResult.error));
 		}
 	}
 
-	private changeSubscriptionSelectorBoxOptions(subscriptions: AzureResourceSubscription[]) {
+	private setSubscriptionsSelectorBoxOptions(subscriptions: AzureResourceSubscription[]) {
+		this._subscriptions = subscriptions;
 		const subscriptionDisplayNames: string[] = subscriptions.map(subscription => subscription.name);
 		this._subscriptionSelectorBox.setOptions(subscriptionDisplayNames);
 		this._subscriptionSelectorBox.select(0);
+		this._subscriptionSelectorBox.enable();
 	}
 
-	private printErrorInSubscriptionSelectorBox(getSubscriptionResult: any) {
-	}*/
+	private setSubscriptionSelectorBoxError(getSubscriptionsError: any) {
+		this._subscriptionSelectorBox.setOptions(['Error getting Azure subscriptions']);
+		this._subscriptionSelectorBox.disable();
+	}
+
+	private onSubscriptionSelectorBoxChanged(checkedSubscription: number) {
+		if (this._subscriptions) {
+			this._selectedSubscription = this._subscriptions[checkedSubscription];
+			this._azureAccountService.getStorageAccounts(this._selectedAccount, [this._selectedSubscription])
+				.then(getStorageAccountsResult => this.setStorageAccountSelectorBoxOptions(getStorageAccountsResult.resources))
+				.catch(getStorageAccountsResult => this.setStorageAccountSelectorBoxError(getStorageAccountsResult.errors));
+		}
+	}
+
+	private setStorageAccountSelectorBoxOptions(storageAccounts: AzureGraphResource[]) {
+		this._storageAccounts = storageAccounts;
+		const storageAccountDisplayNames: string[] = this._storageAccounts.map(storageAccount => storageAccount.name);
+		this._storageAccountSelectorBox.setOptions(storageAccountDisplayNames);
+		this._storageAccountSelectorBox.select(0);
+		this._storageAccountSelectorBox.enable();
+	}
+
+	private setStorageAccountSelectorBoxError(errors: any) {
+		this._storageAccountSelectorBox.setOptions(['Error getting storage accounts']);
+		this._storageAccountSelectorBox.disable();
+	}
+
+	private onStorageAccountSelectorBoxChanged(checkedStorageAccount: number) {
+		if (this._storageAccounts) {
+			this._selectedStorageAccount = this._storageAccounts[checkedStorageAccount];
+			this._azureAccountService.getBlobContainers(this._selectedAccount, this._selectedSubscription, this._selectedStorageAccount)
+				.then(getBlobContainersResult => this.setBlobContainersSelectorBoxOptions(getBlobContainersResult.blobContainers))
+				.catch(getBlobContainersResult => this.setBlobContainersSelectorBoxErrors(getBlobContainersResult.errors));
+		}
+	}
+
+	private setBlobContainersSelectorBoxOptions(blobContainers: BlobContainer[]): any {
+		this._blobContainers = blobContainers;
+		const blobContainersDisplayNames: string[] = this._blobContainers.map(blobContainer => blobContainer.name);
+		this._blobContainerSelectorBox.setOptions(blobContainersDisplayNames);
+		this._blobContainerSelectorBox.select(0);
+		this._blobContainerSelectorBox.enable();
+	}
+
+	private setBlobContainersSelectorBoxErrors(errors: any): any {
+		this._blobContainerSelectorBox.setOptions(['Error getting blob containers']);
+		this._blobContainerSelectorBox.disable();
+	}
+
+
+
+
+	private setBackupFileDefaultValue() {
+		this._backupFileInputBox.value = 'backup.bak';
+	}
 
 	public open(ownerUri: string,
 		expandPath: string,
@@ -228,7 +297,7 @@ export class UrlBrowserDialog extends Modal {
 
 
 	private enableOkButton() {
-		if (strings.isFalsyOrWhitespace(this._blobContainerSelectorBox.value) || strings.isFalsyOrWhitespace(this._sasInputBox.value)) {
+		if (strings.isFalsyOrWhitespace(this._blobContainerSelectorBox.value) || strings.isFalsyOrWhitespace(this._sasInputBox.value) || (this._restoreDialog && strings.isFalsyOrWhitespace(this._blobContainerSelectorBox.value)) || (!this._restoreDialog && strings.isFalsyOrWhitespace(this._backupFileInputBox.value))) {
 			this._okButton.enabled = false;
 		} else {
 			this._okButton.enabled = true;
@@ -236,7 +305,13 @@ export class UrlBrowserDialog extends Modal {
 	}
 
 	private ok() {
-		this._onOk.fire(this._blobContainerSelectorBox.value);
+		let returnValue = '';
+		if (this._restoreDialog) {
+			returnValue = this._backupFileSelectorBox.value;
+		} else {
+			returnValue = `https://${this._storageAccountSelectorBox.value}.blob.core.windows.net/${this._blobContainerSelectorBox.value}/${this._backupFileInputBox.value}`;
+		}
+		this._onOk.fire(returnValue);
 		this.close('ok');
 	}
 
@@ -252,7 +327,9 @@ export class UrlBrowserDialog extends Modal {
 
 	private registerListeners(): void {
 		this._register(this._accountSelectorBox.onDidSelect(e => this.onAccountSelectorBoxChanged(e.index)));
-		//this._register(this._tenantSelectorBox.onDidSelect(selectedTenant => this.onTenantSelectorBoxChanged(selectedTenant.index)));
+		this._register(this._tenantSelectorBox.onDidSelect(selectedTenant => this.onTenantSelectorBoxChanged(selectedTenant.index)));
+		this._register(this._subscriptionSelectorBox.onDidSelect(selectedSubscription => this.onSubscriptionSelectorBoxChanged(selectedSubscription.index)));
+		this._register(this._storageAccountSelectorBox.onDidSelect(selectedStorageAccount => this.onStorageAccountSelectorBoxChanged(selectedStorageAccount.index)));
 
 		// Theme styler
 		this._register(attachSelectBoxStyler(this._tenantSelectorBox, this._themeService));
@@ -262,6 +339,7 @@ export class UrlBrowserDialog extends Modal {
 		this._register(attachSelectBoxStyler(this._blobContainerSelectorBox, this._themeService));
 		this._register(attachSelectBoxStyler(this._backupFileSelectorBox, this._themeService));
 		this._register(attachInputBoxStyler(this._sasInputBox, this._themeService));
+		this._register(attachInputBoxStyler(this._backupFileInputBox, this._themeService));
 		this._register(attachButtonStyler(this._sasButton, this._themeService));
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));

@@ -35,8 +35,11 @@ import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemet
 export abstract class ExtHostAzureBlobShape {
 	public $createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse> { throw ni(); }
 }
+
 export abstract class ExtHostAzureAccountShape {
 	public $getSubscriptions(account: azurecore.AzureAccount, ignoreErrors?: boolean, selectedOnly?: boolean): Thenable<azurecore.GetSubscriptionsResult> { throw ni(); }
+	public $getStorageAccounts(account: azurecore.AzureAccount, subscriptions: azurecore.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountResult> { throw ni(); }
+	public $getBlobContainers(account: azurecore.AzureAccount, subscription: azurecore.AzureResourceSubscription, storageAccount: azurecore.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetBlobContainersResult> { throw ni(); }
 }
 
 export abstract class ExtHostAccountManagementShape {

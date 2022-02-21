@@ -13,5 +13,7 @@ export const IAzureAccountService = createDecorator<IAzureAccountService>(SERVIC
 export interface IAzureAccountService {
 	_serviceBrand: undefined;
 	getSubscriptions(account: azurecore.AzureAccount): Promise<azurecore.GetSubscriptionsResult>;
-}
+	getStorageAccounts(account: azurecore.AzureAccount, subscriptions: azurecore.AzureResourceSubscription[]): Promise<azurecore.GetStorageAccountResult>;
+	getBlobContainers(account: azurecore.AzureAccount, subscription: azurecore.AzureResourceSubscription, storageAccount: azurecore.AzureGraphResource): Promise<azurecore.GetBlobContainersResult>;
 
+}

@@ -36,10 +36,20 @@ export class AzureAccountService implements IAzureAccountService {
 		return this._proxy.getSubscriptions(account, ignoreErrors, selectedOnly);
 	}
 
+	public getStorageAccounts(account: azurecore.AzureAccount, subscriptions: azurecore.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountResult> {
+		this.checkProxy();
+		return this._proxy.getStorageAccounts(account, subscriptions, ignoreErrors);
+	}
+
+	public getBlobContainers(account: azurecore.AzureAccount, subscription: azurecore.AzureResourceSubscription, storageAccount: azurecore.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetBlobContainersResult> {
+		this.checkProxy();
+		return this._proxy.getBlobContainers(account, subscription, storageAccount, ignoreErrors);
+	}
+
+
 	private checkProxy(): void {
 		if (!this._proxy) {
 			throw new Error('Azure Account proxy not initialized');
 		}
 	}
 }
-

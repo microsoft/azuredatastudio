@@ -93,6 +93,7 @@ export class RestoreDialog extends Modal {
 	private _optionsTab?: IPanelTab;
 
 	private _isManagedInstance?: boolean;
+	private _selectedRestoreOptionIndex?: number;
 
 	// File option
 	private readonly _relocateDatabaseFilesOption = 'relocateDbFiles';
@@ -182,14 +183,6 @@ export class RestoreDialog extends Modal {
 		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel(), 'right', true);
 		this.registerListeners();
 		this._destinationRestoreToInputBox!.disable();
-
-		if (this._isManagedInstance) {
-			const restoreFromUrlIndex = 2;
-			this._restoreFromSelectBox.select(restoreFromUrlIndex);
-			this._restoreFromSelectBox.disable();
-		} else {
-			this._restoreFromSelectBox.enable();
-		}
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -673,6 +666,10 @@ export class RestoreDialog extends Modal {
 		this._register(this._restoreFromSelectBox!.onDidSelect(selectedRestoreFrom => {
 			this.onRestoreFromChanged(selectedRestoreFrom.selected);
 		}));
+
+		this._register(this._urlInputBox!.onDidChange(url => {
+			this.onUrlPathChanged(url);
+		}));
 	}
 
 	private onFileBrowserRequested(): void {
@@ -691,9 +688,12 @@ export class RestoreDialog extends Modal {
 			FileValidationConstants.restore,
 			true,
 			true,
-			filepath => this.onFileBrowsed(filepath));
+			url => this.onUrlBrowsed(url));
 	}
 
+	private onUrlBrowsed(url: string) {
+		this._urlInputBox!.value = url;
+	}
 
 	private onFileBrowsed(filepath: string) {
 		const oldFilePath = this._filePathInputBox!.value;
@@ -718,6 +718,12 @@ export class RestoreDialog extends Modal {
 
 	private onFilePathChanged(filePath: string) {
 		this.viewModel.filePath = filePath;
+		this.viewModel.selectedBackupSets = undefined;
+		this.validateRestore(true);
+	}
+
+	private onUrlPathChanged(urlPath: string) {
+		this.viewModel.filePath = urlPath;
 		this.viewModel.selectedBackupSets = undefined;
 		this.validateRestore(true);
 	}
@@ -766,7 +772,7 @@ export class RestoreDialog extends Modal {
 			}
 			this.viewModel.deviceType = DeviceType.file.valueOf();
 		} else if (selectedRestoreFrom === this._urlTitle) {
-			this.viewModel.onRestoreFromChanged(false);
+			this.viewModel.onRestoreFromChanged(true);
 			DOM.hide(this._destinationRestoreToContainer!);
 			DOM.hide(this._sourceDatabasesElement!);
 			DOM.hide(this._restoreFromBackupFileElement!);
@@ -826,8 +832,10 @@ export class RestoreDialog extends Modal {
 
 	private resetDialog(): void {
 		this.hideError();
-		this._restoreFromSelectBox!.selectWithOptionName(this._databaseTitle);
-		this.onRestoreFromChanged(this._databaseTitle);
+		if (!this._isManagedInstance) {
+			this._restoreFromSelectBox!.selectWithOptionName(this._databaseTitle);
+			this.onRestoreFromChanged(this._databaseTitle);
+		}
 		this._sourceDatabaseSelectBox!.select(0);
 		this._panel!.showTab(this._generalTab.identifier!);
 		this._isBackupFileCheckboxChanged = false;
@@ -838,6 +846,15 @@ export class RestoreDialog extends Modal {
 	public open(serverName: string, ownerUri: string) {
 		this.title = this._restoreTitle + ' - ' + serverName;
 		this._ownerUri = ownerUri;
+		if (this._isManagedInstance) {
+			const restoreFromUrlIndex = 2;
+			this._selectedRestoreOptionIndex = restoreFromUrlIndex;
+			this._restoreFromSelectBox.select(this._selectedRestoreOptionIndex);
+			this.onRestoreFromChanged(this._urlTitle);
+			this._restoreFromSelectBox.disable();
+		} else {
+			this._restoreFromSelectBox.enable();
+		}
 
 		this.show();
 		this._restoreFromSelectBox!.focus();
