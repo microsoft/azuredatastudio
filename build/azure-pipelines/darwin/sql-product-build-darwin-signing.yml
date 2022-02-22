@@ -18,9 +18,9 @@ steps:
     displayName: 'Rename the file'
 
   - task: UseDotNet@2
-    displayName: 'Install .NET Core sdk for signing'
+    displayName: 'Install .NET Core runtime for signing'
     inputs:
-      packageType: sdk
+      packageType: runtime
       version: 2.1.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
