@@ -38,13 +38,6 @@ export function setupWeb(opts: minimist.ParsedArgs) {
 function setupCommonTests(opts: minimist.ParsedArgs): void {
 	beforeSuite(opts);
 	afterSuite(opts);
-
-	beforeEach(async function (): Promise<void> {
-		const app = this.app as Application;
-		// Clearing any toast notifications that popup when ADS is launched like Telemetry opt-out.
-		await app.workbench.notificationToast.closeNotificationToasts();
-	});
-
 	afterEach(async function (): Promise<void> {
 		const app = this.app as Application;
 		await app.workbench.quickaccess.runCommand('workbench.action.closeAllEditors');
