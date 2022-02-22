@@ -145,7 +145,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 				},
 				{
 					displayName: loc.releaseNotes,
-					valueType: azdata.DeclarativeDataType.string,
+					valueType: azdata.DeclarativeDataType.component,
 					isReadOnly: true,
 					width: '30%',
 					headerCssStyles: cssStyles.tableHeader,
@@ -162,6 +162,20 @@ export class ControllerUpgradesPage extends DashboardPage {
 			],
 			dataValues: []
 		}).component();
+
+		// For links in tables
+		// displayName: loc.endpoint,
+		// valueType: azdata.DeclarativeDataType.component,
+		// isReadOnly: true,
+		// width: '50%',
+		// headerCssStyles: cssStyles.tableHeader,
+		// rowCssStyles: {
+		// 	...cssStyles.tableRow,
+		// 	'overflow': 'hidden',
+		// 	'text-overflow': 'ellipsis',
+		// 	'white-space': 'nowrap',
+		// 	'max-width': '0'
+		// }
 
 		this._upgradesMessage = this.modelView.modelBuilder.text()
 			.withProps({ CSSStyles: { 'text-align': 'center' } })
@@ -184,8 +198,10 @@ export class ControllerUpgradesPage extends DashboardPage {
 		root.addItem(this._upgradesMessage);
 
 		this.initialized = true;
+
 		this._upgradesTableLoading.loading = false;
 		this._upgradesContainer.addItem(this._upgradesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
+
 		return root;
 	}
 
