@@ -3,14 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Table } from 'sql/base/browser/ui/table/table';
 import { CreateComponentsFunc, DesignerUIComponent, SetComponentValueFunc } from 'sql/workbench/browser/designer/designer';
-import { DesignerViewModel, DesignerDataPropertyInfo, DesignerEditPath } from 'sql/workbench/browser/designer/interfaces';
+import { DesignerViewModel, DesignerDataPropertyInfo, DesignerPropertyPath } from 'sql/workbench/browser/designer/interfaces';
 import * as DOM from 'vs/base/browser/dom';
 import { equals } from 'vs/base/common/objects';
 import { localize } from 'vs/nls';
 
 export interface ObjectInfo {
-	path: DesignerEditPath;
+	path: DesignerPropertyPath;
 	type: string;
 	components: DesignerDataPropertyInfo[];
 	viewModel: DesignerViewModel;
@@ -19,7 +20,7 @@ export interface ObjectInfo {
 export class DesignerPropertiesPane {
 	private _titleElement: HTMLElement;
 	private _contentElement: HTMLElement;
-	private _objectPath: DesignerEditPath;
+	private _objectPath: DesignerPropertyPath;
 	private _componentMap = new Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }>();
 	private _groupHeaders: HTMLElement[] = [];
 
@@ -48,7 +49,7 @@ export class DesignerPropertiesPane {
 		return this._componentMap;
 	}
 
-	public get objectPath(): DesignerEditPath {
+	public get objectPath(): DesignerPropertyPath {
 		return this._objectPath;
 	}
 
@@ -93,5 +94,23 @@ export class DesignerPropertiesPane {
 			this._setComponentValue(value.defintion, value.component, item.viewModel);
 		});
 		this._descriptionContainer.style.display = 'none';
+	}
+
+	public selectProperty(path: DesignerPropertyPath): void {
+		const componentInfo = this.componentMap.get(<string>path[0]);
+		if (componentInfo.defintion.componentType !== 'table') {
+			componentInfo.component.focus();
+			return;
+		}
+
+		const table = componentInfo.component as Table<Slick.SlickData>;
+		const row = path[1] as number;
+		let cell = 0;
+		if (path.length === 3) {
+			const colName = path[2] as string;
+			cell = table.columns.findIndex(c => c.field === colName);
+		}
+		table.setActiveCell(row, cell);
+		table.grid.scrollCellIntoView(row, cell, false);
 	}
 }
