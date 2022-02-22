@@ -43,7 +43,7 @@ export abstract class AbstractTelemetryOptOut implements IWorkbenchContribution 
 	protected async handleTelemetryOptOut(): Promise<void> {
 		if (this.productService.telemetryOptOutUrl &&
 			!this.storageService.get(AbstractTelemetryOptOut.TELEMETRY_OPT_OUT_SHOWN, StorageScope.GLOBAL) &&
-			!this.environmentService.disableTelemetry) {
+			!this.environmentService.disableTelemetry) { // {{SQL CARBON EDIT}} Adding check to disable opt out toast when this flag is set.
 			const experimentId = 'telemetryOptOut';
 
 			const [count, experimentState] = await Promise.all([this.getWindowCount(), this.experimentService.getExperimentById(experimentId)]);
