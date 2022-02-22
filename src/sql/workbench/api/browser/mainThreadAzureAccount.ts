@@ -42,4 +42,8 @@ export class MainThreadAzureAccount extends Disposable implements MainThreadAzur
 		return this._proxy.$getBlobContainers(account, subscription, storageAccount, ignoreErrors);
 	}
 
+	public getBlobs(account: azurecore.AzureAccount, subscription: azurecore.AzureResourceSubscription, storageAccount: azurecore.AzureGraphResource, containerName: string, ignoreErrors?: boolean): Promise<azurecore.GetBlobsResult> {
+		return this._proxy.$getBlobs(account, subscription, storageAccount, containerName, ignoreErrors);
+	}
+
 }

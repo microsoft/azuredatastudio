@@ -29,7 +29,7 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Account } from 'azdata';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
-import { BlobContainer, AzureGraphResource, AzureResourceSubscription } from 'azurecore';
+import { Blob, BlobContainer, AzureGraphResource, AzureResourceSubscription, GetBlobsResult } from 'azurecore';
 
 export class UrlBrowserDialog extends Modal {
 	private _accounts: Account[];
@@ -40,6 +40,7 @@ export class UrlBrowserDialog extends Modal {
 	private _selectedStorageAccount: AzureGraphResource;
 	private _blobContainers: BlobContainer[];
 	private _selectedBlobContainer: BlobContainer;
+	private _backupFiles: Blob[];
 
 	private _restoreDialog: boolean;
 	//private _viewModel: FileBrowserViewModel;
@@ -142,9 +143,6 @@ export class UrlBrowserDialog extends Modal {
 		this._blobContainerSelectorBox.setAriaLabel(blobContainerLabel);
 		let blobContainerSelector = DialogHelper.appendRow(tableContainer, blobContainerLabel, 'file-input-label', 'file-input-box');
 		DialogHelper.appendInputSelectBox(blobContainerSelector, this._blobContainerSelectorBox);
-		this._blobContainerSelectorBox.setOptions(['Blob container 1', 'Blob container 2']);
-		this._blobContainerSelectorBox.select(0);
-		this._blobContainerSelectorBox.onDidSelect(() => this.enableOkButton());
 
 
 		let sharedAccessSignatureLabel = localize('azurebrowser.sharedAccessSignature', "Shared access signature generated");
@@ -162,16 +160,14 @@ export class UrlBrowserDialog extends Modal {
 		this._backupFileSelectorBox = new SelectBox(['*'], '*', this._contextViewService);
 		this._backupFileSelectorBox.setAriaLabel(backupFileLabel);
 
-		let fileInput = DialogHelper.appendRow(tableContainer, backupFileLabel, 'file-input-label', 'file-input-box');
-		this._backupFileInputBox = new InputBox(fileInput, this._contextViewService, { flexibleHeight: true });
-
 		if (this._restoreDialog) {
 			let backupFileSelector = DialogHelper.appendRow(tableContainer, backupFileLabel, 'file-input-label', 'file-input-box');
 			DialogHelper.appendInputSelectBox(backupFileSelector, this._backupFileSelectorBox);
 			this._backupFileSelectorBox.setOptions(['backup-file.bak', 'backup-file2.bak']);
 			this._backupFileSelectorBox.select(0);
-			fileInput.hidden = true;
 		} else {
+			let fileInput = DialogHelper.appendRow(tableContainer, backupFileLabel, 'file-input-label', 'file-input-box');
+			this._backupFileInputBox = new InputBox(fileInput, this._contextViewService, { flexibleHeight: true });
 			this.setBackupFileDefaultValue();
 		}
 
@@ -256,7 +252,7 @@ export class UrlBrowserDialog extends Modal {
 		}
 	}
 
-	private setBlobContainersSelectorBoxOptions(blobContainers: BlobContainer[]): any {
+	private setBlobContainersSelectorBoxOptions(blobContainers: BlobContainer[]) {
 		this._blobContainers = blobContainers;
 		const blobContainersDisplayNames: string[] = this._blobContainers.map(blobContainer => blobContainer.name);
 		this._blobContainerSelectorBox.setOptions(blobContainersDisplayNames);
@@ -264,13 +260,32 @@ export class UrlBrowserDialog extends Modal {
 		this._blobContainerSelectorBox.enable();
 	}
 
-	private setBlobContainersSelectorBoxErrors(errors: any): any {
+	private setBlobContainersSelectorBoxErrors(errors: any) {
 		this._blobContainerSelectorBox.setOptions(['Error getting blob containers']);
 		this._blobContainerSelectorBox.disable();
 	}
 
+	private onBlobContainersSelectorBoxChanged(checkedBlobContainer: number) {
+		if (this._blobContainers && this._restoreDialog) {
+			this._selectedBlobContainer = this._blobContainers[checkedBlobContainer];
+			this._azureAccountService.getBlobs(this._selectedAccount, this._selectedSubscription, this._selectedStorageAccount, this._selectedBlobContainer.name, true)
+				.then(getBlobsResult => this.setBackupFilesOptions(getBlobsResult))
+				.catch(getBlobsResult => this.setBackupFilesSelectorError(getBlobsResult));
+		}
+	}
 
+	private setBackupFilesOptions(getBlobsResult: GetBlobsResult) {
+		this._backupFiles = getBlobsResult.blobs;
+		const backupFilesDisplayNames: string[] = this._backupFiles.map(backupFile => backupFile.name);
+		this._backupFileSelectorBox.setOptions(backupFilesDisplayNames);
+		this._backupFileSelectorBox.select(0);
+		this._backupFileSelectorBox.enable();
+	}
 
+	setBackupFilesSelectorError(getBlobsResult: GetBlobsResult) {
+		this._backupFileSelectorBox.setOptions(['Error getting backup files']);
+		this._backupFileSelectorBox.disable();
+	}
 
 	private setBackupFileDefaultValue() {
 		this._backupFileInputBox.value = 'backup.bak';
@@ -307,7 +322,7 @@ export class UrlBrowserDialog extends Modal {
 	private ok() {
 		let returnValue = '';
 		if (this._restoreDialog) {
-			returnValue = this._backupFileSelectorBox.value;
+			returnValue = `https://${this._storageAccountSelectorBox.value}.blob.core.windows.net/${this._blobContainerSelectorBox.value}/${this._backupFileSelectorBox.value}`;
 		} else {
 			returnValue = `https://${this._storageAccountSelectorBox.value}.blob.core.windows.net/${this._blobContainerSelectorBox.value}/${this._backupFileInputBox.value}`;
 		}
@@ -330,6 +345,10 @@ export class UrlBrowserDialog extends Modal {
 		this._register(this._tenantSelectorBox.onDidSelect(selectedTenant => this.onTenantSelectorBoxChanged(selectedTenant.index)));
 		this._register(this._subscriptionSelectorBox.onDidSelect(selectedSubscription => this.onSubscriptionSelectorBoxChanged(selectedSubscription.index)));
 		this._register(this._storageAccountSelectorBox.onDidSelect(selectedStorageAccount => this.onStorageAccountSelectorBoxChanged(selectedStorageAccount.index)));
+		this._register(this._blobContainerSelectorBox.onDidSelect(selectedBlobContainer => {
+			this.onBlobContainersSelectorBoxChanged(selectedBlobContainer.index);
+			this.enableOkButton();
+		}));
 
 		// Theme styler
 		this._register(attachSelectBoxStyler(this._tenantSelectorBox, this._themeService));
@@ -337,9 +356,13 @@ export class UrlBrowserDialog extends Modal {
 		this._register(attachSelectBoxStyler(this._subscriptionSelectorBox, this._themeService));
 		this._register(attachSelectBoxStyler(this._storageAccountSelectorBox, this._themeService));
 		this._register(attachSelectBoxStyler(this._blobContainerSelectorBox, this._themeService));
-		this._register(attachSelectBoxStyler(this._backupFileSelectorBox, this._themeService));
 		this._register(attachInputBoxStyler(this._sasInputBox, this._themeService));
-		this._register(attachInputBoxStyler(this._backupFileInputBox, this._themeService));
+		if (this._backupFileInputBox) {
+			this._register(attachInputBoxStyler(this._backupFileInputBox, this._themeService));
+		}
+		if (this._backupFileSelectorBox) {
+			this._register(attachSelectBoxStyler(this._backupFileSelectorBox, this._themeService));
+		}
 		this._register(attachButtonStyler(this._sasButton, this._themeService));
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));

@@ -323,4 +323,5 @@ declare module 'azurecore' {
 	export type AzureResourceSubscription = azureResource.AzureResourceSubscription;
 	export type AzureGraphResource = azureResource.AzureGraphResource;
 	export type BlobContainer = azureResource.BlobContainer;
+	export type Blob = azureResource.Blob;
 }
