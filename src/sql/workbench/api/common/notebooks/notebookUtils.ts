@@ -17,13 +17,13 @@ export const DotnetInteractiveLanguagePrefix = 'dotnet-interactive.';
 export const DotnetInteractiveJupyterLabelPrefix = '.NET (';
 export const DotnetInteractiveLabel = '.NET Interactive';
 
-export function convertToVSCodeNotebookCell(cellSource: string | string[], cellKind: azdata.nb.CellType, cellIndex: number, cellUri: URI, docUri: URI, cellLanguage: string): vscode.NotebookCell {
+export function convertToVSCodeNotebookCell(cellKind: azdata.nb.CellType, cellIndex: number, cellUri: URI, docUri: URI, cellLanguage: string, cellSource?: string | string[]): vscode.NotebookCell {
 	return <vscode.NotebookCell>{
 		kind: cellKind === CellTypes.Code ? NotebookCellKind.Code : NotebookCellKind.Markup,
 		index: cellIndex,
 		document: <vscode.TextDocument>{
 			uri: cellUri,
-			languageId: cellLanguage ?? '',
+			languageId: cellLanguage,
 			getText: () => Array.isArray(cellSource) ? cellSource.join('') : (cellSource ?? ''),
 		},
 		notebook: <vscode.NotebookDocument>{
