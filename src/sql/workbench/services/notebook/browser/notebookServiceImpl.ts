@@ -258,7 +258,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			let untitledUriSet = new Set(untitledEditorURIs);
 			let counter = 1;
 			do {
-				uri = URI.from({ scheme: Schemas.untitled, path: `Untitled-${counter}` });
+				uri = URI.from({ scheme: Schemas.untitled, path: `Notebook-${counter}` });
 				counter++;
 			} while (untitledUriSet.has(uri));
 		}
