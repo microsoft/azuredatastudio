@@ -1382,17 +1382,21 @@ export class ProjectsController {
 		if (model.action === UpdateProjectAction.Compare) {
 			await vscode.commands.executeCommand(constants.schemaCompareRunComparisonCommand, model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
 		} else if (model.action === UpdateProjectAction.Update) {
-			await vscode.window.withProgress(
-				{
-					location: vscode.ProgressLocation.Notification,
-					title: constants.updatingProjectFromDatabase(path.basename(model.targetEndpointInfo.projectFilePath), model.sourceEndpointInfo.databaseName),
-					cancellable: false
-				}, async (_progress, _token) => {
-					return this.schemaCompareAndUpdateProject(model.sourceEndpointInfo, model.targetEndpointInfo);
-				});
+			await vscode.window.showWarningMessage(constants.applyConfirmation, { modal: true }, constants.yesString).then(async (result) => {
+				if (result === constants.yesString) {
+					await vscode.window.withProgress(
+						{
+							location: vscode.ProgressLocation.Notification,
+							title: constants.updatingProjectFromDatabase(path.basename(model.targetEndpointInfo.projectFilePath), model.sourceEndpointInfo.databaseName),
+							cancellable: false
+						}, async (_progress, _token) => {
+							return this.schemaCompareAndUpdateProject(model.sourceEndpointInfo, model.targetEndpointInfo);
+						});
 
-			void vscode.commands.executeCommand(constants.refreshDataWorkspaceCommand);
-			utils.getDataWorkspaceExtensionApi().showProjectsView();
+					void vscode.commands.executeCommand(constants.refreshDataWorkspaceCommand);
+					utils.getDataWorkspaceExtensionApi().showProjectsView();
+				}
+			});
 		} else {
 			throw new Error(`Unknown UpdateProjectAction: ${model.action}`);
 		}

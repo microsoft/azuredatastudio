@@ -53,6 +53,7 @@
 
 		//List and trees
 		"list.hoverBackground": "#444444",
+		"list.activeSelectionIconForeground": "#FFF",
 		"pickerGroup.border": "#0078d7",
 		"input.placeholderForeground": "#a6a6a6",
 		"editorGroupHeader.tabsBackground": "#444444",
