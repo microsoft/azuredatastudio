@@ -21,7 +21,7 @@ steps:
     displayName: 'Install .NET Core runtime for signing'
     inputs:
       packageType: runtime
-      version: 2.1.x
+      version: 2.1.0
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
