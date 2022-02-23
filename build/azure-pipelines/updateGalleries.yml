@@ -1,3 +1,6 @@
+pool:
+  vmImage: 'windows-latest'
+
 trigger:
 - release/extensions
 - extensions/rc1
