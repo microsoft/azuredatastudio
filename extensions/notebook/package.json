@@ -774,7 +774,7 @@
     "@microsoft/vscodetestcover": "^1.2.0"
   },
   "resolutions": {
-    "url-parse": "^1.5.6"
+    "url-parse": "^1.5.8"
   },
   "enableProposedApi": true
 }
