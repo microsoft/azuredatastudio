@@ -8,7 +8,7 @@ import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
-import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs } from '../api/azure';
+import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs, Subscription } from '../api/azure';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
@@ -1472,6 +1472,75 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			case Page.DatabaseSelector:
 				saveInfo.selectedDatabases = this.databaseSelectorTableValues;
 				await this.extensionContext.globalState.update(`${this.mementoString}.${serverName}`, saveInfo);
+		}
+	}
+
+	public loadSavedInfo(): Boolean {
+		try {
+			if (this.savedInfo.networkContainerType) {
+				this._databaseBackup.networkContainerType = this.savedInfo.networkContainerType;
+			}
+
+			this._databaseBackup.networkShares = this.savedInfo.networkShares || [];
+			this._databaseBackup.blobs = this.savedInfo.blobs || [];
+			this._databaseBackup.subscription = <Subscription>this.savedInfo.targetSubscription || undefined;
+			this._targetDatabaseNames = this.savedInfo.targetDatabaseNames;
+
+			if (this.savedInfo.migrationMode) {
+				this._databaseBackup.migrationMode = this.savedInfo.migrationMode;
+			}
+
+			if (this.savedInfo.azureAccount) {
+				this._azureAccount = this.savedInfo.azureAccount;
+			}
+
+			if (this.savedInfo.azureTenant) {
+				this._azureTenant = this.savedInfo.azureTenant;
+			}
+
+			if (this.savedInfo.subscription) {
+				this._targetSubscription = this.savedInfo.subscription;
+			}
+
+			if (this.savedInfo.location) {
+				this._location = this.savedInfo.location;
+			}
+
+			if (this.savedInfo.resourceGroup) {
+				this._resourceGroup = this.savedInfo.resourceGroup;
+			}
+
+			if (this.savedInfo.targetServerInstance) {
+				this._targetServerInstance = this.savedInfo.targetServerInstance;
+			}
+
+			if (this.savedInfo.migrationTargetType) {
+				this._targetType = this.savedInfo.migrationTargetType;
+			}
+
+			this._databaseAssessment = this.savedInfo.databaseAssessment || [];
+			this._databaseSelection = this.savedInfo.migrationDatabases;
+			this._migrationDbs = this.savedInfo.databaseList;
+
+			if (this.savedInfo.serverAssessment) {
+				this._assessmentResults = this.savedInfo.serverAssessment;
+			}
+
+			const savedSkuRecommendation = this.savedInfo.skuRecommendation;
+			if (savedSkuRecommendation) {
+				this._skuRecommendationPerformanceDataSource = savedSkuRecommendation.skuRecommendationPerformanceDataSource;
+				this._skuRecommendationPerformanceLocation = savedSkuRecommendation.skuRecommendationPerformanceLocation;
+				this._perfDataCollectionStartDate = savedSkuRecommendation.perfDataCollectionStartDate;
+				this._perfDataCollectionStopDate = savedSkuRecommendation.perfDataCollectionStopDate;
+				this._skuTargetPercentile = savedSkuRecommendation.skuTargetPercentile;
+				this._skuScalingFactor = savedSkuRecommendation.skuScalingFactor;
+				this._skuEnablePreview = savedSkuRecommendation.skuEnablePreview;
+			}
+
+			this.databaseSelectorTableValues = this.savedInfo.selectedDatabases;
+			return true;
+		} catch {
+			return false;
 		}
 	}
 }

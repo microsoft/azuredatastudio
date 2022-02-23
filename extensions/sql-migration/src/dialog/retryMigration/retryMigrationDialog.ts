@@ -12,6 +12,7 @@ import { MigrationMode, MigrationStateModel, NetworkContainerType, SavedInfo } f
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { WizardController } from '../../wizard/wizardController';
 import { getMigrationModeEnum, getMigrationTargetTypeEnum } from '../../constants/helper';
+import * as constants from '../../constants/strings';
 
 export class RetryMigrationDialog {
 	private _context: vscode.ExtensionContext;
@@ -151,7 +152,11 @@ export class RetryMigrationDialog {
 		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 		const stateModel = this.createMigrationStateModel(this._migration, connectionId, serverName, api, location!);
 
-		const wizardController = new WizardController(this._context, stateModel);
-		await wizardController.openWizard(stateModel.sourceConnectionId);
+		if (stateModel.loadSavedInfo()) {
+			const wizardController = new WizardController(this._context, stateModel);
+			await wizardController.openWizard(stateModel.sourceConnectionId);
+		} else {
+			void vscode.window.showInformationMessage(constants.MIGRATION_CANNOT_RETRY);
+		}
 	}
 }
