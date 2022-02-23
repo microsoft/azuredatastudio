@@ -59,10 +59,8 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		let uri = URI.revive(notebookUri);
 		let uriString = uri.toString();
 		this.findExecuteManagersForUri(uriString).forEach(manager => {
-			if (manager) {
-				manager.provider.handleNotebookClosed(uri);
-				this._adapters.delete(manager.handle);
-			}
+			manager.provider.handleNotebookClosed(uri);
+			this._adapters.delete(manager.handle);
 		});
 	}
 
