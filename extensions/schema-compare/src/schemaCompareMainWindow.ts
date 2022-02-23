@@ -899,7 +899,6 @@ export class SchemaCompareMainWindow {
 				}
 
 				if (!result || !result.success) {
-
 					TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, getTelemetryErrorType(result?.errorMessage))
 						.withAdditionalProperties({
 							'operationId': this.comparisonResult.operationId,
@@ -913,6 +912,12 @@ export class SchemaCompareMainWindow {
 					this.applyButton.enabled = true;
 					this.applyButton.title = loc.applyEnabledMessage;
 				}
+				else if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
+					const workspaceApi = getDataWorkspaceExtensionApi();
+					workspaceApi.showProjectsView();
+
+					void vscode.window.showInformationMessage(loc.applySuccess);
+				}
 
 				TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyEnded')
 					.withAdditionalProperties({
@@ -920,13 +925,6 @@ export class SchemaCompareMainWindow {
 						'operationId': this.comparisonResult.operationId,
 						'targetType': getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)
 					}).send();
-
-				if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
-					const workspaceApi = getDataWorkspaceExtensionApi();
-					workspaceApi.showProjectsView();
-
-					void vscode.window.showInformationMessage(loc.applySuccess);
-				}
 			}
 		});
 	}
