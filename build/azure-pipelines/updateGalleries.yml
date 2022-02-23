@@ -31,8 +31,7 @@ steps:
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/release/extensions')
 
 - powershell: |
-   git checkout extensions/rc1
-
+    git checkout extensions/rc1
   displayName: 'Checkout RC1 branch'
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/extensions/rc1')
 
