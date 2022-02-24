@@ -88,7 +88,7 @@ export function convertToVSCodeCellOutput(output: azdata.nb.ICellOutput): vscode
 	};
 }
 
-export function convertToADSNotebookContents(notebookData: vscode.NotebookData): azdata.nb.INotebookContents {
+export function convertToADSNotebookContents(notebookData: vscode.NotebookData | undefined): azdata.nb.INotebookContents {
 	let result = {
 		cells: notebookData?.cells?.map<azdata.nb.ICellContents>(cell => {
 			let executionOrder = cell.executionSummary?.executionOrder;
