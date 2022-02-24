@@ -1,5 +1,37 @@
 # Change Log
 
+
+ ## Version 1.35.0
+* Release date: February 24, 2022
+* Release status: General Availability
+## What's new in this version
+* New Features:
+    *  Table Designer - Added functionality for creation and management of tables for SQL Servers. Built using DacFx framework 
+    *  Query Plan Viewer - Added functionality for users to view a graphic view of estimated and actual query plans without need for an extension 
+    *  Azure Arc Extension - Updated the Data Controller deployment wizard and the SQL Managed Instance - Azure Arc deployment wizard to reflect the deployment experience in Azure Portal
+
+* Bug Fixes:
+    *  Azure Arc Extension - SQL Managed Instance-Azure Arc is now fixed for both indirect connectivity mode and direct connectivity mode 
+    *  Notebooks - Support for keyboard navigation between cells to minimize mouse clicking
+
+| Platform																|
+| ---------------------------------------	|
+| [Windows User Installer][win-user]			|
+| [Windows System Installer][win-system]	|
+| [Windows ZIP][win-zip]									|
+| [macOS ZIP][osx-zip]										|
+| [Linux TAR.GZ][linux-zip]								|
+| [Linux RPM][linux-rpm]									|
+| [Linux DEB][linux-deb]									|
+
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2187459
+[win-system]: https://go.microsoft.com/fwlink/?linkid=2187520
+[win-zip]: https://go.microsoft.com/fwlink/?linkid=2187460
+[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2187461
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2187522
+[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2187521
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2187462
+
  ## Version 1.34.0
 * Release date: December 15, 2021
 * Release status: General Availability
@@ -30,26 +62,6 @@
 ## Hotfix release
 - Fix for [#16535 Unable to See Saved Connections in Restricted Mode](https://github.com/microsoft/azuredatastudio/issues/17535)
 - Fix for [#17579 Can't type in Notebook code cell after editing text cell](https://github.com/microsoft/azuredatastudio/issues/17579)
-
-    
-
-| Platform																|
-| ---------------------------------------	|
-| [Windows User Installer][win-user]			|
-| [Windows System Installer][win-system]	|
-| [Windows ZIP][win-zip]									|
-| [macOS ZIP][osx-zip]										|
-| [Linux TAR.GZ][linux-zip]								|
-| [Linux RPM][linux-rpm]									|
-| [Linux DEB][linux-deb]									|
-
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2176805
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2175910
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2176806
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2176807
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2176505
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2176005
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2176006
 
 ## Version 1.33.0
 * Release date: October 27, 2021
