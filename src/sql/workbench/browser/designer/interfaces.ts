@@ -104,6 +104,7 @@ export interface DesignerState {
 
 export const NameProperty = 'name';
 export const ScriptProperty = 'script';
+export const CanBeDeletedProperty = 'canBeDeleted';
 
 export interface DesignerView {
 	components?: DesignerDataPropertyInfo[]
@@ -196,7 +197,8 @@ export interface DesignerTableProperties extends ComponentProperties {
 }
 
 export interface DesignerTableComponentRowData {
-	[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+	[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties | boolean;
+	canBeDeleted?: boolean;
 }
 
 

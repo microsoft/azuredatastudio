@@ -186,5 +186,7 @@
 	"objectsListProperties.name": "Name",
 
 	"title.newTable": "New Table",
-	"title.designTable": "Design"
+	"title.designTable": "Design",
+	"title.newEdgeTable": "New Edge Table",
+	"title.newNodeTable": "New Node Table"
 }

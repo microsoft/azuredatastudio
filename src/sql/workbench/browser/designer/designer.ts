@@ -6,7 +6,7 @@
 import {
 	DesignerComponentInput, DesignerEditType, DesignerTab, DesignerEdit, DesignerPropertyPath, DesignerViewModel, DesignerDataPropertyInfo,
 	DesignerTableComponentRowData, DesignerTableProperties, InputBoxProperties, DropDownProperties, CheckBoxProperties,
-	DesignerEditProcessedEventArgs, DesignerStateChangedEventArgs, DesignerAction, DesignerUIState, ScriptProperty, DesignerRootObjectPath
+	DesignerEditProcessedEventArgs, DesignerStateChangedEventArgs, DesignerAction, DesignerUIState, ScriptProperty, DesignerRootObjectPath, CanBeDeletedProperty
 }
 	from 'sql/workbench/browser/designer/interfaces';
 import { IPanelTab, ITabbedPanelStyles, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
@@ -823,7 +823,8 @@ export class Designer extends Disposable implements IThemable {
 						title: localize('designer.removeRowText', "Remove"),
 						width: 20,
 						resizable: false,
-						isFontIcon: true
+						isFontIcon: true,
+						enabledField: CanBeDeletedProperty
 					});
 					deleteRowColumn.onClick(async (e) => {
 						if (tableProperties.showRemoveRowConfirmation) {

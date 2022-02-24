@@ -1354,7 +1354,11 @@ declare module 'azdata' {
 		 * The data item of the designer's table component.
 		 */
 		export interface DesignerTableComponentDataItem {
-			[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+			[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties | boolean;
+			/**
+			 * Whether the row can be deleted. The default value is true.
+			 */
+			canBeDeleted?: boolean;
 		}
 
 		/**
