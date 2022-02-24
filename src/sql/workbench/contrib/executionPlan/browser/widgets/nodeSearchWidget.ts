@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { QueryPlanWidgetBase } from 'sql/workbench/contrib/queryplan2/browser/queryPlanWidgetBase';
+import { ExecutionPlanWidgetBase } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetBase';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import * as DOM from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import { Codicon } from 'vs/base/common/codicons';
-import { InternalExecutionPlanNode, QueryPlan2 } from 'sql/workbench/contrib/queryplan2/browser/queryPlan';
+import { InternalExecutionPlanNode, ExecutionPlan } from 'sql/workbench/contrib/executionPlan/browser/executionPlan';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { attachInputBoxStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -17,10 +17,10 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { isString } from 'vs/base/common/types';
 
-const CONTAINS_DISPLAY_STRING = localize("queryPlanSearchTypeContains", 'Contains');
-const EQUALS_DISPLAY_STRING = localize("queryPlanSearchTypeEquals", 'Equals');
+const CONTAINS_DISPLAY_STRING = localize("executionPlanSearchTypeContains", 'Contains');
+const EQUALS_DISPLAY_STRING = localize("executionPlanSearchTypeEquals", 'Equals');
 
-export class NodeSearchWidget extends QueryPlanWidgetBase {
+export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 
 	private _propertyNameSelectBoxContainer: HTMLElement;
 	private _propertyNameSelectBox: SelectBox;
@@ -36,7 +36,7 @@ export class NodeSearchWidget extends QueryPlanWidgetBase {
 	private _actionBar: ActionBar;
 
 	constructor(
-		public readonly queryPlanView: QueryPlan2,
+		public readonly executionPlanView: ExecutionPlan,
 		@IContextViewService public readonly contextViewService: IContextViewService,
 		@IThemeService public readonly themeService: IThemeService
 
@@ -46,7 +46,7 @@ export class NodeSearchWidget extends QueryPlanWidgetBase {
 		// property name dropdown
 		this._propertyNameSelectBoxContainer = DOM.$('.search-widget-property-name-select-box .dropdown-container');
 		this.container.appendChild(this._propertyNameSelectBoxContainer);
-		const propDropdownOptions = [...queryPlanView.graphElementPropertiesSet].sort();
+		const propDropdownOptions = [...executionPlanView.graphElementPropertiesSet].sort();
 		this._propertyNameSelectBox = new SelectBox(propDropdownOptions, propDropdownOptions[0], this.contextViewService, this._propertyNameSelectBoxContainer);
 		attachSelectBoxStyler(this._propertyNameSelectBox, this.themeService);
 		this._propertyNameSelectBoxContainer.style.width = '150px';
@@ -114,7 +114,7 @@ export class NodeSearchWidget extends QueryPlanWidgetBase {
 			this._usePreviousSearchResult = true;
 
 			// Doing depth first search in the graphModel to find nodes with matching prop values.
-			const graphModel = this.queryPlanView.graphModel;
+			const graphModel = this.executionPlanView.graphModel;
 			const stack: InternalExecutionPlanNode[] = [];
 			stack.push(graphModel.root);
 
@@ -143,10 +143,10 @@ export class NodeSearchWidget extends QueryPlanWidgetBase {
 		}
 
 		// Getting the node at search index
-		const resultCell = this.queryPlanView.azdataGraphDiagram.graph.model.getCell(this._searchResults[this._currentSearchResultIndex]);
+		const resultCell = this.executionPlanView.azdataGraphDiagram.graph.model.getCell(this._searchResults[this._currentSearchResultIndex]);
 		// Selecting the node on graph diagram
-		this.queryPlanView.azdataGraphDiagram.graph.setSelectionCell(resultCell);
-		this.queryPlanView.propertiesView.graphElement = this.queryPlanView.searchNodes(resultCell.id);
+		this.executionPlanView.azdataGraphDiagram.graph.setSelectionCell(resultCell);
+		this.executionPlanView.propertiesView.graphElement = this.executionPlanView.searchNodes(resultCell.id);
 
 		/**
 		 * The selected graph node might be hidden/partially visible if the graph is overflowing the parent container.
@@ -164,13 +164,13 @@ export class NodeSearchWidget extends QueryPlanWidgetBase {
 		 *  6. Smoothly scroll to the left top x and y calculated in step 4, 5.
 		 */
 
-		const cellRect = this.queryPlanView.azdataGraphDiagram.graph.getCellBounds(resultCell);
+		const cellRect = this.executionPlanView.azdataGraphDiagram.graph.getCellBounds(resultCell);
 		const cellMidPoint: Point = {
 			x: cellRect.x + cellRect.width / 2,
 			y: cellRect.y + cellRect.height / 2,
 		};
 
-		const graphContainer = <HTMLElement>this.queryPlanView.azdataGraphDiagram.container;
+		const graphContainer = <HTMLElement>this.executionPlanView.azdataGraphDiagram.container;
 		const containerBoundingRect = graphContainer.getBoundingClientRect();
 
 		const leftTopScrollPoint: Point = {
@@ -242,6 +242,6 @@ export class CancelSearch extends Action {
 	}
 
 	public override async run(context: NodeSearchWidget): Promise<void> {
-		context.queryPlanView.planActionView.removeWidget(context);
+		context.executionPlanView.planActionView.removeWidget(context);
 	}
 }
