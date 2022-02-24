@@ -254,13 +254,11 @@ export class NotebookService extends Disposable implements INotebookService {
 			uri = URI.revive(resource);
 		} else {
 			// Need to create a new untitled URI, so find the lowest numbered one that's available
-			let untitledEditorURIs = this.listNotebookEditors().filter(editor => editor.notebookParams.notebookUri.scheme === Schemas.untitled).map(editor => editor.notebookParams.notebookUri);
-			let untitledUriSet = new Set(untitledEditorURIs);
 			let counter = 1;
 			do {
 				uri = URI.from({ scheme: Schemas.untitled, path: `Notebook-${counter}` });
 				counter++;
-			} while (untitledUriSet.has(uri));
+			} while (this._untitledEditorService.get(uri));
 		}
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
