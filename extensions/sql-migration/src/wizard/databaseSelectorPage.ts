@@ -6,11 +6,12 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, Page, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { debounce } from '../api/utils';
 import * as styles from '../constants/styles';
+import { selectDatabasesFromList } from '../constants/helper';
 
 const styleLeft: azdata.CssStyles = {
 	'border': 'none',
@@ -89,7 +90,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	}
 
 	public async onPageLeave(): Promise<void> {
-		const assessedDatabases = this.migrationStateModel._databaseAssessment ?? [];
+		const assessedDatabases = this.migrationStateModel._assessmentDbs ?? [];
 		const selectedDatabases = this.selectedDbs();
 		// run assessment if
 		// * the prior assessment had an error or
@@ -268,20 +269,10 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}
 		).component();
 
-		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseSelector) {
-			await this._databaseSelectorTable.setDataValues(this.migrationStateModel.savedInfo.selectedDatabases);
-		} else {
-			if (this.migrationStateModel.retryMigration) {
-				const sourceDatabaseName = this.migrationStateModel.savedInfo.databaseList[0];
-				this._databaseTableValues.forEach((row, index) => {
-					const dbName = row[1].value as string;
-					if (dbName?.toLowerCase() === sourceDatabaseName?.toLowerCase()) {
-						row[0].value = true;
-					}
-				});
-			}
-			await this._databaseSelectorTable.setDataValues(this._databaseTableValues);
+		if (this.migrationStateModel.resumeAssessment || this.migrationStateModel.retryMigration) {
+			this._databaseTableValues = selectDatabasesFromList(this.migrationStateModel.savedInfo.databaseAssessment, this._databaseTableValues);
 		}
+		await this._databaseSelectorTable.setDataValues(this._databaseTableValues);
 		await this.updateValuesOnSelection();
 
 		this._disposables.push(this._databaseSelectorTable.onDataChanged(async () => {
@@ -300,7 +291,6 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		flex.addItem(this._dbCount, { flex: '0 0 auto' });
 		flex.addItem(this._databaseSelectorTable);
 		return flex;
-		// insert names of databases into table
 	}
 
 	public selectedDbs(): string[] {
@@ -317,8 +307,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		await this._dbCount.updateProperties({
 			'value': constants.DATABASES_SELECTED(this.selectedDbs().length, this._databaseTableValues.length)
 		});
-		this.migrationStateModel._databaseAssessment = this.selectedDbs();
-		this.migrationStateModel.databaseSelectorTableValues = <azdata.DeclarativeTableCellValue[][]>this._databaseSelectorTable.dataValues;
+		this.migrationStateModel._assessmentDbs = this.selectedDbs();
 	}
 
 	// undo when bug #16445 is fixed

@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as mssql from '../../../../mssql';
 import { azureResource } from 'azureResource';
 import { getLocations, getResourceGroupFromId, getBlobContainerId, getFullResourceGroupFromId, getResourceName } from '../../api/azure';
-import { MigrationMode, MigrationStateModel, NetworkContainerType, SavedInfo } from '../../models/stateMachine';
+import { MigrationMode, MigrationStateModel, NetworkContainerType, Page, SavedInfo } from '../../models/stateMachine';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { WizardController } from '../../wizard/wizardController';
 import { getMigrationModeEnum, getMigrationTargetTypeEnum } from '../../constants/helper';
@@ -36,16 +36,15 @@ export class RetryMigrationDialog {
 			azureTenant: migration.azureAccount.properties.tenants[0],
 
 			// DatabaseSelector
-			selectedDatabases: [],
+			databaseAssessment: [sourceDatabaseName],
 
 			// SKURecommendation
-			databaseAssessment: [],
 			databaseList: [sourceDatabaseName],
-			migrationDatabases: [],
 			serverAssessment: null,
 			skuRecommendation: null,
-
 			migrationTargetType: getMigrationTargetTypeEnum(migration)!,
+
+			// TargetSelection
 			subscription: migration.subscription,
 			location: location,
 			resourceGroup: {
@@ -66,7 +65,7 @@ export class RetryMigrationDialog {
 			blobs: [],
 
 			// Integration Runtime
-			migrationServiceId: migration.migrationContext.properties.migrationService,
+			sqlMigrationService: migration.controller,
 		};
 
 		const getStorageAccountResourceGroup = (storageAccountResourceId: string) => {

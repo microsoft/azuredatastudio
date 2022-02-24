@@ -382,12 +382,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		let serverName = '';
-		if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.serverName)) {
-			serverName = this.migrationStateModel.serverName;
-		} else {
-			serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
-		}
+		let serverName = this.migrationStateModel.serverName || (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 
 		let miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(serverName), this, MigrationTargetType.SQLMI);
 		let vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(serverName), this, MigrationTargetType.SQLVM);
@@ -419,37 +414,40 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private async changeTargetType(newTargetType: string) {
-		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
-			this.migrationStateModel._databaseAssessment = <string[]>this.migrationStateModel.savedInfo.databaseAssessment;
-		}
-		// remove assessed databases that have been removed from the source selection list
-		const miDbs = this.migrationStateModel._miDbs.filter(
-			db => this.migrationStateModel._databaseAssessment.findIndex(
-				dba => dba === db) >= 0);
+		switch (newTargetType) {
+			case MigrationTargetType.SQLMI: {
+				const miDbs = this.migrationStateModel._miDbs.filter(
+					db => this.migrationStateModel._assessmentDbs.findIndex(
+						dba => dba === db) >= 0);
 
-		const vmDbs = this.migrationStateModel._vmDbs.filter(
-			db => this.migrationStateModel._databaseAssessment.findIndex(
-				dba => dba === db) >= 0);
+				this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI;
+				if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
+					this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel.savedInfo.databaseList.length, this.migrationStateModel._assessmentDbs.length);
+				} else {
+					this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(miDbs.length, this.migrationStateModel._assessmentDbs.length);
+				}
+				this.migrationStateModel._targetType = MigrationTargetType.SQLMI;
+				this.migrationStateModel._migrationDbs = miDbs;
+				break;
+			}
 
-		if (newTargetType === MigrationTargetType.SQLMI) {
-			this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI;
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
-				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel.savedInfo.databaseList.length, this.migrationStateModel._databaseAssessment.length);
-			} else {
-				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(miDbs.length, this.migrationStateModel._databaseAssessment.length);
+			case MigrationTargetType.SQLVM: {
+				const vmDbs = this.migrationStateModel._vmDbs.filter(
+					db => this.migrationStateModel._assessmentDbs.findIndex(
+						dba => dba === db) >= 0);
+
+				this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM;
+				if ((this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation)) {
+					this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel.savedInfo.databaseList.length, this.migrationStateModel._assessmentDbs.length);
+				} else {
+					this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(vmDbs.length, this.migrationStateModel._assessmentDbs.length);
+				}
+				this.migrationStateModel._targetType = MigrationTargetType.SQLVM;
+				this.migrationStateModel._migrationDbs = vmDbs;
+				break;
 			}
-			this.migrationStateModel._targetType = MigrationTargetType.SQLMI;
-			this.migrationStateModel._migrationDbs = miDbs;
-		} else {
-			this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM;
-			if ((this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation)) {
-				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel.savedInfo.databaseList.length, this.migrationStateModel._databaseAssessment.length);
-			} else {
-				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(vmDbs.length, this.migrationStateModel._databaseAssessment.length);
-			}
-			this.migrationStateModel._targetType = MigrationTargetType.SQLVM;
-			this.migrationStateModel._migrationDbs = vmDbs;
 		}
+
 		this.migrationStateModel.refreshDatabaseBackupPage = true;
 	}
 
@@ -509,26 +507,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				await this.refreshCardText();
 			}
 
-			if (this.migrationStateModel.savedInfo.migrationTargetType === MigrationTargetType.SQLMI) {
-				this.migrationStateModel._miDbs = this.migrationStateModel.savedInfo.databaseList;
-			} else {
-				this.migrationStateModel._vmDbs = this.migrationStateModel.savedInfo.databaseList;
-			}
 
 			if (this.migrationStateModel.savedInfo.skuRecommendation) {
-				const skuRecommendationSavedInfo = this.migrationStateModel.savedInfo.skuRecommendation;
-				this.migrationStateModel._skuRecommendationPerformanceDataSource = skuRecommendationSavedInfo.skuRecommendationPerformanceDataSource!;
-				this.migrationStateModel._skuRecommendationPerformanceLocation = skuRecommendationSavedInfo.skuRecommendationPerformanceLocation!;
 
-				this.migrationStateModel._skuScalingFactor = skuRecommendationSavedInfo.skuScalingFactor!;
-				this.migrationStateModel._skuTargetPercentile = skuRecommendationSavedInfo.skuTargetPercentile!;
-				this.migrationStateModel._skuEnablePreview = skuRecommendationSavedInfo.skuEnablePreview!;
 				await this.refreshSkuParameters();
 
 				switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
 					case PerformanceDataSourceOptions.CollectData: {
-						this.migrationStateModel._perfDataCollectionStartDate = skuRecommendationSavedInfo.perfDataCollectionStartDate;
-
 						// check if collector is still running
 						await this.migrationStateModel.refreshPerfDataCollection();
 						if (this.migrationStateModel._perfDataCollectionIsCollecting) {

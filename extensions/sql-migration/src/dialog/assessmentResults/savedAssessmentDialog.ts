@@ -127,7 +127,6 @@ export class SavedAssessmentDialog {
 			.withLayout({
 				flexFlow: 'column',
 				height: '100%',
-				width: '100%',
 			}).withProps({
 				CSSStyles: {
 					'margin': '20px 15px',

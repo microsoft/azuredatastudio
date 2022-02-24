@@ -383,7 +383,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this._resourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._targetSubscription);
 			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.IntegrationRuntime && this._resourceGroupDropdown.values)) {
 				this._resourceGroupDropdown.values.forEach((resource, resourceIndex) => {
-					const resourceId = this.migrationStateModel.savedInfo?.migrationServiceId?.toLowerCase();
+					const resourceId = this.migrationStateModel.savedInfo?.sqlMigrationService?.id?.toLowerCase();
 					if (resourceId && (<azdata.CategoryValue>resource).name.toLowerCase() === getFullResourceGroupFromId(resourceId)) {
 						selectDropDownIndex(this._resourceGroupDropdown, resourceIndex);
 					}
@@ -401,7 +401,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			const selectedSqlMigrationService = this._dmsDropdown.values.find(v => v.displayName.toLowerCase() === this.migrationStateModel._sqlMigrationService?.name?.toLowerCase());
 			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.IntegrationRuntime && this._dmsDropdown.values)) {
 				this._dmsDropdown.values.forEach((resource, resourceIndex) => {
-					if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.migrationServiceId?.toLowerCase()) {
+					if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.sqlMigrationService?.id?.toLowerCase()) {
 						selectDropDownIndex(this._dmsDropdown, resourceIndex);
 					}
 				});
