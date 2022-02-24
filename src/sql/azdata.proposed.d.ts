@@ -40,22 +40,22 @@ declare module 'azdata' {
 			 */
 			supportedLanguages?: string[];
 			/**
-			 * The original name for this kernel. Used for .NET Interactive compatibility.
+			 * The original name for this kernel.
 			 */
 			oldName?: string;
 			/**
-			 * The original display name for this kernel. Used for .NET Interactive compatibility.
+			 * The original display name for this kernel.
 			 */
 			oldDisplayName?: string;
 			/**
-			 * The original language name for this kernel. Used for .NET Interactive compatibility.
+			 * The original language name for this kernel.
 			 */
 			oldLanguage?: string;
 		}
 
 		export interface ILanguageInfo {
 			/**
-			 * The original name for this language. Used for .NET Interactive compatibility.
+			 * The original name for this language.
 			 */
 			oldName?: string;
 		}
