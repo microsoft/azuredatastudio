@@ -31,6 +31,9 @@ declare module 'azdata' {
 		}
 
 		export interface ISessionOptions {
+			/**
+			 * The spec for the kernel being used to create this session.
+			 */
 			kernelSpec?: IKernelSpec;
 		}
 
