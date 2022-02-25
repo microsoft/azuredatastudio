@@ -5,9 +5,9 @@
 
 import type * as azdata from 'azdata';
 
-export class QueryPlan2State {
+export class ExecutionPlanState {
 	graphs: azdata.ExecutionPlanGraph[] = [];
-	clearQueryPlan2State() {
+	clearExecutionPlanState() {
 		this.graphs = [];
 	}
 }
