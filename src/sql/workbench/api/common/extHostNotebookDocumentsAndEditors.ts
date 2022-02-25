@@ -23,6 +23,7 @@ import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNot
 import { ExtHostNotebookEditor } from 'sql/workbench/api/common/extHostNotebookEditor';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
+import { docNotFoundForUriError } from 'sql/base/common/locConstants';
 
 type Adapter = azdata.nb.NavigationProvider;
 
@@ -252,7 +253,10 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 
 	async openNotebookDocument(uri: vscode.Uri): Promise<azdata.nb.NotebookDocument> {
 		let docData = this._documents.get(uri.toString());
-		return docData?.document;
+		if (!docData) {
+			throw new Error(docNotFoundForUriError);
+		}
+		return docData.document;
 	}
 
 	showNotebookDocument(uri: vscode.Uri, showOptions: azdata.nb.NotebookShowOptions): Thenable<azdata.nb.NotebookEditor> {

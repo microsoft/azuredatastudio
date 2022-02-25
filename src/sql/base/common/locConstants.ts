@@ -51,3 +51,4 @@ export const functionalityNotSupportedError = localize('vscodeFunctionalityNotSu
 export const invalidArgumentsError = localize('vscodeInvalidArgumentsError', "Invalid arguments.");
 export const docCreationFailedError = localize('vscodeDocCreationFailedError', "Failed to create notebook document.");
 export const cellToolbarCompatibilityMessage = localize('notebook.cellToolbarLocation.compatibilityDescription', "Where the cell toolbar should be shown, or whether it should be hidden. Note: This setting is only enabled for extension compatibility purposes, and so does not affect anything.");
+export const docNotFoundForUriError = localize('docNotFoundForUriError', 'Could not open a notebook document for the specified URI.');
