@@ -191,6 +191,9 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			},
 			getBackupConfigInfo(connectionUri: string): Thenable<azdata.BackupConfigInfo> {
 				return self._proxy.$getBackupConfigInfo(handle, connectionUri);
+			},
+			createSas(blobContainerUri: string): Thenable<azdata.CreateSasResponse> {
+				return self._proxy.$createSas(handle, blobContainerUri);
 			}
 		});
 

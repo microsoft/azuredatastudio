@@ -572,6 +572,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.BackupProvider>(handle).getBackupConfigInfo(connectionUri);
 	}
 
+	public override $createSas(handle: number, blobContainerUri: string): Thenable<azdata.CreateSasResponse> {
+		return this._resolveProvider<azdata.BackupProvider>(handle).createSas(blobContainerUri);
+	}
+
 	/**
 	 * Restores a database
 	 */
