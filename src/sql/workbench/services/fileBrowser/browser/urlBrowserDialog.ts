@@ -30,6 +30,7 @@ import { Account } from 'azdata';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
 import { Blob, BlobContainer, AzureGraphResource, AzureResourceSubscription, GetBlobsResult } from 'azurecore';
+import { IBackupService } from 'sql/platform/backup/common/backupService';
 
 export class UrlBrowserDialog extends Modal {
 	private _accounts: Account[];
@@ -42,6 +43,7 @@ export class UrlBrowserDialog extends Modal {
 	private _selectedBlobContainer: BlobContainer;
 	private _backupFiles: Blob[];
 
+	private _ownerUri: string;
 	private _restoreDialog: boolean;
 	//private _viewModel: FileBrowserViewModel;
 	private _body: HTMLElement;
@@ -72,7 +74,8 @@ export class UrlBrowserDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
-		@IAzureAccountService private _azureAccountService: IAzureAccountService
+		@IAzureAccountService private _azureAccountService: IAzureAccountService,
+		@IBackupService private _backupService: IBackupService
 	) {
 		super(title, TelemetryKeys.ModalDialogName.FileBrowser, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'flyout', hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
 		//this._viewModel = this._instantiationService.createInstance(FileBrowserViewModel);
@@ -296,6 +299,7 @@ export class UrlBrowserDialog extends Modal {
 		fileFilters: [{ label: string, filters: string[] }],
 		fileValidationServiceType: string,
 	): void {
+		this._ownerUri = ownerUri;
 		this.enableOkButton();
 		this.spinner = true;
 		this.show();
@@ -337,7 +341,12 @@ export class UrlBrowserDialog extends Modal {
 	}
 
 	private generateSharedAccessSignature() {
-		this._sasInputBox.value = 'mocked shared access signature';
+		const blobContainerUri = `https://${this._storageAccountSelectorBox.value}.blob.core.windows.net/${this._blobContainerSelectorBox.value}/`;
+		this._backupService.createSas(this._ownerUri, blobContainerUri)
+			.then(
+				result => {
+					this._sasInputBox.value = result.sharedAccessSignature;
+				});
 	}
 
 	private registerListeners(): void {
