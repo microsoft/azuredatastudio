@@ -28,9 +28,9 @@
 [win-system]: https://go.microsoft.com/fwlink/?linkid=2187520
 [win-zip]: https://go.microsoft.com/fwlink/?linkid=2187460
 [osx-zip]: https://go.microsoft.com/fwlink/?linkid=2187461
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2187522
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2187462
 [linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2187521
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2187462
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2187522
 
  ## Version 1.34.0
 * Release date: December 15, 2021
