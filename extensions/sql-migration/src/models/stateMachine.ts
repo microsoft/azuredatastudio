@@ -1517,7 +1517,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			this._databaseBackup.subscription = <Subscription>this.savedInfo.targetSubscription || undefined;
 			this._targetDatabaseNames = this.savedInfo.targetDatabaseNames;
 
-			if (this.savedInfo.migrationMode) {
+			if (this.savedInfo.migrationMode?.toString()) {
 				this._databaseBackup.migrationMode = this.savedInfo.migrationMode;
 			}
 
@@ -1549,8 +1549,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				this._targetType = this.savedInfo.migrationTargetType;
 			}
 
-			this._assessmentDbs = this.savedInfo.databaseAssessment || [];
-
+			this._assessmentDbs = this.savedInfo.databaseAssessment;
 			this._migrationDbs = this.savedInfo.databaseList;
 			switch (this._targetType) {
 				case MigrationTargetType.SQLMI:

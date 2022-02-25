@@ -17,6 +17,7 @@ export class MigrationModePage extends MigrationWizardPage {
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL, 'MigrationModePage'), migrationStateModel);
+		this.migrationStateModel._databaseBackup.migrationMode = this.migrationStateModel._databaseBackup.migrationMode || MigrationMode.ONLINE;
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
@@ -53,6 +54,7 @@ export class MigrationModePage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		// todo - remove originalMigrationMode + refreshDatabaseBackupPage
 		this.originalMigrationMode = this.migrationStateModel._databaseBackup.migrationMode;
 		this.wizard.registerNavigationValidator((e) => {
 			return true;
@@ -71,7 +73,7 @@ export class MigrationModePage extends MigrationWizardPage {
 	}
 
 	private migrationModeContainer(): azdata.FormComponent {
-		const buttonGroup = 'cutoverContainer';
+		const buttonGroup = 'migrationMode';
 
 		const onlineButton = this._view.modelBuilder.radioButton().withProps({
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL,

@@ -126,10 +126,9 @@ export class SavedAssessmentDialog {
 		const flex = view.modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'column',
-				height: '100%',
 			}).withProps({
 				CSSStyles: {
-					'margin': '20px 15px',
+					'padding': '20px 15px',
 				}
 			}).component();
 		flex.addItem(radioStart, { flex: '0 0 auto' });
