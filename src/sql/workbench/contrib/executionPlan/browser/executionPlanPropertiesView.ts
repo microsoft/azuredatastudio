@@ -232,7 +232,7 @@ export interface GraphElementPropertyViewData {
 }
 
 export class ClosePropertyViewAction extends Action {
-	public static ID = 'qp.propertiesView.close';
+	public static ID = 'ep.propertiesView.close';
 	public static LABEL = localize('executionPlanPropertyViewClose', "Close");
 
 	constructor() {
@@ -245,7 +245,7 @@ export class ClosePropertyViewAction extends Action {
 }
 
 export class SortPropertiesAlphabeticallyAction extends Action {
-	public static ID = 'qp.propertiesView.sortByAlphabet';
+	public static ID = 'ep.propertiesView.sortByAlphabet';
 	public static LABEL = localize('executionPlanPropertyViewSortAlphabetically', "Alphabetical");
 
 	constructor() {
@@ -258,7 +258,7 @@ export class SortPropertiesAlphabeticallyAction extends Action {
 }
 
 export class SortPropertiesByDisplayOrderAction extends Action {
-	public static ID = 'qp.propertiesView.sortByDisplayOrder';
+	public static ID = 'ep.propertiesView.sortByDisplayOrder';
 	public static LABEL = localize('executionPlanPropertyViewSortByDisplayOrder', "Categorized");
 
 	constructor() {

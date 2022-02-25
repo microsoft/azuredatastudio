@@ -470,7 +470,7 @@ class OpenQueryAction extends Action {
 
 class PropertiesAction extends Action {
 	public static ID = 'ep.propertiesAction';
-	public static LABEL = localize('queryPlanPropertiesActionLabel', "Properties");
+	public static LABEL = localize('executionPlanPropertiesActionLabel', "Properties");
 
 	constructor() {
 		super(PropertiesAction.ID, PropertiesAction.LABEL, openPropertiesIconClassNames);
@@ -483,7 +483,7 @@ class PropertiesAction extends Action {
 
 class ZoomInAction extends Action {
 	public static ID = 'ep.ZoomInAction';
-	public static LABEL = localize('queryPlanZoomInActionLabel', "Zoom In");
+	public static LABEL = localize('executionPlanZoomInActionLabel', "Zoom In");
 
 	constructor() {
 		super(ZoomInAction.ID, ZoomInAction.LABEL, zoomInIconClassNames);
@@ -496,7 +496,7 @@ class ZoomInAction extends Action {
 
 class ZoomOutAction extends Action {
 	public static ID = 'ep.ZoomOutAction';
-	public static LABEL = localize('queryPlanZoomOutActionLabel', "Zoom Out");
+	public static LABEL = localize('executionPlanZoomOutActionLabel', "Zoom Out");
 
 	constructor() {
 		super(ZoomOutAction.ID, ZoomOutAction.LABEL, zoomOutIconClassNames);
@@ -509,7 +509,7 @@ class ZoomOutAction extends Action {
 
 class ZoomToFitAction extends Action {
 	public static ID = 'ep.FitGraph';
-	public static LABEL = localize('queryPlanFitGraphLabel', "Zoom to fit");
+	public static LABEL = localize('executionPlanFitGraphLabel', "Zoom to fit");
 
 	constructor() {
 		super(ZoomToFitAction.ID, ZoomToFitAction.LABEL, zoomToFitIconClassNames);
@@ -524,7 +524,7 @@ class ZoomToFitAction extends Action {
 
 class SavePlanFile extends Action {
 	public static ID = 'ep.saveXML';
-	public static LABEL = localize('queryPlanSavePlanXML', "Save Plan File");
+	public static LABEL = localize('executionPlanSavePlanXML', "Save Plan File");
 
 	constructor() {
 		super(SavePlanFile.ID, SavePlanFile.LABEL, savePlanIconClassNames);
