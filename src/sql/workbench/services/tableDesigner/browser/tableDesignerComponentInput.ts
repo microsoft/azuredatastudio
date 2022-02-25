@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerPropertyPath, DesignerValidationError } from 'sql/workbench/browser/designer/interfaces';
+import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerPropertyPath, DesignerValidationError, ScriptProperty } from 'sql/workbench/browser/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -91,7 +91,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			result => {
 				this._viewModel = result.viewModel;
 				this._validationErrors = result.errors;
-				this.updateState(result.isValid, !equals(this._viewModel, this._originalViewModel), undefined);
+				this.updateState(result.isValid, this.isDirty(), undefined);
 
 				this._onEditProcessed.fire({
 					edit: edit,
@@ -643,6 +643,17 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		};
 		Object.assign(telemetryInfo, this._telemetryInfo);
 		return telemetryInfo;
+	}
+
+	private isDirty(): boolean {
+		const copyOfViewModel = Object.assign({}, this._viewModel);
+		const copyOfOriginalViewModel = Object.assign({}, this._originalViewModel);
+		// The generated script might be slightly different even though the models are the same
+		// espeically the order of the description property statements.
+		// we should take the script out for comparison.
+		delete copyOfViewModel[ScriptProperty];
+		delete copyOfOriginalViewModel[ScriptProperty];
+		return !equals(copyOfViewModel, copyOfOriginalViewModel);
 	}
 
 	/**
