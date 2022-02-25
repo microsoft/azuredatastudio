@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationMode, MigrationStateModel, Page, StateChangeEvent } from '../models/stateMachine';
+import { MigrationMode, MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 
@@ -79,7 +79,7 @@ export class MigrationModePage extends MigrationWizardPage {
 			CSSStyles: {
 				...styles.LABEL_CSS,
 			},
-			checked: true
+			checked: this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.ONLINE,
 		}).component();
 
 		const onlineDescription = this._view.modelBuilder.text().withProps({
@@ -103,6 +103,7 @@ export class MigrationModePage extends MigrationWizardPage {
 				...styles.LABEL_CSS,
 				'margin-top': '12px'
 			},
+			checked: this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE,
 		}).component();
 
 		const offlineDescription = this._view.modelBuilder.text().withProps({
@@ -112,16 +113,6 @@ export class MigrationModePage extends MigrationWizardPage {
 				'margin-left': '20px'
 			}
 		}).component();
-
-		if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode)) {
-			if (this.migrationStateModel.savedInfo.migrationMode === MigrationMode.ONLINE) {
-				onlineButton.checked = true;
-				offlineButton.checked = false;
-			} else {
-				onlineButton.checked = false;
-				offlineButton.checked = true;
-			}
-		}
 
 		this._disposables.push(offlineButton.onDidChangeCheckedState((e) => {
 			if (e) {

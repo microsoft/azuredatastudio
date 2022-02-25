@@ -270,6 +270,8 @@ export const ACCOUNTS_SELECTION_PAGE_TITLE = localize('sql.migration.wizard.acco
 export const ACCOUNTS_SELECTION_PAGE_DESCRIPTION = localize('sql.migration.wizard.account.description', "Select an Azure account linked to Azure Data Studio, or link one now.");
 export const ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR = localize('sql.migration.wizard.account.noAccount.error', "Add a linked account and then try again.");
 export const ACCOUNT_LINK_BUTTON_LABEL = localize('sql.migration.wizard.account.add.button.label', "Link account");
+export const INVALID_ACCOUNT_ERROR = localize('sql.migration.invalid.account.error', "To continue, select a valid Azure account.");
+
 export function accountLinkedMessage(count: number): string {
 	return count === 1 ? localize('sql.migration.wizard.account.count.single.message', '{0} account linked', count) : localize('sql.migration.wizard.account.count.multiple.message', '{0} accounts linked', count);
 }

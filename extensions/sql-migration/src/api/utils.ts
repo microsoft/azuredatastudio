@@ -153,10 +153,15 @@ export function selectDropDownIndex(dropDown: DropDownComponent, index: number):
 	}
 }
 
-export function findDropDownItemIndex(dropDown: DropDownComponent, value: string): number {
+export function findDropDownItemIndex(dropDown: DropDownComponent, value: string, useDisplayName: boolean = true): number {
 	if (dropDown.values) {
-		return dropDown.values.findIndex((v: any) =>
-			(v as CategoryValue)?.displayName?.toLowerCase() === value?.toLowerCase());
+		if (useDisplayName) {
+			return dropDown.values.findIndex((v: any) =>
+				(v as CategoryValue)?.displayName?.toLowerCase() === value?.toLowerCase());
+		} else {
+			return dropDown.values.findIndex((v: any) =>
+				(v as CategoryValue)?.name?.toLowerCase() === value?.toLowerCase());
+		}
 	}
 
 	return -1;
