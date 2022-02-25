@@ -352,7 +352,7 @@ export class QueryModelService implements IQueryModelService {
 			this._onQueryEvent.fire(event);
 		});
 
-		queryRunner.onQueryPlan2Available(qp2Info => {
+		queryRunner.onExecutionPlanAvailable(qp2Info => {
 			// fire extensibility API event
 			let event: IQueryEvent = {
 				type: 'executionPlan',
