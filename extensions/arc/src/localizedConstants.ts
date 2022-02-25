@@ -344,3 +344,6 @@ export const version = localize('arc.version', "Version");
 export const releaseDate = localize('arc.releaseDate', "Release Date");
 export const releaseNotes = localize('arc.releaseNotes', "Release Notes");
 export const upgrade = localize('arc.upgrade', "Upgrade");
+export const upgradeDataController = localize('arc.upgradeDataController', "Upgrade Data Controller");
+export const areYouSure = localize('arc.areYouSure', "Are you sure you want to apply the selected upgrade?");
+export const upgradeDialog = localize('arc.upgradeDialog', "During a data controller upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the data controller will not cause downtime for the data services (SQL Managed Instance or PostgreSQL Hyperscale server).");

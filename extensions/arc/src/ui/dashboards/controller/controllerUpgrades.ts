@@ -3,22 +3,23 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// import * as vscode from 'vscode';
+import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-// import * as azExt from 'az-ext';
+import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
 // import { IconPathHelper, cssStyles, ConnectionMode } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 // import { RPModel, DatabaseModel, systemDbs } from '../../../models/miaaModel';
 import { ControllerModel } from '../../../models/controllerModel';
+import { systemDbs } from '../../../models/miaaModel';
 // import { ConfigureRPOSqlDialog } from '../../dialogs/configureRPOSqlDialog';
-// import { RestoreSqlDialog } from '../../dialogs/restoreSqlDialog';
+import { UpgradeController } from '../../dialogs/upgradeController';
 
 export class ControllerUpgradesPage extends DashboardPage {
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel) {
 		super(modelView, dashboard);
-		// this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
+		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 		// this.disposables.push(
 		// 	this._controllerModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated())),
 		// );
@@ -30,20 +31,40 @@ export class ControllerUpgradesPage extends DashboardPage {
 	private _upgradesTableLoading!: azdata.LoadingComponent;
 	private _upgradesTable!: azdata.DeclarativeTableComponent;
 	private _upgradesMessage!: azdata.TextComponent;
-	// private readonly _azApi: azExt.IExtension;
+	private readonly _azApi: azExt.IExtension;
 
 	// private _saveArgs: RPModel = {
 	// 	recoveryPointObjective: '',
 	// 	retentionDays: ''
 	// };
 
-	// private _pitrArgs = {
-	// 	destName: '',
-	// 	managedInstance: '',
-	// 	time: '',
-	// 	noWait: true,
-	// 	dryRun: false
-	// };
+	// Upgrade Args Notes
+	// --desired-version -v  : The desired version tag to which the data controller will be upgraded,
+	//                         or empty to use the latest.
+	// --dry-run -d          : Indicates which instance would be upgraded but does not actually upgrade
+	//                         the instances.
+	// --k8s-namespace -k    : The Kubernetes namespace in which the data controller exists.
+	// --name -n             : The name for the data controller.
+	// --no-wait             : If given, the command will start the upgrade, but will not wait for the
+	//                         entire upgrade to complete. Upgrade will continue in the background.
+	// --resource-group -g   : The Azure resource group in which the data controller resource should be
+	//                         added.
+	// --target [Deprecated] : The desired version tag to which the data controller will be
+	//                         upgraded, or empty to use the latest.
+	//     Option '--target' has been deprecated and will be removed in a future release. Use '--
+	//     desired-version' instead.
+	// --use-k8s             : Upgrade data controller using local Kubernetes APIs.
+
+
+	private _upgradeArgs = {
+		desiredVersion: '',
+		dryRun: false,
+		k8snamespace: '',
+		name: '',
+		noWait: true,
+		resourceGroup: '',
+		usek8s: ''
+	};
 
 	public get title(): string {
 		return loc.upgradeManagement;
@@ -181,7 +202,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 			.withProps({ CSSStyles: { 'text-align': 'center' } })
 			.component();
 
-		// this.handleDatabasesUpdated();
+		this.handleDatabasesUpdated();
 		this._upgradesTableLoading.component = this._upgradesTable;
 		// this.disposables.push(
 		// 	this._connectToServerButton!.onDidClick(async () => {
@@ -285,89 +306,95 @@ export class ControllerUpgradesPage extends DashboardPage {
 		).component();
 	}
 
-	// private handleDatabasesUpdated(): void {
-	// // 	// If we were able to get the databases it means we have a good connection so update the username too
-	// // 	let databaseDisplay = this._controllerModel.databases.map(d => [
-	// // 		d.name,
-	// // 		d.earliestBackup,
-	// // 		d.lastBackup,
-	// // 		this.createRestoreButton(d)]);
+	private handleDatabasesUpdated(): void {
+		// 	// If we were able to get the databases it means we have a good connection so update the username too
+		// let databaseDisplay = this._controllerModel.databases.map(d => [
+		// 	d.name,
+		// 	d.earliestBackup,
+		// 	d.lastBackup,
+		// 	this.createRestoreButton(d)]);
 
-	// // 	let databasesValues = databaseDisplay.map(d => {
-	// // 		return d.map((value): azdata.DeclarativeTableCellValue => {
-	// // 			return { value: value };
-	// // 		});
-	// // 	});
+		let databaseDisplay = [['a', 'b', 'c', this.createUpgradeButton('d')], ['A', 'B', 'C', 'D']];
+		let databasesValues = databaseDisplay.map(d => {
+			return d.map((value: any): azdata.DeclarativeTableCellValue => {
+				return { value: value };
+			});
+		});
 
-	// // 	this._databasesTable.setDataValues(databasesValues);
+		this._upgradesTable.setDataValues(databasesValues);
 
-	// 	this._upgradesTableLoading.loading = false;
+		this._upgradesTableLoading.loading = false;
 
-	// // 	if (this._miaaModel.databasesLastUpdated) {
-	// // 		// We successfully connected so now can remove the button and replace it with the actual databases table
-	// // 		this._databasesContainer.removeItem(this._connectToServerLoading);
-	// 		this._upgradesContainer.addItem(this._upgradesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
+		// 	if (this._miaaModel.databasesLastUpdated) {
+		// 		// We successfully connected so now can remove the button and replace it with the actual databases table
+		// 		this._databasesContainer.removeItem(this._connectToServerLoading);
+		this._upgradesContainer.addItem(this._upgradesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
 
-	// // 	} else {
-	// // 		// If we don't have an endpoint then there's no point in showing the connect button - but the logic
-	// // 		// to display text informing the user of this is already handled by the handleMiaaConfigUpdated
-	// // 		if (this._miaaModel?.config?.status.primaryEndpoint) {
-	// // 			this._connectToServerLoading.loading = false;
-	// // 			this._connectToServerButton.enabled = true;
-	// // 		}
-	// // 	}
-	// }
+		// 	} else {
+		// 		// If we don't have an endpoint then there's no point in showing the connect button - but the logic
+		// 		// to display text informing the user of this is already handled by the handleMiaaConfigUpdated
+		// 		if (this._miaaModel?.config?.status.primaryEndpoint) {
+		// 			this._connectToServerLoading.loading = false;
+		// 			this._connectToServerButton.enabled = true;
+		// 		}
+		// 	}
+	}
 
 	// private refreshRD(): void {
 	// 	this._saveArgs.retentionDays = this._miaaModel.config?.spec?.backup?.retentionPeriodInDays.toString() ?? '';
 	// }
 
-	// Create restore button for every database entry in the database table
-	// private createRestoreButton(db: DatabaseModel): azdata.ButtonComponent | string {
-	// 	let pitrDate = db.lastBackup;
-	// 	if (!pitrDate) {
-	// 		return '';
-	// 	}
-	// 	const restoreButton = this.modelView.modelBuilder.button().withProps({
-	// 		enabled: systemDbs.indexOf(db.name) > -1 ? false : true,
-	// 		iconPath: IconPathHelper.openInTab,
-	// 	}).component();
-	// 	this.disposables.push(
-	// 		restoreButton.onDidClick(async () => {
-	// 			const restoreDialog = new RestoreSqlDialog(this._miaaModel, this._controllerModel, db);
-	// 			restoreDialog.showDialog(loc.restoreDatabase);
-	// 			let args = await restoreDialog.waitForClose();
-	// 			if (args) {
-	// 				try {
-	// 					restoreButton.enabled = false;
-	// 					this._pitrArgs.destName = args.destDbName;
-	// 					this._pitrArgs.managedInstance = args.instanceName;
-	// 					this._pitrArgs.time = `"${args.restorePoint}"`;
-	// 					await vscode.window.withProgress(
-	// 						{
-	// 							location: vscode.ProgressLocation.Notification,
-	// 							title: loc.updatingInstance(this._miaaModel.info.name),
-	// 							cancellable: false
-	// 						},
-	// 						async (_progress, _token): Promise<void> => {
-	// 							await this._azApi.az.sql.midbarc.restore(
-	// 								db.name, this._pitrArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
-	// 							try {
-	// 								await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
-	// 							} catch (error) {
-	// 								vscode.window.showErrorMessage(loc.refreshFailed(error));
-	// 							}
-	// 						}
-	// 					);
-	// 				} catch (error) {
-	// 					vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));
-	// 				} finally {
-	// 					this._configureRetentionPolicyButton.enabled = true;
-	// 				}
-	// 			}
-	// 		}));
-	// 	return restoreButton;
-	// }
+	//Create restore button for every database entry in the database table
+	private createUpgradeButton(db: string): azdata.ButtonComponent | string {
+		const upgradeButton = this.modelView.modelBuilder.button().withProps({
+			enabled: systemDbs.indexOf(db) > -1 ? false : true,
+			iconPath: IconPathHelper.openInTab,
+		}).component();
+
+		this.disposables.push(
+			upgradeButton.onDidClick(async () => {
+				const upgradeDialog = new UpgradeController(this._controllerModel);
+				upgradeDialog.showDialog(loc.upgradeDataController);
+				let args = await upgradeDialog.waitForClose();
+				if (args) {
+					try {
+						//
+						// private _upgradeArgs = {
+						// 	desiredVersion: '',
+						// 	dryRun: false,
+						// 	k8snamespace: '',
+						// 	name: '',
+						// 	noWait: true,
+						// 	resourceGroup: '',
+						// 	usek8s: ''
+						// };
+						upgradeButton.enabled = false;
+						this._upgradeArgs.name = args.instanceName; // False data, just setting the args here but should be determined by what version button was pressed
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.Notification,
+								title: loc.updatingInstance(this._controllerModel.info.name),
+								cancellable: false
+							},
+							async (_progress, _token): Promise<void> => {
+								await this._azApi.az.arcdata.dc.upgrade();
+								try {
+									await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
+								} catch (error) {
+									vscode.window.showErrorMessage(loc.refreshFailed(error));
+								}
+							}
+						);
+					} catch (error) {
+						vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));
+					} finally {
+						this._configureRetentionPolicyButton.enabled = true;
+					}
+				}
+			}));
+
+		return upgradeButton;
+	}
 
 }
 

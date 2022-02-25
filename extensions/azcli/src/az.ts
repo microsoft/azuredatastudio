@@ -90,6 +90,17 @@ export class AzTool implements azExt.IAzApi {
 				show: (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.DcConfigShowResult>> => {
 					return this.executeCommand<azExt.DcConfigShowResult>(['arcdata', 'dc', 'config', 'show', '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
 				}
+			},
+			upgrade: (desiredVersion?: string, dryRun?: string, namespace?: string, name?: string, noWait?: boolean, resourceGroup?: string, usek8s?: boolean, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
+				const argsArray = ['arcdata', 'dc', 'upgrade'];
+				if (desiredVersion) { argsArray.push('--desired-version', desiredVersion); }
+				if (dryRun) { argsArray.push('--dry-run', dryRun); }
+				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
+				if (name) { argsArray.push('--name', name); }
+				if (noWait) { argsArray.push('--no-wait'); }
+				if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
+				if (usek8s) { argsArray.push('--use-k8s'); }
+				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
 		}
 	};
