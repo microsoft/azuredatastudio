@@ -3738,7 +3738,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://tsql.tech/wp-content/uploads/2018/01/LogoSmall.png"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-server-diagnostic-book/LogoSmall.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",

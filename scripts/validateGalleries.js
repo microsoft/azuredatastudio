@@ -251,6 +251,15 @@ function validateExtensionProperty(path, extensionName, extensionPropertyJson) {
     }
 }
 
+// The set of asset types that are required to be hosted by either us or Github due to potential CORS issues loading
+// content in ADS from other sources.
+const hostedAssetTypes = new Set([
+    'Microsoft.VisualStudio.Services.VSIXPackage',
+    'Microsoft.VisualStudio.Services.Icons.Default',
+    'Microsoft.VisualStudio.Services.Content.Details',
+    'Microsoft.VisualStudio.Services.Content.Changelog',
+    'Microsoft.VisualStudio.Code.Manifest']);
+
 /**
  * Validate an extension file blob according to
  * interface IRawGalleryExtensionFile {
@@ -266,10 +275,14 @@ async function validateExtensionFile(path, extensionName, extensionFileJson) {
     if (!extensionFileJson.source) {
         throw new Error(`${path} - ${extensionName} - No source\n${JSON.stringify(extensionFileJson)}`)
     }
-    // Waka-time link is hitting rate limit for the download link so just ignore this one for now. 
+    // Waka-time link is hitting rate limit for the download link so just ignore this one for now.
     if (extensionName === 'vscode-wakatime' && extensionFileJson.assetType === 'Microsoft.SQLOps.DownloadPage') {
         return;
     }
+    if (hostedAssetTypes.has(extensionFileJson.assetType) && !(extensionFileJson.source.startsWith('https://sqlopsextensions.blob.core.windows.net/') || extensionFileJson.source.startsWith('https://raw.githubusercontent.com/'))) {
+        throw new Error(`${path} - ${extensionName} - The asset ${extensionFileJson.source} (${extensionFileJson.assetType}) is required to be hosted either on Github or by the Azure Data Studio team. If the asset is hosted on Github it must use a https://raw.githubusercontent.com/ URL. If the asset cannot be hosted on Github then please reply in the PR with links to the assets and a team member will handle moving them.`);
+    }
+
     // Validate the source URL
     try {
         const response = await got(extensionFileJson.source);
