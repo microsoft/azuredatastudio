@@ -34,6 +34,7 @@ import { IPosition } from 'vs/editor/common/core/position';
 import { CellOutputEdit, CellOutputDataEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IModeService } from 'vs/editor/common/services/modeService';
+import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -71,7 +72,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
-	private _metadata: nb.ICellMetadata;
+	private _metadata: ICellMetadata;
 	private _isCollapsed: boolean;
 	private _onLanguageChanged = new Emitter<string>();
 	private _onCollapseStateChanged = new Emitter<boolean>();
@@ -1020,7 +1021,7 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 		this._attachments = cell.attachments;
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
-		this.setLanguageFromContents(cell);
+		this.setLanguageFromContents(cell.cell_type, cell.metadata);
 		this._savedConnectionName = this._metadata.connection_name;
 		if (cell.outputs) {
 			for (let output of cell.outputs) {
@@ -1076,13 +1077,13 @@ export class CellModel extends Disposable implements ICellModel {
 		this.fireOutputsChanged(false);
 	}
 
-	private setLanguageFromContents(cell: nb.ICellContents): void {
-		if (cell.cell_type === CellTypes.Markdown) {
+	private setLanguageFromContents(cellType: string, metadata: ICellMetadata): void {
+		if (cellType === CellTypes.Markdown) {
 			this._language = 'markdown';
-		} else if (cell.metadata?.language) {
-			this._language = cell.metadata.language;
-		} else if (cell.metadata?.dotnet_interactive?.language) {
-			this._language = `dotnet-interactive.${cell.metadata.dotnet_interactive.language}`;
+		} else if (metadata?.language) {
+			this._language = metadata.language;
+		} else if (metadata?.dotnet_interactive?.language) {
+			this._language = `dotnet-interactive.${metadata.dotnet_interactive.language}`;
 		} else {
 			this._language = this._options?.notebook?.language;
 		}
