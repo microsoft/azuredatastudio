@@ -99,25 +99,25 @@ export class ClientSession implements IClientSession {
 				await this._executeManager.sessionManager.ready;
 			}
 			if (this._defaultKernel) {
-				await this.startSessionInstance(this._defaultKernel.name);
+				await this.startSessionInstance(this._defaultKernel);
 			}
 		}
 	}
 
-	private async startSessionInstance(kernelName: string): Promise<void> {
+	private async startSessionInstance(kernelSpec: nb.IKernelSpec): Promise<void> {
 		let session: nb.ISession;
 		try {
 			// TODO #3164 should use URI instead of path for startNew
 			session = await this._executeManager.sessionManager.startNew({
 				path: this.notebookUri.fsPath,
-				kernelName: kernelName
-				// TODO add kernel name if saved in the document
+				kernelName: kernelSpec.name,
+				kernelSpec: kernelSpec
 			});
 			session.defaultKernelLoaded = true;
 		} catch (err) {
 			// TODO move registration
 			if (err && err.response && err.response.status === 501) {
-				this.options.notificationService.warn(localize('kernelRequiresConnection', "Kernel {0} was not found. The default kernel will be used instead.", kernelName));
+				this.options.notificationService.warn(localize('kernelRequiresConnection', "Kernel {0} was not found. The default kernel will be used instead.", kernelSpec.name));
 				session = await this._executeManager.sessionManager.startNew({
 					path: this.notebookUri.fsPath,
 					kernelName: undefined
@@ -128,7 +128,7 @@ export class ClientSession implements IClientSession {
 			}
 		}
 		this._session = session;
-		await this.runKernelConfigActions(kernelName);
+		await this.runKernelConfigActions(kernelSpec.name);
 		this._statusChangedEmitter.fire(session);
 	}
 
@@ -278,7 +278,7 @@ export class ClientSession implements IClientSession {
 			kernel = await this._session.changeKernel(options);
 			await this.runKernelConfigActions(kernel.name);
 		} else {
-			kernel = await this.startSessionInstance(options.name).then(() => this.kernel);
+			kernel = await this.startSessionInstance(options).then(() => this.kernel);
 		}
 		return kernel;
 	}
