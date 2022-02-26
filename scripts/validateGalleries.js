@@ -260,6 +260,12 @@ const hostedAssetTypes = new Set([
     'Microsoft.VisualStudio.Services.Content.Changelog',
     'Microsoft.VisualStudio.Code.Manifest']);
 
+const allowedHosts = [
+    'https://sqlopsextensions.blob.core.windows.net/',
+    'https://dsct.blob.core.windows.net/',
+    'https://raw.githubusercontent.com/'
+];
+
 /**
  * Validate an extension file blob according to
  * interface IRawGalleryExtensionFile {
@@ -279,7 +285,7 @@ async function validateExtensionFile(path, extensionName, extensionFileJson) {
     if (extensionName === 'vscode-wakatime' && extensionFileJson.assetType === 'Microsoft.SQLOps.DownloadPage') {
         return;
     }
-    if (hostedAssetTypes.has(extensionFileJson.assetType) && !(extensionFileJson.source.startsWith('https://sqlopsextensions.blob.core.windows.net/') || extensionFileJson.source.startsWith('https://raw.githubusercontent.com/'))) {
+    if (hostedAssetTypes.has(extensionFileJson.assetType) && !allowedHosts.find(host => extensionFileJson.source.startsWith(host))) {
         throw new Error(`${path} - ${extensionName} - The asset ${extensionFileJson.source} (${extensionFileJson.assetType}) is required to be hosted either on Github or by the Azure Data Studio team. If the asset is hosted on Github it must use a https://raw.githubusercontent.com/ URL. If the asset cannot be hosted on Github then please reply in the PR with links to the assets and a team member will handle moving them.`);
     }
 
