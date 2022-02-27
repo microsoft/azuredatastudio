@@ -4523,19 +4523,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://github.com/LycanII/LzScripts/blob/7020990d4a253ab7947637540a3e5c9aede73f49/images/default_icon.png"
+									"source": "https://raw.githubusercontent.com/LycanII/LzScripts/master/images/default_icon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://github.com/LycanII/LzScripts/blob/7020990d4a253ab7947637540a3e5c9aede73f49/README.md"
+									"source": "https://raw.githubusercontent.com/LycanII/LzScripts/master/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://github.com/LycanII/LzScripts/blob/7020990d4a253ab7947637540a3e5c9aede73f49/package.json"
+									"source": "https://raw.githubusercontent.com/LycanII/LzScripts/master/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://github.com/LycanII/LzScripts/blob/7020990d4a253ab7947637540a3e5c9aede73f49/LICENSE"
+									"source": "https://raw.githubusercontent.com/LycanII/LzScripts/master/LICENSE"
 								}
 							],
 							"properties": [
