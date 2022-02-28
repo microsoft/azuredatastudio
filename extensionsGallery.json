@@ -6,7 +6,7 @@
 					"extensionId": "10",
 					"extensionName": "agent",
 					"displayName": "SQL Server Agent",
-					"shortDescription": "Manage and troubleshoot SQL Agent jobs",
+					"shortDescription": "Manage and troubleshoot SQL Agent jobs ",
 					"publisher": {
 						"displayName": "Microsoft",
 						"publisherId": "Microsoft",
