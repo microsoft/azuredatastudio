@@ -269,15 +269,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://foundrylabssqlsearch.blob.core.windows.net/sqlops-sql-search-insiders/metadata/gatebase.png"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-search/0.4.0/gatebase.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://foundrylabssqlsearch.blob.core.windows.net/sqlops-sql-search-insiders/metadata/README.md"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-search/0.4.0/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://foundrylabssqlsearch.blob.core.windows.net/sqlops-sql-search-insiders/metadata/package.json"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-search/0.4.0/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -574,15 +574,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.github.com/Microsoft/sql-data-warehouse-samples/master/samples/sqlops/MonitoringScripts/sqldw_icon.png"
+									"source": "https://raw.githubusercontent.com/Microsoft/sql-data-warehouse-samples/master/samples/sqlops/MonitoringScripts/sqldw_icon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.github.com/Microsoft/sql-data-warehouse-samples/master/samples/sqlops/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/sql-data-warehouse-samples/master/samples/sqlops/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.github.com/Microsoft/sql-data-warehouse-samples/master/samples/sqlops/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/sql-data-warehouse-samples/master/samples/sqlops/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -1474,14 +1474,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.12.0",
-							"lastUpdated": "10/22/2021",
+							"version": "1.13.0",
+							"lastUpdated": "2/22/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-1.12.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-1.13.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1511,7 +1511,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.13.0"
+									"value": ">=1.35.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2440,11 +2440,11 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://downloads.sentryone.com/downloads/ads/s1logo.png"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/plan-explorer/0.9.8/s1logo.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://downloads.sentryone.com/downloads/ads/readme.0.9.8.md"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/plan-explorer/0.9.8/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -3217,11 +3217,11 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://foundrylabssqlsearch.blob.core.windows.net/sqlops-sql-search-insiders/metadata/gatebase.png"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-prompt/0.2.10/gatebase.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://cdn.rd.gt/sqlprompt-productassets/README.md"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-prompt/0.2.10/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -3434,14 +3434,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.14.1",
-							"lastUpdated": "1/5/2021",
+							"version": "0.15.0",
+							"lastUpdated": "2/22/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-0.14.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-0.15.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3467,7 +3467,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.31.0"
+									"value": ">=1.35.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -3742,7 +3742,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://tsql.tech/wp-content/uploads/2018/01/LogoSmall.png"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-server-diagnostic-book/LogoSmall.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -4097,14 +4097,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.11",
-							"lastUpdated": "12/08/2021",
+							"version": "0.1.12",
+							"lastUpdated": "02/17/2022",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-0.1.11.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-0.1.12.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4134,7 +4134,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.33.0"
+									"value": ">=1.35.0"
 								}
 							]
 						}
@@ -4165,19 +4165,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://github.com/sahalMoidu/ADS-add-columns/raw/master/logo.png"
+									"source": "https://raw.githubusercontent.com/sahalMoidu/ADS-add-columns/master/logo.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://github.com/sahalMoidu/ADS-add-columns/raw/master/README.md"
+									"source": "https://raw.githubusercontent.com/sahalMoidu/ADS-add-columns/master/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://github.com/sahalMoidu/ADS-add-columns/raw/master/package.json"
+									"source": "https://raw.githubusercontent.com/sahalMoidu/ADS-add-columns/master/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://github.com/sahalMoidu/ADS-add-columns/raw/master/LICENSE"
+									"source": "https://raw.githubusercontent.com/sahalMoidu/ADS-add-columns/master/LICENSE"
 								}
 							],
 							"properties": [
@@ -4507,6 +4507,67 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "88",
+					"extensionName": "lz-scripts",
+					"displayName": "Lazy Scripts",
+					"shortDescription": "Generates scripts from the results of select query",
+					"publisher": {
+						"displayName": "Faith S. Yintii",
+						"publisherId": "LycanII",
+						"publisherName": "LycanII"
+					},
+					"versions": [
+						{
+							"version": "0.0.1",
+							"lastUpdated": "02/27/2022",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/LycanII/LzScripts/releases/tag/Latest"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/LycanII/LzScripts/master/images/default_icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/LycanII/LzScripts/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/LycanII/LzScripts/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/LycanII/LzScripts/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.8.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/LycanII/LzScripts"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -4515,7 +4576,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 74
+							"count": 75
 						}
 					]
 				}

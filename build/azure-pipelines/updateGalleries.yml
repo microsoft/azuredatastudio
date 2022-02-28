@@ -1,0 +1,49 @@
+pool:
+  vmImage: 'windows-latest'
+
+trigger:
+- release/extensions
+- extensions/rc1
+
+steps:
+- task: AzureFileCopy@4
+  displayName: 'Update extensionsGallery.json'
+  inputs:
+    SourcePath: extensionsGallery.json
+    azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+    Destination: AzureBlob
+    storage: sqlopsextensions
+    ContainerName: marketplace
+    BlobPrefix: v1/extensionsGallery.json
+    AdditionalArgumentsForBlobCopy: '--cache-control="max-age=0" --overwrite=true'
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/release/extensions')
+
+- task: AzureFileCopy@4
+  displayName: 'Update extensionsGallery-insider.json'
+  inputs:
+    SourcePath: 'extensionsGallery-insider.json'
+    azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+    Destination: AzureBlob
+    storage: sqlopsextensions
+    ContainerName: marketplace
+    BlobPrefix: 'v1/extensionsGallery-insider.json'
+    AdditionalArgumentsForBlobCopy: '--cache-control="max-age=0" --overwrite=true'
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/release/extensions')
+
+- powershell: |
+    git checkout extensions/rc1
+  displayName: 'Checkout RC1 branch'
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/extensions/rc1')
+
+- task: AzureFileCopy@4
+  displayName: 'Update extensionsGallery-test.json'
+  inputs:
+    SourcePath: extensionsGallery.json
+    azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+    Destination: AzureBlob
+    storage: sqlopsextensions
+    ContainerName: marketplace
+    BlobPrefix: 'v1/extensionsGallery-test.json'
+    AdditionalArgumentsForBlobCopy: '--cache-control="max-age=0" --overwrite=true'
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/extensions/rc1')
+
