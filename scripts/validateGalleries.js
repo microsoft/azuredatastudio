@@ -162,6 +162,9 @@ async function validateVersion(path, extensionName, extensionVersionJson) {
     if (extensionVersionJson.lastUpdated === undefined) {
         throw new Error(`${path} - ${extensionName} - No last updated\n${JSON.stringify(extensionVersionJson)}`)
     }
+    if ((new Date(extensionVersionJson.lastUpdated)).toString() === 'Invalid Date') {
+        throw new Error(`${path} - ${extensionName} - Last updated value '${extensionVersionJson.lastUpdated}' is invalid. It must be in the format MM/DD/YYYY\n${JSON.stringify(extensionVersionJson)}`)
+    }
     if (extensionVersionJson.assetUri === undefined) {
         throw new Error(`${path} - ${extensionName} - No asset URI\n${JSON.stringify(extensionVersionJson)}`)
     }
