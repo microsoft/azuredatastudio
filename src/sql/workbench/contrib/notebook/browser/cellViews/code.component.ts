@@ -464,7 +464,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			.then(languages => this.pickCellLanguage(languages))
 			.then(selection => {
 				if (selection?.languageId) {
-					this._cellModel.setOverrideLanguage(selection.label);
+					this._cellModel.setOverrideLanguage(selection.languageId);
 				}
 			})
 			.catch(err => onUnexpectedError(err));
