@@ -85,6 +85,10 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this.cellModel.hover = value;
 	}
 
+	public onCellLanguageClick(event: any): void {
+		return;
+	}
+
 	protected _actionBar: Taskbar;
 	private readonly _minimumHeight = 30;
 	private readonly _maximumHeight = 4000;
@@ -115,6 +119,9 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
+		if (this.languageElement) {
+			(<HTMLElement>this.languageElement.nativeElement).title = localize('selectCellLanguage', "Select Cell Language Mode");
+		}
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -269,6 +276,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.cellModel.onLanguageChanged(language => {
 			let nativeElement = <HTMLElement>this.languageElement.nativeElement;
 			nativeElement.innerText = this.cellModel.displayLanguage;
+			nativeElement.ariaLabel = this.cellModel.displayLanguage;
 			this.updateLanguageMode();
 			this._changeRef.detectChanges();
 		}));

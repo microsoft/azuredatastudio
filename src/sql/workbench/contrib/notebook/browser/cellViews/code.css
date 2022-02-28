@@ -119,6 +119,11 @@ code-component .cellLanguage {
 	display: inline-block;
 	text-align: center;
 	font-size: 16px;
+	border-style: none;
+}
+
+code-component .cellLanguage:hover {
+	background-color: green;
 }
 
 code-component .parameter {
