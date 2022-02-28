@@ -4507,6 +4507,67 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "88",
+					"extensionName": "lz-scripts",
+					"displayName": "Lazy Scripts",
+					"shortDescription": "Generates scripts from the results of select query",
+					"publisher": {
+						"displayName": "Faith S. Yintii",
+						"publisherId": "LycanII",
+						"publisherName": "LycanII"
+					},
+					"versions": [
+						{
+							"version": "0.0.1",
+							"lastUpdated": "27/02/2022",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/LycanII/LzScripts/releases/tag/Latest"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/LycanII/LzScripts/master/images/default_icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/LycanII/LzScripts/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/LycanII/LzScripts/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/LycanII/LzScripts/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.8.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/LycanII/LzScripts"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -4515,7 +4576,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 74
+							"count": 75
 						}
 					]
 				}
