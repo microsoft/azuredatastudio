@@ -54,7 +54,7 @@ export function canRetryMigration(status: string | undefined): boolean {
 const TABLE_CHECKBOX_INDEX = 0;
 const TABLE_DB_NAME_INDEX = 1;
 export function selectDatabasesFromList(selectedDbs: string[], databaseTableValues: azdata.DeclarativeTableCellValue[][]): azdata.DeclarativeTableCellValue[][] {
-	const sourceDatabaseNames = selectedDbs?.map(dbName => dbName.toLocaleLowerCase());
+	const sourceDatabaseNames = selectedDbs?.map(dbName => dbName.toLocaleLowerCase()) || [];
 	if (sourceDatabaseNames.length > 0) {
 		for (let i in databaseTableValues) {
 			const row = databaseTableValues[i];

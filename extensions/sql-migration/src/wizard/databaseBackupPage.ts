@@ -127,6 +127,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				name: buttonGroup,
 				label: constants.DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL,
+				checked: this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE,
 				CSSStyles: {
 					...styles.BODY_CSS,
 					'margin': '0'
@@ -143,6 +144,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				name: buttonGroup,
 				label: constants.DATABASE_BACKUP_NC_BLOB_STORAGE_RADIO_LABEL,
+				checked: this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER,
 				CSSStyles: {
 					...styles.BODY_CSS,
 					'margin': '0'
@@ -743,7 +745,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		// todo - refreshDatabaseBackupPage
 		if (this.migrationStateModel.refreshDatabaseBackupPage) {
 			try {
 				const isOfflineMigration = this.migrationStateModel._databaseBackup?.migrationMode === MigrationMode.OFFLINE;
@@ -777,15 +778,22 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this._existingDatabases = await this.migrationStateModel.getManagedDatabases();
 				}
 				this.migrationStateModel._migrationDbs.forEach((db, index) => {
-					if (!this.migrationStateModel._targetDatabaseNames[index]) {
-						this.migrationStateModel._targetDatabaseNames.push(db);
+					let targetDatabaseName = db;
+					let networkShare = <NetworkShare>{};
+					let blob = <Blob>{};
+					if (this.migrationStateModel.resumeAssessment || this.migrationStateModel.retryMigration) {
+						const savedInfoIndex = this.migrationStateModel.savedInfo?.databaseList?.indexOf(db);
+						if (savedInfoIndex > -1) {
+							targetDatabaseName = this.migrationStateModel.savedInfo.targetDatabaseNames[savedInfoIndex] || targetDatabaseName;
+							networkShare = this.migrationStateModel.savedInfo.networkShares[savedInfoIndex] || networkShare;
+							blob = this.migrationStateModel.savedInfo.blobs[savedInfoIndex] || blob;
+						}
 					}
-					if (!this.migrationStateModel._databaseBackup.blobs[index]) {
-						this.migrationStateModel._databaseBackup.blobs.push(<Blob>{});
-					}
-					if (!this.migrationStateModel._databaseBackup.networkShares[index]) {
-						this.migrationStateModel._databaseBackup.networkShares.push(<NetworkShare>{});
-					}
+
+					this.migrationStateModel._targetDatabaseNames[index] = targetDatabaseName;
+					this.migrationStateModel._databaseBackup.networkShares[index] = networkShare;
+					this.migrationStateModel._databaseBackup.blobs[index] = blob;
+
 					const targetDatabaseInput = this._view.modelBuilder.inputBox().withProps({
 						required: true,
 						value: db,
@@ -1123,9 +1131,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		switch (containerType) {
 			case NetworkContainerType.NETWORK_SHARE: {
-				this._networkShareButton.checked = true;
-				this._blobContainerButton.checked = false;
-
 				await this._networkShareContainer.updateCssStyles({ 'display': 'inline' });
 				await this._networkShareStorageAccountDetails.updateCssStyles({ 'display': 'inline' });
 				await this._networkTableContainer.updateCssStyles({ 'display': 'inline' });
@@ -1136,10 +1141,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				break;
 			}
 			case NetworkContainerType.BLOB_CONTAINER: {
-				// todo - move true and false to button declare like migrationMode
-				this._networkShareButton.checked = false;
-				this._blobContainerButton.checked = true;
-
 				await this._networkShareContainer.updateCssStyles({ 'display': 'none' });
 				await this._networkShareStorageAccountDetails.updateCssStyles({ 'display': 'none' });
 				await this._networkTableContainer.updateCssStyles({ 'display': 'none' });

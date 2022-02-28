@@ -73,7 +73,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-
 		switch (this.migrationStateModel._targetType) {
 			case MigrationTargetType.SQLMI:
 				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_MI_CARD_TEXT);
@@ -88,6 +87,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				break;
 		}
 
+		await this.populateResourceInstanceDropdown();
 		await this.populateAzureAccountsDropdown();
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
@@ -105,7 +105,9 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				errors.push(constants.INVALID_ACCOUNT_ERROR);
 			}
 
-			//  todo - tenant?
+			// if (!this.migrationStateModel._azureTenant) {
+			// 	errors.push(constants.INVALID_ACCOUNT_ERROR);
+			// }
 
 			if (!this.migrationStateModel._targetSubscription ||
 				(<azdata.CategoryValue>this._azureSubscriptionDropdown.value)?.displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
@@ -206,7 +208,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						'display': 'none'
 					});
 				}
-				// todo - what does this validate do?
 				await this._azureAccountsDropdown.validate();
 			} else {
 				this.migrationStateModel._azureAccount = undefined!;
@@ -271,9 +272,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			this.migrationStateModel._azureTenant = deepClone(selectedTenant);
 			if (selectedIndex > -1) {
 				this.migrationStateModel._azureAccount.properties.tenants = [this.migrationStateModel.getTenant(selectedIndex)];
-			} else {
-				// todo - tenant
-				// this.migrationStateModel._azureAccount.properties.tenants = undefined!;
 			}
 		}));
 
@@ -374,8 +372,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			CSSStyles: {
 				'margin-top': '-1em'
 			},
-			//  todo - validations
-			validationErrorMessages: ['invalid resource group'],
 		}).component();
 		this._disposables.push(this._azureResourceGroupDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._azureResourceGroupDropdown, value);
@@ -406,22 +402,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			CSSStyles: {
 				'margin-top': '-1em'
 			},
-			validationErrorMessages: ['invalid resource name']
-			//  todo - validations
-			// }).withValidation(dropdown => {
-			// 	if (dropdown.value) {
-			// 		console.log("withValidation", dropdown)
-			// 		let dropdownValue = (<azdata.CategoryValue>dropdown.value)?.name.toLowerCase();
-			// 		// dropdown.value !
-			// 		let resourceValues = (<azdata.CategoryValue[]>this._azureResourceDropdown.values)?.map(x => x.name.toLocaleLowerCase());
-			// 		// let isValidResource = (<azdata.CategoryValue[]>this._azureResourceDropdown.values)?.find(resource => resource.name === dropdown.value);
-			// 		if (!resourceValues.includes(dropdownValue)) {
-			// 			// dropdown.validationErrorMessages = ['invalid resource name'];
-			// 			return false;
-			// 		}
-			// 	}
-			// 	// dropdown.validationErrorMessages = [];
-			// 	return true;
 		}).component();
 		this._disposables.push(this._azureResourceDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._azureResourceDropdown, value);

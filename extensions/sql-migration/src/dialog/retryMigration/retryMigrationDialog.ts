@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as mssql from '../../../../mssql';
 import { azureResource } from 'azureResource';
 import { getLocations, getResourceGroupFromId, getBlobContainerId, getFullResourceGroupFromId, getResourceName } from '../../api/azure';
-import { MigrationMode, MigrationStateModel, NetworkContainerType, Page, SavedInfo } from '../../models/stateMachine';
+import { MigrationMode, MigrationStateModel, NetworkContainerType, SavedInfo } from '../../models/stateMachine';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { WizardController } from '../../wizard/wizardController';
 import { getMigrationModeEnum, getMigrationTargetTypeEnum } from '../../constants/helper';
@@ -31,20 +31,17 @@ export class RetryMigrationDialog {
 		savedInfo = {
 			closedPage: 0,
 
-			// AzureAccount
-			azureAccount: migration.azureAccount,
-			azureTenant: migration.azureAccount.properties.tenants[0],
-
 			// DatabaseSelector
 			databaseAssessment: [sourceDatabaseName],
 
 			// SKURecommendation
 			databaseList: [sourceDatabaseName],
-			serverAssessment: null,
 			skuRecommendation: null,
 			migrationTargetType: getMigrationTargetTypeEnum(migration)!,
 
 			// TargetSelection
+			azureAccount: migration.azureAccount,
+			azureTenant: migration.azureAccount.properties.tenants[0],
 			subscription: migration.subscription,
 			location: location,
 			resourceGroup: {
@@ -58,7 +55,6 @@ export class RetryMigrationDialog {
 			migrationMode: getMigrationModeEnum(migration),
 
 			// DatabaseBackup
-			targetSubscription: migration.subscription,
 			targetDatabaseNames: [migration.migrationContext.name],
 			networkContainerType: null,
 			networkShares: [],

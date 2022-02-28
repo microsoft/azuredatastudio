@@ -54,7 +54,6 @@ export class MigrationModePage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		// todo - remove originalMigrationMode + refreshDatabaseBackupPage
 		this.originalMigrationMode = this.migrationStateModel._databaseBackup.migrationMode;
 		this.wizard.registerNavigationValidator((e) => {
 			return true;
@@ -78,10 +77,10 @@ export class MigrationModePage extends MigrationWizardPage {
 		const onlineButton = this._view.modelBuilder.radioButton().withProps({
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL,
 			name: buttonGroup,
+			checked: this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.ONLINE,
 			CSSStyles: {
 				...styles.LABEL_CSS,
 			},
-			checked: this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.ONLINE,
 		}).component();
 
 		const onlineDescription = this._view.modelBuilder.text().withProps({
@@ -101,11 +100,11 @@ export class MigrationModePage extends MigrationWizardPage {
 		const offlineButton = this._view.modelBuilder.radioButton().withProps({
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL,
 			name: buttonGroup,
+			checked: this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE,
 			CSSStyles: {
 				...styles.LABEL_CSS,
 				'margin-top': '12px'
 			},
-			checked: this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE,
 		}).component();
 
 		const offlineDescription = this._view.modelBuilder.text().withProps({

@@ -8,7 +8,7 @@ import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
-import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs, Subscription } from '../api/azure';
+import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs } from '../api/azure';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
@@ -118,12 +118,11 @@ export interface StateChangeEvent {
 
 export interface SavedInfo {
 	closedPage: number;
-	serverAssessment: ServerAssessment | null; // TODO- remove?
+	databaseAssessment: string[]; // assessmentDbs
+	databaseList: string[]; // migrationDbs
+	migrationTargetType: MigrationTargetType | null;
 	azureAccount: azdata.Account | null;
 	azureTenant: azurecore.Tenant | null;
-	migrationTargetType: MigrationTargetType | null;
-	databaseAssessment: string[];// assessmentDbs
-	databaseList: string[]; // migrationDbs
 	subscription: azureResource.AzureResourceSubscription | null;
 	location: azureResource.AzureLocation | null;
 	resourceGroup: azureResource.AzureResourceResourceGroup | null;
@@ -132,10 +131,7 @@ export interface SavedInfo {
 	networkContainerType: NetworkContainerType | null;
 	networkShares: NetworkShare[];
 	blobs: Blob[];
-	// databaseBackupType: networkShare[] || Blob[]
-
-	targetSubscription: azureResource.AzureResourceSubscription | null;
-	targetDatabaseNames: string[]; // TODO- object? original db name : target db name
+	targetDatabaseNames: string[];
 	sqlMigrationService: SqlMigrationService | undefined;
 	skuRecommendation: SkuRecommendationSavedInfo | null;
 }
@@ -1436,12 +1432,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		let saveInfo: SavedInfo;
 		saveInfo = {
 			closedPage: currentPage,
-			serverAssessment: null,  // todo - set as undefined to catch empty result
-			azureAccount: null,
-			azureTenant: null,
-			migrationTargetType: null,
 			databaseAssessment: [],
 			databaseList: [],
+			migrationTargetType: null,
+			azureAccount: null,
+			azureTenant: null,
 			subscription: null,
 			location: null,
 			resourceGroup: null,
@@ -1449,7 +1444,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			migrationMode: null,
 			networkContainerType: null,
 			networkShares: [],
-			targetSubscription: null,
 			blobs: [],
 			targetDatabaseNames: [],
 			sqlMigrationService: undefined,
@@ -1464,7 +1458,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			case Page.DatabaseBackup:
 				saveInfo.networkContainerType = this._databaseBackup.networkContainerType;
 				saveInfo.networkShares = this._databaseBackup.networkShares;
-				saveInfo.targetSubscription = this._databaseBackup.subscription;
 				saveInfo.blobs = this._databaseBackup.blobs;
 				saveInfo.targetDatabaseNames = this._targetDatabaseNames;
 
@@ -1481,7 +1474,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			case Page.SKURecommendation:
 				saveInfo.migrationTargetType = this._targetType;
-				saveInfo.serverAssessment = this._assessmentResults;
 				saveInfo.databaseList = this._migrationDbs;
 
 				if (this._skuRecommendationPerformanceDataSource) {
@@ -1504,51 +1496,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 	public loadSavedInfo(): Boolean {
-		// todo - load and validate
-		// set start page to the first page with problems
+		// convert SavedInfo values to MigrationStateModel values
+		// exclude targetDatabaseNames, blobs, networkShares
+		// as these list values may change when user updates migrationDbs
 		console.log('loadSavedInfo', this.savedInfo);
 		try {
-			if (this.savedInfo.networkContainerType) {
-				this._databaseBackup.networkContainerType = this.savedInfo.networkContainerType;
-			}
-
-			this._databaseBackup.networkShares = this.savedInfo.networkShares || [];
-			this._databaseBackup.blobs = this.savedInfo.blobs || [];
-			this._databaseBackup.subscription = <Subscription>this.savedInfo.targetSubscription || undefined;
-			this._targetDatabaseNames = this.savedInfo.targetDatabaseNames;
-
-			if (this.savedInfo.migrationMode?.toString()) {
-				this._databaseBackup.migrationMode = this.savedInfo.migrationMode;
-			}
-
-			if (this.savedInfo.azureAccount) {
-				this._azureAccount = this.savedInfo.azureAccount;
-			}
-
-			if (this.savedInfo.azureTenant) {
-				this._azureTenant = this.savedInfo.azureTenant;
-			}
-
-			if (this.savedInfo.subscription) {
-				this._targetSubscription = this.savedInfo.subscription;
-			}
-
-			if (this.savedInfo.location) {
-				this._location = this.savedInfo.location;
-			}
-
-			if (this.savedInfo.resourceGroup) {
-				this._resourceGroup = this.savedInfo.resourceGroup;
-			}
-
-			if (this.savedInfo.targetServerInstance) {
-				this._targetServerInstance = this.savedInfo.targetServerInstance;
-			}
-
-			if (this.savedInfo.migrationTargetType) {
-				this._targetType = this.savedInfo.migrationTargetType;
-			}
-
 			this._assessmentDbs = this.savedInfo.databaseAssessment;
 			this._migrationDbs = this.savedInfo.databaseList;
 			switch (this._targetType) {
@@ -1560,9 +1512,18 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					break;
 			}
 
-			if (this.savedInfo.serverAssessment) {
-				this._assessmentResults = this.savedInfo.serverAssessment;
-			}
+			this._azureAccount = this.savedInfo.azureAccount || undefined!;
+			this._azureTenant = this.savedInfo.azureTenant || undefined!;
+
+			this._targetType = this.savedInfo.migrationTargetType || undefined!;
+			this._targetSubscription = this.savedInfo.subscription || undefined!;
+			this._location = this.savedInfo.location || undefined!;
+			this._resourceGroup = this.savedInfo.resourceGroup || undefined!;
+			this._targetServerInstance = this.savedInfo.targetServerInstance || undefined!;
+
+			this._databaseBackup.migrationMode = this.savedInfo.migrationMode || undefined!;
+			this._databaseBackup.networkContainerType = this.savedInfo.networkContainerType || undefined!;
+			this._databaseBackup.subscription = this.savedInfo.subscription || undefined!;
 
 			this._sqlMigrationService = this.savedInfo.sqlMigrationService;
 

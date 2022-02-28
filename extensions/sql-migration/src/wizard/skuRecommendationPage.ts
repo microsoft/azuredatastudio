@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, MigrationTargetType, Page, PerformanceDataSourceOptions, ServerAssessment, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType, PerformanceDataSourceOptions, StateChangeEvent } from '../models/stateMachine';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
 import { SkuRecommendationResultsDialog } from '../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
 import { GetAzureRecommendationDialog } from '../dialog/skuRecommendationResults/getAzureRecommendationDialog';
@@ -421,11 +421,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						dba => dba === db) >= 0);
 
 				this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI;
-				if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
-					this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel.savedInfo.databaseList.length, this.migrationStateModel._assessmentDbs.length);
-				} else {
-					this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(miDbs.length, this.migrationStateModel._assessmentDbs.length);
-				}
+				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(miDbs.length, this.migrationStateModel._assessmentDbs.length);
 				this.migrationStateModel._targetType = MigrationTargetType.SQLMI;
 				this.migrationStateModel._migrationDbs = miDbs;
 				break;
@@ -437,11 +433,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						dba => dba === db) >= 0);
 
 				this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM;
-				if ((this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation)) {
-					this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel.savedInfo.databaseList.length, this.migrationStateModel._assessmentDbs.length);
-				} else {
-					this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(vmDbs.length, this.migrationStateModel._assessmentDbs.length);
-				}
+				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(vmDbs.length, this.migrationStateModel._assessmentDbs.length);
 				this.migrationStateModel._targetType = MigrationTargetType.SQLVM;
 				this.migrationStateModel._migrationDbs = vmDbs;
 				break;
@@ -458,16 +450,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		};
 
 		await this._setAssessmentState(true, false);
-
 		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 		const errors: string[] = [];
 		try {
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage) {
-				this.migrationStateModel._assessmentResults = <ServerAssessment>this.migrationStateModel.savedInfo.serverAssessment;
-			} else {
-				await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
-			}
-
+			await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
 			const assessmentError = this.migrationStateModel._assessmentResults?.assessmentError;
 			if (assessmentError) {
 				errors.push(`message: ${assessmentError.message}${EOL}stack: ${assessmentError.stack}`);
@@ -501,41 +487,36 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			await this.migrationStateModel.getSkuRecommendations();
 		}
 
-		if (this.hasSavedInfo()) {
-			if (this.migrationStateModel.savedInfo.migrationTargetType) {
-				this._rbg.selectedCardId = this.migrationStateModel.savedInfo.migrationTargetType;
-				await this.refreshCardText();
-			}
+		if (this.migrationStateModel.savedInfo?.migrationTargetType) {
+			this._rbg.selectedCardId = this.migrationStateModel._targetType;
+		}
 
+		if (this.migrationStateModel.savedInfo?.skuRecommendation) {
+			await this.refreshSkuParameters();
 
-			if (this.migrationStateModel.savedInfo.skuRecommendation) {
+			switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
+				case PerformanceDataSourceOptions.CollectData: {
+					// check if collector is still running
+					await this.migrationStateModel.refreshPerfDataCollection();
+					if (this.migrationStateModel._perfDataCollectionIsCollecting) {
+						// user started collecting data, and the collector is still running
+						const collectionStartTime = new Date(this.migrationStateModel._perfDataCollectionStartDate!);
+						const expectedRefreshTime = new Date(collectionStartTime.getTime() + this.migrationStateModel.refreshGetSkuRecommendationFrequency);
+						const timeLeft = Math.abs(new Date().getTime() - expectedRefreshTime.getTime());
+						await this.migrationStateModel.startSkuTimers(this, timeLeft);
 
-				await this.refreshSkuParameters();
-
-				switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
-					case PerformanceDataSourceOptions.CollectData: {
-						// check if collector is still running
-						await this.migrationStateModel.refreshPerfDataCollection();
-						if (this.migrationStateModel._perfDataCollectionIsCollecting) {
-							// user started collecting data, and the collector is still running
-							const collectionStartTime = new Date(this.migrationStateModel._perfDataCollectionStartDate!);
-							const expectedRefreshTime = new Date(collectionStartTime.getTime() + this.migrationStateModel.refreshGetSkuRecommendationFrequency);
-							const timeLeft = Math.abs(new Date().getTime() - expectedRefreshTime.getTime());
-							await this.migrationStateModel.startSkuTimers(this, timeLeft);
-
-						} else {
-							// user started collecting data, but collector is stopped
-							// set stop date to some date value
-							this.migrationStateModel._perfDataCollectionStopDate = this.migrationStateModel._perfDataCollectionStopDate || new Date();
-							await this.migrationStateModel.getSkuRecommendations();
-						}
-						break;
-					}
-
-					case PerformanceDataSourceOptions.OpenExisting: {
+					} else {
+						// user started collecting data, but collector is stopped
+						// set stop date to some date value
+						this.migrationStateModel._perfDataCollectionStopDate = this.migrationStateModel._perfDataCollectionStopDate || new Date();
 						await this.migrationStateModel.getSkuRecommendations();
-						break;
 					}
+					break;
+				}
+
+				case PerformanceDataSourceOptions.OpenExisting: {
+					await this.migrationStateModel.getSkuRecommendations();
+					break;
 				}
 			}
 		}
@@ -1171,10 +1152,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 
 		await this.refreshCardText(false);
-	}
-
-	private hasSavedInfo(): boolean {
-		return this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation);
 	}
 
 	private hasRecommendations(): boolean {
