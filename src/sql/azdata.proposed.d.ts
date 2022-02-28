@@ -30,7 +30,44 @@ declare module 'azdata' {
 			setTrusted(state: boolean): void;
 		}
 
+		export interface ISessionOptions {
+			/**
+			 * The spec for the kernel being used to create this session.
+			 */
+			kernelSpec?: IKernelSpec;
+		}
+
+		export interface IKernelSpec {
+			/**
+			 * The list of languages that are supported for this kernel.
+			 */
+			supportedLanguages?: string[];
+			/**
+			 * The original name for this kernel.
+			 */
+			oldName?: string;
+			/**
+			 * The original display name for this kernel.
+			 */
+			oldDisplayName?: string;
+			/**
+			 * The original language name for this kernel.
+			 */
+			oldLanguage?: string;
+		}
+
+		export interface ILanguageInfo {
+			/**
+			 * The original name for this language.
+			 */
+			oldName?: string;
+		}
+
 		export interface IStandardKernel {
+			/**
+			 * The list of languages that are supported for this kernel.
+			 */
+			supportedLanguages: string[];
 			readonly blockedOnSAW?: boolean;
 		}
 
@@ -59,7 +96,15 @@ declare module 'azdata' {
 			/**
 			 * URI of the notebook document that is sending this execute request.
 			 */
-			notebookUri?: vscode.Uri;
+			notebookUri: vscode.Uri;
+			/**
+			 * URI of the notebook cell that is sending this execute request.
+			 */
+			cellUri: vscode.Uri;
+			/**
+			 * The language of the notebook document that is executing this request.
+			 */
+			language: string;
 			/**
 			 * The index of the cell which the code being executed is from.
 			 */

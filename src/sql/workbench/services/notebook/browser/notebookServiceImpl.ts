@@ -248,13 +248,18 @@ export class NotebookService extends Disposable implements INotebookService {
 		lifecycleService.onWillShutdown(() => this.shutdown());
 	}
 
-	public async openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined> {
-		const uri = URI.revive(resource);
-
-		const editorOptions: ITextEditorOptions = {
-			preserveFocus: options.preserveFocus,
-			pinned: !options.preview
-		};
+	public async createNotebookInput(options: INotebookShowOptions, resource?: UriComponents): Promise<IEditorInput | undefined> {
+		let uri: URI;
+		if (resource) {
+			uri = URI.revive(resource);
+		} else {
+			// Need to create a new untitled URI, so find the lowest numbered one that's available
+			let counter = 1;
+			do {
+				uri = URI.from({ scheme: Schemas.untitled, path: `Notebook-${counter}` });
+				counter++;
+			} while (this._untitledEditorService.get(uri));
+		}
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
 		let fileInput: IEditorInput;
@@ -269,6 +274,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: 'notebook' });
 			}
 		}
+
 		// We only need to get the Notebook language association as such we only need to use ipynb
 		const inputCreator = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
 		if (inputCreator) {
@@ -286,7 +292,21 @@ export class NotebookService extends Disposable implements INotebookService {
 				}
 			}
 		}
-		return await this._editorService.openEditor(fileInput, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
+
+		if (!fileInput) {
+			throw new Error(localize('failedToCreateNotebookInput', "Failed to create notebook input for provider '{0}'", options.providerId));
+		}
+
+		return fileInput;
+	}
+
+	public async openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined> {
+		const editorOptions: ITextEditorOptions = {
+			preserveFocus: options.preserveFocus,
+			pinned: !options.preview
+		};
+		let input = await this.createNotebookInput(options, resource);
+		return await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
 	}
 
 	/**
@@ -321,7 +341,8 @@ export class NotebookService extends Disposable implements INotebookService {
 				let descriptor = new StandardKernelsDescriptor(notebookConstants.SQL, [{
 					name: notebookConstants.SQL,
 					displayName: notebookConstants.SQL,
-					connectionProviderIds: sqlConnectionTypes
+					connectionProviderIds: sqlConnectionTypes,
+					supportedLanguages: [notebookConstants.sqlKernelSpec.language]
 				}]);
 				this._providerToStandardKernels.set(notebookConstants.SQL, descriptor);
 			}
@@ -785,7 +806,12 @@ export class NotebookService extends Disposable implements INotebookService {
 		notebookRegistry.registerProviderDescription({
 			provider: serializationProvider.providerId,
 			fileExtensions: [DEFAULT_NOTEBOOK_FILETYPE],
-			standardKernels: [{ name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }]
+			standardKernels: [{
+				name: notebookConstants.SQL,
+				displayName: notebookConstants.SQL,
+				connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER],
+				supportedLanguages: [notebookConstants.sqlKernelSpec.language]
+			}]
 		});
 	}
 
