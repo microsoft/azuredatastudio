@@ -4518,8 +4518,8 @@
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
-									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://github.com/LycanII/LzScripts/releases/download/Latest/LzScripts-0.0.1.vsix"
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/LycanII/LzScripts/releases/tag/Latest"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
