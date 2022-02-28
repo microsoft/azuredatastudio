@@ -494,6 +494,17 @@ export class NotebookService extends Disposable implements INotebookService {
 		return kernels;
 	}
 
+	public async getSupportedLanguagesForProvider(provider: string): Promise<string[]> {
+		let languages: string[] = [];
+		let kernels = await this.getStandardKernelsForProvider(provider);
+		kernels?.forEach(kernel => {
+			if (kernel.supportedLanguages) {
+				languages.push(...kernel.supportedLanguages);
+			}
+		});
+		return languages;
+	}
+
 	private shutdown(): void {
 		this._executeManagersMap.forEach(manager => {
 			manager.forEach(m => {
