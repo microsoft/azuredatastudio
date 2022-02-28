@@ -502,6 +502,8 @@ export class NotebookService extends Disposable implements INotebookService {
 				languages.push(...kernel.supportedLanguages);
 			}
 		});
+		// Remove duplicates
+		languages = [...new Set(languages)];
 		return languages;
 	}
 
