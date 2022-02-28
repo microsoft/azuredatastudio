@@ -119,9 +119,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
-		if (this.languageElement) {
-			(<HTMLElement>this.languageElement.nativeElement).title = localize('selectCellLanguage', "Select Cell Language Mode");
-		}
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -150,6 +147,10 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
+	}
+
+	get cellLanguageTitle(): string {
+		return localize('selectCellLanguage', "Select Cell Language Mode");
 	}
 
 	get parametersText(): string {
