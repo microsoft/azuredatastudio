@@ -120,10 +120,7 @@ code-component .cellLanguage {
 	text-align: center;
 	font-size: 12px;
 	border-style: none;
-}
-
-code-component .cellLanguage:hover {
-	background-color: green;
+	background-color: transparent;
 }
 
 code-component .parameter {
