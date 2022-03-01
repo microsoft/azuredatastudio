@@ -612,19 +612,33 @@ export class Designer extends Disposable implements IThemable {
 				checkbox.checked = checkboxData.checked;
 				break;
 			case 'dropdown':
-				const dropdown = component as SelectBox;
-				const defaultDropdownData = definition.componentProperties as DropDownProperties;
+				const dropdownProperties = definition.componentProperties as DropDownProperties;
 				const dropdownData = viewModel[definition.propertyName] as DropDownProperties;
-				if (dropdownData.enabled === false) {
-					dropdown.disable();
-				} else {
-					dropdown.enable();
-				}
-				const options = (dropdownData.values || defaultDropdownData.values || []) as string[];
-				dropdown.setOptions(options);
+				const options = (dropdownData.values || dropdownProperties.values || []) as string[];
 				const idx = options?.indexOf(dropdownData.value as string);
-				if (idx > -1) {
-					dropdown.select(idx);
+				let dropdown: Dropdown | SelectBox;
+				if (dropdownProperties.isEditable) {
+					dropdown = component as Dropdown;
+					if (dropdownData.enabled === false) {
+						dropdown.enabled = false;
+					} else {
+						dropdown.enabled = true;
+					}
+					dropdown.values = options;
+					if (idx > -1) {
+						dropdown.value = options[idx];
+					}
+				} else {
+					dropdown = component as SelectBox;
+					if (dropdownData.enabled === false) {
+						dropdown.disable();
+					} else {
+						dropdown.enable();
+					}
+					dropdown.setOptions(options);
+					if (idx > -1) {
+						dropdown.select(idx);
+					}
 				}
 				break;
 			default:
@@ -708,39 +722,37 @@ export class Designer extends Disposable implements IThemable {
 				container.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				const dropdownContainer = container.appendChild(DOM.$(''));
 				const dropdownProperties = componentDefinition.componentProperties as DropDownProperties;
-				const dropdown = new SelectBox(dropdownProperties.values as string[] || [], undefined, this._contextViewProvider, undefined);
-				dropdown.setAriaLabel(componentDefinition.componentProperties?.title);
-				dropdown.render(dropdownContainer);
-				dropdown.selectElem.style.height = '25px';
-				dropdown.onDidSelect((e) => {
-					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: e.selected });
-				});
-				dropdown.onDidFocus(() => {
-					if (view === 'PropertiesView') {
-						this._propertiesPane.updateDescription(componentDefinition);
-					} else if (view === 'TabsView' || view === 'TopContentView') {
-						this.updatePropertiesPane(DesignerRootObjectPath);
-					}
-				});
+				let dropdown;
+				if (dropdownProperties.isEditable) {
+					dropdown = new Dropdown(dropdownContainer, this._contextViewProvider, { values: dropdownProperties.values as string[] || [] });
+					dropdown.ariaLabel = componentDefinition.componentProperties?.title;
+					dropdown.onValueChange((value) => {
+						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: value });
+					});
+					dropdown.onFocus(() => {
+						if (view === 'PropertiesView') {
+							this._propertiesPane.updateDescription(componentDefinition);
+						} else if (view === 'TabsView' || view === 'TopContentView') {
+							this.updatePropertiesPane(DesignerRootObjectPath);
+						}
+					});
+				} else {
+					dropdown = new SelectBox(dropdownProperties.values as string[] || [], undefined, this._contextViewProvider, undefined);
+					dropdown.setAriaLabel(componentDefinition.componentProperties?.title);
+					dropdown.render(dropdownContainer);
+					dropdown.selectElem.style.height = '25px';
+					dropdown.onDidSelect((e) => {
+						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: e.selected });
+					});
+					dropdown.onDidFocus(() => {
+						if (view === 'PropertiesView') {
+							this._propertiesPane.updateDescription(componentDefinition);
+						} else if (view === 'TabsView' || view === 'TopContentView') {
+							this.updatePropertiesPane(DesignerRootObjectPath);
+						}
+					});
+				}
 				component = dropdown;
-				break;
-			case 'editableDropdown':
-				container.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
-				const editableDropdownContainer = container.appendChild(DOM.$(''));
-				const edropdownProperties = componentDefinition.componentProperties as DropDownProperties;
-				const editableDropdown = new Dropdown(editableDropdownContainer, this._contextViewProvider, { values: edropdownProperties.values as string[] || [] });
-				editableDropdown.ariaLabel = componentDefinition.componentProperties?.title;
-				editableDropdown.onValueChange((e) => {
-					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: e });
-				});
-				editableDropdown.onFocus(() => {
-					if (view === 'PropertiesView') {
-						this._propertiesPane.updateDescription(componentDefinition);
-					} else if (view === 'TabsView' || view === 'TopContentView') {
-						this.updatePropertiesPane(DesignerRootObjectPath);
-					}
-				});
-				component = editableDropdown;
 				break;
 			case 'checkbox':
 				container.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
@@ -826,16 +838,9 @@ export class Designer extends Disposable implements IThemable {
 							return {
 								name: dropdownProperties.title,
 								field: propertyDefinition.propertyName,
-								editor: this._tableCellEditorFactory.getSelectBoxEditorClass(propertyPath, dropdownProperties.values as string[]),
+								editor: dropdownProperties.isEditable ? this._tableCellEditorFactory.getDropDownEditorClass(propertyPath, dropdownProperties.values as string[]) :
+									this._tableCellEditorFactory.getSelectBoxEditorClass(propertyPath, dropdownProperties.values as string[]),
 								width: dropdownProperties.width as number
-							};
-						case 'editableDropdown':
-							const editableDropdownProperties = propertyDefinition.componentProperties as DropDownProperties;
-							return {
-								name: editableDropdownProperties.title,
-								field: propertyDefinition.propertyName,
-								editor: this._tableCellEditorFactory.getDropDownEditorClass(propertyPath, editableDropdownProperties.values as string[]),
-								width: editableDropdownProperties.width as number
 							};
 						default:
 							const inputProperties = propertyDefinition.componentProperties as InputBoxProperties;
