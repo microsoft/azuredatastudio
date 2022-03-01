@@ -91,7 +91,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 
 	public async onPageLeave(): Promise<void> {
 		const assessedDatabases = this.migrationStateModel._assessedDatabaseList ?? [];
-		const selectedDatabases = this.migrationStateModel._assessmentDbs;
+		const selectedDatabases = this.migrationStateModel._databasesForAssessment;
 		// run assessment if
 		// * no prior assessment
 		// * the prior assessment had an error or
@@ -309,7 +309,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		await this._dbCount.updateProperties({
 			'value': constants.DATABASES_SELECTED(this.selectedDbs().length, this._databaseTableValues.length)
 		});
-		this.migrationStateModel._assessmentDbs = this.selectedDbs();
+		this.migrationStateModel._databasesForAssessment = this.selectedDbs();
 	}
 
 	// undo when bug #16445 is fixed

@@ -48,7 +48,7 @@ export class SummaryPage extends MigrationWizardPage {
 		const targetDatabaseSummary = new TargetDatabaseSummaryDialog(this.migrationStateModel);
 		const targetDatabaseHyperlink = this._view.modelBuilder.hyperlink().withProps({
 			url: '',
-			label: this.migrationStateModel._migrationDbs.length.toString(),
+			label: this.migrationStateModel._databasesForMigration.length.toString(),
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin': '0px',

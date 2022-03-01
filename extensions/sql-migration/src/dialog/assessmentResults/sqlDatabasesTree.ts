@@ -143,7 +143,7 @@ export class SqlDatabaseTree {
 				...styles.BOLD_NOTE_CSS,
 				'margin': '0px 15px 0px 15px'
 			},
-			value: constants.DATABASES(0, this._model._assessmentDbs?.length)
+			value: constants.DATABASES(0, this._model._databasesForAssessment?.length)
 		}).component();
 		return this._databaseCount;
 	}
@@ -882,7 +882,7 @@ export class SqlDatabaseTree {
 	public async initialize(): Promise<void> {
 		let instanceTableValues: azdata.DeclarativeTableCellValue[][] = [];
 		this._databaseTableValues = [];
-		this._dbNames = this._model._assessmentDbs;
+		this._dbNames = this._model._databasesForAssessment;
 		const selectedDbs = (this._targetType === MigrationTargetType.SQLVM) ? this._model._vmDbs : this._model._miDbs;
 		this._serverName = (await this._model.getSourceConnectionProfile()).serverName;
 
@@ -970,9 +970,8 @@ export class SqlDatabaseTree {
 
 	private async updateValuesOnSelection() {
 		await this._databaseCount.updateProperties({
-			'value': constants.DATABASES(this.selectedDbs()?.length, this._model._assessmentDbs?.length)
+			'value': constants.DATABASES(this.selectedDbs()?.length, this._model._databasesForAssessment?.length)
 		});
-		this._model._databaseSelection = <azdata.DeclarativeTableCellValue[][]>this._databaseTable.dataValues;
 	}
 
 	// undo when bug #16445 is fixed

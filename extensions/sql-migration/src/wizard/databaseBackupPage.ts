@@ -777,7 +777,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI) {
 					this._existingDatabases = await this.migrationStateModel.getManagedDatabases();
 				}
-				this.migrationStateModel._migrationDbs.forEach((db, index) => {
+				this.migrationStateModel._databasesForMigration.forEach((db, index) => {
 					let targetDatabaseName = db;
 					let networkShare = <NetworkShare>{};
 					let blob = <Blob>{};
@@ -957,7 +957,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 
 				let data: azdata.DeclarativeTableCellValue[][] = [];
-				this.migrationStateModel._migrationDbs.forEach((db, index) => {
+				this.migrationStateModel._databasesForMigration.forEach((db, index) => {
 					const targetRow: azdata.DeclarativeTableCellValue[] = [];
 					targetRow.push({
 						value: db
@@ -973,7 +973,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				await this._networkShareTargetDatabaseNamesTable.setDataValues(data);
 
 				data = [];
-				this.migrationStateModel._migrationDbs.forEach((db, index) => {
+				this.migrationStateModel._databasesForMigration.forEach((db, index) => {
 					const targetRow: azdata.DeclarativeTableCellValue[] = [];
 					targetRow.push({
 						value: db
@@ -1032,24 +1032,24 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				case NetworkContainerType.BLOB_CONTAINER:
 					this._blobContainerResourceGroupDropdowns.forEach((v, index) => {
 						if (this.shouldDisplayBlobDropdownError(v, [constants.RESOURCE_GROUP_NOT_FOUND])) {
-							errors.push(constants.INVALID_BLOB_RESOURCE_GROUP_ERROR(this.migrationStateModel._migrationDbs[index]));
+							errors.push(constants.INVALID_BLOB_RESOURCE_GROUP_ERROR(this.migrationStateModel._databasesForMigration[index]));
 						}
 					});
 					this._blobContainerStorageAccountDropdowns.forEach((v, index) => {
 						if (this.shouldDisplayBlobDropdownError(v, [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP_PROMPT])) {
-							errors.push(constants.INVALID_BLOB_STORAGE_ACCOUNT_ERROR(this.migrationStateModel._migrationDbs[index]));
+							errors.push(constants.INVALID_BLOB_STORAGE_ACCOUNT_ERROR(this.migrationStateModel._databasesForMigration[index]));
 						}
 					});
 					this._blobContainerDropdowns.forEach((v, index) => {
 						if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBCONTAINERS_FOUND, constants.SELECT_STORAGE_ACCOUNT])) {
-							errors.push(constants.INVALID_BLOB_CONTAINER_ERROR(this.migrationStateModel._migrationDbs[index]));
+							errors.push(constants.INVALID_BLOB_CONTAINER_ERROR(this.migrationStateModel._databasesForMigration[index]));
 						}
 					});
 
 					if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 						this._blobContainerLastBackupFileDropdowns.forEach((v, index) => {
 							if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBFILES_FOUND, constants.SELECT_BLOB_CONTAINER])) {
-								errors.push(constants.INVALID_BLOB_LAST_BACKUP_FILE_ERROR(this.migrationStateModel._migrationDbs[index]));
+								errors.push(constants.INVALID_BLOB_LAST_BACKUP_FILE_ERROR(this.migrationStateModel._databasesForMigration[index]));
 							}
 						});
 					}
@@ -1066,7 +1066,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						}
 						duplicates.forEach((d) => {
 							if (d.length > 1) {
-								const dupString = `${d.map(index => this.migrationStateModel._migrationDbs[index]).join(', ')}`;
+								const dupString = `${d.map(index => this.migrationStateModel._databasesForMigration[index]).join(', ')}`;
 								errors.push(constants.PROVIDE_UNIQUE_CONTAINERS + dupString);
 							}
 						});

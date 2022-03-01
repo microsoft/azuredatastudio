@@ -417,25 +417,25 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		switch (newTargetType) {
 			case MigrationTargetType.SQLMI: {
 				const miDbs = this.migrationStateModel._miDbs.filter(
-					db => this.migrationStateModel._assessmentDbs.findIndex(
+					db => this.migrationStateModel._databasesForAssessment.findIndex(
 						dba => dba === db) >= 0);
 
 				this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI;
-				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(miDbs.length, this.migrationStateModel._assessmentDbs.length);
+				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(miDbs.length, this.migrationStateModel._databasesForAssessment.length);
 				this.migrationStateModel._targetType = MigrationTargetType.SQLMI;
-				this.migrationStateModel._migrationDbs = miDbs;
+				this.migrationStateModel._databasesForMigration = miDbs;
 				break;
 			}
 
 			case MigrationTargetType.SQLVM: {
 				const vmDbs = this.migrationStateModel._vmDbs.filter(
-					db => this.migrationStateModel._assessmentDbs.findIndex(
+					db => this.migrationStateModel._databasesForAssessment.findIndex(
 						dba => dba === db) >= 0);
 
 				this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM;
-				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(vmDbs.length, this.migrationStateModel._assessmentDbs.length);
+				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(vmDbs.length, this.migrationStateModel._databasesForAssessment.length);
 				this.migrationStateModel._targetType = MigrationTargetType.SQLVM;
-				this.migrationStateModel._migrationDbs = vmDbs;
+				this.migrationStateModel._databasesForMigration = vmDbs;
 				break;
 			}
 		}
@@ -561,7 +561,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		display = (this._rbg.selectedCardId
 			&& (!failedAssessment || this._skipAssessmentCheckbox.checked)
-			&& this.migrationStateModel._migrationDbs.length > 0)
+			&& this.migrationStateModel._databasesForMigration.length > 0)
 			? 'inline'
 			: 'none';
 
@@ -582,7 +582,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (this._rbg.selectedCardId === undefined || this._rbg.selectedCardId === '') {
 				errors.push(constants.SELECT_TARGET_TO_CONTINUE);
 			}
-			if (this.migrationStateModel._migrationDbs.length === 0) {
+			if (this.migrationStateModel._databasesForMigration.length === 0) {
 				errors.push(constants.SELECT_DATABASE_TO_MIGRATE);
 			}
 
@@ -617,9 +617,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	public async refreshCardText(showLoadingIcon: boolean = true): Promise<void> {
 		this._rbgLoader.loading = showLoadingIcon && true;
 		if (this._rbg.selectedCardId === MigrationTargetType.SQLMI) {
-			this.migrationStateModel._migrationDbs = this.migrationStateModel._miDbs;
+			this.migrationStateModel._databasesForMigration = this.migrationStateModel._miDbs;
 		} else {
-			this.migrationStateModel._migrationDbs = this.migrationStateModel._vmDbs;
+			this.migrationStateModel._databasesForMigration = this.migrationStateModel._vmDbs;
 		}
 
 		const dbCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.length;
