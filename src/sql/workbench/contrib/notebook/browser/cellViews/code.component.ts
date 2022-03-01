@@ -459,7 +459,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
-	public onCellLanguageClick(event: any): void {
+	public onCellLanguageClick(): void {
 		this._notebookService.getSupportedLanguagesForProvider(this._model.providerId, this._model.selectedKernelDisplayName)
 			.then(languages => this.pickCellLanguage(languages))
 			.then(selection => {
