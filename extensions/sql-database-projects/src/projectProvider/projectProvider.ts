@@ -61,6 +61,15 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 			displayName: constants.edgeProjectTypeDisplayName,
 			description: constants.edgeProjectTypeDescription,
 			icon: IconPathHelper.sqlEdgeProject
+		},
+		{
+			id: constants.emptyAzureDbSqlDatabaseProjectTypeId,
+			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
+			displayName: constants.emptyAzureDbProjectTypeDisplayName,
+			description: constants.emptyAzureDbProjectTypeDescription,
+			icon: IconPathHelper.colorfulSqlProject,
+			targetPlatforms: Array.from(constants.targetPlatformToVersion.keys()),
+			defaultTargetPlatform: sqldbproj.SqlTargetPlatform.sqlAzure
 		}];
 	}
 

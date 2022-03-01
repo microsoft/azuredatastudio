@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AppSettingType, IDeployAppIntegrationProfile, IDeployProfile, ILocalDbSetting } from './deployProfile';
+import { AppSettingType, IDeployAppIntegrationProfile, ILocalDbDeployProfile, ILocalDbSetting, ISqlConnectionProperties } from './deployProfile';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Project } from '../project';
 import * as constants from '../../common/constants';
@@ -52,7 +52,7 @@ export class DeployService {
 		return undefined;
 	}
 
-	public async updateAppSettings(profile: IDeployAppIntegrationProfile, deployProfile: IDeployProfile | undefined): Promise<void> {
+	public async updateAppSettings(profile: IDeployAppIntegrationProfile, deployProfile: ILocalDbDeployProfile | undefined): Promise<void> {
 		// Update app settings
 		//
 		if (!profile.appSettingFile) {
@@ -124,7 +124,7 @@ export class DeployService {
 		return { label: imageLabel, tag: imageTag, containerName: dockerName };
 	}
 
-	public async deploy(profile: IDeployProfile, project: Project): Promise<string | undefined> {
+	public async deploy(profile: ILocalDbDeployProfile, project: Project): Promise<string | undefined> {
 		return await this.executeTask(constants.deployDbTaskName, async () => {
 			if (!profile.localDbSetting) {
 				return undefined;
@@ -233,7 +233,7 @@ export class DeployService {
 	}
 
 	// Connects to a database
-	private async connectToDatabase(profile: ILocalDbSetting, saveConnectionAndPassword: boolean, database: string): Promise<ConnectionResult | string | undefined> {
+	private async connectToDatabase(profile: ISqlConnectionProperties, saveConnectionAndPassword: boolean, database: string): Promise<ConnectionResult | string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		const vscodeMssqlApi = getAzdataApi ? undefined : await utils.getVscodeMssqlApi();
 		if (getAzdataApi) {
@@ -321,10 +321,10 @@ export class DeployService {
 		return connectionResult ? connectionResult.connectionId : <string>connection;
 	}
 
-	public async getConnection(profile: ILocalDbSetting, saveConnectionAndPassword: boolean, database: string): Promise<string | undefined> {
+	public async getConnection(profile: ISqlConnectionProperties, saveConnectionAndPassword: boolean, database: string): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		let connection = await utils.retry(
-			constants.connectingToSqlServerOnDockerMessage,
+			constants.connectingToSqlServerMessage,
 			async () => {
 				return await this.connectToDatabase(profile, saveConnectionAndPassword, database);
 			},

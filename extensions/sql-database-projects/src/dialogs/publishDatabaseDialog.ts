@@ -16,7 +16,7 @@ import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
 import { getAgreementDisplayText, getConnectionName, getDockerBaseImages } from './utils';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { IDeployProfile } from '../models/deploy/deployProfile';
+import { ILocalDbDeployProfile } from '../models/deploy/deployProfile';
 import { Deferred } from '../common/promise';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
@@ -62,7 +62,7 @@ export class PublishDatabaseDialog {
 	private toDispose: vscode.Disposable[] = [];
 
 	public publish: ((proj: Project, profile: IDeploySettings) => any) | undefined;
-	public publishToContainer: ((proj: Project, profile: IDeployProfile) => any) | undefined;
+	public publishToContainer: ((proj: Project, profile: ILocalDbDeployProfile) => any) | undefined;
 	public generateScript: ((proj: Project, profile: IDeploySettings) => any) | undefined;
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
@@ -230,9 +230,9 @@ export class PublishDatabaseDialog {
 			await this.publish!(this.project, settings);
 		} else {
 			const dockerBaseImage = this.getBaseDockerImageName();
-			const baseImages = getDockerBaseImages();
+			const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
 			const imageInfo = baseImages.find(x => x.name === dockerBaseImage);
-			const settings: IDeployProfile = {
+			const settings: ILocalDbDeployProfile = {
 				localDbSetting: {
 					dbName: this.targetDatabaseName,
 					dockerBaseImage: dockerBaseImage,
@@ -584,7 +584,7 @@ export class PublishDatabaseDialog {
 		});
 		const serverConfirmPasswordRow = this.createFormRow(view, constants.confirmServerPassword, this.serverConfigAdminPasswordTextBox);
 
-		const baseImages = getDockerBaseImages();
+		const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
 		this.baseDockerImageDropDown = view.modelBuilder.dropDown().withProps({
 			values: baseImages.map(x => x.name),
 			ariaLabel: constants.baseDockerImage,
@@ -610,7 +610,7 @@ export class PublishDatabaseDialog {
 			if (this.eulaCheckBox) {
 				this.eulaCheckBox.checked = false;
 			}
-			const baseImage = getDockerBaseImages().find(x => x.name === this.baseDockerImageDropDown?.value);
+			const baseImage = getDockerBaseImages(this.project.getProjectTargetVersion()).find(x => x.name === this.baseDockerImageDropDown?.value);
 			if (baseImage?.agreementInfo.link) {
 				const text = view.modelBuilder.text().withProps({
 					value: constants.eulaAgreementTemplate,

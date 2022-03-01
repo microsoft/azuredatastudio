@@ -28,6 +28,10 @@ export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
 export const emptyProjectTypeDisplayName = localize('emptyProjectTypeDisplayName', "SQL Database");
 export const emptyProjectTypeDescription = localize('emptyProjectTypeDescription', "Develop and publish schemas for SQL databases starting from an empty project");
 
+export const emptyAzureDbSqlDatabaseProjectTypeId = 'EmptyAzureDbSqlDbProj';
+export const emptyAzureDbProjectTypeDisplayName = localize('emptyAzureDbProjectTypeDisplayName', "Azure DB SQL Database");
+export const emptyAzureDbProjectTypeDescription = localize('emptyAzureDbProjectTypeDescription', "Develop and publish schemas for Azure DB SQL databases starting from an empty project");
+
 export const edgeSqlDatabaseProjectTypeId = 'SqlDbEdgeProj';
 export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "SQL Edge");
 export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription', "Start with the core pieces to develop and publish schemas for SQL Edge");
@@ -141,14 +145,19 @@ export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not 
 export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
 export const publishToExistingServer = localize('publishToExistingServer', "Publish to existing server");
 export const publishToDockerContainer = localize('publishToDockerContainer', "Publish to new server in a container");
+export const publishToNewAzureServer = localize('publishToNewAzureServer', "Publish to new Azure server");
 export const enterPortNumber = localize('enterPortNumber', "Enter SQL server port number or press enter to use the default value");
 export const serverPortNumber = localize('serverPortNumber', "SQL server port number");
+export const azureServerName = localize('azureServerName', "SQL server name");
 export const serverPassword = localize('serverPassword', "SQL Server admin password");
 export const confirmServerPassword = localize('confirmServerPassword', "Confirm SQL Server admin password");
 export const baseDockerImage = localize('baseDockerImage', "Base SQL Server Docker image");
 export const publishTo = localize('publishTo', "Publish Target");
 export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
 export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
+export const enterUser = localize('enterUser', "Enter SQL Server admin user");
+export const enterMinIpAddress = localize('enterMinIpAddress', "Enter firewall rule min IP address");
+export const enterMaxIpAddress = localize('enterMaxIpAddress', "Enter firewall rule max IP address");
 export const enterPassword = localize('enterPassword', "Enter SQL Server admin password");
 export const confirmPassword = localize('confirmPassword', "Confirm SQL server admin password");
 export const selectBaseImage = localize('selectBaseImage', "Select the base SQL Server docker image");
@@ -194,7 +203,7 @@ export const runningDockerMessage = localize('runningDockerMessage', "Building a
 export function dockerNotRunningError(error: string) { return localize('dockerNotRunningError', "Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'", error || ''); }
 export const dockerContainerNotRunningErrorMessage = localize('dockerContainerNotRunningErrorMessage', "Docker container is not running");
 export const dockerContainerFailedToRunErrorMessage = localize('dockerContainerFailedToRunErrorMessage', "Failed to run the docker container");
-export const connectingToSqlServerOnDockerMessage = localize('connectingToSqlServerOnDockerMessage', "Connecting to SQL Server on Docker");
+export const connectingToSqlServerMessage = localize('connectingToSqlServerMessage', "Connecting to SQL Server");
 export const deployProjectFailedMessage = localize('deployProjectFailedMessage', "Failed to open a connection to the deployed database'");
 export const containerAlreadyExistForProject = localize('containerAlreadyExistForProject', "Containers already exist for this project. Do you want to delete them before deploying a new one?");
 export const checkoutOutputMessage = localize('checkoutOutputMessage', "Check output pane for more details");
@@ -209,7 +218,7 @@ export function retryWaitMessage(numberOfSeconds: number, name: string) { return
 export function retryRunMessage(attemptNumber: number, numberOfAttempts: number, name: string) { return localize('retryRunMessage', "Running operation '{2}' Attempt {0} of {1}", attemptNumber, numberOfAttempts, name); }
 export function retrySucceedMessage(name: string, result: string) { return localize('retrySucceedMessage', "Operation '{0}' completed successfully. Result: {1}", name, result); }
 export function retryFailedMessage(name: string, result: string, error: string) { return localize('retryFailedMessage', "Operation '{0}' failed. Re-trying... Current Result: {1}. Error: '{2}'", name, result, error); }
-export function retryMessage(name: string, error: string) { return localize('retryMessage', "Operation '{0}' failed. Re-trying... Error: '{1}'", name, error || ''); }
+export function retryMessage(name: string, error: string) { return localize('retryMessage', "Operation '{0}' failed. Re-trying... Error: '{1}'", name, error); }
 
 // Add Database Reference dialog strings
 

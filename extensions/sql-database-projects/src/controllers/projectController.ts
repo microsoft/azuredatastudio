@@ -37,15 +37,16 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
 import { getPublishDatabaseSettings, launchPublishTargetOption } from '../dialogs/publishDatabaseQuickpick';
-import { launchPublishToDockerContainerQuickpick } from '../dialogs/deployDatabaseQuickpick';
+import { launchCreateAzureServerQuickPick, launchPublishToDockerContainerQuickpick } from '../dialogs/deployDatabaseQuickpick';
 import { DeployService } from '../models/deploy/deployService';
 import { GenerateProjectFromOpenApiSpecOptions, SqlTargetPlatform } from 'sqldbproj';
 import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
-import { IDeployProfile } from '../models/deploy/deployProfile';
+import { ILocalDbDeployProfile } from '../models/deploy/deployProfile';
 import { EntryType, FileProjectEntry, IDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
 import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updateProject';
+import { AzureSqlClient } from '../models/deploy/azureSqlClient';
 
 const maxTableLength = 10;
 
@@ -171,8 +172,22 @@ export class ProjectsController {
 			'PROJECT_DSP': creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP
 		};
 
-		let newProjFileContents = creationParams.projectTypeId === constants.emptySqlDatabaseSdkProjectTypeId ? templates.macroExpansion(templates.newSdkSqlProjectTemplate, macroDict) : templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
+		let newProjFileContents = '';//creationParams.projectTypeId === constants.emptySqlDatabaseSdkProjectTypeId ? templates.macroExpansion(templates.newSdkSqlProjectTemplate, macroDict) : templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
 
+		switch (creationParams.projectTypeId) {
+			case constants.emptySqlDatabaseSdkProjectTypeId:
+				newProjFileContents = templates.macroExpansion(templates.newSdkSqlProjectTemplate, macroDict);
+				break;
+			case constants.emptySqlDatabaseProjectTypeId:
+				newProjFileContents = templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
+				break;
+			case constants.emptyAzureDbSqlDatabaseProjectTypeId:
+				newProjFileContents = templates.macroExpansion(templates.newAzureDbSqlProjectTemplate, macroDict);
+				break;
+			default:
+				newProjFileContents = templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
+				break;
+		}
 		let newProjFileName = creationParams.newProjName;
 
 		if (!newProjFileName.toLowerCase().endsWith(constants.sqlprojExtension)) {
@@ -180,6 +195,7 @@ export class ProjectsController {
 		}
 
 		const newProjFilePath = path.join(creationParams.folderUri.fsPath, path.parse(newProjFileName).name, newProjFileName);
+		const readmeFilePath = path.join(creationParams.folderUri.fsPath, path.parse(newProjFileName).name, 'readme.md');
 
 		if (await utils.exists(newProjFilePath)) {
 			throw new Error(constants.projectAlreadyExists(newProjFileName, path.parse(newProjFilePath).dir));
@@ -187,6 +203,7 @@ export class ProjectsController {
 
 		await fs.mkdir(path.dirname(newProjFilePath), { recursive: true });
 		await fs.writeFile(newProjFilePath, newProjFileContents);
+		await fs.writeFile(readmeFilePath, '');
 
 		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
 
@@ -267,7 +284,7 @@ export class ProjectsController {
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project or the Project itself
 	 * @param deployProfile
 	 */
-	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: IDeployProfile): Promise<void> {
+	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: ILocalDbDeployProfile): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
 		try {
 			if (deployProfile && deployProfile.deploySettings) {
@@ -343,6 +360,36 @@ export class ProjectsController {
 			if (deployProfile?.deploySettings) {
 				await this.publishToDockerContainer(project, deployProfile);
 			}
+		} else if (publishTarget === constants.publishToNewAzureServer) {
+			const settings = await launchCreateAzureServerQuickPick(project);
+			this._outputChannel.appendLine(`Creating SQL server '${settings?.sqlDbSetting?.serverName}' in Azure ... `);
+			void utils.showInfoMessageWithOutputChannel(`Creating SQL server '${settings?.sqlDbSetting?.serverName}' in Azure ... `, this._outputChannel);
+			if (settings?.sqlDbSetting && settings?.deploySettings) {
+				const azureSqlClient = AzureSqlClient;
+				const server = await azureSqlClient.createServer(settings?.sqlDbSetting.subscription, settings?.sqlDbSetting.resourceGroup, settings?.sqlDbSetting.serverName, {
+					location: settings?.sqlDbSetting?.location,
+					administratorLogin: settings?.sqlDbSetting.userName,
+					administratorLoginPassword: settings?.sqlDbSetting.password
+				});
+				if (server && server.fullyQualifiedDomainName) {
+					void vscode.window.showInformationMessage('server created in Azure! ' + server.fullyQualifiedDomainName);
+					this._outputChannel.appendLine(`Server created ${server.name}`);
+					settings.sqlDbSetting.serverName = server.fullyQualifiedDomainName;
+				}
+				//let settings: IDeploySettings | undefined = await getPublishDatabaseSettings(project, false);
+				this._outputChannel.appendLine('connecting to azure server ...');
+
+				const connectionUri = await this.deployService.getConnection(settings.sqlDbSetting, false, 'master');
+				this._outputChannel.appendLine('connection to azure ' + connectionUri);
+				if (settings && connectionUri) {
+					settings.deploySettings.connectionUri = connectionUri;
+					this._outputChannel.appendLine('deploying sql project to Azure');
+					await this.publishOrScriptProject(project, settings.deploySettings, true);
+					this._outputChannel.appendLine('deploy is done');
+					await this.deployService.getConnection(settings.sqlDbSetting, true, settings.sqlDbSetting.dbName);
+				}
+			}
+
 		} else {
 			let settings: IDeploySettings | undefined = await getPublishDatabaseSettings(project);
 

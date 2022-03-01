@@ -11,7 +11,7 @@ import { DeployService } from '../../models/deploy/deployService';
 import { Project } from '../../models/project';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { AppSettingType, IDeployProfile } from '../../models/deploy/deployProfile';
+import { AppSettingType, ILocalDbDeployProfile } from '../../models/deploy/deployProfile';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as fse from 'fs-extra';
 import * as path from 'path';
@@ -68,7 +68,7 @@ describe('deploy service', function (): void {
 
 	it('Should deploy a database to docker container successfully', async function (): Promise<void> {
 		const testContext = createContext();
-		const deployProfile: IDeployProfile = {
+		const deployProfile: ILocalDbDeployProfile = {
 			localDbSetting: {
 				dbName: 'test',
 				password: 'PLACEHOLDER',
@@ -98,7 +98,7 @@ describe('deploy service', function (): void {
 
 	it('Should fail the deploy if docker is not running', async function (): Promise<void> {
 		const testContext = createContext();
-		const deployProfile: IDeployProfile = {
+		const deployProfile: ILocalDbDeployProfile = {
 			localDbSetting: {
 				dbName: 'test',
 				password: 'PLACEHOLDER',
@@ -173,7 +173,7 @@ describe('deploy service', function (): void {
 		const filePath = path.join(project1.projectFolderPath, 'local.settings.json');
 		await fse.writeFile(filePath, settingContent);
 
-		const deployProfile: IDeployProfile = {
+		const deployProfile: ILocalDbDeployProfile = {
 			localDbSetting: {
 				dbName: 'test',
 				password: 'PLACEHOLDER',
@@ -228,7 +228,7 @@ describe('deploy service', function (): void {
 		const filePath = path.join(project1.projectFolderPath, 'local.settings.json');
 		await fse.writeFile(filePath, settingContent);
 
-		const deployProfile: IDeployProfile = {
+		const deployProfile: ILocalDbDeployProfile = {
 
 			deploySettings: {
 				connectionUri: 'connection',

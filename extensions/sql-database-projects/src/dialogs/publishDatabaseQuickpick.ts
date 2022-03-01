@@ -210,7 +210,7 @@ export async function launchPublishTargetOption(): Promise<string | undefined> {
 	// Show options to user for deploy to existing server or docker
 
 	const publishOption = await vscode.window.showQuickPick(
-		[constants.publishToExistingServer, constants.publishToDockerContainer],
+		[constants.publishToExistingServer, constants.publishToDockerContainer, constants.publishToNewAzureServer],
 		{ title: constants.selectPublishOption, ignoreFocusOut: true });
 
 	// Return when user hits escape

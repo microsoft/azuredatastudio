@@ -5,13 +5,20 @@
 
 import { IDeploySettings } from '../IDeploySettings';
 import type * as azdataType from 'azdata';
+import { AzureSubscription } from '../../../azure-account.api';
+import { ResourceGroup } from '@azure/arm-resources/esm/models';
 
 export enum AppSettingType {
 	None,
 	AzureFunction
 }
-export interface IDeployProfile {
+export interface ILocalDbDeployProfile {
 	localDbSetting?: ILocalDbSetting;
+	deploySettings?: IDeploySettings;
+}
+
+export interface ISqlDbDeployProfile {
+	sqlDbSetting?: ISqlDbSetting;
 	deploySettings?: IDeploySettings;
 }
 
@@ -21,20 +28,31 @@ export interface IDeployAppIntegrationProfile {
 	appSettingType: AppSettingType;
 }
 
-export interface ILocalDbSetting {
-	serverName: string,
-	port: number,
-	userName: string,
-	password: string,
-	dbName: string,
+export interface ISqlDbSetting extends ISqlConnectionProperties {
+	subscription: AzureSubscription,
+	resourceGroup: ResourceGroup,
+	location: string
+}
+
+export interface ILocalDbSetting extends ISqlConnectionProperties {
 	dockerBaseImage: string,
 	dockerBaseImageEula: string,
+}
+
+export interface ISqlConnectionProperties {
+	accountId?: string
+	serverName: string,
+	userName: string,
+	password: string,
+	port: number,
+	dbName: string,
+	profileName?: string,
 	connectionRetryTimeout?: number,
-	profileName?: string
 }
 
 export interface DockerImageInfo {
 	name: string,
+	displayName: string,
 	agreementInfo: AgreementInfo
 }
 export interface AgreementInfo {
