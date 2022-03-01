@@ -90,12 +90,14 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	}
 
 	public async onPageLeave(): Promise<void> {
-		const assessedDatabases = this.migrationStateModel._assessmentDbs ?? [];
-		const selectedDatabases = this.selectedDbs();
+		const assessedDatabases = this.migrationStateModel._assessedDatabaseList ?? [];
+		const selectedDatabases = this.migrationStateModel._assessmentDbs;
 		// run assessment if
+		// * no prior assessment
 		// * the prior assessment had an error or
 		// * the assessed databases list is different from the selected databases list
-		this.migrationStateModel._runAssessments = !!this.migrationStateModel._assessmentResults?.assessmentError
+		this.migrationStateModel._runAssessments = !this.migrationStateModel._assessmentResults
+			|| !!this.migrationStateModel._assessmentResults?.assessmentError
 			|| assessedDatabases.length === 0
 			|| assessedDatabases.length !== selectedDatabases.length
 			|| assessedDatabases.some(db => selectedDatabases.indexOf(db) < 0);

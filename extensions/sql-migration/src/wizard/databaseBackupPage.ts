@@ -280,7 +280,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._windowsUserAccountText = this._view.modelBuilder.inputBox()
 			.withProps({
-				value: this.migrationStateModel._databaseBackup.networkShares[0]?.windowsUser,
 				placeHolder: constants.WINDOWS_USER_ACCOUNT,
 				required: true,
 				validationErrorMessage: constants.INVALID_USER_ACCOUNT,
@@ -765,6 +764,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this._sourceHelpText.value = constants.SQL_SOURCE_DETAILS(this.migrationStateModel._authenticationType, connectionProfile.serverName);
 				this._sqlSourceUsernameInput.value = username;
 				this._sqlSourcePassword.value = (await azdata.connection.getCredentials(this.migrationStateModel.sourceConnectionId)).password;
+				this._windowsUserAccountText.value = this.migrationStateModel.savedInfo?.networkShares[0]?.windowsUser;
 
 				this._networkShareTargetDatabaseNames = [];
 				this._networkShareLocations = [];
@@ -782,14 +782,23 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					let networkShare = <NetworkShare>{};
 					let blob = <Blob>{};
 					if (this.migrationStateModel.resumeAssessment || this.migrationStateModel.retryMigration) {
+						// retrieve the targetDatabaseName, networkShare, blob values from SavedInfo for the corresponding db
 						const savedInfoIndex = this.migrationStateModel.savedInfo?.databaseList?.indexOf(db);
 						if (savedInfoIndex > -1) {
 							targetDatabaseName = this.migrationStateModel.savedInfo.targetDatabaseNames[savedInfoIndex] || targetDatabaseName;
 							networkShare = this.migrationStateModel.savedInfo.networkShares[savedInfoIndex] || networkShare;
 							blob = this.migrationStateModel.savedInfo.blobs[savedInfoIndex] || blob;
+						} else {
+							// network share values are uniform for all dbs in the same migration, except for networkShareLocation
+							const savedNetworkShare = this.migrationStateModel.savedInfo.networkShares[0];
+							if (savedNetworkShare) {
+								networkShare = {
+									...savedNetworkShare,
+									networkShareLocation: '',
+								};
+							}
 						}
 					}
-
 					this.migrationStateModel._targetDatabaseNames[index] = targetDatabaseName;
 					this.migrationStateModel._databaseBackup.networkShares[index] = networkShare;
 					this.migrationStateModel._databaseBackup.blobs[index] = blob;
@@ -1098,7 +1107,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						break;
 					case NetworkContainerType.NETWORK_SHARE:
 						// All network share migrations use the same storage account
-						const storageAccount = this.migrationStateModel._databaseBackup.networkShares[0].storageAccount;
+						const storageAccount = this.migrationStateModel._databaseBackup.networkShares[0]?.storageAccount;
 						const storageKey = (await getStorageAccountAccessKeys(
 							this.migrationStateModel._azureAccount,
 							this.migrationStateModel._databaseBackup.subscription,
@@ -1191,7 +1200,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	private async getSubscriptionValues(): Promise<void> {
-
 		this._networkShareContainerSubscription.value = this.migrationStateModel._targetSubscription.name;
 		this._networkShareContainerLocation.value = await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._targetServerInstance.location);
 
@@ -1222,7 +1230,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._networkShareContainerStorageAccountDropdown.loading = true;
 		this._networkShareStorageAccountResourceGroupDropdown.loading = true;
 		try {
-			this._networkShareContainerStorageAccountDropdown.values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.networkShares[0].resourceGroup);
+			this._networkShareContainerStorageAccountDropdown.values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.networkShares[0]?.resourceGroup);
 			this.migrationStateModel.selectDefaultDropdownValue(this._networkShareContainerStorageAccountDropdown, this.migrationStateModel?._databaseBackup?.networkShares[0]?.storageAccount?.id, false);
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingNetworkShareStorageDropdown', error);
