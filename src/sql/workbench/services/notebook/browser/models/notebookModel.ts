@@ -38,6 +38,7 @@ import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { AddCellEdit, CellOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, CellOutputDataEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
+import { DotnetInteractiveLabel } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -1006,7 +1007,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 		}
 
-		if (this._capabilitiesService?.providers) {
+		if (this._capabilitiesService?.providers && this.executeManager.providerId === SQL_NOTEBOOK_PROVIDER) {
 			let providers = this._capabilitiesService.providers;
 			for (const server in providers) {
 				let alias = providers[server].connection.notebookKernelAlias;
@@ -1045,6 +1046,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._defaultKernel = notebookConstants.sqlKernelSpec;
 			this._providerId = SQL_NOTEBOOK_PROVIDER;
 		}
+
 		if (!this._defaultLanguageInfo?.name) {
 			// update default language
 			this._defaultLanguageInfo = {
@@ -1136,12 +1138,22 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				language = KernelsLanguage.Python;
 			} else if (language.toLowerCase() === 'c#') {
 				language = KernelsLanguage.CSharp;
+			} else if (language.toLowerCase() === 'f#') {
+				language = KernelsLanguage.FSharp;
 			}
 		} else {
 			language = KernelsLanguage.Python;
 		}
 
+		// Update cell language if it was using the previous default, but skip updating the cell
+		// if it was using a more specific language.
+		let oldLanguage = this._language;
 		this._language = language.toLowerCase();
+		this._cells?.forEach(cell => {
+			if (!cell.language || cell.language === oldLanguage) {
+				cell.setOverrideLanguage(this._language);
+			}
+		});
 	}
 
 	public changeKernel(displayName: string): void {
@@ -1336,6 +1348,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName || displayName.startsWith(kernel.displayName));
 			if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
+				// Special case .NET Interactive kernel name to handle inconsistencies between notebook providers and jupyter kernel specs
+				if (this._savedKernelInfo.display_name === DotnetInteractiveLabel) {
+					this._savedKernelInfo.oldName = this._savedKernelInfo.name;
+				}
+
 				this._savedKernelInfo.name = standardKernel.name;
 				this._savedKernelInfo.display_name = standardKernel.displayName;
 			}
@@ -1421,7 +1438,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._savedKernelInfo = {
 					name: kernel.name,
 					display_name: spec.display_name,
-					language: spec.language
+					language: spec.language,
+					supportedLanguages: spec.supportedLanguages,
+					oldName: spec.oldName,
+					oldDisplayName: spec.oldDisplayName,
+					oldLanguage: spec.oldLanguage
 				};
 				this.clientSession?.configureKernel(this._savedKernelInfo);
 			} catch (err) {
@@ -1547,7 +1568,29 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		let metadata = Object.create(null) as nb.INotebookMetadata;
 		// TODO update language and kernel when these change
 		metadata.kernelspec = this._savedKernelInfo;
+		delete metadata.kernelspec?.supportedLanguages;
+
 		metadata.language_info = this.languageInfo;
+
+		// Undo special casing for .NET Interactive
+		if (metadata.kernelspec?.oldName) {
+			metadata.kernelspec.name = metadata.kernelspec.oldName;
+			delete metadata.kernelspec.oldName;
+		}
+		if (metadata.kernelspec?.oldDisplayName) {
+			metadata.kernelspec.display_name = metadata.kernelspec.oldDisplayName;
+			delete metadata.kernelspec.oldDisplayName;
+		}
+		if (metadata.kernelspec?.oldLanguage) {
+			metadata.kernelspec.language = metadata.kernelspec.oldLanguage;
+			delete metadata.kernelspec.oldLanguage;
+		}
+		if (metadata.language_info?.oldName) {
+			metadata.language_info.name = metadata.language_info?.oldName;
+			delete metadata.language_info?.oldName;
+		}
+
+
 		metadata.tags = this._tags;
 		metadata.multi_connection_mode = this._multiConnectionMode ? this._multiConnectionMode : undefined;
 		if (this.configurationService.getValue(saveConnectionNameConfigName)) {

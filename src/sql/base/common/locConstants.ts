@@ -48,5 +48,7 @@ export const desktopContributionMiinstallVsix = localize({ key: 'miinstallVsix',
 export const workspaceTrustDescription = localize('workspace.trust.description', "Controls whether or not workspace trust is enabled within Azure Data Studio.");
 export function workspaceTrustEmptyWindowDescription(settingName: string): string { return localize('workspace.trust.emptyWindow.description', "Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.", settingName); }
 export const functionalityNotSupportedError = localize('vscodeFunctionalityNotSupportedError', "This VS Code functionality is not supported in Azure Data Studio.");
-export const invalidArgumentsError = localize('vscodeInvalidArgumentsError', "Invalid arguments");
+export const invalidArgumentsError = localize('vscodeInvalidArgumentsError', "Invalid arguments.");
+export const docCreationFailedError = localize('vscodeDocCreationFailedError', "Failed to create notebook document.");
 export const cellToolbarCompatibilityMessage = localize('notebook.cellToolbarLocation.compatibilityDescription', "Where the cell toolbar should be shown, or whether it should be hidden. Note: This setting is only enabled for extension compatibility purposes, and so does not affect anything.");
+export const docNotFoundForUriError = localize('docNotFoundForUriError', 'Could not open a notebook document for the specified URI.');

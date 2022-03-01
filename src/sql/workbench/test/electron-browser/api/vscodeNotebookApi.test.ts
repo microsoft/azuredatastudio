@@ -64,21 +64,23 @@ suite('Notebook Serializer', () => {
 			}
 		}],
 		metadata: {
-			kernelspec: {
-				name: 'python3',
-				display_name: 'Python 3',
-				language: 'python'
-			},
-			language_info: {
-				name: 'python',
-				version: '3.8.10',
-				mimetype: 'text/x-python',
-				codemirror_mode: {
-					name: 'ipython',
-					version: '3'
-				}
-			},
 			custom: {
+				metadata: {
+					kernelspec: {
+						name: 'python3',
+						display_name: 'Python 3',
+						language: 'python'
+					},
+					language_info: {
+						name: 'python',
+						version: '3.8.10',
+						mimetype: 'text/x-python',
+						codemirror_mode: {
+							name: 'ipython',
+							version: '3'
+						}
+					}
+				},
 				nbformat: NBFORMAT,
 				nbformat_minor: NBFORMAT_MINOR
 			}
@@ -161,6 +163,13 @@ suite('Notebook Serializer', () => {
 			}],
 			executionSummary: {
 				executionOrder: 1
+			},
+			metadata: {
+				custom: {
+					metadata: {
+						language: 'python'
+					}
+				}
 			}
 		}, {
 			kind: NotebookCellKind.Code,
@@ -176,24 +185,33 @@ suite('Notebook Serializer', () => {
 			}],
 			executionSummary: {
 				executionOrder: 2
+			},
+			metadata: {
+				custom: {
+					metadata: {
+						language: 'python'
+					}
+				}
 			}
 		}],
 		metadata: {
-			kernelspec: {
-				name: 'python3',
-				display_name: 'Python 3',
-				language: 'python'
-			},
-			language_info: {
-				name: 'python',
-				version: '3.8.10',
-				mimetype: 'text/x-python',
-				codemirror_mode: {
-					name: 'ipython',
-					version: '3'
-				}
-			},
 			custom: {
+				metadata: {
+					kernelspec: {
+						name: 'python3',
+						display_name: 'Python 3',
+						language: 'python'
+					},
+					language_info: {
+						name: 'python',
+						version: '3.8.10',
+						mimetype: 'text/x-python',
+						codemirror_mode: {
+							name: 'ipython',
+							version: '3'
+						}
+					}
+				},
 				nbformat: NBFORMAT,
 				nbformat_minor: NBFORMAT_MINOR
 			}
@@ -349,7 +367,10 @@ suite('Notebook Serializer', () => {
 		cells: [{
 			contents: {
 				cell_type: 'code',
-				source: '1+1'
+				source: '1+1',
+				metadata: {
+					language: 'python'
+				}
 			}
 		}, {
 			contents: {
@@ -413,7 +434,7 @@ suite('Notebook Serializer', () => {
 	}
 
 	test('Retrieve range of cells from VS Code NotebookDocument', async () => {
-		let expectedCells: vscode.NotebookCell[] = testDoc.cells.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.source, index, testDoc.uri, testDoc.kernelSpec.language));
+		let expectedCells: vscode.NotebookCell[] = testDoc.cells.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.cell_type, index, cell.uri, testDoc.uri, cell.contents.metadata?.language, cell.contents.source));
 		let vsDoc = new VSCodeNotebookDocument(testDoc);
 
 		let actualCells = vsDoc.getCells();
@@ -430,7 +451,7 @@ suite('Notebook Serializer', () => {
 	});
 
 	test('Retrieve specific cell from VS Code NotebookDocument', async () => {
-		let expectedCells: vscode.NotebookCell[] = testDoc.cells.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.source, index, testDoc.uri, testDoc.kernelSpec.language));
+		let expectedCells: vscode.NotebookCell[] = testDoc.cells.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.cell_type, index, cell.uri, testDoc.uri, cell.contents.metadata?.language, cell.contents.source));
 		let vsDoc = new VSCodeNotebookDocument(testDoc);
 
 		let firstCell = vsDoc.cellAt(0);

@@ -12,7 +12,12 @@
 				<div #editor class="editor"></div>
 			</div>
 		</div>
-		<collapse-component *ngIf="cellModel.cellType === 'code' && cellModel.source && cellModel.source.length > 1" [cellModel]="cellModel" [activeCellId]="activeCellId"></collapse-component>
+		<div style="display: flex; flex-flow: row; justify-content: flex-end;">
+			<collapse-component *ngIf="cellModel.cellType === 'code' && cellModel.source && cellModel.source.length > 1" [cellModel]="cellModel" [activeCellId]="activeCellId"></collapse-component>
+			<div #cellLanguage class="cellLanguage" *ngIf="cellModel.cellType === 'code' && cellModel.language">
+				{{cellModel.displayLanguage}}
+			</div>
+		</div>
 		<div #parameter class="parameter" *ngIf="cellModel.cellType === 'code' && cellModel.isParameter">
 			<span>{{parametersText}}</span>
 		</div>
