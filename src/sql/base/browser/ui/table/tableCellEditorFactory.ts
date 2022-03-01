@@ -102,84 +102,11 @@ export class TableCellEditorFactory {
 		return TextEditor;
 	}
 
-	public getSelectBoxEditorClass(context: any, defaultOptions: string[]): any {
+	public getDropdownEditorClass(context: any, defaultOptions: string[], isEditable?: boolean): any {
 		const self = this;
 		class TextEditor {
 			private _originalValue: string;
 			private _selectBox: SelectBox;
-			private _keyCaptureList: number[];
-
-			constructor(private _args: Slick.Editors.EditorOptions<Slick.SlickData>) {
-				this.init();
-				const keycodesToCapture = [KeyCode.Home, KeyCode.End, KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.RightArrow];
-				this._keyCaptureList = keycodesToCapture.map(keycode => getCodeForKeyCode(keycode));
-			}
-
-			/**
-			 * The text editor should handle these key press events to avoid event bubble up
-			 */
-			public get keyCaptureList(): number[] {
-				return this._keyCaptureList;
-			}
-
-			public init(): void {
-				const container = DOM.$('');
-				this._args.container.appendChild(container);
-				this._selectBox = new SelectBox([], undefined, self._contextViewProvider);
-				container.style.height = '100%';
-				container.style.width = '100%';
-				this._selectBox.render(container);
-				this._selectBox.selectElem.style.height = '100%';
-				self._options.editorStyler(this._selectBox);
-				this._selectBox.focus();
-			}
-
-			public destroy(): void {
-				this._selectBox.dispose();
-			}
-
-			public focus(): void {
-				this._selectBox.focus();
-			}
-
-			public loadValue(item: Slick.SlickData): void {
-				this._originalValue = self._options.valueGetter(item, this._args.column) ?? '';
-				const options = self._options.optionsGetter(item, this._args.column) ?? defaultOptions;
-				const idx = options?.indexOf(this._originalValue);
-				if (idx > -1) {
-					this._selectBox.setOptions(options);
-					this._selectBox.select(idx);
-				}
-			}
-
-			public async applyValue(item: Slick.SlickData, state: string): Promise<void> {
-				const activeCell = this._args.grid.getActiveCell();
-				await self._options.valueSetter(context, activeCell.row, item, this._args.column, state);
-			}
-
-			public isValueChanged(): boolean {
-				return this._selectBox.value !== this._originalValue.toString();
-
-			}
-
-			public serializeValue(): any {
-				return this._selectBox.value;
-			}
-
-			public validate(): Slick.ValidateResults {
-				return {
-					valid: true,
-					msg: undefined
-				};
-			}
-		}
-		return TextEditor;
-	}
-
-	public getDropDownEditorClass(context: any, defaultOptions: string[]): any {
-		const self = this;
-		class TextEditor {
-			private _originalValue: string;
 			private _dropdown: Dropdown;
 			private _keyCaptureList: number[];
 
@@ -199,19 +126,37 @@ export class TableCellEditorFactory {
 			public init(): void {
 				const container = DOM.$('');
 				this._args.container.appendChild(container);
-				this._dropdown = new Dropdown(container, self._contextViewProvider);
-				container.style.height = '100%';
-				container.style.width = '100%';
-				self._options.editorStyler(this._dropdown);
-				this._dropdown.focus();
+				if (isEditable) {
+					this._dropdown = new Dropdown(container, self._contextViewProvider);
+					container.style.height = '100%';
+					container.style.width = '100%';
+					self._options.editorStyler(this._dropdown);
+					this._dropdown.focus();
+				} else {
+					this._selectBox = new SelectBox([], undefined, self._contextViewProvider);
+					container.style.height = '100%';
+					container.style.width = '100%';
+					this._selectBox.render(container);
+					this._selectBox.selectElem.style.height = '100%';
+					self._options.editorStyler(this._selectBox);
+					this._selectBox.focus();
+				}
 			}
 
 			public destroy(): void {
-				this._dropdown.dispose();
+				if (isEditable) {
+					this._dropdown.dispose();
+				} else {
+					this._selectBox.dispose();
+				}
 			}
 
 			public focus(): void {
-				this._dropdown.focus();
+				if (isEditable) {
+					this._dropdown.focus();
+				} else {
+					this._selectBox.focus();
+				}
 			}
 
 			public loadValue(item: Slick.SlickData): void {
@@ -219,8 +164,13 @@ export class TableCellEditorFactory {
 				const options = self._options.optionsGetter(item, this._args.column) ?? defaultOptions;
 				const idx = options?.indexOf(this._originalValue);
 				if (idx > -1) {
-					this._dropdown.values = options;
-					this._dropdown.value = options[idx];
+					if (isEditable) {
+						this._dropdown.values = options;
+						this._dropdown.value = options[idx];
+					} else {
+						this._selectBox.setOptions(options);
+						this._selectBox.select(idx);
+					}
 				}
 			}
 
@@ -230,12 +180,19 @@ export class TableCellEditorFactory {
 			}
 
 			public isValueChanged(): boolean {
-				return this._dropdown.value !== this._originalValue.toString();
-
+				if (isEditable) {
+					return this._dropdown.value !== this._originalValue.toString();
+				} else {
+					return this._selectBox.value !== this._originalValue.toString();
+				}
 			}
 
 			public serializeValue(): any {
-				return this._dropdown.value;
+				if (isEditable) {
+					return this._dropdown.value;
+				} else {
+					return this._selectBox.value;
+				}
 			}
 
 			public validate(): Slick.ValidateResults {

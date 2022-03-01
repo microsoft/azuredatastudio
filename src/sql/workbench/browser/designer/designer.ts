@@ -838,8 +838,7 @@ export class Designer extends Disposable implements IThemable {
 							return {
 								name: dropdownProperties.title,
 								field: propertyDefinition.propertyName,
-								editor: dropdownProperties.isEditable ? this._tableCellEditorFactory.getDropDownEditorClass(propertyPath, dropdownProperties.values as string[]) :
-									this._tableCellEditorFactory.getSelectBoxEditorClass(propertyPath, dropdownProperties.values as string[]),
+								editor: this._tableCellEditorFactory.getDropdownEditorClass(propertyPath, dropdownProperties.values as string[], dropdownProperties.isEditable),
 								width: dropdownProperties.width as number
 							};
 						default:
