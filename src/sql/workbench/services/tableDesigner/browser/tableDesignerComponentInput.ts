@@ -321,7 +321,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					width: 150
 				}
 			}, {
-				componentType: 'dropdown',
+				componentType: 'editableDropdown',
 				propertyName: designers.TableColumnProperty.Type,
 				description: localize('designer.column.description.dataType', "Displays the data type name for the column"),
 				componentProperties: {

@@ -129,7 +129,7 @@ export interface DesignerDataPropertyInfo {
 	componentProperties?: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
 }
 
-export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
+export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table' | 'editableDropdown';
 
 export interface ComponentProperties {
 	title?: string;

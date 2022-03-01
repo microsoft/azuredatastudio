@@ -42,6 +42,8 @@ import { DesignerPropertyPathValidator } from 'sql/workbench/browser/designer/de
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { listActiveSelectionBackground, listActiveSelectionForeground } from 'vs/platform/theme/common/colorRegistry';
 import { alert } from 'vs/base/browser/ui/aria/aria';
+import { Dropdown, IDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
+import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -50,11 +52,12 @@ export interface IDesignerStyle {
 	selectBoxStyles?: ISelectBoxStyles;
 	checkboxStyles?: ICheckboxStyles;
 	buttonStyles?: IButtonStyles;
+	dropdownStyles?: IListStyles & IInputBoxStyles & IDropdownStyles;
 	paneSeparator?: Color;
 	groupHeaderBackground?: Color;
 }
 
-export type DesignerUIComponent = InputBox | Checkbox | Table<Slick.SlickData> | SelectBox;
+export type DesignerUIComponent = InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Dropdown;
 
 export type CreateComponentsFunc = (container: HTMLElement, components: DesignerDataPropertyInfo[], parentPath: DesignerPropertyPath) => DesignerUIComponent[];
 export type SetComponentValueFunc = (definition: DesignerDataPropertyInfo, component: DesignerUIComponent, data: DesignerViewModel) => void;
@@ -191,7 +194,7 @@ export class Designer extends Disposable implements IThemable {
 		});
 	}
 
-	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Button): void {
+	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Button | Dropdown): void {
 		if (component instanceof InputBox) {
 			component.style(this._styles.inputBoxStyles);
 		} else if (component instanceof Checkbox) {
@@ -202,6 +205,8 @@ export class Designer extends Disposable implements IThemable {
 			component.style(this._styles.tableStyles);
 		} else if (component instanceof Button) {
 			component.style(this._styles.buttonStyles);
+		} else if (component instanceof Dropdown) {
+			component.style(this._styles.dropdownStyles);
 		} else {
 			component.style(this._styles.selectBoxStyles);
 		}
@@ -719,6 +724,24 @@ export class Designer extends Disposable implements IThemable {
 				});
 				component = dropdown;
 				break;
+			case 'editableDropdown':
+				container.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
+				const editableDropdownContainer = container.appendChild(DOM.$(''));
+				const edropdownProperties = componentDefinition.componentProperties as DropDownProperties;
+				const editableDropdown = new Dropdown(editableDropdownContainer, this._contextViewProvider, { values: edropdownProperties.values as string[] || [] });
+				editableDropdown.ariaLabel = componentDefinition.componentProperties?.title;
+				editableDropdown.onValueChange((e) => {
+					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: e });
+				});
+				editableDropdown.onFocus(() => {
+					if (view === 'PropertiesView') {
+						this._propertiesPane.updateDescription(componentDefinition);
+					} else if (view === 'TabsView' || view === 'TopContentView') {
+						this.updatePropertiesPane(DesignerRootObjectPath);
+					}
+				});
+				component = editableDropdown;
+				break;
 			case 'checkbox':
 				container.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				const checkboxContainer = container.appendChild(DOM.$(''));
@@ -805,6 +828,14 @@ export class Designer extends Disposable implements IThemable {
 								field: propertyDefinition.propertyName,
 								editor: this._tableCellEditorFactory.getSelectBoxEditorClass(propertyPath, dropdownProperties.values as string[]),
 								width: dropdownProperties.width as number
+							};
+						case 'editableDropdown':
+							const editableDropdownProperties = propertyDefinition.componentProperties as DropDownProperties;
+							return {
+								name: editableDropdownProperties.title,
+								field: propertyDefinition.propertyName,
+								editor: this._tableCellEditorFactory.getDropDownEditorClass(propertyPath, editableDropdownProperties.values as string[]),
+								width: editableDropdownProperties.width as number
 							};
 						default:
 							const inputProperties = propertyDefinition.componentProperties as InputBoxProperties;
