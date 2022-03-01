@@ -24,34 +24,6 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		}, telemetryInfo);
 	}));
 
-	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newNodeTable', async (context: azdata.ObjectExplorerContext) => {
-		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
-		const telemetryInfo = await getTelemetryInfo(context, TableType.Basic);
-		await azdata.designers.openTableDesigner(sqlProviderName, {
-			server: context.connectionProfile.serverName,
-			database: context.connectionProfile.databaseName,
-			isNewTable: true,
-			id: generateUuid(),
-			connectionString: connectionString,
-			accessToken: context.connectionProfile.options.azureAccountToken,
-			isNodeTable: true
-		}, telemetryInfo);
-	}));
-
-	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newEdgeTable', async (context: azdata.ObjectExplorerContext) => {
-		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
-		const telemetryInfo = await getTelemetryInfo(context, TableType.Basic);
-		await azdata.designers.openTableDesigner(sqlProviderName, {
-			server: context.connectionProfile.serverName,
-			database: context.connectionProfile.databaseName,
-			isNewTable: true,
-			id: generateUuid(),
-			connectionString: connectionString,
-			accessToken: context.connectionProfile.options.azureAccountToken,
-			isEdgeTable: true
-		}, telemetryInfo);
-	}));
-
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.designTable', async (context: azdata.ObjectExplorerContext) => {
 		const server = context.connectionProfile.serverName;
 		const database = context.connectionProfile.databaseName;

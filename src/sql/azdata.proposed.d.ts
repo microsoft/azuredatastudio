@@ -1109,14 +1109,6 @@ declare module 'azdata' {
 			 * The initial state of the designer.
 			 */
 			viewModel: DesignerViewModel;
-			/**
-			 * The supported column types
-			 */
-			columnTypes: string[];
-			/**
-			 * The list of schemas in the database.
-			 */
-			schemas: string[];
 		}
 
 		/**
@@ -1418,6 +1410,10 @@ declare module 'azdata' {
 		 * The result returned by the table designer provider after handling an edit request.
 		 */
 		export interface DesignerEditResult {
+			/**
+			 * The new view information if the view needs to be refreshed.
+			 */
+			view?: object;
 			/**
 			 * The view model object.
 			 */

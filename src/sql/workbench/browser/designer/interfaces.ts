@@ -221,6 +221,7 @@ export type DesignerValidationError = { message: string, propertyPath?: Designer
 
 export interface DesignerEditResult {
 	isValid: boolean;
+	refreshView?: boolean;
 	errors?: DesignerValidationError[];
 }
 

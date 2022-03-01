@@ -6,7 +6,7 @@
 import {
 	DesignerComponentInput, DesignerEditType, DesignerTab, DesignerEdit, DesignerPropertyPath, DesignerViewModel, DesignerDataPropertyInfo,
 	DesignerTableComponentRowData, DesignerTableProperties, InputBoxProperties, DropDownProperties, CheckBoxProperties,
-	DesignerEditProcessedEventArgs, DesignerStateChangedEventArgs, DesignerAction, DesignerUIState, ScriptProperty, DesignerRootObjectPath, CanBeDeletedProperty
+	DesignerEditProcessedEventArgs, DesignerStateChangedEventArgs, DesignerAction, ScriptProperty, DesignerRootObjectPath, CanBeDeletedProperty
 }
 	from 'sql/workbench/browser/designer/interfaces';
 import { IPanelTab, ITabbedPanelStyles, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
@@ -253,24 +253,12 @@ export class Designer extends Disposable implements IThemable {
 
 
 	public setInput(input: DesignerComponentInput): void {
-		// Save state
-		if (this._input) {
-			this._input.designerUIState = this.getUIState();
-		}
-
-		// Clean up
+		this.saveUIState();
 		if (this._loadingTimeoutHandle) {
 			this.stopLoading();
 		}
-		this._buttons = [];
-		this._componentMap.clear();
-		DOM.clearNode(this._topContentContainer);
-		this._contentTabbedPanel.clearTabs();
-		this._propertiesPane.clear();
+		this.clearUI();
 		this._inputDisposable?.dispose();
-		this._groupHeaders = [];
-
-
 		// Initialize with new input
 		this._input = input;
 		this._inputDisposable = new DisposableStore();
@@ -302,6 +290,15 @@ export class Designer extends Disposable implements IThemable {
 		this._inputDisposable?.dispose();
 	}
 
+	private clearUI(): void {
+		this._buttons = [];
+		this._componentMap.clear();
+		DOM.clearNode(this._topContentContainer);
+		this._contentTabbedPanel.clearTabs();
+		this._propertiesPane.clear();
+		this._groupHeaders = [];
+	}
+
 	private initializeDesigner(): void {
 		const view = this._input.view;
 		if (view.components) {
@@ -323,7 +320,13 @@ export class Designer extends Disposable implements IThemable {
 			alert(localize('designer.errorCountAlert', "{0} validation errors found.", args.result.errors.length));
 		}
 		try {
-			this.updateComponentValues();
+			if (args.result.refreshView) {
+				this.saveUIState();
+				this.clearUI();
+				this.initializeDesigner();
+			} else {
+				this.updateComponentValues();
+			}
 			if (edit.type === DesignerEditType.Add) {
 				// For tables in the main view, move focus to the first cell of the newly added row, and the properties pane will be showing the new object.
 				if (edit.path.length === 1) {
@@ -900,11 +903,13 @@ export class Designer extends Disposable implements IThemable {
 		}
 	}
 
-	private getUIState(): DesignerUIState {
-		return {
-			activeContentTabId: this._contentTabbedPanel.activeTabId,
-			activeScriptTabId: this._scriptTabbedPannel.activeTabId
-		};
+	private saveUIState(): void {
+		if (this._input) {
+			this._input.designerUIState = {
+				activeContentTabId: this._contentTabbedPanel.activeTabId,
+				activeScriptTabId: this._scriptTabbedPannel.activeTabId
+			};
+		}
 	}
 
 	private restoreUIState(): void {

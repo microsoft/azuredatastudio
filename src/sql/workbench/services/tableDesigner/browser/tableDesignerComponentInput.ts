@@ -90,6 +90,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		this._provider.processTableEdit(this.tableInfo, edit).then(
 			result => {
 				this._viewModel = result.viewModel;
+				if (result.view) {
+					this.setDesignerView(result.view as azdata.designers.TableDesignerView);
+				}
 				this._validationErrors = result.errors;
 				this.updateState(result.isValid, this.isDirty(), undefined);
 
@@ -97,7 +100,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					edit: edit,
 					result: {
 						isValid: result.isValid,
-						errors: result.errors
+						errors: result.errors,
+						refreshView: !!result.view
 					}
 				});
 				editAction.withAdditionalMeasurements({
@@ -239,31 +243,33 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		this.updateState(true, this.tableInfo.isNewTable);
 		this._viewModel = designerInfo.viewModel;
 		this._originalViewModel = this.tableInfo.isNewTable ? undefined : deepClone(this._viewModel);
-		this.setDefaultData();
+		this.setDesignerView(designerInfo.view);
+	}
 
+	private setDesignerView(tableDesignerView: azdata.designers.TableDesignerView) {
 		const tabs = [];
 
-		if (designerInfo.view.columnTableOptions?.showTable) {
-			tabs.push(this.getColumnsTab(designerInfo.view.columnTableOptions, designerInfo.columnTypes));
+		if (tableDesignerView.columnTableOptions?.showTable) {
+			tabs.push(this.getColumnsTab(tableDesignerView.columnTableOptions));
 		}
 
-		if (designerInfo.view.foreignKeyTableOptions?.showTable) {
-			tabs.push(this.getForeignKeysTab(designerInfo.view.foreignKeyTableOptions));
+		if (tableDesignerView.foreignKeyTableOptions?.showTable) {
+			tabs.push(this.getForeignKeysTab(tableDesignerView.foreignKeyTableOptions));
 		}
 
-		if (designerInfo.view.checkConstraintTableOptions?.showTable) {
-			tabs.push(this.getCheckConstraintsTab(designerInfo.view.checkConstraintTableOptions));
+		if (tableDesignerView.checkConstraintTableOptions?.showTable) {
+			tabs.push(this.getCheckConstraintsTab(tableDesignerView.checkConstraintTableOptions));
 		}
 
-		if (designerInfo.view.indexTableOptions?.showTable) {
-			tabs.push(this.getIndexesTab(designerInfo.view.indexTableOptions, designerInfo.view.indexColumnSpecificationTableOptions));
+		if (tableDesignerView.indexTableOptions?.showTable) {
+			tabs.push(this.getIndexesTab(tableDesignerView.indexTableOptions, tableDesignerView.indexColumnSpecificationTableOptions));
 		}
 
-		if (designerInfo.view.additionalTabs) {
-			tabs.push(...designerInfo.view.additionalTabs);
+		if (tableDesignerView.additionalTabs) {
+			tabs.push(...tableDesignerView.additionalTabs);
 		}
 
-		tabs.push(this.getGeneralTab(designerInfo));
+		tabs.push(this.getGeneralTab(tableDesignerView));
 
 		this._view = {
 			components: [{
@@ -279,7 +285,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		};
 	}
 
-	private getGeneralTab(designerInfo: azdata.designers.TableDesignerInfo): DesignerTab {
+	private getGeneralTab(tableDesignerView: azdata.designers.TableDesignerView): DesignerTab {
 		const generalTabComponents: DesignerDataPropertyInfo[] = [
 			{
 				componentType: 'dropdown',
@@ -287,7 +293,6 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				description: localize('designer.table.description.schema', "The schema that contains the table."),
 				componentProperties: <DropDownProperties>{
 					title: localize('tableDesigner.schemaTitle', "Schema"),
-					values: designerInfo.schemas
 				}
 			}, {
 				componentType: 'input',
@@ -299,8 +304,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}
 		];
 
-		if (designerInfo.view.additionalTableProperties) {
-			generalTabComponents.push(...designerInfo.view.additionalTableProperties);
+		if (tableDesignerView.additionalTableProperties) {
+			generalTabComponents.push(...tableDesignerView.additionalTableProperties);
 		}
 
 		return <DesignerTab>{
@@ -309,7 +314,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		};
 	}
 
-	private getColumnsTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions, columnTypes: string[]): DesignerTab {
+	private getColumnsTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions): DesignerTab {
 
 		const columnProperties: DesignerDataPropertyInfo[] = [
 			{
@@ -326,8 +331,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				description: localize('designer.column.description.dataType', "Displays the data type name for the column"),
 				componentProperties: {
 					title: localize('tableDesigner.columnTypeTitle', "Type"),
-					width: 100,
-					values: columnTypes
+					width: 100
 				}
 			}, {
 				componentType: 'input',
@@ -621,19 +625,6 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			properties.push(...options.additionalProperties);
 		}
 		return properties;
-	}
-
-	private setDefaultData(): void {
-		const properties = Object.keys(this._viewModel);
-		this.setDefaultInputData(properties, designers.TableProperty.Name);
-		this.setDefaultInputData(properties, designers.TableProperty.Schema);
-		this.setDefaultInputData(properties, designers.TableProperty.Description);
-	}
-
-	private setDefaultInputData(allProperties: string[], property: string): void {
-		if (allProperties.indexOf(property) === -1) {
-			this._viewModel[property] = {};
-		}
 	}
 
 	private createTelemetryInfo(): ITelemetryEventProperties {
