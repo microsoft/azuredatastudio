@@ -460,7 +460,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	public onCellLanguageClick(event: any): void {
-		this._notebookService.getSupportedLanguagesForProvider(this._model.providerId)
+		this._notebookService.getSupportedLanguagesForProvider(this._model.providerId, this._model.selectedKernelDisplayName)
 			.then(languages => this.pickCellLanguage(languages))
 			.then(selection => {
 				if (selection?.languageId) {
@@ -485,12 +485,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 				description = localize('cellLanguageDescriptionConfigured', "({0})", lang);
 			}
 
-			const languageName = this._modeService.getLanguageName(lang);
-			if (!languageName) {
-				// Notebook has unrecognized language
-				return;
-			}
-
+			const languageName = this._modeService.getLanguageName(lang) ?? lang;
 			const item = <ILanguagePickInput>{
 				label: languageName,
 				iconClasses: getIconClasses(this._modelService, this._modeService, this.getFakeResource(languageName, this._modeService)),

@@ -235,7 +235,7 @@ export class ServerManagerStub implements nb.ServerManager {
 }
 
 export class NotebookServiceStub implements INotebookService {
-	getSupportedLanguagesForProvider(provider: string): Promise<string[]> {
+	getSupportedLanguagesForProvider(provider: string, kernelDisplayName?: string): Promise<string[]> {
 		throw new Error('Method not implemented.');
 	}
 	createNotebookInput(options: INotebookShowOptions, resource?: UriComponents): Promise<IEditorInput> {
