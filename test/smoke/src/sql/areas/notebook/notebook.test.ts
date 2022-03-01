@@ -160,6 +160,25 @@ export function setup(opts: minimist.ParsedArgs) {
 				await verifyElementRendered(app, markdownString, imgSelector);
 			});
 		});
+
+		describe('Cell Actions', function () {
+			it('can change cell language', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
+				await app.workbench.sqlNotebook.addCellFromPlaceholder('Code');
+				await app.workbench.sqlNotebook.waitForPlaceholderGone();
+
+				const languagePickerButton = '.notebook-cell.active .cellLanguage';
+				await app.code.waitAndClick(languagePickerButton);
+
+				await app.workbench.quickinput.waitForQuickInputElements(names => names[0] === 'SQL');
+				await app.code.waitAndClick('.quick-input-widget .quick-input-list .monaco-list-row');
+
+				let element = await app.code.waitForElement(languagePickerButton);
+				assert.strictEqual(element.textContent?.trim(), 'SQL');
+			});
+		});
 	});
 }
 
