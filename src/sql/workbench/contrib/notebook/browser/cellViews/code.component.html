@@ -14,9 +14,9 @@
 		</div>
 		<div style="display: flex; flex-flow: row; justify-content: flex-end;">
 			<collapse-component *ngIf="cellModel.cellType === 'code' && cellModel.source && cellModel.source.length > 1" [cellModel]="cellModel" [activeCellId]="activeCellId"></collapse-component>
-			<div #cellLanguage class="cellLanguage" *ngIf="cellModel.cellType === 'code' && cellModel.language">
+			<button #cellLanguage title="{{cellLanguageTitle}}" class="cellLanguage" *ngIf="cellModel.cellType === 'code' && cellModel.language" (click)="onCellLanguageClick()">
 				{{cellModel.displayLanguage}}
-			</div>
+			</button>
 		</div>
 		<div #parameter class="parameter" *ngIf="cellModel.cellType === 'code' && cellModel.isParameter">
 			<span>{{parametersText}}</span>
