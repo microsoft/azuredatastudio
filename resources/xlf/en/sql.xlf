@@ -2902,8 +2902,17 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/code.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="cellLanguageDescription">
+      <source xml:lang="en">({0}) - Current Language</source>
+    </trans-unit>
+    <trans-unit id="cellLanguageDescriptionConfigured">
+      <source xml:lang="en">({0})</source>
+    </trans-unit>
     <trans-unit id="parametersText">
       <source xml:lang="en">Parameters</source>
+    </trans-unit>
+    <trans-unit id="selectCellLanguage">
+      <source xml:lang="en">Select Cell Language Mode</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/codeActions" source-language="en" datatype="plaintext"><body>
