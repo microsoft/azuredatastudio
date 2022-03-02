@@ -112,19 +112,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 
 	ngOnInit() {
 		this._register(DOM.addDisposableListener(this.toolbarElement.nativeElement, DOM.EventType.FOCUS_IN, () => {
-			// update UI
-			let lastActiveCell = document.getElementsByClassName('notebook-cell active')[0];
-			let cell = document.activeElement.closest('.notebook-cell');
-			if (lastActiveCell !== cell) {
-				lastActiveCell?.classList.remove('active');
-				(lastActiveCell as HTMLElement).blur();
-				cell?.classList.add('active');
-				// update the model
-				this.model.updateActiveCell(this.cellModel);
-				if (!(this._changeRef['destroyed'])) {
-					this._changeRef.detectChanges();
-				}
-			}
+			this.model.updateActiveCell(this.cellModel);
 		}));
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
