@@ -111,9 +111,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	ngOnInit() {
-		this._register(DOM.addDisposableListener(this.toolbarElement.nativeElement, DOM.EventType.FOCUS_IN, () => {
-			this.model.updateActiveCell(this.cellModel);
-		}));
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
@@ -145,6 +142,10 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
+	}
+
+	public updateActiveCell(): void {
+		this._model.updateActiveCell(this.cellModel);
 	}
 
 	get parametersText(): string {

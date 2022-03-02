@@ -418,6 +418,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.updatePreview();
 	}
 
+	public updateActiveCell(): void {
+		this._model.updateActiveCell(this.cellModel);
+	}
+
 	public handleHtmlChanged(): void {
 		let textOutputElement = <HTMLElement>this.output.nativeElement;
 		this.addUndoElement(textOutputElement.innerHTML);
