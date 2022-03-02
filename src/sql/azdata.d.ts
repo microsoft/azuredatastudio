@@ -1972,7 +1972,7 @@ declare module 'azdata' {
 	export interface BackupProvider extends DataProvider {
 		backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: TaskExecutionMode): Thenable<BackupResponse>;
 		getBackupConfigInfo(connectionUri: string): Thenable<BackupConfigInfo>;
-		createSas(blobContainerUri: string): Thenable<CreateSasResponse>;
+		createSas(ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string): Thenable<CreateSasResponse>;
 	}
 
 	export interface RestoreProvider extends DataProvider {
