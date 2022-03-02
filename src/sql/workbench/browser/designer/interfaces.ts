@@ -212,7 +212,10 @@ export interface DesignerEdit {
 	type: DesignerEditType;
 	path: DesignerPropertyPath;
 	value?: any;
+	source: DesignerUIArea;
 }
+
+export type DesignerUIArea = 'PropertiesView' | 'ScriptView' | 'TopContentView' | 'TabsView';
 
 export type DesignerPropertyPath = (string | number)[];
 export const DesignerRootObjectPath: DesignerPropertyPath = [];
