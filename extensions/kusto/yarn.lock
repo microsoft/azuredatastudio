@@ -109,7 +109,7 @@ concat-map@0.0.1:
 
 "dataprotocol-client@git://github.com/nemanja-milovancevic/sqlops-dataprotocolclient.git#1.2.5":
   version "1.2.5"
-  resolved "git://github.com/nemanja-milovancevic/sqlops-dataprotocolclient.git#e46ff0fcc243b6c4b54e3867398099c2394baae6"
+  resolved "git://github.com/nemanja-milovancevic/sqlops-dataprotocolclient.git#f0b4f42a1909435a1a3226f2a558379d8e6f5988"
   dependencies:
     vscode-languageclient "5.2.1"
 

@@ -341,12 +341,21 @@ export class UrlBrowserDialog extends Modal {
 	}
 
 	private generateSharedAccessSignature() {
-		const blobContainerUri = `https://${this._storageAccountSelectorBox.value}.blob.core.windows.net/${this._blobContainerSelectorBox.value}/`;
-		this._backupService.createSas(this._ownerUri, blobContainerUri)
-			.then(
-				result => {
-					this._sasInputBox.value = result.sharedAccessSignature;
-				});
+		const blobContainerUri = `https://${this._storageAccountSelectorBox.value}.blob.core.windows.net/${this._blobContainerSelectorBox.value}`;
+		this._azureAccountService.getStorageAccountAccessKey(this._selectedAccount, this._selectedSubscription, this._selectedStorageAccount)
+			.then(getStorageAccountAccessKeyResult => {
+				const key1 = getStorageAccountAccessKeyResult.keyName1;
+				this._backupService.createSas(this._ownerUri, blobContainerUri, key1, this._selectedStorageAccount.name)
+					.then(
+						result => {
+							const sas = result.sharedAccessSignature;
+							this._sasInputBox.value = sas;
+						});
+			})
+			.catch(error => {
+				const err = error;
+			});
+
 	}
 
 	private registerListeners(): void {

@@ -34,6 +34,11 @@ export class ExtHostAzureAccount extends ExtHostAzureAccountShape {
 		return api.getBlobs(account, subscription, storageAccount, containerName, ignoreErrors);
 	}
 
+	public override $getStorageAccountAccessKey(account: azurecore.AzureAccount, subscription: azurecore.AzureResourceSubscription, storageAccount: azurecore.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountAccessKeyResult> {
+		const api = this.getApi();
+		return api.getStorageAccountAccessKey(account, subscription, storageAccount, ignoreErrors);
+	}
+
 	private getApi(): azurecore.IExtension {
 		return this._extHostExtensionService.getExtensionExports(new ExtensionIdentifier(azurecore.extension.name)) as azurecore.IExtension;
 	}
