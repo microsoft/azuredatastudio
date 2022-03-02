@@ -22,7 +22,7 @@ export const CELL_TOOLBAR_SELECTOR: string = 'cell-toolbar-component';
 
 @Component({
 	selector: CELL_TOOLBAR_SELECTOR,
-	template: `<div #celltoolbar [style.visibility]="cellModel.active ? 'visible' : 'hidden'"></div>`
+	template: `<div #celltoolbar></div>`
 })
 export class CellToolbarComponent {
 	@ViewChild('celltoolbar', { read: ElementRef }) private celltoolbar: ElementRef;
