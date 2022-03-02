@@ -34,7 +34,7 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 			// the onDidChangeAccounts event will trigger in many cases where the accounts didn't actually change
 			// the notifyNodeChanged event triggers a refresh which triggers a getChildren which can trigger this callback
 			// this below check short-circuits the infinite callback loop
-			await this.setSystemInitialized();
+			this.setSystemInitialized();
 			if (!equals(accounts, this.accounts)) {
 				this.accounts = accounts;
 				this.notifyNodeChanged(undefined);
@@ -69,19 +69,17 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 		try {
 			this.accounts = await azdata.accounts.getAllAccounts();
 			// System has been initialized
-			await this.setSystemInitialized();
+			this.setSystemInitialized();
 			this._onDidChangeTreeData.fire(undefined);
 		} catch (err) {
 			// Skip for now, we can assume that the accounts changed event will eventually notify instead
 			this.isSystemInitialized = false;
-			await vscode.commands.executeCommand('setContext', 'azurecore:accountsLoaded', this.isSystemInitialized);
 		}
 	}
 
-	private async setSystemInitialized(): Promise<void> {
+	private setSystemInitialized(): void {
 		this.isSystemInitialized = true;
 		this.loadingAccountsPromise = undefined;
-		await vscode.commands.executeCommand('setContext', 'azurecore:accountsLoaded', this.isSystemInitialized);
 	}
 
 	public get onDidChangeTreeData(): vscode.Event<TreeNode> {

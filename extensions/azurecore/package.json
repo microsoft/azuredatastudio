@@ -253,7 +253,7 @@
       "view/title": [
         {
           "command": "azure.resource.signin",
-          "when": "view == azureResourceExplorer && azurecore:accountsLoaded",
+          "when": "view == azureResourceExplorer",
           "group": "navigation@1"
         },
         {
