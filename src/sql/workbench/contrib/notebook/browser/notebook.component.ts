@@ -300,7 +300,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public selectCell(cell: ICellModel) {
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
 			this.model.updateActiveCell(cell);
-			this.detectChanges();
 		}
 	}
 
@@ -343,7 +342,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	public unselectActiveCell() {
 		this.model.updateActiveCell(undefined);
-		this.detectChanges();
 	}
 
 	// Handles double click to edit icon change
