@@ -492,7 +492,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 				description,
 				languageId: lang
 			};
-			if (lang === 'markdown' || lang === this._cellModel.language) {
+			if (lang === this._cellModel.language) {
 				topItems.push(item);
 			} else {
 				mainItems.push(item);
