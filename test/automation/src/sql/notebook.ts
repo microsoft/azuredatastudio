@@ -15,11 +15,13 @@ export class Notebook {
 
 	public readonly notebookToolbar: NotebookToolbar;
 	public readonly textCellToolbar: TextCellToolbar;
+	public readonly keyboardNav: NotebooksKeyboardActions;
 	public readonly view: NotebookTreeView;
 
 	constructor(private code: Code, private quickAccess: QuickAccess, private quickInput: QuickInput, private editors: Editors) {
 		this.notebookToolbar = new NotebookToolbar(code);
 		this.textCellToolbar = new TextCellToolbar(code);
+		this.keyboardNav = new NotebooksKeyboardActions(code);
 		this.view = new NotebookTreeView(code, quickAccess);
 	}
 
@@ -402,5 +404,29 @@ export class NotebookTreeView {
 
 	async waitForPinnedNotebookTreeViewGone(): Promise<void> {
 		await this.code.waitForElementGone(NotebookTreeView.pinnedNotebooksSelector);
+	}
+}
+
+export class NotebooksKeyboardActions {
+	constructor(private code: Code) { }
+
+	async selectPreviousCell(): Promise<void> {
+		await this.code.dispatchKeybinding('up');
+	}
+
+	async selectNextCell(): Promise<void> {
+		await this.code.dispatchKeybinding('down');
+	}
+
+	async enterEditMode(): Promise<void> {
+
+	}
+
+	async exitEditMode(): Promise<void> {
+
+	}
+
+	async exit(): Promise<void> {
+
 	}
 }

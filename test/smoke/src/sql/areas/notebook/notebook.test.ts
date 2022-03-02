@@ -59,6 +59,14 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.waitForColorization('6', 'mtk1'); // employees
 		});
 
+		it('can navigate cells with keyboard', async function () {
+			const app = this.app as Application;
+			await app.workbench.sqlNotebook.newUntitledNotebook();
+			await app.workbench.sqlNotebook.addCell('code');
+			await app.workbench.sqlNotebook.addCell('markdown');
+			await app.workbench.sqlNotebook.keyboardNav.exitEditMode();
+		});
+
 		// Python Notebooks
 
 		it('can open new notebook, configure Python, and execute one cell', async function () {
