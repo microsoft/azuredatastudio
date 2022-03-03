@@ -131,17 +131,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator((e) => {
-
-			sendSqlMigrationActionEvent(
-				TelemetryViews.MigrationWizardTargetSelectionPage,
-				TelemetryAction.OnPageLeave,
-				{
-					'sessionId': this.migrationStateModel?._sessionId,
-					'subscriptionId': this.migrationStateModel?._targetSubscription?.id,
-					'resourceGroup': this.migrationStateModel?._resourceGroup?.name,
-					'tenantId': this.migrationStateModel?._azureTenant?.id || this.migrationStateModel?._azureAccount?.properties?.tenants[0]?.id
-				}, {});
-
 			return true;
 		});
 	}
