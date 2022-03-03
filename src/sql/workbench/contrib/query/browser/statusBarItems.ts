@@ -315,3 +315,25 @@ export class QueryResultSelectionSummaryStatusBarContribution extends Disposable
 		this.show();
 	}
 }
+
+export class QueryResultsEditorOutputStatusModeContribution extends Disposable implements IWorkbenchContribution {
+	// private static readonly ID = 'status.query.editor-output-mode';
+	// private statusItem: IStatusbarEntryAccessor;
+	// private readonly name = localize('status.query.editor-output-mode', 'Results to File');
+
+	constructor(
+		// @IStatusbarService private readonly statusbarService: IStatusbarService,
+		@IEditorService editorService: IEditorService
+	) {
+		super();
+		// this.statusItem = this._register(
+		// 	this.statusbarService.addEntry({
+		// 		name: this.name,
+		// 		text: localize('query.status.editor-output-status', "Results to File"),
+		// 		ariaLabel: localize('query.status.editor-output-status', "Results to File")
+		// 	},
+		// 		QueryResultsEditorOutputStatusModeContribution.ID,
+		// 		StatusbarAlignment.RIGHT, 100)
+		// );
+	}
+}
