@@ -677,5 +677,7 @@ export class QueryEditor extends EditorPane {
 		else {
 			this.resultsWriterStatus[this.input.uri].mode = mode;
 		}
+
+		this.editorService.activeEditorOutputModeChanged();
 	}
 }

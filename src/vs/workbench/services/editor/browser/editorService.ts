@@ -63,6 +63,9 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 	private readonly _onDidMostRecentlyActiveEditorsChange = this._register(new Emitter<void>());
 	readonly onDidMostRecentlyActiveEditorsChange = this._onDidMostRecentlyActiveEditorsChange.event;
 
+	private readonly _onDidActiveEditorOutputModeChange = this._register(new Emitter<void>());
+	readonly onDidActiveEditorOutputModeChance = this._onDidActiveEditorOutputModeChange.event;
+
 	//#endregion
 
 	private readonly fileEditorInputFactory = Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).getFileEditorInputFactory();
@@ -1268,6 +1271,12 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		return uniqueEditors;
 	}
 
+	//#endregion
+
+	//#region activeEditorOutputModeChanged()
+	activeEditorOutputModeChanged(): void {
+		this._onDidActiveEditorOutputModeChange.fire();
+	}
 	//#endregion
 
 	override dispose(): void {

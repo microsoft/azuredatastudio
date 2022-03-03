@@ -27,7 +27,7 @@ import { localize } from 'vs/nls';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
-import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, QueryStatusStatusBarContributions, QueryResultSelectionSummaryStatusBarContribution } from 'sql/workbench/contrib/query/browser/statusBarItems';
+import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, QueryStatusStatusBarContributions, QueryResultSelectionSummaryStatusBarContribution, QueryResultsEditorOutputStatusModeContribution } from 'sql/workbench/contrib/query/browser/statusBarItems';
 import { SqlFlavorStatusbarItem, ChangeFlavorAction } from 'sql/workbench/contrib/query/browser/flavorStatus';
 import { EditorExtensions, IEditorInputFactoryRegistry } from 'vs/workbench/common/editor';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
@@ -511,6 +511,7 @@ workbenchRegistry.registerWorkbenchContribution(RowCountStatusBarContributions, 
 workbenchRegistry.registerWorkbenchContribution(QueryStatusStatusBarContributions, LifecyclePhase.Restored);
 workbenchRegistry.registerWorkbenchContribution(SqlFlavorStatusbarItem, LifecyclePhase.Restored);
 workbenchRegistry.registerWorkbenchContribution(QueryResultSelectionSummaryStatusBarContribution, LifecyclePhase.Restored);
+workbenchRegistry.registerWorkbenchContribution(QueryResultsEditorOutputStatusModeContribution, LifecyclePhase.Restored);
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 

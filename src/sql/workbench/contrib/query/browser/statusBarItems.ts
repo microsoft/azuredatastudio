@@ -5,6 +5,7 @@
 
 import { parseNumAsTimeString } from 'sql/platform/connection/common/utils';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
+import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ICellValue } from 'sql/workbench/services/query/common/query';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
@@ -16,6 +17,7 @@ import { localize } from 'vs/nls';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from 'vs/workbench/services/statusbar/common/statusbar';
+
 export class TimeElapsedStatusBarContributions extends Disposable implements IWorkbenchContribution {
 
 	private static readonly ID = 'status.query.timeElapsed';
@@ -317,23 +319,49 @@ export class QueryResultSelectionSummaryStatusBarContribution extends Disposable
 }
 
 export class QueryResultsEditorOutputStatusModeContribution extends Disposable implements IWorkbenchContribution {
-	// private static readonly ID = 'status.query.editor-output-mode';
-	// private statusItem: IStatusbarEntryAccessor;
-	// private readonly name = localize('status.query.editor-output-mode', 'Results to File');
+
+	private static readonly ID = 'status.query.editor-output-mode';
+	private readonly name = localize('status.query.editor-output-mode', 'Results to File');
 
 	constructor(
-		// @IStatusbarService private readonly statusbarService: IStatusbarService,
-		@IEditorService editorService: IEditorService
+		@IStatusbarService private readonly statusbarService: IStatusbarService,
+		@IEditorService private readonly editorService: IEditorService
 	) {
 		super();
-		// this.statusItem = this._register(
-		// 	this.statusbarService.addEntry({
-		// 		name: this.name,
-		// 		text: localize('query.status.editor-output-status', "Results to File"),
-		// 		ariaLabel: localize('query.status.editor-output-status', "Results to File")
-		// 	},
-		// 		QueryResultsEditorOutputStatusModeContribution.ID,
-		// 		StatusbarAlignment.RIGHT, 100)
-		// );
+		this._register(
+			this.statusbarService.addEntry({
+				name: this.name,
+				text: localize('query.status.editor-output-status', "Results to File"),
+				ariaLabel: localize('query.status.editor-output-status', "Results to File")
+			},
+				QueryResultsEditorOutputStatusModeContribution.ID,
+				StatusbarAlignment.RIGHT, 100)
+		);
+
+
+		this._register(this.editorService.onDidActiveEditorOutputModeChange(() => {
+			this.update();
+		}));
+		this.update();
+	}
+
+	private update() {
+		this.hide();
+
+		let editor = this.editorService.activeEditorPane as QueryEditor;
+		if (editor.queryResultsWriterStatus.isWritingToFIle()) {
+			this.show();
+		}
+		else {
+			this.hide();
+		}
+	}
+
+	private hide() {
+		this.statusbarService.updateEntryVisibility(QueryResultsEditorOutputStatusModeContribution.ID, false);
+	}
+
+	private show() {
+		this.statusbarService.updateEntryVisibility(QueryResultsEditorOutputStatusModeContribution.ID, true);
 	}
 }

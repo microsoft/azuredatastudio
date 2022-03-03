@@ -84,6 +84,11 @@ export interface IEditorService {
 	readonly onDidCloseEditor: Event<IEditorCloseEvent>;
 
 	/**
+	 * Emitted when query results output mode for an editor is changed.
+	 */
+	readonly onDidActiveEditorOutputModeChange?: Event<void>;
+
+	/**
 	 * The currently active editor pane or `undefined` if none. The editor pane is
 	 * the workbench container for editors of any kind.
 	 *
@@ -253,4 +258,9 @@ export interface IEditorService {
 	 * @returns `true` if all editors reverted and `false` otherwise.
 	 */
 	revertAll(options?: IRevertAllEditorsOptions): Promise<boolean>;
+
+	/**
+	 * Fires an event when the active editor output mode has changed.
+	 */
+	activeEditorOutputModeChanged?: () => void;
 }
