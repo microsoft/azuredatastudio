@@ -137,6 +137,7 @@ export class AccountDialog extends Modal {
 	private _container?: HTMLElement;
 	private _splitViewContainer?: HTMLElement;
 	private _noaccountViewContainer?: HTMLElement;
+	private _loadingProviderViewContainer?: HTMLElement;
 
 	// EVENTING ////////////////////////////////////////////////////////////
 	private _onAddAccountErrorEmitter: Emitter<string>;
@@ -218,6 +219,11 @@ export class AccountDialog extends Modal {
 		const noAccountLabel = localize('accountDialog.noAccountLabel', "There is no linked account. Please add an account.");
 		noAccountTitle.innerText = noAccountLabel;
 
+		this._loadingProviderViewContainer = DOM.$('div.loading-provider-view');
+		const loadingProviderTitle = DOM.append(this._loadingProviderViewContainer, DOM.$('.loading-provider-view-label'));
+		const loadingProviderLabel = localize('accountDialog.loadingProviderLabel', "Waiting for accounts to load, please wait...");
+		loadingProviderTitle.innerText = loadingProviderLabel;
+
 		// Show the add account button for the first provider
 		// Todo: If we have more than 1 provider, need to show all add account buttons for all providers
 		const buttonSection = DOM.append(this._noaccountViewContainer, DOM.$('div.button-section'));
@@ -229,6 +235,7 @@ export class AccountDialog extends Modal {
 		}));
 
 		DOM.append(container, this._noaccountViewContainer);
+		DOM.append(container, this._loadingProviderViewContainer);
 	}
 
 	private registerListeners(): void {
@@ -257,20 +264,29 @@ export class AccountDialog extends Modal {
 		if (!this.isEmptyLinkedAccount()) {
 			this.showSplitView();
 		} else {
-			this.showNoAccountContainer();
+			//this.showNoAccountContainer();
+			this.hideWhenLoading();
 		}
 
 	}
 
-	private showNoAccountContainer() {
+	// private showNoAccountContainer() {
+	// 	this._splitViewContainer!.hidden = true;
+	// 	this._noaccountViewContainer!.hidden = false;
+	// 	this._addAccountButton!.focus();
+	// }
+
+	private hideWhenLoading() {
 		this._splitViewContainer!.hidden = true;
-		this._noaccountViewContainer!.hidden = false;
-		this._addAccountButton!.focus();
+		this._noaccountViewContainer!.hidden = true;
+		this._loadingProviderViewContainer!.hidden = false;
+		this.spinner = true;
 	}
 
 	private showSplitView() {
 		this._splitViewContainer!.hidden = false;
 		this._noaccountViewContainer!.hidden = true;
+		this._loadingProviderViewContainer!.hidden = true;
 		if (Iterable.consume(this._providerViewsMap.values()).length > 0) {
 			const firstView = this._providerViewsMap.values().next().value;
 			if (firstView && firstView.view instanceof AccountPanel) {
@@ -402,7 +418,8 @@ export class AccountDialog extends Modal {
 		}
 
 		if (this.isEmptyLinkedAccount() && this._noaccountViewContainer!.hidden) {
-			this.showNoAccountContainer();
+			//this.showNoAccountContainer();
+			this.hideWhenLoading();
 		}
 
 		this.layout();

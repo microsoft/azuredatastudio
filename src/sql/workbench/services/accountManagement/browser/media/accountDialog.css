@@ -12,6 +12,15 @@
 	padding-bottom: 15px;
 }
 
+.loading-provider-view {
+	font-size: 20px;
+	padding: 15px;
+}
+
+.loading-provider-view .loading-provider-view-label {
+	padding-bottom: 15px;
+}
+
 .account-view .header {
 	position: relative;
 	line-height: 22px;
