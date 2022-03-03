@@ -50,7 +50,7 @@ export class ClientSession implements IClientSession {
 	private _kernelConfigActions: ((kernelName: string) => Promise<any>)[] = [];
 	private _connectionId: string = '';
 
-	private readonly _jupyterNotImplementedError = 'Invalid response: 501 Not Implemented';
+	private readonly _kernelNotFoundError = 501;
 
 	constructor(private options: IClientSessionOptions) {
 		this._notebookUri = options.notebookUri;
@@ -117,7 +117,7 @@ export class ClientSession implements IClientSession {
 			session.defaultKernelLoaded = true;
 		} catch (err) {
 			// TODO move registration
-			if (err?.response?.status === 501 || err?.message === this._jupyterNotImplementedError) {
+			if (err.response?.status === this._kernelNotFoundError || err.errorCode === this._kernelNotFoundError) {
 				this.options.notificationService.warn(localize('kernelRequiresConnection', "Kernel '{0}' was not found. The default kernel will be used instead.", kernelSpec.name));
 				session = await this._executeManager.sessionManager.startNew({
 					path: this.notebookUri.fsPath,
