@@ -12,7 +12,6 @@ import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { deepClone, findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
-import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
 
 export class TargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
