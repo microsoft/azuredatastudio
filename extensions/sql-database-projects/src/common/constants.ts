@@ -191,7 +191,7 @@ export const cleaningDockerImagesMessage = localize('cleaningDockerImagesMessage
 export const dockerImageMessage = localize('dockerImageMessage', "Docker Image:");
 export const dockerImageEulaMessage = localize('dockerImageEulaMessage', "License Agreement:");
 export const creatingDeploymentSettingsMessage = localize('creatingDeploymentSettingsMessage', "Creating deployment settings ...");
-export const runningDockerMessage = localize('runningDockerMessage', "Building and running the docker container ...");
+export const runningDockerMessage = localize('runningDockerMessage', "Running the docker container ...");
 export function dockerNotRunningError(error: string) { return localize('dockerNotRunningError', "Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'", error || ''); }
 export const dockerContainerNotRunningErrorMessage = localize('dockerContainerNotRunningErrorMessage', "Docker container is not running");
 export const dockerContainerFailedToRunErrorMessage = localize('dockerContainerFailedToRunErrorMessage', "Failed to run the docker container");
