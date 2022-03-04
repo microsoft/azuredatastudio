@@ -1123,7 +1123,9 @@ declare module 'azdata' {
 			Script = 'script',
 			ForeignKeys = 'foreignKeys',
 			CheckConstraints = 'checkConstraints',
-			Indexes = 'indexes'
+			Indexes = 'indexes',
+			PrimaryKeyName = 'primaryKeyName',
+			PrimaryKeyColumns = 'primaryKeyColumns'
 		}
 		/**
 		 * Name of the common table column properties.
@@ -1228,6 +1230,18 @@ declare module 'azdata' {
 			* Default columns to display values are: Column.
 			*/
 			indexColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
+
+			/**
+			* Primary column specification table options.
+			* Common index properties are handled by Azure Data Studio. see {@link TableIndexColumnSpecificationProperty}
+			* Default columns to display values are: Column.
+			*/
+			primaryKeyColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
+
+			/**
+			 * Additional primary key properties. Common primary key properties: primaryKeyName.
+			 */
+			additionalPrimaryKeyProperties?: DesignerDataPropertyInfo[];
 		}
 
 		export interface TableDesignerBuiltInTableViewOptions extends DesignerTablePropertiesBase {
@@ -1318,6 +1332,14 @@ declare module 'azdata' {
 			 * The confirmation message to be displayed when user removes a row.
 			 */
 			removeRowConfirmationMessage?: string;
+			/**
+			 * Whether to show the item detail in properties view. The default value is true.
+			 */
+			showItemDetailInPropertiesView?: boolean;
+			/**
+			 * The label of the add new button. The default value is 'Add New'.
+			 */
+			labelForAddNewButton?: string;
 		}
 
 		/**

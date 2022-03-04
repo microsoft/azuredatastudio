@@ -194,6 +194,14 @@ export interface DesignerTableProperties extends ComponentProperties {
 	 * The confirmation message to be displayed when user removes a row.
 	 */
 	removeRowConfirmationMessage?: string;
+	/**
+	 * Whether to show the item detail in properties view. The default value is true.
+	 */
+	showItemDetailInPropertiesView?: boolean;
+	/**
+	 * The label of the add new button. The default value is 'Add New'.
+	 */
+	labelForAddNewButton?: string;
 }
 
 export interface DesignerTableComponentRowData {

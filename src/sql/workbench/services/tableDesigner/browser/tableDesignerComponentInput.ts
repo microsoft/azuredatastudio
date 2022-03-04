@@ -253,6 +253,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			tabs.push(this.getColumnsTab(tableDesignerView.columnTableOptions));
 		}
 
+		tabs.push(this.getPrimaryKeyTab(tableDesignerView));
+
 		if (tableDesignerView.foreignKeyTableOptions?.showTable) {
 			tabs.push(this.getForeignKeysTab(tableDesignerView.foreignKeyTableOptions));
 		}
@@ -408,7 +410,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						canAddRows: options.canAddRows,
 						canRemoveRows: options.canRemoveRows,
 						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
-						showRemoveRowConfirmation: options.showRemoveRowConfirmation
+						showRemoveRowConfirmation: options.showRemoveRowConfirmation,
+						labelForAddNewButton: options.labelForAddNewButton ?? localize('tableDesigner.addNewColumn', "New Column")
 					}
 				}
 			]
@@ -482,11 +485,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					ariaLabel: localize('tableDesigner.foreignKeyColumns', "Columns"),
 					columns: [designers.ForeignKeyColumnMappingProperty.Column, designers.ForeignKeyColumnMappingProperty.ForeignColumn],
 					itemProperties: foreignKeyColumnMappingProperties,
-					objectTypeDisplayName: '',
-					canAddRows: options.canAddRows,
-					canRemoveRows: options.canRemoveRows,
-					removeRowConfirmationMessage: options.removeRowConfirmationMessage,
-					showRemoveRowConfirmation: options.showRemoveRowConfirmation
+					labelForAddNewButton: localize('tableDesigner.addNewColumnMapping', "New Column Mapping")
 				}
 			}
 		];
@@ -506,10 +505,67 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						canAddRows: options.canAddRows,
 						canRemoveRows: options.canRemoveRows,
 						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
-						showRemoveRowConfirmation: options.showRemoveRowConfirmation
+						showRemoveRowConfirmation: options.showRemoveRowConfirmation,
+						labelForAddNewButton: options.labelForAddNewButton ?? localize('tableDesigner.addForeignKey', "New Foreign Key")
 					}
 				}
 			]
+		};
+	}
+
+	private getPrimaryKeyTab(view: azdata.designers.TableDesignerView): DesignerTab {
+		const options = view.primaryKeyColumnSpecificationTableOptions;
+		const columnSpecProperties: DesignerDataPropertyInfo[] = [
+			{
+				componentType: 'dropdown',
+				propertyName: designers.TableIndexColumnSpecificationProperty.Column,
+				description: localize('designer.index.column.description.name', "The name of the column."),
+				componentProperties: {
+					title: localize('tableDesigner.index.column.name', "Column"),
+					width: 100
+				}
+			}];
+
+		const tabComponents = [];
+		tabComponents.push(
+			{
+				componentType: 'input',
+				propertyName: designers.TableProperty.PrimaryKeyName,
+				showInPropertiesView: false,
+				description: localize('designer.table.primaryKeyName.description', "Name of the primary key."),
+				componentProperties: {
+					title: localize('tableDesigner.primaryKeyNameTitle', "Name")
+				}
+			});
+		if (view.additionalPrimaryKeyProperties) {
+			view.additionalPrimaryKeyProperties.forEach(component => {
+				component.showInPropertiesView = false;
+				tabComponents.push(component);
+			});
+		}
+		tabComponents.push({
+			componentType: 'table',
+			propertyName: designers.TableProperty.PrimaryKeyColumns,
+			showInPropertiesView: false,
+			description: localize('designer.table.primaryKeyColumns.description', "Columns in the primary key."),
+			componentProperties: <DesignerTableProperties>{
+				title: localize('tableDesigner.primaryKeyColumnsTitle', "Primary Key Columns"),
+				ariaLabel: localize('tableDesigner.primaryKeyColumnsTitle', "Primary Key Columns"),
+				columns: this.getTableDisplayProperties(options, [designers.TableIndexColumnSpecificationProperty.Column]),
+				itemProperties: this.addAdditionalTableProperties(options, columnSpecProperties),
+				objectTypeDisplayName: '',
+				canAddRows: options.canAddRows,
+				canRemoveRows: options.canRemoveRows,
+				removeRowConfirmationMessage: options.removeRowConfirmationMessage,
+				showRemoveRowConfirmation: options.showRemoveRowConfirmation,
+				showItemDetailInPropertiesView: false,
+				labelForAddNewButton: options.labelForAddNewButton ?? localize('tableDesigner.addNewColumnToPrimaryKey', "Add Column")
+			}
+		});
+
+		return <DesignerTab>{
+			title: localize('tableDesigner.PrimaryKeyTabTitle', "Primary Key"),
+			components: tabComponents
 		};
 	}
 
@@ -549,7 +605,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						canAddRows: options.canAddRows,
 						canRemoveRows: options.canRemoveRows,
 						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
-						showRemoveRowConfirmation: options.showRemoveRowConfirmation
+						showRemoveRowConfirmation: options.showRemoveRowConfirmation,
+						labelForAddNewButton: options.labelForAddNewButton ?? localize('tableDesigner.addNewCheckConstraint', "New Check Constraint")
 					}
 				}
 			]
@@ -588,8 +645,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					objectTypeDisplayName: '',
 					canAddRows: columnSpecTableOptions.canAddRows,
 					canRemoveRows: columnSpecTableOptions.canRemoveRows,
-					removeRowConfirmationMessage: options.removeRowConfirmationMessage,
-					showRemoveRowConfirmation: options.showRemoveRowConfirmation
+					removeRowConfirmationMessage: columnSpecTableOptions.removeRowConfirmationMessage,
+					showRemoveRowConfirmation: columnSpecTableOptions.showRemoveRowConfirmation,
+					labelForAddNewButton: columnSpecTableOptions.labelForAddNewButton ?? localize('tableDesigner.addNewColumnToIndex', "Add Column")
 				}
 			}
 		];
@@ -609,7 +667,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						canAddRows: options.canAddRows,
 						canRemoveRows: options.canRemoveRows,
 						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
-						showRemoveRowConfirmation: options.showRemoveRowConfirmation
+						showRemoveRowConfirmation: options.showRemoveRowConfirmation,
+						labelForAddNewButton: options.labelForAddNewButton ?? localize('tableDesigner.addNewIndex', "New Index")
 					}
 				}
 			]

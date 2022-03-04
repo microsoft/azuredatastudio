@@ -42,6 +42,7 @@ import { DesignerPropertyPathValidator } from 'sql/workbench/browser/designer/de
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { listActiveSelectionBackground, listActiveSelectionForeground } from 'vs/platform/theme/common/colorRegistry';
 import { alert } from 'vs/base/browser/ui/aria/aria';
+import { layoutDesignerTable, TableHeaderRowHeight, TableRowHeight } from 'sql/workbench/browser/designer/designerTableUtil';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -64,8 +65,6 @@ interface DesignerTableCellContext {
 	path: DesignerPropertyPath;
 }
 
-const TableRowHeight = 25;
-const TableHeaderRowHeight = 28;
 const ScriptTabId = 'scripts';
 const MessagesTabId = 'messages';
 
@@ -149,7 +148,9 @@ export class Designer extends Disposable implements IThemable {
 		this._scriptTabbedPannel = new TabbedPanel(this._editorContainer);
 		this._messagesView = this._instantiationService.createInstance(DesignerMessagesTabPanelView);
 		this._register(this._messagesView.onMessageSelected((path) => {
-			this.selectProperty(path);
+			if (path && path.length > 0) {
+				this.selectProperty(path);
+			}
 		}));
 		this._scriptEditorView = new DesignerScriptEditorTabPanelView(this._instantiationService);
 		this._scriptTabbedPannel.pushTab({
@@ -311,8 +312,8 @@ export class Designer extends Disposable implements IThemable {
 		view.tabs.forEach(tab => {
 			this._contentTabbedPanel.pushTab(this.createTabView(tab));
 		});
-		this.layoutTabbedPanel();
 		this.updateComponentValues();
+		this.layoutTabbedPanel();
 		this.updatePropertiesPane(DesignerRootObjectPath);
 		this.restoreUIState();
 	}
@@ -328,8 +329,12 @@ export class Designer extends Disposable implements IThemable {
 				this.saveUIState();
 				this.clearUI();
 				this.initializeDesigner();
+				if (!args.result.isValid) {
+					this._scriptTabbedPannel.showTab(MessagesTabId);
+				}
 			} else {
 				this.updateComponentValues();
+				this.layoutTabbedPanel();
 			}
 			if (edit.type === DesignerEditType.Add) {
 				// For tables in the main view, move focus to the first cell of the newly added row, and the properties pane will be showing the new object.
@@ -414,19 +419,9 @@ export class Designer extends Disposable implements IThemable {
 	private layoutPropertiesPane() {
 		this._propertiesPane?.componentMap.forEach((v) => {
 			if (v.component instanceof Table) {
-				const rows = v.component.getData().getLength();
-				// Tables in properties pane, minimum height:2 rows, maximum height: 10 rows.
-				const actualHeight = this.getTableHeight(rows);
-				const minHeight = this.getTableHeight(2);
-				const maxHeight = this.getTableHeight(10);
-				const height = Math.min(Math.max(minHeight, actualHeight), maxHeight);
-				v.component.layout(new DOM.Dimension(this._propertiesPaneContainer.clientWidth - 10 /*padding*/, height));
+				layoutDesignerTable(v.component, this._propertiesPaneContainer.clientWidth);
 			}
 		});
-	}
-
-	private getTableHeight(rows: number): number {
-		return rows * TableRowHeight + TableHeaderRowHeight;
 	}
 
 	private updatePropertiesPane(objectPath: DesignerPropertyPath): void {
@@ -512,7 +507,7 @@ export class Designer extends Disposable implements IThemable {
 					for (const component of tab.components) {
 						if (path[0] === component.propertyName) {
 							// if we are editing the top level property and the view is properties view, then we don't have to switch to the tab.
-							if (path.length !== 1 && view === 'PropertiesView') {
+							if (path.length !== 1 || view !== 'PropertiesView') {
 								this._contentTabbedPanel.showTab(tab.title);
 							}
 							found = true;
@@ -762,7 +757,7 @@ export class Designer extends Disposable implements IThemable {
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
 				if (tableProperties.canAddRows) {
 					const buttonContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
-					const addNewText = localize('designer.newRowText', "Add New");
+					const addNewText = tableProperties.labelForAddNewButton ?? localize('designer.newRowText', "Add New");
 					const addRowButton = new Button(buttonContainer, {
 						title: addNewText,
 						secondary: true
@@ -875,7 +870,11 @@ export class Designer extends Disposable implements IThemable {
 				table.grid.onActiveCellChanged.subscribe((e, data) => {
 					if (view === 'TabsView' || view === 'TopContentView') {
 						if (data.row !== undefined) {
-							this.updatePropertiesPane([...propertyPath, data.row]);
+							if (tableProperties.showItemDetailInPropertiesView === false) {
+								this.updatePropertiesPane(DesignerRootObjectPath);
+							} else {
+								this.updatePropertiesPane([...propertyPath, data.row]);
+							}
 						} else {
 							this.updatePropertiesPane(DesignerRootObjectPath);
 						}
