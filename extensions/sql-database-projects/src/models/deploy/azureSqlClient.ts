@@ -3,10 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import { AzureAccountExtensionApi, AzureSubscription } from '../../../azure-account.api';
+//import * as vscode from 'vscode';
+//import { AzureAccountExtensionApi, AzureSubscription } from '../../typings/azure-account.api';
 import { SubscriptionClient } from '@azure/arm-subscriptions';
-import { AzureExtensionApiProvider } from '../../../azpi';
+//import { AzureExtensionApiProvider } from '../../typings/azpi';
 import { SqlManagementClient, Server } from '@azure/arm-sql';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import * as coreAuth from '@azure/core-auth';
@@ -40,6 +40,7 @@ class SQLTokenCredential implements coreAuth.TokenCredential {
 }
 export class AzureSqlClient {
 
+	/*
 	public static async init() {
 		if (!AzureSqlClient.azureApis) {
 			const extension = vscode.extensions.getExtension<AzureExtensionApiProvider>('ms-vscode.azure-account');
@@ -60,11 +61,13 @@ export class AzureSqlClient {
 		}
 	}
 
+
 	public static async getToken(subscription: AzureSubscription): Promise<coreAuth.AccessToken | undefined> {
 		return <coreAuth.AccessToken>await subscription.session.credentials2.getToken('https://database.windows.net/.default', {
 			tenantId: subscription.session.tenantId
 		});
 	}
+	*/
 
 	public static async getSubscriptions(): Promise<SubscriptionWithSession[]> {
 		const subscriptions: SubscriptionWithSession[] = [];
@@ -122,7 +125,7 @@ export class AzureSqlClient {
 		return [];
 	}
 
-	private static azureApis: AzureAccountExtensionApi | undefined;
+	//private static azureApis: AzureAccountExtensionApi | undefined;
 
 	/*
 	private static async getAzureApis(): Promise<AzureAccountExtensionApi | undefined> {
