@@ -59,8 +59,7 @@ else
 				compile-extension:mssql \
 				compile-extension:notebook \
 				compile-extension:resource-deployment \
-				compile-extension:sql-database-projects \
-				compile-extension:sql-bindings
+				compile-extension:sql-database-projects
 
 	# Configuration for more verbose output
 	export VSCODE_CLI=1
@@ -159,11 +158,6 @@ echo ********************************************
 echo *** starting sql-database-projects tests ***
 echo ********************************************
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/sql-database-projects --extensionTestsPath=$ROOT/extensions/sql-database-projects/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
-
-echo ********************************************
-echo *** starting sql-database-projects tests ***
-echo ********************************************
-"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/sql-bindings --extensionTestsPath=$ROOT/extensions/sql-bindings/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo ********************************************
 echo *** starting data-workspace tests ***
