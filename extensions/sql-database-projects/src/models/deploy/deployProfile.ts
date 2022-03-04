@@ -5,8 +5,10 @@
 
 import { IDeploySettings } from '../IDeploySettings';
 import type * as azdataType from 'azdata';
-import { AzureSubscription } from '../../../azure-account.api';
+//import { AzureSubscription } from '../../../azure-account.api';
 import { ResourceGroup } from '@azure/arm-resources/esm/models';
+import * as coreAuth from '@azure/core-auth';
+import { SubscriptionWithSession } from './azureSqlClient';
 
 export enum AppSettingType {
 	None,
@@ -29,7 +31,7 @@ export interface IDeployAppIntegrationProfile {
 }
 
 export interface ISqlDbSetting extends ISqlConnectionProperties {
-	subscription: AzureSubscription,
+	subscription: SubscriptionWithSession,
 	resourceGroup: ResourceGroup,
 	location: string
 }
@@ -48,6 +50,7 @@ export interface ISqlConnectionProperties {
 	dbName: string,
 	profileName?: string,
 	connectionRetryTimeout?: number,
+	accessToken?: coreAuth.AccessToken
 }
 
 export interface DockerImageInfo {
@@ -58,3 +61,4 @@ export interface DockerImageInfo {
 export interface AgreementInfo {
 	link: azdataType.LinkArea;
 }
+

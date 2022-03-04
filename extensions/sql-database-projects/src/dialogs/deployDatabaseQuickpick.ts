@@ -212,7 +212,7 @@ export async function launchCreateAzureServerQuickPick(project: Project): Promis
 
 	return {
 		deploySettings: settings, sqlDbSetting: {
-			accountId: subscription.session.userId,
+			accountId: subscription.account.key.id,
 			serverName: serverName,
 			userName: user,
 			password: password,

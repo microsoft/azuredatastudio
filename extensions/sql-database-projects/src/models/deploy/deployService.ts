@@ -263,7 +263,7 @@ export class DeployService {
 				encrypt: false,
 				connectTimeout: 30,
 				applicationName: 'SQL Database Project',
-				accountId: undefined,
+				accountId: profile.accountId,
 				azureAccountToken: undefined,
 				applicationIntent: undefined,
 				attachDbFilename: undefined,
@@ -286,7 +286,8 @@ export class DeployService {
 				typeSystemVersion: undefined,
 				workstationId: undefined,
 				profileName: profile.profileName,
-				expiresOn: undefined
+				expiresOn: undefined,
+				tenantId: undefined
 			};
 			let connectionUrl = await vscodeMssqlApi.connect(connectionProfile, saveConnectionAndPassword);
 			return connectionUrl;

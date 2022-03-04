@@ -468,6 +468,7 @@
     "vscode-nls": "^4.1.2",
     "which": "^2.0.2",
     "xml-formatter": "^2.1.0",
+    "@azure/identity": "2.0.4",
     "xmldom": "^0.6.0",
     "@azure/arm-appservice": "^9.0.0",
     "@azure/arm-resources": "^4.2.2",

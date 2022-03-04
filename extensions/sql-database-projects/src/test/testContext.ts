@@ -140,6 +140,11 @@ export class MockAzureFunctionService implements vscodeMssql.IAzureFunctionsServ
 	getAzureFunctions(_: string): Thenable<vscodeMssql.GetAzureFunctionsResult> { return Promise.resolve(mockGetAzureFunctionsResult); }
 }
 
+export class MockAccountService implements vscodeMssql.IAccountService {
+	getAccount(): Promise<vscodeMssql.IAccount> { return Promise.reject('not implemented'); }
+	getAccountSecurityToken(_: vscodeMssql.IAccount, __: string | undefined): Thenable<vscodeMssql.Token> { return Promise.reject('not implemented'); }
+}
+
 export const mockDacFxMssqlOptionResult: vscodeMssql.DacFxOptionsResult = {
 	success: true,
 	errorMessage: '',
@@ -253,7 +258,9 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 		this.dacFx = new MockDacFxMssqlService;
 		this.schemaCompare = new MockSchemaCompareService;
 		this.azureFunctions = new MockAzureFunctionService;
+		this.accountService = new MockAccountService;
 	}
+	accountService: vscodeMssql.IAccountService;
 	promptForConnection(_?: boolean): Promise<vscodeMssql.IConnectionInfo | undefined> {
 		throw new Error('Method not implemented.');
 	}
@@ -376,7 +383,8 @@ export function createTestCredentials(): vscodeMssql.IConnectionInfo {
 		multipleActiveResultSets: false,
 		packetSize: 8192,
 		typeSystemVersion: 'Latest',
-		connectionString: ''
+		connectionString: '',
+		tenantId: ''
 	};
 	return creds;
 }
