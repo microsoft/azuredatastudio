@@ -338,7 +338,7 @@ export class QueryResultsEditorOutputStatusModeContribution extends Disposable i
 				StatusbarAlignment.RIGHT, 100)
 		);
 
-
+		this._register(this.editorService.onDidActiveEditorChange(this.update, this));
 		this._register(this.editorService.onDidActiveEditorOutputModeChange(this.update, this));
 		this.update();
 	}
