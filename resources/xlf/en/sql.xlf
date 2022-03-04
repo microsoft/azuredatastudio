@@ -5303,7 +5303,7 @@ Error: {1}</source>
       <source xml:lang="en">An error occurred while starting the notebook session</source>
     </trans-unit>
     <trans-unit id="kernelRequiresConnection">
-      <source xml:lang="en">Kernel {0} was not found. The default kernel will be used instead.</source>
+      <source xml:lang="en">Kernel '{0}' was not found. The default kernel will be used instead.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/notebook/browser/models/notebookContexts" source-language="en" datatype="plaintext"><body>
