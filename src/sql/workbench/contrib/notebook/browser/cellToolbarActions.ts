@@ -246,7 +246,7 @@ export class AddCellFromContextAction extends CellActionBase {
 			if (index !== undefined && this.isAfter) {
 				index += 1;
 			}
-			model.addCell(this.cellType, index);
+			model.addCell(this.cellType, index, context.cell.metadata?.language);
 		} catch (error) {
 			let message = getErrorMessage(error);
 
