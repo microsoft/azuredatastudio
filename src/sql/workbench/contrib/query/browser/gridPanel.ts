@@ -221,6 +221,10 @@ export class GridPanel extends Disposable {
 	}
 
 	private addResultSet(resultSet: ResultSetSummary[]) {
+		if (!this.isWritingResultsToGrid) {
+			return;
+		}
+
 		const tables: Array<GridTable<any>> = [];
 
 		for (const set of resultSet) {
