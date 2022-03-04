@@ -14,7 +14,7 @@ import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
-import { hashString, deepClone, selectDropDownIndex, findDropDownItemIndex } from '../api/utils';
+import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 const localize = nls.loadMessageBundle();
 
@@ -118,8 +118,8 @@ export interface StateChangeEvent {
 
 export interface SavedInfo {
 	closedPage: number;
-	databaseAssessment: string[]; // MigrationStateModel._databasesForAssessment
-	databaseList: string[]; // MigrationStateModel._databasesForMigration
+	databaseAssessment: string[];
+	databaseList: string[];
 	migrationTargetType: MigrationTargetType | null;
 	azureAccount: azdata.Account | null;
 	azureTenant: azurecore.Tenant | null;
@@ -172,6 +172,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _fileShares!: azureResource.FileShare[];
 	public _blobContainers!: azureResource.BlobContainer[];
 	public _lastFileNames!: azureResource.Blob[];
+	public _sourceDatabaseNames!: string[];
 	public _targetDatabaseNames!: string[];
 
 	public _sqlMigrationServiceResourceGroup!: string;
@@ -191,6 +192,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public mementoString: string;
 
 	public _databasesForMigration: string[] = [];
+	public _didUpdateDatabasesForMigration: boolean = false;
 	public _vmDbs: string[] = [];
 	public _miDbs: string[] = [];
 	public _targetType!: MigrationTargetType;
@@ -1244,7 +1246,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 	public getBlobLastBackupFileName(index: number): string {
-		return this._lastFileNames[index].name;
+		return this._lastFileNames[index]?.name;
 	}
 
 	public async getSqlMigrationServiceValues(subscription: azureResource.AzureResourceSubscription, resourceGroupName: string): Promise<azdata.CategoryValue[]> {
@@ -1499,15 +1501,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 	public loadSavedInfo(): Boolean {
-		// convert SavedInfo values to MigrationStateModel values
-		// exclude targetDatabaseNames, blobs, networkShares
-		// as these list values may change when user updates _databasesForMigration
-		console.log('loadSavedInfo', this.savedInfo);
 		try {
 			this._targetType = this.savedInfo.migrationTargetType || undefined!;
 
 			this._databasesForAssessment = this.savedInfo.databaseAssessment;
 			this._databasesForMigration = this.savedInfo.databaseList;
+			this._didUpdateDatabasesForMigration = true;
 			switch (this._targetType) {
 				case MigrationTargetType.SQLMI:
 					this._miDbs = this._databasesForMigration;
@@ -1526,7 +1525,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			this._targetServerInstance = this.savedInfo.targetServerInstance || undefined!;
 
 			this._databaseBackup.migrationMode = this.savedInfo.migrationMode || undefined!;
+
+			this._sourceDatabaseNames = this._databasesForMigration;
+			this._targetDatabaseNames = this.savedInfo.targetDatabaseNames;
 			this._databaseBackup.networkContainerType = this.savedInfo.networkContainerType || undefined!;
+			this._databaseBackup.networkShares = this.savedInfo.networkShares;
+			this._databaseBackup.blobs = this.savedInfo.blobs;
 			this._databaseBackup.subscription = this.savedInfo.subscription || undefined!;
 
 			this._sqlMigrationService = this.savedInfo.sqlMigrationService;
@@ -1550,19 +1554,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			return true;
 		} catch {
 			return false;
-		}
-	}
-
-	public selectDefaultDropdownValue(dropDown: azdata.DropDownComponent, value?: string, useDisplayName: boolean = true): void {
-		if (value && (this.resumeAssessment || this.retryMigration)) {
-			const selectedIndex = findDropDownItemIndex(dropDown, value, useDisplayName);
-			if (selectedIndex > -1) {
-				selectDropDownIndex(dropDown, selectedIndex);
-			} else {
-				selectDropDownIndex(dropDown, 0);
-			}
-		} else {
-			selectDropDownIndex(dropDown, 0);
 		}
 	}
 }

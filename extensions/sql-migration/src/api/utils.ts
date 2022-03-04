@@ -146,6 +146,11 @@ export function convertIsoTimeToLocalTime(isoTime: string): Date {
 
 export type SupportedAutoRefreshIntervals = -1 | 15000 | 30000 | 60000 | 180000 | 300000;
 
+export function selectDefaultDropdownValue(dropDown: DropDownComponent, value?: string, useDisplayName: boolean = true): void {
+	const selectedIndex = value ? findDropDownItemIndex(dropDown, value, useDisplayName) : 0;
+	selectDropDownIndex(dropDown, selectedIndex);
+}
+
 export function selectDropDownIndex(dropDown: DropDownComponent, index: number): void {
 	if (index >= 0 && dropDown.values && index <= dropDown.values.length - 1) {
 		const value = dropDown.values[index];

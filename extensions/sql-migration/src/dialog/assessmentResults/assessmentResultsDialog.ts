@@ -84,14 +84,29 @@ export class AssessmentResultsDialog {
 	}
 
 	protected async execute() {
-		if (this._targetType === MigrationTargetType.SQLVM) {
-			this._model._vmDbs = this._tree.selectedDbs();
-		} else {
-			this._model._miDbs = this._tree.selectedDbs();
+		const selectedDbs = this._tree.selectedDbs();
+		switch (this._targetType) {
+			case MigrationTargetType.SQLMI: {
+				this.didUpdateDatabasesForMigration(this._model._miDbs, selectedDbs);
+				this._model._miDbs = selectedDbs;
+				break;
+			}
+
+			case MigrationTargetType.SQLVM: {
+				this.didUpdateDatabasesForMigration(this._model._vmDbs, selectedDbs);
+				this._model._vmDbs = selectedDbs;
+				break;
+			}
 		}
 		await this._skuRecommendationPage.refreshCardText();
 		this.model.refreshDatabaseBackupPage = true;
 		this._isOpen = false;
+	}
+
+	private didUpdateDatabasesForMigration(priorDbs: string[], selectedDbs: string[]) {
+		this._model._didUpdateDatabasesForMigration = selectedDbs.length === 0
+			|| selectedDbs.length !== priorDbs.length
+			|| priorDbs.some(db => selectedDbs.indexOf(db) < 0);
 	}
 
 	protected async cancel() {

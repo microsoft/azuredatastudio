@@ -17,6 +17,7 @@ import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as styles from '../constants/styles';
 import { SkuEditParametersDialog } from '../dialog/skuRecommendationResults/skuEditParametersDialog';
+import { logError, TelemetryViews } from '../telemtery';
 
 export interface Product {
 	type: MigrationTargetType;
@@ -421,7 +422,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						dba => dba === db) >= 0);
 
 				this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI;
-				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(miDbs.length, this.migrationStateModel._databasesForAssessment.length);
 				this.migrationStateModel._targetType = MigrationTargetType.SQLMI;
 				this.migrationStateModel._databasesForMigration = miDbs;
 				break;
@@ -433,13 +433,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						dba => dba === db) >= 0);
 
 				this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM;
-				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(vmDbs.length, this.migrationStateModel._databasesForAssessment.length);
 				this.migrationStateModel._targetType = MigrationTargetType.SQLVM;
 				this.migrationStateModel._databasesForMigration = vmDbs;
 				break;
 			}
 		}
 
+		this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel._databasesForMigration.length, this.migrationStateModel._databasesForAssessment.length);
 		this.migrationStateModel.refreshDatabaseBackupPage = true;
 	}
 
@@ -465,8 +465,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						e => `message: ${e.message}${EOL}errorSummary: ${e.errorSummary}${EOL}possibleCauses: ${e.possibleCauses}${EOL}guidance: ${e.guidance}${EOL}errorId: ${e.errorId}`)!);
 				}
 			} catch (e) {
-				console.log(e);
 				errors.push(constants.SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR(serverName, e));
+				logError(TelemetryViews.MigrationWizardTaSkuRecommendationPage, 'SkuRecommendationUnexpectedError', e);
 			} finally {
 				this.migrationStateModel._runAssessments = errors.length > 0;
 				if (errors.length > 0) {

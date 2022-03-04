@@ -961,9 +961,7 @@ export class SqlDatabaseTree {
 		}
 		await this._instanceTable.setDataValues(instanceTableValues);
 
-		if (this._model.resumeAssessment || this._model.retryMigration) {
-			this._databaseTableValues = selectDatabasesFromList(this._model.savedInfo.databaseList, this._databaseTableValues);
-		}
+		this._databaseTableValues = selectDatabasesFromList(this._model._databasesForMigration, this._databaseTableValues);
 		await this._databaseTable.setDataValues(this._databaseTableValues);
 		await this.updateValuesOnSelection();
 	}

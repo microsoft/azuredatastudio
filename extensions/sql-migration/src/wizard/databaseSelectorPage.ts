@@ -271,9 +271,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}
 		).component();
 
-		if (this.migrationStateModel.resumeAssessment || this.migrationStateModel.retryMigration) {
-			this._databaseTableValues = selectDatabasesFromList(this.migrationStateModel.savedInfo.databaseAssessment, this._databaseTableValues);
-		}
+		this._databaseTableValues = selectDatabasesFromList(this.migrationStateModel._databasesForAssessment, this._databaseTableValues);
 		await this._databaseSelectorTable.setDataValues(this._databaseTableValues);
 		await this.updateValuesOnSelection();
 

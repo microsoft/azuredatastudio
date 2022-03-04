@@ -60,7 +60,7 @@ export class MigrationModePage extends MigrationWizardPage {
 		});
 	}
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		if (this.originalMigrationMode !== this.migrationStateModel._databaseBackup.migrationMode || this.migrationStateModel.resumeAssessment) {
+		if (this.originalMigrationMode !== this.migrationStateModel._databaseBackup.migrationMode) {
 			this.migrationStateModel.refreshDatabaseBackupPage = true;
 		}
 

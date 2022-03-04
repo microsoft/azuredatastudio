@@ -11,7 +11,7 @@ import { MigrationStateModel, MigrationTargetType, StateChangeEvent } from '../m
 import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { deepClone, findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
+import { deepClone, findDropDownItemIndex, selectDropDownIndex, selectDefaultDropdownValue } from '../api/utils';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
 
 export class TargetSelectionPage extends MigrationWizardPage {
@@ -104,10 +104,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			if (!this.migrationStateModel._azureAccount) {
 				errors.push(constants.INVALID_ACCOUNT_ERROR);
 			}
-
-			// if (!this.migrationStateModel._azureTenant) {
-			// 	errors.push(constants.INVALID_ACCOUNT_ERROR);
-			// }
 
 			if (!this.migrationStateModel._targetSubscription ||
 				(<azdata.CategoryValue>this._azureSubscriptionDropdown.value)?.displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
@@ -444,7 +440,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		try {
 			this.updateDropdownLoadingStatus(TargetDropDowns.AzureAccount, true);
 			this._azureAccountsDropdown.values = await this.migrationStateModel.getAccountValues();
-			this.migrationStateModel.selectDefaultDropdownValue(this._azureAccountsDropdown, this.migrationStateModel._azureAccount?.displayInfo?.userId, false);
+			selectDefaultDropdownValue(this._azureAccountsDropdown, this.migrationStateModel._azureAccount?.displayInfo?.userId, false);
 		} finally {
 			this.updateDropdownLoadingStatus(TargetDropDowns.AzureAccount, false);
 		}
@@ -454,7 +450,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		try {
 			this.updateDropdownLoadingStatus(TargetDropDowns.Subscription, true);
 			this._azureSubscriptionDropdown.values = await this.migrationStateModel.getSubscriptionsDropdownValues();
-			this.migrationStateModel.selectDefaultDropdownValue(this._azureSubscriptionDropdown, this.migrationStateModel._targetSubscription?.id, false);
+			selectDefaultDropdownValue(this._azureSubscriptionDropdown, this.migrationStateModel._targetSubscription?.id, false);
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -466,7 +462,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		try {
 			this.updateDropdownLoadingStatus(TargetDropDowns.Location, true);
 			this._azureLocationDropdown.values = await this.migrationStateModel.getAzureLocationDropdownValues(this.migrationStateModel._targetSubscription);
-			this.migrationStateModel.selectDefaultDropdownValue(this._azureLocationDropdown, this.migrationStateModel._location?.displayName, true);
+			selectDefaultDropdownValue(this._azureLocationDropdown, this.migrationStateModel._location?.displayName, true);
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -478,7 +474,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		try {
 			this.updateDropdownLoadingStatus(TargetDropDowns.ResourceGroup, true);
 			this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._targetSubscription);
-			this.migrationStateModel.selectDefaultDropdownValue(this._azureResourceGroupDropdown, this.migrationStateModel._resourceGroup?.id, false);
+			selectDefaultDropdownValue(this._azureResourceGroupDropdown, this.migrationStateModel._resourceGroup?.id, false);
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -499,7 +495,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					break;
 				}
 			}
-			this.migrationStateModel.selectDefaultDropdownValue(this._azureResourceDropdown, this.migrationStateModel._targetServerInstance?.name, false);
+			selectDefaultDropdownValue(this._azureResourceDropdown, this.migrationStateModel._targetServerInstance?.name, true);
 		} catch (e) {
 			console.log(e);
 		} finally {
