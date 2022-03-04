@@ -86,7 +86,7 @@ export interface IEditorService {
 	/**
 	 * Emitted when query results output mode for an editor is changed.
 	 */
-	readonly onDidActiveEditorOutputModeChange?: Event<void>;
+	readonly onDidActiveEditorOutputModeChange: Event<void>;
 
 	/**
 	 * The currently active editor pane or `undefined` if none. The editor pane is
@@ -262,5 +262,5 @@ export interface IEditorService {
 	/**
 	 * Fires an event when the active editor output mode has changed.
 	 */
-	activeEditorOutputModeChanged?: () => void;
+	activeEditorOutputModeChanged: () => void;
 }

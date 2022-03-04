@@ -64,7 +64,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 	readonly onDidMostRecentlyActiveEditorsChange = this._onDidMostRecentlyActiveEditorsChange.event;
 
 	private readonly _onDidActiveEditorOutputModeChange = this._register(new Emitter<void>());
-	readonly onDidActiveEditorOutputModeChance = this._onDidActiveEditorOutputModeChange.event;
+	readonly onDidActiveEditorOutputModeChange = this._onDidActiveEditorOutputModeChange.event;
 
 	//#endregion
 

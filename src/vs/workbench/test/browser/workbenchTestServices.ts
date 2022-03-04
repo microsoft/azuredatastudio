@@ -783,6 +783,7 @@ export class TestEditorService implements EditorServiceImpl {
 	onDidCloseEditor: Event<IEditorCloseEvent> = Event.None;
 	onDidOpenEditorFail: Event<IEditorIdentifier> = Event.None;
 	onDidMostRecentlyActiveEditorsChange: Event<void> = Event.None;
+	onDidActiveEditorOutputModeChange: Event<void> = Event.None;
 
 	private _activeTextEditorControl: ICodeEditor | IDiffEditor | undefined;
 	public get activeTextEditorControl(): ICodeEditor | IDiffEditor | undefined { return this._activeTextEditorControl; }
@@ -803,6 +804,7 @@ export class TestEditorService implements EditorServiceImpl {
 	count = this.editors.length;
 
 	constructor(private editorGroupService?: IEditorGroupsService) { }
+	activeEditorOutputModeChanged: () => void;
 	getEditors() { return []; }
 	findEditors() { return [] as any; }
 	openEditor(editor: IEditorInput, options?: IEditorOptions, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): Promise<IEditorPane | undefined>;

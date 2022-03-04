@@ -339,9 +339,7 @@ export class QueryResultsEditorOutputStatusModeContribution extends Disposable i
 		);
 
 
-		this._register(this.editorService.onDidActiveEditorOutputModeChange(() => {
-			this.update();
-		}));
+		this._register(this.editorService.onDidActiveEditorOutputModeChange(this.update, this));
 		this.update();
 	}
 
