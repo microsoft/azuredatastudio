@@ -24,6 +24,7 @@ const localize = nls.loadMessageBundle();
 
 export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disposable {
 	private static readonly CONFIGURATION_SECTION = 'accounts.azure.auth';
+	private readonly _onInitComplete = new vscode.EventEmitter<void>();
 	private readonly authMappings = new Map<AzureAuthType, AzureAuth>();
 	private initComplete: Deferred<void, Error>;
 	private initCompletePromise: Promise<void> = new Promise<void>((resolve, reject) => this.initComplete = { resolve, reject });
@@ -99,6 +100,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			}
 		}
 		this.initComplete.resolve();
+		this._onInitComplete.fire();
 		return accounts;
 	}
 
