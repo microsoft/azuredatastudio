@@ -36,6 +36,10 @@ export const emptySqlDatabaseSdkProjectTypeId = 'EmptySqlDbSdkProj';
 export const emptySdkProjectTypeDisplayName = localize('emptySdkProjectTypeDisplayName', "SQL Database (SDK)");
 export const emptySdkProjectTypeDescription = localize('emptySdkProjectTypeDescription', "Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.");
 
+export const emptyAzureDbSqlDatabaseProjectTypeId = 'EmptyAzureSqlDbProj';
+export const emptyAzureDbProjectTypeDisplayName = localize('emptyAzureDbProjectTypeDisplayName', "Azure SQL DB");
+export const emptyAzureDbProjectTypeDescription = localize('emptyAzureDbProjectTypeDescription', "Develop and publish schemas for Azure SQL DB starting from an empty project");
+
 // Dashboard
 export const addItemAction = localize('addItemAction', "Add Item");
 export const schemaCompareAction = localize('schemaCompareAction', "Schema Compare");
@@ -141,6 +145,7 @@ export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not 
 export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
 export const publishToExistingServer = localize('publishToExistingServer', "Publish to existing server");
 export const publishToDockerContainer = localize('publishToDockerContainer', "Publish to new server in a container");
+export const publishToNewAzureServer = localize('publishToNewAzureServer', "Publish to new SQL DB logical server");
 export const enterPortNumber = localize('enterPortNumber', "Enter SQL server port number or press enter to use the default value");
 export const serverPortNumber = localize('serverPortNumber', "SQL server port number");
 export const serverPassword = localize('serverPassword', "SQL Server admin password");
@@ -158,6 +163,9 @@ export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be 
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
+export const sqlServer2019 = 'SQL Server 2019';
+export const sqlServer2017 = 'SQL Server 2017';
+export const azureSqlEdge = 'Azure SQL Edge';
 
 //
 export const eulaAgreementTemplate = localize({ key: 'eulaAgreementTemplate', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.");
@@ -194,7 +202,7 @@ export const runningDockerMessage = localize('runningDockerMessage', "Building a
 export function dockerNotRunningError(error: string) { return localize('dockerNotRunningError', "Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'", error || ''); }
 export const dockerContainerNotRunningErrorMessage = localize('dockerContainerNotRunningErrorMessage', "Docker container is not running");
 export const dockerContainerFailedToRunErrorMessage = localize('dockerContainerFailedToRunErrorMessage', "Failed to run the docker container");
-export const connectingToSqlServerOnDockerMessage = localize('connectingToSqlServerOnDockerMessage', "Connecting to SQL Server on Docker");
+export const connectingToSqlServerMessage = localize('connectingToSqlServerOnDockerMessage', "Connecting to SQL Server");
 export const deployProjectFailedMessage = localize('deployProjectFailedMessage', "Failed to open a connection to the deployed database'");
 export const containerAlreadyExistForProject = localize('containerAlreadyExistForProject', "Containers already exist for this project. Do you want to delete them before deploying a new one?");
 export const checkoutOutputMessage = localize('checkoutOutputMessage', "Check output pane for more details");

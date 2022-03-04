@@ -171,7 +171,21 @@ export class ProjectsController {
 			'PROJECT_DSP': creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP
 		};
 
-		let newProjFileContents = creationParams.projectTypeId === constants.emptySqlDatabaseSdkProjectTypeId ? templates.macroExpansion(templates.newSdkSqlProjectTemplate, macroDict) : templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
+		let newProjFileContents = '';
+		switch (creationParams.projectTypeId) {
+			case constants.emptySqlDatabaseSdkProjectTypeId:
+				newProjFileContents = templates.macroExpansion(templates.newSdkSqlProjectTemplate, macroDict);
+				break;
+			case constants.emptySqlDatabaseProjectTypeId:
+				newProjFileContents = templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
+				break;
+			case constants.emptyAzureDbSqlDatabaseProjectTypeId:
+				newProjFileContents = templates.macroExpansion(templates.newAzureSqlDbProjectTemplate, macroDict);
+				break;
+			default:
+				newProjFileContents = templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
+				break;
+		}
 
 		let newProjFileName = creationParams.newProjName;
 
