@@ -35,7 +35,7 @@ export function getDockerBaseImages(target: string): DockerImageInfo[] {
 	if (target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure)) {
 		return [{
 			name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2019-latest`,
-			displayName: constants.sqlServer2019,
+			displayName: SqlTargetPlatform.sqlServer2019,
 			agreementInfo: {
 				link: {
 					text: constants.eulaAgreementTitle,
@@ -44,7 +44,7 @@ export function getDockerBaseImages(target: string): DockerImageInfo[] {
 			}
 		}, {
 			name: `${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}:latest`,
-			displayName: constants.azureSqlEdge,
+			displayName: SqlTargetPlatform.sqlEdge,
 			agreementInfo: {
 				link: {
 					text: constants.edgeEulaAgreementTitle,
@@ -56,7 +56,7 @@ export function getDockerBaseImages(target: string): DockerImageInfo[] {
 		return [
 			{
 				name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2017-latest`,
-				displayName: constants.sqlServer2017,
+				displayName: SqlTargetPlatform.sqlServer2017,
 				agreementInfo: {
 					link: {
 						text: constants.eulaAgreementTitle,
@@ -66,7 +66,7 @@ export function getDockerBaseImages(target: string): DockerImageInfo[] {
 			},
 			{
 				name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2019-latest`,
-				displayName: constants.sqlServer2019,
+				displayName: SqlTargetPlatform.sqlServer2019,
 				agreementInfo: {
 					link: {
 						text: constants.eulaAgreementTitle,
@@ -76,7 +76,7 @@ export function getDockerBaseImages(target: string): DockerImageInfo[] {
 			},
 			{
 				name: `${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}:latest`,
-				displayName: constants.azureSqlEdge,
+				displayName: SqlTargetPlatform.sqlEdge,
 				agreementInfo: {
 					link: {
 						text: constants.edgeEulaAgreementTitle,

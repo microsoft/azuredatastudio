@@ -68,7 +68,6 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 			displayName: constants.emptyAzureDbProjectTypeDisplayName,
 			description: constants.emptyAzureDbProjectTypeDescription,
 			icon: IconPathHelper.colorfulSqlProject,
-			targetPlatforms: Array.from(constants.targetPlatformToVersion.keys()),
 			defaultTargetPlatform: sqldbproj.SqlTargetPlatform.sqlAzure
 		}];
 	}

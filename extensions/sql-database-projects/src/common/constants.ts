@@ -162,9 +162,6 @@ export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be 
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
-export const sqlServer2019 = 'SQL Server 2019';
-export const sqlServer2017 = 'SQL Server 2017';
-export const azureSqlEdge = 'Azure SQL Edge';
 
 //
 export const eulaAgreementTemplate = localize({ key: 'eulaAgreementTemplate', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.");
