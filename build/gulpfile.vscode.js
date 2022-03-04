@@ -135,6 +135,7 @@ const extensionsFilter = filter([
 	'**/schema-compare.xlf',
 	'**/server-report.xlf',
 	'**/sql-assessment.xlf',
+	'**/sql-bindings.xlf',
 	'**/sql-database-projects.xlf',
 	'**/sql-migration.xlf',
 	'**/xml-language-features.xlf'

@@ -1,0 +1,7 @@
+{
+	"name": "sql-bindings-vscode",
+	"publisher": "ms-mssql",
+	"extensionDependencies": [
+		"ms-mssql.mssql"
+	]
+}
