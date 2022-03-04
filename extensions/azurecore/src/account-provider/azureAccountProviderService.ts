@@ -153,6 +153,9 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 			const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
 			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context, this._uriEventHandler, isSaw);
+			accountProvider.onInitComplete(() => {
+				console.log('account event was fired!');
+			});
 
 			this._accountProviders[provider.metadata.id] = accountProvider;
 			this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);

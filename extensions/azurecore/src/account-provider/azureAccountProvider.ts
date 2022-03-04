@@ -28,6 +28,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	private readonly authMappings = new Map<AzureAuthType, AzureAuth>();
 	private initComplete: Deferred<void, Error>;
 	private initCompletePromise: Promise<void> = new Promise<void>((resolve, reject) => this.initComplete = { resolve, reject });
+	public onInitComplete = this._onInitComplete.event;
 
 	constructor(
 		metadata: AzureAccountProviderMetadata,
