@@ -75,7 +75,7 @@ export class SplitCellAction extends CellActionBase {
 	doRun(context: CellContext): Promise<void> {
 		let model = context.model;
 		let index = model.cells.findIndex((cell) => cell.id === context.cell.id);
-		context.model?.splitCell(context.cell.cellType, this.notebookService, index);
+		context.model?.splitCell(context.cell.cellType, this.notebookService, index, context.cell.metadata?.language);
 		return Promise.resolve();
 	}
 	public setListener(context: CellContext) {
