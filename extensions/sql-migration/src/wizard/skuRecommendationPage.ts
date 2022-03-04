@@ -561,7 +561,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		display = (this._rbg.selectedCardId
 			&& (!failedAssessment || this._skipAssessmentCheckbox.checked)
-			&& this.migrationStateModel._databasesForMigration.length > 0)
+			&& this.migrationStateModel._databasesForMigration?.length > 0)
 			? 'inline'
 			: 'none';
 

@@ -304,6 +304,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			} else {
 				this.migrationStateModel._targetSubscription = undefined!;
 			}
+			this.migrationStateModel.refreshDatabaseBackupPage = true;
 			await this.populateLocationDropdown();
 			await this.populateResourceGroupDropdown();
 		}));
@@ -335,6 +336,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			} else {
 				this.migrationStateModel._location = undefined!;
 			}
+			this.migrationStateModel.refreshDatabaseBackupPage = true;
 			await this.populateResourceInstanceDropdown();
 		}));
 

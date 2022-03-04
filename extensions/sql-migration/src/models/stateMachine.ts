@@ -1526,6 +1526,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			this._databaseBackup.migrationMode = this.savedInfo.migrationMode || undefined!;
 
+			this.refreshDatabaseBackupPage = true;
 			this._sourceDatabaseNames = this._databasesForMigration;
 			this._targetDatabaseNames = this.savedInfo.targetDatabaseNames;
 			this._databaseBackup.networkContainerType = this.savedInfo.networkContainerType || undefined!;
