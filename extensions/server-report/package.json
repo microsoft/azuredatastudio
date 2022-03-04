@@ -125,7 +125,7 @@
 							"columnsAsLabels": true
 						}
 					},
-					"queryFile": "./dist/sql/all_db_space_used.sql"
+					"queryFile": "./sql/all_db_space_used.sql"
 				}
 			},
 			{
@@ -140,7 +140,7 @@
 							"columnsAsLabels": false
 						}
 					},
-					"queryFile": "./dist/sql/cpumetric.sql"
+					"queryFile": "./sql/cpumetric.sql"
 				}
 			},
 			{
@@ -156,7 +156,7 @@
 							"columnsAsLabels": false
 						}
 					},
-					"queryFile": "./dist/sql/backup_size_trend.sql"
+					"queryFile": "./sql/backup_size_trend.sql"
 				}
 			},
 			{
@@ -171,9 +171,9 @@
 							"columnsAsLabels": true
 						}
 					},
-					"queryFile": "./dist/sql/waits_paul_randal.sql",
+					"queryFile": "./sql/waits_paul_randal.sql",
 					"details": {
-						"queryFile": "./dist/sql/waits_detail_paul_randal.sql",
+						"queryFile": "./sql/waits_detail_paul_randal.sql",
 						"label": {
 							"column": "WaitType",
 							"state": []
@@ -194,9 +194,9 @@
 							"columnsAsLabels": true
 						}
 					},
-					"queryFile": "./dist/sql/wait_resources.sql",
+					"queryFile": "./sql/wait_resources.sql",
 					"details": {
-						"queryFile": "./dist/sql/wait_resources.sql",
+						"queryFile": "./sql/wait_resources.sql",
 						"label": {
 							"column": "WaitType",
 							"state": []
@@ -217,7 +217,7 @@
 							"columnsAsLabels": true
 						}
 					},
-					"queryFile": "./dist/sql/memorybydb.sql"
+					"queryFile": "./sql/memorybydb.sql"
 				}
 			},
 			{
@@ -231,7 +231,7 @@
 							"legendPosition": "none"
 						}
 					},
-					"queryFile": "./dist/sql/typeofContentions.sql",
+					"queryFile": "./sql/typeofContentions.sql",
 					"autoRefreshInterval": 0.05
 				}
 			},
@@ -247,7 +247,7 @@
 							"xAxisLabel": "Object Ids for System Tables"
 						}
 					},
-					"queryFile": "./dist/sql/metadataContention.sql",
+					"queryFile": "./sql/metadataContention.sql",
 					"autoRefreshInterval": 0.05
 				}
 			},
@@ -263,7 +263,7 @@
 							"xAxisLabel": "Page Types"
 						}
 					},
-					"queryFile": "./dist/sql/allocationContention.sql",
+					"queryFile": "./sql/allocationContention.sql",
 					"autoRefreshInterval": 0.05
 				}
 			}
