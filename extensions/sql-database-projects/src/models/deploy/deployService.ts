@@ -160,7 +160,7 @@ export class DeployService {
 			this.logToOutput(constants.runningDockerMessage);
 			// Building the image and running the docker
 			//
-			const createdDockerId: string | undefined = await this.buildAndRunDockerContainer(imageSpec, profile.localDbSetting);
+			const createdDockerId: string | undefined = await this.runDockerContainer(imageSpec, profile.localDbSetting);
 			this.logToOutput(`Docker container created. Id: ${createdDockerId}`);
 
 
@@ -191,7 +191,7 @@ export class DeployService {
 		});
 	}
 
-	private async buildAndRunDockerContainer(dockerImageSpec: DockerImageSpec, profile: ILocalDbSetting): Promise<string | undefined> {
+	private async runDockerContainer(dockerImageSpec: DockerImageSpec, profile: ILocalDbSetting): Promise<string | undefined> {
 
 		// Sensitive data to remove from output console
 		const sensitiveData = [profile.password];
