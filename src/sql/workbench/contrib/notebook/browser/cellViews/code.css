@@ -118,7 +118,9 @@ code-component .cellLanguage {
 	padding: 2px 15px;
 	display: inline-block;
 	text-align: center;
-	font-size: 16px;
+	font-size: 12px;
+	border-style: none;
+	background-color: transparent;
 }
 
 code-component .parameter {

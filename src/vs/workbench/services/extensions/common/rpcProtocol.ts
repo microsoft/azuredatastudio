@@ -445,6 +445,7 @@ export class RPCProtocol extends Disposable implements IRPCProtocol {
 				err.name = value.name;
 				err.message = value.message;
 				err.stack = value.stack;
+				err.errorCode = value.errorCode; // {{SQL CARBON EDIT}} Include custom error code
 			} else {
 				err = value;
 			}

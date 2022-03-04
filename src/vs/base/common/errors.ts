@@ -104,12 +104,14 @@ export function transformErrorForSerialization(error: any): any;
 export function transformErrorForSerialization(error: any): any {
 	if (error instanceof Error) {
 		let { name, message } = error;
+		let errorCode = (<any>error).errorCode; // {{SQL CARBON EDIT}} Add error code to retain more information
 		const stack: string = (<any>error).stacktrace || (<any>error).stack;
 		return {
 			$isError: true,
 			name,
 			message,
-			stack
+			stack,
+			errorCode
 		};
 	}
 

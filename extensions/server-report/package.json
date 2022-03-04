@@ -32,32 +32,32 @@
 				"command": "tempdb.startEvent",
 				"title": "Start",
 				"icon": {
-					"light": "./dist/media/launch.svg",
-					"dark": "./dist/media/launch_inverse.svg"
+					"light": "./images/launch.svg",
+					"dark": "./images/launch_inverse.svg"
 				}
 			},
 			{
 				"command": "tempdb.stopEvent",
 				"title": "Stop",
 				"icon": {
-					"light": "./dist/media/blocker.svg",
-					"dark": "./dist/media/blocker_inverse.svg"
+					"light": "./images/blocker.svg",
+					"dark": "./images/blocker_inverse.svg"
 				}
 			},
 			{
 				"command": "tempdb.contention",
 				"title": "Contention Help for Tempdb",
 				"icon": {
-					"light": "./dist/media/documentation.svg",
-					"dark": "./dist/media/documentation_inverse.svg"
+					"light": "./images/documentation.svg",
+					"dark": "./images/documentation_inverse.svg"
 				}
 			},
 			{
 				"command": "tempdb.pauseEvent",
 				"title": "Toggle Auto Refresh",
 				"icon": {
-					"light": "./dist/media/insights.svg",
-					"dark": "./dist/media/insights_inverse.svg"
+					"light": "./images/insights.svg",
+					"dark": "./images/insights_inverse.svg"
 				}
 			}
 		],
@@ -77,8 +77,8 @@
 							"id": "server-reports-monitoring",
 							"title": "Monitor",
 							"icon": {
-								"light": "./dist/media/monitor.svg",
-								"dark": "./dist/media/monitor_inverse.svg"
+								"light": "./images/monitor.svg",
+								"dark": "./images/monitor_inverse.svg"
 							},
 							"container": {
 								"server-reports-monitoring-container": {}
@@ -88,8 +88,8 @@
 							"id": "server-reports-performance",
 							"title": "Performance",
 							"icon": {
-								"light": "./dist/media/performance.svg",
-								"dark": "./dist/media/performance_inverse.svg"
+								"light": "./images/performance.svg",
+								"dark": "./images/performance_inverse.svg"
 							},
 							"container": {
 								"server-reports-performance-container": {}
@@ -104,8 +104,8 @@
 				"group": "monitoring",
 				"description": "TempDB reports",
 				"icon": {
-					"light": "./dist/media/tempdb.svg",
-					"dark": "./dist/media/tempdb_inverse.svg"
+					"light": "./images/tempdb.svg",
+					"dark": "./images/tempdb_inverse.svg"
 				},
 				"container": {
 					"server-reports-tempdb-container": {}
@@ -125,7 +125,7 @@
 							"columnsAsLabels": true
 						}
 					},
-					"queryFile": "./dist/sql/all_db_space_used.sql"
+					"queryFile": "./sql/all_db_space_used.sql"
 				}
 			},
 			{
@@ -140,7 +140,7 @@
 							"columnsAsLabels": false
 						}
 					},
-					"queryFile": "./dist/sql/cpumetric.sql"
+					"queryFile": "./sql/cpumetric.sql"
 				}
 			},
 			{
@@ -156,7 +156,7 @@
 							"columnsAsLabels": false
 						}
 					},
-					"queryFile": "./dist/sql/backup_size_trend.sql"
+					"queryFile": "./sql/backup_size_trend.sql"
 				}
 			},
 			{
@@ -171,9 +171,9 @@
 							"columnsAsLabels": true
 						}
 					},
-					"queryFile": "./dist/sql/waits_paul_randal.sql",
+					"queryFile": "./sql/waits_paul_randal.sql",
 					"details": {
-						"queryFile": "./dist/sql/waits_detail_paul_randal.sql",
+						"queryFile": "./sql/waits_detail_paul_randal.sql",
 						"label": {
 							"column": "WaitType",
 							"state": []
@@ -194,9 +194,9 @@
 							"columnsAsLabels": true
 						}
 					},
-					"queryFile": "./dist/sql/wait_resources.sql",
+					"queryFile": "./sql/wait_resources.sql",
 					"details": {
-						"queryFile": "./dist/sql/wait_resources.sql",
+						"queryFile": "./sql/wait_resources.sql",
 						"label": {
 							"column": "WaitType",
 							"state": []
@@ -217,7 +217,7 @@
 							"columnsAsLabels": true
 						}
 					},
-					"queryFile": "./dist/sql/memorybydb.sql"
+					"queryFile": "./sql/memorybydb.sql"
 				}
 			},
 			{
@@ -231,7 +231,7 @@
 							"legendPosition": "none"
 						}
 					},
-					"queryFile": "./dist/sql/typeofContentions.sql",
+					"queryFile": "./sql/typeofContentions.sql",
 					"autoRefreshInterval": 0.05
 				}
 			},
@@ -247,7 +247,7 @@
 							"xAxisLabel": "Object Ids for System Tables"
 						}
 					},
-					"queryFile": "./dist/sql/metadataContention.sql",
+					"queryFile": "./sql/metadataContention.sql",
 					"autoRefreshInterval": 0.05
 				}
 			},
@@ -263,7 +263,7 @@
 							"xAxisLabel": "Page Types"
 						}
 					},
-					"queryFile": "./dist/sql/allocationContention.sql",
+					"queryFile": "./sql/allocationContention.sql",
 					"autoRefreshInterval": 0.05
 				}
 			}
