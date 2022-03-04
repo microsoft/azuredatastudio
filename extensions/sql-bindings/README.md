@@ -2,7 +2,7 @@
 
 ## Overview
 
-Microsoft SQL Bindings for Azure Data Studio and VS Code enables users to develop azure functions with sql bindings
+Microsoft SQL Bindings for Azure Data Studio and VS Code enables users to develop Azure Functions with Azure SQL bindings
 
 ### VS Code
 

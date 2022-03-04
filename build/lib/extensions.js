@@ -231,7 +231,7 @@ const externalExtensions = [
     'schema-compare',
     'server-report',
     'sql-assessment',
-	'sql-bindings',
+    'sql-bindings',
     'sql-database-projects',
     'sql-migration'
 ];
