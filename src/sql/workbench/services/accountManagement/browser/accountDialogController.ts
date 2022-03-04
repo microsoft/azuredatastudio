@@ -6,6 +6,7 @@
 import Severity from 'vs/base/common/severity';
 import { AccountDialog } from 'sql/workbench/services/accountManagement/browser/accountDialog';
 import { localize } from 'vs/nls';
+import { Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
@@ -18,6 +19,7 @@ export class AccountDialogController {
 	public get accountDialog(): AccountDialog | undefined { return this._accountDialog; }
 
 	constructor(
+		private _providerRegisteredEvent: Event<void>,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService
 	) { }
@@ -28,6 +30,9 @@ export class AccountDialogController {
 	public openAccountDialog(): void {
 		// Create a new dialog if one doesn't exist
 		if (!this._accountDialog) {
+			this._providerRegisteredEvent(() => {
+				this._errorMessageService.showDialog(Severity.Info, 'AccountProviderMessage', 'receiving AccountProvider event in accountDialogController');
+			});
 			this._accountDialog = this._instantiationService.createInstance(AccountDialog);
 			this._accountDialog.onAddAccountErrorEvent(msg => this.handleOnAddAccountError(msg));
 			this._accountDialog.onCloseEvent(() => this.handleOnClose());

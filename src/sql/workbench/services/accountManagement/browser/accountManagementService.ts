@@ -47,6 +47,9 @@ export class AccountManagementService implements IAccountManagementService {
 	private _updateAccountListEmitter: Emitter<UpdateAccountListEventParams>;
 	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return this._updateAccountListEmitter.event; }
 
+	private _registerProviderLoadEmitter: Emitter<void>;
+	public get registerProviderLoadEvent(): Event<void> { return this._registerProviderLoadEmitter.event; }
+
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -64,6 +67,7 @@ export class AccountManagementService implements IAccountManagementService {
 		this._addAccountProviderEmitter = new Emitter<AccountProviderAddedEventParams>();
 		this._removeAccountProviderEmitter = new Emitter<azdata.AccountProviderMetadata>();
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
+		this._registerProviderLoadEmitter = new Emitter<void>();
 
 		_storageService.onWillSaveState(() => this.shutdown());
 	}
@@ -317,7 +321,7 @@ export class AccountManagementService implements IAccountManagementService {
 			try {
 				// If the account list dialog hasn't been defined, create a new one
 				if (!self._accountDialogController) {
-					self._accountDialogController = self._instantiationService.createInstance(AccountDialogController);
+					self._accountDialogController = self._instantiationService.createInstance(AccountDialogController, this.registerProviderLoadEvent);
 				}
 				self._accountDialogController.openAccountDialog();
 				self._accountDialogController.accountDialog!.onCloseEvent(resolve);
@@ -395,6 +399,7 @@ export class AccountManagementService implements IAccountManagementService {
 		});
 		// Notify listeners that the account has been updated
 		this.fireAccountListUpdate(p, false);
+		this._registerProviderLoadEmitter.fire();
 	}
 
 	// SERVICE MANAGEMENT METHODS //////////////////////////////////////////
