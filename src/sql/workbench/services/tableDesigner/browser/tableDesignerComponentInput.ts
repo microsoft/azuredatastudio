@@ -156,6 +156,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			const result = await this._provider.publishChanges(this.tableInfo);
 			this._viewModel = result.viewModel;
 			this._originalViewModel = result.viewModel;
+			this.setDesignerView(result.view);
 			saveNotificationHandle.updateMessage(localize('tableDesigner.publishChangeSuccess', "The changes have been successfully published."));
 			this.tableInfo = result.newTableInfo;
 			this.updateState(true, false);
@@ -256,7 +257,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		tabs.push(this.getPrimaryKeyTab(tableDesignerView));
 
 		if (tableDesignerView.foreignKeyTableOptions?.showTable) {
-			tabs.push(this.getForeignKeysTab(tableDesignerView.foreignKeyTableOptions));
+			tabs.push(this.getForeignKeysTab(tableDesignerView.foreignKeyTableOptions, tableDesignerView.foreignKeyColumnMappingTableOptions));
 		}
 
 		if (tableDesignerView.checkConstraintTableOptions?.showTable) {
@@ -418,7 +419,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		};
 	}
 
-	private getForeignKeysTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions): DesignerTab {
+	private getForeignKeysTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions, columnMappingTableOptions: azdata.designers.TableDesignerBuiltInTableViewOptions): DesignerTab {
 
 		const foreignKeyColumnMappingProperties: DesignerDataPropertyInfo[] = [
 			{
@@ -483,9 +484,12 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				group: localize('tableDesigner.foreignKeyColumns', "Columns"),
 				componentProperties: <DesignerTableProperties>{
 					ariaLabel: localize('tableDesigner.foreignKeyColumns', "Columns"),
-					columns: [designers.ForeignKeyColumnMappingProperty.Column, designers.ForeignKeyColumnMappingProperty.ForeignColumn],
-					itemProperties: foreignKeyColumnMappingProperties,
-					labelForAddNewButton: localize('tableDesigner.addNewColumnMapping', "New Column Mapping")
+					columns: this.getTableDisplayProperties(columnMappingTableOptions, [designers.ForeignKeyColumnMappingProperty.Column, designers.ForeignKeyColumnMappingProperty.ForeignColumn]),
+					itemProperties: this.addAdditionalTableProperties(columnMappingTableOptions, foreignKeyColumnMappingProperties),
+					canAddRows: columnMappingTableOptions.canAddRows,
+					canRemoveRows: columnMappingTableOptions.canRemoveRows,
+					removeRowConfirmationMessage: columnMappingTableOptions.removeRowConfirmationMessage,
+					labelForAddNewButton: columnMappingTableOptions.labelForAddNewButton ?? localize('tableDesigner.addNewColumnMapping', "New Column Mapping")
 				}
 			}
 		];

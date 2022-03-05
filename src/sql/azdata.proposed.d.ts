@@ -1212,6 +1212,12 @@ declare module 'azdata' {
 			 */
 			foreignKeyTableOptions?: TableDesignerBuiltInTableViewOptions;
 			/**
+			 * Foreign key column mapping table options.
+			 * Common foreign key column mapping properties are handled by Azure Data Studio. see {@link ForeignKeyColumnMappingProperty}.
+			 * Default columns to display values are: Column, ForeignColumn.
+			 */
+			foreignKeyColumnMappingTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
 			 * Check constraints table options.
 			 * Common check constraint properties are handled by Azure Data Studio. see {@link TableCheckConstraintProperty}
 			 * Default columns to display values are: Name, Expression.
@@ -1223,21 +1229,18 @@ declare module 'azdata' {
 			 * Default columns to display values are: Name.
 			 */
 			indexTableOptions?: TableDesignerBuiltInTableViewOptions;
-
 			/**
 			* Index column specification table options.
 			* Common index properties are handled by Azure Data Studio. see {@link TableIndexColumnSpecificationProperty}
 			* Default columns to display values are: Column.
 			*/
 			indexColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
-
 			/**
 			* Primary column specification table options.
 			* Common index properties are handled by Azure Data Studio. see {@link TableIndexColumnSpecificationProperty}
 			* Default columns to display values are: Column.
 			*/
 			primaryKeyColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
-
 			/**
 			 * Additional primary key properties. Common primary key properties: primaryKeyName.
 			 */
@@ -1462,6 +1465,10 @@ declare module 'azdata' {
 			 * The new view model.
 			 */
 			viewModel: DesignerViewModel;
+			/**
+			 * The new view.
+			 */
+			view: DesignerViewModel;
 		}
 	}
 

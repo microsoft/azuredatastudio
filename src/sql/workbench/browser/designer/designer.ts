@@ -326,9 +326,7 @@ export class Designer extends Disposable implements IThemable {
 		}
 		try {
 			if (args.result.refreshView) {
-				this.saveUIState();
-				this.clearUI();
-				this.initializeDesigner();
+				this.refresh();
 				if (!args.result.isValid) {
 					this._scriptTabbedPannel.showTab(MessagesTabId);
 				}
@@ -360,8 +358,8 @@ export class Designer extends Disposable implements IThemable {
 					this.updatePropertiesPane(this._propertiesPane.objectPath);
 				}
 			}
+			// try to move the focus back to where it was
 			if (args.result.refreshView) {
-				// try to move the focus back to where it was
 				this.selectProperty(args.edit.path, args.edit.source, false);
 			}
 		} catch (err) {
@@ -408,8 +406,9 @@ export class Designer extends Disposable implements IThemable {
 	}
 
 	private refresh() {
-		this.updateComponentValues();
-		this.updatePropertiesPane(this._propertiesPane.objectPath);
+		this.saveUIState();
+		this.clearUI();
+		this.initializeDesigner();
 	}
 
 	private layoutTabbedPanel() {
@@ -542,7 +541,9 @@ export class Designer extends Disposable implements IThemable {
 					this._propertiesPane.selectProperty(relativePath);
 				}
 			}
-			this.highlightActiveElement();
+			if (highlight) {
+				this.highlightActiveElement();
+			}
 		}
 	}
 
