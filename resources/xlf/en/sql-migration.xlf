@@ -432,6 +432,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.instance">
       <source xml:lang="en">Instance</source>
     </trans-unit>
+    <trans-unit id="sql.migration.invalid.account.error">
+      <source xml:lang="en">To continue, select a valid Azure account.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.invalid.blob.container.error">
       <source xml:lang="en">To continue, select a valid blob container for source database '{0}'.</source>
     </trans-unit>
@@ -464,6 +467,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.invalid.resourceGroup.error">
       <source xml:lang="en">To continue, select a valid resource group.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.invalid.savedInfo">
+      <source xml:lang="en">Cannot retrieve saved session. Try again by selecting new session.</source>
     </trans-unit>
     <trans-unit id="sql.migration.invalid.service.name.error">
       <source xml:lang="en">Enter a valid name for the Migration Service.</source>
@@ -747,11 +753,8 @@ This may take some time.</source>
     <trans-unit id="sql.migration.resourceGroups">
       <source xml:lang="en">Resource group</source>
     </trans-unit>
-    <trans-unit id="sql.migration.resume.continue">
+    <trans-unit id="sql.migration.resume.session">
       <source xml:lang="en">Resume previously saved session</source>
-    </trans-unit>
-    <trans-unit id="sql.migration.resume.start">
-      <source xml:lang="en">Start a new session</source>
     </trans-unit>
     <trans-unit id="sql.migration.resume.title">
       <source xml:lang="en">Run migration workflow again</source>
@@ -1235,6 +1238,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.start.migration.button">
       <source xml:lang="en">Start migration</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.start.session">
+      <source xml:lang="en">Start a new session</source>
     </trans-unit>
     <trans-unit id="sql.migration.start.time">
       <source xml:lang="en">Start time</source>
