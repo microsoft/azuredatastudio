@@ -21,7 +21,7 @@ suite('Account Management Dialog Controller Tests', () => {
 	test('Open Account Dialog - Dialog Doesn\'t Exist', () => {
 		// Setup: Create instance of the controller
 		let instantiationService = createInstantiationService();
-		let controller = new AccountDialogController(instantiationService, undefined!);
+		let controller = new AccountDialogController(new Emitter<void>().event, instantiationService, undefined!);
 		assert.strictEqual(controller.accountDialog, undefined);
 
 		// If: I open the account dialog when one hasn't been opened
@@ -35,7 +35,7 @@ suite('Account Management Dialog Controller Tests', () => {
 	test('Open Account Dialog - Dialog Exists', () => {
 		// Setup: Create instance of the controller with an account dialog already loaded
 		let instantiationService = createInstantiationService();
-		let controller = new AccountDialogController(instantiationService, undefined!);
+		let controller = new AccountDialogController(new Emitter<void>().event, instantiationService, undefined!);
 		controller.openAccountDialog();
 		let accountDialog = controller.accountDialog;
 
@@ -58,7 +58,7 @@ suite('Account Management Dialog Controller Tests', () => {
 		mockErrorMessageService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()));
 
 		// ... Create instance of the controller with an opened dialog
-		let controller = new AccountDialogController(instantiationService, mockErrorMessageService.object);
+		let controller = new AccountDialogController(new Emitter<void>().event, instantiationService, mockErrorMessageService.object);
 		controller.openAccountDialog();
 
 		// If: The account dialog reports a failure adding an account
