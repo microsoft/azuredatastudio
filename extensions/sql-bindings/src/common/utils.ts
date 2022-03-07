@@ -9,14 +9,11 @@ import * as os from 'os';
 import * as constants from './constants';
 import * as path from 'path';
 import * as glob from 'fast-glob';
-import * as dataworkspace from 'dataworkspace';
 import * as mssql from '../../../mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import * as fse from 'fs-extra';
 import * as which from 'which';
-import * as cp from 'child_process';
 import { promises as fs } from 'fs';
-import { Project } from '../models/project';
 
 export interface ValidationResult {
 	errorMessage: string;
@@ -626,22 +623,4 @@ export function getFoldersAlongPath(startFolder: string, endFolder: string): str
 	}
 
 	return folders;
-}
-
-
-// SQL Binding
-export async function executeCommand(command: string, cwd?: string): Promise<string> {
-	return new Promise<string>((resolve, reject) => {
-		cp.exec(command, { maxBuffer: 500 * 1024, cwd: cwd }, (error: Error, stdout: string, stderr: string) => {
-			if (error) {
-				reject(error);
-				return;
-			}
-			if (stderr && stderr.length > 0) {
-				reject(new Error(stderr));
-				return;
-			}
-			resolve(stdout);
-		});
-	});
 }

@@ -294,9 +294,5 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 	}
 
 	// 6. Add sql extension package reference to project. If the reference is already there, it doesn't get added again
-	// await packageHelper.addPackageToAFProjectContainingFile(uri, constants.sqlExtensionPackageName);
-	if (projectUri?.fsPath) {
-		await azureFunctionsUtils.addNugetReferenceToProjectFile(projectUri.fsPath);
-	}
+	await packageHelper.addPackageToAFProjectContainingFile(uri, constants.sqlExtensionPackageName);
 }
-

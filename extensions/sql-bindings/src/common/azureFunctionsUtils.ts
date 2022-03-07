@@ -10,7 +10,7 @@ import * as constants from './constants';
 import { parseJson } from './parseJson';
 
 /**
- * Represents the settings in an Azure function project's local.settings.json file
+ * Represents the settings in an Azure function project's locawl.settings.json file
  */
 export interface ILocalSettingsJson {
 	IsEncrypted?: boolean;
@@ -99,12 +99,4 @@ export async function getAFProjectContainingFile(fileUri: vscode.Uri): Promise<v
 // copied from verifyIsproject.ts in vscode-azurefunctions extension
 export async function isFunctionProject(folderPath: string): Promise<boolean> {
 	return fse.pathExists(path.join(folderPath, constants.hostFileName));
-}
-
-/**
- * Adds the required nuget package to the project
- * @param selectedProjectFile is the users selected project file path
- */
-export async function addNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void> {
-	await utils.executeCommand(`dotnet add ${selectedProjectFile} package ${constants.sqlExtensionPackageName} --prerelease`);
 }
