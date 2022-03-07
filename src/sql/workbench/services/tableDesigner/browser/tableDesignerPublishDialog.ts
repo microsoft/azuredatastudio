@@ -34,6 +34,7 @@ export enum TableDesignerPublishDialogResult {
 export class TableDesignerPublishDialog extends Modal {
 
 	private _report?: string;
+	private _format: string = 'plaintext';
 	private _okButton?: Button;
 	private _generateScriptButton?: Button;
 	private _cancelButton?: Button;
@@ -54,8 +55,9 @@ export class TableDesignerPublishDialog extends Modal {
 		this._markdownRenderer = instantiationService.createInstance(MarkdownRenderer, {});
 	}
 
-	public open(report: string): Promise<TableDesignerPublishDialogResult> {
+	public open(report: string, format: string = 'plaintext'): Promise<TableDesignerPublishDialogResult> {
 		this._report = report;
+		this._format = format;
 		this.render();
 		this.show();
 		const promise = new Promise<TableDesignerPublishDialogResult>((resolve) => {
@@ -78,8 +80,12 @@ export class TableDesignerPublishDialog extends Modal {
 
 	protected renderBody(container: HTMLElement) {
 		const body = DOM.append(container, DOM.$('.table-designer-publish-dialog'));
-		const markdownElement = this._markdownRenderer.render({ value: this._report }).element;
-		DOM.append(body, markdownElement);
+		if (this._format === 'plaintext') {
+			body.innerText = this._report;
+		} else { // markdown
+			const markdownElement = this._markdownRenderer.render({ value: this._report }).element;
+			DOM.append(body, markdownElement);
+		}
 	}
 
 	protected layout(height?: number): void {
