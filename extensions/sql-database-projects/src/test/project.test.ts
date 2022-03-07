@@ -14,7 +14,7 @@ import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
 import { Project } from '../models/project';
-import { exists, convertSlashesForSqlProj } from '../common/utils';
+import { exists, convertSlashesForSqlProj, getWellKnownDatabaseSources } from '../common/utils';
 import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { SqlTargetPlatform } from 'sqldbproj';
@@ -1557,6 +1557,118 @@ describe('Project: properties', function (): void {
 
 		should(() => project.getDatabaseDefaultCollation())
 			.throw('Invalid value specified for the property \'DefaultCollation\' in .sqlproj file');
+	});
+
+	it('Should add database source to project property', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		// Should add a single database source
+		await project.addDatabaseSource('test1');
+		let databaseSourceItems: string[] = project.getDatabaseSourceValues();
+		should(databaseSourceItems.length).equal(1);
+		should(databaseSourceItems[0]).equal('test1');
+
+		// Should add multiple database sources
+		await project.addDatabaseSource('test2');
+		await project.addDatabaseSource('test3');
+		databaseSourceItems = project.getDatabaseSourceValues();
+		should(databaseSourceItems.length).equal(3);
+		should(databaseSourceItems[0]).equal('test1');
+		should(databaseSourceItems[1]).equal('test2');
+		should(databaseSourceItems[2]).equal('test3');
+
+		// Should not add duplicate database sources
+		await project.addDatabaseSource('test1');
+		await project.addDatabaseSource('test2');
+		await project.addDatabaseSource('test3');
+		should(databaseSourceItems.length).equal(3);
+		should(databaseSourceItems[0]).equal('test1');
+		should(databaseSourceItems[1]).equal('test2');
+		should(databaseSourceItems[2]).equal('test3');
+	});
+
+	it('Should remove database source from project property', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		await project.addDatabaseSource('test1');
+		await project.addDatabaseSource('test2');
+		await project.addDatabaseSource('test3');
+		await project.addDatabaseSource('test4');
+
+		let databaseSourceItems: string[] = project.getDatabaseSourceValues();
+		should(databaseSourceItems.length).equal(4);
+
+		// Should remove database sources
+		await project.removeDatabaseSource('test2');
+		await project.removeDatabaseSource('test1');
+		await project.removeDatabaseSource('test4');
+
+		databaseSourceItems = project.getDatabaseSourceValues();
+		should(databaseSourceItems.length).equal(1);
+		should(databaseSourceItems[0]).equal('test3');
+
+		// Should remove database source tag when last database source is removed
+		await project.removeDatabaseSource('test3');
+		databaseSourceItems = project.getDatabaseSourceValues();
+
+		should(databaseSourceItems.length).equal(0);
+	});
+
+	it('Should add and remove values from project properties according to specified case sensitivity', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
+		const project = await Project.openProject(projFilePath);
+		const propertyName = 'TestProperty';
+
+		// Should add value to collection
+		await project['addValueToCollectionProjectProperty'](propertyName, 'test');
+		should(project['evaluateProjectPropertyValue'](propertyName)).equal('test');
+
+		// Should not allow duplicates of different cases when comparing case insitively
+		await project['addValueToCollectionProjectProperty'](propertyName, 'TEST');
+		should(project['evaluateProjectPropertyValue'](propertyName)).equal('test');
+
+		// Should allow duplicates of differnt cases when comparing case sensitively
+		await project['addValueToCollectionProjectProperty'](propertyName, 'TEST', true);
+		should(project['evaluateProjectPropertyValue'](propertyName)).equal('test;TEST');
+
+		// Should remove values case insesitively
+		await project['removeValueFromCollectionProjectProperty'](propertyName, 'Test');
+		should(project['evaluateProjectPropertyValue'](propertyName)).equal('TEST');
+
+		// Should remove values case sensitively
+		await project['removeValueFromCollectionProjectProperty'](propertyName, 'Test', true);
+		should(project['evaluateProjectPropertyValue'](propertyName)).equal('TEST');
+		await project['removeValueFromCollectionProjectProperty'](propertyName, 'TEST', true);
+		should(project['evaluateProjectPropertyValue'](propertyName)).equal(undefined);
+	});
+
+	it('Should only return well known database strings when getWellKnownDatabaseSourceString function is called', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		await project.addDatabaseSource('test1');
+		await project.addDatabaseSource('test2');
+		await project.addDatabaseSource('test3');
+		await project.addDatabaseSource(constants.WellKnownDatabaseSources[0]);
+
+		should(getWellKnownDatabaseSources(project.getDatabaseSourceValues()).length).equal(1);
+		should(getWellKnownDatabaseSources(project.getDatabaseSourceValues())[0]).equal(constants.WellKnownDatabaseSources[0]);
+	});
+
+	it('Should throw error when adding or removing database source that contains semicolon', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
+		const project = await Project.openProject(projFilePath);
+		const semicolon = ';';
+
+		await testUtils.shouldThrowSpecificError(
+			async () => await project.addDatabaseSource(semicolon),
+			constants.invalidProjectPropertyValueProvided(semicolon));
+
+		await testUtils.shouldThrowSpecificError(
+			async () => await project.removeDatabaseSource(semicolon),
+			constants.invalidProjectPropertyValueProvided(semicolon));
 	});
 });
 
