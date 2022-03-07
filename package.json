@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
-  "version": "1.35.0",
-  "distro": "315dcb18cc81bfa733b04746ba9c0131c38d3913",
+  "version": "1.36.0",
+  "distro": "c56461d705cbb7fab980277848260cf579fff140",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -73,9 +73,9 @@
     "@vscode/sqlite3": "4.0.12",
     "@vscode/vscode-languagedetection": "1.0.18",
     "angular2-grid": "2.0.6",
-    "ansi_up": "^3.0.0",
+    "ansi_up": "^5.1.0",
     "applicationinsights": "1.0.8",
-    "azdataGraph": "github:Microsoft/azdataGraph#0.0.14",
+    "azdataGraph": "github:Microsoft/azdataGraph#0.0.16",
     "chart.js": "^2.9.4",
     "chokidar": "3.5.2",
     "graceful-fs": "4.2.6",

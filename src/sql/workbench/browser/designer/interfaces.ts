@@ -44,6 +44,11 @@ export interface DesignerComponentInput {
 	readonly viewModel: DesignerViewModel;
 
 	/**
+	 * Gets the validation errors.
+	 */
+	readonly validationErrors: DesignerValidationError[] | undefined;
+
+	/**
 	 * Start initilizing the designer input object.
 	 */
 	initialize(): void;
@@ -76,7 +81,8 @@ export interface DesignerComponentInput {
 }
 
 export interface DesignerUIState {
-	activeTabId: PanelTabIdentifier;
+	activeContentTabId: PanelTabIdentifier;
+	activeScriptTabId: PanelTabIdentifier;
 }
 
 export type DesignerAction = 'publish' | 'initialize' | 'processEdit' | 'generateScript' | 'generateReport';
@@ -143,6 +149,7 @@ export interface CategoryValue {
 export interface DropDownProperties extends ComponentProperties {
 	value?: string | CategoryValue;
 	values?: string[] | CategoryValue[];
+	isEditable?: boolean;
 }
 
 export interface CheckBoxProperties extends ComponentProperties {
@@ -175,7 +182,6 @@ export interface DesignerTableProperties extends ComponentProperties {
 	 * Whether user can add new rows to the table. The default value is true.
 	 */
 	canAddRows?: boolean;
-
 	/**
 	 * Whether user can remove rows from the table. The default value is true.
 	 */
@@ -203,16 +209,18 @@ export enum DesignerEditType {
 
 export interface DesignerEdit {
 	type: DesignerEditType;
-	path: DesignerEditPath;
+	path: DesignerPropertyPath;
 	value?: any;
 }
 
-export type DesignerEditPath = (string | number)[];
-export const DesignerRootObjectPath: DesignerEditPath = [];
+export type DesignerPropertyPath = (string | number)[];
+export const DesignerRootObjectPath: DesignerPropertyPath = [];
+
+export type DesignerValidationError = { message: string, propertyPath?: DesignerPropertyPath };
 
 export interface DesignerEditResult {
 	isValid: boolean;
-	errors?: { message: string, property?: DesignerEditPath }[];
+	errors?: DesignerValidationError[];
 }
 
 export interface DesignerTextEditor {

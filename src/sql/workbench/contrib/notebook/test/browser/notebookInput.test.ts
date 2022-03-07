@@ -40,7 +40,8 @@ suite('Notebook Input', function (): void {
 			name: 'TestName',
 			displayName: 'TestDisplayName',
 			connectionProviderIds: ['TestId'],
-			notebookProvider: testProvider
+			notebookProvider: testProvider,
+			supportedLanguages: ['python']
 		}]);
 	});
 	let testManager: ISerializationManager = {
@@ -129,12 +130,14 @@ suite('Notebook Input', function (): void {
 			name: 'TestName1',
 			displayName: 'TestDisplayName1',
 			connectionProviderIds: ['TestId1'],
-			notebookProvider: 'TestProvider'
+			notebookProvider: 'TestProvider',
+			supportedLanguages: ['python']
 		}, {
 			name: 'TestName2',
 			displayName: 'TestDisplayName2',
 			connectionProviderIds: ['TestId2'],
-			notebookProvider: 'TestProvider'
+			notebookProvider: 'TestProvider',
+			supportedLanguages: ['python']
 		}];
 		untitledNotebookInput.standardKernels = testKernels;
 		assert.deepStrictEqual(untitledNotebookInput.standardKernels, testKernels);

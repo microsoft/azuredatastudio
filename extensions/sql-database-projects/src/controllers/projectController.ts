@@ -534,21 +534,23 @@ export class ProjectsController {
 
 		const result: mssql.SchemaComparePublishProjectResult = await service.schemaComparePublishProjectChanges(operationId, projectPath, fs, utils.getAzdataApi()!.TaskExecutionMode.execute);
 
-		const project = await Project.openProject(projectFilePath);
+		if (result.errorMessage === '') {
+			const project = await Project.openProject(projectFilePath);
 
-		let toAdd: vscode.Uri[] = [];
-		result.addedFiles.forEach((f: any) => toAdd.push(vscode.Uri.file(f)));
-		await project.addToProject(toAdd);
+			let toAdd: vscode.Uri[] = [];
+			result.addedFiles.forEach((f: any) => toAdd.push(vscode.Uri.file(f)));
+			await project.addToProject(toAdd);
 
-		let toRemove: vscode.Uri[] = [];
-		result.deletedFiles.forEach((f: any) => toRemove.push(vscode.Uri.file(f)));
+			let toRemove: vscode.Uri[] = [];
+			result.deletedFiles.forEach((f: any) => toRemove.push(vscode.Uri.file(f)));
 
-		let toRemoveEntries: FileProjectEntry[] = [];
-		toRemove.forEach(f => toRemoveEntries.push(new FileProjectEntry(f, f.path.replace(projectPath + '\\', ''), EntryType.File)));
+			let toRemoveEntries: FileProjectEntry[] = [];
+			toRemove.forEach(f => toRemoveEntries.push(new FileProjectEntry(f, f.path.replace(projectPath + '\\', ''), EntryType.File)));
 
-		toRemoveEntries.forEach(async f => await project.exclude(f));
+			toRemoveEntries.forEach(async f => await project.exclude(f));
 
-		await this.buildProject(project);
+			await this.buildProject(project);
+		}
 
 		return result;
 	}
@@ -648,6 +650,29 @@ export class ProjectsController {
 				.withAdditionalProperties(telemetryProps)
 				.withAdditionalMeasurements(telemetryMeasurements)
 				.send();
+		}
+	}
+
+	public async addExistingItemPrompt(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(treeNode);
+
+		const uris = await vscode.window.showOpenDialog({
+			canSelectFiles: true,
+			canSelectFolders: false,
+			canSelectMany: false,
+			openLabel: constants.selectString,
+			title: constants.selectFileString
+		});
+
+		if (!uris) {
+			return;	// user cancelled
+		}
+
+		try {
+			await project.addExistingItem(uris[0].fsPath);
+			this.refreshProjectsTree(treeNode);
+		} catch (err) {
+			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
 
@@ -1359,17 +1384,21 @@ export class ProjectsController {
 		if (model.action === UpdateProjectAction.Compare) {
 			await vscode.commands.executeCommand(constants.schemaCompareRunComparisonCommand, model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
 		} else if (model.action === UpdateProjectAction.Update) {
-			await vscode.window.withProgress(
-				{
-					location: vscode.ProgressLocation.Notification,
-					title: constants.updatingProjectFromDatabase(path.basename(model.targetEndpointInfo.projectFilePath), model.sourceEndpointInfo.databaseName),
-					cancellable: false
-				}, async (_progress, _token) => {
-					return this.schemaCompareAndUpdateProject(model.sourceEndpointInfo, model.targetEndpointInfo);
-				});
+			await vscode.window.showWarningMessage(constants.applyConfirmation, { modal: true }, constants.yesString).then(async (result) => {
+				if (result === constants.yesString) {
+					await vscode.window.withProgress(
+						{
+							location: vscode.ProgressLocation.Notification,
+							title: constants.updatingProjectFromDatabase(path.basename(model.targetEndpointInfo.projectFilePath), model.sourceEndpointInfo.databaseName),
+							cancellable: false
+						}, async (_progress, _token) => {
+							return this.schemaCompareAndUpdateProject(model.sourceEndpointInfo, model.targetEndpointInfo);
+						});
 
-			void vscode.commands.executeCommand(constants.refreshDataWorkspaceCommand);
-			utils.getDataWorkspaceExtensionApi().showProjectsView();
+					void vscode.commands.executeCommand(constants.refreshDataWorkspaceCommand);
+					utils.getDataWorkspaceExtensionApi().showProjectsView();
+				}
+			});
 		} else {
 			throw new Error(`Unknown UpdateProjectAction: ${model.action}`);
 		}

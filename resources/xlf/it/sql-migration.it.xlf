@@ -338,14 +338,6 @@ L'operazione potrebbe richiedere qualche minuto.</target>
         <source xml:lang="en">Help articles and video links</source>
         <target state="translated">Articoli della guida e collegamenti video</target>
       </trans-unit>
-      <trans-unit id="sql.migration.dashboard.link1.description">
-        <source xml:lang="en">Assessment rules used to determine the feasibility of migrating your SQL Server instance to Azure SQL Managed Instance.</source>
-        <target state="translated">Vedere l'elenco delle regole usate per valutare la possibilità di eseguire la migrazione dell'istanza di SQL Server a Istanza gestita di SQL di Azure.</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.dashboard.link1.title">
-        <source xml:lang="en">Assessment rules for Azure SQL Managed Instance</source>
-        <target state="translated">Regole di valutazione per istanza gestita di SQL di Azure</target>
-      </trans-unit>
       <trans-unit id="sql.migration.dashboard.migrate.task.button">
         <source xml:lang="en">Migrate to Azure SQL</source>
         <target state="translated">Eseguire la migrazione a Azure SQL</target>
@@ -1497,6 +1489,42 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       <trans-unit id="total.databases.selected">
         <source xml:lang="en">{0} of {1} databases selected.</source>
         <target state="translated">{0} di {1} database selezionati.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/sql-migration/dist/dashboard/sqlServerDashboard" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="sql.migration.dashboard.help.description.dmsGuide">
+        <source xml:lang="en">A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.</source>
+        <target state="new">A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.description.mi">
+        <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Managed Instance with minimal downtime.</source>
+        <target state="new">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Managed Instance with minimal downtime.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.description.migrateUsingADS">
+        <source xml:lang="en">The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.</source>
+        <target state="new">The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.description.vm">
+        <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</source>
+        <target state="new">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.dmsGuide">
+        <source xml:lang="en">Azure Database Migration Guides</source>
+        <target state="new">Azure Database Migration Guides</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.mi">
+        <source xml:lang="en">Tutorial:  Migrate to Azure SQL Managed Instance (online)</source>
+        <target state="new">Tutorial:  Migrate to Azure SQL Managed Instance (online)</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.migrateUsingADS">
+        <source xml:lang="en">Migrate databases using Azure Data Studio</source>
+        <target state="new">Migrate databases using Azure Data Studio</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.vm">
+        <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</source>
+        <target state="new">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</target>
       </trans-unit>
     </body>
   </file>

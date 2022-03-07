@@ -29,6 +29,26 @@
 	height: 100%;
 }
 
+.designer-component .messages-container {
+	overflow: hidden;
+	height: 100%;
+	width: 100%;
+}
+
+.designer-component .messages-container .message-item {
+	display: flex;
+}
+
+.designer-component .messages-container .message-item .message-icon {
+	margin: 0px 6px;
+	flex: 0 0 auto;
+	line-height: 25px;
+}
+
+.designer-component .messages-container .message-item .message-text {
+	flex: 1 1 auto;
+}
+
 .designer-component .tabbed-panel-container {
 	flex: 1 1 auto;
 	overflow: hidden;

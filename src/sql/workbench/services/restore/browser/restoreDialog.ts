@@ -34,7 +34,6 @@ import { attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachE
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/workbench/services/restore/browser/restoreViewModel';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
-import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
@@ -46,6 +45,7 @@ import { attachModalDialogStyler, attachTabbedPanelStyler } from 'sql/workbench/
 import { fileFiltersSet } from 'sql/workbench/services/restore/common/constants';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 
 interface FileListElement {
 	logicalFileName: string;

@@ -327,6 +327,7 @@
 		"package": {
 			"description": "Azure Data Studio 的 SQL Server 架构比较支持对数据库和 dacpacs 的架构进行比较。",
 			"displayName": "SQL Server 架构比较",
+			"schemaCompare.runComparison": "运行架构比较",
 			"schemaCompare.start": "架构比较"
 		}
 	}

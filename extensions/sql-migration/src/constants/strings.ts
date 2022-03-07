@@ -17,10 +17,13 @@ export function WIZARD_TITLE(instanceName: string): string {
 }
 // //#endregion
 
-// Resume Migration Dialog
+// Save and close
+export const SAVE_AND_CLOSE = localize('sql.migration.save.close', "Save and close");
+export const SAVE_AND_CLOSE_POPUP = localize('sql.migration.save.close.popup', "Configuration saved. Performance data collection will remain running in the background. You can stop the collection when you want to.");
 export const RESUME_TITLE = localize('sql.migration.resume.title', "Run migration workflow again");
-export const START_MIGRATION = localize('sql.migration.resume.start', "Start with migration assessment again (recommended)");
-export const CONTINUE_MIGRATION = localize('sql.migration.resume.continue', "Continue last migration attempt...");
+export const START_NEW_SESSION = localize('sql.migration.start.session', "Start a new session");
+export const RESUME_SESSION = localize('sql.migration.resume.session', "Resume previously saved session");
+export const OPEN_SAVED_INFO_ERROR = localize("sql.migration.invalid.savedInfo", 'Cannot retrieve saved session. Try again by selecting new session.');
 
 // Databases for assessment
 export const DATABASE_FOR_ASSESSMENT_PAGE_TITLE = localize('sql.migration.database.assessment.title', "Databases for assessment");
@@ -63,13 +66,13 @@ export const REFRESH_ASSESSMENT_BUTTON_LABEL = localize('sql.migration.refresh.a
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose your Azure SQL target");
 
 
-export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance (PaaS)");
-export const SKU_RECOMMENDATION_DB_CARD_TEXT = localize('sql.migration.sku.db.card.title', "Azure SQL Database (PaaS)");
-export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "SQL Server on Azure Virtual Machine (IaaS)");
+export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance");
+export const SKU_RECOMMENDATION_DB_CARD_TEXT = localize('sql.migration.sku.db.card.title', "Azure SQL Database");
+export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "SQL Server on Azure Virtual Machine");
 export const SELECT_AZURE_MI = localize('sql.migration.select.azure.mi', "Select your target Azure subscription and your target Azure SQL Managed Instance.");
 export const SELECT_AZURE_VM = localize('sql.migration.select.azure.vm', "Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.");
-export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI = localize('sql.migration.sku.recommendation.view.assessment.mi', "To migrate to Azure SQL Managed Instance (PaaS), view assessment results and select one or more databases.");
-export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM = localize('sql.migration.sku.recommendation.view.assessment.vm', "To migrate to SQL Server on Azure Virtual Machine (IaaS), view assessment results and select one or more databases.");
+export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI = localize('sql.migration.sku.recommendation.view.assessment.mi', "To migrate to Azure SQL Managed Instance, view assessment results and select one or more databases.");
+export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM = localize('sql.migration.sku.recommendation.view.assessment.vm', "To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.");
 export const VIEW_SELECT_BUTTON_LABEL = localize('sql.migration.view.select.button.label', "View/Select");
 export function TOTAL_DATABASES_SELECTED(selectedDbCount: number, totalDbCount: number): string {
 	return localize('total.databases.selected', "{0} of {1} databases selected", selectedDbCount, totalDbCount);
@@ -232,6 +235,9 @@ export const EMPTY_TIME = localize('sql.migration.sku.recommendations.empty.time
 export function LAST_REFRESHED_TIME(d: string = EMPTY_TIME): string {
 	return localize('sql.migration.sku.recommendations.lastRefreshed', "Last refreshed: {0}", d);
 }
+export function TIME_IN_MINUTES(val: number): number {
+	return val * 60000;
+}
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
@@ -264,6 +270,8 @@ export const ACCOUNTS_SELECTION_PAGE_TITLE = localize('sql.migration.wizard.acco
 export const ACCOUNTS_SELECTION_PAGE_DESCRIPTION = localize('sql.migration.wizard.account.description', "Select an Azure account linked to Azure Data Studio, or link one now.");
 export const ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR = localize('sql.migration.wizard.account.noAccount.error', "Add a linked account and then try again.");
 export const ACCOUNT_LINK_BUTTON_LABEL = localize('sql.migration.wizard.account.add.button.label', "Link account");
+export const INVALID_ACCOUNT_ERROR = localize('sql.migration.invalid.account.error', "To continue, select a valid Azure account.");
+
 export function accountLinkedMessage(count: number): string {
 	return count === 1 ? localize('sql.migration.wizard.account.count.single.message', '{0} account linked', count) : localize('sql.migration.wizard.account.count.multiple.message', '{0} accounts linked', count);
 }
@@ -662,8 +670,6 @@ export const SQL_MIGRATION_SERVICE_DETAILS_AUTH_KEYS_TITLE = localize('sql.migra
 export const SQL_MIGRATION_SERVICE_DETAILS_STATUS_UNAVAILABLE = localize('sql.migration.service.details.status.unavailable', "-- unavailable --");
 
 //Source Credentials page.
-export const SAVE_AND_CLOSE = localize('sql.migration.save.close', "Save and close");
-export const SAVE_AND_CLOSE_POPUP = localize('sql.migration.save.close.popup', "Configuration saved. Performance data collection will remain running in the background. You can stop the collection when you want to.");
 export const SOURCE_CONFIGURATION = localize('sql.migration.source.configuration', "Source configuration");
 export const SOURCE_CREDENTIALS = localize('sql.migration.source.credentials', "Source credentials");
 export const ENTER_YOUR_SQL_CREDS = localize('sql.migration.enter.your.sql.cred', "Enter the credentials for the source SQL Server instance. These credentials will be used while migrating databases to Azure SQL.");
@@ -721,7 +727,7 @@ export const REFRESH_BUTTON_LABEL = localize('sql.migration.status.refresh.label
 // Saved Assessment Dialog
 export const NEXT_LABEL = localize('sql.migration.saved.assessment.next', "Next");
 export const CANCEL_LABEL = localize('sql.migration.saved.assessment.cancel', "Cancel");
-export const SAVED_ASSESSMENT_RESULT = localize('sql.migration.saved.assessment.result', "Saved assessment result");
+export const SAVED_ASSESSMENT_RESULT = localize('sql.migration.saved.assessment.result', "Saved session");
 
 // Retry Migration
 export const MIGRATION_CANNOT_RETRY = localize('sql.migration.cannot.retry', 'Migration cannot be retried.');

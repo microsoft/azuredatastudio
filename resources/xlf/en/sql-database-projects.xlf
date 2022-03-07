@@ -736,7 +736,7 @@
       <source xml:lang="en">Run via npx</source>
     </trans-unit>
     <trans-unit id="runningDockerMessage">
-      <source xml:lang="en">Building and running the docker container ...</source>
+      <source xml:lang="en">Running the docker container ...</source>
     </trans-unit>
     <trans-unit id="sameDatabase">
       <source xml:lang="en">Same database</source>
@@ -794,6 +794,9 @@
     </trans-unit>
     <trans-unit id="selectDatabase">
       <source xml:lang="en">Select database</source>
+    </trans-unit>
+    <trans-unit id="selectFileString">
+      <source xml:lang="en">Select File</source>
     </trans-unit>
     <trans-unit id="selectFolderStructure">
       <source xml:lang="en">Select folder structure</source>
@@ -1004,6 +1007,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.addDatabaseReference">
       <source xml:lang="en">Add Database Reference</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.addExistingItem">
+      <source xml:lang="en">Add Existing Item...</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.addSqlBinding">
       <source xml:lang="en">Add SQL Binding (preview)</source>

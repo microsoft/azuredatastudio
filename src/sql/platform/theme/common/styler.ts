@@ -379,12 +379,14 @@ export function attachDesignerStyler(widget: any, themeService: IThemeService): 
 		const tableStyles = computeStyles(colorTheme, defaultTableStyles);
 		const checkboxStyles = computeStyles(colorTheme, defaultCheckboxStyles);
 		const buttonStyles = computeStyles(colorTheme, defaultButtonStyles);
+		const editableDropdownStyles = computeStyles(colorTheme, defaultEditableDropdownStyle);
 		widget.style({
 			inputBoxStyles: inputStyles,
 			selectBoxStyles: selectBoxStyles,
 			tableStyles: tableStyles,
 			checkboxStyles: checkboxStyles,
 			buttonStyles: buttonStyles,
+			dropdownStyles: editableDropdownStyles,
 			paneSeparator: cr.resolveColorValue(sqlcr.DesignerPaneSeparator, colorTheme),
 			groupHeaderBackground: cr.resolveColorValue(sqlcr.GroupHeaderBackground, colorTheme)
 		});

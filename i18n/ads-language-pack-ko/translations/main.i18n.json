@@ -9992,6 +9992,7 @@
 			"miinstallVsix": "VSIX 패키지에서 확장 설치",
 			"newQuery": "새 쿼리",
 			"notebook.cellTitle": "전자 필기장 셀 제목 메뉴",
+			"notebook.cellToolbarLocation.compatibilityDescription": "셀 도구 모음을 표시할지 또는 숨길지 여부입니다. 참고: 이 설정은 확장 호환성 용도로만 사용하도록 설정되었으므로 아무 영향을 주지 않습니다.",
 			"notebook.title": "전자 필기장 제목 메뉴",
 			"notebook.toolbar": "전자 필기장 도구 모음 메뉴",
 			"objectExplorer.context": "개체 탐색기 항목 상황에 맞는 메뉴",
@@ -10002,8 +10003,11 @@
 			"recommendedExtensions": "Marketplace",
 			"scenarioTypeUndefined": "확장 권장 사항의 시나리오 유형을 제공해야 합니다.",
 			"showReleaseNotes": "업데이트 후 릴리스 정보를 표시합니다. 릴리스 정보는 새 웹 브라우저 창에서 열립니다.",
+			"sql.watcherExclude": "파일 감시에서 제외할 파일 경로의 GLOB 패턴을 구성합니다. 패턴은 절대 경로에서 일치해야 합니다. 즉, 적절하게 일치하려면 접두사가 '**/'이거나 전체 경로여야 하고, 경로 내 파일과 일치하려면 접미사가 '/**'여야 합니다(예: '**/build/output/**' 또는 '/Users/name/workspaces/project/build/output/**'). 이 설정을 변경하려면 다시 시작해야 합니다. 시작할 때 Azure Data Studio에서 CPU 시간을 많이 소비하는 경우 큰 폴더를 제외하여 초기 로드를 줄일 수 있습니다.",
 			"uninstallExtensionComplete": "Azure Data Studio를 다시 로드하여 이 확장 {0}의 제거를 완료하세요.",
 			"updateLocale": "Azure Data Studio의 UI 언어를 {0}(으)로 변경하고 다시 시작하시겠습니까?",
+			"vscodeFunctionalityNotSupportedError": "이 VS Code 기능은 Azure Data Studio에서 지원되지 않습니다.",
+			"vscodeInvalidArgumentsError": "잘못된 인수",
 			"watermark.newNotebook": "새 Notebook",
 			"watermark.newSqlFile": "새 SQL 파일",
 			"workspace.trust.description": "Azure Data Studio 내에서 작업 영역 신뢰를 사용할지 여부를 제어합니다.",
@@ -10165,15 +10169,18 @@
 			"showConnectDialogOnStartup": "시작 시 연결 대화 상자 표시"
 		},
 		"sql/workbench/browser/designer/designer": {
+			"designer.defaultRemoveRowConfirmationMessage": "행을 제거하시겠습니까?",
 			"designer.generalGroupName": "일반",
 			"designer.loadingDesigner": "디자이너를 로드하는 중...",
 			"designer.loadingDesignerCompleted": "디자이너가 로드되었습니다.",
 			"designer.newRowText": "새로 추가",
+			"designer.processing": "처리 중...",
 			"designer.processingChanges": "변경 내용 처리 중...",
 			"designer.processingChangesCompleted": "변경 내용이 처리되었습니다.",
+			"designer.processingCompleted": "처리 완료",
+			"designer.publishChangesCompleted": "변경 사항이 게시되었습니다.",
+			"designer.publishingChanges": "변경 내용을 게시하는 중...",
 			"designer.removeRowText": "제거",
-			"designer.savingChanges": "변경 내용 저장 중...",
-			"designer.savingChangesCompleted": "변경 내용이 저장되었습니다.",
 			"tableDesigner.unknownComponentType": "구성 요소 형식: {0}이(가) 지원되지 않음"
 		},
 		"sql/workbench/browser/designer/designerPropertiesPane": {
@@ -10198,6 +10205,7 @@
 			"resourceViewerInput.resourceViewer": "리소스 뷰어"
 		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
+			"tableDesigner.OperationInProgressWarning": "다른 작업이 진행 중인 동안에는 작업을 수행할 수 없습니다.",
 			"tableDesigner.newTable": "새 테이블"
 		},
 		"sql/workbench/browser/modal/modal": {
@@ -11176,7 +11184,7 @@
 			"clearResults": "결과 지우기",
 			"collapseAllCells": "셀 축소",
 			"expandAllCells": "셀 확장",
-			"kernelNotSupported": "커널이 지원되지 않으므로 이 전자 필기장을 매개 변수로 실행할 수 없습니다. 지원되는 커널 및 형식을 사용하세요. [자세한 정보] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
+			"kernelNotSupported": "This notebook cannot run with parameters as the kernel is not supported. Please use the supported kernels and format. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"loading": "커널을 로드하는 중...",
 			"loadingContexts": "컨텍스트를 로드하는 중...",
 			"localhost": "localhost",
@@ -11184,8 +11192,8 @@
 			"newViewLabel": "새 보기 만들기",
 			"noContextAvailable": "없음",
 			"noKernel": "커널 없음",
-			"noParametersCell": "이 전자 필기장은 매개 변수 셀이 추가될 때까지 매개 변수를 사용하여 실행할 수 없습니다. [자세히 알아보기] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
-			"noParametersInCell": "매개 변수 셀에 추가된 매개 변수가 있을 때까지 이 전자 필기장을 매개 변수로 실행할 수 없습니다. [자세한 정보] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
+			"noParametersCell": "This notebook cannot run with parameters until a parameter cell is added. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
+			"noParametersInCell": "This notebook cannot run with parameters until there are parameters added to the parameter cell. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"notebook.findNext": "다음 문자열 찾기",
 			"notebook.findPrevious": "이전 문자열 찾기",
 			"notebookViewLabel": "편집기",
@@ -11581,11 +11589,8 @@
 			"refreshError": "'{0}' 노드를 새로 고치는 동안 오류가 발생했습니다. {1}"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/actions": {
-			"tableDesigner.saveTableChanges": "변경 내용 저장"
-		},
-		"sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution": {
-			"tableDesigner.configTitle": "테이블 디자이너",
-			"tableDesigner.featureEnabledDescription": "테이블 디자이너 기능의 사용 여부를 제어합니다. 기본값은 false입니다."
+			"tableDesigner.generateScript": "스크립트 생성",
+			"tableDesigner.publishTableChanges": "변경 내용 게시 중..."
 		},
 		"sql/workbench/contrib/tasks/browser/tasks.contribution": {
 			"inProgressTasksChangesBadge": "진행 중인 작업 {0}개",
@@ -11647,8 +11652,6 @@
 			"welcomePage.location": "위치",
 			"welcomePage.moreRecent": "자세히 표시",
 			"welcomePage.name": "이름",
-			"welcomePage.preview": "미리 보기",
-			"welcomePage.previewBody": "이 기능 페이지는 미리 보기로 제공됩니다. 미리 보기 기능은 제품에 영구적으로 포함될 예정인 새로운 기능을 도입합니다. 이와 같은 기능은 안정적이지만 접근성 측면에서 추가적인 개선이 필요합니다. 해당 기능이 개발되는 동안 초기 피드백을 주시면 감사하겠습니다.",
 			"welcomePage.resources": "리소스",
 			"welcomePage.runQuery": "쿼리 실행",
 			"welcomePage.runQueryBody": "쿼리 편집기를 통해 데이터와 상호 작용합니다.",
@@ -11724,41 +11727,6 @@
 			"welcomePage.sqlServerProfiler": "SQL Server 프로파일러",
 			"welcomePage.startTour": "둘러보기 시작",
 			"welcomePage.willReloadAfterInstallingExtensionPack": "{0}에 대한 추가 지원을 설치한 후 창이 다시 로드됩니다."
-		},
-		"sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page": {
-			"welcomePage.azdata": "Azure Data Studio",
-			"welcomePage.azdataBlog": "최신 릴리스의 새로운 기능 알아보기",
-			"welcomePage.azdataBlogDescription": "매월 새로운 기능을 보여주는 새로운 월간 블로그 게시물",
-			"welcomePage.colorTheme": "색 테마",
-			"welcomePage.colorThemeDescription": "편집기 및 코드를 원하는 방식으로 표시",
-			"welcomePage.customize": "사용자 지정",
-			"welcomePage.deploy": "배포",
-			"welcomePage.extensionDescription": "SQL Server 관리자 팩 등을 포함하여 필요한 확장 다운로드",
-			"welcomePage.extensions": "확장",
-			"welcomePage.followTwitter": "Twitter에서 팔로우",
-			"welcomePage.followTwitterDescription": "커뮤니티가 Azure Data Studio를 사용하는 방식과 엔지니어와 직접 대화하는 방법을 최신 상태로 유지하세요.",
-			"welcomePage.gettingStarted": "시작",
-			"welcomePage.gitHubRepository": "GitHub 리포지토리",
-			"welcomePage.help": "도움말",
-			"welcomePage.keyboardShortcut": "바로 가기 키",
-			"welcomePage.keyboardShortcutDescription": "즐겨 찾는 명령을 찾아 사용자 지정",
-			"welcomePage.learn": "학습",
-			"welcomePage.moreRecent": "자세히...",
-			"welcomePage.newConnection": "새 연결",
-			"welcomePage.newDeployment": "새 배포...",
-			"welcomePage.newNotebook": "새 Notebook",
-			"welcomePage.newQuery": "새 쿼리",
-			"welcomePage.noRecentFolders": "최근 폴더 없음",
-			"welcomePage.openFileLinuxPC": "파일 열기",
-			"welcomePage.openFileMac": "파일 열기",
-			"welcomePage.productDocumentation": "설명서",
-			"welcomePage.recent": "최근 항목",
-			"welcomePage.releaseNotes": "릴리스 정보",
-			"welcomePage.reportIssue": "문제 또는 기능 요청 보고",
-			"welcomePage.showCommands": "모든 명령 찾기 및 실행",
-			"welcomePage.showCommandsDescription": "명령 팔레트({0})에서 명령을 빠른 액세스 및 검색",
-			"welcomePage.showOnStartup": "시작 시 시작 페이지 표시",
-			"welcomePage.start": "시작"
 		},
 		"sql/workbench/services/accountManagement/browser/accountDialog": {
 			"accountDialog.addConnection": "계정 추가",
@@ -11952,7 +11920,7 @@
 			"value": "값"
 		},
 		"sql/workbench/services/insights/common/insightsUtils": {
-			"insightsDidNotFindResolvedFile": "다음 경로에서 쿼리 파일을 찾을 수 없습니다.\r\n {0}"
+			"insightsDidNotFindResolvedFile": "다음 경로에서 쿼리 파일을 찾을 수 없습니다. \r\n {0}"
 		},
 		"sql/workbench/services/jobManagement/browser/jobManagementUtilities": {
 			"agentUtilities.betweenRetries": "다시 시도 대기 중",
@@ -11995,6 +11963,7 @@
 			"splitCellEdit": "셀 분할"
 		},
 		"sql/workbench/services/notebook/browser/models/clientSession": {
+			"NoExecuteManager": "이 전자 필기장 파일 형식에 대해 공급자가 정의되지 않았기 때문에 서버를 시작할 수 없습니다.",
 			"ServerNotStarted": "알 수 없는 이유로 서버가 시작되지 않았습니다.",
 			"clientSession.unknownError": "Notebook 세션을 시작하는 동안 오류가 발생했습니다.",
 			"kernelRequiresConnection": "{0} 커널을 찾을 수 없습니다. 대신 기본 커널이 사용됩니다."
@@ -12015,8 +11984,11 @@
 			"startSessionFailed": "{0} 세션을 시작할 수 없습니다."
 		},
 		"sql/workbench/services/notebook/browser/notebookServiceImpl": {
+			"executeProviderTimeout": "전자 필기장 공급자자 '{0}'에 대한 실행 공급자 가용성 대기 시간이 초과되었습니다.",
 			"notebookServiceNoProvider": "Notebook 공급자가 없습니다.",
-			"notebookUriNotDefined": "Notebook 관리자를 만들 때 URI가 전달되지 않았습니다."
+			"notebookUriNotDefined": "Notebook 관리자를 만들 때 URI가 전달되지 않았습니다.",
+			"serializationProviderTimeout": "전자 필기장 공급자 '{0}'에 대한 serialization 공급자 가용성 대기 시간이 초과되었습니다.",
+			"standardKernelsTimeout": "전자 필기장 공급자 '{0}'에 대한 표준 커널 가용성 대기 시간이 초과되었습니다."
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewModel": {
 			"notebookView.nameTaken": "이름이 {0}인 보기가 이 전자 필기장에 이미 있습니다."
@@ -12050,6 +12022,7 @@
 			"carbon.extension.contributes.notebook.magic": "'%%sql'과(와) 같은 셀 매직의 이름입니다.",
 			"carbon.extension.contributes.notebook.provider": "Notebook 공급자의 식별자입니다.",
 			"carbon.extension.contributes.notebook.standardKernels": "이 Notebook 공급자에서 표준이어야 하는 커널",
+			"providerNotInRegistryError": "지정된 공급자 '{0}'이(가) 전자 필기장 레지스트리에 없습니다.",
 			"vscode.extension.contributes.notebook.languagemagics": "Notebook 언어를 적용합니다.",
 			"vscode.extension.contributes.notebook.providersDescriptions": "전자 필기장 공급자 설명을 제공합니다."
 		},
@@ -12119,7 +12092,6 @@
 		"sql/workbench/services/query/common/queryModelService": {
 			"commitEditFailed": "행 커밋 실패: ",
 			"msgCancelQueryFailed": "쿼리 취소 실패: {0}",
-			"queryModelService.noQueryFoundForUri": "{0}에 대한 쿼리를 찾을 수 없습니다.",
 			"queryModelService.uriAlreadyHasQuery": "{0}에 기존 쿼리가 이미 있습니다.",
 			"runQueryBatchStartLine": "줄 {0}",
 			"runQueryBatchStartMessage": "다음에서 쿼리 실행 시작: ",
@@ -12227,11 +12199,16 @@
 			"designer.foreignkey.description.onDeleteAction": "사용자가 외래 키 관계에 포함된 데이터가 있는 행을 삭제하려고 할 때 수행할 동작입니다.",
 			"designer.foreignkey.description.onUpdateAction": "사용자가 외래 키 관계에 포함된 데이터가 있는 행을 업데이트하려고 할 때 수행할 동작입니다.",
 			"designer.foreignkey.description.primaryKeyTable": "기본 또는 고유 키 열을 포함하는 테이블입니다.",
+			"designer.index.column.description.name": "열의 이름입니다.",
+			"designer.index.description.columns": "인덱스의 열입니다.",
+			"designer.index.description.name": "인덱스 이름입니다.",
 			"designer.table.description.description": "테이블에 대한 설명입니다.",
 			"designer.table.description.name": "테이블 개체의 이름입니다.",
 			"designer.table.description.schema": "테이블을 포함하는 스키마입니다.",
+			"tableDesigner.ErrorDialogTitle": "Table Designer Error",
 			"tableDesigner.ForeignKeyTypeName": "외래 키",
-			"tableDesigner.PrimaryKeyTableName": "기본 키 테이블",
+			"tableDesigner.ForeignTableName": "외부 테이블",
+			"tableDesigner.IndexTypeName": "인덱스",
 			"tableDesigner.checkConstraintExpressionTitle": "식",
 			"tableDesigner.checkConstraintNameTitle": "이름",
 			"tableDesigner.checkConstraintTypeName": "CHECK 제약 조건",
@@ -12249,18 +12226,27 @@
 			"tableDesigner.descriptionTitle": "설명",
 			"tableDesigner.errorInitializingTableDesigner": "테이블 디자이너를 초기화하는 동안 오류가 발생했습니다. {0}",
 			"tableDesigner.errorProcessingEdit": "변경을 처리하는 동안 오류가 발생했습니다: {0}",
-			"tableDesigner.foreignKeyColumn": "외래 키 열",
-			"tableDesigner.foreignKeyColumns": "열 매핑",
+			"tableDesigner.foreignKey.column": "열",
+			"tableDesigner.foreignKey.foreignColumn": "외부 열",
+			"tableDesigner.foreignKeyColumns": "열",
 			"tableDesigner.foreignKeyNameTitle": "이름",
 			"tableDesigner.foreignKeyOnDeleteAction": "삭제 시 작업",
 			"tableDesigner.foreignKeyOnUpdateAction": "업데이트 작업 시",
 			"tableDesigner.foreignKeysTabTitle": "외래 키",
 			"tableDesigner.generalTab": "일반",
+			"tableDesigner.generatePreviewReportError": "미리 보기 보고서를 생성하는 동안 오류가 발생했습니다. {0}",
+			"tableDesigner.generateScriptError": "스크립트 생성하는 동안 오류가 발생했습니다. {0}",
+			"tableDesigner.generatingPreviewReport": "미리 보기 보고서 생성 중...",
+			"tableDesigner.generatingScript": "스크립트 생성 중...",
+			"tableDesigner.generatingScriptCompleted": "스크립트를 생성했습니다.",
+			"tableDesigner.index.column.name": "열",
+			"tableDesigner.indexColumns": "열",
+			"tableDesigner.indexName": "이름",
+			"tableDesigner.indexesTabTitle": "인덱스",
 			"tableDesigner.nameTitle": "테이블 이름",
-			"tableDesigner.primaryKeyColumn": "기본 키 열",
-			"tableDesigner.saveChangeError": "변경 내용을 저장하는 동안 오류가 발생했습니다. {0}",
-			"tableDesigner.savedChangeSuccess": "변경 내용이 저장되었습니다.",
-			"tableDesigner.savingChanges": "테이블 디자이너 변경 내용을 저장하는 중...",
+			"tableDesigner.publishChangeError": "변경 내용을 게시하는 동안 오류가 발생했습니다. {0}",
+			"tableDesigner.publishChangeSuccess": "변경 내용을 게시했습니다.",
+			"tableDesigner.savingChanges": "테이블 디자이너 변경 내용을 게시하는 중...",
 			"tableDesigner.schemaTitle": "스키마",
 			"tableDesigner.tableObjectType": "테이블"
 		},
@@ -12272,6 +12258,60 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "시작(&S)",
 			"showReleaseNotes": "시작 표시"
+		},
+		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
+			"errorStartBeforeReady": "세션을 시작할 수 없습니다. 관리자가 아직 초기화되지 않았습니다."
+		},
+		"sql/workbench/contrib/queryplan2/browser/planHeader": {
+			"planHeaderIndexAndCost": "쿼리 {0}: 쿼리 비용(스크립트 기준): {1}%"
+		},
+		"sql/workbench/contrib/queryplan2/browser/queryPlan": {
+			"openQueryAction": "쿼리 열기",
+			"queryPlanCustomZoom": "사용자 지정 확대/축소",
+			"queryPlanFitGraphLabel": "크기에 맞게",
+			"queryPlanOpenGraphFile": "Open Plan File",
+			"queryPlanPropertiesActionLabel": "속성",
+			"queryPlanSavePlanXML": "Save Plan File",
+			"queryPlanSearchNodeAction": "SearchNode",
+			"queryPlanTitle": "Query Plan (Preview)",
+			"queryPlanZoomInActionLabel": "확대",
+			"queryPlanZoomOutActionLabel": "축소"
+		},
+		"sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView": {
+			"nodePropertyViewNameNameColumnHeader": "Name",
+			"nodePropertyViewNameValueColumnHeader": "Value",
+			"nodePropertyViewTitle": "Properties",
+			"queryPlanPropertiesEdgeOperationName": "Edge",
+			"queryPlanPropertyViewClose": "Close",
+			"queryPlanPropertyViewSortAlphabetically": "Alphabetical",
+			"queryPlanPropertyViewSortByDisplayOrde": "Categorized"
+		},
+		"sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget": {
+			"cancelCustomZoomAction": "Close (Escape)",
+			"invalidCustomZoomError": "Select a zoom value between 1 to 200",
+			"qpZoomValueLabel": "Zoom (percent)",
+			"zoomAction": "Zoom (Enter)"
+		},
+		"sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget": {
+			"cancelSearchAction": "Close (Escape)",
+			"nextSearchItemAction": "Next Match (Enter)",
+			"previousSearchItemAction": "Previous Match (Shift+Enter)",
+			"queryPlanSearchTypeContains": "Contains",
+			"queryPlanSearchTypeEquals": "Equals"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
+			"tableDesigner.PreviewFeature": "미리 보기 기능"
+		},
+		"sql/workbench/contrib/tsgops/browser/tsgopsActions": {
+			"hideActivityBarViewContainers": "확장 뷰렛 숨기기",
+			"hidePanel": "패널 숨기기",
+			"hideSettings": "설정 아이콘 숨기기"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerPublishDialog": {
+			"tableDesigner.UpdateDatabase": "데이터베이스 업데이트",
+			"tableDesigner.cancel": "취소",
+			"tableDesigner.generateScript": "스크립트 생성",
+			"tableDesigner.previewDatabaseUpdates": "데이터베이스 업데이트 미리 보기"
 		}
 	}
 }

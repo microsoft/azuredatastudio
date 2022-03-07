@@ -22,5 +22,6 @@ export enum KernelsLanguage {
 	SparkScala = 'scala',
 	SparkR = 'sparkr',
 	PowerShell = 'powershell',
-	CSharp = 'cs'
+	CSharp = 'csharp',
+	FSharp = 'fsharp'
 }

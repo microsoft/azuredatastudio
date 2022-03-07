@@ -48,6 +48,7 @@ exports.dirs = [
 	'extensions/server-report',
 	'extensions/simple-browser',
 	'extensions/sql-assessment',
+	'extensions/sql-bindings',
 	'extensions/sql-database-projects',
 	'extensions/sql-migration',
 	'extensions/vscode-test-resolver',
