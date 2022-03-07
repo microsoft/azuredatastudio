@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/sql-bindings/package" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="%description%">
+    <trans-unit id="description">
       <source xml:lang="en">Enables users to develop and publish Azure Functions with Azure SQL bindings</source>
     </trans-unit>
-    <trans-unit id="%displayName%">
+    <trans-unit id="displayName">
       <source xml:lang="en">SQL Bindings</source>
     </trans-unit>
 </body></file>
