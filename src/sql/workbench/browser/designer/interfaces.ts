@@ -150,6 +150,7 @@ export interface CategoryValue {
 export interface DropDownProperties extends ComponentProperties {
 	value?: string | CategoryValue;
 	values?: string[] | CategoryValue[];
+	isEditable?: boolean;
 }
 
 export interface CheckBoxProperties extends ComponentProperties {

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/queryPlan2';
+import 'vs/css!./media/executionPlan';
 import type * as azdata from 'azdata';
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { localize } from 'vs/nls';
@@ -11,10 +11,10 @@ import { dispose } from 'vs/base/common/lifecycle';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import * as DOM from 'vs/base/browser/dom';
 import * as azdataGraphModule from 'azdataGraph';
-import { customZoomIconClassNames, openPlanFileIconClassNames, openPropertiesIconClassNames, openQueryIconClassNames, queryPlanNodeIconPaths, savePlanIconClassNames, searchIconClassNames, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/queryplan2/browser/constants';
+import { customZoomIconClassNames, openPlanFileIconClassNames, openPropertiesIconClassNames, openQueryIconClassNames, executionPlanNodeIconPaths, savePlanIconClassNames, searchIconClassNames, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { isString } from 'vs/base/common/types';
-import { PlanHeader } from 'sql/workbench/contrib/queryplan2/browser/planHeader';
-import { QueryPlanPropertiesView } from 'sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView';
+import { PlanHeader } from 'sql/workbench/contrib/executionPlan/browser/planHeader';
+import { ExecutionPlanPropertiesView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView';
 import { Action } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
@@ -30,9 +30,9 @@ import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/co
 import { Progress } from 'vs/platform/progress/common/progress';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { EDITOR_FONT_DEFAULTS } from 'vs/editor/common/config/editorOptions';
-import { QueryPlanWidgetController } from 'sql/workbench/contrib/queryplan2/browser/queryPlanWidgetController';
-import { CustomZoomWidget } from 'sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget';
-import { NodeSearchWidget } from 'sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget';
+import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
+import { CustomZoomWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget';
+import { NodeSearchWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IFileService } from 'vs/platform/files/common/files';
 import { VSBuffer } from 'vs/base/common/buffer';
@@ -56,15 +56,15 @@ export interface InternalExecutionPlanEdge extends azdata.ExecutionPlanEdge {
 	id?: string;
 }
 
-export class QueryPlan2Tab implements IPanelTab {
-	public readonly title = localize('queryPlanTitle', "Query Plan (Preview)");
-	public readonly identifier = 'QueryPlan2Tab';
-	public readonly view: QueryPlan2View;
+export class ExecutionPlanTab implements IPanelTab {
+	public readonly title = localize('executionPlanTitle', "Query Plan (Preview)");
+	public readonly identifier = 'ExecutionPlan2Tab';
+	public readonly view: ExecutionPlanView;
 
 	constructor(
 		@IInstantiationService instantiationService: IInstantiationService,
 	) {
-		this.view = instantiationService.createInstance(QueryPlan2View);
+		this.view = instantiationService.createInstance(ExecutionPlanView);
 	}
 
 	public dispose() {
@@ -77,10 +77,10 @@ export class QueryPlan2Tab implements IPanelTab {
 
 }
 
-export class QueryPlan2View implements IPanelView {
-	private _qps?: QueryPlan2[] = [];
+export class ExecutionPlanView implements IPanelView {
+	private _eps?: ExecutionPlan[] = [];
 	private _graphs?: azdata.ExecutionPlanGraph[] = [];
-	private _container = DOM.$('.qps-container');
+	private _container = DOM.$('.eps-container');
 
 	constructor(
 		@IInstantiationService private instantiationService: IInstantiationService,
@@ -93,7 +93,7 @@ export class QueryPlan2View implements IPanelView {
 
 	dispose() {
 		this._container.remove();
-		delete this._qps;
+		delete this._eps;
 		delete this._graphs;
 	}
 
@@ -101,7 +101,7 @@ export class QueryPlan2View implements IPanelView {
 	}
 
 	public clear() {
-		this._qps = [];
+		this._eps = [];
 		this._graphs = [];
 		DOM.clearNode(this._container);
 	}
@@ -109,9 +109,9 @@ export class QueryPlan2View implements IPanelView {
 	public addGraphs(newGraphs: azdata.ExecutionPlanGraph[] | undefined) {
 		if (newGraphs) {
 			newGraphs.forEach(g => {
-				const qp2 = this.instantiationService.createInstance(QueryPlan2, this._container, this._qps.length + 1);
-				qp2.graphModel = g;
-				this._qps.push(qp2);
+				const ep = this.instantiationService.createInstance(ExecutionPlan, this._container, this._eps.length + 1);
+				ep.graphModel = g;
+				this._eps.push(ep);
 				this._graphs.push(g);
 				this.updateRelativeCosts();
 			});
@@ -124,14 +124,14 @@ export class QueryPlan2View implements IPanelView {
 		}, 0);
 
 		if (sum > 0) {
-			this._qps.forEach(qp => {
-				qp.planHeader.relativeCost = ((qp.graphModel.root.subTreeCost + qp.graphModel.root.cost) / sum) * 100;
+			this._eps.forEach(ep => {
+				ep.planHeader.relativeCost = ((ep.graphModel.root.subTreeCost + ep.graphModel.root.cost) / sum) * 100;
 			});
 		}
 	}
 }
 
-export class QueryPlan2 implements ISashLayoutProvider {
+export class ExecutionPlan implements ISashLayoutProvider {
 	private _graphModel?: azdata.ExecutionPlanGraph;
 
 	private _container: HTMLElement;
@@ -143,11 +143,11 @@ export class QueryPlan2 implements ISashLayoutProvider {
 	private _planContainer: HTMLElement;
 	private _planHeaderContainer: HTMLElement;
 
-	public propertiesView: QueryPlanPropertiesView;
+	public propertiesView: ExecutionPlanPropertiesView;
 	private _propContainer: HTMLElement;
 
 	private _planActionContainer: HTMLElement;
-	public planActionView: QueryPlanWidgetController;
+	public planActionView: ExecutionPlanWidgetController;
 
 	public azdataGraphDiagram: any;
 
@@ -170,9 +170,9 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
 	) {
 		// parent container for query plan.
-		this._container = DOM.$('.query-plan');
+		this._container = DOM.$('.execution-plan');
 		this._parent.appendChild(this._container);
-		const sashContainer = DOM.$('.query-plan-sash');
+		const sashContainer = DOM.$('.execution-plan-sash');
 		this._parent.appendChild(sashContainer);
 
 		const sash = new Sash(sashContainer, this, { orientation: Orientation.HORIZONTAL });
@@ -227,11 +227,11 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		// container properties
 		this._propContainer = DOM.$('.properties');
 		this._container.appendChild(this._propContainer);
-		this.propertiesView = new QueryPlanPropertiesView(this._propContainer, this._themeService);
+		this.propertiesView = new ExecutionPlanPropertiesView(this._propContainer, this._themeService);
 
 		this._planActionContainer = DOM.$('.plan-action-container');
 		this._planContainer.appendChild(this._planActionContainer);
-		this.planActionView = new QueryPlanWidgetController(this._planActionContainer);
+		this.planActionView = new ExecutionPlanWidgetController(this._planActionContainer);
 
 		// container that holds actionbar icons
 		this._actionBarContainer = DOM.$('.action-bar-container');
@@ -350,7 +350,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		let graphRoot: azdata.ExecutionPlanNode = this._graphModel.root;
 
 		this.populate(graphRoot, diagramRoot);
-		this.azdataGraphDiagram = new azdataGraph.azdataQueryPlan(container, diagramRoot, queryPlanNodeIconPaths);
+		this.azdataGraphDiagram = new azdataGraph.azdataQueryPlan(container, diagramRoot, executionPlanNodeIconPaths);
 
 		this.azdataGraphDiagram.graph.setCellsMovable(false); // preventing drag and drop of graph nodes.
 		this.azdataGraphDiagram.graph.setCellsDisconnectable(false); // preventing graph edges to be disconnected from source and target nodes.
@@ -456,66 +456,66 @@ export class QueryPlan2 implements ISashLayoutProvider {
 }
 
 class OpenQueryAction extends Action {
-	public static ID = 'qp.OpenQueryAction';
+	public static ID = 'ep.OpenQueryAction';
 	public static LABEL = localize('openQueryAction', "Open Query");
 
 	constructor() {
 		super(OpenQueryAction.ID, OpenQueryAction.LABEL, openQueryIconClassNames);
 	}
 
-	public override async run(context: QueryPlan2): Promise<void> {
+	public override async run(context: ExecutionPlan): Promise<void> {
 		context.openQuery();
 	}
 }
 
 class PropertiesAction extends Action {
-	public static ID = 'qp.propertiesAction';
-	public static LABEL = localize('queryPlanPropertiesActionLabel', "Properties");
+	public static ID = 'ep.propertiesAction';
+	public static LABEL = localize('executionPlanPropertiesActionLabel', "Properties");
 
 	constructor() {
 		super(PropertiesAction.ID, PropertiesAction.LABEL, openPropertiesIconClassNames);
 	}
 
-	public override async run(context: QueryPlan2): Promise<void> {
+	public override async run(context: ExecutionPlan): Promise<void> {
 		context.propertiesView.toggleVisibility();
 	}
 }
 
 class ZoomInAction extends Action {
-	public static ID = 'qp.ZoomInAction';
-	public static LABEL = localize('queryPlanZoomInActionLabel', "Zoom In");
+	public static ID = 'ep.ZoomInAction';
+	public static LABEL = localize('executionPlanZoomInActionLabel', "Zoom In");
 
 	constructor() {
 		super(ZoomInAction.ID, ZoomInAction.LABEL, zoomInIconClassNames);
 	}
 
-	public override async run(context: QueryPlan2): Promise<void> {
+	public override async run(context: ExecutionPlan): Promise<void> {
 		context.azdataGraphDiagram.graph.zoomIn();
 	}
 }
 
 class ZoomOutAction extends Action {
-	public static ID = 'qp.ZoomOutAction';
-	public static LABEL = localize('queryPlanZoomOutActionLabel', "Zoom Out");
+	public static ID = 'ep.ZoomOutAction';
+	public static LABEL = localize('executionPlanZoomOutActionLabel', "Zoom Out");
 
 	constructor() {
 		super(ZoomOutAction.ID, ZoomOutAction.LABEL, zoomOutIconClassNames);
 	}
 
-	public override async run(context: QueryPlan2): Promise<void> {
+	public override async run(context: ExecutionPlan): Promise<void> {
 		context.azdataGraphDiagram.graph.zoomOut();
 	}
 }
 
 class ZoomToFitAction extends Action {
-	public static ID = 'qp.FitGraph';
-	public static LABEL = localize('queryPlanFitGraphLabel', "Zoom to fit");
+	public static ID = 'ep.FitGraph';
+	public static LABEL = localize('executionPlanFitGraphLabel', "Zoom to fit");
 
 	constructor() {
 		super(ZoomToFitAction.ID, ZoomToFitAction.LABEL, zoomToFitIconClassNames);
 	}
 
-	public override async run(context: QueryPlan2): Promise<void> {
+	public override async run(context: ExecutionPlan): Promise<void> {
 		context.azdataGraphDiagram.graph.fit();
 		context.azdataGraphDiagram.graph.view.rendering = true;
 		context.azdataGraphDiagram.graph.refresh();
@@ -523,14 +523,14 @@ class ZoomToFitAction extends Action {
 }
 
 class SavePlanFile extends Action {
-	public static ID = 'qp.saveXML';
-	public static LABEL = localize('queryPlanSavePlanXML', "Save Plan File");
+	public static ID = 'ep.saveXML';
+	public static LABEL = localize('executionPlanSavePlanXML', "Save Plan File");
 
 	constructor() {
 		super(SavePlanFile.ID, SavePlanFile.LABEL, savePlanIconClassNames);
 	}
 
-	public override async run(context: QueryPlan2): Promise<void> {
+	public override async run(context: ExecutionPlan): Promise<void> {
 		const workspaceFolders = await context.workspaceContextService.getWorkspace().folders;
 		const defaultFileName = 'plan';
 		let currentWorkSpaceFolder: URI;
@@ -544,7 +544,7 @@ class SavePlanFile extends Action {
 			filters: [
 				{
 					extensions: ['sqlplan'], //TODO: Get this extension from provider
-					name: localize('queryPlan.SaveFileDescription', 'Execution Plan Files') //TODO: Get the names from providers.
+					name: localize('executionPlan.SaveFileDescription', 'Execution Plan Files') //TODO: Get the names from providers.
 				}
 			],
 			defaultUri: currentWorkSpaceFolder // If no workspaces are opened this will be undefined
@@ -556,40 +556,40 @@ class SavePlanFile extends Action {
 }
 
 class CustomZoomAction extends Action {
-	public static ID = 'qp.customZoom';
-	public static LABEL = localize('queryPlanCustomZoom', "Custom Zoom");
+	public static ID = 'ep.customZoom';
+	public static LABEL = localize('executionPlanCustomZoom', "Custom Zoom");
 
 	constructor() {
 		super(CustomZoomAction.ID, CustomZoomAction.LABEL, customZoomIconClassNames);
 	}
 
-	public override async run(context: QueryPlan2): Promise<void> {
+	public override async run(context: ExecutionPlan): Promise<void> {
 		context.planActionView.toggleWidget(context._instantiationService.createInstance(CustomZoomWidget, context));
 	}
 }
 
 class SearchNodeAction extends Action {
-	public static ID = 'qp.searchNode';
-	public static LABEL = localize('queryPlanSearchNodeAction', "Find Node");
+	public static ID = 'ep.searchNode';
+	public static LABEL = localize('executionPlanSearchNodeAction', "Find Node");
 
 	constructor() {
 		super(SearchNodeAction.ID, SearchNodeAction.LABEL, searchIconClassNames);
 	}
 
-	public override async run(context: QueryPlan2): Promise<void> {
+	public override async run(context: ExecutionPlan): Promise<void> {
 		context.planActionView.toggleWidget(context._instantiationService.createInstance(NodeSearchWidget, context));
 	}
 }
 
 class OpenPlanFile extends Action {
-	public static ID = 'qp.openGraphFile';
-	public static Label = localize('queryPlanOpenGraphFile', "Show Query Plan XML"); //TODO: add a contribution point for providers to set this text
+	public static ID = 'ep.openGraphFile';
+	public static Label = localize('executionPlanOpenGraphFile', "Show Query Plan XML"); //TODO: add a contribution point for providers to set this text
 
 	constructor() {
 		super(OpenPlanFile.ID, OpenPlanFile.Label, openPlanFileIconClassNames);
 	}
 
-	public override async run(context: QueryPlan2): Promise<void> {
+	public override async run(context: ExecutionPlan): Promise<void> {
 		await context.openGraphFile();
 	}
 }
@@ -598,7 +598,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	const recommendationsColor = theme.getColor(textLinkForeground);
 	if (recommendationsColor) {
 		collector.addRule(`
-		.qps-container .query-plan .plan .header .recommendations {
+		.eps-container .execution-plan .plan .header .recommendations {
 			color: ${recommendationsColor};
 		}
 		`);
@@ -606,7 +606,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	const shadow = theme.getColor(widgetShadow);
 	if (shadow) {
 		collector.addRule(`
-		.qps-container .query-plan .plan .plan-action-container .child {
+		.eps-container .execution-plan .plan .plan-action-container .child {
 			box-shadow: 0 0 8px 2px ${shadow};
 		}
 		`);
@@ -615,9 +615,9 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	const menuBackgroundColor = theme.getColor(listHoverBackground);
 	if (menuBackgroundColor) {
 		collector.addRule(`
-		.qps-container .query-plan .plan .header,
-		.qps-container .query-plan .properties .title,
-		.qps-container .query-plan .properties .table-action-bar {
+		.eps-container .execution-plan .plan .header,
+		.eps-container .execution-plan .properties .title,
+		.eps-container .execution-plan .properties .table-action-bar {
 			background-color: ${menuBackgroundColor};
 		}
 		`);
@@ -626,7 +626,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	const widgetBackgroundColor = theme.getColor(editorWidgetBackground);
 	if (widgetBackgroundColor) {
 		collector.addRule(`
-		.qps-container .query-plan .plan .plan-action-container .child,
+		.eps-container .execution-plan .plan .plan-action-container .child,
 		.mxTooltip {
 			background-color: ${widgetBackgroundColor};
 		}
@@ -636,10 +636,10 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	const widgetBorderColor = theme.getColor(contrastBorder);
 	if (widgetBorderColor) {
 		collector.addRule(`
-		.qps-container .query-plan .plan .plan-action-container .child,
-		.qps-container .query-plan .plan .header,
-		.qps-container .query-plan .properties .title,
-		.qps-container .query-plan .properties .table-action-bar,
+		.eps-container .execution-plan .plan .plan-action-container .child,
+		.eps-container .execution-plan .plan .header,
+		.eps-container .execution-plan .properties .title,
+		.eps-container .execution-plan .properties .table-action-bar,
 		.mxTooltip {
 			border: 1px solid ${widgetBorderColor};
 		}

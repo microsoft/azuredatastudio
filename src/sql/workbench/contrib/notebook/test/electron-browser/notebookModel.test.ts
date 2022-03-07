@@ -1006,6 +1006,33 @@ suite('notebook model', function (): void {
 		assert.strictEqual(model.languageInfo.name, 'fake', 'Notebook language info is not set properly');
 	});
 
+	test('Should add new cell with provided cell language', async function () {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentLoader = mockContentManager.object;
+
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undoRedoService);
+		await model.loadContents();
+
+		const newLanguage = 'CustomCellLanguage';
+		let cell = model.addCell(CellTypes.Code, undefined, newLanguage);
+		assert.strictEqual(model.cells.length, expectedNotebookContent.cells.length + 1, 'New cell was not added to list of cells.');
+		assert.strictEqual(cell.language, newLanguage);
+	});
+
+	test('Should add new cell with default language if none is provided', async function () {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentLoader = mockContentManager.object;
+
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undoRedoService);
+		await model.loadContents();
+
+		let cell = model.addCell(CellTypes.Code);
+		assert.strictEqual(model.cells.length, expectedNotebookContent.cells.length + 1, 'New cell was not added to list of cells.');
+		assert.strictEqual(cell.language, expectedNotebookContent.metadata.language_info.name);
+	});
+
 	async function loadModelAndStartClientSession(notebookContent: nb.INotebookContents): Promise<NotebookModel> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(notebookContent));

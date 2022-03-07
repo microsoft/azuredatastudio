@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationMode, MigrationStateModel, Page, StateChangeEvent } from '../models/stateMachine';
+import { MigrationMode, MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 
@@ -17,6 +17,7 @@ export class MigrationModePage extends MigrationWizardPage {
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL, 'MigrationModePage'), migrationStateModel);
+		this.migrationStateModel._databaseBackup.migrationMode = this.migrationStateModel._databaseBackup.migrationMode || MigrationMode.ONLINE;
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
@@ -59,7 +60,7 @@ export class MigrationModePage extends MigrationWizardPage {
 		});
 	}
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		if (this.originalMigrationMode !== this.migrationStateModel._databaseBackup.migrationMode || this.migrationStateModel.resumeAssessment) {
+		if (this.originalMigrationMode !== this.migrationStateModel._databaseBackup.migrationMode) {
 			this.migrationStateModel.refreshDatabaseBackupPage = true;
 		}
 
@@ -71,15 +72,15 @@ export class MigrationModePage extends MigrationWizardPage {
 	}
 
 	private migrationModeContainer(): azdata.FormComponent {
-		const buttonGroup = 'cutoverContainer';
+		const buttonGroup = 'migrationMode';
 
 		const onlineButton = this._view.modelBuilder.radioButton().withProps({
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL,
 			name: buttonGroup,
+			checked: this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.ONLINE,
 			CSSStyles: {
 				...styles.LABEL_CSS,
 			},
-			checked: true
 		}).component();
 
 		const onlineDescription = this._view.modelBuilder.text().withProps({
@@ -99,6 +100,7 @@ export class MigrationModePage extends MigrationWizardPage {
 		const offlineButton = this._view.modelBuilder.radioButton().withProps({
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL,
 			name: buttonGroup,
+			checked: this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE,
 			CSSStyles: {
 				...styles.LABEL_CSS,
 				'margin-top': '12px'
@@ -112,16 +114,6 @@ export class MigrationModePage extends MigrationWizardPage {
 				'margin-left': '20px'
 			}
 		}).component();
-
-		if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode)) {
-			if (this.migrationStateModel.savedInfo.migrationMode === MigrationMode.ONLINE) {
-				onlineButton.checked = true;
-				offlineButton.checked = false;
-			} else {
-				onlineButton.checked = false;
-				offlineButton.checked = true;
-			}
-		}
 
 		this._disposables.push(offlineButton.onDidChangeCheckedState((e) => {
 			if (e) {

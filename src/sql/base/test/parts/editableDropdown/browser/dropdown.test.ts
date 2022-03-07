@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { Dropdown, IDropdownOptions } from 'sql/base/parts/editableDropdown/browser/dropdown';
+import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 
 const options: IDropdownOptions = {
 	values: [

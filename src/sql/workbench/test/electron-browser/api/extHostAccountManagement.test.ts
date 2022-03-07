@@ -12,9 +12,10 @@ import { TestInstantiationService } from 'vs/platform/instantiation/test/common/
 import { IRPCProtocol } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { MainThreadAccountManagement } from 'sql/workbench/api/browser/mainThreadAccountManagement';
-import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TestRPCProtocol } from 'vs/workbench/test/browser/api/testRPCProtocol';
+import { AzureResource } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
 

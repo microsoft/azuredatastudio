@@ -3,11 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import type * as azdata from 'azdata';
+export function activate(): void {
+}
 
-export class QueryPlan2State {
-	graphs: azdata.ExecutionPlanGraph[] = [];
-	clearQueryPlan2State() {
-		this.graphs = [];
-	}
+export function deactivate(): void {
 }

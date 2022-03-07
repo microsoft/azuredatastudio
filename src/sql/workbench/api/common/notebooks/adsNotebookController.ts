@@ -19,6 +19,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 type SelectionChangedEvent = { selected: boolean, notebook: vscode.NotebookDocument; };
 type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };
 type ExecutionHandler = (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>;
+type LanguagesHandler = (languages: string[]) => void;
 type InterruptHandler = (notebook: vscode.NotebookDocument) => void | Promise<void>;
 
 /**
@@ -39,8 +40,8 @@ export class ADSNotebookController implements vscode.NotebookController {
 		private _id: string,
 		private _viewType: string,
 		private _label: string,
-		private _addLanguagesHandler: (providerId, languages) => void,
 		private _extHostNotebookDocumentsAndEditors: ExtHostNotebookDocumentsAndEditors,
+		private _languagesHandler: LanguagesHandler,
 		private _handler?: ExecutionHandler,
 		preloads?: vscode.NotebookRendererScript[]
 	) {
@@ -107,7 +108,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 
 	public set supportedLanguages(value: string[]) {
 		this._kernelData.supportedLanguages = value;
-		this._addLanguagesHandler(this._viewType, value);
+		this._languagesHandler(value);
 		this._languagesAdded.resolve();
 	}
 

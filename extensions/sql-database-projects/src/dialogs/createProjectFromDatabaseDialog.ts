@@ -92,6 +92,16 @@ export class CreateProjectFromDatabaseDialog {
 				label: constants.sdkStyleProject
 			}).component();
 
+			const sdkLearnMore = view.modelBuilder.hyperlink().withProps({
+				label: constants.learnMore,
+				url: constants.sdkLearnMoreUrl
+			}).component();
+
+			const sdkFormComponentGroup = view.modelBuilder.flexContainer()
+				.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
+				.withItems([this.sdkStyleCheckbox, sdkLearnMore], { CSSStyles: { flex: '0 0 auto', 'margin-right': '10px' } })
+				.component();
+
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
 					{
@@ -117,7 +127,7 @@ export class CreateProjectFromDatabaseDialog {
 								component: createProjectSettingsFormSection,
 							},
 							{
-								component: this.sdkStyleCheckbox
+								component: sdkFormComponentGroup
 							}
 						]
 					}
