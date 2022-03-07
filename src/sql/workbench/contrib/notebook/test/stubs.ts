@@ -122,7 +122,7 @@ export class NotebookModelStub implements INotebookModel {
 	getMetaValue(key: string) {
 		throw new Error('Method not implemented.');
 	}
-	addCell(cellType: CellType, index?: number): void {
+	addCell(cellType: CellType, index?: number, language?: string): void {
 		throw new Error('Method not implemented.');
 	}
 	moveCell(cellModel: ICellModel, direction: MoveDirection): void {
