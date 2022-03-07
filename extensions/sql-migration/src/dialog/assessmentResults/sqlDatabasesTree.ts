@@ -5,12 +5,13 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { SqlMigrationAssessmentResultItem, SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
-import { MigrationStateModel, MigrationTargetType, Page } from '../../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import { debounce } from '../../api/utils';
 import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
 import * as styles from '../../constants/styles';
 import { EOL } from 'os';
+import { selectDatabasesFromList } from '../../constants/helper';
 
 const styleLeft: azdata.CssStyles = {
 	'border': 'none',
@@ -142,7 +143,7 @@ export class SqlDatabaseTree {
 				...styles.BOLD_NOTE_CSS,
 				'margin': '0px 15px 0px 15px'
 			},
-			value: constants.DATABASES(0, this._model._databaseAssessment?.length)
+			value: constants.DATABASES(0, this._model._databasesForAssessment?.length)
 		}).component();
 		return this._databaseCount;
 	}
@@ -881,7 +882,7 @@ export class SqlDatabaseTree {
 	public async initialize(): Promise<void> {
 		let instanceTableValues: azdata.DeclarativeTableCellValue[][] = [];
 		this._databaseTableValues = [];
-		this._dbNames = this._model._databaseAssessment;
+		this._dbNames = this._model._databasesForAssessment;
 		const selectedDbs = (this._targetType === MigrationTargetType.SQLVM) ? this._model._vmDbs : this._model._miDbs;
 		this._serverName = (await this._model.getSourceConnectionProfile()).serverName;
 
@@ -959,25 +960,16 @@ export class SqlDatabaseTree {
 			});
 		}
 		await this._instanceTable.setDataValues(instanceTableValues);
-		if (this._model.resumeAssessment && this._model.savedInfo.closedPage >= Page.SKURecommendation && this._targetType === this._model.savedInfo.migrationTargetType) {
-			await this._databaseTable.setDataValues(this._model.savedInfo.migrationDatabases);
-		} else {
-			if (this._model.retryMigration && this._targetType === this._model.savedInfo.migrationTargetType) {
-				const sourceDatabaseName = this._model.savedInfo.databaseList[0];
-				const sourceDatabaseIndex = this._dbNames.indexOf(sourceDatabaseName);
-				this._databaseTableValues[sourceDatabaseIndex][0].value = true;
-			}
 
-			await this._databaseTable.setDataValues(this._databaseTableValues);
-			await this.updateValuesOnSelection();
-		}
+		this._databaseTableValues = selectDatabasesFromList(this._model._databasesForMigration, this._databaseTableValues);
+		await this._databaseTable.setDataValues(this._databaseTableValues);
+		await this.updateValuesOnSelection();
 	}
 
 	private async updateValuesOnSelection() {
 		await this._databaseCount.updateProperties({
-			'value': constants.DATABASES(this.selectedDbs()?.length, this._model._databaseAssessment?.length)
+			'value': constants.DATABASES(this.selectedDbs()?.length, this._model._databasesForAssessment?.length)
 		});
-		this._model._databaseSelection = <azdata.DeclarativeTableCellValue[][]>this._databaseTable.dataValues;
 	}
 
 	// undo when bug #16445 is fixed
