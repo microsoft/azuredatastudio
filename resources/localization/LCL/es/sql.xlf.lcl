@@ -1377,6 +1377,24 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";src/sql/base/browser/ui/editableDropdown/browser/dropdown.editableDropdown.errorValidate" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Must be an option from the list]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Debe ser una opción de la lista]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/browser/ui/editableDropdown/browser/dropdown.selectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select Box]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Seleccionar cuadro]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/base/browser/ui/loadingSpinner/loadingSpinner.component.loadingCompletedMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Loading completed]]></Val>
@@ -2036,24 +2054,6 @@
           <Val><![CDATA[Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Controla si la ventana vacía es de confianza de forma predeterminada en Azure Data Studio. Cuando se usa con "#{0}#", puede habilitar toda la funcionalidad de Azure Data Studio sin preguntar en una ventana vacía.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/base/parts/editableDropdown/browser/dropdown.editableDropdown.errorValidate" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Must be an option from the list]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Debe ser una opción de la lista]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/base/parts/editableDropdown/browser/dropdown.selectBox" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select Box]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Seleccionar cuadro]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14813,10 +14813,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/services/notebook/browser/models/clientSession.kernelRequiresConnection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Kernel {0} was not found. The default kernel will be used instead.]]></Val>
+          <Val><![CDATA[Kernel '{0}' was not found. The default kernel will be used instead.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[No se encontró el kernel {0}. En su lugar, se utilizará el kernel predeterminado.]]></Val>
+            <Val><![CDATA[No se ha encontradoNo se encontró el kernel {0}. En su lugar, se utilizará el kernel predeterminado.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Kernel {0} was not found. The default kernel will be used instead.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
