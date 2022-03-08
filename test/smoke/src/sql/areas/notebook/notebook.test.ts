@@ -14,6 +14,7 @@ export function setup(opts: minimist.ParsedArgs) {
 		afterSuite(opts);
 
 		it('can perform basic text cell functionality', async function () {
+			throw new Error('test failure');
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
