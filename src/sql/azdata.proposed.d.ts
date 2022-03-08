@@ -1622,7 +1622,6 @@ declare module 'azdata' {
 		graphFileType: string;
 	}
 
-
 	/**
 	 * Component to display text with an icon representing the severity
 	 */
