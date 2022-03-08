@@ -13,6 +13,7 @@ import * as vscode from 'vscode';
 import { ConnectionResult } from 'azdata';
 import * as templates from '../../templates/templates';
 import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
+//import { IFireWallRuleError } from 'vscode-mssql';
 
 interface DockerImageSpec {
 	label: string;
@@ -274,7 +275,21 @@ export class DeployService {
 				expiresOn: undefined,
 				tenantId: undefined
 			};
-			let connectionUrl = await vscodeMssqlApi.connect(connectionProfile, saveConnectionAndPassword);
+			let connectionUrl = '';
+			try {
+				connectionUrl = await vscodeMssqlApi.connect(connectionProfile, saveConnectionAndPassword);
+			} catch (err) {
+				console.log('$$$$$$$' + ' ' + err);
+				const connectionUri = err.connectionUri;
+				if (connectionUri) {
+					await vscodeMssqlApi.promptForFirewallRule(connectionUri, connectionProfile);
+				}
+				//const firewallRuleError = <IFireWallRuleError> err;
+				console.log('!!!!!!!' + connectionUri + ' ' + err);
+
+				// add firewall
+
+			}
 			return connectionUrl;
 		} else {
 			return undefined;

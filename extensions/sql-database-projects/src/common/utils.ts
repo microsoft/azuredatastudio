@@ -451,7 +451,7 @@ export async function retry<T>(
 			}
 
 		} catch (err) {
-			outputChannel.appendLine(constants.retryMessage(name, err));
+			outputChannel.appendLine(constants.retryMessage(name, getErrorMessage(err)));
 		}
 	}
 

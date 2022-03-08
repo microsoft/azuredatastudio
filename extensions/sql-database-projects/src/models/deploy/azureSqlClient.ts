@@ -72,10 +72,10 @@ export class AzureSqlClient {
 	public static async getSubscriptions(): Promise<SubscriptionWithSession[]> {
 		const subscriptions: SubscriptionWithSession[] = [];
 		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
-		const account = await vscodeMssqlApi.accountService.getAccount();
+		const account = await vscodeMssqlApi.azureAccountService.getAccount();
 		const tenants = <Tenant[]>account.properties.tenants;
 		for (const tenantId of tenants.map(t => t.id)) {
-			const token = await vscodeMssqlApi.accountService.getAccountSecurityToken(account, tenantId);
+			const token = await vscodeMssqlApi.azureAccountService.getAccountSecurityToken(account, tenantId);
 			const subClient = new SubscriptionClient(new TokenCredentials(token.token));
 			const newSubs = await subClient.subscriptions.list();
 			subscriptions.push(...newSubs.map(newSub => {
@@ -98,12 +98,22 @@ export class AzureSqlClient {
 	public static async createServer(subscription: SubscriptionWithSession, resourceGroup: ResourceGroup, serverName: string, parameters: Server): Promise<Server | undefined> {
 		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 		//const account = await vscodeMssqlApi.accountService.getAccount();
-		const token = await vscodeMssqlApi.accountService.getAccountSecurityToken(subscription.account, subscription.tenantId);
+		const token = await vscodeMssqlApi.azureAccountService.getAccountSecurityToken(subscription.account, subscription.tenantId);
 		const credential = new SQLTokenCredential(token);
 		if (subscription?.subscription.subscriptionId && resourceGroup?.name) {
 			const sqlClient: SqlManagementClient = new SqlManagementClient(credential, subscription.subscription.subscriptionId);
 			//let sqlClient = new SqlManagementClient(new coreAuth.TokenCredential(token.token), subscription.subscription.id);
 			if (sqlClient) {
+				try {
+					const currentServer = await sqlClient.servers.get(resourceGroup.name,
+						serverName);
+					if (currentServer) {
+						// TODO: error for existing server
+						return currentServer;
+					}
+				} catch {
+					// Ignore the error if
+				}
 				const result = await sqlClient.servers.beginCreateOrUpdateAndWait(resourceGroup.name,
 					serverName, parameters);
 
@@ -115,7 +125,7 @@ export class AzureSqlClient {
 
 	public static async getResourceGroups(subscription: SubscriptionWithSession): Promise<Array<ResourceGroup> | []> {
 		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
-		const token = await vscodeMssqlApi.accountService.getAccountSecurityToken(subscription.account, subscription.tenantId);
+		const token = await vscodeMssqlApi.azureAccountService.getAccountSecurityToken(subscription.account, subscription.tenantId);
 		if (subscription?.subscription?.subscriptionId) {
 			//const resourceGroupClient = new ResourceManagementClient(<coreAuth.TokenCredential>subscription.session.credentials2, subscription.subscription.subscriptionId);
 			const resourceGroupClient = new ResourceManagementClient(new TokenCredentials(token.token), subscription.subscription.subscriptionId);

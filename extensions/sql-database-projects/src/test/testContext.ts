@@ -140,7 +140,7 @@ export class MockAzureFunctionService implements vscodeMssql.IAzureFunctionsServ
 	getAzureFunctions(_: string): Thenable<vscodeMssql.GetAzureFunctionsResult> { return Promise.resolve(mockGetAzureFunctionsResult); }
 }
 
-export class MockAccountService implements vscodeMssql.IAccountService {
+export class MockAccountService implements vscodeMssql.IAzureAccountService {
 	getAccount(): Promise<vscodeMssql.IAccount> { return Promise.reject('not implemented'); }
 	getAccountSecurityToken(_: vscodeMssql.IAccount, __: string | undefined): Thenable<vscodeMssql.Token> { return Promise.reject('not implemented'); }
 }
@@ -258,9 +258,9 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 		this.dacFx = new MockDacFxMssqlService;
 		this.schemaCompare = new MockSchemaCompareService;
 		this.azureFunctions = new MockAzureFunctionService;
-		this.accountService = new MockAccountService;
+		this.azureAccountService = new MockAccountService;
 	}
-	accountService: vscodeMssql.IAccountService;
+	azureAccountService: vscodeMssql.IAzureAccountService;
 	promptForConnection(_?: boolean): Promise<vscodeMssql.IConnectionInfo | undefined> {
 		throw new Error('Method not implemented.');
 	}
@@ -274,6 +274,9 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 		throw new Error('Method not implemented.');
 	}
 	getConnectionString(_: string | vscodeMssql.ConnectionDetails, ___?: boolean, _____?: boolean): Promise<string> {
+		throw new Error('Method not implemented.');
+	}
+	promptForFirewallRule(_: string, __: vscodeMssql.IConnectionInfo): Promise<boolean> {
 		throw new Error('Method not implemented.');
 	}
 }
