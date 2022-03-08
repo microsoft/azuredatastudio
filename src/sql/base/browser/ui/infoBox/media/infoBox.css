@@ -37,7 +37,7 @@
 }
 
 .infobox-text {
-	flex: 1 1 auto;
+	flex: 1 1 fit-content;
 	padding: 10px 0px 0px 0px;
 	user-select: text;
 	overflow: scroll;
