@@ -452,6 +452,7 @@ export class AccountManagementService implements IAccountManagementService {
 		return op(provider);
 	}
 
+	// This is being fired too early before the accounts have been populated, need to delay somehow.
 	private fireAccountListUpdate(provider: AccountProviderWithMetadata, sort: boolean) {
 		// Step 1) Get and sort the list
 		if (sort) {
