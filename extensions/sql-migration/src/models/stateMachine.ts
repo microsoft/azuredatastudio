@@ -1010,7 +1010,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				} else {
 					managedInstanceValue = {
 						name: managedInstance.id,
-						displayName: `(Unavailable) ${managedInstance.name}`
+						displayName: constants.UNAVAILABLE_MANAGED_INSTANCE_PREFIX(managedInstance.name)
 					};
 				}
 
