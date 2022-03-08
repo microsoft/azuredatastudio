@@ -409,7 +409,12 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 					case MigrationTargetType.SQLMI:
 						this.migrationStateModel._targetServerInstance = this.migrationStateModel.getManagedInstance(selectedIndex);
-						if (this.migrationStateModel._targetServerInstance.properties.state === 'Ready') {
+						if (this.migrationStateModel._targetServerInstance.properties.state !== 'Ready') {
+							this.wizard.message = {
+								text: constants.MI_NOT_READY_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.state),
+								level: azdata.window.MessageLevel.Error
+							};
+						} else {
 							this.wizard.message = {
 								text: '',
 								level: azdata.window.MessageLevel.Error
