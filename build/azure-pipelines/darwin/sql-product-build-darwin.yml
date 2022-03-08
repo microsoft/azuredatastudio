@@ -134,7 +134,7 @@ steps:
       APP_NAME="`ls $APP_ROOT | head -n 1`"
       yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/darwin/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions"
     displayName: Run smoke tests (Electron)
-    continueOnError: true
+    continueOnError: ne(variables['SMOKE_FAIL_ON_ERROR'], 'true')
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   # - script: |
