@@ -131,6 +131,7 @@ export class AccountDialog extends Modal {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _providerViewsMap = new Map<string, IProviderViewUiComponent>();
 
+	private _accountsLoaded: boolean = false;
 	private _closeButton?: Button;
 	private _addAccountButton?: Button;
 	private _splitView?: SplitView;
@@ -145,6 +146,9 @@ export class AccountDialog extends Modal {
 
 	private _onCloseEmitter: Emitter<void>;
 	public get onCloseEvent(): Event<void> { return this._onCloseEmitter.event; }
+
+	public _onProviderRegisterEmitter: Emitter<void>;
+	public get onProviderRegisterEvent(): Event<void> { return this._onProviderRegisterEmitter.event; }
 
 	constructor(
 		@ILayoutService layoutService: ILayoutService,
@@ -180,6 +184,10 @@ export class AccountDialog extends Modal {
 		// Setup the event emitters
 		this._onAddAccountErrorEmitter = new Emitter<string>();
 		this._onCloseEmitter = new Emitter<void>();
+		this._onProviderRegisterEmitter = new Emitter<void>();
+		this.onProviderRegisterEvent(() => {
+			this.logService.debug(`Event fired from accountDialog`);
+		});
 
 		// Create the view model and wire up the events
 		this.viewModel = this._instantiationService.createInstance(AccountViewModel);
@@ -263,18 +271,23 @@ export class AccountDialog extends Modal {
 		this.show();
 		if (!this.isEmptyLinkedAccount()) {
 			this.showSplitView();
-		} else {
-			//this.showNoAccountContainer();
+		}
+		else if (!this._accountsLoaded) {
 			this.hideWhenLoading();
+		}
+		else {
+			this.showNoAccountContainer();
 		}
 
 	}
 
-	// private showNoAccountContainer() {
-	// 	this._splitViewContainer!.hidden = true;
-	// 	this._noaccountViewContainer!.hidden = false;
-	// 	this._addAccountButton!.focus();
-	// }
+
+
+	private showNoAccountContainer() {
+		this._splitViewContainer!.hidden = true;
+		this._noaccountViewContainer!.hidden = false;
+		this._addAccountButton!.focus();
+	}
 
 	private hideWhenLoading() {
 		this._splitViewContainer!.hidden = true;
@@ -417,9 +430,13 @@ export class AccountDialog extends Modal {
 			this.showSplitView();
 		}
 
-		if (this.isEmptyLinkedAccount() && this._noaccountViewContainer!.hidden) {
-			//this.showNoAccountContainer();
-			this.hideWhenLoading();
+		if (this.isEmptyLinkedAccount() && this._noaccountViewContainer!.hidden && !this._accountsLoaded) {
+			if (!this._accountsLoaded) {
+				this.hideWhenLoading();
+			}
+			else {
+				this.showNoAccountContainer();
+			}
 		}
 
 		this.layout();

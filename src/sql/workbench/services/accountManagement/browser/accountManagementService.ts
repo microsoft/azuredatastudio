@@ -321,7 +321,10 @@ export class AccountManagementService implements IAccountManagementService {
 			try {
 				// If the account list dialog hasn't been defined, create a new one
 				if (!self._accountDialogController) {
-					self._accountDialogController = self._instantiationService.createInstance(AccountDialogController, this.registerProviderLoadEvent);
+					self._accountDialogController = self._instantiationService.createInstance(AccountDialogController);
+					this.registerProviderLoadEvent(() => {
+						self._accountDialogController._onProviderRegisterEmitter.fire();
+					});
 				}
 				self._accountDialogController.openAccountDialog();
 				self._accountDialogController.accountDialog!.onCloseEvent(resolve);

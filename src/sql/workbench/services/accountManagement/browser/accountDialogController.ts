@@ -6,7 +6,7 @@
 import Severity from 'vs/base/common/severity';
 import { AccountDialog } from 'sql/workbench/services/accountManagement/browser/accountDialog';
 import { localize } from 'vs/nls';
-import { Event } from 'vs/base/common/event';
+import { Emitter, Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
@@ -18,11 +18,15 @@ export class AccountDialogController {
 	private _accountDialog?: AccountDialog;
 	public get accountDialog(): AccountDialog | undefined { return this._accountDialog; }
 
+	public _onProviderRegisterEmitter: Emitter<void>;
+	public get onProviderRegisterEvent(): Event<void> { return this._onProviderRegisterEmitter.event; }
+
 	constructor(
-		private _providerRegisteredEvent: Event<void>,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService
-	) { }
+	) {
+		this._onProviderRegisterEmitter = new Emitter<void>();
+	}
 
 	/**
 	 * Open account dialog
@@ -30,10 +34,10 @@ export class AccountDialogController {
 	public openAccountDialog(): void {
 		// Create a new dialog if one doesn't exist
 		if (!this._accountDialog) {
-			this._providerRegisteredEvent(() => {
-				this._errorMessageService.showDialog(Severity.Info, 'AccountProviderMessage', 'receiving AccountProvider event in accountDialogController');
-			});
 			this._accountDialog = this._instantiationService.createInstance(AccountDialog);
+			this.onProviderRegisterEvent(() => {
+				this._accountDialog._onProviderRegisterEmitter.fire();
+			});
 			this._accountDialog.onAddAccountErrorEvent(msg => this.handleOnAddAccountError(msg));
 			this._accountDialog.onCloseEvent(() => this.handleOnClose());
 			this._accountDialog.render();
