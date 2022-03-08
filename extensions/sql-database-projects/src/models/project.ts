@@ -1753,8 +1753,8 @@ export class Project implements ISqlProject {
 		}
 
 		const propertyGroups = this.projFileXmlDoc.getElementsByTagName(constants.PropertyGroup);
-		let propertyGroup = propertyGroups.length > 0 ? propertyGroups[0] : null;
-		if (propertyGroup === null) {
+		let propertyGroup = propertyGroups.length > 0 ? propertyGroups[0] : undefined;
+		if (propertyGroup === undefined) {
 			propertyGroup = this.projFileXmlDoc.createElement(constants.PropertyGroup);
 			this.projFileXmlDoc.documentElement?.appendChild(propertyGroup);
 		}
