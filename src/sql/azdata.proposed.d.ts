@@ -1632,4 +1632,11 @@ declare module 'azdata' {
 		 */
 		onDidClick: vscode.Event<undefined>;
 	}
+
+	export interface InfoBoxComponentProperties {
+		/**
+		 * Sets whether the infobox is clickable or not. This will display a right arrow at the end of infobox text.
+		 */
+		isClickable?: boolean | undefined;
+	}
 }

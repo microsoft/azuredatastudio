@@ -3859,10 +3859,6 @@ declare module 'azdata' {
 		 * Controls whether the text should be announced by the screen reader. Default value is false.
 		 */
 		announceText?: boolean | undefined;
-		/**
-		 * Sets whether the infobox is clickable or not. This will display a right arrow at the end of infobox text.
-		 */
-		isClickable?: boolean | undefined;
 	}
 
 	/**
