@@ -114,7 +114,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public doubleClickEditEnabled: boolean;
 	private _editorHeight: number;
 	private readonly _markdownMaxHeight = 4000;
-	public markdownCellLabel: string = localize('markdownCell', 'Markdown Cell');
 
 	private readonly _undoStack: RichTextEditStack;
 	private readonly _redoStack: RichTextEditStack;
@@ -417,10 +416,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	public handleContentChanged(): void {
 		this.updatePreview();
-	}
-
-	public updateActiveCell(): void {
-		this._model.updateActiveCell(this.cellModel);
 	}
 
 	public handleHtmlChanged(): void {
