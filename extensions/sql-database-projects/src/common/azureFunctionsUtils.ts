@@ -100,11 +100,3 @@ export async function getAFProjectContainingFile(fileUri: vscode.Uri): Promise<v
 export async function isFunctionProject(folderPath: string): Promise<boolean> {
 	return fse.pathExists(path.join(folderPath, constants.hostFileName));
 }
-
-/**
- * Adds the required nuget package to the project
- * @param selectedProjectFile is the users selected project file path
- */
-export async function addNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void> {
-	await utils.executeCommand(`dotnet add ${selectedProjectFile} package ${constants.sqlExtensionPackageName} --prerelease`);
-}

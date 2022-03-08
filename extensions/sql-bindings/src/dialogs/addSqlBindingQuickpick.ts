@@ -260,6 +260,8 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 				connectionStringSettingName = selectedSetting.label;
 			}
 		}
+		// Add sql extension package reference to project. If the reference is already there, it doesn't get added again
+		await azureFunctionsUtils.addNugetReferenceToProjectFile(projectUri.fsPath);
 	} else {
 		// if no AF project was found or there's more than one AF functions project in the workspace,
 		// ask for the user to input the setting name
@@ -292,7 +294,4 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 		TelemetryReporter.sendErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding);
 		return;
 	}
-
-	// 6. Add sql extension package reference to project. If the reference is already there, it doesn't get added again
-	await azureFunctionsUtils.addNugetReferenceToProjectFile(projectUri.fsPath);
 }
