@@ -234,9 +234,10 @@ export class BrowserWorkbenchEnvironmentService implements IWorkbenchEnvironment
 			|| this.productService.webviewContentExternalBaseUrlTemplate
 			|| 'https://{{uuid}}.vscode-webview.net/{{quality}}/{{commit}}/out/vs/workbench/contrib/webview/browser/pre/';
 
+		const webviewExternalEndpointCommit = this.payload?.get('webviewExternalEndpointCommit');
 		return endpoint
-			.replace('{{commit}}', this.payload?.get('webviewExternalEndpointCommit') ?? this.productService.commit ?? 'a81fff00c9dab105800118fcf8b044cd84620419')
-			.replace('{{quality}}', this.productService.quality || 'insider');
+			.replace('{{commit}}', webviewExternalEndpointCommit ?? this.productService.commit ?? '181b43c0e2949e36ecb623d8cc6de29d4fa2bae8')
+			.replace('{{quality}}', (webviewExternalEndpointCommit ? 'insider' : this.productService.quality) ?? 'insider');
 	}
 
 	@memoize

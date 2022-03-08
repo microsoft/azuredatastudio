@@ -28,6 +28,7 @@ import { IRemoteAuthorityResolverService } from 'vs/platform/remote/common/remot
 import { ITunnelService } from 'vs/platform/remote/common/tunnel';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { WebviewPortMappingManager } from 'vs/platform/webview/common/webviewPortMapping';
+import { parentOriginHash } from 'vs/workbench/browser/webview';
 import { asWebviewUri, decodeAuthority, webviewGenericCspSource, webviewRootResourceAuthority } from 'vs/workbench/api/common/shared/webview';
 import { loadLocalResource, WebviewResourceResponse } from 'vs/workbench/contrib/webview/browser/resourceLoading';
 import { WebviewThemeDataProvider } from 'vs/workbench/contrib/webview/browser/themeing';
@@ -90,6 +91,10 @@ namespace WebviewState {
 
 export class IFrameWebview extends Disposable implements Webview {
 
+
+	protected readonly iframeId: string;
+	private readonly encodedWebviewOriginPromise: Promise<string>;
+	private encodedWebviewOrigin: string | undefined;
 	protected get platform(): string { return 'browser'; }
 
 	private readonly _expectedServiceWorkerVersion = 2; // Keep this in sync with the version in service-worker.js
@@ -119,6 +124,8 @@ export class IFrameWebview extends Disposable implements Webview {
 
 	private readonly _messageHandlers = new Map<string, Set<(data: any) => void>>();
 
+	private _disposed = false;
+
 	constructor(
 		public readonly id: string,
 		private readonly options: WebviewOptions,
@@ -137,6 +144,7 @@ export class IFrameWebview extends Disposable implements Webview {
 		@ITunnelService private readonly _tunnelService: ITunnelService,
 	) {
 		super();
+		this.encodedWebviewOriginPromise = parentOriginHash(window.origin, this.iframeId).then(id => this.encodedWebviewOrigin = id);
 
 		this.content = {
 			html: '',
@@ -291,19 +299,34 @@ export class IFrameWebview extends Disposable implements Webview {
 		}));
 
 		this._register(addDisposableListener(window, 'message', e => {
+			if (!this.encodedWebviewOrigin || e?.data?.target !== this.iframeId) {
+				return;
+			}
+
+			if (e.origin !== this.webviewContentOrigin(this.encodedWebviewOrigin)) {
+				console.log(`Skipped renderer receiving message due to mismatched origins: ${e.origin} ${this.webviewContentOrigin}`);
+				return;
+			}
+
 			if (e?.data?.target === this.id) {
 				const handlers = this._messageHandlers.get(e.data.channel);
 				handlers?.forEach(handler => handler(e.data.data));
 			}
+
+
 		}));
 
-		this.initElement(extension, options);
+		this.encodedWebviewOriginPromise.then(encodedWebviewOrigin => {
+			if (!this._disposed) {
+				this.initElement(encodedWebviewOrigin, extension, options);
+			}
+		});
 	}
 
 	override dispose(): void {
-		if (this.element) {
-			this.element.remove();
-		}
+		this._disposed = true;
+
+		this.element?.remove();
 		this._element = undefined;
 
 		this._onDidDispose.fire();
@@ -380,7 +403,7 @@ export class IFrameWebview extends Disposable implements Webview {
 		return element;
 	}
 
-	private initElement(extension: WebviewExtensionDescription | undefined, options: WebviewOptions) {
+	private initElement(encodedWebviewOrigin: string, extension: WebviewExtensionDescription | undefined, options: WebviewOptions) {
 		// The extensionId and purpose in the URL are used for filtering in js-debug:
 		const params: { [key: string]: string } = {
 			id: this.id,
@@ -398,7 +421,11 @@ export class IFrameWebview extends Disposable implements Webview {
 			.map((key) => `${key}=${encodeURIComponent(params[key]!)}`)
 			.join('&');
 
-		this.element!.setAttribute('src', `${this.webviewContentEndpoint}/index.html?${queryString}`);
+
+		// Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=1754872
+		const fileName = isFirefox ? 'index-no-csp.html' : 'index.html';
+
+		this.element!.setAttribute('src', `${this.webviewContentEndpoint}/${fileName}?${queryString}`);
 	}
 
 	public mountTo(parent: HTMLElement) {
@@ -407,12 +434,17 @@ export class IFrameWebview extends Disposable implements Webview {
 		}
 	}
 
-	protected get webviewContentEndpoint(): string {
-		const endpoint = this._environmentService.webviewExternalEndpoint!.replace('{{uuid}}', this.id);
+	protected webviewContentEndpoint(encodedWebviewOrigin: string): string {
+		const endpoint = this._environmentService.webviewExternalEndpoint!.replace('{{uuid}}', encodedWebviewOrigin);
 		if (endpoint[endpoint.length - 1] === '/') {
 			return endpoint.slice(0, endpoint.length - 1);
 		}
 		return endpoint;
+	}
+
+	private webviewContentOrigin(encodedWebviewOrigin: string): string {
+		const uri = URI.parse(this.webviewContentEndpoint(encodedWebviewOrigin));
+		return uri.scheme + '://' + uri.authority.toLowerCase();
 	}
 
 	private doPostMessage(channel: string, data?: any): void {

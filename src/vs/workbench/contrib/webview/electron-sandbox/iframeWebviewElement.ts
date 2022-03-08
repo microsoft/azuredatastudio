@@ -99,19 +99,19 @@ export class ElectronIframeWebview extends IFrameWebview implements WebviewFindD
 		}
 	}
 
+	protected override webviewContentEndpoint(iframeId: string): string {
+		return `${Schemas.vscodeWebview}://${iframeId}`;
+	}
+
+
 	public override mountTo(parent: HTMLElement) {
 		if (!this.element) {
 			return;
 		}
-
 		if (this._webviewFindWidget) {
 			parent.appendChild(this._webviewFindWidget.getDomNode()!);
 		}
 		parent.appendChild(this.element);
-	}
-
-	protected override get webviewContentEndpoint(): string {
-		return `${Schemas.vscodeWebview}://${this.id}`;
 	}
 
 	protected override style(): void {
