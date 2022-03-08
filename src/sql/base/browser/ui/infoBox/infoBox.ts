@@ -127,6 +127,17 @@ export class InfoBox extends Disposable implements IThemable {
 
 	public set isClickable(v: boolean) {
 		this._isClickable = v;
+		if (this._isClickable) {
+			this._clickableIndicator.style.visibility = 'visible';
+			this._infoBoxElement.style.cursor = 'pointer';
+			this._infoBoxElement.setAttribute('role', 'button');
+			this._infoBoxElement.tabIndex = 0;
+		} else {
+			this._clickableIndicator.style.visibility = 'hidden';
+			this._infoBoxElement.style.cursor = 'default';
+			this._infoBoxElement.removeAttribute('role');
+			this._infoBoxElement.tabIndex = -1;
+		}
 		this._clickableIndicator.style.visibility = this._isClickable ? 'visible' : 'hidden';
 		this._infoBoxElement.style.cursor = this._isClickable ? 'pointer' : 'default';
 	}
