@@ -70,24 +70,29 @@ export class AzureSqlClient {
 	*/
 
 	public static async getSubscriptions(): Promise<SubscriptionWithSession[]> {
-		const subscriptions: SubscriptionWithSession[] = [];
-		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
-		const account = await vscodeMssqlApi.azureAccountService.getAccount();
-		const tenants = <Tenant[]>account.properties.tenants;
-		for (const tenantId of tenants.map(t => t.id)) {
-			const token = await vscodeMssqlApi.azureAccountService.getAccountSecurityToken(account, tenantId);
-			const subClient = new SubscriptionClient(new TokenCredentials(token.token));
-			const newSubs = await subClient.subscriptions.list();
-			subscriptions.push(...newSubs.map(newSub => {
-				return {
-					subscription: newSub,
-					tenantId: tenantId,
-					account: account
-				};
-			}));
-		}
+		try {
+			const subscriptions: SubscriptionWithSession[] = [];
+			const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+			const account = await vscodeMssqlApi.azureAccountService.getAccount();
+			const tenants = <Tenant[]>account.properties.tenants;
+			for (const tenantId of tenants.map(t => t.id)) {
+				const token = await vscodeMssqlApi.azureAccountService.getAccountSecurityToken(account, tenantId);
+				const subClient = new SubscriptionClient(new TokenCredentials(token.token));
+				const newSubs = await subClient.subscriptions.list();
+				subscriptions.push(...newSubs.map(newSub => {
+					return {
+						subscription: newSub,
+						tenantId: tenantId,
+						account: account
+					};
+				}));
+			}
 
-		return subscriptions;
+			return subscriptions;
+		} catch (error) {
+			console.log(error);
+			return [];
+		}
 
 		/*
 		const azureApis = await AzureSqlClient.getAzureApis();
