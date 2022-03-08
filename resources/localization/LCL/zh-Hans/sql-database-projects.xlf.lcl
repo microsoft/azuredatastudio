@@ -2277,10 +2277,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.runningDockerMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Building and running the docker container ...]]></Val>
+          <Val><![CDATA[Running the docker container ...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[正在生成并运行 Docker 容器...]]></Val>
+            <Val><![CDATA[正在运行 docker 容器...]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Building and running the docker container ...]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
