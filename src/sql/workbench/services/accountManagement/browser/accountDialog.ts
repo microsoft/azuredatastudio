@@ -147,9 +147,6 @@ export class AccountDialog extends Modal {
 	private _onCloseEmitter: Emitter<void>;
 	public get onCloseEvent(): Event<void> { return this._onCloseEmitter.event; }
 
-	public _onProviderRegisterEmitter: Emitter<void>;
-	public get onProviderRegisterEvent(): Event<void> { return this._onProviderRegisterEmitter.event; }
-
 	constructor(
 		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
@@ -184,15 +181,11 @@ export class AccountDialog extends Modal {
 		// Setup the event emitters
 		this._onAddAccountErrorEmitter = new Emitter<string>();
 		this._onCloseEmitter = new Emitter<void>();
-		this._onProviderRegisterEmitter = new Emitter<void>();
-		this.onProviderRegisterEvent(() => {
-		});
 
 		// Create the view model and wire up the events
 		this.viewModel = this._instantiationService.createInstance(AccountViewModel);
 		this.viewModel.addProviderEvent(arg => { this.addProvider(arg); });
 		this.viewModel.removeProviderEvent(arg => { this.removeProvider(arg); });
-		// update account list event is called before it's actually loaded, need to delay its initial call.
 		this.viewModel.updateAccountListEvent(arg => { this.updateProviderAccounts(arg); });
 
 		// Load the initial contents of the view model
