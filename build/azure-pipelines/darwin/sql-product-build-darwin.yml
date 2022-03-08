@@ -128,14 +128,24 @@ steps:
       yarn gulp compile-extensions
     displayName: Compile Extensions
 
+  # Per https://developercommunity.visualstudio.com/t/variablesexpressions-dont-work-with-continueonerro/1187733 we can't use variables
+  # in continueOnError directly so instead make two copies of the task and only run one or the other based on the SMOKE_FAIL_ON_ERROR value
   - script: |
       set -e
       APP_ROOT=$(agent.builddirectory)/azuredatastudio-darwin-x64
       APP_NAME="`ls $APP_ROOT | head -n 1`"
       yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/darwin/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions"
-    displayName: Run smoke tests (Electron)
+    displayName: Run smoke tests (Electron) (Continue on Error)
     continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+    condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
+
+  - script: |
+      set -e
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-darwin-x64
+      APP_NAME="`ls $APP_ROOT | head -n 1`"
+      yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/darwin/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions"
+    displayName: Run smoke tests (Electron) (Fail on Error)
+    condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
   # - script: |
   #     set -e
