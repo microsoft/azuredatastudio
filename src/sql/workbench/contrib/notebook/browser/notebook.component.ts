@@ -350,10 +350,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
-	public getNotebookCellLabel(cell: ICellModel): string {
-		return localize('notebookCelllabel', "{0} {1}", cell.cellType === CellTypes.Code ? 'Code Cell' : 'Markdown Cell', cell.id);
-	}
-
 	// Handles double click to edit icon change
 	// See textcell.component.ts for changing edit behavior
 	public enableActiveCellEditIconOnDoubleClick() {

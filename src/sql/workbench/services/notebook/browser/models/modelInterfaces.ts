@@ -500,6 +500,7 @@ export interface ITableUpdatedEvent {
 export interface ICellModel {
 	cellUri: URI;
 	id: string;
+	cellLabel: string;
 	readonly language: string;
 	readonly cellGuid: string;
 	source: string | string[];

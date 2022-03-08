@@ -111,6 +111,11 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	ngOnInit() {
+		this._register(DOM.addDisposableListener(this.codeElement.nativeElement, DOM.EventType.FOCUS_IN, () => {
+			if (this._model.activeCell !== this.cellModel) {
+				this._model.updateActiveCell(this.cellModel);
+			}
+		}));
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
