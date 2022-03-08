@@ -11,6 +11,8 @@ import { Color } from 'vs/base/common/color';
 import * as DOM from 'vs/base/browser/dom';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Codicon } from 'vs/base/common/codicons';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export interface IInfoBoxStyles {
 	informationBackground?: Color;
@@ -52,20 +54,24 @@ export class InfoBox extends Disposable implements IThemable {
 		container.appendChild(this._infoBoxElement);
 		this._infoBoxElement.appendChild(this._imageElement);
 		this._infoBoxElement.appendChild(this._textElement);
-
-		this._clickableIndicator = DOM.$('.infobox-clickable-arrow');
-		this._clickableIndicator.classList.add(...Codicon.arrowRight.classNamesArray);
+		this._clickableIndicator = DOM.$('a');
+		this._clickableIndicator.classList.add('infobox-clickable-arrow', ...Codicon.arrowRight.classNamesArray);
 		this._infoBoxElement.appendChild(this._clickableIndicator);
 
-		[DOM.EventType.CLICK].forEach(eventType => {
-			this._register(DOM.addDisposableListener(this._infoBoxElement, eventType, e => {
-				if (!this._isClickable) {
-					DOM.EventHelper.stop(e);
-					return;
-				}
+		this._register(DOM.addDisposableListener(this._infoBoxElement, DOM.EventType.CLICK, e => {
+			if (this._isClickable) {
 				this._onDidClick.fire(undefined);
-			}));
-		});
+			}
+		}));
+
+		this._register(DOM.addDisposableListener(this._infoBoxElement, DOM.EventType.KEY_PRESS, e => {
+			const event = new StandardKeyboardEvent(e);
+			if (this._isClickable && (event.equals(KeyCode.Enter) || !event.equals(KeyCode.Space))) {
+				this._onDidClick.fire(undefined);
+				DOM.EventHelper.stop(e);
+				return;
+			}
+		}));
 
 		if (options) {
 			this.infoBoxStyle = options.style;
@@ -128,18 +134,18 @@ export class InfoBox extends Disposable implements IThemable {
 	public set isClickable(v: boolean) {
 		this._isClickable = v;
 		if (this._isClickable) {
-			this._clickableIndicator.style.visibility = 'visible';
+			this._clickableIndicator.style.display = '';
+			this._clickableIndicator.tabIndex = 0;
 			this._infoBoxElement.style.cursor = 'pointer';
 			this._infoBoxElement.setAttribute('role', 'button');
-			this._infoBoxElement.tabIndex = 0;
+			this._textElement.style.maxWidth = 'calc(100% - 75px)';
 		} else {
-			this._clickableIndicator.style.visibility = 'hidden';
+			this._clickableIndicator.style.display = 'none';
+			this._clickableIndicator.tabIndex = -1;
 			this._infoBoxElement.style.cursor = 'default';
 			this._infoBoxElement.removeAttribute('role');
-			this._infoBoxElement.tabIndex = -1;
+			this._textElement.style.maxWidth = '';
 		}
-		this._clickableIndicator.style.visibility = this._isClickable ? 'visible' : 'hidden';
-		this._infoBoxElement.style.cursor = this._isClickable ? 'pointer' : 'default';
 	}
 
 	private updateStyle(): void {
