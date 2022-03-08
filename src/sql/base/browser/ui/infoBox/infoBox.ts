@@ -8,6 +8,9 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { alert, status } from 'vs/base/browser/ui/aria/aria';
 import { IThemable } from 'vs/base/common/styler';
 import { Color } from 'vs/base/common/color';
+import * as DOM from 'vs/base/browser/dom';
+import { Event, Emitter } from 'vs/base/common/event';
+import { Codicon } from 'vs/base/common/codicons';
 
 export interface IInfoBoxStyles {
 	informationBackground?: Color;
@@ -22,16 +25,22 @@ export interface InfoBoxOptions {
 	text: string;
 	style: InfoBoxStyle;
 	announceText?: boolean;
+	isClickable?: boolean;
 }
 
 export class InfoBox extends Disposable implements IThemable {
 	private _imageElement: HTMLDivElement;
 	private _textElement: HTMLDivElement;
 	private _infoBoxElement: HTMLDivElement;
+	private _clickableIndicator: HTMLDivElement;
 	private _text = '';
 	private _infoBoxStyle: InfoBoxStyle = 'information';
 	private _styles: IInfoBoxStyles;
 	private _announceText: boolean = false;
+	private _isClickable: boolean = false;
+
+	private _onDidClick = this._register(new Emitter<undefined>());
+	get onDidClick(): Event<undefined> { return this._onDidClick.event; }
 
 	constructor(container: HTMLElement, options?: InfoBoxOptions) {
 		super();
@@ -43,10 +52,26 @@ export class InfoBox extends Disposable implements IThemable {
 		container.appendChild(this._infoBoxElement);
 		this._infoBoxElement.appendChild(this._imageElement);
 		this._infoBoxElement.appendChild(this._textElement);
+
+		this._clickableIndicator = DOM.$('.infobox-clickable-arrow');
+		this._clickableIndicator.classList.add(...Codicon.arrowRight.classNamesArray);
+		this._infoBoxElement.appendChild(this._clickableIndicator);
+
+		[DOM.EventType.CLICK].forEach(eventType => {
+			this._register(DOM.addDisposableListener(this._infoBoxElement, eventType, e => {
+				if (!this._isClickable) {
+					DOM.EventHelper.stop(e);
+					return;
+				}
+				this._onDidClick.fire(undefined);
+			}));
+		});
+
 		if (options) {
 			this.infoBoxStyle = options.style;
 			this.text = options.text;
 			this._announceText = (options.announceText === true);
+			this.isClickable = (options.isClickable === true);
 		}
 	}
 
@@ -94,6 +119,16 @@ export class InfoBox extends Disposable implements IThemable {
 				}
 			}
 		}
+	}
+
+	public get isClickable(): boolean {
+		return this._isClickable;
+	}
+
+	public set isClickable(v: boolean) {
+		this._isClickable = v;
+		this._clickableIndicator.style.visibility = this._isClickable ? 'visible' : 'hidden';
+		this._infoBoxElement.style.cursor = this._isClickable ? 'pointer' : 'default';
 	}
 
 	private updateStyle(): void {

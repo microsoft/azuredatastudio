@@ -8,7 +8,6 @@
 	flex-direction: row;
 	width: 100%;
 	height: 100%;
-	overflow: scroll;
 }
 
 .infobox-image {
@@ -38,7 +37,17 @@
 }
 
 .infobox-text {
-	flex: 1 1 auto;
-	padding: 10px 0;
+	flex: 0 0 auto;
+	padding: 10px 0px 0px 0px;
 	user-select: text;
+	overflow: scroll;
+	max-width: calc(100% - 75px);
+}
+
+.infobox-clickable-arrow {
+	padding: 10px 0px 0px 0px;
+}
+
+.infobox-container:hover .infobox-clickable-arrow {
+	border: 1px dashed;
 }
