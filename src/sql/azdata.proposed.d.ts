@@ -1621,4 +1621,15 @@ declare module 'azdata' {
 		 */
 		graphFileType: string;
 	}
+
+
+	/**
+	 * Component to display text with an icon representing the severity
+	 */
+	export interface InfoBoxComponent extends Component, InfoBoxComponentProperties {
+		/**
+		 * An event called when the InfoBox is clicked
+		 */
+		onDidClick: vscode.Event<undefined>;
+	}
 }

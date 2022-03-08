@@ -3839,12 +3839,7 @@ declare module 'azdata' {
 	/**
 	 * Component to display text with an icon representing the severity
 	 */
-	export interface InfoBoxComponent extends Component, InfoBoxComponentProperties {
-		/**
-		 * An event called when the button is clicked
-		 */
-		onDidClick: vscode.Event<undefined>;
-	}
+	export interface InfoBoxComponent extends Component, InfoBoxComponentProperties { }
 
 	export type InfoBoxStyle = 'information' | 'warning' | 'error' | 'success';
 
