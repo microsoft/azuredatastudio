@@ -4,22 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { getAzdataApi } from './common/utils';
-import MainController from './controllers/mainController';
+import { launchAddSqlBindingQuickpick } from '../src/dialogs/addSqlBindingQuickpick';
 
-let controllers: MainController[] = [];
-
-export function activate(context: vscode.ExtensionContext): Promise<void> {
+export function activate(context: vscode.ExtensionContext): void {
 	void vscode.commands.executeCommand('setContext', 'azdataAvailable', !!getAzdataApi());
-	// Start the main controller
-	const mainController = new MainController(context);
-	controllers.push(mainController);
-	context.subscriptions.push(mainController);
-
-	return mainController.activate();
+	context.subscriptions.push(vscode.commands.registerCommand('sqlBindings.addSqlBinding', async (uri: vscode.Uri | undefined) => { return launchAddSqlBindingQuickpick(uri); }));
 }
 
 export function deactivate(): void {
-	for (let controller of controllers) {
-		controller.deactivate();
-	}
 }
