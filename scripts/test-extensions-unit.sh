@@ -154,7 +154,6 @@ echo ************************************************
 # echo ******************************************
 # "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/mssql --extensionTestsPath=$ROOT/extensions/mssql/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
-
 echo ********************************************
 echo *** starting sql-database-projects tests ***
 echo ********************************************
