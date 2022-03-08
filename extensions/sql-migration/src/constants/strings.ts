@@ -291,6 +291,9 @@ export function ACCOUNT_ACCESS_ERROR(account: AzureAccount, error: Error) {
 		`${account?.properties?.tenants[0]?.displayName} (${account?.properties?.tenants[0]?.userId})`,
 		error.message);
 }
+export function MI_NOT_READY_ERROR(miName: string, state: string): string {
+	return localize('sql.migration.mi.not.ready', "The Managed Instance '{0}' is currently unavailbable for migration because it is currently in the '{1}' state.", miName, state);
+}
 
 // database backup page
 export const DATABASE_BACKUP_PAGE_TITLE = localize('sql.migration.database.page.title', "Database backup");

@@ -1000,10 +1000,21 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 
 			this._targetManagedInstances.forEach((managedInstance) => {
-				managedInstanceValues.push({
-					name: managedInstance.id,
-					displayName: `${managedInstance.name}`
-				});
+				let managedInstanceValue: azdata.CategoryValue;
+
+				if (managedInstance.properties.state === 'Ready') {
+					managedInstanceValue = {
+						name: managedInstance.id,
+						displayName: `${managedInstance.name}`
+					};
+				} else {
+					managedInstanceValue = {
+						name: managedInstance.id,
+						displayName: `(Unavailable) ${managedInstance.name}`
+					};
+				}
+
+				managedInstanceValues.push(managedInstanceValue);
 			});
 
 			if (managedInstanceValues.length === 0) {
