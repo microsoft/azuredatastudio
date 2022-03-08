@@ -475,7 +475,7 @@
   resolved "https://registry.yarnpkg.com/@types/which/-/which-2.0.1.tgz#27ecd67f915b7c3d6ba552135bb1eecd66e63501"
   integrity sha512-Jjakcv8Roqtio6w1gr0D7y6twbhx6gGgFGF5BLwajPpnOIOxFkakFhCq+LmyyeAz7BX6ULrjBOxdKaCDy+4+dQ==
 
-"@types/xml-formatter@2.1.0":
+"@types/xml-formatter@2.1.1":
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/@types/xml-formatter/-/xml-formatter-2.1.1.tgz#43eaeb21a8be0e8554658b3be6525a6df1b2bed3"
   integrity sha512-bMP2ZkVCJrOO0NYiLGHc0m6GkkR1ougOCavz+Z/PKVcwzyoLLoTBDnGvqm0YsEushbNJXpXlK65da22RE4XcPA==
@@ -1674,10 +1674,10 @@ xml-formatter@*:
   dependencies:
     xml-parser-xo "^3.2.0"
 
-xml-formatter@2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/xml-formatter/-/xml-formatter-2.1.0.tgz#ff438be6e2195e480b7525ecd3b06652ed76f390"
-  integrity sha512-t55v5mfpohwKvNbfd8A0FZSZI22//hqXqx3AwRx3mjZel0IEoRM2p1bvVnvNPxHqdqZ0sDjUrBqfHJNbIfE8fw==
+xml-formatter@2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/xml-formatter/-/xml-formatter-2.1.1.tgz#6a58d65957c46d76fa9846205440bb7d1f8ae395"
+  integrity sha512-Mhliz2i6/QpNG/FQa/DiDc7EG3wWoVKbXL2Ldgf+zw72KYreoHxhS+xM6UX6vP540EGFQ1CwT1ZzCqj6sGXHlw==
   dependencies:
     xml-parser-xo "^3.0.0"
 
