@@ -24,7 +24,6 @@ const extensionList = [
 	'machine-learning',
 	'resource-deployment',
 	'schema-compare',
-	'sql-bindings',
 	'sql-database-projects'
 ];
 
