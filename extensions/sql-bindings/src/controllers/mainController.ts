@@ -26,7 +26,7 @@ export default class MainController implements vscode.Disposable {
 
 	private async initializeSqlBindings(): Promise<void> {
 		// init commands
-		vscode.commands.registerCommand('sqlDatabaseProjects.addSqlBinding', async (uri: vscode.Uri | undefined) => { return launchAddSqlBindingQuickpick(uri); });
+		vscode.commands.registerCommand('sqlBindings.addSqlBinding', async (uri: vscode.Uri | undefined) => { return launchAddSqlBindingQuickpick(uri); });
 	}
 
 	public dispose(): void {

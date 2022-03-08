@@ -47,23 +47,6 @@ export interface IPackageInfo {
 	aiKey: string;
 }
 
-export function getPackageInfo(packageJson?: any): IPackageInfo | undefined {
-	if (!packageJson) {
-		packageJson = require('../../package.json');
-	}
-
-	if (packageJson) {
-		return {
-			name: packageJson.name,
-			fullName: `${packageJson.publisher}.${packageJson.name}`,
-			version: packageJson.version,
-			aiKey: packageJson.aiKey
-		};
-	}
-
-	return undefined;
-}
-
 // Try to load the azdata API - but gracefully handle the failure in case we're running
 // in a context where the API doesn't exist (such as VS Code)
 let azdataApi: typeof azdataType | undefined = undefined;
