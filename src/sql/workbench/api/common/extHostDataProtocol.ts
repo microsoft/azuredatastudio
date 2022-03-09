@@ -909,7 +909,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).generateScript(table);
 	}
 
-	public override $generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.GeneratePreviewReportResult> {
+	public override $generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.PreviewReportResult> {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).generatePreviewReport(table);
 	}
 

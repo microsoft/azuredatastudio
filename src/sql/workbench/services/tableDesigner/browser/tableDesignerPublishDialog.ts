@@ -20,6 +20,7 @@ import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { MarkdownRenderer } from 'vs/editor/browser/core/markdownRenderer';
+import { Mimes } from 'vs/base/common/mime';
 
 const OkText: string = localize('tableDesigner.UpdateDatabase', "Update Database");
 const CancelText: string = localize('tableDesigner.cancel', "Cancel");
@@ -31,15 +32,10 @@ export enum TableDesignerPublishDialogResult {
 	Cancel
 }
 
-enum MimeType {
-	Plaintext = 'text/plain',
-	Markdown = 'text/markdown'
-}
-
 export class TableDesignerPublishDialog extends Modal {
 
 	private _report?: string;
-	private _mimeType: string = MimeType.Plaintext;
+	private _mimeType: string = Mimes.text;
 	private _okButton?: Button;
 	private _generateScriptButton?: Button;
 	private _cancelButton?: Button;
@@ -60,7 +56,7 @@ export class TableDesignerPublishDialog extends Modal {
 		this._markdownRenderer = instantiationService.createInstance(MarkdownRenderer, {});
 	}
 
-	public open(report: string, mimeType: string = MimeType.Plaintext): Promise<TableDesignerPublishDialogResult> {
+	public open(report: string, mimeType: string = Mimes.text): Promise<TableDesignerPublishDialogResult> {
 		this._report = report;
 		this._mimeType = mimeType;
 		this.render();
@@ -85,7 +81,7 @@ export class TableDesignerPublishDialog extends Modal {
 
 	protected renderBody(container: HTMLElement) {
 		const body = DOM.append(container, DOM.$('.table-designer-publish-dialog'));
-		if (this._mimeType === MimeType.Markdown) {
+		if (this._mimeType === Mimes.markdown) {
 			const markdownElement = this._markdownRenderer.render({ value: this._report }).element;
 			DOM.append(body, markdownElement);
 		} else {

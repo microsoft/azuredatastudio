@@ -556,7 +556,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Generate preview report.
 	 */
-	$generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.GeneratePreviewReportResult> { throw ni(); }
+	$generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.PreviewReportResult> { throw ni(); }
 
 	/**
 	 * Dispose the table designer.
