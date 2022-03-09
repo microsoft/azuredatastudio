@@ -1117,7 +1117,7 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 				return Promise.reject(e);
 			}
 		};
-		const processTableEdit = (tableInfo: azdata.designers.TableInfo, tableChangeInfo: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> => {
+		const processTableEdit = (tableInfo: azdata.designers.TableInfo, tableChangeInfo: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult<azdata.designers.TableDesignerView>> => {
 			let params: contracts.TableDesignerEditRequestParams = {
 				tableInfo: tableInfo,
 				tableChangeInfo: tableChangeInfo
