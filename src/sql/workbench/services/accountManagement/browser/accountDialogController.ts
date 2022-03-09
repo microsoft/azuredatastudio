@@ -26,10 +26,10 @@ export class AccountDialogController {
 	/**
 	 * Open account dialog
 	 */
-	public openAccountDialog(): void {
+	public openAccountDialog(hasInitialized: boolean): void {
 		// Create a new dialog if one doesn't exist
 		if (!this._accountDialog) {
-			this._accountDialog = this._instantiationService.createInstance(AccountDialog);
+			this._accountDialog = this._instantiationService.createInstance(AccountDialog, hasInitialized);
 			this._accountDialog.onAddAccountErrorEvent(msg => this.handleOnAddAccountError(msg));
 			this._accountDialog.onCloseEvent(() => this.handleOnClose());
 			this._accountDialog.render();

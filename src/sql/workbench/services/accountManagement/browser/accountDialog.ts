@@ -131,7 +131,6 @@ export class AccountDialog extends Modal {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _providerViewsMap = new Map<string, IProviderViewUiComponent>();
 
-	private _accountsLoaded: boolean = true;
 	private _closeButton?: Button;
 	private _addAccountButton?: Button;
 	private _splitView?: SplitView;
@@ -148,6 +147,7 @@ export class AccountDialog extends Modal {
 	public get onCloseEvent(): Event<void> { return this._onCloseEmitter.event; }
 
 	constructor(
+		private accountsLoaded: boolean,
 		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -191,9 +191,6 @@ export class AccountDialog extends Modal {
 		// Load the initial contents of the view model
 		this.viewModel.initialize()
 			.then(addedProviders => {
-				if (addedProviders.length === 0) {
-					this._accountsLoaded = false;
-				}
 				for (const addedProvider of addedProviders) {
 					this.addProvider(addedProvider);
 				}
@@ -268,7 +265,7 @@ export class AccountDialog extends Modal {
 		if (!this.isEmptyLinkedAccount()) {
 			this.showSplitView();
 		}
-		else if (!this._accountsLoaded) {
+		else if (!this.accountsLoaded) {
 			this.hideWhenLoading();
 		}
 		else {
@@ -284,7 +281,6 @@ export class AccountDialog extends Modal {
 		this._noaccountViewContainer!.hidden = false;
 		this._loadingProviderViewContainer!.hidden = true;
 		this._addAccountButton!.focus();
-		this.spinner = false;
 	}
 
 	private hideWhenLoading() {
@@ -347,9 +343,7 @@ export class AccountDialog extends Modal {
 		);
 		addAccountAction.addAccountCompleteEvent(() => this.spinner = false);
 		addAccountAction.addAccountErrorEvent(msg => this._onAddAccountErrorEmitter.fire(msg));
-		addAccountAction.addAccountStartEvent(() => {
-			this.spinner = true;
-		});
+		addAccountAction.addAccountStartEvent(() => this.spinner = true);
 
 		let providerView = new AccountPanel(
 			{
@@ -426,7 +420,8 @@ export class AccountDialog extends Modal {
 		}
 		providerMapping.view.updateAccounts(args.accountList);
 
-		this._accountsLoaded = true;
+		this.accountsLoaded = true;
+		this.spinner = false;
 
 		if (args.accountList.length > 0 && this._splitViewContainer!.hidden) {
 			this.showSplitView();

@@ -320,7 +320,8 @@ export class AccountManagementService implements IAccountManagementService {
 				if (!self._accountDialogController) {
 					self._accountDialogController = self._instantiationService.createInstance(AccountDialogController);
 				}
-				self._accountDialogController.openAccountDialog();
+				let hasInitialized = Object.keys(self._providers).length !== 0;
+				self._accountDialogController.openAccountDialog(hasInitialized);
 				self._accountDialogController.accountDialog!.onCloseEvent(resolve);
 			} catch (e) {
 				reject(e);

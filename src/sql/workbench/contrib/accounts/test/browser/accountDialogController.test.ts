@@ -25,7 +25,7 @@ suite('Account Management Dialog Controller Tests', () => {
 		assert.strictEqual(controller.accountDialog, undefined);
 
 		// If: I open the account dialog when one hasn't been opened
-		controller.openAccountDialog();
+		controller.openAccountDialog(true);
 
 		// Then:
 		// ... The account dialog should be defined
@@ -36,11 +36,11 @@ suite('Account Management Dialog Controller Tests', () => {
 		// Setup: Create instance of the controller with an account dialog already loaded
 		let instantiationService = createInstantiationService();
 		let controller = new AccountDialogController(instantiationService, undefined!);
-		controller.openAccountDialog();
+		controller.openAccountDialog(true);
 		let accountDialog = controller.accountDialog;
 
 		// If: I open the account dialog when one has already been opened
-		controller.openAccountDialog();
+		controller.openAccountDialog(true);
 
 		// Then: It should be the same dialog that already existed
 		assert.strictEqual(controller.accountDialog, accountDialog);
@@ -59,7 +59,7 @@ suite('Account Management Dialog Controller Tests', () => {
 
 		// ... Create instance of the controller with an opened dialog
 		let controller = new AccountDialogController(instantiationService, mockErrorMessageService.object);
-		controller.openAccountDialog();
+		controller.openAccountDialog(true);
 
 		// If: The account dialog reports a failure adding an account
 		mockEventEmitter.fire('Error message');
@@ -87,7 +87,7 @@ function createInstantiationService(addAccountFailureEmitter?: Emitter<string>):
 		.returns(() => undefined);
 
 	// Create a mock account dialog
-	let accountDialog = new AccountDialog(undefined!, undefined!, instantiationService.object, undefined!, undefined!, undefined!, undefined!, new MockContextKeyService(), undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!);
+	let accountDialog = new AccountDialog(true, undefined!, undefined!, instantiationService.object, undefined!, undefined!, undefined!, undefined!, new MockContextKeyService(), undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!);
 	let mockAccountDialog = TypeMoq.Mock.ofInstance(accountDialog);
 	mockAccountDialog.setup(x => x.onAddAccountErrorEvent)
 		.returns(() => { return addAccountFailureEmitter ? addAccountFailureEmitter.event : mockEvent.event; });
