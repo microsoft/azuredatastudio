@@ -178,10 +178,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			sticky: true
 		});
 
-		let report;
+		let previewReportResult: azdata.designers.GeneratePreviewReportResult;
 		try {
 			this.updateState(this.valid, this.dirty, 'generateReport');
-			report = await this._provider.generatePreviewReport(this.tableInfo);
+			previewReportResult = await this._provider.generatePreviewReport(this.tableInfo);
 			reportNotificationHandle.close();
 			this.updateState(this.valid, this.dirty);
 		} catch (error) {
@@ -190,7 +190,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			return;
 		}
 		const dialog = this._instantiationService.createInstance(TableDesignerPublishDialog);
-		const result = await dialog.open(<any>report.report);
+		const result = await dialog.open(previewReportResult.report, previewReportResult.mimeType);
 		if (result === TableDesignerPublishDialogResult.GenerateScript) {
 			await this.generateScript();
 		} else if (result === TableDesignerPublishDialogResult.UpdateDatabase) {
