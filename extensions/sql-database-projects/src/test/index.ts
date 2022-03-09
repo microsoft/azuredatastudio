@@ -6,7 +6,7 @@
 import * as path from 'path';
 import * as testRunner from '@microsoft/vscodetestcover';
 
-const suite = 'SQL Bindings Extension Tests';
+const suite = 'Database Projects Extension Tests';
 
 const mochaOptions: any = {
 	ui: 'bdd',
