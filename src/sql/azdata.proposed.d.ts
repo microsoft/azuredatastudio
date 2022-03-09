@@ -1493,7 +1493,7 @@ declare module 'azdata' {
 			 */
 			report: string;
 			/**
-			 * Format (mimeType) of the script
+			 * Format (mimeType) of the report
 			 */
 			mimeType: string;
 		}
