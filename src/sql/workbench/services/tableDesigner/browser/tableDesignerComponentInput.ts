@@ -173,7 +173,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			sticky: true
 		});
 
-		let previewReportResult: azdata.designers.PreviewReportResult;
+		let previewReportResult: azdata.designers.GeneratePreviewReportResult;
 		try {
 			this.updateState(this.valid, this.dirty, 'generateReport');
 			previewReportResult = await this._provider.generatePreviewReport(this.tableInfo);
