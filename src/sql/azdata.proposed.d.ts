@@ -1638,5 +1638,10 @@ declare module 'azdata' {
 		 * Default value is false.
 		 */
 		isClickable?: boolean | undefined;
+
+		/**
+		 * Sets the ariaLabel for the right arrow button that shows up in clickable infoboxes
+		 */
+		clickableButtonAriaLabel?: string;
 	}
 }

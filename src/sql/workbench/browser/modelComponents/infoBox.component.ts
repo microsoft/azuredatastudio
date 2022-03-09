@@ -72,7 +72,7 @@ export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxCompon
 			this._infoBox.infoBoxStyle = this.style;
 			this._infoBox.text = this.text;
 			this._infoBox.isClickable = this.isClickable;
-			this._infoBox.ariaLabel = this.ariaLabel;
+			this._infoBox.clickableButtonAriaLabel = this.clickableButtonAriaLabel;
 		}
 	}
 
@@ -90,5 +90,9 @@ export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxCompon
 
 	public get isClickable(): boolean {
 		return this.getPropertyOrDefault<boolean>((props) => props.isClickable, false);
+	}
+
+	public get clickableButtonAriaLabel(): string {
+		return this.getPropertyOrDefault<string>((props) => props.clickableButtonAriaLabel, '');
 	}
 }

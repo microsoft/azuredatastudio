@@ -28,7 +28,7 @@ export interface InfoBoxOptions {
 	style: InfoBoxStyle;
 	announceText?: boolean;
 	isClickable?: boolean;
-	ariaLabel?: string;
+	clickableButtonAriaLabel?: string;
 }
 
 export class InfoBox extends Disposable implements IThemable {
@@ -41,7 +41,7 @@ export class InfoBox extends Disposable implements IThemable {
 	private _styles: IInfoBoxStyles;
 	private _announceText: boolean = false;
 	private _isClickable: boolean = false;
-	private _ariaLabel: string;
+	private _clickableButtonAriaLabel: string;
 
 	private _clickListenersDisposableStore = new DisposableStore();
 	private _onDidClick: Emitter<void> = this._register(new Emitter<void>());
@@ -66,7 +66,7 @@ export class InfoBox extends Disposable implements IThemable {
 			this.text = options.text;
 			this._announceText = (options.announceText === true);
 			this.isClickable = (options.isClickable === true);
-			this.ariaLabel = options.ariaLabel;
+			this.clickableButtonAriaLabel = options.clickableButtonAriaLabel;
 		}
 	}
 
@@ -163,14 +163,14 @@ export class InfoBox extends Disposable implements IThemable {
 		this._clickListenersDisposableStore.clear();
 	}
 
-	public get ariaLabel(): string {
-		return this._ariaLabel;
+	public get clickableButtonAriaLabel(): string {
+		return this._clickableButtonAriaLabel;
 	}
 
-	public set ariaLabel(v: string) {
-		this._ariaLabel = v;
-		this._clickableIndicator.ariaLabel = this._ariaLabel;
-		this._clickableIndicator.title = this.ariaLabel;
+	public set clickableButtonAriaLabel(v: string) {
+		this._clickableButtonAriaLabel = v;
+		this._clickableIndicator.ariaLabel = this._clickableButtonAriaLabel;
+		this._clickableIndicator.title = this._clickableButtonAriaLabel;
 	}
 
 	private updateStyle(): void {

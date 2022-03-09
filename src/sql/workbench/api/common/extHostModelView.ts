@@ -2120,6 +2120,14 @@ class InfoBoxComponentWrapper extends ComponentWrapper implements azdata.InfoBox
 		this.setProperty('isClickable', v);
 	}
 
+	public get clickableButtonAriaLabel(): string {
+		return this.properties['clickableButtonAriaLabel'];
+	}
+
+	public set clickableButtonAriaLabel(v: string) {
+		this.setProperty('clickableButtonAriaLabel', v);
+	}
+
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
