@@ -42,8 +42,8 @@ export class InfoBox extends Disposable implements IThemable {
 	private _isClickable: boolean = false;
 
 	private _clickListenersDisposableStore = new DisposableStore();
-	private _onDidClick: Emitter<undefined> = this._register(new Emitter<undefined>());
-	get onDidClick(): Event<undefined> { return this._onDidClick.event; }
+	private _onDidClick: Emitter<void> = this._register(new Emitter<void>());
+	get onDidClick(): Event<void> { return this._onDidClick.event; }
 
 	constructor(container: HTMLElement, options?: InfoBoxOptions) {
 		super();
@@ -142,14 +142,14 @@ export class InfoBox extends Disposable implements IThemable {
 	private registerClickListeners() {
 		this._clickListenersDisposableStore.add(DOM.addDisposableListener(this._infoBoxElement, DOM.EventType.CLICK, e => {
 			if (this._isClickable) {
-				this._onDidClick.fire(undefined);
+				this._onDidClick.fire();
 			}
 		}));
 
 		this._clickListenersDisposableStore.add(DOM.addDisposableListener(this._infoBoxElement, DOM.EventType.KEY_PRESS, e => {
 			const event = new StandardKeyboardEvent(e);
 			if (this._isClickable && (event.equals(KeyCode.Enter) || !event.equals(KeyCode.Space))) {
-				this._onDidClick.fire(undefined);
+				this._onDidClick.fire();
 				DOM.EventHelper.stop(e);
 				return;
 			}

@@ -2085,7 +2085,7 @@ class InfoBoxComponentWrapper extends ComponentWrapper implements azdata.InfoBox
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.InfoBox, id, logService);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<undefined>());
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<void>());
 	}
 
 	public get style(): azdata.InfoBoxStyle {
