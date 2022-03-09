@@ -180,6 +180,7 @@ declare module 'azdata' {
 		rows: DbCellValue[][];
 	}
 
+	//
 	export interface SerializeDataResult {
 		messages?: string;
 		succeeded: boolean;
