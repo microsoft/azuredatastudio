@@ -705,8 +705,12 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		// The generated script might be slightly different even though the models are the same
 		// espeically the order of the description property statements.
 		// we should take the script out for comparison.
-		delete copyOfViewModel[ScriptProperty];
-		delete copyOfOriginalViewModel[ScriptProperty];
+		if (copyOfViewModel) {
+			delete copyOfViewModel[ScriptProperty];
+		}
+		if (copyOfOriginalViewModel) {
+			delete copyOfOriginalViewModel[ScriptProperty];
+		}
 		return !equals(copyOfViewModel, copyOfOriginalViewModel);
 	}
 
