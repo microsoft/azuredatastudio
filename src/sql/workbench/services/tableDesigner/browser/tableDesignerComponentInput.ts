@@ -91,7 +91,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			result => {
 				this._viewModel = result.viewModel;
 				if (result.view) {
-					this.setDesignerView(result.view as azdata.designers.TableDesignerView);
+					this.setDesignerView(result.view);
 				}
 				this._validationErrors = result.errors;
 				this.updateState(result.isValid, this.isDirty(), undefined);
@@ -700,8 +700,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	private isDirty(): boolean {
-		const copyOfViewModel = Object.assign({}, this._viewModel);
-		const copyOfOriginalViewModel = Object.assign({}, this._originalViewModel);
+		const copyOfViewModel = deepClone(this._viewModel);
+		const copyOfOriginalViewModel = deepClone(this._originalViewModel);
 		// The generated script might be slightly different even though the models are the same
 		// espeically the order of the description property statements.
 		// we should take the script out for comparison.

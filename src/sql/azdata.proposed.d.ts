@@ -1081,7 +1081,7 @@ declare module 'azdata' {
 			 * @param table the table information
 			 * @param tableChangeInfo the information about the change user made through the UI.
 			 */
-			processTableEdit(table: TableInfo, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
+			processTableEdit(table: TableInfo, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult<TableDesignerView>>;
 
 			/**
 			 * Publish the changes.
@@ -1479,11 +1479,11 @@ declare module 'azdata' {
 		/**
 		 * The result returned by the table designer provider after handling an edit request.
 		 */
-		export interface DesignerEditResult {
+		export interface DesignerEditResult<T> {
 			/**
 			 * The new view information if the view needs to be refreshed.
 			 */
-			view?: object;
+			view?: T;
 			/**
 			 * The view model object.
 			 */
@@ -1513,7 +1513,7 @@ declare module 'azdata' {
 			/**
 			 * The new view.
 			 */
-			view: DesignerViewModel;
+			view: TableDesignerView;
 		}
 	}
 

@@ -301,7 +301,9 @@ export class Designer extends Disposable implements IThemable {
 	}
 
 	private clearUI(): void {
+		this._buttons.forEach(button => button.dispose());
 		this._buttons = [];
+		this._componentMap.forEach(item => item.component.dispose());
 		this._componentMap.clear();
 		DOM.clearNode(this._topContentContainer);
 		this._contentTabbedPanel.clearTabs();

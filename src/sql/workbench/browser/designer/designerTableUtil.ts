@@ -5,9 +5,11 @@
 
 import { Table } from 'sql/base/browser/ui/table/table';
 import * as DOM from 'vs/base/browser/dom';
+import { deepClone } from 'vs/base/common/objects';
 
 export const TableRowHeight = 25;
 export const TableHeaderRowHeight = 28;
+const minHeight = getTableHeight(2);
 
 /**
  * Layout the table, the height will be determined by the number of rows in it.
@@ -19,12 +21,10 @@ export function layoutDesignerTable(table: Table<Slick.SlickData>, width: number
 	if (table.container.contains(document.activeElement)) {
 		// Note down the current active cell if the focus is currently in the table
 		// After the table layout operation is done, the focus will be restored.
-		activeCell = Object.assign({}, table.activeCell);
+		activeCell = deepClone(table.activeCell);
 	}
 	const rows = table.getData().getLength();
-	// Tables in designer will have minimum height of 2 rows
 	const actualHeight = getTableHeight(rows);
-	const minHeight = getTableHeight(2);
 	const height = Math.max(minHeight, actualHeight);
 	table.layout(new DOM.Dimension(width - 20 /* Padding and scroll bar */, height));
 	if (activeCell && rows > activeCell.row) {
