@@ -190,7 +190,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			return;
 		}
 		const dialog = this._instantiationService.createInstance(TableDesignerPublishDialog);
-		const result = await dialog.open(report);
+		const result = await dialog.open(<any>report.report);
 		if (result === TableDesignerPublishDialogResult.GenerateScript) {
 			await this.generateScript();
 		} else if (result === TableDesignerPublishDialogResult.UpdateDatabase) {
