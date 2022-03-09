@@ -20,8 +20,7 @@ export class AccountDialogController {
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService
-	) {
-	}
+	) { }
 
 	/**
 	 * Open account dialog
