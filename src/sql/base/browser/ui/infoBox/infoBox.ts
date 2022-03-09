@@ -40,9 +40,9 @@ export class InfoBox extends Disposable implements IThemable {
 	private _styles: IInfoBoxStyles;
 	private _announceText: boolean = false;
 	private _isClickable: boolean = false;
-	private _clickListenersDisposableStore = new DisposableStore();
 
-	private _onDidClick: Emitter<undefined>;
+	private _clickListenersDisposableStore = new DisposableStore();
+	private _onDidClick: Emitter<undefined> = this._register(new Emitter<undefined>());
 	get onDidClick(): Event<undefined> { return this._onDidClick.event; }
 
 	constructor(container: HTMLElement, options?: InfoBoxOptions) {
@@ -140,7 +140,6 @@ export class InfoBox extends Disposable implements IThemable {
 	}
 
 	private registerClickListeners() {
-		this._onDidClick = this._clickListenersDisposableStore.add(new Emitter<undefined>());
 		this._clickListenersDisposableStore.add(DOM.addDisposableListener(this._infoBoxElement, DOM.EventType.CLICK, e => {
 			if (this._isClickable) {
 				this._onDidClick.fire(undefined);
