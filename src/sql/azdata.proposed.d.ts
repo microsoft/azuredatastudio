@@ -1489,13 +1489,13 @@ declare module 'azdata' {
 
 		export interface GeneratePreviewReportResult {
 			/**
-			 * Script of the report
+			 * Report generated for generate preview
 			 */
-			script: string;
+			report: string;
 			/**
-			 * Format of the script (plaintext or markdown)
+			 * Format (mimeType) of the script
 			 */
-			format: string;
+			mimeType: string;
 		}
 	}
 
