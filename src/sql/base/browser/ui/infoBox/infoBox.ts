@@ -41,7 +41,7 @@ export class InfoBox extends Disposable implements IThemable {
 	private _announceText: boolean = false;
 	private _isClickable: boolean = false;
 
-	private _onDidClick = this._register(new Emitter<undefined>());
+	private _onDidClick: Emitter<undefined>;
 	get onDidClick(): Event<undefined> { return this._onDidClick.event; }
 
 	constructor(container: HTMLElement, options?: InfoBoxOptions) {
@@ -139,13 +139,37 @@ export class InfoBox extends Disposable implements IThemable {
 			this._infoBoxElement.style.cursor = 'pointer';
 			this._infoBoxElement.setAttribute('role', 'button');
 			this._textElement.style.maxWidth = 'calc(100% - 75px)';
+			this.registerClickListeners();
 		} else {
 			this._clickableIndicator.style.display = 'none';
 			this._clickableIndicator.tabIndex = -1;
 			this._infoBoxElement.style.cursor = 'default';
 			this._infoBoxElement.removeAttribute('role');
 			this._textElement.style.maxWidth = '';
+			this.unregisterClickListeners();
 		}
+	}
+
+	private registerClickListeners() {
+		this._onDidClick = this._register(new Emitter<undefined>());
+		this._register(DOM.addDisposableListener(this._infoBoxElement, DOM.EventType.CLICK, e => {
+			if (this._isClickable) {
+				this._onDidClick.fire(undefined);
+			}
+		}));
+
+		this._register(DOM.addDisposableListener(this._infoBoxElement, DOM.EventType.KEY_PRESS, e => {
+			const event = new StandardKeyboardEvent(e);
+			if (this._isClickable && (event.equals(KeyCode.Enter) || !event.equals(KeyCode.Space))) {
+				this._onDidClick.fire(undefined);
+				DOM.EventHelper.stop(e);
+				return;
+			}
+		}));
+	}
+
+	private unregisterClickListeners() {
+		this.dispose();
 	}
 
 	private updateStyle(): void {
