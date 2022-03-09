@@ -13,7 +13,7 @@
   "icon": "",
   "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
   "activationEvents": [
-    "*"
+    "onCommand:sqlBindings.addSqlBinding"
   ],
   "main": "./out/extension",
   "repository": {
@@ -28,5 +28,34 @@
     "untrustedWorkspaces": {
       "supported": true
     }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "sqlBindings.addSqlBinding",
+        "title": "%sqlBindings.addSqlBinding%",
+        "category": "MS SQL"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "sqlBindings.addSqlBinding",
+          "when": "editorLangId == csharp && !azdataAvailable && resourceScheme != untitled"
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "@microsoft/ads-extension-telemetry": "^1.1.5",
+    "fast-glob": "^3.2.7",
+    "fs-extra": "^5.0.0",
+    "jsonc-parser": "^2.3.1",
+    "promisify-child-process": "^3.1.1",
+    "vscode-nls": "^4.1.2"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^5.0.0",
+    "tslint": "^5.8.0"
   }
 }
