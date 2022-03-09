@@ -10,7 +10,7 @@ import * as TypeMoq from 'typemoq';
 import * as mssql from '../../../mssql/src/mssql';
 import * as vscodeMssql from 'vscode-mssql';
 
-export interface TestContext {
+export interface TestUtils {
 	context: vscode.ExtensionContext;
 	dacFxService: TypeMoq.IMock<mssql.IDacFxService>;
 	azureFunctionService: TypeMoq.IMock<vscodeMssql.IAzureFunctionsService>;
@@ -271,7 +271,7 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 	}
 }
 
-export function createContext(): TestContext {
+export function createTestUtils(): TestUtils {
 	let extensionPath = path.join(__dirname, '..', '..');
 
 	return {

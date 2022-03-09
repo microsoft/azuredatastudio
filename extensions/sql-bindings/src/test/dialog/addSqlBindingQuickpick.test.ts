@@ -11,13 +11,13 @@ import * as utils from '../../common/utils';
 import * as constants from '../../common/constants';
 import * as azureFunctionUtils from '../../common/azureFunctionsUtils';
 
-import { createContext, TestContext, createTestCredentials } from '../testContext';
+import { createTestUtils, TestUtils, createTestCredentials } from '../testUtils';
 import { launchAddSqlBindingQuickpick } from '../../dialogs/addSqlBindingQuickpick';
 
-let testContext: TestContext;
+let testUtils: TestUtils;
 describe('Add SQL Binding quick pick', () => {
 	beforeEach(function (): void {
-		testContext = createContext();
+		testUtils = createTestUtils();
 	});
 
 	afterEach(function (): void {
@@ -25,10 +25,10 @@ describe('Add SQL Binding quick pick', () => {
 	});
 
 	it('Should show error if the file contains no Azure Functions', async function (): Promise<void> {
-		sinon.stub(utils, 'getAzureFunctionService').resolves(testContext.azureFunctionService.object);
-		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testContext.vscodeMssqlIExtension.object);
+		sinon.stub(utils, 'getAzureFunctionService').resolves(testUtils.azureFunctionService.object);
+		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);
 		const spy = sinon.spy(vscode.window, 'showErrorMessage');
-		testContext.azureFunctionService.setup(x => x.getAzureFunctions(TypeMoq.It.isAny())).returns(async () => {
+		testUtils.azureFunctionService.setup(x => x.getAzureFunctions(TypeMoq.It.isAny())).returns(async () => {
 			return Promise.resolve({
 				success: true,
 				errorMessage: '',
@@ -43,10 +43,10 @@ describe('Add SQL Binding quick pick', () => {
 	});
 
 	it('Should show error if adding SQL binding was not successful', async function (): Promise<void> {
-		sinon.stub(utils, 'getAzureFunctionService').resolves(testContext.azureFunctionService.object);
-		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testContext.vscodeMssqlIExtension.object);
+		sinon.stub(utils, 'getAzureFunctionService').resolves(testUtils.azureFunctionService.object);
+		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);
 		const spy = sinon.spy(vscode.window, 'showErrorMessage');
-		testContext.azureFunctionService.setup(x => x.getAzureFunctions(TypeMoq.It.isAny())).returns(async () => {
+		testUtils.azureFunctionService.setup(x => x.getAzureFunctions(TypeMoq.It.isAny())).returns(async () => {
 			return Promise.resolve({
 				success: true,
 				errorMessage: '',
@@ -56,7 +56,7 @@ describe('Add SQL Binding quick pick', () => {
 		//failure since no AFs are found in the project
 		sinon.stub(azureFunctionUtils, 'getAFProjectContainingFile').resolves(undefined);
 		const errormsg = 'Error inserting binding';
-		testContext.azureFunctionService.setup(x => x.addSqlBinding(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => {
+		testUtils.azureFunctionService.setup(x => x.addSqlBinding(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => {
 			return Promise.resolve({
 				success: false,
 				errorMessage: errormsg
@@ -79,12 +79,12 @@ describe('Add SQL Binding quick pick', () => {
 	});
 
 	it('Should show error connection profile does not connect', async function (): Promise<void> {
-		sinon.stub(utils, 'getAzureFunctionService').resolves(testContext.azureFunctionService.object);
-		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testContext.vscodeMssqlIExtension.object);
+		sinon.stub(utils, 'getAzureFunctionService').resolves(testUtils.azureFunctionService.object);
+		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);
 		let connectionCreds = createTestCredentials();
 
 		sinon.stub(azureFunctionUtils, 'getAFProjectContainingFile').resolves(vscode.Uri.file('testUri'));
-		testContext.azureFunctionService.setup(x => x.getAzureFunctions(TypeMoq.It.isAny())).returns(async () => {
+		testUtils.azureFunctionService.setup(x => x.getAzureFunctions(TypeMoq.It.isAny())).returns(async () => {
 			return Promise.resolve({
 				success: true,
 				errorMessage: '',
@@ -94,10 +94,10 @@ describe('Add SQL Binding quick pick', () => {
 
 		// Mocks connect call to mssql
 		let error = new Error('Connection Request Failed');
-		testContext.vscodeMssqlIExtension.setup(x => x.connect(TypeMoq.It.isAny(), undefined)).throws(error);
+		testUtils.vscodeMssqlIExtension.setup(x => x.connect(TypeMoq.It.isAny(), undefined)).throws(error);
 
 		// Mocks promptForConnection
-		testContext.vscodeMssqlIExtension.setup(x => x.promptForConnection(true)).returns(() => Promise.resolve(connectionCreds));
+		testUtils.vscodeMssqlIExtension.setup(x => x.promptForConnection(true)).returns(() => Promise.resolve(connectionCreds));
 		let quickpickStub = sinon.stub(vscode.window, 'showQuickPick');
 		// select Azure function
 		quickpickStub.onFirstCall().resolves({ label: 'af1' });
