@@ -60,16 +60,17 @@ jobs:
   - template: win32/sql-product-build-win32.yml
   timeoutInMinutes: 90
 
-- job: Windows_Test
-  condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
-  pool:
-    name: mssqltools
-  dependsOn:
-  - Linux
-  - Windows
-  steps:
-  - template: win32/sql-product-test-win32.yml
-  timeoutInMinutes: 90
+# disable due to invalid machine pool (karlb 3/9/2022)
+# - job: Windows_Test
+#   condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
+#   pool:
+#     name: mssqltools
+#   dependsOn:
+#   - Linux
+#   - Windows
+#   steps:
+#   - template: win32/sql-product-test-win32.yml
+#   timeoutInMinutes: 90
 
 - job: Release
   condition: and(succeeded(), or(eq(variables['VSCODE_RELEASE'], 'true'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
@@ -79,7 +80,8 @@ jobs:
   - macOS
   - Linux
   - Windows
-  - Windows_Test
+# disable due to invalid machine pool (karlb 3/9/2022)
+#  - Windows_Test
   - macOS_Signing
   steps:
   - template: sql-release.yml
