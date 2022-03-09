@@ -1096,7 +1096,7 @@ export namespace InitializeTableDesignerRequest {
 }
 
 export namespace ProcessTableDesignerEditRequest {
-	export const type = new RequestType<TableDesignerEditRequestParams, azdata.designers.DesignerEditResult, void, void>('tabledesigner/processedit');
+	export const type = new RequestType<TableDesignerEditRequestParams, azdata.designers.DesignerEditResult<azdata.designers.TableDesignerView>, void, void>('tabledesigner/processedit');
 }
 
 export namespace PublishTableDesignerChangesRequest {
