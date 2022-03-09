@@ -6,7 +6,7 @@
 import { IDeploySettings } from '../IDeploySettings';
 import type * as azdataType from 'azdata';
 //import { AzureSubscription } from '../../../azure-account.api';
-import { ResourceGroup } from '@azure/arm-resources/esm/models';
+import { ResourceGroup } from '@azure/arm-resources';
 import * as coreAuth from '@azure/core-auth';
 import { SubscriptionWithSession } from './azureSqlClient';
 

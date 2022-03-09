@@ -5,15 +5,12 @@
 
 //import * as vscode from 'vscode';
 //import { AzureAccountExtensionApi, AzureSubscription } from '../../typings/azure-account.api';
-import { SubscriptionClient } from '@azure/arm-subscriptions';
+import { SubscriptionClient, Subscription } from '@azure/arm-subscriptions';
 //import { AzureExtensionApiProvider } from '../../typings/azpi';
 import { SqlManagementClient, Server } from '@azure/arm-sql';
-import { TokenCredentials } from '@azure/ms-rest-js';
 import * as coreAuth from '@azure/core-auth';
-import { ResourceManagementClient } from '@azure/arm-resources';
-import { ResourceGroup } from '@azure/arm-resources/esm/models';
+import { ResourceManagementClient, ResourceGroup } from '@azure/arm-resources';
 import * as utils from '../../common/utils';
-import { Subscription } from '@azure/arm-subscriptions/esm/models';
 import { IAccount, Tenant, Token } from 'vscode-mssql';
 
 export interface SubscriptionWithSession {
@@ -77,15 +74,19 @@ export class AzureSqlClient {
 			const tenants = <Tenant[]>account.properties.tenants;
 			for (const tenantId of tenants.map(t => t.id)) {
 				const token = await vscodeMssqlApi.azureAccountService.getAccountSecurityToken(account, tenantId);
-				const subClient = new SubscriptionClient(new TokenCredentials(token.token));
-				const newSubs = await subClient.subscriptions.list();
-				subscriptions.push(...newSubs.map(newSub => {
-					return {
-						subscription: newSub,
+				const subClient = new SubscriptionClient(new SQLTokenCredential(token));
+				const newSubPages = await subClient.subscriptions.list();
+				let nextSub = await newSubPages.next();
+				while (!nextSub.done) {
+					subscriptions.push({
+
+						subscription: nextSub.value,
 						tenantId: tenantId,
 						account: account
-					};
-				}));
+
+					});
+					nextSub = await newSubPages.next();
+				}
 			}
 
 			return subscriptions;
@@ -129,13 +130,20 @@ export class AzureSqlClient {
 	}
 
 	public static async getResourceGroups(subscription: SubscriptionWithSession): Promise<Array<ResourceGroup> | []> {
+		const groups: ResourceGroup[] = [];
 		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 		const token = await vscodeMssqlApi.azureAccountService.getAccountSecurityToken(subscription.account, subscription.tenantId);
 		if (subscription?.subscription?.subscriptionId) {
 			//const resourceGroupClient = new ResourceManagementClient(<coreAuth.TokenCredential>subscription.session.credentials2, subscription.subscription.subscriptionId);
-			const resourceGroupClient = new ResourceManagementClient(new TokenCredentials(token.token), subscription.subscription.subscriptionId);
-			const resourceGroupResponse = await resourceGroupClient.resourceGroups.list();
-			return resourceGroupResponse;
+			const resourceGroupClient = new ResourceManagementClient(new SQLTokenCredential(token), subscription.subscription.subscriptionId);
+
+			const newGroupsPages = await resourceGroupClient.resourceGroups.list();
+			let nextGroup = await newGroupsPages.next();
+			while (!nextGroup.done) {
+				groups.push(nextGroup.value);
+				nextGroup = await newGroupsPages.next();
+			}
+			return groups;
 		}
 		return [];
 	}
