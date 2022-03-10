@@ -36,24 +36,14 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 */
 	get supportedProjectTypes(): dataworkspace.IProjectType[] {
 		return [{
-			id: constants.emptySqlDatabaseSdkProjectTypeId,
-			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
-			displayName: constants.emptySdkProjectTypeDisplayName,
-			description: constants.emptySdkProjectTypeDescription,
-			icon: IconPathHelper.colorfulSqlProject,
-			targetPlatforms: Array.from(constants.targetPlatformToVersion.keys()),
-			defaultTargetPlatform: constants.defaultTargetPlatform,
-			linkDisplayValue: constants.learnMore,
-			linkLocation: constants.sdkLearnMoreUrl
-		},
-		{
 			id: constants.emptySqlDatabaseProjectTypeId,
 			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
 			displayName: constants.emptyProjectTypeDisplayName,
 			description: constants.emptyProjectTypeDescription,
 			icon: IconPathHelper.colorfulSqlProject,
 			targetPlatforms: Array.from(constants.targetPlatformToVersion.keys()),
-			defaultTargetPlatform: constants.defaultTargetPlatform
+			defaultTargetPlatform: constants.defaultTargetPlatform,
+			sdkStyleOption: true
 		},
 		{
 			id: constants.edgeSqlDatabaseProjectTypeId,
@@ -71,12 +61,13 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * @param projectTypeId the ID of the project/template
 	 * @returns Uri of the newly created project file
 	 */
-	async createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform?: sqldbproj.SqlTargetPlatform): Promise<vscode.Uri> {
+	async createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform?: sqldbproj.SqlTargetPlatform, sdkStyle: boolean = true): Promise<vscode.Uri> {
 		const projectFile = await this.projectController.createNewProject({
 			newProjName: name,
 			folderUri: location,
 			projectTypeId: projectTypeId,
-			targetPlatform: targetPlatform
+			targetPlatform: targetPlatform,
+			sdkStyle: sdkStyle
 		});
 
 		return vscode.Uri.file(projectFile);

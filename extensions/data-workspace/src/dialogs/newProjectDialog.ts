@@ -22,6 +22,7 @@ class NewProjectDialogModel {
 	name: string = '';
 	location: string = '';
 	targetPlatform?: string;
+	sdkStyleProject?: boolean;
 }
 
 export async function openSpecificProjectNewProjectDialog(projectType: IProjectType, workspaceService: WorkspaceService): Promise<vscode.Uri | undefined> {
@@ -35,6 +36,7 @@ export class NewProjectDialog extends DialogBase {
 	public model: NewProjectDialogModel = new NewProjectDialogModel();
 	public formBuilder: azdataType.FormBuilder | undefined;
 	public targetPlatformDropdownFormComponent: azdataType.FormComponent | undefined;
+	public sdkProjectCheckboxFormComponent: azdataType.FormComponent | undefined;
 	public newProjectDialogComplete: Deferred<void> | undefined;
 	public newDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.newProjectDialogComplete = { resolve, reject });
 	public projectUri: vscode.Uri | undefined;
@@ -87,7 +89,7 @@ export class NewProjectDialog extends DialogBase {
 				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId })
 				.send();
 
-			this.projectUri = await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId, this.model.targetPlatform);
+			this.projectUri = await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId, this.model.targetPlatform, this.model.sdkStyleProject);
 			this.newProjectDialogComplete?.resolve();
 		}
 		catch (err) {
@@ -161,6 +163,15 @@ export class NewProjectDialog extends DialogBase {
 				this.formBuilder?.removeFormItem(this.targetPlatformDropdownFormComponent!);
 				this.model.targetPlatform = undefined;
 			}
+
+			if (selectedProject?.sdkStyleOption) {
+				sdkProjectCheckbox.checked = true;
+				this.model.sdkStyleProject = true;
+				this.formBuilder?.addFormItem(this.sdkProjectCheckboxFormComponent!);
+			} else {
+				this.model.sdkStyleProject = false;
+				this.formBuilder?.removeFormItem(this.sdkProjectCheckboxFormComponent!);
+			}
 		}));
 
 		const projectNameTextBox = view.modelBuilder.inputBox().withProps({
@@ -227,6 +238,30 @@ export class NewProjectDialog extends DialogBase {
 			component: targetPlatformDropdown
 		};
 
+		const sdkProjectCheckbox = view.modelBuilder.checkBox().withProps({
+			checked: true,
+			label: constants.SdkStyleProject
+		}).component();
+
+		this.register(sdkProjectCheckbox.onChanged(() => {
+			this.model.sdkStyleProject = sdkProjectCheckbox.checked;
+		}));
+
+		const sdkLearnMore = view.modelBuilder.hyperlink().withProps({
+			label: constants.LearnMore,
+			url: 'https://github.com/microsoft/DacFx/tree/main/src/Microsoft.Build.Sql'
+		}).component();
+
+		const sdkFormComponentGroup = view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
+			.withItems([sdkProjectCheckbox, sdkLearnMore], { CSSStyles: { flex: '0 0 auto', 'margin-right': '10px' } })
+			.component();
+
+
+		this.sdkProjectCheckboxFormComponent = {
+			component: sdkFormComponentGroup,
+		};
+
 		this.formBuilder = view.modelBuilder.formContainer().withFormItems([
 			{
 				title: constants.TypeTitle,
@@ -248,6 +283,11 @@ export class NewProjectDialog extends DialogBase {
 		// add version dropdown if the first project type has one
 		if (allProjectTypes[0].targetPlatforms) {
 			this.formBuilder.addFormItem(this.targetPlatformDropdownFormComponent);
+		}
+
+		// add sdk style checkbox is the first project has the option
+		if (allProjectTypes[0].sdkStyleOption) {
+			this.formBuilder.addFormItem(this.sdkProjectCheckboxFormComponent);
 		}
 
 		await view.initializeModel(this.formBuilder.component());

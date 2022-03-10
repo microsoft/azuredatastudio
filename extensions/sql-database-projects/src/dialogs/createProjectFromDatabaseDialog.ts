@@ -381,7 +381,7 @@ export class CreateProjectFromDatabaseDialog {
 			filePath: this.projectLocationTextBox!.value!,
 			version: '1.0.0.0',
 			extractTarget: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
-			sdkStyle: this.sdkStyleCheckbox?.checked
+			sdkStyle: this.sdkStyleCheckbox?.checked!
 		};
 
 		azdataApi!.window.closeDialog(this.dialog);
