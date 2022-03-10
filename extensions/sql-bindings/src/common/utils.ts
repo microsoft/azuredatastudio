@@ -111,22 +111,14 @@ export async function getAllProjectsInFolder(folder: vscode.Uri, projectExtensio
 
 /**
  * Gets the package info for the extension based on where the extension is installed
- * @param packageJson is the package.json file of the extension
  * @returns the package info object
  */
-export function getPackageInfo(packageJson?: any): IPackageInfo | undefined {
-	if (!packageJson) {
-		packageJson = require('../../package.json');
-	}
-
-	if (packageJson) {
-		return {
-			name: packageJson.name,
-			fullName: `${packageJson.publisher}.${packageJson.name}`,
-			version: packageJson.version,
-			aiKey: packageJson.aiKey
-		};
-	}
-
-	return undefined;
+export function getPackageInfo(): IPackageInfo {
+	const packageJson = require('../../package.json');
+	return {
+		name: packageJson.name,
+		fullName: `${packageJson.publisher}.${packageJson.name}`,
+		version: packageJson.version,
+		aiKey: packageJson.aiKey
+	};
 }

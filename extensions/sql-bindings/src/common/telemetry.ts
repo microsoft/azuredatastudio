@@ -9,7 +9,6 @@ const packageInfo = getPackageInfo()!;
 
 export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 
-
 export enum TelemetryViews {
 	SqlBindingsQuickPick = 'SqlBindingsQuickPick'
 }
