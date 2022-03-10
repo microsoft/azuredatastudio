@@ -516,7 +516,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			initializeTableDesigner(tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> {
 				return self._proxy.$initializeTableDesigner(handle, tableInfo);
 			},
-			processTableEdit(table, edit): Thenable<azdata.designers.DesignerEditResult> {
+			processTableEdit(table, edit): Thenable<azdata.designers.DesignerEditResult<azdata.designers.TableDesignerView>> {
 				return self._proxy.$processTableDesignerEdit(handle, table, edit);
 			},
 			publishChanges(tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.PublishChangesResult> {
@@ -525,7 +525,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			generateScript(tableInfo: azdata.designers.TableInfo): Thenable<string> {
 				return self._proxy.$generateScriptForTableDesigner(handle, tableInfo);
 			},
-			generatePreviewReport(tableInfo: azdata.designers.TableInfo): Thenable<string> {
+			generatePreviewReport(tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.GeneratePreviewReportResult> {
 				return self._proxy.$generatePreviewReportForTableDesigner(handle, tableInfo);
 			},
 			disposeTableDesigner(tableInfo: azdata.designers.TableInfo): Thenable<void> {
