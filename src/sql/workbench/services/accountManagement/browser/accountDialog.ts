@@ -278,6 +278,7 @@ export class AccountDialog extends Modal {
 
 
 	private showNoAccountContainer() {
+		this.spinner = false;
 		this._splitViewContainer!.hidden = true;
 		this._noaccountViewContainer!.hidden = false;
 		this._loadingProviderViewContainer!.hidden = true;
@@ -285,13 +286,14 @@ export class AccountDialog extends Modal {
 	}
 
 	private hideWhenLoading() {
+		this.spinner = true;
 		this._splitViewContainer!.hidden = true;
 		this._noaccountViewContainer!.hidden = true;
 		this._loadingProviderViewContainer!.hidden = false;
-		this.spinner = true;
 	}
 
 	private showSplitView() {
+		this.spinner = false;
 		this._splitViewContainer!.hidden = false;
 		this._noaccountViewContainer!.hidden = true;
 		this._loadingProviderViewContainer!.hidden = true;
@@ -420,8 +422,6 @@ export class AccountDialog extends Modal {
 			return;
 		}
 		providerMapping.view.updateAccounts(args.accountList);
-
-		this.spinner = false;
 
 		if (args.accountList.length > 0 && this._splitViewContainer!.hidden) {
 			this.showSplitView();
