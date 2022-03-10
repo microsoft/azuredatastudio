@@ -3513,15 +3513,15 @@ declare module 'azdata' {
 		 * List of links to embed within the text. If links are specified there must be placeholder
 		 * values in the value indicating where the links should be placed, in the format {i}
 		 *
-		 * e.g. Click {0} for more information!
+		 * e.g. "Click {0} for more information!""
 		 */
 		links?: LinkArea[] | undefined;
 		/**
-		 * The text to display in the tooltip when the component is hovered over
+		 * If set then an info icon is displayed next to the text which will display the description text when hovered over.
 		 */
 		description?: string | undefined;
 		/**
-		 * Whether to display a * next to the text to indicate that the field is required
+		 * Whether to display a * next to the text to indicate that the field is required. Default is false.
 		 */
 		requiredIndicator?: boolean | undefined;
 		/**
@@ -3530,7 +3530,7 @@ declare module 'azdata' {
 		 */
 		headingLevel?: HeadingLevel;
 		/**
-		 * Sets the type of text box to be displayed
+		 * Sets the type of text box to be displayed. Default is plain text.
 		 */
 		textType?: TextType;
 	}
