@@ -273,7 +273,6 @@ export class AccountDialog extends Modal {
 		else {
 			this.showNoAccountContainer();
 		}
-
 	}
 
 
