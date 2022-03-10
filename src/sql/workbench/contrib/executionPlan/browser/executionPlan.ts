@@ -39,6 +39,7 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { URI } from 'vs/base/common/uri';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 
 let azdataGraph = azdataGraphModule();
 
@@ -82,13 +83,16 @@ export class ExecutionPlanView implements IPanelView {
 	private _graphs?: azdata.ExecutionPlanGraph[] = [];
 	private _container = DOM.$('.eps-container');
 
+	private _planCache: Map<string, string> = new Map();
+
 	constructor(
 		@IInstantiationService private instantiationService: IInstantiationService,
+		@IExecutionPlanService private executionPlanService: IExecutionPlanService
 	) {
 	}
 
-	public render(container: HTMLElement): void {
-		container.appendChild(this._container);
+	public render(parent: HTMLElement): void {
+		parent.appendChild(this._container);
 	}
 
 	dispose() {
@@ -116,6 +120,22 @@ export class ExecutionPlanView implements IPanelView {
 				this.updateRelativeCosts();
 			});
 		}
+	}
+
+	public async addXml(graphFile: azdata.ExecutionPlanGraphFile) {
+		this.clear();
+		if (this._planCache.has(graphFile.graphFileContent)) {
+			this._container.innerHTML = this._planCache.get(graphFile.graphFileContent);
+			return;
+		} else {
+			const graphs = (await this.executionPlanService.getExecutionPlan({
+				graphFileContent: graphFile.graphFileContent,
+				graphFileType: graphFile.graphFileType
+			})).graphs;
+			this.addGraphs(graphs);
+			this._planCache.set(graphFile.graphFileContent, this._container.innerHTML);
+		}
+
 	}
 
 	private updateRelativeCosts() {

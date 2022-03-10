@@ -201,6 +201,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerExecutionPlanServiceProvider(provider: azdata.ExecutionPlanServiceProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.ExecutionPlanServiceProvider);
+		this._proxy.$registerExecutionPlanServiceProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	// Capabilities Discovery handlers
 	override $getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
 		return this._resolveProvider<azdata.CapabilitiesProvider>(handle).getServerCapabilities(client);
@@ -920,5 +926,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	public override $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): Promise<void> {
 		this._proxy.$openTableDesigner(providerId, tableInfo, telemetryInfo);
 		return Promise.resolve();
+	}
+
+	// Execution Plan
+
+	public override $getExecutionPlan(handle: number, planFile: azdata.ExecutionPlanGraphFile): Thenable<azdata.GetExecutionPlanResult> {
+		return this._resolveProvider<azdata.ExecutionPlanServiceProvider>(handle).getExecutionPlan(planFile);
 	}
 }

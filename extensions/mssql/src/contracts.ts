@@ -1114,3 +1114,16 @@ export namespace DisposeTableDesignerRequest {
 	export const type = new RequestType<azdata.designers.TableInfo, void, void, void>('tabledesigner/dispose');
 }
 // ------------------------------- < Table Designer > ------------------------------------
+
+
+// ------------------------------- < Execution Plan > ------------------------------------
+
+export interface GetExecutionPlanParams {
+	graphFile: azdata.ExecutionPlanGraphFile,
+}
+
+export namespace GetExecutionPlanRequest {
+	export const type = new RequestType<GetExecutionPlanParams, azdata.GetExecutionPlanResult, void, void>('executionplan/getexecutionplan');
+}
+
+// ------------------------------- < Execution Plan > ------------------------------------

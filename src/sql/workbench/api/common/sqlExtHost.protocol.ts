@@ -567,6 +567,11 @@ export abstract class ExtHostDataProtocolShape {
 	 * Open a new instance of table designer.
 	 */
 	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): void { throw ni(); }
+
+	/**
+	 * Execution Plan Section
+	 */
+	$getExecutionPlan(handle: number, planFile: azdata.ExecutionPlanGraphFile): Thenable<azdata.GetExecutionPlanResult> { throw ni(); }
 }
 
 /**
@@ -637,6 +642,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerSqlAssessmentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerDataGridProvider(providerId: string, title: string, handle: number): void;
 	$registerTableDesignerProvider(providerId: string, handle: number): Promise<any>;
+	$registerExecutionPlanServiceProvider(providerId: string, handle: number): Promise<any>;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
@@ -661,7 +667,6 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void;
 	$onJobDataUpdated(handle: Number): void;
 	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): void;
-
 	/**
 	 * Callback when a session has completed initialization
 	 */

@@ -1050,11 +1050,13 @@ declare module 'azdata' {
 	}
 
 	export enum DataProviderType {
-		TableDesignerProvider = 'TableDesignerProvider'
+		TableDesignerProvider = 'TableDesignerProvider',
+		ExecutionPlanServiceProvider = 'ExecutionPlanServiceProvider'
 	}
 
 	export namespace dataprotocol {
 		export function registerTableDesignerProvider(provider: designers.TableDesignerProvider): vscode.Disposable;
+		export function registerExecutionPlanServiceProvider(provider: ExecutionPlanServiceProvider): vscode.Disposable;
 	}
 
 	export namespace designers {
@@ -1620,5 +1622,14 @@ declare module 'azdata' {
 		 * File type for execution plan. This will be the file type of the editor when the user opens the graph file
 		 */
 		graphFileType: string;
+	}
+
+	export interface GetExecutionPlanResult extends ResultStatus {
+		graphs: ExecutionPlanGraph[]
+	}
+
+	export interface ExecutionPlanServiceProvider extends DataProvider {
+		// execution plan service methods
+		getExecutionPlan(planFile: ExecutionPlanGraphFile): Thenable<GetExecutionPlanResult>;
 	}
 }

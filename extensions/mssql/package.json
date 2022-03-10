@@ -759,6 +759,7 @@
     "connectionProvider": {
       "providerId": "MSSQL",
       "displayName": "%mssql.provider.displayName%",
+      "supportedExecutionPlanFileExtensions":["sqlplan"],
       "iconPath": [
         {
           "id": "mssql:cloud",

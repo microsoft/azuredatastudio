@@ -1183,3 +1183,50 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 	}
 }
 
+
+/**
+ * Execution Plan Service Feature
+ * TODO: Move this feature to data protocol client repo once stablized
+ */
+export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		contracts.GetExecutionPlanRequest.type,
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, ExecutionPlanServiceFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		const getExecutionPlan = (planFile: azdata.ExecutionPlanGraphFile): Thenable<azdata.GetExecutionPlanResult> => {
+			const params: contracts.GetExecutionPlanParams = { graphFile: planFile };
+			return client.sendRequest(contracts.GetExecutionPlanRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.GetExecutionPlanRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		return azdata.dataprotocol.registerExecutionPlanServiceProvider({
+			providerId: client.providerId,
+			getExecutionPlan
+		});
+	}
+}
+
