@@ -405,7 +405,7 @@ suite('Account Management Service Tests:', () => {
 		// ... Add mocking for instantiating an account dialog controller
 		let mockDialogController = TypeMoq.Mock.ofType(AccountDialogController);
 		let mockAccountDialog = {};
-		mockDialogController.setup(x => x.openAccountDialog(true));
+		mockDialogController.setup(x => x.openAccountDialog());
 		mockDialogController.setup(x => x.accountDialog).returns(() => <AccountDialog>mockAccountDialog);
 		let mockAccountDialogCloseEvent = new Emitter<void>();
 		(mockAccountDialog as any).onCloseEvent = mockAccountDialogCloseEvent.event;
@@ -423,7 +423,7 @@ suite('Account Management Service Tests:', () => {
 				state.instantiationService.verify(x => x.createInstance(TypeMoq.It.isValue(AccountDialogController)), TypeMoq.Times.once());
 
 				// ... The dialog should have been opened
-				mockDialogController.verify(x => x.openAccountDialog(true), TypeMoq.Times.once());
+				mockDialogController.verify(x => x.openAccountDialog(), TypeMoq.Times.once());
 			});
 	});
 
@@ -435,7 +435,7 @@ suite('Account Management Service Tests:', () => {
 		// ... Add mocking for instantiating an account dialog controller
 		let mockDialogController = TypeMoq.Mock.ofType(AccountDialogController);
 		let mockAccountDialog = {};
-		mockDialogController.setup(x => x.openAccountDialog(true));
+		mockDialogController.setup(x => x.openAccountDialog());
 		mockDialogController.setup(x => x.accountDialog).returns(() => <AccountDialog>mockAccountDialog);
 		let mockAccountDialogCloseEvent = new Emitter<void>();
 		(mockAccountDialog as any).onCloseEvent = mockAccountDialogCloseEvent.event;
@@ -459,7 +459,7 @@ suite('Account Management Service Tests:', () => {
 				state.instantiationService.verify(x => x.createInstance(TypeMoq.It.isValue(AccountDialogController)), TypeMoq.Times.once());
 
 				// ... The dialog should have been opened twice
-				mockDialogController.verify(x => x.openAccountDialog(true), TypeMoq.Times.exactly(2));
+				mockDialogController.verify(x => x.openAccountDialog(), TypeMoq.Times.exactly(2));
 			});
 	});
 

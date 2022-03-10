@@ -46,6 +46,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Iterable } from 'vs/base/common/iterator';
 import { Tenant, TenantListDelegate, TenantListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 export const VIEWLET_ID = 'workbench.view.accountpanel';
 
@@ -147,7 +148,6 @@ export class AccountDialog extends Modal {
 	public get onCloseEvent(): Event<void> { return this._onCloseEmitter.event; }
 
 	constructor(
-		private accountsLoaded: boolean,
 		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -163,7 +163,8 @@ export class AccountDialog extends Modal {
 		@IQuickInputService private _quickInputService: IQuickInputService,
 		@INotificationService private _notificationService: INotificationService,
 		@IOpenerService protected readonly openerService: IOpenerService,
-		@ITelemetryService private readonly vstelemetryService: ITelemetryService
+		@ITelemetryService private readonly vstelemetryService: ITelemetryService,
+		@IAccountManagementService private readonly _accountManagementService: IAccountManagementService,
 	) {
 		super(
 			localize('linkedAccounts', "Linked accounts"),
@@ -222,7 +223,7 @@ export class AccountDialog extends Modal {
 
 		this._loadingProviderViewContainer = DOM.$('div.loading-provider-view');
 		const loadingProviderTitle = DOM.append(this._loadingProviderViewContainer, DOM.$('.loading-provider-view-label'));
-		const loadingProviderLabel = localize('accountDialog.loadingProviderLabel', "Waiting for accounts to load, please wait...");
+		const loadingProviderLabel = localize('accountDialog.loadingProviderLabel', "Loading accounts...");
 		loadingProviderTitle.innerText = loadingProviderLabel;
 
 		// Show the add account button for the first provider
@@ -260,12 +261,13 @@ export class AccountDialog extends Modal {
 		this.hide(hideReason);
 	}
 
-	public open() {
+	public async open() {
+		let accountMetadata = await this._accountManagementService.getAccountProviderMetadata();
 		this.show();
 		if (!this.isEmptyLinkedAccount()) {
 			this.showSplitView();
 		}
-		else if (!this.accountsLoaded) {
+		else if (accountMetadata.length === 0) {
 			this.hideWhenLoading();
 		}
 		else {
@@ -420,7 +422,6 @@ export class AccountDialog extends Modal {
 		}
 		providerMapping.view.updateAccounts(args.accountList);
 
-		this.accountsLoaded = true;
 		this.spinner = false;
 
 		if (args.accountList.length > 0 && this._splitViewContainer!.hidden) {

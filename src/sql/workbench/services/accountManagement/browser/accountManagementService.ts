@@ -319,8 +319,7 @@ export class AccountManagementService implements IAccountManagementService {
 				if (!self._accountDialogController) {
 					self._accountDialogController = self._instantiationService.createInstance(AccountDialogController);
 				}
-				let hasInitialized = Object.keys(self._providers).length !== 0;
-				self._accountDialogController.openAccountDialog(hasInitialized);
+				self._accountDialogController.openAccountDialog();
 				self._accountDialogController.accountDialog!.onCloseEvent(resolve);
 			} catch (e) {
 				reject(e);
@@ -379,7 +378,7 @@ export class AccountManagementService implements IAccountManagementService {
 		const updatedAccounts = await provider.initialize(accounts);
 
 		// Don't add the accounts that are about to get deleted to the cache.
-		this._providers[providerMetadata.id].accounts = updatedAccounts.filter(s => s.delete === undefined);
+		this._providers[providerMetadata.id].accounts = updatedAccounts.filter(s => !s.delete);
 
 		const writePromises = updatedAccounts.map(async (account) => {
 			if (account.delete === true) {
