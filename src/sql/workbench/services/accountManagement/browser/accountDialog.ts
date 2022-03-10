@@ -271,9 +271,8 @@ export class AccountDialog extends Modal {
 		else {
 			this.showNoAccountContainer();
 		}
+
 	}
-
-
 
 	private showNoAccountContainer() {
 		this._loadingSpinner.loading = false;
