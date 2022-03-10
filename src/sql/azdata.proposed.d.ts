@@ -311,39 +311,6 @@ declare module 'azdata' {
 		title: string;
 	}
 
-	export interface DeclarativeTableColumn {
-		headerCssStyles?: CssStyles;
-		rowCssStyles?: CssStyles;
-		ariaLabel?: string;
-		showCheckAll?: boolean;
-		hidden?: boolean;
-	}
-
-
-	export enum DeclarativeDataType {
-		component = 'component',
-		menu = 'menu'
-	}
-
-	export type DeclarativeTableRowSelectedEvent = {
-		row: number
-	};
-
-	export interface DeclarativeTableComponent extends Component, DeclarativeTableProperties {
-		onRowSelected: vscode.Event<DeclarativeTableRowSelectedEvent>;
-		/**
-		 * Sets the filter currently applied to this table - only rows with index in the given array will be visible. undefined
-		 * will clear the filter
-		 */
-		setFilter(rowIndexes: number[] | undefined): void;
-
-		/**
-		 * Sets the data values.
-		 * @param v The new data values
-		 */
-		setDataValues(v: DeclarativeTableCellValue[][]): Promise<void>;
-	}
-
 	/*
 	 * Add optional azureAccount for connectionWidget.
 	 */
@@ -364,95 +331,6 @@ declare module 'azdata' {
 
 	export interface ConnectionOption {
 		defaultValueOsOverrides?: DefaultValueOsOverride[];
-	}
-
-
-	export interface DeclarativeTableProperties {
-		/**
-		 * dataValues will only be used if data is an empty array.
-		 * To set the dataValues, it is recommended to use the setDataValues method that returns a promise.
-		 */
-		dataValues?: DeclarativeTableCellValue[][];
-
-		/**
-		 * Gets a boolean value determines whether the row selection is enabled. Default value is false.
-		 */
-		enableRowSelection?: boolean;
-
-		/**
-		 * Gets or sets the selected row number of the table. -1 means to no selected row.
-		 */
-		selectedRow?: number;
-	}
-
-
-	export interface DeclarativeTableMenuCellValue {
-		/**
-		 * commands for the menu. Use an array for a group and menu separators will be added.
-		 */
-		commands: (string | string[])[];
-		/**
-		 * context that will be passed to the commands.
-		 */
-		context: { [key: string]: string | boolean | number } | string | boolean | number | undefined
-	}
-
-	export interface DeclarativeTableCellValue {
-		/**
-		 * The cell value
-		 */
-		value: string | number | boolean | Component | DeclarativeTableMenuCellValue;
-		/**
-		 * The aria-label of the cell
-		 */
-		ariaLabel?: string;
-		/**
-		 * The CSS style of the cell
-		 */
-		style?: CssStyles;
-		/**
-		 * A boolean value indicates whether the cell is enabled. Default value is true.
-		 * Note: this is currently only implemented for boolean type (checkbox).
-		 */
-		enabled?: boolean;
-	}
-
-	export interface DropDownProperties {
-		/**
-		 * Adds a short hint that describes the expected value for the editable dropdown
-		 */
-		placeholder?: string;
-		/**
-		 * Define error messages to show when custom validation fails. Note: For empty required dropdowns we use a default error message.
-		 */
-		validationErrorMessages?: string[];
-	}
-
-	/**
-	 * The heading levels an HTML heading element can be.
-	 */
-	export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
-
-	/**
-	 * The type of text this is - used to determine display color.
-	 */
-	export enum TextType {
-		Normal = 'Normal',
-		Error = 'Error',
-		UnorderedList = 'UnorderedList',
-		OrderedList = 'OrderedList'
-	}
-
-	export interface TextComponentProperties {
-		/**
-		 * The heading level for this component - if set the text component will be created as an h#
-		 * HTML element with this value being the #.
-		 */
-		headingLevel?: HeadingLevel;
-		/**
-		 * Sets the type of text box to be displayed
-		 */
-		textType?: TextType;
 	}
 
 	export interface TaskInfo {
@@ -540,13 +418,6 @@ declare module 'azdata' {
 		delete?: boolean;
 	}
 
-	export enum CardType {
-		/**
-		 * Card with the icon as a background image
-		 */
-		Image = 'Image'
-	}
-
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location
@@ -578,15 +449,6 @@ declare module 'azdata' {
 		 * Append data to an existing table data.
 		 */
 		appendData(data: any[][]): Thenable<void>;
-	}
-
-	export interface LinkArea {
-		/*
-		* Accessibility information used when screen reader interacts with this link.
-		* Generally, a link has no need to set the `role` of the accessibilityInformation;
-		* but it is exposed for situations that may require it.
-		*/
-		accessibilityInformation?: vscode.AccessibilityInformation
 	}
 
 	export interface IconColumnCellValue {
@@ -670,18 +532,6 @@ declare module 'azdata' {
 		 * Contains execution plans returned by the database in ResultSets.
 		 */
 		executionPlans: ExecutionPlanGraph[];
-	}
-
-
-	export interface ServerInfo {
-		/**
-		 * The CPU count of the host running the server.
-		 */
-		cpuCount?: number;
-		/**
-		 * The physical memory of the host running the server.
-		 */
-		physicalMemoryInMb?: number;
 	}
 
 	export interface ObjectMetadata {
