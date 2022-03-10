@@ -212,6 +212,7 @@ export class AccountDialog extends Modal {
 
 	protected renderBody(container: HTMLElement) {
 		this._container = container;
+
 		// Setup loading spinner
 		this._loadingSpinner = new LoadingSpinner(this._container, { showText: true });
 		this._loadingSpinner.loadingCompletedMessage = '';
@@ -276,8 +277,8 @@ export class AccountDialog extends Modal {
 
 	private showNoAccountContainer() {
 		this._loadingSpinner.loading = false;
-		this._noaccountViewContainer!.hidden = false;
 		this._splitViewContainer!.hidden = true;
+		this._noaccountViewContainer!.hidden = false;
 		this._addAccountButton!.focus();
 	}
 
@@ -339,9 +340,7 @@ export class AccountDialog extends Modal {
 			AddAccountAction,
 			newProvider.addedProvider.id
 		);
-		addAccountAction.addAccountCompleteEvent(() => {
-			this._loadingSpinner.loading = false;
-		});
+		addAccountAction.addAccountCompleteEvent(() => this._loadingSpinner.loading = false);
 		addAccountAction.addAccountErrorEvent(msg => this._onAddAccountErrorEmitter.fire(msg));
 		addAccountAction.addAccountStartEvent(() => {
 			this._loadingSpinner.loadingMessage = localize('accountDialog.addingAccountLabel', "Adding account, complete login in web browser.");
