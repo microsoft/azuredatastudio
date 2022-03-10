@@ -736,7 +736,7 @@
       <source xml:lang="en">Run via npx</source>
     </trans-unit>
     <trans-unit id="runningDockerMessage">
-      <source xml:lang="en">Building and running the docker container ...</source>
+      <source xml:lang="en">Running the docker container ...</source>
     </trans-unit>
     <trans-unit id="sameDatabase">
       <source xml:lang="en">Same database</source>

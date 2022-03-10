@@ -146,6 +146,15 @@ export function convertIsoTimeToLocalTime(isoTime: string): Date {
 
 export type SupportedAutoRefreshIntervals = -1 | 15000 | 30000 | 60000 | 180000 | 300000;
 
+export function selectDefaultDropdownValue(dropDown: DropDownComponent, value?: string, useDisplayName: boolean = true): void {
+	const selectedIndex = value ? findDropDownItemIndex(dropDown, value, useDisplayName) : -1;
+	if (selectedIndex > -1) {
+		selectDropDownIndex(dropDown, selectedIndex);
+	} else {
+		selectDropDownIndex(dropDown, 0);
+	}
+}
+
 export function selectDropDownIndex(dropDown: DropDownComponent, index: number): void {
 	if (index >= 0 && dropDown.values && index <= dropDown.values.length - 1) {
 		const value = dropDown.values[index];
@@ -153,10 +162,15 @@ export function selectDropDownIndex(dropDown: DropDownComponent, index: number):
 	}
 }
 
-export function findDropDownItemIndex(dropDown: DropDownComponent, value: string): number {
+export function findDropDownItemIndex(dropDown: DropDownComponent, value: string, useDisplayName: boolean = true): number {
 	if (dropDown.values) {
-		return dropDown.values.findIndex((v: any) =>
-			(v as CategoryValue)?.displayName?.toLowerCase() === value?.toLowerCase());
+		if (useDisplayName) {
+			return dropDown.values.findIndex((v: any) =>
+				(v as CategoryValue)?.displayName?.toLowerCase() === value?.toLowerCase());
+		} else {
+			return dropDown.values.findIndex((v: any) =>
+				(v as CategoryValue)?.name?.toLowerCase() === value?.toLowerCase());
+		}
 	}
 
 	return -1;
