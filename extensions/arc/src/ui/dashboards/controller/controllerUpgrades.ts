@@ -377,13 +377,24 @@ export class ControllerUpgradesPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token): Promise<void> => {
-								await this._azApi.az.arcdata.dc.upgrade();
+								let result = await this._azApi.az.arcdata.dc.listUpgrades(this._controllerModel.info.namespace);
+								let versions, currentVersion = result.stdout;
+								console.log(versions);
+								console.log(currentVersion);
 								try {
 									await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
 								} catch (error) {
 									vscode.window.showErrorMessage(loc.refreshFailed(error));
 								}
 							}
+							// async (_progress, _token): Promise<void> => {
+							// 	await this._azApi.az.arcdata.dc.upgrade();
+							// 	try {
+							// 		await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
+							// 	} catch (error) {
+							// 		vscode.window.showErrorMessage(loc.refreshFailed(error));
+							// 	}
+							// }
 						);
 					} catch (error) {
 						vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));

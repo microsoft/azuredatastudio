@@ -55,6 +55,11 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 						return azToolService.localAz!.arcdata.dc.config.show(namespace, additionalEnvVars);
 					}
 				},
+				listUpgrades: async (namespace: string, usek8s?: boolean, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					await localAzDiscovered;
+					validateAz(azToolService.localAz);
+					return azToolService.localAz!.arcdata.dc.listUpgrades(namespace, usek8s, additionalEnvVars);
+				},
 				upgrade: async (desiredVersion?: string, dryRun?: string, namespace?: string, name?: string, noWait?: boolean, resourceGroup?: string, usek8s?: boolean, additionalEnvVars?: azExt.AdditionalEnvVars) => {
 					await localAzDiscovered;
 					validateAz(azToolService.localAz);
