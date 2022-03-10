@@ -5051,18 +5051,9 @@ declare module 'azdata' {
 		}
 
 		export interface INotebookMetadata {
-			kernelspec?: IKernelInfo | IKernelSpec | undefined;
+			kernelspec?: IKernelSpec | undefined;
 			language_info?: ILanguageInfo | undefined;
 			tags?: string[] | undefined;
-		}
-
-		/**
-		 * @deprecated Use IKernelSpec instead
-		 */
-		export interface IKernelInfo {
-			name: string;
-			language?: string | undefined;
-			display_name?: string | undefined;
 		}
 
 		export interface ILanguageInfo {

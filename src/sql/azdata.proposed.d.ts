@@ -30,7 +30,44 @@ declare module 'azdata' {
 			setTrusted(state: boolean): void;
 		}
 
+		export interface ISessionOptions {
+			/**
+			 * The spec for the kernel being used to create this session.
+			 */
+			kernelSpec?: IKernelSpec;
+		}
+
+		export interface IKernelSpec {
+			/**
+			 * The list of languages that are supported for this kernel.
+			 */
+			supportedLanguages?: string[];
+			/**
+			 * The original name for this kernel.
+			 */
+			oldName?: string;
+			/**
+			 * The original display name for this kernel.
+			 */
+			oldDisplayName?: string;
+			/**
+			 * The original language name for this kernel.
+			 */
+			oldLanguage?: string;
+		}
+
+		export interface ILanguageInfo {
+			/**
+			 * The original name for this language.
+			 */
+			oldName?: string;
+		}
+
 		export interface IStandardKernel {
+			/**
+			 * The list of languages that are supported for this kernel.
+			 */
+			supportedLanguages: string[];
 			readonly blockedOnSAW?: boolean;
 		}
 
@@ -59,7 +96,15 @@ declare module 'azdata' {
 			/**
 			 * URI of the notebook document that is sending this execute request.
 			 */
-			notebookUri?: vscode.Uri;
+			notebookUri: vscode.Uri;
+			/**
+			 * URI of the notebook cell that is sending this execute request.
+			 */
+			cellUri: vscode.Uri;
+			/**
+			 * The language of the notebook document that is executing this request.
+			 */
+			language: string;
 			/**
 			 * The index of the cell which the code being executed is from.
 			 */
@@ -1036,7 +1081,7 @@ declare module 'azdata' {
 			 * @param table the table information
 			 * @param tableChangeInfo the information about the change user made through the UI.
 			 */
-			processTableEdit(table: TableInfo, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
+			processTableEdit(table: TableInfo, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult<TableDesignerView>>;
 
 			/**
 			 * Publish the changes.
@@ -1054,7 +1099,7 @@ declare module 'azdata' {
 			 * Generate preview report describing the changes to be made.
 			 * @param table the table information
 			 */
-			generatePreviewReport(table: TableInfo): Thenable<string>;
+			generatePreviewReport(table: TableInfo): Thenable<GeneratePreviewReportResult>;
 
 			/**
 			 * Notify the provider that the table designer has been closed.
@@ -1109,14 +1154,6 @@ declare module 'azdata' {
 			 * The initial state of the designer.
 			 */
 			viewModel: DesignerViewModel;
-			/**
-			 * The supported column types
-			 */
-			columnTypes: string[];
-			/**
-			 * The list of schemas in the database.
-			 */
-			schemas: string[];
 		}
 
 		/**
@@ -1131,7 +1168,9 @@ declare module 'azdata' {
 			Script = 'script',
 			ForeignKeys = 'foreignKeys',
 			CheckConstraints = 'checkConstraints',
-			Indexes = 'indexes'
+			Indexes = 'indexes',
+			PrimaryKeyName = 'primaryKeyName',
+			PrimaryKeyColumns = 'primaryKeyColumns'
 		}
 		/**
 		 * Name of the common table column properties.
@@ -1218,6 +1257,12 @@ declare module 'azdata' {
 			 */
 			foreignKeyTableOptions?: TableDesignerBuiltInTableViewOptions;
 			/**
+			 * Foreign key column mapping table options.
+			 * Common foreign key column mapping properties are handled by Azure Data Studio. see {@link ForeignKeyColumnMappingProperty}.
+			 * Default columns to display values are: Column, ForeignColumn.
+			 */
+			foreignKeyColumnMappingTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
 			 * Check constraints table options.
 			 * Common check constraint properties are handled by Azure Data Studio. see {@link TableCheckConstraintProperty}
 			 * Default columns to display values are: Name, Expression.
@@ -1229,13 +1274,22 @@ declare module 'azdata' {
 			 * Default columns to display values are: Name.
 			 */
 			indexTableOptions?: TableDesignerBuiltInTableViewOptions;
-
 			/**
 			* Index column specification table options.
 			* Common index properties are handled by Azure Data Studio. see {@link TableIndexColumnSpecificationProperty}
 			* Default columns to display values are: Column.
 			*/
 			indexColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			* Primary column specification table options.
+			* Common index properties are handled by Azure Data Studio. see {@link TableIndexColumnSpecificationProperty}
+			* Default columns to display values are: Column.
+			*/
+			primaryKeyColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			 * Additional primary key properties. Common primary key properties: primaryKeyName.
+			 */
+			additionalPrimaryKeyProperties?: DesignerDataPropertyInfo[];
 		}
 
 		export interface TableDesignerBuiltInTableViewOptions extends DesignerTablePropertiesBase {
@@ -1326,6 +1380,14 @@ declare module 'azdata' {
 			 * The confirmation message to be displayed when user removes a row.
 			 */
 			removeRowConfirmationMessage?: string;
+			/**
+			 * Whether to show the item detail in properties view. The default value is true.
+			 */
+			showItemDetailInPropertiesView?: boolean;
+			/**
+			 * The label of the add new button. The default value is 'Add New'.
+			 */
+			labelForAddNewButton?: string;
 		}
 
 		/**
@@ -1354,7 +1416,11 @@ declare module 'azdata' {
 		 * The data item of the designer's table component.
 		 */
 		export interface DesignerTableComponentDataItem {
-			[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+			[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties | boolean;
+			/**
+			 * Whether the row can be deleted. The default value is true.
+			 */
+			canBeDeleted?: boolean;
 		}
 
 		/**
@@ -1413,7 +1479,11 @@ declare module 'azdata' {
 		/**
 		 * The result returned by the table designer provider after handling an edit request.
 		 */
-		export interface DesignerEditResult {
+		export interface DesignerEditResult<T> {
+			/**
+			 * The new view information if the view needs to be refreshed.
+			 */
+			view?: T;
 			/**
 			 * The view model object.
 			 */
@@ -1440,6 +1510,21 @@ declare module 'azdata' {
 			 * The new view model.
 			 */
 			viewModel: DesignerViewModel;
+			/**
+			 * The new view.
+			 */
+			view: TableDesignerView;
+		}
+
+		export interface GeneratePreviewReportResult {
+			/**
+			 * Report generated for generate preview
+			 */
+			report: string;
+			/**
+			 * Format (mimeType) of the report
+			 */
+			mimeType: string;
 		}
 	}
 

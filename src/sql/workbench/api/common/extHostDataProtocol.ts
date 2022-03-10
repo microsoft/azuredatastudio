@@ -897,7 +897,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).initializeTableDesigner(table);
 	}
 
-	public override $processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> {
+	public override $processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult<azdata.designers.TableDesignerView>> {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).processTableEdit(table, edit);
 	}
 
@@ -909,7 +909,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).generateScript(table);
 	}
 
-	public override $generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> {
+	public override $generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.GeneratePreviewReportResult> {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).generatePreviewReport(table);
 	}
 
