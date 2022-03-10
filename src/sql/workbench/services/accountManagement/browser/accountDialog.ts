@@ -45,6 +45,7 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Iterable } from 'vs/base/common/iterator';
+import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 import { Tenant, TenantListDelegate, TenantListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
@@ -131,6 +132,7 @@ export class AccountDialog extends Modal {
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _providerViewsMap = new Map<string, IProviderViewUiComponent>();
+	private _loadingSpinner: LoadingSpinner;
 
 	private _closeButton?: Button;
 	private _addAccountButton?: Button;
@@ -138,7 +140,6 @@ export class AccountDialog extends Modal {
 	private _container?: HTMLElement;
 	private _splitViewContainer?: HTMLElement;
 	private _noaccountViewContainer?: HTMLElement;
-	private _loadingProviderViewContainer?: HTMLElement;
 
 	// EVENTING ////////////////////////////////////////////////////////////
 	private _onAddAccountErrorEmitter: Emitter<string>;
@@ -175,8 +176,7 @@ export class AccountDialog extends Modal {
 			themeService,
 			logService,
 			textResourcePropertiesService,
-			contextKeyService,
-			{ hasSpinner: true }
+			contextKeyService
 		);
 
 		// Setup the event emitters
@@ -212,6 +212,9 @@ export class AccountDialog extends Modal {
 
 	protected renderBody(container: HTMLElement) {
 		this._container = container;
+		// Setup loading spinner
+		this._loadingSpinner = new LoadingSpinner(this._container, { showText: true });
+
 		this._splitViewContainer = DOM.$('div.account-view.monaco-pane-view');
 		DOM.append(container, this._splitViewContainer);
 		this._splitView = new SplitView(this._splitViewContainer);
@@ -220,11 +223,6 @@ export class AccountDialog extends Modal {
 		const noAccountTitle = DOM.append(this._noaccountViewContainer, DOM.$('.no-account-view-label'));
 		const noAccountLabel = localize('accountDialog.noAccountLabel', "There is no linked account. Please add an account.");
 		noAccountTitle.innerText = noAccountLabel;
-
-		this._loadingProviderViewContainer = DOM.$('div.loading-provider-view');
-		const loadingProviderTitle = DOM.append(this._loadingProviderViewContainer, DOM.$('.loading-provider-view-label'));
-		const loadingProviderLabel = localize('accountDialog.loadingProviderLabel', "Loading accounts...");
-		loadingProviderTitle.innerText = loadingProviderLabel;
 
 		// Show the add account button for the first provider
 		// Todo: If we have more than 1 provider, need to show all add account buttons for all providers
@@ -237,7 +235,6 @@ export class AccountDialog extends Modal {
 		}));
 
 		DOM.append(container, this._noaccountViewContainer);
-		DOM.append(container, this._loadingProviderViewContainer);
 	}
 
 	private registerListeners(): void {
@@ -278,25 +275,25 @@ export class AccountDialog extends Modal {
 
 
 	private showNoAccountContainer() {
-		this.spinner = false;
-		this._splitViewContainer!.hidden = true;
+		this._loadingSpinner.loadingMessage = '';
+		this._loadingSpinner.loading = false;
 		this._noaccountViewContainer!.hidden = false;
-		this._loadingProviderViewContainer!.hidden = true;
+		this._splitViewContainer!.hidden = true;
 		this._addAccountButton!.focus();
 	}
 
 	private hideWhenLoading() {
-		this.spinner = true;
+		this._loadingSpinner.loadingMessage = localize('accountDialog.loadingProviderLabel', "Loading accounts...");
+		this._loadingSpinner.loading = true;
 		this._splitViewContainer!.hidden = true;
 		this._noaccountViewContainer!.hidden = true;
-		this._loadingProviderViewContainer!.hidden = false;
 	}
 
 	private showSplitView() {
-		this.spinner = false;
+		this._loadingSpinner.loadingMessage = '';
+		this._loadingSpinner.loading = false;
 		this._splitViewContainer!.hidden = false;
 		this._noaccountViewContainer!.hidden = true;
-		this._loadingProviderViewContainer!.hidden = true;
 		if (Iterable.consume(this._providerViewsMap.values()).length > 0) {
 			const firstView = this._providerViewsMap.values().next().value;
 			if (firstView && firstView.view instanceof AccountPanel) {
@@ -344,9 +341,15 @@ export class AccountDialog extends Modal {
 			AddAccountAction,
 			newProvider.addedProvider.id
 		);
-		addAccountAction.addAccountCompleteEvent(() => this.spinner = false);
+		addAccountAction.addAccountCompleteEvent(() => {
+			this._loadingSpinner.loadingCompletedMessage = '';
+			this._loadingSpinner.loading = false;
+		});
 		addAccountAction.addAccountErrorEvent(msg => this._onAddAccountErrorEmitter.fire(msg));
-		addAccountAction.addAccountStartEvent(() => this.spinner = true);
+		addAccountAction.addAccountStartEvent(() => {
+			this._loadingSpinner.loadingCompletedMessage = this._loadingSpinner.loadingMessage = localize('accountDialog.addingAccountLabel', "Adding account, complete login in web browser.");
+			this._loadingSpinner.loading = true;
+		});
 
 		let providerView = new AccountPanel(
 			{
