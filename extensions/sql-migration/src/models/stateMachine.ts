@@ -184,6 +184,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _currentState: State;
 	private _gatheringInformationError: string | undefined;
 
+	public _fullInstanceName!: string;
 	public _databasesForAssessment!: string[];
 	public _assessmentResults!: ServerAssessment;
 	public _assessedDatabaseList!: string[];
@@ -298,6 +299,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			this._assessedDatabaseList = this._databasesForAssessment.slice();
 
 			if (response?.assessmentResult) {
+				this._fullInstanceName = response.assessmentResult.name;
 				response.assessmentResult.items = response.assessmentResult.items?.filter(
 					issue => issue.appliesToMigrationTargetPlatform === targetType);
 
@@ -351,16 +353,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async getSkuRecommendations(): Promise<SkuRecommendation> {
 		try {
-			const serverInfo = await azdata.connection.getServerInfo(this.sourceConnectionId);
-			// const machineName = (<any>serverInfo)['machineName'];		// get actual machine name instead of whatever the user entered as the server name (e.g. DESKTOP-xxx instead of localhost)
-
-			const instanceName = this._assessmentApiResponse.assessmentResult.name;
+			if (!this._fullInstanceName) {
+				await this.getDatabaseAssessments(MigrationTargetType.SQLMI);
+			}
 
 			const response = (await this.migrationService.getSkuRecommendations(
 				this._skuRecommendationPerformanceLocation,
 				this._performanceDataQueryIntervalInSeconds,
 				this._recommendationTargetPlatforms.map(p => p.toString()),
-				instanceName,
+				this._fullInstanceName,
 				this._skuTargetPercentile,
 				this._skuScalingFactor,
 				this._defaultDataPointStartTime,
