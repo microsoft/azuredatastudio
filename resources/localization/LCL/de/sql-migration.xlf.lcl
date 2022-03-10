@@ -1516,6 +1516,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.account.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[To continue, select a valid Azure account.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Wählen Sie ein gültiges Azure-Konto aus, um den Vorgang fortzusetzen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1645,6 +1648,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.savedInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot retrieve saved session. Try again by selecting new session.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die gespeicherte Sitzung kann nicht abgerufen werden. Versuchen Sie es erneut, indem Sie eine neue Sitzung auswählen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

@@ -18,6 +18,9 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { MarkdownRenderer } from 'vs/editor/browser/core/markdownRenderer';
+import { Mimes } from 'vs/base/common/mime';
 
 const OkText: string = localize('tableDesigner.UpdateDatabase', "Update Database");
 const CancelText: string = localize('tableDesigner.cancel', "Cancel");
@@ -32,10 +35,12 @@ export enum TableDesignerPublishDialogResult {
 export class TableDesignerPublishDialog extends Modal {
 
 	private _report?: string;
+	private _mimeType: string = Mimes.text;
 	private _okButton?: Button;
 	private _generateScriptButton?: Button;
 	private _cancelButton?: Button;
 	private _promiseResolver: (value: TableDesignerPublishDialogResult) => void;
+	private readonly _markdownRenderer: MarkdownRenderer;
 
 	constructor(
 		@IThemeService themeService: IThemeService,
@@ -44,13 +49,16 @@ export class TableDesignerPublishDialog extends Modal {
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
-		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
+		@IInstantiationService instantiationService: IInstantiationService
 	) {
 		super('', TelemetryKeys.ModalDialogName.TableDesignerPublishDialog, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: false });
+		this._markdownRenderer = instantiationService.createInstance(MarkdownRenderer, {});
 	}
 
-	public open(report: string): Promise<TableDesignerPublishDialogResult> {
+	public open(report: string, mimeType: string = Mimes.text): Promise<TableDesignerPublishDialogResult> {
 		this._report = report;
+		this._mimeType = mimeType;
 		this.render();
 		this.show();
 		const promise = new Promise<TableDesignerPublishDialogResult>((resolve) => {
@@ -73,7 +81,13 @@ export class TableDesignerPublishDialog extends Modal {
 
 	protected renderBody(container: HTMLElement) {
 		const body = DOM.append(container, DOM.$('.table-designer-publish-dialog'));
-		body.innerText = this._report;
+		if (this._mimeType === Mimes.markdown) {
+			const markdownElement = this._markdownRenderer.render({ value: this._report }).element;
+			DOM.append(body, markdownElement);
+		} else {
+			// default to plain text
+			body.innerText = this._report;
+		}
 	}
 
 	protected layout(height?: number): void {

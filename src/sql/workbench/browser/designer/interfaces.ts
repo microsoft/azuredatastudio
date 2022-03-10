@@ -104,6 +104,7 @@ export interface DesignerState {
 
 export const NameProperty = 'name';
 export const ScriptProperty = 'script';
+export const CanBeDeletedProperty = 'canBeDeleted';
 
 export interface DesignerView {
 	components?: DesignerDataPropertyInfo[]
@@ -194,10 +195,19 @@ export interface DesignerTableProperties extends ComponentProperties {
 	 * The confirmation message to be displayed when user removes a row.
 	 */
 	removeRowConfirmationMessage?: string;
+	/**
+	 * Whether to show the item detail in properties view. The default value is true.
+	 */
+	showItemDetailInPropertiesView?: boolean;
+	/**
+	 * The label of the add new button. The default value is 'Add New'.
+	 */
+	labelForAddNewButton?: string;
 }
 
 export interface DesignerTableComponentRowData {
-	[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+	[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties | boolean;
+	canBeDeleted?: boolean;
 }
 
 
@@ -211,7 +221,10 @@ export interface DesignerEdit {
 	type: DesignerEditType;
 	path: DesignerPropertyPath;
 	value?: any;
+	source: DesignerUIArea;
 }
+
+export type DesignerUIArea = 'PropertiesView' | 'ScriptView' | 'TopContentView' | 'TabsView';
 
 export type DesignerPropertyPath = (string | number)[];
 export const DesignerRootObjectPath: DesignerPropertyPath = [];
@@ -220,6 +233,7 @@ export type DesignerValidationError = { message: string, propertyPath?: Designer
 
 export interface DesignerEditResult {
 	isValid: boolean;
+	refreshView?: boolean;
 	errors?: DesignerValidationError[];
 }
 
