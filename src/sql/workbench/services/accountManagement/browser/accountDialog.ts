@@ -214,6 +214,7 @@ export class AccountDialog extends Modal {
 		this._container = container;
 		// Setup loading spinner
 		this._loadingSpinner = new LoadingSpinner(this._container, { showText: true });
+		this._loadingSpinner.loadingCompletedMessage = '';
 
 		this._splitViewContainer = DOM.$('div.account-view.monaco-pane-view');
 		DOM.append(container, this._splitViewContainer);
@@ -265,7 +266,7 @@ export class AccountDialog extends Modal {
 			this.showSplitView();
 		}
 		else if (accountMetadata.length === 0) {
-			this.hideWhenLoading();
+			this.showLoadingSpinner();
 		}
 		else {
 			this.showNoAccountContainer();
@@ -275,14 +276,13 @@ export class AccountDialog extends Modal {
 
 
 	private showNoAccountContainer() {
-		this._loadingSpinner.loadingMessage = '';
 		this._loadingSpinner.loading = false;
 		this._noaccountViewContainer!.hidden = false;
 		this._splitViewContainer!.hidden = true;
 		this._addAccountButton!.focus();
 	}
 
-	private hideWhenLoading() {
+	private showLoadingSpinner() {
 		this._loadingSpinner.loadingMessage = localize('accountDialog.loadingProviderLabel', "Loading accounts...");
 		this._loadingSpinner.loading = true;
 		this._splitViewContainer!.hidden = true;
@@ -290,7 +290,6 @@ export class AccountDialog extends Modal {
 	}
 
 	private showSplitView() {
-		this._loadingSpinner.loadingMessage = '';
 		this._loadingSpinner.loading = false;
 		this._splitViewContainer!.hidden = false;
 		this._noaccountViewContainer!.hidden = true;
@@ -342,12 +341,11 @@ export class AccountDialog extends Modal {
 			newProvider.addedProvider.id
 		);
 		addAccountAction.addAccountCompleteEvent(() => {
-			this._loadingSpinner.loadingCompletedMessage = '';
 			this._loadingSpinner.loading = false;
 		});
 		addAccountAction.addAccountErrorEvent(msg => this._onAddAccountErrorEmitter.fire(msg));
 		addAccountAction.addAccountStartEvent(() => {
-			this._loadingSpinner.loadingCompletedMessage = this._loadingSpinner.loadingMessage = localize('accountDialog.addingAccountLabel', "Adding account, complete login in web browser.");
+			this._loadingSpinner.loadingMessage = localize('accountDialog.addingAccountLabel', "Adding account, complete login in web browser.");
 			this._loadingSpinner.loading = true;
 		});
 
