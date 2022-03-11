@@ -32,7 +32,13 @@ import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAcco
 import { Blob, BlobContainer, AzureGraphResource, AzureResourceSubscription, GetBlobsResult } from 'azurecore';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 
+
+const ERROR_GETTING_BLOB_CONTAINERS = localize('urlbrowserdialog.getblobcontainerserror', "Error getting blob containers");
+
 export class UrlBrowserDialog extends Modal {
+
+	private _defaultBackupName: string;
+
 	private _accounts: Account[];
 	private _selectedAccount: Account;
 	private _subscriptions: AzureResourceSubscription[];
@@ -64,6 +70,7 @@ export class UrlBrowserDialog extends Modal {
 
 	constructor(title: string,
 		restoreDialog: boolean,
+		defaultBackupName: string,
 		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		//@IInstantiationService private _instantiationService: IInstantiationService,
@@ -81,6 +88,7 @@ export class UrlBrowserDialog extends Modal {
 		//this._viewModel = this._instantiationService.createInstance(FileBrowserViewModel);
 		//this._viewModel.onAddFileTree(args => this.handleOnAddFileTree(args.rootNode, args.selectedNode, args.expandedNodes).catch(err => onUnexpectedError(err)));
 		//this._viewModel.onPathValidate(args => this.handleOnValidate(args.succeeded, args.message));
+		this._defaultBackupName = defaultBackupName;
 		this._restoreDialog = restoreDialog;
 	}
 
@@ -151,6 +159,7 @@ export class UrlBrowserDialog extends Modal {
 		let sharedAccessSignatureLabel = localize('azurebrowser.sharedAccessSignature', "Shared access signature generated");
 		let sasInput = DialogHelper.appendRow(tableContainer, sharedAccessSignatureLabel, 'file-input-label', 'file-input-box');
 		this._sasInputBox = new InputBox(sasInput, this._contextViewService, { flexibleHeight: true });
+		this._sasInputBox.disable();
 		this._sasInputBox.onDidChange(() => this.enableOkButton());
 
 		let sasButtonLabel = DialogHelper.appendRow(tableContainer, '', 'file-input-label', 'file-input-box');
@@ -182,7 +191,7 @@ export class UrlBrowserDialog extends Modal {
 	}
 
 	private setAccountSelectorBoxOptions(accounts: Account[]) {
-		this._accounts = accounts;
+		this._accounts = accounts.filter(account => !account.isStale);
 		const accountDisplayNames: string[] = accounts.map(account => account.displayInfo.displayName);
 		this._accountSelectorBox.setOptions(accountDisplayNames);
 		this._accountSelectorBox.select(0);
@@ -264,7 +273,9 @@ export class UrlBrowserDialog extends Modal {
 	}
 
 	private setBlobContainersSelectorBoxErrors(errors: any) {
-		this._blobContainerSelectorBox.setOptions(['Error getting blob containers']);
+		this._blobContainers = [];
+		this._blobContainerSelectorBox.setOptions([ERROR_GETTING_BLOB_CONTAINERS]);
+		this._blobContainerSelectorBox.select(0);
 		this._blobContainerSelectorBox.disable();
 	}
 
@@ -275,6 +286,7 @@ export class UrlBrowserDialog extends Modal {
 				.then(getBlobsResult => this.setBackupFilesOptions(getBlobsResult))
 				.catch(getBlobsResult => this.setBackupFilesSelectorError(getBlobsResult));
 		}
+		this.enableCreateCredentialsButton();
 	}
 
 	private setBackupFilesOptions(getBlobsResult: GetBlobsResult) {
@@ -291,7 +303,7 @@ export class UrlBrowserDialog extends Modal {
 	}
 
 	private setBackupFileDefaultValue() {
-		this._backupFileInputBox.value = 'backup.bak';
+		this._backupFileInputBox.value = this._defaultBackupName;
 	}
 
 	public open(ownerUri: string,
@@ -301,6 +313,7 @@ export class UrlBrowserDialog extends Modal {
 	): void {
 		this._ownerUri = ownerUri;
 		this.enableOkButton();
+		this.enableCreateCredentialsButton();
 		this.spinner = true;
 		this.show();
 		this.spinner = false;
@@ -323,6 +336,14 @@ export class UrlBrowserDialog extends Modal {
 		}
 	}
 
+	private enableCreateCredentialsButton() {
+		if (strings.isFalsyOrWhitespace(this._blobContainerSelectorBox.label) || this._blobContainerSelectorBox.label === ERROR_GETTING_BLOB_CONTAINERS || this._blobContainerSelectorBox.label === '*') {
+			this._sasButton.enabled = false;
+		} else {
+			this._sasButton.enabled = true;
+		}
+	}
+
 	private ok() {
 		let returnValue = '';
 		if (this._restoreDialog) {
@@ -341,6 +362,7 @@ export class UrlBrowserDialog extends Modal {
 	}
 
 	private generateSharedAccessSignature() {
+		this.spinner = true;
 		const blobContainerUri = `https://${this._storageAccountSelectorBox.value}.blob.core.windows.net/${this._blobContainerSelectorBox.value}`;
 		this._azureAccountService.getStorageAccountAccessKey(this._selectedAccount, this._selectedSubscription, this._selectedStorageAccount)
 			.then(getStorageAccountAccessKeyResult => {
@@ -350,10 +372,11 @@ export class UrlBrowserDialog extends Modal {
 						result => {
 							const sas = result.sharedAccessSignature;
 							this._sasInputBox.value = sas;
+							this.spinner = false;
 						});
 			})
 			.catch(error => {
-				const err = error;
+				this.spinner = false;
 			});
 
 	}
@@ -363,10 +386,7 @@ export class UrlBrowserDialog extends Modal {
 		this._register(this._tenantSelectorBox.onDidSelect(selectedTenant => this.onTenantSelectorBoxChanged(selectedTenant.index)));
 		this._register(this._subscriptionSelectorBox.onDidSelect(selectedSubscription => this.onSubscriptionSelectorBoxChanged(selectedSubscription.index)));
 		this._register(this._storageAccountSelectorBox.onDidSelect(selectedStorageAccount => this.onStorageAccountSelectorBoxChanged(selectedStorageAccount.index)));
-		this._register(this._blobContainerSelectorBox.onDidSelect(selectedBlobContainer => {
-			this.onBlobContainersSelectorBoxChanged(selectedBlobContainer.index);
-			this.enableOkButton();
-		}));
+		this._register(this._blobContainerSelectorBox.onDidSelect(selectedBlobContainer => this.onBlobContainersSelectorBoxChanged(selectedBlobContainer.index)));
 
 		// Theme styler
 		this._register(attachSelectBoxStyler(this._tenantSelectorBox, this._themeService));
