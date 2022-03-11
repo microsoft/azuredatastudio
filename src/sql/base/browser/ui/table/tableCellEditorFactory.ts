@@ -12,7 +12,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { debounce } from 'vs/base/common/decorators';
 import { Event } from 'vs/base/common/event';
-import { DisposableStore } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface ITableCellEditorOptions {
 	valueGetter?: (item: Slick.SlickData, column: Slick.Column<Slick.SlickData>) => string,
@@ -43,13 +43,13 @@ export class TableCellEditorFactory {
 
 	public getTextEditorClass(context: any, inputType: 'text' | 'number' = 'text'): any {
 		const self = this;
-		class TextEditor {
+		class TextEditor extends Disposable {
 			private _originalValue: string;
 			private _input: InputBox;
 			private _keyCaptureList: number[];
-			private _toDispose = new DisposableStore();
 
 			constructor(private _args: Slick.Editors.EditorOptions<Slick.SlickData>) {
+				super();
 				this.init();
 				const keycodesToCapture = [KeyCode.Home, KeyCode.End, KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.RightArrow];
 				this._keyCaptureList = keycodesToCapture.map(keycode => getCodeForKeyCode(keycode));
@@ -69,26 +69,26 @@ export class TableCellEditorFactory {
 				self._options.editorStyler(this._input);
 				this._input.element.style.height = '100%';
 				this._input.focus();
-				this._input.onDidChange(() => {
-					this.commitEdit();
+				this._input.onDidChange(async () => {
+					await this.commitEdit();
 				});
-				this._toDispose.add(this._input);
-				this._toDispose.add(self._options.onStyleChange(() => {
+				this._register(this._input);
+				this._register(self._options.onStyleChange(() => {
 					self._options.editorStyler(this._input);
 				}));
 			}
 
 			@debounce(200)
-			private commitEdit(): void {
+			private async commitEdit(): Promise<void> {
 				if (this.isValueChanged()) {
 					const item = this._args.grid.getDataItem(this._args.grid.getActiveCell().row);
-					this.applyValue(item, this._input.value);
+					await this.applyValue(item, this._input.value);
 					this._originalValue = this._input.value;
 				}
 			}
 
 			public destroy(): void {
-				this._toDispose.dispose();
+				this.dispose();
 			}
 
 			public focus(): void {
@@ -125,13 +125,13 @@ export class TableCellEditorFactory {
 
 	public getDropdownEditorClass(context: any, defaultOptions: string[], isEditable?: boolean): any {
 		const self = this;
-		class TextEditor {
+		class DropdownEditor extends Disposable {
 			private _originalValue: string;
 			private _component: SelectBox | Dropdown;
 			private _keyCaptureList: number[];
-			private _toDispose = new DisposableStore();
 
 			constructor(private _args: Slick.Editors.EditorOptions<Slick.SlickData>) {
+				super();
 				this.init();
 				const keycodesToCapture = [KeyCode.Home, KeyCode.End, KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.RightArrow];
 				this._keyCaptureList = keycodesToCapture.map(keycode => getCodeForKeyCode(keycode));
@@ -151,35 +151,35 @@ export class TableCellEditorFactory {
 				container.style.width = '100%';
 				if (isEditable) {
 					this._component = new Dropdown(container, self._contextViewProvider);
-					this._component.onValueChange(() => {
-						this.commitEdit();
+					this._component.onValueChange(async () => {
+						await this.commitEdit();
 					});
 				} else {
 					this._component = new SelectBox([], undefined, self._contextViewProvider);
 					this._component.render(container);
 					this._component.selectElem.style.height = '100%';
-					this._component.onDidSelect(() => {
-						this.commitEdit();
+					this._component.onDidSelect(async () => {
+						await this.commitEdit();
 					});
 				}
 				self._options.editorStyler(this._component);
 				this._component.focus();
-				this._toDispose.add(this._component);
-				this._toDispose.add(self._options.onStyleChange(() => {
+				this._register(this._component);
+				this._register(self._options.onStyleChange(() => {
 					self._options.editorStyler(this._component);
 				}));
 			}
 
-			private commitEdit(): void {
+			private async commitEdit(): Promise<void> {
 				if (this.isValueChanged()) {
 					const item = this._args.grid.getDataItem(this._args.grid.getActiveCell().row);
-					this.applyValue(item, this._component.value);
+					await this.applyValue(item, this._component.value);
 					this._originalValue = this._component.value;
 				}
 			}
 
 			public destroy(): void {
-				this._toDispose.dispose();
+				this.dispose();
 			}
 
 			public focus(): void {
@@ -221,6 +221,6 @@ export class TableCellEditorFactory {
 				};
 			}
 		}
-		return TextEditor;
+		return DropdownEditor;
 	}
 }
