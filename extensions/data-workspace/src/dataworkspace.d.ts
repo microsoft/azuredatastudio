@@ -127,14 +127,14 @@ declare module 'dataworkspace' {
 		readonly targetPlatforms?: string[];
 
 		/**
-		 * Whether or not sdk style project is an option
-		 */
-		readonly sdkStyleOption?: boolean;
-
-		/**
 		 * Gets the default target platform
 		 */
 		readonly defaultTargetPlatform?: string;
+
+		/**
+		 * Whether or not sdk style project is an option
+		 */
+		readonly sdkStyleOption?: boolean;
 
 		/**
 		 * Location where clicking on the Learn More next to SDK style checkbox will go. sdkStyleOption needs to be set to true to use this
