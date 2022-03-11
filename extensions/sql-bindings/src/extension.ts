@@ -6,7 +6,6 @@ import * as vscode from 'vscode';
 import { ITreeNodeInfo } from 'vscode-mssql';
 import { getAzdataApi, getVscodeMssqlApi } from './common/utils';
 import { launchAddSqlBindingQuickpick } from './dialogs/addSqlBindingQuickpick';
-import * as constants from './common/constants';
 import { createAzureFunction } from './services/azureFunctionsService';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
@@ -16,7 +15,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	// register the add sql binding command
 	context.subscriptions.push(vscode.commands.registerCommand('sqlBindings.addSqlBinding', async (uri: vscode.Uri | undefined) => { return launchAddSqlBindingQuickpick(uri); }));
 	// Generate Azure Function command
-	context.subscriptions.push(vscode.commands.registerCommand(constants.cmdCreateAzureFunction, async (node: ITreeNodeInfo) => {
+	context.subscriptions.push(vscode.commands.registerCommand('sqlBindings.createAzureFunction', async (node: ITreeNodeInfo) => {
 		let connectionInfo = node.connectionInfo;
 		// set the database containing the selected table so it can be used
 		// for the initial catalog property of the connection string

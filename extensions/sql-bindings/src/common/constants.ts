@@ -25,7 +25,6 @@ export const defaultSqlBindingTextLines =
 export const defaultBindingResult = 'return new OkObjectResult(responseMessage);';
 export const sqlBindingResult = `return new OkObjectResult(result);`;
 export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
-export const cmdCreateAzureFunction = 'sqlBindings.createAzureFunction';
 export const functionNameTitle = localize('functionNameTitle', 'Function Name');
 export const selectProject = localize('selectProject', 'Select the Azure Function project for the SQL Binding');
 export const azureFunctionsExtensionNotFound = localize('azureFunctionsExtensionNotFound', 'The Azure Functions extension is required to create a new Azure Function with SQL binding but is not installed, install it now?');
