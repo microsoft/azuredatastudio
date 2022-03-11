@@ -215,7 +215,6 @@ export class AccountDialog extends Modal {
 
 		// Setup loading spinner
 		this._loadingSpinner = new LoadingSpinner(this._container, { showText: true });
-		this._loadingSpinner.loadingCompletedMessage = '';
 
 		this._splitViewContainer = DOM.$('div.account-view.monaco-pane-view');
 		DOM.append(container, this._splitViewContainer);
