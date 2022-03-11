@@ -351,13 +351,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async getSkuRecommendations(): Promise<SkuRecommendation> {
 		try {
-			let fullInstanceName = (await this.getSourceConnectionProfile()).serverName;
+			const serverInfo = await azdata.connection.getServerInfo(this.sourceConnectionId);
+			const machineName = (<any>serverInfo)['machineName'];	// contains the correct machine name but not necessarily the correct instance name
+			const instanceName = (await this.getSourceConnectionProfile()).serverName;	// contains the correct instance name but not necessarily the correct machine name
 
-			if (fullInstanceName.includes('localhost')) {
-				const serverInfo = await azdata.connection.getServerInfo(this.sourceConnectionId);
-				const machineName = (<any>serverInfo)['machineName'];
-
-				fullInstanceName = fullInstanceName.replace('localhost', machineName);
+			let fullInstanceName: string;
+			if (instanceName.includes('\\')) {
+				fullInstanceName = machineName + '\\' + instanceName.substring(instanceName.indexOf('\\') + 1);
+			} else {
+				fullInstanceName = machineName;
 			}
 
 			const response = (await this.migrationService.getSkuRecommendations(
