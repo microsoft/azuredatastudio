@@ -310,7 +310,7 @@ export const DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_LABEL = localize('sql.migrat
 export const DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_PLACEHOLDER = localize('sql.migration.network.share.password.placeholder', "Enter password.");
 export const DATABASE_BACKUP_NETWORK_SHARE_AZURE_ACCOUNT_HEADER = localize('sql.migration.network.share.azure.header', "Storage account details");
 export const DATABASE_BACKUP_NETWORK_SHARE_AZURE_ACCOUNT_HELP = localize('sql.migration.network.share.azure.help', "Provide the Azure Storage account where the backups will be uploaded to.");
-export const DATABASE_BACKUP_PRIVATE_ENDPOINT_INFO_TEXT = localize('sql.migration.database.private.endpoint.info.text', "You can't use an Azure Storage account that has a private endpoint with Azure Database Migration Service.");
+export const DATABASE_BACKUP_PRIVATE_ENDPOINT_INFO_TEXT = localize('sql.migration.database.private.endpoint.info.text', "Ensure that the Azure Storage account does not use a private endpoint.");
 export const DUPLICATE_NAME_ERROR = localize('sql.migration.unique.name', "Select a unique name for this target database");
 export function DATABASE_ALREADY_EXISTS_MI(dbName: string, targetName: string): string {
 	return localize('sql.migration.database.already.exists', "Database '{0}' already exists on the target managed instance '{1}'.", dbName, targetName);
