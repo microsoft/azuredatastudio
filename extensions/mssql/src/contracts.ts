@@ -1119,11 +1119,11 @@ export namespace DisposeTableDesignerRequest {
 // ------------------------------- < Execution Plan > ------------------------------------
 
 export interface GetExecutionPlanParams {
-	graphFile: azdata.ExecutionPlanGraphFile,
+	graphInfo: azdata.ExecutionPlanGraphInfo,
 }
 
 export namespace GetExecutionPlanRequest {
-	export const type = new RequestType<GetExecutionPlanParams, azdata.GetExecutionPlanResult, void, void>('executionplan/getexecutionplan');
+	export const type = new RequestType<GetExecutionPlanParams, azdata.GetExecutionPlanResult, void, void>('queryexecutionplan/getexecutionplan');
 }
 
 // ------------------------------- < Execution Plan > ------------------------------------

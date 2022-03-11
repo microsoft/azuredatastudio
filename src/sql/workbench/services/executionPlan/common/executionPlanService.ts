@@ -19,8 +19,10 @@ export class ExecutionPlanService implements IExecutionPlanService {
 	}
 
 	private _runAction<T>(fileFormat: string, action: (handler: azdata.ExecutionPlanServiceProvider) => Thenable<T>): Promise<T> {
-		const providers = Object.keys(this._capabilitiesService.providers);
-
+		let providers = Object.keys(this._capabilitiesService.providers);
+		while (providers.length === 0) {
+			providers = Object.keys(this._capabilitiesService.providers);
+		}
 		let rightProviders: string[] = [];
 		for (let i = 0; i < providers.length; i++) {
 			const providerCapabilities = this._capabilitiesService.getCapabilities(providers[i]);
@@ -63,7 +65,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		this._providers[providerId] = provider;
 	}
 
-	getExecutionPlan(planFile: azdata.ExecutionPlanGraphFile): Thenable<azdata.GetExecutionPlanResult> {
+	getExecutionPlan(planFile: azdata.ExecutionPlanGraphInfo): Thenable<azdata.GetExecutionPlanResult> {
 		return this._runAction(planFile.graphFileType, (runner) => {
 			return runner.getExecutionPlan(planFile);
 		});

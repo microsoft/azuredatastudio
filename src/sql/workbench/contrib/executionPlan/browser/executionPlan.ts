@@ -40,6 +40,8 @@ import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace
 import { URI } from 'vs/base/common/uri';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
+import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
+import { InfoBox } from 'sql/base/browser/ui/infoBox/infoBox';
 
 let azdataGraph = azdataGraphModule();
 
@@ -79,11 +81,13 @@ export class ExecutionPlanTab implements IPanelTab {
 }
 
 export class ExecutionPlanView implements IPanelView {
+	private _loadingSpinner: LoadingSpinner;
+	private _loadingErrorInfoBox: InfoBox;
 	private _eps?: ExecutionPlan[] = [];
 	private _graphs?: azdata.ExecutionPlanGraph[] = [];
 	private _container = DOM.$('.eps-container');
 
-	private _planCache: Map<string, string> = new Map();
+	private _planCache: Map<string, azdata.ExecutionPlanGraph[]> = new Map();
 
 	constructor(
 		@IInstantiationService private instantiationService: IInstantiationService,
@@ -122,20 +126,34 @@ export class ExecutionPlanView implements IPanelView {
 		}
 	}
 
-	public async addXml(graphFile: azdata.ExecutionPlanGraphFile) {
+	public async addXml(graphFile: azdata.ExecutionPlanGraphInfo) {
 		this.clear();
-		if (this._planCache.has(graphFile.graphFileContent)) {
-			this._container.innerHTML = this._planCache.get(graphFile.graphFileContent);
-			return;
-		} else {
-			const graphs = (await this.executionPlanService.getExecutionPlan({
-				graphFileContent: graphFile.graphFileContent,
-				graphFileType: graphFile.graphFileType
-			})).graphs;
-			this.addGraphs(graphs);
-			this._planCache.set(graphFile.graphFileContent, this._container.innerHTML);
+		this._loadingSpinner = new LoadingSpinner(this._container, { showText: true, fullSize: true });
+		this._loadingSpinner.loadingMessage = localize('loadingExecutionPlanFile', "Generating execution plans");
+		try {
+			this._loadingSpinner.loading = true;
+			if (this._planCache.has(graphFile.graphFileContent)) {
+				this.addGraphs(this._planCache.get(graphFile.graphFileContent));
+				return;
+			} else {
+				const graphs = (await this.executionPlanService.getExecutionPlan({
+					graphFileContent: graphFile.graphFileContent,
+					graphFileType: graphFile.graphFileType
+				})).graphs;
+				this.addGraphs(graphs);
+				this._planCache.set(graphFile.graphFileContent, graphs);
+			}
+		} catch (e) {
+			this._loadingErrorInfoBox = new InfoBox(this._container, {
+				text: e.toString(),
+				style: 'error',
+				isClickable: false
+			});
+			this._loadingErrorInfoBox.isClickable = false;
+		} finally {
+			this._loadingSpinner.loadingCompletedMessage = localize('executionPlanFileLoadingComplete', "Execution plans are generated");
+			this._loadingSpinner.loading = false;
 		}
-
 	}
 
 	private updateRelativeCosts() {

@@ -1055,7 +1055,7 @@ declare module 'azdata' {
 		/**
 		 * String representation of graph
 		 */
-		graphFile: ExecutionPlanGraphFile;
+		graphFile: ExecutionPlanGraphInfo;
 		/**
 		 * Query recommendations for optimizing performance
 		 */
@@ -1166,7 +1166,7 @@ declare module 'azdata' {
 		queryWithDescription: string;
 	}
 
-	export interface ExecutionPlanGraphFile {
+	export interface ExecutionPlanGraphInfo {
 		/**
 		 * File contents
 		 */
@@ -1183,7 +1183,7 @@ declare module 'azdata' {
 
 	export interface ExecutionPlanServiceProvider extends DataProvider {
 		// execution plan service methods
-		getExecutionPlan(planFile: ExecutionPlanGraphFile): Thenable<GetExecutionPlanResult>;
+		getExecutionPlan(planFile: ExecutionPlanGraphInfo): Thenable<GetExecutionPlanResult>;
 	}
 
 	/**
