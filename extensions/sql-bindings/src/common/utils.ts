@@ -169,3 +169,17 @@ export async function getUniqueFileName(folderPath: string, fileName: string): P
 export function escapeClosingBrackets(str: string): string {
 	return str.replace(']', ']]');
 }
+
+/**
+ * Gets the package info for the extension based on where the extension is installed
+ * @returns the package info object
+ */
+export function getPackageInfo(): IPackageInfo {
+	const packageJson = require('../../package.json');
+	return {
+		name: packageJson.name,
+		fullName: `${packageJson.publisher}.${packageJson.name}`,
+		version: packageJson.version,
+		aiKey: packageJson.aiKey
+	};
+}
