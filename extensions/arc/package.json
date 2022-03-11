@@ -367,8 +367,9 @@
                           "variableName": "AZDATA_NB_VAR_LOG_ANALYTICS_WORKSPACE_NAMES",
                           "required": true,
                           "options": {
-                            "values": ["Workspace1", "Workspace2"],
-                            "defaultValue": "Workspace1",
+                            "source": {
+                              "providerId": "arc.logAnalyticsWorkspaceNames"
+                            },
                             "optionsType": "dropdown"
                           },
                           "enabled": {
@@ -1426,6 +1427,9 @@
     "resourceDeploymentOptionsSources": [
       {
         "id": "arc.controllers"
+      },
+      {
+        "id": "arc.logAnalyticsWorkspaceNames"
       }
     ]
   },
