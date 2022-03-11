@@ -187,6 +187,11 @@ declare module 'az-ext' {
 		state: string //Completed
 	}
 
+	export interface LogAnalyticsWorkspaceListResult {
+		id: string, // "4fba9901-e2d6-3cef-b676-e43s0287ab11"
+		name: string // "exampleWorkspace"
+	}
+
 	export interface PostgresServerShowResult {
 		apiVersion: string, // "arcdata.microsoft.com/v1alpha1"
 		kind: string, // "postgresql"
@@ -360,6 +365,17 @@ declare module 'az-ext' {
 					namespace?: string,
 					additionalEnvVars?: AdditionalEnvVars
 				): Promise<AzOutput<SqlMiDbRestoreResult>>
+			}
+		},
+		monitor: {
+			logAnalytics: {
+				workspace: {
+					list(
+						resourceGroup: string, // test-rg
+						subscription: string, // 122c121a-095a-4f5d-22e4-cc6b238490a3
+						additionalEnvVars?: AdditionalEnvVars
+					): Promise<AzOutput<LogAnalyticsWorkspaceListResult[]>>
+				}
 			}
 		},
 		getPath(): Promise<string>,
