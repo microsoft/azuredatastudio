@@ -360,7 +360,43 @@
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
                             "value": "Direct"
                           }
+                        },
+                        {
+                          "type": "options",
+                          "label": "%arc.data.controller.log.analytics.workspace.names%",
+                          "variableName": "AZDATA_NB_VAR_LOG_ANALYTICS_WORKSPACE_NAMES",
+                          "required": true,
+                          "options": {
+                            "values": ["Workspace1", "Workspace2"],
+                            "defaultValue": "Workspace1",
+                            "optionsType": "dropdown"
+                          },
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_AUTO_UPLOAD_LOGS",
+                            "value": "true"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "label": "%arc.data.controller.log.analytics.workspace.id%",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_LOG_ANALYTICS_WORKSPACE_ID",
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_AUTO_UPLOAD_LOGS",
+                            "value": "true"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "label": "%arc.data.controller.log.analytics.primary.key%",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_LOG_ANALYTICS_PRIMARY_KEY",
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_AUTO_UPLOAD_LOGS",
+                            "value": "true"
+                          }
                         }
+
                       ]
                     },
                     {
