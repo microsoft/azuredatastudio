@@ -3,171 +3,123 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import SqlToolsServiceClient from '../languageservice/serviceclient';
 import * as vscode from 'vscode';
 import * as mssql from 'vscode-mssql';
 import * as path from 'path';
 import * as utils from '../common/utils';
-import * as azureFunctionsContracts from '../models/contracts/azureFunctions/azureFunctionsContracts';
 import * as azureFunctionUtils from '../common/azureFunctionsUtils';
 import * as constants from '../common/constants';
 
 export const hostFileName: string = 'host.json';
 
-/**
- * Adds SQL Bindings to generated Azure Functions in a file
- */
-export class AzureFunctionsService implements mssql.IAzureFunctionsService {
 
-	constructor(private _client: SqlToolsServiceClient) { }
-
-	/**
-	 * Adds a SQL Binding to a specified Azure function in a file
-	 * @param bindingType Type of SQL Binding
-	 * @param filePath Path of the file where the Azure Functions are
-	 * @param functionName Name of the function where the SQL Binding is to be added
-	 * @param objectName Name of Object for the SQL Query
-	 * @param connectionStringSetting Setting for the connection string
-	 * @returns
-	 */
-	addSqlBinding(
-		bindingType: mssql.BindingType,
-		filePath: string,
-		functionName: string,
-		objectName: string,
-		connectionStringSetting: string
-	): Thenable<mssql.ResultStatus> {
-		const params: mssql.AddSqlBindingParams = {
-			bindingType: bindingType,
-			filePath: filePath,
-			functionName: functionName,
-			objectName: objectName,
-			connectionStringSetting: connectionStringSetting
-		};
-
-		return this._client.sendRequest(azureFunctionsContracts.AddSqlBindingRequest.type, params);
+export async function createAzureFunction(connectionString: string, schema: string, table: string): Promise<void> {
+	const azureFunctionApi = await azureFunctionUtils.getAzureFunctionsExtensionApi();
+	if (!azureFunctionApi) {
+		return;
 	}
+	let projectFile = await azureFunctionUtils.getAzureFunctionProject();
+	let newHostProjectFile!: azureFunctionUtils.IFileFunctionObject;
+	let hostFile: string;
 
-	/**
-	 * Gets the names of the Azure functions in the file
-	 * @param filePath Path of the file to get the Azure functions
-	 * @returns array of names of Azure functions in the file
-	 */
-	getAzureFunctions(filePath: string): Thenable<mssql.GetAzureFunctionsResult> {
-		const params: mssql.GetAzureFunctionsParams = {
-			filePath: filePath
-		};
-
-		return this._client.sendRequest(azureFunctionsContracts.GetAzureFunctionsRequest.type, params);
-	}
-
-	public async createAzureFunction(connectionString: string, schema: string, table: string): Promise<void> {
-		const azureFunctionApi = await azureFunctionUtils.getAzureFunctionsExtensionApi();
-		if (!azureFunctionApi) {
+	if (!projectFile) {
+		let projectCreate = await vscode.window.showErrorMessage(constants.azureFunctionsProjectMustBeOpened,
+			constants.createProject, constants.learnMore);
+		if (projectCreate === constants.learnMore) {
+			void vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(constants.sqlBindingsDoc));
 			return;
-		}
-		let projectFile = await azureFunctionUtils.getAzureFunctionProject();
-		let newHostProjectFile: azureFunctionUtils.IFileFunctionObject;
-		let hostFile: string;
-
-		if (!projectFile) {
-			let projectCreate = await vscode.window.showErrorMessage(constants.azureFunctionsProjectMustBeOpened,
-				constants.createProject, constants.learnMore);
-			if (projectCreate === constants.learnMore) {
-				void vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(constants.sqlBindingsDoc));
-				return;
-			} else if (projectCreate === constants.createProject) {
-				// start the create azure function project flow
-				try {
-					// because of an AF extension API issue, we have to get the newly created file by adding a watcher
-					// issue: https://github.com/microsoft/vscode-azurefunctions/issues/3052
-					newHostProjectFile = await azureFunctionUtils.waitForNewHostFile();
-					await azureFunctionApi.createFunction({});
-					const timeoutForHostFile = utils.timeoutPromise(constants.timeoutProjectError);
-					hostFile = await Promise.race([newHostProjectFile.filePromise, timeoutForHostFile]);
-					if (hostFile) {
-						// start the add sql binding flow
-						projectFile = await azureFunctionUtils.getAzureFunctionProject();
-					}
-				} catch (error) {
-					void vscode.window.showErrorMessage(utils.formatString(constants.errorNewAzureFunction, error.message ?? error));
-					return;
-				} finally {
-					newHostProjectFile.watcherDisposable.dispose();
-				}
-			}
-		}
-
-		if (projectFile) {
-			// because of an AF extension API issue, we have to get the newly created file by adding a watcher
-			// issue: https://github.com/microsoft/vscode-azurefunctions/issues/2908
-			const newFunctionFileObject = azureFunctionUtils.waitForNewFunctionFile(projectFile);
-			let functionFile: string;
-			let functionName: string;
-
+		} else if (projectCreate === constants.createProject) {
+			// start the create azure function project flow
 			try {
-				// get function name from user
-				let uniqueFunctionName = await utils.getUniqueFileName(path.dirname(projectFile), table);
-				functionName = await vscode.window.showInputBox({
-					title: constants.functionNameTitle,
-					value: uniqueFunctionName,
-					ignoreFocusOut: true,
-					validateInput: input => input ? undefined : constants.nameMustNotBeEmpty
-				}) as string;
-				if (!functionName) {
-					return;
+				// because of an AF extension API issue, we have to get the newly created file by adding a watcher
+				// issue: https://github.com/microsoft/vscode-azurefunctions/issues/3052
+				newHostProjectFile = await azureFunctionUtils.waitForNewHostFile();
+				await azureFunctionApi.createFunction({});
+				const timeoutForHostFile = utils.timeoutPromise(constants.timeoutProjectError);
+				hostFile = await Promise.race([newHostProjectFile.filePromise, timeoutForHostFile]);
+				if (hostFile) {
+					// start the add sql binding flow
+					projectFile = await azureFunctionUtils.getAzureFunctionProject();
 				}
-
-				// create C# HttpTrigger
-				await azureFunctionApi.createFunction({
-					language: 'C#',
-					templateId: 'HttpTrigger',
-					functionName: functionName,
-					folderPath: projectFile
-				});
-
-				// check for the new function file to be created and dispose of the file system watcher
-				const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
-				functionFile = await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
+			} catch (error) {
+				void vscode.window.showErrorMessage(utils.formatString(constants.errorNewAzureFunction, error.message ?? error));
+				return;
 			} finally {
-				newFunctionFileObject.watcherDisposable.dispose();
+				newHostProjectFile.watcherDisposable.dispose();
+			}
+		}
+	}
+
+	if (projectFile) {
+		// because of an AF extension API issue, we have to get the newly created file by adding a watcher
+		// issue: https://github.com/microsoft/vscode-azurefunctions/issues/2908
+		const newFunctionFileObject = azureFunctionUtils.waitForNewFunctionFile(projectFile);
+		let functionFile: string;
+		let functionName: string;
+
+		try {
+			// get function name from user
+			let uniqueFunctionName = await utils.getUniqueFileName(path.dirname(projectFile), table);
+			functionName = await vscode.window.showInputBox({
+				title: constants.functionNameTitle,
+				value: uniqueFunctionName,
+				ignoreFocusOut: true,
+				validateInput: input => input ? undefined : constants.nameMustNotBeEmpty
+			}) as string;
+			if (!functionName) {
+				return;
 			}
 
-			// select input or output binding
-			const inputOutputItems: (vscode.QuickPickItem & { type: mssql.BindingType })[] = [
-				{
-					label: constants.input,
-					type: mssql.BindingType.input
-				},
-				{
-					label: constants.output,
-					type: mssql.BindingType.output
-				}
-			];
-
-			const selectedBinding = await vscode.window.showQuickPick(inputOutputItems, {
-				canPickMany: false,
-				title: constants.selectBindingType,
-				ignoreFocusOut: true
+			// create C# HttpTrigger
+			await azureFunctionApi.createFunction({
+				language: 'C#',
+				templateId: 'HttpTrigger',
+				functionName: functionName,
+				folderPath: projectFile
 			});
 
-			if (!selectedBinding) {
-				return;
-			}
-
-			await azureFunctionUtils.addNugetReferenceToProjectFile(projectFile);
-			await azureFunctionUtils.addConnectionStringToConfig(connectionString, projectFile);
-
-			let objectName = utils.generateQuotedFullName(schema, table);
-			await this.addSqlBinding(
-				selectedBinding.type,
-				functionFile,
-				functionName,
-				objectName,
-				constants.sqlConnectionString
-			);
-
-			azureFunctionUtils.overwriteAzureFunctionMethodBody(functionFile);
+			// check for the new function file to be created and dispose of the file system watcher
+			const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
+			functionFile = await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
+		} finally {
+			newFunctionFileObject.watcherDisposable.dispose();
 		}
+
+		// select input or output binding
+		const inputOutputItems: (vscode.QuickPickItem & { type: mssql.BindingType })[] = [
+			{
+				label: constants.input,
+				type: mssql.BindingType.input
+			},
+			{
+				label: constants.output,
+				type: mssql.BindingType.output
+			}
+		];
+
+		const selectedBinding = await vscode.window.showQuickPick(inputOutputItems, {
+			canPickMany: false,
+			title: constants.selectBindingType,
+			ignoreFocusOut: true
+		});
+
+		if (!selectedBinding) {
+			return;
+		}
+
+		await azureFunctionUtils.addNugetReferenceToProjectFile(projectFile);
+		await azureFunctionUtils.addConnectionStringToConfig(connectionString, projectFile);
+
+		let objectName = utils.generateQuotedFullName(schema, table);
+		const azureFunctionsService = await utils.getAzureFunctionService();
+		await azureFunctionsService.addSqlBinding(
+			selectedBinding.type,
+			functionFile,
+			functionName,
+			objectName,
+			constants.sqlConnectionString
+		);
+
+		azureFunctionUtils.overwriteAzureFunctionMethodBody(functionFile);
 	}
 }
