@@ -84,6 +84,14 @@ declare module 'vscode-mssql' {
 		 * @returns connection string for the connection
 		 */
 		getConnectionString(connectionUriOrDetails: string | ConnectionDetails, includePassword?: boolean, includeApplicationName?: boolean): Promise<string>;
+
+		/**
+	 	 * Set connection details for the provided connection info
+	 	 * Able to use this for getConnectionString requests to STS that require ConnectionDetails type
+	 	 * @param connectionInfo connection info of the connection
+	 	 * @returns connection details credentials for the connection
+	 	 */
+		createConnectionDetails(connectionInfo: IConnectionInfo): ConnectionDetails;
 	}
 
 	/**

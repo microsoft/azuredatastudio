@@ -269,6 +269,9 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 	getConnectionString(_: string | vscodeMssql.ConnectionDetails, ___?: boolean, _____?: boolean): Promise<string> {
 		throw new Error('Method not implemented.');
 	}
+	createConnectionDetails(_: vscodeMssql.IConnectionInfo): vscodeMssql.ConnectionDetails {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export function createTestUtils(): TestUtils {
