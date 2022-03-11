@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles } from '../../../constants';
+import { IconPathHelper, cssStyles, ConnectionMode } from '../../../constants';
 // import { IconPathHelper, cssStyles, ConnectionMode } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 // import { RPModel, DatabaseModel, systemDbs } from '../../../models/miaaModel';
@@ -344,6 +344,19 @@ export class ControllerUpgradesPage extends DashboardPage {
 	// 	this._saveArgs.retentionDays = this._miaaModel.config?.spec?.backup?.retentionPeriodInDays.toString() ?? '';
 	// }
 
+	// Given the list of available versions and the current version, if the current version is not the latest,
+	// then return the next version available. (Can only upgrade to next version due to limitations by Azure CLI arcdata extension.)
+	// If current version is the latest, then return undefined.
+	private getNextUpgrade(versions: string[], currentVersion: string): string | undefined {
+		let index = versions.indexOf(currentVersion);
+		// The version at index 0 will be the latest
+		if (index > 0) {
+			return versions[index - 1];
+		} else {
+			return undefined;
+		}
+	}
+
 	//Create restore button for every database entry in the database table
 	private createUpgradeButton(db: string): azdata.ButtonComponent | string {
 		const upgradeButton = this.modelView.modelBuilder.button().withProps({
@@ -377,10 +390,33 @@ export class ControllerUpgradesPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token): Promise<void> => {
-								let result = await this._azApi.az.arcdata.dc.listUpgrades(this._controllerModel.info.namespace);
-								let versions, currentVersion = result.stdout;
-								console.log(versions);
-								console.log(currentVersion);
+								const result = await this._azApi.az.arcdata.dc.listUpgrades(this._controllerModel.info.namespace);
+								const versions = result.stdout.versions;
+								const currentVersion = result.stdout.currentVersion;
+								const nextVersion = this.getNextUpgrade(versions, currentVersion);
+
+								if (nextVersion) {
+									if (this._controllerModel.info.connectionMode === ConnectionMode.direct) {
+										await this._azApi.az.arcdata.dc.upgrade(
+											nextVersion,
+											this._controllerModel.info.name,
+											this._controllerModel.info.resourceGroup,
+											undefined, // Indirect mode argument - namespace
+											undefined // Indirect mode argument - usek8s
+										);
+									} else {
+										await this._azApi.az.arcdata.dc.upgrade(
+											nextVersion,
+											this._controllerModel.info.name,
+											undefined, // Direct mode argument - resourceGroup
+											this._controllerModel.info.namespace,
+											true
+										);
+									}
+								} else {
+									console.error('The current version is the latest version. No upgrades available.');
+								}
+
 								try {
 									await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
 								} catch (error) {

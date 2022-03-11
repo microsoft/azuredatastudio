@@ -110,14 +110,13 @@ export class AzTool implements azExt.IAzApi {
 					stderr: output.stderr
 				};
 			},
-			upgrade: (desiredVersion?: string, dryRun?: string, namespace?: string, name?: string, noWait?: boolean, resourceGroup?: string, usek8s?: boolean, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
-				const argsArray = ['arcdata', 'dc', 'upgrade'];
-				if (desiredVersion) { argsArray.push('--desired-version', desiredVersion); }
-				if (dryRun) { argsArray.push('--dry-run', dryRun); }
-				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
-				if (name) { argsArray.push('--name', name); }
-				if (noWait) { argsArray.push('--no-wait'); }
+			upgrade: (desiredVersion: string, name: string, resourceGroup?: string, namespace?: string, usek8s?: boolean, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
+				const argsArray = ['arcdata', 'dc', 'upgrade', '--desired-version', desiredVersion, '--name', name];
+				// Direct mode argument
 				if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
+				// Indirect mode arguments
+
+				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
 				if (usek8s) { argsArray.push('--use-k8s'); }
 				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
