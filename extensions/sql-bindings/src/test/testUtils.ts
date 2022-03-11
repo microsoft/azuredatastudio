@@ -354,6 +354,7 @@ export function createTestCredentials(): vscodeMssql.IConnectionInfo {
 		password: '12345678',
 		email: 'test-email',
 		accountId: 'test-account-id',
+		tenantId: 'test-tenant-id',
 		port: 1234,
 		authenticationType: 'test',
 		azureAccountToken: '',
