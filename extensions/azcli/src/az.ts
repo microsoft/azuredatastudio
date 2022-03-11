@@ -212,8 +212,11 @@ export class AzTool implements azExt.IAzApi {
 	public monitor = {
 		logAnalytics: {
 			workspace: {
-				list: (resourceGroup: string, subscription: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.LogAnalyticsWorkspaceListResult[]>> => {
-					return this.executeCommand<azExt.LogAnalyticsWorkspaceListResult[]>(['monitor', 'log-analytics', 'workspace', 'list', '--resource-group', resourceGroup, '--subscription', subscription], additionalEnvVars);
+				list: (resourceGroup?: string, subscription?: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.LogAnalyticsWorkspaceListResult[]>> => {
+					const argsArray = ['monitor', 'log-analytics', 'workspace', 'list'];
+					if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
+					if (subscription) { argsArray.push('--subscription', subscription); }
+					return this.executeCommand<azExt.LogAnalyticsWorkspaceListResult[]>(argsArray, additionalEnvVars);
 				}
 			}
 		}

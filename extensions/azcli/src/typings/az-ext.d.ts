@@ -371,8 +371,8 @@ declare module 'az-ext' {
 			logAnalytics: {
 				workspace: {
 					list(
-						resourceGroup: string, // test-rg
-						subscription: string, // 122c121a-095a-4f5d-22e4-cc6b238490a3
+						resourceGroup?: string, // test-rg
+						subscription?: string, // 122c121a-095a-4f5d-22e4-cc6b238490a3
 						additionalEnvVars?: AdditionalEnvVars
 					): Promise<AzOutput<LogAnalyticsWorkspaceListResult[]>>
 				}
