@@ -137,14 +137,9 @@ declare module 'dataworkspace' {
 		readonly defaultTargetPlatform?: string;
 
 		/**
-		 * Link display value for a link at the end of the project description. linkLocation also needs to be set to use this
+		 * Location where clicking on the Learn More next to SDK style checkbox will go. sdkStyleOption needs to be set to true to use this
 		 */
-		readonly linkDisplayValue?: string;
-
-		/**
-		 * Location where clicking on the linkDisplayValue will go to
-		 */
-		readonly linkLocation?: string
+		readonly sdkStyleLearnMoreUrl?: string
 	}
 
 	/**

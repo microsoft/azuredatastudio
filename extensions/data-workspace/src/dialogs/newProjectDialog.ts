@@ -124,8 +124,7 @@ export class NewProjectDialog extends DialogBase {
 								'font-weight': 'bold'
 							}
 						}, {
-							textValue: projectType.description,
-							linkDisplayValue: projectType.linkDisplayValue
+							textValue: projectType.description
 						}
 					]
 				};
@@ -140,15 +139,7 @@ export class NewProjectDialog extends DialogBase {
 			selectedCardId: allProjectTypes.length > 0 ? allProjectTypes[0].id : undefined
 		}).component();
 
-		projectTypeRadioCardGroup.onLinkClick(async (value) => {
-			for (let projectType of allProjectTypes) {
-				if (value.cardId === projectType.id) {
-					void vscode.env.openExternal(vscode.Uri.parse(projectType.linkLocation!));
-				}
-			}
-		});
-
-		this.register(projectTypeRadioCardGroup.onSelectionChanged((e) => {
+		this.register(projectTypeRadioCardGroup.onSelectionChanged(async (e) => {
 			this.model.projectTypeId = e.cardId;
 			const selectedProject = allProjectTypes.find(p => p.id === e.cardId);
 
@@ -157,7 +148,7 @@ export class NewProjectDialog extends DialogBase {
 				targetPlatformDropdown.values = selectedProject?.targetPlatforms;
 				targetPlatformDropdown.value = this.getDefaultTargetPlatform(selectedProject);
 
-				this.formBuilder?.addFormItem(this.targetPlatformDropdownFormComponent!);
+				this.formBuilder?.insertFormItem(this.targetPlatformDropdownFormComponent!, 3);
 			} else {
 				// remove the target version dropdown if the selected project type didn't provide values for this
 				this.formBuilder?.removeFormItem(this.targetPlatformDropdownFormComponent!);
@@ -167,6 +158,15 @@ export class NewProjectDialog extends DialogBase {
 			if (selectedProject?.sdkStyleOption) {
 				sdkProjectCheckbox.checked = true;
 				this.model.sdkStyleProject = true;
+
+				if (selectedProject.sdkStyleLearnMoreUrl) {
+					await sdkLearnMore.updateProperty('url', selectedProject.sdkStyleLearnMoreUrl);
+					sdkFormComponentGroup.addItem(sdkLearnMore);
+				} else {
+					// remove learn more link if the project type didn't provide it
+					sdkFormComponentGroup.removeItem(sdkLearnMore);
+				}
+
 				this.formBuilder?.addFormItem(this.sdkProjectCheckboxFormComponent!);
 			} else {
 				this.model.sdkStyleProject = false;
@@ -249,14 +249,18 @@ export class NewProjectDialog extends DialogBase {
 
 		const sdkLearnMore = view.modelBuilder.hyperlink().withProps({
 			label: constants.LearnMore,
-			url: 'https://github.com/microsoft/DacFx/tree/main/src/Microsoft.Build.Sql'
+			url: ''
 		}).component();
 
 		const sdkFormComponentGroup = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
-			.withItems([sdkProjectCheckbox, sdkLearnMore], { CSSStyles: { flex: '0 0 auto', 'margin-right': '10px' } })
+			.withItems([sdkProjectCheckbox], { CSSStyles: { flex: '0 0 auto', 'margin-right': '10px' } })
 			.component();
 
+		if (allProjectTypes[0].sdkStyleLearnMoreUrl) {
+			await sdkLearnMore.updateProperty('url', allProjectTypes[0].sdkStyleLearnMoreUrl);
+			sdkFormComponentGroup.addItem(sdkLearnMore);
+		}
 
 		this.sdkProjectCheckboxFormComponent = {
 			component: sdkFormComponentGroup,
