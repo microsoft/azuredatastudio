@@ -133,7 +133,6 @@ export class AccountDialog extends Modal {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _providerViewsMap = new Map<string, IProviderViewUiComponent>();
 	private _loadingSpinner: LoadingSpinner;
-	private _spinnerContainer: HTMLElement;
 
 	private _closeButton?: Button;
 	private _addAccountButton?: Button;
@@ -215,9 +214,7 @@ export class AccountDialog extends Modal {
 		this._container = container;
 
 		// Setup loading spinner
-		this._spinnerContainer = DOM.$('div.account-loading-spinner-view');
-		DOM.append(container, this._spinnerContainer);
-		this._loadingSpinner = new LoadingSpinner(this._spinnerContainer, { showText: true });
+		this._loadingSpinner = new LoadingSpinner(this._container, { showText: true, fullSize: true });
 
 		this._splitViewContainer = DOM.$('div.account-view.monaco-pane-view');
 		DOM.append(container, this._splitViewContainer);
@@ -342,12 +339,7 @@ export class AccountDialog extends Modal {
 			AddAccountAction,
 			newProvider.addedProvider.id
 		);
-		addAccountAction.addAccountCompleteEvent(() => this._loadingSpinner.loading = false);
 		addAccountAction.addAccountErrorEvent(msg => this._onAddAccountErrorEmitter.fire(msg));
-		addAccountAction.addAccountStartEvent(() => {
-			this._loadingSpinner.loadingMessage = localize('accountDialog.addingAccountLabel', "Adding account, complete login in web browser.");
-			this._loadingSpinner.loading = true;
-		});
 
 		let providerView = new AccountPanel(
 			{
