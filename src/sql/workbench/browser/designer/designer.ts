@@ -723,7 +723,11 @@ export class Designer extends Disposable implements IThemable {
 					type: inputProperties.inputType,
 				});
 				input.onDidChange(() => {
-					this.handleInputBoxEdit({ type: DesignerEditType.Update, path: propertyPath, value: input.value, source: view });
+					// The supress edit processing check is done in the handleEdit method, but since we have debounce operation on input box we
+					// have to do it here to avoid treating system originated value setting operation as user edits.
+					if (!this._supressEditProcessing) {
+						this.handleInputBoxEdit({ type: DesignerEditType.Update, path: propertyPath, value: input.value, source: view });
+					}
 				});
 				input.onInputFocus(() => {
 					if (view === 'PropertiesView') {
