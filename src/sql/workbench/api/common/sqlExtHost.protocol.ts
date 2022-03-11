@@ -541,7 +541,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Process the table edit.
 	 */
-	$processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> { throw ni(); }
+	$processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult<azdata.designers.TableDesignerView>> { throw ni(); }
 
 	/**
 	 * Publish the table designer changes.
@@ -556,7 +556,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Generate preview report.
 	 */
-	$generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> { throw ni(); }
+	$generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.GeneratePreviewReportResult> { throw ni(); }
 
 	/**
 	 * Dispose the table designer.

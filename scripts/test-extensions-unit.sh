@@ -59,6 +59,7 @@ else
 				compile-extension:mssql \
 				compile-extension:notebook \
 				compile-extension:resource-deployment \
+				compile-extension:sql-bindings \
 				compile-extension:sql-database-projects
 
 	# Configuration for more verbose output
@@ -154,10 +155,16 @@ echo ************************************************
 # echo ******************************************
 # "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/mssql --extensionTestsPath=$ROOT/extensions/mssql/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
-#echo ********************************************
-#echo *** starting sql-database-projects tests ***
-#echo ********************************************
-#"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/sql-database-projects --extensionTestsPath=$ROOT/extensions/sql-database-projects/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+echo ********************************************
+echo *** starting sql-bindings tests ***
+echo ********************************************
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/sql-bindings --extensionTestsPath=$ROOT/extensions/sql-bindings/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+
+
+echo ********************************************
+echo *** starting sql-database-projects tests ***
+echo ********************************************
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/sql-database-projects --extensionTestsPath=$ROOT/extensions/sql-database-projects/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo ********************************************
 echo *** starting data-workspace tests ***
