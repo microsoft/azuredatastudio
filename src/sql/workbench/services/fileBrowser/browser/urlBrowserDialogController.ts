@@ -26,10 +26,11 @@ export class UrlBrowserDialogController implements IUrlBrowserDialogController {
 		fileValidationServiceType: string,
 		isWide: boolean,
 		isRestoreDialog: boolean,
+		defaultBackupName: string,
 		handleOnOk: (path: string) => void
 	): void {
 		//if (!this._fileBrowserDialog) {
-		this._urlBrowserDialog = this._instantiationService.createInstance(UrlBrowserDialog, localize('filebrowser.selectBlob', "Select a blob"), isRestoreDialog);
+		this._urlBrowserDialog = this._instantiationService.createInstance(UrlBrowserDialog, localize('filebrowser.selectBlob', "Select a blob"), isRestoreDialog, defaultBackupName);
 		this._urlBrowserDialog.render();
 		//}
 

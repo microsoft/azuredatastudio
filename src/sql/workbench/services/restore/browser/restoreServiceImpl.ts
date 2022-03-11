@@ -303,9 +303,8 @@ export class RestoreDialogController implements IRestoreDialogController {
 					if (!this._restoreDialogs[this._currentProvider]) {
 						let newRestoreDialog: RestoreDialog | OptionsDialog;
 						if (this._currentProvider === ConnectionConstants.mssqlProviderName) {
-							const engineEdition: number = this._connectionService.getConnectionInfo(this._ownerUri).serverInfo.engineEditionId;
 							let provider = this._currentProvider;
-							newRestoreDialog = this._instantiationService.createInstance(RestoreDialog, this.getRestoreOption(), engineEdition === DatabaseEngineEdition.SqlManagedInstance);
+							newRestoreDialog = this._instantiationService.createInstance(RestoreDialog, this.getRestoreOption());
 							newRestoreDialog.onCancel(() => this.handleOnCancel());
 							newRestoreDialog.onRestore((isScriptOnly) => this.handleOnRestore(isScriptOnly));
 							newRestoreDialog.onValidate((overwriteTargetDatabase) => this.handleMssqlOnValidateFile(overwriteTargetDatabase));
@@ -323,9 +322,10 @@ export class RestoreDialogController implements IRestoreDialogController {
 					if (this._currentProvider === ConnectionConstants.mssqlProviderName) {
 						let restoreDialog = this._restoreDialogs[this._currentProvider] as RestoreDialog;
 						this.getMssqlRestoreConfigInfo().then(() => {
+							const engineEdition: number = this._connectionService.getConnectionInfo(this._ownerUri).serverInfo.engineEditionId;
 							// database list is filled only after getMssqlRestoreConfigInfo() calling before will always set to empty value
 							restoreDialog.viewModel.resetRestoreOptions(connection.databaseName!, restoreDialog.viewModel.databaseList);
-							restoreDialog.open(connection.serverName, this._ownerUri!);
+							restoreDialog.open(connection.serverName, this._ownerUri!, engineEdition === DatabaseEngineEdition.SqlManagedInstance);
 							restoreDialog.validateRestore();
 						}, restoreConfigError => {
 							reject(restoreConfigError);

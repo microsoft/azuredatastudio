@@ -17,5 +17,6 @@ export interface IUrlBrowserDialogController {
 		fileValidationServiceType: string,
 		isWide: boolean,
 		isRestoreDialog: boolean,
+		defaultBackupName: string,
 		handleOnOk: (path: string) => void): void;
 }

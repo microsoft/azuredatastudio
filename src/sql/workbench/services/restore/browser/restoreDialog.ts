@@ -148,7 +148,6 @@ export class RestoreDialog extends Modal {
 
 	constructor(
 		optionsMetadata: azdata.ServiceOption[],
-		isManagedInstance: boolean,
 		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -161,7 +160,6 @@ export class RestoreDialog extends Modal {
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.ModalDialogName.Restore, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasErrors: true, width: 'wide', hasSpinner: true });
-		this._isManagedInstance = isManagedInstance;
 		// view model
 		this.viewModel = new RestoreViewModel(optionsMetadata);
 		this.viewModel.onSetLastBackupTaken((value) => this.updateLastBackupTaken(value));
@@ -287,8 +285,9 @@ export class RestoreDialog extends Modal {
 
 		this._targetDatabaseInputBox = new InputBox(inputTargetDatabaseContainer, this._contextViewService, {
 			ariaLabel: LocalizedStrings.TARGETDATABASE,
-			placeholder: localize('targetDatabaseTooltip', "Please enter database name")
+			placeholder: localize('targetDatabaseTooltip', "No backup set selected")
 		});
+		this._targetDatabaseInputBox.disable();
 
 		const restoreToLabel = localize('restoreTo', "Restore to");
 		const destinationRestoreToAriaOptions = {
@@ -616,9 +615,17 @@ export class RestoreDialog extends Modal {
 
 	private backupFileCheckboxChanged(e: Slick.EventData, data: Slick.OnSelectedRowsChangedEventArgs<Slick.SlickData>): void {
 		let selectedFiles: string[] = [];
+		let selectedDatabases: string[] = [];
 		data.grid.getSelectedRows().forEach(row => {
 			selectedFiles.push(data.grid.getDataItem(row)['Id']);
+			selectedDatabases.push(data.grid.getDataItem(row)['Database']);
 		});
+
+		if (selectedDatabases.length !== 0) {
+			this._targetDatabaseInputBox.value = selectedDatabases[0];
+		} else {
+			this._targetDatabaseInputBox.value = '';
+		}
 
 		let isSame = false;
 		if (this.viewModel.selectedBackupSets && this.viewModel.selectedBackupSets.length === selectedFiles.length) {
@@ -688,6 +695,7 @@ export class RestoreDialog extends Modal {
 			FileValidationConstants.restore,
 			true,
 			true,
+			'',
 			url => this.onUrlBrowsed(url));
 	}
 
@@ -730,6 +738,12 @@ export class RestoreDialog extends Modal {
 
 	private onSourceDatabaseChanged(selectedDatabase: string) {
 		// This check is to avoid any unnecessary even firing (to remove flickering)
+		if (this.viewModel.sourceDatabaseName === undefined) {
+			this.viewModel.sourceDatabaseName = null;
+		}
+		if (selectedDatabase === undefined) {
+			selectedDatabase = null;
+		}
 		if (this.viewModel.sourceDatabaseName !== selectedDatabase) {
 			this.viewModel.sourceDatabaseName = selectedDatabase;
 			this.viewModel.selectedBackupSets = undefined;
@@ -774,7 +788,7 @@ export class RestoreDialog extends Modal {
 		} else if (selectedRestoreFrom === this._urlTitle) {
 			this.viewModel.onRestoreFromChanged(true);
 			DOM.hide(this._destinationRestoreToContainer!);
-			DOM.hide(this._sourceDatabasesElement!);
+			DOM.show(this._sourceDatabasesElement!);
 			DOM.hide(this._restoreFromBackupFileElement!);
 			DOM.show(this._restoreFromUrlElement!);
 			DOM.hide(this._targetDatabaseElement!);
@@ -843,7 +857,8 @@ export class RestoreDialog extends Modal {
 		this.resetRestoreContent();
 	}
 
-	public open(serverName: string, ownerUri: string) {
+	public open(serverName: string, ownerUri: string, isManagedInstance) {
+		this._isManagedInstance = isManagedInstance;
 		this.title = this._restoreTitle + ' - ' + serverName;
 		this._ownerUri = ownerUri;
 		if (this._isManagedInstance) {

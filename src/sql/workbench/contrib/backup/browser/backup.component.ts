@@ -515,7 +515,6 @@ export class BackupComponent extends AngularDisposable {
 			this.mediaDescriptionBox!.disable();
 			if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance) {
 				this.toUrlCheckBox.checked = true;
-				this.onChangeToUrl();
 				this.backupTypeSelectBox!.disable();
 				this.copyOnlyCheckBox!.disable();
 				this.backupRetainDaysBox!.disable();
@@ -528,6 +527,7 @@ export class BackupComponent extends AngularDisposable {
 				this.copyOnlyCheckBox!.enable();
 				this.backupTypeSelectBox!.enable();
 			}
+			this.onChangeToUrl();
 
 			// Set backup path list
 			this.setBackupPathList();
@@ -546,14 +546,12 @@ export class BackupComponent extends AngularDisposable {
 
 	private setBackupPathList() {
 		this.backupPathTypePairs = {};
-		this.setDefaultBackupPaths();
 		let pathlist: ISelectOptionItem[] = [];
-		for (let i in this.backupPathTypePairs) {
-			pathlist.push({ text: i });
-		}
-		if (this.toUrlCheckBox.checked) {
-			this.urlInputBox.value = pathlist[0].text;
-		} else {
+		if (!this.toUrlCheckBox.checked) {
+			for (let i in this.backupPathTypePairs) {
+				pathlist.push({ text: i });
+			}
+			this.setDefaultBackupPaths();
 			this.pathListBox!.setOptions(pathlist, 0);
 		}
 	}
@@ -675,7 +673,7 @@ export class BackupComponent extends AngularDisposable {
 			this.setEncryptOptionsEnabled(true);
 
 			// Force to choose format media option since otherwise encryption cannot be done
-			if (!this.isFormatChecked) {
+			if (!this.isFormatChecked && !this.toUrlCheckBox.checked) {
 				this.onChangeMediaFormat();
 			}
 		} else {
@@ -756,6 +754,7 @@ export class BackupComponent extends AngularDisposable {
 			FileValidationConstants.backup,
 			false,
 			false,
+			this.getDefaultBackupFileName(),
 			(url => this.handleUrlPathAdded(url)));
 	}
 
@@ -881,9 +880,7 @@ export class BackupComponent extends AngularDisposable {
 			if (this.defaultNewBackupFolder[0] === '/') {
 				serverPathSeparator = '/';
 			}
-			let d: Date = new Date();
-			let formattedDateTime: string = `-${d.getFullYear()}${d.getMonth() + 1}${d.getDate()}-${d.getHours()}-${d.getMinutes()}-${d.getSeconds()}`;
-			let defaultNewBackupLocation = this.defaultNewBackupFolder + serverPathSeparator + this.databaseName + formattedDateTime + '.bak';
+			let defaultNewBackupLocation = this.defaultNewBackupFolder + serverPathSeparator + this.databaseName + this.getDefaultBackupFileName() + '.bak';
 
 			// Add a default new backup locationthis.backupPathTypePairs![filepath] = BackupConstants.deviceTypeFile;
 			if (this.toUrlCheckBox!.checked) {
@@ -892,6 +889,13 @@ export class BackupComponent extends AngularDisposable {
 				this.backupPathTypePairs![defaultNewBackupLocation] = BackupConstants.deviceTypeFile;
 			}
 		}
+	}
+
+	private getDefaultBackupFileName(): string {
+		let d: Date = new Date();
+		let formattedDateTime: string = `-${d.getFullYear()}${d.getMonth() + 1}${d.getDate()}-${d.getHours()}-${d.getMinutes()}-${d.getSeconds()}`;
+		let defaultBackupFileName = this.databaseName + formattedDateTime + '.bak';
+		return defaultBackupFileName;
 	}
 
 	private enableMediaInput(enable: boolean): void {
