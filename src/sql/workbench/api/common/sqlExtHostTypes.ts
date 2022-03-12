@@ -972,6 +972,7 @@ export namespace designers {
 
 	export enum TableColumnProperty {
 		Name = 'name',
+		AdvancedType = 'advancedType',
 		Type = 'type',
 		AllowNulls = 'allowNulls',
 		DefaultValue = 'defaultValue',

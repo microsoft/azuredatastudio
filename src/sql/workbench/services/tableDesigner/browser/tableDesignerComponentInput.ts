@@ -330,6 +330,15 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				}
 			}, {
 				componentType: 'dropdown',
+				propertyName: designers.TableColumnProperty.AdvancedType,
+				description: localize('designer.column.description.advancedType', "Displays the unified data type (including length, scale and precision) for the column"),
+				componentProperties: {
+					title: localize('tableDesigner.columnAdvancedTypeTitle', "Advanced Type"),
+					width: 100,
+					isEditable: true
+				}
+			}, {
+				componentType: 'dropdown',
 				propertyName: designers.TableColumnProperty.Type,
 				description: localize('designer.column.description.dataType', "Displays the data type name for the column"),
 				componentProperties: {
@@ -387,6 +396,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 		const displayProperties = this.getTableDisplayProperties(options, [
 			designers.TableColumnProperty.Name,
+			designers.TableColumnProperty.AdvancedType,
 			designers.TableColumnProperty.Type,
 			designers.TableColumnProperty.Length,
 			designers.TableColumnProperty.Precision,

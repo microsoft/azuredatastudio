@@ -1182,6 +1182,7 @@ declare module 'azdata' {
 			Length = 'length',
 			Name = 'name',
 			Type = 'type',
+			AdvancedType = 'advancedType',
 			IsPrimaryKey = 'isPrimaryKey',
 			Precision = 'precision',
 			Scale = 'scale'
