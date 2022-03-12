@@ -8,17 +8,26 @@ import type * as azdata from 'azdata';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
+import { Event, Emitter } from 'vs/base/common/event';
 
+interface ExecutionPlanProviderRegisteredEvent {
+	id: string,
+	provider: azdata.ExecutionPlanServiceProvider
+}
 export class ExecutionPlanService implements IExecutionPlanService {
 	private _providers: { [handle: string]: azdata.ExecutionPlanServiceProvider; } = Object.create(null);
-
+	private _onProviderRegister: Emitter<ExecutionPlanProviderRegisteredEvent> = new Emitter<ExecutionPlanProviderRegisteredEvent>();
+	private _providerRegisterEvent: Event<ExecutionPlanProviderRegisteredEvent>;
 	constructor(
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IQuickInputService private _quickInputService: IQuickInputService,
+		@IExtensionService private _extensionService: IExtensionService
 	) {
+		this._providerRegisterEvent = this._onProviderRegister.event;
 	}
 
-	private _runAction<T>(fileFormat: string, action: (handler: azdata.ExecutionPlanServiceProvider) => Thenable<T>): Promise<T> {
+	private async _runAction<T>(fileFormat: string, action: (handler: azdata.ExecutionPlanServiceProvider) => Thenable<T>): Promise<T> {
 		let providers = Object.keys(this._capabilitiesService.providers);
 		while (providers.length === 0) {
 			providers = Object.keys(this._capabilitiesService.providers);
@@ -53,7 +62,28 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		if (!selectedProvider) {
 			return Promise.reject(new Error(localize('providerIdNotValidError', "Valid provider is required in order to interact with ExecutionPlanService")));
 		}
+		await this._extensionService.whenInstalledExtensionsRegistered();
 		let handler = this._providers[selectedProvider];
+		if (!handler) {
+			handler = await new Promise((resolve, reject) => {
+				this._providerRegisterEvent(e => {
+					if (e.id === selectedProvider) {
+						resolve(e.provider);
+					}
+				});
+				setTimeout(() => {
+					/**
+					 * Handling a possible edge case where provider registered event
+					 * might have been called before we await for it.
+					 */
+					if (this._providers[selectedProvider]) {
+						resolve(this._providers[selectedProvider]);
+						return;
+					}
+					resolve(undefined);
+				}, 30000);
+			});
+		}
 		if (handler) {
 			return Promise.resolve(action(handler));
 		} else {
@@ -63,6 +93,10 @@ export class ExecutionPlanService implements IExecutionPlanService {
 
 	registerProvider(providerId: string, provider: azdata.ExecutionPlanServiceProvider): void {
 		this._providers[providerId] = provider;
+		this._onProviderRegister.fire({
+			id: providerId,
+			provider: provider
+		});
 	}
 
 	getExecutionPlan(planFile: azdata.ExecutionPlanGraphInfo): Thenable<azdata.GetExecutionPlanResult> {
