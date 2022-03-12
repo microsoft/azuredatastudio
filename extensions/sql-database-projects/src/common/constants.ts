@@ -151,6 +151,10 @@ export const enterPortNumber = localize('enterPortNumber', "Enter SQL server por
 export const serverPortNumber = localize('serverPortNumber', "SQL server port number");
 export const azureServerName = localize('azureServerName', "SQL server name");
 export const serverPassword = localize('serverPassword', "SQL Server admin password");
+export const azureSubscription = localize('azureSubscription', "Azure subscription");
+export const resourceGroup = localize('resourceGroup', "Resource group");
+export const azureLocation = localize('location', "Location");
+export const azureAccounts = localize('azureAccounts', "Azure accounts");
 export const confirmServerPassword = localize('confirmServerPassword', "Confirm SQL Server admin password");
 export const baseDockerImage = localize('baseDockerImage', "Base SQL Server Docker image");
 export const publishTo = localize('publishTo', "Publish Target");
@@ -205,6 +209,7 @@ export function dockerNotRunningError(error: string) { return localize('dockerNo
 export const dockerContainerNotRunningErrorMessage = localize('dockerContainerNotRunningErrorMessage', "Docker container is not running");
 export const dockerContainerFailedToRunErrorMessage = localize('dockerContainerFailedToRunErrorMessage', "Failed to run the docker container");
 export const connectingToSqlServerMessage = localize('connectingToSqlServerMessage', "Connecting to SQL Server");
+export const serverCreated = localize('serverCreated', "Server created");
 export const deployProjectFailedMessage = localize('deployProjectFailedMessage', "Failed to open a connection to the deployed database'");
 export const containerAlreadyExistForProject = localize('containerAlreadyExistForProject', "Containers already exist for this project. Do you want to delete them before deploying a new one?");
 export const checkoutOutputMessage = localize('checkoutOutputMessage', "Check output pane for more details");
@@ -478,6 +483,8 @@ export const passwordSetting = 'Password';
 export const integratedAuth = 'Integrated';
 export const azureMfaAuth = 'AzureMFA';
 export const sqlAuth = 'SqlAuth';
+
+export const azureAddAccount = 'Add an Account...';
 
 // Tree item types
 export enum DatabaseProjectItemType {

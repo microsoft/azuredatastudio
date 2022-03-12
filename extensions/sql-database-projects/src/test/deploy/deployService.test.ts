@@ -91,7 +91,7 @@ describe('deploy service', function (): void {
 		sandbox.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
 		sandbox.stub(azdata.tasks, 'startBackgroundOperation').callThrough();
 
-		let connection = await deployService.deploy(deployProfile, project1);
+		let connection = await deployService.deployToContainer(deployProfile, project1);
 		should(connection).equals('connection');
 
 	});
@@ -118,7 +118,7 @@ describe('deploy service', function (): void {
 		const deployService = new DeployService(testContext.outputChannel, shellExecutionHelper.object);
 		sandbox.stub(azdata.tasks, 'startBackgroundOperation').callThrough();
 
-		await should(deployService.deploy(deployProfile, project1)).rejected();
+		await should(deployService.deployToContainer(deployProfile, project1)).rejected();
 	});
 
 	it('Should retry connecting to the server', async function (): Promise<void> {

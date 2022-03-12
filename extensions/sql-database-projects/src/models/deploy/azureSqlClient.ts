@@ -3,20 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-//import * as vscode from 'vscode';
-//import { AzureAccountExtensionApi, AzureSubscription } from '../../typings/azure-account.api';
-import { SubscriptionClient, Subscription } from '@azure/arm-subscriptions';
-//import { AzureExtensionApiProvider } from '../../typings/azpi';
+import { SubscriptionClient, Subscription, Location } from '@azure/arm-subscriptions';
 import { SqlManagementClient, Server } from '@azure/arm-sql';
 import * as coreAuth from '@azure/core-auth';
 import { ResourceManagementClient, ResourceGroup } from '@azure/arm-resources';
 import * as utils from '../../common/utils';
 import { IAccount, Tenant, Token } from 'vscode-mssql';
-
-export interface SubscriptionWithSession {
+export interface AzureAccountSession {
 	subscription: Subscription,
 	tenantId: string,
-	account: IAccount
+	account: IAccount,
+	token: Token
 }
 
 class SQLTokenCredential implements coreAuth.TokenCredential {
@@ -37,40 +34,35 @@ class SQLTokenCredential implements coreAuth.TokenCredential {
 }
 export class AzureSqlClient {
 
-	/*
-	public static async init() {
-		if (!AzureSqlClient.azureApis) {
-			const extension = vscode.extensions.getExtension<AzureExtensionApiProvider>('ms-vscode.azure-account');
-			if (extension && !extension.isActive) {
-				await extension.activate();
+	public static async getAccounts(): Promise<IAccount[]> {
+		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+		return await vscodeMssqlApi.azureAccountService.getAccounts();
+	}
 
-			} else if (!extension) {
-				void vscode.window.showErrorMessage('Please make sure Azure Account extension is installed!');
-			}
+	public static async getAccount(): Promise<IAccount> {
+		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+		return await vscodeMssqlApi.azureAccountService.getAccount();
+	}
 
-			const azureApiProvider = extension?.exports;
-			if (azureApiProvider) {
-				AzureSqlClient.azureApis = azureApiProvider.getApi<AzureAccountExtensionApi>('1');
-				if (!(await AzureSqlClient.azureApis.waitForLogin())) {
-					await vscode.commands.executeCommand('azure-account.askForLogin');
-				}
-			}
+	public static async getLocations(session: AzureAccountSession): Promise<Location[]> {
+		let locations: Location[] = [];
+		const subClient = new SubscriptionClient(new SQLTokenCredential(session.token));
+		if (!session?.subscription?.subscriptionId) {
+			return [];
 		}
+		const locationsPages = await subClient.subscriptions.listLocations(session.subscription.subscriptionId);
+		let nextLocation = await locationsPages.next();
+		while (!nextLocation.done) {
+			locations.push(nextLocation.value);
+			nextLocation = await locationsPages.next();
+		}
+		return locations;
 	}
 
-
-	public static async getToken(subscription: AzureSubscription): Promise<coreAuth.AccessToken | undefined> {
-		return <coreAuth.AccessToken>await subscription.session.credentials2.getToken('https://database.windows.net/.default', {
-			tenantId: subscription.session.tenantId
-		});
-	}
-	*/
-
-	public static async getSubscriptions(): Promise<SubscriptionWithSession[]> {
+	public static async getSubscriptions(account: IAccount): Promise<AzureAccountSession[]> {
 		try {
-			const subscriptions: SubscriptionWithSession[] = [];
+			const subscriptions: AzureAccountSession[] = [];
 			const vscodeMssqlApi = await utils.getVscodeMssqlApi();
-			const account = await vscodeMssqlApi.azureAccountService.getAccount();
 			const tenants = <Tenant[]>account.properties.tenants;
 			for (const tenantId of tenants.map(t => t.id)) {
 				const token = await vscodeMssqlApi.azureAccountService.getAccountSecurityToken(account, tenantId);
@@ -79,10 +71,10 @@ export class AzureSqlClient {
 				let nextSub = await newSubPages.next();
 				while (!nextSub.done) {
 					subscriptions.push({
-
 						subscription: nextSub.value,
 						tenantId: tenantId,
-						account: account
+						account: account,
+						token: token
 
 					});
 					nextSub = await newSubPages.next();
@@ -94,21 +86,12 @@ export class AzureSqlClient {
 			console.log(error);
 			return [];
 		}
-
-		/*
-		const azureApis = await AzureSqlClient.getAzureApis();
-		return azureApis?.subscriptions || [];
-		*/
 	}
 
-	public static async createServer(subscription: SubscriptionWithSession, resourceGroup: ResourceGroup, serverName: string, parameters: Server): Promise<Server | undefined> {
-		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
-		//const account = await vscodeMssqlApi.accountService.getAccount();
-		const token = await vscodeMssqlApi.azureAccountService.getAccountSecurityToken(subscription.account, subscription.tenantId);
-		const credential = new SQLTokenCredential(token);
-		if (subscription?.subscription.subscriptionId && resourceGroup?.name) {
-			const sqlClient: SqlManagementClient = new SqlManagementClient(credential, subscription.subscription.subscriptionId);
-			//let sqlClient = new SqlManagementClient(new coreAuth.TokenCredential(token.token), subscription.subscription.id);
+	public static async createServer(session: AzureAccountSession, resourceGroup: ResourceGroup, serverName: string, parameters: Server): Promise<Server | undefined> {
+		const credential = new SQLTokenCredential(session.token);
+		if (session?.subscription.subscriptionId && resourceGroup?.name) {
+			const sqlClient: SqlManagementClient = new SqlManagementClient(credential, session.subscription.subscriptionId);
 			if (sqlClient) {
 				try {
 					const currentServer = await sqlClient.servers.get(resourceGroup.name,
@@ -129,13 +112,11 @@ export class AzureSqlClient {
 		return undefined;
 	}
 
-	public static async getResourceGroups(subscription: SubscriptionWithSession): Promise<Array<ResourceGroup> | []> {
+	public static async getResourceGroups(session: AzureAccountSession): Promise<Array<ResourceGroup> | []> {
 		const groups: ResourceGroup[] = [];
-		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
-		const token = await vscodeMssqlApi.azureAccountService.getAccountSecurityToken(subscription.account, subscription.tenantId);
-		if (subscription?.subscription?.subscriptionId) {
-			//const resourceGroupClient = new ResourceManagementClient(<coreAuth.TokenCredential>subscription.session.credentials2, subscription.subscription.subscriptionId);
-			const resourceGroupClient = new ResourceManagementClient(new SQLTokenCredential(token), subscription.subscription.subscriptionId);
+
+		if (session?.subscription?.subscriptionId) {
+			const resourceGroupClient = new ResourceManagementClient(new SQLTokenCredential(session.token), session.subscription.subscriptionId);
 
 			const newGroupsPages = await resourceGroupClient.resourceGroups.list();
 			let nextGroup = await newGroupsPages.next();
@@ -147,16 +128,4 @@ export class AzureSqlClient {
 		}
 		return [];
 	}
-
-	//private static azureApis: AzureAccountExtensionApi | undefined;
-
-	/*
-	private static async getAzureApis(): Promise<AzureAccountExtensionApi | undefined> {
-		if (!AzureSqlClient.azureApis) {
-			await AzureSqlClient.init();
-		}
-
-		return AzureSqlClient.azureApis;
-	}
-	*/
 }

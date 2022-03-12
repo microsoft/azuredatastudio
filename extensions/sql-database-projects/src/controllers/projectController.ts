@@ -43,10 +43,9 @@ import { GenerateProjectFromOpenApiSpecOptions, SqlTargetPlatform } from 'sqldbp
 import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
-import { ILocalDbDeployProfile } from '../models/deploy/deployProfile';
+import { ILocalDbDeployProfile, ISqlDbDeployProfile } from '../models/deploy/deployProfile';
 import { EntryType, FileProjectEntry, IDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
 import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updateProject';
-import { AzureSqlClient } from '../models/deploy/azureSqlClient';
 
 const maxTableLength = 10;
 
@@ -279,6 +278,20 @@ export class ProjectsController {
 		}
 	}
 
+	public async publishToAzure(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: ISqlDbDeployProfile): Promise<void> {
+		const project: Project = this.getProjectFromContext(context);
+		this._outputChannel.appendLine(`Creating SQL server '${deployProfile?.sqlDbSetting?.serverName}' in Azure ... `);
+		void utils.showInfoMessageWithOutputChannel(`Creating SQL server '${deployProfile?.sqlDbSetting?.serverName}' in Azure ... `, this._outputChannel);
+		const connectionUri = await this.deployService.deployToAzure(deployProfile);
+		if (deployProfile?.deploySettings && deployProfile?.sqlDbSetting && connectionUri) {
+			if (deployProfile && connectionUri) {
+				deployProfile.deploySettings.connectionUri = connectionUri;
+				await this.publishOrScriptProject(project, deployProfile.deploySettings, true);
+				await this.deployService.getConnection(deployProfile.sqlDbSetting, true, deployProfile.sqlDbSetting.dbName);
+			}
+		}
+	}
+
 	/**
 	 * Publishes a project to docker container
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project or the Project itself
@@ -291,7 +304,7 @@ export class ProjectsController {
 				let connectionUri: string | undefined;
 				if (deployProfile.localDbSetting) {
 					void utils.showInfoMessageWithOutputChannel(constants.publishingProjectMessage, this._outputChannel);
-					connectionUri = await this.deployService.deploy(deployProfile, project);
+					connectionUri = await this.deployService.deployToContainer(deployProfile, project);
 					if (connectionUri) {
 						deployProfile.deploySettings.connectionUri = connectionUri;
 					}
@@ -362,32 +375,9 @@ export class ProjectsController {
 			}
 		} else if (publishTarget === constants.publishToNewAzureServer) {
 			const settings = await launchCreateAzureServerQuickPick(project);
-			this._outputChannel.appendLine(`Creating SQL server '${settings?.sqlDbSetting?.serverName}' in Azure ... `);
-			void utils.showInfoMessageWithOutputChannel(`Creating SQL server '${settings?.sqlDbSetting?.serverName}' in Azure ... `, this._outputChannel);
-			if (settings?.sqlDbSetting && settings?.deploySettings) {
-				const azureSqlClient = AzureSqlClient;
-				const server = await azureSqlClient.createServer(settings?.sqlDbSetting.subscription, settings?.sqlDbSetting.resourceGroup, settings?.sqlDbSetting.serverName, {
-					location: settings?.sqlDbSetting?.location,
-					administratorLogin: settings?.sqlDbSetting.userName,
-					administratorLoginPassword: settings?.sqlDbSetting.password
-				});
-				if (server && server.fullyQualifiedDomainName) {
-					void vscode.window.showInformationMessage('server created in Azure! ' + server.fullyQualifiedDomainName);
-					this._outputChannel.appendLine(`Server created ${server.name}`);
-					settings.sqlDbSetting.serverName = server.fullyQualifiedDomainName;
-				}
-				//let settings: IDeploySettings | undefined = await getPublishDatabaseSettings(project, false);
-				this._outputChannel.appendLine('connecting to azure server ...');
 
-				const connectionUri = await this.deployService.getConnection(settings.sqlDbSetting, false, 'master');
-				this._outputChannel.appendLine('connection to azure ' + connectionUri);
-				if (settings && connectionUri) {
-					settings.deploySettings.connectionUri = connectionUri;
-					this._outputChannel.appendLine('deploying sql project to Azure');
-					await this.publishOrScriptProject(project, settings.deploySettings, true);
-					this._outputChannel.appendLine('deploy is done');
-					await this.deployService.getConnection(settings.sqlDbSetting, true, settings.sqlDbSetting.dbName);
-				}
+			if (settings?.deploySettings && settings?.sqlDbSetting) {
+				await this.publishToAzure(project, settings);
 			}
 
 		} else {

@@ -14,6 +14,7 @@ import * as path from 'path';
 import * as fse from 'fs-extra';
 import { AzureSqlClient } from '../models/deploy/azureSqlClient';
 import { IDeploySettings } from '../models/IDeploySettings';
+import { IAccount } from 'vscode-mssql';
 
 /**
  * Create flow for Deploying a database using only VS Code-native APIs such as QuickPick
@@ -119,11 +120,35 @@ async function launchEulaQuickPick(imageInfo: DockerImageInfo | undefined): Prom
 export async function launchCreateAzureServerQuickPick(project: Project): Promise<ISqlDbDeployProfile | undefined> {
 
 	const client = AzureSqlClient;
-	const subscriptions = await client.getSubscriptions();
+	const accounts = await client.getAccounts();
+	const accountOptions = accounts.map(x => x.displayInfo?.displayName || '');
+	accountOptions.unshift(constants.azureAddAccount);
+
+	let account: IAccount | undefined;
+	let accountOption = await vscode.window.showQuickPick(
+		accountOptions,
+		{ title: constants.azureAccounts, ignoreFocusOut: true });
+
+	// Return when user hits escape
+	if (!accountOption) {
+		return undefined;
+	}
+
+	if (accountOption === constants.azureAddAccount) {
+		account = await client.getAccount();
+	} else {
+		account = accounts.find(x => x.displayInfo.displayName === accountOption);
+	}
+
+	if (!account) {
+		return;
+	}
+
+	const subscriptions = await client.getSubscriptions(account);
 
 	const subscriptionName = await vscode.window.showQuickPick(
 		subscriptions.map(x => x.subscription.displayName || ''),
-		{ title: 'subscriptions', ignoreFocusOut: true });
+		{ title: constants.azureSubscription, ignoreFocusOut: true });
 
 	// Return when user hits escape
 	if (!subscriptionName) {
@@ -135,10 +160,11 @@ export async function launchCreateAzureServerQuickPick(project: Project): Promis
 	if (!subscription?.subscription?.subscriptionId) {
 		return undefined;
 	}
+
 	const resourceGroups = await client.getResourceGroups(subscription);
 	const resourceGroupName = await vscode.window.showQuickPick(
 		resourceGroups.map(x => x.name || ''),
-		{ title: 'resource groups', ignoreFocusOut: true });
+		{ title: constants.resourceGroup, ignoreFocusOut: true });
 
 	// Return when user hits escape
 	if (!resourceGroupName) {
@@ -146,8 +172,28 @@ export async function launchCreateAzureServerQuickPick(project: Project): Promis
 	}
 
 	const resourceGroup = resourceGroups.find(x => x.name === resourceGroupName);
-	if (!resourceGroup?.location) {
-		return;
+
+	// Return when user hits escape
+	if (!resourceGroup) {
+		return undefined;
+	}
+
+	let locations = await client.getLocations(subscription);
+	if (resourceGroup.location) {
+		const defaultLocation = locations.find(x => x.name === resourceGroup.location);
+		if (defaultLocation) {
+			locations = locations.filter(x => x.name !== defaultLocation.name);
+			locations.unshift(defaultLocation);
+		}
+	}
+
+	let locationName = await vscode.window.showQuickPick(
+		locations.map(x => x.name || ''),
+		{ title: constants.azureLocation, ignoreFocusOut: true, placeHolder: resourceGroup?.location });
+
+	// Return when user hits escape
+	if (!locationName) {
+		locationName = resourceGroup?.location;
 	}
 
 	let serverName: string | undefined = '';
@@ -211,7 +257,9 @@ export async function launchCreateAzureServerQuickPick(project: Project): Promis
 	let settings: IDeploySettings | undefined = await getPublishDatabaseSettings(project, false);
 
 	return {
+		// TODO add tenant
 		deploySettings: settings, sqlDbSetting: {
+			tenantId: subscription.tenantId,
 			accountId: subscription.account.key.id,
 			serverName: serverName,
 			userName: user,
@@ -220,7 +268,7 @@ export async function launchCreateAzureServerQuickPick(project: Project): Promis
 			dbName: '',
 			subscription: subscription,
 			resourceGroup: resourceGroup,
-			location: resourceGroup.location
+			location: locationName
 		}
 	};
 }

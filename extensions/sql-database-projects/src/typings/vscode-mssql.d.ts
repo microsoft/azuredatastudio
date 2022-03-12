@@ -19,10 +19,6 @@ declare module 'vscode-mssql' {
 		name = 'ms-mssql.mssql'
 	}
 
-	export interface IFireWallRuleError extends Error {
-		connectionUri: string;
-	}
-
 	/**
 	* The APIs provided by Mssql extension
 	*/
@@ -72,7 +68,7 @@ declare module 'vscode-mssql' {
 
 		/**
 		 * Prompts the user to add firewall rule if connection failed with firerule error.
-		 * @param connectionUri The URI of the connection to list the databases for.
+		 * @param connectionUri The URI of the connection to add firewall rule to.
 		 * @param connectionInfo The connection info
 		 * @returns True if firewall rulle added
 		 */
@@ -101,6 +97,14 @@ declare module 'vscode-mssql' {
 		 * @returns connection string for the connection
 		 */
 		getConnectionString(connectionUriOrDetails: string | ConnectionDetails, includePassword?: boolean, includeApplicationName?: boolean): Promise<string>;
+
+		/**
+	 	 * Set connection details for the provided connection info
+	 	 * Able to use this for getConnectionString requests to STS that require ConnectionDetails type
+	 	 * @param connectionInfo connection info of the connection
+	 	 * @returns connection details credentials for the connection
+	 	 */
+		createConnectionDetails(connectionInfo: IConnectionInfo): ConnectionDetails;
 	}
 
 	/**
@@ -302,8 +306,25 @@ declare module 'vscode-mssql' {
 	}
 
 	/**
- * Represents a key that identifies an account.
- */
+	 * Represents a tenant information for an account.
+	 */
+	export interface Tenant {
+		id: string;
+		displayName: string;
+		userId?: string;
+		tenantCategory?: string;
+	}
+
+	/**
+	 * Error that connect method throws if connection fails because of a fire wall rule error.
+	 */
+	export interface IFireWallRuleError extends Error {
+		connectionUri: string;
+	}
+
+	/**
+	 * Represents a key that identifies an account.
+	 */
 	export interface IAccountKey {
 		/**
 		 * Identifier for the account, unique to the provider
@@ -397,16 +418,21 @@ declare module 'vscode-mssql' {
 		tokenType: string;
 	}
 
-	export interface Tenant {
-		id: string;
-		displayName: string;
-		userId?: string;
-		tenantCategory?: string;
-	}
-
 	export interface IAzureAccountService {
+		/**
+		 * Prompts user to login to Azure and returns the account
+		 */
 		getAccount(): Promise<IAccount>;
-		getAccountSecurityToken(account: IAccount, tenantId: string | undefined): Thenable<Token>;
+
+		/**
+		 * Returns current Azure accounts
+		 */
+		getAccounts(): Promise<IAccount[]>;
+
+		/**
+		 * Returns an access token for given user and tenant
+		 */
+		getAccountSecurityToken(account: IAccount, tenantId: string | undefined): Promise<Token>;
 	}
 
 	export interface IAzureFunctionsService {
