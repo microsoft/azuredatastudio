@@ -108,3 +108,17 @@ export async function getAllProjectsInFolder(folder: vscode.Uri, projectExtensio
 	// glob will return an array of file paths with forward slashes, so they need to be converted back if on windows
 	return (await glob(projFilter)).map(p => vscode.Uri.file(path.resolve(p)));
 }
+
+/**
+ * Gets the package info for the extension based on where the extension is installed
+ * @returns the package info object
+ */
+export function getPackageInfo(): IPackageInfo {
+	const packageJson = require('../../package.json');
+	return {
+		name: packageJson.name,
+		fullName: `${packageJson.publisher}.${packageJson.name}`,
+		version: packageJson.version,
+		aiKey: packageJson.aiKey
+	};
+}

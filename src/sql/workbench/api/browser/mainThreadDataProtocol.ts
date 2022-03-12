@@ -525,7 +525,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			generateScript(tableInfo: azdata.designers.TableInfo): Thenable<string> {
 				return self._proxy.$generateScriptForTableDesigner(handle, tableInfo);
 			},
-			generatePreviewReport(tableInfo: azdata.designers.TableInfo): Thenable<string> {
+			generatePreviewReport(tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.GeneratePreviewReportResult> {
 				return self._proxy.$generatePreviewReportForTableDesigner(handle, tableInfo);
 			},
 			disposeTableDesigner(tableInfo: azdata.designers.TableInfo): Thenable<void> {
