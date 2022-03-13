@@ -4519,7 +4519,7 @@
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/LycanII/LzScripts/releases/tag/Latest"
+									"source": "https://github.com/LycanII/LzScripts/releases"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
