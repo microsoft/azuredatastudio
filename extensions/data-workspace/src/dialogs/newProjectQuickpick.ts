@@ -106,6 +106,7 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 
 		const selectedTargetPlatform = await vscode.window.showQuickPick(targetPlatforms, { title: constants.SelectTargetPlatform, ignoreFocusOut: true });
 		if (!selectedTargetPlatform) {
+			// User cancelled
 			return;
 		}
 
