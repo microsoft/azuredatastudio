@@ -97,7 +97,7 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 			tooltip: constants.LearnMore
 		};
 		const quickPick = vscode.window.createQuickPick();
-		quickPick.items = [{ label: constants.Yes }, { label: constants.No }];
+		quickPick.items = [{ label: constants.YesRecommended }, { label: constants.No }];
 		quickPick.title = constants.SdkStyleProject;
 		quickPick.ignoreFocusOut = true;
 		const disposables: vscode.Disposable[] = [];
@@ -106,6 +106,7 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 			if (projectType.sdkLearnMoreUrl) {
 				// add button to open sdkLearnMoreUrl if it was provided
 				quickPick.buttons = [sdkLearnMoreButton];
+				quickPick.placeholder = constants.SdkLearnMorePlaceholder;
 			}
 
 			let sdkStylePromise = new Promise<boolean | undefined>((resolve) => {
@@ -114,7 +115,7 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 						resolve(undefined);
 					}),
 					quickPick.onDidChangeSelection((item) => {
-						resolve(item[0].label === constants.Yes);
+						resolve(item[0].label === constants.YesRecommended);
 					}));
 
 				if (projectType.sdkLearnMoreUrl) {
