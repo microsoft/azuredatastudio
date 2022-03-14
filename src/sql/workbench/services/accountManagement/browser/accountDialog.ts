@@ -213,7 +213,6 @@ export class AccountDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		this._container = container;
 
-		// Setup loading spinner
 		this._loadingSpinner = new LoadingSpinner(this._container, { showText: true, fullSize: true });
 
 		this._splitViewContainer = DOM.$('div.account-view.monaco-pane-view');
