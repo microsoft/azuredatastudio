@@ -51,6 +51,9 @@ export const NameCannotBeEmpty = localize('dataworkspace.nameCannotBeEmpty', "Na
 export const TargetPlatform = localize('dataworkspace.targetPlatform', "Target Platform");
 export const SdkStyleProject = localize('dataworkspace.sdkStyleProject', "SDK-style project (Preview)");
 export const LearnMore = localize('dataworkspace.learnMore', "Learn More");
+export const YesRecommended = localize('dataworkspace.yesRecommended', "Yes (Recommended)");
+export const No = localize('dataworkspace.no', "No");
+export const SdkLearnMorePlaceholder = localize('dataworkspace.sdkLearnMorePlaceholder', "Click \"Learn More\" button for more information about SDK-style projects");
 
 //Open Existing Dialog
 export const OpenExistingDialogTitle = localize('dataworkspace.openExistingDialogTitle', "Open Existing Project");
