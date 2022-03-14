@@ -20,9 +20,11 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 			label: projType.displayName,
 			description: projType.description,
 			id: projType.id,
+			targetPlatforms: projType.targetPlatforms,
+			defaultTargetPlatform: projType.defaultTargetPlatform,
 			sdkOption: projType.sdkStyleOption,
 			sdkLearnMoreUrl: projType.sdkStyleLearnMoreUrl
-		} as vscode.QuickPickItem & { id: string, sdkOption?: boolean, sdkLearnMoreUrl?: string };
+		} as vscode.QuickPickItem & { id: string, sdkOption?: boolean, targetPlatforms?: string[], defaultTargetPlatform?: string, sdkLearnMoreUrl?: string };
 	});
 
 	// 1. Prompt for project type
@@ -89,9 +91,30 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 		continue;
 	}
 
+	let targetPlatform;
+	if (projectType.targetPlatforms) {
+		// 4. Target platform of the project
+		let targetPlatforms: vscode.QuickPickItem[] = projectType.targetPlatforms.map(targetPlatform => { return { label: targetPlatform }; });
+
+		if (projectType.defaultTargetPlatform) {
+			// move the default target platform to be the first one in the list
+			targetPlatforms.splice(targetPlatforms.findIndex(i => i.label === projectType.defaultTargetPlatform), 1);
+
+			// add default next to the default target platform
+			targetPlatforms.unshift({ label: projectType.defaultTargetPlatform, description: constants.Default });
+		}
+
+		const selectedTargetPlatform = await vscode.window.showQuickPick(targetPlatforms, { title: constants.SelectTargetPlatform, ignoreFocusOut: true });
+		if (!selectedTargetPlatform) {
+			return;
+		}
+
+		targetPlatform = selectedTargetPlatform.label;
+	}
+
 	let sdkStyle;
 	if (projectType.sdkOption) {
-		// 4. SDK-style project or not
+		// 3. SDK-style project or not
 		const sdkLearnMoreButton: vscode.QuickInputButton = {
 			iconPath: new vscode.ThemeIcon('link-external'),
 			tooltip: constants.LearnMore
@@ -138,5 +161,5 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 		}
 	}
 
-	await workspaceService.createProject(projectName, vscode.Uri.file(projectLocation), projectType.id, undefined, sdkStyle);
+	await workspaceService.createProject(projectName, vscode.Uri.file(projectLocation), projectType.id, targetPlatform, sdkStyle);
 }
