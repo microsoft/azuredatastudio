@@ -4750,6 +4750,9 @@ Error: {1}</source>
     <trans-unit id="accountDialog.didNotPickAuthProvider">
       <source xml:lang="en">You didn't select any authentication provider. Please try again.</source>
     </trans-unit>
+    <trans-unit id="accountDialog.loadingProviderLabel">
+      <source xml:lang="en">Loading accounts...</source>
+    </trans-unit>
     <trans-unit id="accountDialog.noAccountLabel">
       <source xml:lang="en">There is no linked account. Please add an account.</source>
     </trans-unit>
