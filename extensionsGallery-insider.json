@@ -4520,14 +4520,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.0.1",
-							"lastUpdated": "02/27/2022",
+							"version": "1.1.0",
+							"lastUpdated": "03/12/2022",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/LycanII/LzScripts/releases/tag/Latest"
+									"source": "https://github.com/LycanII/LzScripts/releases"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
