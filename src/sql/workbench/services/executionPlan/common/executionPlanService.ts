@@ -27,6 +27,11 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		this._providerRegisterEvent = this._onProviderRegister.event;
 	}
 
+	/**
+	 * Runs the actions using the provider that supports the fileFormat provided.
+	 * @param fileFormat: fileformat of the underlying execution plan file. It is used to get the provider that support it.
+	 * @param action: executionPlanService action to be performed.
+	 */
 	private async _runAction<T>(fileFormat: string, action: (handler: azdata.executionPlan.ExecutionPlanServiceProvider) => Thenable<T>): Promise<T> {
 		let providers = Object.keys(this._capabilitiesService.providers);
 		if (!providers) {
