@@ -9,7 +9,6 @@ import * as assert from 'assert';
 
 import * as objects from 'vs/base/common/objects';
 
-
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { NotebookModelStub, ClientSessionStub, KernelStub, FutureStub } from 'sql/workbench/contrib/notebook/test/stubs';
