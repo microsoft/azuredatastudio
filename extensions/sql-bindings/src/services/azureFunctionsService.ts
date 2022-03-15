@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as mssql from 'vscode-mssql';
 import * as path from 'path';
 import * as utils from '../common/utils';
 import * as azureFunctionUtils from '../common/azureFunctionsUtils';
 import * as constants from '../common/constants';
+import * as azureFunctionsContracts from '../contracts/azureFunctions/azureFunctionsContracts';
+import { AddSqlBindingParams, BindingType, GetAzureFunctionsParams, GetAzureFunctionsResult, ResultStatus } from 'sql-bindings';
 
 export const hostFileName: string = 'host.json';
 
@@ -86,14 +87,14 @@ export async function createAzureFunction(connectionString: string, schema: stri
 		}
 
 		// select input or output binding
-		const inputOutputItems: (vscode.QuickPickItem & { type: mssql.BindingType })[] = [
+		const inputOutputItems: (vscode.QuickPickItem & { type: BindingType })[] = [
 			{
 				label: constants.input,
-				type: mssql.BindingType.input
+				type: BindingType.input
 			},
 			{
 				label: constants.output,
-				type: mssql.BindingType.output
+				type: BindingType.output
 			}
 		];
 
@@ -122,4 +123,48 @@ export async function createAzureFunction(connectionString: string, schema: stri
 
 		azureFunctionUtils.overwriteAzureFunctionMethodBody(functionFile);
 	}
+}
+
+/**
+ * Adds a SQL Binding to a specified Azure function in a file
+ * @param bindingType Type of SQL Binding
+ * @param filePath Path of the file where the Azure Functions are
+ * @param functionName Name of the function where the SQL Binding is to be added
+ * @param objectName Name of Object for the SQL Query
+ * @param connectionStringSetting Setting for the connection string
+ * @returns Azure Function SQL binding
+ */
+export async function addSqlBinding(
+	bindingType: BindingType,
+	filePath: string,
+	functionName: string,
+	objectName: string,
+	connectionStringSetting: string
+): Promise<ResultStatus> {
+	const params: AddSqlBindingParams = {
+		bindingType: bindingType,
+		filePath: filePath,
+		functionName: functionName,
+		objectName: objectName,
+		connectionStringSetting: connectionStringSetting
+	};
+
+	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+
+	return vscodeMssqlApi.sendRequest(azureFunctionsContracts.AddSqlBindingRequest.type, params);
+}
+
+
+/**
+ * Gets the names of the Azure functions in the file
+ * @param filePath Path of the file to get the Azure functions
+ * @returns array of names of Azure functions in the file
+ */
+export async function getAzureFunctions(filePath: string): Promise<GetAzureFunctionsResult> {
+	const params: GetAzureFunctionsParams = {
+		filePath: filePath
+	};
+	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+
+	return vscodeMssqlApi.sendRequest(azureFunctionsContracts.GetAzureFunctionsRequest.type, params);
 }

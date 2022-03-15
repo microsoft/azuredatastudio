@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { ITreeNodeInfo } from 'vscode-mssql';
+import { IExtension, BindingType } from 'sql-bindings';
 import { getAzdataApi, getVscodeMssqlApi } from './common/utils';
 import { launchAddSqlBindingQuickpick } from './dialogs/addSqlBindingQuickpick';
-import { createAzureFunction } from './services/azureFunctionsService';
+import { addSqlBinding, createAzureFunction, getAzureFunctions } from './services/azureFunctionsService';
 
-export async function activate(context: vscode.ExtensionContext): Promise<void> {
+export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const vscodeMssqlApi = await getVscodeMssqlApi();
 
 	void vscode.commands.executeCommand('setContext', 'azdataAvailable', !!getAzdataApi());
@@ -32,6 +33,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		const connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
 		await createAzureFunction(connectionString, node.metadata.schema, node.metadata.name);
 	}));
+	return {
+		addSqlBinding: async (bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string) => {
+			return addSqlBinding(bindingType, filePath, functionName, objectName, connectionStringSetting);
+		},
+		getAzureFunctions: async (filePath: string) => {
+			return getAzureFunctions(filePath);
+		}
+	};
 }
 
 export function deactivate(): void {
