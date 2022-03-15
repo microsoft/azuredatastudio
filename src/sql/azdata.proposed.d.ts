@@ -131,15 +131,6 @@ declare module 'azdata' {
 	}
 
 	/**
-	 * The SQL Server data types.
-	 */
-	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
-		| 'Float' | 'Image' | 'Int' | 'Money' | 'NChar' | 'NText' | 'NVarChar' | 'Real'
-		| 'UniqueIdentifier' | 'SmallDateTime' | 'SmallInt' | 'SmallMoney' | 'Text' | 'Timestamp'
-		| 'TinyInt' | 'VarBinary' | 'VarChar' | 'Variant' | 'Xml' | 'Udt' | 'Structured' | 'Date'
-		| 'Time' | 'DateTime2' | 'DateTimeOffset';
-
-	/**
 	 * The column information of a data set.
 	 */
 	export interface SimpleColumnInfo {
@@ -149,9 +140,8 @@ declare module 'azdata' {
 		name: string;
 		/**
 		 * The data type of the column.
-		 * Note by alanren: The data type shouldn't be restricted to SqlDbType.
 		 */
-		dataTypeName: SqlDbType;
+		dataTypeName: string;
 	}
 
 	/**
