@@ -1210,7 +1210,7 @@ export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		const getExecutionPlan = (planFile: azdata.ExecutionPlanGraphInfo): Thenable<azdata.GetExecutionPlanResult> => {
+		const getExecutionPlan = (planFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.GetExecutionPlanResult> => {
 			const params: contracts.GetExecutionPlanParams = { graphInfo: planFile };
 			return client.sendRequest(contracts.GetExecutionPlanRequest.type, params).then(
 				r => {

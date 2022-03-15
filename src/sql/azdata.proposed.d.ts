@@ -569,7 +569,7 @@ declare module 'azdata' {
 
 	export namespace dataprotocol {
 		export function registerTableDesignerProvider(provider: designers.TableDesignerProvider): vscode.Disposable;
-		export function registerExecutionPlanServiceProvider(provider: ExecutionPlanServiceProvider): vscode.Disposable;
+		export function registerExecutionPlanServiceProvider(provider: executionPlan.ExecutionPlanServiceProvider): vscode.Disposable;
 	}
 
 	export namespace designers {
@@ -1043,147 +1043,149 @@ declare module 'azdata' {
 		}
 	}
 
-	export interface ExecutionPlanGraph {
-		/**
-		 * Root of the execution plan tree
-		 */
-		root: ExecutionPlanNode;
-		/**
-		 * Underlying query for the execution plan graph.
-		 */
-		query: string;
-		/**
-		 * String representation of graph
-		 */
-		graphFile: ExecutionPlanGraphInfo;
-		/**
-		 * Query recommendations for optimizing performance
-		 */
-		recommendations: ExecutionPlanRecommendations[];
-	}
+	export namespace executionPlan {
+		export interface ExecutionPlanGraph {
+			/**
+			 * Root of the execution plan tree
+			 */
+			root: ExecutionPlanNode;
+			/**
+			 * Underlying query for the execution plan graph.
+			 */
+			query: string;
+			/**
+			 * String representation of graph
+			 */
+			graphFile: ExecutionPlanGraphInfo;
+			/**
+			 * Query recommendations for optimizing performance
+			 */
+			recommendations: ExecutionPlanRecommendations[];
+		}
 
-	export interface ExecutionPlanNode {
-		/**
-		 * Type of the node. This property determines the icon that is displayed for it
-		 */
-		type: string;
-		/**
-		 * Cost associated with the node
-		 */
-		cost: number;
-		/**
-		 * Cost of the node subtree
-		 */
-		subTreeCost: number;
-		/**
-		 * Relative cost of the node compared to its siblings.
-		 */
-		relativeCost: number;
-		/**
-		 * Time take by the node operation in milliseconds
-		 */
-		elapsedTimeInMs: number;
-		/**
-		 * Node properties to be shown in the tooltip
-		 */
-		properties: ExecutionPlanGraphElementProperty[];
-		/**
-		 * Display name for the node
-		 */
-		name: string;
-		/**
-		 * Description associated with the node.
-		 */
-		description: string;
-		/**
-		 * Subtext displayed under the node name
-		 */
-		subtext: string[];
-		/**
-		 * Direct children of the nodes.
-		 */
-		children: ExecutionPlanNode[];
-		/**
-		 * Edges corresponding to the children.
-		 */
-		edges: ExecutionPlanEdge[];
-	}
+		export interface ExecutionPlanNode {
+			/**
+			 * Type of the node. This property determines the icon that is displayed for it
+			 */
+			type: string;
+			/**
+			 * Cost associated with the node
+			 */
+			cost: number;
+			/**
+			 * Cost of the node subtree
+			 */
+			subTreeCost: number;
+			/**
+			 * Relative cost of the node compared to its siblings.
+			 */
+			relativeCost: number;
+			/**
+			 * Time take by the node operation in milliseconds
+			 */
+			elapsedTimeInMs: number;
+			/**
+			 * Node properties to be shown in the tooltip
+			 */
+			properties: ExecutionPlanGraphElementProperty[];
+			/**
+			 * Display name for the node
+			 */
+			name: string;
+			/**
+			 * Description associated with the node.
+			 */
+			description: string;
+			/**
+			 * Subtext displayed under the node name
+			 */
+			subtext: string[];
+			/**
+			 * Direct children of the nodes.
+			 */
+			children: ExecutionPlanNode[];
+			/**
+			 * Edges corresponding to the children.
+			 */
+			edges: ExecutionPlanEdge[];
+		}
 
-	export interface ExecutionPlanEdge {
-		/**
-		 * Count of the rows returned by the subtree of the edge.
-		 */
-		rowCount: number;
-		/**
-		 * Size of the rows returned by the subtree of the edge.
-		 */
-		rowSize: number;
-		/**
-		 * Edge properties to be shown in the tooltip.
-		 */
-		properties: ExecutionPlanGraphElementProperty[]
-	}
+		export interface ExecutionPlanEdge {
+			/**
+			 * Count of the rows returned by the subtree of the edge.
+			 */
+			rowCount: number;
+			/**
+			 * Size of the rows returned by the subtree of the edge.
+			 */
+			rowSize: number;
+			/**
+			 * Edge properties to be shown in the tooltip.
+			 */
+			properties: ExecutionPlanGraphElementProperty[]
+		}
 
-	export interface ExecutionPlanGraphElementProperty {
-		/**
-		 * Name of the property
-		 */
-		name: string;
-		/**
-		 * value for the property
-		 */
-		value: string | ExecutionPlanGraphElementProperty[];
-		/**
-		 * Flag to show/hide props in tooltip
-		 */
-		showInTooltip: boolean;
-		/**
-		 * Display order of property
-		 */
-		displayOrder: number;
-		/**
-		 *  Flag to indicate if the property has a longer value so that it will be shown at the bottom of the tooltip
-		 */
-		positionAtBottom: boolean;
-		/**
-		 * Display value of property to show in tooltip and other UI element.
-		 */
-		displayValue: string;
-	}
+		export interface ExecutionPlanGraphElementProperty {
+			/**
+			 * Name of the property
+			 */
+			name: string;
+			/**
+			 * value for the property
+			 */
+			value: string | ExecutionPlanGraphElementProperty[];
+			/**
+			 * Flag to show/hide props in tooltip
+			 */
+			showInTooltip: boolean;
+			/**
+			 * Display order of property
+			 */
+			displayOrder: number;
+			/**
+			 *  Flag to indicate if the property has a longer value so that it will be shown at the bottom of the tooltip
+			 */
+			positionAtBottom: boolean;
+			/**
+			 * Display value of property to show in tooltip and other UI element.
+			 */
+			displayValue: string;
+		}
 
-	export interface ExecutionPlanRecommendations {
-		/**
-		 * Text displayed in the show plan graph control description
-		 */
-		displayString: string;
-		/**
-		 * Query that is recommended to the user
-		 */
-		queryText: string;
-		/**
-		 * Query that will be opened in a new file once the user click on the recommendation
-		 */
-		queryWithDescription: string;
-	}
+		export interface ExecutionPlanRecommendations {
+			/**
+			 * Text displayed in the show plan graph control description
+			 */
+			displayString: string;
+			/**
+			 * Query that is recommended to the user
+			 */
+			queryText: string;
+			/**
+			 * Query that will be opened in a new file once the user click on the recommendation
+			 */
+			queryWithDescription: string;
+		}
 
-	export interface ExecutionPlanGraphInfo {
-		/**
-		 * File contents
-		 */
-		graphFileContent: string;
-		/**
-		 * File type for execution plan. This will be the file type of the editor when the user opens the graph file
-		 */
-		graphFileType: string;
-	}
+		export interface ExecutionPlanGraphInfo {
+			/**
+			 * File contents
+			 */
+			graphFileContent: string;
+			/**
+			 * File type for execution plan. This will be the file type of the editor when the user opens the graph file
+			 */
+			graphFileType: string;
+		}
 
-	export interface GetExecutionPlanResult extends ResultStatus {
-		graphs: ExecutionPlanGraph[]
-	}
+		export interface GetExecutionPlanResult extends ResultStatus {
+			graphs: ExecutionPlanGraph[]
+		}
 
-	export interface ExecutionPlanServiceProvider extends DataProvider {
-		// execution plan service methods
-		getExecutionPlan(planFile: ExecutionPlanGraphInfo): Thenable<GetExecutionPlanResult>;
+		export interface ExecutionPlanServiceProvider extends DataProvider {
+			// execution plan service methods
+			getExecutionPlan(planFile: ExecutionPlanGraphInfo): Thenable<GetExecutionPlanResult>;
+		}
 	}
 
 	/**
