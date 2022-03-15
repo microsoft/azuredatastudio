@@ -1378,7 +1378,6 @@ suite('Cell Model', function (): void {
 
 		let getCurrentCellEditModePromise = () => {
 			return new Promise((resolve, reject) => {
-				setTimeout((error) => reject(error));
 				cellModel.onCurrentEditModeChanged(cellEditMode => {
 					resolve(cellEditMode);
 				});
