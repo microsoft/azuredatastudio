@@ -132,7 +132,7 @@ export async function createAzureFunction(connectionString: string, schema: stri
  * @param functionName Name of the function where the SQL Binding is to be added
  * @param objectName Name of Object for the SQL Query
  * @param connectionStringSetting Setting for the connection string
- * @returns
+ * @returns Azure Function SQL binding
  */
 export async function addSqlBinding(
 	bindingType: BindingType,
@@ -140,7 +140,7 @@ export async function addSqlBinding(
 	functionName: string,
 	objectName: string,
 	connectionStringSetting: string
-): Promise<Thenable<ResultStatus>> {
+): Promise<ResultStatus> {
 	const params: AddSqlBindingParams = {
 		bindingType: bindingType,
 		filePath: filePath,

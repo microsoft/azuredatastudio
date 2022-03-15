@@ -25,7 +25,7 @@ declare module 'sqlbindings' {
 		 * @param filePath Path of the file to get the Azure functions
 		 * @returns array of names of Azure functions in the file
 		 */
-		 getAzureFunctions(filePath: string): Thenable<GetAzureFunctionsResult>;
+		 getAzureFunctions(filePath: string): Promise<GetAzureFunctionsResult>;
 	}
 
 	/**
@@ -33,7 +33,7 @@ declare module 'sqlbindings' {
 	 */
 	export interface AddSqlBindingParams {
 		/**
-		 * Aboslute file path of file to add SQL binding
+		 * Absolute file path of file to add SQL binding
 		 */
 		filePath: string;
 
