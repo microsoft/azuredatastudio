@@ -260,18 +260,21 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	public async createNotebookInputFromContents(providerId: string, contents?: nb.INotebookContents, resource?: UriComponents): Promise<IEditorInput> {
-		let serializedContent: string;
 		let uri: URI;
 		if (resource) {
 			uri = URI.revive(resource);
 		} else {
 			uri = this.getUntitledFileUri();
+			resource = uri;
 		}
+
+		let serializedContent: string;
 		if (contents) {
 			// Have to serialize contents again first, since our notebook code assumes input is based on the raw file contents
 			let manager = await this.getOrCreateSerializationManager(providerId, uri);
 			serializedContent = await manager.contentManager.serializeNotebook(contents);
 		}
+
 		let options: INotebookShowOptions = {
 			providerId: providerId,
 			initialContent: serializedContent
