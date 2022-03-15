@@ -381,7 +381,14 @@
                           "type": "text",
                           "label": "%arc.data.controller.log.analytics.workspace.id%",
                           "required": true,
+                          "isEvaluated": true,
                           "variableName": "AZDATA_NB_VAR_LOG_ANALYTICS_WORKSPACE_ID",
+                          "valueProvider": {
+                            "providerId": "workspace-name-to-id",
+                            "triggerFields": [
+                              "AZDATA_NB_VAR_LOG_ANALYTICS_WORKSPACE_NAMES"
+                            ]
+                          },
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_AUTO_UPLOAD_LOGS",
                             "value": "true"

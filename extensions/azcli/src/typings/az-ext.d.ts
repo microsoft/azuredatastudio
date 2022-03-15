@@ -188,8 +188,42 @@ declare module 'az-ext' {
 	}
 
 	export interface LogAnalyticsWorkspaceListResult {
-		id: string, // "4fba9901-e2d6-3cef-b676-e43s0287ab11"
-		name: string // "exampleWorkspace"
+		createdDate: string, // "2020-02-25T16:59:38Z"
+		customerId: string, // "7e136a79-c0b6-4878-86bf-7bf7a6a7e6f6",
+		eTag: string, // null,
+		etag: string, // "\"00006df1-0000-0700-0000-61ee552f0000\"",
+		features: {
+			clusterResourceId: string, // null,
+			disableLocalAuth: boolean, // null,
+			enableDataExport: boolean, // null,
+			enableLogAccessUsingOnlyResourcePermissions: boolean, //true,
+			immediatePurgeDataOn30Days: boolean, // null,
+			legacy: number, // 0,
+			searchVersion: number // 1
+		},
+		forceCmkForQuery: boolean, // null,
+		id: string, // "/subscriptions/a5082b19-8a6e-4bc5-8fdd-8ef39dfebc39/resourcegroups/bugbash/providers/microsoft.operationalinsights/workspaces/bugbash-logs",
+		location: string, // "westus",
+		modifiedDate: string, // "2022-02-21T09:18:22.3906451Z",
+		name: string, // "bugbash-logs",
+		privateLinkScopedResources: string, // null,
+		provisioningState: string, // "Succeeded",
+		publicNetworkAccessForIngestion: string, // "Enabled",
+		publicNetworkAccessForQuery: string, // "Enabled",
+		resourceGroup: string, // "bugbash",
+		retentionInDays: number, // 30,
+		sku: {
+			capacityReservationLevel: number, // null,
+			lastSkuUpdate: string, // "2020-02-25T16:59:38Z",
+			name: string, // "pergb2018"
+		},
+		tags: string[], //null,
+		type: string, //"Microsoft.OperationalInsights/workspaces",
+		workspaceCapping: {
+			dailyQuotaGb: number, //-1.0,
+			dataIngestionStatus: string, // "RespectQuota",
+			quotaNextResetTime: string, // "2022-02-21T19:00:00Z"
+		}
 	}
 
 	export interface PostgresServerShowResult {
