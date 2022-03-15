@@ -1376,16 +1376,16 @@ suite('Cell Model', function (): void {
 		assert(cellModel.showPreview, 'showPreview should default to true when not in editMode');
 		assert(!cellModel.showMarkdown, 'showMarkdown should be false when not in editMode');
 
-		let currentCellEditModePromise = () => {
+		let getCurrentCellEditModePromise = () => {
 			return new Promise((resolve, reject) => {
-				setTimeout((error) => reject(error), 2000);
+				setTimeout((error) => reject(error));
 				cellModel.onCurrentEditModeChanged(cellEditMode => {
 					resolve(cellEditMode);
 				});
 			});
 		};
 
-		let cellModePromise = currentCellEditModePromise();
+		let cellModePromise = getCurrentCellEditModePromise();
 		// Initially mode is defaulted be WYSIWYG -> showPreview is true and showMarkdown is false
 		assert.strictEqual(cellModel.currentMode, CellEditModes.WYSIWYG, 'Current mode should be WYSIWYG when not in edit mode');
 		assert.strictEqual(cellModel.isEditMode, false, 'cell should not default to edit mode');
@@ -1394,7 +1394,7 @@ suite('Cell Model', function (): void {
 		let lastEditMode = await cellModePromise;
 		assert.strictEqual(lastEditMode, CellEditModes.WYSIWYG, 'Default edit mode should be WYSIWYG');
 		// update mode to SPLITVIEW -> showMarkdown and showPreview both are true
-		cellModePromise = currentCellEditModePromise();
+		cellModePromise = getCurrentCellEditModePromise();
 		cellModel.showMarkdown = true;
 		lastEditMode = await cellModePromise;
 		assert.strictEqual(lastEditMode, CellEditModes.SPLIT, 'LastEditMode should be set to split view');
@@ -1406,7 +1406,7 @@ suite('Cell Model', function (): void {
 		assert.strictEqual(cellModel.currentMode, CellEditModes.SPLIT, 'Should persist lastEditMode and be in Split View');
 
 		// update mode to markdown mode only -> showPreview is false and showMarkdown is true
-		cellModePromise = currentCellEditModePromise();
+		cellModePromise = getCurrentCellEditModePromise();
 		cellModel.showPreview = false;
 		lastEditMode = await cellModePromise;
 		assert.strictEqual(lastEditMode, CellEditModes.MARKDOWN, 'LastEditMode should be set to markdown');

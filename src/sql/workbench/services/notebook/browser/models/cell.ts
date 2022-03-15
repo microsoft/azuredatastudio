@@ -241,6 +241,10 @@ export class CellModel extends Disposable implements ICellModel {
 			const newEditMode = this._lastEditMode ?? this._defaultTextEditMode;
 			this.showPreview = newEditMode !== TextCellEditModes.Markdown;
 			this.showMarkdown = newEditMode !== TextCellEditModes.RichText;
+		} else {
+			// when not in edit mode, default the values to false.
+			this._showMarkdown = false;
+			this._showPreview = false;
 		}
 		this._onCellModeChanged.fire(this._isEditMode);
 		// Note: this does not require a notebook update as it does not change overall state
@@ -1036,12 +1040,10 @@ export class CellModel extends Disposable implements ICellModel {
 		if (this._cellType === CellTypes.Code) {
 			return CellEditModes.CODE;
 		}
-		if (this.isEditMode) {
-			if (this._showMarkdown && this._showPreview) {
-				return CellEditModes.SPLIT;
-			} else if (this._showMarkdown && !this._showPreview) {
-				return CellEditModes.MARKDOWN;
-			}
+		if (this._showMarkdown && this._showPreview) {
+			return CellEditModes.SPLIT;
+		} else if (this._showMarkdown && !this._showPreview) {
+			return CellEditModes.MARKDOWN;
 		}
 		// defaulting to WYSIWYG
 		return CellEditModes.WYSIWYG;
