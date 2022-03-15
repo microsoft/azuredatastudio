@@ -1213,9 +1213,7 @@ export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
 		const getExecutionPlan = (planFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.GetExecutionPlanResult> => {
 			const params: contracts.GetExecutionPlanParams = { graphInfo: planFile };
 			return client.sendRequest(contracts.GetExecutionPlanRequest.type, params).then(
-				r => {
-					return r;
-				},
+				r => r,
 				e => {
 					client.logFailedRequest(contracts.GetExecutionPlanRequest.type, e);
 					return Promise.reject(e);
