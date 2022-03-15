@@ -249,6 +249,10 @@ export function AZURE_SQL_TARGET_PAGE_DESCRIPTION(targetInstance: string = 'inst
 export const AZURE_SQL_DATABASE_MANAGED_INSTANCE = localize('sql.migration.azure.sql.database.managed.instance', "Azure SQL Managed Instance");
 export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instance found.");
 export const INVALID_MANAGED_INSTANCE_ERROR = localize('sql.migration.invalid.managedInstance.error', "To continue, select a valid managed instance.");
+export function UNAVAILABLE_MANAGED_INSTANCE_PREFIX(miName: string): string {
+	return localize('sql.migration.unavailable.managedInstance', "(Unavailable) {0}", miName);
+}
+
 
 // Virtual Machine
 export const AZURE_SQL_DATABASE_VIRTUAL_MACHINE = localize('sql.migration.azure.sql.database.virtual.machine', "SQL Server on Azure Virtual Machines");
@@ -290,6 +294,9 @@ export function ACCOUNT_ACCESS_ERROR(account: AzureAccount, error: Error) {
 		`${account?.displayInfo?.displayName} (${account?.displayInfo?.userId})`,
 		`${account?.properties?.tenants[0]?.displayName} (${account?.properties?.tenants[0]?.userId})`,
 		error.message);
+}
+export function MI_NOT_READY_ERROR(miName: string, state: string): string {
+	return localize('sql.migration.mi.not.ready', "The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.", miName, state);
 }
 
 // database backup page
