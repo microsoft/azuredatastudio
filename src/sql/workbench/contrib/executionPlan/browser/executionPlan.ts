@@ -114,6 +114,10 @@ export class ExecutionPlanView implements IPanelView {
 		DOM.clearNode(this._container);
 	}
 
+	/**
+	 * Adds executionPlanGraph to the graph controller.
+	 * @param newGraphs: ExecutionPlanGraphs to be added.
+	 */
 	public addGraphs(newGraphs: azdata.executionPlan.ExecutionPlanGraph[] | undefined) {
 		if (newGraphs) {
 			newGraphs.forEach(g => {
@@ -126,7 +130,15 @@ export class ExecutionPlanView implements IPanelView {
 		}
 	}
 
-	public async addXml(graphFile: azdata.executionPlan.ExecutionPlanGraphInfo) {
+	/**
+	 * Loads the graph file by converting the file to generic executionPlan graphs.
+	 * This feature requires the right providers to be registered that can handle
+	 * the graphFileType in the graphFile
+	 * Please note: this method clears the existing graph in the graph control
+	 * @param graphFile: graph file to be loaded.
+	 * @returns
+	 */
+	public async loadGraphFile(graphFile: azdata.executionPlan.ExecutionPlanGraphInfo) {
 		this.clear();
 		this._loadingSpinner = new LoadingSpinner(this._container, { showText: true, fullSize: true });
 		this._loadingSpinner.loadingMessage = localize('loadingExecutionPlanFile', "Generating execution plans");
