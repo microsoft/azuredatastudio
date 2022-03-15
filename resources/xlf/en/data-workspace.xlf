@@ -67,6 +67,9 @@
     <trans-unit id="dataworkspace.nameCannotBeEmpty">
       <source xml:lang="en">Name cannot be empty</source>
     </trans-unit>
+    <trans-unit id="dataworkspace.no">
+      <source xml:lang="en">No</source>
+    </trans-unit>
     <trans-unit id="dataworkspace.ok">
       <source xml:lang="en">OK</source>
     </trans-unit>
@@ -115,6 +118,9 @@
     <trans-unit id="dataworkspace.restartConfirmation">
       <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?</source>
     </trans-unit>
+    <trans-unit id="dataworkspace.sdkLearnMorePlaceholder">
+      <source xml:lang="en">Click "Learn More" button for more information about SDK-style projects</source>
+    </trans-unit>
     <trans-unit id="dataworkspace.sdkStyleProject">
       <source xml:lang="en">SDK-style project (Preview)</source>
     </trans-unit>
@@ -132,6 +138,9 @@
     </trans-unit>
     <trans-unit id="dataworkspace.workspacePlaceholder">
       <source xml:lang="en">Select workspace ({0}) file</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.yesRecommended">
+      <source xml:lang="en">Yes (Recommended)</source>
     </trans-unit>
     <trans-unit id="fileDoesNotExist">
       <source xml:lang="en">File '{0}' doesn't exist</source>
