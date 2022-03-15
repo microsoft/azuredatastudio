@@ -143,6 +143,7 @@ export class ExecutionPlanView implements IPanelView {
 				this.addGraphs(graphs);
 				this._planCache.set(graphFile.graphFileContent, graphs);
 			}
+			this._loadingSpinner.loadingCompletedMessage = localize('executionPlanFileLoadingComplete', "Execution plans are generated");
 		} catch (e) {
 			this._loadingErrorInfoBox = new InfoBox(this._container, {
 				text: e.toString(),
@@ -150,8 +151,8 @@ export class ExecutionPlanView implements IPanelView {
 				isClickable: false
 			});
 			this._loadingErrorInfoBox.isClickable = false;
+			this._loadingSpinner.loadingCompletedMessage = localize('executionPlanFileLoadingFailed', "Failed to load execution plan");
 		} finally {
-			this._loadingSpinner.loadingCompletedMessage = localize('executionPlanFileLoadingComplete', "Execution plans are generated");
 			this._loadingSpinner.loading = false;
 		}
 	}
