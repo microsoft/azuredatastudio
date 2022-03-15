@@ -118,7 +118,7 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 
 	let sdkStyle;
 	if (projectType.sdkOption) {
-		// 3. SDK-style project or not
+		// 5. SDK-style project or not
 		const sdkLearnMoreButton: vscode.QuickInputButton = {
 			iconPath: new vscode.ThemeIcon('link-external'),
 			tooltip: constants.LearnMore
