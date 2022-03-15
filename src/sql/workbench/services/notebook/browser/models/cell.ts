@@ -1036,10 +1036,12 @@ export class CellModel extends Disposable implements ICellModel {
 		if (this._cellType === CellTypes.Code) {
 			return CellEditModes.CODE;
 		}
-		if (this._showMarkdown && this._showPreview) {
-			return CellEditModes.SPLIT;
-		} else if (this._showMarkdown && !this._showPreview) {
-			return CellEditModes.MARKDOWN;
+		if (this.isEditMode) {
+			if (this._showMarkdown && this._showPreview) {
+				return CellEditModes.SPLIT;
+			} else if (this._showMarkdown && !this._showPreview) {
+				return CellEditModes.MARKDOWN;
+			}
 		}
 		// defaulting to WYSIWYG
 		return CellEditModes.WYSIWYG;
