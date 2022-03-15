@@ -130,8 +130,54 @@ declare module 'azdata' {
 		export const onDidCloseNotebookDocument: vscode.Event<NotebookDocument>;
 	}
 
+	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
+		| 'Float' | 'Image' | 'Int' | 'Money' | 'NChar' | 'NText' | 'NVarChar' | 'Real'
+		| 'UniqueIdentifier' | 'SmallDateTime' | 'SmallInt' | 'SmallMoney' | 'Text' | 'Timestamp'
+		| 'TinyInt' | 'VarBinary' | 'VarChar' | 'Variant' | 'Xml' | 'Udt' | 'Structured' | 'Date'
+		| 'Time' | 'DateTime2' | 'DateTimeOffset';
+
+	export interface SimpleColumnInfo {
+		name: string;
+		/**
+		 * This is expected to match the SqlDbTypes for serialization purposes
+		 */
+		dataTypeName: SqlDbType;
+	}
+	export interface SerializeDataStartRequestParams {
+		/**
+		 * 'csv', 'json', 'excel', 'xml'
+		 */
+		saveFormat: string;
+		filePath: string;
+		isLastBatch: boolean;
+		rows: DbCellValue[][];
+		columns: SimpleColumnInfo[];
+		includeHeaders?: boolean;
+		delimiter?: string;
+		lineSeperator?: string;
+		textIdentifier?: string;
+		encoding?: string;
+		formatted?: boolean;
+	}
+
+	export interface SerializeDataContinueRequestParams {
+		filePath: string;
+		isLastBatch: boolean;
+		rows: DbCellValue[][];
+	}
+
+	export interface SerializeDataResult {
+		messages?: string;
+		succeeded: boolean;
+	}
+
+	export interface SerializationProvider extends DataProvider {
+		startSerialization(requestParams: SerializeDataStartRequestParams): Thenable<SerializeDataResult>;
+		continueSerialization(requestParams: SerializeDataContinueRequestParams): Thenable<SerializeDataResult>;
+	}
 
 	export namespace dataprotocol {
+		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
 		export function registerSqlAssessmentServicesProvider(provider: SqlAssessmentServicesProvider): vscode.Disposable;
 		/**
 		 * Registers a DataGridProvider which is used to provide lists of items to a data grid
