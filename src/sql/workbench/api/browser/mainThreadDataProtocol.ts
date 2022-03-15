@@ -552,8 +552,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		return undefined;
 	}
 
-	public $registerExecutionPlanServiceProvider(providerId: string, handle: number): void {
-		this._executionPlanService.registerProvider(providerId, <azdata.executionPlan.ExecutionPlanServiceProvider>{
+	public $registerExecutionPlanProvider(providerId: string, handle: number): void {
+		this._executionPlanService.registerProvider(providerId, <azdata.executionPlan.ExecutionPlanProvider>{
 			getExecutionPlan: (planFile: azdata.executionPlan.ExecutionPlanGraphInfo) => this._proxy.$getExecutionPlan(handle, planFile)
 		});
 	}

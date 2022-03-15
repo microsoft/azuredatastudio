@@ -1221,7 +1221,7 @@ export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		return azdata.dataprotocol.registerExecutionPlanServiceProvider({
+		return azdata.dataprotocol.registerExecutionPlanProvider({
 			providerId: client.providerId,
 			getExecutionPlan
 		});

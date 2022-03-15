@@ -47,11 +47,11 @@ export class ExecutionPlanInput extends EditorInput {
 		return false;
 	}
 
-	public override async resolve(refresh?: boolean): Promise<EditorModel | null> {
+	public override async resolve(refresh?: boolean): Promise<EditorModel | undefined> {
 		if (!this._content) {
 			this._content = (await this._fileService.read(this._uri, { acceptTextOnly: true })).value;
 		}
-		return null;
+		return undefined;
 	}
 
 	get resource(): URI | undefined {

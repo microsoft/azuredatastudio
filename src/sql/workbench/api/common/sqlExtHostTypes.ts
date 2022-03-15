@@ -383,7 +383,7 @@ export enum DataProviderType {
 	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
 	DataGridProvider = 'DataGridProvider',
 	TableDesignerProvider = 'TableDesignerProvider',
-	ExecutionPlanServiceProvider = 'ExecutionPlanServiceProvider'
+	ExecutionPlanProvider = 'ExecutionPlanProvider'
 }
 
 export enum DeclarativeDataType {

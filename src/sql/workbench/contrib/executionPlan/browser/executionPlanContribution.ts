@@ -49,7 +49,9 @@ export class ExecutionPlanEditorOverrideContribution extends Disposable implemen
 	public registerEditorOverride(): void {
 		const supportedFileFormats: string[] = [];
 		Object.keys(this._capabilitiesService.providers).forEach(e => {
-			supportedFileFormats.push(... this._capabilitiesService.providers[e].connection.supportedExecutionPlanFileExtensions);
+			if (this._capabilitiesService.providers[e]?.connection?.supportedExecutionPlanFileExtensions) {
+				supportedFileFormats.push(... this._capabilitiesService.providers[e].connection.supportedExecutionPlanFileExtensions);
+			}
 		});
 
 		this._editorResolverService.registerEditor(

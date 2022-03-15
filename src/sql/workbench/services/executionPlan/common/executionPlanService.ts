@@ -13,10 +13,10 @@ import { Event, Emitter } from 'vs/base/common/event';
 
 interface ExecutionPlanProviderRegisteredEvent {
 	id: string,
-	provider: azdata.executionPlan.ExecutionPlanServiceProvider
+	provider: azdata.executionPlan.ExecutionPlanProvider
 }
 export class ExecutionPlanService implements IExecutionPlanService {
-	private _providers: { [handle: string]: azdata.executionPlan.ExecutionPlanServiceProvider; } = Object.create(null);
+	private _providers: { [handle: string]: azdata.executionPlan.ExecutionPlanProvider; } = Object.create(null);
 	private _onProviderRegister: Emitter<ExecutionPlanProviderRegisteredEvent> = new Emitter<ExecutionPlanProviderRegisteredEvent>();
 	private _providerRegisterEvent: Event<ExecutionPlanProviderRegisteredEvent>;
 	constructor(
@@ -32,7 +32,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 	 * @param fileFormat: fileformat of the underlying execution plan file. It is used to get the provider that support it.
 	 * @param action: executionPlanService action to be performed.
 	 */
-	private async _runAction<T>(fileFormat: string, action: (handler: azdata.executionPlan.ExecutionPlanServiceProvider) => Thenable<T>): Promise<T> {
+	private async _runAction<T>(fileFormat: string, action: (handler: azdata.executionPlan.ExecutionPlanProvider) => Thenable<T>): Promise<T> {
 		let providers = Object.keys(this._capabilitiesService.providers);
 		if (!providers) {
 			providers = await new Promise(resolve => {
@@ -59,7 +59,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 					ariaLabel: p
 				};
 			});
-			providerQuickPick.placeholder = localize('selectExecutionPlanServiceProvider', "Select a provider to open execution plan");
+			providerQuickPick.placeholder = localize('selectExecutionPlanProvider', "Select a provider to open execution plan");
 
 			selectedProvider = await new Promise((resolve) => {
 				providerQuickPick.onDidChangeSelection(e => {
@@ -90,11 +90,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 					 * Handling a possible edge case where provider registered event
 					 * might have been called before we await for it.
 					 */
-					if (this._providers[selectedProvider]) {
-						resolve(this._providers[selectedProvider]);
-						return;
-					}
-					resolve(undefined);
+					resolve(this._providers[selectedProvider]);
 				}, 30000);
 			});
 		}
@@ -105,7 +101,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		}
 	}
 
-	registerProvider(providerId: string, provider: azdata.executionPlan.ExecutionPlanServiceProvider): void {
+	registerProvider(providerId: string, provider: azdata.executionPlan.ExecutionPlanProvider): void {
 		if (this._providers[providerId]) {
 			throw new Error(`A execution plan provider with id "${providerId}" is already registered`);
 		}

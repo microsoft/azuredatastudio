@@ -564,12 +564,12 @@ declare module 'azdata' {
 
 	export enum DataProviderType {
 		TableDesignerProvider = 'TableDesignerProvider',
-		ExecutionPlanServiceProvider = 'ExecutionPlanServiceProvider'
+		ExecutionPlanProvider = 'ExecutionPlanProvider'
 	}
 
 	export namespace dataprotocol {
 		export function registerTableDesignerProvider(provider: designers.TableDesignerProvider): vscode.Disposable;
-		export function registerExecutionPlanServiceProvider(provider: executionPlan.ExecutionPlanServiceProvider): vscode.Disposable;
+		export function registerExecutionPlanProvider(provider: executionPlan.ExecutionPlanProvider): vscode.Disposable;
 	}
 
 	export namespace designers {
@@ -1182,7 +1182,7 @@ declare module 'azdata' {
 			graphs: ExecutionPlanGraph[]
 		}
 
-		export interface ExecutionPlanServiceProvider extends DataProvider {
+		export interface ExecutionPlanProvider extends DataProvider {
 			// execution plan service methods
 
 			/**
