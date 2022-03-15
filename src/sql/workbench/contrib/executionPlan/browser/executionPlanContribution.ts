@@ -41,14 +41,19 @@ export class ExecutionPlanEditorOverrideContribution extends Disposable implemen
 		this._capabilitiesService.onCapabilitiesRegistered(e => {
 			const newFileFormats = this._executionPlanService.getSupportedExecutionPlanExtensionsForProvider(e.id);
 			if (newFileFormats?.length > 0) {
-				this._editorResolverService.updateUserAssociations(`*.{${newFileFormats.join()}}`, ExecutionPlanEditor.ID); // Registering new file formats when new providers are registered.
+				this._editorResolverService.updateUserAssociations(this.getGlobForFileExtensions(newFileFormats), ExecutionPlanEditor.ID); // Registering new file formats when new providers are registered.
 			}
 		});
 	}
 
 	public registerEditorOverride(): void {
+		const supportedFileFormats: string[] = [];
+		Object.keys(this._capabilitiesService.providers).forEach(e => {
+			supportedFileFormats.push(... this._capabilitiesService.providers[e].connection.supportedExecutionPlanFileExtensions);
+		});
+
 		this._editorResolverService.registerEditor(
-			'',
+			this.getGlobForFileExtensions(supportedFileFormats),
 			{
 				id: ExecutionPlanEditor.ID,
 				label: ExecutionPlanEditor.LABEL,
@@ -60,6 +65,10 @@ export class ExecutionPlanEditorOverrideContribution extends Disposable implemen
 				return { editor: executionPlanInput, options: editorInput.options, group: group };
 			}
 		);
+	}
+
+	private getGlobForFileExtensions(extensions: string[]): string {
+		return extensions?.length === 0 ? '' : `*.{${extensions.join()}}`;
 	}
 }
 
