@@ -61,8 +61,4 @@ export class ExecutionPlanEditor extends EditorPane {
 			graphFileType: input.getFileExtension().replace('.', '')
 		});
 	}
-
-	public override dispose(): void {
-		super.dispose();
-	}
 }

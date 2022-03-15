@@ -8,7 +8,6 @@ import { URI } from 'vs/base/common/uri';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { EditorModel } from 'vs/workbench/common/editor/editorModel';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 
 export class ExecutionPlanInput extends EditorInput {
 
@@ -25,7 +24,7 @@ export class ExecutionPlanInput extends EditorInput {
 	}
 
 	override get typeId(): string {
-		return UntitledTextEditorInput.ID;
+		return ExecutionPlanInput.ID;
 	}
 
 	public override getName(): string {
