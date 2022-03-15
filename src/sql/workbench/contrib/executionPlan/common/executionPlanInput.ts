@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { extname } from 'vs/base/common/path';
+import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { EditorModel } from 'vs/workbench/common/editor/editorModel';
@@ -28,7 +28,7 @@ export class ExecutionPlanInput extends EditorInput {
 	}
 
 	public override getName(): string {
-		return this._uri.fsPath.replace(/^.*[\\\/]/, ''); // Getting file name
+		return path.basename(this._uri.fsPath);
 	}
 
 	public get content(): string | undefined {
@@ -40,7 +40,7 @@ export class ExecutionPlanInput extends EditorInput {
 	}
 
 	public getFileExtension(): string {
-		return extname(this._uri.fsPath);
+		return path.extname(this._uri.fsPath);
 	}
 
 	public supportsSplitEditor(): boolean {
