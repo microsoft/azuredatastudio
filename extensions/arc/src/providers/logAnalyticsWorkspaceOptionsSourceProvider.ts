@@ -20,17 +20,12 @@ export class LogAnalyticsWorkspaceOptionsSourceProvider implements rd.IOptionsSo
 	}
 
 	public async getOptions(): Promise<string[]> {
-		let workspaceNames: string[] = [];
-		await Promise.resolve(
-			this._azApi.az.monitor.logAnalytics.workspace.list().then(result => {
-				result.stdout.forEach(workspace => {
-					workspaceNames.push(workspace.name);
-				});
-			}).catch(err => {
-				vscode.window.showErrorMessage(errorListingLogAnalyticsWorkspaces(err));
-				throw err;
-			})
-		);
-		return workspaceNames;
+		try {
+			const workspacesListResult = await this._azApi.az.monitor.logAnalytics.workspace.list();
+			return workspacesListResult.stdout.map(workspace => workspace.name);
+		} catch (err) {
+			vscode.window.showErrorMessage(errorListingLogAnalyticsWorkspaces(err));
+			throw err;
+		}
 	}
 }
