@@ -10,7 +10,7 @@ import * as TypeMoq from 'typemoq';
 import * as mssql from '../../../mssql/src/mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import { RequestType } from 'vscode-languageclient';
-import { BindingType, GetAzureFunctionsResult } from 'sqlbindings';
+import { BindingType, GetAzureFunctionsResult } from 'sql-bindings';
 
 export interface TestUtils {
 	context: vscode.ExtensionContext;

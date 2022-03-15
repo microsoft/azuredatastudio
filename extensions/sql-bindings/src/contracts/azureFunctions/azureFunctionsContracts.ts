@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AddSqlBindingParams, GetAzureFunctionsParams, GetAzureFunctionsResult, ResultStatus } from 'sqlbindings';
+import { AddSqlBindingParams, GetAzureFunctionsParams, GetAzureFunctionsResult, ResultStatus } from 'sql-bindings';
 import { RequestType } from 'vscode-languageclient';
 
 /**

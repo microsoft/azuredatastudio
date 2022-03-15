@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-declare module 'sqlbindings' {
+declare module 'sql-bindings' {
 
 	/**
 	 * sql bindings extension
@@ -21,9 +21,9 @@ declare module 'sqlbindings' {
 		addSqlBinding(bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string): Promise<ResultStatus>;
 
 		/**
-		 * Gets the names of the Azure functions in the file
-		 * @param filePath Path of the file to get the Azure functions
-		 * @returns array of names of Azure functions in the file
+		 * Gets the names of the Azure Functions in the file
+		 * @param filePath Path of the file to get the Azure Functions
+		 * @returns array of names of Azure Functions in the file
 		 */
 		 getAzureFunctions(filePath: string): Promise<GetAzureFunctionsResult>;
 	}
@@ -59,7 +59,7 @@ declare module 'sqlbindings' {
 	}
 
 	/**
-	 * Azure functions binding type
+	 * Azure Functions binding type
 	 */
 	export const enum BindingType {
 		input,
@@ -67,7 +67,7 @@ declare module 'sqlbindings' {
 	}
 
 	/**
-	 * ResultStatus from d.ts
+	 * Base result object from a request to the SQL Tools Service
 	 */
 	export interface ResultStatus {
 		success: boolean;
@@ -75,21 +75,21 @@ declare module 'sqlbindings' {
 	}
 
 	/**
-	 * Parameters for getting the names of the Azure functions in a file
+	 * Parameters for getting the names of the Azure Functions in a file
 	 */
 	 export interface GetAzureFunctionsParams {
 		/**
-		 * Absolute file path of file to get Azure functions
+		 * Absolute file path of file to get Azure Functions
 		 */
 		filePath: string;
 	}
 
 	/**
-	 * Result from a get Azure functions request
+	 * Result from a get Azure Functions request
 	 */
 	 export interface GetAzureFunctionsResult extends ResultStatus {
 		/**
-		 * Array of names of Azure functions in the file
+		 * Array of names of Azure Functions in the file
 		 */
 		azureFunctions: string[];
 	}

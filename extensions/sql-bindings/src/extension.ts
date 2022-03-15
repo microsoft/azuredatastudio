@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { ITreeNodeInfo } from 'vscode-mssql';
-import { IExtension, BindingType } from 'sqlbindings';
+import { IExtension, BindingType } from 'sql-bindings';
 import { getAzdataApi, getVscodeMssqlApi } from './common/utils';
 import { launchAddSqlBindingQuickpick } from './dialogs/addSqlBindingQuickpick';
 import { addSqlBinding, createAzureFunction, getAzureFunctions } from './services/azureFunctionsService';

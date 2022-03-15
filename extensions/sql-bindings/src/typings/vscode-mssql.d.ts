@@ -7,7 +7,7 @@ declare module 'vscode-mssql' {
 
 	import * as vscode from 'vscode';
 	import { RequestType } from 'vscode-languageclient';
-	import { BindingType, GetAzureFunctionsResult } from 'sqlbindings';
+	import { BindingType, GetAzureFunctionsResult } from 'sql-bindings';
 
 	/**
 	 * Covers defining what the vscode-mssql extension exports to other extensions

@@ -9,7 +9,7 @@ import * as utils from '../common/utils';
 import * as azureFunctionUtils from '../common/azureFunctionsUtils';
 import * as constants from '../common/constants';
 import * as azureFunctionsContracts from '../contracts/azureFunctions/azureFunctionsContracts';
-import { AddSqlBindingParams, BindingType, GetAzureFunctionsParams, GetAzureFunctionsResult, ResultStatus } from 'sqlbindings';
+import { AddSqlBindingParams, BindingType, GetAzureFunctionsParams, GetAzureFunctionsResult, ResultStatus } from 'sql-bindings';
 
 export const hostFileName: string = 'host.json';
 

@@ -10,7 +10,7 @@ import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { BindingType } from 'sqlbindings';
+import { BindingType } from 'sql-bindings';
 
 export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined): Promise<void> {
 	TelemetryReporter.sendActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.startAddSqlBinding);
