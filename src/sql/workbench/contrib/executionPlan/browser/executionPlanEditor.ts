@@ -56,7 +56,7 @@ export class ExecutionPlanEditor extends EditorPane {
 		}
 		await input.resolve();
 		await super.setInput(input, options, context, CancellationToken.None);
-		this.view.addXml({
+		this.view.loadGraphFile({
 			graphFileContent: input.content,
 			graphFileType: input.getFileExtension().replace('.', '')
 		});
