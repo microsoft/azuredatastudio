@@ -329,6 +329,15 @@
           "Notebook"
         ],
         "configuration": "./language-configuration.json"
+      }, {
+        "id": "dib",
+        "extensions": [
+          ".dib"
+        ],
+        "aliases": [
+          ".NET Interactive Notebook"
+        ],
+        "configuration": "./language-configuration.json"
       }
     ],
     "menus": {

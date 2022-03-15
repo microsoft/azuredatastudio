@@ -17,8 +17,11 @@ export function isStream(output: nb.ICellOutput): output is nb.IStreamResult {
 	return output.output_type === 'stream';
 }
 
-export function getProvidersForFileName(fileName: string, notebookService: INotebookService): string[] {
+export function getProvidersForFileName(fileName: string, notebookService: INotebookService, languageMode?: string): string[] {
 	let fileExt = path.extname(fileName);
+	if (!fileExt && languageMode && languageMode !== 'notebook') {
+		fileExt = `.${languageMode}`;
+	}
 	let providers: string[];
 	// First try to get provider for actual file type
 	if (fileExt) {
