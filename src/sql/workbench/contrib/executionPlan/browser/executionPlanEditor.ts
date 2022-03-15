@@ -19,7 +19,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 export class ExecutionPlanEditor extends EditorPane {
 
 	public static ID: string = 'workbench.editor.executionplan';
-	public static LABEL: string = localize('executionPlanEditor', "Execution Plan Editor");
+	public static LABEL: string = localize('executionPlanEditor', "Query Execution Plan Editor");
 
 	private view: ExecutionPlanView;
 
