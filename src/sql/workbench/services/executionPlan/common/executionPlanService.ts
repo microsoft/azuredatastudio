@@ -29,33 +29,42 @@ export class ExecutionPlanService implements IExecutionPlanService {
 
 	private async _runAction<T>(fileFormat: string, action: (handler: azdata.ExecutionPlanServiceProvider) => Thenable<T>): Promise<T> {
 		let providers = Object.keys(this._capabilitiesService.providers);
-		while (providers.length === 0) {
-			providers = Object.keys(this._capabilitiesService.providers);
+		if (!providers) {
+			providers = await new Promise(resolve => {
+				this._capabilitiesService.onCapabilitiesRegistered(e => {
+					resolve(Object.keys(this._capabilitiesService.providers));
+				});
+			});
 		}
-		let rightProviders: string[] = [];
+
+		let epProviders: string[] = [];
 		for (let i = 0; i < providers.length; i++) {
 			const providerCapabilities = this._capabilitiesService.getCapabilities(providers[i]);
 			if (providerCapabilities.connection.supportedExecutionPlanFileExtensions?.includes(fileFormat)) {
-				rightProviders.push(providers[i]);
+				epProviders.push(providers[i]);
 			}
 		}
 
 		let selectedProvider: string;
-		if (rightProviders.length > 1) {
+		if (epProviders.length > 1) {
 			const providerQuickPick = this._quickInputService.createQuickPick<IQuickPickItem>();
-			providerQuickPick.items = rightProviders.map(p => {
+			providerQuickPick.items = epProviders.map(p => {
 				return {
 					label: p,
 					ariaLabel: p
 				};
 			});
 			providerQuickPick.placeholder = localize('selectExecutionPlanServiceProvider', "Select a provider to open execution plan");
-			providerQuickPick.onDidChangeValue(e => {
-				selectedProvider = e;
+
+			selectedProvider = await new Promise((resolve) => {
+				providerQuickPick.onDidChangeSelection(e => {
+					providerQuickPick.hide();
+					resolve(e[0].label);
+				});
+				providerQuickPick.show();
 			});
-			providerQuickPick.show();
 		} else {
-			selectedProvider = rightProviders[0];
+			selectedProvider = epProviders[0];
 		}
 
 
@@ -87,11 +96,14 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		if (handler) {
 			return Promise.resolve(action(handler));
 		} else {
-			return Promise.reject(new Error(localize('noHandlerRegistered', "No Handler Registered")));
+			return Promise.reject(new Error(localize('noHandlerRegistered', "No valid execution plan handler is registered")));
 		}
 	}
 
 	registerProvider(providerId: string, provider: azdata.ExecutionPlanServiceProvider): void {
+		if (this._providers[providerId]) {
+			throw new Error(`A execution plan provider with id "${providerId}" is already registered`);
+		}
 		this._providers[providerId] = provider;
 		this._onProviderRegister.fire({
 			id: providerId,
@@ -99,7 +111,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		});
 	}
 
-	getExecutionPlan(planFile: azdata.ExecutionPlanGraphInfo): Thenable<azdata.GetExecutionPlanResult> {
+	getExecutionPlan(planFile: azdata.ExecutionPlanGraphInfo): Promise<azdata.GetExecutionPlanResult> {
 		return this._runAction(planFile.graphFileType, (runner) => {
 			return runner.getExecutionPlan(planFile);
 		});

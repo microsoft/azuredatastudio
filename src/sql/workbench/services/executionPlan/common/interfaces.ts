@@ -14,6 +14,6 @@ export const IExecutionPlanService = createDecorator<IExecutionPlanService>(SERV
 export interface IExecutionPlanService {
 	_serviceBrand: undefined;
 	registerProvider(providerId: string, provider: azdata.ExecutionPlanServiceProvider): void;
-	getExecutionPlan(planFile: azdata.ExecutionPlanGraphInfo): Thenable<azdata.GetExecutionPlanResult>;
+	getExecutionPlan(planFile: azdata.ExecutionPlanGraphInfo): Promise<azdata.GetExecutionPlanResult>;
 	getSupportedExecutionPlanExtensionsForProvider(providerId: string): string[];
 }
