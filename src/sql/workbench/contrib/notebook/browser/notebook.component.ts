@@ -141,9 +141,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		// on its elements (we have a "virtual" focus that is updated as users click or navigate through cells). So some of the keyboard
 		// events we care about are fired when the document focus is on something else - typically the root window.
 		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-			// For DownArrow, UpArrow and Enter - Make sure that the current active element is an ancestor - this is to prevent us from handling events when the focus is
+			// For DownArrow, UpArrow, Enter, Escape (unselecting active cell) - Make sure that the current active element is an ancestor - this is to prevent us from handling events when the focus is
 			// on some other dialog or part of the app.
-			// For Escape - the focused element is the div.notebook-preview or textarea.inputarea of the cell, so we need to make sure that it is a descendant of the current active cell
+			// For Escape (exiting edit mode)- the focused element is the div.notebook-preview or textarea.inputarea of the cell, so we need to make sure that it is a descendant of the current active cell
 			//  on the current active editor.
 			const activeCellElement = this.container.nativeElement.querySelector(`.editor-group-container.active .notebook-cell.active`);
 			let handled = false;
@@ -185,7 +185,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			if (handled) {
 				DOM.EventHelper.stop(e);
 			}
-
 		}));
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());

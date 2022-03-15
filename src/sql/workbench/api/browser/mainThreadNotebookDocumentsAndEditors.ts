@@ -27,8 +27,6 @@ import { localize } from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
-import { ICommandService } from 'vs/platform/commands/common/commands';
-import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -322,8 +320,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotebookService private readonly _notebookService: INotebookService,
 		@IFileService private readonly _fileService: IFileService,
-		@ITextFileService private readonly _textFileService: ITextFileService,
-		@ICommandService private readonly _commandService: ICommandService
+		@ITextFileService private readonly _textFileService: ITextFileService
 	) {
 		super();
 		if (extHostContext) {
@@ -343,6 +340,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		} else {
 			return Promise.resolve(false);
 		}
+	}
+
+	async $tryCreateNotebookDocument(options: INotebookShowOptions): Promise<UriComponents> {
+		let input = await this._notebookService.createNotebookInput(options);
+		return input.resource;
 	}
 
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
@@ -710,14 +712,6 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 					}
 				}
 			}
-		});
-	}
-
-	$createNotebookDocument(providerId: string, contents: azdata.nb.INotebookContents): Promise<azdata.nb.NotebookDocument> {
-		return this._commandService.executeCommand(NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID, {
-			providerId: providerId,
-			initialContent: contents,
-			initialDirtyState: false
 		});
 	}
 }

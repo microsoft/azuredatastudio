@@ -1647,7 +1647,7 @@ registerAction2(class ClearCellOutputsAction extends NotebookCellAction {
 	}
 });
 
-interface ILanguagePickInput extends IQuickPickItem {
+export interface ILanguagePickInput extends IQuickPickItem { // {{SQL CARBON EDIT}} Add export
 	languageId: string;
 	description: string;
 }
