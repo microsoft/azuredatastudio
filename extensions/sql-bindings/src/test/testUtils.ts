@@ -256,7 +256,7 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 		this.schemaCompare = new MockSchemaCompareService;
 		this.azureFunctions = new MockAzureFunctionService;
 	}
-	sendRequest<P, R, E, R0>(_: RequestType<P, R, E, R0>, __?: P): Thenable<R> {
+	sendRequest<P, R, E, R0>(_: RequestType<P, R, E, R0>, __?: P): Promise<R> {
 		throw new Error('Method not implemented.');
 	}
 	promptForConnection(_?: boolean): Promise<vscodeMssql.IConnectionInfo | undefined> {
