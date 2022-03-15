@@ -98,7 +98,10 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 
 		if (projectType.defaultTargetPlatform) {
 			// move the default target platform to be the first one in the list
-			targetPlatforms.splice(targetPlatforms.findIndex(i => i.label === projectType.defaultTargetPlatform), 1);
+			const defaultIndex = targetPlatforms.findIndex(i => i.label === projectType.defaultTargetPlatform);
+			if (defaultIndex > -1) {
+				targetPlatforms.splice(defaultIndex, 1);
+			}
 
 			// add default next to the default target platform
 			targetPlatforms.unshift({ label: projectType.defaultTargetPlatform, description: constants.Default });
