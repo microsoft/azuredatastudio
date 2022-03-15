@@ -13,10 +13,10 @@ import { Event, Emitter } from 'vs/base/common/event';
 
 interface ExecutionPlanProviderRegisteredEvent {
 	id: string,
-	provider: azdata.ExecutionPlanServiceProvider
+	provider: azdata.executionPlan.ExecutionPlanServiceProvider
 }
 export class ExecutionPlanService implements IExecutionPlanService {
-	private _providers: { [handle: string]: azdata.ExecutionPlanServiceProvider; } = Object.create(null);
+	private _providers: { [handle: string]: azdata.executionPlan.ExecutionPlanServiceProvider; } = Object.create(null);
 	private _onProviderRegister: Emitter<ExecutionPlanProviderRegisteredEvent> = new Emitter<ExecutionPlanProviderRegisteredEvent>();
 	private _providerRegisterEvent: Event<ExecutionPlanProviderRegisteredEvent>;
 	constructor(
@@ -27,7 +27,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		this._providerRegisterEvent = this._onProviderRegister.event;
 	}
 
-	private async _runAction<T>(fileFormat: string, action: (handler: azdata.ExecutionPlanServiceProvider) => Thenable<T>): Promise<T> {
+	private async _runAction<T>(fileFormat: string, action: (handler: azdata.executionPlan.ExecutionPlanServiceProvider) => Thenable<T>): Promise<T> {
 		let providers = Object.keys(this._capabilitiesService.providers);
 		if (!providers) {
 			providers = await new Promise(resolve => {
@@ -100,7 +100,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		}
 	}
 
-	registerProvider(providerId: string, provider: azdata.ExecutionPlanServiceProvider): void {
+	registerProvider(providerId: string, provider: azdata.executionPlan.ExecutionPlanServiceProvider): void {
 		if (this._providers[providerId]) {
 			throw new Error(`A execution plan provider with id "${providerId}" is already registered`);
 		}
@@ -111,7 +111,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		});
 	}
 
-	getExecutionPlan(planFile: azdata.ExecutionPlanGraphInfo): Promise<azdata.GetExecutionPlanResult> {
+	getExecutionPlan(planFile: azdata.executionPlan.ExecutionPlanGraphInfo): Promise<azdata.executionPlan.GetExecutionPlanResult> {
 		return this._runAction(planFile.graphFileType, (runner) => {
 			return runner.getExecutionPlan(planFile);
 		});

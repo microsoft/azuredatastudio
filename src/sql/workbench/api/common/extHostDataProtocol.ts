@@ -201,7 +201,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
-	$registerExecutionPlanServiceProvider(provider: azdata.ExecutionPlanServiceProvider): vscode.Disposable {
+	$registerExecutionPlanServiceProvider(provider: azdata.executionPlan.ExecutionPlanServiceProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.ExecutionPlanServiceProvider);
 		this._proxy.$registerExecutionPlanServiceProvider(provider.providerId, provider.handle);
 		return rt;
@@ -930,7 +930,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	// Execution Plan
 
-	public override $getExecutionPlan(handle: number, planFile: azdata.ExecutionPlanGraphInfo): Thenable<azdata.GetExecutionPlanResult> {
-		return this._resolveProvider<azdata.ExecutionPlanServiceProvider>(handle).getExecutionPlan(planFile);
+	public override $getExecutionPlan(handle: number, planFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.GetExecutionPlanResult> {
+		return this._resolveProvider<azdata.executionPlan.ExecutionPlanServiceProvider>(handle).getExecutionPlan(planFile);
 	}
 }

@@ -45,14 +45,14 @@ import { InfoBox } from 'sql/base/browser/ui/infoBox/infoBox';
 
 let azdataGraph = azdataGraphModule();
 
-export interface InternalExecutionPlanNode extends azdata.ExecutionPlanNode {
+export interface InternalExecutionPlanNode extends azdata.executionPlan.ExecutionPlanNode {
 	/**
 	 * Unique internal id given to graph node by ADS.
 	 */
 	id?: string;
 }
 
-export interface InternalExecutionPlanEdge extends azdata.ExecutionPlanEdge {
+export interface InternalExecutionPlanEdge extends azdata.executionPlan.ExecutionPlanEdge {
 	/**
 	 * Unique internal id given to graph edge by ADS.
 	 */
@@ -84,10 +84,10 @@ export class ExecutionPlanView implements IPanelView {
 	private _loadingSpinner: LoadingSpinner;
 	private _loadingErrorInfoBox: InfoBox;
 	private _eps?: ExecutionPlan[] = [];
-	private _graphs?: azdata.ExecutionPlanGraph[] = [];
+	private _graphs?: azdata.executionPlan.ExecutionPlanGraph[] = [];
 	private _container = DOM.$('.eps-container');
 
-	private _planCache: Map<string, azdata.ExecutionPlanGraph[]> = new Map();
+	private _planCache: Map<string, azdata.executionPlan.ExecutionPlanGraph[]> = new Map();
 
 	constructor(
 		@IInstantiationService private instantiationService: IInstantiationService,
@@ -114,7 +114,7 @@ export class ExecutionPlanView implements IPanelView {
 		DOM.clearNode(this._container);
 	}
 
-	public addGraphs(newGraphs: azdata.ExecutionPlanGraph[] | undefined) {
+	public addGraphs(newGraphs: azdata.executionPlan.ExecutionPlanGraph[] | undefined) {
 		if (newGraphs) {
 			newGraphs.forEach(g => {
 				const ep = this.instantiationService.createInstance(ExecutionPlan, this._container, this._eps.length + 1);
@@ -126,7 +126,7 @@ export class ExecutionPlanView implements IPanelView {
 		}
 	}
 
-	public async addXml(graphFile: azdata.ExecutionPlanGraphInfo) {
+	public async addXml(graphFile: azdata.executionPlan.ExecutionPlanGraphInfo) {
 		this.clear();
 		this._loadingSpinner = new LoadingSpinner(this._container, { showText: true, fullSize: true });
 		this._loadingSpinner.loadingMessage = localize('loadingExecutionPlanFile', "Generating execution plans");
@@ -170,7 +170,7 @@ export class ExecutionPlanView implements IPanelView {
 }
 
 export class ExecutionPlan implements ISashLayoutProvider {
-	private _graphModel?: azdata.ExecutionPlanGraph;
+	private _graphModel?: azdata.executionPlan.ExecutionPlanGraph;
 
 	private _container: HTMLElement;
 
@@ -365,7 +365,7 @@ export class ExecutionPlan implements ISashLayoutProvider {
 		return diagramEdge;
 	}
 
-	private populateProperties(props: azdata.ExecutionPlanGraphElementProperty[]) {
+	private populateProperties(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[]) {
 		return props.filter(e => isString(e.displayValue) && e.showInTooltip)
 			.sort((a, b) => a.displayOrder - b.displayOrder)
 			.map(e => {
@@ -385,7 +385,7 @@ export class ExecutionPlan implements ISashLayoutProvider {
 
 	private createPlanDiagram(container: HTMLElement) {
 		let diagramRoot: any = new Object();
-		let graphRoot: azdata.ExecutionPlanNode = this._graphModel.root;
+		let graphRoot: azdata.executionPlan.ExecutionPlanNode = this._graphModel.root;
 
 		this.populate(graphRoot, diagramRoot);
 		this.azdataGraphDiagram = new azdataGraph.azdataQueryPlan(container, diagramRoot, executionPlanNodeIconPaths);
@@ -423,7 +423,7 @@ export class ExecutionPlan implements ISashLayoutProvider {
 	}
 
 
-	public set graphModel(graph: azdata.ExecutionPlanGraph | undefined) {
+	public set graphModel(graph: azdata.executionPlan.ExecutionPlanGraph | undefined) {
 		this._graphModel = graph;
 		if (this._graphModel) {
 			this.planHeader.graphIndex = this._graphIndex;
@@ -458,7 +458,7 @@ export class ExecutionPlan implements ISashLayoutProvider {
 		}
 	}
 
-	public get graphModel(): azdata.ExecutionPlanGraph | undefined {
+	public get graphModel(): azdata.executionPlan.ExecutionPlanGraph | undefined {
 		return this._graphModel;
 	}
 

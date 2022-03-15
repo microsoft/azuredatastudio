@@ -531,7 +531,7 @@ declare module 'azdata' {
 		/**
 		 * Contains execution plans returned by the database in ResultSets.
 		 */
-		executionPlans: ExecutionPlanGraph[];
+		executionPlans: executionPlan.ExecutionPlanGraph[];
 	}
 
 	export interface ObjectMetadata {
@@ -1184,6 +1184,11 @@ declare module 'azdata' {
 
 		export interface ExecutionPlanServiceProvider extends DataProvider {
 			// execution plan service methods
+
+			/**
+			 * Gets the execution plan graph from the provider for a given plan file
+			 * @param planFile file that contains the execution plan
+			 */
 			getExecutionPlan(planFile: ExecutionPlanGraphInfo): Thenable<GetExecutionPlanResult>;
 		}
 	}

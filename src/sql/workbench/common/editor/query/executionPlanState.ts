@@ -6,7 +6,7 @@
 import type * as azdata from 'azdata';
 
 export class ExecutionPlanState {
-	graphs: azdata.ExecutionPlanGraph[] = [];
+	graphs: azdata.executionPlan.ExecutionPlanGraph[] = [];
 	clearExecutionPlanState() {
 		this.graphs = [];
 	}

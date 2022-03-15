@@ -385,7 +385,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				return extHostDataProvider.$registerTableDesignerProvider(provider);
 			};
 
-			let registerExecutionPlanServiceProvider = (provider: azdata.ExecutionPlanServiceProvider): vscode.Disposable => {
+			let registerExecutionPlanServiceProvider = (provider: azdata.executionPlan.ExecutionPlanServiceProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerExecutionPlanServiceProvider(provider);
 			};
 

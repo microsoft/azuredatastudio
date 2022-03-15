@@ -571,7 +571,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Execution Plan Section
 	 */
-	$getExecutionPlan(handle: number, planFile: azdata.ExecutionPlanGraphInfo): Thenable<azdata.GetExecutionPlanResult> { throw ni(); }
+	$getExecutionPlan(handle: number, planFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.GetExecutionPlanResult> { throw ni(); }
 }
 
 /**
