@@ -569,7 +569,7 @@ export abstract class ExtHostDataProtocolShape {
 	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): void { throw ni(); }
 
 	/**
-	 * Execution Plan Section
+	 * Gets the generic execution plan graph for a plan file.
 	 */
 	$getExecutionPlan(handle: number, planFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.GetExecutionPlanResult> { throw ni(); }
 }
