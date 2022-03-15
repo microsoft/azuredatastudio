@@ -6,6 +6,11 @@
 
 declare module 'sql-bindings' {
 
+	export const enum extension {
+		name = 'Microsoft.sql-bindings',
+		vsCodeName = 'ms-mssql.sql-bindings-vscode'
+	}
+
 	/**
 	 * sql bindings extension
 	 */
