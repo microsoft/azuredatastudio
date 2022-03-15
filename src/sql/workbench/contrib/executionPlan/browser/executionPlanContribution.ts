@@ -40,7 +40,7 @@ export class ExecutionPlanEditorOverrideContribution extends Disposable implemen
 
 		this._capabilitiesService.onCapabilitiesRegistered(e => {
 			const newFileFormats = this._executionPlanService.getSupportedExecutionPlanExtensionsForProvider(e.id);
-			if (newFileFormats && newFileFormats.length > 0) {
+			if (newFileFormats?.length > 0) {
 				this._editorResolverService.updateUserAssociations(`*.{${newFileFormats.join()}}`, ExecutionPlanEditor.ID); // Registering new file formats when new providers are registered.
 			}
 		});
