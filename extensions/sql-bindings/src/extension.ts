@@ -7,7 +7,8 @@ import { ITreeNodeInfo } from 'vscode-mssql';
 import { IExtension, BindingType } from 'sql-bindings';
 import { getAzdataApi, getVscodeMssqlApi } from './common/utils';
 import { addSqlBinding, createAzureFunction, getAzureFunctions } from './services/azureFunctionsService';
-import { launchAddSqlBindingQuickpick, promptForBindingType, promptForConnectionStringSetting, promptForObjectName } from './dialogs/addSqlBindingQuickpick';
+import { launchAddSqlBindingQuickpick } from './dialogs/addSqlBindingQuickpick';
+import { promptForBindingType, promptForConnectionStringSetting, promptForObjectName } from './common/azureFunctionsUtils';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const vscodeMssqlApi = await getVscodeMssqlApi();
