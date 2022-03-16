@@ -30,7 +30,7 @@ declare module 'sql-bindings' {
 		/**
 		 * Prompts the user to select type of binding and returns result
 		 */
-		promptForBindingType(): Promise<BindingType | undefined>;
+		promptForBindingType(): Promise<(vscode.QuickPickItem & { type: BindingType })  | undefined>;
 
 		/**
 		 * Prompts the user to enter object name for the SQL query
@@ -39,8 +39,7 @@ declare module 'sql-bindings' {
 		promptForObjectName(bindingType: BindingType): Promise<string | undefined>;
 
 		/**
-		 * Prompts the user to enter connection setting from project's local.settings.json.
-		 * If project uri is undefined, then ask user to input setting name.
+		 * Prompts the user to enter connection setting from AF project
 		 * @param projectUri Azure Function project uri
 		 */
 		promptForConnectionStringSetting(projectUri: vscode.Uri | undefined): Promise<string | undefined>;
@@ -86,7 +85,7 @@ declare module 'sql-bindings' {
 	/**
 	 * Azure Functions binding type
 	 */
-	export enum BindingType {
+	export const enum BindingType {
 		input,
 		output
 	}
