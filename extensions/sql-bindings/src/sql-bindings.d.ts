@@ -39,8 +39,9 @@ declare module 'sql-bindings' {
 		promptForObjectName(bindingType: BindingType): Promise<string | undefined>;
 
 		/**
-		 * Prompts the user to generate the
-		 * @param bindingType Type of SQL Binding
+		 * Prompts the user to enter connection setting from project's local.settings.json.
+		 * If project uri is undefined, then ask user to input setting name.
+		 * @param projectUri Azure Function project uri
 		 */
 		promptForConnectionStringSetting(projectUri: vscode.Uri | undefined): Promise<string | undefined>;
 
