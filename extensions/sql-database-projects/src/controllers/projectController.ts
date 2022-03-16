@@ -274,6 +274,8 @@ export class ProjectsController {
 	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: IDeployProfile): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
 		try {
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer);
+
 			if (deployProfile && deployProfile.deploySettings) {
 				let connectionUri: string | undefined;
 				if (deployProfile.localDbSetting) {
@@ -283,6 +285,7 @@ export class ProjectsController {
 						deployProfile.deploySettings.connectionUri = connectionUri;
 					}
 				}
+
 				if (deployProfile.deploySettings.connectionUri) {
 					const publishResult = await this.publishOrScriptProject(project, deployProfile.deploySettings, true);
 					if (publishResult && publishResult.success) {
@@ -299,6 +302,7 @@ export class ProjectsController {
 			}
 		} catch (error) {
 			void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, error, this._outputChannel);
+			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer);
 		}
 		return;
 	}

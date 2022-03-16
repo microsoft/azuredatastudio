@@ -38,5 +38,6 @@ export enum TelemetryActions {
 	startAddSqlBinding = 'startAddSqlBinding',
 	finishAddSqlBinding = 'finishAddSqlBinding',
 	createProjectFromDatabase = 'createProjectFromDatabase',
-	updateProjectFromDatabase = 'updateProjectFromDatabase'
+	updateProjectFromDatabase = 'updateProjectFromDatabase',
+	publishToContainer = 'publishToContainer'
 }
