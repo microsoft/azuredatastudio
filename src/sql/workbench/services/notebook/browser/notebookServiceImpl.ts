@@ -50,7 +50,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { INTERACTIVE_PROVIDER_ID, JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
+import { DEFAULT_NB_LANGUAGE_MODE, INTERACTIVE_LANGUAGE_MODE, INTERACTIVE_PROVIDER_ID, JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
 
@@ -292,7 +292,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
 		let fileInput: IEditorInput;
-		let languageMode = options.providerId === INTERACTIVE_PROVIDER_ID ? 'dib' : 'notebook';
+		let languageMode = options.providerId === INTERACTIVE_PROVIDER_ID ? INTERACTIVE_LANGUAGE_MODE : DEFAULT_NB_LANGUAGE_MODE;
 		if (isUntitled && path.isAbsolute(uri.fsPath)) {
 			const model = this._untitledEditorService.create({ associatedResource: uri, mode: languageMode, initialValue: options.initialContent });
 			fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
