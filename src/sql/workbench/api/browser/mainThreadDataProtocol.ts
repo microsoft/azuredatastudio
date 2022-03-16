@@ -31,6 +31,7 @@ import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvide
 import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/common/interface';
+import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -61,7 +62,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@IAssessmentService private _assessmentService: IAssessmentService,
 		@IDataGridProviderService private _dataGridProviderService: IDataGridProviderService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
-		@ITableDesignerService private _tableDesignerService: ITableDesignerService
+		@ITableDesignerService private _tableDesignerService: ITableDesignerService,
+		@IExecutionPlanService private _executionPlanService: IExecutionPlanService
 	) {
 		super();
 		if (extHostContext) {
@@ -548,6 +550,12 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		});
 
 		return undefined;
+	}
+
+	public $registerExecutionPlanProvider(providerId: string, handle: number): void {
+		this._executionPlanService.registerProvider(providerId, <azdata.executionPlan.ExecutionPlanProvider>{
+			getExecutionPlan: (planFile: azdata.executionPlan.ExecutionPlanGraphInfo) => this._proxy.$getExecutionPlan(handle, planFile)
+		});
 	}
 
 	// Connection Management handlers
