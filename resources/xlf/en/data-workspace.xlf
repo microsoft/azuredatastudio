@@ -40,6 +40,9 @@
     <trans-unit id="dataworkspace.create">
       <source xml:lang="en">Create</source>
     </trans-unit>
+    <trans-unit id="dataworkspace.default">
+      <source xml:lang="en">Default</source>
+    </trans-unit>
     <trans-unit id="dataworkspace.enterProjectName">
       <source xml:lang="en">Enter Project Name</source>
     </trans-unit>
@@ -132,6 +135,9 @@
     </trans-unit>
     <trans-unit id="dataworkspace.selectProjectType">
       <source xml:lang="en">Select Project Type</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.selectTargetPlatform">
+      <source xml:lang="en">Select Target Platform</source>
     </trans-unit>
     <trans-unit id="dataworkspace.targetPlatform">
       <source xml:lang="en">Target Platform</source>
