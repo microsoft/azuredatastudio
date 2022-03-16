@@ -6,15 +6,15 @@ import * as vscode from 'vscode';
 import { ITreeNodeInfo } from 'vscode-mssql';
 import { IExtension, BindingType } from 'sql-bindings';
 import { getAzdataApi, getVscodeMssqlApi } from './common/utils';
-import { launchAddSqlBindingQuickpick } from './dialogs/addSqlBindingQuickpick';
+import { SqlBindingConfig } from './dialogs/addSqlBindingQuickpick';
 import { addSqlBinding, createAzureFunction, getAzureFunctions } from './services/azureFunctionsService';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const vscodeMssqlApi = await getVscodeMssqlApi();
-
+	let sqlBindingConfiguration = new SqlBindingConfig(vscodeMssqlApi);
 	void vscode.commands.executeCommand('setContext', 'azdataAvailable', !!getAzdataApi());
 	// register the add sql binding command
-	context.subscriptions.push(vscode.commands.registerCommand('sqlBindings.addSqlBinding', async (uri: vscode.Uri | undefined) => { return launchAddSqlBindingQuickpick(uri); }));
+	context.subscriptions.push(vscode.commands.registerCommand('sqlBindings.addSqlBinding', async (uri: vscode.Uri | undefined) => { return sqlBindingConfiguration.launchAddSqlBindingQuickpick(uri); }));
 	// Generate Azure Function command
 	context.subscriptions.push(vscode.commands.registerCommand('sqlBindings.createAzureFunction', async (node: ITreeNodeInfo) => {
 		let connectionInfo = node.connectionInfo;
@@ -36,6 +36,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	return {
 		addSqlBinding: async (bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string) => {
 			return addSqlBinding(bindingType, filePath, functionName, objectName, connectionStringSetting);
+		},
+		promptForBindingType: async () => {
+			return sqlBindingConfiguration.promptForBindingType();
+		},
+		promptForObjectName: async (bindingType: BindingType) => {
+			return sqlBindingConfiguration.promptForObjectName(bindingType);
+		},
+		promptForConnectionStringSetting: async (projectUri: vscode.Uri | undefined) => {
+			return sqlBindingConfiguration.promptForConnectionStringSetting(projectUri);
 		},
 		getAzureFunctions: async (filePath: string) => {
 			return getAzureFunctions(filePath);
