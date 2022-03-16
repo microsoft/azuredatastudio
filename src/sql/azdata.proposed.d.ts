@@ -130,53 +130,123 @@ declare module 'azdata' {
 		export const onDidCloseNotebookDocument: vscode.Event<NotebookDocument>;
 	}
 
-	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
-		| 'Float' | 'Image' | 'Int' | 'Money' | 'NChar' | 'NText' | 'NVarChar' | 'Real'
-		| 'UniqueIdentifier' | 'SmallDateTime' | 'SmallInt' | 'SmallMoney' | 'Text' | 'Timestamp'
-		| 'TinyInt' | 'VarBinary' | 'VarChar' | 'Variant' | 'Xml' | 'Udt' | 'Structured' | 'Date'
-		| 'Time' | 'DateTime2' | 'DateTimeOffset';
-
+	/**
+	 * The column information of a data set.
+	 */
 	export interface SimpleColumnInfo {
+		/**
+		 * The column name.
+		 */
 		name: string;
 		/**
-		 * This is expected to match the SqlDbTypes for serialization purposes
+		 * The data type of the column.
 		 */
-		dataTypeName: SqlDbType;
+		dataTypeName: string;
 	}
+
+	/**
+	 * The parameters for start data serialization request.
+	 */
 	export interface SerializeDataStartRequestParams {
 		/**
 		 * 'csv', 'json', 'excel', 'xml'
 		 */
 		saveFormat: string;
+		/**
+		 * The path of the target file.
+		 */
 		filePath: string;
+		/**
+		 * Whether the request is the last batch of the data set to be serialized.
+		 */
 		isLastBatch: boolean;
+		/**
+		 * Data to be serialized.
+		 */
 		rows: DbCellValue[][];
+		/**
+		 * The columns of the data set.
+		 */
 		columns: SimpleColumnInfo[];
+		/**
+		 * Whether to include column headers to the target file.
+		 */
 		includeHeaders?: boolean;
+		/**
+		 * The delimiter to seperate the cells.
+		 */
 		delimiter?: string;
+		/**
+		 * The line seperator.
+		 */
 		lineSeperator?: string;
+		/**
+		 * Character used for enclosing text fields when saving results as CSV.
+		 */
 		textIdentifier?: string;
+		/**
+		 * File encoding used when saving results as CSV.
+		 */
 		encoding?: string;
+		/**
+		 * When true, XML output will be formatted when saving results as XML.
+		 */
 		formatted?: boolean;
 	}
 
+	/**
+	 * The parameters for continue data serialization request.
+	 */
 	export interface SerializeDataContinueRequestParams {
+		/**
+		 * The path of the target file.
+		 */
 		filePath: string;
+		/**
+		 * Whether the request is the last batch.
+		 */
 		isLastBatch: boolean;
+		/**
+		 * Data to be serialized.
+		 */
 		rows: DbCellValue[][];
 	}
 
+	/**
+	 * The result of data serialization data request.
+	 */
 	export interface SerializeDataResult {
+		/**
+		 * The output message.
+		 */
 		messages?: string;
+		/**
+		 * Whether the serialization is succeeded.
+		 */
 		succeeded: boolean;
 	}
 
+	/**
+	 * The serialization provider.
+	 */
 	export interface SerializationProvider extends DataProvider {
+		/**
+		 * Start the data serialization.
+		 * @param requestParams the request parameters.
+		 */
 		startSerialization(requestParams: SerializeDataStartRequestParams): Thenable<SerializeDataResult>;
+		/**
+		 * Continue the data serialization.
+		 * @param requestParams the request parameters.
+		 */
 		continueSerialization(requestParams: SerializeDataContinueRequestParams): Thenable<SerializeDataResult>;
 	}
 
 	export namespace dataprotocol {
+		/**
+		 * Registers a SerializationProvider.
+		 * @param provider The data serialization provider.
+		 */
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
 		export function registerSqlAssessmentServicesProvider(provider: SqlAssessmentServicesProvider): vscode.Disposable;
 		/**
