@@ -154,7 +154,11 @@ export class ProjectsController {
 	 */
 	public async createNewProject(creationParams: NewProjectParams): Promise<string> {
 		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.createNewProject)
-			.withAdditionalProperties({ template: creationParams.projectTypeId, sdkStyle: creationParams.sdkStyle!.toString() })
+			.withAdditionalProperties({
+				template: creationParams.projectTypeId,
+				sdkStyle: creationParams.sdkStyle!.toString(),
+				targetPlatform: creationParams.targetPlatform?.toString() ?? ''
+			})
 			.send();
 
 		if (creationParams.projectGuid && !UUID.isUUID(creationParams.projectGuid)) {
@@ -442,6 +446,7 @@ export class ProjectsController {
 		const timeToPublish = actionEndTime - actionStartTime;
 		telemetryProps.actionDuration = timeToPublish.toString();
 		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
+		telemetryProps.sqlcmdVariablesCount = Object.keys(project.sqlCmdVariables).length.toString();
 
 		const currentPublishIndex = this.publishInfo.findIndex(d => d.startDate === currentPublishTimeInfo);
 		this.publishInfo[currentPublishIndex].status = result.success ? Status.success : Status.failed;
@@ -669,10 +674,12 @@ export class ProjectsController {
 		}
 
 		try {
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addExistingItem);
 			await project.addExistingItem(uris[0].fsPath);
 			this.refreshProjectsTree(treeNode);
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.addExistingItem);
 		}
 	}
 
@@ -1282,6 +1289,8 @@ export class ProjectsController {
 
 	public async createProjectFromDatabaseCallback(model: ImportDataModel) {
 		try {
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.createProjectFromDatabase);
+
 			const newProjFolderUri = model.filePath;
 
 			const newProjFilePath = await this.createNewProject({
@@ -1308,6 +1317,7 @@ export class ProjectsController {
 			await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.createProjectFromDatabase);
 		}
 	}
 
@@ -1373,9 +1383,11 @@ export class ProjectsController {
 
 	public async updateProjectFromDatabaseCallback(model: UpdateProjectDataModel) {
 		try {
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectFromDatabase);
 			await this.updateProjectFromDatabaseApiCall(model);
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectFromDatabase);
 		}
 	}
 
