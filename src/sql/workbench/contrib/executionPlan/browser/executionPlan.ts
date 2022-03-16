@@ -116,7 +116,7 @@ export class ExecutionPlanView implements IPanelView {
 
 	/**
 	 * Adds executionPlanGraph to the graph controller.
-	 * @param newGraphs: ExecutionPlanGraphs to be added.
+	 * @param newGraphs ExecutionPlanGraphs to be added.
 	 */
 	public addGraphs(newGraphs: azdata.executionPlan.ExecutionPlanGraph[] | undefined) {
 		if (newGraphs) {
@@ -135,7 +135,7 @@ export class ExecutionPlanView implements IPanelView {
 	 * This feature requires the right providers to be registered that can handle
 	 * the graphFileType in the graphFile
 	 * Please note: this method clears the existing graph in the graph control
-	 * @param graphFile: graph file to be loaded.
+	 * @param graphFile graph file to be loaded.
 	 * @returns
 	 */
 	public async loadGraphFile(graphFile: azdata.executionPlan.ExecutionPlanGraphInfo) {
