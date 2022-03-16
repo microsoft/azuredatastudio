@@ -391,7 +391,7 @@ export class ChartView extends Disposable implements IPanelView {
 				numberInput.onDidChange(e => {
 					if (this._options[entry] !== e) {
 						// When user clears the input box, the value we get from the input box will be empty string.
-						(this._options[entry] as any) = e === '' ? undefined : Number(e);
+						(this._options[entry] as any) = (e === '' ? undefined : Number(e));
 						if (this.insight) {
 							this.insight.options = this._options;
 						}
