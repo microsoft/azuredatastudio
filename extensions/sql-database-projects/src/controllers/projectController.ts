@@ -451,6 +451,7 @@ export class ProjectsController {
 		telemetryProps.actionDuration = timeToPublish.toString();
 		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
 		telemetryProps.sqlcmdVariablesCount = Object.keys(project.sqlCmdVariables).length.toString();
+		telemetryProps.projectTargetPLatform = project.getProjectTargetVersion();
 
 		const currentPublishIndex = this.publishInfo.findIndex(d => d.startDate === currentPublishTimeInfo);
 		this.publishInfo[currentPublishIndex].status = result.success ? Status.success : Status.failed;
