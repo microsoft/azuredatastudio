@@ -333,8 +333,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				propertyName: designers.TableColumnProperty.AdvancedType,
 				description: localize('designer.column.description.advancedType', "Displays the unified data type (including length, scale and precision) for the column"),
 				componentProperties: {
-					title: localize('tableDesigner.columnAdvancedTypeTitle', "Advanced Type"),
-					width: 100,
+					title: localize('tableDesigner.columnAdvancedTypeTitle', "Type"),
+					width: 120,
 					isEditable: true
 				}
 			}, {
@@ -397,10 +397,6 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		const displayProperties = this.getTableDisplayProperties(options, [
 			designers.TableColumnProperty.Name,
 			designers.TableColumnProperty.AdvancedType,
-			designers.TableColumnProperty.Type,
-			designers.TableColumnProperty.Length,
-			designers.TableColumnProperty.Precision,
-			designers.TableColumnProperty.Scale,
 			designers.TableColumnProperty.IsPrimaryKey,
 			designers.TableColumnProperty.AllowNulls,
 			designers.TableColumnProperty.DefaultValue,
