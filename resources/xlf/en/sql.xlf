@@ -2280,6 +2280,12 @@
     <trans-unit id="executionPlanCustomZoom">
       <source xml:lang="en">Custom Zoom</source>
     </trans-unit>
+    <trans-unit id="executionPlanFileLoadingComplete">
+      <source xml:lang="en">Execution plans are generated</source>
+    </trans-unit>
+    <trans-unit id="executionPlanFileLoadingFailed">
+      <source xml:lang="en">Failed to load execution plan</source>
+    </trans-unit>
     <trans-unit id="executionPlanFitGraphLabel">
       <source xml:lang="en">Zoom to fit</source>
     </trans-unit>
@@ -2304,8 +2310,16 @@
     <trans-unit id="executionPlanZoomOutActionLabel">
       <source xml:lang="en">Zoom Out</source>
     </trans-unit>
+    <trans-unit id="loadingExecutionPlanFile">
+      <source xml:lang="en">Generating execution plans</source>
+    </trans-unit>
     <trans-unit id="openQueryAction">
       <source xml:lang="en">Open Query</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanEditor">
+      <source xml:lang="en">Query Execution Plan Editor</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext"><body>
@@ -5104,6 +5118,17 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="warning">
       <source xml:lang="en">Warning</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/executionPlan/common/executionPlanService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="noHandlerRegistered">
+      <source xml:lang="en">No valid execution plan handler is registered</source>
+    </trans-unit>
+    <trans-unit id="providerIdNotValidError">
+      <source xml:lang="en">Valid provider is required in order to interact with ExecutionPlanService</source>
+    </trans-unit>
+    <trans-unit id="selectExecutionPlanProvider">
+      <source xml:lang="en">Select a provider to open execution plan</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/fileBrowser/browser/fileBrowserDialog" source-language="en" datatype="plaintext"><body>
