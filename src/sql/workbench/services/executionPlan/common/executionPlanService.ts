@@ -53,8 +53,8 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		let selectedProvider: string;
 
 		/**
-		 * This handles the case when multiple providers support the same query plan extension.
-		 * The code shows a quick pick and lets user select the provider they want to open the query plan file with.
+		 * This handles the case when multiple providers support the same execution plan extension.
+		 * The code shows a quick pick and lets user select the provider they want to open the execution plan file with.
 		 */
 		if (epProviders.length > 1) {
 			const providerQuickPick = this._quickInputService.createQuickPick<IQuickPickItem>();
