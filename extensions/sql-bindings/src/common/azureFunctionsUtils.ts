@@ -310,6 +310,9 @@ export async function isFunctionProject(folderPath: string): Promise<boolean> {
 	return fs.existsSync(path.join(folderPath, constants.hostFileName));
 }
 
+/**
+ * Prompts the user to select type of binding and returns result
+ */
 export async function promptForBindingType(): Promise<(vscode.QuickPickItem & { type: BindingType }) | undefined> {
 	const inputOutputItems: (vscode.QuickPickItem & { type: BindingType })[] = [
 		{
@@ -331,6 +334,10 @@ export async function promptForBindingType(): Promise<(vscode.QuickPickItem & { 
 	return selectedBinding;
 }
 
+/**
+ * Prompts the user to enter object name for the SQL query
+ * @param bindingType Type of SQL Binding
+ */
 export async function promptForObjectName(bindingType: BindingType): Promise<string | undefined> {
 	return vscode.window.showInputBox({
 		prompt: bindingType === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
@@ -340,7 +347,11 @@ export async function promptForObjectName(bindingType: BindingType): Promise<str
 	});
 }
 
-export async function promptForConnectionStringSetting(projectUri: vscode.Uri | undefined): Promise<string | undefined> {
+/**
+ * Prompts the user to enter connection setting and updates it from AF project
+ * @param projectUri Azure Function project uri
+ */
+export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined): Promise<string | undefined> {
 	let connectionStringSettingName: string | undefined;
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 

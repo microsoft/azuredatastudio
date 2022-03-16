@@ -8,7 +8,7 @@ import { IExtension, BindingType } from 'sql-bindings';
 import { getAzdataApi, getVscodeMssqlApi } from './common/utils';
 import { addSqlBinding, createAzureFunction, getAzureFunctions } from './services/azureFunctionsService';
 import { launchAddSqlBindingQuickpick } from './dialogs/addSqlBindingQuickpick';
-import { promptForBindingType, promptForConnectionStringSetting, promptForObjectName } from './common/azureFunctionsUtils';
+import { promptForBindingType, promptAndUpdateConnectionStringSetting, promptForObjectName } from './common/azureFunctionsUtils';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const vscodeMssqlApi = await getVscodeMssqlApi();
@@ -43,8 +43,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		promptForObjectName: async (bindingType: BindingType) => {
 			return promptForObjectName(bindingType);
 		},
-		promptForConnectionStringSetting: async (projectUri: vscode.Uri | undefined) => {
-			return promptForConnectionStringSetting(projectUri);
+		promptAndUpdateConnectionStringSetting: async (projectUri: vscode.Uri | undefined) => {
+			return promptAndUpdateConnectionStringSetting(projectUri);
 		},
 		getAzureFunctions: async (filePath: string) => {
 			return getAzureFunctions(filePath);

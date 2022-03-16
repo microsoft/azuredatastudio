@@ -77,7 +77,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 		// continue even if there's no AF project found. The binding should still be able to be added as long as there was an azure function found in the file earlier
 	}
 
-	let connectionStringSettingName = await azureFunctionsUtils.promptForConnectionStringSetting(projectUri);
+	let connectionStringSettingName = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(projectUri);
 	if (!connectionStringSettingName) {
 		return;
 	}
