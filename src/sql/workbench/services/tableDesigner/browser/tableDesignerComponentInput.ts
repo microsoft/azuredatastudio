@@ -331,6 +331,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'dropdown',
 				propertyName: designers.TableColumnProperty.AdvancedType,
+				showInPropertiesView: false,
 				description: localize('designer.column.description.advancedType', "Displays the unified data type (including length, scale and precision) for the column"),
 				componentProperties: {
 					title: localize('tableDesigner.columnAdvancedTypeTitle', "Type"),
