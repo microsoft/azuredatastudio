@@ -1294,7 +1294,6 @@ export class ProjectsController {
 
 	public async createProjectFromDatabaseCallback(model: ImportDataModel) {
 		try {
-			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.createProjectFromDatabase);
 
 			const newProjFolderUri = model.filePath;
 
@@ -1309,7 +1308,16 @@ export class ProjectsController {
 			this.setFilePath(model);
 
 			const project = await Project.openProject(newProjFilePath);
+
+			const startTime = new Date();
+
 			await this.createProjectFromDatabaseApiCall(model); // Call ExtractAPI in DacFx Service
+
+			const timeToExtract = new Date().getTime() - startTime.getTime();
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.createProjectFromDatabase)
+				.withAdditionalMeasurements({ durationMs: timeToExtract })
+				.send();
+
 			let fileFolderList: vscode.Uri[] = model.extractTarget === mssql.ExtractTarget.file ? [vscode.Uri.file(model.filePath)] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
 
 			if (!model.sdkStyle) {
@@ -1388,8 +1396,14 @@ export class ProjectsController {
 
 	public async updateProjectFromDatabaseCallback(model: UpdateProjectDataModel) {
 		try {
-			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectFromDatabase);
+			const startTime = new Date();
+
 			await this.updateProjectFromDatabaseApiCall(model);
+
+			const timeToUpdate = new Date().getTime() - startTime.getTime();
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectFromDatabase)
+				.withAdditionalMeasurements({ durationMs: timeToUpdate })
+				.send();
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectFromDatabase);
