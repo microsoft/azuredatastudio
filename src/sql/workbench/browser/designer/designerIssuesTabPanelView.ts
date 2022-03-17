@@ -106,7 +106,7 @@ class TableFilterListRenderer implements IListRenderer<DesignerIssue, DesignerIs
 			case 'warning':
 				iconClass = Codicon.warning.classNames;
 				break;
-			case 'informational':
+			case 'information':
 				iconClass = Codicon.info.classNames;
 				break;
 			default:
@@ -114,9 +114,6 @@ class TableFilterListRenderer implements IListRenderer<DesignerIssue, DesignerIs
 				break;
 		}
 		templateData.issueIcon.className = `issue-icon ${iconClass}`;
-	}
-
-	disposeElement?(element: DesignerIssue, index: number, templateData: DesignerIssueListItemTemplate, height: number): void {
 	}
 
 	public disposeTemplate(templateData: DesignerIssueListItemTemplate): void {

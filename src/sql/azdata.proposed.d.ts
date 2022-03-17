@@ -1067,7 +1067,7 @@ declare module 'azdata' {
 		 * 'warning': Inform the user the potential risks with the current state. e.g. Having multiple edge constraints is only useful as a temporary state.
 		 * 'information': Informational message.
 		 */
-		export type DesignerIssueSeverity = 'error' | 'warning' | 'informational';
+		export type DesignerIssueSeverity = 'error' | 'warning' | 'information';
 
 		/**
 		 * The result returned by the table designer provider after handling an edit request.

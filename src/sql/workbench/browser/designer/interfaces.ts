@@ -229,7 +229,7 @@ export type DesignerUIArea = 'PropertiesView' | 'ScriptView' | 'TopContentView' 
 export type DesignerPropertyPath = (string | number)[];
 export const DesignerRootObjectPath: DesignerPropertyPath = [];
 
-export type DesignerIssueSeverity = 'error' | 'warning' | 'informational';
+export type DesignerIssueSeverity = 'error' | 'warning' | 'information';
 export type DesignerIssue = { description: string, propertyPath?: DesignerPropertyPath, severity: DesignerIssueSeverity };
 
 export interface DesignerEditResult {
