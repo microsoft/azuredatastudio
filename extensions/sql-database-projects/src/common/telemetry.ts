@@ -26,11 +26,17 @@ export enum TelemetryActions {
 	deleteObjectFromProject = 'deleteObjectFromProject',
 	editProjectFile = 'editProjectFile',
 	addItemFromTree = 'addItemFromTree',
+	addExistingItem = 'addExistingItem',
 	excludeFromProject = 'excludeFromProject',
 	projectSchemaCompareCommandInvoked = 'projectSchemaCompareCommandInvoked',
 	publishProject = 'publishProject',
 	build = 'build',
 	updateProjectForRoundtrip = 'updateProjectForRoundtrip',
 	changePlatformType = 'changePlatformType',
-	updateSystemDatabaseReferencesInProjFile = 'updateSystemDatabaseReferencesInProjFile'
+	updateSystemDatabaseReferencesInProjFile = 'updateSystemDatabaseReferencesInProjFile',
+	startAddSqlBinding = 'startAddSqlBinding',
+	finishAddSqlBinding = 'finishAddSqlBinding',
+	createProjectFromDatabase = 'createProjectFromDatabase',
+	updateProjectFromDatabase = 'updateProjectFromDatabase',
+	publishToContainer = 'publishToContainer'
 }
