@@ -367,12 +367,18 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.sdkLearnMorePlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Click "Learn More" button for more information about SDK-style projects]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fare clic sul pulsante "Altre informazioni" per altre informazioni sui progetti in stile SDK]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.sdkStyleProject" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SDK-style project (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Progetto in stile SDK (Anteprima)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -424,6 +430,9 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.yesRecommended" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Yes (Recommended)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Sì (Scelta consigliata)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

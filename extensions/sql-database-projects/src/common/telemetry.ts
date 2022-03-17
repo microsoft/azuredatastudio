@@ -16,7 +16,6 @@ export enum TelemetryViews {
 	ProjectController = 'ProjectController',
 	SqlProjectPublishDialog = 'SqlProjectPublishDialog',
 	ProjectTree = 'ProjectTree',
-	SqlBindingsQuickPick = 'SqlBindingsQuickPick'
 }
 
 export enum TelemetryActions {

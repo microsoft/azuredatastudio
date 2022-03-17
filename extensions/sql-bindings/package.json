@@ -63,7 +63,6 @@
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^1.1.5",
     "fast-glob": "^3.2.7",
-    "jsonc-parser": "^2.3.1",
     "promisify-child-process": "^3.1.1",
     "vscode-nls": "^4.1.2",
     "vscode-languageclient": "5.2.1"
