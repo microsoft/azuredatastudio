@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerPropertyPath, DesignerValidationError, ScriptProperty } from 'sql/workbench/browser/designer/interfaces';
+import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerPropertyPath, DesignerIssue, ScriptProperty } from 'sql/workbench/browser/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -22,7 +22,7 @@ const ErrorDialogTitle: string = localize('tableDesigner.ErrorDialogTitle', "Tab
 export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	private _viewModel: DesignerViewModel;
-	private _validationErrors?: DesignerValidationError[];
+	private _issues?: DesignerIssue[];
 	private _view: DesignerView;
 	private _valid: boolean = true;
 	private _dirty: boolean = false;
@@ -76,8 +76,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		return this._viewModel;
 	}
 
-	get validationErrors(): DesignerValidationError[] | undefined {
-		return this._validationErrors;
+	get issues(): DesignerIssue[] | undefined {
+		return this._issues;
 	}
 
 	processEdit(edit: DesignerEdit): void {
@@ -93,14 +93,14 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				if (result.view) {
 					this.setDesignerView(result.view);
 				}
-				this._validationErrors = result.errors;
+				this._issues = result.issues;
 				this.updateState(result.isValid, this.isDirty(), undefined);
 
 				this._onEditProcessed.fire({
 					edit: edit,
 					result: {
 						isValid: result.isValid,
-						errors: result.errors,
+						issues: result.issues,
 						refreshView: !!result.view
 					}
 				});
@@ -372,7 +372,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				description: localize('designer.column.description.precision', "For numeric data, the maximum number of decimal digits that can be stored in this database object."),
 				componentProperties: {
 					title: localize('tableDesigner.columnPrecisionTitle', "Precision"),
-					width: 60
+					width: 60,
+					inputType: 'number'
 				}
 			}, {
 				componentType: 'input',
@@ -380,7 +381,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				description: localize('designer.column.description.scale', "For numeric data, the maximum number of decimal digits that can be stored in this database object to the right of decimal point."),
 				componentProperties: {
 					title: localize('tableDesigner.columnScaleTitle', "Scale"),
-					width: 60
+					width: 60,
+					inputType: 'number'
 				}
 			}
 		];

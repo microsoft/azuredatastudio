@@ -1062,6 +1062,14 @@ declare module 'azdata' {
 		export type DesignerEditPath = (string | number)[];
 
 		/**
+		 * Severity of the messages returned by the provider after processing an edit.
+		 * 'error': The issue must be fixed in order to commit the changes.
+		 * 'warning': Inform the user the potential risks with the current state. e.g. Having multiple edge constraints is only useful as a temporary state.
+		 * 'information': Informational message.
+		 */
+		export type DesignerIssueSeverity = 'error' | 'warning' | 'information';
+
+		/**
 		 * The result returned by the table designer provider after handling an edit request.
 		 */
 		export interface DesignerEditResult<T> {
@@ -1078,9 +1086,9 @@ declare module 'azdata' {
 			 */
 			isValid: boolean;
 			/**
-			 * Error messages of current state, and the property the caused the error.
+			 * Issues of current state.
 			 */
-			errors?: { message: string, propertyPath?: DesignerEditPath }[];
+			issues?: { severity: DesignerIssueSeverity, description: string, propertyPath?: DesignerEditPath }[];
 		}
 
 		/**
