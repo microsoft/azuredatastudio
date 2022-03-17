@@ -96,7 +96,6 @@ export class InfoBox extends Disposable implements IThemable {
 		this._infoBoxElement.classList.add('infobox-container', style);
 		this._imageElement.classList.add('infobox-image', style);
 		this.updateStyle();
-		this.updateClickableState();
 	}
 
 	public get text(): string {
