@@ -13450,7 +13450,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Loading accounts...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Загрузка учетных записей...]]></Val>
+            <Val><![CDATA[Загрузка учетных записей…]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
