@@ -5,10 +5,10 @@
 import * as os from 'os';
 import * as fs from 'fs';
 import * as vscode from 'vscode';
+import * as path from 'path';
 import * as utils from './utils';
 import * as constants from './constants';
 import { BindingType } from 'sql-bindings';
-import * as path from 'path';
 import { ConnectionDetails, IConnectionInfo } from 'vscode-mssql';
 // https://github.com/microsoft/vscode-azurefunctions/blob/main/src/vscode-azurefunctions.api.d.ts
 import { AzureFunctionsExtensionApi } from '../typings/vscode-azurefunctions.api';

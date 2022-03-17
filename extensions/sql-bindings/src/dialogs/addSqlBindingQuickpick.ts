@@ -8,6 +8,7 @@ import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { addSqlBinding, getAzureFunctions } from '../services/azureFunctionsService';
 
 export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined): Promise<void> {
 	TelemetryReporter.sendActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.startAddSqlBinding);
@@ -27,16 +28,16 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 		}
 	}
 
-	// get all the Azure functions in the file
-	const azureFunctionsService = await utils.getAzureFunctionService();
+	// get azure functions from STS request
 	let getAzureFunctionsResult;
 	try {
-		getAzureFunctionsResult = await azureFunctionsService.getAzureFunctions(uri.fsPath);
+		getAzureFunctionsResult = await getAzureFunctions(uri.fsPath);
 	} catch (e) {
 		void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 		return;
 	}
 
+	// get all the Azure functions in the file
 	const azureFunctions = getAzureFunctionsResult.azureFunctions;
 
 	if (azureFunctions.length === 0) {
@@ -84,7 +85,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 
 	// 5. insert binding
 	try {
-		const result = await azureFunctionsService.addSqlBinding(selectedBinding.type, uri.fsPath, azureFunctionName, objectName, connectionStringSettingName);
+		const result = await addSqlBinding(selectedBinding.type, uri.fsPath, azureFunctionName, objectName, connectionStringSettingName);
 
 		if (!result.success) {
 			void vscode.window.showErrorMessage(result.errorMessage);
