@@ -10,12 +10,10 @@ import * as TypeMoq from 'typemoq';
 import * as mssql from '../../../mssql/src/mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import { RequestType } from 'vscode-languageclient';
-import { BindingType, GetAzureFunctionsResult } from 'sql-bindings';
 
 export interface TestUtils {
 	context: vscode.ExtensionContext;
 	dacFxService: TypeMoq.IMock<mssql.IDacFxService>;
-	azureFunctionService: TypeMoq.IMock<vscodeMssql.IAzureFunctionsService>;
 	outputChannel: vscode.OutputChannel;
 	vscodeMssqlIExtension: TypeMoq.IMock<vscodeMssql.IExtension>
 	dacFxMssqlService: TypeMoq.IMock<vscodeMssql.IDacFxService>;
@@ -131,17 +129,6 @@ export const mockResultStatus = {
 	errorMessage: ''
 };
 
-export const mockGetAzureFunctionsResult = {
-	success: true,
-	errorMessage: '',
-	azureFunctions: []
-};
-
-export class MockAzureFunctionService implements vscodeMssql.IAzureFunctionsService {
-	addSqlBinding(_: BindingType, __: string, ___: string, ____: string, _____: string): Thenable<vscodeMssql.ResultStatus> { return Promise.resolve(mockResultStatus); }
-	getAzureFunctions(_: string): Thenable<GetAzureFunctionsResult> { return Promise.resolve(mockGetAzureFunctionsResult); }
-}
-
 export const mockDacFxMssqlOptionResult: vscodeMssql.DacFxOptionsResult = {
 	success: true,
 	errorMessage: '',
@@ -249,12 +236,10 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 	sqlToolsServicePath: string = '';
 	dacFx: vscodeMssql.IDacFxService;
 	schemaCompare: vscodeMssql.ISchemaCompareService;
-	azureFunctions: vscodeMssql.IAzureFunctionsService;
 
 	constructor() {
 		this.dacFx = new MockDacFxMssqlService;
 		this.schemaCompare = new MockSchemaCompareService;
-		this.azureFunctions = new MockAzureFunctionService;
 	}
 	sendRequest<P, R, E, R0>(_: RequestType<P, R, E, R0>, __?: P): Promise<R> {
 		throw new Error('Method not implemented.');
@@ -311,7 +296,6 @@ export function createTestUtils(): TestUtils {
 			extension: undefined as any
 		},
 		dacFxService: TypeMoq.Mock.ofType(MockDacFxService),
-		azureFunctionService: TypeMoq.Mock.ofType(MockAzureFunctionService),
 		vscodeMssqlIExtension: TypeMoq.Mock.ofType(MockVscodeMssqlIExtension),
 		dacFxMssqlService: TypeMoq.Mock.ofType(MockDacFxMssqlService),
 		schemaCompareService: TypeMoq.Mock.ofType(MockSchemaCompareService),
