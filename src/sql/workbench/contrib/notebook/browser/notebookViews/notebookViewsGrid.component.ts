@@ -15,7 +15,7 @@ import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { generateLayout } from 'sql/workbench/services/notebook/browser/notebookViews/autodash';
 import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCard.component';
 import { LocalSelectionTransfer } from 'vs/workbench/browser/dnd';
-import { NotebookViewsCardTabComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCardTab.components';
+import { NotebookViewsCardTabComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCardTab.component';
 
 export interface INotebookViewsGridOptions {
 	cellHeight?: number;
@@ -148,7 +148,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 
 		this._gridEnabled = true;
 
-		this.updateGrid();
+		//this.updateGrid();
 	}
 
 	/**

@@ -1,7 +1,7 @@
 <div class="tabs-and-actions-container">
 	<div class="tabs-container" role="tablist" draggable="true">
 		<ng-container *ngFor="let tab of tabs">
-			<view-card-tab-component #wrapper [tabTransfer]="tabTransfer" [card]="card" [tab]="tab" [active]="tab.guid === activeTab.guid" [activeView]="activeView" [cell]="tab.cell"></view-card-tab-component>
+			<view-card-tab-component #wrapper [tabTransfer]="tabTransfer" [card]="card" [tab]="tab" [active]="tab.guid === activeTab?.guid" [activeView]="activeView"></view-card-tab-component>
 			<ng-content *ngTemplateOutlet='wrapper.templateRef'></ng-content>
 		</ng-container>
 	</div>

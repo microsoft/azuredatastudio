@@ -3,14 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./cellToolbar';
-import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import 'vs/css!./notebookViewsCardTabs';
+import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnInit, SimpleChange, TemplateRef, ViewChild } from '@angular/core';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { INotebookView, INotebookViewCard, INotebookViewsTab } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { DEFAULT_VIEW_CARD_HEIGHT, DEFAULT_VIEW_CARD_WIDTH } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
-import { NotebookViewsCardTabComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCardTab.components';
+import { NotebookViewsCardTabComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCardTab.component';
 import { LocalSelectionTransfer } from 'vs/workbench/browser/dnd';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { TAB_BORDER, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
 
 @Component({
 	selector: 'view-card-component',
@@ -22,12 +25,13 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	@Input() ready: boolean;
 	@Input() cells: ICellModel[];
 	@Input() card: INotebookViewCard;
+	@Input() activeTab: INotebookViewsTab;
 	@Input() tabTransfer: LocalSelectionTransfer<NotebookViewsCardTabComponent>;
 
 	@ViewChild('templateRef') templateRef: TemplateRef<any>;
 	@ViewChild('item', { read: ElementRef }) private _item: ElementRef;
 
-	private _activeTab: INotebookViewsTab;
+	cell: ICellModel;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
@@ -44,17 +48,12 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	}
 
 	public initialize(): void {
-		/*
-		if(this.card.guid === '1') {
-			this._tabs = this.cells.slice(0, 2).map((cell) => ({ title: `Tab ${cell.id}`, guid: cell.cellGuid, cell }));
+		if (this.card.activeTab === undefined) {
+			this.card.activeTab = this.tabs[0];
+			this.cell = this.cells.find(c => c.cellGuid === this.card.activeTab.cell.guid);
+		} else {
+			this.cell = this.cells.find(c => c.cellGuid === this.card.activeTab.cell.guid);
 		}
-
-		if(this.card.guid === '2') {
-			this._tabs = this.cells.slice(2).map((cell) => ({ title: `Tab ${cell.id}`, guid: cell.cellGuid, cell }));
-		}
-		*/
-
-		this._activeTab = this.tabs[0];
 
 		this.detectChanges();
 	}
@@ -63,7 +62,13 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 		this.detectChanges();
 	}
 
-	ngOnChanges() {
+	handleTabSelected(selectedTab: INotebookViewsTab) {
+		this.cell = undefined;
+		this.detectChanges();
+		this.cell = this.cells.find(c => c.cellGuid === selectedTab.cell.guid);
+	}
+
+	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
 		this.detectChanges();
 	}
 
@@ -72,15 +77,7 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	}
 
 	public get tabs(): INotebookViewsTab[] {
-		return this.card.tabs;
-	}
-
-	public get activeTab(): INotebookViewsTab {
-		return this._activeTab;
-	}
-
-	public get cell(): ICellModel {
-		return this.activeTab?.cell;
+		return this.card?.tabs ?? [];
 	}
 
 	public get metadata(): INotebookViewCard {
@@ -117,3 +114,17 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 		this._changeRef.detectChanges();
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const background = theme.getColor(EDITOR_GROUP_HEADER_TABS_BACKGROUND);
+	const border = theme.getColor(TAB_BORDER);
+
+	if (background && border) {
+		collector.addRule(`
+		.notebook-card .tabs-and-actions-container {
+			border-color: ${border.toString()};
+			background-color: ${background.toString()};
+		}
+		`);
+	}
+});

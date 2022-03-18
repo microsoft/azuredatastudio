@@ -23,7 +23,6 @@ export class NotebookViewModel implements INotebookView {
 	private _onDeleted = new Emitter<INotebookView>();
 	private _onCellVisibilityChanged = new Emitter<ICellModel>();
 	private _isNew: boolean = false;
-	private _cards: INotebookViewCard[] = [];
 
 	public readonly guid: string;
 	public readonly onDeleted = this._onDeleted.event;
@@ -32,6 +31,7 @@ export class NotebookViewModel implements INotebookView {
 	constructor(
 		protected _name: string,
 		private _notebookViews: NotebookViewsExtension,
+		private _cards: INotebookViewCard[] = [],
 		guid?: string
 	) {
 		this.guid = guid ?? generateUuid();
@@ -39,7 +39,7 @@ export class NotebookViewModel implements INotebookView {
 
 	public static load(guid: string, notebookViews: NotebookViewsExtension): INotebookView {
 		const view = notebookViews.getViews().find(v => v.guid === guid);
-		return new NotebookViewModel(view.name, notebookViews, view.guid);
+		return new NotebookViewModel(view.name, notebookViews, view.cards, view.guid);
 	}
 
 	public initialize(isNew?: boolean): void {
@@ -55,9 +55,6 @@ export class NotebookViewModel implements INotebookView {
 		if (isNew) {
 			this.initializeCards();
 		}
-		///
-
-
 
 		const cells = this._notebookViews.notebook.cells;
 		cells.forEach((cell, idx) => { this.initializeCell(cell, idx); });
@@ -66,19 +63,24 @@ export class NotebookViewModel implements INotebookView {
 	public initializeCards() {
 		const cells = this._notebookViews.notebook.cells;
 
+		let card: INotebookViewCard;
 		cells.forEach((cell, idx) => {
-			const newCard: INotebookViewCard = {
-				guid: this.guid,
-				y: idx * DEFAULT_VIEW_CARD_HEIGHT,
-				x: 0,
-				width: DEFAULT_VIEW_CARD_WIDTH,
-				height: DEFAULT_VIEW_CARD_HEIGHT,
-				tabs: []
-			};
+			if (idx % 2 === 0) {
+				card = {
+					guid: this.guid,
+					y: idx * DEFAULT_VIEW_CARD_HEIGHT,
+					x: 0,
+					width: DEFAULT_VIEW_CARD_WIDTH,
+					height: DEFAULT_VIEW_CARD_HEIGHT,
+					tabs: []
+				};
+			}
 
-			this.createTab(cell, newCard);
+			this.createTab(cell, card);
 
-			this._cards.push(newCard);
+			if (idx % 2 !== 0) {
+				this._cards.push(card);
+			}
 		});
 	}
 
@@ -87,7 +89,7 @@ export class NotebookViewModel implements INotebookView {
 			throw new Error('A card must be specified to create a tab');
 		}
 
-		const newTab: INotebookViewsTab = { title: 'Untitled', guid: generateUuid(), cell };
+		const newTab: INotebookViewsTab = { title: 'Untitled', guid: generateUuid(), cell: { guid: cell.cellGuid } };
 		card.tabs.push(newTab);
 	}
 
@@ -142,21 +144,6 @@ export class NotebookViewModel implements INotebookView {
 
 	public get cards(): INotebookViewCard[] {
 		return this._cards;
-		/*
-		return [{
-			guid: '1',
-			x: 0,
-			y: 0,
-			width: 6,
-			height: 3
-		}, {
-			guid: '2',
-			x: 6,
-			y: 0,
-			width: 6,
-			height: 3
-		}];
-		*/
 	}
 
 	public get cells(): Readonly<ICellModel[]> {
@@ -264,6 +251,6 @@ export class NotebookViewModel implements INotebookView {
 	}
 
 	public toJSON() {
-		return { guid: this.guid, name: this._name, cards: [] } as NotebookViewModel;
+		return { guid: this.guid, name: this._name, cards: this.cards } as NotebookViewModel;
 	}
 }

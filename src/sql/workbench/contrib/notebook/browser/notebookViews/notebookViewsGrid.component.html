@@ -6,7 +6,7 @@
 -->
 <div class="nb-grid-stack grid-stack">
 	<ng-container *ngFor="let card of cards">
-		<view-card-component #wrapper [tabTransfer]="tabTransfer" [card]="card" [ready]="loaded" [activeView]="activeView" [cells]="cells" [model]="model"></view-card-component>
+		<view-card-component #wrapper [tabTransfer]="tabTransfer" [card]="card" [activeTab]="card.activeTab" [ready]="loaded" [activeView]="activeView" [cells]="cells" [model]="model"></view-card-component>
 		<ng-content *ngTemplateOutlet='wrapper.templateRef'></ng-content>
 	</ng-container>
 </div>

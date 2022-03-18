@@ -21,7 +21,7 @@ export type CardChangeEvent = {
 export interface INotebookViewsTab {
 	title: string,
 	guid: string,
-	cell: ICellModel
+	cell: INotebookViewCell
 }
 
 export type TabContentType = 'cell';
@@ -80,6 +80,7 @@ export interface INotebookViewCard {
 	width?: number;
 	height?: number;
 	tabs?: INotebookViewsTab[];
+	activeTab?: INotebookViewsTab;
 }
 
 export interface INotebookViewCell {

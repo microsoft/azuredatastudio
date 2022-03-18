@@ -41,7 +41,7 @@ import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellVi
 import { NotebookViewsModalComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsModal.component';
 import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCard.component';
 import { NotebookViewsCardTabsComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCardTabs.component';
-import { NotebookViewsCardTabComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCardTab.components';
+import { NotebookViewsCardTabComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCardTab.component';
 
 const outputComponentRegistry = Registry.as<ICellComponentRegistry>(OutputComponentExtensions.CellComponentContributions);
 

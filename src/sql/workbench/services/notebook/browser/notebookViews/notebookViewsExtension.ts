@@ -154,7 +154,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 	}
 
 	public updateCard(card: INotebookViewCard, cardData: INotebookViewCard, currentView: INotebookView, override: boolean = false) {
-		const notebookMetadata = this.getNotebookMetadata(this._notebook);
+		const notebookMetadata = this.getExtensionMetadata();
 		if (notebookMetadata) {
 			const viewToUpdate = notebookMetadata.views.findIndex(view => view.guid === currentView.guid);
 
@@ -163,7 +163,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 
 				if (cardToUpdate >= 0) {
 					notebookMetadata.views[viewToUpdate].cards[cardToUpdate] = override ? cardData : { ...notebookMetadata.views[viewToUpdate], ...cardData };
-					this.setNotebookMetadata(this._notebook, notebookMetadata);
+					this.setExtensionMetadata(this._notebook, notebookMetadata);
 				}
 			}
 		}

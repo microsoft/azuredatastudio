@@ -2,11 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, forwardRef, Inject, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { INotebookView, INotebookViewCard, INotebookViewsTab } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { LocalSelectionTransfer } from 'vs/workbench/browser/dnd';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { EventType as TouchEventType, GestureEvent } from 'vs/base/browser/touch';
@@ -28,11 +27,12 @@ export class NotebookViewsCardTabComponent extends AngularDisposable implements 
 	@Input() model: NotebookModel;
 	@Input() activeView: INotebookView;
 	@Input() ready: boolean;
-	@Input() cell: ICellModel;
 	@Input() active: boolean;
 	@Input() card: INotebookViewCard;
 	@Input() tab: INotebookViewsTab;
 	@Input() tabTransfer: LocalSelectionTransfer<NotebookViewsCardTabComponent>;
+
+	@Output() public onTabSelected = new EventEmitter<INotebookViewsTab>();
 
 	@ViewChild('templateRef') templateRef: TemplateRef<any>;
 	@ViewChild('tab', { read: ElementRef }) private _tab: ElementRef;
@@ -56,6 +56,9 @@ export class NotebookViewsCardTabComponent extends AngularDisposable implements 
 
 		const handleClickOrTouch = (e: MouseEvent | GestureEvent): void => {
 			this._tab.nativeElement.blur(); // prevent flicker of focus outline on tab until editor got focus
+			this.card.activeTab = this.tab;
+
+			this.onTabSelected.emit(this.tab);
 
 			if (e instanceof MouseEvent && e.button !== 0) {
 				if (e.button === 1) {
@@ -128,7 +131,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 
 	if (background && border) {
 		collector.addRule(`
-		view-card-tabs-component .tabs-container > .tab {
+		.notebook-card .tabs-container .tab {
 			border-color: ${border.toString()};
 			background-color: ${background.toString()};
 		}
@@ -137,7 +140,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 
 	if (activeBackground) {
 		collector.addRule(`
-		view-card-tabs-component .tabs-container > .tab.active {
+		.notebook-card .tabs-container .tab.active {
 			background-color: ${activeBackground.toString()};
 		}
 		`);

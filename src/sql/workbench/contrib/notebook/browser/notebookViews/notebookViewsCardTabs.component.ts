@@ -6,7 +6,7 @@ import 'vs/css!./notebookViewsCardTabs';
 import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { INotebookView, INotebookViewCard, INotebookViewsTab } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
-import { NotebookViewsCardTabComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCardTab.components';
+import { NotebookViewsCardTabComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCardTab.component';
 import { LocalSelectionTransfer } from 'vs/workbench/browser/dnd';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { TAB_BORDER, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
@@ -38,7 +38,6 @@ export class NotebookViewsCardTabsComponent extends AngularDisposable implements
 	}
 
 	public initialize(): void {
-
 		this.detectChanges();
 	}
 
@@ -48,9 +47,6 @@ export class NotebookViewsCardTabsComponent extends AngularDisposable implements
 
 	ngOnChanges() {
 		this.detectChanges();
-	}
-
-	onSelectedTabChanged(tab: INotebookViewsTab): void {
 	}
 
 	get elementRef(): ElementRef {
