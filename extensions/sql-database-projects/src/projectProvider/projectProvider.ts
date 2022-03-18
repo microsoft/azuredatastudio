@@ -60,7 +60,8 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
 			displayName: constants.emptyAzureDbProjectTypeDisplayName,
 			description: constants.emptyAzureDbProjectTypeDescription,
-			icon: IconPathHelper.colorfulSqlProject,
+			defaultTargetPlatform: sqldbproj.SqlTargetPlatform.sqlAzure,
+			icon: IconPathHelper.sqlDbProject,
 			sdkStyleOption: true,
 			sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl
 		}];
@@ -74,6 +75,13 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * @returns Uri of the newly created project file
 	 */
 	async createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform?: sqldbproj.SqlTargetPlatform, sdkStyle: boolean = true): Promise<vscode.Uri> {
+
+		if (!targetPlatform) {
+			const projectType = this.supportedProjectTypes.find(x => x.id === projectTypeId);
+			if (projectType && projectType.defaultTargetPlatform) {
+				targetPlatform = projectType.defaultTargetPlatform as sqldbproj.SqlTargetPlatform;
+			}
+		}
 		const projectFile = await this.projectController.createNewProject({
 			newProjName: name,
 			folderUri: location,
