@@ -310,7 +310,7 @@ export class DataTierApplicationWizard {
 			.withAdditionalProperties({
 				isPotentialDataLoss: this.model.potentialDataLoss?.toString(),
 				page: this.wizard.currentPage.toString(),
-				operation: this.selectedOperation.toString()
+				selectedOperation: this.selectedOperation.toString()
 			}).send();
 	}
 
