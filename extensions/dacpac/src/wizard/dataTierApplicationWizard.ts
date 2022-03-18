@@ -308,7 +308,9 @@ export class DataTierApplicationWizard {
 	private cancelDataTierApplicationWizard(): void {
 		TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, 'WizardCanceled')
 			.withAdditionalProperties({
-				isPotentialDataLoss: this.model.potentialDataLoss?.toString()
+				isPotentialDataLoss: this.model.potentialDataLoss?.toString(),
+				page: this.wizard.currentPage.toString(),
+				operation: this.selectedOperation.toString()
 			}).send();
 	}
 
