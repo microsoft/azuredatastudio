@@ -20,6 +20,8 @@ declare module 'azdata' {
 
 		export function registerBackupProvider(provider: BackupProvider): vscode.Disposable;
 
+		export function registerBlobProvider(provider: BlobProvider): vscode.Disposable;
+
 		export function registerRestoreProvider(provider: RestoreProvider): vscode.Disposable;
 
 		export function registerScriptingProvider(provider: ScriptingProvider): vscode.Disposable;
@@ -1936,7 +1938,6 @@ declare module 'azdata' {
 	export interface BackupProvider extends DataProvider {
 		backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: TaskExecutionMode): Thenable<BackupResponse>;
 		getBackupConfigInfo(connectionUri: string): Thenable<BackupConfigInfo>;
-		createSas(ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string): Thenable<CreateSasResponse>;
 	}
 
 	export interface RestoreProvider extends DataProvider {
@@ -1944,6 +1945,10 @@ declare module 'azdata' {
 		cancelRestorePlan(connectionUri: string, restoreInfo: RestoreInfo): Thenable<boolean>;
 		restore(connectionUri: string, restoreInfo: RestoreInfo): Thenable<RestoreResponse>;
 		getRestoreConfigInfo(connectionUri: string): Thenable<RestoreConfigInfo>;
+	}
+
+	export interface BlobProvider extends DataProvider {
+		createSas(ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Thenable<CreateSasResponse>;
 	}
 
 	export interface RestoreInfo {
@@ -4526,7 +4531,8 @@ declare module 'azdata' {
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 		IconProvider = 'IconProvider',
 		SerializationProvider = 'SerializationProvider',
-		SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider'
+		SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
+		BlobProvider = 'BlobProvider'
 	}
 
 	/**
