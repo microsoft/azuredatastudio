@@ -66,6 +66,14 @@ const ACTIONBAR_HEIGHT = 120;
 // this handles min size if rows is greater than the min grid visible rows
 const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 
+const LOCALIZED_XML_SHOWPLAN_COLUMN_NAME = localize('xmlShowplan', "XML Showplan");
+
+export function GetLocalizedXMLShowPlanColumnName(column: IColumn): string {
+	return column.columnName === 'Microsoft SQL Server 2005 XML Showplan'
+		? LOCALIZED_XML_SHOWPLAN_COLUMN_NAME
+		: escape(column.columnName);
+}
+
 export class GridPanel extends Disposable {
 	private container = document.createElement('div');
 	private scrollableView: ScrollableView;
@@ -423,9 +431,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 			return <Slick.Column<T>>{
 				id: i.toString(),
-				name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
-					? localize('xmlShowplan', "XML Showplan")
-					: escape(c.columnName),
+				name: GetLocalizedXMLShowPlanColumnName(c),
 				field: i.toString(),
 				formatter: isLinked ? hyperLinkFormatter : textFormatter,
 				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined

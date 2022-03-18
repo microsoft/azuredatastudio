@@ -5,6 +5,7 @@
 
 import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { GetLocalizedXMLShowPlanColumnName } from 'sql/workbench/contrib/query/browser/gridPanel';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
 import { IQueryMessage, ResultSetSummary, IQueryResultsWriter, MessageType } from 'sql/workbench/services/query/common/query';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
@@ -195,9 +196,7 @@ class Table extends Disposable {
 
 			return <IColumn>{
 				id: index.toString(),
-				name: col.columnName === 'Microsoft SQL Server 2005 XML Showplan'
-					? nls.localize('xmlShowplanColumnName', "XML Showplan")
-					: escape(col.columnName),
+				name: GetLocalizedXMLShowPlanColumnName(col),
 				field: index.toString(),
 				formatter: isLinked ? hyperLinkFormatter : textFormatter,
 				width: col.columnSize,
