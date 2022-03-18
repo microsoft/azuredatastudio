@@ -59,7 +59,8 @@ describe('ProjectsController', function (): void {
 					newProjName: 'TestProjectName',
 					folderUri: vscode.Uri.file(projFileDir),
 					projectTypeId: constants.emptySqlDatabaseProjectTypeId,
-					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575'
+					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
+					sdkStyle: false
 				});
 
 				let projFileText = (await fs.readFile(projFilePath)).toString();
@@ -77,7 +78,8 @@ describe('ProjectsController', function (): void {
 					folderUri: vscode.Uri.file(projFileDir),
 					projectTypeId: constants.emptySqlDatabaseProjectTypeId,
 					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
-					targetPlatform: projTargetPlatform
+					targetPlatform: projTargetPlatform,
+					sdkStyle: false
 				});
 
 				const project = await Project.openProject(projFilePath);
@@ -496,7 +498,8 @@ describe('ProjectsController', function (): void {
 					projName: 'testProject',
 					filePath: 'testLocation',
 					version: '1.0.0.0',
-					extractTarget: mssql.ExtractTarget['schemaObjectType']
+					extractTarget: mssql.ExtractTarget['schemaObjectType'],
+					sdkStyle: false
 				});
 
 				return Promise.resolve(undefined);
@@ -520,7 +523,7 @@ describe('ProjectsController', function (): void {
 			let folderPath = await testUtils.generateTestFolderPath();
 			let projectName = 'My Project';
 			let importPath;
-			let model: ImportDataModel = { connectionUri: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['file'] };
+			let model: ImportDataModel = { connectionUri: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['file'], sdkStyle: false };
 
 			const projController = new ProjectsController(testContext.outputChannel);
 			projController.setFilePath(model);
@@ -533,7 +536,7 @@ describe('ProjectsController', function (): void {
 			let folderPath = await testUtils.generateTestFolderPath();
 			let projectName = 'My Project';
 			let importPath;
-			let model: ImportDataModel = { connectionUri: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'] };
+			let model: ImportDataModel = { connectionUri: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'], sdkStyle: false };
 
 			const projController = new ProjectsController(testContext.outputChannel);
 			projController.setFilePath(model);

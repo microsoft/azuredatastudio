@@ -382,7 +382,8 @@ export enum DataProviderType {
 	IconProvider = 'IconProvider',
 	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
 	DataGridProvider = 'DataGridProvider',
-	TableDesignerProvider = 'TableDesignerProvider'
+	TableDesignerProvider = 'TableDesignerProvider',
+	ExecutionPlanProvider = 'ExecutionPlanProvider'
 }
 
 export enum DeclarativeDataType {
@@ -965,7 +966,9 @@ export namespace designers {
 		Script = 'script',
 		ForeignKeys = 'foreignKeys',
 		CheckConstraints = 'checkConstraints',
-		Indexes = 'indexes'
+		Indexes = 'indexes',
+		PrimaryKeyName = 'primaryKeyName',
+		PrimaryKeyColumns = 'primaryKeyColumns'
 	}
 
 	export enum TableColumnProperty {

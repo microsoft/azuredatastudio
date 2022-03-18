@@ -56,7 +56,7 @@ export class DesignerPropertyPathValidator {
 			if (!tableData.data || tableData.data.length - 1 < objectIndex) {
 				return false;
 			}
-			currentObject = tableData.data[objectIndex];
+			currentObject = tableData.data[objectIndex] as DesignerViewModel;
 			index++;
 		}
 		return true;
