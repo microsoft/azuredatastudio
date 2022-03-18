@@ -81,7 +81,7 @@ export async function createAzureFunction(connectionString: string, schema: stri
 			let templateId: string = selectedBinding.type === BindingType.input ? constants.inputTemplateID : constants.outputTemplateID;
 			let objectName = utils.generateQuotedFullName(schema, table);
 
-			// create C# HttpTrigger
+			// create C# Azure Function with SQL Binding
 			await azureFunctionApi.createFunction({
 				language: 'C#',
 				templateId: templateId,
