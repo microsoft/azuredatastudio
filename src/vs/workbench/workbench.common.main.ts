@@ -180,8 +180,13 @@ import { IJobManagementService } from 'sql/workbench/services/jobManagement/comm
 import { JobManagementService } from 'sql/workbench/services/jobManagement/common/jobManagementService';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { BackupService } from 'sql/platform/backup/common/backupServiceImp';
+<<<<<<< HEAD
 import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
 import { AzureBlobService } from 'sql/workbench/services/azureBlob/browser/azureBlobService';
+=======
+import { IBlobService } from 'sql/platform/blob/common/blobService';
+import { BlobService } from 'sql/platform/blob/common/blobServiceImpl';
+>>>>>>> 3dd52462dc (Moved createSas RPC to the BlobService)
 import { IBackupUiService } from 'sql/workbench/contrib/backup/common/backupUiService';
 import { BackupUiService } from 'sql/workbench/contrib/backup/browser/backupUiService';
 import { IRestoreDialogController, IRestoreService } from 'sql/workbench/services/restore/common/restoreService';
@@ -233,7 +238,11 @@ registerSingleton(IMetadataService, MetadataService);
 registerSingleton(IAdminService, AdminService);
 registerSingleton(IJobManagementService, JobManagementService);
 registerSingleton(IBackupService, BackupService);
+<<<<<<< HEAD
 registerSingleton(IAzureBlobService, AzureBlobService);
+=======
+registerSingleton(IBlobService, BlobService);
+>>>>>>> 3dd52462dc (Moved createSas RPC to the BlobService)
 registerSingleton(IBackupUiService, BackupUiService);
 registerSingleton(IScriptingService, ScriptingService);
 registerSingleton(IRestoreService, RestoreService);

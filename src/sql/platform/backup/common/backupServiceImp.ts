@@ -56,22 +56,6 @@ export class BackupService implements IBackupService {
 		});
 	}
 
-
-	public createSas(connectionUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string): Thenable<azdata.CreateSasResponse> {
-		return new Promise<azdata.CreateSasResponse>((resolve, reject) => {
-			const providerResult = this.getProvider(connectionUri);
-			if (providerResult) {
-				providerResult.provider.createSas(connectionUri, blobContainerUri, blobContainerKey, storageAccountName).then(result => {
-					resolve(result);
-				}, error => {
-					reject(error);
-				});
-			} else {
-				reject(invalidProvider());
-			}
-		});
-	}
-
 	private getProvider(connectionUri: string): { provider: azdata.BackupProvider, providerName: string } | undefined {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {

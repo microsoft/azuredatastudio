@@ -427,7 +427,7 @@
     }
   },
   "dependencies": {
-    "dataprotocol-client": "git://github.com/nemanja-milovancevic/sqlops-dataprotocolclient.git#1.2.5",
+    "dataprotocol-client": "https://github.com/nemanja-milovancevic/sqlops-dataprotocolclient.git#1.2.7",
     "figures": "^2.0.0",
     "find-remove": "1.2.1",
     "@microsoft/ads-service-downloader": "0.2.4",

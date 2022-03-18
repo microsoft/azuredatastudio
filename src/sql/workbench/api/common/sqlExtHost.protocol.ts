@@ -328,7 +328,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Creates shared access key
 	 */
-	$createSas(handle: number, ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string): Thenable<azdata.CreateSasResponse> { throw ni(); }
+	$createSas(handle: number, ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Thenable<azdata.CreateSasResponse> { throw ni(); }
 
 	/**
 	 * Restores a database

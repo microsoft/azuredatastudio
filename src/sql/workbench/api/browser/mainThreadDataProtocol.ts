@@ -32,7 +32,6 @@ import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/te
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/common/interface';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
-
 /**
  * Main thread class for handling data protocol management registration.
  */
@@ -191,9 +190,6 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			},
 			getBackupConfigInfo(connectionUri: string): Thenable<azdata.BackupConfigInfo> {
 				return self._proxy.$getBackupConfigInfo(handle, connectionUri);
-			},
-			createSas(ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string): Thenable<azdata.CreateSasResponse> {
-				return self._proxy.$createSas(handle, ownerUri, blobContainerUri, blobContainerKey, storageAccountName);
 			}
 		});
 
