@@ -30,7 +30,7 @@ import { Account } from 'azdata';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
 import { Blob, BlobContainer, AzureGraphResource, AzureResourceSubscription, GetBlobsResult } from 'azurecore';
-import { IBackupService } from 'sql/platform/backup/common/backupService';
+import { IBlobService } from 'sql/platform/blob/common/blobService';
 
 
 const ERROR_GETTING_BLOB_CONTAINERS = localize('urlbrowserdialog.getblobcontainerserror', "Error getting blob containers");
@@ -82,7 +82,7 @@ export class UrlBrowserDialog extends Modal {
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@IAzureAccountService private _azureAccountService: IAzureAccountService,
-		@IBackupService private _backupService: IBackupService
+		@IBlobService private _blobService: IBlobService
 	) {
 		super(title, TelemetryKeys.ModalDialogName.FileBrowser, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'flyout', hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
 		//this._viewModel = this._instantiationService.createInstance(FileBrowserViewModel);
@@ -367,7 +367,7 @@ export class UrlBrowserDialog extends Modal {
 		this._azureAccountService.getStorageAccountAccessKey(this._selectedAccount, this._selectedSubscription, this._selectedStorageAccount)
 			.then(getStorageAccountAccessKeyResult => {
 				const key1 = getStorageAccountAccessKeyResult.keyName1;
-				this._backupService.createSas(this._ownerUri, blobContainerUri, key1, this._selectedStorageAccount.name)
+				this._blobService.createSas(this._ownerUri, blobContainerUri, key1, this._selectedStorageAccount.name, this.nextYear())
 					.then(
 						result => {
 							const sas = result.sharedAccessSignature;
@@ -379,6 +379,12 @@ export class UrlBrowserDialog extends Modal {
 				this.spinner = false;
 			});
 
+	}
+
+	private nextYear(): string {
+		const today = new Date();
+		const nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDay());
+		return nextYear.toLocaleString().split(',')[0];
 	}
 
 	private registerListeners(): void {
