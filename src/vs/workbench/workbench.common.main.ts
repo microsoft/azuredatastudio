@@ -180,6 +180,8 @@ import { IJobManagementService } from 'sql/workbench/services/jobManagement/comm
 import { JobManagementService } from 'sql/workbench/services/jobManagement/common/jobManagementService';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { BackupService } from 'sql/platform/backup/common/backupServiceImp';
+import { IBlobService } from 'sql/platform/blob/common/blobService';
+import { BlobService } from 'sql/platform/blob/common/blobServiceImpl';
 import { IBackupUiService } from 'sql/workbench/contrib/backup/common/backupUiService';
 import { BackupUiService } from 'sql/workbench/contrib/backup/browser/backupUiService';
 import { IRestoreDialogController, IRestoreService } from 'sql/workbench/services/restore/common/restoreService';
@@ -227,6 +229,7 @@ registerSingleton(IMetadataService, MetadataService);
 registerSingleton(IAdminService, AdminService);
 registerSingleton(IJobManagementService, JobManagementService);
 registerSingleton(IBackupService, BackupService);
+registerSingleton(IBlobService, BlobService);
 registerSingleton(IBackupUiService, BackupUiService);
 registerSingleton(IScriptingService, ScriptingService);
 registerSingleton(IRestoreService, RestoreService);

@@ -26,9 +26,6 @@ export interface IBackupService {
 	 */
 	backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.BackupResponse>;
 
-
-	createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string): Thenable<azdata.CreateSasResponse>;
-
 	/**
 	 * Register a disaster recovery provider
 	 */

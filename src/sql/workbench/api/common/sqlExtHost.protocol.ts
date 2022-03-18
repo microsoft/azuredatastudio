@@ -313,7 +313,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Creates shared access key
 	 */
-	$createSas(handle: number, ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string): Thenable<azdata.CreateSasResponse> { throw ni(); }
+	$createSas(handle: number, ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Thenable<azdata.CreateSasResponse> { throw ni(); }
 
 	/**
 	 * Restores a database
@@ -616,6 +616,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerConnectionProvider(providerId: string, handle: number): Promise<any>;
 	$registerBackupProvider(providerId: string, handle: number): Promise<any>;
 	$registerRestoreProvider(providerId: string, handle: number): Promise<any>;
+	$registerBlobProvider(providerId: string, handle: number): Promise<any>;
 	$registerScriptingProvider(providerId: string, handle: number): Promise<any>;
 	$registerQueryProvider(providerId: string, handle: number): Promise<any>;
 	$registerProfilerProvider(providerId: string, handle: number): Promise<any>;
