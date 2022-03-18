@@ -326,17 +326,7 @@ export class DataTierApplicationWizard {
 		additionalProps.upgradeExistingDatabase = this.model.upgradeExisting.toString();
 		additionalProps.potentialDataLoss = this.model.potentialDataLoss.toString();
 
-		if (result?.success) {
-			TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, TelemetryAction.DeployDacpac)
-				.withAdditionalProperties(additionalProps)
-				.withAdditionalMeasurements(additionalMeasurements)
-				.send();
-		} else {
-			TelemetryReporter.createErrorEvent(TelemetryViews.DataTierApplicationWizard, TelemetryAction.DeployDacpac)
-				.withAdditionalProperties(additionalProps)
-				.withAdditionalMeasurements(additionalMeasurements)
-				.send();
-		}
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.DeployDacpac, additionalProps, additionalMeasurements);
 
 		return result;
 	}
@@ -353,15 +343,7 @@ export class DataTierApplicationWizard {
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - extractStartTime);
 		additionalMeasurements.extractedDacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
 
-		if (result?.success) {
-			TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, TelemetryAction.ExtractDacpac)
-				.withAdditionalMeasurements(additionalMeasurements)
-				.send();
-		} else {
-			TelemetryReporter.createErrorEvent(TelemetryViews.DataTierApplicationWizard, TelemetryAction.ExtractDacpac)
-				.withAdditionalMeasurements(additionalMeasurements)
-				.send();
-		}
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.ExtractDacpac, undefined, additionalMeasurements);
 
 		return result;
 	}
@@ -378,15 +360,7 @@ export class DataTierApplicationWizard {
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - exportStartTime);
 		additionalMeasurements.exportedBacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
 
-		if (result?.success) {
-			TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, TelemetryAction.ExportBacpac)
-				.withAdditionalMeasurements(additionalMeasurements)
-				.send();
-		} else {
-			TelemetryReporter.createErrorEvent(TelemetryViews.DataTierApplicationWizard, TelemetryAction.ExportBacpac)
-				.withAdditionalMeasurements(additionalMeasurements)
-				.send();
-		}
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.ExportBacpac, undefined, additionalMeasurements);
 
 		return result;
 	}
@@ -403,15 +377,7 @@ export class DataTierApplicationWizard {
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - importStartTime);
 		additionalMeasurements.importedBacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
 
-		if (result?.success) {
-			TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, TelemetryAction.ImportBacpac)
-				.withAdditionalMeasurements(additionalMeasurements)
-				.send();
-		} else {
-			TelemetryReporter.createErrorEvent(TelemetryViews.DataTierApplicationWizard, TelemetryAction.ImportBacpac)
-				.withAdditionalMeasurements(additionalMeasurements)
-				.send();
-		}
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.ImportBacpac, undefined, additionalMeasurements);
 
 		return result;
 	}
@@ -434,20 +400,10 @@ export class DataTierApplicationWizard {
 		additionalMeasurements.deployDacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
 		additionalProps.potentialDataLoss = this.model.potentialDataLoss.toString();
 
-		if (result?.success) {
-			TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, TelemetryAction.GenerateScript)
-				.withAdditionalProperties(additionalProps)
-				.withAdditionalMeasurements(additionalMeasurements)
-				.send();
-		} else {
-			TelemetryReporter.createErrorEvent(TelemetryViews.DataTierApplicationWizard, TelemetryAction.GenerateScript)
-				.withAdditionalProperties(additionalProps)
-				.withAdditionalMeasurements(additionalMeasurements)
-				.send();
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.GenerateScript, undefined, additionalMeasurements);
 
-			if (result.errorMessage) {
-				vscode.window.showErrorMessage(loc.generateDeployErrorMessage(result.errorMessage));
-			}
+		if (!result?.success && result.errorMessage) {
+			vscode.window.showErrorMessage(loc.generateDeployErrorMessage(result.errorMessage));
 		}
 
 		return result;
@@ -464,18 +420,10 @@ export class DataTierApplicationWizard {
 
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - deployPlanStartTime);
 
-		if (result?.success) {
-			TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, TelemetryAction.GenerateScript)
-				.withAdditionalMeasurements(additionalMeasurements)
-				.send();
-		} else {
-			TelemetryReporter.createErrorEvent(TelemetryViews.DataTierApplicationWizard, TelemetryAction.GenerateScript)
-				.withAdditionalMeasurements(additionalMeasurements)
-				.send();
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.GenerateDeployPlan, undefined, additionalMeasurements);
 
-			if (result.errorMessage) {
-				vscode.window.showErrorMessage(loc.deployPlanErrorMessage(result.errorMessage));
-			}
+		if (!result?.success && result.errorMessage) {
+			vscode.window.showErrorMessage(loc.deployPlanErrorMessage(result.errorMessage));
 		}
 
 		return result.report;
@@ -525,5 +473,19 @@ export class DataTierApplicationWizard {
 			this.dacfxService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).dacFx;
 		}
 		return this.dacfxService;
+	}
+
+	private sendDacFxOperationTelemetryEvent(result: azdata.ResultStatus, telemetryAction: string, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {
+		if (result?.success) {
+			TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, telemetryAction)
+				.withAdditionalProperties(additionalProps)
+				.withAdditionalMeasurements(additionalMeasurements)
+				.send();
+		} else {
+			TelemetryReporter.createErrorEvent(TelemetryViews.DataTierApplicationWizard, telemetryAction)
+				.withAdditionalProperties(additionalProps)
+				.withAdditionalMeasurements(additionalMeasurements)
+				.send();
+		}
 	}
 }

@@ -20,6 +20,7 @@ export enum TelemetryViews {
 export enum TelemetryAction {
 	DeployDacpac = 'DeployDacpacOperation',
 	GenerateScript = 'GenerateDeployScriptOperation',
+	GenerateDeployPlan = 'GenerateDeployPlan',
 	ExtractDacpac = 'ExtractDacpacOperation',
 	ExportBacpac = 'ExportBacpacOperation',
 	ImportBacpac = 'ImportBacpacOperation'
