@@ -29,6 +29,7 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { Emitter } from 'vs/base/common/event';
 
 export enum MessageLevel {
 	Error = 0,
@@ -147,6 +148,9 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _modalShowingContext: IContextKey<Array<string>>;
 	private readonly _staticKey: string;
 
+	private _onClosed = new Emitter<HideReason>();
+	public onClosed = this._onClosed.event;
+
 	/**
 	 * Get the back button, only available after render and if the hasBackButton option is true
 	 */
@@ -161,13 +165,20 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * (hyoshi - 10/2/2017 tracked by https://github.com/Microsoft/carbon/issues/1836)
 	 */
 	public setWide(isWide: boolean): void {
-		DOM.toggleClass(this._bodyContainer!, 'wide', isWide);
+		this._bodyContainer!.classList.toggle('wide', isWide);
 	}
 
 	/**
 	 * Constructor for modal
 	 * @param _title Title of the modal, if undefined, the title section is not rendered
 	 * @param _name Name of the modal, used for telemetry
+	 * @param _telemetryService
+	 * @param layoutService
+	 * @param _clipboardService
+	 * @param _themeService
+	 * @param logService
+	 * @param textResourcePropertiesService
+	 * @param _contextKeyService
 	 * @param options Modal options
 	 */
 	constructor(
@@ -356,18 +367,18 @@ export abstract class Modal extends Disposable implements IThemable {
 		if (this.shouldShowExpandMessageButton) {
 			DOM.append(this._detailsButtonContainer!, this._toggleMessageDetailButton!.element);
 		} else {
-			DOM.removeNode(this._toggleMessageDetailButton!.element);
+			this._toggleMessageDetailButton!.element.remove();
 		}
 	}
 
 	private toggleMessageDetail() {
-		const isExpanded = DOM.hasClass(this._messageSummary!, MESSAGE_EXPANDED_MODE_CLASS);
-		DOM.toggleClass(this._messageSummary!, MESSAGE_EXPANDED_MODE_CLASS, !isExpanded);
+		const isExpanded = this._messageSummary!.classList.contains(MESSAGE_EXPANDED_MODE_CLASS);
+		this._messageSummary!.classList.toggle(MESSAGE_EXPANDED_MODE_CLASS, !isExpanded);
 		this._toggleMessageDetailButton!.label = isExpanded ? SHOW_DETAILS_TEXT : localize('hideMessageDetails', "Hide Details");
 
 		if (this._messageDetailText) {
 			if (isExpanded) {
-				DOM.removeNode(this._messageDetail!);
+				this._messageDetail!.remove();
 			} else {
 				DOM.append(this._messageBody!, this._messageDetail!);
 			}
@@ -458,7 +469,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			}
 		}));
 		this.disposableStore.add(trapKeyboardNavigation(this._modalDialog!));
-		this.disposableStore.add(DOM.addDisposableListener(window, DOM.EventType.RESIZE, (e: Event) => {
+		this.disposableStore.add(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
 			this.layout(DOM.getTotalHeight(this._modalBodySection!));
 		}));
 
@@ -476,7 +487,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Hides the modal and removes key listeners
 	 */
-	protected hide(reason?: HideReason, currentPageName?: string): void {
+	protected hide(reason: HideReason = 'close', currentPageName?: string): void {
 		this._modalShowingContext.get()!.pop();
 		this._bodyContainer!.remove();
 		this.disposableStore.clear();
@@ -488,6 +499,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			})
 			.send();
 		this.restoreKeyboardFocus();
+		this._onClosed.fire(reason);
 	}
 
 	private restoreKeyboardFocus() {
@@ -525,7 +537,6 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Returns a footer button matching the provided label
 	 * @param label Label to show on the button
-	 * @param onSelect The callback to call when the button is selected
 	 */
 	protected findFooterButton(label: string): Button | undefined {
 		return this._footerButtons.find(e => {
@@ -576,8 +587,8 @@ export abstract class Modal extends Disposable implements IThemable {
 					severityText = WARNING_ALT_TEXT;
 				}
 				levelClasses.forEach(level => {
-					DOM.toggleClass(this._messageIcon!, level, selectedLevel === level);
-					DOM.toggleClass(this._messageElement!, level, selectedLevel === level);
+					this._messageIcon!.classList.toggle(level, selectedLevel === level);
+					this._messageElement!.classList.toggle(level, selectedLevel === level);
 				});
 
 				this._messageIcon!.title = severityText;
@@ -586,7 +597,7 @@ export abstract class Modal extends Disposable implements IThemable {
 				this._messageSummary!.title = message!;
 				this._messageDetail!.innerText = description;
 			}
-			DOM.removeNode(this._messageDetail!);
+			this._messageDetail!.remove();
 			this.messagesElementVisible = !!this._messageSummaryText;
 			// Read out the description to screen readers so they don't have to
 			// search around for the alert box to hear the extra information

@@ -44,10 +44,10 @@ suite('Account picker service tests', () => {
 
 		// Then:
 		// ... All the events for the view models should be properly initialized
-		assert.notEqual(service.addAccountCompleteEvent, undefined);
-		assert.notEqual(service.addAccountErrorEvent, undefined);
-		assert.notEqual(service.addAccountStartEvent, undefined);
-		assert.notEqual(service.onAccountSelectionChangeEvent, undefined);
+		assert.notStrictEqual(service.addAccountCompleteEvent, undefined);
+		assert.notStrictEqual(service.addAccountErrorEvent, undefined);
+		assert.notStrictEqual(service.addAccountStartEvent, undefined);
+		assert.notStrictEqual(service.onAccountSelectionChangeEvent, undefined);
 
 
 		// ... All the events should properly fire

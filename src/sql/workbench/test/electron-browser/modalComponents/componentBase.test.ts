@@ -67,7 +67,7 @@ suite('ComponentBase Tests', () => {
 	});
 
 	test('Component validation runs external validations stored in the model store', () => {
-		assert.equal(testComponent.valid, true, 'Test component validity did not default to true');
+		assert.strictEqual(testComponent.valid, true, 'Test component validity did not default to true');
 		let validationCalls = 0;
 		modelStore.registerValidationCallback(componentId => {
 			validationCalls += 1;
@@ -75,14 +75,14 @@ suite('ComponentBase Tests', () => {
 		});
 
 		return testComponent.validate().then(valid => {
-			assert.equal(validationCalls, 1, 'External validation was not called once');
-			assert.equal(valid, false, 'Validate call did not return correct value from the external validation');
-			assert.equal(testComponent.valid, false, 'Validate call did not update the component valid property');
+			assert.strictEqual(validationCalls, 1, 'External validation was not called once');
+			assert.strictEqual(valid, false, 'Validate call did not return correct value from the external validation');
+			assert.strictEqual(testComponent.valid, false, 'Validate call did not update the component valid property');
 		});
 	});
 
 	test('Component validation runs default component validations', () => {
-		assert.equal(testComponent.valid, true, 'Test component validity did not default to true');
+		assert.strictEqual(testComponent.valid, true, 'Test component validity did not default to true');
 		let validationCalls = 0;
 		testComponent.addValidation(() => {
 			validationCalls += 1;
@@ -90,20 +90,20 @@ suite('ComponentBase Tests', () => {
 		});
 
 		return testComponent.validate().then(valid => {
-			assert.equal(validationCalls, 1, 'Default validation was not called once');
-			assert.equal(valid, false, 'Validate call did not return correct value from the default validation');
-			assert.equal(testComponent.valid, false, 'Validate call did not update the component valid property');
+			assert.strictEqual(validationCalls, 1, 'Default validation was not called once');
+			assert.strictEqual(valid, false, 'Validate call did not return correct value from the default validation');
+			assert.strictEqual(testComponent.valid, false, 'Validate call did not update the component valid property');
 		});
 	});
 
 	test('Container validation reflects child component validity', () => {
-		assert.equal(testContainer.valid, true, 'Test container validity did not default to true');
+		assert.strictEqual(testContainer.valid, true, 'Test container validity did not default to true');
 		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
 		testComponent.addValidation(() => false);
 		return testComponent.validate().then(() => {
 			return testContainer.validate().then(valid => {
-				assert.equal(valid, false, 'Validate call did not return correct value for container child validation');
-				assert.equal(testContainer.valid, false, 'Validate call did not update the container valid property');
+				assert.strictEqual(valid, false, 'Validate call did not return correct value for container child validation');
+				assert.strictEqual(testContainer.valid, false, 'Validate call did not update the container valid property');
 			});
 		});
 	});
@@ -112,8 +112,8 @@ suite('ComponentBase Tests', () => {
 		testContainer.registerEventHandler(event => {
 			try {
 				if (event.eventType === ComponentEventType.validityChanged) {
-					assert.equal(testContainer.valid, false, 'Test container validity did not change to false when child validity changed');
-					assert.equal(event.args, false, 'ValidityChanged event did not contain the updated container validity');
+					assert.strictEqual(testContainer.valid, false, 'Test container validity did not change to false when child validity changed');
+					assert.strictEqual(event.args, false, 'ValidityChanged event did not contain the updated container validity');
 					done();
 				}
 			} catch (err) {
@@ -127,51 +127,51 @@ suite('ComponentBase Tests', () => {
 
 	test('Inserting a component to a container adds the component to the right place', () => {
 		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
-		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
+		assert.strictEqual(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		testContainer.addToContainer([{ componentDescriptor: testComponent2.descriptor, config: undefined, index: 0 }]);
-		assert.equal(testContainer.TestItems.length, 2, `Unexpected number of items. Expected 2 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
-		assert.equal(testContainer.TestItems[0].descriptor.id, testComponent2.descriptor.id);
+		assert.strictEqual(testContainer.TestItems.length, 2, `Unexpected number of items. Expected 2 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
+		assert.strictEqual(testContainer.TestItems[0].descriptor.id, testComponent2.descriptor.id);
 	});
 
 	test('Inserting a component to a container given negative index fails', () => {
 		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
-		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
+		assert.strictEqual(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		assert.throws(() => testContainer.addToContainer([{ componentDescriptor: testComponent2.descriptor, config: undefined, index: -1 }]));
 	});
 
 	test('Inserting a component to a container given wrong index fails', () => {
 		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
-		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
+		assert.strictEqual(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		assert.throws(() => testContainer.addToContainer([{ componentDescriptor: testComponent2.descriptor, config: undefined, index: 10 }]));
 	});
 
 	test('Inserting a component to a container given end of list succeeds', () => {
 		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
-		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
+		assert.strictEqual(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		testContainer.addToContainer([{ componentDescriptor: testComponent2.descriptor, config: undefined, index: 1 }]);
-		assert.equal(testContainer.TestItems.length, 2, `Unexpected number of items. Expected 2 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
+		assert.strictEqual(testContainer.TestItems.length, 2, `Unexpected number of items. Expected 2 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 	});
 
 	test('Removing a component the does not exist does not make change in the items', () => {
 		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
-		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
+		assert.strictEqual(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		testContainer.removeFromContainer(testComponent2.descriptor);
-		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
+		assert.strictEqual(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 	});
 
 	test('Removing a component removes it from items', () => {
 		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
 		testContainer.addToContainer([{ componentDescriptor: testComponent2.descriptor, config: undefined }]);
-		assert.equal(testContainer.TestItems.length, 2, `Unexpected number of items. Expected 2 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
+		assert.strictEqual(testContainer.TestItems.length, 2, `Unexpected number of items. Expected 2 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		testContainer.removeFromContainer(testComponent.descriptor);
-		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
-		assert.equal(testContainer.TestItems[0].descriptor.id, testComponent2.descriptor.id);
+		assert.strictEqual(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
+		assert.strictEqual(testContainer.TestItems[0].descriptor.id, testComponent2.descriptor.id);
 	});
 
 	test('Container dost not add same component twice', () => {
 		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
-		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
+		assert.strictEqual(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined, index: 0 }]);
-		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
+		assert.strictEqual(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 	});
 });

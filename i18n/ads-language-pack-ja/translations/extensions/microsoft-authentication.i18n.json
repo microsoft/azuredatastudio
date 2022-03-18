@@ -8,18 +8,18 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Microsoft アカウント",
-			"description": "Microsoft 認証プロバイダー",
-			"signIn": "サインイン",
-			"signOut": "サインアウト"
-		},
 		"dist/AADHelper": {
 			"signOut": "保存された認証情報を読み取ることができなかったため、サインアウトされました。"
 		},
 		"dist/keychain": {
-			"troubleshooting": "トラブルシューティング ガイド",
-			"keychainWriteError": "ログイン情報のキーチェーンへの書き込みが、エラー '{0}' で失敗しました。"
+			"keychainWriteError": "ログイン情報のキーチェーンへの書き込みが、エラー '{0}' で失敗しました。",
+			"troubleshooting": "トラブルシューティング ガイド"
+		},
+		"package": {
+			"description": "Microsoft 認証プロバイダー",
+			"displayName": "Microsoft アカウント",
+			"signIn": "サインイン",
+			"signOut": "サインアウト"
 		}
 	}
 }

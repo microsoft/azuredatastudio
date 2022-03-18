@@ -52,6 +52,7 @@ import { TestTreeView } from 'sql/workbench/services/connection/test/browser/tes
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { ConnectionTreeService, IConnectionTreeService } from 'sql/workbench/services/connection/common/connectionTreeService';
 import { ConnectionBrowserView } from 'sql/workbench/services/connection/browser/connectionBrowseTab';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 suite('ConnectionDialogService tests', () => {
 	const testTreeViewId = 'testTreeView';
@@ -102,6 +103,7 @@ suite('ConnectionDialogService tests', () => {
 		testInstantiationService.stub(ILayoutService, new TestLayoutService());
 		testInstantiationService.stub(IAdsTelemetryService, new NullAdsTelemetryService());
 		testInstantiationService.stub(IConnectionTreeService, new ConnectionTreeService());
+		testInstantiationService.stub(ICapabilitiesService, new TestCapabilitiesService());
 		connectionDialogService = new ConnectionDialogService(testInstantiationService, capabilitiesService, errorMessageService.object,
 			new TestConfigurationService(), new BrowserClipboardService(), NullCommandService, new NullLogService());
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
@@ -113,7 +115,7 @@ suite('ConnectionDialogService tests', () => {
 		mockConnectionManagementService.setup(x => x.getConnectionGroups(TypeMoq.It.isAny())).returns(() => {
 			return [new ConnectionProfileGroup('test_group', undefined, 'test_group')];
 		});
-		testConnectionDialog = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, testInstantiationService, mockConnectionManagementService.object, undefined, undefined, viewDescriptorService, new TestThemeService(), new TestLayoutService(), new NullAdsTelemetryService(), new MockContextKeyService(), undefined, new NullLogService(), new TestTextResourcePropertiesService(new TestConfigurationService), new TestConfigurationService());
+		testConnectionDialog = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, testInstantiationService, mockConnectionManagementService.object, undefined, undefined, viewDescriptorService, new TestThemeService(), new TestLayoutService(), new NullAdsTelemetryService(), new MockContextKeyService(), undefined, new NullLogService(), new TestTextResourcePropertiesService(new TestConfigurationService), new TestConfigurationService(), new TestCapabilitiesService());
 		testConnectionDialog.render();
 		testConnectionDialog['renderBody'](DOM.createStyleSheet());
 		(connectionDialogService as any)._connectionDialog = testConnectionDialog;
@@ -281,7 +283,7 @@ suite('ConnectionDialogService tests', () => {
 		Also openDialogAndWait returns the connection profile passed in */
 		(connectionDialogService as any).handleDefaultOnConnect(testConnectionParams, connectionProfile);
 		let result = await connectionPromise;
-		assert.equal(result, connectionProfile);
+		assert.strictEqual(result, connectionProfile);
 	});
 
 	test('handleFillInConnectionInputs calls function on ConnectionController widget', async () => {
@@ -292,7 +294,7 @@ suite('ConnectionDialogService tests', () => {
 		await connectionDialogService.showDialog(mockConnectionManagementService.object, testConnectionParams, connectionProfile);
 		await (connectionDialogService as any).handleFillInConnectionInputs(connectionProfile);
 		let returnedModel = ((connectionDialogService as any)._connectionControllerMap['MSSQL'] as any)._model;
-		assert.equal(returnedModel._groupName, 'testGroup');
+		assert.strictEqual(returnedModel._groupName, 'testGroup');
 		assert(called);
 	});
 

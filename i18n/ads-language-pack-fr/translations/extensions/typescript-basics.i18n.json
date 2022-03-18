@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Bases du langage TypeScript",
-			"description": "Fournit des extraits de code, la coloration syntaxique, la correspondance des crochets et le repli dans les fichiers TypeScript."
+			"description": "Fournit des extraits de code, la coloration syntaxique, la correspondance des crochets et le repli dans les fichiers TypeScript.",
+			"displayName": "Bases du langage TypeScript"
 		}
 	}
 }

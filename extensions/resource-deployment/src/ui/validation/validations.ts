@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { InputValueType } from 'resource-deployment';
 import * as vscode from 'vscode';
 import { isUndefinedOrEmpty, throwUnless } from '../../common/utils';
-import { InputValueType } from '../modelViewUtils';
 
 export interface ValidationResult {
 	valid: boolean;

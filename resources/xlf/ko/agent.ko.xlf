@@ -1,298 +1,262 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/agent/dist/data/alertData" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="alertData.DefaultAlertTypString">
+        <source xml:lang="en">SQL Server event alert</source>
+        <target state="translated">SQL Server 이벤트 경고</target>
+      </trans-unit>
+      <trans-unit id="alertData.saveErrorMessage">
+        <source xml:lang="en">Alert update failed '{0}'</source>
+        <target state="translated">'{0}' 경고를 업데이트하지 못했습니다.</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.PerformanceCondition">
+        <source xml:lang="en">SQL Server performance condition alert</source>
+        <target state="translated">SQL Server 성능 조건 경고</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.WmiEvent">
+        <source xml:lang="en">WMI event alert</source>
+        <target state="translated">WMI 이벤트 경고</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/agent/dist/data/jobData" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="jobData.jobNameRequired">
+        <source xml:lang="en">Job name must be provided</source>
+        <target state="translated">작업 이름을 지정해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="jobData.newJobErrorMessage">
+        <source xml:lang="en">Job creation failed '{0}'</source>
+        <target state="translated">'{0}' 작업을 만들지 못했습니다.</target>
+      </trans-unit>
+      <trans-unit id="jobData.newJobSuccessMessage">
+        <source xml:lang="en">Job '{0}' created successfully</source>
+        <target state="translated">'{0}' 작업을 만들었습니다.</target>
+      </trans-unit>
+      <trans-unit id="jobData.saveErrorMessage">
+        <source xml:lang="en">Job update failed '{0}'</source>
+        <target state="translated">'{0}' 작업을 업데이트하지 못했습니다.</target>
+      </trans-unit>
+      <trans-unit id="jobData.saveSucessMessage">
+        <source xml:lang="en">Job '{0}' updated successfully</source>
+        <target state="translated">'{0}' 작업을 업데이트했습니다.</target>
+      </trans-unit>
+      <trans-unit id="jobData.whenJobCompletes">
+        <source xml:lang="en">When the job completes</source>
+        <target state="translated">작업 완료 시</target>
+      </trans-unit>
+      <trans-unit id="jobData.whenJobFails">
+        <source xml:lang="en">When the job fails</source>
+        <target state="translated">작업 실패 시</target>
+      </trans-unit>
+      <trans-unit id="jobData.whenJobSucceeds">
+        <source xml:lang="en">When the job succeeds</source>
+        <target state="translated">작업 성공 시</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/agent/dist/data/jobStepData" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="jobStepData.saveErrorMessage">
+        <source xml:lang="en">Step update failed '{0}'</source>
+        <target state="translated">'{0}' 단계를 업데이트하지 못했습니다.</target>
+      </trans-unit>
+      <trans-unit id="stepData.jobNameRequired">
+        <source xml:lang="en">Job name must be provided</source>
+        <target state="translated">작업 이름을 지정해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="stepData.stepNameRequired">
+        <source xml:lang="en">Step name must be provided</source>
+        <target state="translated">단계 이름을 지정해야 합니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/agent/dist/data/notebookData" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="notebookData.invalidNotebookPath">
+        <source xml:lang="en">Invalid notebook path</source>
+        <target state="translated">전자 필기장 경로가 잘못됨</target>
+      </trans-unit>
+      <trans-unit id="notebookData.jobExists">
+        <source xml:lang="en">Job with similar name already exists</source>
+        <target state="translated">이름이 비슷한 작업이 이미 있음</target>
+      </trans-unit>
+      <trans-unit id="notebookData.jobNameRequired">
+        <source xml:lang="en">Notebook name must be provided</source>
+        <target state="translated">전자 필기장 이름을 제공해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="notebookData.newJobErrorMessage">
+        <source xml:lang="en">Notebook creation failed '{0}'</source>
+        <target state="translated">Notebook 만들기 실패 ‘{0}’</target>
+      </trans-unit>
+      <trans-unit id="notebookData.newJobSuccessMessage">
+        <source xml:lang="en">Notebook '{0}' created successfully</source>
+        <target state="translated">Notebook '{0}'이(가) 생성됨</target>
+      </trans-unit>
+      <trans-unit id="notebookData.saveErrorMessage">
+        <source xml:lang="en">Notebook update failed '{0}'</source>
+        <target state="translated">Notebook 업데이트 실패 '{0}'</target>
+      </trans-unit>
+      <trans-unit id="notebookData.saveSucessMessage">
+        <source xml:lang="en">Notebook '{0}' updated successfully</source>
+        <target state="translated">Notebook '{0}'을(를) 업데이트함</target>
+      </trans-unit>
+      <trans-unit id="notebookData.selectExecutionDatabase">
+        <source xml:lang="en">Select execution database</source>
+        <target state="translated">실행 데이터베이스 선택</target>
+      </trans-unit>
+      <trans-unit id="notebookData.selectStorageDatabase">
+        <source xml:lang="en">Select storage database</source>
+        <target state="translated">저장소 데이터베이스 선택</target>
+      </trans-unit>
+      <trans-unit id="notebookData.templatePathRequired">
+        <source xml:lang="en">Template path must be provided</source>
+        <target state="translated">템플릿 경로를 제공해야 함</target>
+      </trans-unit>
+      <trans-unit id="notebookData.whenJobCompletes">
+        <source xml:lang="en">When the notebook completes</source>
+        <target state="translated">전자 필기장이 완료되는 경우</target>
+      </trans-unit>
+      <trans-unit id="notebookData.whenJobFails">
+        <source xml:lang="en">When the notebook fails</source>
+        <target state="translated">전자 필기장이 실패하는 경우</target>
+      </trans-unit>
+      <trans-unit id="notebookData.whenJobSucceeds">
+        <source xml:lang="en">When the notebook succeeds</source>
+        <target state="translated">전자 필기장이 성공하는 경우</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/agent/dist/data/proxyData" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="proxyData.newJobSuccessMessage">
+        <source xml:lang="en">Proxy '{0}' created successfully</source>
+        <target state="translated">'{0}' 프록시를 만들었습니다.</target>
+      </trans-unit>
+      <trans-unit id="proxyData.saveErrorMessage">
+        <source xml:lang="en">Proxy update failed '{0}'</source>
+        <target state="translated">프록시를 업데이트하지 못했습니다. '{0}'</target>
+      </trans-unit>
+      <trans-unit id="proxyData.saveSucessMessage">
+        <source xml:lang="en">Proxy '{0}' updated successfully</source>
+        <target state="translated">'{0}' 프록시를 업데이트했습니다.</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/agent/dist/dialogs/agentDialog" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="agentDialog.OK">
-        <source xml:lang="en">OK</source>
-        <target state="translated">확인</target>
-      </trans-unit>
       <trans-unit id="agentDialog.Cancel">
         <source xml:lang="en">Cancel</source>
         <target state="translated">취소</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/agent/dist/dialogs/jobStepDialog" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="jobStepDialog.fileBrowserTitle">
-        <source xml:lang="en">Locate Database Files - </source>
-        <target state="translated">데이터베이스 파일 찾기 - </target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.ok">
+      <trans-unit id="agentDialog.OK">
         <source xml:lang="en">OK</source>
         <target state="translated">확인</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">취소</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.general">
-        <source xml:lang="en">General</source>
-        <target state="translated">일반</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.advanced">
-        <source xml:lang="en">Advanced</source>
-        <target state="translated">고급</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.open">
-        <source xml:lang="en">Open...</source>
-        <target state="translated">열기...</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.parse">
-        <source xml:lang="en">Parse</source>
-        <target state="translated">구문 분석</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.successParse">
-        <source xml:lang="en">The command was successfully parsed.</source>
-        <target state="translated">명령을 구문 분석했습니다.</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.failParse">
-        <source xml:lang="en">The command failed.</source>
-        <target state="translated">명령이 실패했습니다.</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.blankStepName">
-        <source xml:lang="en">The step name cannot be left blank</source>
-        <target state="translated">단계 이름은 비워 둘 수 없습니다.</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.processExitCode">
-        <source xml:lang="en">Process exit code of a successful command:</source>
-        <target state="translated">성공한 명령의 프로세스 종료 코드:</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.stepNameLabel">
-        <source xml:lang="en">Step Name</source>
-        <target state="translated">단계 이름</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.typeLabel">
-        <source xml:lang="en">Type</source>
-        <target state="translated">형식</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.runAsLabel">
-        <source xml:lang="en">Run as</source>
-        <target state="translated">다음 계정으로 실행</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.databaseLabel">
-        <source xml:lang="en">Database</source>
-        <target state="translated">데이터베이스</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.commandLabel">
-        <source xml:lang="en">Command</source>
-        <target state="translated">명령</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.successAction">
-        <source xml:lang="en">On success action</source>
-        <target state="translated">성공한 경우 동작</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.failureAction">
-        <source xml:lang="en">On failure action</source>
-        <target state="translated">실패한 경우 동작</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.runAsUser">
-        <source xml:lang="en">Run as user</source>
-        <target state="translated">사용자로 실행</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.retryAttempts">
-        <source xml:lang="en">Retry Attempts</source>
-        <target state="translated">재시도 횟수</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.retryInterval">
-        <source xml:lang="en">Retry Interval (minutes)</source>
-        <target state="translated">재시도 간격(분)</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.logToTable">
-        <source xml:lang="en">Log to table</source>
-        <target state="translated">테이블에 기록</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.appendExistingTableEntry">
-        <source xml:lang="en">Append output to exisiting entry in table</source>
-        <target state="translated">테이블의 기존 항목에 출력 추가</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.includeStepOutputHistory">
-        <source xml:lang="en">Include step output in history</source>
-        <target state="translated">기록에 단계 출력 포함</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.outputFile">
-        <source xml:lang="en">Output File</source>
-        <target state="translated">출력 파일</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.appendOutputToFile">
-        <source xml:lang="en">Append output to existing file</source>
-        <target state="translated">기존 파일에 출력 추가</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.selectedPath">
-        <source xml:lang="en">Selected path</source>
-        <target state="translated">선택한 경로</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.filesOfType">
-        <source xml:lang="en">Files of type</source>
-        <target state="translated">파일 형식</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.fileName">
-        <source xml:lang="en">File name</source>
-        <target state="translated">파일 이름</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.allFiles">
-        <source xml:lang="en">All Files (*)</source>
-        <target state="translated">모든 파일(*)</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.newJobStep">
-        <source xml:lang="en">New Job Step</source>
-        <target state="translated">새 작업 단계</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.editJobStep">
-        <source xml:lang="en">Edit Job Step</source>
-        <target state="translated">작업 단계 편집</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.TSQL">
-        <source xml:lang="en">Transact-SQL script (T-SQL)</source>
-        <target state="translated">Transact-SQL 스크립트(T-SQL)</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.powershell">
-        <source xml:lang="en">PowerShell</source>
-        <target state="translated">PowerShell</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.CmdExec">
-        <source xml:lang="en">Operating system (CmdExec)</source>
-        <target state="translated">운영 체제(CmdExec)</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.replicationDistribution">
-        <source xml:lang="en">Replication Distributor</source>
-        <target state="translated">복제 배포자</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.replicationMerge">
-        <source xml:lang="en">Replication Merge</source>
-        <target state="translated">복제 병합</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.replicationQueueReader">
-        <source xml:lang="en">Replication Queue Reader</source>
-        <target state="translated">복제 큐 판독기</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.replicationSnapshot">
-        <source xml:lang="en">Replication Snapshot</source>
-        <target state="translated">복제 스냅샷</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.replicationTransactionLogReader">
-        <source xml:lang="en">Replication Transaction-Log Reader</source>
-        <target state="translated">복제 트랜잭션 로그 판독기</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.analysisCommand">
-        <source xml:lang="en">SQL Server Analysis Services Command</source>
-        <target state="translated">SQL Server Analysis Services 명령</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.analysisQuery">
-        <source xml:lang="en">SQL Server Analysis Services Query</source>
-        <target state="translated">SQL Server Analysis Services 쿼리</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.servicesPackage">
-        <source xml:lang="en">SQL Server Integration Service Package</source>
-        <target state="translated">SQL Server 통합 서비스 패키지</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.agentServiceAccount">
-        <source xml:lang="en">SQL Server Agent Service Account</source>
-        <target state="translated">SQL Server 에이전트 서비스 계정</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.nextStep">
-        <source xml:lang="en">Go to the next step</source>
-        <target state="translated">다음 단계로 이동</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.quitJobSuccess">
-        <source xml:lang="en">Quit the job reporting success</source>
-        <target state="translated">성공 보고와 함께 작업 종료</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.quitJobFailure">
-        <source xml:lang="en">Quit the job reporting failure</source>
-        <target state="translated">실패 보고와 함께 작업 종료</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/agent/dist/dialogs/pickScheduleDialog" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="pickSchedule.jobSchedules">
-        <source xml:lang="en">Job Schedules</source>
-        <target state="translated">작업 일정</target>
-      </trans-unit>
-      <trans-unit id="pickSchedule.ok">
-        <source xml:lang="en">OK</source>
-        <target state="translated">확인</target>
-      </trans-unit>
-      <trans-unit id="pickSchedule.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">취소</target>
-      </trans-unit>
-      <trans-unit id="pickSchedule.availableSchedules">
-        <source xml:lang="en">Available Schedules:</source>
-        <target state="translated">사용 가능한 일정:</target>
-      </trans-unit>
-      <trans-unit id="pickSchedule.scheduleName">
-        <source xml:lang="en">Name</source>
-        <target state="translated">이름</target>
-      </trans-unit>
-      <trans-unit id="pickSchedule.scheduleID">
-        <source xml:lang="en">ID</source>
-        <target state="translated">ID</target>
-      </trans-unit>
-      <trans-unit id="pickSchedule.description">
-        <source xml:lang="en">Description</source>
-        <target state="translated">설명</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/agent/dist/dialogs/alertDialog" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="alertDialog.createAlert">
-        <source xml:lang="en">Create Alert</source>
-        <target state="translated">경고 만들기</target>
+      <trans-unit id="alertDialog.AdditionalNotification">
+        <source xml:lang="en">Additional notification message to send</source>
+        <target state="translated">전송할 추가 알림 메시지</target>
       </trans-unit>
-      <trans-unit id="alertDialog.editAlert">
-        <source xml:lang="en">Edit Alert</source>
-        <target state="translated">경고 편집</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.General">
-        <source xml:lang="en">General</source>
-        <target state="translated">일반</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.Response">
-        <source xml:lang="en">Response</source>
-        <target state="translated">응답</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.Options">
-        <source xml:lang="en">Options</source>
-        <target state="translated">옵션</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.eventAlert">
-        <source xml:lang="en">Event alert definition</source>
-        <target state="translated">이벤트 경고 정의</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.Name">
-        <source xml:lang="en">Name</source>
-        <target state="translated">이름</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.Type">
-        <source xml:lang="en">Type</source>
-        <target state="translated">형식</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.Enabled">
-        <source xml:lang="en">Enabled</source>
-        <target state="translated">사용</target>
+      <trans-unit id="alertDialog.AllDatabases">
+        <source xml:lang="en">&lt;all databases&gt;</source>
+        <target state="translated">&lt;모든 데이터베이스&gt;</target>
       </trans-unit>
       <trans-unit id="alertDialog.DatabaseName">
         <source xml:lang="en">Database name</source>
         <target state="translated">데이터베이스 이름</target>
       </trans-unit>
+      <trans-unit id="alertDialog.DelayMinutes">
+        <source xml:lang="en">Delay Minutes</source>
+        <target state="translated">지연(분)</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.DelaySeconds">
+        <source xml:lang="en">Delay Seconds</source>
+        <target state="translated">지연(초)</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.Enabled">
+        <source xml:lang="en">Enabled</source>
+        <target state="translated">사용</target>
+      </trans-unit>
       <trans-unit id="alertDialog.ErrorNumber">
         <source xml:lang="en">Error number</source>
         <target state="translated">오류 번호</target>
       </trans-unit>
-      <trans-unit id="alertDialog.Severity">
-        <source xml:lang="en">Severity</source>
-        <target state="translated">심각도</target>
+      <trans-unit id="alertDialog.ExecuteJob">
+        <source xml:lang="en">Execute Job</source>
+        <target state="translated">작업 실행</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.ExecuteJobName">
+        <source xml:lang="en">Job Name</source>
+        <target state="translated">작업 이름</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.General">
+        <source xml:lang="en">General</source>
+        <target state="translated">일반</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.IncludeErrorInEmail">
+        <source xml:lang="en">Include alert error text in e-mail</source>
+        <target state="translated">전자 메일에 경고 오류 텍스트 포함</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.IncludeErrorInPager">
+        <source xml:lang="en">Include alert error text in pager</source>
+        <target state="translated">호출기에 경고 오류 텍스트 포함</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.MessageText">
+        <source xml:lang="en">Message text</source>
+        <target state="translated">메시지 텍스트</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.Name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.NewJob">
+        <source xml:lang="en">New Job</source>
+        <target state="translated">새 작업</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.NewOperator">
+        <source xml:lang="en">New Operator</source>
+        <target state="translated">새 운영자</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.NotifyOperators">
+        <source xml:lang="en">Notify Operators</source>
+        <target state="translated">운영자에게 알림</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.OperatorEmail">
+        <source xml:lang="en">E-mail</source>
+        <target state="translated">전자 메일</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.OperatorList">
+        <source xml:lang="en">Operator List</source>
+        <target state="translated">운영자 목록</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.OperatorName">
+        <source xml:lang="en">Operator</source>
+        <target state="translated">운영자</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.OperatorPager">
+        <source xml:lang="en">Pager</source>
+        <target state="translated">호출기</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.Options">
+        <source xml:lang="en">Options</source>
+        <target state="translated">옵션</target>
       </trans-unit>
       <trans-unit id="alertDialog.RaiseAlertContains">
         <source xml:lang="en">Raise alert when message contains</source>
         <target state="translated">메시지에 다음 텍스트가 포함될 때 경고 발생</target>
       </trans-unit>
-      <trans-unit id="alertDialog.MessageText">
-        <source xml:lang="en">Message text</source>
-        <target state="translated">메시지 텍스트</target>
+      <trans-unit id="alertDialog.Response">
+        <source xml:lang="en">Response</source>
+        <target state="translated">응답</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.Severity">
+        <source xml:lang="en">Severity</source>
+        <target state="translated">심각도</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity001">
         <source xml:lang="en">001 - Miscellaneous System Information</source>
@@ -394,273 +358,141 @@
         <source xml:lang="en">025 - Fatal Error</source>
         <target state="translated">오류 - 025</target>
       </trans-unit>
-      <trans-unit id="alertDialog.AllDatabases">
-        <source xml:lang="en">&lt;all databases&gt;</source>
-        <target state="translated">&lt;모든 데이터베이스&gt;</target>
+      <trans-unit id="alertDialog.Type">
+        <source xml:lang="en">Type</source>
+        <target state="translated">형식</target>
       </trans-unit>
-      <trans-unit id="alertDialog.ExecuteJob">
-        <source xml:lang="en">Execute Job</source>
-        <target state="translated">작업 실행</target>
+      <trans-unit id="alertDialog.createAlert">
+        <source xml:lang="en">Create Alert</source>
+        <target state="translated">경고 만들기</target>
       </trans-unit>
-      <trans-unit id="alertDialog.ExecuteJobName">
-        <source xml:lang="en">Job Name</source>
-        <target state="translated">작업 이름</target>
+      <trans-unit id="alertDialog.editAlert">
+        <source xml:lang="en">Edit Alert</source>
+        <target state="translated">경고 편집</target>
       </trans-unit>
-      <trans-unit id="alertDialog.NotifyOperators">
-        <source xml:lang="en">Notify Operators</source>
-        <target state="translated">운영자에게 알림</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.NewJob">
-        <source xml:lang="en">New Job</source>
-        <target state="translated">새 작업</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.OperatorList">
-        <source xml:lang="en">Operator List</source>
-        <target state="translated">운영자 목록</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.OperatorName">
-        <source xml:lang="en">Operator</source>
-        <target state="translated">운영자</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.OperatorEmail">
-        <source xml:lang="en">E-mail</source>
-        <target state="translated">전자 메일</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.OperatorPager">
-        <source xml:lang="en">Pager</source>
-        <target state="translated">호출기</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.NewOperator">
-        <source xml:lang="en">New Operator</source>
-        <target state="translated">새 운영자</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.IncludeErrorInEmail">
-        <source xml:lang="en">Include alert error text in e-mail</source>
-        <target state="translated">전자 메일에 경고 오류 텍스트 포함</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.IncludeErrorInPager">
-        <source xml:lang="en">Include alert error text in pager</source>
-        <target state="translated">호출기에 경고 오류 텍스트 포함</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.AdditionalNotification">
-        <source xml:lang="en">Additional notification message to send</source>
-        <target state="translated">전송할 추가 알림 메시지</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.DelayMinutes">
-        <source xml:lang="en">Delay Minutes</source>
-        <target state="translated">지연(분)</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.DelaySeconds">
-        <source xml:lang="en">Delay Seconds</source>
-        <target state="translated">지연(초)</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/agent/dist/dialogs/operatorDialog" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="createOperator.createOperator">
-        <source xml:lang="en">Create Operator</source>
-        <target state="translated">연산자 만들기</target>
-      </trans-unit>
-      <trans-unit id="createOperator.editOperator">
-        <source xml:lang="en">Edit Operator</source>
-        <target state="translated">연산자 편집</target>
-      </trans-unit>
-      <trans-unit id="createOperator.General">
-        <source xml:lang="en">General</source>
-        <target state="translated">일반</target>
-      </trans-unit>
-      <trans-unit id="createOperator.Notifications">
-        <source xml:lang="en">Notifications</source>
-        <target state="translated">알림</target>
-      </trans-unit>
-      <trans-unit id="createOperator.Name">
-        <source xml:lang="en">Name</source>
-        <target state="translated">이름</target>
-      </trans-unit>
-      <trans-unit id="createOperator.Enabled">
-        <source xml:lang="en">Enabled</source>
-        <target state="translated">사용</target>
-      </trans-unit>
-      <trans-unit id="createOperator.EmailName">
-        <source xml:lang="en">E-mail Name</source>
-        <target state="translated">전자 메일 이름</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerEmailName">
-        <source xml:lang="en">Pager E-mail Name</source>
-        <target state="translated">호출기 전자 메일 이름</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerMondayCheckBox">
-        <source xml:lang="en">Monday</source>
-        <target state="translated">월요일</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerTuesdayCheckBox">
-        <source xml:lang="en">Tuesday</source>
-        <target state="translated">화요일</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerWednesdayCheckBox">
-        <source xml:lang="en">Wednesday</source>
-        <target state="translated">수요일</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerThursdayCheckBox">
-        <source xml:lang="en">Thursday</source>
-        <target state="translated">목요일</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerFridayCheckBox">
-        <source xml:lang="en">Friday  </source>
-        <target state="translated">금요일  </target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerSaturdayCheckBox">
-        <source xml:lang="en">Saturday</source>
-        <target state="translated">토요일</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerSundayCheckBox">
-        <source xml:lang="en">Sunday</source>
-        <target state="translated">일요일</target>
-      </trans-unit>
-      <trans-unit id="createOperator.workdayBegin">
-        <source xml:lang="en">Workday begin</source>
-        <target state="translated">업무 시작일</target>
-      </trans-unit>
-      <trans-unit id="createOperator.workdayEnd">
-        <source xml:lang="en">Workday end</source>
-        <target state="translated">업무 종료일</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerDutySchedule">
-        <source xml:lang="en">Pager on duty schedule</source>
-        <target state="translated">호출기 연락 가능 근무 일정</target>
-      </trans-unit>
-      <trans-unit id="createOperator.AlertListHeading">
-        <source xml:lang="en">Alert list</source>
-        <target state="translated">경고 목록</target>
-      </trans-unit>
-      <trans-unit id="createOperator.AlertNameColumnLabel">
-        <source xml:lang="en">Alert name</source>
-        <target state="translated">경고 이름</target>
-      </trans-unit>
-      <trans-unit id="createOperator.AlertEmailColumnLabel">
-        <source xml:lang="en">E-mail</source>
-        <target state="translated">전자 메일</target>
-      </trans-unit>
-      <trans-unit id="createOperator.AlertPagerColumnLabel">
-        <source xml:lang="en">Pager</source>
-        <target state="translated">호출기</target>
+      <trans-unit id="alertDialog.eventAlert">
+        <source xml:lang="en">Event alert definition</source>
+        <target state="translated">이벤트 경고 정의</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/agent/dist/dialogs/jobDialog" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="jobDialog.general">
-        <source xml:lang="en">General</source>
-        <target state="translated">일반</target>
+      <trans-unit id="jobDialog.alertEnabledLabel">
+        <source xml:lang="en">Enabled</source>
+        <target state="translated">사용</target>
       </trans-unit>
-      <trans-unit id="jobDialog.steps">
-        <source xml:lang="en">Steps</source>
-        <target state="translated">단계</target>
+      <trans-unit id="jobDialog.alertNameLabel">
+        <source xml:lang="en">Alert Name</source>
+        <target state="translated">경고 이름</target>
       </trans-unit>
-      <trans-unit id="jobDialog.schedules">
-        <source xml:lang="en">Schedules</source>
-        <target state="translated">일정</target>
+      <trans-unit id="jobDialog.alertTypeLabel">
+        <source xml:lang="en">Type</source>
+        <target state="translated">형식</target>
       </trans-unit>
       <trans-unit id="jobDialog.alerts">
         <source xml:lang="en">Alerts</source>
         <target state="translated">경고</target>
       </trans-unit>
-      <trans-unit id="jobDialog.notifications">
-        <source xml:lang="en">Notifications</source>
-        <target state="translated">알림</target>
+      <trans-unit id="jobDialog.alertsList">
+        <source xml:lang="en">Alerts list</source>
+        <target state="translated">경고 목록</target>
       </trans-unit>
       <trans-unit id="jobDialog.blankJobNameError">
         <source xml:lang="en">The name of the job cannot be blank.</source>
         <target state="translated">작업 이름을 비워 둘 수 없습니다.</target>
       </trans-unit>
-      <trans-unit id="jobDialog.name">
-        <source xml:lang="en">Name</source>
-        <target state="translated">이름</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.owner">
-        <source xml:lang="en">Owner</source>
-        <target state="translated">소유자</target>
-      </trans-unit>
       <trans-unit id="jobDialog.category">
         <source xml:lang="en">Category</source>
         <target state="translated">범주</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.description">
-        <source xml:lang="en">Description</source>
-        <target state="translated">설명</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.enabled">
-        <source xml:lang="en">Enabled</source>
-        <target state="translated">사용</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.jobStepList">
-        <source xml:lang="en">Job step list</source>
-        <target state="translated">작업 단계 목록</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.step">
-        <source xml:lang="en">Step</source>
-        <target state="translated">단계</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.type">
-        <source xml:lang="en">Type</source>
-        <target state="translated">형식</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.onSuccess">
-        <source xml:lang="en">On Success</source>
-        <target state="translated">성공한 경우</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.onFailure">
-        <source xml:lang="en">On Failure</source>
-        <target state="translated">실패한 경우</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.new">
-        <source xml:lang="en">New Step</source>
-        <target state="translated">새 단계</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.edit">
-        <source xml:lang="en">Edit Step</source>
-        <target state="translated">단계 편집</target>
       </trans-unit>
       <trans-unit id="jobDialog.delete">
         <source xml:lang="en">Delete Step</source>
         <target state="translated">단계 삭제</target>
       </trans-unit>
-      <trans-unit id="jobDialog.moveUp">
-        <source xml:lang="en">Move Step Up</source>
-        <target state="translated">단계를 위로 이동</target>
+      <trans-unit id="jobDialog.deleteJobLabel">
+        <source xml:lang="en">Automatically delete job</source>
+        <target state="translated">자동으로 작업 삭제</target>
       </trans-unit>
-      <trans-unit id="jobDialog.moveDown">
-        <source xml:lang="en">Move Step Down</source>
-        <target state="translated">단계를 아래로 이동</target>
+      <trans-unit id="jobDialog.description">
+        <source xml:lang="en">Description</source>
+        <target state="translated">설명</target>
       </trans-unit>
-      <trans-unit id="jobDialog.startStepAt">
-        <source xml:lang="en">Start step</source>
-        <target state="translated">시작 단계</target>
+      <trans-unit id="jobDialog.edit">
+        <source xml:lang="en">Edit Step</source>
+        <target state="translated">단계 편집</target>
       </trans-unit>
-      <trans-unit id="jobDialog.notificationsTabTop">
-        <source xml:lang="en">Actions to perform when the job completes</source>
-        <target state="translated">작업 완료 시 수행할 동작</target>
+      <trans-unit id="jobDialog.editJob">
+        <source xml:lang="en">Edit Job</source>
+        <target state="translated">작업 편집</target>
       </trans-unit>
       <trans-unit id="jobDialog.email">
         <source xml:lang="en">Email</source>
         <target state="translated">전자 메일</target>
       </trans-unit>
-      <trans-unit id="jobDialog.page">
-        <source xml:lang="en">Page</source>
-        <target state="translated">페이지</target>
+      <trans-unit id="jobDialog.enabled">
+        <source xml:lang="en">Enabled</source>
+        <target state="translated">사용</target>
       </trans-unit>
       <trans-unit id="jobDialog.eventLogCheckBoxLabel">
         <source xml:lang="en">Write to the Windows Application event log</source>
         <target state="translated">Windows 애플리케이션 이벤트 로그에 쓰기</target>
       </trans-unit>
-      <trans-unit id="jobDialog.deleteJobLabel">
-        <source xml:lang="en">Automatically delete job</source>
-        <target state="translated">자동으로 작업 삭제</target>
+      <trans-unit id="jobDialog.general">
+        <source xml:lang="en">General</source>
+        <target state="translated">일반</target>
       </trans-unit>
-      <trans-unit id="jobDialog.schedulesaLabel">
-        <source xml:lang="en">Schedules list</source>
-        <target state="translated">일정 목록</target>
+      <trans-unit id="jobDialog.jobStepList">
+        <source xml:lang="en">Job step list</source>
+        <target state="translated">작업 단계 목록</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.moveDown">
+        <source xml:lang="en">Move Step Down</source>
+        <target state="translated">단계를 아래로 이동</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.moveUp">
+        <source xml:lang="en">Move Step Up</source>
+        <target state="translated">단계를 위로 이동</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.new">
+        <source xml:lang="en">New Step</source>
+        <target state="translated">새 단계</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.newAlert">
+        <source xml:lang="en">New Alert</source>
+        <target state="translated">새 경고</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.newJob">
+        <source xml:lang="en">New Job</source>
+        <target state="translated">새 작업</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.notifications">
+        <source xml:lang="en">Notifications</source>
+        <target state="translated">알림</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.notificationsTabTop">
+        <source xml:lang="en">Actions to perform when the job completes</source>
+        <target state="translated">작업 완료 시 수행할 동작</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.onFailure">
+        <source xml:lang="en">On Failure</source>
+        <target state="translated">실패한 경우</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.onSuccess">
+        <source xml:lang="en">On Success</source>
+        <target state="translated">성공한 경우</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.owner">
+        <source xml:lang="en">Owner</source>
+        <target state="translated">소유자</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.page">
+        <source xml:lang="en">Page</source>
+        <target state="translated">페이지</target>
       </trans-unit>
       <trans-unit id="jobDialog.pickSchedule">
         <source xml:lang="en">Pick Schedule</source>
@@ -670,158 +502,426 @@
         <source xml:lang="en">Remove Schedule</source>
         <target state="translated">일정 제거</target>
       </trans-unit>
-      <trans-unit id="jobDialog.alertsList">
-        <source xml:lang="en">Alerts list</source>
-        <target state="translated">경고 목록</target>
+      <trans-unit id="jobDialog.schedules">
+        <source xml:lang="en">Schedules</source>
+        <target state="translated">일정</target>
       </trans-unit>
-      <trans-unit id="jobDialog.newAlert">
-        <source xml:lang="en">New Alert</source>
-        <target state="translated">새 경고</target>
+      <trans-unit id="jobDialog.schedulesaLabel">
+        <source xml:lang="en">Schedules list</source>
+        <target state="translated">일정 목록</target>
       </trans-unit>
-      <trans-unit id="jobDialog.alertNameLabel">
-        <source xml:lang="en">Alert Name</source>
-        <target state="translated">경고 이름</target>
+      <trans-unit id="jobDialog.startStepAt">
+        <source xml:lang="en">Start step</source>
+        <target state="translated">시작 단계</target>
       </trans-unit>
-      <trans-unit id="jobDialog.alertEnabledLabel">
-        <source xml:lang="en">Enabled</source>
-        <target state="translated">사용</target>
+      <trans-unit id="jobDialog.step">
+        <source xml:lang="en">Step</source>
+        <target state="translated">단계</target>
       </trans-unit>
-      <trans-unit id="jobDialog.alertTypeLabel">
+      <trans-unit id="jobDialog.steps">
+        <source xml:lang="en">Steps</source>
+        <target state="translated">단계</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.type">
         <source xml:lang="en">Type</source>
         <target state="translated">형식</target>
       </trans-unit>
-      <trans-unit id="jobDialog.newJob">
-        <source xml:lang="en">New Job</source>
-        <target state="translated">새 작업</target>
+    </body>
+  </file>
+  <file original="extensions/agent/dist/dialogs/jobStepDialog" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="jobStepDialog.CmdExec">
+        <source xml:lang="en">Operating system (CmdExec)</source>
+        <target state="translated">운영 체제(CmdExec)</target>
       </trans-unit>
-      <trans-unit id="jobDialog.editJob">
-        <source xml:lang="en">Edit Job</source>
-        <target state="translated">작업 편집</target>
+      <trans-unit id="jobStepDialog.TSQL">
+        <source xml:lang="en">Transact-SQL script (T-SQL)</source>
+        <target state="translated">Transact-SQL 스크립트(T-SQL)</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.advanced">
+        <source xml:lang="en">Advanced</source>
+        <target state="translated">고급</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.agentServiceAccount">
+        <source xml:lang="en">SQL Server Agent Service Account</source>
+        <target state="translated">SQL Server 에이전트 서비스 계정</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.allFiles">
+        <source xml:lang="en">All Files (*)</source>
+        <target state="translated">모든 파일(*)</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.analysisCommand">
+        <source xml:lang="en">SQL Server Analysis Services Command</source>
+        <target state="translated">SQL Server Analysis Services 명령</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.analysisQuery">
+        <source xml:lang="en">SQL Server Analysis Services Query</source>
+        <target state="translated">SQL Server Analysis Services 쿼리</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.appendExistingTableEntry">
+        <source xml:lang="en">Append output to exisiting entry in table</source>
+        <target state="translated">테이블의 기존 항목에 출력 추가</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.appendOutputToFile">
+        <source xml:lang="en">Append output to existing file</source>
+        <target state="translated">기존 파일에 출력 추가</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.blankStepName">
+        <source xml:lang="en">The step name cannot be left blank</source>
+        <target state="translated">단계 이름은 비워 둘 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.commandLabel">
+        <source xml:lang="en">Command</source>
+        <target state="translated">명령</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.databaseLabel">
+        <source xml:lang="en">Database</source>
+        <target state="translated">데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.editJobStep">
+        <source xml:lang="en">Edit Job Step</source>
+        <target state="translated">작업 단계 편집</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.failParse">
+        <source xml:lang="en">The command failed.</source>
+        <target state="translated">명령이 실패했습니다.</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.failureAction">
+        <source xml:lang="en">On failure action</source>
+        <target state="translated">실패한 경우 동작</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.fileBrowserTitle">
+        <source xml:lang="en">Locate Database Files - </source>
+        <target state="translated">데이터베이스 파일 찾기 - </target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.fileName">
+        <source xml:lang="en">File name</source>
+        <target state="translated">파일 이름</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.filesOfType">
+        <source xml:lang="en">Files of type</source>
+        <target state="translated">파일 형식</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.general">
+        <source xml:lang="en">General</source>
+        <target state="translated">일반</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.includeStepOutputHistory">
+        <source xml:lang="en">Include step output in history</source>
+        <target state="translated">기록에 단계 출력 포함</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.logToTable">
+        <source xml:lang="en">Log to table</source>
+        <target state="translated">테이블에 기록</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.newJobStep">
+        <source xml:lang="en">New Job Step</source>
+        <target state="translated">새 작업 단계</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.nextStep">
+        <source xml:lang="en">Go to the next step</source>
+        <target state="translated">다음 단계로 이동</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">확인</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.open">
+        <source xml:lang="en">Open...</source>
+        <target state="translated">열기...</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.outputFile">
+        <source xml:lang="en">Output File</source>
+        <target state="translated">출력 파일</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.parse">
+        <source xml:lang="en">Parse</source>
+        <target state="translated">구문 분석</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.powershell">
+        <source xml:lang="en">PowerShell</source>
+        <target state="translated">PowerShell</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.processExitCode">
+        <source xml:lang="en">Process exit code of a successful command:</source>
+        <target state="translated">성공한 명령의 프로세스 종료 코드:</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.quitJobFailure">
+        <source xml:lang="en">Quit the job reporting failure</source>
+        <target state="translated">실패 보고와 함께 작업 종료</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.quitJobSuccess">
+        <source xml:lang="en">Quit the job reporting success</source>
+        <target state="translated">성공 보고와 함께 작업 종료</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationDistribution">
+        <source xml:lang="en">Replication Distributor</source>
+        <target state="translated">복제 배포자</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationMerge">
+        <source xml:lang="en">Replication Merge</source>
+        <target state="translated">복제 병합</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationQueueReader">
+        <source xml:lang="en">Replication Queue Reader</source>
+        <target state="translated">복제 큐 판독기</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationSnapshot">
+        <source xml:lang="en">Replication Snapshot</source>
+        <target state="translated">복제 스냅샷</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationTransactionLogReader">
+        <source xml:lang="en">Replication Transaction-Log Reader</source>
+        <target state="translated">복제 트랜잭션 로그 판독기</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.retryAttempts">
+        <source xml:lang="en">Retry Attempts</source>
+        <target state="translated">재시도 횟수</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.retryInterval">
+        <source xml:lang="en">Retry Interval (minutes)</source>
+        <target state="translated">재시도 간격(분)</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.runAsLabel">
+        <source xml:lang="en">Run as</source>
+        <target state="translated">다음 계정으로 실행</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.runAsUser">
+        <source xml:lang="en">Run as user</source>
+        <target state="translated">사용자로 실행</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.selectedPath">
+        <source xml:lang="en">Selected path</source>
+        <target state="translated">선택한 경로</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.servicesPackage">
+        <source xml:lang="en">SQL Server Integration Service Package</source>
+        <target state="translated">SQL Server 통합 서비스 패키지</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.stepNameLabel">
+        <source xml:lang="en">Step Name</source>
+        <target state="translated">단계 이름</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.successAction">
+        <source xml:lang="en">On success action</source>
+        <target state="translated">성공한 경우 동작</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.successParse">
+        <source xml:lang="en">The command was successfully parsed.</source>
+        <target state="translated">명령을 구문 분석했습니다.</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.typeLabel">
+        <source xml:lang="en">Type</source>
+        <target state="translated">형식</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/dist/data/jobData" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="extensions/agent/dist/dialogs/notebookDialog" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="jobData.whenJobCompletes">
-        <source xml:lang="en">When the job completes</source>
-        <target state="translated">작업 완료 시</target>
+      <trans-unit id="notebookDialog.defaultDropdownString">
+        <source xml:lang="en">Select Database</source>
+        <target state="translated">데이터베이스 선택</target>
       </trans-unit>
-      <trans-unit id="jobData.whenJobFails">
-        <source xml:lang="en">When the job fails</source>
-        <target state="translated">작업 실패 시</target>
+      <trans-unit id="notebookDialog.description">
+        <source xml:lang="en">Description</source>
+        <target state="translated">설명</target>
       </trans-unit>
-      <trans-unit id="jobData.whenJobSucceeds">
-        <source xml:lang="en">When the job succeeds</source>
-        <target state="translated">작업 성공 시</target>
+      <trans-unit id="notebookDialog.editJob">
+        <source xml:lang="en">Edit Notebook Job</source>
+        <target state="translated">전자 필기장 작업 편집</target>
       </trans-unit>
-      <trans-unit id="jobData.jobNameRequired">
-        <source xml:lang="en">Job name must be provided</source>
-        <target state="translated">작업 이름을 지정해야 합니다.</target>
+      <trans-unit id="notebookDialog.executeDatabase">
+        <source xml:lang="en">Execution Database</source>
+        <target state="translated">실행 데이터베이스</target>
       </trans-unit>
-      <trans-unit id="jobData.saveErrorMessage">
-        <source xml:lang="en">Job update failed '{0}'</source>
-        <target state="translated">'{0}' 작업을 업데이트하지 못했습니다.</target>
+      <trans-unit id="notebookDialog.executionDatabaseInfo">
+        <source xml:lang="en">Select a database against which notebook queries will run</source>
+        <target state="translated">전자 필기장 쿼리를 실행할 데이터베이스 선택</target>
       </trans-unit>
-      <trans-unit id="jobData.newJobErrorMessage">
-        <source xml:lang="en">Job creation failed '{0}'</source>
-        <target state="translated">'{0}' 작업을 만들지 못했습니다.</target>
+      <trans-unit id="notebookDialog.general">
+        <source xml:lang="en">General</source>
+        <target state="translated">일반</target>
       </trans-unit>
-      <trans-unit id="jobData.saveSucessMessage">
-        <source xml:lang="en">Job '{0}' updated successfully</source>
-        <target state="translated">'{0}' 작업을 업데이트했습니다.</target>
+      <trans-unit id="notebookDialog.jobSection">
+        <source xml:lang="en">Job Details</source>
+        <target state="translated">작업 정보</target>
       </trans-unit>
-      <trans-unit id="jobData.newJobSuccessMessage">
-        <source xml:lang="en">Job '{0}' created successfully</source>
-        <target state="translated">'{0}' 작업을 만들었습니다.</target>
+      <trans-unit id="notebookDialog.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.newJob">
+        <source xml:lang="en">New Notebook Job</source>
+        <target state="translated">새 Notebook 작업</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.notebookSection">
+        <source xml:lang="en">Notebook Details</source>
+        <target state="translated">Notebook 세부 정보</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.owner">
+        <source xml:lang="en">Owner</source>
+        <target state="translated">소유자</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.pickSchedule">
+        <source xml:lang="en">Pick Schedule</source>
+        <target state="translated">일정 선택</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.removeSchedule">
+        <source xml:lang="en">Remove Schedule</source>
+        <target state="translated">일정 제거</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.schedulesaLabel">
+        <source xml:lang="en">Schedules list</source>
+        <target state="translated">일정 목록</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.targetDatabase">
+        <source xml:lang="en">Storage Database</source>
+        <target state="translated">저장소 데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.targetDatabaseInfo">
+        <source xml:lang="en">Select a database to store all notebook job metadata and results</source>
+        <target state="translated">모든 전자 필기장 작업 메타데이터 및 결과를 저장할 데이터베이스 선택</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.templateNotebook">
+        <source xml:lang="en">Notebook Path</source>
+        <target state="translated">전자 필기장 경로</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.templatePath">
+        <source xml:lang="en">Select a notebook to schedule from PC</source>
+        <target state="translated">PC에서 예약할 전자 필기장 선택</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/dist/data/jobStepData" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="extensions/agent/dist/dialogs/operatorDialog" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="jobStepData.saveErrorMessage">
-        <source xml:lang="en">Step update failed '{0}'</source>
-        <target state="translated">'{0}' 단계를 업데이트하지 못했습니다.</target>
+      <trans-unit id="createOperator.AlertEmailColumnLabel">
+        <source xml:lang="en">E-mail</source>
+        <target state="translated">전자 메일</target>
       </trans-unit>
-      <trans-unit id="stepData.jobNameRequired">
-        <source xml:lang="en">Job name must be provided</source>
-        <target state="translated">작업 이름을 지정해야 합니다.</target>
+      <trans-unit id="createOperator.AlertListHeading">
+        <source xml:lang="en">Alert list</source>
+        <target state="translated">경고 목록</target>
       </trans-unit>
-      <trans-unit id="stepData.stepNameRequired">
-        <source xml:lang="en">Step name must be provided</source>
-        <target state="translated">단계 이름을 지정해야 합니다.</target>
+      <trans-unit id="createOperator.AlertNameColumnLabel">
+        <source xml:lang="en">Alert name</source>
+        <target state="translated">경고 이름</target>
+      </trans-unit>
+      <trans-unit id="createOperator.AlertPagerColumnLabel">
+        <source xml:lang="en">Pager</source>
+        <target state="translated">호출기</target>
+      </trans-unit>
+      <trans-unit id="createOperator.EmailName">
+        <source xml:lang="en">E-mail Name</source>
+        <target state="translated">전자 메일 이름</target>
+      </trans-unit>
+      <trans-unit id="createOperator.Enabled">
+        <source xml:lang="en">Enabled</source>
+        <target state="translated">사용</target>
+      </trans-unit>
+      <trans-unit id="createOperator.General">
+        <source xml:lang="en">General</source>
+        <target state="translated">일반</target>
+      </trans-unit>
+      <trans-unit id="createOperator.Name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="createOperator.Notifications">
+        <source xml:lang="en">Notifications</source>
+        <target state="translated">알림</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerDutySchedule">
+        <source xml:lang="en">Pager on duty schedule</source>
+        <target state="translated">호출기 연락 가능 근무 일정</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerEmailName">
+        <source xml:lang="en">Pager E-mail Name</source>
+        <target state="translated">호출기 전자 메일 이름</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerFridayCheckBox">
+        <source xml:lang="en">Friday  </source>
+        <target state="translated">금요일  </target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerMondayCheckBox">
+        <source xml:lang="en">Monday</source>
+        <target state="translated">월요일</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerSaturdayCheckBox">
+        <source xml:lang="en">Saturday</source>
+        <target state="translated">토요일</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerSundayCheckBox">
+        <source xml:lang="en">Sunday</source>
+        <target state="translated">일요일</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerThursdayCheckBox">
+        <source xml:lang="en">Thursday</source>
+        <target state="translated">목요일</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerTuesdayCheckBox">
+        <source xml:lang="en">Tuesday</source>
+        <target state="translated">화요일</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerWednesdayCheckBox">
+        <source xml:lang="en">Wednesday</source>
+        <target state="translated">수요일</target>
+      </trans-unit>
+      <trans-unit id="createOperator.createOperator">
+        <source xml:lang="en">Create Operator</source>
+        <target state="translated">연산자 만들기</target>
+      </trans-unit>
+      <trans-unit id="createOperator.editOperator">
+        <source xml:lang="en">Edit Operator</source>
+        <target state="translated">연산자 편집</target>
+      </trans-unit>
+      <trans-unit id="createOperator.workdayBegin">
+        <source xml:lang="en">Workday begin</source>
+        <target state="translated">업무 시작일</target>
+      </trans-unit>
+      <trans-unit id="createOperator.workdayEnd">
+        <source xml:lang="en">Workday end</source>
+        <target state="translated">업무 종료일</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/dist/mainController" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="extensions/agent/dist/dialogs/pickScheduleDialog" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="mainController.notImplemented">
-        <source xml:lang="en">This feature is under development.  Check-out the latest insiders build if you'd like to try out the most recent changes!</source>
-        <target state="translated">이 기능은 아직 개발 중입니다. 가장 최근 변경 기능을 사용해 보려면 최신 참가자 빌드를 확인하세요.</target>
+      <trans-unit id="pickSchedule.availableSchedules">
+        <source xml:lang="en">Available Schedules:</source>
+        <target state="translated">사용 가능한 일정:</target>
       </trans-unit>
-      <trans-unit id="agent.templateUploadSuccessful">
-        <source xml:lang="en">Template updated successfully</source>
-        <target state="translated">템플릿을 업데이트함</target>
+      <trans-unit id="pickSchedule.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
       </trans-unit>
-      <trans-unit id="agent.templateUploadError">
-        <source xml:lang="en">Template update failure</source>
-        <target state="translated">템플릿 업데이트 실패</target>
+      <trans-unit id="pickSchedule.description">
+        <source xml:lang="en">Description</source>
+        <target state="translated">설명</target>
       </trans-unit>
-      <trans-unit id="agent.unsavedFileSchedulingError">
-        <source xml:lang="en">The notebook must be saved before being scheduled. Please save and then retry scheduling again.</source>
-        <target state="translated">예약하기 전에 전자 필기장을 저장해야 합니다. 저장한 후 예약을 다시 시도하세요.</target>
+      <trans-unit id="pickSchedule.jobSchedules">
+        <source xml:lang="en">Job Schedules</source>
+        <target state="translated">작업 일정</target>
       </trans-unit>
-      <trans-unit id="agent.AddNewConnection">
-        <source xml:lang="en">Add new connection</source>
-        <target state="translated">새 연결 추가</target>
+      <trans-unit id="pickSchedule.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">확인</target>
       </trans-unit>
-      <trans-unit id="agent.selectConnection">
-        <source xml:lang="en">Select a connection</source>
-        <target state="translated">연결 선택</target>
+      <trans-unit id="pickSchedule.scheduleID">
+        <source xml:lang="en">ID</source>
+        <target state="translated">ID</target>
       </trans-unit>
-      <trans-unit id="agent.selectValidConnection">
-        <source xml:lang="en">Please select a valid connection</source>
-        <target state="translated">올바른 연결을 선택하세요</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/agent/dist/data/alertData" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="alertData.saveErrorMessage">
-        <source xml:lang="en">Alert update failed '{0}'</source>
-        <target state="translated">'{0}' 경고를 업데이트하지 못했습니다.</target>
-      </trans-unit>
-      <trans-unit id="alertData.DefaultAlertTypString">
-        <source xml:lang="en">SQL Server event alert</source>
-        <target state="translated">SQL Server 이벤트 경고</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.PerformanceCondition">
-        <source xml:lang="en">SQL Server performance condition alert</source>
-        <target state="translated">SQL Server 성능 조건 경고</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.WmiEvent">
-        <source xml:lang="en">WMI event alert</source>
-        <target state="translated">WMI 이벤트 경고</target>
+      <trans-unit id="pickSchedule.scheduleName">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/agent/dist/dialogs/proxyDialog" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="createProxy.createProxy">
-        <source xml:lang="en">Create Proxy</source>
-        <target state="translated">프록시 만들기</target>
-      </trans-unit>
-      <trans-unit id="createProxy.editProxy">
-        <source xml:lang="en">Edit Proxy</source>
-        <target state="translated">프록시 편집</target>
-      </trans-unit>
-      <trans-unit id="createProxy.General">
-        <source xml:lang="en">General</source>
-        <target state="translated">일반</target>
-      </trans-unit>
-      <trans-unit id="createProxy.ProxyName">
-        <source xml:lang="en">Proxy name</source>
-        <target state="translated">프록시 이름</target>
-      </trans-unit>
       <trans-unit id="createProxy.CredentialName">
         <source xml:lang="en">Credential name</source>
         <target state="translated">자격 증명 이름</target>
@@ -830,21 +930,21 @@
         <source xml:lang="en">Description</source>
         <target state="translated">설명</target>
       </trans-unit>
-      <trans-unit id="createProxy.SubsystemName">
-        <source xml:lang="en">Subsystem</source>
-        <target state="translated">하위 시스템</target>
+      <trans-unit id="createProxy.General">
+        <source xml:lang="en">General</source>
+        <target state="translated">일반</target>
       </trans-unit>
       <trans-unit id="createProxy.OperatingSystem">
         <source xml:lang="en">Operating system (CmdExec)</source>
         <target state="translated">운영 체제(CmdExec)</target>
       </trans-unit>
-      <trans-unit id="createProxy.ReplicationSnapshot">
-        <source xml:lang="en">Replication Snapshot</source>
-        <target state="translated">복제 스냅샷</target>
+      <trans-unit id="createProxy.PowerShell">
+        <source xml:lang="en">PowerShell</source>
+        <target state="translated">PowerShell</target>
       </trans-unit>
-      <trans-unit id="createProxy.ReplicationTransactionLog">
-        <source xml:lang="en">Replication Transaction-Log Reader</source>
-        <target state="translated">복제 트랜잭션 로그 판독기</target>
+      <trans-unit id="createProxy.ProxyName">
+        <source xml:lang="en">Proxy name</source>
+        <target state="translated">프록시 이름</target>
       </trans-unit>
       <trans-unit id="createProxy.ReplicationDistributor">
         <source xml:lang="en">Replication Distributor</source>
@@ -858,169 +958,69 @@
         <source xml:lang="en">Replication Queue Reader</source>
         <target state="translated">복제 큐 판독기</target>
       </trans-unit>
-      <trans-unit id="createProxy.SSASQueryLabel">
-        <source xml:lang="en">SQL Server Analysis Services Query</source>
-        <target state="translated">SQL Server Analysis Services 쿼리</target>
+      <trans-unit id="createProxy.ReplicationSnapshot">
+        <source xml:lang="en">Replication Snapshot</source>
+        <target state="translated">복제 스냅샷</target>
+      </trans-unit>
+      <trans-unit id="createProxy.ReplicationTransactionLog">
+        <source xml:lang="en">Replication Transaction-Log Reader</source>
+        <target state="translated">복제 트랜잭션 로그 판독기</target>
       </trans-unit>
       <trans-unit id="createProxy.SSASCommandLabel">
         <source xml:lang="en">SQL Server Analysis Services Command</source>
         <target state="translated">SQL Server Analysis Services 명령</target>
       </trans-unit>
+      <trans-unit id="createProxy.SSASQueryLabel">
+        <source xml:lang="en">SQL Server Analysis Services Query</source>
+        <target state="translated">SQL Server Analysis Services 쿼리</target>
+      </trans-unit>
       <trans-unit id="createProxy.SSISPackage">
         <source xml:lang="en">SQL Server Integration Services Package</source>
         <target state="translated">SQL Server Integration Services 패키지</target>
       </trans-unit>
-      <trans-unit id="createProxy.PowerShell">
-        <source xml:lang="en">PowerShell</source>
-        <target state="translated">PowerShell</target>
+      <trans-unit id="createProxy.SubsystemName">
+        <source xml:lang="en">Subsystem</source>
+        <target state="translated">하위 시스템</target>
+      </trans-unit>
+      <trans-unit id="createProxy.createProxy">
+        <source xml:lang="en">Create Proxy</source>
+        <target state="translated">프록시 만들기</target>
+      </trans-unit>
+      <trans-unit id="createProxy.editProxy">
+        <source xml:lang="en">Edit Proxy</source>
+        <target state="translated">프록시 편집</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/dist/data/proxyData" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="extensions/agent/dist/mainController" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="proxyData.saveErrorMessage">
-        <source xml:lang="en">Proxy update failed '{0}'</source>
-        <target state="translated">프록시를 업데이트하지 못했습니다. '{0}'</target>
+      <trans-unit id="agent.AddNewConnection">
+        <source xml:lang="en">Add new connection</source>
+        <target state="translated">새 연결 추가</target>
       </trans-unit>
-      <trans-unit id="proxyData.saveSucessMessage">
-        <source xml:lang="en">Proxy '{0}' updated successfully</source>
-        <target state="translated">'{0}' 프록시를 업데이트했습니다.</target>
+      <trans-unit id="agent.selectConnection">
+        <source xml:lang="en">Select a connection</source>
+        <target state="translated">연결 선택</target>
       </trans-unit>
-      <trans-unit id="proxyData.newJobSuccessMessage">
-        <source xml:lang="en">Proxy '{0}' created successfully</source>
-        <target state="translated">'{0}' 프록시를 만들었습니다.</target>
+      <trans-unit id="agent.selectValidConnection">
+        <source xml:lang="en">Please select a valid connection</source>
+        <target state="translated">올바른 연결을 선택하세요</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/agent/dist/dialogs/notebookDialog" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="notebookDialog.newJob">
-        <source xml:lang="en">New Notebook Job</source>
-        <target state="translated">새 Notebook 작업</target>
+      <trans-unit id="agent.templateUploadError">
+        <source xml:lang="en">Template update failure</source>
+        <target state="translated">템플릿 업데이트 실패</target>
       </trans-unit>
-      <trans-unit id="notebookDialog.editJob">
-        <source xml:lang="en">Edit Notebook Job</source>
-        <target state="translated">전자 필기장 작업 편집</target>
+      <trans-unit id="agent.templateUploadSuccessful">
+        <source xml:lang="en">Template updated successfully</source>
+        <target state="translated">템플릿을 업데이트함</target>
       </trans-unit>
-      <trans-unit id="notebookDialog.general">
-        <source xml:lang="en">General</source>
-        <target state="translated">일반</target>
+      <trans-unit id="agent.unsavedFileSchedulingError">
+        <source xml:lang="en">The notebook must be saved before being scheduled. Please save and then retry scheduling again.</source>
+        <target state="translated">예약하기 전에 전자 필기장을 저장해야 합니다. 저장한 후 예약을 다시 시도하세요.</target>
       </trans-unit>
-      <trans-unit id="notebookDialog.notebookSection">
-        <source xml:lang="en">Notebook Details</source>
-        <target state="translated">Notebook 세부 정보</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.templateNotebook">
-        <source xml:lang="en">Notebook Path</source>
-        <target state="translated">전자 필기장 경로</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.targetDatabase">
-        <source xml:lang="en">Storage Database</source>
-        <target state="translated">저장소 데이터베이스</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.executeDatabase">
-        <source xml:lang="en">Execution Database</source>
-        <target state="translated">실행 데이터베이스</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.defaultDropdownString">
-        <source xml:lang="en">Select Database</source>
-        <target state="translated">데이터베이스 선택</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.jobSection">
-        <source xml:lang="en">Job Details</source>
-        <target state="translated">작업 정보</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.name">
-        <source xml:lang="en">Name</source>
-        <target state="translated">이름</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.owner">
-        <source xml:lang="en">Owner</source>
-        <target state="translated">소유자</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.schedulesaLabel">
-        <source xml:lang="en">Schedules list</source>
-        <target state="translated">일정 목록</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.pickSchedule">
-        <source xml:lang="en">Pick Schedule</source>
-        <target state="translated">일정 선택</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.removeSchedule">
-        <source xml:lang="en">Remove Schedule</source>
-        <target state="translated">일정 제거</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.description">
-        <source xml:lang="en">Description</source>
-        <target state="translated">설명</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.templatePath">
-        <source xml:lang="en">Select a notebook to schedule from PC</source>
-        <target state="translated">PC에서 예약할 전자 필기장 선택</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.targetDatabaseInfo">
-        <source xml:lang="en">Select a database to store all notebook job metadata and results</source>
-        <target state="translated">모든 전자 필기장 작업 메타데이터 및 결과를 저장할 데이터베이스 선택</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.executionDatabaseInfo">
-        <source xml:lang="en">Select a database against which notebook queries will run</source>
-        <target state="translated">전자 필기장 쿼리를 실행할 데이터베이스 선택</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/agent/dist/data/notebookData" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="notebookData.whenJobCompletes">
-        <source xml:lang="en">When the notebook completes</source>
-        <target state="translated">전자 필기장이 완료되는 경우</target>
-      </trans-unit>
-      <trans-unit id="notebookData.whenJobFails">
-        <source xml:lang="en">When the notebook fails</source>
-        <target state="translated">전자 필기장이 실패하는 경우</target>
-      </trans-unit>
-      <trans-unit id="notebookData.whenJobSucceeds">
-        <source xml:lang="en">When the notebook succeeds</source>
-        <target state="translated">전자 필기장이 성공하는 경우</target>
-      </trans-unit>
-      <trans-unit id="notebookData.jobNameRequired">
-        <source xml:lang="en">Notebook name must be provided</source>
-        <target state="translated">전자 필기장 이름을 제공해야 합니다.</target>
-      </trans-unit>
-      <trans-unit id="notebookData.templatePathRequired">
-        <source xml:lang="en">Template path must be provided</source>
-        <target state="translated">템플릿 경로를 제공해야 함</target>
-      </trans-unit>
-      <trans-unit id="notebookData.invalidNotebookPath">
-        <source xml:lang="en">Invalid notebook path</source>
-        <target state="translated">전자 필기장 경로가 잘못됨</target>
-      </trans-unit>
-      <trans-unit id="notebookData.selectStorageDatabase">
-        <source xml:lang="en">Select storage database</source>
-        <target state="translated">저장소 데이터베이스 선택</target>
-      </trans-unit>
-      <trans-unit id="notebookData.selectExecutionDatabase">
-        <source xml:lang="en">Select execution database</source>
-        <target state="translated">실행 데이터베이스 선택</target>
-      </trans-unit>
-      <trans-unit id="notebookData.jobExists">
-        <source xml:lang="en">Job with similar name already exists</source>
-        <target state="translated">이름이 비슷한 작업이 이미 있음</target>
-      </trans-unit>
-      <trans-unit id="notebookData.saveErrorMessage">
-        <source xml:lang="en">Notebook update failed '{0}'</source>
-        <target state="translated">Notebook 업데이트 실패 '{0}'</target>
-      </trans-unit>
-      <trans-unit id="notebookData.newJobErrorMessage">
-        <source xml:lang="en">Notebook creation failed '{0}'</source>
-        <target state="translated">Notebook 만들기 실패 ‘{0}’</target>
-      </trans-unit>
-      <trans-unit id="notebookData.saveSucessMessage">
-        <source xml:lang="en">Notebook '{0}' updated successfully</source>
-        <target state="translated">Notebook '{0}'을(를) 업데이트함</target>
-      </trans-unit>
-      <trans-unit id="notebookData.newJobSuccessMessage">
-        <source xml:lang="en">Notebook '{0}' created successfully</source>
-        <target state="translated">Notebook '{0}'이(가) 생성됨</target>
+      <trans-unit id="mainController.notImplemented">
+        <source xml:lang="en">This feature is under development.  Check-out the latest insiders build if you'd like to try out the most recent changes!</source>
+        <target state="translated">이 기능은 아직 개발 중입니다. 가장 최근 변경 기능을 사용해 보려면 최신 참가자 빌드를 확인하세요.</target>
       </trans-unit>
     </body>
   </file>

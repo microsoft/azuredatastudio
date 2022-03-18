@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Tema Claro Silencioso",
 			"description": "Tema claro silencioso do Visual Studio Code",
+			"displayName": "Tema Claro Silencioso",
 			"themeLabel": "Suave Claro"
 		}
 	}

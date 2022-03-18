@@ -8,20 +8,13 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "이미지 미리 보기",
-			"description": "VS Code의 기본 제공 이미지 미리 보기를 제공함",
-			"customEditors.displayName": "이미지 미리 보기",
-			"command.zoomIn": "확대",
-			"command.zoomOut": "축소"
-		},
 		"dist/binarySizeStatusBarEntry": {
 			"sizeB": "{0}B",
+			"sizeGB": "{0}GB",
 			"sizeKB": "{0}KB",
 			"sizeMB": "{0}MB",
-			"sizeGB": "{0}GB",
-			"sizeTB": "{0}TB",
-			"sizeStatusBar.name": "이미지 이진 크기"
+			"sizeStatusBar.name": "이미지 이진 크기",
+			"sizeTB": "{0}TB"
 		},
 		"dist/preview": {
 			"preview.imageLoadError": "이미지를 로드하는 동안 오류가 발생했습니다.",
@@ -34,6 +27,13 @@
 			"zoomStatusBar.name": "이미지 확대/축소",
 			"zoomStatusBar.placeholder": "확대/축소 수준 선택",
 			"zoomStatusBar.wholeImageLabel": "전체 이미지"
+		},
+		"package": {
+			"command.zoomIn": "확대",
+			"command.zoomOut": "축소",
+			"customEditors.displayName": "이미지 미리 보기",
+			"description": "VS Code의 기본 제공 이미지 미리 보기를 제공함",
+			"displayName": "이미지 미리 보기"
 		}
 	}
 }

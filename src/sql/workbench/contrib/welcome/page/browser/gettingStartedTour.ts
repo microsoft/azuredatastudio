@@ -161,8 +161,7 @@ export class GuidedTour extends Disposable {
 			exitButton.classList.add('ads-tour-btn-exit');
 			exitButton.innerText = 'x';
 			const img = document.createElement('img');
-			const gif = require.toUrl(popupImage);
-			img.src = require.toUrl(gif);
+			img.src = require.toUrl(popupImage);
 			img.classList.add('ads-tour-img');
 			flexContainer.classList.add(...flexClasses);
 			container.classList.add('ads-tour-popup');

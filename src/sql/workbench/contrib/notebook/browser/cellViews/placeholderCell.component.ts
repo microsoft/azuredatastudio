@@ -25,8 +25,6 @@ export class PlaceholderCellComponent extends CellView implements OnInit, OnChan
 		this._model = value;
 	}
 
-	private _model: NotebookModel;
-
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 	) {

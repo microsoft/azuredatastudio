@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "SQL-Sprachgrundlagen",
-			"description": "Bietet Syntaxhervorhebung und Klammernabgleich in SQL-Dateien."
+			"description": "Bietet Syntaxhervorhebung und Klammernabgleich in SQL-Dateien.",
+			"displayName": "SQL-Sprachgrundlagen"
 		}
 	}
 }

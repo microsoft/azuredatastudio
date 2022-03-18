@@ -364,7 +364,7 @@ suite('SQL Connection Tree Action tests', () => {
 			connection,
 			connectionManagementService.object);
 
-		assert.equal(connectionAction.enabled, false, 'delete action should be disabled.');
+		assert.strictEqual(connectionAction.enabled, false, 'delete action should be disabled.');
 	});
 
 	test('RefreshConnectionAction - refresh should be called if connection status is connect', () => {

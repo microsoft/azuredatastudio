@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Python-Sprachgrundlagen",
-			"description": "Bietet Syntaxhervorhebung, Klammernabgleich und Falten in Python-Dateien."
+			"description": "Bietet Syntaxhervorhebung, Klammernabgleich und Falten in Python-Dateien.",
+			"displayName": "Python-Sprachgrundlagen"
 		}
 	}
 }

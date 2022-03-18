@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Noções Básicas da Linguagem XML",
-			"description": "Fornecer realce de sintaxe e correspondência de colchetes em arquivos XML."
+			"description": "Fornecer realce de sintaxe e correspondência de colchetes em arquivos XML.",
+			"displayName": "Noções Básicas da Linguagem XML"
 		}
 	}
 }

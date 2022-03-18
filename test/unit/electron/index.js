@@ -17,7 +17,7 @@ const MochaJUnitReporter = require('mocha-junit-reporter');
 const url = require('url');
 const net = require('net');
 const createStatsCollector = require('mocha/lib/stats-collector');
-const FullJsonStreamReporter = require('../fullJsonStreamReporter');
+const { applyReporter, importMochaReporter } = require('../reporter');
 
 // Disable render process reuse, we still have
 // non-context aware native modules in the renderer.
@@ -25,7 +25,7 @@ app.allowRendererProcessReuse = false;
 
 const optimist = require('optimist')
 	.describe('grep', 'only run tests matching <pattern>').alias('grep', 'g').alias('grep', 'f').string('grep')
-	.describe('invert', 'uses the inverse of the match specified by grep').alias('invert', 'i').string('invert')
+	.describe('invert', 'uses the inverse of the match specified by grep').alias('invert', 'i').string('invert') // {{SQL CARBON EDIT}}
 	.describe('run', 'only run tests from <file>').string('run')
 	.describe('runGlob', 'only run tests matching <file_pattern>').alias('runGlob', 'glob').alias('runGlob', 'runGrep').string('runGlob')
 	.describe('build', 'run with build output (out-build)').boolean('build')
@@ -85,15 +85,6 @@ function deserializeRunnable(runnable) {
 	};
 }
 
-function importMochaReporter(name) {
-	if (name === 'full-json-stream') {
-		return FullJsonStreamReporter;
-	}
-
-	const reporterPath = path.join(path.dirname(require.resolve('mocha')), 'lib', 'reporters', name);
-	return require(reporterPath);
-}
-
 function deserializeError(err) {
 	const inspect = err.inspect;
 	err.inspect = () => inspect;
@@ -134,11 +125,6 @@ class IPCRunner extends events.EventEmitter {
 	}
 }
 
-function parseReporterOption(value) {
-	let r = /^([^=]+)=(.*)$/.exec(value);
-	return r ? { [r[1]]: r[2] } : {};
-}
-
 app.on('ready', () => {
 
 	ipcMain.on('error', (_, err) => {
@@ -177,10 +163,8 @@ app.on('ready', () => {
 			nodeIntegration: true,
 			contextIsolation: false,
 			enableWebSQL: false,
-			enableRemoteModule: false,
 			spellcheck: false,
-			nativeWindowOpen: true,
-			webviewTag: true
+			nativeWindowOpen: true
 		}
 	});
 
@@ -215,7 +199,7 @@ app.on('ready', () => {
 			timeout = setTimeout(() => {
 				console.error('timed out waiting for before starting tests debugger');
 				resolve();
-			}, 7000);
+			}, 15000);
 		}).finally(() => {
 			if (socket) {
 				socket.end();
@@ -260,23 +244,7 @@ app.on('ready', () => {
 			});
 		}
 
-		let Reporter;
-		try {
-			Reporter = importMochaReporter(argv.reporter);
-		} catch (err) {
-			try {
-				Reporter = require(argv.reporter);
-			} catch (err) {
-				Reporter = process.platform === 'win32' ? mocha.reporters.List : mocha.reporters.Spec;
-				console.warn(`could not load reporter: ${argv.reporter}, using ${Reporter.name}`);
-			}
-		}
-
-		let reporterOptions = argv['reporter-options'];
-		reporterOptions = typeof reporterOptions === 'string' ? [reporterOptions] : reporterOptions;
-		reporterOptions = reporterOptions.reduce((r, o) => Object.assign(r, parseReporterOption(o)), {});
-
-		new Reporter(runner, { reporterOptions });
+		applyReporter(runner, argv);
 	}
 
 	if (!argv.debug) {

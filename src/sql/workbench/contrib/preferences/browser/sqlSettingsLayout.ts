@@ -41,6 +41,11 @@ let sqlTocItems: ITOCEntry<string>[] = [{
 			id: 'data/builtinCharts',
 			label: localize('builtinCharts', "Built-in Charts"),
 			settings: ['builtinCharts.*']
+		},
+		{
+			id: 'data/tableDesigner',
+			label: localize('tableDesigner', "Table Designer"),
+			settings: ['tableDesigner.*']
 		}
 	]
 }];

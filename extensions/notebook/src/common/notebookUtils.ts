@@ -49,7 +49,7 @@ export class NotebookUtils {
 				await azdata.nb.showNotebookDocument(file[0]);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
+			void vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
@@ -62,7 +62,7 @@ export class NotebookUtils {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
+			void vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
@@ -75,7 +75,7 @@ export class NotebookUtils {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
+			void vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
@@ -88,7 +88,7 @@ export class NotebookUtils {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
+			void vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
@@ -107,8 +107,12 @@ export class NotebookUtils {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
+			void vscode.window.showErrorMessage(getErrorMessage(err));
 		}
+	}
+
+	public async toggleMarkdownStyle(style: string, showUI?: boolean, value?: string): Promise<void> {
+		return vscode.commands.executeCommand(style, showUI, value);
 	}
 
 	public async analyzeNotebook(oeContext?: azdata.ObjectExplorerContext): Promise<void> {

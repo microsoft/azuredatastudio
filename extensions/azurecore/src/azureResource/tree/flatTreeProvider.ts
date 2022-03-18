@@ -40,7 +40,7 @@ export class FlatAzureResourceTreeProvider implements vscode.TreeDataProvider<Tr
 		}
 
 		if (this.resourceLoader.state === LoaderState.NotStarted) {
-			this.resourceLoader.start();
+			this.resourceLoader.start().catch(err => console.error('Error loading Azure Resources for FlatAzureResourceTreeProvider ', err));
 			return [AzureResourceMessageTreeNode.create(localize('azure.resource.tree.treeProvider.loadingLabel', "Loading ..."), undefined)];
 		}
 

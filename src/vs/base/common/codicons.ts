@@ -3,10 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SqlIconId } from 'sql/base/common/codicons';
-import { codiconStartMarker } from 'vs/base/common/codicon';
+import { SqlIconId } from 'sql/base/common/codicons'; // {{SQL CARBON EDIT}}
 import { Emitter, Event } from 'vs/base/common/event';
-import { localize } from 'vs/nls';
 
 export interface IIconRegistry {
 	readonly all: IterableIterator<Codicon>;
@@ -48,8 +46,8 @@ const _registry = new Registry();
 
 export const iconRegistry: IIconRegistry = _registry;
 
-export function registerCodicon(id: string, def: Codicon, description?: string): Codicon {
-	return new Codicon(id, def, description);
+export function registerCodicon(id: string, def: Codicon): Codicon {
+	return new Codicon(id, def);
 }
 
 // Selects all codicon names encapsulated in the `$()` syntax and wraps the
@@ -114,7 +112,6 @@ export namespace CSSIcon {
 			}
 			return classNames;
 		}
-
 	}
 
 	export function asClassName(icon: CSSIcon): string {
@@ -381,7 +378,7 @@ export namespace Codicon {
 	export const horizontalRule = new Codicon('horizontal-rule', { fontCharacter: '\\eb07' });
 	export const hubot = new Codicon('hubot', { fontCharacter: '\\eb08' });
 	export const inbox = new Codicon('inbox', { fontCharacter: '\\eb09' });
-	export const issueClosed = new Codicon('issue-closed', { fontCharacter: '\\eb0a' });
+	export const issueClosed = new Codicon('issue-closed', { fontCharacter: '\\eba4' });
 	export const issueReopened = new Codicon('issue-reopened', { fontCharacter: '\\eb0b' });
 	export const issues = new Codicon('issues', { fontCharacter: '\\eb0c' });
 	export const italic = new Codicon('italic', { fontCharacter: '\\eb0d' });
@@ -586,36 +583,22 @@ export namespace Codicon {
 	export const filterFilled = new Codicon('filter-filled', { fontCharacter: '\\ebce' });
 	export const wand = new Codicon('wand', { fontCharacter: '\\ebcf' });
 	export const debugLineByLine = new Codicon('debug-line-by-line', { fontCharacter: '\\ebd0' });
+	export const inspect = new Codicon('inspect', { fontCharacter: '\\ebd1' });
+	export const layers = new Codicon('layers', { fontCharacter: '\\ebd2' });
+	export const layersDot = new Codicon('layers-dot', { fontCharacter: '\\ebd3' });
+	export const layersActive = new Codicon('layers-active', { fontCharacter: '\\ebd4' });
+	export const compass = new Codicon('compass', { fontCharacter: '\\ebd5' });
+	export const compassDot = new Codicon('compass-dot', { fontCharacter: '\\ebd6' });
+	export const compassActive = new Codicon('compass-active', { fontCharacter: '\\ebd7' });
+	export const azure = new Codicon('azure', { fontCharacter: '\\ebd8' });
+	export const issueDraft = new Codicon('issue-draft', { fontCharacter: '\\ebd9' });
+	export const gitPullRequestClosed = new Codicon('git-pull-request-closed', { fontCharacter: '\\ebda' });
+	export const gitPullRequestDraft = new Codicon('git-pull-request-draft', { fontCharacter: '\\ebdb' });
+	export const debugAll = new Codicon('debug-all', { fontCharacter: '\\ebdc' });
+	export const debugCoverage = new Codicon('debug-coverage', { fontCharacter: '\\ebdd' });
+	export const runErrors = new Codicon('run-errors', { fontCharacter: '\\ebde' });
+	export const folderLibrary = new Codicon('folder-library', { fontCharacter: '\\ebdf' });
 
-	export const dropDownButton = new Codicon('drop-down-button', Codicon.chevronDown.definition, localize('dropDownButton', 'Icon for drop down buttons.'));
+	export const dropDownButton = new Codicon('drop-down-button', Codicon.chevronDown.definition);
 }
 
-// common icons
-
-
-
-
-const escapeCodiconsRegex = /(\\)?\$\([a-z0-9\-]+?(?:~[a-z0-9\-]*?)?\)/gi;
-export function escapeCodicons(text: string): string {
-	return text.replace(escapeCodiconsRegex, (match, escaped) => escaped ? match : `\\${match}`);
-}
-
-const markdownEscapedCodiconsRegex = /\\\$\([a-z0-9\-]+?(?:~[a-z0-9\-]*?)?\)/gi;
-export function markdownEscapeEscapedCodicons(text: string): string {
-	// Need to add an extra \ for escaping in markdown
-	return text.replace(markdownEscapedCodiconsRegex, match => `\\${match}`);
-}
-
-const markdownUnescapeCodiconsRegex = /(\\)?\$\\\(([a-z0-9\-]+?(?:~[a-z0-9\-]*?)?)\\\)/gi;
-export function markdownUnescapeCodicons(text: string): string {
-	return text.replace(markdownUnescapeCodiconsRegex, (match, escaped, codicon) => escaped ? match : `$(${codicon})`);
-}
-
-const stripCodiconsRegex = /(\s)?(\\)?\$\([a-z0-9\-]+?(?:~[a-z0-9\-]*?)?\)(\s)?/gi;
-export function stripCodicons(text: string): string {
-	if (text.indexOf(codiconStartMarker) === -1) {
-		return text;
-	}
-
-	return text.replace(stripCodiconsRegex, (match, preWhitespace, escaped, postWhitespace) => escaped ? match : preWhitespace || postWhitespace || '');
-}

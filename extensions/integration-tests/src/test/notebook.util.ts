@@ -10,6 +10,9 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
+const NBFORMAT = 4;
+const NBFORMAT_MINOR = 2;
+
 export class CellTypes {
 	public static readonly Code = 'code';
 	public static readonly Markdown = 'markdown';
@@ -29,8 +32,8 @@ export const pySparkNotebookContent: azdata.nb.INotebookContents = {
 			display_name: 'PySpark'
 		}
 	},
-	nbformat: 4,
-	nbformat_minor: 2
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 export const notebookContentForCellLanguageTest: azdata.nb.INotebookContents = {
@@ -46,8 +49,8 @@ export const notebookContentForCellLanguageTest: azdata.nb.INotebookContents = {
 			display_name: ''
 		},
 	},
-	nbformat: 4,
-	nbformat_minor: 2
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 export const pythonNotebookMultipleCellsContent: azdata.nb.INotebookContents = {
@@ -78,8 +81,8 @@ export const pythonNotebookMultipleCellsContent: azdata.nb.INotebookContents = {
 			display_name: 'Python 3'
 		}
 	},
-	nbformat: 4,
-	nbformat_minor: 2
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 export const sqlNotebookContent: azdata.nb.INotebookContents = {
@@ -95,8 +98,8 @@ export const sqlNotebookContent: azdata.nb.INotebookContents = {
 			display_name: 'SQL'
 		}
 	},
-	nbformat: 4,
-	nbformat_minor: 2
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 export const sqlNotebookMultipleCellsContent: azdata.nb.INotebookContents = {
@@ -122,8 +125,8 @@ export const sqlNotebookMultipleCellsContent: azdata.nb.INotebookContents = {
 			display_name: 'SQL'
 		}
 	},
-	nbformat: 4,
-	nbformat_minor: 2
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 export const pySparkKernelMetadata = {

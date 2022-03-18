@@ -7,13 +7,16 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { createSqlMigrationService, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlMigrationService } from '../../api/azure';
 import { MigrationStateModel, NetworkContainerType } from '../../models/stateMachine';
+import { logError, TelemetryViews } from '../../telemtery';
 import * as constants from '../../constants/strings';
 import * as os from 'os';
 import { azureResource } from 'azureResource';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
+import { createAuthenticationKeyTable } from '../../wizard/integrationRuntimePage';
 import * as EventEmitter from 'events';
 import { clearDialogMessage } from '../../api/utils';
+import * as styles from '../../constants/styles';
 
 export class CreateSqlMigrationServiceDialog {
 
@@ -21,7 +24,7 @@ export class CreateSqlMigrationServiceDialog {
 
 	private migrationServiceSubscription!: azdata.TextComponent;
 	private migrationServiceResourceGroupDropdown!: azdata.DropDownComponent;
-	private migrationServiceLocation!: azdata.InputBoxComponent;
+	private migrationServiceLocation!: azdata.TextComponent;
 	private migrationServiceNameText!: azdata.InputBoxComponent;
 	private _formSubmitButton!: azdata.ButtonComponent;
 	private _createResourceGroupLink!: azdata.HyperlinkComponent;
@@ -158,8 +161,8 @@ export class CreateSqlMigrationServiceDialog {
 					d => { try { d.dispose(); } catch { } });
 			}));
 
-			return view.initializeModel(form).then(() => {
-				this.populateSubscriptions();
+			return view.initializeModel(form).then(async () => {
+				await this.populateSubscriptions();
 			});
 		});
 
@@ -167,15 +170,15 @@ export class CreateSqlMigrationServiceDialog {
 		this._testConnectionButton.hidden = true;
 		this._disposables.push(this._testConnectionButton.onClick(async (e) => {
 			this._refreshLoadingComponent.loading = true;
-			this._connectionStatus.updateCssStyles({
+			await this._connectionStatus.updateCssStyles({
 				'display': 'none'
 			});
 			try {
 				await this.refreshStatus();
 			} catch (e) {
-				vscode.window.showErrorMessage(e);
+				void vscode.window.showErrorMessage(e);
 			}
-			this._connectionStatus.updateCssStyles({
+			await this._connectionStatus.updateCssStyles({
 				'display': 'inline'
 			});
 			this._refreshLoadingComponent.loading = false;
@@ -208,29 +211,31 @@ export class CreateSqlMigrationServiceDialog {
 		const dialogDescription = this._view.modelBuilder.text().withProps({
 			value: constants.MIGRATION_SERVICE_DIALOG_DESCRIPTION,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
 		const subscriptionDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION,
+			description: constants.MIGRATION_SERVICE_SUBSCRIPTION_INFO,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...styles.LABEL_CSS
 			}
 		}).component();
 
-		this.migrationServiceSubscription = this._view.modelBuilder.inputBox().withProps({
-			required: true,
-			enabled: false
+		this.migrationServiceSubscription = this._view.modelBuilder.text().withProps({
+			enabled: false,
+			CSSStyles: {
+				'margin': '-1em 0 0'
+			}
 		}).component();
 
 		const resourceGroupDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.RESOURCE_GROUP,
+			description: constants.MIGRATION_SERVICE_RESOURCE_GROUP_INFO,
 			requiredIndicator: true,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...styles.LABEL_CSS
 			}
 		}).component();
 
@@ -239,20 +244,26 @@ export class CreateSqlMigrationServiceDialog {
 			required: true,
 			editable: true,
 			fireOnTextChange: true,
+			CSSStyles: {
+				'margin-top': '-1em'
+			}
 		}).component();
 
 		const migrationServiceNameLabel = this._view.modelBuilder.text().withProps({
 			value: constants.NAME,
+			description: constants.MIGRATION_SERVICE_NAME_INFO,
 			requiredIndicator: true,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...styles.LABEL_CSS
 			}
 		}).component();
 
 		this._createResourceGroupLink = this._view.modelBuilder.hyperlink().withProps({
 			label: constants.CREATE_NEW,
-			url: ''
+			url: '',
+			CSSStyles: {
+				...styles.BODY_CSS
+			}
 		}).component();
 
 		this._disposables.push(this._createResourceGroupLink.onDidClick(async e => {
@@ -269,37 +280,48 @@ export class CreateSqlMigrationServiceDialog {
 					name: createdResourceGroup.name
 				};
 				this.migrationServiceResourceGroupDropdown.loading = false;
-				this.migrationServiceResourceGroupDropdown.focus();
+				await this.migrationServiceResourceGroupDropdown.focus();
 			}
 		}));
 
-		this.migrationServiceNameText = this._view.modelBuilder.inputBox().component();
+		this.migrationServiceNameText = this._view.modelBuilder.inputBox().withProps({
+			CSSStyles: {
+				'margin-top': '-1em'
+			}
+		}).component();
 
 		const locationDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.LOCATION,
+			description: constants.MIGRATION_SERVICE_LOCATION_INFO,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...styles.LABEL_CSS
 			}
 		}).component();
 
-		this.migrationServiceLocation = this._view.modelBuilder.inputBox().withProps({
-			required: true,
+		this.migrationServiceLocation = this._view.modelBuilder.text().withProps({
 			enabled: false,
-			value: await this._model.getLocationDisplayName(this._model._targetServerInstance.location)
+			value: await this._model.getLocationDisplayName(this._model._targetServerInstance.location),
+			CSSStyles: {
+				'margin': '-1em 0 0'
+			}
 		}).component();
 
-		const targetlabel = this._view.modelBuilder.text().withProps({
+		const targetLabel = this._view.modelBuilder.text().withProps({
 			value: constants.TARGET,
+			description: constants.MIGRATION_SERVICE_TARGET_INFO,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...styles.LABEL_CSS
 			}
 		}).component();
 
-		const targetText = this._view.modelBuilder.inputBox().withProps({
+		const targetText = this._view.modelBuilder.text().withProps({
 			enabled: false,
-			value: constants.AZURE_SQL
+			value: constants.AZURE_SQL,
+			CSSStyles: {
+				'margin-top': '-1em',
+				// 'font-size': '13px',
+				// 'margin': '0px'
+			}
 		}).component();
 
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems([
@@ -313,7 +335,7 @@ export class CreateSqlMigrationServiceDialog {
 			this._createResourceGroupLink,
 			migrationServiceNameLabel,
 			this.migrationServiceNameText,
-			targetlabel,
+			targetLabel,
 			targetText
 		]).withLayout({
 			flexFlow: 'column'
@@ -365,29 +387,28 @@ export class CreateSqlMigrationServiceDialog {
 		const setupIRHeadingText = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_CONTAINER_HEADING,
 			CSSStyles: {
-				'font-weight': 'bold',
-				'font-size': '13px'
+				...styles.LABEL_CSS
 			}
 		}).component();
 
 		const setupIRdescription1 = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_CONTAINER_DESCRIPTION1,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
 		const setupIRdescription2 = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_CONTAINER_DESCRIPTION2,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
 		const irSetupStep1Text = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_STEP1,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			},
 			links: [
 				{
@@ -400,7 +421,7 @@ export class CreateSqlMigrationServiceDialog {
 		const irSetupStep2Text = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_STEP2,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -409,7 +430,7 @@ export class CreateSqlMigrationServiceDialog {
 			CSSStyles: {
 				'margin-top': '10px',
 				'margin-bottom': '10px',
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -417,7 +438,7 @@ export class CreateSqlMigrationServiceDialog {
 			text: '',
 			style: 'error',
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -428,55 +449,11 @@ export class CreateSqlMigrationServiceDialog {
 		this._refreshLoadingComponent = this._view.modelBuilder.loadingComponent().withProps({
 			loading: false,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
-
-		this.migrationServiceAuthKeyTable = this._view.modelBuilder.declarativeTable().withProps({
-			ariaLabel: constants.DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS,
-			columns: [
-				{
-					displayName: constants.NAME,
-					valueType: azdata.DeclarativeDataType.string,
-					width: '50px',
-					isReadOnly: true,
-					rowCssStyles: {
-						'font-size': '13px'
-					},
-					headerCssStyles: {
-						'font-size': '13px'
-					}
-				},
-				{
-					displayName: constants.AUTH_KEY_COLUMN_HEADER,
-					valueType: azdata.DeclarativeDataType.string,
-					width: '500px',
-					isReadOnly: true,
-					rowCssStyles: {
-						'font-size': '13px'
-					},
-					headerCssStyles: {
-						'font-size': '13px'
-					}
-				},
-				{
-					displayName: '',
-					valueType: azdata.DeclarativeDataType.component,
-					width: '30px',
-					isReadOnly: true,
-					rowCssStyles: {
-						'font-size': '13px'
-					},
-					headerCssStyles: {
-						'font-size': '13px'
-					}
-				}
-			],
-			CSSStyles: {
-				'margin-top': '5px'
-			}
-		}).component();
+		this.migrationServiceAuthKeyTable = createAuthenticationKeyTable(this._view);
 
 		this._setupContainer = this._view.modelBuilder.flexContainer().withItems(
 			[
@@ -521,7 +498,7 @@ export class CreateSqlMigrationServiceDialog {
 					description: e.message,
 					level: azdata.window.MessageLevel.Error
 				};
-				console.log(e);
+				logError(TelemetryViews.CreateDataMigrationServiceDialog, 'FetchSqlMigrationServiceFailed', e);
 			}
 			await new Promise(r => setTimeout(r, 5000));
 		}
@@ -533,21 +510,21 @@ export class CreateSqlMigrationServiceDialog {
 			const state = migrationServiceStatus.properties.integrationRuntimeState;
 
 			if (state === 'Online') {
-				this._connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
+				await this._connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
 					text: constants.SERVICE_READY(this._createdMigrationService!.name, this.irNodes.join(', ')),
 					style: 'success',
 					CSSStyles: {
-						'font-size': '13px'
+						...styles.BODY_CSS
 					}
 				});
 				this._dialogObject.okButton.enabled = true;
 			} else {
 				this._connectionStatus.text = constants.SERVICE_NOT_READY(this._createdMigrationService!.name);
-				this._connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
+				await this._connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
 					text: constants.SERVICE_NOT_READY(this._createdMigrationService!.name),
 					style: 'warning',
 					CSSStyles: {
-						'font-size': '13px'
+						...styles.BODY_CSS
 					}
 				});
 				this._dialogObject.okButton.enabled = false;
@@ -567,9 +544,9 @@ export class CreateSqlMigrationServiceDialog {
 			ariaLabel: constants.COPY_KEY1,
 		}).component();
 
-		this._disposables.push(this._copyKey1Button.onDidClick((e) => {
-			vscode.env.clipboard.writeText(<string>this.migrationServiceAuthKeyTable.dataValues![0][1].value);
-			vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
+		this._disposables.push(this._copyKey1Button.onDidClick(async (e) => {
+			await vscode.env.clipboard.writeText(<string>this.migrationServiceAuthKeyTable.dataValues![0][1].value);
+			void vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
 		}));
 
 		this._copyKey2Button = this._view.modelBuilder.button().withProps({
@@ -578,9 +555,9 @@ export class CreateSqlMigrationServiceDialog {
 			ariaLabel: constants.COPY_KEY2,
 		}).component();
 
-		this._disposables.push(this._copyKey2Button.onDidClick((e) => {
-			vscode.env.clipboard.writeText(<string>this.migrationServiceAuthKeyTable.dataValues![1][1].value);
-			vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
+		this._disposables.push(this._copyKey2Button.onDidClick(async (e) => {
+			await vscode.env.clipboard.writeText(<string>this.migrationServiceAuthKeyTable.dataValues![1][1].value);
+			void vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
 		}));
 
 		this._refreshKey1Button = this._view.modelBuilder.button().withProps({
@@ -603,7 +580,7 @@ export class CreateSqlMigrationServiceDialog {
 			//TODO: add refresh logic
 		}));
 
-		this.migrationServiceAuthKeyTable.updateProperties({
+		await this.migrationServiceAuthKeyTable.updateProperties({
 			dataValues: [
 				[
 					{

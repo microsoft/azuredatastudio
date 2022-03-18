@@ -6,7 +6,7 @@
 import { IEditorOptions, EditorOption } from 'vs/editor/common/config/editorOptions';
 import * as nls from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
-import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
+import { TextResourceEditorModel } from 'vs/workbench/common/editor/textResourceEditorModel';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 
 import { BaseTextEditor, IEditorConfiguration } from 'vs/workbench/browser/parts/editor/textEditor';
@@ -15,13 +15,14 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { IEditorOpenContext } from 'vs/workbench/common/editor';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
+import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
@@ -36,6 +37,7 @@ export class QueryTextEditor extends BaseTextEditor {
 	private _hideLineNumbers: boolean;
 	private _scrollbarHeight: number;
 	private _lineHeight: number;
+	private _shouldAddHorizontalScrollbarHeight: boolean = false;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -85,9 +87,9 @@ export class QueryTextEditor extends BaseTextEditor {
 		return options;
 	}
 
-	override async setInput(input: UntitledTextEditorInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
+	override async setInput(input: UntitledTextEditorInput, options: ITextEditorOptions, context: IEditorOpenContext): Promise<void> {
 		await super.setInput(input, options, context, CancellationToken.None);
-		const editorModel = await this.input.resolve() as ResourceEditorModel;
+		const editorModel = await this.input.resolve() as TextResourceEditorModel;
 		await editorModel.resolve();
 		this.getControl().setModel(editorModel.textEditorModel);
 	}
@@ -122,6 +124,10 @@ export class QueryTextEditor extends BaseTextEditor {
 		return editorWidget.getScrollHeight();
 	}
 
+	public get shouldAddHorizontalScrollbar(): boolean {
+		return this._shouldAddHorizontalScrollbarHeight;
+	}
+
 	public setHeightToScrollHeight(configChanged?: boolean, isEditorCollapsed?: boolean,) {
 		let editorWidget = this.getControl() as ICodeEditor;
 		let layoutInfo = editorWidget.getLayoutInfo();
@@ -145,7 +151,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		// number of lines that wrap). Finally, viewportColumn is calculated on editor resizing automatically; we can use it to ensure
 		// that the viewportColumn will always be greater than any character's column in an editor.
 		let numberWrappedLines = 0;
-		let shouldAddHorizontalScrollbarHeight = false;
+		this._shouldAddHorizontalScrollbarHeight = false;
 		if (!this._lineHeight || configChanged) {
 			this._lineHeight = editorWidget.getOption(EditorOption.lineHeight) || 18;
 		}
@@ -161,14 +167,14 @@ export class QueryTextEditor extends BaseTextEditor {
 			for (let line = 1; line <= lineCount; line++) {
 				// The horizontal scrollbar always appears 1 column past the viewport column when word wrap is disabled
 				if (editorWidgetModel.getLineMaxColumn(line) >= layoutInfo.viewportColumn + 1) {
-					shouldAddHorizontalScrollbarHeight = true;
+					this._shouldAddHorizontalScrollbarHeight = true;
 					break;
 				}
 			}
 		}
 		let editorHeightUsingLines = this._lineHeight * (lineCount + numberWrappedLines);
 		let editorHeightUsingMinHeight = Math.max(Math.min(editorHeightUsingLines, this._maxHeight), this._minHeight);
-		editorHeightUsingMinHeight = shouldAddHorizontalScrollbarHeight ? editorHeightUsingMinHeight + this._scrollbarHeight : editorHeightUsingMinHeight;
+		editorHeightUsingMinHeight = this._shouldAddHorizontalScrollbarHeight ? editorHeightUsingMinHeight + this._scrollbarHeight : editorHeightUsingMinHeight;
 		this.setHeight(editorHeightUsingMinHeight);
 	}
 

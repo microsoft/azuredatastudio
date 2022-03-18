@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Fonctionnalités du langage XML",
-			"description": "Fournit une prise en charge riche de langage pour XML."
+			"description": "Fournit une prise en charge riche de langage pour XML.",
+			"displayName": "Fonctionnalités du langage XML"
 		}
 	}
 }

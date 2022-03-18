@@ -34,7 +34,7 @@ suite('TableComponent Tests', () => {
 				'c3': '6'
 			}
 		];
-		assert.deepEqual(actual, expected);
+		assert.deepStrictEqual(actual, expected);
 	});
 
 	test('Table transformData should return empty array given undefined rows', () => {
@@ -43,7 +43,7 @@ suite('TableComponent Tests', () => {
 		let columns = ['c1', 'c2', 'c3'];
 		let actual = tableComponent.transformData(data, columns);
 		let expected: { [key: string]: string }[] = [];
-		assert.deepEqual(actual, expected);
+		assert.deepStrictEqual(actual, expected);
 	});
 
 	test('Table transformData should return empty array given undefined columns', () => {
@@ -55,7 +55,7 @@ suite('TableComponent Tests', () => {
 		const tableComponent = new TableComponent(undefined, undefined, undefined, new NullLogService(), undefined);
 		let actual = tableComponent.transformData(data, columns);
 		let expected: { [key: string]: string }[] = [];
-		assert.deepEqual(actual, expected);
+		assert.deepStrictEqual(actual, expected);
 	});
 
 	test('Table transformData should return array matched with columns given rows with missing column', () => {
@@ -76,6 +76,6 @@ suite('TableComponent Tests', () => {
 				'c2': '5'
 			}
 		];
-		assert.deepEqual(actual, expected);
+		assert.deepStrictEqual(actual, expected);
 	});
 });

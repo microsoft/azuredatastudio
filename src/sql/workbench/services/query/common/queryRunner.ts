@@ -6,9 +6,10 @@
 import { IQueryManagementService, QueryCancelResult, ExecutionPlanOptions } from 'sql/workbench/services/query/common/queryManagement';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { Deferred } from 'sql/base/common/promise';
-import { IQueryPlanInfo } from 'sql/workbench/services/query/common/queryModel';
+import { IQueryPlanInfo, IExecutionPlanInfo } from 'sql/workbench/services/query/common/queryModel';
 import { ResultSerializer, SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 
+import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import * as types from 'vs/base/common/types';
@@ -72,6 +73,9 @@ export default class QueryRunner extends Disposable {
 	private readonly _onQueryPlanAvailable = this._register(new Emitter<IQueryPlanInfo>());
 	public readonly onQueryPlanAvailable = this._onQueryPlanAvailable.event;
 
+	private readonly _onExecutionPlanAvailable = this._register(new Emitter<IExecutionPlanInfo>());
+	public readonly onExecutionPlanAvailable = this._onExecutionPlanAvailable.event;
+
 	private readonly _onVisualize = this._register(new Emitter<ResultSetSummary>());
 	public readonly onVisualize = this._onVisualize.event;
 
@@ -102,6 +106,12 @@ export default class QueryRunner extends Disposable {
 
 	get hasCompleted(): boolean {
 		return this._hasCompleted;
+	}
+
+	private _isDisposed: boolean = false;
+
+	get isDisposed(): boolean {
+		return this._isDisposed;
 	}
 
 	/**
@@ -377,6 +387,16 @@ export default class QueryRunner extends Disposable {
 		}
 	}
 
+	public handleExecutionPlanAvailable(executionPlans: azdata.ExecutionPlanGraph[] | undefined) {
+		if (executionPlans) {
+			this._onExecutionPlanAvailable.fire({
+				providerId: mssqlProviderName,
+				fileUri: this.uri,
+				planGraphs: executionPlans
+			});
+		}
+	}
+
 	/**
 	 * Handle a Mssage from the service layer
 	 */
@@ -417,8 +437,14 @@ export default class QueryRunner extends Disposable {
 	}
 
 	public override dispose() {
+		this.logService.info(`Disposing the query runner of: '${this.uri}'', call stack: ${new Error().stack}`);
 		this._batchSets = undefined!;
 		super.dispose();
+		this._isDisposed = true;
+	}
+
+	public changeConnectionUri(oldUri: string, newUri: string): Promise<void> {
+		return this.queryManagementService.changeConnectionUri(oldUri, newUri);
 	}
 
 	get totalElapsedMilliseconds(): number {

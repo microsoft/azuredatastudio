@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -12,10 +12,11 @@ import { TestConfigurationService } from 'vs/platform/configuration/test/common/
 import { IFileService } from 'vs/platform/files/common/files';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { NotebookProviderInfoStore } from 'vs/workbench/contrib/notebook/browser/notebookServiceImpl';
+import { INotebookEditorModelResolverService } from 'vs/workbench/contrib/notebook/common/notebookEditorModelResolverService';
 import { NotebookProviderInfo } from 'vs/workbench/contrib/notebook/common/notebookProvider';
-import { EditorOverrideService } from 'vs/workbench/services/editor/browser/editorOverrideService';
-import { ContributedEditorPriority } from 'vs/workbench/services/editor/common/editorOverrideService';
-import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
+import { EditorResolverService } from 'vs/workbench/services/editor/browser/editorResolverService';
+import { RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorResolverService';
+import { IExtensionService, nullExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 
 suite('NotebookProviderInfoStore', function () {
@@ -31,34 +32,33 @@ suite('NotebookProviderInfoStore', function () {
 			new class extends mock<IExtensionService>() {
 				override onDidRegisterExtensions = Event.None;
 			},
-			instantiationService.createInstance(EditorOverrideService),
+			instantiationService.createInstance(EditorResolverService),
 			new TestConfigurationService(),
 			new class extends mock<IAccessibilityService>() { },
 			instantiationService,
 			new class extends mock<IFileService>() {
 				override canHandleResource() { return true; }
-			}
+			},
+			new class extends mock<INotebookEditorModelResolverService>() { }
 		);
 
 		const fooInfo = new NotebookProviderInfo({
+			extension: nullExtensionDescription.identifier,
 			id: 'foo',
 			displayName: 'foo',
 			selectors: [{ filenamePattern: '*.foo' }],
-			priority: ContributedEditorPriority.default,
-			dynamicContribution: false,
+			priority: RegisteredEditorPriority.default,
 			exclusive: false,
 			providerDisplayName: 'foo',
-			providerExtensionLocation: null!
 		});
 		const barInfo = new NotebookProviderInfo({
+			extension: nullExtensionDescription.identifier,
 			id: 'bar',
 			displayName: 'bar',
 			selectors: [{ filenamePattern: '*.bar' }],
-			priority: ContributedEditorPriority.default,
-			dynamicContribution: false,
+			priority: RegisteredEditorPriority.default,
 			exclusive: false,
 			providerDisplayName: 'bar',
-			providerExtensionLocation: null!
 		});
 
 		store.add(fooInfo);

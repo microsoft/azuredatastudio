@@ -9,9 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"title.sqlServerNotebooks": "SQL Server Notebooks",
+			"description.sqlserverNotebooks": "用來協助開始使用 SQL Server 並對其進行疑難排解的筆記本",
 			"title.sqlServer2019Book": "SQL Server 2019 指南",
-			"description.sqlserverNotebooks": "用來協助開始使用 SQL Server 並對其進行疑難排解的筆記本"
+			"title.sqlServerNotebooks": "SQL Server Notebooks"
 		}
 	}
 }

@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "내일 밤 파란색 테마",
 			"description": "Visual Studio Code용 내일 밤 파란색 테마",
+			"displayName": "내일 밤 파란색 테마",
 			"themeLabel": "내일 밤 파란색"
 		}
 	}

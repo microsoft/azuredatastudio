@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "搜尋結果",
-			"description": "為索引標籤式搜尋結果提供語法醒目提示和語言功能。"
+			"description": "為索引標籤式搜尋結果提供語法醒目提示和語言功能。",
+			"displayName": "搜尋結果"
 		}
 	}
 }

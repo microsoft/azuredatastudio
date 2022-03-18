@@ -7,19 +7,14 @@ import { AddServerAction } from 'sql/workbench/services/objectExplorer/browser/c
 import { escape } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
 
-const previewImgDescription = escape(localize('welcomePage.previewBody', "This feature page is in preview. Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development."));
-
+// Note - this content is passed through an HTML sanitizer defined in src\vs\base\browser\dom.ts (safeInnerHtml). If something
+// isn't rendering correctly make sure that the tags/attributes and schemas are all listed in the allowed lists.
 export default () => `
 <div class="welcomePageContainer">
 	<div class="welcomePage">
 		<div class="ads-homepage splash">
 			<div class="gradient">
 				<div class="content-container">
-					<div class="ads-homepage-section tool-tip">
-						<div class="tool-tip-container" id="tool-tip-container-wide">
-							<a role="img" tabindex=0 class="ads-welcome-page-link preview-link" aria-label="${previewImgDescription}" title="${previewImgDescription}" id="preview-link-wide" tabindex="0" name="preview"><p>${escape(localize('welcomePage.preview', "Preview"))}</p><i class="icon-info themed-icon"></i></a>
-						</div>
-					</div>
 					<div class="ads-homepage-section section header hero">
 						<div class="row start">
 							<div class="header-top-nav">

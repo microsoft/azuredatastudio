@@ -12,6 +12,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { CLIOutput, IExtensionGalleryService, IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { ExtensionManagementCLIService } from 'vs/platform/extensionManagement/common/extensionManagementCLIService';
 import { getExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
+import { IExtensionManifest } from 'vs/platform/extensions/common/extensions';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { ILabelService } from 'vs/platform/label/common/label';
@@ -21,7 +22,6 @@ import { IOpenWindowOptions, IWindowOpenable } from 'vs/platform/windows/common/
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { IExtensionManagementServerService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { IExtensionManifestPropertiesService } from 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
-import { IExtensionManifest } from 'vs/workbench/workbench.web.api';
 
 
 // this class contains the commands that the CLI server is reying on
@@ -54,7 +54,7 @@ CommandsRegistry.registerCommand('_remoteCLI.manageExtensions', async function (
 	const extensionManagementServerService = accessor.get(IExtensionManagementServerService);
 	const remoteExtensionManagementService = extensionManagementServerService.remoteExtensionManagementServer?.extensionManagementService;
 	if (!remoteExtensionManagementService) {
-		return undefined;
+		return undefined; // {{SQL CARBON EDIT}} Strict nulls
 	}
 
 	const cliService = instantiationService.createChild(new ServiceCollection([IExtensionManagementService, remoteExtensionManagementService])).createInstance(RemoteExtensionCLIManagementService);

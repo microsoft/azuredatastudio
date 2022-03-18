@@ -107,9 +107,9 @@ suite('Dashboard Properties Widget Tests', () => {
 			// because config parsing is done async we need to put our asserts on the thread stack
 			setImmediate(() => {
 				const propertyItems: PropertyItem[] = (testComponent as any).parseProperties(databaseInfo);
-				assert.equal(propertyItems.length, 1);
-				assert.equal(propertyItems[0].displayName, 'Test');
-				assert.equal(propertyItems[0].value, 'Test Property');
+				assert.strictEqual(propertyItems.length, 1);
+				assert.strictEqual(propertyItems[0].displayName, 'Test');
+				assert.strictEqual(propertyItems[0].value, 'Test Property');
 				resolve();
 			});
 		});

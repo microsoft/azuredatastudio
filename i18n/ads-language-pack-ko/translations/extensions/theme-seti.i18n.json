@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Seti 파일 아이콘 테마",
 			"description": "Seti UI 파일 아이콘으로 만든 파일 아이콘 테마",
+			"displayName": "Seti 파일 아이콘 테마",
 			"themeLabel": "Seti(Visual Studio Code)"
 		}
 	}

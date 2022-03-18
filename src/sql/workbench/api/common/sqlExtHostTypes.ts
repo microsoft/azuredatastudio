@@ -5,6 +5,7 @@
 
 import { nb, IConnectionProfile } from 'azdata';
 import * as vsExtTypes from 'vs/workbench/api/common/extHostTypes';
+import { URI } from 'vs/base/common/uri';
 
 // SQL added extension host types
 export enum ServiceOptionType {
@@ -380,7 +381,8 @@ export enum DataProviderType {
 	SerializationProvider = 'SerializationProvider',
 	IconProvider = 'IconProvider',
 	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
-	DataGridProvider = 'DataGridProvider'
+	DataGridProvider = 'DataGridProvider',
+	TableDesignerProvider = 'TableDesignerProvider'
 }
 
 export enum DeclarativeDataType {
@@ -395,7 +397,8 @@ export enum DeclarativeDataType {
 export enum CardType {
 	VerticalButton = 'VerticalButton',
 	Details = 'Details',
-	ListItem = 'ListItem'
+	ListItem = 'ListItem',
+	Image = 'Image'
 }
 
 export enum Orientation {
@@ -427,7 +430,6 @@ export class TreeComponentItem extends vsExtTypes.TreeItem {
 	checked?: boolean;
 }
 
-// Accounts interfaces.ts > AzureResource should also be updated
 export enum AzureResource {
 	ResourceManagement = 0,
 	Sql = 1,
@@ -446,6 +448,9 @@ export class TreeItem extends vsExtTypes.TreeItem {
 	payload?: IConnectionProfile;
 	providerHandle?: string;
 }
+
+export type ThemedIconPath = { light: string | URI; dark: string | URI };
+export type IconPath = string | URI | ThemedIconPath;
 
 export class SqlThemeIcon {
 
@@ -546,9 +551,26 @@ export class SqlThemeIcon {
 	}
 }
 
-export interface INotebookManagerDetails {
+export interface ICellMetadata {
+	language?: string | undefined;
+	tags?: string[] | undefined;
+	azdata_cell_guid?: string | undefined;
+	connection_name?: string;
+	/**
+	 * .NET Interactive metadata. This is only required for compatibility with the .NET Interactive extension.
+	 */
+	dotnet_interactive?: {
+		language: string;
+	}
+}
+
+export interface ISerializationManagerDetails {
 	handle: number;
 	hasContentManager: boolean;
+}
+
+export interface IExecuteManagerDetails {
+	handle: number;
 	hasServerManager: boolean;
 }
 
@@ -623,10 +645,47 @@ export class CellRange {
 	}
 }
 
-export interface ISingleNotebookEditOperation {
+export const enum NotebookEditOperationType {
+	/**
+	 * Inserts a new cell with the specified content at the specified position.
+	 */
+	InsertCell = 0,
+	/**
+	 * Deletes a single cell.
+	 */
+	DeleteCell = 1,
+	/**
+	 * Replace the specified cell range with a new cell made from the specified content.
+	 */
+	ReplaceCells = 2,
+	/**
+	 * Update a cell with the specified new values. Currently only supports updating cell output.
+	 */
+	UpdateCell = 3,
+	/**
+	 * Updates a cell outputs with the specified new values.
+	 */
+	UpdateCellOutput = 4
+}
+
+// TODO This should be split up into separate edit operation types
+export interface INotebookEditOperation {
+	/**
+	 * The type of edit operation this is
+	 */
+	type: NotebookEditOperationType;
+	/**
+	 * The range of cells that this edit affects
+	 */
 	range: ICellRange;
+	/**
+	 * The cell metadata to use for the edit operation (only for some edit operations)
+	 */
 	cell: Partial<nb.ICellContents>;
-	forceMoveMarkers: boolean;
+	/**
+	 * Whether to append the content to the existing content or replace it.
+	 */
+	append?: boolean;
 }
 
 export class ConnectionProfile {
@@ -892,5 +951,64 @@ export enum ButtonType {
 
 export enum TextType {
 	Normal = 'Normal',
-	Error = 'Error'
+	Error = 'Error',
+	UnorderedList = 'UnorderedList',
+	OrderedList = 'OrderedList'
+}
+
+export namespace designers {
+	export enum TableProperty {
+		Schema = 'schema',
+		Name = 'name',
+		Description = 'description',
+		Columns = 'columns',
+		Script = 'script',
+		ForeignKeys = 'foreignKeys',
+		CheckConstraints = 'checkConstraints',
+		Indexes = 'indexes'
+	}
+
+	export enum TableColumnProperty {
+		Name = 'name',
+		Type = 'type',
+		AllowNulls = 'allowNulls',
+		DefaultValue = 'defaultValue',
+		Length = 'length',
+		IsPrimaryKey = 'isPrimaryKey',
+		Precision = 'precision',
+		Scale = 'scale'
+	}
+
+	export enum TableForeignKeyProperty {
+		Name = 'name',
+		ForeignTable = 'foreignTable',
+		OnDeleteAction = 'onDeleteAction',
+		OnUpdateAction = 'onUpdateAction',
+		Columns = 'columns'
+	}
+
+	export enum ForeignKeyColumnMappingProperty {
+		Column = 'column',
+		ForeignColumn = 'foreignColumn'
+	}
+
+	export enum TableCheckConstraintProperty {
+		Name = 'name',
+		Expression = 'expression'
+	}
+
+	export enum TableIndexProperty {
+		Name = 'name',
+		Columns = 'columns'
+	}
+
+	export enum TableIndexColumnSpecificationProperty {
+		Column = 'column'
+	}
+
+	export enum DesignerEditType {
+		Add = 0,
+		Remove = 1,
+		Update = 2
+	}
 }

@@ -30,5 +30,7 @@
 	"config.azureCodeGrantMethod": "Code Grant Method",
 	"config.azureDeviceCodeMethod": "Device Code Method",
 	"config.noSystemKeychain": "Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.",
-	"config.piiLogging": "Should Personally Identifiable Information (PII) be logged in the console view locally"
+	"config.piiLogging": "Should Personally Identifiable Information (PII) be logged in the Azure Accounts output channel and the output channel log file.",
+	"config.loggingLevel": "[Optional] The verbosity of logging for the Azure Accounts extension."
+
 }

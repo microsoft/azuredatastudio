@@ -88,6 +88,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	public async startLogin(): Promise<AzureAccount | azdata.PromptFailedResult> {
 		let loginComplete: Deferred<void, Error>;
 		try {
+			Logger.verbose('Starting login');
 			const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
 			loginComplete = result.authComplete;
 			if (!result?.response) {
@@ -100,14 +101,19 @@ export abstract class AzureAuth implements vscode.Disposable {
 			loginComplete?.resolve();
 			return account;
 		} catch (ex) {
+			Logger.error('Login failed');
 			if (ex instanceof AzureAuthError) {
 				if (loginComplete) {
 					loginComplete.reject(ex);
+					Logger.error(ex);
 				} else {
-					vscode.window.showErrorMessage(ex.getPrintableString());
+					void vscode.window.showErrorMessage(ex.message);
+					Logger.error(ex.originalMessageAndException);
 				}
+			} else {
+				Logger.error(ex);
+
 			}
-			Logger.error(ex);
 			return {
 				canceled: false
 			};
@@ -139,7 +145,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return await this.hydrateAccount(tokenResult, this.getTokenClaims(tokenResult.token));
 		} catch (ex) {
 			if (ex instanceof AzureAuthError) {
-				vscode.window.showErrorMessage(ex.getPrintableString());
+				void vscode.window.showErrorMessage(ex.message);
+				Logger.error(ex.originalMessageAndException);
+			} else {
+				Logger.error(ex);
 			}
 			Logger.error(ex);
 			account.isStale = true;
@@ -155,13 +164,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public async getAccountSecurityToken(account: AzureAccount, tenantId: string, azureResource: azdata.AzureResource): Promise<Token | undefined> {
 		if (account.isStale === true) {
-			Logger.log('Account was stale. No tokens being fetched.');
+			Logger.error('Account was stale. No tokens being fetched.');
 			return undefined;
 		}
 
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 		if (!resource) {
-			Logger.log('Invalid resource, not fetching', azureResource);
+			Logger.error('Invalid resource, not fetching', azureResource);
 
 			return undefined;
 		}
@@ -178,23 +187,26 @@ export abstract class AzureAuth implements vscode.Disposable {
 		if (cachedTokens?.accessToken) {
 			let expiry = Number(cachedTokens.expiresOn);
 			if (Number.isNaN(expiry)) {
-				Logger.log('Expiration time was not defined. This is expected on first launch');
+				Logger.error('Expiration time was not defined. This is expected on first launch');
 				expiry = 0;
 			}
 			const currentTime = new Date().getTime() / 1000;
 
 			let accessToken = cachedTokens.accessToken;
+			let expiresOn = Number(cachedTokens.expiresOn);
 			const remainingTime = expiry - currentTime;
 			const maxTolerance = 2 * 60; // two minutes
 
 			if (remainingTime < maxTolerance) {
 				const result = await this.refreshToken(tenant, resource, cachedTokens.refreshToken);
 				accessToken = result.accessToken;
+				expiresOn = Number(result.expiresOn);
 			}
 			// Let's just return here.
 			if (accessToken) {
 				return {
 					...accessToken,
+					expiresOn: expiresOn,
 					tokenType: 'Bearer'
 				};
 			}
@@ -214,6 +226,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		if (result.accessToken) {
 			return {
 				...result.accessToken,
+				expiresOn: Number(result.expiresOn),
 				tokenType: 'Bearer'
 			};
 		}
@@ -248,16 +261,18 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	public async getToken(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData | RefreshTokenPostData): Promise<OAuthTokenResponse> {
+		Logger.verbose('Fetching token');
 		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
 		const response = await this.makePostRequest(tokenUrl, postData);
-
+		Logger.pii('Token: ', [{ name: 'access token', objOrArray: response.data }, { name: 'refresh token', objOrArray: response.data }],
+			[{ name: 'access token', value: response.data.access_token }, { name: 'refresh token', value: response.data.refresh_token }]);
 		if (response.data.error === 'interaction_required') {
 			return this.handleInteractionRequired(tenant, resource);
 		}
 
 		if (response.data.error) {
 			Logger.error('Response error!', response.data);
-			throw new AzureAuthError(localize('azure.responseError', "Token retrieval failed with an error. Open developer tools to view the error"), 'Token retrieval failed', undefined);
+			throw new AzureAuthError(localize('azure.responseError', "Token retrieval failed with an error. [Open developer tools]({0}) for more details.", 'command:workbench.action.toggleDevTools'), 'Token retrieval failed', undefined);
 		}
 
 		const accessTokenString = response.data.access_token;
@@ -333,8 +348,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
+			Logger.verbose('Fetching tenants', tenantUri);
 			const tenantResponse = await this.makeGetRequest(tenantUri, token.token);
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
+				Logger.verbose(`Tenant: ${tenantInfo.displayName}`);
 				return {
 					id: tenantInfo.tenantId,
 					displayName: tenantInfo.displayName ? tenantInfo.displayName : localize('azureWorkAccountDisplayName', "Work or school account"),
@@ -351,7 +368,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 			return tenants;
 		} catch (ex) {
-			Logger.log(ex);
+			Logger.error(`Error fetching tenants :${ex}`);
 			throw new Error('Error retrieving tenant information');
 		}
 	}
@@ -366,7 +383,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 			throw new AzureAuthError(msg, 'Adding account to cache failed', undefined);
 		}
 		try {
+			Logger.pii(`Saving access token`, [{ name: 'access_token', objOrArray: accessToken }], []);
 			await this.tokenCache.saveCredential(`${accountKey.accountId}_access_${resource.id}_${tenant.id}`, JSON.stringify(accessToken));
+			Logger.pii(`Saving refresh token`, [{ name: 'refresh_token', objOrArray: refreshToken }], []);
 			await this.tokenCache.saveCredential(`${accountKey.accountId}_refresh_${resource.id}_${tenant.id}`, JSON.stringify(refreshToken));
 			this.memdb.set(`${accountKey.accountId}_${tenant.id}_${resource.id}`, expiresOn);
 		} catch (ex) {
@@ -388,6 +407,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		let refreshTokenString: string;
 		let expiresOn: string;
 		try {
+			Logger.info('Fetching saved token');
 			accessTokenString = await this.tokenCache.getCredential(`${accountKey.accountId}_access_${resource.id}_${tenant.id}`);
 			refreshTokenString = await this.tokenCache.getCredential(`${accountKey.accountId}_refresh_${resource.id}_${tenant.id}`);
 			expiresOn = this.memdb.get(`${accountKey.accountId}_${tenant.id}_${resource.id}`);
@@ -398,7 +418,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		try {
 			if (!accessTokenString) {
-				Logger.log('No access token found');
+				Logger.error('No access token found');
 				return undefined;
 			}
 			const accessToken: AccessToken = JSON.parse(accessTokenString);
@@ -495,6 +515,12 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#region data modeling
 
 	public createAccount(tokenClaims: TokenClaims, key: string, tenants: Tenant[]): AzureAccount {
+		Logger.verbose(`Token Claims: ${tokenClaims.name}`);
+		tenants.forEach((tenant) => {
+			Logger.verbose(
+				`Tenant ID: ${tenant.id}
+				Tenant Name: ${tenant.displayName}`);
+		});
 		// Determine if this is a microsoft account
 		let accountIssuer = 'unknown';
 
@@ -616,7 +642,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return this.deleteAccountCache(account);
 		} catch (ex) {
 			const msg = localize('azure.cacheErrrorRemove', "Error when removing your account from the cache.");
-			vscode.window.showErrorMessage(msg);
+			void vscode.window.showErrorMessage(msg);
 			Logger.error('Error when removing tokens.', ex);
 		}
 	}
@@ -673,6 +699,11 @@ export interface Token extends AccountKey {
 	 * Access token
 	 */
 	token: string;
+
+	/**
+	 * Access token expiry timestamp
+	 */
+	expiresOn?: number;
 
 	/**
 	 * TokenType

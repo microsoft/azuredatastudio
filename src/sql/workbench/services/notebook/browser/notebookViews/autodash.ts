@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { nb } from 'azdata';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
@@ -69,13 +74,13 @@ class CellDisplayGroup extends DisplayGroup<ICellModel> {
 		//For graphs
 		if (this.hasGraph(cell)) {
 			visInfo.width = 6;
-			visInfo.height = 4;
+			visInfo.height = 12;
 		}
 		//For tables
 		else if (this.hasTable(cell)) {
-			visInfo.height = Math.min(meta?.height, 3);
+			visInfo.height = Math.min(meta?.height, 6);
 		} else {
-			visInfo.height = Math.min(meta?.height, 3);
+			visInfo.height = Math.min(meta?.height, 6);
 		}
 
 		visInfo.display = true;
@@ -87,11 +92,11 @@ class CellDisplayGroup extends DisplayGroup<ICellModel> {
 	}
 
 	hasGraph(cell: ICellModel): boolean {
-		return !!cell.outputs.find((o: nb.IDisplayResult) => o?.output_type === 'display_data' && o?.data.hasOwnProperty('application/vnd.plotly.v1+json'));
+		return !!cell.outputs.find((o: nb.ICellOutput) => o?.output_type === 'display_data' && (o as nb.IDisplayResult)?.data.hasOwnProperty('application/vnd.plotly.v1+json'));
 	}
 
 	hasTable(cell: ICellModel): boolean {
-		return !!cell.outputs.find((o: nb.IDisplayResult) => o?.output_type === 'display_data' && o?.data.hasOwnProperty('application/vnd.dataresource+json'));
+		return !!cell.outputs.find((o: nb.ICellOutput) => o?.output_type === 'display_data' && (o as nb.IDisplayResult)?.data.hasOwnProperty('application/vnd.dataresource+json'));
 	}
 }
 

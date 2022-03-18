@@ -303,6 +303,7 @@ export function createViewContext(): ViewTestContext {
 		registerCloseValidator: () => { },
 		registerOperation: () => { },
 		onValidityChanged: new vscode.EventEmitter<boolean>().event,
+		onClosed: new vscode.EventEmitter<azdata.window.CloseReason>().event,
 		registerContent: () => { },
 		modelView: undefined!,
 		valid: true

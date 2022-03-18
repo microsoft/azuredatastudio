@@ -73,6 +73,11 @@ export const FILE_EDITOR_INPUT_ID = 'workbench.editors.files.fileEditorInput';
  */
 export const BINARY_FILE_EDITOR_ID = 'workbench.editors.files.binaryFileEditor';
 
+/**
+ * Language mode for binary files opened as text.
+ */
+export const BINARY_TEXT_FILE_MODE = 'code-text-binary';
+
 export interface IFilesConfiguration extends PlatformIFilesConfiguration, IWorkbenchEditorConfiguration {
 	explorer: {
 		openEditors: {
@@ -83,6 +88,7 @@ export interface IFilesConfiguration extends PlatformIFilesConfiguration, IWorkb
 		enableDragAndDrop: boolean;
 		confirmDelete: boolean;
 		sortOrder: SortOrder;
+		sortOrderLexicographicOptions: LexicographicOptions;
 		decorations: {
 			colors: boolean;
 			badges: boolean;
@@ -105,6 +111,18 @@ export const enum SortOrder {
 	Modified = 'modified'
 }
 
+export const enum LexicographicOptions {
+	Default = 'default',
+	Upper = 'upper',
+	Lower = 'lower',
+	Unicode = 'unicode',
+}
+
+export interface ISortOrderConfiguration {
+	sortOrder: SortOrder;
+	lexicographicOptions: LexicographicOptions;
+}
+
 export class TextFileContentProvider extends Disposable implements ITextModelContentProvider {
 	private readonly fileWatcherDisposable = this._register(new MutableDisposable());
 
@@ -119,8 +137,8 @@ export class TextFileContentProvider extends Disposable implements ITextModelCon
 
 	static async open(resource: URI, scheme: string, label: string, editorService: IEditorService, options?: ITextEditorOptions): Promise<void> {
 		await editorService.openEditor({
-			leftResource: TextFileContentProvider.resourceToTextFile(scheme, resource),
-			rightResource: resource,
+			original: { resource: TextFileContentProvider.resourceToTextFile(scheme, resource) },
+			modified: { resource },
 			label,
 			options
 		});

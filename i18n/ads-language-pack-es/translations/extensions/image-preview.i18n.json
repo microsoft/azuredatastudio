@@ -8,20 +8,13 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Vista previa de la imagen",
-			"description": "Proporciona la vista previa de imagen integrada de VS Code",
-			"customEditors.displayName": "Vista previa de la imagen",
-			"command.zoomIn": "Acercar",
-			"command.zoomOut": "Alejar"
-		},
 		"dist/binarySizeStatusBarEntry": {
 			"sizeB": "{0} B",
+			"sizeGB": "{0} GB",
 			"sizeKB": "{0} KB",
 			"sizeMB": "{0} MB",
-			"sizeGB": "{0} GB",
-			"sizeTB": "{0} TB",
-			"sizeStatusBar.name": "Tamaño binario de la imagen"
+			"sizeStatusBar.name": "Tamaño binario de la imagen",
+			"sizeTB": "{0} TB"
 		},
 		"dist/preview": {
 			"preview.imageLoadError": "Se ha producido un error al cargar la imagen.",
@@ -34,6 +27,13 @@
 			"zoomStatusBar.name": "Zoom de imagen",
 			"zoomStatusBar.placeholder": "Seleccionar nivel de zoom",
 			"zoomStatusBar.wholeImageLabel": "Imagen completa"
+		},
+		"package": {
+			"command.zoomIn": "Acercar",
+			"command.zoomOut": "Alejar",
+			"customEditors.displayName": "Vista previa de la imagen",
+			"description": "Proporciona la vista previa de imagen integrada de VS Code",
+			"displayName": "Vista previa de la imagen"
 		}
 	}
 }

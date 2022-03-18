@@ -8,7 +8,7 @@ import 'vs/css!./media/queryEditor';
 import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import * as path from 'vs/base/common/path';
-import { EditorOptions, IEditorControl, IEditorMemento, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { IEditorControl, IEditorMemento, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { EditorPane, EditorMemento } from 'vs/workbench/browser/parts/editor/editorPane';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -28,7 +28,7 @@ import { DisposableStore } from 'vs/base/common/lifecycle';
 import { IAction } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -39,8 +39,12 @@ import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as actions from 'sql/workbench/contrib/query/browser/queryActions';
 import { IRange } from 'vs/editor/common/core/range';
-import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -106,10 +110,12 @@ export class QueryEditor extends EditorPane {
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IModeService private readonly modeService: IModeService,
+		@ITextResourceConfigurationService textResourceConfigurationService: ITextResourceConfigurationService,
+		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
 	) {
 		super(QueryEditor.ID, telemetryService, themeService, storageService);
 
-		this.editorMemento = this.getEditorMemento<IQueryEditorViewState>(editorGroupService, QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY, 100);
+		this.editorMemento = this.getEditorMemento<IQueryEditorViewState>(editorGroupService, textResourceConfigurationService, QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY, 100);
 
 		this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
 
@@ -118,14 +124,21 @@ export class QueryEditor extends EditorPane {
 	}
 
 	private onFilesChanged(e: FileChangesEvent): void {
-		const deleted = e.getDeleted();
-		if (deleted && deleted.length) {
-			this.clearTextEditorViewState(deleted.map(d => d.resource));
+		const deleted = e.rawDeleted;
+		if (!deleted) {
+			return;
+		}
+		const changes = [];
+		for (const [, change] of deleted) {
+			changes.push(change);
+		}
+		if (changes.length) {
+			this.clearTextEditorViewState(changes.map(d => d.resource));
 		}
 	}
 
-	protected override getEditorMemento<T>(editorGroupService: IEditorGroupsService, key: string, limit: number = 10): IEditorMemento<T> {
-		return new EditorMemento(this.getId(), key, Object.create(null), limit, editorGroupService); // do not persist in storage as results are never persisted
+	protected override getEditorMemento<T>(editorGroupService: IEditorGroupsService, configurationService: ITextResourceConfigurationService, key: string, limit: number = 10): IEditorMemento<T> {
+		return new EditorMemento(this.getId(), key, Object.create(null), limit, editorGroupService, configurationService); // do not persist in storage as results are never persisted
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////
@@ -202,6 +215,11 @@ export class QueryEditor extends EditorPane {
 		this._register(this.connectionManagementService.onLanguageFlavorChanged(() => {
 			this.setTaskbarContent();
 		}));
+		this._register(this.capabilitiesService.onCapabilitiesRegistered(c => {
+			if (c.id === this.currentProvider) {
+				this.setTaskbarContent();
+			}
+		}));
 	}
 
 	/**
@@ -213,9 +231,9 @@ export class QueryEditor extends EditorPane {
 			this._changeConnectionAction.enabled = this.input.state.connected;
 			this.setTaskbarContent();
 			if (this.input.state.connected) {
-				this.listDatabasesActionItem.onConnected();
+				this.listDatabasesActionItem?.onConnected();
 			} else {
-				this.listDatabasesActionItem.onDisconnect();
+				this.listDatabasesActionItem?.onDisconnect();
 			}
 		}
 
@@ -250,97 +268,72 @@ export class QueryEditor extends EditorPane {
 	 */
 	private _getActionItemForAction(action: IAction): IActionViewItem {
 		if (action.id === actions.ListDatabasesAction.ID) {
-			return this.listDatabasesActionItem;
+			if (!this._listDatabasesActionItem) {
+				this._listDatabasesActionItem = this.instantiationService.createInstance(actions.ListDatabasesActionItem, this, action);
+				this._register(this._listDatabasesActionItem.attachStyler(this.themeService));
+			}
+			return this._listDatabasesActionItem;
 		}
 
 		return null;
 	}
 
-	private get listDatabasesActionItem(): actions.ListDatabasesActionItem {
-		if (!this._listDatabasesActionItem) {
-			this._listDatabasesActionItem = this.instantiationService.createInstance(actions.ListDatabasesActionItem, this);
-			this._register(this._listDatabasesActionItem.attachStyler(this.themeService));
-		}
+	private get listDatabasesActionItem(): actions.ListDatabasesActionItem | undefined {
 		return this._listDatabasesActionItem;
 	}
 
-	private setTaskbarContent(): void {
-		// Create HTML Elements for the taskbar
-		const separator = Taskbar.createTaskbarSeparator();
-		let content: ITaskbarContent[];
-		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
-		let connectionProfile = this.connectionManagementService.getConnectionProfile(this.input?.uri);
-		let fileExtension = path.extname(this.input?.uri || '');
-		const providerId = connectionProfile?.providerName ||
+	private get currentProvider(): string | undefined {
+		const connectionProfile = this.connectionManagementService.getConnectionProfile(this.input?.uri);
+		return connectionProfile?.providerName ||
 			this.connectionManagementService.getProviderIdFromUri(this.input?.uri) ||
 			this.connectionManagementService.getDefaultProviderId();
-		// TODO: Make it more generic, some way for extensions to register the commands it supports
-		if ((providerId === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
-			if (this.input instanceof UntitledQueryEditorInput) {		// Sets proper language mode for untitled query editor based on the connection selected by user.
+	}
+
+	private setTaskbarContent(): void {
+		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
+		const fileExtension = path.extname(this.input?.uri || '');
+		const providerId = this.currentProvider;
+		const content: ITaskbarContent[] = [
+			{ action: this._runQueryAction },
+			{ action: this._cancelQueryAction },
+			{ element: Taskbar.createTaskbarSeparator() },
+			{ action: this._toggleConnectDatabaseAction },
+			{ action: this._changeConnectionAction }
+		];
+
+		// TODO: Allow query provider to provide the language mode.
+		if (this.input instanceof UntitledQueryEditorInput) {
+			if ((providerId === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
 				this.input.setMode('kusto');
 			}
-
-			content = [
-				{ action: this._runQueryAction },
-				{ action: this._cancelQueryAction },
-				{ element: separator },
-				{ action: this._toggleConnectDatabaseAction },
-				{ action: this._changeConnectionAction },
-				{ action: this._listDatabasesAction }
-			];
-		}
-		else if (providerId === 'LOGANALYTICS' || this.modeService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
-			if (this.input instanceof UntitledQueryEditorInput) {
+			else if (providerId === 'LOGANALYTICS' || this.modeService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
 				this.input.setMode('loganalytics');
 			}
-
-			content = [
-				{ action: this._runQueryAction },
-				{ action: this._cancelQueryAction },
-				{ element: separator },
-				{ action: this._toggleConnectDatabaseAction },
-				{ action: this._changeConnectionAction },
-				{ action: this._listDatabasesAction }
-			];
 		}
-		else {
-			if (previewFeaturesEnabled) {
-				content = [
-					{ action: this._runQueryAction },
-					{ action: this._cancelQueryAction },
-					{ element: separator },
-					{ action: this._toggleConnectDatabaseAction },
-					{ action: this._changeConnectionAction },
-					{ action: this._listDatabasesAction },
-				];
 
-				if (providerId === 'MSSQL') {
-					content.push({ element: separator },
-						{ action: this._estimatedQueryPlanAction },
-						{ action: this._toggleSqlcmdMode }
-					);
+		// Only show the databases dropdown if the connection provider supports it.
+		// If the provider we're using isn't registered yet then default to not showing it - we'll update once the provider is registered
+		if (this.capabilitiesService.getCapabilities(providerId)?.connection?.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
+			content.push({ action: this._listDatabasesAction });
+		}
 
-					content.push({ action: this._exportAsNotebookAction });
-				}
-			} else {
-				content = [
-					{ action: this._runQueryAction },
-					{ action: this._cancelQueryAction },
-					{ element: separator },
-					{ action: this._toggleConnectDatabaseAction },
-					{ action: this._changeConnectionAction },
-					{ action: this._listDatabasesAction }
-				];
-			}
+		// TODO: Allow extensions to contribute toolbar actions.
+		if (previewFeaturesEnabled && providerId === 'MSSQL') {
+			content.push(
+				{ element: Taskbar.createTaskbarSeparator() },
+				{ action: this._estimatedQueryPlanAction },
+				{ action: this._toggleSqlcmdMode },
+				{ action: this._exportAsNotebookAction }
+			);
 		}
 
 		this.taskbar.setContent(content);
 	}
 
-	public override async setInput(newInput: QueryEditorInput, options: EditorOptions, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
+	public override async setInput(newInput: QueryEditorInput, options: IEditorOptions, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		const oldInput = this.input;
 
-		if (newInput.matches(oldInput)) {
+		if (oldInput && newInput.matches(oldInput)) {
 			return Promise.resolve();
 		}
 
@@ -513,7 +506,7 @@ export class QueryEditor extends EditorPane {
 		return this.currentTextEditor.getControl();
 	}
 
-	public override setOptions(options: EditorOptions): void {
+	public override setOptions(options: IEditorOptions): void {
 		this.currentTextEditor.setOptions(options);
 	}
 

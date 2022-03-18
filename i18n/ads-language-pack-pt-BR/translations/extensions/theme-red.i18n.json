@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Tema Vermelho",
 			"description": "Tema vermelho do Visual Studio Code",
+			"displayName": "Tema Vermelho",
 			"themeLabel": "Vermelho"
 		}
 	}

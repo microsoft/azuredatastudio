@@ -68,3 +68,9 @@ The same principle can be applied to the vscode/azdata APIs. The object in this 
 To generate a report combining the code coverage for extensions + core run `node ./test/combineCoverage`. Currently this will combine coverage from the Core Unit Tests, Extension Unit Tests and Extension Integration tests - see above docs for instructions on how to run those to generate coverage.
 
 Once ran the combined coverage report will be located in `./test/coverage`.
+
+## Troubleshooting
+
+### When debugging extension unit tests my breakpoints aren't being hit
+
+There's a known issue when code coverage is enabled that breakpoints won't be hit. See https://github.com/microsoft/azuredatastudio/issues/17985 for more details and a workaround.

@@ -29,6 +29,9 @@ import { MockQuickInputService } from 'sql/workbench/contrib/notebook/test/commo
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { Separator } from 'vs/base/common/actions';
 import { INotebookView, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 class TestClientSession extends ClientSessionStub {
 	private _errorState: boolean = false;
@@ -64,7 +67,8 @@ class TestNotebookModel extends NotebookModelStub {
 					name: 'StandardKernel1',
 					displayName: 'StandardKernel1',
 					connectionProviderIds: ['Kernel1 connection 1', 'Kernel1 connection2'],
-					notebookProvider: 'kernel provider1'
+					notebookProvider: 'kernel provider1',
+					supportedLanguages: ['python']
 				}
 			],
 			[
@@ -73,7 +77,8 @@ class TestNotebookModel extends NotebookModelStub {
 					name: 'StandardKernel2',
 					displayName: 'StandardKernel2',
 					connectionProviderIds: ['Kernel1 connection 2', 'Kernel1 connection2'],
-					notebookProvider: 'kernel provider2'
+					notebookProvider: 'kernel provider2',
+					supportedLanguages: ['python']
 				}
 			]
 		]
@@ -106,6 +111,9 @@ class TestNotebookModel extends NotebookModelStub {
 	public override getStandardKernelFromName(name: string): IStandardKernelWithProvider {
 		return this._standardKernelsMap.get(name);
 	}
+
+	public override sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties?: ITelemetryEventProperties): void {
+	}
 }
 
 suite('Notebook Actions', function (): void {
@@ -113,9 +121,11 @@ suite('Notebook Actions', function (): void {
 	let mockNotebookEditor: TypeMoq.Mock<INotebookEditor>;
 	let mockNotebookService: TypeMoq.Mock<INotebookService>;
 	const testUri = URI.parse('untitled');
+	let testNotebookModel = new TestNotebookModel();
 
 	suiteSetup(function (): void {
 		mockNotebookEditor = TypeMoq.Mock.ofType<INotebookEditor>(NotebookEditorStub);
+		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel);
 		mockNotebookService = TypeMoq.Mock.ofType<INotebookService>(NotebookServiceStub);
 		mockNotebookService.setup(x => x.findNotebookEditor(TypeMoq.It.isAny())).returns(uri => mockNotebookEditor.object);
 	});
@@ -129,7 +139,7 @@ suite('Notebook Actions', function (): void {
 		let actualCellType: CellType;
 
 
-		let action = new AddCellAction('TestId', 'TestLabel', 'TestClass', mockNotebookService.object, new NullAdsTelemetryService());
+		let action = new AddCellAction('TestId', 'TestLabel', 'TestClass', mockNotebookService.object);
 		action.cellType = testCellType;
 
 		// Normal use case
@@ -189,10 +199,14 @@ suite('Notebook Actions', function (): void {
 	});
 
 	test('Run All Cells Action', async function (): Promise<void> {
+		const testNotebookModel = TypeMoq.Mock.ofType<INotebookModel>(NotebookModelStub);
+		testNotebookModel.setup(x => x.getMetaValue(TypeMoq.It.isAny())).returns(() => undefined);
+		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel.object);
+
 		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
 		mockNotification.setup(n => n.notify(TypeMoq.It.isAny()));
 
-		let action = new RunAllCellsAction('TestId', 'TestLabel', 'TestClass', mockNotification.object, mockNotebookService.object, new NullAdsTelemetryService());
+		let action = new RunAllCellsAction('TestId', 'TestLabel', 'TestClass', mockNotification.object, mockNotebookService.object);
 
 		// Normal use case
 		mockNotebookEditor.setup(c => c.runAllCells()).returns(() => Promise.resolve(true));
@@ -269,8 +283,8 @@ suite('Notebook Actions', function (): void {
 					display_name: 'Python 3'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 
 		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
@@ -313,8 +327,8 @@ suite('Notebook Actions', function (): void {
 					display_name: 'Python 3'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let expectedMsg: string = noParameterCell;
 
@@ -354,8 +368,8 @@ suite('Notebook Actions', function (): void {
 					display_name: 'Python 3'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let expectedMsg: string = noParametersInCell;
 
@@ -399,8 +413,8 @@ suite('Notebook Actions', function (): void {
 					display_name: 'Python 3'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let expectedMsg: string = noParametersInCell;
 
@@ -445,8 +459,8 @@ suite('Notebook Actions', function (): void {
 					display_name: 'Python 3'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let expectedMsg: string = noParametersInCell;
 
@@ -494,8 +508,8 @@ suite('Notebook Actions', function (): void {
 					display_name: 'SQL'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let expectedMsg: string = kernelNotSupported;
 
@@ -577,7 +591,7 @@ suite('Notebook Actions', function (): void {
 		let setOptionsSpy: sinon.SinonSpy;
 
 		setup(async () => {
-			sandbox = sinon.sandbox.create();
+			sandbox = sinon.createSandbox();
 			container = document.createElement('div');
 			contextViewProvider = new ContextViewProviderStub();
 			const instantiationService = <TestInstantiationService>workbenchInstantiationService();

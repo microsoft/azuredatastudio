@@ -8,68 +8,68 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "SQL Assessment",
-			"description": "Azure Data Studio (プレビュー) の SQL Assessment では、ベストプラクティスの SQL Server の構成を評価するためのメカニズムが提供されます。",
-			"dashboard.tabName": "SQL Assessment"
-		},
-		"dist/localized": {
-			"asmt.section.api.title": "情報",
-			"asmt.apiversion": "API バージョン",
-			"asmt.rulesetversion": "既定の規則",
-			"asmt.section.instance.title": "SQL Server インスタンスの詳細",
-			"asmt.serverversion": "バージョン",
-			"asmt.serveredition": "エディション",
-			"asmt.instancename": "インスタンス名",
-			"asmt.osversion": "OS バージョン",
-			"asmt.column.target": "ターゲット",
-			"asmt.column.severity": "重要度",
-			"asmt.column.message": "メッセージ",
-			"asmt.column.checkId": "ID の確認",
-			"asmt.column.tags": "タグ",
-			"asmt.learnMore": "詳細情報",
-			"asmt.sqlReportTitle": "SQL Assessment レポート",
-			"asmt.sqlReport.resultForDatabase": "データベースの結果",
-			"asmt.sqlReport.resultForInstance": "サーバーの結果",
-			"asmt.sqlReport.Error": "エラー",
-			"asmt.sqlReport.Warning": "警告",
-			"asmt.sqlReport.Info": "情報",
-			"asmt.column.helpLink": "ヘルプ リンク",
-			"asmt.sqlReport.severityMsg": "{0}: {1} 項目"
-		},
 		"dist/assessmentResultGrid": {
-			"databaseIconLabel": "データベース",
-			"serverIconLabel": "サーバー",
 			"asmt.column.targetType": "ターゲット型",
 			"asmt.details.clickHere": "ここをクリック",
-			"asmt.details.toLearnMore": " をクリックしてください。",
+			"asmt.details.recommendation": "推奨事項",
 			"asmt.details.ruleDescription": "規則の説明",
-			"asmt.details.recommendation": "推奨事項"
+			"asmt.details.toLearnMore": " をクリックしてください。",
+			"databaseIconLabel": "データベース",
+			"serverIconLabel": "サーバー"
+		},
+		"dist/localized": {
+			"asmt.apiversion": "API バージョン",
+			"asmt.column.checkId": "ID の確認",
+			"asmt.column.helpLink": "ヘルプ リンク",
+			"asmt.column.message": "メッセージ",
+			"asmt.column.severity": "重要度",
+			"asmt.column.tags": "タグ",
+			"asmt.column.target": "ターゲット",
+			"asmt.instancename": "インスタンス名",
+			"asmt.learnMore": "詳細情報",
+			"asmt.osversion": "OS バージョン",
+			"asmt.rulesetversion": "既定の規則",
+			"asmt.section.api.title": "情報",
+			"asmt.section.instance.title": "SQL Server インスタンスの詳細",
+			"asmt.serveredition": "エディション",
+			"asmt.serverversion": "バージョン",
+			"asmt.sqlReport.Error": "エラー",
+			"asmt.sqlReport.Info": "情報",
+			"asmt.sqlReport.Warning": "警告",
+			"asmt.sqlReport.resultForDatabase": "データベースの結果",
+			"asmt.sqlReport.resultForInstance": "サーバーの結果",
+			"asmt.sqlReport.severityMsg": "{0}: {1} 項目",
+			"asmt.sqlReportTitle": "SQL Assessment レポート"
 		},
 		"dist/tabs/assessmentMainTab": {
-			"invokeAssessmentLabelServer": "評価の呼び出し",
-			"getAssessmentItemsServer": "適用可能な規則を表示する",
-			"invokeAssessmentLabelDatabase": "{0} の評価の呼び出し",
-			"getAssessmentItemsDatabase": "{0} に適用可能な規則を表示する",
+			"asmtaction.label.cancel": "キャンセル",
+			"asmtaction.label.open": "開く",
+			"asmtaction.openReport": "レポートが保存されました。開きますか?",
 			"btnExportAsScript": "スクリプトとしてエクスポート",
 			"btnGeneratehtmlreport": "HTML レポートの作成",
-			"asmtaction.openReport": "レポートが保存されました。開きますか?",
-			"asmtaction.label.open": "開く",
-			"asmtaction.label.cancel": "キャンセル",
-			"btnViewSamplesShort": "GitHub にてすべて表示する",
 			"btnViewSamples": "すべての規則を表示し、GitHub の詳細を確認する",
+			"btnViewSamplesShort": "GitHub にてすべて表示する",
+			"getAssessmentItemsDatabase": "{0} に適用可能な規則を表示する",
+			"getAssessmentItemsServer": "適用可能な規則を表示する",
+			"invokeAssessmentLabelDatabase": "{0} の評価の呼び出し",
+			"invokeAssessmentLabelServer": "評価の呼び出し",
 			"msgBoxAsmtInfo": "SQL Assessment 情報",
+			"msgBoxCopied": "SQL Assessment 情報をコピーしました",
 			"msgBoxCopyBtn": "コピー",
-			"ok": "OK",
-			"msgBoxCopied": "SQL Assessment 情報をコピーしました"
+			"ok": "OK"
 		},
 		"dist/tabs/historyTab": {
 			"asmt.history.back": "<< 戻る",
 			"asmt.history.resultsTitle": "{0} からの評価結果",
 			"asmt.history.summaryAsmtDate": "評価日",
 			"asmt.history.summaryError": "エラー",
-			"asmt.history.summaryWarning": "警告",
-			"asmt.history.summaryInfo": "情報"
+			"asmt.history.summaryInfo": "情報",
+			"asmt.history.summaryWarning": "警告"
+		},
+		"package": {
+			"dashboard.tabName": "SQL Assessment",
+			"description": "Azure Data Studio (プレビュー) の SQL Assessment では、ベストプラクティスの SQL Server の構成を評価するためのメカニズムが提供されます。",
+			"displayName": "SQL Assessment"
 		}
 	}
 }

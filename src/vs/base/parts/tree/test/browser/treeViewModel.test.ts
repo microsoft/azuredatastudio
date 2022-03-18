@@ -63,15 +63,15 @@ suite('TreeView - HeightMap', () => {
 	});
 
 	test('simple', () => {
-		assert.equal(rangeMap.itemAt(0), 'a');
-		assert.equal(rangeMap.itemAt(2), 'a');
-		assert.equal(rangeMap.itemAt(3), 'b');
-		assert.equal(rangeMap.itemAt(32), 'b');
-		assert.equal(rangeMap.itemAt(33), 'c');
-		assert.equal(rangeMap.itemAt(40), 'c');
-		assert.equal(rangeMap.itemAt(57), 'c');
-		assert.equal(rangeMap.itemAt(58), 'd');
-		assert.equal(rangeMap.itemAt(59), 'd');
+		assert.strictEqual(rangeMap.itemAt(0), 'a');
+		assert.strictEqual(rangeMap.itemAt(2), 'a');
+		assert.strictEqual(rangeMap.itemAt(3), 'b');
+		assert.strictEqual(rangeMap.itemAt(32), 'b');
+		assert.strictEqual(rangeMap.itemAt(33), 'c');
+		assert.strictEqual(rangeMap.itemAt(40), 'c');
+		assert.strictEqual(rangeMap.itemAt(57), 'c');
+		assert.strictEqual(rangeMap.itemAt(58), 'd');
+		assert.strictEqual(rangeMap.itemAt(59), 'd');
 		assert.throws(() => rangeMap.itemAt(60));
 	});
 
@@ -79,20 +79,20 @@ suite('TreeView - HeightMap', () => {
 		let navigator = makeNavigator('x', 4, 'y', 20, 'z', 8);
 		rangeMap.onInsertItems(navigator);
 
-		assert.equal(rangeMap.itemAt(0), 'x');
-		assert.equal(rangeMap.itemAt(3), 'x');
-		assert.equal(rangeMap.itemAt(4), 'y');
-		assert.equal(rangeMap.itemAt(23), 'y');
-		assert.equal(rangeMap.itemAt(24), 'z');
-		assert.equal(rangeMap.itemAt(31), 'z');
-		assert.equal(rangeMap.itemAt(32), 'a');
-		assert.equal(rangeMap.itemAt(34), 'a');
-		assert.equal(rangeMap.itemAt(35), 'b');
-		assert.equal(rangeMap.itemAt(64), 'b');
-		assert.equal(rangeMap.itemAt(65), 'c');
-		assert.equal(rangeMap.itemAt(89), 'c');
-		assert.equal(rangeMap.itemAt(90), 'd');
-		assert.equal(rangeMap.itemAt(91), 'd');
+		assert.strictEqual(rangeMap.itemAt(0), 'x');
+		assert.strictEqual(rangeMap.itemAt(3), 'x');
+		assert.strictEqual(rangeMap.itemAt(4), 'y');
+		assert.strictEqual(rangeMap.itemAt(23), 'y');
+		assert.strictEqual(rangeMap.itemAt(24), 'z');
+		assert.strictEqual(rangeMap.itemAt(31), 'z');
+		assert.strictEqual(rangeMap.itemAt(32), 'a');
+		assert.strictEqual(rangeMap.itemAt(34), 'a');
+		assert.strictEqual(rangeMap.itemAt(35), 'b');
+		assert.strictEqual(rangeMap.itemAt(64), 'b');
+		assert.strictEqual(rangeMap.itemAt(65), 'c');
+		assert.strictEqual(rangeMap.itemAt(89), 'c');
+		assert.strictEqual(rangeMap.itemAt(90), 'd');
+		assert.strictEqual(rangeMap.itemAt(91), 'd');
 		assert.throws(() => rangeMap.itemAt(92));
 	});
 
@@ -100,20 +100,20 @@ suite('TreeView - HeightMap', () => {
 		let navigator = makeNavigator('x', 4, 'y', 20, 'z', 8);
 		rangeMap.onInsertItems(navigator, 'a');
 
-		assert.equal(rangeMap.itemAt(0), 'a');
-		assert.equal(rangeMap.itemAt(2), 'a');
-		assert.equal(rangeMap.itemAt(3), 'x');
-		assert.equal(rangeMap.itemAt(6), 'x');
-		assert.equal(rangeMap.itemAt(7), 'y');
-		assert.equal(rangeMap.itemAt(26), 'y');
-		assert.equal(rangeMap.itemAt(27), 'z');
-		assert.equal(rangeMap.itemAt(34), 'z');
-		assert.equal(rangeMap.itemAt(35), 'b');
-		assert.equal(rangeMap.itemAt(64), 'b');
-		assert.equal(rangeMap.itemAt(65), 'c');
-		assert.equal(rangeMap.itemAt(89), 'c');
-		assert.equal(rangeMap.itemAt(90), 'd');
-		assert.equal(rangeMap.itemAt(91), 'd');
+		assert.strictEqual(rangeMap.itemAt(0), 'a');
+		assert.strictEqual(rangeMap.itemAt(2), 'a');
+		assert.strictEqual(rangeMap.itemAt(3), 'x');
+		assert.strictEqual(rangeMap.itemAt(6), 'x');
+		assert.strictEqual(rangeMap.itemAt(7), 'y');
+		assert.strictEqual(rangeMap.itemAt(26), 'y');
+		assert.strictEqual(rangeMap.itemAt(27), 'z');
+		assert.strictEqual(rangeMap.itemAt(34), 'z');
+		assert.strictEqual(rangeMap.itemAt(35), 'b');
+		assert.strictEqual(rangeMap.itemAt(64), 'b');
+		assert.strictEqual(rangeMap.itemAt(65), 'c');
+		assert.strictEqual(rangeMap.itemAt(89), 'c');
+		assert.strictEqual(rangeMap.itemAt(90), 'd');
+		assert.strictEqual(rangeMap.itemAt(91), 'd');
 		assert.throws(() => rangeMap.itemAt(92));
 	});
 
@@ -121,52 +121,52 @@ suite('TreeView - HeightMap', () => {
 		let navigator = makeNavigator('x', 4, 'y', 20, 'z', 8);
 		rangeMap.onInsertItems(navigator, 'd');
 
-		assert.equal(rangeMap.itemAt(0), 'a');
-		assert.equal(rangeMap.itemAt(2), 'a');
-		assert.equal(rangeMap.itemAt(3), 'b');
-		assert.equal(rangeMap.itemAt(32), 'b');
-		assert.equal(rangeMap.itemAt(33), 'c');
-		assert.equal(rangeMap.itemAt(57), 'c');
-		assert.equal(rangeMap.itemAt(58), 'd');
-		assert.equal(rangeMap.itemAt(59), 'd');
-		assert.equal(rangeMap.itemAt(60), 'x');
-		assert.equal(rangeMap.itemAt(63), 'x');
-		assert.equal(rangeMap.itemAt(64), 'y');
-		assert.equal(rangeMap.itemAt(83), 'y');
-		assert.equal(rangeMap.itemAt(84), 'z');
-		assert.equal(rangeMap.itemAt(91), 'z');
+		assert.strictEqual(rangeMap.itemAt(0), 'a');
+		assert.strictEqual(rangeMap.itemAt(2), 'a');
+		assert.strictEqual(rangeMap.itemAt(3), 'b');
+		assert.strictEqual(rangeMap.itemAt(32), 'b');
+		assert.strictEqual(rangeMap.itemAt(33), 'c');
+		assert.strictEqual(rangeMap.itemAt(57), 'c');
+		assert.strictEqual(rangeMap.itemAt(58), 'd');
+		assert.strictEqual(rangeMap.itemAt(59), 'd');
+		assert.strictEqual(rangeMap.itemAt(60), 'x');
+		assert.strictEqual(rangeMap.itemAt(63), 'x');
+		assert.strictEqual(rangeMap.itemAt(64), 'y');
+		assert.strictEqual(rangeMap.itemAt(83), 'y');
+		assert.strictEqual(rangeMap.itemAt(84), 'z');
+		assert.strictEqual(rangeMap.itemAt(91), 'z');
 		assert.throws(() => rangeMap.itemAt(92));
 	});
 
 	test('onRemoveItems at beginning', () => {
 		rangeMap.onRemoveItems(new ArrayNavigator(['a', 'b']));
 
-		assert.equal(rangeMap.itemAt(0), 'c');
-		assert.equal(rangeMap.itemAt(24), 'c');
-		assert.equal(rangeMap.itemAt(25), 'd');
-		assert.equal(rangeMap.itemAt(26), 'd');
+		assert.strictEqual(rangeMap.itemAt(0), 'c');
+		assert.strictEqual(rangeMap.itemAt(24), 'c');
+		assert.strictEqual(rangeMap.itemAt(25), 'd');
+		assert.strictEqual(rangeMap.itemAt(26), 'd');
 		assert.throws(() => rangeMap.itemAt(27));
 	});
 
 	test('onRemoveItems in middle', () => {
 		rangeMap.onRemoveItems(new ArrayNavigator(['c']));
 
-		assert.equal(rangeMap.itemAt(0), 'a');
-		assert.equal(rangeMap.itemAt(2), 'a');
-		assert.equal(rangeMap.itemAt(3), 'b');
-		assert.equal(rangeMap.itemAt(32), 'b');
-		assert.equal(rangeMap.itemAt(33), 'd');
-		assert.equal(rangeMap.itemAt(34), 'd');
+		assert.strictEqual(rangeMap.itemAt(0), 'a');
+		assert.strictEqual(rangeMap.itemAt(2), 'a');
+		assert.strictEqual(rangeMap.itemAt(3), 'b');
+		assert.strictEqual(rangeMap.itemAt(32), 'b');
+		assert.strictEqual(rangeMap.itemAt(33), 'd');
+		assert.strictEqual(rangeMap.itemAt(34), 'd');
 		assert.throws(() => rangeMap.itemAt(35));
 	});
 
 	test('onRemoveItems at end', () => {
 		rangeMap.onRemoveItems(new ArrayNavigator(['c', 'd']));
 
-		assert.equal(rangeMap.itemAt(0), 'a');
-		assert.equal(rangeMap.itemAt(2), 'a');
-		assert.equal(rangeMap.itemAt(3), 'b');
-		assert.equal(rangeMap.itemAt(32), 'b');
+		assert.strictEqual(rangeMap.itemAt(0), 'a');
+		assert.strictEqual(rangeMap.itemAt(2), 'a');
+		assert.strictEqual(rangeMap.itemAt(3), 'b');
+		assert.strictEqual(rangeMap.itemAt(32), 'b');
 		assert.throws(() => rangeMap.itemAt(33));
 	});
 
@@ -174,12 +174,12 @@ suite('TreeView - HeightMap', () => {
 		let navigator = makeNavigator('a', 1, 'b', 1);
 		rangeMap.onRefreshItems(navigator);
 
-		assert.equal(rangeMap.itemAt(0), 'a');
-		assert.equal(rangeMap.itemAt(1), 'b');
-		assert.equal(rangeMap.itemAt(2), 'c');
-		assert.equal(rangeMap.itemAt(26), 'c');
-		assert.equal(rangeMap.itemAt(27), 'd');
-		assert.equal(rangeMap.itemAt(28), 'd');
+		assert.strictEqual(rangeMap.itemAt(0), 'a');
+		assert.strictEqual(rangeMap.itemAt(1), 'b');
+		assert.strictEqual(rangeMap.itemAt(2), 'c');
+		assert.strictEqual(rangeMap.itemAt(26), 'c');
+		assert.strictEqual(rangeMap.itemAt(27), 'd');
+		assert.strictEqual(rangeMap.itemAt(28), 'd');
 		assert.throws(() => rangeMap.itemAt(29));
 	});
 
@@ -187,14 +187,14 @@ suite('TreeView - HeightMap', () => {
 		let navigator = makeNavigator('b', 40, 'c', 4);
 		rangeMap.onRefreshItems(navigator);
 
-		assert.equal(rangeMap.itemAt(0), 'a');
-		assert.equal(rangeMap.itemAt(2), 'a');
-		assert.equal(rangeMap.itemAt(3), 'b');
-		assert.equal(rangeMap.itemAt(42), 'b');
-		assert.equal(rangeMap.itemAt(43), 'c');
-		assert.equal(rangeMap.itemAt(46), 'c');
-		assert.equal(rangeMap.itemAt(47), 'd');
-		assert.equal(rangeMap.itemAt(48), 'd');
+		assert.strictEqual(rangeMap.itemAt(0), 'a');
+		assert.strictEqual(rangeMap.itemAt(2), 'a');
+		assert.strictEqual(rangeMap.itemAt(3), 'b');
+		assert.strictEqual(rangeMap.itemAt(42), 'b');
+		assert.strictEqual(rangeMap.itemAt(43), 'c');
+		assert.strictEqual(rangeMap.itemAt(46), 'c');
+		assert.strictEqual(rangeMap.itemAt(47), 'd');
+		assert.strictEqual(rangeMap.itemAt(48), 'd');
 		assert.throws(() => rangeMap.itemAt(49));
 	});
 
@@ -202,51 +202,51 @@ suite('TreeView - HeightMap', () => {
 		let navigator = makeNavigator('d', 22);
 		rangeMap.onRefreshItems(navigator);
 
-		assert.equal(rangeMap.itemAt(0), 'a');
-		assert.equal(rangeMap.itemAt(2), 'a');
-		assert.equal(rangeMap.itemAt(3), 'b');
-		assert.equal(rangeMap.itemAt(32), 'b');
-		assert.equal(rangeMap.itemAt(33), 'c');
-		assert.equal(rangeMap.itemAt(57), 'c');
-		assert.equal(rangeMap.itemAt(58), 'd');
-		assert.equal(rangeMap.itemAt(79), 'd');
+		assert.strictEqual(rangeMap.itemAt(0), 'a');
+		assert.strictEqual(rangeMap.itemAt(2), 'a');
+		assert.strictEqual(rangeMap.itemAt(3), 'b');
+		assert.strictEqual(rangeMap.itemAt(32), 'b');
+		assert.strictEqual(rangeMap.itemAt(33), 'c');
+		assert.strictEqual(rangeMap.itemAt(57), 'c');
+		assert.strictEqual(rangeMap.itemAt(58), 'd');
+		assert.strictEqual(rangeMap.itemAt(79), 'd');
 		assert.throws(() => rangeMap.itemAt(80));
 	});
 
 	test('withItemsInRange', () => {
 		let i = 0;
 		let itemsInRange = ['a', 'b'];
-		rangeMap.withItemsInRange(2, 27, function (item) { assert.equal(item, itemsInRange[i++]); });
-		assert.equal(i, itemsInRange.length);
+		rangeMap.withItemsInRange(2, 27, function (item) { assert.strictEqual(item, itemsInRange[i++]); });
+		assert.strictEqual(i, itemsInRange.length);
 
 		i = 0;
 		itemsInRange = ['a', 'b'];
-		rangeMap.withItemsInRange(0, 3, function (item) { assert.equal(item, itemsInRange[i++]); });
-		assert.equal(i, itemsInRange.length);
+		rangeMap.withItemsInRange(0, 3, function (item) { assert.strictEqual(item, itemsInRange[i++]); });
+		assert.strictEqual(i, itemsInRange.length);
 
 		i = 0;
 		itemsInRange = ['a'];
-		rangeMap.withItemsInRange(0, 2, function (item) { assert.equal(item, itemsInRange[i++]); });
-		assert.equal(i, itemsInRange.length);
+		rangeMap.withItemsInRange(0, 2, function (item) { assert.strictEqual(item, itemsInRange[i++]); });
+		assert.strictEqual(i, itemsInRange.length);
 
 		i = 0;
 		itemsInRange = ['a'];
-		rangeMap.withItemsInRange(0, 2, function (item) { assert.equal(item, itemsInRange[i++]); });
-		assert.equal(i, itemsInRange.length);
+		rangeMap.withItemsInRange(0, 2, function (item) { assert.strictEqual(item, itemsInRange[i++]); });
+		assert.strictEqual(i, itemsInRange.length);
 
 		i = 0;
 		itemsInRange = ['b', 'c'];
-		rangeMap.withItemsInRange(15, 39, function (item) { assert.equal(item, itemsInRange[i++]); });
-		assert.equal(i, itemsInRange.length);
+		rangeMap.withItemsInRange(15, 39, function (item) { assert.strictEqual(item, itemsInRange[i++]); });
+		assert.strictEqual(i, itemsInRange.length);
 
 		i = 0;
 		itemsInRange = ['a', 'b', 'c', 'd'];
-		rangeMap.withItemsInRange(1, 58, function (item) { assert.equal(item, itemsInRange[i++]); });
-		assert.equal(i, itemsInRange.length);
+		rangeMap.withItemsInRange(1, 58, function (item) { assert.strictEqual(item, itemsInRange[i++]); });
+		assert.strictEqual(i, itemsInRange.length);
 
 		i = 0;
 		itemsInRange = ['c', 'd'];
-		rangeMap.withItemsInRange(45, 58, function (item) { assert.equal(item, itemsInRange[i++]); });
-		assert.equal(i, itemsInRange.length);
+		rangeMap.withItemsInRange(45, 58, function (item) { assert.strictEqual(item, itemsInRange[i++]); });
+		assert.strictEqual(i, itemsInRange.length);
 	});
 });

@@ -44,7 +44,6 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { MenuRegistry, IMenuService, MenuId, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { NAV_SECTION } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { EDITOR_PANE_BACKGROUND } from 'vs/workbench/common/theme';
@@ -54,6 +53,7 @@ import { focusBorder } from 'vs/platform/theme/common/colorRegistry';
 import { LabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 import { DASHBOARD_BORDER, TOOLBAR_OVERFLOW_SHADOW } from 'sql/workbench/common/theme';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 const homeTabGroupId = 'home';
@@ -125,8 +125,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(ICommandService) private commandService: ICommandService,
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
 		@Inject(IMenuService) private menuService: IMenuService,
-		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService
 	) {
 		super();
 		this._tabName = DashboardPage.tabName.bindTo(contextKeyService);
@@ -165,9 +165,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			this.createTabs(tempWidgets);
 		}
 
-		this.showToolbar = true;
-		this.createToolbar(this.toolbarContainer.nativeElement, this.homeTabId);
-
 		this._register(this.themeService.onDidColorThemeChange((event: IColorTheme) => {
 			this.updateTheme(event);
 		}));
@@ -181,7 +178,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			let secondary: IAction[] = [];
 			const menu = this.menuService.createMenu(MenuId.DashboardToolbar, this.contextKeyService);
 			let groups = menu.getActions({ arg: this.connectionManagementService.connectionInfo.connectionProfile.toIConnectionProfile(), shouldForwardArgs: true });
-			fillInActions(groups, { primary, secondary }, false, '', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
+			fillInActions(groups, { primary, secondary }, false, g => g === '', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
 
 			primary.forEach(a => {
 				if (a instanceof MenuItemAction) {
@@ -281,7 +278,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	private createActionItemProvider(action: Action): IActionViewItem {
 		// Create ActionItem for actions contributed by extensions
 		if (action instanceof MenuItemAction) {
-			return new LabeledMenuItemActionItem(action, this.keybindingService, this.notificationService);
+			return this.instantiationService.createInstance(LabeledMenuItemActionItem, action, undefined);
 		}
 		return undefined;
 	}
@@ -504,7 +501,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			return [this.propertiesWidget];
 		} else if (types.isArray(properties)) {
 			return properties.map((item) => {
-				const retVal = objects.assign({}, this.propertiesWidget);
+				const retVal = Object.assign({}, this.propertiesWidget);
 				retVal.edition = item.edition;
 				retVal.provider = item.provider;
 				retVal.widget = { 'properties-widget': { properties: item.properties } };

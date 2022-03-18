@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "TypeScript 語言基礎知識",
-			"description": "為 TypeScript 檔案提供程式碼片段、語法醒目提示、括弧對應與摺疊功能。"
+			"description": "為 TypeScript 檔案提供程式碼片段、語法醒目提示、括弧對應與摺疊功能。",
+			"displayName": "TypeScript 語言基礎知識"
 		}
 	}
 }

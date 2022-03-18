@@ -37,7 +37,7 @@ const handleNeverUsed = async (): Promise<void> => {
 	const option = await vscode.window.showInformationMessage<TerminalMessageItem>(neverUsedString, openAzureShellButton, okButton);
 
 	if (option.action === TerminalOption.OPEN_SITE) {
-		vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/AA83f8f'));
+		void vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/AA83f8f'));
 	}
 };
 
@@ -115,7 +115,7 @@ export class AzureTerminalService implements IAzureTerminalService {
 		});
 
 		if (!shell) {
-			vscode.window.showErrorMessage(localize('azure.shellTypeRequired', "You must pick a shell type"));
+			void vscode.window.showErrorMessage(localize('azure.shellTypeRequired', "You must pick a shell type"));
 			return;
 		}
 
@@ -236,7 +236,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 		const terminalUri = terminalResult.data?.socketUri;
 
 		if (terminalResult.data.error) {
-			vscode.window.showErrorMessage(terminalResult.data.error.message);
+			void vscode.window.showErrorMessage(terminalResult.data.error.message);
 		}
 
 		if (!terminalUri) {

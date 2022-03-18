@@ -218,7 +218,7 @@ export class DefaultController implements _.IController {
 	protected isClickOnTwistie(event: mouse.IMouseEvent): boolean {
 		let element = event.target as HTMLElement;
 
-		if (!dom.hasClass(element, 'content')) {
+		if (!element.classList.contains('content')) {
 			return false;
 		}
 

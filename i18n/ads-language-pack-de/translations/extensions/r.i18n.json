@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "R-Sprachgrundlagen",
-			"description": "Bietet Syntaxhervorhebung und Klammernabgleich in R-Dateien."
+			"description": "Bietet Syntaxhervorhebung und Klammernabgleich in R-Dateien.",
+			"displayName": "R-Sprachgrundlagen"
 		}
 	}
 }

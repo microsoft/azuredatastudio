@@ -9,11 +9,11 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Azure SQL 混合式雲端工具組",
+			"books-preview-category": "Jupyter 書籍",
 			"description": "開啟 Azure SQL 混合式雲端工具組 Jupyter 書籍",
-			"title.openJupyterBook": "開啟 Azure SQL 混合式雲端工具組 Jupyter 書籍",
+			"displayName": "Azure SQL 混合式雲端工具組",
 			"title.cloudHybridBooks": "Azure SQL 混合式雲端工具組",
-			"books-preview-category": "Jupyter 書籍"
+			"title.openJupyterBook": "開啟 Azure SQL 混合式雲端工具組 Jupyter 書籍"
 		}
 	}
 }

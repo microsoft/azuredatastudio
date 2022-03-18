@@ -18,7 +18,7 @@ import { DebugSession } from 'vs/workbench/contrib/debug/browser/debugSession';
 import { createMockDebugModel } from 'vs/workbench/contrib/debug/test/browser/mockDebug';
 import { createMockSession } from 'vs/workbench/contrib/debug/test/browser/callStack.test';
 
-suite.skip('Debug - ANSI Handling', () => {
+suite.skip('Debug - ANSI Handling', () => { // {{SQL CARBON EDIT}} Skip test
 
 	let model: DebugModel;
 	let session: DebugSession;

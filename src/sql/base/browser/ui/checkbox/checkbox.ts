@@ -30,6 +30,9 @@ export class Checkbox extends Widget {
 	private _onChange = new Emitter<boolean>();
 	public readonly onChange: Event<boolean> = this._onChange.event;
 
+	private _onFocus = new Emitter<void>();
+	public readonly onFocus: Event<void> = this._onFocus.event;
+
 	constructor(container: HTMLElement, opts: ICheckboxOptions) {
 		super();
 		const id = generateUuid();
@@ -46,6 +49,9 @@ export class Checkbox extends Widget {
 			this._onChange.fire(this.checked);
 		});
 
+		this.onfocus(this._el, () => {
+			this._onFocus.fire();
+		});
 
 		this._label = document.createElement('label');
 		this._label.style.verticalAlign = 'middle';

@@ -160,7 +160,12 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 	private async _doExecuteCommand<T>(id: string, args: any[], retry: boolean): Promise<T> {
 
 		if (this._commands.has(id)) {
-			this._mainThreadTelemetryProxy.$publicLog(TelemetryKeys.EventName.Action, { properties: { action: TelemetryKeys.TelemetryAction.adsCommandExecuted, view: TelemetryKeys.TelemetryView.ExtensionHost, target: id } }); // {{SQL CARBON EDIT}} Log ext-contributed commands. Only logging here to avoid double-logging for command executions coming from core (which are already logged)
+			// {{SQL CARBON EDIT}} Log ext-contributed commands (which never get send to the main thread if called from the ext host).
+			// Only logging here to avoid double-logging for command executions coming from core (which are already logged)
+			if (!id.startsWith('_')) { // Commands starting with _ are internal commands which generally aren't useful to us currently
+				this._mainThreadTelemetryProxy.$publicLog(TelemetryKeys.EventName.Action, { properties: { action: TelemetryKeys.TelemetryAction.adsCommandExecuted, view: TelemetryKeys.TelemetryView.ExtensionHost, target: id } });
+			}
+
 			// we stay inside the extension host and support
 			// to pass any kind of parameters around
 			return this._executeContributedCommand<T>(id, args);
@@ -170,12 +175,12 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 			const toArgs = cloneAndChange(args, function (value) {
 				if (value instanceof extHostTypes.Position) {
 					return extHostTypeConverter.Position.from(value);
-				}
-				if (value instanceof extHostTypes.Range) {
+				} else if (value instanceof extHostTypes.Range) {
 					return extHostTypeConverter.Range.from(value);
-				}
-				if (value instanceof extHostTypes.Location) {
+				} else if (value instanceof extHostTypes.Location) {
 					return extHostTypeConverter.location.from(value);
+				} else if (extHostTypes.NotebookRange.isNotebookRange(value)) {
+					return extHostTypeConverter.NotebookRange.from(value);
 				}
 				if (!Array.isArray(value)) {
 					return value;
@@ -373,7 +378,8 @@ export class ApiCommandArgument<V, O = V> {
 	static readonly Number = new ApiCommandArgument<number>('number', '', v => typeof v === 'number', v => v);
 	static readonly String = new ApiCommandArgument<string>('string', '', v => typeof v === 'string', v => v);
 
-	static readonly CallHierarchyItem = new ApiCommandArgument('item', 'A call hierarchy item', v => v instanceof extHostTypes.CallHierarchyItem, extHostTypeConverter.CallHierarchyItem.to);
+	static readonly CallHierarchyItem = new ApiCommandArgument('item', 'A call hierarchy item', v => v instanceof extHostTypes.CallHierarchyItem, extHostTypeConverter.CallHierarchyItem.from);
+	static readonly TypeHierarchyItem = new ApiCommandArgument('item', 'A type hierarchy item', v => v instanceof extHostTypes.TypeHierarchyItem, extHostTypeConverter.TypeHierarchyItem.from);
 
 	constructor(
 		readonly name: string,

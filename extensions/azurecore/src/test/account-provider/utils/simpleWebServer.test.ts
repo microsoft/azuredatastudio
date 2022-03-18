@@ -24,7 +24,7 @@ describe('AccountProvider.SimpleWebServer', function (): void {
 
 	it('Double startup should fail', async function (): Promise<void> {
 		await server.startup();
-		server.startup().should.be.rejected();
+		await server.startup().should.be.rejected();
 	});
 
 	it('404 on unknown requests', async function (): Promise<void> {
@@ -59,7 +59,7 @@ describe('AccountProvider.SimpleWebServer', function (): void {
 
 	it('Server shuts off', async function (): Promise<void> {
 		await server.startup();
-		server.shutdown().should.not.be.rejected();
+		await server.shutdown().should.not.be.rejected();
 	});
 
 });

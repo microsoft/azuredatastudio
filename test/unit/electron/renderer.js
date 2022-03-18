@@ -176,6 +176,7 @@ function loadTests(opts) {
 
 	// collect unexpected errors
 	loader.require(['vs/base/common/errors'], function (errors) {
+		// {{SQL CARBON EDIT}}
 		global.window.addEventListener('unhandledrejection', event => {
 			errors.onUnexpectedError(event.reason);
 			event.preventDefault();
@@ -249,6 +250,10 @@ function serializeError(err) {
 function safeStringify(obj) {
 	const seen = new Set();
 	return JSON.stringify(obj, (key, value) => {
+		if (value === undefined) {
+			return '[undefined]';
+		}
+
 		if (isObject(value) || Array.isArray(value)) {
 			if (seen.has(value)) {
 				return '[Circular]';
@@ -295,9 +300,9 @@ function runTests(opts) {
 	}
 
 	return loadTests(opts).then(() => {
-
 		if (opts.grep) {
-			mocha.grep(new RegExp(opts.grep));
+			mocha.grep(opts.grep);
+			// {{SQL CARBON EDIT}} Add invert option
 			if (opts.invert) {
 				mocha.invert();
 			}

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import { EditorInput } from 'vs/workbench/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 import { TopOperationsState } from 'sql/workbench/common/editor/query/topOperationsState';
 import { ChartState } from 'sql/workbench/common/editor/query/chartState';
@@ -12,6 +12,7 @@ import { QueryPlanState } from 'sql/workbench/common/editor/query/queryPlanState
 import { GridPanelState } from 'sql/workbench/common/editor/query/gridTableState';
 import { QueryModelViewState } from 'sql/workbench/common/editor/query/modelViewState';
 import { URI } from 'vs/base/common/uri';
+import { ExecutionPlanState } from 'sql/workbench/common/editor/query/executionPlanState';
 
 export class ResultsViewState {
 	public readonly gridPanelState: GridPanelState = new GridPanelState();
@@ -19,6 +20,7 @@ export class ResultsViewState {
 	public readonly queryPlanState: QueryPlanState = new QueryPlanState();
 	public readonly topOperationsState = new TopOperationsState();
 	public readonly dynamicModelViewTabsState: Map<string, QueryModelViewState> = new Map<string, QueryModelViewState>();
+	public readonly executionPlanState: ExecutionPlanState = new ExecutionPlanState();
 
 	public activeTab?: string;
 	public readonly visibleTabs: Set<string> = new Set<string>();
@@ -27,6 +29,7 @@ export class ResultsViewState {
 		this.gridPanelState.dispose();
 		this.chartState.dispose();
 		this.queryPlanState.dispose();
+		this.executionPlanState.clearExecutionPlanState();
 		this.dynamicModelViewTabsState.forEach((state: QueryModelViewState, identifier: string) => {
 			state.dispose();
 		});
@@ -46,7 +49,7 @@ export class QueryResultsInput extends EditorInput {
 		return this._state;
 	}
 
-	constructor(private _uri: string) {
+	constructor(public uri: string) {
 		super();
 	}
 
@@ -60,7 +63,7 @@ export class QueryResultsInput extends EditorInput {
 
 	override matches(other: any): boolean {
 		if (other instanceof QueryResultsInput) {
-			return (other._uri === this._uri);
+			return (other.uri === this.uri);
 		}
 
 		return false;
@@ -82,10 +85,6 @@ export class QueryResultsInput extends EditorInput {
 
 	static get ID() {
 		return 'workbench.query.queryResultsInput';
-	}
-
-	get uri(): string {
-		return this._uri;
 	}
 
 	get resource(): URI | undefined {

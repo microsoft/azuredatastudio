@@ -109,7 +109,10 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
-		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => mockSubscriptionCache = mockSubscriptions);
+		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => {
+			mockSubscriptionCache = mockSubscriptions;
+			return Promise.resolve();
+		});
 	});
 
 	afterEach(function (): void {
@@ -217,7 +220,10 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 		sinon.stub(azdata.accounts, 'getAccountSecurityToken').resolves(mockToken);
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
-		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => mockSubscriptionCache = mockSubscriptions);
+		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => {
+			mockSubscriptionCache = mockSubscriptions;
+			return Promise.resolve();
+		});
 	});
 
 	afterEach(function (): void {
@@ -354,7 +360,11 @@ describe('AzureResourceAccountTreeNode.clearCache', function (): void {
 		sinon.stub(azdata.accounts, 'getAccountSecurityToken').returns(Promise.resolve(mockToken));
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
-		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => mockSubscriptionCache = mockSubscriptions);
+		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() =>
+		{
+			mockSubscriptionCache = mockSubscriptions;
+			return Promise.resolve();
+		});
 	});
 
 	afterEach(function (): void {

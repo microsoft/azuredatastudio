@@ -93,6 +93,10 @@ abstract class ControllerDialogBase extends InitializingComponent {
 	protected completionPromise = new Deferred<ConnectToControllerDialogModel | undefined>();
 	protected id!: string;
 	protected resources: ResourceInfo[] = [];
+	protected resourceGroup!: string;
+	protected connectionMode!: string;
+	protected location!: string;
+	protected customLocation!: string;
 
 	constructor(protected treeDataProvider: AzureArcTreeDataProvider, title: string) {
 		super();
@@ -165,7 +169,11 @@ abstract class ControllerDialogBase extends InitializingComponent {
 			kubeConfigFilePath: this.kubeConfigInputBox.value!,
 			kubeClusterContext: this.clusterContextRadioGroup.value!,
 			name: this.nameInputBox.value ?? '',
-			resources: this.resources
+			resources: this.resources,
+			resourceGroup: this.resourceGroup ?? '',
+			connectionMode: this.connectionMode ?? '',
+			location: this.location ?? '',
+			customLocation: this.customLocation ?? ''
 		};
 	}
 }
@@ -191,6 +199,15 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 			await controllerModel.refresh(false, this.namespaceInputBox.value);
 			// default info.name to the name of the controller instance if the user did not specify their own and to a pre-canned default if for some weird reason controller endpoint returned instanceName is also not a valid value
 			controllerModel.info.name = controllerModel.info.name || controllerModel.controllerConfig?.metadata.name || loc.defaultControllerName;
+			controllerModel.info.resourceGroup = <string>controllerModel.controllerConfig?.spec.settings.azure.resourceGroup;
+			controllerModel.info.connectionMode = <string>controllerModel.controllerConfig?.spec.settings.azure.connectionMode;
+			controllerModel.info.location = <string>controllerModel.controllerConfig?.spec.settings.azure.location;
+
+			if (controllerModel.info.connectionMode === 'direct') {
+				const rawCustomLocation = <string>controllerModel.controllerConfig?.metadata.annotations['management.azure.com/customLocation'];
+				const exp = /\/\bsubscriptions\b\/[\S]*\/\bresourceGroups\/[\S]*\/providers\/[\S]*\/customLocations\/([\S]*)/;
+				controllerModel.info.customLocation = <string>exp.exec(rawCustomLocation)?.pop();
+			}
 		} catch (err) {
 			this.dialog.message = {
 				text: loc.connectToControllerFailed(this.namespaceInputBox.value, err),

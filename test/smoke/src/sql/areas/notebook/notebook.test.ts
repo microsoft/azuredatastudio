@@ -4,9 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Application } from '../../../../../automation';
+import * as minimist from 'minimist';
+import { afterSuite, beforeSuite } from '../../../utils';
+import * as assert from 'assert';
 
-export function setup() {
+export function setup(opts: minimist.ParsedArgs) {
 	describe('Notebook', () => {
+		beforeSuite(opts);
+		afterSuite(opts);
 
 		it('can perform basic text cell functionality', async function () {
 			const app = this.app as Application;
@@ -14,7 +19,8 @@ export function setup() {
 			await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
 			await app.workbench.sqlNotebook.waitForPlaceholderGone();
 
-			await app.code.dispatchKeybinding('escape');
+			await app.code.dispatchKeybinding('escape'); // first escape sets the cell in edit mode
+			await app.code.dispatchKeybinding('escape'); // second escape unselects cell completely
 			await app.workbench.sqlNotebook.waitForDoubleClickToEdit();
 			await app.workbench.sqlNotebook.doubleClickTextCell();
 			await app.workbench.sqlNotebook.waitForDoubleClickToEditGone();
@@ -56,6 +62,7 @@ export function setup() {
 		// Python Notebooks
 
 		it('can open new notebook, configure Python, and execute one cell', async function () {
+			this.timeout(600000); // set timeout to 10 minutes to ensure test does not timeout during python installation
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.addCell('code');
@@ -64,7 +71,10 @@ export function setup() {
 
 			await app.workbench.sqlNotebook.notebookToolbar.changeKernel('Python 3');
 			await app.workbench.configurePythonDialog.waitForConfigurePythonDialog();
-			await app.workbench.configurePythonDialog.installPython();
+			await app.workbench.configurePythonDialog.waitForPageOneLoaded();
+			await app.workbench.configurePythonDialog.next();
+			await app.workbench.configurePythonDialog.waitForPageTwoLoaded();
+			await app.workbench.configurePythonDialog.install();
 			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
 
 			await app.workbench.sqlNotebook.runActiveCell();
@@ -88,7 +98,16 @@ export function setup() {
 
 		afterEach(async function () {
 			const app = this.app as Application;
+			// If the test failed, take a screenshot before closing the active editor.
+			if (this.currentTest!.state === 'failed') {
+				const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
+				await app.captureScreenshot(`${name} (screenshot before revertAndCloseActiveEditor action)`);
+			}
+
 			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
+
+			// Close any open wizards
+			await app.code.dispatchKeybinding('escape');
 		});
 
 		describe('Notebook Toolbar Actions', async () => {
@@ -125,7 +144,64 @@ export function setup() {
 				await app.workbench.sqlNotebook.waitForTrustedElements();
 			});
 		});
+
+		describe('markdown', function () {
+			it('can create http link from markdown', async function () {
+				const app = this.app as Application;
+				const markdownString = '[Microsoft homepage](http://www.microsoft.com)';
+				const linkSelector = '.notebook-cell.active .notebook-text a[href=\'http://www.microsoft.com\']';
+				await verifyElementRendered(app, markdownString, linkSelector);
+			});
+			it('can create img from markdown', async function () {
+				const app = this.app as Application;
+				const markdownString = '![Churn-Index](https://www.ngdata.com/wp-content/uploads/2016/05/churn.jpg)';
+				// Verify image with the correct src and alt attributes is created
+				const imgSelector = '.notebook-cell.active .notebook-text img[src=\'https://www.ngdata.com/wp-content/uploads/2016/05/churn.jpg\'][alt=\'Churn-Index\']';
+				await verifyElementRendered(app, markdownString, imgSelector);
+			});
+		});
+
+		describe('Cell Actions', function () {
+			it('can change cell language', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
+				await app.workbench.sqlNotebook.addCellFromPlaceholder('Code');
+				await app.workbench.sqlNotebook.waitForPlaceholderGone();
+
+				const languagePickerButton = '.notebook-cell.active .cellLanguage';
+				await app.code.waitAndClick(languagePickerButton);
+
+				await app.workbench.quickinput.waitForQuickInputElements(names => names[0] === 'SQL');
+				await app.code.waitAndClick('.quick-input-widget .quick-input-list .monaco-list-row');
+
+				let element = await app.code.waitForElement(languagePickerButton);
+				assert.strictEqual(element.textContent?.trim(), 'SQL');
+			});
+		});
 	});
+}
+
+/**
+ * Verifies that the given markdown string is rendered into the expected HTML element in split view, rich text view
+ * and the text cell outside of edit mode.
+ * @param app The application
+ * @param markdownString The markdown text to enter for the element to render
+ * @param element The query selector for the element that is expected to be rendered
+ */
+async function verifyElementRendered(app: Application, markdownString: string, element: string): Promise<void> {
+	await app.workbench.sqlNotebook.newUntitledNotebook();
+	await app.workbench.sqlNotebook.addCell('markdown');
+	await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
+	await app.workbench.sqlNotebook.waitForTypeInEditor(markdownString);
+	// Verify link is shown in split view
+	await app.code.waitForElement(element);
+	await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Rich Text View');
+	// Verify link is shown in WYSIWYG view
+	await app.code.waitForElement(element);
+	// Verify link is shown outside of edit mode
+	await app.code.dispatchKeybinding('escape');
+	await app.code.waitForElement(element);
 }
 
 async function openAndRunNotebook(app: Application, filename: string): Promise<void> {

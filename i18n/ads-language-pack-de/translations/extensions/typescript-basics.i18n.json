@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "TypeScript-Sprachgrundlagen",
-			"description": "Bietet Ausschnitte, Syntaxhervorhebung, Klammernpaare und Falten in TypeScript-Dateien."
+			"description": "Bietet Ausschnitte, Syntaxhervorhebung, Klammernpaare und Falten in TypeScript-Dateien.",
+			"displayName": "TypeScript-Sprachgrundlagen"
 		}
 	}
 }

@@ -9,7 +9,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	// Currently all the functionality for this is contained within the core ADS
 	// code as the extensibility API doesn't currently support all the required
 	// functionality (such as contributing tab panels)
-	vscode.commands.executeCommand('queryHistory.enableQueryHistory');
+	void vscode.commands.executeCommand('queryHistory.enableQueryHistory');
 }
 
 export async function deactivate(): Promise<void> {

@@ -32,6 +32,10 @@ export class ArcControllersOptionsSourceProvider implements rd.IOptionsSourcePro
 			case 'namespace': return controller.info.namespace || '';
 			case 'kubeConfig': return controller.info.kubeConfigFilePath;
 			case 'clusterContext': return controller.info.kubeClusterContext;
+			case 'resourceGroup': return controller.info.resourceGroup;
+			case 'connectionMode': return controller.info.connectionMode;
+			case 'location': return controller.info.location;
+			case 'customLocation': return controller.info.customLocation;
 			default: throw new Error(loc.variableValueFetchForUnsupportedVariable(variableName));
 		}
 	}
@@ -41,6 +45,10 @@ export class ArcControllersOptionsSourceProvider implements rd.IOptionsSourcePro
 			case 'namespace': return false;
 			case 'kubeConfig': return false;
 			case 'clusterContext': return false;
+			case 'resourceGroup': return false;
+			case 'connectionMode': return false;
+			case 'location': return false;
+			case 'customLocation': return false;
 			default: throw new Error(loc.isPasswordFetchForUnsupportedVariable(variableName));
 		}
 	}

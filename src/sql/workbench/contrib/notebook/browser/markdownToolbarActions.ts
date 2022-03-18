@@ -16,6 +16,7 @@ import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
 import { IEditor } from 'vs/editor/common/editorCommon';
+import { highlightSelectedText } from 'sql/workbench/contrib/notebook/browser/utils';
 
 export class TransformMarkdownAction extends Action {
 
@@ -58,44 +59,7 @@ export class TransformMarkdownAction extends Action {
 				document.execCommand('formatBlock', false, 'H3');
 				break;
 			case MarkdownButtonType.HIGHLIGHT:
-				let selectionFocusNode = document.getSelection()?.focusNode;
-				// Find if element is wrapped in <mark></mark>
-				while (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() && selectionFocusNode?.parentNode?.nodeName?.toLowerCase() !== 'mark') {
-					selectionFocusNode = selectionFocusNode.parentNode;
-				}
-				// Find if element is wrapped in <span background-color="yellow">
-				if (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() !== 'mark') {
-					selectionFocusNode = document.getSelection()?.focusNode;
-					while (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() && selectionFocusNode?.parentNode?.nodeName?.toLowerCase() !== 'span' && selectionFocusNode?.parentElement?.style?.backgroundColor !== 'yellow') {
-						selectionFocusNode = selectionFocusNode.parentNode;
-					}
-				}
-				let nodeName = selectionFocusNode?.parentNode?.nodeName?.toLowerCase();
-				let backgroundColor = selectionFocusNode?.parentElement?.style?.backgroundColor;
-				if (nodeName === 'mark') {
-					let oldParent = selectionFocusNode.parentNode;
-					let newParent = selectionFocusNode.parentNode.parentNode;
-					let oldParentNextSibling = oldParent.nextSibling;
-					// Remove mark element, reparent
-					while (oldParent.childNodes.length > 0) {
-						// If no next sibling, then old parent was the final child node, so we can append
-						if (!oldParentNextSibling) {
-							newParent.appendChild(oldParent.firstChild);
-						} else {
-							newParent.insertBefore(oldParent.firstChild, oldParentNextSibling);
-						}
-					}
-					// Empty span required to force an input so that HTML change is seen from text cell component
-					// This span doesn't have any effect on the markdown generated.
-					document.execCommand('formatBlock', false, 'span');
-				} else if (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() === 'span' && backgroundColor === 'yellow') {
-					selectionFocusNode.parentElement.style.backgroundColor = '';
-					// Empty span required to force an input so that HTML change is seen from text cell component
-					// This span doesn't have any effect on the markdown generated.
-					document.execCommand('formatBlock', false, 'span');
-				} else {
-					document.execCommand('hiliteColor', false, 'Yellow');
-				}
+				highlightSelectedText();
 				break;
 			case MarkdownButtonType.IMAGE:
 			case MarkdownButtonType.IMAGE_PREVIEW:
@@ -209,6 +173,7 @@ export class MarkdownTextTransformer {
 	 * @param endRange range for end text that was inserted
 	 * @param type MarkdownButtonType
 	 * @param editorControl code editor widget
+	 * @param editorModel
 	 * @param noSelection controls whether there was no previous selection in the editor
 	 */
 	private setEndSelection(endRange: IRange, type: MarkdownButtonType, editorControl: CodeEditorWidget, editorModel: TextModel, noSelection: boolean, isUndo: boolean): void {
@@ -607,8 +572,6 @@ export class ToggleViewAction extends Action {
 	}
 
 	public override async run(context: MarkdownToolbarComponent): Promise<void> {
-		context.removeActiveClassFromModeActions();
-		this.class += ' active';
 		context.cellModel.showPreview = this.showPreview;
 		context.cellModel.showMarkdown = this.showMarkdown;
 		// Hide image button in WYSIWYG mode
@@ -617,5 +580,6 @@ export class ToggleViewAction extends Action {
 		} else {
 			context.showLinkAndImageButtons();
 		}
+		context.updateActiveViewAction();
 	}
 }

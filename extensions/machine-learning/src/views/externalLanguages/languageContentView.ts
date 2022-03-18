@@ -146,10 +146,10 @@ export class LanguageContentView extends LanguageViewBase {
 
 	public get updatedContent(): mssql.ExternalLanguageContent {
 		return {
-			pathToExtension: this.extensionFile.value || '',
-			extensionFileName: this.extensionFileName.value || '',
-			parameters: this.parameters.value || '',
-			environmentVariables: this.envVariables.value || '',
+			pathToExtension: this.extensionFile.value as string || '',
+			extensionFileName: this.extensionFileName.value as string || '',
+			parameters: this.parameters.value as string || '',
+			environmentVariables: this.envVariables.value as string || '',
 			isLocalFile: this._isLocalPath || false,
 			platform: this._languageContent?.platform
 		};

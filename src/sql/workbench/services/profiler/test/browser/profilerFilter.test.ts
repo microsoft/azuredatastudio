@@ -105,7 +105,7 @@ suite('Profiler filter data tests', () => {
 
 function filterAndVerify(filter: ProfilerFilter, data: TestData[], expectedResult: TestData[], stepName: string) {
 	let actualResult = FilterData(filter, data);
-	assert.equal(actualResult.length, expectedResult.length, `length check for ${stepName}`);
+	assert.strictEqual(actualResult.length, expectedResult.length, `length check for ${stepName}`);
 	for (let i = 0; i < actualResult.length; i++) {
 		let actual = actualResult[i];
 		let expected = expectedResult[i];

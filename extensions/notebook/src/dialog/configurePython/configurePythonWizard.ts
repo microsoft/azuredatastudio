@@ -99,6 +99,10 @@ export class ConfigurePythonWizard {
 		});
 
 		this._wizard.registerNavigationValidator(async (info) => {
+			// The pages have not been registered yet
+			if (pages.size === 0) {
+				return false;
+			}
 			let lastPage = pages.get(info.lastPage);
 			let newPage = pages.get(info.newPage);
 
@@ -126,6 +130,13 @@ export class ConfigurePythonWizard {
 
 	public async close(): Promise<void> {
 		await this._wizard.close();
+	}
+
+	public showInfoMessage(errorMsg: string) {
+		this._wizard.message = <azdata.window.DialogMessage>{
+			text: errorMsg,
+			level: azdata.window.MessageLevel.Information
+		};
 	}
 
 	public showErrorMessage(errorMsg: string) {

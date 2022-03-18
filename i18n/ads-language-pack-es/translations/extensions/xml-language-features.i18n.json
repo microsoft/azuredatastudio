@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Características del lenguaje XML",
-			"description": "Proporciona un potente soporte de lenguaje para archivos XML."
+			"description": "Proporciona un potente soporte de lenguaje para archivos XML.",
+			"displayName": "Características del lenguaje XML"
 		}
 	}
 }

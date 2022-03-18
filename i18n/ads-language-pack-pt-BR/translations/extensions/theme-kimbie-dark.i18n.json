@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Tema escuro Kimbie",
 			"description": "Tema escuro Kimbie do Visual Studio Code",
+			"displayName": "Tema escuro Kimbie",
 			"themeLabel": "Kimbie Escuro"
 		}
 	}

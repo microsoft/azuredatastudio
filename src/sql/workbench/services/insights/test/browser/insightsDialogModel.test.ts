@@ -32,7 +32,7 @@ suite('Insights Dialog Model Tests', () => {
 		];
 		let result = insightsDialogModel.getListResources(0, 1);
 		for (let resource of result) {
-			assert.equal(resource.stateColor, 'green', 'always Condition did not return val as expected');
+			assert.strictEqual(resource.stateColor, 'green', 'always Condition did not return val as expected');
 		}
 
 		label.state = [
@@ -52,9 +52,9 @@ suite('Insights Dialog Model Tests', () => {
 			['label3', 'value3']
 		];
 		result = insightsDialogModel.getListResources(0, 1);
-		assert.equal(result[0].stateColor, 'green', 'always Condition did not return val as expected');
-		assert.equal(isUndefinedOrNull(result[1].stateColor), true, 'always Condition did not return val as expected');
-		assert.equal(isUndefinedOrNull(result[2].stateColor), true, 'always Condition did not return val as expected');
+		assert.strictEqual(result[0].stateColor, 'green', 'always Condition did not return val as expected');
+		assert.strictEqual(isUndefinedOrNull(result[1].stateColor), true, 'always Condition did not return val as expected');
+		assert.strictEqual(isUndefinedOrNull(result[2].stateColor), true, 'always Condition did not return val as expected');
 
 		label.state = [
 			{
@@ -80,9 +80,9 @@ suite('Insights Dialog Model Tests', () => {
 			['label3', 'value3']
 		];
 		result = insightsDialogModel.getListResources(0, 1);
-		assert.equal(result[0].stateColor, 'green', 'always Condition did not return val as expected');
-		assert.equal(result[1].stateColor, 'red', 'always Condition did not return val as expected');
-		assert.equal(isUndefinedOrNull(result[2].stateColor), true, 'always Condition did not return val as expected');
+		assert.strictEqual(result[0].stateColor, 'green', 'always Condition did not return val as expected');
+		assert.strictEqual(result[1].stateColor, 'red', 'always Condition did not return val as expected');
+		assert.strictEqual(isUndefinedOrNull(result[2].stateColor), true, 'always Condition did not return val as expected');
 
 		label.state = [
 			{
@@ -108,9 +108,9 @@ suite('Insights Dialog Model Tests', () => {
 			['label3', 'value3']
 		];
 		result = insightsDialogModel.getListResources(0, 1);
-		assert.equal(result[0].stateColor, 'green', 'always Condition did not return val as expected');
-		assert.equal(result[1].stateColor, 'red', 'always Condition did not return val as expected');
-		assert.equal(isUndefinedOrNull(result[2].stateColor), true, 'always Condition did not return val as expected');
+		assert.strictEqual(result[0].stateColor, 'green', 'always Condition did not return val as expected');
+		assert.strictEqual(result[1].stateColor, 'red', 'always Condition did not return val as expected');
+		assert.strictEqual(isUndefinedOrNull(result[2].stateColor), true, 'always Condition did not return val as expected');
 
 		label.state = [
 			{
@@ -136,9 +136,9 @@ suite('Insights Dialog Model Tests', () => {
 			['label3', 'value3']
 		];
 		result = insightsDialogModel.getListResources(0, 1);
-		assert.equal(result[0].stateColor, 'green', 'always Condition did not return val as expected');
-		assert.equal(result[1].stateColor, 'red', 'always Condition did not return val as expected');
-		assert.equal(isUndefinedOrNull(result[2].stateColor), true, 'always Condition did not return val as expected');
+		assert.strictEqual(result[0].stateColor, 'green', 'always Condition did not return val as expected');
+		assert.strictEqual(result[1].stateColor, 'red', 'always Condition did not return val as expected');
+		assert.strictEqual(isUndefinedOrNull(result[2].stateColor), true, 'always Condition did not return val as expected');
 
 		label.state = [
 			{
@@ -164,9 +164,9 @@ suite('Insights Dialog Model Tests', () => {
 			['label3', 'value3']
 		];
 		result = insightsDialogModel.getListResources(0, 1);
-		assert.equal(result[0].stateColor, 'green', 'always Condition did not return val as expected');
-		assert.equal(result[1].stateColor, 'red', 'always Condition did not return val as expected');
-		assert.equal(isUndefinedOrNull(result[2].stateColor), true, 'always Condition did not return val as expected');
+		assert.strictEqual(result[0].stateColor, 'green', 'always Condition did not return val as expected');
+		assert.strictEqual(result[1].stateColor, 'red', 'always Condition did not return val as expected');
+		assert.strictEqual(isUndefinedOrNull(result[2].stateColor), true, 'always Condition did not return val as expected');
 
 		label.state = [
 			{
@@ -192,9 +192,9 @@ suite('Insights Dialog Model Tests', () => {
 			['label3', 'value3']
 		];
 		result = insightsDialogModel.getListResources(0, 1);
-		assert.equal(result[0].stateColor, 'green', 'always Condition did not return val as expected');
-		assert.equal(result[1].stateColor, 'red', 'always Condition did not return val as expected');
-		assert.equal(isUndefinedOrNull(result[2].stateColor), true, 'always Condition did not return val as expected');
+		assert.strictEqual(result[0].stateColor, 'green', 'always Condition did not return val as expected');
+		assert.strictEqual(result[1].stateColor, 'red', 'always Condition did not return val as expected');
+		assert.strictEqual(isUndefinedOrNull(result[2].stateColor), true, 'always Condition did not return val as expected');
 
 		label.state = [
 			{
@@ -220,9 +220,9 @@ suite('Insights Dialog Model Tests', () => {
 			['label3', 'value3']
 		];
 		result = insightsDialogModel.getListResources(0, 1);
-		assert.equal(result[0].stateColor, 'green', 'always Condition did not return val as expected');
-		assert.equal(isUndefinedOrNull(result[1].stateColor), true, 'always Condition did not return val as expected');
-		assert.equal(result[2].stateColor, 'green', 'always Condition did not return val as expected');
+		assert.strictEqual(result[0].stateColor, 'green', 'always Condition did not return val as expected');
+		assert.strictEqual(isUndefinedOrNull(result[1].stateColor), true, 'always Condition did not return val as expected');
+		assert.strictEqual(result[2].stateColor, 'green', 'always Condition did not return val as expected');
 
 		label.state = [
 			{
@@ -247,8 +247,8 @@ suite('Insights Dialog Model Tests', () => {
 			['label3', 'value3']
 		];
 		result = insightsDialogModel.getListResources(0, 1);
-		assert.equal(result[0].stateColor, 'green', 'always Condition did not return val as expected');
-		assert.equal(result[1].stateColor, 'green', 'always Condition did not return val as expected');
-		assert.equal(result[2].stateColor, 'green', 'always Condition did not return val as expected');
+		assert.strictEqual(result[0].stateColor, 'green', 'always Condition did not return val as expected');
+		assert.strictEqual(result[1].stateColor, 'green', 'always Condition did not return val as expected');
+		assert.strictEqual(result[2].stateColor, 'green', 'always Condition did not return val as expected');
 	});
 });

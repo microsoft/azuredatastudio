@@ -5,7 +5,7 @@
 
 import * as DOM from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
-import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { IEditorOpenContext } from 'vs/workbench/common/editor';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -13,6 +13,7 @@ import { QueryPlanInput } from 'sql/workbench/contrib/queryPlan/common/queryPlan
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { QueryPlanView } from 'sql/workbench/contrib/queryPlan/browser/queryPlan';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
 
 export class QueryPlanEditor extends EditorPane {
 
@@ -55,7 +56,7 @@ export class QueryPlanEditor extends EditorPane {
 		this.view.layout(dimension);
 	}
 
-	public override async setInput(input: QueryPlanInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
+	public override async setInput(input: QueryPlanInput, options: IEditorOptions, context: IEditorOpenContext): Promise<void> {
 		if (this.input instanceof QueryPlanInput && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}

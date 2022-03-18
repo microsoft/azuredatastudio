@@ -154,7 +154,7 @@ export class AzTool implements azExt.IAzApi {
 			show: (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.SqlMiShowResult>> => {
 				return this.executeCommand<azExt.SqlMiShowResult>(['sql', 'mi-arc', 'show', '-n', name, '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
 			},
-			edit: (
+			update: (
 				name: string,
 				args: {
 					coresLimit?: string,
@@ -162,20 +162,53 @@ export class AzTool implements azExt.IAzApi {
 					memoryLimit?: string,
 					memoryRequest?: string,
 					noWait?: boolean,
+					retentionDays?: string
 				},
-				namespace: string,
+				// Direct mode arguments
+				resourceGroup?: string,
+				// Indirect mode arguments
+				namespace?: string,
+				usek8s?: boolean,
+				// Additional arguments
 				additionalEnvVars?: azExt.AdditionalEnvVars
 			): Promise<azExt.AzOutput<void>> => {
-				const argsArray = ['sql', 'mi-arc', 'edit', '-n', name, '--k8s-namespace', namespace, '--use-k8s'];
+				const argsArray = ['sql', 'mi-arc', 'update', '-n', name];
 				if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
 				if (args.coresRequest) { argsArray.push('--cores-request', args.coresRequest); }
 				if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
 				if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
 				if (args.noWait) { argsArray.push('--no-wait'); }
+				if (args.retentionDays) { argsArray.push('--retention-days', args.retentionDays); }
+				if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
+				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
+				if (usek8s) { argsArray.push('--use-k8s'); }
 				return this.executeCommand<void>(argsArray, additionalEnvVars);
+			}
+		},
+		midbarc: {
+			restore: (
+				name: string,
+				args: {
+					destName?: string,
+					managedInstance?: string,
+					time?: string,
+					noWait?: boolean,
+					dryRun?: boolean
+				},
+				namespace: string,
+				additionalEnvVars?: azExt.AdditionalEnvVars
+			): Promise<azExt.AzOutput<azExt.SqlMiDbRestoreResult>> => {
+				const argsArray = ['sql', 'midb-arc', 'restore', '--name', name, '--k8s-namespace', namespace, '--use-k8s'];
+				if (args.destName) { argsArray.push('--dest-name', args.destName); }
+				if (args.managedInstance) { argsArray.push('--managed-instance', args.managedInstance); }
+				if (args.time) { argsArray.push('--time', args.time); }
+				if (args.noWait) { argsArray.push('--no-wait'); }
+				if (args.dryRun) { argsArray.push('--dry-run'); }
+				return this.executeCommand<azExt.SqlMiDbRestoreResult>(argsArray, additionalEnvVars);
 			}
 		}
 	};
+
 
 	/**
 	 * Gets the output of running '--version' command on the az tool.

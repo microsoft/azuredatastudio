@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
+import { isLinux, isMacintosh, isWindows } from 'vs/base/common/platform';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { isMacintosh, isLinux, isWindows } from 'vs/base/common/platform';
 
 function createContext(ctx: any) {
 	return {
@@ -27,7 +27,7 @@ suite('ContextKeyExpr', () => {
 			ContextKeyExpr.notEquals('c1', 'cc1'),
 			ContextKeyExpr.notEquals('c2', 'cc2'),
 			ContextKeyExpr.not('d1'),
-			ContextKeyExpr.not('d2'),
+			ContextKeyExpr.not('d2')
 		)!;
 		let b = ContextKeyExpr.and(
 			ContextKeyExpr.equals('b2', 'bb2'),

@@ -17,5 +17,5 @@ export function getSqlConfigSection(workspaceConfigService: IConfigurationServic
 
 export function getSqlConfigValue<T>(workspaceConfigService: IConfigurationService, configName: string): T {
 	let config = workspaceConfigService.getValue<{ [key: string]: any }>(ConnectionConstants.sqlConfigSectionName);
-	return config[configName];
+	return config ? config[configName] : undefined;
 }

@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as constants from '../common/constants';
+import { AgreementInfo, DockerImageInfo } from '../models/deploy/deployProfile';
 
 /**
  * Gets connection name from connection object if there is one,
@@ -23,4 +24,40 @@ export function getConnectionName(connection: any): string {
 	}
 
 	return connectionName;
+}
+
+export function getAgreementDisplayText(agreementInfo: AgreementInfo): string {
+	return constants.eulaAgreementText(agreementInfo.link!.text);
+}
+
+export function getDockerBaseImages(): DockerImageInfo[] {
+	return [
+		{
+			name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2017-latest`,
+			agreementInfo: {
+				link: {
+					text: constants.eulaAgreementTitle,
+					url: constants.sqlServerEulaLink,
+				}
+			}
+		},
+		{
+			name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2019-latest`,
+			agreementInfo: {
+				link: {
+					text: constants.eulaAgreementTitle,
+					url: constants.sqlServerEulaLink,
+				}
+			}
+		},
+		{
+			name: `${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}:latest`,
+			agreementInfo: {
+				link: {
+					text: constants.edgeEulaAgreementTitle,
+					url: constants.sqlServerEdgeEulaLink,
+				}
+			}
+		},
+	];
 }

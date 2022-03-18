@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Registry } from 'vs/platform/registry/common/platform';
-import { EditorDescriptor, IEditorRegistry } from 'vs/workbench/browser/editor';
+import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { IConfigurationRegistry, Extensions as ConfigExtensions, IConfigurationNode } from 'vs/platform/configuration/common/configurationRegistry';
@@ -29,10 +29,10 @@ import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWo
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, QueryStatusStatusBarContributions, QueryResultSelectionSummaryStatusBarContribution } from 'sql/workbench/contrib/query/browser/statusBarItems';
 import { SqlFlavorStatusbarItem, ChangeFlavorAction } from 'sql/workbench/contrib/query/browser/flavorStatus';
-import { EditorExtensions, IEditorInputFactoryRegistry } from 'vs/workbench/common/editor';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
-import { FileQueryEditorInputSerializer, QueryEditorLanguageAssociation, UntitledQueryEditorInputSerializer } from 'sql/workbench/contrib/query/browser/queryInputFactory';
-import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
+import { EditorExtensions, IEditorFactoryRegistry } from 'vs/workbench/common/editor';
+import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
+import { FileQueryEditorSerializer, QueryEditorLanguageAssociation, UntitledQueryEditorSerializer } from 'sql/workbench/contrib/query/browser/queryEditorFactory';
+import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';
 import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
@@ -43,8 +43,8 @@ import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IModeService } from 'vs/editor/common/services/modeService';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { IEditorOverrideService, ContributedEditorPriority } from 'vs/workbench/services/editor/common/editorOverrideService';
+import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
+import { IEditorResolverService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorResolverService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ILogService } from 'vs/platform/log/common/log';
 
@@ -52,20 +52,20 @@ export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.query
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
 export const ResultsMessagesFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsMessagesFocussedId));
 
-Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
-	.registerEditorInputSerializer(FileQueryEditorInput.ID, FileQueryEditorInputSerializer);
+Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory)
+	.registerEditorSerializer(FileQueryEditorInput.ID, FileQueryEditorSerializer);
 
-Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
-	.registerEditorInputSerializer(UntitledQueryEditorInput.ID, UntitledQueryEditorInputSerializer);
+Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory)
+	.registerEditorSerializer(UntitledQueryEditorInput.ID, UntitledQueryEditorSerializer);
 
 Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
 	.registerLanguageAssociation(QueryEditorLanguageAssociation.languages, QueryEditorLanguageAssociation, QueryEditorLanguageAssociation.isDefault);
 
-Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(EditorDescriptor.create(QueryResultsEditor, QueryResultsEditor.ID, localize('queryResultsEditor.name', "Query Results")), [new SyncDescriptor(QueryResultsInput)]);
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
+	.registerEditorPane(EditorPaneDescriptor.create(QueryResultsEditor, QueryResultsEditor.ID, localize('queryResultsEditor.name', "Query Results")), [new SyncDescriptor(QueryResultsInput)]);
 
-Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(EditorDescriptor.create(QueryEditor, QueryEditor.ID, QueryEditor.LABEL), [new SyncDescriptor(FileQueryEditorInput), new SyncDescriptor(UntitledQueryEditorInput)]);
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
+	.registerEditorPane(EditorPaneDescriptor.create(QueryEditor, QueryEditor.ID, QueryEditor.LABEL), [new SyncDescriptor(FileQueryEditorInput), new SyncDescriptor(UntitledQueryEditorInput)]);
 
 const actionRegistry = <IWorkbenchActionRegistry>Registry.as(ActionExtensions.WorkbenchActions);
 
@@ -78,7 +78,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		id: OE_NEW_QUERY_ACTION_ID,
 		title: localize('newQuery', "New Query")
 	},
-	when: ContextKeyExpr.or(ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Server')), ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Database')))
+	when: ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.IsQueryProvider.isEqualTo(true), ContextKeyExpr.or(TreeNodeContextKey.NodeType.isEqualTo('Server'), TreeNodeContextKey.NodeType.isEqualTo('Database')))
 });
 
 // New Query
@@ -89,7 +89,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: DE_NEW_QUERY_COMMAND_ID,
 		title: localize('newQuery', "New Query")
 	},
-	when: MssqlNodeContext.IsDatabaseOrServer
+	when: ContextKeyExpr.and(MssqlNodeContext.IsDatabaseOrServer, MssqlNodeContext.IsQueryProvider)
 });
 
 const ExplorerNewQueryActionID = 'explorer.query';
@@ -150,7 +150,7 @@ actionRegistry.registerWorkbenchAction(
 		CopyQueryWithResultsKeyboardAction,
 		CopyQueryWithResultsKeyboardAction.ID,
 		CopyQueryWithResultsKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_C }
+		{ primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_V) }
 	),
 	CopyQueryWithResultsKeyboardAction.LABEL
 );
@@ -392,11 +392,6 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.copyRemoveNewLine', "Configuration options for copying multi-line results from the Results View"),
 			'default': true
 		},
-		'queryEditor.results.optimizedTable': {
-			'type': 'boolean',
-			'description': localize('queryEditor.results.optimizedTable', "(Experimental) Use a optimized table in the results out. Some functionality might be missing and in the works."),
-			'default': false
-		},
 		'queryEditor.results.inMemoryDataProcessingThreshold': {
 			'type': 'number',
 			'default': 5000,
@@ -505,7 +500,7 @@ export class QueryEditorOverrideContribution extends Disposable implements IWork
 	constructor(
 		@ILogService private _logService: ILogService,
 		@IEditorService private _editorService: IEditorService,
-		@IEditorOverrideService private _editorOverrideService: IEditorOverrideService,
+		@IEditorResolverService private _editorResolverService: IEditorResolverService,
 		@IModeService private _modeService: IModeService
 	) {
 		super();
@@ -528,26 +523,26 @@ export class QueryEditorOverrideContribution extends Disposable implements IWork
 			// Create the selector from the list of all the language extensions we want to associate with the
 			// query editor (filtering out any languages which didn't have any extensions registered yet)
 			const selector = `*{${langExtensions.join(',')}}`;
-			this._registeredOverrides.add(this._editorOverrideService.registerContributionPoint(
+			this._registeredOverrides.add(this._editorResolverService.registerEditor(
 				selector,
 				{
 					id: QueryEditor.ID,
 					label: QueryEditor.LABEL,
-					describes: (currentEditor) => currentEditor instanceof FileQueryEditorInput,
-					priority: ContributedEditorPriority.builtin
+					priority: RegisteredEditorPriority.builtin
 				},
-				{},
-				(resource, options, group) => {
-					const fileInput = this._editorService.createEditorInput({
-						resource: resource
-					}) as FileEditorInput;
+				{
+					// Fall back to using the normal text based diff editor - we don't want the query bar and related items showing up in the diff editor
+					canHandleDiff: () => false
+				},
+				(editorInput, group) => {
+					const fileInput = this._editorService.createEditorInput(editorInput) as FileEditorInput;
 					const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
-					const queryEditorInput = langAssociation?.syncConvertinput?.(fileInput);
+					const queryEditorInput = langAssociation?.syncConvertInput?.(fileInput);
 					if (!queryEditorInput) {
-						this._logService.warn('Unable to create input for overriding editor ', resource);
+						this._logService.warn('Unable to create input for resolving editor ', editorInput.resource);
 						return undefined;
 					}
-					return { editor: queryEditorInput, options: options, group: group };
+					return { editor: queryEditorInput, options: editorInput.options, group: group };
 				}
 			));
 		});

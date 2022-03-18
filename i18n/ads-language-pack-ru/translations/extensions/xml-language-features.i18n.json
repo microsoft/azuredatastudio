@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Возможности языка XML",
-			"description": "Предоставляет широкую поддержку языка для XML."
+			"description": "Предоставляет широкую поддержку языка для XML.",
+			"displayName": "Возможности языка XML"
 		}
 	}
 }

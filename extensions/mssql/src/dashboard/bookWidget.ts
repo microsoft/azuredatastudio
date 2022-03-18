@@ -69,5 +69,5 @@ export function registerBooksWidget(bookContributionProvider: BookContributionPr
 }
 
 function openBookViewlet(folderUri: vscode.Uri): void {
-	vscode.commands.executeCommand('bookTreeView.openBook', folderUri.fsPath, true, undefined);
+	void vscode.commands.executeCommand('bookTreeView.openBook', folderUri.fsPath, true, undefined);
 }

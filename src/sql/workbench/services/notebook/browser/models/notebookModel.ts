@@ -9,30 +9,36 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
-import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, MoveDirection, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, MoveDirection, ViewMode, ICellEdit } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { KernelsLanguage, nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER, ISerializationManager, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookContexts } from 'sql/workbench/services/notebook/browser/models/notebookContexts';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity, INotificationService } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
-import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookEditOperation, NotebookEditOperationType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
 import { getErrorMessage } from 'vs/base/common/errors';
-import { startsWith } from 'vs/base/common/strings';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { Deferred } from 'sql/base/common/promise';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { values } from 'vs/base/common/collections';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { isUUID } from 'vs/base/common/uuid';
+import { TextModel } from 'vs/editor/common/model/textModel';
+import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
+import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
+import { AddCellEdit, CellOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, CellOutputDataEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
+import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
+import { deepClone } from 'vs/base/common/objects';
+import { DotnetInteractiveLabel } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -52,6 +58,11 @@ export class ErrorInfo {
 interface INotebookMetadataInternal extends nb.INotebookMetadata {
 	azdata_notebook_guid?: string;
 }
+
+export type SplitCell = {
+	cell: ICellModel;
+	prefix: string | undefined;
+};
 
 type NotebookMetadataKeys = Required<nb.INotebookMetadata>;
 const expectedMetadataKeys: NotebookMetadataKeys = {
@@ -81,6 +92,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _trustedMode: boolean;
 	private _onActiveCellChanged = new Emitter<ICellModel | undefined>();
 	private _onCellTypeChanged = new Emitter<ICellModel>();
+	private _onScrollEmitter = new Emitter<void>();
 
 	private _cells: ICellModel[] | undefined;
 	private _defaultLanguageInfo: nb.ILanguageInfo | undefined;
@@ -120,11 +132,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@IAdsTelemetryService private readonly adstelemetryService: IAdsTelemetryService,
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IConfigurationService private configurationService: IConfigurationService,
-		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService
-
+		@IUndoRedoService private undoService: IUndoRedoService,
+		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService,
 	) {
 		super();
-		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
+		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.executeManagers) {
 			throw new Error('path or notebook service not defined');
 		}
 		this._trustedMode = false;
@@ -136,29 +148,36 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._defaultKernel = _notebookOptions.defaultKernel;
 	}
 
-	public get notebookManagers(): INotebookManager[] {
-		let notebookManagers = this._notebookOptions.notebookManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
-		if (!notebookManagers.length) {
-			return this._notebookOptions.notebookManagers;
+	private get serializationManagers(): ISerializationManager[] {
+		let managers = this._notebookOptions.serializationManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
+		if (!managers.length) {
+			return this._notebookOptions.serializationManagers;
 		}
-		return notebookManagers;
+		return managers;
 	}
 
-	public get notebookManager(): INotebookManager | undefined {
-		let manager = this.notebookManagers.find(manager => manager.providerId === this._providerId);
+	public get serializationManager(): ISerializationManager | undefined {
+		let manager = this.serializationManagers.find(manager => manager.providerId === this._providerId);
 		if (!manager) {
-			// Note: this seems like a less than ideal scenario. We should ideally pass in the "correct" provider ID and allow there to be a default,
-			// instead of assuming in the NotebookModel constructor that the option is either SQL or Jupyter
-			manager = this.notebookManagers.find(manager => manager.providerId === DEFAULT_NOTEBOOK_PROVIDER);
+			manager = this.serializationManagers.find(manager => manager.providerId === SQL_NOTEBOOK_PROVIDER);
 		}
 		return manager;
 	}
 
-	public getNotebookManager(providerId: string): INotebookManager | undefined {
-		if (providerId) {
-			return this.notebookManagers.find(manager => manager.providerId === providerId);
+	public get executeManagers(): IExecuteManager[] {
+		let managers = this._notebookOptions.executeManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
+		if (!managers.length) {
+			return this._notebookOptions.executeManagers;
 		}
-		return undefined;
+		return managers;
+	}
+
+	public get executeManager(): IExecuteManager | undefined {
+		let manager = this.executeManagers.find(manager => manager.providerId === this._providerId);
+		if (!manager) {
+			manager = this.executeManagers.find(manager => manager.providerId === SQL_NOTEBOOK_PROVIDER);
+		}
+		return manager;
 	}
 
 	public get notebookOptions(): INotebookModelOptions {
@@ -174,7 +193,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get hasServerManager(): boolean {
 		// If the service has a server manager, then we can show the start button
-		return !!this.notebookManager?.serverManager;
+		return !!this.executeManager?.serverManager;
 	}
 
 	public get contentChanged(): Event<NotebookContentChange> {
@@ -214,6 +233,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._contextsChangedEmitter.event;
 	}
 
+	public get onScroll(): Emitter<void> {
+		return this._onScrollEmitter;
+	}
+
 	public get contextsLoading(): Event<void> {
 		return this._contextsLoadingEmitter.event;
 	}
@@ -243,7 +266,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			defaultKernel: '',
 			kernels: []
 		};
-		this.notebookManagers.forEach(manager => {
+		this.executeManagers.forEach(manager => {
 			if (manager.sessionManager && manager.sessionManager.specs && manager.sessionManager.specs.kernels) {
 				manager.sessionManager.specs.kernels.forEach(kernel => {
 					specs.kernels.push(kernel);
@@ -395,8 +418,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 			let contents: nb.INotebookContents | undefined;
 
-			if (this._notebookOptions && this._notebookOptions.contentManager) {
-				contents = await this._notebookOptions.contentManager.loadContent();
+			if (this._notebookOptions && this._notebookOptions.contentLoader) {
+				contents = await this._notebookOptions.contentLoader.loadContent();
 			}
 			let factory = this._notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
@@ -454,6 +477,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
+	public sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties: ITelemetryEventProperties = {}): void {
+		let properties: ITelemetryEventProperties = deepClone(additionalProperties);
+		properties['azdata_notebook_guid'] = this.getMetaValue('azdata_notebook_guid');
+		this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, action)
+			.withAdditionalProperties(properties)
+			.send();
+	}
+
 	private loadContentMetadata(metadata: INotebookMetadataInternal): void {
 		this._savedKernelInfo = metadata.kernelspec;
 		this._defaultLanguageInfo = metadata.language_info;
@@ -469,9 +500,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (metadata.azdata_notebook_guid && metadata.azdata_notebook_guid.length === 36) {
 			//Verify if it is actual GUID and then send it to the telemetry
 			if (isUUID(metadata.azdata_notebook_guid)) {
-				this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.Open)
-					.withAdditionalProperties({ azdata_notebook_guid: metadata.azdata_notebook_guid })
-					.send();
+				this.sendNotebookTelemetryActionEvent(TelemetryKeys.TelemetryAction.Open);
 			}
 		}
 		Object.keys(metadata).forEach(key => {
@@ -484,7 +513,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public async requestModelLoad(): Promise<void> {
 		try {
-			this.setDefaultKernelAndProviderId();
+			await this.setDefaultKernelAndProviderId();
 			this.trySetLanguageFromLangInfo();
 		} catch (error) {
 			this._inErrorState = true;
@@ -519,22 +548,191 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			return undefined;
 		}
 		let cell = this.createCell(cellType);
+		return this.insertCell(cell, index, true);
+	}
 
+	public splitCell(cellType: CellType, notebookService: INotebookService, index?: number, addToUndoStack: boolean = true): ICellModel | undefined {
+		if (this.inErrorState) {
+			return undefined;
+		}
+
+		let notebookEditor = notebookService.findNotebookEditor(this.notebookUri);
+		let cellEditorProvider = notebookEditor.cellEditors.find(e => e.cellGuid() === this.cells[index].cellGuid);
+		//Only split the cell if the markdown editor is open.
+		//TODO: Need to handle splitting of cell if the selection is on webview
+		if (cellEditorProvider) {
+			let editor = cellEditorProvider.getEditor() as QueryTextEditor;
+			if (editor) {
+				let editorControl = editor.getControl() as CodeEditorWidget;
+
+				let model = editorControl.getModel() as TextModel;
+				let range = model.getFullModelRange();
+				let selection = editorControl.getSelection();
+				let source = this.cells[index].source;
+				let newCell = undefined, tailCell = undefined, partialSource = undefined;
+				let newCellIndex = index;
+				let tailCellIndex = index;
+				let splitCells: SplitCell[] = [];
+
+				// Save UI state
+				let showMarkdown = this.cells[index].showMarkdown;
+				let showPreview = this.cells[index].showPreview;
+
+				//Get selection value from current cell
+				let newCellContent = model.getValueInRange(selection);
+				let startPosition = selection.getStartPosition();
+				//If the cursor is at the beginning of the cell with no selection, return
+				if (newCellContent.length === 0 && startPosition.lineNumber === 1 && startPosition.column === 1) {
+					return undefined;
+				}
+
+				//Get content after selection
+				let tailRange = range.setStartPosition(selection.endLineNumber, selection.endColumn);
+				let tailCellContent = model.getValueInRange(tailRange);
+
+				//Get content before selection
+				let headRange = range.setEndPosition(selection.startLineNumber, selection.startColumn);
+				let headContent = model.getValueInRange(headRange);
+
+				// If the selection is equal to entire content then do nothing
+				if (headContent.length === 0 && tailCellContent.length === 0) {
+					return undefined;
+				}
+
+				//Set content before selection if the selection is not the same as original content
+				if (headContent.length) {
+					let headsource = source.slice(range.startLineNumber - 1, selection.startLineNumber - 1);
+					if (selection.startColumn > 1) {
+						partialSource = source.slice(selection.startLineNumber - 1, selection.startLineNumber)[0].slice(0, selection.startColumn - 1);
+						headsource = headsource.concat(partialSource.toString());
+					}
+					this.cells[index].source = headsource;
+					splitCells.push({ cell: this.cells[index], prefix: undefined });
+				}
+
+				if (newCellContent.length) {
+					let newSource = source.slice(selection.startLineNumber - 1, selection.endLineNumber) as string[];
+					if (selection.startColumn > 1) {
+						partialSource = source.slice(selection.startLineNumber - 1)[0].slice(selection.startColumn - 1);
+						newSource.splice(0, 1, partialSource);
+					}
+					if (selection.endColumn !== source[selection.endLineNumber - 1].length) {
+						let splicestart = 0;
+						if (selection.startLineNumber === selection.endLineNumber) {
+							splicestart = selection.startColumn - 1;
+						}
+						let partial = source.slice(selection.endLineNumber - 1, selection.endLineNumber)[0].slice(splicestart, selection.endColumn - 1);
+						newSource.splice(newSource.length - 1, 1, partial);
+					}
+					//If the selection is not from the start of the cell, create a new cell.
+					if (headContent.length) {
+						newCell = this.createCell(cellType);
+						newCell.source = newSource;
+						newCellIndex++;
+						this.insertCell(newCell, newCellIndex, false);
+						splitCells.push({ cell: this.cells[newCellIndex], prefix: undefined });
+					}
+					else { //update the existing cell
+						this.cells[index].source = newSource;
+					}
+				}
+
+				if (tailCellContent.length) {
+					//tail cell will be of original cell type.
+					tailCell = this.createCell(this._cells[index].cellType);
+					let tailSource = source.slice(tailRange.startLineNumber - 1) as string[];
+					if (selection.endColumn > 1) {
+						partialSource = source.slice(tailRange.startLineNumber - 1, tailRange.startLineNumber)[0].slice(tailRange.startColumn - 1);
+						tailSource.splice(0, 1, partialSource);
+					}
+					let newlinesBeforeTailCellContent: string;
+					//Remove the trailing empty line after the cursor
+					if (tailSource[0] === '\r\n' || tailSource[0] === '\n') {
+						newlinesBeforeTailCellContent = tailSource.splice(0, 1)[0];
+					}
+					tailCell.source = tailSource;
+					tailCellIndex = newCellIndex + 1;
+					this.insertCell(tailCell, tailCellIndex, false);
+					splitCells.push({ cell: this.cells[tailCellIndex], prefix: newlinesBeforeTailCellContent });
+				}
+
+				let activeCell = newCell ? newCell : (headContent.length ? tailCell : this.cells[index]);
+				let activeCellIndex = newCell ? newCellIndex : (headContent.length ? tailCellIndex : index);
+
+				if (addToUndoStack) {
+					this.undoService.pushElement(new SplitCellEdit(this, splitCells));
+				}
+				//make new cell Active
+				this.updateActiveCell(activeCell, true);
+				this._contentChangedEmitter.fire({
+					changeType: NotebookChangeType.CellsModified,
+					cells: [activeCell],
+					cellIndex: activeCellIndex
+				});
+				activeCell.showMarkdown = showMarkdown;
+				activeCell.showPreview = showPreview;
+
+				//return inserted cell
+				return activeCell;
+			}
+		}
+		return undefined;
+	}
+
+	public mergeCells(cells: SplitCell[]): void {
+		let firstCell = cells[0].cell;
+		// Append the other cell sources to the first cell
+		for (let i = 1; i < cells.length; i++) {
+			firstCell.source = cells[i].prefix ? [...firstCell.source, ...cells[i].prefix, ...cells[i].cell.source] : [...firstCell.source, ...cells[i].cell.source];
+		}
+		// Set newly created cell as active cell
+		this.updateActiveCell(firstCell, true);
+		this._contentChangedEmitter.fire({
+			changeType: NotebookChangeType.CellsModified,
+			cells: [firstCell],
+			cellIndex: 0
+		});
+		for (let i = 1; i < cells.length; i++) {
+			this.deleteCell(cells[i].cell, false);
+		}
+	}
+
+	public splitCells(cells: SplitCell[], firstCellOriginalSource: string | string[]): void {
+		cells[0].cell.source = firstCellOriginalSource;
+		this.updateActiveCell(cells[0].cell, true);
+		this._contentChangedEmitter.fire({
+			changeType: NotebookChangeType.CellsModified,
+			cells: [cells[0].cell],
+			cellIndex: 0
+		});
+
+		for (let i = 1; i < cells.length; i++) {
+			this.insertCell(cells[i].cell, undefined, false);
+		}
+	}
+
+	public insertCell(cell: ICellModel, index?: number, addToUndoStack: boolean = true): ICellModel | undefined {
+		if (this.inErrorState) {
+			return undefined;
+		}
 		if (index !== undefined && index !== null && index >= 0 && index < this._cells.length) {
 			this._cells.splice(index, 0, cell);
 		} else {
 			this._cells.push(cell);
 			index = undefined;
 		}
-		// Set newly created cell as active cell
-		this.updateActiveCell(cell);
-		cell.isEditMode = true;
+		if (addToUndoStack) {
+			// Only make cell active when inserting the cell. If we update the active cell when undoing/redoing, the user would have to deselect the cell first
+			// and to undo multiple times.
+			this.updateActiveCell(cell, true);
+			this.undoService.pushElement(new AddCellEdit(this, cell, index));
+		}
+
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsModified,
 			cells: [cell],
 			cellIndex: index
 		});
-
 		return cell;
 	}
 
@@ -565,7 +763,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	moveCell(cell: ICellModel, direction: MoveDirection): void {
+	moveCell(cell: ICellModel, direction: MoveDirection, addToUndoStack: boolean = true): void {
 		if (this.inErrorState) {
 			return;
 		}
@@ -588,10 +786,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._cells.splice(index - 1, 0, cell);
 		}
 
+		if (addToUndoStack) {
+			this.undoService.pushElement(new MoveCellEdit(this, cell, direction));
+			// If we update the active cell when undoing/redoing, the user would have to deselect the cell first and to undo multiple times.
+			this.updateActiveCell(cell);
+		}
 		index = this.findCellIndex(cell);
 
-		// Set newly created cell as active cell
-		this.updateActiveCell(cell);
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsModified,
 			cells: [cell],
@@ -599,21 +800,26 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		});
 	}
 
-	public updateActiveCell(cell?: ICellModel): void {
+	public updateActiveCell(cell?: ICellModel, isEditMode: boolean = false): void {
 		if (this._activeCell) {
 			this._activeCell.active = false;
+			this._activeCell.isEditMode = false;
 		}
 		this._activeCell = cell;
 		if (this._activeCell) {
 			this._activeCell.active = true;
+			this._activeCell.isEditMode = isEditMode;
 		}
 		this._onActiveCellChanged.fire(cell);
 	}
 
-	public convertCellType(cell: ICellModel): void {
+	public convertCellType(cell: ICellModel, addToUndoStack: boolean = true): void {
 		if (cell) {
 			let index = this.findCellIndex(cell);
 			if (index > -1) {
+				if (addToUndoStack) {
+					this.undoService.pushElement(new ConvertCellTypeEdit(this, cell));
+				}
 				// Ensure override language is reset
 				cell.setOverrideLanguage('');
 				cell.cellType = cell.cellType === CellTypes.Markdown ? CellTypes.Code : CellTypes.Markdown;
@@ -637,12 +843,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._notebookOptions.factory.createCell(singleCell, { notebook: this, isTrusted: true });
 	}
 
-	deleteCell(cellModel: ICellModel): void {
+	deleteCell(cellModel: ICellModel, addToUndoStack: boolean = true): void {
 		if (this.inErrorState || !this._cells) {
 			return;
 		}
 		let index = this._cells.findIndex(cell => cell.equals(cellModel));
 		if (index > -1) {
+			if (addToUndoStack) {
+				this.undoService.pushElement(new DeleteCellEdit(this, cellModel, index));
+			}
+
 			this._cells.splice(index, 1);
 			if (this._activeCell === cellModel) {
 				this.updateActiveCell();
@@ -658,26 +868,59 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	pushEditOperations(edits: ISingleNotebookEditOperation[]): void {
+	pushEditOperations(edits: INotebookEditOperation[]): void {
 		if (this.inErrorState || !this._cells) {
 			return;
 		}
 
-		for (let edit of edits) {
-			let newCells: ICellModel[] = [];
-			if (edit.cell) {
-				// TODO: should we validate and complete required missing parameters?
-				let contents: nb.ICellContents = edit.cell as nb.ICellContents;
-				newCells.push(this._notebookOptions.factory.createCell(contents, { notebook: this, isTrusted: this._trustedMode }));
+		for (const edit of edits) {
+			const startCell = this.cells[edit.range.start];
+			switch (edit.type) {
+				case NotebookEditOperationType.UpdateCell:
+					if (!startCell) {
+						this.logService.warn(`Did not receive a valid starting cell when processing edit type ${edit.type}`);
+						continue;
+					}
+					startCell.processEdits([
+						new CellOutputEdit(edit.cell.outputs ?? [], !!edit.append)
+					]);
+					break;
+				case NotebookEditOperationType.UpdateCellOutput:
+					if (!startCell) {
+						this.logService.warn(`Did not receive a valid starting cell when processing edit type ${edit.type}`);
+						continue;
+					}
+					const cellEdits: ICellEdit[] = [];
+					edit.cell.outputs?.forEach(o => {
+						const targetOutput = startCell.outputs.find(o2 => o.id === o2.id);
+						if (!targetOutput) {
+							this.logService.warn(`Could not find target output with ID ${o.id} when updating cell output`);
+							return;
+						}
+						cellEdits.push(new CellOutputDataEdit(targetOutput.id, (o as nb.IDisplayData).data, !!edit.append));
+					});
+					startCell.processEdits(cellEdits);
+					break;
+				case NotebookEditOperationType.InsertCell:
+				case NotebookEditOperationType.ReplaceCells:
+				case NotebookEditOperationType.DeleteCell:
+					let newCells: ICellModel[] = [];
+					if (edit.cell) {
+						// TODO: should we validate and complete required missing parameters?
+						let contents: nb.ICellContents = edit.cell as nb.ICellContents;
+						newCells.push(this._notebookOptions.factory.createCell(contents, { notebook: this, isTrusted: this._trustedMode }));
+						this.undoService.pushElement(new AddCellEdit(this, newCells[0], edit.range.start));
+					}
+					this._cells.splice(edit.range.start, edit.range.end - edit.range.start, ...newCells);
+					if (newCells.length > 0) {
+						this.updateActiveCell(newCells[0]);
+					}
+					this._contentChangedEmitter.fire({
+						changeType: NotebookChangeType.CellsModified,
+						isDirty: true
+					});
+					break;
 			}
-			this._cells.splice(edit.range.start, edit.range.end - edit.range.start, ...newCells);
-			if (newCells.length > 0) {
-				this.updateActiveCell(newCells[0]);
-			}
-			this._contentChangedEmitter.fire({
-				changeType: NotebookChangeType.CellsModified,
-				isDirty: true
-			});
 		}
 	}
 
@@ -689,7 +932,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._onErrorEmitter.fire({ message: error, severity: Severity.Error });
 	}
 
-	public async startSession(manager: INotebookManager, displayName?: string, setErrorStateOnFail?: boolean, kernelAlias?: string): Promise<void> {
+	public async startSession(manager: IExecuteManager, displayName?: string, setErrorStateOnFail?: boolean, kernelAlias?: string): Promise<void> {
 		if (displayName) {
 			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName);
 			if (standardKernel) {
@@ -699,7 +942,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (this._defaultKernel) {
 			let clientSession = this._notebookOptions.factory.createClientSession({
 				notebookUri: this._notebookOptions.notebookUri,
-				notebookManager: manager,
+				executeManager: manager,
 				notificationService: this._notebookOptions.notificationService,
 				kernelSpec: this._defaultKernel
 			});
@@ -713,6 +956,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (this.isValidConnection(profile)) {
 				this._activeConnection = profile;
 				this._savedConnectionName = profile.connectionName;
+				kernelAlias = this._currentKernelAlias;
 			}
 
 			clientSession.onKernelChanging(async (e) => {
@@ -745,7 +989,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (this._activeClientSession) {
 			// Old active client sessions have already been shutdown by RESTART_JUPYTER_NOTEBOOK_SESSIONS command
 			this._activeClientSession = undefined;
-			await this.startSession(this.notebookManager, this._selectedKernelDisplayName, true);
+			await this.startSession(this.executeManager, this._selectedKernelDisplayName, true);
 		}
 	}
 
@@ -754,8 +998,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._activeClientSession = clientSession;
 	}
 
-	public setDefaultKernelAndProviderId() {
-		if (this._capabilitiesService?.providers) {
+	public async setDefaultKernelAndProviderId(): Promise<void> {
+		if (!this._defaultKernel) {
+			await this.executeManager.sessionManager.ready;
+			if (this.executeManager.sessionManager.specs) {
+				let defaultKernelName = this.executeManager.sessionManager.specs.defaultKernel;
+				this._defaultKernel = this.executeManager.sessionManager.specs.kernels.find(kernel => kernel.name === defaultKernelName);
+			}
+		}
+
+		if (this._capabilitiesService?.providers && this.executeManager.providerId === SQL_NOTEBOOK_PROVIDER) {
 			let providers = this._capabilitiesService.providers;
 			for (const server in providers) {
 				let alias = providers[server].connection.notebookKernelAlias;
@@ -772,7 +1024,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (provider && provider !== this._providerId) {
 				this._providerId = provider;
 			} else if (!provider) {
-				this.notebookOptions.notebookManagers.forEach(m => {
+				this.notebookOptions.executeManagers.forEach(m => {
 					if (m.providerId !== SQL_NOTEBOOK_PROVIDER) {
 						// We don't know which provider it is before that provider is chosen to query its specs. Choosing the "last" one registered.
 						this._providerId = m.providerId;
@@ -794,6 +1046,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._defaultKernel = notebookConstants.sqlKernelSpec;
 			this._providerId = SQL_NOTEBOOK_PROVIDER;
 		}
+
 		if (!this._defaultLanguageInfo?.name) {
 			// update default language
 			this._defaultLanguageInfo = {
@@ -885,12 +1138,22 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				language = KernelsLanguage.Python;
 			} else if (language.toLowerCase() === 'c#') {
 				language = KernelsLanguage.CSharp;
+			} else if (language.toLowerCase() === 'f#') {
+				language = KernelsLanguage.FSharp;
 			}
 		} else {
 			language = KernelsLanguage.Python;
 		}
 
+		// Update cell language if it was using the previous default, but skip updating the cell
+		// if it was using a more specific language.
+		let oldLanguage = this._language;
 		this._language = language.toLowerCase();
+		this._cells?.forEach(cell => {
+			if (!cell.language || cell.language === oldLanguage) {
+				cell.setOverrideLanguage(this._language);
+			}
+		});
 	}
 
 	public changeKernel(displayName: string): void {
@@ -978,12 +1241,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		} else if (kernel.info) {
 			this.updateLanguageInfo(kernel.info.language_info);
 		}
-		this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.KernelChanged)
-			.withAdditionalProperties({
-				name: kernel.name,
-				alias: kernelAlias || ''
-			})
-			.send();
+		this.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.KernelChanged, {
+			name: kernel.name,
+			alias: kernelAlias || ''
+		});
 		this._kernelChangedEmitter.fire({
 			newValue: kernel,
 			oldValue: undefined,
@@ -997,7 +1258,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			// Ensure that the kernel we try to switch to is a valid kernel; if not, use the default
 			let kernelSpecs = this.getKernelSpecs();
 			if (kernelSpecs && kernelSpecs.length > 0 && kernelSpecs.findIndex(k => k.display_name === spec.display_name) < 0) {
-				spec = kernelSpecs.find(spec => spec.name === this.notebookManager?.sessionManager.specs.defaultKernel);
+				spec = kernelSpecs.find(spec => spec.name === this.executeManager?.sessionManager.specs.defaultKernel);
 			}
 		}
 		else {
@@ -1085,8 +1346,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (this._savedKernelInfo.display_name !== displayName) {
 				this._savedKernelInfo.display_name = displayName;
 			}
-			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName || startsWith(displayName, kernel.displayName));
+			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName || displayName.startsWith(kernel.displayName));
 			if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
+				// Special case .NET Interactive kernel name to handle inconsistencies between notebook providers and jupyter kernel specs
+				if (this._savedKernelInfo.display_name === DotnetInteractiveLabel) {
+					this._savedKernelInfo.oldName = this._savedKernelInfo.name;
+				}
+
 				this._savedKernelInfo.name = standardKernel.name;
 				this._savedKernelInfo.display_name = standardKernel.displayName;
 			}
@@ -1094,11 +1360,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public getDisplayNameFromSpecName(kernel: nb.IKernel): string | undefined {
-		let specs = this.notebookManager?.sessionManager.specs;
+		let specs = this.executeManager?.sessionManager.specs;
 		if (!specs || !specs.kernels) {
 			return kernel.name;
 		}
-		let newKernel = this.notebookManager.sessionManager.specs.kernels.find(k => k.name === kernel.name);
+		let newKernel = this.executeManager.sessionManager.specs.kernels.find(k => k.name === kernel.name);
 		let newKernelDisplayName;
 		if (newKernel) {
 			newKernelDisplayName = newKernel.display_name;
@@ -1172,7 +1438,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._savedKernelInfo = {
 					name: kernel.name,
 					display_name: spec.display_name,
-					language: spec.language
+					language: spec.language,
+					supportedLanguages: spec.supportedLanguages,
+					oldName: spec.oldName,
+					oldDisplayName: spec.oldDisplayName,
+					oldLanguage: spec.oldLanguage
 				};
 				this.clientSession?.configureKernel(this._savedKernelInfo);
 			} catch (err) {
@@ -1197,7 +1467,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._onProviderIdChanged.fire(this._providerId);
 
 				await this.shutdownActiveSession();
-				let manager = this.getNotebookManager(providerId);
+				let manager = this.executeManager;
 				if (manager) {
 					await this.startSession(manager, displayName, false, kernelAlias);
 				} else {
@@ -1220,8 +1490,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				return providerId;
 			}
 		} else {
-			if (this.notebookManagers?.length) {
-				return this.notebookManagers.map(m => m.providerId).find(p => p !== DEFAULT_NOTEBOOK_PROVIDER && p !== SQL_NOTEBOOK_PROVIDER);
+			if (this.executeManagers?.length) {
+				return this.executeManagers.map(m => m.providerId).find(p => p !== DEFAULT_NOTEBOOK_PROVIDER && p !== SQL_NOTEBOOK_PROVIDER);
 			}
 		}
 		return undefined;
@@ -1229,9 +1499,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	// Get kernel specs from current sessionManager
 	private getKernelSpecs(): nb.IKernelSpec[] {
-		if (this.notebookManager && this.notebookManager.sessionManager && this.notebookManager.sessionManager.specs &&
-			this.notebookManager.sessionManager.specs.kernels) {
-			return this.notebookManager.sessionManager.specs.kernels;
+		if (this.executeManager && this.executeManager.sessionManager && this.executeManager.sessionManager.specs &&
+			this.executeManager.sessionManager.specs.kernels) {
+			return this.executeManager.sessionManager.specs.kernels;
 		}
 		return [];
 	}
@@ -1298,7 +1568,29 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		let metadata = Object.create(null) as nb.INotebookMetadata;
 		// TODO update language and kernel when these change
 		metadata.kernelspec = this._savedKernelInfo;
+		delete metadata.kernelspec?.supportedLanguages;
+
 		metadata.language_info = this.languageInfo;
+
+		// Undo special casing for .NET Interactive
+		if (metadata.kernelspec?.oldName) {
+			metadata.kernelspec.name = metadata.kernelspec.oldName;
+			delete metadata.kernelspec.oldName;
+		}
+		if (metadata.kernelspec?.oldDisplayName) {
+			metadata.kernelspec.display_name = metadata.kernelspec.oldDisplayName;
+			delete metadata.kernelspec.oldDisplayName;
+		}
+		if (metadata.kernelspec?.oldLanguage) {
+			metadata.kernelspec.language = metadata.kernelspec.oldLanguage;
+			delete metadata.kernelspec.oldLanguage;
+		}
+		if (metadata.language_info?.oldName) {
+			metadata.language_info.name = metadata.language_info?.oldName;
+			delete metadata.language_info?.oldName;
+		}
+
+
 		metadata.tags = this._tags;
 		metadata.multi_connection_mode = this._multiConnectionMode ? this._multiConnectionMode : undefined;
 		if (this.configurationService.getValue(saveConnectionNameConfigName)) {
@@ -1341,5 +1633,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		};
 
 		this._contentChangedEmitter.fire(changeInfo);
+	}
+
+	public undo(): void {
+		if (this.undoService.canUndo(this.notebookUri)) {
+			this.undoService.undo(this.notebookUri);
+		}
+	}
+
+	public redo(): void {
+		if (this.undoService.canRedo(this.notebookUri)) {
+			this.undoService.redo(this.notebookUri);
+		}
 	}
 }

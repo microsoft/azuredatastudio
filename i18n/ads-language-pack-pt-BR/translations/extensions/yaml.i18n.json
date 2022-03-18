@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Noções Básicas da Linguagem YAML",
-			"description": "Fornece realce de sintaxe e correspondência de colchetes em arquivos YAML."
+			"description": "Fornece realce de sintaxe e correspondência de colchetes em arquivos YAML.",
+			"displayName": "Noções Básicas da Linguagem YAML"
 		}
 	}
 }

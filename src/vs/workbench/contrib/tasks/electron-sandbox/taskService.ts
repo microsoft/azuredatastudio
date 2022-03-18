@@ -10,7 +10,7 @@ import { ITaskSystem } from 'vs/workbench/contrib/tasks/common/taskSystem';
 import { ExecutionEngine } from 'vs/workbench/contrib/tasks/common/tasks';
 import * as TaskConfig from '../common/taskConfiguration';
 import { AbstractTaskService } from 'vs/workbench/contrib/tasks/browser/abstractTaskService';
-import { ITaskService, TaskFilter } from 'vs/workbench/contrib/tasks/common/taskService';
+import { TaskFilter, ITaskService } from 'vs/workbench/contrib/tasks/common/taskService';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { TerminalTaskSystem } from 'vs/workbench/contrib/tasks/browser/terminalTaskSystem';
 import { IConfirmationResult, IDialogService } from 'vs/platform/dialogs/common/dialogs';
@@ -31,7 +31,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IViewsService, IViewDescriptorService } from 'vs/workbench/common/views';
 import { IOutputService } from 'vs/workbench/contrib/output/common/output';
-import { ITerminalService } from 'vs/workbench/contrib/terminal/browser/terminal';
+import { ITerminalGroupService, ITerminalService } from 'vs/workbench/contrib/terminal/browser/terminal';
 import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
@@ -69,6 +69,7 @@ export class TaskService extends AbstractTaskService {
 		@IQuickInputService quickInputService: IQuickInputService,
 		@IConfigurationResolverService configurationResolverService: IConfigurationResolverService,
 		@ITerminalService terminalService: ITerminalService,
+		@ITerminalGroupService terminalGroupService: ITerminalGroupService,
 		@IStorageService storageService: IStorageService,
 		@IProgressService progressService: IProgressService,
 		@IOpenerService openerService: IOpenerService,
@@ -101,6 +102,7 @@ export class TaskService extends AbstractTaskService {
 			quickInputService,
 			configurationResolverService,
 			terminalService,
+			terminalGroupService,
 			storageService,
 			progressService,
 			openerService,

@@ -9,27 +9,36 @@ import { deepClone } from 'vs/base/common/objects';
 
 export class NotebookExtension<TNotebookMeta, TCellMeta> {
 	readonly version = 1;
-	readonly extensionName = 'azuredatastudio';
 	readonly extensionNamespace = 'extensions';
 
-	public getNotebookMetadata(notebook: INotebookModel): TNotebookMeta {
+	private _extensionName: string;
+
+	public constructor(extensionName: string) {
+		this._extensionName = extensionName;
+	}
+
+	public get extensionName(): string {
+		return this._extensionName;
+	}
+
+	public getExtensionMetadata(notebook: INotebookModel): TNotebookMeta {
 		const metadata = notebook.getMetaValue(this.extensionNamespace) || {};
 		return metadata[this.extensionName] as TNotebookMeta;
 	}
 
-	public setNotebookMetadata(notebook: INotebookModel, metadata: TNotebookMeta) {
+	public setExtensionMetadata(notebook: INotebookModel, metadata: TNotebookMeta) {
 		const meta = {};
 		meta[this.extensionName] = metadata;
 		notebook.setMetaValue(this.extensionNamespace, meta);
 		notebook.serializationStateChanged(NotebookChangeType.MetadataChanged);
 	}
 
-	public getCellMetadata(cell: ICellModel): TCellMeta {
+	public getExtensionCellMetadata(cell: ICellModel): TCellMeta {
 		const namespaceMeta = cell.metadata[this.extensionNamespace] || {};
 		return namespaceMeta[this.extensionName] as TCellMeta;
 	}
 
-	public setCellMetadata(cell: ICellModel, metadata: TCellMeta) {
+	public setExtensionCellMetadata(cell: ICellModel, metadata: TCellMeta) {
 		const meta = {};
 		meta[this.extensionName] = metadata;
 		cell.metadata[this.extensionNamespace] = meta;

@@ -15,6 +15,12 @@
   "activationEvents": [
     "onDashboardOpen"
   ],
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "main": "./out/main",
   "repository": {
     "type": "git",

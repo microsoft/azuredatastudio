@@ -6,11 +6,15 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationContext, MigrationLocalStorage } from '../models/migrationLocalStorage';
+import { logError, TelemetryViews } from '../telemtery';
 import * as loc from '../constants/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatusDialog';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
 import { filterMigrations, SupportedAutoRefreshIntervals } from '../api/utils';
+import * as styles from '../constants/styles';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
 interface IActionMetadata {
 	title?: string,
@@ -32,6 +36,7 @@ interface StatusCard {
 }
 
 export class DashboardWidget {
+	private _context: vscode.ExtensionContext;
 
 	private _migrationStatusCardsContainer!: azdata.FlexContainer;
 	private _migrationStatusCardLoadingContainer!: azdata.LoadingComponent;
@@ -51,7 +56,8 @@ export class DashboardWidget {
 
 	private isRefreshing: boolean = false;
 
-	constructor() {
+	constructor(context: vscode.ExtensionContext) {
+		this._context = context;
 	}
 
 	private async getCurrentMigrations(): Promise<MigrationContext[]> {
@@ -77,10 +83,13 @@ export class DashboardWidget {
 			const header = this.createHeader(view);
 			container.addItem(header, {
 				CSSStyles: {
-					'background-image': `url(${vscode.Uri.file(<string>IconPathHelper.migrationDashboardHeaderBackground.light)})`,
-					'width': '870px',
-					'height': '260px',
-					'background-size': '100%',
+					'background-image': `
+						url(${vscode.Uri.file(<string>IconPathHelper.migrationDashboardHeaderBackground.light)}),
+						linear-gradient(0deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 100%)
+					`,
+					'background-repeat': 'no-repeat',
+					'background-position': '91.06% 100%',
+					'margin-bottom': '20px'
 				}
 			});
 
@@ -88,12 +97,12 @@ export class DashboardWidget {
 			header.addItem(tasksContainer, {
 				CSSStyles: {
 					'width': `${maxWidth}px`,
-					'height': '150px',
+					'margin': '24px'
 				}
 			});
 			container.addItem(await this.createFooter(view), {
 				CSSStyles: {
-					'margin-top': '20px'
+					'margin': '0 24px'
 				}
 			});
 			this._disposables.push(this._view.onClosed(e => {
@@ -103,11 +112,13 @@ export class DashboardWidget {
 			}));
 
 			await view.initializeModel(container);
-			this.refreshMigrations();
+			await this.refreshMigrations();
 		});
 	}
 
 	private createHeader(view: azdata.ModelView): azdata.FlexContainer {
+		this.setAutoRefresh(refreshFrequency);
+
 		const header = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: maxWidth,
@@ -116,28 +127,20 @@ export class DashboardWidget {
 			value: loc.DASHBOARD_TITLE,
 			width: '750px',
 			CSSStyles: {
-				'font-size': '36px',
-				'margin-bottom': '5px',
+				...styles.DASHBOARD_TITLE_CSS
 			}
 		}).component();
 
-		this.setAutoRefresh(refreshFrequency);
-
-		const container = view.modelBuilder.flexContainer().withItems([
-			titleComponent,
-		]).component();
-
-		const descComponent = view.modelBuilder.text().withProps({
+		const descriptionComponent = view.modelBuilder.text().withProps({
 			value: loc.DASHBOARD_DESCRIPTION,
 			CSSStyles: {
-				'font-size': '12px',
-				'margin-top': '10px',
+				...styles.NOTE_CSS
 			}
 		}).component();
-		header.addItems([container, descComponent], {
+		header.addItems([titleComponent, descriptionComponent], {
 			CSSStyles: {
 				'width': `${maxWidth}px`,
-				'padding-left': '20px'
+				'padding-left': '24px'
 			}
 		});
 		return header;
@@ -147,7 +150,6 @@ export class DashboardWidget {
 		const tasksContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 			width: '100%',
-			height: '50px',
 		}).component();
 
 		const migrateButtonMetadata: IActionMetadata = {
@@ -160,24 +162,23 @@ export class DashboardWidget {
 		const preRequisiteListTitle = view.modelBuilder.text().withProps({
 			value: loc.PRE_REQ_TITLE,
 			CSSStyles: {
-				'font-size': '14px',
-				'padding-left': '15px',
-				'margin-bottom': '-5px'
+				...styles.BODY_CSS,
+				'margin': '0px',
 			}
 		}).component();
 
 		const migrateButton = this.createTaskButton(view, migrateButtonMetadata);
 
-		const points = `•	${loc.PRE_REQ_1}
-•	${loc.PRE_REQ_2}
-•	${loc.PRE_REQ_3}`;
-
 		const preRequisiteListElement = view.modelBuilder.text().withProps({
-			value: points,
+			value: [
+				loc.PRE_REQ_1,
+				loc.PRE_REQ_2,
+				loc.PRE_REQ_3
+			],
 			CSSStyles: {
-				'padding-left': '15px',
-				'margin-bottom': '5px',
-				'margin-top': '10px'
+				...styles.SMALL_NOTE_CSS,
+				'padding-left': '12px',
+				'margin': '-0.5em 0px',
 			}
 		}).component();
 
@@ -185,36 +186,22 @@ export class DashboardWidget {
 			label: loc.LEARN_MORE,
 			ariaLabel: loc.LEARN_MORE_ABOUT_PRE_REQS,
 			url: 'https://aka.ms/azuresqlmigrationextension',
-			CSSStyles: {
-				'padding-left': '10px'
-			}
 		}).component();
 
 		const preReqContainer = view.modelBuilder.flexContainer().withItems([
 			preRequisiteListTitle,
-			preRequisiteListElement
+			preRequisiteListElement,
+			preRequisiteLearnMoreLink
 		]).withLayout({
 			flexFlow: 'column'
 		}).component();
 
-		preReqContainer.addItem(preRequisiteLearnMoreLink, {
-			CSSStyles: {
-				'padding-left': '10px'
-			}
-		});
-
-		tasksContainer.addItem(migrateButton, {
-			CSSStyles: {
-				'margin-top': '20px',
-				'padding': '10px'
-			}
-		});
+		tasksContainer.addItem(migrateButton, {});
 		tasksContainer.addItems([preReqContainer], {
 			CSSStyles: {
-				'padding': '10px'
+				'margin-left': '20px'
 			}
 		});
-
 		return tasksContainer;
 	}
 
@@ -232,7 +219,12 @@ export class DashboardWidget {
 			title: taskMetaData.title,
 			width: maxWidth,
 			CSSStyles: {
-				'border': '1px solid'
+				'border': '1px solid',
+				'display': 'flex',
+				'flex-direction': 'column',
+				'justify-content': 'flex-start',
+				'border-radius': '4px',
+				'transition': 'all .5s ease',
 			}
 		}).component();
 		this._disposables.push(buttonContainer.onDidClick(async () => {
@@ -260,7 +252,7 @@ export class DashboardWidget {
 		this._viewAllMigrationsButton.enabled = false;
 		this._migrationStatusCardLoadingContainer.loading = true;
 		try {
-			this.setCurrentMigrations(await this.getMigrations());
+			await this.setCurrentMigrations(await this.getMigrations());
 			const migrations = await this.getCurrentMigrations();
 			const inProgressMigrations = filterMigrations(migrations, AdsMigrationStatus.ONGOING);
 			let warningCount = 0;
@@ -309,7 +301,8 @@ export class DashboardWidget {
 			}
 
 		} catch (error) {
-			console.log(error);
+			logError(TelemetryViews.SqlServerDashboard, 'RefreshgMigrationFailed', error);
+
 		} finally {
 			this.isRefreshing = false;
 			this._migrationStatusCardLoadingContainer.loading = false;
@@ -326,193 +319,112 @@ export class DashboardWidget {
 	private createStatusCard(
 		cardIconPath: IconPath,
 		cardTitle: string,
+		hasSubtext: boolean = false
 	): StatusCard {
+		const buttonWidth = '400px';
+		const buttonHeight = hasSubtext ? '70px' : '50px';
+		const statusCard = this._view.modelBuilder.flexContainer()
+			.withProps({
+				CSSStyles: {
+					'width': buttonWidth,
+					'height': buttonHeight,
+					'align-items': 'center',
+				}
+			}).component();
 
-		const cardTitleText = this._view.modelBuilder.text().withProps({ value: cardTitle }).withProps({
-			CSSStyles: {
-				'height': '23px',
-				'margin-top': '15px',
-				'margin-bottom': '0px',
-				'width': '300px',
-				'font-size': '14px',
-				'font-weight': 'bold'
-			}
-		}).component();
-
-		const cardCount = this._view.modelBuilder.text().withProps({
-			value: '0',
-			CSSStyles: {
-				'font-size': '28px',
-				'line-height': '36px',
-				'margin-top': '4px'
-			}
-		}).component();
-
-		const flex = this._view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'width': '400px',
-				'height': '50px'
-			}
-		}).component();
-
-		const img = this._view.modelBuilder.image().withProps({
+		const statusIcon = this._view.modelBuilder.image().withProps({
 			iconPath: cardIconPath!.light,
 			iconHeight: 24,
 			iconWidth: 24,
-			width: 64,
-			height: 30,
+			height: 32,
 			CSSStyles: {
-				'margin-top': '10px'
+				'margin': '0 8px'
 			}
 		}).component();
 
-		flex.addItem(img, {
-			flex: '0'
-		});
-		flex.addItem(cardTitleText, {
-			flex: '0',
-			CSSStyles: {
-				'width': '300px'
-			}
-		});
-		flex.addItem(cardCount, {
-			flex: '0'
-		});
-
-		const compositeButton = this._view.modelBuilder.divContainer().withItems([flex]).withProps({
-			ariaRole: 'button',
-			ariaLabel: loc.SHOW_STATUS,
-			clickable: true,
-			CSSStyles: {
-				'width': '400px',
-				'border': '1px solid',
-				'margin-top': '10px',
-				'height': '50px'
-			}
-		}).component();
-		return {
-			container: compositeButton,
-			count: cardCount
-		};
-	}
-
-	private createStatusWithSubtextCard(
-		cardIconPath: IconPath,
-		cardTitle: string,
-		cardDescription: string
-	): StatusCard {
-
-		const cardTitleText = this._view.modelBuilder.text().withProps({ value: cardTitle }).withProps({
-			CSSStyles: {
-				'height': '23px',
-				'margin-top': '15px',
-				'margin-bottom': '0px',
-				'width': '300px',
-				'font-size': '14px',
-			}
-		}).component();
-
-		const cardDescriptionWarning = this._view.modelBuilder.image().withProps({
-			iconPath: IconPathHelper.warning,
-			iconWidth: 12,
-			iconHeight: 12,
-			width: 12,
-			height: 17
-		}).component();
-
-		const cardDescriptionText = this._view.modelBuilder.text().withProps({ value: cardDescription }).withProps({
-			CSSStyles: {
-				'height': '13px',
-				'margin-top': '0px',
-				'margin-bottom': '0px',
-				'width': '250px',
-				'font-height': '13px',
-				'margin': '0 0 0 4px'
-			}
-		}).component();
-
-		const subTextContainer = this._view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'justify-content': 'left',
-			}
-		}).component();
-
-		subTextContainer.addItem(cardDescriptionWarning, {
-			flex: '0 0 auto'
-		});
-
-		subTextContainer.addItem(cardDescriptionText, {
-			flex: '0 0 auto'
-		});
-
-		const cardCount = this._view.modelBuilder.text().withProps({
-			value: '0',
-			CSSStyles: {
-				'font-size': '28px',
-				'line-height': '28px',
-				'margin-top': '15px'
-			}
-		}).component();
-
-		const flexContainer = this._view.modelBuilder.flexContainer().withItems([
-			cardTitleText,
-			subTextContainer
-		]).withLayout({
+		const textContainer = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
-		}).withProps({
+		}).component();
+
+		const cardTitleText = this._view.modelBuilder.text().withProps({ value: cardTitle }).withProps({
 			CSSStyles: {
-				'width': '300px',
+				...styles.SECTION_HEADER_CSS,
+				'width': '240px'
+			}
+		}).component();
+		textContainer.addItem(cardTitleText);
+
+		const cardCount = this._view.modelBuilder.text().withProps({
+			value: '0',
+			CSSStyles: {
+				...styles.BIG_NUMBER_CSS,
+				'margin': '0 0 0 8px',
+				'text-align': 'center',
 			}
 		}).component();
 
-		const flex = this._view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'width': '400px',
-				'height': '70px',
-			}
-		}).component();
+		let warningContainer;
+		let warningText;
+		if (hasSubtext) {
+			const warningIcon = this._view.modelBuilder.image().withProps({
+				iconPath: IconPathHelper.warning,
+				iconWidth: 12,
+				iconHeight: 12,
+				width: 12,
+				height: 18
+			}).component();
 
-		const img = this._view.modelBuilder.image().withProps({
-			iconPath: cardIconPath!.light,
-			iconHeight: 24,
-			iconWidth: 24,
-			width: 64,
-			height: 30,
-			CSSStyles: {
-				'margin-top': '20px'
-			}
-		}).component();
+			const warningDescription = '';
+			warningText = this._view.modelBuilder.text().withProps({ value: warningDescription }).withProps({
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'padding-left': '8px',
+				}
+			}).component();
 
-		flex.addItem(img, {
-			flex: '0'
-		});
-		flex.addItem(flexContainer, {
-			flex: '0',
-			CSSStyles: {
-				'width': '300px'
-			}
-		});
-		flex.addItem(cardCount, {
-			flex: '0'
-		});
+			warningContainer = this._view.modelBuilder.flexContainer().withItems([
+				warningIcon,
+				warningText
+			], {
+				flex: '0 0 auto'
+			}).withProps({
+				CSSStyles: {
+					'align-items': 'center'
+				}
+			}).component();
 
-		const compositeButton = this._view.modelBuilder.divContainer().withItems([flex]).withProps({
-			ariaRole: 'button',
-			ariaLabel: 'show status',
-			clickable: true,
-			CSSStyles: {
-				'width': '400px',
-				'height': '70px',
-				'margin-top': '10px',
-				'border': '1px solid'
-			}
-		}).component();
+			textContainer.addItem(warningContainer);
+		}
+
+		statusCard.addItems([
+			statusIcon,
+			textContainer,
+			cardCount,
+		]);
+
+		const compositeButton = this._view.modelBuilder.divContainer()
+			.withItems([statusCard])
+			.withProps({
+				ariaRole: 'button',
+				ariaLabel: loc.SHOW_STATUS,
+				clickable: true,
+				CSSStyles: {
+					'height': buttonHeight,
+					'margin-bottom': '16px',
+					'border': '1px solid',
+					'display': 'flex',
+					'flex-direction': 'column',
+					'justify-content': 'flex-start',
+					'border-radius': '4px',
+					'transition': 'all .5s ease',
+				}
+			}).component();
 		return {
 			container: compositeButton,
 			count: cardCount,
-			textContainer: flexContainer,
-			warningContainer: subTextContainer,
-			warningText: cardDescriptionText
+			textContainer: textContainer,
+			warningContainer: warningContainer,
+			warningText: warningText
 		};
 	}
 
@@ -520,7 +432,6 @@ export class DashboardWidget {
 		const footerContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 			width: maxWidth,
-			height: '500px',
 			justifyContent: 'flex-start'
 		}).component();
 		const statusContainer = await this.createMigrationStatusContainer(view);
@@ -528,7 +439,7 @@ export class DashboardWidget {
 		footerContainer.addItem(statusContainer);
 		footerContainer.addItem(videoLinksContainer, {
 			CSSStyles: {
-				'padding-left': '10px',
+				'padding-left': '8px',
 			}
 		});
 
@@ -539,22 +450,19 @@ export class DashboardWidget {
 		const statusContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '400px',
-			height: '350px',
+			height: '360px',
 			justifyContent: 'flex-start',
 		}).withProps({
 			CSSStyles: {
-				'border': '1px solid',
-				'padding': '15px'
+				'border': '1px solid rgba(0, 0, 0, 0.1)',
+				'padding': '16px'
 			}
 		}).component();
 
 		const statusContainerTitle = view.modelBuilder.text().withProps({
 			value: loc.DATABASE_MIGRATION_STATUS,
 			CSSStyles: {
-				'font-size': '18px',
-				'font-weight': 'bold',
-				'margin': '0px',
-				'width': '290px'
+				...styles.SECTION_HEADER_CSS
 			}
 		}).component();
 
@@ -562,13 +470,13 @@ export class DashboardWidget {
 			label: loc.VIEW_ALL,
 			url: '',
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
 		this._disposables.push(this._viewAllMigrationsButton.onDidClick(async (e) => {
 			const migrationStatus = await this.getCurrentMigrations();
-			new MigrationStatusDialog(migrationStatus ? migrationStatus : await this.getMigrations(), AdsMigrationStatus.ALL).initialize();
+			new MigrationStatusDialog(this._context, migrationStatus ? migrationStatus : await this.getMigrations(), AdsMigrationStatus.ALL).initialize();
 		}));
 
 		const refreshButton = view.modelBuilder.hyperlink().withProps({
@@ -576,8 +484,8 @@ export class DashboardWidget {
 			url: '',
 			ariaRole: 'button',
 			CSSStyles: {
+				...styles.BODY_CSS,
 				'text-align': 'right',
-				'font-size': '13px'
 			}
 		}).component();
 
@@ -592,20 +500,74 @@ export class DashboardWidget {
 		}).component();
 
 		buttonContainer.addItem(this._viewAllMigrationsButton, {
-			flex: 'auto',
 			CSSStyles: {
-				'border-right': '1px solid ',
-				'width': '40px',
+				'padding-right': '8px',
+				'border-right': '1px solid',
 			}
 		});
 
 		buttonContainer.addItem(refreshButton, {
-			flex: 'auto',
 			CSSStyles: {
-				'margin-left': '5px',
-				'width': '25px'
+				'padding-left': '8px',
 			}
 		});
+
+		const addAccountImage = view.modelBuilder.image().withProps({
+			iconPath: IconPathHelper.addAzureAccount,
+			iconHeight: 100,
+			iconWidth: 100,
+			width: 96,
+			height: 96,
+			CSSStyles: {
+				'opacity': '50%',
+				'margin': '15% auto 10% auto',
+				'filter': 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))',
+				'display': 'none'
+			}
+		}).component();
+
+		const addAccountText = view.modelBuilder.text().withProps({
+			value: loc.ADD_ACCOUNT_MESSAGE,
+			width: 198,
+			height: 34,
+			CSSStyles: {
+				...styles.NOTE_CSS,
+				'margin': 'auto',
+				'text-align': 'center',
+				'display': 'none'
+			}
+		}).component();
+
+		const addAccountButton = view.modelBuilder.button().withProps({
+			label: loc.ADD_ACCOUNT,
+			width: '100px',
+			enabled: true,
+			CSSStyles: {
+				'margin': '5% 40%',
+				'display': 'none'
+			}
+		}).component();
+
+		this._disposables.push(addAccountButton.onDidClick(async (e) => {
+			await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
+			addAccountButton.enabled = false;
+			let accounts = await azdata.accounts.getAllAccounts();
+
+			if (accounts.length !== 0) {
+				await addAccountImage.updateCssStyles({
+					'display': 'none'
+				});
+				await addAccountText.updateCssStyles({
+					'display': 'none'
+				});
+				await addAccountButton.updateCssStyles({
+					'display': 'none'
+				});
+				await this._migrationStatusCardsContainer.updateCssStyles({ 'visibility': 'visible' });
+				await this._viewAllMigrationsButton.updateCssStyles({ 'visibility': 'visible' });
+			}
+			await this.refreshMigrations();
+		}));
 
 		const header = view.modelBuilder.flexContainer().withItems(
 			[
@@ -613,17 +575,34 @@ export class DashboardWidget {
 				buttonContainer
 			]
 		).withLayout({
-			flexFlow: 'row'
+			flexFlow: 'row',
+			alignItems: 'center'
 		}).component();
 
 		this._migrationStatusCardsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+
+		let accounts = await azdata.accounts.getAllAccounts();
+
+		if (accounts.length === 0) {
+			await addAccountImage.updateCssStyles({
+				'display': 'block'
+			});
+			await addAccountText.updateCssStyles({
+				'display': 'block'
+			});
+			await addAccountButton.updateCssStyles({
+				'display': 'block'
+			});
+			await this._migrationStatusCardsContainer.updateCssStyles({ 'visibility': 'hidden' });
+			await this._viewAllMigrationsButton.updateCssStyles({ 'visibility': 'hidden' });
+		}
 
 		this._inProgressMigrationButton = this.createStatusCard(
 			IconPathHelper.inProgressMigration,
 			loc.MIGRATION_IN_PROGRESS
 		);
 		this._disposables.push(this._inProgressMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.ONGOING);
+			const dialog = new MigrationStatusDialog(this._context, await this.getCurrentMigrations(), AdsMigrationStatus.ONGOING);
 			dialog.initialize();
 		}));
 
@@ -631,13 +610,13 @@ export class DashboardWidget {
 			this._inProgressMigrationButton.container
 		);
 
-		this._inProgressWarningMigrationButton = this.createStatusWithSubtextCard(
+		this._inProgressWarningMigrationButton = this.createStatusCard(
 			IconPathHelper.inProgressMigration,
 			loc.MIGRATION_IN_PROGRESS,
-			''
+			true
 		);
 		this._disposables.push(this._inProgressWarningMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.ONGOING);
+			const dialog = new MigrationStatusDialog(this._context, await this.getCurrentMigrations(), AdsMigrationStatus.ONGOING);
 			dialog.initialize();
 		}));
 
@@ -650,7 +629,7 @@ export class DashboardWidget {
 			loc.MIGRATION_COMPLETED
 		);
 		this._disposables.push(this._successfulMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.SUCCEEDED);
+			const dialog = new MigrationStatusDialog(this._context, await this.getCurrentMigrations(), AdsMigrationStatus.SUCCEEDED);
 			dialog.initialize();
 		}));
 		this._migrationStatusCardsContainer.addItem(
@@ -663,7 +642,7 @@ export class DashboardWidget {
 			loc.MIGRATION_CUTOVER_CARD
 		);
 		this._disposables.push(this._completingMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.COMPLETING);
+			const dialog = new MigrationStatusDialog(this._context, await this.getCurrentMigrations(), AdsMigrationStatus.COMPLETING);
 			dialog.initialize();
 		}));
 		this._migrationStatusCardsContainer.addItem(
@@ -675,7 +654,7 @@ export class DashboardWidget {
 			loc.MIGRATION_FAILED
 		);
 		this._disposables.push(this._failedMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.FAILED);
+			const dialog = new MigrationStatusDialog(this._context, await this.getCurrentMigrations(), AdsMigrationStatus.FAILED);
 			dialog.initialize();
 		}));
 		this._migrationStatusCardsContainer.addItem(
@@ -687,7 +666,7 @@ export class DashboardWidget {
 			loc.MIGRATION_NOT_STARTED
 		);
 		this._disposables.push(this._notStartedMigrationCard.container.onDidClick((e) => {
-			vscode.window.showInformationMessage('Feature coming soon');
+			void vscode.window.showInformationMessage('Feature coming soon');
 		}));
 
 		this._migrationStatusCardLoadingContainer = view.modelBuilder.loadingComponent().withItem(this._migrationStatusCardsContainer).component();
@@ -695,21 +674,15 @@ export class DashboardWidget {
 		statusContainer.addItem(
 			header, {
 			CSSStyles: {
-				'padding': '0px',
-				'padding-right': '5px',
-				'padding-top': '10px',
-				'height': '10px',
-				'margin': '0px'
+				'margin-bottom': '16px'
 			}
 		}
 		);
 
-		statusContainer.addItem(this._migrationStatusCardLoadingContainer, {
-			CSSStyles: {
-				'margin-top': '30px'
-			}
-		});
-
+		statusContainer.addItem(addAccountImage, {});
+		statusContainer.addItem(addAccountText, {});
+		statusContainer.addItem(addAccountButton, {});
+		statusContainer.addItem(this._migrationStatusCardLoadingContainer, {});
 		return statusContainer;
 	}
 
@@ -717,117 +690,101 @@ export class DashboardWidget {
 		const linksContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '400px',
-			height: '350px',
+			height: '360px',
 			justifyContent: 'flex-start',
 		}).withProps({
 			CSSStyles: {
-				'border': '1px solid',
-				'padding': '15px'
+				'border': '1px solid rgba(0, 0, 0, 0.1)',
+				'padding': '16px',
+				'overflow': 'scroll',
 			}
 		}).component();
 		const titleComponent = view.modelBuilder.text().withProps({
 			value: loc.HELP_TITLE,
 			CSSStyles: {
-				'font-size': '18px',
-				'font-weight': 'bold',
-				'margin': '0px'
+				...styles.SECTION_HEADER_CSS
 			}
 		}).component();
 
 		linksContainer.addItems([titleComponent], {
 			CSSStyles: {
-				'padding': '0px',
-				'padding-right': '5px',
-				'padding-top': '10px',
-				'height': '10px',
-				'margin': '0px'
+				'margin-bottom': '16px'
 			}
 		});
 
-		const links = [{
-			title: loc.HELP_LINK1_TITLE,
-			description: loc.HELP_LINK1_DESCRIPTION,
-			link: 'https://docs.microsoft.com/azure/azure-sql/migration-guides/managed-instance/sql-server-to-sql-managed-instance-assessment-rules'
-		}];
+		const links = [
+			{
+				title: localize('sql.migration.dashboard.help.link.migrateUsingADS', 'Migrate databases using Azure Data Studio'),
+				description: localize('sql.migration.dashboard.help.description.migrateUsingADS', 'The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.'),
+				link: 'https://docs.microsoft.com/azure/dms/migration-using-azure-data-studio'
+			},
+			{
+				title: localize('sql.migration.dashboard.help.link.mi', 'Tutorial:  Migrate to Azure SQL Managed Instance (online)'),
+				description: localize('sql.migration.dashboard.help.description.mi', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Managed Instance with minimal downtime.'),
+				link: 'https://docs.microsoft.com/azure/dms/tutorial-sql-server-managed-instance-online-ads'
+			},
+			{
+				title: localize('sql.migration.dashboard.help.link.vm', 'Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)'),
+				description: localize('sql.migration.dashboard.help.description.vm', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.'),
+				link: 'https://docs.microsoft.com/azure/dms/tutorial-sql-server-to-virtual-machine-online-ads'
+			},
+			{
+				title: localize('sql.migration.dashboard.help.link.dmsGuide', 'Azure Database Migration Guides'),
+				description: localize('sql.migration.dashboard.help.description.dmsGuide', 'A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.'),
+				link: 'https://docs.microsoft.com/data-migration/'
+			},
+		];
 
-		const styles = {
-			'margin-top': '10px',
-			'padding': '10px 10px 10px 0'
-		};
-		linksContainer.addItems(links.map(l => this.createLink(view, l)), {
-			CSSStyles: styles
-		});
+		linksContainer.addItems(links.map(l => this.createLink(view, l)), {});
 
-		const videosContainer = this.createVideoLinkContainers(view, [
-		]);
-		const viewPanelStyle = {
-			'padding': '10px 5px 10px 10px',
-			'margin-top': '-15px'
-		};
-		linksContainer.addItem(videosContainer, {
-			CSSStyles: viewPanelStyle
-		});
+		const videoLinks: IActionMetadata[] = [];
+		const videosContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row',
+			width: maxWidth,
+		}).component();
+		videosContainer.addItems(videoLinks.map(l => this.createVideoLink(view, l)), {});
+		linksContainer.addItem(videosContainer);
 
 		return linksContainer;
 	}
 
 	private createLink(view: azdata.ModelView, linkMetaData: IActionMetadata): azdata.Component {
 		const maxWidth = 400;
-		const labelsContainer = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column',
-			width: maxWidth,
-			justifyContent: 'flex-start'
+		const labelsContainer = view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'flex-direction': 'column',
+				'width': `${maxWidth}px`,
+				'justify-content': 'flex-start',
+				'margin-bottom': '12px'
+			}
+		}).component();
+		const linkContainer = view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'flex-direction': 'row',
+				'width': `${maxWidth}px`,
+				'justify-content': 'flex-start',
+				'margin-bottom': '4px'
+			}
+
 		}).component();
 		const descriptionComponent = view.modelBuilder.text().withProps({
 			value: linkMetaData.description,
 			width: maxWidth,
 			CSSStyles: {
-				'font-size': '12px',
-				'line-height': '16px',
-				'margin': '0px'
+				...styles.NOTE_CSS
 			}
-		}).component();
-		const linkContainer = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'row',
-			width: maxWidth + 10,
-			justifyContent: 'flex-start'
 		}).component();
 		const linkComponent = view.modelBuilder.hyperlink().withProps({
 			label: linkMetaData.title!,
 			url: linkMetaData.link!,
 			showLinkIcon: true,
 			CSSStyles: {
-				'font-size': '14px',
-				'margin': '0px'
+				...styles.BODY_CSS
 			}
 		}).component();
-		linkContainer.addItem(linkComponent, {
-			CSSStyles: {
-				'font-size': '14px',
-				'line-height': '18px',
-				'padding': '0 5px 0 0',
-			}
-		});
-		labelsContainer.addItems([linkContainer, descriptionComponent], {
-			CSSStyles: {
-				'padding': '5px 0 0 0',
-			}
-		});
-
+		linkContainer.addItem(linkComponent);
+		labelsContainer.addItems([linkContainer, descriptionComponent]);
 		return labelsContainer;
-	}
-
-	private createVideoLinkContainers(view: azdata.ModelView, links: IActionMetadata[]): azdata.Component {
-		const maxWidth = 400;
-		const videosContainer = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'row',
-			width: maxWidth,
-		}).component();
-		links.forEach(link => {
-			const videoContainer = this.createVideoLink(view, link);
-			videosContainer.addItem(videoContainer);
-		});
-		return videosContainer;
 	}
 
 	private createVideoLink(view: azdata.ModelView, linkMetaData: IActionMetadata): azdata.Component {
@@ -847,8 +804,7 @@ export class DashboardWidget {
 			width: maxWidth,
 			height: '50px',
 			CSSStyles: {
-				'font-size': '13px',
-				'margin': '0px'
+				...styles.BODY_CSS
 			}
 		}).component();
 		this._disposables.push(video1Container.onDidClick(async () => {

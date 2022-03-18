@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Conceptos básicos del lenguaje Windows Bat",
-			"description": "Proporciona fragmentos de código, resaltado de sintaxis, correspondencia de corchetes y plegado de código en archivos por lotes de Windows."
+			"description": "Proporciona fragmentos de código, resaltado de sintaxis, correspondencia de corchetes y plegado de código en archivos por lotes de Windows.",
+			"displayName": "Conceptos básicos del lenguaje Windows Bat"
 		}
 	}
 }

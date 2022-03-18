@@ -109,14 +109,14 @@ suite('Advanced options helper tests', () => {
 		categoryOption.isRequired = false;
 		possibleInputs = [];
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
-		assert.equal(optionValue, 'ReadWrite');
-		assert.equal(possibleInputs.length, 3);
-		assert.equal(possibleInputs[0].text, '');
-		assert.equal(possibleInputs[1].text, 'ReadWrite');
-		assert.equal(possibleInputs[2].text, 'ReadOnly');
-		assert.equal(possibleInputs[0].value, '');
-		assert.equal(possibleInputs[1].value, 'RW');
-		assert.equal(possibleInputs[2].value, 'RO');
+		assert.strictEqual(optionValue, 'ReadWrite');
+		assert.strictEqual(possibleInputs.length, 3);
+		assert.strictEqual(possibleInputs[0].text, '');
+		assert.strictEqual(possibleInputs[1].text, 'ReadWrite');
+		assert.strictEqual(possibleInputs[2].text, 'ReadOnly');
+		assert.strictEqual(possibleInputs[0].value, '');
+		assert.strictEqual(possibleInputs[1].value, 'RW');
+		assert.strictEqual(possibleInputs[2].value, 'RO');
 	});
 
 	test('create default and required category options should set the option value and possible inputs correctly', () => {
@@ -124,10 +124,10 @@ suite('Advanced options helper tests', () => {
 		categoryOption.isRequired = true;
 		possibleInputs = [];
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
-		assert.equal(optionValue, 'ReadWrite');
-		assert.equal(possibleInputs.length, 2);
-		assert.equal(possibleInputs[0].text, 'ReadWrite');
-		assert.equal(possibleInputs[1].text, 'ReadOnly');
+		assert.strictEqual(optionValue, 'ReadWrite');
+		assert.strictEqual(possibleInputs.length, 2);
+		assert.strictEqual(possibleInputs[0].text, 'ReadWrite');
+		assert.strictEqual(possibleInputs[1].text, 'ReadOnly');
 	});
 
 	test('create no default and not required category options should set the option value and possible inputs correctly', () => {
@@ -135,11 +135,11 @@ suite('Advanced options helper tests', () => {
 		categoryOption.isRequired = false;
 		possibleInputs = [];
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
-		assert.equal(optionValue, '');
-		assert.equal(possibleInputs.length, 3);
-		assert.equal(possibleInputs[0].text, '');
-		assert.equal(possibleInputs[1].text, 'ReadWrite');
-		assert.equal(possibleInputs[2].text, 'ReadOnly');
+		assert.strictEqual(optionValue, '');
+		assert.strictEqual(possibleInputs.length, 3);
+		assert.strictEqual(possibleInputs[0].text, '');
+		assert.strictEqual(possibleInputs[1].text, 'ReadWrite');
+		assert.strictEqual(possibleInputs[2].text, 'ReadOnly');
 	});
 
 	test('create no default but required category options should set the option value and possible inputs correctly', () => {
@@ -147,10 +147,10 @@ suite('Advanced options helper tests', () => {
 		categoryOption.isRequired = true;
 		possibleInputs = [];
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
-		assert.equal(optionValue, 'ReadWrite');
-		assert.equal(possibleInputs.length, 2);
-		assert.equal(possibleInputs[0].text, 'ReadWrite');
-		assert.equal(possibleInputs[1].text, 'ReadOnly');
+		assert.strictEqual(optionValue, 'ReadWrite');
+		assert.strictEqual(possibleInputs.length, 2);
+		assert.strictEqual(possibleInputs[0].text, 'ReadWrite');
+		assert.strictEqual(possibleInputs[1].text, 'ReadOnly');
 	});
 
 	test('create not required category options with option value should set the option value and possible inputs correctly', () => {
@@ -159,11 +159,11 @@ suite('Advanced options helper tests', () => {
 		possibleInputs = [];
 		options['applicationIntent'] = 'ReadOnly';
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
-		assert.equal(optionValue, 'ReadOnly');
-		assert.equal(possibleInputs.length, 3);
-		assert.equal(possibleInputs[0].text, '');
-		assert.equal(possibleInputs[1].text, 'ReadWrite');
-		assert.equal(possibleInputs[2].text, 'ReadOnly');
+		assert.strictEqual(optionValue, 'ReadOnly');
+		assert.strictEqual(possibleInputs.length, 3);
+		assert.strictEqual(possibleInputs[0].text, '');
+		assert.strictEqual(possibleInputs[1].text, 'ReadWrite');
+		assert.strictEqual(possibleInputs[2].text, 'ReadOnly');
 	});
 
 	test('create required category options with option value should set the option value and possible inputs correctly', () => {
@@ -172,10 +172,10 @@ suite('Advanced options helper tests', () => {
 		possibleInputs = [];
 		options['applicationIntent'] = 'ReadOnly';
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(categoryOption, options, possibleInputs);
-		assert.equal(optionValue, 'ReadOnly');
-		assert.equal(possibleInputs.length, 2);
-		assert.equal(possibleInputs[0].text, 'ReadWrite');
-		assert.equal(possibleInputs[1].text, 'ReadOnly');
+		assert.strictEqual(optionValue, 'ReadOnly');
+		assert.strictEqual(possibleInputs.length, 2);
+		assert.strictEqual(possibleInputs[0].text, 'ReadWrite');
+		assert.strictEqual(possibleInputs[1].text, 'ReadOnly');
 	});
 
 	test('create default but not required boolean options should set the option value and possible inputs correctly', () => {
@@ -183,11 +183,11 @@ suite('Advanced options helper tests', () => {
 		booleanOption.isRequired = false;
 		possibleInputs = [];
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
-		assert.equal(optionValue, 'False');
-		assert.equal(possibleInputs.length, 3);
-		assert.equal(possibleInputs[0].text, '');
-		assert.equal(possibleInputs[1].text, 'True');
-		assert.equal(possibleInputs[2].text, 'False');
+		assert.strictEqual(optionValue, 'False');
+		assert.strictEqual(possibleInputs.length, 3);
+		assert.strictEqual(possibleInputs[0].text, '');
+		assert.strictEqual(possibleInputs[1].text, 'True');
+		assert.strictEqual(possibleInputs[2].text, 'False');
 	});
 
 	test('create default and required boolean options should set the option value and possible inputs correctly', () => {
@@ -195,10 +195,10 @@ suite('Advanced options helper tests', () => {
 		booleanOption.isRequired = true;
 		possibleInputs = [];
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
-		assert.equal(optionValue, 'False');
-		assert.equal(possibleInputs.length, 2);
-		assert.equal(possibleInputs[0].text, 'True');
-		assert.equal(possibleInputs[1].text, 'False');
+		assert.strictEqual(optionValue, 'False');
+		assert.strictEqual(possibleInputs.length, 2);
+		assert.strictEqual(possibleInputs[0].text, 'True');
+		assert.strictEqual(possibleInputs[1].text, 'False');
 	});
 
 	test('create no default and not required boolean options should set the option value and possible inputs correctly', () => {
@@ -206,11 +206,11 @@ suite('Advanced options helper tests', () => {
 		booleanOption.isRequired = false;
 		possibleInputs = [];
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
-		assert.equal(optionValue, '');
-		assert.equal(possibleInputs.length, 3);
-		assert.equal(possibleInputs[0].text, '');
-		assert.equal(possibleInputs[1].text, 'True');
-		assert.equal(possibleInputs[2].text, 'False');
+		assert.strictEqual(optionValue, '');
+		assert.strictEqual(possibleInputs.length, 3);
+		assert.strictEqual(possibleInputs[0].text, '');
+		assert.strictEqual(possibleInputs[1].text, 'True');
+		assert.strictEqual(possibleInputs[2].text, 'False');
 	});
 
 	test('create no default but required boolean options should set the option value and possible inputs correctly', () => {
@@ -218,10 +218,10 @@ suite('Advanced options helper tests', () => {
 		booleanOption.isRequired = true;
 		possibleInputs = [];
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
-		assert.equal(optionValue, 'True');
-		assert.equal(possibleInputs.length, 2);
-		assert.equal(possibleInputs[0].text, 'True');
-		assert.equal(possibleInputs[1].text, 'False');
+		assert.strictEqual(optionValue, 'True');
+		assert.strictEqual(possibleInputs.length, 2);
+		assert.strictEqual(possibleInputs[0].text, 'True');
+		assert.strictEqual(possibleInputs[1].text, 'False');
 	});
 
 	test('create not required boolean options with option value should set the option value and possible inputs correctly', () => {
@@ -230,11 +230,11 @@ suite('Advanced options helper tests', () => {
 		possibleInputs = [];
 		options['asynchronousProcessing'] = true;
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
-		assert.equal(optionValue, 'True');
-		assert.equal(possibleInputs.length, 3);
-		assert.equal(possibleInputs[0].text, '');
-		assert.equal(possibleInputs[1].text, 'True');
-		assert.equal(possibleInputs[2].text, 'False');
+		assert.strictEqual(optionValue, 'True');
+		assert.strictEqual(possibleInputs.length, 3);
+		assert.strictEqual(possibleInputs[0].text, '');
+		assert.strictEqual(possibleInputs[1].text, 'True');
+		assert.strictEqual(possibleInputs[2].text, 'False');
 	});
 
 	test('create required boolean options with option value should set the option value and possible inputs correctly', () => {
@@ -243,10 +243,10 @@ suite('Advanced options helper tests', () => {
 		possibleInputs = [];
 		options['asynchronousProcessing'] = 'False';
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
-		assert.equal(optionValue, 'False');
-		assert.equal(possibleInputs.length, 2);
-		assert.equal(possibleInputs[0].text, 'True');
-		assert.equal(possibleInputs[1].text, 'False');
+		assert.strictEqual(optionValue, 'False');
+		assert.strictEqual(possibleInputs.length, 2);
+		assert.strictEqual(possibleInputs[0].text, 'True');
+		assert.strictEqual(possibleInputs[1].text, 'False');
 	});
 
 	test('create default number options should set the option value and possible inputs correctly', () => {
@@ -254,7 +254,7 @@ suite('Advanced options helper tests', () => {
 		numberOption.isRequired = true;
 		possibleInputs = [];
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(numberOption, options, possibleInputs);
-		assert.equal(optionValue, '15');
+		assert.strictEqual(optionValue, '15');
 	});
 
 	test('create number options with option value should set the option value and possible inputs correctly', () => {
@@ -263,7 +263,7 @@ suite('Advanced options helper tests', () => {
 		possibleInputs = [];
 		options['connectTimeout'] = '45';
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(numberOption, options, possibleInputs);
-		assert.equal(optionValue, '45');
+		assert.strictEqual(optionValue, '45');
 	});
 
 	test('create default string options should set the option value and possible inputs correctly', () => {
@@ -271,7 +271,7 @@ suite('Advanced options helper tests', () => {
 		stringOption.isRequired = true;
 		possibleInputs = [];
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(stringOption, options, possibleInputs);
-		assert.equal(optionValue, 'Japanese');
+		assert.strictEqual(optionValue, 'Japanese');
 	});
 
 	test('create string options with option value should set the option value and possible inputs correctly', () => {
@@ -280,7 +280,7 @@ suite('Advanced options helper tests', () => {
 		possibleInputs = [];
 		options['currentLanguage'] = 'Spanish';
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(stringOption, options, possibleInputs);
-		assert.equal(optionValue, 'Spanish');
+		assert.strictEqual(optionValue, 'Spanish');
 	});
 
 	test('validate undefined and optional number input should return no error', () => {
@@ -295,7 +295,7 @@ suite('Advanced options helper tests', () => {
 		};
 
 		let error = OptionsDialogHelper.validateInputs(optionsMap);
-		assert.equal(error, true);
+		assert.strictEqual(error, true);
 	});
 
 	test('validate a valid optional number input should return no error', () => {
@@ -310,7 +310,7 @@ suite('Advanced options helper tests', () => {
 		};
 
 		let error = OptionsDialogHelper.validateInputs(optionsMap);
-		assert.equal(error, true);
+		assert.strictEqual(error, true);
 	});
 
 	test('validate a valid required number input should return no error', () => {
@@ -324,7 +324,7 @@ suite('Advanced options helper tests', () => {
 			optionValue: null
 		};
 		let error = OptionsDialogHelper.validateInputs(optionsMap);
-		assert.equal(error, true);
+		assert.strictEqual(error, true);
 	});
 
 	test('validate invalid optional number option should return an expected error', () => {
@@ -339,7 +339,7 @@ suite('Advanced options helper tests', () => {
 		};
 
 		let error = OptionsDialogHelper.validateInputs(optionsMap);
-		assert.equal(error, false);
+		assert.strictEqual(error, false);
 	});
 
 	test('validate required optional number option should return an expected error', () => {
@@ -354,7 +354,7 @@ suite('Advanced options helper tests', () => {
 		};
 
 		let error = OptionsDialogHelper.validateInputs(optionsMap);
-		assert.equal(error, false);
+		assert.strictEqual(error, false);
 	});
 
 	test('update options should delete option entry if the input value is an empty string', () => {
@@ -369,7 +369,7 @@ suite('Advanced options helper tests', () => {
 		};
 		options['connectTimeout'] = '45';
 		OptionsDialogHelper.updateOptions(options, optionsMap);
-		assert.equal(options['connectTimeout'], undefined);
+		assert.strictEqual(options['connectTimeout'], undefined);
 	});
 
 	test('update options should update correct option value', () => {
@@ -384,7 +384,7 @@ suite('Advanced options helper tests', () => {
 		};
 		options['connectTimeout'] = '45';
 		OptionsDialogHelper.updateOptions(options, optionsMap);
-		assert.equal(options['connectTimeout'], 50);
+		assert.strictEqual(options['connectTimeout'], '50');
 	});
 
 	test('update options should add the option value to options', () => {
@@ -399,18 +399,18 @@ suite('Advanced options helper tests', () => {
 		};
 		options = {};
 		OptionsDialogHelper.updateOptions(options, optionsMap);
-		assert.equal(options['connectTimeout'], 50);
+		assert.strictEqual(options['connectTimeout'], '50');
 	});
 
 	test('groupOptionsByCategory converts a list of options to a map of category names to lists of options', () => {
 		let optionsList = [categoryOption, booleanOption, numberOption, stringOption, defaultGroupOption];
 		let optionsMap = OptionsDialogHelper.groupOptionsByCategory(optionsList);
 		let categoryNames = Object.keys(optionsMap);
-		assert.equal(categoryNames.some(x => x === 'Initialization'), true);
-		assert.equal(categoryNames.some(x => x === 'General'), true);
-		assert.equal(categoryNames.length, 2);
-		assert.equal(optionsMap['Initialization'].length, 4);
-		assert.equal(optionsMap['General'].length, 1);
+		assert.strictEqual(categoryNames.some(x => x === 'Initialization'), true);
+		assert.strictEqual(categoryNames.some(x => x === 'General'), true);
+		assert.strictEqual(categoryNames.length, 2);
+		assert.strictEqual(optionsMap['Initialization'].length, 4);
+		assert.strictEqual(optionsMap['General'].length, 1);
 	});
 
 });

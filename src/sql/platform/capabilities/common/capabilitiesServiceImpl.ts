@@ -38,7 +38,8 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 			};
 			this._providers.set(id, provider);
 		}
-
+		// By default isQueryProvider is true.
+		provider.connection.isQueryProvider = provider.connection.isQueryProvider !== false;
 		this._onCapabilitiesRegistered.fire({ id, features: provider });
 	}
 

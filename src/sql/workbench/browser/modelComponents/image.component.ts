@@ -8,7 +8,6 @@ import {
 	OnDestroy, AfterViewInit, ElementRef, ViewChild
 } from '@angular/core';
 
-import * as DOM from 'vs/base/browser/dom';
 import * as azdata from 'azdata';
 import { ITitledComponent } from 'sql/workbench/browser/modelComponents/interfaces';
 import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
@@ -56,7 +55,7 @@ export default class ImageComponent extends ComponentWithIconBase<azdata.ImageCo
 		if (this.iconPath) {
 			if (!this._iconClass) {
 				super.updateIcon();
-				DOM.addClasses(this.imageContainer.nativeElement, this._iconClass, 'icon');
+				this.imageContainer.nativeElement.classList.add(this._iconClass, 'icon');
 			} else {
 				super.updateIcon();
 			}

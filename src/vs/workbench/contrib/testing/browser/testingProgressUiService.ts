@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { RunOnceScheduler } from 'vs/base/common/async';
@@ -60,6 +60,9 @@ export class TestingProgressUiService extends Disposable implements ITestingProg
 				const collected = collectTestStateCounts(false, allResults[0].counts);
 				this.updateCountsEmitter.fire(collected);
 				this.updateTextEmitter.fire(getTestProgressText(false, collected));
+			} else {
+				this.updateTextEmitter.fire('');
+				this.updateCountsEmitter.fire(collectTestStateCounts(false));
 			}
 
 			this.current.clear();

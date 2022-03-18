@@ -8,35 +8,35 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"client\\dist\\node/jsonClient": {
+			"configureLimit": "Utilisez le paramètre '{0}' pour configurer la limite.",
+			"goToSetting": "Ouvrir les paramètres",
+			"json.resolveError": "JSON : erreur de résolution de schéma",
+			"json.schemaResolutionDisabledMessage": "Le téléchargement des schémas est désactivé. Cliquez pour configurer.",
+			"json.schemaResolutionErrorMessage": "Impossible de résoudre le schéma. Cliquez pour réessayer.",
+			"jsonserver.name": "Serveur de langage JSON",
+			"ok": "OK",
+			"schemaDownloadDisabled": "Le téléchargement des schémas est désactivé via le paramètre '{0}'",
+			"untitled.schema": "Impossible de charger {0}",
+			"yes never again": "Ne plus afficher"
+		},
 		"package": {
-			"displayName": "Fonctionnalités de langage JSON",
 			"description": "Fournit une prise en charge de langage pour les fichiers JSON",
+			"displayName": "Fonctionnalités de langage JSON",
+			"json.clickToRetry": "Cliquez pour réessayer.",
+			"json.colorDecorators.enable.deprecationMessage": "Le paramètre 'json.colorDecorators.enable' a été déprécié en faveur de 'editor.colorDecorators'.",
+			"json.colorDecorators.enable.desc": "Active ou désactive les éléments décoratifs de couleurs",
+			"json.enableSchemaDownload.desc": "Quand ils sont activés, les schémas JSON peuvent être récupérés (fetch) à partir des emplacements http et https.",
+			"json.format.enable.desc": "Activer/désactiver le formateur JSON par défaut",
+			"json.maxItemsComputed.desc": "Nombre maximal de symboles de plan et de régions de pliage calculé (limité pour des raisons de performances).",
+			"json.maxItemsExceededInformation.desc": "Affiche une notification en cas de dépassement du nombre maximal de symboles de plan et de zones de pliage.",
+			"json.schemaResolutionErrorMessage": "Impossible de résoudre le schéma.",
 			"json.schemas.desc": "Associe les schémas aux fichiers JSON dans le projet actif.",
-			"json.schemas.url.desc": "URL de schéma ou chemin relatif d'un schéma dans le répertoire actuel",
 			"json.schemas.fileMatch.desc": "Tableau de modèles de fichiers pour la recherche de correspondances durant la résolution de fichiers JSON en schémas. Le caractère '*' peut être utilisé en tant que caractère générique. Les modèles d'exclusion peuvent également être définis et commencer par '!'. Un fichier correspond quand il existe au moins un modèle correspondant et que le dernier modèle correspondant n'est pas un modèle d'exclusion.",
 			"json.schemas.fileMatch.item.desc": "Modèle de fichier pouvant contenir '*' à mapper durant la résolution de fichiers JSON en schémas.",
 			"json.schemas.schema.desc": "Définition de schéma pour l'URL indiquée. Le schéma doit être fourni uniquement pour éviter les accès à l'URL du schéma.",
-			"json.format.enable.desc": "Activer/désactiver le formateur JSON par défaut",
-			"json.tracing.desc": "Trace la communication entre VS Code et le serveur de langage JSON.",
-			"json.colorDecorators.enable.desc": "Active ou désactive les éléments décoratifs de couleurs",
-			"json.colorDecorators.enable.deprecationMessage": "Le paramètre 'json.colorDecorators.enable' a été déprécié en faveur de 'editor.colorDecorators'.",
-			"json.schemaResolutionErrorMessage": "Impossible de résoudre le schéma.",
-			"json.clickToRetry": "Cliquez pour réessayer.",
-			"json.maxItemsComputed.desc": "Nombre maximal de symboles de plan et de régions de pliage calculé (limité pour des raisons de performances).",
-			"json.maxItemsExceededInformation.desc": "Affiche une notification en cas de dépassement du nombre maximal de symboles de plan et de zones de pliage.",
-			"json.enableSchemaDownload.desc": "Quand ils sont activés, les schémas JSON peuvent être récupérés (fetch) à partir des emplacements http et https."
-		},
-		"client\\dist\\node/jsonClient": {
-			"json.resolveError": "JSON : erreur de résolution de schéma",
-			"jsonserver.name": "Serveur de langage JSON",
-			"untitled.schema": "Impossible de charger {0}",
-			"schemaDownloadDisabled": "Le téléchargement des schémas est désactivé via le paramètre '{0}'",
-			"ok": "OK",
-			"goToSetting": "Ouvrir les paramètres",
-			"yes never again": "Ne plus afficher",
-			"configureLimit": "Utilisez le paramètre '{0}' pour configurer la limite.",
-			"json.schemaResolutionErrorMessage": "Impossible de résoudre le schéma. Cliquez pour réessayer.",
-			"json.schemaResolutionDisabledMessage": "Le téléchargement des schémas est désactivé. Cliquez pour configurer."
+			"json.schemas.url.desc": "URL de schéma ou chemin relatif d'un schéma dans le répertoire actuel",
+			"json.tracing.desc": "Trace la communication entre VS Code et le serveur de langage JSON."
 		}
 	}
 }

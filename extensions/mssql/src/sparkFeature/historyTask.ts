@@ -19,17 +19,17 @@ export class OpenSparkYarnHistoryTask {
 			let sqlClusterConnection = await SqlClusterLookUp.findSqlClusterConnection(sqlConnProfile, this.appContext);
 			if (!sqlClusterConnection) {
 				let name = isSpark ? 'Spark' : 'Yarn';
-				vscode.window.showErrorMessage(loc.sparkConnectionRequired(name));
+				void vscode.window.showErrorMessage(loc.sparkConnectionRequired(name));
 				return;
 			}
 			if (isSpark) {
-				vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(this.generateSparkHistoryUrl(sqlClusterConnection.host, sqlClusterConnection.port)));
+				void vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(this.generateSparkHistoryUrl(sqlClusterConnection.host, sqlClusterConnection.port)));
 			}
 			else {
-				vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(this.generateYarnHistoryUrl(sqlClusterConnection.host, sqlClusterConnection.port)));
+				void vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(this.generateYarnHistoryUrl(sqlClusterConnection.host, sqlClusterConnection.port)));
 			}
 		} catch (error) {
-			vscode.window.showErrorMessage(getErrorMessage(error));
+			void vscode.window.showErrorMessage(getErrorMessage(error));
 		}
 	}
 

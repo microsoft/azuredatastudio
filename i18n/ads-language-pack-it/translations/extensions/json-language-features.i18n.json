@@ -8,35 +8,35 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"client\\dist\\node/jsonClient": {
+			"configureLimit": "Usare l'impostazione '{0}' per configurare il limite.",
+			"goToSetting": "Apri impostazioni",
+			"json.resolveError": "JSON: Errore di risoluzione dello schema",
+			"json.schemaResolutionDisabledMessage": "Il download degli schemi è disabilitato. Fare clic per configurare.",
+			"json.schemaResolutionErrorMessage": "Non è possibile risolvere lo schema. Fare clic per riprovare.",
+			"jsonserver.name": "Server di linguaggio JSON",
+			"ok": "OK",
+			"schemaDownloadDisabled": "Il download degli schemi è disabilitato tramite l'impostazione '{0}'",
+			"untitled.schema": "Impossibile caricare {0}",
+			"yes never again": "Non visualizzare più questo messaggio"
+		},
 		"package": {
-			"displayName": "Funzionalità del linguaggio JSON",
 			"description": "Fornisce supporto avanzato del linguaggio per i file JSON.",
+			"displayName": "Funzionalità del linguaggio JSON",
+			"json.clickToRetry": "Fare clic per riprovare.",
+			"json.colorDecorators.enable.deprecationMessage": "L'impostazione `json.colorDecorators.enable` è stata deprecata e sostituita da `editor.colorDecorators`.",
+			"json.colorDecorators.enable.desc": "Abilita o disabilita gli elementi Decorator di tipo colore",
+			"json.enableSchemaDownload.desc": "Se è abilitata, è possibile recuperare gli schemi JSON da posizioni HTTP e HTTPS.",
+			"json.format.enable.desc": "Abilita/Disabilita il formattatore JSON predefinito",
+			"json.maxItemsComputed.desc": "Numero massimo di simboli di struttura e aree di riduzione calcolati (limitato per motivi di prestazioni).",
+			"json.maxItemsExceededInformation.desc": "Mostra la notifica quando viene superato il numero massimo di simboli di struttura e di aree di riduzione del codice.",
+			"json.schemaResolutionErrorMessage": "Non è possibile risolvere lo schema.",
 			"json.schemas.desc": "Associa schemi a file JSON nel progetto corrente.",
-			"json.schemas.url.desc": "URL di uno schema o percorso relativo di uno schema nella directory corrente",
 			"json.schemas.fileMatch.desc": "Durante la risoluzione di file JSON in schemi è possibile usare una matrice di criteri di file, oltre a `*` come carattere jolly per la ricerca. È anche possibile definire criteri di esclusione aggiungendo il prefisso '!'. Un file corrisponde quando è presente almeno un criterio di corrispondenza e l'ultimo criterio di corrispondenza non è un criterio di esclusione.",
 			"json.schemas.fileMatch.item.desc": "Criteri dei file che possono contenere '*' da usare per la ricerca durante la risoluzione di file JSON in schemi.",
 			"json.schemas.schema.desc": "Definizione dello schema per l'URL specificato. È necessario specificare lo schema per evitare accessi all'URL dello schema.",
-			"json.format.enable.desc": "Abilita/Disabilita il formattatore JSON predefinito",
-			"json.tracing.desc": "Traccia le comunicazioni tra Visual Studio Code e il server di linguaggio JSON.",
-			"json.colorDecorators.enable.desc": "Abilita o disabilita gli elementi Decorator di tipo colore",
-			"json.colorDecorators.enable.deprecationMessage": "L'impostazione `json.colorDecorators.enable` è stata deprecata e sostituita da `editor.colorDecorators`.",
-			"json.schemaResolutionErrorMessage": "Non è possibile risolvere lo schema.",
-			"json.clickToRetry": "Fare clic per riprovare.",
-			"json.maxItemsComputed.desc": "Numero massimo di simboli di struttura e aree di riduzione calcolati (limitato per motivi di prestazioni).",
-			"json.maxItemsExceededInformation.desc": "Mostra la notifica quando viene superato il numero massimo di simboli di struttura e di aree di riduzione del codice.",
-			"json.enableSchemaDownload.desc": "Se è abilitata, è possibile recuperare gli schemi JSON da posizioni HTTP e HTTPS."
-		},
-		"client\\dist\\node/jsonClient": {
-			"json.resolveError": "JSON: Errore di risoluzione dello schema",
-			"jsonserver.name": "Server di linguaggio JSON",
-			"untitled.schema": "Impossibile caricare {0}",
-			"schemaDownloadDisabled": "Il download degli schemi è disabilitato tramite l'impostazione '{0}'",
-			"ok": "OK",
-			"goToSetting": "Apri impostazioni",
-			"yes never again": "Non visualizzare più questo messaggio",
-			"configureLimit": "Usare l'impostazione '{0}' per configurare il limite.",
-			"json.schemaResolutionErrorMessage": "Non è possibile risolvere lo schema. Fare clic per riprovare.",
-			"json.schemaResolutionDisabledMessage": "Il download degli schemi è disabilitato. Fare clic per configurare."
+			"json.schemas.url.desc": "URL di uno schema o percorso relativo di uno schema nella directory corrente",
+			"json.tracing.desc": "Traccia le comunicazioni tra Visual Studio Code e il server di linguaggio JSON."
 		}
 	}
 }

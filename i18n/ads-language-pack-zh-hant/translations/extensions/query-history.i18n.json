@@ -9,9 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"queryHistory.displayName": "查詢歷史記錄",
-			"queryHistory.description": "檢視及執行先前執行的查詢",
 			"queryHistory.clear": "清除所有歷史記錄",
+			"queryHistory.description": "檢視及執行先前執行的查詢",
+			"queryHistory.displayName": "查詢歷史記錄",
 			"queryHistory.toggleCapture": "切換查詢歷史記錄擷取"
 		}
 	}

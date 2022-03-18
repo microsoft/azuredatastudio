@@ -55,7 +55,7 @@ describe('Manage Packages', () => {
 		await should(model.installPackages([])).rejected();
 		await should(model.uninstallPackages([])).rejected();
 		should.equal(await model.getLocations(), undefined, 'Get Locations should be undefined before provider is set');
-		should(model.getPackageOverview('package')).rejected();
+		await should(model.getPackageOverview('package')).rejected();
 
 		// Change provider and then retest functions which throw without valid provider
 		model.changeProvider(provider.providerId);
@@ -63,7 +63,7 @@ describe('Manage Packages', () => {
 		await should(model.installPackages([])).resolved();
 		await should(model.uninstallPackages([])).resolved();
 		should.deepEqual(await model.getLocations(), await provider.getLocations(), 'Get Locations should be valid after provider is set');
-		should(model.getPackageOverview('p1')).resolved();
+		await should(model.getPackageOverview('p1')).resolved();
 		model.changeLocation('location1');
 
 	});

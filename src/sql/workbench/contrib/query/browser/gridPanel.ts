@@ -20,7 +20,6 @@ import { escape } from 'sql/base/common/strings';
 import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
-import { GridTable as HighPerfGridTable } from 'sql/workbench/contrib/query/browser/highPerfGridPanel';
 
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -49,7 +48,7 @@ import { ScrollableView, IView } from 'sql/base/browser/ui/scrollableView/scroll
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
-import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
+import { FilterButtonWidth, HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
@@ -69,16 +68,14 @@ const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ES
 export class GridPanel extends Disposable {
 	private container = document.createElement('div');
 	private scrollableView: ScrollableView;
-	private tables: Array<GridTable<any> | HighPerfGridTable<any>> = [];
+	private tables: Array<GridTable<any>> = [];
 	private tableDisposable = this._register(new DisposableStore());
 	private queryRunnerDisposables = this._register(new DisposableStore());
 
 	private runner: QueryRunner;
 
-	private maximizedGrid: GridTable<any> | HighPerfGridTable<any>;
+	private maximizedGrid: GridTable<any>;
 	private _state: GridPanelState | undefined;
-
-	private readonly optimized = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.optimizedTable;
 
 	constructor(
 		@IConfigurationService private readonly configurationService: IConfigurationService,
@@ -87,7 +84,7 @@ export class GridPanel extends Disposable {
 		@IThemeService private readonly themeService: IThemeService,
 	) {
 		super();
-		this.scrollableView = new ScrollableView(this.container, { scrollDebouce: this.optimized ? 0 : undefined });
+		this.scrollableView = new ScrollableView(this.container);
 		this.scrollableView.onDidScroll(e => {
 			if (this.state && this.scrollableView.length !== 0) {
 				this.state.scrollPosition = e.scrollTop;
@@ -204,7 +201,7 @@ export class GridPanel extends Disposable {
 	}
 
 	private addResultSet(resultSet: ResultSetSummary[]) {
-		const tables: Array<GridTable<any> | HighPerfGridTable<any>> = [];
+		const tables: Array<GridTable<any>> = [];
 
 		for (const set of resultSet) {
 			// ensure we aren't adding a resultSet that is already visible
@@ -221,12 +218,7 @@ export class GridPanel extends Disposable {
 					this.state.tableStates.push(tableState);
 				}
 			}
-			let table: GridTable<any> | HighPerfGridTable<any>;
-			if (this.optimized) {
-				table = this.instantiationService.createInstance(HighPerfGridTable, this.runner, set, tableState);
-			} else {
-				table = this.instantiationService.createInstance(GridTable, this.runner, set, tableState);
-			}
+			const table = this.instantiationService.createInstance(GridTable, this.runner, set, tableState);
 			this.tableDisposable.add(tableState.onMaximizedChange(e => {
 				if (e) {
 					this.maximizeTable(table.id);
@@ -396,7 +388,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		super();
 
 		this.options = { ...defaultGridTableOptions, ...options };
-
 		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
 		this.rowHeight = config && config.rowHeight ? config.rowHeight : ROW_HEIGHT;
 		this.state = state;
@@ -487,7 +478,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.rowNumberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
 		let copyHandler = new CopyKeybind<T>();
 		copyHandler.onCopy(e => {
-			new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run(this.generateContext());
+			this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run(this.generateContext());
 		});
 		this.columns.unshift(this.rowNumberColumn.getColumnDefinition());
 		let tableOptions: Slick.GridOptions<T> = {
@@ -500,7 +491,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			(offset, count) => { return this.loadData(offset, count); },
 			undefined,
 			undefined,
-			(data: ICellValue) => { return data?.displayValue; },
+			(data: ICellValue) => { return data.isNull ? undefined : data?.displayValue; },
 			{
 				inMemoryDataProcessing: this.options.inMemoryDataProcessing,
 				inMemoryDataCountThreshold: this.options.inMemoryDataCountThreshold
@@ -509,7 +500,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
-		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns'), maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth') }));
+		const autoSizeOnRender: boolean = !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns');
+		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: autoSizeOnRender, maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth'), extraColumnHeaderWidth: this.enableFilteringFeature ? FilterButtonWidth : 0 }));
 		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
@@ -537,7 +529,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}));
 		if (this.enableFilteringFeature) {
 			this.filterPlugin = new HeaderFilter(this.contextViewService, this.notificationService, {
-				disabledFilterMessage: localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, you can go to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'")
+				disabledFilterMessage: localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'"),
+				refreshColumns: !autoSizeOnRender // The auto size columns plugin refreshes the columns so we don't need to refresh twice if both plugins are on.
 			});
 			this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
 			this.table.registerPlugin(this.filterPlugin);
@@ -700,6 +693,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
 				await input.resolve();
 				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
+				input.setDirty(false);
+
 				return this.editorService.openEditor(input);
 			});
 		}
@@ -819,8 +814,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					actions.push(new Separator());
 				}
 				actions.push(
-					new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false),
-					new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true)
+					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false),
+					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true)
 				);
 
 				if (this.state.canBeMaximized) {
@@ -844,16 +839,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	private renderGridDataRowsRange(startIndex: number, count: number): void {
-		// let editor = this.table.getCellEditor();
-		// let oldValue = editor ? editor.getValue() : undefined;
-		// let wasValueChanged = editor ? editor.isValueChanged() : false;
 		this.invalidateRange(startIndex, startIndex + count);
-		// let activeCell = this._grid.getActiveCell();
-		// if (editor && activeCell.row >= startIndex && activeCell.row < startIndex + count) {
-		//     if (oldValue && wasValueChanged) {
-		//         editor.setValue(oldValue);
-		//     }
-		// }
 	}
 
 	private invalidateRange(start: number, end: number): void {

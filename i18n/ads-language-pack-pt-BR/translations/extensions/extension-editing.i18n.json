@@ -8,22 +8,22 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Criação de Extensão",
-			"description": "Fornece funcionalidades de lint para extensões de criação."
+		"dist/extensionLinter": {
+			"dataUrlsNotValid": "As URLs de dados não são uma origem de imagem válida.",
+			"embeddedSvgsNotValid": "Os SVGs inseridos não são uma origem de imagem válida.",
+			"httpsRequired": "As imagens precisam usar o protocolo HTTPS.",
+			"relativeBadgeUrlRequiresHttpsRepository": "URLs de selo relativas exigem que um repositório com protocolo HTTPS seja especificado nesse package.json.",
+			"relativeIconUrlRequiresHttpsRepository": "Um ícone exige que um repositório com protocolo HTTPS seja especificado neste package.json.",
+			"relativeUrlRequiresHttpsRepository": "URLs de imagem relativas exigem a especificação de um repositório com protocolo HTTPS no package.json.",
+			"svgsNotValid": "Os SVGs não são uma origem de imagem válida."
 		},
 		"dist/packageDocumentHelper": {
 			"languageSpecificEditorSettings": "Configurações de editor específicas do idioma",
 			"languageSpecificEditorSettingsDescription": "Substituir as configurações do editor para o idioma"
 		},
-		"dist/extensionLinter": {
-			"httpsRequired": "As imagens precisam usar o protocolo HTTPS.",
-			"svgsNotValid": "Os SVGs não são uma origem de imagem válida.",
-			"embeddedSvgsNotValid": "Os SVGs inseridos não são uma origem de imagem válida.",
-			"dataUrlsNotValid": "As URLs de dados não são uma origem de imagem válida.",
-			"relativeUrlRequiresHttpsRepository": "URLs de imagem relativas exigem a especificação de um repositório com protocolo HTTPS no package.json.",
-			"relativeIconUrlRequiresHttpsRepository": "Um ícone exige que um repositório com protocolo HTTPS seja especificado neste package.json.",
-			"relativeBadgeUrlRequiresHttpsRepository": "URLs de selo relativas exigem que um repositório com protocolo HTTPS seja especificado nesse package.json."
+		"package": {
+			"description": "Fornece funcionalidades de lint para extensões de criação.",
+			"displayName": "Criação de Extensão"
 		}
 	}
 }

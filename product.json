@@ -5,7 +5,7 @@
 	"dataFolderName": ".azuredatastudio",
 	"win32MutexName": "azuredatastudio",
 	"licenseName": "Microsoft EULA",
-	"licenseUrl": "https://github.com/Microsoft/azuredatastudio/blob/main/LICENSE.txt",
+	"licenseUrl": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/LICENSE.txt",
 	"win32DirName": "Azure Data Studio",
 	"win32NameVersion": "Azure Data Studio",
 	"win32RegValueName": "azuredatastudio",
@@ -26,6 +26,7 @@
 	"telemetryOptOutUrl": "https://github.com/Microsoft/azuredatastudio/wiki/How-to-Disable-Telemetry-Reporting",
 	"urlProtocol": "azuredatastudio-oss",
 	"enableTelemetry": true,
+	"npsSurveyUrl": "https://aka.ms/azuredatastudio-nps",
 	"aiConfig": {
 		"asimovKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e"
 	},
@@ -36,7 +37,7 @@
 	"gettingStartedUrl": "https://go.microsoft.com/fwlink/?linkid=862039",
 	"releaseNotesUrl": "https://go.microsoft.com/fwlink/?linkid=875578",
 	"documentationUrl": "https://go.microsoft.com/fwlink/?linkid=862277",
-	"vscodeVersion": "1.56.0",
+	"vscodeVersion": "1.59.0",
 	"commit": "9ca6200018fc206d67a47229f991901a8a453781",
 	"date": "2017-12-15T12:00:00.000Z",
 	"recommendedExtensions": [
@@ -58,6 +59,7 @@
 		"Microsoft.sql-assessment",
 		"Microsoft.datavirtualization",
 		"Microsoft.sql-database-projects",
+		"Microsoft.sql-migration",
 		"Microsoft.machine-learning",
 		"Redgate.sql-prompt",
 		"Redgate.sql-search",
@@ -71,10 +73,10 @@
 	"extensionAllowedProposedApi": [
 		"ms-vscode.vscode-js-profile-flame",
 		"ms-vscode.vscode-js-profile-table",
-		"ms-vscode.github-browser",
-		"ms-vscode.github-richnav",
 		"ms-vscode.remotehub",
-		"ms-vscode.remotehub-insiders"
+		"ms-vscode.remotehub-insiders",
+		"GitHub.remotehub",
+		"GitHub.remotehub-insiders"
 	],
 	"extensionsGallery": {
 		"version": "0.0.76",
@@ -83,9 +85,8 @@
 	"builtInExtensions": [
 		{
 			"name": "Microsoft.sqlservernotebook",
-			"version": "0.4.0",
-			"repo": "https://github.com/Microsoft/azuredatastudio"
+			"version": "0.5.0",
+			"repo": "https://github.com/microsoft/azuredatastudio"
 		}
-	],
-	"webBuiltInExtensions": []
+	]
 }

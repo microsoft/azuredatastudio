@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ipcRenderer } from 'vs/base/parts/sandbox/electron-sandbox/globals';
@@ -16,7 +16,7 @@ import { ITerminalService } from 'vs/workbench/contrib/terminal/browser/terminal
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 
 export class TerminalNativeContribution extends Disposable implements IWorkbenchContribution {
-	public _serviceBrand: undefined;
+	declare _serviceBrand: undefined;
 
 	constructor(
 		@IFileService private readonly _fileService: IFileService,
@@ -37,7 +37,7 @@ export class TerminalNativeContribution extends Disposable implements IWorkbench
 	}
 
 	private _onOsResume(): void {
-		this._terminalService.terminalInstances.forEach(instance => instance.forceRedraw());
+		this._terminalService.instances.forEach(instance => instance.forceRedraw());
 	}
 
 	private async _onOpenFileRequest(request: INativeOpenFileRequest): Promise<void> {
@@ -49,7 +49,7 @@ export class TerminalNativeContribution extends Disposable implements IWorkbench
 			await this._whenFileDeleted(waitMarkerFileUri);
 
 			// Focus active terminal
-			this._terminalService.getActiveInstance()?.focus();
+			this._terminalService.activeInstance?.focus();
 		}
 	}
 

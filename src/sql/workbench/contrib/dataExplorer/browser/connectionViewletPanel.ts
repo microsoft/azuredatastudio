@@ -74,7 +74,7 @@ export class ConnectionViewletPanel extends ViewPane {
 
 	override layoutBody(size: number): void {
 		this._serverTreeView.layout(size);
-		DOM.toggleClass(this._root!, 'narrow', this._root!.clientWidth < 300);
+		this._root!.classList.toggle('narrow', this._root!.clientWidth < 300);
 	}
 
 	show(): void {

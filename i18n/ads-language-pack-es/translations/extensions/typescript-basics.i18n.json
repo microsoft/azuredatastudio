@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Elementos básicos del lenguaje TypeScript",
-			"description": "Proporciona fragmentos de código, resaltado de sintaxis, correspondencia de corchetes y plegado de código en archivos de TypeScript."
+			"description": "Proporciona fragmentos de código, resaltado de sintaxis, correspondencia de corchetes y plegado de código en archivos de TypeScript.",
+			"displayName": "Elementos básicos del lenguaje TypeScript"
 		}
 	}
 }

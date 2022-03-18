@@ -219,7 +219,7 @@ export function delta<T>(before: ReadonlyArray<T>, after: ReadonlyArray<T>, comp
  * @param array The unsorted array.
  * @param compare A sort function for the elements.
  * @param n The number of elements to return.
- * @return The first n elemnts from array when sorted with compare.
+ * @return The first n elements from array when sorted with compare.
  */
 export function top<T>(array: ReadonlyArray<T>, compare: (a: T, b: T) => number, n: number): T[] {
 	if (n === 0) {
@@ -241,7 +241,7 @@ export function top<T>(array: ReadonlyArray<T>, compare: (a: T, b: T) => number,
  * @param compare A sort function for the elements.
  * @param n The number of elements to return.
  * @param batch The number of elements to examine before yielding to the event loop.
- * @return The first n elemnts from array when sorted with compare.
+ * @return The first n elements from array when sorted with compare.
  */
 export function topAsync<T>(array: T[], compare: (a: T, b: T) => number, n: number, batch: number, token?: CancellationToken): Promise<T[]> {
 	if (n === 0) {
@@ -286,7 +286,7 @@ export function coalesce<T>(array: ReadonlyArray<T | undefined | null>): T[] {
 }
 
 /**
- * Remove all falsey values from `array`. The original array IS modified.
+ * Remove all falsy values from `array`. The original array IS modified.
  */
 export function coalesceInPlace<T>(array: Array<T | undefined | null>): void {
 	let to = 0;
@@ -324,7 +324,7 @@ export function isNonEmptyArray<T>(obj: T[] | readonly T[] | undefined | null): 
 
 /**
  * Removes duplicates from the given array. The optional keyFn allows to specify
- * how elements are checked for equalness by returning a unique string for each.
+ * how elements are checked for equality by returning a unique string for each.
  */
 export function distinct<T>(array: ReadonlyArray<T>, keyFn?: (t: T) => string): T[] {
 	if (!keyFn) {
@@ -383,16 +383,6 @@ export function lastIndex<T>(array: ReadonlyArray<T>, fn: (item: T) => boolean):
 	}
 
 	return -1;
-}
-
-/**
- * @deprecated ES6: use `Array.find`
- */
-export function first<T>(array: ReadonlyArray<T>, fn: (item: T) => boolean, notFoundValue: T): T;
-export function first<T>(array: ReadonlyArray<T>, fn: (item: T) => boolean): T | undefined;
-export function first<T>(array: ReadonlyArray<T>, fn: (item: T) => boolean, notFoundValue: T | undefined = undefined): T | undefined {
-	const index = array.findIndex(fn);
-	return index < 0 ? notFoundValue : array[index];
 }
 
 export function firstOrDefault<T, NotFound = T>(array: ReadonlyArray<T>, notFoundValue: NotFound): T | NotFound;
@@ -566,28 +556,12 @@ export function mapFind<T, R>(array: Iterable<T>, mapFn: (value: T) => R | undef
 }
 
 /**
- * An alternative for Array.push(...items) method, Use this if you need to push large number of items to the array.
- * Array.push(...item) can only support limited number of items due to the maximum call stack size limit.
- * @param array The array to add items to.
- * @param items The new items to be added.
- */
-export function push<T>(array: T[], items: T[]): void {
-	// set array length and then assign value at index is faster than doing array.push(item) individually
-	const newLength = array.length + items.length;
-	const startIdx = array.length;
-	array.length = newLength;
-	items.forEach((item, index) => {
-		array[startIdx + index] = item;
-	});
-}
-
-/**
- * Insert the new items to array, the insertion be performed on the original array directly, the alternative insertArray() method will return a new array.
+ * Insert the new items in the array.
  * @param array The original array.
  * @param start The zero-based location in the array from which to start inserting elements.
  * @param newItems The items to be inserted
  */
-export function insertArray2<T>(array: T[], start: number, newItems: T[]): void {
+export function insertInto<T>(array: T[], start: number, newItems: T[]): void {
 	const startIdx = getActualStartIndex(array, start);
 	const originalLength = array.length;
 	const newItemsLength = newItems.length;
@@ -611,10 +585,10 @@ export function insertArray2<T>(array: T[], start: number, newItems: T[]): void 
  * @returns An array containing the elements that were deleted.
  */
 export function splice<T>(array: T[], start: number, deleteCount: number, newItems: T[]): T[] {
-	const startIdx = getActualStartIndex(array, start);
-	const deletedItems = array.splice(startIdx, deleteCount);
-	insertArray2(array, startIdx, newItems);
-	return deletedItems;
+	const index = getActualStartIndex(array, start);
+	const result = array.splice(index, deleteCount);
+	insertInto(array, index, newItems);
+	return result;
 }
 
 /**
@@ -625,17 +599,88 @@ export function splice<T>(array: T[], start: number, deleteCount: number, newIte
  * @param start The operation index.
  */
 function getActualStartIndex<T>(array: T[], start: number): number {
-	let startIndex: number;
-	if (start > array.length) {
-		startIndex = array.length;
-	} else if (start < 0) {
-		if ((start + array.length) < 0) {
-			startIndex = 0;
-		} else {
-			startIndex = start + array.length;
+	return start < 0 ? Math.max(start + array.length, 0) : Math.min(start, array.length);
+}
+
+/**
+ * Like Math.min with a delegate, and returns the winning index
+ */
+export function minIndex<T>(array: readonly T[], fn: (value: T) => number): number {
+	let minValue = Number.MAX_SAFE_INTEGER;
+	let minIdx = 0;
+	array.forEach((value, i) => {
+		const thisValue = fn(value);
+		if (thisValue < minValue) {
+			minValue = thisValue;
+			minIdx = i;
 		}
-	} else {
-		startIndex = start;
+	});
+
+	return minIdx;
+}
+
+/**
+ * Like Math.max with a delegate, and returns the winning index
+ */
+export function maxIndex<T>(array: readonly T[], fn: (value: T) => number): number {
+	let minValue = Number.MIN_SAFE_INTEGER;
+	let maxIdx = 0;
+	array.forEach((value, i) => {
+		const thisValue = fn(value);
+		if (thisValue > minValue) {
+			minValue = thisValue;
+			maxIdx = i;
+		}
+	});
+
+	return maxIdx;
+}
+
+export class ArrayQueue<T> {
+	private firstIdx = 0;
+	private lastIdx = this.items.length - 1;
+
+	/**
+	 * Constructs a queue that is backed by the given array. Runtime is O(1).
+	*/
+	constructor(private readonly items: T[]) { }
+
+	get length(): number {
+		return this.lastIdx - this.firstIdx + 1;
 	}
-	return startIndex;
+
+	/**
+	 * Consumes elements from the beginning of the queue as long as the predicate returns true.
+	 * If no elements were consumed, `null` is returned. Has a runtime of O(result.length).
+	*/
+	takeWhile(predicate: (value: T) => boolean): T[] | null {
+		// P(k) := k <= this.lastIdx && predicate(this.items[k])
+		// Find s := min { k | k >= this.firstIdx && !P(k) } and return this.data[this.firstIdx...s)
+
+		let startIdx = this.firstIdx;
+		while (startIdx < this.items.length && predicate(this.items[startIdx])) {
+			startIdx++;
+		}
+		const result = startIdx === this.firstIdx ? null : this.items.slice(this.firstIdx, startIdx);
+		this.firstIdx = startIdx;
+		return result;
+	}
+
+	/**
+	 * Consumes elements from the end of the queue as long as the predicate returns true.
+	 * If no elements were consumed, `null` is returned.
+	 * The result has the same order as the underlying array!
+	*/
+	takeFromEndWhile(predicate: (value: T) => boolean): T[] | null {
+		// P(k) := this.firstIdx >= k && predicate(this.items[k])
+		// Find s := max { k | k <= this.lastIdx && !P(k) } and return this.data(s...this.lastIdx]
+
+		let endIdx = this.lastIdx;
+		while (endIdx >= 0 && predicate(this.items[endIdx])) {
+			endIdx--;
+		}
+		const result = endIdx === this.lastIdx ? null : this.items.slice(endIdx + 1, this.lastIdx + 1);
+		this.lastIdx = endIdx;
+		return result;
+	}
 }

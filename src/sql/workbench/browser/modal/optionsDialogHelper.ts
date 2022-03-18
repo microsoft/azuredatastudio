@@ -167,7 +167,7 @@ export function groupOptionsByCategory(options: azdata.ServiceOption[]): { [cate
 	options.forEach(option => {
 		let groupName = option.groupName;
 		if (groupName === null || groupName === undefined) {
-			groupName = 'General';
+			groupName = localize('optionsDialog.defaultGroupName', 'General');
 		}
 
 		if (!!connectionOptionsMap[groupName]) {

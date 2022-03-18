@@ -11,7 +11,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { URI } from 'vs/base/common/uri';
 
-import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -24,13 +24,19 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
-import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
+import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
+import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -50,19 +56,22 @@ let initialNotebookContent: nb.INotebookContents = {
 			language: 'sql'
 		},
 	},
-	nbformat: 4,
-	nbformat_minor: 5
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let defaultUri = URI.file('/some/path.ipynb');
 let notificationService: TypeMoq.Mock<INotificationService>;
 let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
+let dialogService: TypeMoq.Mock<IDialogService>;
 let instantiationService: IInstantiationService;
 let configurationService: IConfigurationService;
+let undoRedoService: IUndoRedoService;
 
 suite('NotebookViews', function (): void {
 	let defaultViewName = 'Default New View';
-	let notebookManagers = [new NotebookManagerStub()];
+	let serializationManagers = [new SerializationManagerStub()];
+	let executeManagers = [new ExecuteManagerStub()];
 	let mockSessionManager: TypeMoq.Mock<nb.SessionManager>;
 	let memento: TypeMoq.Mock<Memento>;
 	let queryConnectionService: TypeMoq.Mock<TestConnectionManagementService>;
@@ -75,15 +84,28 @@ suite('NotebookViews', function (): void {
 		notebookViews = await initializeExtension();
 	});
 
+	test('should not modify the notebook document until a view is created', async () => {
+		//Create some content
+		notebookViews.notebook.addCell(CellTypes.Code, 0);
+		const cell = notebookViews.notebook.cells[0];
+
+		assert.strictEqual(notebookViews.getExtensionMetadata(), undefined);
+		assert.strictEqual(notebookViews.getExtensionCellMetadata(cell), undefined);
+
+		//Check that the view is created
+		notebookViews.createNewView(defaultViewName);
+		assert.notStrictEqual(notebookViews.getExtensionMetadata(), undefined);
+	});
+
 	test('create new view', async function (): Promise<void> {
-		assert.equal(notebookViews.getViews().length, 0, 'notebook should not initially generate any views');
+		assert.strictEqual(notebookViews.getViews().length, 0, 'notebook should not initially generate any views');
 
 		let newView = notebookViews.createNewView(defaultViewName);
 		let cellsWithMatchingGuid = newView.cells.filter(cell => newView.getCellMetadata(cell).guid === newView.guid);
 
-		assert.equal(newView.name, defaultViewName, 'view was not created with its given name');
-		assert.equal(newView.cells.length, 2, 'view did not contain the same number of cells as the notebook used to create it');
-		assert.equal(cellsWithMatchingGuid.length, newView.cells.length, 'cell metadata was not created for all cells in view');
+		assert.strictEqual(newView.name, defaultViewName, 'view was not created with its given name');
+		assert.strictEqual(newView.cells.length, 2, 'view did not contain the same number of cells as the notebook used to create it');
+		assert.strictEqual(cellsWithMatchingGuid.length, newView.cells.length, 'cell metadata was not created for all cells in view');
 	});
 
 	test('remove view', async function (): Promise<void> {
@@ -93,23 +115,23 @@ suite('NotebookViews', function (): void {
 
 		let cellsWithNewView = notebookViews.getCells().filter(cell => cell.views.find(v => v.guid === newView.guid));
 
-		assert.equal(notebookViews.getViews().length, 0, 'view not removed from notebook metadata');
-		assert.equal(cellsWithNewView.length, 0, 'view not removed from cells');
+		assert.strictEqual(notebookViews.getViews().length, 0, 'view not removed from notebook metadata');
+		assert.strictEqual(cellsWithNewView.length, 0, 'view not removed from cells');
 	});
 
 	test('default view name', async function (): Promise<void> {
 		let newView = notebookViews.createNewView();
-		assert.equal(newView.name, NotebookViewsExtension.defaultViewName);
+		assert.strictEqual(newView.name, NotebookViewsExtension.defaultViewName);
 
 		let newView1 = notebookViews.createNewView();
-		assert.equal(newView1.name, `${NotebookViewsExtension.defaultViewName} 1`);
+		assert.strictEqual(newView1.name, `${NotebookViewsExtension.defaultViewName} 1`);
 	});
 
 	test('active view', async function (): Promise<void> {
 		let newView = notebookViews.createNewView();
 		notebookViews.setActiveView(newView);
 
-		assert.equal(notebookViews.getActiveView(), newView);
+		assert.strictEqual(notebookViews.getActiveView(), newView);
 	});
 
 	test('update cell', async function (): Promise<void> {
@@ -131,9 +153,12 @@ suite('NotebookViews', function (): void {
 
 	function setupServices() {
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
-		notebookManagers[0].sessionManager = mockSessionManager.object;
-		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
-		capabilitiesService = TypeMoq.Mock.ofType(TestCapabilitiesService);
+		executeManagers[0].providerId = SQL_NOTEBOOK_PROVIDER;
+		executeManagers[0].sessionManager = mockSessionManager.object;
+		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
+		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);
+		dialogService = TypeMoq.Mock.ofType<IDialogService>(TestDialogService, TypeMoq.MockBehavior.Loose);
+		undoRedoService = new UndoRedoService(dialogService.object, notificationService.object);
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 		memento.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
 		queryConnectionService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
@@ -144,8 +169,9 @@ suite('NotebookViews', function (): void {
 		defaultModelOptions = {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
-			notebookManagers,
-			contentManager: undefined,
+			serializationManagers: serializationManagers,
+			executeManagers: executeManagers,
+			contentLoader: undefined,
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
 			providerId: 'SQL',
@@ -157,11 +183,11 @@ suite('NotebookViews', function (): void {
 	}
 
 	async function initializeExtension(): Promise<NotebookViewsExtension> {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(initialNotebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undoRedoService, undefined);
 		await model.loadContents();
 		await model.requestModelLoad();
 

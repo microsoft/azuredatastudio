@@ -41,6 +41,9 @@ export class InputBox extends vsInputBox {
 	private _onLoseFocus = this._register(new Emitter<OnLoseFocusParams>());
 	public onLoseFocus: Event<OnLoseFocusParams> = this._onLoseFocus.event;
 
+	private _onInputFocus = this._register(new Emitter<void>());
+	public onInputFocus: Event<void> = this._onInputFocus.event;
+
 	private _isTextAreaInput = false;
 	private _hideErrors = false;
 
@@ -58,10 +61,14 @@ export class InputBox extends vsInputBox {
 			self._lastLoseFocusValue = self.value;
 		});
 
+		this.onfocus(this.inputElement, () => {
+			self._onInputFocus.fire();
+		});
+
 		if (_sqlOptions && _sqlOptions.type === 'textarea') {
 			this._isTextAreaInput = true;
 		}
-		this.required = !!this._sqlOptions.required;
+		this.required = !!this._sqlOptions?.required;
 	}
 
 	public override style(styles: IInputBoxStyles): void {
@@ -170,5 +177,19 @@ export class InputBox extends vsInputBox {
 			return super.validate();
 		}
 		return undefined;
+	}
+
+	public override set width(width: number) {
+		super.width = width;
+		this.element.style.width = 'fit-content';
+	}
+
+	public override get value() {
+		return super.value;
+	}
+
+	public override set value(newValue: string) {
+		this._lastLoseFocusValue = newValue;
+		super.value = newValue;
 	}
 }

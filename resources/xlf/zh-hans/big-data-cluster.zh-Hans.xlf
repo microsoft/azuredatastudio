@@ -1,496 +1,62 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/big-data-cluster/package" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="description">
-        <source xml:lang="en">Support for managing SQL Server Big Data Clusters</source>
-        <target state="translated">支持管理 SQL Server 大数据群集</target>
-      </trans-unit>
-      <trans-unit id="text.sqlServerBigDataClusters">
-        <source xml:lang="en">SQL Server Big Data Clusters</source>
-        <target state="translated">SQL Server 大数据群集</target>
-      </trans-unit>
-      <trans-unit id="command.connectController.title">
-        <source xml:lang="en">Connect to Existing Controller</source>
-        <target state="translated">连接到现有控制器</target>
-      </trans-unit>
-      <trans-unit id="command.createController.title">
-        <source xml:lang="en">Create New Controller</source>
-        <target state="translated">创建新控制器</target>
-      </trans-unit>
-      <trans-unit id="command.removeController.title">
-        <source xml:lang="en">Remove Controller</source>
-        <target state="translated">移除控制器</target>
-      </trans-unit>
-      <trans-unit id="command.refreshController.title">
-        <source xml:lang="en">Refresh</source>
-        <target state="translated">刷新</target>
-      </trans-unit>
-      <trans-unit id="command.manageController.title">
-        <source xml:lang="en">Manage</source>
-        <target state="translated">管理</target>
-      </trans-unit>
-      <trans-unit id="command.mount.title">
-        <source xml:lang="en">Mount HDFS</source>
-        <target state="translated">装载 HDFS</target>
-      </trans-unit>
-      <trans-unit id="command.refreshmount.title">
-        <source xml:lang="en">Refresh Mount</source>
-        <target state="translated">刷新装载</target>
-      </trans-unit>
-      <trans-unit id="command.deletemount.title">
-        <source xml:lang="en">Delete Mount</source>
-        <target state="translated">删除装载</target>
-      </trans-unit>
-      <trans-unit id="bdc.configuration.title">
-        <source xml:lang="en">Big Data Cluster</source>
-        <target state="translated">大数据群集</target>
-      </trans-unit>
-      <trans-unit id="bdc.view.welcome.connect">
-        <source xml:lang="en">No SQL Big Data Cluster controllers registered. [Learn More](https://docs.microsoft.com/sql/big-data-cluster/big-data-cluster-overview)
-[Connect Controller](command:bigDataClusters.command.connectController)</source>
-        <target state="translated">未注册任何 SQL 大数据群集控制器。[了解更多](https://docs.microsoft.com/sql/big-data-cluster/big-data-cluster-overview)
-[连接控制器](command:bigDataClusters.command.connectController)</target>
-      </trans-unit>
-      <trans-unit id="bdc.view.welcome.loading">
-        <source xml:lang="en">Loading controllers...</source>
-        <target state="translated">正在加载控制器...</target>
-      </trans-unit>
-      <trans-unit id="bdc.ignoreSslVerification.desc">
-        <source xml:lang="en">Ignore SSL verification errors against SQL Server Big Data Cluster endpoints such as HDFS, Spark, and Controller if true</source>
-        <target state="translated">如果为 true，则忽略针对 SQL Server 大数据群集终结点(如 HDFS、Spark 和控制器)的 SSL 验证错误</target>
-      </trans-unit>
-      <trans-unit id="resource-type-sql-bdc-display-name">
-        <source xml:lang="en">SQL Server Big Data Cluster</source>
-        <target state="translated">SQL Server 大数据群集</target>
-      </trans-unit>
-      <trans-unit id="resource-type-sql-bdc-description">
-        <source xml:lang="en">SQL Server Big Data Cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes</source>
-        <target state="translated">借助 SQL Server 大数据群集，可部署在 Kubernetes 上运行的 SQL Server、Spark 和 HDFS 容器的可扩展群集</target>
-      </trans-unit>
-      <trans-unit id="version-display-name">
-        <source xml:lang="en">Version</source>
-        <target state="translated">版本</target>
-      </trans-unit>
-      <trans-unit id="bdc-2019-display-name">
-        <source xml:lang="en">SQL Server 2019</source>
-        <target state="translated">SQL Server 2019</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target">
-        <source xml:lang="en">Deployment target</source>
-        <target state="translated">部署目标</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-new-aks">
-        <source xml:lang="en">New Azure Kubernetes Service Cluster</source>
-        <target state="translated">新的 Azure Kubernetes 服务群集</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-aks">
-        <source xml:lang="en">Existing Azure Kubernetes Service Cluster</source>
-        <target state="translated">现有 Azure Kubernetes 服务群集</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-kubeadm">
-        <source xml:lang="en">Existing Kubernetes Cluster (kubeadm)</source>
-        <target state="translated">现有 Kubernetes 群集(kubeadm)</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-aro">
-        <source xml:lang="en">Existing Azure Red Hat OpenShift cluster</source>
-        <target state="translated">现有 Azure Red Hat OpenShift 群集</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-openshift">
-        <source xml:lang="en">Existing OpenShift cluster</source>
-        <target state="translated">现有 OpenShift 群集</target>
-      </trans-unit>
-      <trans-unit id="bdc-cluster-settings-section-title">
-        <source xml:lang="en">SQL Server Big Data Cluster settings</source>
-        <target state="translated">SQL Server 大数据群集设置</target>
-      </trans-unit>
-      <trans-unit id="bdc-cluster-name-field">
-        <source xml:lang="en">Cluster name</source>
-        <target state="translated">群集名称</target>
-      </trans-unit>
-      <trans-unit id="bdc-controller-username-field">
-        <source xml:lang="en">Controller username</source>
-        <target state="translated">控制器用户名</target>
-      </trans-unit>
-      <trans-unit id="bdc-password-field">
-        <source xml:lang="en">Password</source>
-        <target state="translated">密码</target>
-      </trans-unit>
-      <trans-unit id="bdc-confirm-password-field">
-        <source xml:lang="en">Confirm password</source>
-        <target state="translated">确认密码</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-settings-section-title">
-        <source xml:lang="en">Azure settings</source>
-        <target state="translated">Azure 设置</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-subscription-id-field">
-        <source xml:lang="en">Subscription id</source>
-        <target state="translated">订阅 ID</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-subscription-id-placeholder">
-        <source xml:lang="en">Use my default Azure subscription</source>
-        <target state="translated">使用默认 Azure 订阅</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-resource-group-field">
-        <source xml:lang="en">Resource group name</source>
-        <target state="translated">资源组名称</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-region-field">
-        <source xml:lang="en">Region</source>
-        <target state="translated">区域</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-aks-name-field">
-        <source xml:lang="en">AKS cluster name</source>
-        <target state="translated">AKS 群集名称</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-vm-size-field">
-        <source xml:lang="en">VM size</source>
-        <target state="translated">VM 大小</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-vm-count-field">
-        <source xml:lang="en">VM count</source>
-        <target state="translated">VM 计数</target>
-      </trans-unit>
-      <trans-unit id="bdc-storage-class-field">
-        <source xml:lang="en">Storage class name</source>
-        <target state="translated">存储类名称</target>
-      </trans-unit>
-      <trans-unit id="bdc-data-size-field">
-        <source xml:lang="en">Capacity for data (GB)</source>
-        <target state="translated">数据容量(GB)</target>
-      </trans-unit>
-      <trans-unit id="bdc-log-size-field">
-        <source xml:lang="en">Capacity for logs (GB)</source>
-        <target state="translated">日志容量(GB)</target>
-      </trans-unit>
-      <trans-unit id="bdc-agreement">
-        <source xml:lang="en">I accept {0}, {1} and {2}.</source>
-        <target state="translated">我接受 {0}、{1} 和 {2}。</target>
-      </trans-unit>
-      <trans-unit id="microsoft-privacy-statement">
-        <source xml:lang="en">Microsoft Privacy Statement</source>
-        <target state="translated">Microsoft 隐私声明</target>
-      </trans-unit>
-      <trans-unit id="bdc-agreement-azdata-eula">
-        <source xml:lang="en">azdata License Terms</source>
-        <target state="translated">azdata 许可条款</target>
-      </trans-unit>
-      <trans-unit id="bdc-agreement-bdc-eula">
-        <source xml:lang="en">SQL Server License Terms</source>
-        <target state="translated">SQL Server 许可条款</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="state.creating">
-        <source xml:lang="en">Creating</source>
-        <target state="translated">正在创建</target>
-      </trans-unit>
-      <trans-unit id="state.waiting">
-        <source xml:lang="en">Waiting</source>
-        <target state="translated">正在等待</target>
-      </trans-unit>
-      <trans-unit id="state.ready">
-        <source xml:lang="en">Ready</source>
-        <target state="translated">准备就绪</target>
-      </trans-unit>
-      <trans-unit id="state.deleting">
-        <source xml:lang="en">Deleting</source>
-        <target state="translated">正在删除</target>
-      </trans-unit>
-      <trans-unit id="state.deleted">
-        <source xml:lang="en">Deleted</source>
-        <target state="translated">已删除</target>
-      </trans-unit>
-      <trans-unit id="state.applyingUpgrade">
-        <source xml:lang="en">Applying Upgrade</source>
-        <target state="translated">正在应用升级</target>
-      </trans-unit>
-      <trans-unit id="state.upgrading">
-        <source xml:lang="en">Upgrading</source>
-        <target state="translated">正在升级</target>
-      </trans-unit>
-      <trans-unit id="state.applyingmanagedupgrade">
-        <source xml:lang="en">Applying Managed Upgrade</source>
-        <target state="translated">正在应用托管升级</target>
-      </trans-unit>
-      <trans-unit id="state.managedUpgrading">
-        <source xml:lang="en">Managed Upgrading</source>
-        <target state="translated">正在托管升级</target>
-      </trans-unit>
-      <trans-unit id="state.rollback">
-        <source xml:lang="en">Rollback</source>
-        <target state="translated">回退</target>
-      </trans-unit>
-      <trans-unit id="state.rollbackInProgress">
-        <source xml:lang="en">Rollback In Progress</source>
-        <target state="translated">正在回退</target>
-      </trans-unit>
-      <trans-unit id="state.rollbackComplete">
-        <source xml:lang="en">Rollback Complete</source>
-        <target state="translated">回退完成</target>
-      </trans-unit>
-      <trans-unit id="state.error">
-        <source xml:lang="en">Error</source>
-        <target state="translated">错误</target>
-      </trans-unit>
-      <trans-unit id="state.creatingSecrets">
-        <source xml:lang="en">Creating Secrets</source>
-        <target state="translated">正在创建机密</target>
-      </trans-unit>
-      <trans-unit id="state.waitingForSecrets">
-        <source xml:lang="en">Waiting For Secrets</source>
-        <target state="translated">正在等待机密</target>
-      </trans-unit>
-      <trans-unit id="state.creatingGroups">
-        <source xml:lang="en">Creating Groups</source>
-        <target state="translated">正在创建组</target>
-      </trans-unit>
-      <trans-unit id="state.waitingForGroups">
-        <source xml:lang="en">Waiting For Groups</source>
-        <target state="translated">正在等待组</target>
-      </trans-unit>
-      <trans-unit id="state.creatingResources">
-        <source xml:lang="en">Creating Resources</source>
-        <target state="translated">正在创建资源</target>
-      </trans-unit>
-      <trans-unit id="state.waitingForResources">
-        <source xml:lang="en">Waiting For Resources</source>
-        <target state="translated">正在等待资源</target>
-      </trans-unit>
-      <trans-unit id="state.creatingKerberosDelegationSetup">
-        <source xml:lang="en">Creating Kerberos Delegation Setup</source>
-        <target state="translated">正在创建 Kerberos 委派设置</target>
-      </trans-unit>
-      <trans-unit id="state.waitingForKerberosDelegationSetup">
-        <source xml:lang="en">Waiting For Kerberos Delegation Setup</source>
-        <target state="translated">正在等待 Kerberos 委派设置</target>
-      </trans-unit>
-      <trans-unit id="state.waitingForDeletion">
-        <source xml:lang="en">Waiting For Deletion</source>
-        <target state="translated">正在等待删除</target>
-      </trans-unit>
-      <trans-unit id="state.waitingForUpgrade">
-        <source xml:lang="en">Waiting For Upgrade</source>
-        <target state="translated">正在等待升级</target>
-      </trans-unit>
-      <trans-unit id="state.upgradePaused">
-        <source xml:lang="en">Upgrade Paused</source>
-        <target state="translated">升级已暂停</target>
-      </trans-unit>
-      <trans-unit id="state.running">
-        <source xml:lang="en">Running</source>
-        <target state="translated">正在运行</target>
-      </trans-unit>
-      <trans-unit id="endpoint.appproxy">
-        <source xml:lang="en">Application Proxy</source>
-        <target state="translated">应用程序代理</target>
-      </trans-unit>
-      <trans-unit id="endpoint.controller">
-        <source xml:lang="en">Cluster Management Service</source>
-        <target state="translated">群集管理服务</target>
-      </trans-unit>
-      <trans-unit id="endpoint.gateway">
-        <source xml:lang="en">Gateway to access HDFS files, Spark</source>
-        <target state="translated">访问 HDFS 文件的网关，Spark</target>
-      </trans-unit>
-      <trans-unit id="endpoint.managementproxy">
-        <source xml:lang="en">Management Proxy</source>
-        <target state="translated">管理代理</target>
-      </trans-unit>
-      <trans-unit id="endpoint.mgmtproxy">
-        <source xml:lang="en">Management Proxy</source>
-        <target state="translated">管理代理</target>
-      </trans-unit>
-      <trans-unit id="endpoint.sqlServerEndpoint">
-        <source xml:lang="en">SQL Server Master Instance Front-End</source>
-        <target state="translated">SQL Server 主实例前端</target>
-      </trans-unit>
-      <trans-unit id="endpoint.grafana">
-        <source xml:lang="en">Metrics Dashboard</source>
-        <target state="translated">指标仪表板</target>
-      </trans-unit>
-      <trans-unit id="endpoint.kibana">
-        <source xml:lang="en">Log Search Dashboard</source>
-        <target state="translated">日志搜索仪表板</target>
-      </trans-unit>
-      <trans-unit id="endpoint.yarnHistory">
-        <source xml:lang="en">Spark Diagnostics and Monitoring Dashboard</source>
-        <target state="translated">Spark 诊断和监视仪表板</target>
-      </trans-unit>
-      <trans-unit id="endpoint.sparkHistory">
-        <source xml:lang="en">Spark Jobs Management and Monitoring Dashboard</source>
-        <target state="translated">Spark 作业管理和监视仪表板</target>
-      </trans-unit>
-      <trans-unit id="endpoint.webhdfs">
-        <source xml:lang="en">HDFS File System Proxy</source>
-        <target state="translated">HDFS 文件系统代理</target>
-      </trans-unit>
-      <trans-unit id="endpoint.livy">
-        <source xml:lang="en">Proxy for running Spark statements, jobs, applications</source>
-        <target state="translated">用于运行 Spark 语句、作业和应用程序的代理</target>
-      </trans-unit>
-      <trans-unit id="service.sql">
-        <source xml:lang="en">SQL Server</source>
-        <target state="translated">SQL Server</target>
-      </trans-unit>
-      <trans-unit id="service.hdfs">
-        <source xml:lang="en">HDFS</source>
-        <target state="translated">HDFS</target>
-      </trans-unit>
-      <trans-unit id="service.spark">
-        <source xml:lang="en">Spark</source>
-        <target state="translated">Spark</target>
-      </trans-unit>
-      <trans-unit id="service.control">
-        <source xml:lang="en">Control</source>
-        <target state="translated">Control</target>
-      </trans-unit>
-      <trans-unit id="service.gateway">
-        <source xml:lang="en">Gateway</source>
-        <target state="translated">网关</target>
-      </trans-unit>
-      <trans-unit id="service.app">
-        <source xml:lang="en">App</source>
-        <target state="translated">应用</target>
-      </trans-unit>
-      <trans-unit id="bdc.healthy">
-        <source xml:lang="en">Healthy</source>
-        <target state="translated">正常</target>
-      </trans-unit>
-      <trans-unit id="bdc.unhealthy">
-        <source xml:lang="en">Unhealthy</source>
-        <target state="translated">不正常</target>
-      </trans-unit>
-      <trans-unit id="endpointsError">
-        <source xml:lang="en">Unexpected error retrieving BDC Endpoints: {0}</source>
-        <target state="translated">检索 BDC 终结点时出现意外错误: {0}</target>
+      <trans-unit id="bdc.error.deleteHdfs">
+        <source xml:lang="en">Error deleting mount</source>
+        <target state="translated">删除装载时出错</target>
+      </trans-unit>
+      <trans-unit id="bdc.error.getBdcStatus">
+        <source xml:lang="en">Error retrieving BDC status from {0}</source>
+        <target state="translated">从 {0} 检索 BDC 状态时出错</target>
+      </trans-unit>
+      <trans-unit id="bdc.error.getClusterConfig">
+        <source xml:lang="en">Error retrieving cluster config from {0}</source>
+        <target state="translated">从 {0} 检索群集配置时出错</target>
+      </trans-unit>
+      <trans-unit id="bdc.error.getEndPoints">
+        <source xml:lang="en">Error retrieving endpoints from {0}</source>
+        <target state="translated">从 {0} 检索终结点时出错</target>
+      </trans-unit>
+      <trans-unit id="bdc.error.mountHdfs">
+        <source xml:lang="en">Error creating mount</source>
+        <target state="translated">创建装载时出错</target>
+      </trans-unit>
+      <trans-unit id="bdc.error.refreshHdfs">
+        <source xml:lang="en">Error refreshing mount</source>
+        <target state="translated">刷新装载时出错</target>
+      </trans-unit>
+      <trans-unit id="bdc.error.statusHdfs">
+        <source xml:lang="en">Error getting mount status</source>
+        <target state="translated">获取装载状态时出错</target>
+      </trans-unit>
+      <trans-unit id="bdc.error.tokenPost">
+        <source xml:lang="en">Error during authentication</source>
+        <target state="translated">身份验证期间出错</target>
+      </trans-unit>
+      <trans-unit id="bdc.error.unauthorized">
+        <source xml:lang="en">You do not have permission to log into this cluster using Windows Authentication</source>
+        <target state="translated">你没有使用 Windows 身份验证登录到此群集的权限</target>
+      </trans-unit>
+      <trans-unit id="error.no.activedirectory">
+        <source xml:lang="en">This cluster does not support Windows authentication</source>
+        <target state="translated">此群集不支持 Windows 身份验证</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/big-data-cluster/dist/bigDataCluster/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="bdc.dashboard.status">
-        <source xml:lang="en">Status Icon</source>
-        <target state="translated">状态图标</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.instance">
-        <source xml:lang="en">Instance</source>
-        <target state="translated">实例</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.state">
-        <source xml:lang="en">State</source>
-        <target state="translated">状态</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.view">
-        <source xml:lang="en">View</source>
-        <target state="translated">查看</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.notAvailable">
-        <source xml:lang="en">N/A</source>
-        <target state="translated">不适用</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.healthStatusDetails">
-        <source xml:lang="en">Health Status Details</source>
-        <target state="translated">运行状况详细信息</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.metricsAndLogs">
-        <source xml:lang="en">Metrics and Logs</source>
-        <target state="translated">指标和日志</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.healthStatus">
-        <source xml:lang="en">Health Status</source>
-        <target state="translated">运行状况</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.nodeMetrics">
-        <source xml:lang="en">Node Metrics</source>
-        <target state="translated">节点指标</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.sqlMetrics">
-        <source xml:lang="en">SQL Metrics</source>
-        <target state="translated">SQL 指标</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.logs">
-        <source xml:lang="en">Logs</source>
-        <target state="translated">日志</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.viewNodeMetrics">
-        <source xml:lang="en">View Node Metrics {0}</source>
-        <target state="translated">查看节点指标 {0}</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.viewSqlMetrics">
-        <source xml:lang="en">View SQL Metrics {0}</source>
-        <target state="translated">查看 SQL 指标 {0}</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.viewLogs">
-        <source xml:lang="en">View Kibana Logs {0}</source>
-        <target state="translated">查看 Kibana 日志 {0}</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.lastUpdated">
-        <source xml:lang="en">Last Updated : {0}</source>
-        <target state="translated">上次更新时间: {0}</target>
-      </trans-unit>
-      <trans-unit id="basicAuthName">
-        <source xml:lang="en">Basic</source>
-        <target state="translated">基本</target>
-      </trans-unit>
-      <trans-unit id="integratedAuthName">
-        <source xml:lang="en">Windows Authentication</source>
-        <target state="translated">Windows 身份验证</target>
+      <trans-unit id="add">
+        <source xml:lang="en">Add</source>
+        <target state="translated">添加</target>
       </trans-unit>
       <trans-unit id="addNewController">
         <source xml:lang="en">Add New Controller</source>
         <target state="translated">添加新控制器</target>
       </trans-unit>
-      <trans-unit id="url">
-        <source xml:lang="en">URL</source>
-        <target state="translated">URL</target>
-      </trans-unit>
-      <trans-unit id="username">
-        <source xml:lang="en">Username</source>
-        <target state="translated">用户名</target>
-      </trans-unit>
-      <trans-unit id="password">
-        <source xml:lang="en">Password</source>
-        <target state="translated">密码</target>
-      </trans-unit>
-      <trans-unit id="rememberPassword">
-        <source xml:lang="en">Remember Password</source>
-        <target state="translated">记住密码</target>
-      </trans-unit>
-      <trans-unit id="clusterManagementUrl">
-        <source xml:lang="en">Cluster Management URL</source>
-        <target state="translated">群集管理 URL</target>
-      </trans-unit>
-      <trans-unit id="textAuthCapital">
-        <source xml:lang="en">Authentication type</source>
-        <target state="translated">身份验证类型</target>
-      </trans-unit>
-      <trans-unit id="hdsf.dialog.connection.section">
-        <source xml:lang="en">Cluster Connection</source>
-        <target state="translated">群集连接</target>
-      </trans-unit>
-      <trans-unit id="add">
-        <source xml:lang="en">Add</source>
-        <target state="translated">添加</target>
-      </trans-unit>
-      <trans-unit id="cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">取消</target>
-      </trans-unit>
-      <trans-unit id="ok">
-        <source xml:lang="en">OK</source>
-        <target state="translated">确定</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.refresh">
-        <source xml:lang="en">Refresh</source>
-        <target state="translated">刷新</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.troubleshoot">
-        <source xml:lang="en">Troubleshoot</source>
-        <target state="translated">疑难解答</target>
+      <trans-unit id="basicAuthName">
+        <source xml:lang="en">Basic</source>
+        <target state="translated">基本</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.bdcOverview">
         <source xml:lang="en">Big Data Cluster overview</source>
@@ -504,10 +70,6 @@
         <source xml:lang="en">Cluster Overview</source>
         <target state="translated">群集概述</target>
       </trans-unit>
-      <trans-unit id="bdc.dashboard.serviceEndpoints">
-        <source xml:lang="en">Service Endpoints</source>
-        <target state="translated">服务终结点</target>
-      </trans-unit>
       <trans-unit id="bdc.dashboard.clusterProperties">
         <source xml:lang="en">Cluster Properties</source>
         <target state="translated">群集属性</target>
@@ -516,109 +78,29 @@
         <source xml:lang="en">Cluster State</source>
         <target state="translated">群集状态</target>
       </trans-unit>
-      <trans-unit id="bdc.dashboard.serviceName">
-        <source xml:lang="en">Service Name</source>
-        <target state="translated">服务名称</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.service">
-        <source xml:lang="en">Service</source>
-        <target state="translated">服务</target>
+      <trans-unit id="bdc.dashboard.copy">
+        <source xml:lang="en">Copy</source>
+        <target state="translated">复制</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.endpoint">
         <source xml:lang="en">Endpoint</source>
         <target state="translated">终结点</target>
       </trans-unit>
-      <trans-unit id="copiedEndpoint">
-        <source xml:lang="en">Endpoint '{0}' copied to clipboard</source>
-        <target state="translated">终结点“{0}”已复制到剪贴板</target>
+      <trans-unit id="bdc.dashboard.healthStatus">
+        <source xml:lang="en">Health Status</source>
+        <target state="translated">运行状况</target>
       </trans-unit>
-      <trans-unit id="bdc.dashboard.copy">
-        <source xml:lang="en">Copy</source>
-        <target state="translated">复制</target>
+      <trans-unit id="bdc.dashboard.healthStatusDetails">
+        <source xml:lang="en">Health Status Details</source>
+        <target state="translated">运行状况详细信息</target>
       </trans-unit>
-      <trans-unit id="bdc.dashboard.viewDetails">
-        <source xml:lang="en">View Details</source>
-        <target state="translated">查看详细信息</target>
+      <trans-unit id="bdc.dashboard.instance">
+        <source xml:lang="en">Instance</source>
+        <target state="translated">实例</target>
       </trans-unit>
-      <trans-unit id="bdc.dashboard.viewErrorDetails">
-        <source xml:lang="en">View Error Details</source>
-        <target state="translated">查看错误详细信息</target>
-      </trans-unit>
-      <trans-unit id="connectController.dialog.title">
-        <source xml:lang="en">Connect to Controller</source>
-        <target state="translated">连接到控制器</target>
-      </trans-unit>
-      <trans-unit id="mount.main.section">
-        <source xml:lang="en">Mount Configuration</source>
-        <target state="translated">装载配置</target>
-      </trans-unit>
-      <trans-unit id="mount.task.name">
-        <source xml:lang="en">Mounting HDFS folder on path {0}</source>
-        <target state="translated">正在路径 {0} 上装载 HDFS 文件夹</target>
-      </trans-unit>
-      <trans-unit id="refreshmount.task.name">
-        <source xml:lang="en">Refreshing HDFS Mount on path {0}</source>
-        <target state="translated">正在刷新路径 {0} 上的 HDFS 装载</target>
-      </trans-unit>
-      <trans-unit id="deletemount.task.name">
-        <source xml:lang="en">Deleting HDFS Mount on path {0}</source>
-        <target state="translated">正在删除路径 {0} 上的 HDFS 装载</target>
-      </trans-unit>
-      <trans-unit id="mount.task.submitted">
-        <source xml:lang="en">Mount creation has started</source>
-        <target state="translated">已开始装载创建</target>
-      </trans-unit>
-      <trans-unit id="refreshmount.task.submitted">
-        <source xml:lang="en">Refresh mount request submitted</source>
-        <target state="translated">刷新已提交的装载请求</target>
-      </trans-unit>
-      <trans-unit id="deletemount.task.submitted">
-        <source xml:lang="en">Delete mount request submitted</source>
-        <target state="translated">删除已提交的装载请求</target>
-      </trans-unit>
-      <trans-unit id="mount.task.complete">
-        <source xml:lang="en">Mounting HDFS folder is complete</source>
-        <target state="translated">已完成 HDFS 文件夹装载</target>
-      </trans-unit>
-      <trans-unit id="mount.task.inprogress">
-        <source xml:lang="en">Mounting is likely to complete, check back later to verify</source>
-        <target state="translated">装载即将完成，请稍后回来查看以进行验证</target>
-      </trans-unit>
-      <trans-unit id="mount.dialog.title">
-        <source xml:lang="en">Mount HDFS Folder</source>
-        <target state="translated">装载 HDFS 文件夹</target>
-      </trans-unit>
-      <trans-unit id="mount.hdfsPath.title">
-        <source xml:lang="en">HDFS Path</source>
-        <target state="translated">HDFS 路径</target>
-      </trans-unit>
-      <trans-unit id="mount.hdfsPath.info">
-        <source xml:lang="en">Path to a new (non-existing) directory which you want to associate with the mount</source>
-        <target state="translated">要与装载关联的新(不存在)目录的路径</target>
-      </trans-unit>
-      <trans-unit id="mount.remoteUri.title">
-        <source xml:lang="en">Remote URI</source>
-        <target state="translated">远程 URI</target>
-      </trans-unit>
-      <trans-unit id="mount.remoteUri.info">
-        <source xml:lang="en">The URI to the remote data source. Example for ADLS: abfs://fs@saccount.dfs.core.windows.net/</source>
-        <target state="translated">到远程数据源的 URI。ADLS 示例: abfs://fs@saccount.dfs.core.windows.net/</target>
-      </trans-unit>
-      <trans-unit id="mount.credentials.title">
-        <source xml:lang="en">Credentials</source>
-        <target state="translated">凭据</target>
-      </trans-unit>
-      <trans-unit id="mount.credentials.info">
-        <source xml:lang="en">Mount credentials for authentication to remote data source for reads</source>
-        <target state="translated">将身份验证凭据装载到远程数据源进行读取</target>
-      </trans-unit>
-      <trans-unit id="refreshmount.dialog.title">
-        <source xml:lang="en">Refresh Mount</source>
-        <target state="translated">刷新装载</target>
-      </trans-unit>
-      <trans-unit id="deleteMount.dialog.title">
-        <source xml:lang="en">Delete Mount</source>
-        <target state="translated">删除装载</target>
+      <trans-unit id="bdc.dashboard.lastUpdated">
+        <source xml:lang="en">Last Updated : {0}</source>
+        <target state="translated">上次更新时间: {0}</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.loadingClusterStateCompleted">
         <source xml:lang="en">Loading cluster state completed</source>
@@ -628,25 +110,153 @@
         <source xml:lang="en">Loading health status completed</source>
         <target state="translated">运行状况加载已完成</target>
       </trans-unit>
-      <trans-unit id="err.controller.username.required">
-        <source xml:lang="en">Username is required</source>
-        <target state="translated">用户名为必填项</target>
+      <trans-unit id="bdc.dashboard.logs">
+        <source xml:lang="en">Logs</source>
+        <target state="translated">日志</target>
       </trans-unit>
-      <trans-unit id="err.controller.password.required">
-        <source xml:lang="en">Password is required</source>
-        <target state="translated">密码为必填项</target>
-      </trans-unit>
-      <trans-unit id="endpointsError">
-        <source xml:lang="en">Unexpected error retrieving BDC Endpoints: {0}</source>
-        <target state="translated">检索 BDC 终结点时出现意外错误: {0}</target>
+      <trans-unit id="bdc.dashboard.metricsAndLogs">
+        <source xml:lang="en">Metrics and Logs</source>
+        <target state="translated">指标和日志</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.noConnection">
         <source xml:lang="en">The dashboard requires a connection. Please click retry to enter your credentials.</source>
         <target state="translated">仪表板需要连接。请单击“重试”以输入凭据。</target>
       </trans-unit>
+      <trans-unit id="bdc.dashboard.nodeMetrics">
+        <source xml:lang="en">Node Metrics</source>
+        <target state="translated">节点指标</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.notAvailable">
+        <source xml:lang="en">N/A</source>
+        <target state="translated">不适用</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.refresh">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">刷新</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.service">
+        <source xml:lang="en">Service</source>
+        <target state="translated">服务</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.serviceEndpoints">
+        <source xml:lang="en">Service Endpoints</source>
+        <target state="translated">服务终结点</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.serviceName">
+        <source xml:lang="en">Service Name</source>
+        <target state="translated">服务名称</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.sqlMetrics">
+        <source xml:lang="en">SQL Metrics</source>
+        <target state="translated">SQL 指标</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.state">
+        <source xml:lang="en">State</source>
+        <target state="translated">状态</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.status">
+        <source xml:lang="en">Status Icon</source>
+        <target state="translated">状态图标</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.troubleshoot">
+        <source xml:lang="en">Troubleshoot</source>
+        <target state="translated">疑难解答</target>
+      </trans-unit>
       <trans-unit id="bdc.dashboard.unexpectedError">
         <source xml:lang="en">Unexpected error occurred: {0}</source>
         <target state="translated">发生意外错误: {0}</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.view">
+        <source xml:lang="en">View</source>
+        <target state="translated">查看</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.viewDetails">
+        <source xml:lang="en">View Details</source>
+        <target state="translated">查看详细信息</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.viewErrorDetails">
+        <source xml:lang="en">View Error Details</source>
+        <target state="translated">查看错误详细信息</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.viewLogs">
+        <source xml:lang="en">View Kibana Logs {0}</source>
+        <target state="translated">查看 Kibana 日志 {0}</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.viewNodeMetrics">
+        <source xml:lang="en">View Node Metrics {0}</source>
+        <target state="translated">查看节点指标 {0}</target>
+      </trans-unit>
+      <trans-unit id="bdc.dashboard.viewSqlMetrics">
+        <source xml:lang="en">View SQL Metrics {0}</source>
+        <target state="translated">查看 SQL 指标 {0}</target>
+      </trans-unit>
+      <trans-unit id="cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">取消</target>
+      </trans-unit>
+      <trans-unit id="clusterManagementUrl">
+        <source xml:lang="en">Cluster Management URL</source>
+        <target state="translated">群集管理 URL</target>
+      </trans-unit>
+      <trans-unit id="connectController.dialog.title">
+        <source xml:lang="en">Connect to Controller</source>
+        <target state="translated">连接到控制器</target>
+      </trans-unit>
+      <trans-unit id="copiedEndpoint">
+        <source xml:lang="en">Endpoint '{0}' copied to clipboard</source>
+        <target state="translated">终结点“{0}”已复制到剪贴板</target>
+      </trans-unit>
+      <trans-unit id="deleteMount.dialog.title">
+        <source xml:lang="en">Delete Mount</source>
+        <target state="translated">删除装载</target>
+      </trans-unit>
+      <trans-unit id="deletemount.task.name">
+        <source xml:lang="en">Deleting HDFS Mount on path {0}</source>
+        <target state="translated">正在删除路径 {0} 上的 HDFS 装载</target>
+      </trans-unit>
+      <trans-unit id="deletemount.task.submitted">
+        <source xml:lang="en">Delete mount request submitted</source>
+        <target state="translated">删除已提交的装载请求</target>
+      </trans-unit>
+      <trans-unit id="endpointsError">
+        <source xml:lang="en">Unexpected error retrieving BDC Endpoints: {0}</source>
+        <target state="translated">检索 BDC 终结点时出现意外错误: {0}</target>
+      </trans-unit>
+      <trans-unit id="err.controller.password.required">
+        <source xml:lang="en">Password is required</source>
+        <target state="translated">密码为必填项</target>
+      </trans-unit>
+      <trans-unit id="err.controller.username.required">
+        <source xml:lang="en">Username is required</source>
+        <target state="translated">用户名为必填项</target>
+      </trans-unit>
+      <trans-unit id="hdsf.dialog.connection.section">
+        <source xml:lang="en">Cluster Connection</source>
+        <target state="translated">群集连接</target>
+      </trans-unit>
+      <trans-unit id="integratedAuthName">
+        <source xml:lang="en">Windows Authentication</source>
+        <target state="translated">Windows 身份验证</target>
+      </trans-unit>
+      <trans-unit id="mount.credentials.info">
+        <source xml:lang="en">Mount credentials for authentication to remote data source for reads</source>
+        <target state="translated">将身份验证凭据装载到远程数据源进行读取</target>
+      </trans-unit>
+      <trans-unit id="mount.credentials.title">
+        <source xml:lang="en">Credentials</source>
+        <target state="translated">凭据</target>
+      </trans-unit>
+      <trans-unit id="mount.dialog.title">
+        <source xml:lang="en">Mount HDFS Folder</source>
+        <target state="translated">装载 HDFS 文件夹</target>
+      </trans-unit>
+      <trans-unit id="mount.err.formatting">
+        <source xml:lang="en">Bad formatting of credentials at {0}</source>
+        <target state="translated">{0} 处凭据格式错误</target>
+      </trans-unit>
+      <trans-unit id="mount.error.unknown">
+        <source xml:lang="en">Unknown error occurred during the mount process</source>
+        <target state="translated">装载过程中发生未知错误</target>
       </trans-unit>
       <trans-unit id="mount.hdfs.loginerror1">
         <source xml:lang="en">Login to controller failed</source>
@@ -656,85 +266,81 @@
         <source xml:lang="en">Login to controller failed: {0}</source>
         <target state="translated">未能登录到控制器: {0}</target>
       </trans-unit>
-      <trans-unit id="mount.err.formatting">
-        <source xml:lang="en">Bad formatting of credentials at {0}</source>
-        <target state="translated">{0} 处凭据格式错误</target>
+      <trans-unit id="mount.hdfsPath.info">
+        <source xml:lang="en">Path to a new (non-existing) directory which you want to associate with the mount</source>
+        <target state="translated">要与装载关联的新(不存在)目录的路径</target>
+      </trans-unit>
+      <trans-unit id="mount.hdfsPath.title">
+        <source xml:lang="en">HDFS Path</source>
+        <target state="translated">HDFS 路径</target>
+      </trans-unit>
+      <trans-unit id="mount.main.section">
+        <source xml:lang="en">Mount Configuration</source>
+        <target state="translated">装载配置</target>
+      </trans-unit>
+      <trans-unit id="mount.remoteUri.info">
+        <source xml:lang="en">The URI to the remote data source. Example for ADLS: abfs://fs@saccount.dfs.core.windows.net/</source>
+        <target state="translated">到远程数据源的 URI。ADLS 示例: abfs://fs@saccount.dfs.core.windows.net/</target>
+      </trans-unit>
+      <trans-unit id="mount.remoteUri.title">
+        <source xml:lang="en">Remote URI</source>
+        <target state="translated">远程 URI</target>
+      </trans-unit>
+      <trans-unit id="mount.task.complete">
+        <source xml:lang="en">Mounting HDFS folder is complete</source>
+        <target state="translated">已完成 HDFS 文件夹装载</target>
       </trans-unit>
       <trans-unit id="mount.task.error">
         <source xml:lang="en">Error mounting folder: {0}</source>
         <target state="translated">装载文件夹时出错: {0}</target>
       </trans-unit>
-      <trans-unit id="mount.error.unknown">
-        <source xml:lang="en">Unknown error occurred during the mount process</source>
-        <target state="translated">装载过程中发生未知错误</target>
+      <trans-unit id="mount.task.inprogress">
+        <source xml:lang="en">Mounting is likely to complete, check back later to verify</source>
+        <target state="translated">装载即将完成，请稍后回来查看以进行验证</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="error.no.activedirectory">
-        <source xml:lang="en">This cluster does not support Windows authentication</source>
-        <target state="translated">此群集不支持 Windows 身份验证</target>
+      <trans-unit id="mount.task.name">
+        <source xml:lang="en">Mounting HDFS folder on path {0}</source>
+        <target state="translated">正在路径 {0} 上装载 HDFS 文件夹</target>
       </trans-unit>
-      <trans-unit id="bdc.error.tokenPost">
-        <source xml:lang="en">Error during authentication</source>
-        <target state="translated">身份验证期间出错</target>
+      <trans-unit id="mount.task.submitted">
+        <source xml:lang="en">Mount creation has started</source>
+        <target state="translated">已开始装载创建</target>
       </trans-unit>
-      <trans-unit id="bdc.error.unauthorized">
-        <source xml:lang="en">You do not have permission to log into this cluster using Windows Authentication</source>
-        <target state="translated">你没有使用 Windows 身份验证登录到此群集的权限</target>
+      <trans-unit id="ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">确定</target>
       </trans-unit>
-      <trans-unit id="bdc.error.getClusterConfig">
-        <source xml:lang="en">Error retrieving cluster config from {0}</source>
-        <target state="translated">从 {0} 检索群集配置时出错</target>
+      <trans-unit id="password">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密码</target>
       </trans-unit>
-      <trans-unit id="bdc.error.getEndPoints">
-        <source xml:lang="en">Error retrieving endpoints from {0}</source>
-        <target state="translated">从 {0} 检索终结点时出错</target>
+      <trans-unit id="refreshmount.dialog.title">
+        <source xml:lang="en">Refresh Mount</source>
+        <target state="translated">刷新装载</target>
       </trans-unit>
-      <trans-unit id="bdc.error.getBdcStatus">
-        <source xml:lang="en">Error retrieving BDC status from {0}</source>
-        <target state="translated">从 {0} 检索 BDC 状态时出错</target>
+      <trans-unit id="refreshmount.task.name">
+        <source xml:lang="en">Refreshing HDFS Mount on path {0}</source>
+        <target state="translated">正在刷新路径 {0} 上的 HDFS 装载</target>
       </trans-unit>
-      <trans-unit id="bdc.error.mountHdfs">
-        <source xml:lang="en">Error creating mount</source>
-        <target state="translated">创建装载时出错</target>
+      <trans-unit id="refreshmount.task.submitted">
+        <source xml:lang="en">Refresh mount request submitted</source>
+        <target state="translated">刷新已提交的装载请求</target>
       </trans-unit>
-      <trans-unit id="bdc.error.statusHdfs">
-        <source xml:lang="en">Error getting mount status</source>
-        <target state="translated">获取装载状态时出错</target>
+      <trans-unit id="rememberPassword">
+        <source xml:lang="en">Remember Password</source>
+        <target state="translated">记住密码</target>
       </trans-unit>
-      <trans-unit id="bdc.error.refreshHdfs">
-        <source xml:lang="en">Error refreshing mount</source>
-        <target state="translated">刷新装载时出错</target>
+      <trans-unit id="textAuthCapital">
+        <source xml:lang="en">Authentication type</source>
+        <target state="translated">身份验证类型</target>
       </trans-unit>
-      <trans-unit id="bdc.error.deleteHdfs">
-        <source xml:lang="en">Error deleting mount</source>
-        <target state="translated">删除装载时出错</target>
+      <trans-unit id="url">
+        <source xml:lang="en">URL</source>
+        <target state="translated">URL</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/big-data-cluster/dist/extension" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="mount.error.endpointNotFound">
-        <source xml:lang="en">Controller endpoint information was not found</source>
-        <target state="translated">未找到控制器终结点信息</target>
-      </trans-unit>
-      <trans-unit id="bdc.dashboard.title">
-        <source xml:lang="en">Big Data Cluster Dashboard -</source>
-        <target state="translated">大数据群集仪表板 -</target>
-      </trans-unit>
-      <trans-unit id="textYes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">是</target>
-      </trans-unit>
-      <trans-unit id="textNo">
-        <source xml:lang="en">No</source>
-        <target state="translated">否</target>
-      </trans-unit>
-      <trans-unit id="textConfirmRemoveController">
-        <source xml:lang="en">Are you sure you want to remove '{0}'?</source>
-        <target state="translated">确定要删除 "{0}" 吗?</target>
+      <trans-unit id="username">
+        <source xml:lang="en">Username</source>
+        <target state="translated">用户名</target>
       </trans-unit>
     </body>
   </file>
@@ -743,6 +349,400 @@
       <trans-unit id="bdc.controllerTreeDataProvider.error">
         <source xml:lang="en">Unexpected error loading saved controllers: {0}</source>
         <target state="translated">加载已保存的控制器时出现意外错误: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="bdc.healthy">
+        <source xml:lang="en">Healthy</source>
+        <target state="translated">正常</target>
+      </trans-unit>
+      <trans-unit id="bdc.unhealthy">
+        <source xml:lang="en">Unhealthy</source>
+        <target state="translated">不正常</target>
+      </trans-unit>
+      <trans-unit id="endpoint.appproxy">
+        <source xml:lang="en">Application Proxy</source>
+        <target state="translated">应用程序代理</target>
+      </trans-unit>
+      <trans-unit id="endpoint.controller">
+        <source xml:lang="en">Cluster Management Service</source>
+        <target state="translated">群集管理服务</target>
+      </trans-unit>
+      <trans-unit id="endpoint.gateway">
+        <source xml:lang="en">Gateway to access HDFS files, Spark</source>
+        <target state="translated">访问 HDFS 文件的网关，Spark</target>
+      </trans-unit>
+      <trans-unit id="endpoint.grafana">
+        <source xml:lang="en">Metrics Dashboard</source>
+        <target state="translated">指标仪表板</target>
+      </trans-unit>
+      <trans-unit id="endpoint.kibana">
+        <source xml:lang="en">Log Search Dashboard</source>
+        <target state="translated">日志搜索仪表板</target>
+      </trans-unit>
+      <trans-unit id="endpoint.livy">
+        <source xml:lang="en">Proxy for running Spark statements, jobs, applications</source>
+        <target state="translated">用于运行 Spark 语句、作业和应用程序的代理</target>
+      </trans-unit>
+      <trans-unit id="endpoint.managementproxy">
+        <source xml:lang="en">Management Proxy</source>
+        <target state="translated">管理代理</target>
+      </trans-unit>
+      <trans-unit id="endpoint.mgmtproxy">
+        <source xml:lang="en">Management Proxy</source>
+        <target state="translated">管理代理</target>
+      </trans-unit>
+      <trans-unit id="endpoint.sparkHistory">
+        <source xml:lang="en">Spark Jobs Management and Monitoring Dashboard</source>
+        <target state="translated">Spark 作业管理和监视仪表板</target>
+      </trans-unit>
+      <trans-unit id="endpoint.sqlServerEndpoint">
+        <source xml:lang="en">SQL Server Master Instance Front-End</source>
+        <target state="translated">SQL Server 主实例前端</target>
+      </trans-unit>
+      <trans-unit id="endpoint.webhdfs">
+        <source xml:lang="en">HDFS File System Proxy</source>
+        <target state="translated">HDFS 文件系统代理</target>
+      </trans-unit>
+      <trans-unit id="endpoint.yarnHistory">
+        <source xml:lang="en">Spark Diagnostics and Monitoring Dashboard</source>
+        <target state="translated">Spark 诊断和监视仪表板</target>
+      </trans-unit>
+      <trans-unit id="endpointsError">
+        <source xml:lang="en">Unexpected error retrieving BDC Endpoints: {0}</source>
+        <target state="translated">检索 BDC 终结点时出现意外错误: {0}</target>
+      </trans-unit>
+      <trans-unit id="service.app">
+        <source xml:lang="en">App</source>
+        <target state="translated">应用</target>
+      </trans-unit>
+      <trans-unit id="service.control">
+        <source xml:lang="en">Control</source>
+        <target state="translated">Control</target>
+      </trans-unit>
+      <trans-unit id="service.gateway">
+        <source xml:lang="en">Gateway</source>
+        <target state="translated">网关</target>
+      </trans-unit>
+      <trans-unit id="service.hdfs">
+        <source xml:lang="en">HDFS</source>
+        <target state="translated">HDFS</target>
+      </trans-unit>
+      <trans-unit id="service.spark">
+        <source xml:lang="en">Spark</source>
+        <target state="translated">Spark</target>
+      </trans-unit>
+      <trans-unit id="service.sql">
+        <source xml:lang="en">SQL Server</source>
+        <target state="translated">SQL Server</target>
+      </trans-unit>
+      <trans-unit id="state.applyingUpgrade">
+        <source xml:lang="en">Applying Upgrade</source>
+        <target state="translated">正在应用升级</target>
+      </trans-unit>
+      <trans-unit id="state.applyingmanagedupgrade">
+        <source xml:lang="en">Applying Managed Upgrade</source>
+        <target state="translated">正在应用托管升级</target>
+      </trans-unit>
+      <trans-unit id="state.creating">
+        <source xml:lang="en">Creating</source>
+        <target state="translated">正在创建</target>
+      </trans-unit>
+      <trans-unit id="state.creatingGroups">
+        <source xml:lang="en">Creating Groups</source>
+        <target state="translated">正在创建组</target>
+      </trans-unit>
+      <trans-unit id="state.creatingKerberosDelegationSetup">
+        <source xml:lang="en">Creating Kerberos Delegation Setup</source>
+        <target state="translated">正在创建 Kerberos 委派设置</target>
+      </trans-unit>
+      <trans-unit id="state.creatingResources">
+        <source xml:lang="en">Creating Resources</source>
+        <target state="translated">正在创建资源</target>
+      </trans-unit>
+      <trans-unit id="state.creatingSecrets">
+        <source xml:lang="en">Creating Secrets</source>
+        <target state="translated">正在创建机密</target>
+      </trans-unit>
+      <trans-unit id="state.deleted">
+        <source xml:lang="en">Deleted</source>
+        <target state="translated">已删除</target>
+      </trans-unit>
+      <trans-unit id="state.deleting">
+        <source xml:lang="en">Deleting</source>
+        <target state="translated">正在删除</target>
+      </trans-unit>
+      <trans-unit id="state.error">
+        <source xml:lang="en">Error</source>
+        <target state="translated">错误</target>
+      </trans-unit>
+      <trans-unit id="state.managedUpgrading">
+        <source xml:lang="en">Managed Upgrading</source>
+        <target state="translated">正在托管升级</target>
+      </trans-unit>
+      <trans-unit id="state.ready">
+        <source xml:lang="en">Ready</source>
+        <target state="translated">准备就绪</target>
+      </trans-unit>
+      <trans-unit id="state.rollback">
+        <source xml:lang="en">Rollback</source>
+        <target state="translated">回退</target>
+      </trans-unit>
+      <trans-unit id="state.rollbackComplete">
+        <source xml:lang="en">Rollback Complete</source>
+        <target state="translated">回退完成</target>
+      </trans-unit>
+      <trans-unit id="state.rollbackInProgress">
+        <source xml:lang="en">Rollback In Progress</source>
+        <target state="translated">正在回退</target>
+      </trans-unit>
+      <trans-unit id="state.running">
+        <source xml:lang="en">Running</source>
+        <target state="translated">正在运行</target>
+      </trans-unit>
+      <trans-unit id="state.upgradePaused">
+        <source xml:lang="en">Upgrade Paused</source>
+        <target state="translated">升级已暂停</target>
+      </trans-unit>
+      <trans-unit id="state.upgrading">
+        <source xml:lang="en">Upgrading</source>
+        <target state="translated">正在升级</target>
+      </trans-unit>
+      <trans-unit id="state.waiting">
+        <source xml:lang="en">Waiting</source>
+        <target state="translated">正在等待</target>
+      </trans-unit>
+      <trans-unit id="state.waitingForDeletion">
+        <source xml:lang="en">Waiting For Deletion</source>
+        <target state="translated">正在等待删除</target>
+      </trans-unit>
+      <trans-unit id="state.waitingForGroups">
+        <source xml:lang="en">Waiting For Groups</source>
+        <target state="translated">正在等待组</target>
+      </trans-unit>
+      <trans-unit id="state.waitingForKerberosDelegationSetup">
+        <source xml:lang="en">Waiting For Kerberos Delegation Setup</source>
+        <target state="translated">正在等待 Kerberos 委派设置</target>
+      </trans-unit>
+      <trans-unit id="state.waitingForResources">
+        <source xml:lang="en">Waiting For Resources</source>
+        <target state="translated">正在等待资源</target>
+      </trans-unit>
+      <trans-unit id="state.waitingForSecrets">
+        <source xml:lang="en">Waiting For Secrets</source>
+        <target state="translated">正在等待机密</target>
+      </trans-unit>
+      <trans-unit id="state.waitingForUpgrade">
+        <source xml:lang="en">Waiting For Upgrade</source>
+        <target state="translated">正在等待升级</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/dist/extension" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="bdc.dashboard.title">
+        <source xml:lang="en">Big Data Cluster Dashboard -</source>
+        <target state="translated">大数据群集仪表板 -</target>
+      </trans-unit>
+      <trans-unit id="mount.error.endpointNotFound">
+        <source xml:lang="en">Controller endpoint information was not found</source>
+        <target state="translated">未找到控制器终结点信息</target>
+      </trans-unit>
+      <trans-unit id="textConfirmRemoveController">
+        <source xml:lang="en">Are you sure you want to remove '{0}'?</source>
+        <target state="translated">确定要删除 "{0}" 吗?</target>
+      </trans-unit>
+      <trans-unit id="textNo">
+        <source xml:lang="en">No</source>
+        <target state="translated">否</target>
+      </trans-unit>
+      <trans-unit id="textYes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">是</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/package" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="bdc-2019-display-name">
+        <source xml:lang="en">SQL Server 2019</source>
+        <target state="translated">SQL Server 2019</target>
+      </trans-unit>
+      <trans-unit id="bdc-agreement">
+        <source xml:lang="en">I accept {0}, {1} and {2}.</source>
+        <target state="translated">我接受 {0}、{1} 和 {2}。</target>
+      </trans-unit>
+      <trans-unit id="bdc-agreement-azdata-eula">
+        <source xml:lang="en">azdata License Terms</source>
+        <target state="translated">azdata 许可条款</target>
+      </trans-unit>
+      <trans-unit id="bdc-agreement-bdc-eula">
+        <source xml:lang="en">SQL Server License Terms</source>
+        <target state="translated">SQL Server 许可条款</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-aks-name-field">
+        <source xml:lang="en">AKS cluster name</source>
+        <target state="translated">AKS 群集名称</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-region-field">
+        <source xml:lang="en">Region</source>
+        <target state="translated">区域</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-resource-group-field">
+        <source xml:lang="en">Resource group name</source>
+        <target state="translated">资源组名称</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-settings-section-title">
+        <source xml:lang="en">Azure settings</source>
+        <target state="translated">Azure 设置</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-subscription-id-field">
+        <source xml:lang="en">Subscription id</source>
+        <target state="translated">订阅 ID</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-subscription-id-placeholder">
+        <source xml:lang="en">Use my default Azure subscription</source>
+        <target state="translated">使用默认 Azure 订阅</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-vm-count-field">
+        <source xml:lang="en">VM count</source>
+        <target state="translated">VM 计数</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-vm-size-field">
+        <source xml:lang="en">VM size</source>
+        <target state="translated">VM 大小</target>
+      </trans-unit>
+      <trans-unit id="bdc-cluster-name-field">
+        <source xml:lang="en">Cluster name</source>
+        <target state="translated">群集名称</target>
+      </trans-unit>
+      <trans-unit id="bdc-cluster-settings-section-title">
+        <source xml:lang="en">SQL Server Big Data Cluster settings</source>
+        <target state="translated">SQL Server 大数据群集设置</target>
+      </trans-unit>
+      <trans-unit id="bdc-confirm-password-field">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">确认密码</target>
+      </trans-unit>
+      <trans-unit id="bdc-controller-username-field">
+        <source xml:lang="en">Controller username</source>
+        <target state="translated">控制器用户名</target>
+      </trans-unit>
+      <trans-unit id="bdc-data-size-field">
+        <source xml:lang="en">Capacity for data (GB)</source>
+        <target state="translated">数据容量(GB)</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target">
+        <source xml:lang="en">Deployment target</source>
+        <target state="translated">部署目标</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target-existing-aks">
+        <source xml:lang="en">Existing Azure Kubernetes Service Cluster</source>
+        <target state="translated">现有 Azure Kubernetes 服务群集</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target-existing-aro">
+        <source xml:lang="en">Existing Azure Red Hat OpenShift cluster</source>
+        <target state="translated">现有 Azure Red Hat OpenShift 群集</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target-existing-kubeadm">
+        <source xml:lang="en">Existing Kubernetes Cluster (kubeadm)</source>
+        <target state="translated">现有 Kubernetes 群集(kubeadm)</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target-existing-openshift">
+        <source xml:lang="en">Existing OpenShift cluster</source>
+        <target state="translated">现有 OpenShift 群集</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target-new-aks">
+        <source xml:lang="en">New Azure Kubernetes Service Cluster</source>
+        <target state="translated">新的 Azure Kubernetes 服务群集</target>
+      </trans-unit>
+      <trans-unit id="bdc-log-size-field">
+        <source xml:lang="en">Capacity for logs (GB)</source>
+        <target state="translated">日志容量(GB)</target>
+      </trans-unit>
+      <trans-unit id="bdc-password-field">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密码</target>
+      </trans-unit>
+      <trans-unit id="bdc-storage-class-field">
+        <source xml:lang="en">Storage class name</source>
+        <target state="translated">存储类名称</target>
+      </trans-unit>
+      <trans-unit id="bdc.configuration.title">
+        <source xml:lang="en">Big Data Cluster</source>
+        <target state="translated">大数据群集</target>
+      </trans-unit>
+      <trans-unit id="bdc.ignoreSslVerification.desc">
+        <source xml:lang="en">Ignore SSL verification errors against SQL Server Big Data Cluster endpoints such as HDFS, Spark, and Controller if true</source>
+        <target state="translated">如果为 true，则忽略针对 SQL Server 大数据群集终结点(如 HDFS、Spark 和控制器)的 SSL 验证错误</target>
+      </trans-unit>
+      <trans-unit id="bdc.view.welcome.connect">
+        <source xml:lang="en">No SQL Big Data Cluster controllers registered. [Learn More](https://docs.microsoft.com/sql/big-data-cluster/big-data-cluster-overview)
+[Connect Controller](command:bigDataClusters.command.connectController)</source>
+        <target state="translated">未注册任何 SQL 大数据群集控制器。[了解更多](https://docs.microsoft.com/sql/big-data-cluster/big-data-cluster-overview)
+[连接控制器](command:bigDataClusters.command.connectController)</target>
+      </trans-unit>
+      <trans-unit id="bdc.view.welcome.loading">
+        <source xml:lang="en">Loading controllers...</source>
+        <target state="translated">正在加载控制器...</target>
+      </trans-unit>
+      <trans-unit id="command.connectController.title">
+        <source xml:lang="en">Connect to Existing Controller</source>
+        <target state="translated">连接到现有控制器</target>
+      </trans-unit>
+      <trans-unit id="command.createController.title">
+        <source xml:lang="en">Create New Controller</source>
+        <target state="translated">创建新控制器</target>
+      </trans-unit>
+      <trans-unit id="command.deletemount.title">
+        <source xml:lang="en">Delete Mount</source>
+        <target state="translated">删除装载</target>
+      </trans-unit>
+      <trans-unit id="command.manageController.title">
+        <source xml:lang="en">Manage</source>
+        <target state="translated">管理</target>
+      </trans-unit>
+      <trans-unit id="command.mount.title">
+        <source xml:lang="en">Mount HDFS</source>
+        <target state="translated">装载 HDFS</target>
+      </trans-unit>
+      <trans-unit id="command.refreshController.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">刷新</target>
+      </trans-unit>
+      <trans-unit id="command.refreshmount.title">
+        <source xml:lang="en">Refresh Mount</source>
+        <target state="translated">刷新装载</target>
+      </trans-unit>
+      <trans-unit id="command.removeController.title">
+        <source xml:lang="en">Remove Controller</source>
+        <target state="translated">移除控制器</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source xml:lang="en">Support for managing SQL Server Big Data Clusters</source>
+        <target state="translated">支持管理 SQL Server 大数据群集</target>
+      </trans-unit>
+      <trans-unit id="microsoft-privacy-statement">
+        <source xml:lang="en">Microsoft Privacy Statement</source>
+        <target state="translated">Microsoft 隐私声明</target>
+      </trans-unit>
+      <trans-unit id="resource-type-sql-bdc-description">
+        <source xml:lang="en">SQL Server Big Data Cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes</source>
+        <target state="translated">借助 SQL Server 大数据群集，可部署在 Kubernetes 上运行的 SQL Server、Spark 和 HDFS 容器的可扩展群集</target>
+      </trans-unit>
+      <trans-unit id="resource-type-sql-bdc-display-name">
+        <source xml:lang="en">SQL Server Big Data Cluster</source>
+        <target state="translated">SQL Server 大数据群集</target>
+      </trans-unit>
+      <trans-unit id="text.sqlServerBigDataClusters">
+        <source xml:lang="en">SQL Server Big Data Clusters</source>
+        <target state="translated">SQL Server 大数据群集</target>
+      </trans-unit>
+      <trans-unit id="version-display-name">
+        <source xml:lang="en">Version</source>
+        <target state="translated">版本</target>
       </trans-unit>
     </body>
   </file>

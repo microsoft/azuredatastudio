@@ -27,7 +27,7 @@ export class ConfigurePathPage extends BasePage {
 	public async initialize(): Promise<boolean> {
 		let wizardDescription: string;
 		if (this.model.kernelName) {
-			wizardDescription = localize('configurePython.descriptionWithKernel', "The {0} kernel requires a Python runtime to be configured and dependencies to be installed.", this.model.kernelName);
+			wizardDescription = localize('configurePython.descriptionWithKernel', "The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.", this.model.kernelName);
 		} else {
 			wizardDescription = localize('configurePython.descriptionWithoutKernel', "Notebook kernels require a Python runtime to be configured and dependencies to be installed.");
 		}

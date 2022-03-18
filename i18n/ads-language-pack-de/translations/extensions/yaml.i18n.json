@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "YAML-Sprachgrundlagen",
-			"description": "Bietet Syntaxhervorhebung und Klammernabgleich in YAML-Dateien."
+			"description": "Bietet Syntaxhervorhebung und Klammernabgleich in YAML-Dateien.",
+			"displayName": "YAML-Sprachgrundlagen"
 		}
 	}
 }

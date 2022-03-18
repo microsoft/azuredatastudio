@@ -1,7 +1,8 @@
 {
 	"name": "sql-database-projects-vscode",
+	"publisher": "ms-mssql",
 	"extensionDependencies": [
 		"ms-mssql.mssql",
-		"Microsoft.data-workspace-vscode"
+		"ms-mssql.data-workspace-vscode"
 	]
 }

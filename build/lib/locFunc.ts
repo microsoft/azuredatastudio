@@ -17,6 +17,15 @@ import * as rimraf from 'rimraf';
 import * as gulp from 'gulp';
 import * as vfs from 'vinyl-fs';
 
+/**
+ * If you need to compile this file for any changes, please run: yarn tsc -p ./build/tsconfig.json
+ */
+
+//List of extensions that we changed from vscode, so we can exclude them from having "Microsoft." appended in front.
+const alteredVSCodeExtensions = [
+	'git'
+]
+
 const root = path.dirname(path.dirname(__dirname));
 
 // Modified packageLocalExtensionsStream from extensions.ts, but for langpacks.
@@ -68,7 +77,7 @@ function updateMainI18nFile(existingTranslationFilePath: string, originalFilePat
 
 	// Delete any SQL strings that are no longer part of ADS in current langpack.
 	for (let contentKey of Object.keys(objectContents)) {
-		if(contentKey.startsWith('sql') && messages.contents[contentKey] === undefined){
+		if (contentKey.startsWith('sql') && messages.contents[contentKey] === undefined) {
 			delete objectContents[`${contentKey}`]
 		}
 	}
@@ -148,10 +157,14 @@ export function modifyI18nPackFiles(existingTranslationFolder: string, resulting
 					const translatedExtFile = i18n.createI18nFile(`extensions/${extension}`, extensionsPacks[extension]);
 					this.queue(translatedExtFile);
 
-					//handle edge case for 'Microsoft.sqlservernotebook' where extension name is the same as extension ID.
-					//(Other extensions need to have publisher appended in front as their ID.)
-					const adsExtensionId = (extension === 'Microsoft.sqlservernotebook') ? extension : 'Microsoft.' + extension;
-					resultingTranslationPaths.push({ id: adsExtensionId, resourceName: `extensions/${extension}.i18n.json` });
+					// exclude altered vscode extensions from having a new path even if we provide a new I18n file.
+					if (alteredVSCodeExtensions.indexOf(extension) === -1) {
+						//handle edge case for 'Microsoft.sqlservernotebook' where extension name is the same as extension ID.
+						//(Other extensions need to have publisher appended in front as their ID.)
+						let adsExtensionId = (extension === 'Microsoft.sqlservernotebook') ? extension : 'Microsoft.' + extension;
+
+						resultingTranslationPaths.push({ id: adsExtensionId, resourceName: `extensions/${extension}.i18n.json` });
+					}
 				}
 				this.queue(null);
 			})
@@ -177,7 +190,6 @@ const VSCODEExtensions = [
 	"bat",
 	"configuration-editing",
 	"docker",
-	"extension-editing",
 	"git-ui",
 	"git",
 	"github-authentication",
@@ -400,7 +412,7 @@ export function renameVscodeLangpacks(): Promise<void> {
 
 		//Copy files to vscode langpack, then remove the ADS langpack, and finally rename the vscode langpack to match the ADS one.
 		globMDArray.forEach(element => {
-			fs.copyFileSync(element, path.join(locVSCODEFolder,path.parse(element).base));
+			fs.copyFileSync(element, path.join(locVSCODEFolder, path.parse(element).base));
 		});
 		rimraf.sync(locADSFolder);
 		fs.renameSync(locVSCODEFolder, locADSFolder);

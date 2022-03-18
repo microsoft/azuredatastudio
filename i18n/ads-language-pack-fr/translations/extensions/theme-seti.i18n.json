@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Thème Seti pour les icônes de fichiers",
 			"description": "Un thème pour les icônes de fichiers fait avec les icônes de fichiers Seti UI",
+			"displayName": "Thème Seti pour les icônes de fichiers",
 			"themeLabel": "Seti (Visual Studio Code)"
 		}
 	}

@@ -1,66 +1,422 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/cms/dist/cmsResource/cmsResourceCommands" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="cms.AddServerGroup">
+        <source xml:lang="en">Add Server Group</source>
+        <target state="translated">Ajouter le groupe de serveurs</target>
+      </trans-unit>
+      <trans-unit id="cms.Cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Annuler</target>
+      </trans-unit>
+      <trans-unit id="cms.OK">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="cms.ServerGroupDescription">
+        <source xml:lang="en">Server Group Description</source>
+        <target state="translated">Description du groupe de serveurs</target>
+      </trans-unit>
+      <trans-unit id="cms.ServerGroupName">
+        <source xml:lang="en">Server Group Name</source>
+        <target state="translated">Nom du groupe de serveurs</target>
+      </trans-unit>
+      <trans-unit id="cms.confirmDeleteGroup">
+        <source xml:lang="en">Are you sure you want to delete</source>
+        <target state="translated">Voulez-vous vraiment effectuer la suppression</target>
+      </trans-unit>
+      <trans-unit id="cms.confirmDeleteServer">
+        <source xml:lang="en">Are you sure you want to delete</source>
+        <target state="translated">Voulez-vous vraiment effectuer la suppression</target>
+      </trans-unit>
+      <trans-unit id="cms.errors.azureNotAllowed">
+        <source xml:lang="en">Azure SQL Servers cannot be used as Central Management Servers</source>
+        <target state="translated">Vous ne pouvez pas utiliser les serveurs Azure SQL comme serveurs de gestion centralisée</target>
+      </trans-unit>
+      <trans-unit id="cms.errors.sameCmsServerName">
+        <source xml:lang="en">Central Management Server Group already has a Registered Server with the name {0}</source>
+        <target state="translated">Le groupe de serveurs de gestion centralisée a déjà un serveur inscrit nommé {0}</target>
+      </trans-unit>
+      <trans-unit id="cms.errors.sameServerGroupName">
+        <source xml:lang="en">{0} already has a Server Group with the name {1}</source>
+        <target state="translated">{0} a déjà un groupe de serveurs nommé {1}</target>
+      </trans-unit>
+      <trans-unit id="cms.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">Non</target>
+      </trans-unit>
+      <trans-unit id="cms.yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Oui</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/cms/dist/cmsResource/tree/cmsResourceEmptyTreeNode" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="cms.resource.tree.CmsTreeNode.addCmsServerLabel">
+        <source xml:lang="en">Add Central Management Server...</source>
+        <target state="translated">Ajouter un serveur de gestion centralisée...</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/cms/dist/cmsResource/tree/cmsResourceTreeNode" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="cms.resource.cmsResourceTreeNode.noResourcesLabel">
+        <source xml:lang="en">No resources found</source>
+        <target state="translated">Aucune ressource</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/cms/dist/cmsResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="cms.resource.tree.treeProvider.loadError">
+        <source xml:lang="en">Unexpected error occurred while loading saved servers {0}</source>
+        <target state="translated">Une erreur inattendue s'est produite durant le chargement des serveurs enregistrés {0}</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.tree.treeProvider.loadingLabel">
+        <source xml:lang="en">Loading ...</source>
+        <target state="translated">Chargement...</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/cms/dist/cmsUtils" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="cms.errors.sameServerUnderCms">
+        <source xml:lang="en">You cannot add a shared registered server with the same name as the Configuration Server</source>
+        <target state="translated">Vous ne pouvez pas ajouter un serveur inscrit partagé du même nom que le serveur de configuration</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/cms/package" source-language="en" datatype="plaintext" target-language="fr">
     <body>
-      <trans-unit id="cms.displayName">
-        <source xml:lang="en">SQL Server Central Management Servers</source>
-        <target state="translated">Serveurs de gestion centralisée SQL Server</target>
+      <trans-unit id="cloud.databaseProperties.azureEdition">
+        <source xml:lang="en">Edition</source>
+        <target state="translated">Édition</target>
       </trans-unit>
-      <trans-unit id="cms.description">
-        <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>
-        <target state="translated">Prise en charge de la gestion des serveurs de gestion centralisée SQL Server</target>
+      <trans-unit id="cloud.databaseProperties.compatibilityLevel">
+        <source xml:lang="en">Compatibility Level</source>
+        <target state="translated">Niveau de compatibilité</target>
       </trans-unit>
-      <trans-unit id="cms.title">
-        <source xml:lang="en">Central Management Servers</source>
-        <target state="translated">Serveurs de gestion centralisée</target>
+      <trans-unit id="cloud.databaseProperties.owner">
+        <source xml:lang="en">Owner</source>
+        <target state="translated">Propriétaire</target>
       </trans-unit>
-      <trans-unit id="cms.connectionProvider.displayName">
-        <source xml:lang="en">Microsoft SQL Server</source>
-        <target state="translated">Microsoft SQL Server</target>
+      <trans-unit id="cloud.databaseProperties.serviceLevelObjective">
+        <source xml:lang="en">Pricing Tier</source>
+        <target state="translated">Niveau tarifaire</target>
       </trans-unit>
-      <trans-unit id="cms.resource.explorer.title">
-        <source xml:lang="en">Central Management Servers</source>
-        <target state="translated">Serveurs de gestion centralisée</target>
+      <trans-unit id="cloud.serverProperties.serverEdition">
+        <source xml:lang="en">Type</source>
+        <target state="translated">Type</target>
       </trans-unit>
-      <trans-unit id="cms.resource.refresh.title">
-        <source xml:lang="en">Refresh</source>
-        <target state="translated">Actualiser</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.refreshServerGroup.title">
-        <source xml:lang="en">Refresh Server Group</source>
-        <target state="translated">Actualiser le groupe de serveurs</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.deleteRegisteredServer.title">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">Supprimer</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.addRegisteredServer.title">
-        <source xml:lang="en">New Server Registration...</source>
-        <target state="translated">Nouvelle inscription de serveur...</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.deleteServerGroup.title">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">Supprimer</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.addServerGroup.title">
-        <source xml:lang="en">New Server Group...</source>
-        <target state="translated">Nouveau groupe de serveurs...</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.registerCmsServer.title">
-        <source xml:lang="en">Add Central Management Server</source>
-        <target state="translated">Ajouter un serveur de gestion centralisée</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.deleteCmsServer.title">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">Supprimer</target>
+      <trans-unit id="cloud.serverProperties.serverVersion">
+        <source xml:lang="en">Version</source>
+        <target state="translated">Version</target>
       </trans-unit>
       <trans-unit id="cms.configuration.title">
         <source xml:lang="en">MSSQL configuration</source>
         <target state="translated">Configuration MSSQL</target>
       </trans-unit>
-      <trans-unit id="cms.query.displayBitAsNumber">
-        <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
-        <target state="translated">Spécifie si les colonnes BIT doivent être affichées sous forme de nombre (1 ou 0). Si la valeur est false, les colonnes BIT sont affichées sous la forme 'true' ou 'false'</target>
+      <trans-unit id="cms.connectionOptions.applicationIntent.description">
+        <source xml:lang="en">Declares the application workload type when connecting to a server</source>
+        <target state="translated">Déclare le type de charge de travail de l'application pendant la connexion à un serveur</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.applicationIntent.displayName">
+        <source xml:lang="en">Application intent</source>
+        <target state="translated">Intention d'application</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.applicationName.description">
+        <source xml:lang="en">The name of the application</source>
+        <target state="translated">Nom de l'application</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.applicationName.displayName">
+        <source xml:lang="en">Application name</source>
+        <target state="translated">Nom de l'application</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.asynchronousProcessing.description">
+        <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
+        <target state="translated">Quand la valeur est true, permet d'utiliser la fonctionnalité asynchrone dans le fournisseur de données .Net Framework</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.asynchronousProcessing.displayName">
+        <source xml:lang="en">Asynchronous processing</source>
+        <target state="translated">Traitement asynchrone</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
+        <source xml:lang="en">Attach DB filename</source>
+        <target state="translated">Attacher le nom de fichier de base de données</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.attachedDBFileName.description">
+        <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
+        <target state="translated">Nom de fichier principal, y compris le nom de chemin complet, d'une base de données pouvant être attachée</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.attachedDBFileName.displayName">
+        <source xml:lang="en">Attached DB file name</source>
+        <target state="translated">Nom du fichier de base de données attaché</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.authType.categoryValues.azureMFA">
+        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+        <target state="translated">Azure Active Directory - Authentification universelle avec prise en charge de MFA</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.authType.categoryValues.integrated">
+        <source xml:lang="en">Windows Authentication</source>
+        <target state="translated">Authentification Windows</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.authType.categoryValues.sqlLogin">
+        <source xml:lang="en">SQL Login</source>
+        <target state="translated">Connexion SQL</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.authType.description">
+        <source xml:lang="en">Specifies the method of authenticating with SQL Server</source>
+        <target state="translated">Spécifie la méthode d'authentification avec SQL Server</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.authType.displayName">
+        <source xml:lang="en">Authentication type</source>
+        <target state="translated">Type d'authentification</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.columnEncryptionSetting.description">
+        <source xml:lang="en">Default column encryption setting for all the commands on the connection</source>
+        <target state="translated">Paramètre par défaut de chiffrement de colonne pour toutes les commandes sur la connexion</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.columnEncryptionSetting.displayName">
+        <source xml:lang="en">Column encryption</source>
+        <target state="translated">Chiffrement de colonne</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectRetryCount.description">
+        <source xml:lang="en">Number of attempts to restore connection</source>
+        <target state="translated">Nombre de tentatives de restauration de connexion</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectRetryCount.displayName">
+        <source xml:lang="en">Connect retry count</source>
+        <target state="translated">Nombre de tentatives de connexion</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectRetryInterval.description">
+        <source xml:lang="en">Delay between attempts to restore connection</source>
+        <target state="translated">Délai entre les tentatives de restauration de connexion</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectRetryInterval.displayName">
+        <source xml:lang="en">Connect retry interval</source>
+        <target state="translated">Intervalle entre les tentatives de connexion</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectTimeout.description">
+        <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
+        <target state="translated">Durée d'attente (en secondes) d'une connexion au serveur avant de terminer la tentative et de générer une erreur</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectTimeout.displayName">
+        <source xml:lang="en">Connect timeout</source>
+        <target state="translated">Délai d'expiration de la connexion</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectionName.description">
+        <source xml:lang="en">Custom name of the connection</source>
+        <target state="translated">Nom personnalisé de la connexion</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectionName.displayName">
+        <source xml:lang="en">Name (optional)</source>
+        <target state="translated">Nom (facultatif)</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.contextConnection.description">
+        <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
+        <target state="translated">Quand la valeur est true, indique que la connexion doit provenir du contexte du serveur SQL. Disponible uniquement en cas d'exécution dans le processus SQL Server</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.contextConnection.displayName">
+        <source xml:lang="en">Context connection</source>
+        <target state="translated">Connexion contextuelle</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.currentLanguage.description">
+        <source xml:lang="en">The SQL Server language record name</source>
+        <target state="translated">Nom d'enregistrement de la langue de SQL Server</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.currentLanguage.displayName">
+        <source xml:lang="en">Current language</source>
+        <target state="translated">Langage actuel</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.encrypt.description">
+        <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
+        <target state="translated">Quand la valeur est true, SQL Server utilise le chiffrement SSL pour toutes les données envoyées entre le client et le serveur si le serveur a un certificat installé</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.encrypt.displayName">
+        <source xml:lang="en">Encrypt</source>
+        <target state="translated">Chiffrer</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.failoverPartner.description">
+        <source xml:lang="en">The name or network address of the instance of SQL Server that acts as a failover partner</source>
+        <target state="translated">Nom ou adresse réseau de l'instance de SQL Server servant de partenaire de basculement</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.failoverPartner.displayName">
+        <source xml:lang="en">Failover partner</source>
+        <target state="translated">Partenaire de basculement</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.advanced">
+        <source xml:lang="en">Advanced</source>
+        <target state="translated">Avancé</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.connectionResiliency">
+        <source xml:lang="en">Connection Resiliency</source>
+        <target state="translated">Résilience de la connexion</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.context">
+        <source xml:lang="en">Context</source>
+        <target state="translated">Contexte</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.initialization">
+        <source xml:lang="en">Initialization</source>
+        <target state="translated">Initialisation</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.pooling">
+        <source xml:lang="en">Pooling</source>
+        <target state="translated">Regroupement</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.replication">
+        <source xml:lang="en">Replication</source>
+        <target state="translated">Réplication</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.security">
+        <source xml:lang="en">Security</source>
+        <target state="translated">Sécurité</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.source">
+        <source xml:lang="en">Source</source>
+        <target state="translated">Source</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.loadBalanceTimeout.description">
+        <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
+        <target state="translated">Durée de vie minimale (en secondes) de cette connexion dans le pool avant d'être détruite</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.loadBalanceTimeout.displayName">
+        <source xml:lang="en">Load balance timeout</source>
+        <target state="translated">Délai d'expiration de l'équilibrage de charge</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.maxPoolSize.description">
+        <source xml:lang="en">The maximum number of connections allowed in the pool</source>
+        <target state="translated">Nombre maximal de connexions autorisées dans le pool</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.maxPoolSize.displayName">
+        <source xml:lang="en">Max pool size</source>
+        <target state="translated">Taille maximale du pool</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.minPoolSize.description">
+        <source xml:lang="en">The minimum number of connections allowed in the pool</source>
+        <target state="translated">Nombre minimal de connexions autorisées dans le pool</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.minPoolSize.displayName">
+        <source xml:lang="en">Min pool size</source>
+        <target state="translated">Taille minimale du pool</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.multiSubnetFailover.displayName">
+        <source xml:lang="en">Multi subnet failover</source>
+        <target state="translated">Basculement de plusieurs sous-réseaux</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.multipleActiveResultSets.description">
+        <source xml:lang="en">When true, multiple result sets can be returned and read from one connection</source>
+        <target state="translated">Quand la valeur est true, plusieurs jeux de résultats peuvent être retournés et lus sur une même connexion</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.multipleActiveResultSets.displayName">
+        <source xml:lang="en">Multiple active result sets</source>
+        <target state="translated">MARS (Multiple Active Result Set)</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.packetSize.description">
+        <source xml:lang="en">Size in bytes of the network packets used to communicate with an instance of SQL Server</source>
+        <target state="translated">Taille en octets des paquets réseau utilisés pour communiquer avec une instance de SQL Server</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.packetSize.displayName">
+        <source xml:lang="en">Packet size</source>
+        <target state="translated">Taille de paquet</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.password.description">
+        <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
+        <target state="translated">Indique le mot de passe à utiliser pour la connexion à la source de données</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.password.displayName">
+        <source xml:lang="en">Password</source>
+        <target state="translated">Mot de passe</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.persistSecurityInfo.description">
+        <source xml:lang="en">When false, security-sensitive information, such as the password, is not returned as part of the connection</source>
+        <target state="translated">Quand la valeur est false, les informations de sécurité, comme le mot de passe, ne sont pas retournées dans le cadre de la connexion</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.persistSecurityInfo.displayName">
+        <source xml:lang="en">Persist security info</source>
+        <target state="translated">Conserver les informations de sécurité</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.pooling.description">
+        <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
+        <target state="translated">Quand la valeur est true, l'objet de connexion est tiré du pool approprié ou, si nécessaire, est créé et ajouté au pool approprié</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.pooling.displayName">
+        <source xml:lang="en">Pooling</source>
+        <target state="translated">Regroupement</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.port.displayName">
+        <source xml:lang="en">Port</source>
+        <target state="translated">Port</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.replication.description">
+        <source xml:lang="en">Used by SQL Server in Replication</source>
+        <target state="translated">Utilisé par SQL Server dans la réplication</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.replication.displayName">
+        <source xml:lang="en">Replication</source>
+        <target state="translated">Réplication</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.serverDescription.description">
+        <source xml:lang="en">Description of the SQL Server instance</source>
+        <target state="translated">Description de l'instance SQL Server</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.serverDescription.displayName">
+        <source xml:lang="en">Server Description</source>
+        <target state="translated">Description du serveur</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.serverName.description">
+        <source xml:lang="en">Name of the SQL Server instance</source>
+        <target state="translated">Nom de l'instance SQL Server</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.serverName.displayName">
+        <source xml:lang="en">Server</source>
+        <target state="translated">Serveur</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
+        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
+        <target state="translated">Quand la valeur est true (et encrypt=true), SQL Server utilise le chiffrement SSL pour toutes les données envoyées entre le client et le serveur sans valider le certificat de serveur</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.trustServerCertificate.displayName">
+        <source xml:lang="en">Trust server certificate</source>
+        <target state="translated">Approuver le certificat de serveur</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.typeSystemVersion.description">
+        <source xml:lang="en">Indicates which server type system then provider will expose through the DataReader</source>
+        <target state="translated">Indique le système de type serveur que le fournisseur expose par le biais de DataReader</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.typeSystemVersion.displayName">
+        <source xml:lang="en">Type system version</source>
+        <target state="translated">Version du système de type</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.userName.description">
+        <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
+        <target state="translated">Indique l'identifiant utilisateur à utiliser pour la connexion à la source de données</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.userName.displayName">
+        <source xml:lang="en">User name</source>
+        <target state="translated">Nom d'utilisateur</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.workstationId.description">
+        <source xml:lang="en">The name of the workstation connecting to SQL Server</source>
+        <target state="translated">Nom de la station de travail se connectant à SQL Server</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.workstationId.displayName">
+        <source xml:lang="en">Workstation Id</source>
+        <target state="translated">ID de station de travail</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionProvider.displayName">
+        <source xml:lang="en">Microsoft SQL Server</source>
+        <target state="translated">Microsoft SQL Server</target>
+      </trans-unit>
+      <trans-unit id="cms.description">
+        <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>
+        <target state="translated">Prise en charge de la gestion des serveurs de gestion centralisée SQL Server</target>
+      </trans-unit>
+      <trans-unit id="cms.displayName">
+        <source xml:lang="en">SQL Server Central Management Servers</source>
+        <target state="translated">Serveurs de gestion centralisée SQL Server</target>
       </trans-unit>
       <trans-unit id="cms.format.alignColumnDefinitionsInColumns">
         <source xml:lang="en">Should column definitions be aligned?</source>
@@ -86,25 +442,73 @@
         <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
         <target state="translated">[Facultatif] Journaliser la sortie de débogage dans la console (Voir -&gt; Sortie) et sélectionner le canal de sortie approprié dans la liste déroulante</target>
       </trans-unit>
-      <trans-unit id="cms.tracingLevel">
-        <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-        <target state="translated">[Facultatif] Niveau de journalisation des services de back-end. Azure Data Studio génère un nom de fichier à chaque démarrage et, si le fichier existe déjà, ajoute les entrées de journal à ce fichier. Pour nettoyer les anciens fichiers journaux, consultez les paramètres logRetentionMinutes et logFilesRemovalLimit. Le niveau de suivi par défaut correspond à une faible journalisation. Si vous changez le niveau de détail, vous pouvez obtenir une journalisation massive nécessitant de l'espace disque pour les journaux. Le niveau Erreur inclut le niveau Critique, le niveau Avertissement inclut le niveau Erreur, le niveau Informations inclut le niveau Avertissement et le niveau Détail inclut le niveau Informations</target>
+      <trans-unit id="cms.logFilesRemovalLimit">
+        <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
+        <target state="translated">Nombre maximal d'anciens fichiers ayant dépassé mssql.logRetentionMinutes à supprimer au démarrage. Les fichiers qui ne sont pas nettoyés du fait de cette limitation le sont au prochain démarrage d'Azure Data Studio.</target>
       </trans-unit>
       <trans-unit id="cms.logRetentionMinutes">
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
         <target state="translated">Nombre de minutes de conservation des fichiers journaux pour les services de back-end. La durée par défaut est 1 semaine.</target>
       </trans-unit>
-      <trans-unit id="cms.logFilesRemovalLimit">
-        <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
-        <target state="translated">Nombre maximal d'anciens fichiers ayant dépassé mssql.logRetentionMinutes à supprimer au démarrage. Les fichiers qui ne sont pas nettoyés du fait de cette limitation le sont au prochain démarrage d'Azure Data Studio.</target>
+      <trans-unit id="cms.provider.displayName">
+        <source xml:lang="en">Microsoft SQL Server</source>
+        <target state="translated">Microsoft SQL Server</target>
+      </trans-unit>
+      <trans-unit id="cms.query.displayBitAsNumber">
+        <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
+        <target state="translated">Spécifie si les colonnes BIT doivent être affichées sous forme de nombre (1 ou 0). Si la valeur est false, les colonnes BIT sont affichées sous la forme 'true' ou 'false'</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.addRegisteredServer.title">
+        <source xml:lang="en">New Server Registration...</source>
+        <target state="translated">Nouvelle inscription de serveur...</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.addServerGroup.title">
+        <source xml:lang="en">New Server Group...</source>
+        <target state="translated">Nouveau groupe de serveurs...</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.deleteCmsServer.title">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">Supprimer</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.deleteRegisteredServer.title">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">Supprimer</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.deleteServerGroup.title">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">Supprimer</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.explorer.title">
+        <source xml:lang="en">Central Management Servers</source>
+        <target state="translated">Serveurs de gestion centralisée</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.refresh.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">Actualiser</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.refreshServerGroup.title">
+        <source xml:lang="en">Refresh Server Group</source>
+        <target state="translated">Actualiser le groupe de serveurs</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.registerCmsServer.title">
+        <source xml:lang="en">Add Central Management Server</source>
+        <target state="translated">Ajouter un serveur de gestion centralisée</target>
+      </trans-unit>
+      <trans-unit id="cms.title">
+        <source xml:lang="en">Central Management Servers</source>
+        <target state="translated">Serveurs de gestion centralisée</target>
+      </trans-unit>
+      <trans-unit id="cms.tracingLevel">
+        <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
+        <target state="translated">[Facultatif] Niveau de journalisation des services de back-end. Azure Data Studio génère un nom de fichier à chaque démarrage et, si le fichier existe déjà, ajoute les entrées de journal à ce fichier. Pour nettoyer les anciens fichiers journaux, consultez les paramètres logRetentionMinutes et logFilesRemovalLimit. Le niveau de suivi par défaut correspond à une faible journalisation. Si vous changez le niveau de détail, vous pouvez obtenir une journalisation massive nécessitant de l'espace disque pour les journaux. Le niveau Erreur inclut le niveau Critique, le niveau Avertissement inclut le niveau Erreur, le niveau Informations inclut le niveau Avertissement et le niveau Détail inclut le niveau Informations</target>
       </trans-unit>
       <trans-unit id="ignorePlatformWarning">
         <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>
         <target state="translated">[Facultatif] Ne pas afficher les avertissements de plateforme non prise en charge</target>
       </trans-unit>
-      <trans-unit id="onprem.databaseProperties.recoveryModel">
-        <source xml:lang="en">Recovery Model</source>
-        <target state="translated">Mode de récupération</target>
+      <trans-unit id="onprem.databaseProperties.compatibilityLevel">
+        <source xml:lang="en">Compatibility Level</source>
+        <target state="translated">Niveau de compatibilité</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.lastBackupDate">
         <source xml:lang="en">Last Database Backup</source>
@@ -114,21 +518,13 @@
         <source xml:lang="en">Last Log Backup</source>
         <target state="translated">Dernière sauvegarde de journal</target>
       </trans-unit>
-      <trans-unit id="onprem.databaseProperties.compatibilityLevel">
-        <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">Niveau de compatibilité</target>
-      </trans-unit>
       <trans-unit id="onprem.databaseProperties.owner">
         <source xml:lang="en">Owner</source>
         <target state="translated">Propriétaire</target>
       </trans-unit>
-      <trans-unit id="onprem.serverProperties.serverVersion">
-        <source xml:lang="en">Version</source>
-        <target state="translated">Version</target>
-      </trans-unit>
-      <trans-unit id="onprem.serverProperties.serverEdition">
-        <source xml:lang="en">Edition</source>
-        <target state="translated">Édition</target>
+      <trans-unit id="onprem.databaseProperties.recoveryModel">
+        <source xml:lang="en">Recovery Model</source>
+        <target state="translated">Mode de récupération</target>
       </trans-unit>
       <trans-unit id="onprem.serverProperties.machineName">
         <source xml:lang="en">Computer Name</source>
@@ -138,377 +534,13 @@
         <source xml:lang="en">OS Version</source>
         <target state="translated">Version de système d'exploitation</target>
       </trans-unit>
-      <trans-unit id="cloud.databaseProperties.azureEdition">
+      <trans-unit id="onprem.serverProperties.serverEdition">
         <source xml:lang="en">Edition</source>
         <target state="translated">Édition</target>
       </trans-unit>
-      <trans-unit id="cloud.databaseProperties.serviceLevelObjective">
-        <source xml:lang="en">Pricing Tier</source>
-        <target state="translated">Niveau tarifaire</target>
-      </trans-unit>
-      <trans-unit id="cloud.databaseProperties.compatibilityLevel">
-        <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">Niveau de compatibilité</target>
-      </trans-unit>
-      <trans-unit id="cloud.databaseProperties.owner">
-        <source xml:lang="en">Owner</source>
-        <target state="translated">Propriétaire</target>
-      </trans-unit>
-      <trans-unit id="cloud.serverProperties.serverVersion">
+      <trans-unit id="onprem.serverProperties.serverVersion">
         <source xml:lang="en">Version</source>
         <target state="translated">Version</target>
-      </trans-unit>
-      <trans-unit id="cloud.serverProperties.serverEdition">
-        <source xml:lang="en">Type</source>
-        <target state="translated">Type</target>
-      </trans-unit>
-      <trans-unit id="cms.provider.displayName">
-        <source xml:lang="en">Microsoft SQL Server</source>
-        <target state="translated">Microsoft SQL Server</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectionName.displayName">
-        <source xml:lang="en">Name (optional)</source>
-        <target state="translated">Nom (facultatif)</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectionName.description">
-        <source xml:lang="en">Custom name of the connection</source>
-        <target state="translated">Nom personnalisé de la connexion</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.serverName.displayName">
-        <source xml:lang="en">Server</source>
-        <target state="translated">Serveur</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.serverName.description">
-        <source xml:lang="en">Name of the SQL Server instance</source>
-        <target state="translated">Nom de l'instance SQL Server</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.serverDescription.displayName">
-        <source xml:lang="en">Server Description</source>
-        <target state="translated">Description du serveur</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.serverDescription.description">
-        <source xml:lang="en">Description of the SQL Server instance</source>
-        <target state="translated">Description de l'instance SQL Server</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.authType.displayName">
-        <source xml:lang="en">Authentication type</source>
-        <target state="translated">Type d'authentification</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.authType.description">
-        <source xml:lang="en">Specifies the method of authenticating with SQL Server</source>
-        <target state="translated">Spécifie la méthode d'authentification avec SQL Server</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.authType.categoryValues.sqlLogin">
-        <source xml:lang="en">SQL Login</source>
-        <target state="translated">Connexion SQL</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.authType.categoryValues.integrated">
-        <source xml:lang="en">Windows Authentication</source>
-        <target state="translated">Authentification Windows</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.authType.categoryValues.azureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory - Authentification universelle avec prise en charge de MFA</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.userName.displayName">
-        <source xml:lang="en">User name</source>
-        <target state="translated">Nom d'utilisateur</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.userName.description">
-        <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
-        <target state="translated">Indique l'identifiant utilisateur à utiliser pour la connexion à la source de données</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.password.displayName">
-        <source xml:lang="en">Password</source>
-        <target state="translated">Mot de passe</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.password.description">
-        <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
-        <target state="translated">Indique le mot de passe à utiliser pour la connexion à la source de données</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.applicationIntent.displayName">
-        <source xml:lang="en">Application intent</source>
-        <target state="translated">Intention d'application</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.applicationIntent.description">
-        <source xml:lang="en">Declares the application workload type when connecting to a server</source>
-        <target state="translated">Déclare le type de charge de travail de l'application pendant la connexion à un serveur</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.asynchronousProcessing.displayName">
-        <source xml:lang="en">Asynchronous processing</source>
-        <target state="translated">Traitement asynchrone</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.asynchronousProcessing.description">
-        <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-        <target state="translated">Quand la valeur est true, permet d'utiliser la fonctionnalité asynchrone dans le fournisseur de données .Net Framework</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectTimeout.displayName">
-        <source xml:lang="en">Connect timeout</source>
-        <target state="translated">Délai d'expiration de la connexion</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectTimeout.description">
-        <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
-        <target state="translated">Durée d'attente (en secondes) d'une connexion au serveur avant de terminer la tentative et de générer une erreur</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.currentLanguage.displayName">
-        <source xml:lang="en">Current language</source>
-        <target state="translated">Langage actuel</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.currentLanguage.description">
-        <source xml:lang="en">The SQL Server language record name</source>
-        <target state="translated">Nom d'enregistrement de la langue de SQL Server</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.columnEncryptionSetting.displayName">
-        <source xml:lang="en">Column encryption</source>
-        <target state="translated">Chiffrement de colonne</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.columnEncryptionSetting.description">
-        <source xml:lang="en">Default column encryption setting for all the commands on the connection</source>
-        <target state="translated">Paramètre par défaut de chiffrement de colonne pour toutes les commandes sur la connexion</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.encrypt.displayName">
-        <source xml:lang="en">Encrypt</source>
-        <target state="translated">Chiffrer</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.encrypt.description">
-        <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-        <target state="translated">Quand la valeur est true, SQL Server utilise le chiffrement SSL pour toutes les données envoyées entre le client et le serveur si le serveur a un certificat installé</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.persistSecurityInfo.displayName">
-        <source xml:lang="en">Persist security info</source>
-        <target state="translated">Conserver les informations de sécurité</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.persistSecurityInfo.description">
-        <source xml:lang="en">When false, security-sensitive information, such as the password, is not returned as part of the connection</source>
-        <target state="translated">Quand la valeur est false, les informations de sécurité, comme le mot de passe, ne sont pas retournées dans le cadre de la connexion</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.trustServerCertificate.displayName">
-        <source xml:lang="en">Trust server certificate</source>
-        <target state="translated">Approuver le certificat de serveur</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
-        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="translated">Quand la valeur est true (et encrypt=true), SQL Server utilise le chiffrement SSL pour toutes les données envoyées entre le client et le serveur sans valider le certificat de serveur</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachedDBFileName.displayName">
-        <source xml:lang="en">Attached DB file name</source>
-        <target state="translated">Nom du fichier de base de données attaché</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachedDBFileName.description">
-        <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
-        <target state="translated">Nom de fichier principal, y compris le nom de chemin complet, d'une base de données pouvant être attachée</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.contextConnection.displayName">
-        <source xml:lang="en">Context connection</source>
-        <target state="translated">Connexion contextuelle</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.contextConnection.description">
-        <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
-        <target state="translated">Quand la valeur est true, indique que la connexion doit provenir du contexte du serveur SQL. Disponible uniquement en cas d'exécution dans le processus SQL Server</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.port.displayName">
-        <source xml:lang="en">Port</source>
-        <target state="translated">Port</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectRetryCount.displayName">
-        <source xml:lang="en">Connect retry count</source>
-        <target state="translated">Nombre de tentatives de connexion</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectRetryCount.description">
-        <source xml:lang="en">Number of attempts to restore connection</source>
-        <target state="translated">Nombre de tentatives de restauration de connexion</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectRetryInterval.displayName">
-        <source xml:lang="en">Connect retry interval</source>
-        <target state="translated">Intervalle entre les tentatives de connexion</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectRetryInterval.description">
-        <source xml:lang="en">Delay between attempts to restore connection</source>
-        <target state="translated">Délai entre les tentatives de restauration de connexion</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.applicationName.displayName">
-        <source xml:lang="en">Application name</source>
-        <target state="translated">Nom de l'application</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.applicationName.description">
-        <source xml:lang="en">The name of the application</source>
-        <target state="translated">Nom de l'application</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.workstationId.displayName">
-        <source xml:lang="en">Workstation Id</source>
-        <target state="translated">ID de station de travail</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.workstationId.description">
-        <source xml:lang="en">The name of the workstation connecting to SQL Server</source>
-        <target state="translated">Nom de la station de travail se connectant à SQL Server</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.pooling.displayName">
-        <source xml:lang="en">Pooling</source>
-        <target state="translated">Regroupement</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.pooling.description">
-        <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
-        <target state="translated">Quand la valeur est true, l'objet de connexion est tiré du pool approprié ou, si nécessaire, est créé et ajouté au pool approprié</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.maxPoolSize.displayName">
-        <source xml:lang="en">Max pool size</source>
-        <target state="translated">Taille maximale du pool</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.maxPoolSize.description">
-        <source xml:lang="en">The maximum number of connections allowed in the pool</source>
-        <target state="translated">Nombre maximal de connexions autorisées dans le pool</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.minPoolSize.displayName">
-        <source xml:lang="en">Min pool size</source>
-        <target state="translated">Taille minimale du pool</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.minPoolSize.description">
-        <source xml:lang="en">The minimum number of connections allowed in the pool</source>
-        <target state="translated">Nombre minimal de connexions autorisées dans le pool</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.loadBalanceTimeout.displayName">
-        <source xml:lang="en">Load balance timeout</source>
-        <target state="translated">Délai d'expiration de l'équilibrage de charge</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.loadBalanceTimeout.description">
-        <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
-        <target state="translated">Durée de vie minimale (en secondes) de cette connexion dans le pool avant d'être détruite</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.replication.displayName">
-        <source xml:lang="en">Replication</source>
-        <target state="translated">Réplication</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.replication.description">
-        <source xml:lang="en">Used by SQL Server in Replication</source>
-        <target state="translated">Utilisé par SQL Server dans la réplication</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
-        <source xml:lang="en">Attach DB filename</source>
-        <target state="translated">Attacher le nom de fichier de base de données</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.failoverPartner.displayName">
-        <source xml:lang="en">Failover partner</source>
-        <target state="translated">Partenaire de basculement</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.failoverPartner.description">
-        <source xml:lang="en">The name or network address of the instance of SQL Server that acts as a failover partner</source>
-        <target state="translated">Nom ou adresse réseau de l'instance de SQL Server servant de partenaire de basculement</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.multiSubnetFailover.displayName">
-        <source xml:lang="en">Multi subnet failover</source>
-        <target state="translated">Basculement de plusieurs sous-réseaux</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.multipleActiveResultSets.displayName">
-        <source xml:lang="en">Multiple active result sets</source>
-        <target state="translated">MARS (Multiple Active Result Set)</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.multipleActiveResultSets.description">
-        <source xml:lang="en">When true, multiple result sets can be returned and read from one connection</source>
-        <target state="translated">Quand la valeur est true, plusieurs jeux de résultats peuvent être retournés et lus sur une même connexion</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.packetSize.displayName">
-        <source xml:lang="en">Packet size</source>
-        <target state="translated">Taille de paquet</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.packetSize.description">
-        <source xml:lang="en">Size in bytes of the network packets used to communicate with an instance of SQL Server</source>
-        <target state="translated">Taille en octets des paquets réseau utilisés pour communiquer avec une instance de SQL Server</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.typeSystemVersion.displayName">
-        <source xml:lang="en">Type system version</source>
-        <target state="translated">Version du système de type</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.typeSystemVersion.description">
-        <source xml:lang="en">Indicates which server type system then provider will expose through the DataReader</source>
-        <target state="translated">Indique le système de type serveur que le fournisseur expose par le biais de DataReader</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/dist/cmsResource/tree/cmsResourceTreeNode" source-language="en" datatype="plaintext" target-language="fr">
-    <body>
-      <trans-unit id="cms.resource.cmsResourceTreeNode.noResourcesLabel">
-        <source xml:lang="en">No resources found</source>
-        <target state="translated">Aucune ressource</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/dist/cmsResource/tree/cmsResourceEmptyTreeNode" source-language="en" datatype="plaintext" target-language="fr">
-    <body>
-      <trans-unit id="cms.resource.tree.CmsTreeNode.addCmsServerLabel">
-        <source xml:lang="en">Add Central Management Server...</source>
-        <target state="translated">Ajouter un serveur de gestion centralisée...</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/dist/cmsResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="fr">
-    <body>
-      <trans-unit id="cms.resource.tree.treeProvider.loadError">
-        <source xml:lang="en">Unexpected error occurred while loading saved servers {0}</source>
-        <target state="translated">Une erreur inattendue s'est produite durant le chargement des serveurs enregistrés {0}</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.tree.treeProvider.loadingLabel">
-        <source xml:lang="en">Loading ...</source>
-        <target state="translated">Chargement...</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/dist/cmsResource/cmsResourceCommands" source-language="en" datatype="plaintext" target-language="fr">
-    <body>
-      <trans-unit id="cms.errors.sameCmsServerName">
-        <source xml:lang="en">Central Management Server Group already has a Registered Server with the name {0}</source>
-        <target state="translated">Le groupe de serveurs de gestion centralisée a déjà un serveur inscrit nommé {0}</target>
-      </trans-unit>
-      <trans-unit id="cms.errors.azureNotAllowed">
-        <source xml:lang="en">Azure SQL Servers cannot be used as Central Management Servers</source>
-        <target state="translated">Vous ne pouvez pas utiliser les serveurs Azure SQL comme serveurs de gestion centralisée</target>
-      </trans-unit>
-      <trans-unit id="cms.confirmDeleteServer">
-        <source xml:lang="en">Are you sure you want to delete</source>
-        <target state="translated">Voulez-vous vraiment effectuer la suppression</target>
-      </trans-unit>
-      <trans-unit id="cms.yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Oui</target>
-      </trans-unit>
-      <trans-unit id="cms.no">
-        <source xml:lang="en">No</source>
-        <target state="translated">Non</target>
-      </trans-unit>
-      <trans-unit id="cms.AddServerGroup">
-        <source xml:lang="en">Add Server Group</source>
-        <target state="translated">Ajouter le groupe de serveurs</target>
-      </trans-unit>
-      <trans-unit id="cms.OK">
-        <source xml:lang="en">OK</source>
-        <target state="translated">OK</target>
-      </trans-unit>
-      <trans-unit id="cms.Cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">Annuler</target>
-      </trans-unit>
-      <trans-unit id="cms.ServerGroupName">
-        <source xml:lang="en">Server Group Name</source>
-        <target state="translated">Nom du groupe de serveurs</target>
-      </trans-unit>
-      <trans-unit id="cms.ServerGroupDescription">
-        <source xml:lang="en">Server Group Description</source>
-        <target state="translated">Description du groupe de serveurs</target>
-      </trans-unit>
-      <trans-unit id="cms.errors.sameServerGroupName">
-        <source xml:lang="en">{0} already has a Server Group with the name {1}</source>
-        <target state="translated">{0} a déjà un groupe de serveurs nommé {1}</target>
-      </trans-unit>
-      <trans-unit id="cms.confirmDeleteGroup">
-        <source xml:lang="en">Are you sure you want to delete</source>
-        <target state="translated">Voulez-vous vraiment effectuer la suppression</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/dist/cmsUtils" source-language="en" datatype="plaintext" target-language="fr">
-    <body>
-      <trans-unit id="cms.errors.sameServerUnderCms">
-        <source xml:lang="en">You cannot add a shared registered server with the same name as the Configuration Server</source>
-        <target state="translated">Vous ne pouvez pas ajouter un serveur inscrit partagé du même nom que le serveur de configuration</target>
       </trans-unit>
     </body>
   </file>

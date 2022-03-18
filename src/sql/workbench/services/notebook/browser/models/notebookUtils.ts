@@ -5,10 +5,8 @@
 
 import * as path from 'vs/base/common/path';
 import { nb, ServerInfo } from 'azdata';
-import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { URI } from 'vs/base/common/uri';
-import { startsWith } from 'vs/base/common/strings';
-import { assign } from 'vs/base/common/objects';
 
 export const clusterEndpointsProperty = 'clusterEndpoints';
 export const hadoopEndpointNameGateway = 'gateway';
@@ -23,8 +21,7 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 	let fileExt = path.extname(fileName);
 	let providers: string[];
 	// First try to get provider for actual file type
-	if (fileExt && startsWith(fileExt, '.')) {
-		fileExt = fileExt.slice(1, fileExt.length);
+	if (fileExt) {
 		providers = notebookService.getProvidersForFileType(fileExt);
 	}
 	// Fallback to provider for default file type (assume this is a global handler)
@@ -38,13 +35,17 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 	return providers;
 }
 
-export function getStandardKernelsForProvider(providerId: string, notebookService: INotebookService): IStandardKernelWithProvider[] {
+export async function getStandardKernelsForProvider(providerId: string, notebookService: INotebookService): Promise<IStandardKernelWithProvider[]> {
 	if (!providerId || !notebookService) {
 		return [];
 	}
-	let standardKernels = notebookService.getStandardKernelsForProvider(providerId);
+	let standardKernels = await notebookService.getStandardKernelsForProvider(providerId);
+	if (!standardKernels || standardKernels.length === 0) {
+		// Fall back to using SQL provider instead
+		standardKernels = await notebookService.getStandardKernelsForProvider(SQL_NOTEBOOK_PROVIDER) ?? [];
+	}
 	standardKernels.forEach(kernel => {
-		assign(<IStandardKernelWithProvider>kernel, {
+		Object.assign(<IStandardKernelWithProvider>kernel, {
 			name: kernel.name,
 			connectionProviderIds: kernel.connectionProviderIds,
 			notebookProvider: providerId
@@ -58,6 +59,7 @@ export interface IStandardKernelWithProvider {
 	readonly displayName: string;
 	readonly connectionProviderIds: string[];
 	readonly notebookProvider: string;
+	readonly supportedLanguages: string[];
 }
 
 export interface IEndpoint {

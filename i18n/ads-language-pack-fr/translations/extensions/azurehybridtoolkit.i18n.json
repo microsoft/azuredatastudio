@@ -9,11 +9,11 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "kit de ressources cloud hybride Azure SQL",
+			"books-preview-category": "Notebooks Jupyter",
 			"description": "Ouvrir l’ouvrage kit de ressources cloud hybride Azure SQL",
-			"title.openJupyterBook": "Ouvrir l’ouvrage kit de ressources cloud hybride Azure SQL",
+			"displayName": "kit de ressources cloud hybride Azure SQL",
 			"title.cloudHybridBooks": "kit de ressources cloud hybride Azure SQL",
-			"books-preview-category": "Notebooks Jupyter"
+			"title.openJupyterBook": "Ouvrir l’ouvrage kit de ressources cloud hybride Azure SQL"
 		}
 	}
 }

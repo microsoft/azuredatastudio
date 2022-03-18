@@ -97,7 +97,11 @@ describe('Jupyter Session', function (): void {
 
 		// When I request execute
 		let future = kernel.requestExecute({
-			code: code
+			code: code,
+			cellIndex: 0,
+			cellUri: undefined,
+			notebookUri: undefined,
+			language: ''
 		}, true);
 
 		// Then expect wrapper to be returned
@@ -146,7 +150,7 @@ describe('Jupyter Future', function (): void {
 			})
 		});
 		should(handler).not.be.undefined();
-		verifyRelayMessage('shell', handler, () => msg);
+		await verifyRelayMessage('shell', handler, () => msg);
 
 	});
 
@@ -162,7 +166,7 @@ describe('Jupyter Future', function (): void {
 			})
 		});
 		should(handler).not.be.undefined();
-		verifyRelayMessage('stdin', handler, () => msg);
+		await verifyRelayMessage('stdin', handler, () => msg);
 	});
 
 	it('should relay IOPub message', async function (): Promise<void> {
@@ -177,11 +181,11 @@ describe('Jupyter Future', function (): void {
 			})
 		});
 		should(handler).not.be.undefined();
-		verifyRelayMessage('iopub', handler, () => msg);
+		await verifyRelayMessage('iopub', handler, () => msg);
 	});
 
-	function verifyRelayMessage(channel: nb.Channel | KernelMessage.Channel, handler: (msg: KernelMessage.IMessage) => void | PromiseLike<void>, getMessage: () => nb.IMessage): void {
-		handler({
+	async function verifyRelayMessage(channel: nb.Channel | KernelMessage.Channel, handler: (msg: KernelMessage.IMessage) => void | PromiseLike<void>, getMessage: () => nb.IMessage): Promise<void> {
+		await handler({
 			channel: <any>channel,
 			content: { value: 'test' },
 			metadata: { value: 'test' },

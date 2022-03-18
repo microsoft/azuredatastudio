@@ -14,13 +14,20 @@ export enum TelemetryViews {
 	SqlServerDashboard = 'SqlServerDashboard',
 	CreateDataMigrationServiceDialog = 'CreateDataMigrationServiceDialog',
 	AssessmentsDialog = 'AssessmentsDialog',
+	DatabaseBackupPage = 'DatabaseBackupPage',
+	IntegrationRuntimePage = 'IntegrationRuntimePage',
 	MigrationCutoverDialog = 'MigrationCutoverDialog',
 	MigrationStatusDialog = 'MigrationStatusDialog',
 	MigrationWizardAccountSelectionPage = 'MigrationWizardAccountSelectionPage',
 	MigrationWizardTargetSelectionPage = 'MigrationWizardTargetSelectionPage',
+	MigrationWizardIntegrationRuntimePage = 'MigrationWizardIntegrationRuntimePage',
 	MigrationWizardSummaryPage = 'MigrationWizardSummaryPage',
+	MigrationWizardController = 'MigrationWizardController',
 	StartMigrationService = 'StartMigrationSerivce',
-	SqlMigrationWizard = 'SqlMigrationWizard'
+	SqlMigrationWizard = 'SqlMigrationWizard',
+	MigrationLocalStorage = 'MigrationLocalStorage',
+	SkuRecommendationWizard = 'SkuRecommendationWizard',
+	DataCollectionWizard = 'GetAzureRecommendationDialog'
 }
 
 export enum TelemetryAction {
@@ -34,7 +41,22 @@ export enum TelemetryAction {
 	CutoverMigration = 'CutoverMigration',
 	CancelMigration = 'CancelMigration',
 	MigrationStatus = 'MigrationStatus',
-	PageButtonClick = 'PageButtonClick'
+	PageButtonClick = 'PageButtonClick',
+	Prev = 'prev',
+	Next = 'next',
+	Done = 'done',
+	Cancel = 'cancel',
+	OnPageLeave = 'OnPageLeave',
+	GetMISkuRecommendation = 'GetMISkuRecommendation',
+	GetVMSkuRecommendation = 'GetVMSkuRecommendation',
+	GetInstanceRequirements = 'GetInstanceRequirements',
+	StartDataCollection = 'StartDataCollection',
+	StopDataCollection = 'StopDataCollection'
+}
+
+export function logError(telemetryView: TelemetryViews, err: string, error: any): void {
+	console.log(error);
+	TelemetryReporter.sendErrorEvent(telemetryView, err);
 }
 
 export function sendSqlMigrationActionEvent(telemetryView: TelemetryViews, telemetryAction: TelemetryAction, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {

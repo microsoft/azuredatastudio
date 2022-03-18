@@ -4,16 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { FileAccess } from 'vs/base/common/network';
-import { isWeb, globals } from 'vs/base/common/platform';
+import { globals, isWeb } from 'vs/base/common/platform';
 import { env } from 'vs/base/common/process';
-import { dirname, joinPath } from 'vs/base/common/resources';
 import { IProductConfiguration } from 'vs/base/common/product';
+import { dirname, joinPath } from 'vs/base/common/resources';
 import { ISandboxConfiguration } from 'vs/base/parts/sandbox/common/sandboxTypes';
 
 let product: IProductConfiguration;
 
 // Native sandbox environment
-if (typeof globals.vscode !== 'undefined') {
+if (typeof globals.vscode !== 'undefined' && typeof globals.vscode.context !== 'undefined') {
 	const configuration: ISandboxConfiguration | undefined = globals.vscode.context.configuration();
 	if (configuration) {
 		product = configuration.product;
@@ -54,8 +54,8 @@ else {
 	// Running out of sources
 	if (Object.keys(product).length === 0) {
 		Object.assign(product, {
-			version: '1.27.0-dev',
-			vscodeVersion: '1.53.0-dev',
+			version: '1.33.0-dev',
+			vscodeVersion: '1.59.0-dev',
 			nameLong: isWeb ? 'Azure Data Studio Web Dev' : 'Azure Data Studio Dev',
 			nameShort: isWeb ? 'Azure Data Studio Web Dev' : 'Azure Data Studio Dev',
 			applicationName: 'azuredatastudio-oss',
@@ -67,10 +67,10 @@ else {
 			extensionAllowedProposedApi: [
 				'ms-vscode.vscode-js-profile-flame',
 				'ms-vscode.vscode-js-profile-table',
-				'ms-vscode.github-browser',
-				'ms-vscode.github-richnav',
 				'ms-vscode.remotehub',
-				'ms-vscode.remotehub-insiders'
+				'ms-vscode.remotehub-insiders',
+				'GitHub.remotehub',
+				'GitHub.remotehub-insiders'
 			],
 		});
 	}

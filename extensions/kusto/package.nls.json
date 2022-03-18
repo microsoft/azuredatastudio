@@ -44,5 +44,10 @@
 	"kusto.connectionOptions.workstationId.displayName": "Workstation Id",
 	"kusto.connectionOptions.workstationId.description": "The name of the workstation connecting to Kusto Server",
 	"kusto.connectionOptions.failoverPartner.displayName": "Failover partner",
-	"kusto.connectionOptions.failoverPartner.description": "The name or network address of the instance of Kusto Server that acts as a failover partner"
+	"kusto.connectionOptions.failoverPartner.description": "The name or network address of the instance of Kusto Server that acts as a failover partner",
+	"kusto.connectionOptions.groupName.source": "Source",
+	"kusto.connectionOptions.groupName.security": "Security",
+	"kusto.connectionOptions.groupName.initialization": "Initialization",
+	"kusto.connectionOptions.groupName.connectionResiliency": "Connection Resiliency",
+	"kusto.connectionOptions.groupName.context": "Context"
 }

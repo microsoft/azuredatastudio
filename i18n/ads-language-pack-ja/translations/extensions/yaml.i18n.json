@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "YAML の基本言語サポート",
-			"description": "YAML ファイル内で構文ハイライト、かっこ一致を提供します。"
+			"description": "YAML ファイル内で構文ハイライト、かっこ一致を提供します。",
+			"displayName": "YAML の基本言語サポート"
 		}
 	}
 }

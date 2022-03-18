@@ -8,6 +8,7 @@ import 'mocha';
 import * as should from 'should';
 import * as vscode from 'vscode';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
+import { prettyPrintProviders } from './testUtils';
 
 export class MockTreeDataProvider implements vscode.TreeDataProvider<any>{
 	onDidChangeTreeData?: vscode.Event<any> | undefined;
@@ -38,6 +39,10 @@ export function createProjectProvider(projectTypes: IProjectType[], projectActio
 }
 
 suite('ProjectProviderRegistry Tests', function (): void {
+	this.beforeEach(() => {
+		ProjectProviderRegistry.clear();
+	});
+
 	test('register and unregister project providers', async () => {
 		const provider1 = createProjectProvider([
 			{
@@ -111,7 +116,7 @@ suite('ProjectProviderRegistry Tests', function (): void {
 				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
 				data: [['d1']]
 			}]);
-		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');
+		should.strictEqual(ProjectProviderRegistry.providers.length, 0, `there should be no project provider at the beginning of the test, but found ${prettyPrintProviders()}`);
 		const disposable1 = ProjectProviderRegistry.registerProvider(provider1, 'test.testProvider');
 		let providerResult = ProjectProviderRegistry.getProviderByProjectExtension('testproj');
 		should.equal(providerResult, provider1, 'provider1 should be returned for testproj project type');
@@ -141,7 +146,7 @@ suite('ProjectProviderRegistry Tests', function (): void {
 		disposable2.dispose();
 		providerResult = ProjectProviderRegistry.getProviderByProjectExtension('sqlproj');
 		should.equal(providerResult, undefined, 'undefined should be returned for sqlproj project type after provider2 is disposed');
-		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider after unregistering the providers');
+		should.strictEqual(ProjectProviderRegistry.providers.length, 0, `there should be no project provider after unregistering the providers, but found ${prettyPrintProviders()}`);
 	});
 
 	test('Clear the project provider registry', async () => {
@@ -163,10 +168,10 @@ suite('ProjectProviderRegistry Tests', function (): void {
 				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
 				data: [['d1']]
 			}]);
-		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');
+		should.strictEqual(ProjectProviderRegistry.providers.length, 0, `there should be no project provider at the beginning of the test, but found ${prettyPrintProviders()}`);
 		ProjectProviderRegistry.registerProvider(provider, 'test.testProvider');
-		should.strictEqual(ProjectProviderRegistry.providers.length, 1, 'there should be only one project provider at this time');
+		should.strictEqual(ProjectProviderRegistry.providers.length, 1, `there should be only one project provider at this time, but found ${prettyPrintProviders()}`);
 		ProjectProviderRegistry.clear();
-		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider after clearing the registry');
+		should.strictEqual(ProjectProviderRegistry.providers.length, 0, `there should be no project provider after clearing the registry, but found ${prettyPrintProviders()}`);
 	});
 });

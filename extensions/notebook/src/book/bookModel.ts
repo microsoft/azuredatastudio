@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as yaml from 'js-yaml';
-import { BookTreeItem, BookTreeItemType, BookTreeItemFormat } from './bookTreeItem';
+import { BookTreeItem, BookTreeItemFormat } from './bookTreeItem';
 import * as constants from '../common/constants';
 import * as path from 'path';
 import * as fileServices from 'fs';
@@ -13,7 +13,7 @@ import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, JupyterBookSection } from '../contracts/content';
 import { convertFrom, getContentPath, BookVersion } from './bookVersionHandler';
-import { debounce, IPinnedNotebook } from '../common/utils';
+import { debounce, IPinnedNotebook, BookTreeItemType } from '../common/utils';
 import { Deferred } from '../common/promise';
 const fsPromises = fileServices.promises;
 const content = 'content';
@@ -48,7 +48,7 @@ export class BookModel {
 	public watchTOC(): void {
 		fs.watchFile(this.tableOfContentsPath, async (curr, prev) => {
 			if (curr.mtime > prev.mtime) {
-				this.reinitializeContents();
+				this.reinitializeContents().catch(err => console.error('Error reinitializing book contents ', err));
 			}
 		});
 	}
@@ -126,7 +126,7 @@ export class BookModel {
 		}
 
 		if (await fs.pathExists(this._tableOfContentsPath)) {
-			vscode.commands.executeCommand('setContext', 'bookOpened', true);
+			void vscode.commands.executeCommand('setContext', 'bookOpened', true);
 			this.watchTOC();
 		} else {
 			this._errorMessage = loc.missingTocError;
@@ -243,7 +243,8 @@ export class BookModel {
 					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 					isUntitled: this.openAsUntitled,
 					version: book.version,
-					parent: element
+					parent: element,
+					hierarchyId: this.generateHierarchyId(i, element.book.hierarchyId)
 				},
 					{
 						light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
@@ -269,7 +270,8 @@ export class BookModel {
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 						isUntitled: this.openAsUntitled,
 						version: book.version,
-						parent: element
+						parent: element,
+						hierarchyId: this.generateHierarchyId(i, element.book.hierarchyId)
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
@@ -301,7 +303,8 @@ export class BookModel {
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 						isUntitled: this.openAsUntitled,
 						version: book.version,
-						parent: element
+						parent: element,
+						hierarchyId: this.generateHierarchyId(i, element.book.hierarchyId)
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),
@@ -322,7 +325,7 @@ export class BookModel {
 					treeItems.push(markdown);
 				} else {
 					this._errorMessage = loc.missingFileError(sections[i].title, book.title);
-					vscode.window.showErrorMessage(this._errorMessage);
+					void vscode.window.showErrorMessage(this._errorMessage);
 				}
 			}
 		}
@@ -332,7 +335,17 @@ export class BookModel {
 	}
 
 	/**
+	 * Creates a hierarchyId used to identify a tree item's descendants.
+	 * @param treeItemIndex - tree item index based on the book toc. This index is generated when loading a section.
+	 * @param hierarchyId (Optional) - hierarchyId of the parent element
+	 */
+	private generateHierarchyId(treeItemIndex: number, hierarchyId?: string): string {
+		return hierarchyId ? hierarchyId.concat('/', treeItemIndex.toString()) : treeItemIndex.toString();
+	}
+
+	/**
 	 * Recursively parses out a section of a Jupyter Book.
+	 * @param version
 	 * @param section The input data to parse
 	 */
 	public parseJupyterSections(version: string, section: any[]): JupyterBookSection[] {

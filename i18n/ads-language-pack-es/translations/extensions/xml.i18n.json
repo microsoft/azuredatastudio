@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Conceptos básicos del lenguaje XML",
-			"description": "Proporciona resaltado de sintaxis y correspondencia de corchetes en archivos XML."
+			"description": "Proporciona resaltado de sintaxis y correspondencia de corchetes en archivos XML.",
+			"displayName": "Conceptos básicos del lenguaje XML"
 		}
 	}
 }

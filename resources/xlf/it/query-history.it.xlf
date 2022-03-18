@@ -2,17 +2,17 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/query-history/package" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="queryHistory.displayName">
-        <source xml:lang="en">Query History</source>
-        <target state="translated">Cronologia delle query</target>
+      <trans-unit id="queryHistory.clear">
+        <source xml:lang="en">Clear All History</source>
+        <target state="translated">Cancella tutta la cronologia</target>
       </trans-unit>
       <trans-unit id="queryHistory.description">
         <source xml:lang="en">View and run previously executed queries</source>
         <target state="translated">Visualizza ed esegue query eseguite in precedenza</target>
       </trans-unit>
-      <trans-unit id="queryHistory.clear">
-        <source xml:lang="en">Clear All History</source>
-        <target state="translated">Cancella tutta la cronologia</target>
+      <trans-unit id="queryHistory.displayName">
+        <source xml:lang="en">Query History</source>
+        <target state="translated">Cronologia delle query</target>
       </trans-unit>
       <trans-unit id="queryHistory.toggleCapture">
         <source xml:lang="en">Toggle Query History Capture</source>

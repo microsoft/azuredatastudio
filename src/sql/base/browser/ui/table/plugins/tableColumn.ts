@@ -140,6 +140,11 @@ export interface IconColumnOptions extends BaseTableColumnOptions {
 	 * The title for all the cells. If the 'field' is provided, the cell values will overwrite this value.
 	 */
 	title?: string
+
+	/**
+	 * Whether the icon is font icon. If true, no other class names will be auto appended.
+	 */
+	isFontIcon?: boolean;
 }
 
 export interface IconCellValue {

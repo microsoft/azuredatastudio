@@ -94,7 +94,7 @@ export class UploadFilesCommand extends ProgressCommand {
 				}
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(
+			void vscode.window.showErrorMessage(
 				localize('uploadError', "Error uploading files: {0}", utils.getErrorMessage(err, true)));
 		}
 	}
@@ -125,7 +125,7 @@ export class UploadFilesCommand extends ProgressCommand {
 				let children: IFile[] = await Promise.all((await fs.readdir(file.path))
 					.map(childFileName => joinHdfsPath(file.path, childFileName))
 					.map(this.mapPathsToFiles()));
-				this.writeFiles(children, subFolder, cancelToken);
+				await this.writeFiles(children, subFolder, cancelToken);
 			} else {
 				await folderNode.writeFile(file);
 			}
@@ -160,7 +160,7 @@ export class MkDirCommand extends ProgressCommand {
 				}
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(
+			void vscode.window.showErrorMessage(
 				localize('mkDirError', "Error on making directory: {0}", utils.getErrorMessage(err, true)));
 		}
 	}
@@ -215,10 +215,10 @@ export class DeleteFilesCommand extends Command {
 					await oeNodeToRefresh.refresh();
 				}
 			} else {
-				vscode.window.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
+				void vscode.window.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(
+			void vscode.window.showErrorMessage(
 				localize('deleteError', "Error on deleting files: {0}", utils.getErrorMessage(err, true)));
 		}
 	}
@@ -276,10 +276,10 @@ export class SaveFileCommand extends ProgressCommand {
 						() => vscode.window.showInformationMessage(localize('saveCanceled', "Save operation was canceled")));
 				}
 			} else {
-				vscode.window.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
+				void vscode.window.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(
+			void vscode.window.showErrorMessage(
 				localize('saveError', "Error on saving file: {0}", utils.getErrorMessage(err, true)));
 		}
 	}
@@ -330,10 +330,10 @@ export class PreviewFileCommand extends ProgressCommand {
 					localize('previewing', "Generating preview"),
 					false);
 			} else {
-				vscode.window.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
+				void vscode.window.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(
+			void vscode.window.showErrorMessage(
 				localize('previewError', "Error on previewing file: {0}", utils.getErrorMessage(err, true)));
 		}
 	}
@@ -385,12 +385,12 @@ export class CopyPathCommand extends Command {
 			let node = await getNode<HdfsFileSourceNode>(context, this.appContext);
 			if (node) {
 				let path = node.hdfsPath;
-				vscode.env.clipboard.writeText(path);
+				void vscode.env.clipboard.writeText(path);
 			} else {
-				vscode.window.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
+				void vscode.window.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(
+			void vscode.window.showErrorMessage(
 				localize('copyPathError', "Error on copying path: {0}", utils.getErrorMessage(err, true)));
 		}
 	}
@@ -408,10 +408,10 @@ export class ManageAccessCommand extends Command {
 			if (node) {
 				new ManageAccessDialog(node.hdfsPath, await node.getFileSource()).openDialog();
 			} else {
-				vscode.window.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
+				void vscode.window.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(
+			void vscode.window.showErrorMessage(
 				localize('manageAccessError', "An unexpected error occurred while opening the Manage Access dialog: {0}", utils.getErrorMessage(err, true)));
 		}
 	}

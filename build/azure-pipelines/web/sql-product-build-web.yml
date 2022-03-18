@@ -1,7 +1,7 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: "12.13.0"
+    versionSpec: "14.x"
 
 - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
   inputs:
@@ -43,6 +43,7 @@ steps:
     path: .build/node_modules_cache
     cacheHitVar: NODE_MODULES_RESTORED
   displayName: Restore Cache - Node Modules
+  continueOnError: true
 
 - script: |
     set -e
@@ -80,8 +81,8 @@ steps:
 - script: |
     set -e
     yarn sqllint
+    yarn extensions-lint
     yarn gulp hygiene
-    yarn strict-vscode
     yarn valid-layers-check
   displayName: Run hygiene, eslint
   condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
@@ -97,6 +98,20 @@ steps:
     yarn gulp vscode-reh-web-linux-x64-yarnrc-extensions
     yarn gulp vscode-reh-web-linux-x64-min
   displayName: Compile
+
+- script: |
+    set -e
+    yarn gulp compile-extensions
+  displayName: Compile Extensions
+
+- script: |
+    set -e
+    node ./node_modules/playwright/install.js
+    APP_ROOT=$(Agent.BuildDirectory)/vscode-reh-web-linux-x64
+    xvfb-run yarn smoketest --build "$(Agent.BuildDirectory)/vscode-reh-web-linux-x64" --web --headless --screenshots "$(Build.ArtifactStagingDirectory)/smokeshots" --log "$(Build.ArtifactStagingDirectory)/logs/web/smoke.log"
+  displayName: Run smoke tests (Browser)
+  continueOnError: true
+  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
 # - script: |
 #     set -e
@@ -155,7 +170,7 @@ steps:
   displayName: 'Install .NET Core sdk for signing'
   inputs:
     packageType: sdk
-    version: 2.1.x
+    version: 5.0.x
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1

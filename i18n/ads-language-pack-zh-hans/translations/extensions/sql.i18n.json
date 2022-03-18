@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "SQL 语言基础功能",
-			"description": "在 SQL 文件中提供语法高亮和括号匹配功能。"
+			"description": "在 SQL 文件中提供语法高亮和括号匹配功能。",
+			"displayName": "SQL 语言基础功能"
 		}
 	}
 }

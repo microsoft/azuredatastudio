@@ -11,13 +11,22 @@
 		"dist/dialogs/profilerCreateSessionDialog": {
 			"createSessionDialog.cancel": "Annulla",
 			"createSessionDialog.create": "Avvia",
-			"createSessionDialog.title": "Avvia nuova sessione del profiler",
-			"createSessionDialog.templatesInvalid": "L'elenco di modelli non è valido. Non è possibile aprire la finestra di dialogo",
+			"createSessionDialog.createSessionFailed": "Non è stato possibile creare una sessione",
 			"createSessionDialog.dialogOwnerInvalid": "Il proprietario della finestra di dialogo non è valido. Non è possibile aprire la finestra di dialogo",
+			"createSessionDialog.enterSessionName": "Immetti il nome della sessione:",
 			"createSessionDialog.invalidProviderType": "Il tipo di provider non è valido. Non è possibile aprire la finestra di dialogo",
 			"createSessionDialog.selectTemplates": "Seleziona il modello di sessione:",
-			"createSessionDialog.enterSessionName": "Immetti il nome della sessione:",
-			"createSessionDialog.createSessionFailed": "Non è stato possibile creare una sessione"
+			"createSessionDialog.templatesInvalid": "L'elenco di modelli non è valido. Non è possibile aprire la finestra di dialogo",
+			"createSessionDialog.title": "Avvia nuova sessione del profiler"
+		},
+		"package": {
+			"description": "SQL Server Profiler per Azure Data Studio",
+			"displayName": "SQL Server Profiler",
+			"profiler.category": "Profiler",
+			"profiler.contributes.title.newProfler": "Avvia profiler",
+			"profiler.contributes.title.openCreateSessionDialog": "Creare stagione del Profiler",
+			"profiler.contributes.title.start": "Avvia",
+			"profiler.contributes.title.stop": "Arresta"
 		}
 	}
 }

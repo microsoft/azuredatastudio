@@ -14,6 +14,7 @@ import { IURITransformer } from 'vs/base/common/uriIpc';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { mapToSerializable } from 'sql/base/common/map';
+import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
@@ -194,6 +195,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerTableDesignerProvider(provider: azdata.designers.TableDesignerProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.TableDesignerProvider);
+		this._proxy.$registerTableDesignerProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	// Capabilities Discovery handlers
 	override $getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
 		return this._resolveProvider<azdata.CapabilitiesProvider>(handle).getServerCapabilities(client);
@@ -314,6 +321,14 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 			ownerUri = this._getTransformedUri(ownerUri, this.uriTransformer.transformOutgoing);
 		}
 		return this._resolveProvider<azdata.QueryProvider>(handle).disposeQuery(ownerUri);
+	}
+
+	override $connectionUriChanged(handle: number, newUri: string, oldUri: string): Thenable<void> {
+		if (this.uriTransformer) {
+			newUri = this._getTransformedUri(newUri, this.uriTransformer.transformOutgoing);
+			oldUri = this._getTransformedUri(oldUri, this.uriTransformer.transformOutgoing);
+		}
+		return this._resolveProvider<azdata.QueryProvider>(handle).connectionUriChanged(newUri, oldUri);
 	}
 
 	override $onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void {
@@ -875,5 +890,35 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	public override $getDataGridColumns(handle: number): Thenable<azdata.DataGridColumn[]> {
 		return this._resolveProvider<azdata.DataGridProvider>(handle).getDataGridColumns();
+	}
+
+	// Table Designer
+	public override $initializeTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).initializeTableDesigner(table);
+	}
+
+	public override $processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).processTableEdit(table, edit);
+	}
+
+	public override $publishTableDesignerChanges(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.PublishChangesResult> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).publishChanges(table);
+	}
+
+	public override $generateScriptForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).generateScript(table);
+	}
+
+	public override $generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).generatePreviewReport(table);
+	}
+
+	public override $disposeTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<void> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).disposeTableDesigner(table);
+	}
+
+	public override $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): Promise<void> {
+		this._proxy.$openTableDesigner(providerId, tableInfo, telemetryInfo);
+		return Promise.resolve();
 	}
 }

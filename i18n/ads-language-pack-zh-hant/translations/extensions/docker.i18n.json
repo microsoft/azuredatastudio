@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Docker 語言基礎知識",
-			"description": "為 Docker 檔案提供語法醒目提示及括弧對應功能。"
+			"description": "為 Docker 檔案提供語法醒目提示及括弧對應功能。",
+			"displayName": "Docker 語言基礎知識"
 		}
 	}
 }

@@ -30,7 +30,6 @@ import * as DOM from 'vs/base/browser/dom';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -229,7 +228,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				validation: (value: string) => {
 					if (!value) {
 						return ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", serverNameOption.displayName) });
-					} else if (startsWith(value, ' ') || endsWith(value, ' ')) {
+					} else if (value.startsWith(' ') || value.endsWith(' ')) {
 						return ({ type: MessageType.WARNING, content: localize('connectionWidget.fieldWillBeTrimmed', "{0} will be trimmed.", serverNameOption.displayName) });
 					}
 					return undefined;
@@ -419,6 +418,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				if (account) {
 					await this._accountManagementService.refreshAccount(account);
 					await this.fillInAzureAccountOptions();
+					this.updateRefreshCredentialsLink();
 				}
 			}));
 		}
@@ -455,7 +455,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
 		this._userNameInputBox.hideMessage();
 		this._passwordInputBox.hideMessage();
-		this._rememberPasswordCheckBox.checked = false;
 		this._azureAccountDropdown.hideMessage();
 		this._azureTenantDropdown.hideMessage();
 		this._tableContainer.classList.add('hide-username');
@@ -687,12 +686,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			}
 
 			if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
+				let tenantId = connectionInfo.azureTenantId;
 				this.fillInAzureAccountOptions().then(async () => {
 					let accountName = (this.authType === AuthenticationType.AzureMFA)
 						? connectionInfo.azureAccount : connectionInfo.userName;
 					this._azureAccountDropdown.selectWithOptionName(this.getModelValue(accountName));
 					await this.onAzureAccountSelected();
-					let tenantId = connectionInfo.azureTenantId;
 					let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 					if (account && account.properties.tenants.length > 1) {
 						let tenant = account.properties.tenants.find(tenant => tenant.id === tenantId);

@@ -52,18 +52,18 @@ export class MarkdownRenderer {
 	}
 
 	render(markdown: IMarkdownString | undefined, options?: MarkdownRenderOptions, markedOptions?: MarkedOptions): IMarkdownRenderResult {
-		const disposeables = new DisposableStore();
+		const disposables = new DisposableStore();
 
 		let element: HTMLElement;
 		if (!markdown) {
 			element = document.createElement('span');
 		} else {
-			element = renderMarkdown(markdown, { ...this._getRenderOptions(markdown, disposeables), ...options }, markedOptions);
+			element = renderMarkdown(markdown, { ...this._getRenderOptions(markdown, disposables), ...options }, markedOptions);
 		}
 
 		return {
 			element,
-			dispose: () => disposeables.dispose()
+			dispose: () => disposables.dispose()
 		};
 	}
 
@@ -104,7 +104,7 @@ export class MarkdownRenderer {
 			asyncRenderCallback: () => this._onDidRenderAsync.fire(),
 			actionHandler: {
 				callback: (content) => this._openerService.open(content, { fromUserGesture: true, allowContributedOpeners: true, allowCommands: markdown.isTrusted }).catch(onUnexpectedError),
-				disposeables
+				disposables: disposeables
 			}
 		};
 	}

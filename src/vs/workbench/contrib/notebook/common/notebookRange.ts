@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 /**
@@ -18,6 +18,14 @@ export interface ICellRange {
 	end: number;
 }
 
+
+export function isICellRange(candidate: any): candidate is ICellRange {
+	if (!candidate || typeof candidate !== 'object') {
+		return false;
+	}
+	return typeof (<ICellRange>candidate).start === 'number'
+		&& typeof (<ICellRange>candidate).end === 'number';
+}
 
 export function cellIndexesToRanges(indexes: number[]) {
 	indexes.sort((a, b) => a - b);

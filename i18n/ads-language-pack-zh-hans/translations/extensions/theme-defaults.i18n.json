@@ -9,13 +9,13 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "默认主题",
-			"description": "默认 Visual Studio 浅色和深色主题",
-			"darkPlusColorThemeLabel": "深色+ (默认深色)",
-			"lightPlusColorThemeLabel": "浅色+ (默认浅色)",
 			"darkColorThemeLabel": "深色(Visual Studio)",
-			"lightColorThemeLabel": "浅色(Visual Studio)",
+			"darkPlusColorThemeLabel": "深色+ (默认深色)",
+			"description": "默认 Visual Studio 浅色和深色主题",
+			"displayName": "默认主题",
 			"hcColorThemeLabel": "高对比度",
+			"lightColorThemeLabel": "浅色(Visual Studio)",
+			"lightPlusColorThemeLabel": "浅色+ (默认浅色)",
 			"minimalIconThemeLabel": "最小(Visual Studio Code)"
 		}
 	}

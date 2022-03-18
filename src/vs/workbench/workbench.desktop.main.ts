@@ -84,10 +84,13 @@ import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboar
 import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/electron-browser/clipboardService';
 import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
 import { QueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryServiceImpl';
+import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
+import { AzureAccountService } from 'sql/workbench/services/azureAccount/browser/azureAccountService';
 
 registerSingleton(ISqlOAuthService, SqlOAuthService);
 registerSingleton(sqlIClipboardService, sqlClipboardService);
 registerSingleton(IQueryHistoryService, QueryHistoryService);
+registerSingleton(IAzureAccountService, AzureAccountService);
 // {{SQL CARBON EDIT}} - End
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -103,13 +106,6 @@ registerSingleton(IQueryHistoryService, QueryHistoryService);
 
 
 //#region --- workbench contributions
-
-// Rapid Render Splash
-import 'vs/workbench/contrib/splash/electron-browser/partsSplash.contribution';
-
-// Webview
-import 'vs/workbench/contrib/webview/electron-browser/webview.contribution';
-
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //
@@ -127,27 +123,6 @@ import 'vs/workbench/contrib/webview/electron-browser/webview.contribution';
 // Extensions Management
 import 'vs/workbench/contrib/extensions/electron-browser/extensions.contribution';
 
-// Terminal
-import 'vs/workbench/contrib/terminal/electron-browser/terminal.contribution';
-
-// External Terminal
-import 'vs/workbench/contrib/externalTerminal/node/externalTerminal.contribution';
-
-
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//
-// NOTE: Please do NOT register services here. Use `registerSingleton()`
-//       from `workbench.common.main.ts` if the service is shared between
-//       desktop and web or `workbench.sandbox.main.ts` if the service
-//       is desktop only.
-//
-//       The `node` & `electron-browser` layer is deprecated for workbench!
-//
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-// CLI
-import 'vs/workbench/contrib/cli/node/cli.contribution';
 
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -165,8 +140,8 @@ import 'vs/workbench/contrib/cli/node/cli.contribution';
 //#endregion
 
 // {{SQL CARBON EDIT}}
-// release notes
-import 'sql/workbench/update/electron-browser/releaseNotes.contribution';
+// getting started
+import 'sql/workbench/update/electron-browser/gettingStarted.contribution';
 
 // query history
 import 'sql/workbench/contrib/queryHistory/electron-browser/queryHistory.contribution';

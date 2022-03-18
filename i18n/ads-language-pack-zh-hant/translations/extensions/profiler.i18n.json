@@ -11,13 +11,22 @@
 		"dist/dialogs/profilerCreateSessionDialog": {
 			"createSessionDialog.cancel": "取消",
 			"createSessionDialog.create": "開始",
-			"createSessionDialog.title": "開始新的分析工具工作階段",
-			"createSessionDialog.templatesInvalid": "範本清單無效，無法開啟對話方塊",
+			"createSessionDialog.createSessionFailed": "無法建立工作階段",
 			"createSessionDialog.dialogOwnerInvalid": "對話方塊擁有者無效，無法開啟對話方塊",
+			"createSessionDialog.enterSessionName": "輸入工作階段名稱:",
 			"createSessionDialog.invalidProviderType": "提供者類型無效，無法開啟對話方塊",
 			"createSessionDialog.selectTemplates": "選取工作階段範本:",
-			"createSessionDialog.enterSessionName": "輸入工作階段名稱:",
-			"createSessionDialog.createSessionFailed": "無法建立工作階段"
+			"createSessionDialog.templatesInvalid": "範本清單無效，無法開啟對話方塊",
+			"createSessionDialog.title": "開始新的分析工具工作階段"
+		},
+		"package": {
+			"description": "Azure Data Studio 的 SQL Server Profiler",
+			"displayName": "SQL Server Profiler",
+			"profiler.category": "分析工具",
+			"profiler.contributes.title.newProfler": "啟動分析工具",
+			"profiler.contributes.title.openCreateSessionDialog": "建立分析工具季節",
+			"profiler.contributes.title.start": "開始",
+			"profiler.contributes.title.stop": "停止"
 		}
 	}
 }

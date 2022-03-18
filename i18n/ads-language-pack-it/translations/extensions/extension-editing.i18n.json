@@ -8,22 +8,22 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Creazione estensione",
-			"description": "Fornisce funzionalità di linting per la creazione di estensioni."
+		"dist/extensionLinter": {
+			"dataUrlsNotValid": "Gli URL di dati non sono un'origine valida per le immagini.",
+			"embeddedSvgsNotValid": "Le immagini di tipo SVG incorporate non sono un'origine valida.",
+			"httpsRequired": "Le immagini devono usare il protocollo HTTPS.",
+			"relativeBadgeUrlRequiresHttpsRepository": "Notifiche con URL relativo richiedono di specificare un repository con protocollo HTTPS in questo package.json.",
+			"relativeIconUrlRequiresHttpsRepository": "Un'icona richiede di specificare un repository con protocollo HTTPS in questo package.json.",
+			"relativeUrlRequiresHttpsRepository": "Immagini con URL relative richiedono di specificare un repository con protocollo HTTPS in package.json.",
+			"svgsNotValid": "Le immagini di tipo SVG non sono un'origine valida."
 		},
 		"dist/packageDocumentHelper": {
 			"languageSpecificEditorSettings": "Impostazioni dell'editor specifiche del linguaggio",
 			"languageSpecificEditorSettingsDescription": "Esegue l'override delle impostazioni dell'editor per il linguaggio"
 		},
-		"dist/extensionLinter": {
-			"httpsRequired": "Le immagini devono usare il protocollo HTTPS.",
-			"svgsNotValid": "Le immagini di tipo SVG non sono un'origine valida.",
-			"embeddedSvgsNotValid": "Le immagini di tipo SVG incorporate non sono un'origine valida.",
-			"dataUrlsNotValid": "Gli URL di dati non sono un'origine valida per le immagini.",
-			"relativeUrlRequiresHttpsRepository": "Immagini con URL relative richiedono di specificare un repository con protocollo HTTPS in package.json.",
-			"relativeIconUrlRequiresHttpsRepository": "Un'icona richiede di specificare un repository con protocollo HTTPS in questo package.json.",
-			"relativeBadgeUrlRequiresHttpsRepository": "Notifiche con URL relativo richiedono di specificare un repository con protocollo HTTPS in questo package.json."
+		"package": {
+			"description": "Fornisce funzionalità di linting per la creazione di estensioni.",
+			"displayName": "Creazione estensione"
 		}
 	}
 }

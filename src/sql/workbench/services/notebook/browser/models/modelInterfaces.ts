@@ -12,7 +12,7 @@ import { URI } from 'vs/base/common/uri';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 import { CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
-import { INotebookManager, ILanguageMagic } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManager, ILanguageMagic, ISerializationManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
@@ -23,6 +23,11 @@ import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvent
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICellValue, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
+import { IPosition } from 'vs/editor/common/core/position';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+
 
 export enum ViewMode {
 	Notebook,
@@ -34,15 +39,9 @@ export interface ICellRange {
 	readonly end: number;
 }
 
-export interface ISingleNotebookEditOperation {
-	range: ICellRange;
-	cell: Partial<nb.ICellContents>;
-	forceMoveMarkers: boolean;
-}
-
 export interface IClientSessionOptions {
 	notebookUri: URI;
-	notebookManager: INotebookManager;
+	executeManager: IExecuteManager;
 	notificationService: INotificationService;
 	kernelSpec: nb.IKernelSpec;
 }
@@ -254,9 +253,14 @@ export interface INotebookModel {
 	readonly language: string;
 
 	/**
-	 * All notebook managers applicable for a given notebook
+	 * The current serialization manager applicable for a given notebook
 	 */
-	readonly notebookManagers: INotebookManager[];
+	readonly serializationManager: ISerializationManager | undefined;
+
+	/**
+	 * All execute managers applicable for a given notebook
+	 */
+	readonly executeManagers: IExecuteManager[];
 
 	/**
 	 * Event fired on first initialization of the kernel and
@@ -412,7 +416,7 @@ export interface INotebookModel {
 	 * editing the model. Long-term, this will ensure edit operations can be added to the undo stack
 	 * @param edits The edit operations to perform
 	 */
-	pushEditOperations(edits: ISingleNotebookEditOperation[]): void;
+	pushEditOperations(edits: INotebookEditOperation[]): void;
 
 	getApplicableConnectionProviderIds(kernelName: string): string[];
 
@@ -433,6 +437,12 @@ export interface INotebookModel {
 
 	requestConnection(): Promise<boolean>;
 
+	/**
+	 * Create and send a Notebook Telemetry Event
+	 * @param action Telemetry action
+	 * @param additionalProperties Additional properties to send.
+	*/
+	sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties?: ITelemetryEventProperties): void;
 }
 
 export interface NotebookContentChange {
@@ -491,6 +501,7 @@ export interface ICellModel {
 	cellUri: URI;
 	id: string;
 	readonly language: string;
+	readonly displayLanguage: string;
 	readonly cellGuid: string;
 	source: string | string[];
 	cellType: CellType;
@@ -520,6 +531,7 @@ export interface ICellModel {
 	isCollapsed: boolean;
 	isParameter: boolean;
 	isInjectedParameter: boolean;
+	readonly onLanguageChanged: Event<string>;
 	readonly onCollapseStateChanged: Event<boolean>;
 	readonly onParameterStateChanged: Event<boolean>;
 	readonly onCellModeChanged: Event<boolean>;
@@ -528,12 +540,11 @@ export interface ICellModel {
 	showPreview: boolean;
 	showMarkdown: boolean;
 	defaultTextEditMode: string;
-	readonly onCellPreviewModeChanged: Event<boolean>;
-	readonly onCellMarkdownModeChanged: Event<boolean>;
 	sendChangeToNotebook(change: NotebookChangeType): void;
 	cellSourceChanged: boolean;
 	readonly savedConnectionName: string | undefined;
 	attachments: nb.ICellAttachments | undefined;
+	readonly onCurrentEditModeChanged: Event<CellEditModes>;
 	readonly currentMode: CellEditModes;
 	/**
 	 * Adds image as an attachment to cell metadata
@@ -543,6 +554,29 @@ export interface ICellModel {
 	 * Returns the name of the attachment added to metadata.
 	 */
 	addAttachment(mimeType: string, base64Encoding: string, name: string): string;
+	richTextCursorPosition: ICaretPosition;
+	markdownCursorPosition: IPosition;
+	/**
+	 * Processes a list of edits for the cell
+	 * @param edits List of edits to apply to the cell
+	 */
+	processEdits(edits: ICellEdit[]): void;
+}
+
+export const enum CellEditType {
+	Output,
+	OutputData
+}
+
+export interface ICellEdit {
+	readonly type: CellEditType
+}
+
+export interface ICaretPosition {
+	startElementNodes: number[];
+	startOffset: number;
+	endElementNodes: number[];
+	endOffset: number;
 }
 
 export interface IModelFactory {
@@ -551,7 +585,7 @@ export interface IModelFactory {
 	createClientSession(options: IClientSessionOptions): IClientSession;
 }
 
-export interface IContentManager {
+export interface IContentLoader {
 	/**
 	 * This is a specialized method intended to load for a default context - just the current Notebook's URI
 	 */
@@ -569,8 +603,9 @@ export interface INotebookModelOptions {
 	 */
 	factory: IModelFactory;
 
-	contentManager: IContentManager;
-	notebookManagers: INotebookManager[];
+	contentLoader: IContentLoader;
+	serializationManagers: ISerializationManager[];
+	executeManagers: IExecuteManager[];
 	providerId: string;
 	defaultKernel: nb.IKernelSpec;
 	cellMagicMapper: ICellMagicMapper;

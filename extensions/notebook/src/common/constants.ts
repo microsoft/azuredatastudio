@@ -42,6 +42,7 @@ export const localhostName = 'localhost';
 export const localhostTitle = localize('managePackages.localhost', "localhost");
 export const PackageNotFoundError = localize('managePackages.packageNotFound', "Could not find the specified package");
 
+export const ipykernelDisplayName = 'Python 3 (ipykernel)';
 export const python3DisplayName = 'Python 3';
 export const pysparkDisplayName = 'PySpark';
 export const sparkScalaDisplayName = 'Spark | Scala';
@@ -92,3 +93,7 @@ export const SQL_PROVIDER = 'MSSQL';
 export const USER = 'user';
 export const AUTHTYPE = 'authenticationType';
 export const INTEGRATED_AUTH = 'integrated';
+
+// The version of the notebook file format that we support
+export const NBFORMAT = 4;
+export const NBFORMAT_MINOR = 2;

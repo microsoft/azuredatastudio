@@ -183,7 +183,7 @@ export class AddNewPackageTab {
 
 
 	private async doPackageInstall(): Promise<void> {
-		let packageName = this.newPackagesName.value;
+		let packageName = this.newPackagesName.value as string;
 		let packageVersion = this.newPackagesVersions.value as string;
 		if (!packageName || packageName.length === 0 ||
 			!packageVersion || packageVersion.length === 0) {

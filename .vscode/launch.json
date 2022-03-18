@@ -33,7 +33,7 @@
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
 			},
 			"port": 9222,
-			"timeout": 20000,
+			"timeout": 30000,
 			"env": {
 				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null,
 				"VSCODE_SKIP_PRELAUNCH": "1"
@@ -48,7 +48,7 @@
 			"cascadeTerminateToConfigurations": [
 				"Attach to Extension Host"
 			],
-			"userDataDir": false,
+			"userDataDir": "${workspaceFolder}/.profile-oss",
 			"pauseForSourceMap": false,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -104,6 +104,7 @@
 			"name": "Attach to Renderer",
 			"browserAttachLocation": "workspace",
 			"port": 9222,
+			"timeout": 30000,
 			"trace": true,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -268,22 +269,79 @@
 			"presentation": {
 				"group": "4_web"
 			}
+		},
+		{
+			"name": "Run Sample Resource Deployment Extension",
+			"type": "sqlopsExtensionHost",
+			"request": "launch",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
+			},
+			"osx": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"args": [
+				"--extensionDevelopmentPath=${workspaceRoot}/samples/sample-resource-deployment"
+			],
+			"outFiles": [
+				"${workspaceRoot}/samples/sample-resource-deployment/out/**/*.js"
+			],
+			"preLaunchTask": "Watch sample-resource-deployment",
+			"presentation": {
+				"group": "5_samples"
+			},
+			"timeout": 30000
+		},
+		{
+			"name": "Run Sample Notebook Provider Extension",
+			"type": "sqlopsExtensionHost",
+			"request": "launch",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
+			},
+			"osx": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"args": [
+				"--extensionDevelopmentPath=${workspaceRoot}/samples/sample-notebook-provider"
+			],
+			"outFiles": [
+				"${workspaceRoot}/samples/sample-notebook-provider/out/**/*.js"
+			],
+			"preLaunchTask": "Watch sample-notebook-provider",
+			"presentation": {
+				"group": "5_samples"
+			},
+			"timeout": 30000
 		}
 	],
 	"compounds": [
 		{
-			"name": "Launch ADS & Debug All",
-			"stopAll": true,
+			"name": "Launch ADS & Debug Renderer and Extension Host",
 			"configurations": [
-				"Launch Azure Data Studio",
-				"Attach to Main Process",
-				"Attach to Extension Host",
-				"Attach to Shared Process",
+				"Launch ADS & Debug Renderer",
+				"Attach to Extension Host"
 			],
-			"preLaunchTask": "Ensure Prelaunch Dependencies",
 			"presentation": {
 				"group": "1_debug",
-				"order": 4
+				"order": 1
+			}
+		},
+		{
+			"name": "Launch ADS & Debug Extension Host",
+			"configurations": [
+				"Launch Azure Data Studio",
+				"Attach to Extension Host"
+			],
+			"presentation": {
+				"group": "1_debug",
+				"order": 3
 			}
 		},
 		{
@@ -295,18 +353,23 @@
 			],
 			"presentation": {
 				"group": "1_debug",
-				"order": 3
+				"order": 4
 			}
 		},
 		{
-			"name": "Launch ADS & Debug Renderer and Extension Host",
+			"name": "Launch ADS & Debug All",
+			"stopAll": true,
 			"configurations": [
 				"Launch Azure Data Studio",
-				"Attach to Extension Host"
+				"Attach to Main Process",
+				"Attach to Extension Host",
+				"Attach to Shared Process",
+				"Attach to Renderer"
 			],
+			"preLaunchTask": "Ensure Prelaunch Dependencies",
 			"presentation": {
 				"group": "1_debug",
-				"order": 1
+				"order": 5
 			}
 		},
 		{

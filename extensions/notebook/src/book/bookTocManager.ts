@@ -12,14 +12,15 @@ import * as vscode from 'vscode';
 import * as loc from '../common/localizedConstants';
 import { BookModel } from './bookModel';
 import { TocEntryPathHandler } from './tocEntryPathHandler';
-import { FileExtension } from '../common/utils';
+import { FileExtension, BookTreeItemType } from '../common/utils';
 
 export interface IBookTocManager {
-	updateBook(element: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
+	updateBook(sources: BookTreeItem[], target: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
 	removeNotebook(element: BookTreeItem): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
-	addNewFile(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem): Promise<void>;
+	addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void>;
 	recovery(): Promise<void>;
+	enableDnd: boolean;
 }
 
 export interface quickPickResults {
@@ -41,6 +42,7 @@ export class BookTocManager implements IBookTocManager {
 	public tocFiles: Map<string, string> = new Map<string, string>();
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
+	private _enableDnd: boolean = false;
 
 	constructor(private _sourceBook?: BookModel, private _targetBook?: BookModel) {
 		this._targetBook?.unwatchTOC();
@@ -87,32 +89,32 @@ export class BookTocManager implements IBookTocManager {
 		let toc: JupyterBookSection[] = [];
 		for (const content of contents) {
 			try {
-				const contentStat = (await fs.promises.stat(path.join(directory, content)));
+				const contentStat = (await fs.promises.stat(path.posix.join(directory, content)));
 				const parsedFile = path.parse(content);
 				if (contentStat.isFile() && allowedFileExtensions.includes(parsedFile.ext)) {
-					let filePath = directory === rootDirectory ? path.posix.join(path.posix.sep, parsedFile.name) : path.posix.join(path.posix.sep, path.relative(rootDirectory, directory), parsedFile.name);
+					let filePath = directory === rootDirectory ? path.posix.join(path.posix.sep, parsedFile.name) : path.posix.join(path.posix.sep, path.posix.relative(rootDirectory, directory), parsedFile.name);
 					const section: JupyterBookSection = {
 						title: parsedFile.name,
 						file: filePath
 					};
 					toc.push(section);
 				} else if (contentStat.isDirectory()) {
-					let files = await fs.promises.readdir(path.join(directory, content));
+					let files = await fs.promises.readdir(path.posix.join(directory, content));
 					let initFile = this.getInitFile(files);
-					let filePath = directory === rootDirectory ? path.posix.join(path.posix.sep, parsedFile.name, initFile.name) : path.posix.join(path.posix.sep, path.relative(rootDirectory, directory), parsedFile.name, initFile.name);
+					let filePath = directory === rootDirectory ? path.posix.join(path.posix.sep, parsedFile.name, initFile.name) : path.posix.join(path.posix.sep, path.posix.relative(rootDirectory, directory), parsedFile.name, initFile.name);
 					let section: JupyterBookSection = {};
 					section = {
 						title: parsedFile.name,
 						file: filePath,
 						expand_sections: true,
 						numbered: false,
-						sections: await this.createTocFromDir(files, path.join(directory, content), rootDirectory)
+						sections: await this.createTocFromDir(files, path.posix.join(directory, content), rootDirectory)
 					};
 					toc.push(section);
 				}
 			}
 			catch (error) {
-				vscode.window.showWarningMessage(loc.msgCreateBookWarningMsg(content));
+				void vscode.window.showWarningMessage(loc.msgCreateBookWarningMsg(content));
 			}
 		}
 		return toc;
@@ -132,7 +134,7 @@ export class BookTocManager implements IBookTocManager {
 		}
 		this.movedFiles.set(src, path.join(newFileName.concat(' - ', counter.toString())).concat(path.parse(dest).ext));
 		await fs.move(src, path.join(newFileName.concat(' - ', counter.toString())).concat(path.parse(dest).ext), { overwrite: true });
-		vscode.window.showInformationMessage(loc.duplicateFileError(path.parse(dest).base, src, newFileName.concat(' - ', counter.toString())));
+		void vscode.window.showInformationMessage(loc.duplicateFileError(path.parse(dest).base, src, newFileName.concat(' - ', counter.toString())));
 		return newFileName.concat(' - ', counter.toString());
 	}
 
@@ -279,14 +281,19 @@ export class BookTocManager implements IBookTocManager {
 		for (const elem of files) {
 			if (elem.file) {
 				let fileName = undefined;
+				// the toc does not provide the extension of the file, so we need to try for notebooks and markdown
 				try {
 					this.movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'));
 					await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'), { overwrite: false });
 				} catch (error) {
 					if (error.code === 'EEXIST') {
+						// if the file already exists in destination, then rename it before moving it.
 						fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'));
+					} else if (error.code === 'ENOENT') {
+						// if it doesnt exist then remove it from movedFiles
+						this.movedFiles.delete(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'));
 					}
-					else if (error.code !== 'ENOENT') {
+					else {
 						throw (error);
 					}
 				}
@@ -295,9 +302,13 @@ export class BookTocManager implements IBookTocManager {
 					await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'), { overwrite: false });
 				} catch (error) {
 					if (error.code === 'EEXIST') {
+						// if the file already exists in destination, then rename it before moving it.
 						fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'));
+					} else if (error.code === 'ENOENT') {
+						// if it doesnt exist then remove it from movedFiles
+						this.movedFiles.delete(path.join(this.sourceBookContentPath, elem.file).concat('.md'));
 					}
-					else if (error.code !== 'ENOENT') {
+					else {
 						throw (error);
 					}
 				}
@@ -314,7 +325,7 @@ export class BookTocManager implements IBookTocManager {
 	 * Moves a section to a book top level or another book's section. If there's a target section we add the the targetSection directory if it has one and append it to the
 	 * notebook's path. The overwrite option is set to false to prevent any issues with duplicated file names.
 	 * @param section The section that's been moved.
-	 * @param book The target book.
+	 * @param bookItem The target book.
 	*/
 	async moveSectionFiles(section: BookTreeItem, bookItem: BookTreeItem): Promise<void> {
 		const uri = path.posix.join(path.posix.sep, path.relative(section.rootContentPath, section.book.contentPath));
@@ -339,14 +350,14 @@ export class BookTocManager implements IBookTocManager {
 				this.newSection = sectionTOC;
 			}
 		}
-		this.newSection.title = section.title;
+		this.newSection.title = section.book.title;
 		this.newSection.file = path.posix.join(path.parse(uri).dir, fileName);
 		if (section.sections) {
 			const files = section.sections as JupyterBookSection[];
 			const movedSections = await this.traverseSections(files);
 			this.newSection.sections = movedSections;
 			this._modifiedDirectory.add(path.dirname(section.book.contentPath));
-			this.cleanUp(path.dirname(section.book.contentPath));
+			await this.cleanUp(path.dirname(section.book.contentPath));
 		}
 
 		if (bookItem.book.version === BookVersion.v1) {
@@ -358,16 +369,19 @@ export class BookTocManager implements IBookTocManager {
 	/**
 	 * Moves a file to a book top level or a book's section. If there's a target section we add the the targetSection directory if it has one and append it to the
 	 * files's path. The overwrite option is set to false to prevent any issues with duplicated file names.
-	 * @param element Notebook, Markdown File, or book's notebook that will be added to the book.
-	 * @param targetBook Book that will be modified.
+	 * @param file Notebook, Markdown File, or book's notebook that will be added to the book.
+	 * @param book Book that will be modified.
 	*/
 	async moveFile(file: BookTreeItem, book: BookTreeItem): Promise<void> {
 		const rootPath = book.rootContentPath;
 		const filePath = path.parse(file.book.contentPath);
 		let fileName = undefined;
 		try {
+			// no op if the notebook is already in the dest location
 			this.movedFiles.set(file.book.contentPath, path.join(rootPath, filePath.base));
-			await fs.move(file.book.contentPath, path.join(rootPath, filePath.base), { overwrite: false });
+			if (file.book.contentPath !== path.join(rootPath, filePath.base)) {
+				await fs.move(file.book.contentPath, path.join(rootPath, filePath.base), { overwrite: false });
+			}
 		} catch (error) {
 			if (error.code === 'EEXIST') {
 				fileName = await this.renameFile(file.book.contentPath, path.join(rootPath, filePath.base));
@@ -394,59 +408,71 @@ export class BookTocManager implements IBookTocManager {
 
 	/**
 	 * Moves the element to the target book's folder and adds it to the table of contents.
-	 * @param element Notebook, Markdown File, or section that will be added to the book.
-	 * @param targetBook Book that will be modified.
-	 * @param targetSection Book section that'll be modified.
+	 * @param sources The tree items that are been moved.
+	 * @param target Target tree item on which the sources will be added
+	 * @param section (Optional) book section that'll be modified. Not required when using drag and drop.
 	*/
-	public async updateBook(element: BookTreeItem, targetItem: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
-		try {
-			if (element.contextValue === 'section') {
-				// modify the sourceBook toc and remove the section
-				const findSection: JupyterBookSection = { file: element.book.page.file, title: element.book.page.title };
-				await this.moveSectionFiles(element, targetItem);
-				// remove section from book
-				await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
-				// add section to book
-				await this.updateTOC(targetItem.book.version, targetItem.tableOfContentsPath, targetSection, this.newSection);
+	public async updateBook(sources: BookTreeItem[], target: BookTreeItem, section?: JupyterBookSection): Promise<void> {
+		for (let element of sources) {
+			if (element.contextValue === BookTreeItemType.savedBook || this.isParent(element, target, section) || this.isDescendant(element, target)) {
+				// no op if the moving element is a book, the target dest is descendant of the moving element, the target dest is already the moving element parent
+				return;
 			}
-			else {
-				// the notebook is part of a book so we need to modify its toc as well
-				const findSection = { file: element.book.page.file, title: element.book.page.title };
-				await this.moveFile(element, targetItem);
-				if (element.contextValue === 'savedBookNotebook' || element.contextValue === 'Markdown') {
-					// remove notebook entry from book toc
-					await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
-				} else {
-					// close the standalone notebook, so it doesn't throw an error when we move the notebook to new location.
-					await vscode.commands.executeCommand('notebook.command.closeNotebook', element);
-				}
-				await this.updateTOC(targetItem.book.version, targetItem.tableOfContentsPath, targetSection, this.newSection);
-			}
-		} catch (e) {
-			await this.recovery();
-			vscode.window.showErrorMessage(loc.editBookError(element.book.contentPath, e instanceof Error ? e.message : e));
-		} finally {
 			try {
-				await this._targetBook.reinitializeContents();
+				const targetSection = section ? section : (target.contextValue === BookTreeItemType.section ? { file: target.book.page.file, title: target.book.page.title } : undefined);
+				if (element.contextValue === BookTreeItemType.section) {
+					// modify the sourceBook toc and remove the section
+					const findSection: JupyterBookSection = { file: element.book.page.file, title: element.book.page.title };
+					await this.moveSectionFiles(element, target);
+					// remove section from book
+					await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
+					// add section to book
+					await this.updateTOC(target.book.version, target.tableOfContentsPath, targetSection, this.newSection);
+				}
+				else {
+					// the notebook is part of a book so we need to modify its toc as well
+					const findSection = { file: element.book.page.file, title: element.book.page.title };
+					await this.moveFile(element, target);
+					if (element.contextValue === BookTreeItemType.savedBookNotebook || element.contextValue === BookTreeItemType.Markdown) {
+						// remove notebook entry from book toc
+						await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
+					} else {
+						// close the standalone notebook, so it doesn't throw an error when we move the notebook to new location.
+						await vscode.commands.executeCommand('notebook.command.closeNotebook', element);
+					}
+					await this.updateTOC(target.book.version, target.tableOfContentsPath, targetSection, this.newSection);
+				}
+			} catch (e) {
+				await this.recovery();
+				void vscode.window.showErrorMessage(loc.editBookError(element.book.contentPath, e instanceof Error ? e.message : e));
 			} finally {
-				if (this._sourceBook && this._sourceBook.bookPath !== this._targetBook.bookPath) {
-					// refresh source book model to pick up latest changes
-					await this._sourceBook.reinitializeContents();
+				try {
+					await this._targetBook.reinitializeContents();
+				} finally {
+					if (this._sourceBook && this._sourceBook.bookPath !== this._targetBook.bookPath) {
+						// refresh source book model to pick up latest changes
+						await this._sourceBook.reinitializeContents();
+					}
 				}
 			}
 		}
 	}
 
-	public async addNewFile(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem): Promise<void> {
+	public async addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void> {
 		let findSection: JupyterBookSection | undefined = undefined;
 		await fs.writeFile(pathDetails.filePath, '');
-		if (bookItem.contextValue === 'section') {
+		if (bookItem.contextValue === BookTreeItemType.section) {
 			findSection = { file: bookItem.book.page.file, title: bookItem.book.page.title };
 		}
 		let fileEntryInToc: JupyterBookSection = {
 			title: pathDetails.titleInTocEntry,
 			file: pathDetails.fileInTocEntry
 		};
+
+		if (isSection) {
+			fileEntryInToc.sections = [];
+		}
+
 		if (bookItem.book.version === BookVersion.v1) {
 			fileEntryInToc = convertTo(BookVersion.v1, fileEntryInToc);
 		}
@@ -468,6 +494,37 @@ export class BookTocManager implements IBookTocManager {
 		const findSection = { file: element.book.page.file, title: element.book.page.title };
 		await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
 		await this._sourceBook.reinitializeContents();
+	}
+
+	/**
+	 * Checks that the targetTreeItem is descendant of the tree item used by the onDrop method.
+	 * @param treeItem The moving element when using dnd.
+	 * @param targetTreeItem The target element where the moving element is dropped.
+	*/
+	isDescendant(treeItem: BookTreeItem, targetTreeItem: BookTreeItem): boolean {
+		return this._enableDnd && treeItem.rootContentPath === targetTreeItem.rootContentPath && targetTreeItem.book.hierarchyId?.includes(treeItem.book.hierarchyId);
+	}
+
+	/**
+	 * Checks that the book tree item is the parent of the passed element used by the onDrop and the moveTo method.
+	 * @param treeItem The child of the parent tree item.
+	 * @param parentTreeItem The parent of the passed element or the Saved Book tree item.
+	 * @param section (Optional) In case the parentTreeItem is the saved book, verify that the passed Jupyter Book Section is the parent of the treeItem.
+	*/
+	isParent(treeItem: BookTreeItem, parentTreeItem: BookTreeItem, section?: JupyterBookSection): boolean {
+		if (section) {
+			return section.file === treeItem.book.parent?.uri;
+		}
+
+		return treeItem.book.parent?.uri === parentTreeItem.uri &&
+			treeItem.book.parent?.rootContentPath === parentTreeItem.rootContentPath &&
+			treeItem.book.parent?.contextValue === parentTreeItem.contextValue &&
+			treeItem.book.parent?.sections.length === parentTreeItem.sections.length &&
+			treeItem.book.parent?.book.contentPath === parentTreeItem.book.contentPath;
+	}
+
+	public set enableDnd(useDnd: boolean) {
+		this._enableDnd = useDnd;
 	}
 
 	public get modifiedDir(): Set<string> {

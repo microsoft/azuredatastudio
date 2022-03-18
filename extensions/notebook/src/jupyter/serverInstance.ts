@@ -276,7 +276,7 @@ export class PerFolderServerInstance implements IServerInstance {
 		let action = this.errorHandler.handleError();
 		if (action === ErrorAction.Shutdown) {
 			this.notify(this.options.install, localize('jupyterError', "Error sent from Jupyter: {0}", utils.getErrorMessage(error)));
-			this.stop();
+			this.stop().catch(err => console.log('Error stopping Jupyter Server ', err));
 		}
 	}
 	private handleConnectionClosed(): void {

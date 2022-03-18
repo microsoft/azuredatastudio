@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Tema Escuro Solar",
 			"description": "Tema escuro solar do Visual Studio Code",
+			"displayName": "Tema Escuro Solar",
 			"themeLabel": "Solar Escuro"
 		}
 	}

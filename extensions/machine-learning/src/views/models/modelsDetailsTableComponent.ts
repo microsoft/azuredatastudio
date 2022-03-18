@@ -111,7 +111,6 @@ export class ModelsDetailsTableComponent extends ModelViewBase implements IDataC
 
 	/**
 	 * Load data in the component
-	 * @param workspaceResource Azure workspace
 	 */
 	public async loadData(): Promise<void> {
 

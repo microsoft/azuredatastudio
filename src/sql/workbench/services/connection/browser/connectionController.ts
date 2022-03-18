@@ -17,7 +17,6 @@ import { ConnectionWidget } from 'sql/workbench/services/connection/browser/conn
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
-import { assign } from 'vs/base/common/objects';
 
 export class ConnectionController implements IConnectionComponentController {
 	private _advancedController: AdvancedPropertiesController;
@@ -153,7 +152,7 @@ export class ConnectionController implements IConnectionComponentController {
 		} else {
 			defaultGroupId = Utils.defaultGroupId;
 		}
-		allGroups.push(assign({}, this._connectionWidget.DefaultServerGroup, { id: defaultGroupId }));
+		allGroups.push(Object.assign({}, this._connectionWidget.DefaultServerGroup, { id: defaultGroupId }));
 		allGroups.push(this._connectionWidget.NoneServerGroup);
 		if (connectionGroupRoot && connectionGroupRoot.length > 0) {
 			this.flattenGroups(connectionGroupRoot[0], allGroups);

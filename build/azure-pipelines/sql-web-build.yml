@@ -1,8 +1,8 @@
 resources:
   containers:
   - container: linux-x64
-    image: sqltoolscontainers.azurecr.io/web-build-image:1
-    endpoint: ContainerRegistry
+    image: sqltoolscontainers.azurecr.io/web-build-image:2
+    endpoint: SqlToolsContainers
 
 jobs:
 - job: LinuxWeb

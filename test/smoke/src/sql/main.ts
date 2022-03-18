@@ -15,18 +15,21 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { request } from 'https';
 import * as mkdirp from 'mkdirp';
+import * as minimist from 'minimist';
 
-export function main(isWeb: boolean = false): void {
-	if (isWeb) {
-		setupQueryEditorWebTests();
+export function main(opts: minimist.ParsedArgs): void {
+	if (opts.web) {
+		setupQueryEditorWebTests(opts);
+		setupNotebookViewTests(opts);
+		setupAddRemoteBookDialogTests(opts);
 	} else {
-		setupQueryEditorTests();
+		setupQueryEditorTests(opts);
+		setupNotebookTests(opts);
+		setupNotebookViewTests(opts);
+		setupCreateBookDialogTests(opts);
+		setupAddRemoteBookDialogTests(opts);
+		setupImportTests(opts);
 	}
-	setupNotebookTests();
-	setupNotebookViewTests();
-	setupCreateBookDialogTests();
-	setupAddRemoteBookDialogTests();
-	setupImportTests();
 }
 
 /* eslint-disable no-sync */
@@ -34,12 +37,14 @@ export function main(isWeb: boolean = false): void {
 const PLATFORM = '${PLATFORM}';
 const RUNTIME = '${RUNTIME}';
 const VERSION = '${VERSION}';
+const RELEASE_VERSION = '${RELEASE_VERSION}';
 
-const sqliteUrl = `https://github.com/Microsoft/azuredatastudio-sqlite/releases/download/1.4.0/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
+const sqliteUrl = `https://github.com/Microsoft/azuredatastudio-sqlite/releases/download/${RELEASE_VERSION}/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
 
 export async function setup(app: ApplicationOptions): Promise<void> {
 	console.log('*** Downloading test extensions');
-	const requestUrl = sqliteUrl.replace(PLATFORM, process.platform).replace(RUNTIME, getRuntime(app.web || app.remote || false)).replace(VERSION, getVersion(app.web || app.remote || false));
+	const releaseVersion = '1.7.0';
+	const requestUrl = sqliteUrl.replace(RELEASE_VERSION, releaseVersion).replace(PLATFORM, process.platform).replace(RUNTIME, getRuntime(app.web || app.remote || false)).replace(VERSION, getVersion(app.web || app.remote || false));
 	const zip = await fetch(requestUrl);
 	if (!zip) {
 		throw new Error('Could not get extension for current platform');

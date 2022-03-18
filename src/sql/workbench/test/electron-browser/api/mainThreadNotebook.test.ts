@@ -12,14 +12,16 @@ import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import { MainThreadNotebook } from 'sql/workbench/api/browser/mainThreadNotebook';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
-import { INotebookProvider } from 'sql/workbench/services/notebook/browser/notebookService';
-import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IExecuteProvider, ISerializationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, ISerializationManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { TestLifecycleService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { ExtHostNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IProductService } from 'vs/platform/product/common/productService';
+import { Disposable, NotebookCell, NotebookController, NotebookDocument, NotebookDocumentContentOptions, NotebookRegistrationData, NotebookRendererScript, NotebookSerializer } from 'vscode';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 suite('MainThreadNotebook Tests', () => {
 
@@ -30,7 +32,7 @@ suite('MainThreadNotebook Tests', () => {
 	let providerId = 'TestProvider';
 
 	setup(() => {
-		mockProxy = TypeMoq.Mock.ofType(ExtHostNotebookStub);
+		mockProxy = TypeMoq.Mock.ofType<ExtHostNotebookShape>(ExtHostNotebookStub);
 		let extContext = <IExtHostContext>{
 			getProxy: proxyType => mockProxy.object
 		};
@@ -57,88 +59,146 @@ suite('MainThreadNotebook Tests', () => {
 		mainThreadNotebook = new MainThreadNotebook(extContext, mockNotebookService.object, instantiationService);
 	});
 
-	suite('On registering a provider', () => {
-		let provider: INotebookProvider;
+	suite('On registering a serialization provider', () => {
+		let provider: ISerializationProvider;
 		setup(() => {
-			mockNotebookService.setup(s => s.registerProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
+			mockNotebookService.setup(s => s.registerSerializationProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
 				provider = providerImpl;
 			});
 		});
 
 		test('should call through to notebook service', () => {
 			// When I register a provider
-			mainThreadNotebook.$registerNotebookProvider(providerId, 1);
+			mainThreadNotebook.$registerSerializationProvider(providerId, 1);
 			// Then I expect a provider implementation to be passed to the service
-			mockNotebookService.verify(s => s.registerProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			assert.equal(provider.providerId, providerId);
+			mockNotebookService.verify(s => s.registerSerializationProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+			assert.strictEqual(provider.providerId, providerId);
 		});
 		test('should unregister in service', () => {
 			// Given we have a provider
-			mainThreadNotebook.$registerNotebookProvider(providerId, 1);
+			mainThreadNotebook.$registerSerializationProvider(providerId, 1);
 			// When I unregister a provider twice
-			mainThreadNotebook.$unregisterNotebookProvider(1);
-			mainThreadNotebook.$unregisterNotebookProvider(1);
+			mainThreadNotebook.$unregisterSerializationProvider(1);
+			mainThreadNotebook.$unregisterSerializationProvider(1);
 			// Then I expect it to be unregistered in the service just 1 time
-			mockNotebookService.verify(s => s.unregisterProvider(TypeMoq.It.isValue(providerId)), TypeMoq.Times.once());
+			mockNotebookService.verify(s => s.unregisterSerializationProvider(TypeMoq.It.isValue(providerId)), TypeMoq.Times.once());
 		});
 	});
 
-	suite('getNotebookManager', () => {
-		let managerWithAllFeatures: INotebookManagerDetails;
-		let provider: INotebookProvider;
-
+	suite('On registering an execute provider', () => {
+		let provider: IExecuteProvider;
 		setup(() => {
-			managerWithAllFeatures = {
-				handle: 2,
-				hasContentManager: true,
-				hasServerManager: true
-			};
-			mockNotebookService.setup(s => s.registerProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
+			mockNotebookService.setup(s => s.registerExecuteProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
 				provider = providerImpl;
 			});
-			mainThreadNotebook.$registerNotebookProvider(providerId, 1);
+		});
+
+		test('should call through to notebook service', () => {
+			// When I register a provider
+			mainThreadNotebook.$registerExecuteProvider(providerId, 1);
+			// Then I expect a provider implementation to be passed to the service
+			mockNotebookService.verify(s => s.registerExecuteProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+			assert.strictEqual(provider.providerId, providerId);
+		});
+		test('should unregister in service', () => {
+			// Given we have a provider
+			mainThreadNotebook.$registerExecuteProvider(providerId, 1);
+			// When I unregister a provider twice
+			mainThreadNotebook.$unregisterExecuteProvider(1);
+			mainThreadNotebook.$unregisterExecuteProvider(1);
+			// Then I expect it to be unregistered in the service just 1 time
+			mockNotebookService.verify(s => s.unregisterExecuteProvider(TypeMoq.It.isValue(providerId)), TypeMoq.Times.once());
+		});
+	});
+
+	suite('get notebook managers', () => {
+		let serializationManagerWithAllFeatures: ISerializationManagerDetails;
+		let executeManagerWithAllFeatures: IExecuteManagerDetails;
+		let serializationProvider: ISerializationProvider;
+		let executeProvider: IExecuteProvider;
+
+		setup(() => {
+			serializationManagerWithAllFeatures = {
+				handle: 3,
+				hasContentManager: true,
+			};
+			executeManagerWithAllFeatures = {
+				handle: 4,
+				hasServerManager: true
+			};
+			mockNotebookService.setup(s => s.registerSerializationProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
+				serializationProvider = providerImpl;
+			});
+			mainThreadNotebook.$registerSerializationProvider(providerId, 1);
+			mockNotebookService.setup(s => s.registerExecuteProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
+				executeProvider = providerImpl;
+			});
+			mainThreadNotebook.$registerExecuteProvider(providerId, 2);
 
 			// Always return empty specs in this test suite
 			mockProxy.setup(p => p.$refreshSpecs(TypeMoq.It.isAnyNumber())).returns(() => Promise.resolve(undefined));
 		});
 
-		test('should return manager with default content manager & undefined server manager if extension host has none', async () => {
+		test('should return execute manager with undefined server manager if extension host has none', async () => {
 			// Given the extension provider doesn't have acontent or server manager
-			let details: INotebookManagerDetails = {
+			let details: IExecuteManagerDetails = {
 				handle: 2,
-				hasContentManager: false,
 				hasServerManager: false
 			};
-			mockProxy.setup(p => p.$getNotebookManager(TypeMoq.It.isAnyNumber(), TypeMoq.It.isValue(notebookUri)))
+			mockProxy.setup(p => p.$getExecuteManagerDetails(TypeMoq.It.isAnyNumber(), TypeMoq.It.isValue(notebookUri)))
 				.returns(() => Promise.resolve(details));
 
 			// When I get the notebook manager
-			let manager = await provider.getNotebookManager(notebookUri);
+			let manager = await executeProvider.getExecuteManager(notebookUri);
 
-			// Then it should use the built-in content manager
-			assert.ok(manager.contentManager instanceof LocalContentManager);
 			// And it should not define a server manager
-			assert.equal(manager.serverManager, undefined);
+			assert.strictEqual(manager.serverManager, undefined);
 		});
 
-		test('should return manager with a content & server manager if extension host has these', async () => {
+		test('should return serialization manager with a content manager if extension host has these', async () => {
 			// Given the extension provider doesn't have acontent or server manager
-			mockProxy.setup(p => p.$getNotebookManager(TypeMoq.It.isAnyNumber(), TypeMoq.It.isValue(notebookUri)))
-				.returns(() => Promise.resolve(managerWithAllFeatures));
+			mockProxy.setup(p => p.$getSerializationManagerDetails(TypeMoq.It.isAnyNumber(), TypeMoq.It.isValue(notebookUri)))
+				.returns(() => Promise.resolve(serializationManagerWithAllFeatures));
 
 			// When I get the notebook manager
-			let manager = await provider.getNotebookManager(notebookUri);
+			let manager = await serializationProvider.getSerializationManager(notebookUri);
 
-			// Then it shouldn't have wrappers for the content or server manager
+			// Then it shouldn't have wrappers for the content manager
 			assert.ok(!(manager.contentManager instanceof LocalContentManager));
-			assert.notEqual(manager.serverManager, undefined);
+		});
+
+		test('should return execute manager with a server manager if extension host has these', async () => {
+			// Given the extension provider doesn't have a content or server manager
+			mockProxy.setup(p => p.$getExecuteManagerDetails(TypeMoq.It.isAnyNumber(), TypeMoq.It.isValue(notebookUri)))
+				.returns(() => Promise.resolve(executeManagerWithAllFeatures));
+
+			// When I get the notebook manager
+			let manager = await executeProvider.getExecuteManager(notebookUri);
+
+			// Then it shouldn't have wrappers for the server manager
+			assert.notStrictEqual(manager.serverManager, undefined);
 		});
 	});
 
 });
 
 class ExtHostNotebookStub implements ExtHostNotebookShape {
-	$getNotebookManager(providerHandle: number, notebookUri: UriComponents): Thenable<INotebookManagerDetails> {
+	$registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): Disposable {
+		throw new Error('Method not implemented.');
+	}
+	$registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): Disposable {
+		throw new Error('Method not implemented.');
+	}
+	$registerNotebookSerializer(notebookType: string, serializer: NotebookSerializer, options?: NotebookDocumentContentOptions, registration?: NotebookRegistrationData): Disposable {
+		throw new Error('Method not implemented.');
+	}
+	$createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: NotebookCell[], notebook: NotebookDocument, controller: NotebookController) => void | Thenable<void>, rendererScripts?: NotebookRendererScript[]): NotebookController {
+		throw new Error('Method not implemented.');
+	}
+	$getSerializationManagerDetails(providerHandle: number, notebookUri: UriComponents): Thenable<ISerializationManagerDetails> {
+		throw new Error('Method not implemented.');
+	}
+	$getExecuteManagerDetails(providerHandle: number, notebookUri: UriComponents): Thenable<IExecuteManagerDetails> {
 		throw new Error('Method not implemented.');
 	}
 	$handleNotebookClosed(notebookUri: UriComponents): void {
@@ -150,10 +210,10 @@ class ExtHostNotebookStub implements ExtHostNotebookShape {
 	$doStopServer(managerHandle: number): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
-	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<azdata.nb.INotebookContents> {
+	$deserializeNotebook(managerHandle: number, contents: string): Thenable<azdata.nb.INotebookContents> {
 		throw new Error('Method not implemented.');
 	}
-	$save(managerHandle: number, notebookUri: UriComponents, notebook: azdata.nb.INotebookContents): Thenable<azdata.nb.INotebookContents> {
+	$serializeNotebook(managerHandle: number, notebook: azdata.nb.INotebookContents): Thenable<string> {
 		throw new Error('Method not implemented.');
 	}
 	$refreshSpecs(managerHandle: number): Thenable<azdata.nb.IAllKernels> {

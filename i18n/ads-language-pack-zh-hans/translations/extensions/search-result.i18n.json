@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "搜索结果",
-			"description": "为选项卡搜索结果中提供语法突出显示和语言功能。"
+			"description": "为选项卡搜索结果中提供语法突出显示和语言功能。",
+			"displayName": "搜索结果"
 		}
 	}
 }

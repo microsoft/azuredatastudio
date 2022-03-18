@@ -8,11 +8,12 @@ import * as path from 'path';
 import { DataSourcesTreeItem } from './dataSourceTreeItem';
 import { BaseProjectTreeItem } from './baseTreeItem';
 import * as fileTree from './fileFolderTreeItem';
-import { Project, EntryType, FileProjectEntry } from '../project';
+import { Project } from '../project';
 import * as utils from '../../common/utils';
 import { DatabaseReferencesTreeItem } from './databaseReferencesTreeItem';
 import { DatabaseProjectItemType, RelativeOuterPath, ExternalStreamingJob, sqlprojExtension } from '../../common/constants';
 import { IconPathHelper } from '../../common/iconHelper';
+import { EntryType, FileProjectEntry } from '../projectEntry';
 
 /**
  * TreeNode root that represents an entire project
@@ -114,7 +115,8 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 		for (const part of relativePathParts) {
 			if (current.fileChildren[part] === undefined) {
-				current.fileChildren[part] = new fileTree.FolderNode(vscode.Uri.file(path.join(path.dirname(this.project.projectFilePath), part)), current);
+				const parentPath = current instanceof ProjectRootTreeItem ? path.dirname(current.fileSystemUri.fsPath) : current.fileSystemUri.fsPath;
+				current.fileChildren[part] = new fileTree.FolderNode(vscode.Uri.file(path.join(parentPath, part)), current);
 			}
 
 			if (current.fileChildren[part] instanceof fileTree.FileNode) {

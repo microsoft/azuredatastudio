@@ -21,6 +21,7 @@ import { MainThreadTextEditors } from 'vs/workbench/api/browser/mainThreadEditor
 import { ExtHostContext, ExtHostDocumentsAndEditorsShape, IDocumentsAndEditorsDelta, IExtHostContext, IModelAddedData, ITextEditorAddData, MainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { IEditorPane } from 'vs/workbench/common/editor';
+import { EditorGroupColumn, editorGroupToColumn } from 'vs/workbench/services/editor/common/editorGroupColumn';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
@@ -30,8 +31,8 @@ import { IWorkingCopyFileService } from 'vs/workbench/services/workingCopy/commo
 import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentity';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
-import { editorGroupToViewColumn, EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { diffSets, diffMaps } from 'vs/base/common/collections';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 
 
 class TextEditorSnapshot {
@@ -302,14 +303,15 @@ export class MainThreadDocumentsAndEditors {
 		@IWorkingCopyFileService workingCopyFileService: IWorkingCopyFileService,
 		@IUriIdentityService uriIdentityService: IUriIdentityService,
 		@IClipboardService private readonly _clipboardService: IClipboardService,
-		@IPathService pathService: IPathService
+		@IPathService pathService: IPathService,
+		@INotebookService private readonly _notebookService: INotebookService // {{SQL CARBON EDIT}}
 	) {
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostDocumentsAndEditors);
 
 		this._mainThreadDocuments = this._toDispose.add(new MainThreadDocuments(this, extHostContext, this._modelService, this._textFileService, fileService, textModelResolverService, environmentService, uriIdentityService, workingCopyFileService, pathService));
 		extHostContext.set(MainContext.MainThreadDocuments, this._mainThreadDocuments);
 
-		const mainThreadTextEditors = this._toDispose.add(new MainThreadTextEditors(this, extHostContext, codeEditorService, bulkEditService, this._editorService, this._editorGroupService));
+		const mainThreadTextEditors = this._toDispose.add(new MainThreadTextEditors(this, extHostContext, codeEditorService, bulkEditService, this._editorService, this._editorGroupService, this._notebookService));
 		extHostContext.set(MainContext.MainThreadTextEditors, mainThreadTextEditors);
 
 		// It is expected that the ctor of the state computer calls our `_onDelta`.
@@ -410,10 +412,10 @@ export class MainThreadDocumentsAndEditors {
 		};
 	}
 
-	private _findEditorPosition(editor: MainThreadTextEditor): EditorViewColumn | undefined {
+	private _findEditorPosition(editor: MainThreadTextEditor): EditorGroupColumn | undefined {
 		for (const editorPane of this._editorService.visibleEditorPanes) {
 			if (editor.matches(editorPane)) {
-				return editorGroupToViewColumn(this._editorGroupService, editorPane.group);
+				return editorGroupToColumn(this._editorGroupService, editorPane.group);
 			}
 		}
 		return undefined;

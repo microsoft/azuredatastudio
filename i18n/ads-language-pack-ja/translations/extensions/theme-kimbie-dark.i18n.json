@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Kimbie Dark テーマ",
 			"description": "Visual Studio Code の Kimbie dark テーマ",
+			"displayName": "Kimbie Dark テーマ",
 			"themeLabel": "Kimbie Dark"
 		}
 	}

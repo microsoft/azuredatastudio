@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "検索結果",
-			"description": "シンタックスハイライトとタブ付き検索結果向け言語機能を提供します。"
+			"description": "シンタックスハイライトとタブ付き検索結果向け言語機能を提供します。",
+			"displayName": "検索結果"
 		}
 	}
 }

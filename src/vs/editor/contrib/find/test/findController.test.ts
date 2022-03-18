@@ -63,7 +63,7 @@ function executeAction(instantiationService: IInstantiationService, editor: ICod
 	});
 }
 
-suite.skip('FindController', async () => {
+suite.skip('FindController', async () => { // {{SQL CARBON EDIT}} Skip suite
 	const queryState: { [key: string]: any; } = {};
 	let clipboardState = '';
 	const serviceCollection = new ServiceCollection();
@@ -284,6 +284,7 @@ suite.skip('FindController', async () => {
 			await findController.start({
 				forceRevealReplace: false,
 				seedSearchStringFromSelection: 'none',
+				seedSearchStringFromNonEmptySelection: false,
 				seedSearchStringFromGlobalClipboard: false,
 				shouldFocus: FindStartFocusAction.FocusFindInput,
 				shouldAnimate: false,
@@ -310,6 +311,7 @@ suite.skip('FindController', async () => {
 			await findController.start({
 				forceRevealReplace: false,
 				seedSearchStringFromSelection: 'none',
+				seedSearchStringFromNonEmptySelection: false,
 				seedSearchStringFromGlobalClipboard: false,
 				shouldFocus: FindStartFocusAction.NoFocusChange,
 				shouldAnimate: false,
@@ -490,7 +492,7 @@ suite.skip('FindController', async () => {
 	});
 });
 
-suite.skip('FindController query options persistence', async () => {
+suite.skip('FindController query options persistence', async () => { // {{SQL CARBON EDIT}} Skip suite
 	let queryState: { [key: string]: any; } = {};
 	queryState['editor.isRegex'] = false;
 	queryState['editor.matchCase'] = false;
@@ -591,6 +593,7 @@ suite.skip('FindController query options persistence', async () => {
 			const findConfig: IFindStartOptions = {
 				forceRevealReplace: false,
 				seedSearchStringFromSelection: 'none',
+				seedSearchStringFromNonEmptySelection: false,
 				seedSearchStringFromGlobalClipboard: false,
 				shouldFocus: FindStartFocusAction.NoFocusChange,
 				shouldAnimate: false,
@@ -623,6 +626,7 @@ suite.skip('FindController query options persistence', async () => {
 			await findController.start({
 				forceRevealReplace: false,
 				seedSearchStringFromSelection: 'none',
+				seedSearchStringFromNonEmptySelection: false,
 				seedSearchStringFromGlobalClipboard: false,
 				shouldFocus: FindStartFocusAction.NoFocusChange,
 				shouldAnimate: false,
@@ -647,6 +651,7 @@ suite.skip('FindController query options persistence', async () => {
 			await findController.start({
 				forceRevealReplace: false,
 				seedSearchStringFromSelection: 'none',
+				seedSearchStringFromNonEmptySelection: false,
 				seedSearchStringFromGlobalClipboard: false,
 				shouldFocus: FindStartFocusAction.NoFocusChange,
 				shouldAnimate: false,
@@ -672,6 +677,7 @@ suite.skip('FindController query options persistence', async () => {
 			await findController.start({
 				forceRevealReplace: false,
 				seedSearchStringFromSelection: 'none',
+				seedSearchStringFromNonEmptySelection: false,
 				seedSearchStringFromGlobalClipboard: false,
 				shouldFocus: FindStartFocusAction.NoFocusChange,
 				shouldAnimate: false,

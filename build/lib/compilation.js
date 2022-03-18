@@ -9,7 +9,7 @@ const es = require("event-stream");
 const fs = require("fs");
 const gulp = require("gulp");
 const path = require("path");
-const monacodts = require("../monaco/api");
+const monacodts = require("./monaco-api");
 const nls = require("./nls");
 const reporter_1 = require("./reporter");
 const util = require("./util");
@@ -37,6 +37,9 @@ function createCompile(src, build, emitError) {
     const sourcemaps = require('gulp-sourcemaps');
     const projectPath = path.join(__dirname, '../../', src, 'tsconfig.json');
     const overrideOptions = Object.assign(Object.assign({}, getTypeScriptCompilerOptions(src)), { inlineSources: Boolean(build) });
+    if (!build) {
+        overrideOptions.inlineSourceMap = true;
+    }
     const compilation = tsb.create(projectPath, overrideOptions, false, err => reporter(err));
     function pipeline(token) {
         const bom = require('gulp-bom');

@@ -7,7 +7,7 @@ import 'vs/css!./media/connectionDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
-import { IConnectionManagementService, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionType, IConnectionManagementService, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { TreeCreationUtils } from 'sql/workbench/services/objectExplorer/browser/treeCreationUtils';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
@@ -42,6 +42,8 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ConnectionBrowseTab } from 'sql/workbench/services/connection/browser/connectionBrowseTab';
+import { ElementSizeObserver } from 'vs/editor/browser/config/elementSizeObserver';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -97,6 +99,15 @@ export class ConnectionDialogWidget extends Modal {
 
 	private _connectionSource: ConnectionSource = 'manual';
 
+	/**
+	 * The available size of the panel could change when:
+	 * 1. a connection node is selected from recent/browse tab
+	 * 2. the connection type is changed
+	 * 3. the auth type is changed
+	 * We need to react to the size change and properly layout the panel content.
+	 */
+	private _panelSizeObserver: ElementSizeObserver;
+
 	constructor(
 		private providerDisplayNameOptions: string[],
 		private selectedProviderType: string,
@@ -112,7 +123,8 @@ export class ConnectionDialogWidget extends Modal {
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		super(
 			localize('connection', "Connection"),
@@ -145,8 +157,20 @@ export class ConnectionDialogWidget extends Modal {
 
 	public refresh(): void {
 		let filteredProviderMap = this.providerNameToDisplayNameMap;
-		if (this._newConnectionParams && this._newConnectionParams.providers) {
-			const validProviderMap = entries(this.providerNameToDisplayNameMap).filter(x => this.includeProvider(x[0], this._newConnectionParams));
+		if (this._newConnectionParams && (this._newConnectionParams.providers || this._newConnectionParams.connectionType === ConnectionType.editor)) {
+			const validProviderMap = entries(this.providerNameToDisplayNameMap).filter(x => {
+				const providerName = x[0];
+				const capabilities = this._capabilitiesService.getCapabilities(providerName).connection;
+				// If the connection is for an editor (e.g. query editor or notebook), the provider must be a query provider
+				if (this._newConnectionParams.connectionType === ConnectionType.editor && !capabilities.isQueryProvider) {
+					return false;
+				}
+				// If the provider list is provided, the provider must be in the list.
+				if (this._newConnectionParams.providers && !this._newConnectionParams.providers.some(p => p === providerName)) {
+					return false;
+				}
+				return true;
+			});
 			if (validProviderMap && validProviderMap.length > 0) {
 				let map: { [providerDisplayName: string]: string } = {};
 				validProviderMap.forEach(v => {
@@ -159,10 +183,6 @@ export class ConnectionDialogWidget extends Modal {
 		// Remove duplicate listings (CMS uses the same display name)
 		let uniqueProvidersMap = this.connectionManagementService.getUniqueConnectionProvidersByNameMap(filteredProviderMap);
 		this._providerTypeSelectBox.setOptions(Object.keys(uniqueProvidersMap).map(k => uniqueProvidersMap[k]));
-	}
-
-	private includeProvider(providerName: string, params?: INewConnectionParams): Boolean {
-		return params === undefined || params.providers === undefined || params.providers.some(x => x === providerName);
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -218,6 +238,11 @@ export class ConnectionDialogWidget extends Modal {
 
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 		this.updateTheme(this._themeService.getColorTheme());
+		this._panelSizeObserver = new ElementSizeObserver(this._panel.element, undefined, () => {
+			this._panel.layout(new DOM.Dimension(this._panel.element.clientWidth, this._panel.element.clientHeight));
+		});
+		this._register(this._panelSizeObserver);
+		this._panelSizeObserver.startObserving();
 	}
 
 	/**

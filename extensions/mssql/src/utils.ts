@@ -12,12 +12,20 @@ import * as os from 'os';
 import * as findRemoveSync from 'find-remove';
 import * as constants from './constants';
 import { promises as fs } from 'fs';
+import { IConfig, ServerProvider } from '@microsoft/ads-service-downloader';
+import { env } from 'process';
 
 const configTracingLevel = 'tracingLevel';
 const configLogRetentionMinutes = 'logRetentionMinutes';
 const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
 const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
+
+/**
+ *
+ * @returns Whether the current OS is linux or not
+ */
+export const isLinux = os.platform() === 'linux';
 
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
@@ -34,7 +42,6 @@ export function getAppDataPath() {
 /**
  * Get a file name that is not already used in the target directory
  * @param filePath source notebook file name
- * @param fileExtension file type
  */
 export function findNextUntitledEditorName(filePath: string): string {
 	const fileExtension = path.extname(filePath);
@@ -62,8 +69,7 @@ export function getConfigLogFilesRemovalLimit(): number {
 	let config = getConfiguration();
 	if (config) {
 		return Number((config[configLogFilesRemovalLimit]).toFixed(0));
-	}
-	else {
+	} else {
 		return undefined;
 	}
 }
@@ -72,8 +78,7 @@ export function getConfigLogRetentionSeconds(): number {
 	let config = getConfiguration();
 	if (config) {
 		return Number((config[configLogRetentionMinutes] * 60).toFixed(0));
-	}
-	else {
+	} else {
 		return undefined;
 	}
 }
@@ -82,8 +87,7 @@ export function getConfigTracingLevel(): string {
 	let config = getConfiguration();
 	if (config) {
 		return config[configTracingLevel];
-	}
-	else {
+	} else {
 		return undefined;
 	}
 }
@@ -303,4 +307,46 @@ export async function exists(path: string): Promise<boolean> {
 	} catch (e) {
 		return false;
 	}
+}
+
+const STS_OVERRIDE_ENV_VAR = 'ADS_SQLTOOLSSERVICE';
+let overrideMessageDisplayed = false;
+/**
+ * Gets the full path to the EXE for the specified tools service, downloading it in the process if necessary. The location
+ * for this can be overridden with an environment variable for debugging or other purposes.
+ * @param config The configuration values of the server to get/download
+ * @param handleServerEvent A callback for handling events from the server downloader
+ * @returns The path to the server exe
+ */
+export async function getOrDownloadServer(config: IConfig, handleServerEvent?: (e: string, ...args: any[]) => void): Promise<string> {
+	// This env var is used to override the base install location of STS - primarily to be used for debugging scenarios.
+	try {
+		const stsRootPath = env[STS_OVERRIDE_ENV_VAR];
+		if (stsRootPath) {
+			for (const exeFile of config.executableFiles) {
+				const serverFullPath = path.join(stsRootPath, exeFile);
+				if (await exists(serverFullPath)) {
+					const overrideMessage = `Using ${exeFile} from ${stsRootPath}`;
+					// Display message to the user so they know the override is active, but only once so we don't show too many
+					if (!overrideMessageDisplayed) {
+						overrideMessageDisplayed = true;
+						void vscode.window.showInformationMessage(overrideMessage);
+					}
+					console.log(overrideMessage);
+					return serverFullPath;
+				}
+			}
+			console.warn(`Could not find valid SQL Tools Service EXE from ${JSON.stringify(config.executableFiles)} at ${stsRootPath}, falling back to config`);
+		}
+	} catch (err) {
+		console.warn('Unexpected error getting override path for SQL Tools Service client ', err);
+		// Fall back to config if something unexpected happens here
+	}
+
+	const serverdownloader = new ServerProvider(config);
+	if (handleServerEvent) {
+		serverdownloader.eventEmitter.onAny(handleServerEvent);
+	}
+
+	return serverdownloader.getOrDownloadServer();
 }

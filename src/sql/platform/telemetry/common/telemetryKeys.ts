@@ -26,7 +26,8 @@ export const enum ModalDialogName {
 	AutoOAuth = 'AutoOAuth',
 	AddNewDashboardTab = 'AddNewDashboardTab',
 	ProfilerFilter = 'ProfilerFilter',
-	CalloutDialog = 'CalloutDialog'
+	CalloutDialog = 'CalloutDialog',
+	TableDesignerPublishDialog = 'TableDesignerPublishDialog'
 }
 
 export const enum TelemetryView {
@@ -42,7 +43,8 @@ export const enum TelemetryView {
 	Notebook = 'Notebook',
 	ResultsPanel = 'ResultsPanel',
 	Shell = 'Shell',
-	SqlAssessment = 'SqlAssessment'
+	SqlAssessment = 'SqlAssessment',
+	TableDesigner = 'TableDesigner'
 }
 
 export const enum TelemetryError {
@@ -68,6 +70,7 @@ export const enum TelemetryAction {
 	ChartCreated = 'ChartCreated',
 	Click = 'Click',
 	FirewallRuleRequested = 'FirewallRuleCreated',
+	GenerateScript = 'GenerateScript',
 	GetDataGridItems = 'GetDataGridItems',
 	GetDataGridColumns = 'GetDataGridColumns',
 	ModelViewDashboardOpened = 'ModelViewDashboardOpened',
@@ -78,6 +81,7 @@ export const enum TelemetryAction {
 	NewQuery = 'NewQuery',
 	ObjectExplorerExpand = 'ObjectExplorerExpand',
 	Open = 'Open',
+	PublishChanges = 'PublishChanges',
 	RestoreRequested = 'RestoreRequested',
 	RunAgentJob = 'RunAgentJob',
 	RunQuery = 'RunQuery',
@@ -95,7 +99,10 @@ export const enum NbTelemetryAction {
 	RunAll = 'RunNotebook',
 	AddCell = 'AddCell',
 	KernelChanged = 'KernelChanged',
-	NewNotebookFromConnections = 'NewNotebookWithConnectionProfile'
+	NewNotebookFromConnections = 'NewNotebookWithConnectionProfile',
+	UndoCell = 'UndoCell',
+	RedoCell = 'RedoCell',
+	MIMETypeRendererNotFound = 'MIMETypeRendererNotFound'
 }
 
 export const enum TelemetryPropertyName {

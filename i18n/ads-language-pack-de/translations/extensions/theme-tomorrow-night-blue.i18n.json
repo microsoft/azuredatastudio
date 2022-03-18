@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Nachtblaues Tomorrow-Design",
 			"description": "Nachtblaues Tomorrow-Design für Visual Studio Code",
+			"displayName": "Nachtblaues Tomorrow-Design",
 			"themeLabel": "Tomorrow nachtblau"
 		}
 	}

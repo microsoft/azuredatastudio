@@ -120,39 +120,39 @@ suite('Restore Dialog view model tests', () => {
 
 	test('get boolean option type should return correct display value', () => {
 		let falseStringOptionValue = 'False';
-		assert.equal(false, viewModel.getDisplayValue(booleanServiceOption, falseStringOptionValue));
+		assert.strictEqual(false, viewModel.getDisplayValue(booleanServiceOption, falseStringOptionValue));
 
 		let falseBooleanOptionValue = false;
-		assert.equal(false, viewModel.getDisplayValue(booleanServiceOption, falseBooleanOptionValue));
+		assert.strictEqual(false, viewModel.getDisplayValue(booleanServiceOption, falseBooleanOptionValue));
 
 		let trueStringOptionValue = 'true';
-		assert.equal(true, viewModel.getDisplayValue(booleanServiceOption, trueStringOptionValue));
+		assert.strictEqual(true, viewModel.getDisplayValue(booleanServiceOption, trueStringOptionValue));
 
 		let undefinedOptionValue = undefined;
-		assert.equal(false, viewModel.getDisplayValue(booleanServiceOption, undefinedOptionValue));
+		assert.strictEqual(false, viewModel.getDisplayValue(booleanServiceOption, undefinedOptionValue));
 	});
 
 	test('get category option type should return correct display value', () => {
 		let categoryOptionValue = 'catagory2';
-		assert.equal('Catagory 2', viewModel.getDisplayValue(categoryServiceOption, categoryOptionValue));
+		assert.strictEqual('Catagory 2', viewModel.getDisplayValue(categoryServiceOption, categoryOptionValue));
 
 		let undefinedOptionValue = undefined;
-		assert.equal('Catagory 1', viewModel.getDisplayValue(categoryServiceOption, undefinedOptionValue));
+		assert.strictEqual('Catagory 1', viewModel.getDisplayValue(categoryServiceOption, undefinedOptionValue));
 	});
 
 	test('get string option type should return correct display value', () => {
 		let stringOptionValue = 'string1';
-		assert.equal(stringOptionValue, viewModel.getDisplayValue(stringServiceOption, stringOptionValue));
+		assert.strictEqual(stringOptionValue, viewModel.getDisplayValue(stringServiceOption, stringOptionValue));
 
 		let undefinedOptionValue = undefined;
-		assert.equal('', viewModel.getDisplayValue(stringServiceOption, undefinedOptionValue));
+		assert.strictEqual('', viewModel.getDisplayValue(stringServiceOption, undefinedOptionValue));
 	});
 
 	test('get option meta data should return the correct one', () => {
-		assert.equal(stringServiceOption, viewModel.getOptionMetadata(option1String));
-		assert.equal(categoryServiceOption, viewModel.getOptionMetadata(option2Category));
-		assert.equal(booleanServiceOption, viewModel.getOptionMetadata(option3Boolean));
-		assert.equal(undefined, viewModel.getOptionMetadata('option4'));
+		assert.strictEqual(stringServiceOption, viewModel.getOptionMetadata(option1String));
+		assert.strictEqual(categoryServiceOption, viewModel.getOptionMetadata(option2Category));
+		assert.strictEqual(booleanServiceOption, viewModel.getOptionMetadata(option3Boolean));
+		assert.strictEqual(undefined, viewModel.getOptionMetadata('option4'));
 	});
 
 	test('get restore advanced option should return the only the options that have been changed and are different from the default value', () => {
@@ -161,9 +161,9 @@ suite('Restore Dialog view model tests', () => {
 		viewModel.setOptionValue(option3Boolean, false);
 		options = {};
 		viewModel.getRestoreAdvancedOptions(options);
-		assert.equal(undefined, options[option1String]);
-		assert.equal('catagory2', options[option2Category]);
-		assert.equal(false, options[option3Boolean]);
+		assert.strictEqual(undefined, options[option1String]);
+		assert.strictEqual('catagory2', options[option2Category]);
+		assert.strictEqual(false, options[option3Boolean]);
 	});
 
 	test('on restore plan response should update all options from restore plan response correctly', () => {
@@ -179,19 +179,19 @@ suite('Restore Dialog view model tests', () => {
 		viewModel.onRestorePlanResponse(restorePlanResponse);
 
 		// verify that source database, target databasem and last backup get set correctly
-		assert.equal('dbSource', viewModel.sourceDatabaseName);
-		assert.equal('db1', viewModel.targetDatabaseName);
-		assert.equal('8/16/2017', viewModel.lastBackupTaken);
+		assert.strictEqual('dbSource', viewModel.sourceDatabaseName);
+		assert.strictEqual('db1', viewModel.targetDatabaseName);
+		assert.strictEqual('8/16/2017', viewModel.lastBackupTaken);
 
 		// verify that advanced options get set correctly
 		options = {};
 		viewModel.getRestoreAdvancedOptions(options);
-		assert.equal('newOptionValue', options[option1String]);
+		assert.strictEqual('newOptionValue', options[option1String]);
 
 		// verify that selected backup sets get set correctly
 		let selectedBackupSets = viewModel.selectedBackupSets;
-		assert.equal(1, selectedBackupSets!.length);
-		assert.equal('file2', selectedBackupSets![0]);
+		assert.strictEqual(1, selectedBackupSets!.length);
+		assert.strictEqual('file2', selectedBackupSets![0]);
 	});
 
 
@@ -211,20 +211,20 @@ suite('Restore Dialog view model tests', () => {
 		viewModel.resetRestoreOptions('db2');
 
 		// verify that file path, source database, target databasem and last backup get set correctly
-		assert.equal('', viewModel.lastBackupTaken);
-		assert.equal('db2', viewModel.sourceDatabaseName);
-		assert.equal('db2', viewModel.targetDatabaseName);
-		assert.equal('', viewModel.lastBackupTaken);
-		assert.equal(0, viewModel.databaseList!.length);
+		assert.strictEqual('', viewModel.lastBackupTaken);
+		assert.strictEqual('db2', viewModel.sourceDatabaseName);
+		assert.strictEqual('db2', viewModel.targetDatabaseName);
+		assert.strictEqual('', viewModel.lastBackupTaken);
+		assert.strictEqual(0, viewModel.databaseList!.length);
 
 		// verify that advanced options get set correctly
 		options = {};
 		viewModel.getRestoreAdvancedOptions(options);
-		assert.equal(undefined, options[option1String]);
+		assert.strictEqual(undefined, options[option1String]);
 
 		// verify that selected backup sets get set correctly
 		let selectedBackupSets = viewModel.selectedBackupSets;
-		assert.equal(undefined, selectedBackupSets);
+		assert.strictEqual(undefined, selectedBackupSets);
 	});
 
 	test('update options with config info should update option correctly', () => {
@@ -234,16 +234,16 @@ suite('Restore Dialog view model tests', () => {
 		configInfo[option1String] = 'option1 from config info';
 		viewModel.updateOptionWithConfigInfo(configInfo);
 		assert.ok(viewModel.databaseList);
-		assert.equal(3, viewModel.databaseList!.length);
-		assert.equal('', viewModel.databaseList![0]);
-		assert.equal(databaseList[1], viewModel.databaseList![1]);
-		assert.equal(databaseList[2], viewModel.databaseList![2]);
-		assert.equal('option1 from config info', viewModel.getOptionValue(option1String));
+		assert.strictEqual(3, viewModel.databaseList!.length);
+		assert.strictEqual('', viewModel.databaseList![0]);
+		assert.strictEqual(databaseList[1], viewModel.databaseList![1]);
+		assert.strictEqual(databaseList[2], viewModel.databaseList![2]);
+		assert.strictEqual('option1 from config info', viewModel.getOptionValue(option1String));
 
 		// verify that the options from get restore advanced options doesn't contain option1String
 		options = {};
 		viewModel.getRestoreAdvancedOptions(options);
-		assert.equal(undefined, options[option1String]);
+		assert.strictEqual(undefined, options[option1String]);
 	});
 
 	test('on restore from changed should set readHeaderFromMedia and reset the source database names and selected database name correctly', () => {
@@ -252,13 +252,13 @@ suite('Restore Dialog view model tests', () => {
 		viewModel.filePath = 'filepath';
 		viewModel.readHeaderFromMedia = false;
 		viewModel.onRestoreFromChanged(true);
-		assert.equal(true, viewModel.readHeaderFromMedia);
-		assert.equal(undefined, viewModel.sourceDatabaseName);
-		assert.equal('', viewModel.filePath);
+		assert.strictEqual(true, viewModel.readHeaderFromMedia);
+		assert.strictEqual(undefined, viewModel.sourceDatabaseName);
+		assert.strictEqual('', viewModel.filePath);
 
 		viewModel.sourceDatabaseName = 'sourceDatabase2';
 		viewModel.onRestoreFromChanged(false);
-		assert.equal(false, viewModel.readHeaderFromMedia);
-		assert.equal('', viewModel.sourceDatabaseName);
+		assert.strictEqual(false, viewModel.readHeaderFromMedia);
+		assert.strictEqual('', viewModel.sourceDatabaseName);
 	});
 });

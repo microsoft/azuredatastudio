@@ -147,8 +147,8 @@ describe('Notebook URI Handler', function (): void {
 					display_name: 'Python 3'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: constants.NBFORMAT,
+			nbformat_minor: constants.NBFORMAT_MINOR
 		};
 
 		await fs.writeFile(notebookPath, JSON.stringify(notebookContent));

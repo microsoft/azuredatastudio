@@ -19,6 +19,12 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "extensionDependencies": [
     "Microsoft.mssql"
   ],
@@ -90,7 +96,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.1.0"
+    "@microsoft/vscodetestcover": "^1.2.0"
   },
   "__metadata": {
     "id": "10",

@@ -43,7 +43,7 @@ suite('Account Management Dialog Controller Tests', () => {
 		controller.openAccountDialog();
 
 		// Then: It should be the same dialog that already existed
-		assert.equal(controller.accountDialog, accountDialog);
+		assert.strictEqual(controller.accountDialog, accountDialog);
 	});
 
 	test('Add Account Failure - Error Message Shown', () => {

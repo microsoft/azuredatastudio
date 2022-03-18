@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Noções Básicas da Linguagem Docker",
-			"description": "Fornece realce de sintaxe e correspondência de colchetes em arquivos do Docker."
+			"description": "Fornece realce de sintaxe e correspondência de colchetes em arquivos do Docker.",
+			"displayName": "Noções Básicas da Linguagem Docker"
 		}
 	}
 }

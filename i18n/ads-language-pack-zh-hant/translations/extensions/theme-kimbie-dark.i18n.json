@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Kimbie 深色佈景主題",
 			"description": "Visual Studio Code 的 Kimbie 深色佈景主題",
+			"displayName": "Kimbie 深色佈景主題",
 			"themeLabel": "Kimbie 深色"
 		}
 	}

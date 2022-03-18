@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Тема хаоса",
 			"description": "Тема хаоса для Visual Studio Code",
+			"displayName": "Тема хаоса",
 			"themeLabel": "Хаос"
 		}
 	}

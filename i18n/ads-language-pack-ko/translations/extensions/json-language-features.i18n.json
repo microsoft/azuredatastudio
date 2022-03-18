@@ -8,35 +8,35 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"client\\dist\\node/jsonClient": {
+			"configureLimit": "'{0}' 설정을 사용하여 한도를 구성합니다.",
+			"goToSetting": "설정 열기",
+			"json.resolveError": "JSON: 스키마 확인 오류",
+			"json.schemaResolutionDisabledMessage": "스키마 다운로드를 사용할 수 없습니다. 구성하려면 클릭하세요.",
+			"json.schemaResolutionErrorMessage": "스키마를 확인할 수 없습니다. 다시 시도하려면 클릭하세요.",
+			"jsonserver.name": "JSON 언어 서버",
+			"ok": "확인",
+			"schemaDownloadDisabled": "'{0}' 설정을 통해 스키마 다운로드를 사용하지 않도록 설정함",
+			"untitled.schema": "{0}을(를) 로드할 수 없습니다.",
+			"yes never again": "다시 표시 안 함"
+		},
 		"package": {
-			"displayName": "JSON 언어 기능",
 			"description": "JSON 파일에 대한 다양한 언어 지원을 제공합니다.",
+			"displayName": "JSON 언어 기능",
+			"json.clickToRetry": "다시 시도하려면 클릭하세요.",
+			"json.colorDecorators.enable.deprecationMessage": "`json.colorDecorators.enable` 설정은 `editor.colorDecorators`를 위해 사용되지 않습니다.",
+			"json.colorDecorators.enable.desc": "색 데코레이터 사용 또는 사용 안 함",
+			"json.enableSchemaDownload.desc": "사용하도록 설정하면 http 및 https 위치에서 JSON 스키마를 페치할 수 있습니다.",
+			"json.format.enable.desc": "기본 JSON 포맷터를 사용하거나 사용하지 않습니다.",
+			"json.maxItemsComputed.desc": "계산된 최대 윤곽선 기호 및 폴딩 영역의 수입니다(성능상의 이유로 제한됨).",
+			"json.maxItemsExceededInformation.desc": "최대 윤곽 기호 및 접기 영역 수를 초과하는 경우 알림을 표시합니다.",
+			"json.schemaResolutionErrorMessage": "스키마를 확인할 수 없습니다.",
 			"json.schemas.desc": "현재 프로젝트에서 스키마를 JSON 파일에 연결합니다.",
-			"json.schemas.url.desc": "현재 디렉터리에 있는 스키마의 URL 또는 상대 경로",
 			"json.schemas.fileMatch.desc": "JSON 파일을 스키마로 확인할 때 일치하려는 파일 패턴의 배열입니다. `*`를 와일드카드로 사용할 수 있습니다. 제외 패턴을 정의하고 '!'로 시작할 수 있습니다. 하나 이상의 일치 패턴이 있고 마지막 일치 패턴이 제외 패턴이 아닌 경우 파일이 일치합니다.",
 			"json.schemas.fileMatch.item.desc": "JSON 파일로 스키마를 확인할 때 일치할 '*'를 포함할 수 있는 파일 패턴입니다.",
 			"json.schemas.schema.desc": "지정된 URL의 스키마 정의입니다. 스키마는 스키마 URL에 대한 액세스 방지를 위해서만 제공해야 합니다.",
-			"json.format.enable.desc": "기본 JSON 포맷터를 사용하거나 사용하지 않습니다.",
-			"json.tracing.desc": "VS Code와 JSON 언어 서버 간 통신을 추적합니다.",
-			"json.colorDecorators.enable.desc": "색 데코레이터 사용 또는 사용 안 함",
-			"json.colorDecorators.enable.deprecationMessage": "`json.colorDecorators.enable` 설정은 `editor.colorDecorators`를 위해 사용되지 않습니다.",
-			"json.schemaResolutionErrorMessage": "스키마를 확인할 수 없습니다.",
-			"json.clickToRetry": "다시 시도하려면 클릭하세요.",
-			"json.maxItemsComputed.desc": "계산된 최대 윤곽선 기호 및 폴딩 영역의 수입니다(성능상의 이유로 제한됨).",
-			"json.maxItemsExceededInformation.desc": "최대 윤곽 기호 및 접기 영역 수를 초과하는 경우 알림을 표시합니다.",
-			"json.enableSchemaDownload.desc": "사용하도록 설정하면 http 및 https 위치에서 JSON 스키마를 페치할 수 있습니다."
-		},
-		"client\\dist\\node/jsonClient": {
-			"json.resolveError": "JSON: 스키마 확인 오류",
-			"jsonserver.name": "JSON 언어 서버",
-			"untitled.schema": "{0}을(를) 로드할 수 없습니다.",
-			"schemaDownloadDisabled": "'{0}' 설정을 통해 스키마 다운로드를 사용하지 않도록 설정함",
-			"ok": "확인",
-			"goToSetting": "설정 열기",
-			"yes never again": "다시 표시 안 함",
-			"configureLimit": "'{0}' 설정을 사용하여 한도를 구성합니다.",
-			"json.schemaResolutionErrorMessage": "스키마를 확인할 수 없습니다. 다시 시도하려면 클릭하세요.",
-			"json.schemaResolutionDisabledMessage": "스키마 다운로드를 사용할 수 없습니다. 구성하려면 클릭하세요."
+			"json.schemas.url.desc": "현재 디렉터리에 있는 스키마의 URL 또는 상대 경로",
+			"json.tracing.desc": "VS Code와 JSON 언어 서버 간 통신을 추적합니다."
 		}
 	}
 }

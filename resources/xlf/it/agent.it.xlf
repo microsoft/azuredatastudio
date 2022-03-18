@@ -1,298 +1,262 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/agent/dist/data/alertData" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="alertData.DefaultAlertTypString">
+        <source xml:lang="en">SQL Server event alert</source>
+        <target state="translated">Avviso per evento di SQL Server</target>
+      </trans-unit>
+      <trans-unit id="alertData.saveErrorMessage">
+        <source xml:lang="en">Alert update failed '{0}'</source>
+        <target state="translated">L'aggiornamento dell'avviso non è riuscito: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.PerformanceCondition">
+        <source xml:lang="en">SQL Server performance condition alert</source>
+        <target state="translated">Avviso relativo alle prestazioni di SQL Server</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.WmiEvent">
+        <source xml:lang="en">WMI event alert</source>
+        <target state="translated">Avviso per evento WMI</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/agent/dist/data/jobData" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="jobData.jobNameRequired">
+        <source xml:lang="en">Job name must be provided</source>
+        <target state="translated">È necessario specificare il nome del processo</target>
+      </trans-unit>
+      <trans-unit id="jobData.newJobErrorMessage">
+        <source xml:lang="en">Job creation failed '{0}'</source>
+        <target state="translated">La creazione del processo non è riuscita: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="jobData.newJobSuccessMessage">
+        <source xml:lang="en">Job '{0}' created successfully</source>
+        <target state="translated">Il processo '{0}' è stato creato</target>
+      </trans-unit>
+      <trans-unit id="jobData.saveErrorMessage">
+        <source xml:lang="en">Job update failed '{0}'</source>
+        <target state="translated">L'aggiornamento del processo non è riuscito: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="jobData.saveSucessMessage">
+        <source xml:lang="en">Job '{0}' updated successfully</source>
+        <target state="translated">Il processo '{0}' è stato aggiornato</target>
+      </trans-unit>
+      <trans-unit id="jobData.whenJobCompletes">
+        <source xml:lang="en">When the job completes</source>
+        <target state="translated">Al termine del processo</target>
+      </trans-unit>
+      <trans-unit id="jobData.whenJobFails">
+        <source xml:lang="en">When the job fails</source>
+        <target state="translated">Se il processo non riesce</target>
+      </trans-unit>
+      <trans-unit id="jobData.whenJobSucceeds">
+        <source xml:lang="en">When the job succeeds</source>
+        <target state="translated">Se il processo riesce</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/agent/dist/data/jobStepData" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="jobStepData.saveErrorMessage">
+        <source xml:lang="en">Step update failed '{0}'</source>
+        <target state="translated">L'aggiornamento del passaggio non è riuscito: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="stepData.jobNameRequired">
+        <source xml:lang="en">Job name must be provided</source>
+        <target state="translated">È necessario specificare il nome del processo</target>
+      </trans-unit>
+      <trans-unit id="stepData.stepNameRequired">
+        <source xml:lang="en">Step name must be provided</source>
+        <target state="translated">È necessario specificare il nome del passaggio</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/agent/dist/data/notebookData" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="notebookData.invalidNotebookPath">
+        <source xml:lang="en">Invalid notebook path</source>
+        <target state="translated">Percorso del notebook non valido</target>
+      </trans-unit>
+      <trans-unit id="notebookData.jobExists">
+        <source xml:lang="en">Job with similar name already exists</source>
+        <target state="translated">Un processo con un nome simile esiste già</target>
+      </trans-unit>
+      <trans-unit id="notebookData.jobNameRequired">
+        <source xml:lang="en">Notebook name must be provided</source>
+        <target state="translated">È necessario specificare il nome del notebook</target>
+      </trans-unit>
+      <trans-unit id="notebookData.newJobErrorMessage">
+        <source xml:lang="en">Notebook creation failed '{0}'</source>
+        <target state="translated">Creazione del notebook non riuscita '{0}'</target>
+      </trans-unit>
+      <trans-unit id="notebookData.newJobSuccessMessage">
+        <source xml:lang="en">Notebook '{0}' created successfully</source>
+        <target state="translated">Il notebook '{0}' è stato creato</target>
+      </trans-unit>
+      <trans-unit id="notebookData.saveErrorMessage">
+        <source xml:lang="en">Notebook update failed '{0}'</source>
+        <target state="translated">Aggiornamento del blocco appunti non riuscito '{0}'</target>
+      </trans-unit>
+      <trans-unit id="notebookData.saveSucessMessage">
+        <source xml:lang="en">Notebook '{0}' updated successfully</source>
+        <target state="translated">Il notebook '{0}' è stato aggiornato</target>
+      </trans-unit>
+      <trans-unit id="notebookData.selectExecutionDatabase">
+        <source xml:lang="en">Select execution database</source>
+        <target state="translated">Selezionare il database di esecuzione</target>
+      </trans-unit>
+      <trans-unit id="notebookData.selectStorageDatabase">
+        <source xml:lang="en">Select storage database</source>
+        <target state="translated">Selezionare il database di archiviazione</target>
+      </trans-unit>
+      <trans-unit id="notebookData.templatePathRequired">
+        <source xml:lang="en">Template path must be provided</source>
+        <target state="translated">È necessario fornire il percorso del modello</target>
+      </trans-unit>
+      <trans-unit id="notebookData.whenJobCompletes">
+        <source xml:lang="en">When the notebook completes</source>
+        <target state="translated">Quando il notebook completa</target>
+      </trans-unit>
+      <trans-unit id="notebookData.whenJobFails">
+        <source xml:lang="en">When the notebook fails</source>
+        <target state="translated">Quando il notebook ha esito negativo</target>
+      </trans-unit>
+      <trans-unit id="notebookData.whenJobSucceeds">
+        <source xml:lang="en">When the notebook succeeds</source>
+        <target state="translated">Quando il notebook ha esito positivo</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/agent/dist/data/proxyData" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="proxyData.newJobSuccessMessage">
+        <source xml:lang="en">Proxy '{0}' created successfully</source>
+        <target state="translated">Il proxy '{0}' è stato creato</target>
+      </trans-unit>
+      <trans-unit id="proxyData.saveErrorMessage">
+        <source xml:lang="en">Proxy update failed '{0}'</source>
+        <target state="translated">L'aggiornamento del proxy non è riuscito: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="proxyData.saveSucessMessage">
+        <source xml:lang="en">Proxy '{0}' updated successfully</source>
+        <target state="translated">Il proxy '{0}' è stato aggiornato</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/agent/dist/dialogs/agentDialog" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="agentDialog.OK">
-        <source xml:lang="en">OK</source>
-        <target state="translated">OK</target>
-      </trans-unit>
       <trans-unit id="agentDialog.Cancel">
         <source xml:lang="en">Cancel</source>
         <target state="translated">Annulla</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/agent/dist/dialogs/jobStepDialog" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="jobStepDialog.fileBrowserTitle">
-        <source xml:lang="en">Locate Database Files - </source>
-        <target state="translated">Trova file di database - </target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.ok">
+      <trans-unit id="agentDialog.OK">
         <source xml:lang="en">OK</source>
         <target state="translated">OK</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">Annulla</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.general">
-        <source xml:lang="en">General</source>
-        <target state="translated">Generale</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.advanced">
-        <source xml:lang="en">Advanced</source>
-        <target state="translated">Avanzate</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.open">
-        <source xml:lang="en">Open...</source>
-        <target state="translated">Apri...</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.parse">
-        <source xml:lang="en">Parse</source>
-        <target state="translated">Analizza</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.successParse">
-        <source xml:lang="en">The command was successfully parsed.</source>
-        <target state="translated">Il comando è stato analizzato.</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.failParse">
-        <source xml:lang="en">The command failed.</source>
-        <target state="translated">Il comando non è riuscito.</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.blankStepName">
-        <source xml:lang="en">The step name cannot be left blank</source>
-        <target state="translated">Il nome del passaggio non può essere lasciato vuoto</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.processExitCode">
-        <source xml:lang="en">Process exit code of a successful command:</source>
-        <target state="translated">Codice di uscita processo di un comando riuscito:</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.stepNameLabel">
-        <source xml:lang="en">Step Name</source>
-        <target state="translated">Nome del passaggio</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.typeLabel">
-        <source xml:lang="en">Type</source>
-        <target state="translated">Tipo</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.runAsLabel">
-        <source xml:lang="en">Run as</source>
-        <target state="translated">Esegui come</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.databaseLabel">
-        <source xml:lang="en">Database</source>
-        <target state="translated">Database</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.commandLabel">
-        <source xml:lang="en">Command</source>
-        <target state="translated">Comando</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.successAction">
-        <source xml:lang="en">On success action</source>
-        <target state="translated">Azione in caso di operazione riuscita</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.failureAction">
-        <source xml:lang="en">On failure action</source>
-        <target state="translated">Azione in caso di errore</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.runAsUser">
-        <source xml:lang="en">Run as user</source>
-        <target state="translated">Esegui come utente</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.retryAttempts">
-        <source xml:lang="en">Retry Attempts</source>
-        <target state="translated">Numero di tentativi</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.retryInterval">
-        <source xml:lang="en">Retry Interval (minutes)</source>
-        <target state="translated">Intervallo tra tentativi (minuti)</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.logToTable">
-        <source xml:lang="en">Log to table</source>
-        <target state="translated">Registra nella tabella</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.appendExistingTableEntry">
-        <source xml:lang="en">Append output to exisiting entry in table</source>
-        <target state="translated">Accoda output a voce esistente nella tabella</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.includeStepOutputHistory">
-        <source xml:lang="en">Include step output in history</source>
-        <target state="translated">Includi output del passaggio nella cronologia</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.outputFile">
-        <source xml:lang="en">Output File</source>
-        <target state="translated">File di output</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.appendOutputToFile">
-        <source xml:lang="en">Append output to existing file</source>
-        <target state="translated">Accoda output a file esistente</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.selectedPath">
-        <source xml:lang="en">Selected path</source>
-        <target state="translated">Percorso selezionato</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.filesOfType">
-        <source xml:lang="en">Files of type</source>
-        <target state="translated">File di tipo</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.fileName">
-        <source xml:lang="en">File name</source>
-        <target state="translated">Nome file</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.allFiles">
-        <source xml:lang="en">All Files (*)</source>
-        <target state="translated">Tutti i file (*)</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.newJobStep">
-        <source xml:lang="en">New Job Step</source>
-        <target state="translated">Nuovo passaggio del processo</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.editJobStep">
-        <source xml:lang="en">Edit Job Step</source>
-        <target state="translated">Modifica passaggio del processo</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.TSQL">
-        <source xml:lang="en">Transact-SQL script (T-SQL)</source>
-        <target state="translated">Script Transact-SQL (T-SQL)</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.powershell">
-        <source xml:lang="en">PowerShell</source>
-        <target state="translated">PowerShell</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.CmdExec">
-        <source xml:lang="en">Operating system (CmdExec)</source>
-        <target state="translated">Sistema operativo (CmdExec)</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.replicationDistribution">
-        <source xml:lang="en">Replication Distributor</source>
-        <target state="translated">Database di distribuzione repliche</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.replicationMerge">
-        <source xml:lang="en">Replication Merge</source>
-        <target state="translated">Merge repliche</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.replicationQueueReader">
-        <source xml:lang="en">Replication Queue Reader</source>
-        <target state="translated">Lettore coda di repliche</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.replicationSnapshot">
-        <source xml:lang="en">Replication Snapshot</source>
-        <target state="translated">Snapshot repliche</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.replicationTransactionLogReader">
-        <source xml:lang="en">Replication Transaction-Log Reader</source>
-        <target state="translated">Lettura log delle transazioni di replica</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.analysisCommand">
-        <source xml:lang="en">SQL Server Analysis Services Command</source>
-        <target state="translated">Comando di SQL Server Analysis Services</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.analysisQuery">
-        <source xml:lang="en">SQL Server Analysis Services Query</source>
-        <target state="translated">Query di SQL Server Analysis Services</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.servicesPackage">
-        <source xml:lang="en">SQL Server Integration Service Package</source>
-        <target state="translated">Pacchetto SQL Server Integration Services</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.agentServiceAccount">
-        <source xml:lang="en">SQL Server Agent Service Account</source>
-        <target state="translated">Account del servizio SQL Server Agent</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.nextStep">
-        <source xml:lang="en">Go to the next step</source>
-        <target state="translated">Vai al passaggio successivo</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.quitJobSuccess">
-        <source xml:lang="en">Quit the job reporting success</source>
-        <target state="translated">Termina il processo segnalandone la riuscita</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.quitJobFailure">
-        <source xml:lang="en">Quit the job reporting failure</source>
-        <target state="translated">Termina il processo segnalandone un errore</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/agent/dist/dialogs/pickScheduleDialog" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="pickSchedule.jobSchedules">
-        <source xml:lang="en">Job Schedules</source>
-        <target state="translated">Pianificazioni processi</target>
-      </trans-unit>
-      <trans-unit id="pickSchedule.ok">
-        <source xml:lang="en">OK</source>
-        <target state="translated">OK</target>
-      </trans-unit>
-      <trans-unit id="pickSchedule.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">Annulla</target>
-      </trans-unit>
-      <trans-unit id="pickSchedule.availableSchedules">
-        <source xml:lang="en">Available Schedules:</source>
-        <target state="translated">Pianificazioni disponibili:</target>
-      </trans-unit>
-      <trans-unit id="pickSchedule.scheduleName">
-        <source xml:lang="en">Name</source>
-        <target state="translated">Nome</target>
-      </trans-unit>
-      <trans-unit id="pickSchedule.scheduleID">
-        <source xml:lang="en">ID</source>
-        <target state="translated">ID</target>
-      </trans-unit>
-      <trans-unit id="pickSchedule.description">
-        <source xml:lang="en">Description</source>
-        <target state="translated">Descrizione</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/agent/dist/dialogs/alertDialog" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="alertDialog.createAlert">
-        <source xml:lang="en">Create Alert</source>
-        <target state="translated">Crea avviso</target>
+      <trans-unit id="alertDialog.AdditionalNotification">
+        <source xml:lang="en">Additional notification message to send</source>
+        <target state="translated">Messaggio di notifica aggiuntivo da inviare</target>
       </trans-unit>
-      <trans-unit id="alertDialog.editAlert">
-        <source xml:lang="en">Edit Alert</source>
-        <target state="translated">Modifica avviso</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.General">
-        <source xml:lang="en">General</source>
-        <target state="translated">Generale</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.Response">
-        <source xml:lang="en">Response</source>
-        <target state="translated">Risposta</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.Options">
-        <source xml:lang="en">Options</source>
-        <target state="translated">Opzioni</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.eventAlert">
-        <source xml:lang="en">Event alert definition</source>
-        <target state="translated">Definizione di avviso di evento</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.Name">
-        <source xml:lang="en">Name</source>
-        <target state="translated">Nome</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.Type">
-        <source xml:lang="en">Type</source>
-        <target state="translated">Tipo</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.Enabled">
-        <source xml:lang="en">Enabled</source>
-        <target state="translated">Abilitato</target>
+      <trans-unit id="alertDialog.AllDatabases">
+        <source xml:lang="en">&lt;all databases&gt;</source>
+        <target state="translated">&lt;tutti i database&gt;</target>
       </trans-unit>
       <trans-unit id="alertDialog.DatabaseName">
         <source xml:lang="en">Database name</source>
         <target state="translated">Nome del database</target>
       </trans-unit>
+      <trans-unit id="alertDialog.DelayMinutes">
+        <source xml:lang="en">Delay Minutes</source>
+        <target state="translated">Ritardo in minuti</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.DelaySeconds">
+        <source xml:lang="en">Delay Seconds</source>
+        <target state="translated">Ritardo in secondi</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.Enabled">
+        <source xml:lang="en">Enabled</source>
+        <target state="translated">Abilitato</target>
+      </trans-unit>
       <trans-unit id="alertDialog.ErrorNumber">
         <source xml:lang="en">Error number</source>
         <target state="translated">Numero di errore</target>
       </trans-unit>
-      <trans-unit id="alertDialog.Severity">
-        <source xml:lang="en">Severity</source>
-        <target state="translated">Gravità</target>
+      <trans-unit id="alertDialog.ExecuteJob">
+        <source xml:lang="en">Execute Job</source>
+        <target state="translated">Esegui processo</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.ExecuteJobName">
+        <source xml:lang="en">Job Name</source>
+        <target state="translated">Nome del processo</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.General">
+        <source xml:lang="en">General</source>
+        <target state="translated">Generale</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.IncludeErrorInEmail">
+        <source xml:lang="en">Include alert error text in e-mail</source>
+        <target state="translated">Includi testo dell'avviso in messaggi inviati tramite posta elettronica</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.IncludeErrorInPager">
+        <source xml:lang="en">Include alert error text in pager</source>
+        <target state="translated">Includi testo dell'avviso in messaggi inviati tramite cercapersone</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.MessageText">
+        <source xml:lang="en">Message text</source>
+        <target state="translated">Testo del messaggio</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.Name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Nome</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.NewJob">
+        <source xml:lang="en">New Job</source>
+        <target state="translated">Nuovo processo</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.NewOperator">
+        <source xml:lang="en">New Operator</source>
+        <target state="translated">Nuovo operatore</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.NotifyOperators">
+        <source xml:lang="en">Notify Operators</source>
+        <target state="translated">Invia notifica a operatori</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.OperatorEmail">
+        <source xml:lang="en">E-mail</source>
+        <target state="translated">Posta elettronica</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.OperatorList">
+        <source xml:lang="en">Operator List</source>
+        <target state="translated">Elenco operatori</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.OperatorName">
+        <source xml:lang="en">Operator</source>
+        <target state="translated">Operatore</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.OperatorPager">
+        <source xml:lang="en">Pager</source>
+        <target state="translated">Cercapersone</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.Options">
+        <source xml:lang="en">Options</source>
+        <target state="translated">Opzioni</target>
       </trans-unit>
       <trans-unit id="alertDialog.RaiseAlertContains">
         <source xml:lang="en">Raise alert when message contains</source>
         <target state="translated">Genera un avviso quando il messaggio contiene</target>
       </trans-unit>
-      <trans-unit id="alertDialog.MessageText">
-        <source xml:lang="en">Message text</source>
-        <target state="translated">Testo del messaggio</target>
+      <trans-unit id="alertDialog.Response">
+        <source xml:lang="en">Response</source>
+        <target state="translated">Risposta</target>
+      </trans-unit>
+      <trans-unit id="alertDialog.Severity">
+        <source xml:lang="en">Severity</source>
+        <target state="translated">Gravità</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity001">
         <source xml:lang="en">001 - Miscellaneous System Information</source>
@@ -394,273 +358,141 @@
         <source xml:lang="en">025 - Fatal Error</source>
         <target state="translated">025 - Errore irreversibile</target>
       </trans-unit>
-      <trans-unit id="alertDialog.AllDatabases">
-        <source xml:lang="en">&lt;all databases&gt;</source>
-        <target state="translated">&lt;tutti i database&gt;</target>
+      <trans-unit id="alertDialog.Type">
+        <source xml:lang="en">Type</source>
+        <target state="translated">Tipo</target>
       </trans-unit>
-      <trans-unit id="alertDialog.ExecuteJob">
-        <source xml:lang="en">Execute Job</source>
-        <target state="translated">Esegui processo</target>
+      <trans-unit id="alertDialog.createAlert">
+        <source xml:lang="en">Create Alert</source>
+        <target state="translated">Crea avviso</target>
       </trans-unit>
-      <trans-unit id="alertDialog.ExecuteJobName">
-        <source xml:lang="en">Job Name</source>
-        <target state="translated">Nome del processo</target>
+      <trans-unit id="alertDialog.editAlert">
+        <source xml:lang="en">Edit Alert</source>
+        <target state="translated">Modifica avviso</target>
       </trans-unit>
-      <trans-unit id="alertDialog.NotifyOperators">
-        <source xml:lang="en">Notify Operators</source>
-        <target state="translated">Invia notifica a operatori</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.NewJob">
-        <source xml:lang="en">New Job</source>
-        <target state="translated">Nuovo processo</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.OperatorList">
-        <source xml:lang="en">Operator List</source>
-        <target state="translated">Elenco operatori</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.OperatorName">
-        <source xml:lang="en">Operator</source>
-        <target state="translated">Operatore</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.OperatorEmail">
-        <source xml:lang="en">E-mail</source>
-        <target state="translated">Posta elettronica</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.OperatorPager">
-        <source xml:lang="en">Pager</source>
-        <target state="translated">Cercapersone</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.NewOperator">
-        <source xml:lang="en">New Operator</source>
-        <target state="translated">Nuovo operatore</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.IncludeErrorInEmail">
-        <source xml:lang="en">Include alert error text in e-mail</source>
-        <target state="translated">Includi testo dell'avviso in messaggi inviati tramite posta elettronica</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.IncludeErrorInPager">
-        <source xml:lang="en">Include alert error text in pager</source>
-        <target state="translated">Includi testo dell'avviso in messaggi inviati tramite cercapersone</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.AdditionalNotification">
-        <source xml:lang="en">Additional notification message to send</source>
-        <target state="translated">Messaggio di notifica aggiuntivo da inviare</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.DelayMinutes">
-        <source xml:lang="en">Delay Minutes</source>
-        <target state="translated">Ritardo in minuti</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.DelaySeconds">
-        <source xml:lang="en">Delay Seconds</source>
-        <target state="translated">Ritardo in secondi</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/agent/dist/dialogs/operatorDialog" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="createOperator.createOperator">
-        <source xml:lang="en">Create Operator</source>
-        <target state="translated">Crea operatore</target>
-      </trans-unit>
-      <trans-unit id="createOperator.editOperator">
-        <source xml:lang="en">Edit Operator</source>
-        <target state="translated">Modifica operatore</target>
-      </trans-unit>
-      <trans-unit id="createOperator.General">
-        <source xml:lang="en">General</source>
-        <target state="translated">Generale</target>
-      </trans-unit>
-      <trans-unit id="createOperator.Notifications">
-        <source xml:lang="en">Notifications</source>
-        <target state="translated">Notifiche</target>
-      </trans-unit>
-      <trans-unit id="createOperator.Name">
-        <source xml:lang="en">Name</source>
-        <target state="translated">Nome</target>
-      </trans-unit>
-      <trans-unit id="createOperator.Enabled">
-        <source xml:lang="en">Enabled</source>
-        <target state="translated">Abilitato</target>
-      </trans-unit>
-      <trans-unit id="createOperator.EmailName">
-        <source xml:lang="en">E-mail Name</source>
-        <target state="translated">Indirizzo di posta elettronica</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerEmailName">
-        <source xml:lang="en">Pager E-mail Name</source>
-        <target state="translated">Indirizzo cercapersone</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerMondayCheckBox">
-        <source xml:lang="en">Monday</source>
-        <target state="translated">Lunedì</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerTuesdayCheckBox">
-        <source xml:lang="en">Tuesday</source>
-        <target state="translated">Martedì</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerWednesdayCheckBox">
-        <source xml:lang="en">Wednesday</source>
-        <target state="translated">Mercoledì</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerThursdayCheckBox">
-        <source xml:lang="en">Thursday</source>
-        <target state="translated">Giovedì</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerFridayCheckBox">
-        <source xml:lang="en">Friday  </source>
-        <target state="translated">Venerdì</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerSaturdayCheckBox">
-        <source xml:lang="en">Saturday</source>
-        <target state="translated">Sabato</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerSundayCheckBox">
-        <source xml:lang="en">Sunday</source>
-        <target state="translated">Domenica</target>
-      </trans-unit>
-      <trans-unit id="createOperator.workdayBegin">
-        <source xml:lang="en">Workday begin</source>
-        <target state="translated">Inizio della giornata lavorativa</target>
-      </trans-unit>
-      <trans-unit id="createOperator.workdayEnd">
-        <source xml:lang="en">Workday end</source>
-        <target state="translated">Fine della giornata lavorativa</target>
-      </trans-unit>
-      <trans-unit id="createOperator.PagerDutySchedule">
-        <source xml:lang="en">Pager on duty schedule</source>
-        <target state="translated">Pianificazione cercapersone per operatore in servizio</target>
-      </trans-unit>
-      <trans-unit id="createOperator.AlertListHeading">
-        <source xml:lang="en">Alert list</source>
-        <target state="translated">Elenco avvisi</target>
-      </trans-unit>
-      <trans-unit id="createOperator.AlertNameColumnLabel">
-        <source xml:lang="en">Alert name</source>
-        <target state="translated">Nome dell'avviso</target>
-      </trans-unit>
-      <trans-unit id="createOperator.AlertEmailColumnLabel">
-        <source xml:lang="en">E-mail</source>
-        <target state="translated">Posta elettronica</target>
-      </trans-unit>
-      <trans-unit id="createOperator.AlertPagerColumnLabel">
-        <source xml:lang="en">Pager</source>
-        <target state="translated">Cercapersone</target>
+      <trans-unit id="alertDialog.eventAlert">
+        <source xml:lang="en">Event alert definition</source>
+        <target state="translated">Definizione di avviso di evento</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/agent/dist/dialogs/jobDialog" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="jobDialog.general">
-        <source xml:lang="en">General</source>
-        <target state="translated">Generale</target>
+      <trans-unit id="jobDialog.alertEnabledLabel">
+        <source xml:lang="en">Enabled</source>
+        <target state="translated">Abilitato</target>
       </trans-unit>
-      <trans-unit id="jobDialog.steps">
-        <source xml:lang="en">Steps</source>
-        <target state="translated">Passaggi</target>
+      <trans-unit id="jobDialog.alertNameLabel">
+        <source xml:lang="en">Alert Name</source>
+        <target state="translated">Nome dell'avviso</target>
       </trans-unit>
-      <trans-unit id="jobDialog.schedules">
-        <source xml:lang="en">Schedules</source>
-        <target state="translated">Pianificazioni</target>
+      <trans-unit id="jobDialog.alertTypeLabel">
+        <source xml:lang="en">Type</source>
+        <target state="translated">Tipo</target>
       </trans-unit>
       <trans-unit id="jobDialog.alerts">
         <source xml:lang="en">Alerts</source>
         <target state="translated">Avvisi</target>
       </trans-unit>
-      <trans-unit id="jobDialog.notifications">
-        <source xml:lang="en">Notifications</source>
-        <target state="translated">Notifiche</target>
+      <trans-unit id="jobDialog.alertsList">
+        <source xml:lang="en">Alerts list</source>
+        <target state="translated">Elenco avvisi</target>
       </trans-unit>
       <trans-unit id="jobDialog.blankJobNameError">
         <source xml:lang="en">The name of the job cannot be blank.</source>
         <target state="translated">Il nome del processo non può essere vuoto.</target>
       </trans-unit>
-      <trans-unit id="jobDialog.name">
-        <source xml:lang="en">Name</source>
-        <target state="translated">Nome</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.owner">
-        <source xml:lang="en">Owner</source>
-        <target state="translated">Proprietario</target>
-      </trans-unit>
       <trans-unit id="jobDialog.category">
         <source xml:lang="en">Category</source>
         <target state="translated">Categoria</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.description">
-        <source xml:lang="en">Description</source>
-        <target state="translated">Descrizione</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.enabled">
-        <source xml:lang="en">Enabled</source>
-        <target state="translated">Abilitato</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.jobStepList">
-        <source xml:lang="en">Job step list</source>
-        <target state="translated">Elenco dei passaggi del processo</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.step">
-        <source xml:lang="en">Step</source>
-        <target state="translated">Passaggio</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.type">
-        <source xml:lang="en">Type</source>
-        <target state="translated">Tipo</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.onSuccess">
-        <source xml:lang="en">On Success</source>
-        <target state="translated">In caso di riuscita</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.onFailure">
-        <source xml:lang="en">On Failure</source>
-        <target state="translated">In caso di errore</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.new">
-        <source xml:lang="en">New Step</source>
-        <target state="translated">Nuovo passaggio</target>
-      </trans-unit>
-      <trans-unit id="jobDialog.edit">
-        <source xml:lang="en">Edit Step</source>
-        <target state="translated">Modifica passaggio</target>
       </trans-unit>
       <trans-unit id="jobDialog.delete">
         <source xml:lang="en">Delete Step</source>
         <target state="translated">Elimina passaggio</target>
       </trans-unit>
-      <trans-unit id="jobDialog.moveUp">
-        <source xml:lang="en">Move Step Up</source>
-        <target state="translated">Sposta passaggio su</target>
+      <trans-unit id="jobDialog.deleteJobLabel">
+        <source xml:lang="en">Automatically delete job</source>
+        <target state="translated">Elimina automaticamente il processo</target>
       </trans-unit>
-      <trans-unit id="jobDialog.moveDown">
-        <source xml:lang="en">Move Step Down</source>
-        <target state="translated">Sposta passaggio giù</target>
+      <trans-unit id="jobDialog.description">
+        <source xml:lang="en">Description</source>
+        <target state="translated">Descrizione</target>
       </trans-unit>
-      <trans-unit id="jobDialog.startStepAt">
-        <source xml:lang="en">Start step</source>
-        <target state="translated">Passaggio iniziale</target>
+      <trans-unit id="jobDialog.edit">
+        <source xml:lang="en">Edit Step</source>
+        <target state="translated">Modifica passaggio</target>
       </trans-unit>
-      <trans-unit id="jobDialog.notificationsTabTop">
-        <source xml:lang="en">Actions to perform when the job completes</source>
-        <target state="translated">Azioni da eseguire quando il processo viene completato</target>
+      <trans-unit id="jobDialog.editJob">
+        <source xml:lang="en">Edit Job</source>
+        <target state="translated">Modifica processo</target>
       </trans-unit>
       <trans-unit id="jobDialog.email">
         <source xml:lang="en">Email</source>
         <target state="translated">Messaggio di posta elettronica</target>
       </trans-unit>
-      <trans-unit id="jobDialog.page">
-        <source xml:lang="en">Page</source>
-        <target state="translated">Pagina</target>
+      <trans-unit id="jobDialog.enabled">
+        <source xml:lang="en">Enabled</source>
+        <target state="translated">Abilitato</target>
       </trans-unit>
       <trans-unit id="jobDialog.eventLogCheckBoxLabel">
         <source xml:lang="en">Write to the Windows Application event log</source>
         <target state="translated">Scrivi nel log eventi dell'applicazione di Windows</target>
       </trans-unit>
-      <trans-unit id="jobDialog.deleteJobLabel">
-        <source xml:lang="en">Automatically delete job</source>
-        <target state="translated">Elimina automaticamente il processo</target>
+      <trans-unit id="jobDialog.general">
+        <source xml:lang="en">General</source>
+        <target state="translated">Generale</target>
       </trans-unit>
-      <trans-unit id="jobDialog.schedulesaLabel">
-        <source xml:lang="en">Schedules list</source>
-        <target state="translated">Elenco pianificazioni</target>
+      <trans-unit id="jobDialog.jobStepList">
+        <source xml:lang="en">Job step list</source>
+        <target state="translated">Elenco dei passaggi del processo</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.moveDown">
+        <source xml:lang="en">Move Step Down</source>
+        <target state="translated">Sposta passaggio giù</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.moveUp">
+        <source xml:lang="en">Move Step Up</source>
+        <target state="translated">Sposta passaggio su</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Nome</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.new">
+        <source xml:lang="en">New Step</source>
+        <target state="translated">Nuovo passaggio</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.newAlert">
+        <source xml:lang="en">New Alert</source>
+        <target state="translated">Nuovo avviso</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.newJob">
+        <source xml:lang="en">New Job</source>
+        <target state="translated">Nuovo processo</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.notifications">
+        <source xml:lang="en">Notifications</source>
+        <target state="translated">Notifiche</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.notificationsTabTop">
+        <source xml:lang="en">Actions to perform when the job completes</source>
+        <target state="translated">Azioni da eseguire quando il processo viene completato</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.onFailure">
+        <source xml:lang="en">On Failure</source>
+        <target state="translated">In caso di errore</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.onSuccess">
+        <source xml:lang="en">On Success</source>
+        <target state="translated">In caso di riuscita</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.owner">
+        <source xml:lang="en">Owner</source>
+        <target state="translated">Proprietario</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.page">
+        <source xml:lang="en">Page</source>
+        <target state="translated">Pagina</target>
       </trans-unit>
       <trans-unit id="jobDialog.pickSchedule">
         <source xml:lang="en">Pick Schedule</source>
@@ -670,158 +502,426 @@
         <source xml:lang="en">Remove Schedule</source>
         <target state="translated">Rimuovi pianificazione</target>
       </trans-unit>
-      <trans-unit id="jobDialog.alertsList">
-        <source xml:lang="en">Alerts list</source>
-        <target state="translated">Elenco avvisi</target>
+      <trans-unit id="jobDialog.schedules">
+        <source xml:lang="en">Schedules</source>
+        <target state="translated">Pianificazioni</target>
       </trans-unit>
-      <trans-unit id="jobDialog.newAlert">
-        <source xml:lang="en">New Alert</source>
-        <target state="translated">Nuovo avviso</target>
+      <trans-unit id="jobDialog.schedulesaLabel">
+        <source xml:lang="en">Schedules list</source>
+        <target state="translated">Elenco pianificazioni</target>
       </trans-unit>
-      <trans-unit id="jobDialog.alertNameLabel">
-        <source xml:lang="en">Alert Name</source>
-        <target state="translated">Nome dell'avviso</target>
+      <trans-unit id="jobDialog.startStepAt">
+        <source xml:lang="en">Start step</source>
+        <target state="translated">Passaggio iniziale</target>
       </trans-unit>
-      <trans-unit id="jobDialog.alertEnabledLabel">
-        <source xml:lang="en">Enabled</source>
-        <target state="translated">Abilitato</target>
+      <trans-unit id="jobDialog.step">
+        <source xml:lang="en">Step</source>
+        <target state="translated">Passaggio</target>
       </trans-unit>
-      <trans-unit id="jobDialog.alertTypeLabel">
+      <trans-unit id="jobDialog.steps">
+        <source xml:lang="en">Steps</source>
+        <target state="translated">Passaggi</target>
+      </trans-unit>
+      <trans-unit id="jobDialog.type">
         <source xml:lang="en">Type</source>
         <target state="translated">Tipo</target>
       </trans-unit>
-      <trans-unit id="jobDialog.newJob">
-        <source xml:lang="en">New Job</source>
-        <target state="translated">Nuovo processo</target>
+    </body>
+  </file>
+  <file original="extensions/agent/dist/dialogs/jobStepDialog" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="jobStepDialog.CmdExec">
+        <source xml:lang="en">Operating system (CmdExec)</source>
+        <target state="translated">Sistema operativo (CmdExec)</target>
       </trans-unit>
-      <trans-unit id="jobDialog.editJob">
-        <source xml:lang="en">Edit Job</source>
-        <target state="translated">Modifica processo</target>
+      <trans-unit id="jobStepDialog.TSQL">
+        <source xml:lang="en">Transact-SQL script (T-SQL)</source>
+        <target state="translated">Script Transact-SQL (T-SQL)</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.advanced">
+        <source xml:lang="en">Advanced</source>
+        <target state="translated">Avanzate</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.agentServiceAccount">
+        <source xml:lang="en">SQL Server Agent Service Account</source>
+        <target state="translated">Account del servizio SQL Server Agent</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.allFiles">
+        <source xml:lang="en">All Files (*)</source>
+        <target state="translated">Tutti i file (*)</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.analysisCommand">
+        <source xml:lang="en">SQL Server Analysis Services Command</source>
+        <target state="translated">Comando di SQL Server Analysis Services</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.analysisQuery">
+        <source xml:lang="en">SQL Server Analysis Services Query</source>
+        <target state="translated">Query di SQL Server Analysis Services</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.appendExistingTableEntry">
+        <source xml:lang="en">Append output to exisiting entry in table</source>
+        <target state="translated">Accoda output a voce esistente nella tabella</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.appendOutputToFile">
+        <source xml:lang="en">Append output to existing file</source>
+        <target state="translated">Accoda output a file esistente</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.blankStepName">
+        <source xml:lang="en">The step name cannot be left blank</source>
+        <target state="translated">Il nome del passaggio non può essere lasciato vuoto</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Annulla</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.commandLabel">
+        <source xml:lang="en">Command</source>
+        <target state="translated">Comando</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.databaseLabel">
+        <source xml:lang="en">Database</source>
+        <target state="translated">Database</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.editJobStep">
+        <source xml:lang="en">Edit Job Step</source>
+        <target state="translated">Modifica passaggio del processo</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.failParse">
+        <source xml:lang="en">The command failed.</source>
+        <target state="translated">Il comando non è riuscito.</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.failureAction">
+        <source xml:lang="en">On failure action</source>
+        <target state="translated">Azione in caso di errore</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.fileBrowserTitle">
+        <source xml:lang="en">Locate Database Files - </source>
+        <target state="translated">Trova file di database - </target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.fileName">
+        <source xml:lang="en">File name</source>
+        <target state="translated">Nome file</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.filesOfType">
+        <source xml:lang="en">Files of type</source>
+        <target state="translated">File di tipo</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.general">
+        <source xml:lang="en">General</source>
+        <target state="translated">Generale</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.includeStepOutputHistory">
+        <source xml:lang="en">Include step output in history</source>
+        <target state="translated">Includi output del passaggio nella cronologia</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.logToTable">
+        <source xml:lang="en">Log to table</source>
+        <target state="translated">Registra nella tabella</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.newJobStep">
+        <source xml:lang="en">New Job Step</source>
+        <target state="translated">Nuovo passaggio del processo</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.nextStep">
+        <source xml:lang="en">Go to the next step</source>
+        <target state="translated">Vai al passaggio successivo</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.open">
+        <source xml:lang="en">Open...</source>
+        <target state="translated">Apri...</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.outputFile">
+        <source xml:lang="en">Output File</source>
+        <target state="translated">File di output</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.parse">
+        <source xml:lang="en">Parse</source>
+        <target state="translated">Analizza</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.powershell">
+        <source xml:lang="en">PowerShell</source>
+        <target state="translated">PowerShell</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.processExitCode">
+        <source xml:lang="en">Process exit code of a successful command:</source>
+        <target state="translated">Codice di uscita processo di un comando riuscito:</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.quitJobFailure">
+        <source xml:lang="en">Quit the job reporting failure</source>
+        <target state="translated">Termina il processo segnalandone un errore</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.quitJobSuccess">
+        <source xml:lang="en">Quit the job reporting success</source>
+        <target state="translated">Termina il processo segnalandone la riuscita</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationDistribution">
+        <source xml:lang="en">Replication Distributor</source>
+        <target state="translated">Database di distribuzione repliche</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationMerge">
+        <source xml:lang="en">Replication Merge</source>
+        <target state="translated">Merge repliche</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationQueueReader">
+        <source xml:lang="en">Replication Queue Reader</source>
+        <target state="translated">Lettore coda di repliche</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationSnapshot">
+        <source xml:lang="en">Replication Snapshot</source>
+        <target state="translated">Snapshot repliche</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationTransactionLogReader">
+        <source xml:lang="en">Replication Transaction-Log Reader</source>
+        <target state="translated">Lettura log delle transazioni di replica</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.retryAttempts">
+        <source xml:lang="en">Retry Attempts</source>
+        <target state="translated">Numero di tentativi</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.retryInterval">
+        <source xml:lang="en">Retry Interval (minutes)</source>
+        <target state="translated">Intervallo tra tentativi (minuti)</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.runAsLabel">
+        <source xml:lang="en">Run as</source>
+        <target state="translated">Esegui come</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.runAsUser">
+        <source xml:lang="en">Run as user</source>
+        <target state="translated">Esegui come utente</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.selectedPath">
+        <source xml:lang="en">Selected path</source>
+        <target state="translated">Percorso selezionato</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.servicesPackage">
+        <source xml:lang="en">SQL Server Integration Service Package</source>
+        <target state="translated">Pacchetto SQL Server Integration Services</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.stepNameLabel">
+        <source xml:lang="en">Step Name</source>
+        <target state="translated">Nome del passaggio</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.successAction">
+        <source xml:lang="en">On success action</source>
+        <target state="translated">Azione in caso di operazione riuscita</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.successParse">
+        <source xml:lang="en">The command was successfully parsed.</source>
+        <target state="translated">Il comando è stato analizzato.</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.typeLabel">
+        <source xml:lang="en">Type</source>
+        <target state="translated">Tipo</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/dist/data/jobData" source-language="en" datatype="plaintext" target-language="it">
+  <file original="extensions/agent/dist/dialogs/notebookDialog" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="jobData.whenJobCompletes">
-        <source xml:lang="en">When the job completes</source>
-        <target state="translated">Al termine del processo</target>
+      <trans-unit id="notebookDialog.defaultDropdownString">
+        <source xml:lang="en">Select Database</source>
+        <target state="translated">Seleziona database</target>
       </trans-unit>
-      <trans-unit id="jobData.whenJobFails">
-        <source xml:lang="en">When the job fails</source>
-        <target state="translated">Se il processo non riesce</target>
+      <trans-unit id="notebookDialog.description">
+        <source xml:lang="en">Description</source>
+        <target state="translated">Descrizione</target>
       </trans-unit>
-      <trans-unit id="jobData.whenJobSucceeds">
-        <source xml:lang="en">When the job succeeds</source>
-        <target state="translated">Se il processo riesce</target>
+      <trans-unit id="notebookDialog.editJob">
+        <source xml:lang="en">Edit Notebook Job</source>
+        <target state="translated">Modifica processo notebook</target>
       </trans-unit>
-      <trans-unit id="jobData.jobNameRequired">
-        <source xml:lang="en">Job name must be provided</source>
-        <target state="translated">È necessario specificare il nome del processo</target>
+      <trans-unit id="notebookDialog.executeDatabase">
+        <source xml:lang="en">Execution Database</source>
+        <target state="translated">Database di esecuzione</target>
       </trans-unit>
-      <trans-unit id="jobData.saveErrorMessage">
-        <source xml:lang="en">Job update failed '{0}'</source>
-        <target state="translated">L'aggiornamento del processo non è riuscito: '{0}'</target>
+      <trans-unit id="notebookDialog.executionDatabaseInfo">
+        <source xml:lang="en">Select a database against which notebook queries will run</source>
+        <target state="translated">Selezionare un database in cui verranno eseguite le query del notebook</target>
       </trans-unit>
-      <trans-unit id="jobData.newJobErrorMessage">
-        <source xml:lang="en">Job creation failed '{0}'</source>
-        <target state="translated">La creazione del processo non è riuscita: '{0}'</target>
+      <trans-unit id="notebookDialog.general">
+        <source xml:lang="en">General</source>
+        <target state="translated">Generale</target>
       </trans-unit>
-      <trans-unit id="jobData.saveSucessMessage">
-        <source xml:lang="en">Job '{0}' updated successfully</source>
-        <target state="translated">Il processo '{0}' è stato aggiornato</target>
+      <trans-unit id="notebookDialog.jobSection">
+        <source xml:lang="en">Job Details</source>
+        <target state="translated">Dettagli processo</target>
       </trans-unit>
-      <trans-unit id="jobData.newJobSuccessMessage">
-        <source xml:lang="en">Job '{0}' created successfully</source>
-        <target state="translated">Il processo '{0}' è stato creato</target>
+      <trans-unit id="notebookDialog.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Nome</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.newJob">
+        <source xml:lang="en">New Notebook Job</source>
+        <target state="translated">Nuovo processo notebook</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.notebookSection">
+        <source xml:lang="en">Notebook Details</source>
+        <target state="translated">Dettagli dei notebook</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.owner">
+        <source xml:lang="en">Owner</source>
+        <target state="translated">Proprietario</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.pickSchedule">
+        <source xml:lang="en">Pick Schedule</source>
+        <target state="translated">Seleziona pianificazione</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.removeSchedule">
+        <source xml:lang="en">Remove Schedule</source>
+        <target state="translated">Rimuovi pianificazione</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.schedulesaLabel">
+        <source xml:lang="en">Schedules list</source>
+        <target state="translated">Elenco pianificazioni</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.targetDatabase">
+        <source xml:lang="en">Storage Database</source>
+        <target state="translated">Database di archiviazione</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.targetDatabaseInfo">
+        <source xml:lang="en">Select a database to store all notebook job metadata and results</source>
+        <target state="translated">Selezionare un database per archiviare tutti i metadati e i risultati del processo del notebook</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.templateNotebook">
+        <source xml:lang="en">Notebook Path</source>
+        <target state="translated">Percorso del notebook</target>
+      </trans-unit>
+      <trans-unit id="notebookDialog.templatePath">
+        <source xml:lang="en">Select a notebook to schedule from PC</source>
+        <target state="translated">Selezionare un notebook da pianificare dal computer</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/dist/data/jobStepData" source-language="en" datatype="plaintext" target-language="it">
+  <file original="extensions/agent/dist/dialogs/operatorDialog" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="jobStepData.saveErrorMessage">
-        <source xml:lang="en">Step update failed '{0}'</source>
-        <target state="translated">L'aggiornamento del passaggio non è riuscito: '{0}'</target>
+      <trans-unit id="createOperator.AlertEmailColumnLabel">
+        <source xml:lang="en">E-mail</source>
+        <target state="translated">Posta elettronica</target>
       </trans-unit>
-      <trans-unit id="stepData.jobNameRequired">
-        <source xml:lang="en">Job name must be provided</source>
-        <target state="translated">È necessario specificare il nome del processo</target>
+      <trans-unit id="createOperator.AlertListHeading">
+        <source xml:lang="en">Alert list</source>
+        <target state="translated">Elenco avvisi</target>
       </trans-unit>
-      <trans-unit id="stepData.stepNameRequired">
-        <source xml:lang="en">Step name must be provided</source>
-        <target state="translated">È necessario specificare il nome del passaggio</target>
+      <trans-unit id="createOperator.AlertNameColumnLabel">
+        <source xml:lang="en">Alert name</source>
+        <target state="translated">Nome dell'avviso</target>
+      </trans-unit>
+      <trans-unit id="createOperator.AlertPagerColumnLabel">
+        <source xml:lang="en">Pager</source>
+        <target state="translated">Cercapersone</target>
+      </trans-unit>
+      <trans-unit id="createOperator.EmailName">
+        <source xml:lang="en">E-mail Name</source>
+        <target state="translated">Indirizzo di posta elettronica</target>
+      </trans-unit>
+      <trans-unit id="createOperator.Enabled">
+        <source xml:lang="en">Enabled</source>
+        <target state="translated">Abilitato</target>
+      </trans-unit>
+      <trans-unit id="createOperator.General">
+        <source xml:lang="en">General</source>
+        <target state="translated">Generale</target>
+      </trans-unit>
+      <trans-unit id="createOperator.Name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Nome</target>
+      </trans-unit>
+      <trans-unit id="createOperator.Notifications">
+        <source xml:lang="en">Notifications</source>
+        <target state="translated">Notifiche</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerDutySchedule">
+        <source xml:lang="en">Pager on duty schedule</source>
+        <target state="translated">Pianificazione cercapersone per operatore in servizio</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerEmailName">
+        <source xml:lang="en">Pager E-mail Name</source>
+        <target state="translated">Indirizzo cercapersone</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerFridayCheckBox">
+        <source xml:lang="en">Friday  </source>
+        <target state="translated">Venerdì</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerMondayCheckBox">
+        <source xml:lang="en">Monday</source>
+        <target state="translated">Lunedì</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerSaturdayCheckBox">
+        <source xml:lang="en">Saturday</source>
+        <target state="translated">Sabato</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerSundayCheckBox">
+        <source xml:lang="en">Sunday</source>
+        <target state="translated">Domenica</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerThursdayCheckBox">
+        <source xml:lang="en">Thursday</source>
+        <target state="translated">Giovedì</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerTuesdayCheckBox">
+        <source xml:lang="en">Tuesday</source>
+        <target state="translated">Martedì</target>
+      </trans-unit>
+      <trans-unit id="createOperator.PagerWednesdayCheckBox">
+        <source xml:lang="en">Wednesday</source>
+        <target state="translated">Mercoledì</target>
+      </trans-unit>
+      <trans-unit id="createOperator.createOperator">
+        <source xml:lang="en">Create Operator</source>
+        <target state="translated">Crea operatore</target>
+      </trans-unit>
+      <trans-unit id="createOperator.editOperator">
+        <source xml:lang="en">Edit Operator</source>
+        <target state="translated">Modifica operatore</target>
+      </trans-unit>
+      <trans-unit id="createOperator.workdayBegin">
+        <source xml:lang="en">Workday begin</source>
+        <target state="translated">Inizio della giornata lavorativa</target>
+      </trans-unit>
+      <trans-unit id="createOperator.workdayEnd">
+        <source xml:lang="en">Workday end</source>
+        <target state="translated">Fine della giornata lavorativa</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/dist/mainController" source-language="en" datatype="plaintext" target-language="it">
+  <file original="extensions/agent/dist/dialogs/pickScheduleDialog" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="mainController.notImplemented">
-        <source xml:lang="en">This feature is under development.  Check-out the latest insiders build if you'd like to try out the most recent changes!</source>
-        <target state="translated">Questa funzionalità è in fase di sviluppo. Per provare le ultime novità, vedere la build più recente per utenti Insider.</target>
+      <trans-unit id="pickSchedule.availableSchedules">
+        <source xml:lang="en">Available Schedules:</source>
+        <target state="translated">Pianificazioni disponibili:</target>
       </trans-unit>
-      <trans-unit id="agent.templateUploadSuccessful">
-        <source xml:lang="en">Template updated successfully</source>
-        <target state="translated">Il modello è stato aggiornato</target>
+      <trans-unit id="pickSchedule.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Annulla</target>
       </trans-unit>
-      <trans-unit id="agent.templateUploadError">
-        <source xml:lang="en">Template update failure</source>
-        <target state="translated">Errore di aggiornamento del modello</target>
+      <trans-unit id="pickSchedule.description">
+        <source xml:lang="en">Description</source>
+        <target state="translated">Descrizione</target>
       </trans-unit>
-      <trans-unit id="agent.unsavedFileSchedulingError">
-        <source xml:lang="en">The notebook must be saved before being scheduled. Please save and then retry scheduling again.</source>
-        <target state="translated">Prima di pianificare il notebook, è necessario salvarlo. Salvare, quindi ripetere la pianificazione.</target>
+      <trans-unit id="pickSchedule.jobSchedules">
+        <source xml:lang="en">Job Schedules</source>
+        <target state="translated">Pianificazioni processi</target>
       </trans-unit>
-      <trans-unit id="agent.AddNewConnection">
-        <source xml:lang="en">Add new connection</source>
-        <target state="translated">Aggiungere nuova connessione</target>
+      <trans-unit id="pickSchedule.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
       </trans-unit>
-      <trans-unit id="agent.selectConnection">
-        <source xml:lang="en">Select a connection</source>
-        <target state="translated">Selezionare una connessione</target>
+      <trans-unit id="pickSchedule.scheduleID">
+        <source xml:lang="en">ID</source>
+        <target state="translated">ID</target>
       </trans-unit>
-      <trans-unit id="agent.selectValidConnection">
-        <source xml:lang="en">Please select a valid connection</source>
-        <target state="translated">Selezionare una connessione valida.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/agent/dist/data/alertData" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="alertData.saveErrorMessage">
-        <source xml:lang="en">Alert update failed '{0}'</source>
-        <target state="translated">L'aggiornamento dell'avviso non è riuscito: '{0}'</target>
-      </trans-unit>
-      <trans-unit id="alertData.DefaultAlertTypString">
-        <source xml:lang="en">SQL Server event alert</source>
-        <target state="translated">Avviso per evento di SQL Server</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.PerformanceCondition">
-        <source xml:lang="en">SQL Server performance condition alert</source>
-        <target state="translated">Avviso relativo alle prestazioni di SQL Server</target>
-      </trans-unit>
-      <trans-unit id="alertDialog.WmiEvent">
-        <source xml:lang="en">WMI event alert</source>
-        <target state="translated">Avviso per evento WMI</target>
+      <trans-unit id="pickSchedule.scheduleName">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Nome</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/agent/dist/dialogs/proxyDialog" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="createProxy.createProxy">
-        <source xml:lang="en">Create Proxy</source>
-        <target state="translated">Crea proxy</target>
-      </trans-unit>
-      <trans-unit id="createProxy.editProxy">
-        <source xml:lang="en">Edit Proxy</source>
-        <target state="translated">Modifica proxy</target>
-      </trans-unit>
-      <trans-unit id="createProxy.General">
-        <source xml:lang="en">General</source>
-        <target state="translated">Generale</target>
-      </trans-unit>
-      <trans-unit id="createProxy.ProxyName">
-        <source xml:lang="en">Proxy name</source>
-        <target state="translated">Nome del proxy</target>
-      </trans-unit>
       <trans-unit id="createProxy.CredentialName">
         <source xml:lang="en">Credential name</source>
         <target state="translated">Nome della credenziale</target>
@@ -830,21 +930,21 @@
         <source xml:lang="en">Description</source>
         <target state="translated">Descrizione</target>
       </trans-unit>
-      <trans-unit id="createProxy.SubsystemName">
-        <source xml:lang="en">Subsystem</source>
-        <target state="translated">Sottosistema</target>
+      <trans-unit id="createProxy.General">
+        <source xml:lang="en">General</source>
+        <target state="translated">Generale</target>
       </trans-unit>
       <trans-unit id="createProxy.OperatingSystem">
         <source xml:lang="en">Operating system (CmdExec)</source>
         <target state="translated">Sistema operativo (CmdExec)</target>
       </trans-unit>
-      <trans-unit id="createProxy.ReplicationSnapshot">
-        <source xml:lang="en">Replication Snapshot</source>
-        <target state="translated">Snapshot repliche</target>
+      <trans-unit id="createProxy.PowerShell">
+        <source xml:lang="en">PowerShell</source>
+        <target state="translated">PowerShell</target>
       </trans-unit>
-      <trans-unit id="createProxy.ReplicationTransactionLog">
-        <source xml:lang="en">Replication Transaction-Log Reader</source>
-        <target state="translated">Lettura log delle transazioni di replica</target>
+      <trans-unit id="createProxy.ProxyName">
+        <source xml:lang="en">Proxy name</source>
+        <target state="translated">Nome del proxy</target>
       </trans-unit>
       <trans-unit id="createProxy.ReplicationDistributor">
         <source xml:lang="en">Replication Distributor</source>
@@ -858,169 +958,69 @@
         <source xml:lang="en">Replication Queue Reader</source>
         <target state="translated">Lettore coda di repliche</target>
       </trans-unit>
-      <trans-unit id="createProxy.SSASQueryLabel">
-        <source xml:lang="en">SQL Server Analysis Services Query</source>
-        <target state="translated">Query di SQL Server Analysis Services</target>
+      <trans-unit id="createProxy.ReplicationSnapshot">
+        <source xml:lang="en">Replication Snapshot</source>
+        <target state="translated">Snapshot repliche</target>
+      </trans-unit>
+      <trans-unit id="createProxy.ReplicationTransactionLog">
+        <source xml:lang="en">Replication Transaction-Log Reader</source>
+        <target state="translated">Lettura log delle transazioni di replica</target>
       </trans-unit>
       <trans-unit id="createProxy.SSASCommandLabel">
         <source xml:lang="en">SQL Server Analysis Services Command</source>
         <target state="translated">Comando di SQL Server Analysis Services</target>
       </trans-unit>
+      <trans-unit id="createProxy.SSASQueryLabel">
+        <source xml:lang="en">SQL Server Analysis Services Query</source>
+        <target state="translated">Query di SQL Server Analysis Services</target>
+      </trans-unit>
       <trans-unit id="createProxy.SSISPackage">
         <source xml:lang="en">SQL Server Integration Services Package</source>
         <target state="translated">Pacchetto SQL Server Integration Services</target>
       </trans-unit>
-      <trans-unit id="createProxy.PowerShell">
-        <source xml:lang="en">PowerShell</source>
-        <target state="translated">PowerShell</target>
+      <trans-unit id="createProxy.SubsystemName">
+        <source xml:lang="en">Subsystem</source>
+        <target state="translated">Sottosistema</target>
+      </trans-unit>
+      <trans-unit id="createProxy.createProxy">
+        <source xml:lang="en">Create Proxy</source>
+        <target state="translated">Crea proxy</target>
+      </trans-unit>
+      <trans-unit id="createProxy.editProxy">
+        <source xml:lang="en">Edit Proxy</source>
+        <target state="translated">Modifica proxy</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/dist/data/proxyData" source-language="en" datatype="plaintext" target-language="it">
+  <file original="extensions/agent/dist/mainController" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="proxyData.saveErrorMessage">
-        <source xml:lang="en">Proxy update failed '{0}'</source>
-        <target state="translated">L'aggiornamento del proxy non è riuscito: '{0}'</target>
+      <trans-unit id="agent.AddNewConnection">
+        <source xml:lang="en">Add new connection</source>
+        <target state="translated">Aggiungere nuova connessione</target>
       </trans-unit>
-      <trans-unit id="proxyData.saveSucessMessage">
-        <source xml:lang="en">Proxy '{0}' updated successfully</source>
-        <target state="translated">Il proxy '{0}' è stato aggiornato</target>
+      <trans-unit id="agent.selectConnection">
+        <source xml:lang="en">Select a connection</source>
+        <target state="translated">Selezionare una connessione</target>
       </trans-unit>
-      <trans-unit id="proxyData.newJobSuccessMessage">
-        <source xml:lang="en">Proxy '{0}' created successfully</source>
-        <target state="translated">Il proxy '{0}' è stato creato</target>
+      <trans-unit id="agent.selectValidConnection">
+        <source xml:lang="en">Please select a valid connection</source>
+        <target state="translated">Selezionare una connessione valida.</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/agent/dist/dialogs/notebookDialog" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="notebookDialog.newJob">
-        <source xml:lang="en">New Notebook Job</source>
-        <target state="translated">Nuovo processo notebook</target>
+      <trans-unit id="agent.templateUploadError">
+        <source xml:lang="en">Template update failure</source>
+        <target state="translated">Errore di aggiornamento del modello</target>
       </trans-unit>
-      <trans-unit id="notebookDialog.editJob">
-        <source xml:lang="en">Edit Notebook Job</source>
-        <target state="translated">Modifica processo notebook</target>
+      <trans-unit id="agent.templateUploadSuccessful">
+        <source xml:lang="en">Template updated successfully</source>
+        <target state="translated">Il modello è stato aggiornato</target>
       </trans-unit>
-      <trans-unit id="notebookDialog.general">
-        <source xml:lang="en">General</source>
-        <target state="translated">Generale</target>
+      <trans-unit id="agent.unsavedFileSchedulingError">
+        <source xml:lang="en">The notebook must be saved before being scheduled. Please save and then retry scheduling again.</source>
+        <target state="translated">Prima di pianificare il notebook, è necessario salvarlo. Salvare, quindi ripetere la pianificazione.</target>
       </trans-unit>
-      <trans-unit id="notebookDialog.notebookSection">
-        <source xml:lang="en">Notebook Details</source>
-        <target state="translated">Dettagli dei notebook</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.templateNotebook">
-        <source xml:lang="en">Notebook Path</source>
-        <target state="translated">Percorso del notebook</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.targetDatabase">
-        <source xml:lang="en">Storage Database</source>
-        <target state="translated">Database di archiviazione</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.executeDatabase">
-        <source xml:lang="en">Execution Database</source>
-        <target state="translated">Database di esecuzione</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.defaultDropdownString">
-        <source xml:lang="en">Select Database</source>
-        <target state="translated">Seleziona database</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.jobSection">
-        <source xml:lang="en">Job Details</source>
-        <target state="translated">Dettagli processo</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.name">
-        <source xml:lang="en">Name</source>
-        <target state="translated">Nome</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.owner">
-        <source xml:lang="en">Owner</source>
-        <target state="translated">Proprietario</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.schedulesaLabel">
-        <source xml:lang="en">Schedules list</source>
-        <target state="translated">Elenco pianificazioni</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.pickSchedule">
-        <source xml:lang="en">Pick Schedule</source>
-        <target state="translated">Seleziona pianificazione</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.removeSchedule">
-        <source xml:lang="en">Remove Schedule</source>
-        <target state="translated">Rimuovi pianificazione</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.description">
-        <source xml:lang="en">Description</source>
-        <target state="translated">Descrizione</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.templatePath">
-        <source xml:lang="en">Select a notebook to schedule from PC</source>
-        <target state="translated">Selezionare un notebook da pianificare dal computer</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.targetDatabaseInfo">
-        <source xml:lang="en">Select a database to store all notebook job metadata and results</source>
-        <target state="translated">Selezionare un database per archiviare tutti i metadati e i risultati del processo del notebook</target>
-      </trans-unit>
-      <trans-unit id="notebookDialog.executionDatabaseInfo">
-        <source xml:lang="en">Select a database against which notebook queries will run</source>
-        <target state="translated">Selezionare un database in cui verranno eseguite le query del notebook</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/agent/dist/data/notebookData" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="notebookData.whenJobCompletes">
-        <source xml:lang="en">When the notebook completes</source>
-        <target state="translated">Quando il notebook completa</target>
-      </trans-unit>
-      <trans-unit id="notebookData.whenJobFails">
-        <source xml:lang="en">When the notebook fails</source>
-        <target state="translated">Quando il notebook ha esito negativo</target>
-      </trans-unit>
-      <trans-unit id="notebookData.whenJobSucceeds">
-        <source xml:lang="en">When the notebook succeeds</source>
-        <target state="translated">Quando il notebook ha esito positivo</target>
-      </trans-unit>
-      <trans-unit id="notebookData.jobNameRequired">
-        <source xml:lang="en">Notebook name must be provided</source>
-        <target state="translated">È necessario specificare il nome del notebook</target>
-      </trans-unit>
-      <trans-unit id="notebookData.templatePathRequired">
-        <source xml:lang="en">Template path must be provided</source>
-        <target state="translated">È necessario fornire il percorso del modello</target>
-      </trans-unit>
-      <trans-unit id="notebookData.invalidNotebookPath">
-        <source xml:lang="en">Invalid notebook path</source>
-        <target state="translated">Percorso del notebook non valido</target>
-      </trans-unit>
-      <trans-unit id="notebookData.selectStorageDatabase">
-        <source xml:lang="en">Select storage database</source>
-        <target state="translated">Selezionare il database di archiviazione</target>
-      </trans-unit>
-      <trans-unit id="notebookData.selectExecutionDatabase">
-        <source xml:lang="en">Select execution database</source>
-        <target state="translated">Selezionare il database di esecuzione</target>
-      </trans-unit>
-      <trans-unit id="notebookData.jobExists">
-        <source xml:lang="en">Job with similar name already exists</source>
-        <target state="translated">Un processo con un nome simile esiste già</target>
-      </trans-unit>
-      <trans-unit id="notebookData.saveErrorMessage">
-        <source xml:lang="en">Notebook update failed '{0}'</source>
-        <target state="translated">Aggiornamento del blocco appunti non riuscito '{0}'</target>
-      </trans-unit>
-      <trans-unit id="notebookData.newJobErrorMessage">
-        <source xml:lang="en">Notebook creation failed '{0}'</source>
-        <target state="translated">Creazione del notebook non riuscita '{0}'</target>
-      </trans-unit>
-      <trans-unit id="notebookData.saveSucessMessage">
-        <source xml:lang="en">Notebook '{0}' updated successfully</source>
-        <target state="translated">Il notebook '{0}' è stato aggiornato</target>
-      </trans-unit>
-      <trans-unit id="notebookData.newJobSuccessMessage">
-        <source xml:lang="en">Notebook '{0}' created successfully</source>
-        <target state="translated">Il notebook '{0}' è stato creato</target>
+      <trans-unit id="mainController.notImplemented">
+        <source xml:lang="en">This feature is under development.  Check-out the latest insiders build if you'd like to try out the most recent changes!</source>
+        <target state="translated">Questa funzionalità è in fase di sviluppo. Per provare le ultime novità, vedere la build più recente per utenti Insider.</target>
       </trans-unit>
     </body>
   </file>

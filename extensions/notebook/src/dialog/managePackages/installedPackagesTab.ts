@@ -92,7 +92,7 @@ export class InstalledPackagesTab {
 						}
 					],
 					data: [[]],
-					height: '600px',
+					height: '500px',
 					width: '400px'
 				}).component();
 			this.disposables.push(this.installedPackagesTable.onCellAction(async (rowState) => {
@@ -135,7 +135,7 @@ export class InstalledPackagesTab {
 			await view.initializeModel(this.installedPackagesLoader);
 
 			await this.loadInstalledPackagesInfo();
-			this.packageTypeDropdown.focus();
+			await this.packageTypeDropdown.focus();
 		});
 	}
 
@@ -252,7 +252,7 @@ export class InstalledPackagesTab {
 			return;
 		}
 
-		this.uninstallPackageButton.updateProperties({ enabled: false });
+		await this.uninstallPackageButton.updateProperties({ enabled: false });
 		let doUninstall = await this.prompter.promptSingle<boolean>(<IQuestion>{
 			type: QuestionTypes.confirm,
 			message: localize('managePackages.confirmUninstall', "Are you sure you want to uninstall the specified packages?"),
@@ -309,6 +309,6 @@ export class InstalledPackagesTab {
 			}
 		}
 
-		this.uninstallPackageButton.updateProperties({ enabled: true });
+		await this.uninstallPackageButton.updateProperties({ enabled: true });
 	}
 }

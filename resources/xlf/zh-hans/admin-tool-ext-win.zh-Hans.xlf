@@ -1,36 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/admin-tool-ext-win/package" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="adminToolExtWin.displayName">
-        <source xml:lang="en">Database Administration Tool Extensions for Windows</source>
-        <target state="translated">适用于 Windows 的数据库管理工具扩展</target>
-      </trans-unit>
-      <trans-unit id="adminToolExtWin.description">
-        <source xml:lang="en">Adds additional Windows-specific functionality to Azure Data Studio</source>
-        <target state="translated">向 Azure Data Studio 添加其他特定于 Windows 的功能</target>
-      </trans-unit>
-      <trans-unit id="adminToolExtWin.propertiesMenuItem">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">属性</target>
-      </trans-unit>
-      <trans-unit id="adminToolExtWin.launchGswMenuItem">
-        <source xml:lang="en">Generate Scripts...</source>
-        <target state="translated">生成脚本…</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/admin-tool-ext-win/dist/main" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="adminToolExtWin.noConnectionContextForProp">
+      <trans-unit id="adminToolExtWin.launchingDialogStatus">
+        <source xml:lang="en">Launching dialog...</source>
+        <target state="translated">正在启动对话…</target>
+      </trans-unit>
+      <trans-unit id="adminToolExtWin.noConnectionContextForGsw">
         <source xml:lang="en">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</source>
         <target state="translated">未为 handleLaunchSsmsMinPropertiesDialogCommand 提供 ConnectionContext</target>
       </trans-unit>
-      <trans-unit id="adminToolExtWin.noOENode">
-        <source xml:lang="en">Could not determine Object Explorer node from connectionContext : {0}</source>
-        <target state="translated">无法由以下 connectionContex 确定对象资源管理器节点: {0}</target>
-      </trans-unit>
-      <trans-unit id="adminToolExtWin.noConnectionContextForGsw">
+      <trans-unit id="adminToolExtWin.noConnectionContextForProp">
         <source xml:lang="en">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</source>
         <target state="translated">未为 handleLaunchSsmsMinPropertiesDialogCommand 提供 ConnectionContext</target>
       </trans-unit>
@@ -38,13 +18,33 @@
         <source xml:lang="en">No connectionProfile provided from connectionContext : {0}</source>
         <target state="translated">未从 connectionContext 提供任何 connectionProfile: {0}</target>
       </trans-unit>
-      <trans-unit id="adminToolExtWin.launchingDialogStatus">
-        <source xml:lang="en">Launching dialog...</source>
-        <target state="translated">正在启动对话…</target>
+      <trans-unit id="adminToolExtWin.noOENode">
+        <source xml:lang="en">Could not determine Object Explorer node from connectionContext : {0}</source>
+        <target state="translated">无法由以下 connectionContex 确定对象资源管理器节点: {0}</target>
       </trans-unit>
       <trans-unit id="adminToolExtWin.ssmsMinError">
         <source xml:lang="en">Error calling SsmsMin with args '{0}' - {1}</source>
         <target state="translated">使用参数“{0}”调用 SsmsMin 时出错 - {1}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/admin-tool-ext-win/package" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="adminToolExtWin.description">
+        <source xml:lang="en">Adds additional Windows-specific functionality to Azure Data Studio</source>
+        <target state="translated">向 Azure Data Studio 添加其他特定于 Windows 的功能</target>
+      </trans-unit>
+      <trans-unit id="adminToolExtWin.displayName">
+        <source xml:lang="en">Database Administration Tool Extensions for Windows</source>
+        <target state="translated">适用于 Windows 的数据库管理工具扩展</target>
+      </trans-unit>
+      <trans-unit id="adminToolExtWin.launchGswMenuItem">
+        <source xml:lang="en">Generate Scripts...</source>
+        <target state="translated">生成脚本…</target>
+      </trans-unit>
+      <trans-unit id="adminToolExtWin.propertiesMenuItem">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">属性</target>
       </trans-unit>
     </body>
   </file>

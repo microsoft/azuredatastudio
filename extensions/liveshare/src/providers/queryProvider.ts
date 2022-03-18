@@ -59,6 +59,10 @@ export class QueryProvider {
 			return true;
 		});
 
+		this._sharedService.onNotify(constants.connectionUriChangedNotification, (args: any) => {
+			return true;
+		});
+
 		this._sharedService.onRequest(constants.saveResultsRequest, (args: any) => {
 			return true;
 		});
@@ -130,6 +134,13 @@ export class QueryProvider {
 			return self._sharedServiceProxy.request(constants.disposeQueryRequest, [{
 				ownerUri: ownerUri
 			}]);
+		};
+
+		let connectionUriChanged = (ownerUri: string): Thenable<void> => {
+			self._sharedServiceProxy.notify(constants.connectionUriChangedNotification, [{
+				ownerUri: ownerUri
+			}]);
+			return Promise.resolve();
 		};
 
 		let registerOnQueryComplete = (handler: (result: azdata.QueryExecuteCompleteNotificationResult) => any): void => {
@@ -208,6 +219,7 @@ export class QueryProvider {
 			deleteRow,
 			disposeEdit,
 			disposeQuery,
+			connectionUriChanged,
 			getEditRows,
 			getQueryRows,
 			setQueryExecutionOptions,

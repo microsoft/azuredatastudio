@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Тихая светлая тема",
 			"description": "Тихая светлая тема для Visual Studio Code",
+			"displayName": "Тихая светлая тема",
 			"themeLabel": "Тихая светлая"
 		}
 	}

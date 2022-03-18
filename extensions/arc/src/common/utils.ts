@@ -105,8 +105,8 @@ export function getDatabaseStateDisplayText(state: string): string {
 
 /**
  * Opens an input box prompting and validating the user's input.
- * @param options Options for the input box
  * @param title An optional title for the input box
+ * @param options Options for the input box
  * @returns Promise resolving to the user's input if it passed validation,
  * or undefined if the input box was closed for any other reason
  */
@@ -362,4 +362,12 @@ export function debounce(delay: number): Function {
 			this[timerKey] = setTimeout(() => fn.apply(this, args), delay);
 		};
 	});
+}
+
+export function getTimeStamp(dateTime: string | undefined): number {
+	return dateTime ? (new Date(dateTime)).getTime() : 0;
+}
+
+export function checkISOTimeString(dateTime: string): boolean {
+	return /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d.*Z/.test(dateTime);
 }

@@ -9,15 +9,24 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/dialogs/profilerCreateSessionDialog": {
-			"createSessionDialog.cancel": "Отмена",
+			"createSessionDialog.cancel": "Отменить",
 			"createSessionDialog.create": "Запустить",
-			"createSessionDialog.title": "Запустить новый сеанс профилировщика",
-			"createSessionDialog.templatesInvalid": "Недопустимый список шаблонов, не удается открыть диалоговое окно",
+			"createSessionDialog.createSessionFailed": "Не удалось создать сеанс",
 			"createSessionDialog.dialogOwnerInvalid": "Недопустимый владелец диалогового окна, не удается открыть диалоговое окно",
+			"createSessionDialog.enterSessionName": "Введите имя сеанса:",
 			"createSessionDialog.invalidProviderType": "Недопустимый тип поставщика, не удается открыть диалоговое окно",
 			"createSessionDialog.selectTemplates": "Выберите шаблон сеанса:",
-			"createSessionDialog.enterSessionName": "Введите имя сеанса:",
-			"createSessionDialog.createSessionFailed": "Не удалось создать сеанс"
+			"createSessionDialog.templatesInvalid": "Недопустимый список шаблонов, не удается открыть диалоговое окно",
+			"createSessionDialog.title": "Запустить новый сеанс профилировщика"
+		},
+		"package": {
+			"description": "Приложение SQL Server Profiler для Azure Data Studio",
+			"displayName": "Приложение SQL Server Profiler",
+			"profiler.category": "Профилировщик",
+			"profiler.contributes.title.newProfler": "Запустить профилировщик",
+			"profiler.contributes.title.openCreateSessionDialog": "Создание сезона профилировщика",
+			"profiler.contributes.title.start": "Запустить",
+			"profiler.contributes.title.stop": "Остановить"
 		}
 	}
 }

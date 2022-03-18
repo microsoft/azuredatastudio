@@ -16,7 +16,7 @@ Select **New Connection** and choose **Azure Monitor Logs** for the **Connection
 
 Once connected to a cluster, you can start writing a KQL query, run it and a view the results to save it to CSV, JSON, XML, Excel, or as a chart as shown below.
 
-![KQL query in Azure Data Studio](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/kusto/resources/images/kusto-readme-query.gif)
+![Azure Monitor Logs query in Azure Data Studio](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/resources/images/azuremonitorlogs-readme-query.png)
 
 ## Contributing to the Extension
 

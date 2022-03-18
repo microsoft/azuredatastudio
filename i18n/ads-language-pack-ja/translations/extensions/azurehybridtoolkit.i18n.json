@@ -9,11 +9,11 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Azure SQL Hybrid Cloud Toolkit",
+			"books-preview-category": "Jupyter ブック",
 			"description": "Azure SQL ハイブリッドクラウドツールキット Jupyter ブックを開きます",
-			"title.openJupyterBook": "Azure SQL ハイブリッドクラウド ツールキット Jupyter ブックを開く",
+			"displayName": "Azure SQL Hybrid Cloud Toolkit",
 			"title.cloudHybridBooks": "Azure SQL Hybrid Cloud Toolkit",
-			"books-preview-category": "Jupyter ブック"
+			"title.openJupyterBook": "Azure SQL ハイブリッドクラウド ツールキット Jupyter ブックを開く"
 		}
 	}
 }

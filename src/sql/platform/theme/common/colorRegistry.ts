@@ -7,6 +7,9 @@ import { contrastBorder, registerColor } from 'vs/platform/theme/common/colorReg
 import { Color, RGBA } from 'vs/base/common/color';
 import * as nls from 'vs/nls';
 
+// Common
+export const GroupHeaderBackground = registerColor('groupHeaderBackground', { dark: '#252526', light: '#F3F3F3', hc: '#000000' }, nls.localize('groupHeaderBackground', "Background color of the group header."));
+
 // -- Welcome Page Colors
 export const tileBoxShadowColor = new Color(new RGBA(0, 1, 4, 0.13));
 export const textShadow = new Color(new RGBA(0, 0, 0, 0.25));
@@ -85,3 +88,6 @@ export const calloutDialogExteriorBorder = registerColor('calloutDialog.exterior
 export const calloutDialogHeaderFooterBackground = registerColor('calloutDialog.headerFooterBackground', { light: '#FFFFFF', dark: '#1E1E1E', hc: Color.black }, nls.localize('calloutDialogHeaderFooterBackground', 'Callout dialog header and footer background.'));
 export const calloutDialogBodyBackground = registerColor('calloutDialog.bodyBackground', { light: '#FFFFFF', dark: '#1E1E1E', hc: Color.black }, nls.localize('calloutDialogBodyBackground', "Callout dialog body background."));
 export const calloutDialogShadowColor = registerColor('calloutDialog.shadow', { light: '#000000', dark: '#FFFFFF', hc: '#000000' }, nls.localize('calloutDialogShadowColor', 'Callout dialog box shadow color.'));
+
+// Designer
+export const DesignerPaneSeparator = registerColor('designer.paneSeparator', { light: '#DDDDDD', dark: '#8A8886', hc: contrastBorder }, nls.localize('designer.paneSeparator', 'The pane separator color.'));

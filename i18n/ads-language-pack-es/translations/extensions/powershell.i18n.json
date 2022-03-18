@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Conceptos básicos del lenguaje Powershell",
-			"description": "Proporciona fragmentos de código, resaltado de sintaxis, correspondencia de corchetes y plegado de código en archivos de Powershell."
+			"description": "Proporciona fragmentos de código, resaltado de sintaxis, correspondencia de corchetes y plegado de código en archivos de Powershell.",
+			"displayName": "Conceptos básicos del lenguaje Powershell"
 		}
 	}
 }

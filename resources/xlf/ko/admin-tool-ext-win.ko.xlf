@@ -1,36 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/admin-tool-ext-win/package" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="adminToolExtWin.displayName">
-        <source xml:lang="en">Database Administration Tool Extensions for Windows</source>
-        <target state="translated">Windows용 데이터베이스 관리 도구 확장</target>
-      </trans-unit>
-      <trans-unit id="adminToolExtWin.description">
-        <source xml:lang="en">Adds additional Windows-specific functionality to Azure Data Studio</source>
-        <target state="translated">Azure Data Studio에 Windows 관련 추가 기능 추가</target>
-      </trans-unit>
-      <trans-unit id="adminToolExtWin.propertiesMenuItem">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">속성</target>
-      </trans-unit>
-      <trans-unit id="adminToolExtWin.launchGswMenuItem">
-        <source xml:lang="en">Generate Scripts...</source>
-        <target state="translated">스크립트 생성...</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/admin-tool-ext-win/dist/main" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="adminToolExtWin.noConnectionContextForProp">
+      <trans-unit id="adminToolExtWin.launchingDialogStatus">
+        <source xml:lang="en">Launching dialog...</source>
+        <target state="translated">대화 상자를 시작하는 중...</target>
+      </trans-unit>
+      <trans-unit id="adminToolExtWin.noConnectionContextForGsw">
         <source xml:lang="en">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</source>
         <target state="translated">handleLaunchSsmsMinPropertiesDialogCommand에 대한 ConnectionContext가 제공되지 않음</target>
       </trans-unit>
-      <trans-unit id="adminToolExtWin.noOENode">
-        <source xml:lang="en">Could not determine Object Explorer node from connectionContext : {0}</source>
-        <target state="translated">connectionContext에서 개체 탐색기 노드를 확인할 수 없습니다. {0}</target>
-      </trans-unit>
-      <trans-unit id="adminToolExtWin.noConnectionContextForGsw">
+      <trans-unit id="adminToolExtWin.noConnectionContextForProp">
         <source xml:lang="en">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</source>
         <target state="translated">handleLaunchSsmsMinPropertiesDialogCommand에 대한 ConnectionContext가 제공되지 않음</target>
       </trans-unit>
@@ -38,13 +18,33 @@
         <source xml:lang="en">No connectionProfile provided from connectionContext : {0}</source>
         <target state="translated">connectionContext에서 제공된 connectionProfile이 없습니다. {0}</target>
       </trans-unit>
-      <trans-unit id="adminToolExtWin.launchingDialogStatus">
-        <source xml:lang="en">Launching dialog...</source>
-        <target state="translated">대화 상자를 시작하는 중...</target>
+      <trans-unit id="adminToolExtWin.noOENode">
+        <source xml:lang="en">Could not determine Object Explorer node from connectionContext : {0}</source>
+        <target state="translated">connectionContext에서 개체 탐색기 노드를 확인할 수 없습니다. {0}</target>
       </trans-unit>
       <trans-unit id="adminToolExtWin.ssmsMinError">
         <source xml:lang="en">Error calling SsmsMin with args '{0}' - {1}</source>
         <target state="translated">'{0}' 인수로 SsmsMin을 호출하는 중 오류 발생 - {1}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/admin-tool-ext-win/package" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="adminToolExtWin.description">
+        <source xml:lang="en">Adds additional Windows-specific functionality to Azure Data Studio</source>
+        <target state="translated">Azure Data Studio에 Windows 관련 추가 기능 추가</target>
+      </trans-unit>
+      <trans-unit id="adminToolExtWin.displayName">
+        <source xml:lang="en">Database Administration Tool Extensions for Windows</source>
+        <target state="translated">Windows용 데이터베이스 관리 도구 확장</target>
+      </trans-unit>
+      <trans-unit id="adminToolExtWin.launchGswMenuItem">
+        <source xml:lang="en">Generate Scripts...</source>
+        <target state="translated">스크립트 생성...</target>
+      </trans-unit>
+      <trans-unit id="adminToolExtWin.propertiesMenuItem">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">속성</target>
       </trans-unit>
     </body>
   </file>

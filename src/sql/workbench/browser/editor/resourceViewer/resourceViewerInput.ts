@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
-import { EditorInput } from 'vs/workbench/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { DataGridProvider, IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
@@ -13,6 +13,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { getDataGridFormatter } from 'sql/workbench/services/dataGridProvider/browser/dataGridProviderUtils';
 import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
+import { RESOURCE_VIEWER_TYPEID } from 'sql/workbench/common/constants';
 
 export interface ColumnDefinition extends FilterableColumn<azdata.DataGridItem> {
 	name: string;
@@ -22,7 +23,7 @@ export interface ColumnDefinition extends FilterableColumn<azdata.DataGridItem> 
 
 export class ResourceViewerInput extends EditorInput {
 
-	public static ID: string = 'workbench.editorInput.resourceViewerInput';
+	public static ID: string = RESOURCE_VIEWER_TYPEID;
 
 	private _dataGridProvider: DataGridProvider;
 	private _data: azdata.DataGridItem[] = [];

@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
+import { logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
 import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus, AzureAsyncOperationResource, getMigrationAsyncOperationDetails, SqlVMServer, getSubscriptions } from '../api/azure';
 import * as azdata from 'azdata';
 
@@ -19,13 +20,15 @@ export class MigrationLocalStorage {
 		const undefinedSessionId = '{undefined}';
 		const result: MigrationContext[] = [];
 		const validMigrations: MigrationContext[] = [];
-
+		const startTime = new Date().toString();
+		// fetch saved migrations
 		const migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
 		for (let i = 0; i < migrationMementos.length; i++) {
 			const migration = migrationMementos[i];
 			migration.migrationContext = this.removeMigrationSecrets(migration.migrationContext);
 			migration.sessionId = migration.sessionId ?? undefinedSessionId;
 			if (migration.sourceConnectionProfile.serverName === connectionProfile.serverName) {
+				// refresh migration status
 				if (refreshStatus) {
 					try {
 						await this.refreshMigrationAzureAccount(migration);
@@ -51,7 +54,7 @@ export class MigrationLocalStorage {
 							case 'NullMigrationId':
 								continue;
 							default:
-								console.log(e);
+								logError(TelemetryViews.MigrationLocalStorage, 'MigrationBySourceConnectionError', e);
 						}
 					}
 				}
@@ -59,7 +62,38 @@ export class MigrationLocalStorage {
 			}
 			validMigrations.push(migration);
 		}
-		this.context.globalState.update(this.mementoToken, validMigrations);
+
+		await this.context.globalState.update(this.mementoToken, validMigrations);
+
+		sendSqlMigrationActionEvent(
+			TelemetryViews.MigrationLocalStorage,
+			TelemetryAction.Done,
+			{
+				'startTime': startTime,
+				'endTime': new Date().toString()
+			},
+			{
+				'migrationCount': migrationMementos.length
+			}
+		);
+
+		// only save updated migration context
+		if (refreshStatus) {
+			const migrations: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
+			validMigrations.forEach(migration => {
+				const idx = migrations.findIndex(m => m.migrationContext.id === migration.migrationContext.id);
+				if (idx > -1) {
+					migrations[idx] = migration;
+				}
+			});
+
+			// check global state for migrations count mismatch, avoid saving
+			// state if the count has changed when a migration may have been added
+			const current: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
+			if (current.length === migrations.length) {
+				await this.context.globalState.update(this.mementoToken, migrations);
+			}
+		}
 		return result;
 	}
 
@@ -77,7 +111,7 @@ export class MigrationLocalStorage {
 		}
 	}
 
-	public static saveMigration(
+	public static async saveMigration(
 		connectionProfile: azdata.connection.ConnectionProfile,
 		migrationContext: DatabaseMigration,
 		targetMI: SqlManagedInstance | SqlVMServer,
@@ -85,7 +119,7 @@ export class MigrationLocalStorage {
 		subscription: azureResource.AzureResourceSubscription,
 		controller: SqlMigrationService,
 		asyncURL: string,
-		sessionId: string): void {
+		sessionId: string): Promise<void> {
 		try {
 			let migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
 			migrationMementos = migrationMementos.filter(m => m.migrationContext.id !== migrationContext.id);
@@ -99,14 +133,14 @@ export class MigrationLocalStorage {
 				asyncUrl: asyncURL,
 				sessionId: sessionId
 			});
-			this.context.globalState.update(this.mementoToken, migrationMementos);
+			await this.context.globalState.update(this.mementoToken, migrationMementos);
 		} catch (e) {
-			console.log(e);
+			logError(TelemetryViews.MigrationLocalStorage, 'CantSaveMigration', e);
 		}
 	}
 
-	public static clearMigrations() {
-		this.context.globalState.update(this.mementoToken, ([] as MigrationContext[]));
+	public static async clearMigrations(): Promise<void> {
+		await this.context.globalState.update(this.mementoToken, ([] as MigrationContext[]));
 	}
 
 	public static removeMigrationSecrets(migration: DatabaseMigration): DatabaseMigration {
@@ -153,4 +187,14 @@ export enum ProvisioningState {
 	Failed = 'Failed',
 	Succeeded = 'Succeeded',
 	Creating = 'Creating'
+}
+
+export enum BackupFileInfoStatus {
+	Arrived = 'Arrived',
+	Uploading = 'Uploading',
+	Uploaded = 'Uploaded',
+	Restoring = 'Restoring',
+	Restored = 'Restored',
+	Canceled = 'Canceled',
+	Ignored = 'Ignored'
 }

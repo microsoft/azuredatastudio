@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Funzionalità del linguaggio XML",
-			"description": "Fornisce un supporto avanzato del linguaggio per XML."
+			"description": "Fornisce un supporto avanzato del linguaggio per XML.",
+			"displayName": "Funzionalità del linguaggio XML"
 		}
 	}
 }

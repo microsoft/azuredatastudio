@@ -205,6 +205,13 @@ export class Tree implements _.ITree {
 	getContentHeight(): number {
 		return this.view.getContentHeight();
 	}
+
+	/**
+	 * Sets the `aria-label` attribute of the underlying root HTML element.
+	 */
+	public set ariaLabel(value: string) {
+		this.getHTMLElement().setAttribute('aria-label', value);
+	}
 	// {{SQL CARBON EDIT}} - end block
 
 

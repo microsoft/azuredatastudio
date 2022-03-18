@@ -8,7 +8,7 @@ declare module 'dataworkspace' {
 	import * as vscode from 'vscode';
 	export const enum extension {
 		name = 'Microsoft.data-workspace',
-		vscodeName = 'Microsoft.data-workspace-vscode'
+		vscodeName = 'ms-mssql.data-workspace-vscode'
 	}
 
 	/**
@@ -129,6 +129,16 @@ declare module 'dataworkspace' {
 		 * Gets the default target platform
 		 */
 		readonly defaultTargetPlatform?: string;
+
+		/**
+		 * Link display value for a link at the end of the project description. linkLocation also needs to be set to use this
+		 */
+		readonly linkDisplayValue?: string;
+
+		/**
+		 * Location where clicking on the linkDisplayValue will go to
+		 */
+		readonly linkLocation?: string
 	}
 
 	/**

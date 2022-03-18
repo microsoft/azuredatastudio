@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Risultato della ricerca",
-			"description": "Fornisce l'evidenziazione della sintassi e le funzionalità del linguaggio per i risultati della ricerca a schede."
+			"description": "Fornisce l'evidenziazione della sintassi e le funzionalità del linguaggio per i risultati della ricerca a schede.",
+			"displayName": "Risultato della ricerca"
 		}
 	}
 }

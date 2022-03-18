@@ -47,7 +47,7 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 				const errorMsg = localize('azure.resource.tenantSubscriptionsError', "Failed to get subscriptions for account {0} (tenant '{1}'). {2}", account.key.accountId, tenantId, AzureResourceErrorMessageUtil.getErrorMessage(error));
 				console.warn(errorMsg);
 				errors.push(error);
-				vscode.window.showWarningMessage(errorMsg);
+				void vscode.window.showWarningMessage(errorMsg);
 			}
 		}
 		if (!gotSubscriptions) {

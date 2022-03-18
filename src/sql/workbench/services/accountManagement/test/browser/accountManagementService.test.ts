@@ -120,9 +120,9 @@ suite('Account Management Service Tests:', () => {
 				// ... The account list was updated
 				state.eventVerifierUpdate.assertFiredWithVerify((params: UpdateAccountListEventParams | undefined) => {
 					assert.ok(params);
-					assert.equal(params!.providerId, hasAccountProvider.id);
+					assert.strictEqual(params!.providerId, hasAccountProvider.id);
 					assert.ok(Array.isArray(params!.accountList));
-					assert.equal(params!.accountList.length, 1);
+					assert.strictEqual(params!.accountList.length, 1);
 				});
 			});
 	});
@@ -159,10 +159,10 @@ suite('Account Management Service Tests:', () => {
 				// ... The account list change should have been fired
 				state.eventVerifierUpdate.assertFiredWithVerify(param => {
 					assert.ok(param);
-					assert.equal(param!.providerId, hasAccountProvider.id);
+					assert.strictEqual(param!.providerId, hasAccountProvider.id);
 					assert.ok(Array.isArray(param!.accountList));
-					assert.equal(param!.accountList.length, 1);
-					assert.equal(param!.accountList[0], account);
+					assert.strictEqual(param!.accountList.length, 1);
+					assert.strictEqual(param!.accountList[0], account);
 				});
 			});
 	});
@@ -199,10 +199,10 @@ suite('Account Management Service Tests:', () => {
 				// ... The account list change should have been fired
 				state.eventVerifierUpdate.assertFiredWithVerify(param => {
 					assert.ok(param);
-					assert.equal(param!.providerId, hasAccountProvider.id);
+					assert.strictEqual(param!.providerId, hasAccountProvider.id);
 					assert.ok(Array.isArray(param!.accountList));
-					assert.equal(param!.accountList.length, 1);
-					assert.equal(param!.accountList[0], account);
+					assert.strictEqual(param!.accountList.length, 1);
+					assert.strictEqual(param!.accountList[0], account);
 				});
 			});
 	});
@@ -258,8 +258,8 @@ suite('Account Management Service Tests:', () => {
 			.then(result => {
 				// Then: The list should have the one account provider in it
 				assert.ok(Array.isArray(result));
-				assert.equal(result.length, 1);
-				assert.equal(result[0], noAccountProvider);
+				assert.strictEqual(result.length, 1);
+				assert.strictEqual(result[0], noAccountProvider);
 			});
 	});
 
@@ -272,7 +272,7 @@ suite('Account Management Service Tests:', () => {
 			.then(result => {
 				// Then: The results should be an empty array
 				assert.ok(Array.isArray(result));
-				assert.equal(result.length, 0);
+				assert.strictEqual(result.length, 0);
 			});
 	});
 
@@ -302,7 +302,7 @@ suite('Account Management Service Tests:', () => {
 			.then(result => {
 				// Then: I should get back an empty array
 				assert.ok(Array.isArray(result));
-				assert.equal(result.length, 0);
+				assert.strictEqual(result.length, 0);
 			});
 	});
 
@@ -319,7 +319,7 @@ suite('Account Management Service Tests:', () => {
 		return ams.getAccountsForProvider(hasAccountProvider.id)
 			.then(result => {
 				// Then: I should get back the list of accounts
-				assert.equal(result, accountList);
+				assert.strictEqual(result, accountList);
 			});
 	});
 
@@ -355,9 +355,9 @@ suite('Account Management Service Tests:', () => {
 				// ... The updated account list event should have fired
 				state.eventVerifierUpdate.assertFiredWithVerify((params: UpdateAccountListEventParams | undefined) => {
 					assert.ok(params);
-					assert.equal(params!.providerId, hasAccountProvider.id);
+					assert.strictEqual(params!.providerId, hasAccountProvider.id);
 					assert.ok(Array.isArray(params!.accountList));
-					assert.equal(params!.accountList.length, 0);
+					assert.strictEqual(params!.accountList.length, 0);
 				});
 			});
 	});
@@ -490,9 +490,9 @@ suite('Account Management Service Tests:', () => {
 				// ... The provider added event should have fired
 				mocks.eventVerifierProviderAdded.assertFiredWithVerify((param: AccountProviderAddedEventParams | undefined) => {
 					assert.ok(param);
-					assert.equal(param!.addedProvider, noAccountProvider);
+					assert.strictEqual(param!.addedProvider, noAccountProvider);
 					assert.ok(Array.isArray(param!.initialAccounts));
-					assert.equal(param!.initialAccounts.length, 0);
+					assert.strictEqual(param!.initialAccounts.length, 0);
 				});
 			});
 	});

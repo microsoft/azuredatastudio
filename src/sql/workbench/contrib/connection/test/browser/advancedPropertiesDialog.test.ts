@@ -99,6 +99,6 @@ suite('Advanced properties dialog tests', () => {
 		});
 		advancedController.advancedDialog = advanceDialog.object;
 		advancedController.showDialog(providerOptions, options);
-		assert.equal(isAdvancedDialogCalled, true);
+		assert.strictEqual(isAdvancedDialogCalled, true);
 	});
 });

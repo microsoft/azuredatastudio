@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
-import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { IEditorOpenContext } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -27,7 +27,7 @@ import { NotebookFindNextAction, NotebookFindPreviousAction } from 'sql/workbenc
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellEditModes, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { IDisposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IModelDecorationsChangeAccessor, IModelDeltaDecoration } from 'vs/editor/common/model';
@@ -35,6 +35,7 @@ import { NotebookFindDecorations } from 'sql/workbench/contrib/notebook/browser/
 import { TimeoutTimer } from 'vs/base/common/async';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
 
 export class NotebookEditor extends EditorPane implements IFindNotebookController {
 
@@ -83,7 +84,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 	}
 
 	private get _findDecorations(): NotebookFindDecorations {
-		return this.notebookInput.notebookFindModel.findDecorations;
+		return this.notebookInput?.notebookFindModel?.findDecorations;
 	}
 
 	public getPosition(): NotebookRange {
@@ -190,7 +191,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 		}
 	}
 
-	public override async setInput(input: NotebookInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
+	public override async setInput(input: NotebookInput, options: IEditorOptions, context: IEditorOpenContext): Promise<void> {
 		if (this.input && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}
@@ -379,8 +380,8 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 					this._onFindStateChange(changeEvent).catch(onUnexpectedError);
 				}
 			}));
-			this._register(cell.onCellMarkdownModeChanged(e => {
-				if (e) {
+			this._register(cell.onCurrentEditModeChanged(editMode => {
+				if (editMode !== CellEditModes.WYSIWYG) {
 					this._onFindStateChange(changeEvent).catch(onUnexpectedError);
 				}
 			}));
@@ -431,9 +432,11 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 	public async findNext(): Promise<void> {
 		try {
 			const p = await this.notebookFindModel.findNext();
-			this.setSelection(p);
-			this._updateFinderMatchState();
-			this._setCurrentFindMatch(p);
+			if (p !== this._currentMatch) {
+				this.setSelection(p);
+				this._updateFinderMatchState();
+				this._setCurrentFindMatch(p);
+			}
 		} catch (er) {
 			onUnexpectedError(er);
 		}
@@ -442,9 +445,11 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 	public async findPrevious(): Promise<void> {
 		try {
 			const p = await this.notebookFindModel.findPrevious();
-			this.setSelection(p);
-			this._updateFinderMatchState();
-			this._setCurrentFindMatch(p);
+			if (p !== this._currentMatch) {
+				this.setSelection(p);
+				this._updateFinderMatchState();
+				this._setCurrentFindMatch(p);
+			}
 		} catch (er) {
 			onUnexpectedError(er);
 		}

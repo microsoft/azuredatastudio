@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Tema Azul da Noite de Amanhã",
 			"description": "Tema azul da noite de amanhã do Visual Studio Code",
+			"displayName": "Tema Azul da Noite de Amanhã",
 			"themeLabel": "Noite Azul de Amanhã"
 		}
 	}

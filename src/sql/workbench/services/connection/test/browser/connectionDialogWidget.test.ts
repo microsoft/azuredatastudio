@@ -65,7 +65,7 @@ suite('ConnectionDialogWidget tests', () => {
 			new TestCapabilitiesService());
 		let providerDisplayNames = ['Mock SQL Server'];
 		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };
-		connectionDialogWidget = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, cmInstantiationService, mockConnectionManagementService.object, undefined, undefined, viewDescriptorService, new TestThemeService(), new TestLayoutService(), new NullAdsTelemetryService(), new MockContextKeyService(), undefined, new NullLogService(), new TestTextResourcePropertiesService(new TestConfigurationService()), new TestConfigurationService());
+		connectionDialogWidget = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, cmInstantiationService, mockConnectionManagementService.object, undefined, undefined, viewDescriptorService, new TestThemeService(), new TestLayoutService(), new NullAdsTelemetryService(), new MockContextKeyService(), undefined, new NullLogService(), new TestTextResourcePropertiesService(new TestConfigurationService()), new TestConfigurationService(), new TestCapabilitiesService());
 		element = DOM.createStyleSheet();
 		connectionDialogWidget.render();
 		connectionDialogWidget['renderBody'](element);
@@ -76,8 +76,8 @@ suite('ConnectionDialogWidget tests', () => {
 	});
 
 	test('renderBody should have attached a connection dialog body onto element', () => {
-		assert.equal(element.childElementCount, 1);
-		assert.equal(element.children[0].className, 'connection-dialog');
+		assert.strictEqual(element.childElementCount, 1);
+		assert.strictEqual(element.children[0].className, 'connection-dialog');
 	});
 
 	test('updateConnectionProviders should update connection providers', () => {
@@ -87,7 +87,7 @@ suite('ConnectionDialogWidget tests', () => {
 			return getUniqueConnectionProvidersByNameMap(providerNameToDisplayMap);
 		});
 		connectionDialogWidget.updateConnectionProviders(providerDisplayNames, providerNameToDisplayMap);
-		assert.equal(connectionDialogWidget.getDisplayNameFromProviderName('PGSQL'), providerNameToDisplayMap['PGSQL']);
+		assert.strictEqual(connectionDialogWidget.getDisplayNameFromProviderName('PGSQL'), providerNameToDisplayMap['PGSQL']);
 	});
 
 	test('setting newConnectionParams test for connectionDialogWidget', () => {
@@ -109,7 +109,7 @@ suite('ConnectionDialogWidget tests', () => {
 			return getUniqueConnectionProvidersByNameMap(providerNameToDisplayMap);
 		});
 		connectionDialogWidget.newConnectionParams = params;
-		assert.equal(connectionDialogWidget.newConnectionParams, params);
+		assert.strictEqual(connectionDialogWidget.newConnectionParams, params);
 	});
 
 	test('open should call onInitDialog', async () => {
@@ -176,8 +176,8 @@ suite('ConnectionDialogWidget tests', () => {
 		});
 		let providerDisplayName = 'Mock SQL Server';
 		connectionDialogWidget.updateProvider(providerDisplayName);
-		assert.equal(returnedDisplayName, providerDisplayName);
-		assert.equal(returnedContainer.className, 'connection-provider-info');
+		assert.strictEqual(returnedDisplayName, providerDisplayName);
+		assert.strictEqual(returnedContainer.className, 'connection-provider-info');
 		assert(called);
 	});
 });

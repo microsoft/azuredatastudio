@@ -11,22 +11,29 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
 
-import * as azdata from 'azdata';
-import * as vscode from 'vscode';
+import type * as azdata from 'azdata';
+import type * as vscode from 'vscode';
+import type * as azurecore from 'azurecore';
 
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/workbench/services/tasks/common/tasks';
 import {
 	IItemConfig, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
-	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, INotebookSessionDetails,
-	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, ISingleNotebookEditOperation,
-	NotebookChangeKind
+	IModelViewWizardDetails, IModelViewWizardPageDetails, IExecuteManagerDetails, INotebookSessionDetails,
+	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, INotebookEditOperation,
+	NotebookChangeKind,
+	ISerializationManagerDetails
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
 import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { TreeDataTransferDTO } from 'vs/workbench/api/common/shared/treeDataTransfer';
+import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+
+export abstract class ExtHostAzureAccountShape {
+	public $getSubscriptions(account: azurecore.AzureAccount, ignoreErrors?: boolean, selectedOnly?: boolean): Thenable<azurecore.GetSubscriptionsResult> { throw ni(); }
+}
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -192,6 +199,11 @@ export abstract class ExtHostDataProtocolShape {
 	 * Disposes the cached information regarding a query
 	 */
 	$disposeQuery(handle: number, ownerUri: string): Thenable<void> { throw ni(); }
+
+	/**
+	 * Notifies the client that the URI associated with a connection has changed
+	 */
+	$connectionUriChanged(handle: number, newUri: string, oldUri: string): Thenable<void> { throw ni(); }
 
 	/**
 	 * Refreshes the IntelliSense cache
@@ -520,6 +532,41 @@ export abstract class ExtHostDataProtocolShape {
 	 * Gets the list of columns for a data grid
 	 */
 	$getDataGridColumns(handle: number): Thenable<azdata.DataGridColumn[]> { throw ni(); }
+
+	/**
+	 * Gets the table designer info for the specified table
+	 */
+	$initializeTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> { throw ni(); }
+
+	/**
+	 * Process the table edit.
+	 */
+	$processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> { throw ni(); }
+
+	/**
+	 * Publish the table designer changes.
+	 */
+	$publishTableDesignerChanges(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.PublishChangesResult> { throw ni(); }
+
+	/**
+	 * Generate scripts.
+	 */
+	$generateScriptForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> { throw ni(); }
+
+	/**
+	 * Generate preview report.
+	 */
+	$generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> { throw ni(); }
+
+	/**
+	 * Dispose the table designer.
+	 */
+	$disposeTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<void> { throw ni(); }
+
+	/**
+	 * Open a new instance of table designer.
+	 */
+	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): void { throw ni(); }
 }
 
 /**
@@ -561,6 +608,10 @@ export interface MainThreadAccountManagementShape extends IDisposable {
 	$getAccountsForProvider(providerId: string): Thenable<azdata.Account[]>;
 }
 
+export interface MainThreadAzureAccountShape extends IDisposable {
+
+}
+
 export interface MainThreadResourceProviderShape extends IDisposable {
 	$registerResourceProvider(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any>;
 	$unregisterResourceProvider(handle: number): Thenable<any>;
@@ -585,6 +636,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerSerializationProvider(providerId: string, handle: number): Promise<any>;
 	$registerSqlAssessmentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerDataGridProvider(providerId: string, title: string, handle: number): void;
+	$registerTableDesignerProvider(providerId: string, handle: number): Promise<any>;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
@@ -608,6 +660,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onSessionStopped(handle: number, response: azdata.ProfilerSessionStoppedParams): void;
 	$onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void;
 	$onJobDataUpdated(handle: Number): void;
+	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): void;
 
 	/**
 	 * Callback when a session has completed initialization
@@ -644,6 +697,7 @@ function ni() { return new Error('Not implemented'); }
 export const SqlMainContext = {
 	// SQL entries
 	MainThreadAccountManagement: createMainId<MainThreadAccountManagementShape>('MainThreadAccountManagement'),
+	MainThreadAzureAccount: createMainId<MainThreadAzureAccountShape>('MainThreadAzureAccount'),
 	MainThreadConnectionManagement: createMainId<MainThreadConnectionManagementShape>('MainThreadConnectionManagement'),
 	MainThreadCredentialManagement: createMainId<MainThreadCredentialManagementShape>('MainThreadCredentialManagement'),
 	MainThreadDataProtocol: createMainId<MainThreadDataProtocolShape>('MainThreadDataProtocol'),
@@ -665,6 +719,7 @@ export const SqlMainContext = {
 
 export const SqlExtHostContext = {
 	ExtHostAccountManagement: createExtId<ExtHostAccountManagementShape>('ExtHostAccountManagement'),
+	ExtHostAzureAccount: createExtId<ExtHostAzureAccountShape>('ExtHostAzureAccount'),
 	ExtHostConnectionManagement: createExtId<ExtHostConnectionManagementShape>('ExtHostConnectionManagement'),
 	ExtHostCredentialManagement: createExtId<ExtHostCredentialManagementShape>('ExtHostCredentialManagement'),
 	ExtHostDataProtocol: createExtId<ExtHostDataProtocolShape>('ExtHostDataProtocol'),
@@ -818,6 +873,7 @@ export interface ExtHostModelViewDialogShape {
 	$validateNavigation(handle: number, info: azdata.window.WizardPageChangeInfo): Thenable<boolean>;
 	$validateDialogClose(handle: number): Thenable<boolean>;
 	$handleSave(handle: number): Thenable<boolean>;
+	$onClosed(handle: number, reason: azdata.window.CloseReason): void;
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {
@@ -853,12 +909,12 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 }
 
 export interface ExtHostNotebookShape {
-
 	/**
 	 * Looks up a notebook manager for a given notebook URI
 	 * @returns handle of the manager to be used when sending
 	 */
-	$getNotebookManager(providerHandle: number, notebookUri: UriComponents): Thenable<INotebookManagerDetails>;
+	$getSerializationManagerDetails(providerHandle: number, notebookUri: UriComponents): Thenable<ISerializationManagerDetails>;
+	$getExecuteManagerDetails(providerHandle: number, notebookUri: UriComponents): Thenable<IExecuteManagerDetails>;
 	$handleNotebookClosed(notebookUri: UriComponents): void;
 
 	// Server Manager APIs
@@ -866,8 +922,8 @@ export interface ExtHostNotebookShape {
 	$doStopServer(managerHandle: number): Thenable<void>;
 
 	// Content Manager APIs
-	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<azdata.nb.INotebookContents>;
-	$save(managerHandle: number, notebookUri: UriComponents, notebook: azdata.nb.INotebookContents): Thenable<azdata.nb.INotebookContents>;
+	$deserializeNotebook(managerHandle: number, contents: string): Thenable<azdata.nb.INotebookContents>;
+	$serializeNotebook(managerHandle: number, notebook: azdata.nb.INotebookContents): Thenable<string>;
 
 	// Session Manager APIs
 	$refreshSpecs(managerHandle: number): Thenable<azdata.nb.IAllKernels>;
@@ -894,10 +950,14 @@ export interface ExtHostNotebookShape {
 }
 
 export interface MainThreadNotebookShape extends IDisposable {
-	$registerNotebookProvider(providerId: string, handle: number): void;
-	$unregisterNotebookProvider(handle: number): void;
+	$registerSerializationProvider(providerId: string, handle: number): void;
+	$registerExecuteProvider(providerId: string, handle: number): void;
+	$unregisterSerializationProvider(handle: number): void;
+	$unregisterExecuteProvider(handle: number): void;
 	$onFutureMessage(futureId: number, type: FutureMessageType, payload: azdata.nb.IMessage): void;
 	$onFutureDone(futureId: number, done: INotebookFutureDone): void;
+	$updateProviderKernels(providerId: string, languages: azdata.nb.IStandardKernel[]): void;
+	$updateKernelLanguages(providerId: string, kernelName: string, languages: string[]): void;
 }
 
 export interface INotebookDocumentsAndEditorsDelta {
@@ -952,8 +1012,9 @@ export interface ExtHostNotebookDocumentsAndEditorsShape {
 export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable {
 	$trySetTrusted(_uri: UriComponents, isTrusted: boolean): Thenable<boolean>;
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
+	$tryCreateNotebookDocument(options: INotebookShowOptions): Promise<UriComponents>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string>;
-	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
+	$tryApplyEdits(id: string, modelVersionId: number, edits: INotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
 	$runCell(id: string, cellUri: UriComponents): Promise<boolean>;
 	$runAllCells(id: string, startCellUri?: UriComponents, endCellUri?: UriComponents): Promise<boolean>;
 	$clearOutput(id: string, cellUri: UriComponents): Promise<boolean>;

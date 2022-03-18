@@ -9,7 +9,7 @@ import * as es from 'event-stream';
 import * as fs from 'fs';
 import * as gulp from 'gulp';
 import * as path from 'path';
-import * as monacodts from '../monaco/api';
+import * as monacodts from './monaco-api';
 import * as nls from './nls';
 import { createReporter } from './reporter';
 import * as util from './util';
@@ -44,6 +44,9 @@ function createCompile(src: string, build: boolean, emitError?: boolean) {
 
 	const projectPath = path.join(__dirname, '../../', src, 'tsconfig.json');
 	const overrideOptions = { ...getTypeScriptCompilerOptions(src), inlineSources: Boolean(build) };
+	if (!build) {
+		overrideOptions.inlineSourceMap = true;
+	}
 
 	const compilation = tsb.create(projectPath, overrideOptions, false, err => reporter(err));
 

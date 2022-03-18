@@ -1,202 +1,62 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/kusto/package" source-language="en" datatype="plaintext" target-language="pt-BR">
+  <file original="extensions/kusto/dist/features" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
-      <trans-unit id="notebook.command.new">
-        <source xml:lang="en">New Notebook</source>
-        <target state="translated">Novo Notebook</target>
+      <trans-unit id="kusto.accountDoesNotExist">
+        <source xml:lang="en">Account does not exist.</source>
+        <target state="translated">Conta não existe.</target>
       </trans-unit>
-      <trans-unit id="notebook.command.open">
-        <source xml:lang="en">Open Notebook</source>
-        <target state="translated">Abrir Notebook</target>
+      <trans-unit id="kusto.insufficientlyPrivelagedAzureAccount">
+        <source xml:lang="en">The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.</source>
+        <target state="translated">A conta do Azure configurada para {0} não tem permissões suficientes para o Azure Key Vault para acessar uma chave mestra de coluna para Always Encrypted.</target>
       </trans-unit>
-      <trans-unit id="cloud.databaseProperties.name">
-        <source xml:lang="en">Database Name</source>
-        <target state="translated">Nome do Banco de dados</target>
-      </trans-unit>
-      <trans-unit id="cloud.databaseProperties.size">
-        <source xml:lang="en">Size (MB)</source>
-        <target state="translated">Tamanho (MB)</target>
-      </trans-unit>
-      <trans-unit id="cloud.serverProperties.summary">
-        <source xml:lang="en">Status</source>
-        <target state="translated">Status</target>
-      </trans-unit>
-      <trans-unit id="cloud.serverProperties.machinesTotal">
-        <source xml:lang="en">Total Machines in the cluster</source>
-        <target state="translated">Total de Máquinas no cluster</target>
-      </trans-unit>
-      <trans-unit id="cloud.serverProperties.diskCacheCapacity">
-        <source xml:lang="en">% of Cluster data capacity used</source>
-        <target state="translated">% da capacidade de dados do cluster usada</target>
-      </trans-unit>
-      <trans-unit id="databasesListProperties.name">
-        <source xml:lang="en">Name</source>
-        <target state="translated">Nome</target>
-      </trans-unit>
-      <trans-unit id="databasesListProperties.size">
-        <source xml:lang="en">Size (MB)</source>
-        <target state="translated">Tamanho (MB)</target>
-      </trans-unit>
-      <trans-unit id="objectsListProperties.name">
-        <source xml:lang="en">Name</source>
-        <target state="translated">Nome</target>
-      </trans-unit>
-      <trans-unit id="objectsListProperties.metadataTypeName">
-        <source xml:lang="en">Type</source>
-        <target state="translated">Tipo</target>
-      </trans-unit>
-      <trans-unit id="kusto.configuration.title">
-        <source xml:lang="en">KUSTO configuration</source>
-        <target state="translated">Configuração KUSTO</target>
-      </trans-unit>
-      <trans-unit id="kusto.query.displayBitAsNumber">
-        <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
-        <target state="translated">Colunas do tipo BIT devem ser exibidas como números (1 ou 0)? Se false, colunas do tipo BIT serão exibidas como 'true' ou 'false'</target>
-      </trans-unit>
-      <trans-unit id="kusto.format.alignColumnDefinitionsInColumns">
-        <source xml:lang="en">Should column definitions be aligned?</source>
-        <target state="translated">Definições de coluna devem ser alinhadas?</target>
-      </trans-unit>
-      <trans-unit id="kusto.format.datatypeCasing">
-        <source xml:lang="en">Should data types be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
-        <target state="translated">Tipos de dados devem ser formatados como letras MAIÚSCULAS, minúsculas ou nenhum (não formatado)?</target>
-      </trans-unit>
-      <trans-unit id="kusto.format.keywordCasing">
-        <source xml:lang="en">Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
-        <target state="translated">Palavras-chave devem ser formatadas como letras MAIÚSCULAS, minúsculas ou nenhum (não formatado)?</target>
-      </trans-unit>
-      <trans-unit id="kusto.logDebugInfo">
-        <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
-        <target state="translated">[Opcional] Registre a saída da depuração no console (Exibir -&gt; Saída) e, em seguida, selecione o canal de saída apropriado no menu suspenso</target>
-      </trans-unit>
-      <trans-unit id="kusto.tracingLevel">
-        <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-        <target state="translated">[Opcional] Registre o nível para serviços de back-end. O Azure Data Studio gera um nome de arquivo sempre que é iniciado e, quando o arquivo já existe, as entradas de logs são acrescentadas a esse arquivo. Para a limpeza de arquivos de log antigos, confira as configurações logRetentionMinutes e logFilesRemovalLimit. O tracingLevel padrão não registra uma grande quantidade de log. A alteração de detalhamento pode levar ao aumento dos requisitos de log e de espaço em disco para os logs. Erro inclui Crítico, Aviso inclui Erro, informações incluem Aviso e Detalhado inclui Informações</target>
-      </trans-unit>
-      <trans-unit id="kusto.provider.displayName">
-        <source xml:lang="en">Azure Data Explorer (Kusto)</source>
-        <target state="translated">Azure Data Explorer (Kusto)</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.connectionName.displayName">
-        <source xml:lang="en">Name (optional)</source>
-        <target state="translated">Nome (opcional)</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.connectionName.description">
-        <source xml:lang="en">Custom name of the connection</source>
-        <target state="translated">Nome personalizado da conexão</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.serverName.displayName">
-        <source xml:lang="en">Cluster</source>
-        <target state="translated">Cluster</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.serverName.description">
-        <source xml:lang="en">Kusto cluster name</source>
-        <target state="translated">Nome do cluster Kusto</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.databaseName.displayName">
-        <source xml:lang="en">Database</source>
-        <target state="translated">Base de dados</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.databaseName.description">
-        <source xml:lang="en">The name of the initial catalog or database in the data source</source>
-        <target state="translated">O nome do catálogo ou banco de dados inicial na fonte de dados</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.authType.displayName">
-        <source xml:lang="en">Authentication type</source>
-        <target state="translated">Tipo de Autenticação</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.authType.description">
-        <source xml:lang="en">Specifies the method of authenticating with Kusto Server</source>
-        <target state="translated">Especifica o método de autenticação com o servidor Kusto</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.authType.categoryValues.azureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory – Universal com suporte para MFA</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.authType.categoryValues.none">
-        <source xml:lang="en">No Authentication</source>
-        <target state="translated">Sem Autenticação</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.authType.categoryValues.sqlLogin">
-        <source xml:lang="en">User Authentication</source>
-        <target state="translated">Autenticação de usuário</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.userName.displayName">
-        <source xml:lang="en">User name</source>
-        <target state="translated">Nome do usuário</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.userName.description">
-        <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
-        <target state="translated">Indica a ID de usuário a ser usada ao conectar-se à fonte de dados</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.password.displayName">
-        <source xml:lang="en">Password</source>
-        <target state="translated">Senha</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.password.description">
-        <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
-        <target state="translated">Indica a senha a ser usada ao conectar-se à fonte de dados</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.connectTimeout.displayName">
-        <source xml:lang="en">Connect timeout</source>
-        <target state="translated">Tempo limite de conexão</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.connectTimeout.description">
-        <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
-        <target state="translated">O período de tempo (em segundos) para aguardar uma conexão com o servidor antes de encerrar a tentativa e gerar um erro</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.connectRetryCount.displayName">
-        <source xml:lang="en">Connect retry count</source>
-        <target state="translated">Contagem de tentativas de conexão</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.connectRetryCount.description">
-        <source xml:lang="en">Number of attempts to restore connection</source>
-        <target state="translated">Número de tentativas para restaurar a conexão</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.connectRetryInterval.displayName">
-        <source xml:lang="en">Connect retry interval</source>
-        <target state="translated">Intervalo de tentativa de conexão</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.connectRetryInterval.description">
-        <source xml:lang="en">Delay between attempts to restore connection</source>
-        <target state="translated">Atraso entre as tentativas de restauração de conexão</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.applicationName.displayName">
-        <source xml:lang="en">Application name</source>
-        <target state="translated">Nome da Aplicação</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.applicationName.description">
-        <source xml:lang="en">The name of the application</source>
-        <target state="translated">O nome do aplicativo</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.workstationId.displayName">
-        <source xml:lang="en">Workstation Id</source>
-        <target state="translated">Id da Estação de trabalho</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.workstationId.description">
-        <source xml:lang="en">The name of the workstation connecting to Kusto Server</source>
-        <target state="translated">O nome da estação de trabalho conectada ao Servidor Kusto</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.failoverPartner.displayName">
-        <source xml:lang="en">Failover partner</source>
-        <target state="translated">Parceiro de failover</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.failoverPartner.description">
-        <source xml:lang="en">The name or network address of the instance of Kusto Server that acts as a failover partner</source>
-        <target state="translated">O nome ou endereço de rede da instância do Servidor Kusto que atua como um parceiro de failover</target>
+      <trans-unit id="kusto.missingLinkedAzureAccount">
+        <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.</source>
+        <target state="translated">O Azure Data Studio precisa entrar em contato com o Azure Key Vault para acessar uma chave mestra de coluna para Always Encrypted, mas nenhuma conta vinculada do Azure está disponível. Adicione uma conta vinculada do Azure e tente a consulta novamente.</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/kusto/dist/telemetry" source-language="en" datatype="plaintext" target-language="pt-BR">
+  <file original="extensions/kusto/dist/kustoServer" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
-      <trans-unit id="viewKnownIssuesText">
-        <source xml:lang="en">View Known Issues</source>
-        <target state="translated">Exibir Problemas Conhecidos</target>
+      <trans-unit id="downloadServiceDoneChannelMsg">
+        <source xml:lang="en">Done installing {0}</source>
+        <target state="translated">Concluída a instalação de {0}</target>
       </trans-unit>
-      <trans-unit id="serviceCrashMessage">
-        <source xml:lang="en">{0} component exited unexpectedly. Please restart Azure Data Studio.</source>
-        <target state="translated">O componente {0} foi encerrado inesperadamente. Reinicie o Azure Data Studio.</target>
+      <trans-unit id="downloadingServiceChannelMsg">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">Baixando {0}</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceSizeChannelMsg">
+        <source xml:lang="en">({0} KB)</source>
+        <target state="translated">({0} KB)</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceStatusMsg">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">Baixando {0}</target>
+      </trans-unit>
+      <trans-unit id="failedToStartServiceErrorMsg">
+        <source xml:lang="en">Failed to start {0}</source>
+        <target state="translated">Falha ao iniciar o {0}</target>
+      </trans-unit>
+      <trans-unit id="installedServiceChannelMsg">
+        <source xml:lang="en">Installed {0}</source>
+        <target state="translated">Instalado {0}</target>
+      </trans-unit>
+      <trans-unit id="installingServiceChannelMsg">
+        <source xml:lang="en">Installing {0} to {1}</source>
+        <target state="translated">Instalando {0} para {1}</target>
+      </trans-unit>
+      <trans-unit id="installingServiceStatusMsg">
+        <source xml:lang="en">Installing {0}</source>
+        <target state="translated">Instalando {0}</target>
+      </trans-unit>
+      <trans-unit id="serviceStartedStatusMsg">
+        <source xml:lang="en">{0} Started</source>
+        <target state="translated">{0} Iniciado</target>
+      </trans-unit>
+      <trans-unit id="startingServiceStatusMsg">
+        <source xml:lang="en">Starting {0}</source>
+        <target state="translated">A partir de {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -216,12 +76,28 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/kusto/dist/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="cancel">
+        <source xml:lang="en">Cancel operation?</source>
+        <target state="translated">Cancelar operação?</target>
+      </trans-unit>
+      <trans-unit id="cancelTooltip">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Cancelar</target>
+      </trans-unit>
+      <trans-unit id="kusto.searchServers">
+        <source xml:lang="en">Search Server Names</source>
+        <target state="translated">Nomes de Servidores de Pesquisa</target>
+      </trans-unit>
+      <trans-unit id="progress">
+        <source xml:lang="en">$(sync~spin) {0}...</source>
+        <target state="translated">$(sync~spin) {0}...</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/kusto/dist/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
-      <trans-unit id="sessionNotFound">
-        <source xml:lang="en">Session for node {0} does not exist</source>
-        <target state="translated">A sessão para o nó {0} não existe</target>
-      </trans-unit>
       <trans-unit id="notifyError">
         <source xml:lang="en">Error notifying of node change: {0}</source>
         <target state="translated">Erro ao notificar a alteração de nó: {0}</target>
@@ -230,85 +106,229 @@
         <source xml:lang="en">Root</source>
         <target state="translated">Raiz</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/kusto/dist/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext" target-language="pt-BR">
-    <body>
-      <trans-unit id="progress">
-        <source xml:lang="en">$(sync~spin) {0}...</source>
-        <target state="translated">$(sync~spin) {0}...</target>
-      </trans-unit>
-      <trans-unit id="cancelTooltip">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">Cancelar</target>
-      </trans-unit>
-      <trans-unit id="cancel">
-        <source xml:lang="en">Cancel operation?</source>
-        <target state="translated">Cancelar operação?</target>
-      </trans-unit>
-      <trans-unit id="kusto.searchServers">
-        <source xml:lang="en">Search Server Names</source>
-        <target state="translated">Nomes de Servidores de Pesquisa</target>
+      <trans-unit id="sessionNotFound">
+        <source xml:lang="en">Session for node {0} does not exist</source>
+        <target state="translated">A sessão para o nó {0} não existe</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/kusto/dist/kustoServer" source-language="en" datatype="plaintext" target-language="pt-BR">
+  <file original="extensions/kusto/dist/telemetry" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
-      <trans-unit id="serviceStartedStatusMsg">
-        <source xml:lang="en">{0} Started</source>
-        <target state="translated">{0} Iniciado</target>
+      <trans-unit id="serviceCrashMessage">
+        <source xml:lang="en">{0} component exited unexpectedly. Please restart Azure Data Studio.</source>
+        <target state="translated">O componente {0} foi encerrado inesperadamente. Reinicie o Azure Data Studio.</target>
       </trans-unit>
-      <trans-unit id="startingServiceStatusMsg">
-        <source xml:lang="en">Starting {0}</source>
-        <target state="translated">A partir de {0}</target>
-      </trans-unit>
-      <trans-unit id="failedToStartServiceErrorMsg">
-        <source xml:lang="en">Failed to start {0}</source>
-        <target state="translated">Falha ao iniciar o {0}</target>
-      </trans-unit>
-      <trans-unit id="installingServiceChannelMsg">
-        <source xml:lang="en">Installing {0} to {1}</source>
-        <target state="translated">Instalando {0} para {1}</target>
-      </trans-unit>
-      <trans-unit id="installingServiceStatusMsg">
-        <source xml:lang="en">Installing {0}</source>
-        <target state="translated">Instalando {0}</target>
-      </trans-unit>
-      <trans-unit id="installedServiceChannelMsg">
-        <source xml:lang="en">Installed {0}</source>
-        <target state="translated">Instalado {0}</target>
-      </trans-unit>
-      <trans-unit id="downloadingServiceChannelMsg">
-        <source xml:lang="en">Downloading {0}</source>
-        <target state="translated">Baixando {0}</target>
-      </trans-unit>
-      <trans-unit id="downloadingServiceSizeChannelMsg">
-        <source xml:lang="en">({0} KB)</source>
-        <target state="translated">({0} KB)</target>
-      </trans-unit>
-      <trans-unit id="downloadingServiceStatusMsg">
-        <source xml:lang="en">Downloading {0}</source>
-        <target state="translated">Baixando {0}</target>
-      </trans-unit>
-      <trans-unit id="downloadServiceDoneChannelMsg">
-        <source xml:lang="en">Done installing {0}</source>
-        <target state="translated">Concluída a instalação de {0}</target>
+      <trans-unit id="viewKnownIssuesText">
+        <source xml:lang="en">View Known Issues</source>
+        <target state="translated">Exibir Problemas Conhecidos</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/kusto/dist/features" source-language="en" datatype="plaintext" target-language="pt-BR">
+  <file original="extensions/kusto/package" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
-      <trans-unit id="kusto.missingLinkedAzureAccount">
-        <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.</source>
-        <target state="translated">O Azure Data Studio precisa entrar em contato com o Azure Key Vault para acessar uma chave mestra de coluna para Always Encrypted, mas nenhuma conta vinculada do Azure está disponível. Adicione uma conta vinculada do Azure e tente a consulta novamente.</target>
+      <trans-unit id="cloud.databaseProperties.name">
+        <source xml:lang="en">Database Name</source>
+        <target state="translated">Nome do Banco de dados</target>
       </trans-unit>
-      <trans-unit id="kusto.accountDoesNotExist">
-        <source xml:lang="en">Account does not exist.</source>
-        <target state="translated">Conta não existe.</target>
+      <trans-unit id="cloud.databaseProperties.size">
+        <source xml:lang="en">Size (MB)</source>
+        <target state="translated">Tamanho (MB)</target>
       </trans-unit>
-      <trans-unit id="kusto.insufficientlyPrivelagedAzureAccount">
-        <source xml:lang="en">The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.</source>
-        <target state="translated">A conta do Azure configurada para {0} não tem permissões suficientes para o Azure Key Vault para acessar uma chave mestra de coluna para Always Encrypted.</target>
+      <trans-unit id="cloud.serverProperties.diskCacheCapacity">
+        <source xml:lang="en">% of Cluster data capacity used</source>
+        <target state="translated">% da capacidade de dados do cluster usada</target>
+      </trans-unit>
+      <trans-unit id="cloud.serverProperties.machinesTotal">
+        <source xml:lang="en">Total Machines in the cluster</source>
+        <target state="translated">Total de Máquinas no cluster</target>
+      </trans-unit>
+      <trans-unit id="cloud.serverProperties.summary">
+        <source xml:lang="en">Status</source>
+        <target state="translated">Status</target>
+      </trans-unit>
+      <trans-unit id="databasesListProperties.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Nome</target>
+      </trans-unit>
+      <trans-unit id="databasesListProperties.size">
+        <source xml:lang="en">Size (MB)</source>
+        <target state="translated">Tamanho (MB)</target>
+      </trans-unit>
+      <trans-unit id="kusto.configuration.title">
+        <source xml:lang="en">KUSTO configuration</source>
+        <target state="translated">Configuração KUSTO</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.applicationName.description">
+        <source xml:lang="en">The name of the application</source>
+        <target state="translated">O nome do aplicativo</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.applicationName.displayName">
+        <source xml:lang="en">Application name</source>
+        <target state="translated">Nome da Aplicação</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.authType.categoryValues.azureMFA">
+        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+        <target state="translated">Azure Active Directory – Universal com suporte para MFA</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.authType.categoryValues.none">
+        <source xml:lang="en">No Authentication</source>
+        <target state="translated">Sem Autenticação</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.authType.categoryValues.sqlLogin">
+        <source xml:lang="en">User Authentication</source>
+        <target state="translated">Autenticação de usuário</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.authType.description">
+        <source xml:lang="en">Specifies the method of authenticating with Kusto Server</source>
+        <target state="translated">Especifica o método de autenticação com o servidor Kusto</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.authType.displayName">
+        <source xml:lang="en">Authentication type</source>
+        <target state="translated">Tipo de Autenticação</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.connectRetryCount.description">
+        <source xml:lang="en">Number of attempts to restore connection</source>
+        <target state="translated">Número de tentativas para restaurar a conexão</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.connectRetryCount.displayName">
+        <source xml:lang="en">Connect retry count</source>
+        <target state="translated">Contagem de tentativas de conexão</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.connectRetryInterval.description">
+        <source xml:lang="en">Delay between attempts to restore connection</source>
+        <target state="translated">Atraso entre as tentativas de restauração de conexão</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.connectRetryInterval.displayName">
+        <source xml:lang="en">Connect retry interval</source>
+        <target state="translated">Intervalo de tentativa de conexão</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.connectTimeout.description">
+        <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
+        <target state="translated">O período de tempo (em segundos) para aguardar uma conexão com o servidor antes de encerrar a tentativa e gerar um erro</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.connectTimeout.displayName">
+        <source xml:lang="en">Connect timeout</source>
+        <target state="translated">Tempo limite de conexão</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.connectionName.description">
+        <source xml:lang="en">Custom name of the connection</source>
+        <target state="translated">Nome personalizado da conexão</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.connectionName.displayName">
+        <source xml:lang="en">Name (optional)</source>
+        <target state="translated">Nome (opcional)</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.databaseName.description">
+        <source xml:lang="en">The name of the initial catalog or database in the data source</source>
+        <target state="translated">O nome do catálogo ou banco de dados inicial na fonte de dados</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.databaseName.displayName">
+        <source xml:lang="en">Database</source>
+        <target state="translated">Base de dados</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.failoverPartner.description">
+        <source xml:lang="en">The name or network address of the instance of Kusto Server that acts as a failover partner</source>
+        <target state="translated">O nome ou endereço de rede da instância do Servidor Kusto que atua como um parceiro de failover</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.failoverPartner.displayName">
+        <source xml:lang="en">Failover partner</source>
+        <target state="translated">Parceiro de failover</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.groupName.connectionResiliency">
+        <source xml:lang="en">Connection Resiliency</source>
+        <target state="translated">Resiliência da Conexão</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.groupName.context">
+        <source xml:lang="en">Context</source>
+        <target state="translated">Contexto</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.groupName.initialization">
+        <source xml:lang="en">Initialization</source>
+        <target state="translated">Inicialização</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.groupName.security">
+        <source xml:lang="en">Security</source>
+        <target state="translated">Segurança</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.groupName.source">
+        <source xml:lang="en">Source</source>
+        <target state="translated">Fonte</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.password.description">
+        <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
+        <target state="translated">Indica a senha a ser usada ao conectar-se à fonte de dados</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.password.displayName">
+        <source xml:lang="en">Password</source>
+        <target state="translated">Senha</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.serverName.description">
+        <source xml:lang="en">Kusto cluster name</source>
+        <target state="translated">Nome do cluster Kusto</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.serverName.displayName">
+        <source xml:lang="en">Cluster</source>
+        <target state="translated">Cluster</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.userName.description">
+        <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
+        <target state="translated">Indica a ID de usuário a ser usada ao conectar-se à fonte de dados</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.userName.displayName">
+        <source xml:lang="en">User name</source>
+        <target state="translated">Nome do usuário</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.workstationId.description">
+        <source xml:lang="en">The name of the workstation connecting to Kusto Server</source>
+        <target state="translated">O nome da estação de trabalho conectada ao Servidor Kusto</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.workstationId.displayName">
+        <source xml:lang="en">Workstation Id</source>
+        <target state="translated">Id da Estação de trabalho</target>
+      </trans-unit>
+      <trans-unit id="kusto.format.alignColumnDefinitionsInColumns">
+        <source xml:lang="en">Should column definitions be aligned?</source>
+        <target state="translated">Definições de coluna devem ser alinhadas?</target>
+      </trans-unit>
+      <trans-unit id="kusto.format.datatypeCasing">
+        <source xml:lang="en">Should data types be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
+        <target state="translated">Tipos de dados devem ser formatados como letras MAIÚSCULAS, minúsculas ou nenhum (não formatado)?</target>
+      </trans-unit>
+      <trans-unit id="kusto.format.keywordCasing">
+        <source xml:lang="en">Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
+        <target state="translated">Palavras-chave devem ser formatadas como letras MAIÚSCULAS, minúsculas ou nenhum (não formatado)?</target>
+      </trans-unit>
+      <trans-unit id="kusto.logDebugInfo">
+        <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
+        <target state="translated">[Opcional] Registre a saída da depuração no console (Exibir -&gt; Saída) e, em seguida, selecione o canal de saída apropriado no menu suspenso</target>
+      </trans-unit>
+      <trans-unit id="kusto.provider.displayName">
+        <source xml:lang="en">Azure Data Explorer (Kusto)</source>
+        <target state="translated">Azure Data Explorer (Kusto)</target>
+      </trans-unit>
+      <trans-unit id="kusto.query.displayBitAsNumber">
+        <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
+        <target state="translated">Colunas do tipo BIT devem ser exibidas como números (1 ou 0)? Se false, colunas do tipo BIT serão exibidas como 'true' ou 'false'</target>
+      </trans-unit>
+      <trans-unit id="kusto.tracingLevel">
+        <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
+        <target state="translated">[Opcional] Registre o nível para serviços de back-end. O Azure Data Studio gera um nome de arquivo sempre que é iniciado e, quando o arquivo já existe, as entradas de logs são acrescentadas a esse arquivo. Para a limpeza de arquivos de log antigos, confira as configurações logRetentionMinutes e logFilesRemovalLimit. O tracingLevel padrão não registra uma grande quantidade de log. A alteração de detalhamento pode levar ao aumento dos requisitos de log e de espaço em disco para os logs. Erro inclui Crítico, Aviso inclui Erro, informações incluem Aviso e Detalhado inclui Informações</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.new">
+        <source xml:lang="en">New Notebook</source>
+        <target state="translated">Novo Notebook</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.open">
+        <source xml:lang="en">Open Notebook</source>
+        <target state="translated">Abrir Notebook</target>
+      </trans-unit>
+      <trans-unit id="objectsListProperties.metadataTypeName">
+        <source xml:lang="en">Type</source>
+        <target state="translated">Tipo</target>
+      </trans-unit>
+      <trans-unit id="objectsListProperties.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Nome</target>
       </trans-unit>
     </body>
   </file>

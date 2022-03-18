@@ -8,19 +8,19 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"adminToolExtWin.displayName": "Database Administration Tool Extensions for Windows",
-			"adminToolExtWin.description": "Azure Data Studio に Windows 特有の他の機能を追加します",
-			"adminToolExtWin.propertiesMenuItem": "プロパティ",
-			"adminToolExtWin.launchGswMenuItem": "スクリプトの生成..."
-		},
 		"dist/main": {
-			"adminToolExtWin.noConnectionContextForProp": "handleLaunchSsmsMinPropertiesDialogCommand に提供された ConnectionContext はありません",
-			"adminToolExtWin.noOENode": "connectionContext からオブジェクト エクスプローラー ノードを判別できませんでした: {0}",
-			"adminToolExtWin.noConnectionContextForGsw": "handleLaunchSsmsMinPropertiesDialogCommand に提供された ConnectionContext はありません",
-			"adminToolExtWin.noConnectionProfile": "connectionContext から提供された connectionProfile はありません: {0}",
 			"adminToolExtWin.launchingDialogStatus": "ダイアログを起動しています...",
+			"adminToolExtWin.noConnectionContextForGsw": "handleLaunchSsmsMinPropertiesDialogCommand に提供された ConnectionContext はありません",
+			"adminToolExtWin.noConnectionContextForProp": "handleLaunchSsmsMinPropertiesDialogCommand に提供された ConnectionContext はありません",
+			"adminToolExtWin.noConnectionProfile": "connectionContext から提供された connectionProfile はありません: {0}",
+			"adminToolExtWin.noOENode": "connectionContext からオブジェクト エクスプローラー ノードを判別できませんでした: {0}",
 			"adminToolExtWin.ssmsMinError": "引数 '{0}' を伴う SsmsMin の呼び出しでエラーが発生しました - {1}"
+		},
+		"package": {
+			"adminToolExtWin.description": "Azure Data Studio に Windows 特有の他の機能を追加します",
+			"adminToolExtWin.displayName": "Database Administration Tool Extensions for Windows",
+			"adminToolExtWin.launchGswMenuItem": "スクリプトの生成...",
+			"adminToolExtWin.propertiesMenuItem": "プロパティ"
 		}
 	}
 }

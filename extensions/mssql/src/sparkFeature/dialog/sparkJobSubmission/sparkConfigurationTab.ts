@@ -80,11 +80,11 @@ export class SparkConfigurationTab {
 				value: (this._path) ? SparkFileSource.HDFS.toString() : SparkFileSource.Local.toString()
 			}).component();
 
-			this._fileSourceDropDown.onValueChanged(selection => {
+			this._fileSourceDropDown.onValueChanged(async selection => {
 				let isLocal = selection.selected === SparkFileSource.Local.toString();
 				// Disable browser button for cloud source.
 				if (this._filePickerButton) {
-					this._filePickerButton.updateProperties({
+					await this._filePickerButton.updateProperties({
 						enabled: isLocal,
 						required: isLocal
 					});
@@ -109,7 +109,7 @@ export class SparkConfigurationTab {
 				placeHolder: localize('sparkJobSubmission.FilePathPlaceHolder', "Path to a .jar or .py file"),
 				value: (this._path) ? this._path : ''
 			}).component();
-			this._sparkSourceFileInputBox.onTextChanged(text => {
+			this._sparkSourceFileInputBox.onTextChanged(async text => {
 				if (this._fileSourceDropDown.value === SparkFileSource.Local.toString()) {
 					this._dataModel.updateModelByLocalPath(text);
 					if (this._localUploadDestinationLabel) {
@@ -126,7 +126,7 @@ export class SparkConfigurationTab {
 
 				// main class disable/enable is according to whether it's jar file.
 				let isJarFile = this._dataModel.isJarFile();
-				this._mainClassInputBox.updateProperties({ enabled: isJarFile, required: isJarFile });
+				await this._mainClassInputBox.updateProperties({ enabled: isJarFile, required: isJarFile });
 				if (!isJarFile) {
 					// Clear main class for py file.
 					this._mainClassInputBox.value = '';
@@ -281,7 +281,7 @@ export class SparkConfigurationTab {
 
 			return undefined;
 		} catch (err) {
-			vscode.window.showErrorMessage(localize('sparkJobSubmission.SelectFileError', "Error in locating the file due to Error: {0}", utils.getErrorMessage(err)));
+			void vscode.window.showErrorMessage(localize('sparkJobSubmission.SelectFileError', "Error in locating the file due to Error: {0}", utils.getErrorMessage(err)));
 			return undefined;
 		}
 	}

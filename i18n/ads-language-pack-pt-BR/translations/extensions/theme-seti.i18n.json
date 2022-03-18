@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Tema do Ícone de Arquivo do Seti",
 			"description": "Um tema de ícone de arquivo composto dos ícones de arquivo de interface do usuário Seti",
+			"displayName": "Tema do Ícone de Arquivo do Seti",
 			"themeLabel": "Seti (Visual Studio Code)"
 		}
 	}

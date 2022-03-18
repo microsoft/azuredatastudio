@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Abgedunkeltes Monokai-Design",
 			"description": "Abgedunkeltes Monokai-Design für Visual Studio Code",
+			"displayName": "Abgedunkeltes Monokai-Design",
 			"themeLabel": "Monokai abgedunkelt"
 		}
 	}

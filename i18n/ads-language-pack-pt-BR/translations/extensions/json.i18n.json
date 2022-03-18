@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Noções Básicas da Linguagem JSON",
-			"description": "Fornece realce de sintaxe & correspondência de colchetes em arquivos JSON."
+			"description": "Fornece realce de sintaxe & correspondência de colchetes em arquivos JSON.",
+			"displayName": "Noções Básicas da Linguagem JSON"
 		}
 	}
 }

@@ -8,68 +8,68 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "SQL 評定",
-			"description": "Azure Data Studio (預覽) 的 SQL 評定提供一種機制來評估 SQL Server 的設定是否為最佳做法。",
-			"dashboard.tabName": "SQL 評定"
-		},
-		"dist/localized": {
-			"asmt.section.api.title": "資訊",
-			"asmt.apiversion": "API 版本",
-			"asmt.rulesetversion": "預設規則集",
-			"asmt.section.instance.title": "SQL Server 執行個體詳細資料",
-			"asmt.serverversion": "版本",
-			"asmt.serveredition": "版本",
-			"asmt.instancename": "執行個體名稱",
-			"asmt.osversion": "作業系統版本",
-			"asmt.column.target": "目標",
-			"asmt.column.severity": "嚴重性",
-			"asmt.column.message": "訊息",
-			"asmt.column.checkId": "檢查識別碼",
-			"asmt.column.tags": "標籤",
-			"asmt.learnMore": "深入了解",
-			"asmt.sqlReportTitle": "SQL 評定報表",
-			"asmt.sqlReport.resultForDatabase": "資料庫的結果",
-			"asmt.sqlReport.resultForInstance": "伺服器的結果",
-			"asmt.sqlReport.Error": "錯誤",
-			"asmt.sqlReport.Warning": "警告",
-			"asmt.sqlReport.Info": "資訊",
-			"asmt.column.helpLink": "說明連結",
-			"asmt.sqlReport.severityMsg": "{0}: {1} 個項目"
-		},
 		"dist/assessmentResultGrid": {
-			"databaseIconLabel": "資料庫",
-			"serverIconLabel": "伺服器",
 			"asmt.column.targetType": "目標型別",
 			"asmt.details.clickHere": "點擊這裡",
-			"asmt.details.toLearnMore": " 以深入了解。",
+			"asmt.details.recommendation": "建議",
 			"asmt.details.ruleDescription": "規則說明",
-			"asmt.details.recommendation": "建議"
+			"asmt.details.toLearnMore": " 以深入了解。",
+			"databaseIconLabel": "資料庫",
+			"serverIconLabel": "伺服器"
+		},
+		"dist/localized": {
+			"asmt.apiversion": "API 版本",
+			"asmt.column.checkId": "檢查識別碼",
+			"asmt.column.helpLink": "說明連結",
+			"asmt.column.message": "訊息",
+			"asmt.column.severity": "嚴重性",
+			"asmt.column.tags": "標籤",
+			"asmt.column.target": "目標",
+			"asmt.instancename": "執行個體名稱",
+			"asmt.learnMore": "深入了解",
+			"asmt.osversion": "作業系統版本",
+			"asmt.rulesetversion": "預設規則集",
+			"asmt.section.api.title": "資訊",
+			"asmt.section.instance.title": "SQL Server 執行個體詳細資料",
+			"asmt.serveredition": "版本",
+			"asmt.serverversion": "版本",
+			"asmt.sqlReport.Error": "錯誤",
+			"asmt.sqlReport.Info": "資訊",
+			"asmt.sqlReport.Warning": "警告",
+			"asmt.sqlReport.resultForDatabase": "資料庫的結果",
+			"asmt.sqlReport.resultForInstance": "伺服器的結果",
+			"asmt.sqlReport.severityMsg": "{0}: {1} 個項目",
+			"asmt.sqlReportTitle": "SQL 評定報表"
 		},
 		"dist/tabs/assessmentMainTab": {
-			"invokeAssessmentLabelServer": "叫用評定",
-			"getAssessmentItemsServer": "檢視適用的規則",
-			"invokeAssessmentLabelDatabase": "為 {0} 叫用評定",
-			"getAssessmentItemsDatabase": "檢視適用於 {0} 的規則",
+			"asmtaction.label.cancel": "取消",
+			"asmtaction.label.open": "開啟",
+			"asmtaction.openReport": "已儲存報表。要開啟嗎?",
 			"btnExportAsScript": "匯出為指令碼",
 			"btnGeneratehtmlreport": "建立 HTML 報告",
-			"asmtaction.openReport": "已儲存報表。要開啟嗎?",
-			"asmtaction.label.open": "開啟",
-			"asmtaction.label.cancel": "取消",
-			"btnViewSamplesShort": "在 GitHub 上檢視全部",
 			"btnViewSamples": "檢視所有規則，並前往 GitHub 深入了解",
+			"btnViewSamplesShort": "在 GitHub 上檢視全部",
+			"getAssessmentItemsDatabase": "檢視適用於 {0} 的規則",
+			"getAssessmentItemsServer": "檢視適用的規則",
+			"invokeAssessmentLabelDatabase": "為 {0} 叫用評定",
+			"invokeAssessmentLabelServer": "叫用評定",
 			"msgBoxAsmtInfo": "SQL 評定資訊",
+			"msgBoxCopied": "已複製 SQL 評定資訊",
 			"msgBoxCopyBtn": "複製",
-			"ok": "確定",
-			"msgBoxCopied": "已複製 SQL 評定資訊"
+			"ok": "確定"
 		},
 		"dist/tabs/historyTab": {
 			"asmt.history.back": "<< 返回",
 			"asmt.history.resultsTitle": "來自 {0} 的評定結果",
 			"asmt.history.summaryAsmtDate": "評定日期",
 			"asmt.history.summaryError": "錯誤",
-			"asmt.history.summaryWarning": "警告",
-			"asmt.history.summaryInfo": "資訊"
+			"asmt.history.summaryInfo": "資訊",
+			"asmt.history.summaryWarning": "警告"
+		},
+		"package": {
+			"dashboard.tabName": "SQL 評定",
+			"description": "Azure Data Studio (預覽) 的 SQL 評定提供一種機制來評估 SQL Server 的設定是否為最佳做法。",
+			"displayName": "SQL 評定"
 		}
 	}
 }

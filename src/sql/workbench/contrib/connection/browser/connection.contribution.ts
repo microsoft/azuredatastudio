@@ -176,6 +176,18 @@ configurationRegistry.registerConfiguration({
 			'default': 25,
 			'description': localize('sql.maxRecentConnectionsDescription', "The maximum number of recently used connections to store in the connection list.")
 		},
+		'sql.defaultAuthenticationType': {
+			'type': 'string',
+			'enum': ['SqlLogin', 'AzureMFA', `AzureMFAAndUser`, 'Integrated'],
+			'description': localize('sql.defaultAuthenticationTypeDescription', "Default authentication type to use when connecting to Azure resources. "),
+			'enumDescriptions': [
+				localize('sql.defaultAuthenticationType.SqlLogin', "Sql Login"),
+				localize('sql.defaultAuthenticationType.AzureMFA', "Azure Active Directory - Universal with MFA support"),
+				localize('sql.defaultAuthenticationType.AzureMFAAndUser', "Azure Active Directory - Password"),
+				localize('sql.defaultAuthenticationType.Integrated', "Windows Authentication"),
+			],
+			'default': 'AzureMFA'
+		},
 		'sql.defaultEngine': {
 			'type': 'string',
 			'description': localize('sql.defaultEngineDescription', "Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection."),
@@ -185,6 +197,11 @@ configurationRegistry.registerConfiguration({
 			'type': 'boolean',
 			'default': true,
 			'description': localize('connection.parseClipboardForConnectionStringDescription', "Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.")
+		},
+		'connection.showUnsupportedServerVersionWarning': {
+			'type': 'boolean',
+			'default': true,
+			'description': localize('connection.showUnsupportedServerVersionWarning', "Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.")
 		}
 	}
 });

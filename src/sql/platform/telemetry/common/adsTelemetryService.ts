@@ -7,7 +7,6 @@ import * as azdata from 'azdata';
 import { IAdsTelemetryService, ITelemetryInfo, ITelemetryEvent, ITelemetryEventMeasures, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { assign } from 'vs/base/common/objects';
 import { EventName } from 'sql/platform/telemetry/common/telemetryKeys';
 
 
@@ -36,17 +35,17 @@ class TelemetryEventImpl implements ITelemetryEvent {
 	}
 
 	public withAdditionalProperties(additionalProperties: ITelemetryEventProperties): ITelemetryEvent {
-		assign(this._properties, additionalProperties);
+		Object.assign(this._properties, additionalProperties);
 		return this;
 	}
 
 	public withAdditionalMeasurements(additionalMeasurements: ITelemetryEventMeasures): ITelemetryEvent {
-		assign(this._measurements, additionalMeasurements);
+		Object.assign(this._measurements, additionalMeasurements);
 		return this;
 	}
 
 	public withConnectionInfo(connectionInfo?: azdata.IConnectionProfile): ITelemetryEvent {
-		assign(this._properties,
+		Object.assign(this._properties,
 			{
 				authenticationType: connectionInfo?.authenticationType,
 				provider: connectionInfo?.providerName
@@ -55,7 +54,7 @@ class TelemetryEventImpl implements ITelemetryEvent {
 	}
 
 	public withServerInfo(serverInfo?: azdata.ServerInfo): ITelemetryEvent {
-		assign(this._properties,
+		Object.assign(this._properties,
 			{
 				connectionType: serverInfo?.isCloud !== undefined ? (serverInfo.isCloud ? 'Azure' : 'Standalone') : '',
 				serverVersion: serverInfo?.serverVersion ?? '',
@@ -158,7 +157,8 @@ export class AdsTelemetryService implements IAdsTelemetryService {
 
 	/**
 	 * Sends a Metrics event. This is used to log measurements taken.
-	 * @param measurements The metrics to send
+	 * @param metrics The metrics to send
+	 * @param groupName The name of the group these metrics belong to
 	 */
 	public sendMetricsEvent(metrics: ITelemetryEventMeasures, groupName: string = ''): void {
 		this.createMetricsEvent(metrics, groupName).send();
@@ -170,7 +170,6 @@ export class AdsTelemetryService implements IAdsTelemetryService {
 	 * @param name The friendly name of the error
 	 * @param errorCode The error code returned
 	 * @param errorType The specific type of error
-	 * @param properties Optional additional properties
 	 */
 	public createErrorEvent(view: string, name: string, errorCode: string = '', errorType: string = ''): ITelemetryEvent {
 		return new TelemetryEventImpl(this.telemetryService, this.logService, EventName.Error, {

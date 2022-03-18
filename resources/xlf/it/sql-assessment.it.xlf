@@ -1,82 +1,110 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/sql-assessment/package" source-language="en" datatype="plaintext" target-language="it">
+  <file original="extensions/sql-assessment/dist/assessmentResultGrid" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="displayName">
-        <source xml:lang="en">SQL Assessment</source>
-        <target state="translated">Valutazione SQL</target>
+      <trans-unit id="asmt.column.targetType">
+        <source xml:lang="en">Target Type</source>
+        <target state="translated">Tipo di destinazione</target>
       </trans-unit>
-      <trans-unit id="description">
-        <source xml:lang="en">SQL Assessment for Azure Data Studio (Preview) provides a mechanism to evaluate the configuration of SQL Server for best practices.</source>
-        <target state="translated">Valutazione SQL per Azure Data Studio (anteprima) fornisce un meccanismo per valutare la configurazione di SQL Server per le procedure consigliate.</target>
+      <trans-unit id="asmt.details.clickHere">
+        <source xml:lang="en">Click here</source>
+        <target state="translated">Fare clic qui</target>
       </trans-unit>
-      <trans-unit id="dashboard.tabName">
-        <source xml:lang="en">SQL Assessment</source>
-        <target state="translated">Valutazione SQL</target>
+      <trans-unit id="asmt.details.recommendation">
+        <source xml:lang="en">Recommendation</source>
+        <target state="translated">Raccomandazione</target>
+      </trans-unit>
+      <trans-unit id="asmt.details.ruleDescription">
+        <source xml:lang="en">Rule Description</source>
+        <target state="translated">Descrizione regola</target>
+      </trans-unit>
+      <trans-unit id="asmt.details.toLearnMore">
+        <source xml:lang="en"> to learn more.</source>
+        <target state="translated"> per altre informazioni.</target>
+      </trans-unit>
+      <trans-unit id="databaseIconLabel">
+        <source xml:lang="en">Database</source>
+        <target state="translated">Database</target>
+      </trans-unit>
+      <trans-unit id="serverIconLabel">
+        <source xml:lang="en">Server</source>
+        <target state="translated">Server</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/sql-assessment/dist/localized" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="asmt.section.api.title">
-        <source xml:lang="en">Info</source>
-        <target state="translated">Informazioni</target>
-      </trans-unit>
       <trans-unit id="asmt.apiversion">
         <source xml:lang="en">API Version</source>
         <target state="translated">Versione API</target>
-      </trans-unit>
-      <trans-unit id="asmt.rulesetversion">
-        <source xml:lang="en">Default Ruleset</source>
-        <target state="translated">Set di regole predefinito</target>
-      </trans-unit>
-      <trans-unit id="asmt.section.instance.title">
-        <source xml:lang="en">SQL Server Instance Details</source>
-        <target state="translated">Dettagli dell'istanza di SQL Server</target>
-      </trans-unit>
-      <trans-unit id="asmt.serverversion">
-        <source xml:lang="en">Version</source>
-        <target state="translated">Versione</target>
-      </trans-unit>
-      <trans-unit id="asmt.serveredition">
-        <source xml:lang="en">Edition</source>
-        <target state="translated">Edizione</target>
-      </trans-unit>
-      <trans-unit id="asmt.instancename">
-        <source xml:lang="en">Instance Name</source>
-        <target state="translated">Nome istanza</target>
-      </trans-unit>
-      <trans-unit id="asmt.osversion">
-        <source xml:lang="en">OS Version</source>
-        <target state="translated">Versione del sistema operativo</target>
-      </trans-unit>
-      <trans-unit id="asmt.column.target">
-        <source xml:lang="en">Target</source>
-        <target state="translated">Destinazione</target>
-      </trans-unit>
-      <trans-unit id="asmt.column.severity">
-        <source xml:lang="en">Severity</source>
-        <target state="translated">Gravità</target>
-      </trans-unit>
-      <trans-unit id="asmt.column.message">
-        <source xml:lang="en">Message</source>
-        <target state="translated">Messaggio</target>
       </trans-unit>
       <trans-unit id="asmt.column.checkId">
         <source xml:lang="en">Check ID</source>
         <target state="translated">ID controllo</target>
       </trans-unit>
+      <trans-unit id="asmt.column.helpLink">
+        <source xml:lang="en">Help Link</source>
+        <target state="translated">Collegamento alla Guida</target>
+      </trans-unit>
+      <trans-unit id="asmt.column.message">
+        <source xml:lang="en">Message</source>
+        <target state="translated">Messaggio</target>
+      </trans-unit>
+      <trans-unit id="asmt.column.severity">
+        <source xml:lang="en">Severity</source>
+        <target state="translated">Gravità</target>
+      </trans-unit>
       <trans-unit id="asmt.column.tags">
         <source xml:lang="en">Tags</source>
         <target state="translated">Tag</target>
+      </trans-unit>
+      <trans-unit id="asmt.column.target">
+        <source xml:lang="en">Target</source>
+        <target state="translated">Destinazione</target>
+      </trans-unit>
+      <trans-unit id="asmt.instancename">
+        <source xml:lang="en">Instance Name</source>
+        <target state="translated">Nome istanza</target>
       </trans-unit>
       <trans-unit id="asmt.learnMore">
         <source xml:lang="en">Learn More</source>
         <target state="translated">Altre informazioni</target>
       </trans-unit>
-      <trans-unit id="asmt.sqlReportTitle">
-        <source xml:lang="en">SQL Assessment Report</source>
-        <target state="translated">Report di valutazione SQL</target>
+      <trans-unit id="asmt.osversion">
+        <source xml:lang="en">OS Version</source>
+        <target state="translated">Versione del sistema operativo</target>
+      </trans-unit>
+      <trans-unit id="asmt.rulesetversion">
+        <source xml:lang="en">Default Ruleset</source>
+        <target state="translated">Set di regole predefinito</target>
+      </trans-unit>
+      <trans-unit id="asmt.section.api.title">
+        <source xml:lang="en">Info</source>
+        <target state="translated">Informazioni</target>
+      </trans-unit>
+      <trans-unit id="asmt.section.instance.title">
+        <source xml:lang="en">SQL Server Instance Details</source>
+        <target state="translated">Dettagli dell'istanza di SQL Server</target>
+      </trans-unit>
+      <trans-unit id="asmt.serveredition">
+        <source xml:lang="en">Edition</source>
+        <target state="translated">Edizione</target>
+      </trans-unit>
+      <trans-unit id="asmt.serverversion">
+        <source xml:lang="en">Version</source>
+        <target state="translated">Versione</target>
+      </trans-unit>
+      <trans-unit id="asmt.sqlReport.Error">
+        <source xml:lang="en">Error</source>
+        <target state="translated">Errore</target>
+      </trans-unit>
+      <trans-unit id="asmt.sqlReport.Info">
+        <source xml:lang="en">Information</source>
+        <target state="translated">Informazioni</target>
+      </trans-unit>
+      <trans-unit id="asmt.sqlReport.Warning">
+        <source xml:lang="en">Warning</source>
+        <target state="translated">Avviso</target>
       </trans-unit>
       <trans-unit id="asmt.sqlReport.resultForDatabase">
         <source xml:lang="en">Results for database</source>
@@ -86,77 +114,29 @@
         <source xml:lang="en">Results for server</source>
         <target state="translated">Risultati per il server</target>
       </trans-unit>
-      <trans-unit id="asmt.sqlReport.Error">
-        <source xml:lang="en">Error</source>
-        <target state="translated">Errore</target>
-      </trans-unit>
-      <trans-unit id="asmt.sqlReport.Warning">
-        <source xml:lang="en">Warning</source>
-        <target state="translated">Avviso</target>
-      </trans-unit>
-      <trans-unit id="asmt.sqlReport.Info">
-        <source xml:lang="en">Information</source>
-        <target state="translated">Informazioni</target>
-      </trans-unit>
-      <trans-unit id="asmt.column.helpLink">
-        <source xml:lang="en">Help Link</source>
-        <target state="translated">Collegamento alla Guida</target>
-      </trans-unit>
       <trans-unit id="asmt.sqlReport.severityMsg">
         <source xml:lang="en">{0}: {1} item(s)</source>
         <target state="translated">{0}: {1} elemento/i</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/sql-assessment/dist/assessmentResultGrid" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="databaseIconLabel">
-        <source xml:lang="en">Database</source>
-        <target state="translated">Database</target>
-      </trans-unit>
-      <trans-unit id="serverIconLabel">
-        <source xml:lang="en">Server</source>
-        <target state="translated">Server</target>
-      </trans-unit>
-      <trans-unit id="asmt.column.targetType">
-        <source xml:lang="en">Target Type</source>
-        <target state="translated">Tipo di destinazione</target>
-      </trans-unit>
-      <trans-unit id="asmt.details.clickHere">
-        <source xml:lang="en">Click here</source>
-        <target state="translated">Fare clic qui</target>
-      </trans-unit>
-      <trans-unit id="asmt.details.toLearnMore">
-        <source xml:lang="en"> to learn more.</source>
-        <target state="translated"> per altre informazioni.</target>
-      </trans-unit>
-      <trans-unit id="asmt.details.ruleDescription">
-        <source xml:lang="en">Rule Description</source>
-        <target state="translated">Descrizione regola</target>
-      </trans-unit>
-      <trans-unit id="asmt.details.recommendation">
-        <source xml:lang="en">Recommendation</source>
-        <target state="translated">Raccomandazione</target>
+      <trans-unit id="asmt.sqlReportTitle">
+        <source xml:lang="en">SQL Assessment Report</source>
+        <target state="translated">Report di valutazione SQL</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/sql-assessment/dist/tabs/assessmentMainTab" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="invokeAssessmentLabelServer">
-        <source xml:lang="en">Invoke assessment</source>
-        <target state="translated">Richiama valutazione</target>
+      <trans-unit id="asmtaction.label.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Annulla</target>
       </trans-unit>
-      <trans-unit id="getAssessmentItemsServer">
-        <source xml:lang="en">View applicable rules</source>
-        <target state="translated">Visualizza regole applicabili</target>
+      <trans-unit id="asmtaction.label.open">
+        <source xml:lang="en">Open</source>
+        <target state="translated">Apri</target>
       </trans-unit>
-      <trans-unit id="invokeAssessmentLabelDatabase">
-        <source xml:lang="en">Invoke assessment for {0}</source>
-        <target state="translated">Richiama valutazione per {0}</target>
-      </trans-unit>
-      <trans-unit id="getAssessmentItemsDatabase">
-        <source xml:lang="en">View applicable rules for {0}</source>
-        <target state="translated">Visualizza regole applicabili per {0}</target>
+      <trans-unit id="asmtaction.openReport">
+        <source xml:lang="en">Report has been saved. Do you want to open it?</source>
+        <target state="translated">Il report è stato salvato. Aprirlo?</target>
       </trans-unit>
       <trans-unit id="btnExportAsScript">
         <source xml:lang="en">Export as script</source>
@@ -166,29 +146,37 @@
         <source xml:lang="en">Create HTML Report</source>
         <target state="translated">Crea report HTML</target>
       </trans-unit>
-      <trans-unit id="asmtaction.openReport">
-        <source xml:lang="en">Report has been saved. Do you want to open it?</source>
-        <target state="translated">Il report è stato salvato. Aprirlo?</target>
-      </trans-unit>
-      <trans-unit id="asmtaction.label.open">
-        <source xml:lang="en">Open</source>
-        <target state="translated">Apri</target>
-      </trans-unit>
-      <trans-unit id="asmtaction.label.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">Annulla</target>
+      <trans-unit id="btnViewSamples">
+        <source xml:lang="en">View all rules and learn more on GitHub</source>
+        <target state="translated">Visualizza tutte le regole e altre informazioni su GitHub</target>
       </trans-unit>
       <trans-unit id="btnViewSamplesShort">
         <source xml:lang="en">View all on GitHub</source>
         <target state="translated">Visualizza tutto su GitHub</target>
       </trans-unit>
-      <trans-unit id="btnViewSamples">
-        <source xml:lang="en">View all rules and learn more on GitHub</source>
-        <target state="translated">Visualizza tutte le regole e altre informazioni su GitHub</target>
+      <trans-unit id="getAssessmentItemsDatabase">
+        <source xml:lang="en">View applicable rules for {0}</source>
+        <target state="translated">Visualizza regole applicabili per {0}</target>
+      </trans-unit>
+      <trans-unit id="getAssessmentItemsServer">
+        <source xml:lang="en">View applicable rules</source>
+        <target state="translated">Visualizza regole applicabili</target>
+      </trans-unit>
+      <trans-unit id="invokeAssessmentLabelDatabase">
+        <source xml:lang="en">Invoke assessment for {0}</source>
+        <target state="translated">Richiama valutazione per {0}</target>
+      </trans-unit>
+      <trans-unit id="invokeAssessmentLabelServer">
+        <source xml:lang="en">Invoke assessment</source>
+        <target state="translated">Richiama valutazione</target>
       </trans-unit>
       <trans-unit id="msgBoxAsmtInfo">
         <source xml:lang="en">SQL Assessment Information</source>
         <target state="translated">Informazioni sulla valutazione SQL</target>
+      </trans-unit>
+      <trans-unit id="msgBoxCopied">
+        <source xml:lang="en">SQL Assessment Information copied</source>
+        <target state="translated">Le informazioni sulla valutazione SQL sono state copiate</target>
       </trans-unit>
       <trans-unit id="msgBoxCopyBtn">
         <source xml:lang="en">Copy</source>
@@ -197,10 +185,6 @@
       <trans-unit id="ok">
         <source xml:lang="en">OK</source>
         <target state="translated">OK</target>
-      </trans-unit>
-      <trans-unit id="msgBoxCopied">
-        <source xml:lang="en">SQL Assessment Information copied</source>
-        <target state="translated">Le informazioni sulla valutazione SQL sono state copiate</target>
       </trans-unit>
     </body>
   </file>
@@ -222,13 +206,29 @@
         <source xml:lang="en">Error</source>
         <target state="translated">Errore</target>
       </trans-unit>
+      <trans-unit id="asmt.history.summaryInfo">
+        <source xml:lang="en">Information</source>
+        <target state="translated">Informazioni</target>
+      </trans-unit>
       <trans-unit id="asmt.history.summaryWarning">
         <source xml:lang="en">Warning</source>
         <target state="translated">Avviso</target>
       </trans-unit>
-      <trans-unit id="asmt.history.summaryInfo">
-        <source xml:lang="en">Information</source>
-        <target state="translated">Informazioni</target>
+    </body>
+  </file>
+  <file original="extensions/sql-assessment/package" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="dashboard.tabName">
+        <source xml:lang="en">SQL Assessment</source>
+        <target state="translated">Valutazione SQL</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source xml:lang="en">SQL Assessment for Azure Data Studio (Preview) provides a mechanism to evaluate the configuration of SQL Server for best practices.</source>
+        <target state="translated">Valutazione SQL per Azure Data Studio (anteprima) fornisce un meccanismo per valutare la configurazione di SQL Server per le procedure consigliate.</target>
+      </trans-unit>
+      <trans-unit id="displayName">
+        <source xml:lang="en">SQL Assessment</source>
+        <target state="translated">Valutazione SQL</target>
       </trans-unit>
     </body>
   </file>

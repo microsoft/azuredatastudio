@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Concepts de base du langage PowerShell",
-			"description": "Fournit des extraits de code, la coloration syntaxique, la correspondance des crochets et le repli dans les fichiers PowerShell."
+			"description": "Fournit des extraits de code, la coloration syntaxique, la correspondance des crochets et le repli dans les fichiers PowerShell.",
+			"displayName": "Concepts de base du langage PowerShell"
 		}
 	}
 }

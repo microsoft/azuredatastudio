@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/qp';
-import * as QP from 'html-query-plan';
+import * as QP from 'kburtram-query-plan';
 
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 

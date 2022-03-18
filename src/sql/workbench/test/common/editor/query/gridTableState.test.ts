@@ -14,12 +14,12 @@ suite('Grid Table State', () => {
 		const batchId = 0;
 		const state = new GridTableState(resultId, batchId);
 
-		assert.equal(state.resultId, resultId);
-		assert.equal(state.batchId, batchId);
+		assert.strictEqual(state.resultId, resultId);
+		assert.strictEqual(state.batchId, batchId);
 		assert(isUndefined(state.canBeMaximized));
 		assert(isUndefined(state.maximized));
-		assert.equal(state.scrollPositionX, 0);
-		assert.equal(state.scrollPositionY, 0);
+		assert.strictEqual(state.scrollPositionX, 0);
+		assert.strictEqual(state.scrollPositionY, 0);
 		assert(isUndefined(state.columnSizes));
 		assert(isUndefined(state.selection));
 		assert(isUndefined(state.activeCell));
@@ -32,31 +32,31 @@ suite('Grid Table State', () => {
 			state.canBeMaximized = true;
 		});
 
-		assert.equal(event, true);
-		assert.equal(state.canBeMaximized, true);
+		assert.strictEqual(event, true);
+		assert.strictEqual(state.canBeMaximized, true);
 
 		event = await new Promise<boolean>(resolve => {
 			Event.once(state.onCanBeMaximizedChange)(e => resolve(e));
 			state.canBeMaximized = false;
 		});
 
-		assert.equal(event, false);
-		assert.equal(state.canBeMaximized, false);
+		assert.strictEqual(event, false);
+		assert.strictEqual(state.canBeMaximized, false);
 
 		event = await new Promise<boolean>(resolve => {
 			Event.once(state.onMaximizedChange)(e => resolve(e));
 			state.maximized = true;
 		});
 
-		assert.equal(event, true);
-		assert.equal(state.maximized, true);
+		assert.strictEqual(event, true);
+		assert.strictEqual(state.maximized, true);
 
 		event = await new Promise<boolean>(resolve => {
 			Event.once(state.onMaximizedChange)(e => resolve(e));
 			state.maximized = false;
 		});
 
-		assert.equal(event, false);
-		assert.equal(state.maximized, false);
+		assert.strictEqual(event, false);
+		assert.strictEqual(state.maximized, false);
 	});
 });

@@ -393,7 +393,6 @@ export function renderText(options: renderText.IRenderOptions): Promise<void> {
 	let { host, source } = options;
 
 	const ansiUp = new AnsiUp();
-	ansiUp.escape_for_html = true;
 	ansiUp.use_classes = true;
 
 	// Create the HTML content.

@@ -39,7 +39,7 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		mockConnectionManagementService.setup(x => x.getConnectionGroups()).returns(x => []);
 		mockConnectionManagementService.setup(x => x.hasRegisteredServers()).returns(() => true);
 		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, new TestThemeService(), undefined, undefined, capabilitiesService, undefined, undefined, new MockContextKeyService());
-		mockTree = TypeMoq.Mock.ofType(TestTree);
+		mockTree = TypeMoq.Mock.ofType<ITree>(TestTree);
 		(serverTreeView as any)._tree = mockTree.object;
 		mockRefreshTreeMethod = TypeMoq.Mock.ofType(Function);
 		mockRefreshTreeMethod.setup(x => x()).returns(() => Promise.resolve());
@@ -84,8 +84,8 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
 	test('isObjectExplorerConnectionUri', async () => {
 		let connectionUriFalse = serverTreeView.isObjectExplorerConnectionUri('123');
-		assert.equal(false, connectionUriFalse);
-		assert.equal(true, serverTreeView.isObjectExplorerConnectionUri('connection:123'));
+		assert.strictEqual(false, connectionUriFalse);
+		assert.strictEqual(true, serverTreeView.isObjectExplorerConnectionUri('connection:123'));
 	});
 
 	test('setExpandedState', async () => {

@@ -95,7 +95,7 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 				const copyValueCell = view.modelBuilder.button().component();
 				copyValueCell.iconPath = { light: context.asAbsolutePath('resources/light/copy.png'), dark: context.asAbsolutePath('resources/dark/copy_inverse.png') };
 				copyValueCell.onDidClick(() => {
-					vscode.env.clipboard.writeText(endpointInfo.endpoint);
+					void vscode.env.clipboard.writeText(endpointInfo.endpoint);
 				});
 				copyValueCell.title = localize("copyText", "Copy");
 				copyValueCell.iconHeight = '14px';
@@ -142,7 +142,7 @@ export enum Endpoint {
 
 /**
  * Gets the localized text to display for a corresponding endpoint
- * @param serviceName The endpoint name to get the display text for
+ * @param endpointName The endpoint name to get the display text for
  * @param description The backup description to use if we don't have our own
  */
 function getEndpointDisplayText(endpointName?: string, description?: string): string {

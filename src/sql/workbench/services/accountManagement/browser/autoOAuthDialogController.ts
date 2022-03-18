@@ -72,9 +72,9 @@ export class AutoOAuthDialogController {
 		this._providerId = undefined;
 	}
 
-	private handleOnAddAccount(): void {
+	private async handleOnAddAccount(): Promise<void> {
 		if (this._userCode && this._uri) {
-			this._accountManagementService.copyUserCodeAndOpenBrowser(this._userCode, this._uri);
+			return this._accountManagementService.copyUserCodeAndOpenBrowser(this._userCode, this._uri);
 		} else {
 			throw new Error('Missing user code and uri');
 		}

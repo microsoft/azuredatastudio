@@ -9,12 +9,13 @@ import * as path from 'path';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 
-import { Project, SystemDatabase } from '../models/project';
+import { Project } from '../models/project';
 import { cssStyles } from '../common/uiConstants';
 import { IconPathHelper } from '../common/iconHelper';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Deferred } from '../common/promise';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { SystemDatabase } from '../models/projectEntry';
 
 export enum ReferenceType {
 	project,
@@ -46,8 +47,7 @@ export class AddDatabaseReferenceDialog {
 	public currentReferenceType: ReferenceType | undefined;
 
 	private toDispose: vscode.Disposable[] = [];
-	private initDialogComplete: Deferred<void> | undefined;
-	private initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
+	private initDialogComplete: Deferred = new Deferred();
 
 	public addReference: ((proj: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings) => any) | undefined;
 
@@ -86,7 +86,7 @@ export class AddDatabaseReferenceDialog {
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 
 		utils.getAzdataApi()!.window.openDialog(this.dialog);
-		await this.initDialogPromise;
+		await this.initDialogComplete.promise;
 	}
 
 	private dispose(): void {
@@ -139,12 +139,12 @@ export class AddDatabaseReferenceDialog {
 			this.updateEnabledInputBoxes();
 
 			if (this.currentReferenceType === ReferenceType.project) {
-				this.projectRadioButton?.focus();
+				await this.projectRadioButton?.focus();
 			} else {
-				this.systemDatabaseRadioButton?.focus();
+				await this.systemDatabaseRadioButton?.focus();
 			}
 
-			this.initDialogComplete?.resolve();
+			this.initDialogComplete.resolve();
 		});
 	}
 
@@ -559,7 +559,7 @@ export class AddDatabaseReferenceDialog {
 		}
 
 		this.exampleUsage!.value = newText;
-		this.exampleUsage?.updateCssStyles({ 'font-style': fontStyle });
+		void this.exampleUsage?.updateCssStyles({ 'font-style': fontStyle });
 	}
 
 	private validSqlCmdVariables(): boolean {
@@ -616,8 +616,9 @@ export class AddDatabaseReferenceDialog {
 }
 
 export function getSystemDbOptions(project: Project): string[] {
+	const projectTargetVersion = project.getProjectTargetVersion().toLowerCase();
 	// only master is a valid system db reference for projects targeting Azure and DW
-	if (project.getProjectTargetVersion().toLowerCase().includes('azure') || project.getProjectTargetVersion().toLowerCase().includes('dw')) {
+	if (projectTargetVersion.includes('azure') || projectTargetVersion.includes('dw')) {
 		return [constants.master];
 	}
 	return [constants.master, constants.msdb];

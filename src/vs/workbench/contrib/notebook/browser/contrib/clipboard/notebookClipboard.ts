@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -31,7 +31,7 @@ import { Webview } from 'vs/workbench/contrib/webview/browser/webview';
 function getFocusedWebviewDelegate(accessor: ServicesAccessor): Webview | undefined {
 	const editorService = accessor.get(IEditorService);
 	const editor = getNotebookEditorFromEditorPane(editorService.activeEditorPane);
-	if (!editor?.hasFocus()) {
+	if (!editor?.hasEditorFocus()) {
 		return undefined; // {{SQL CARBON EDIT}} strict nulls
 	}
 

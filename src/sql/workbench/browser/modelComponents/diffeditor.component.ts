@@ -10,7 +10,7 @@ import {
 import * as azdata from 'azdata';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
+import { TextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
@@ -96,8 +96,8 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 			}
 		});
 
-		let editorinput1 = this._instantiationService.createInstance(ResourceEditorInput, uri1, 'source', undefined, undefined);
-		let editorinput2 = this._instantiationService.createInstance(ResourceEditorInput, uri2, 'target', undefined, undefined);
+		let editorinput1 = this._instantiationService.createInstance(TextResourceEditorInput, uri1, 'source', undefined, undefined, undefined);
+		let editorinput2 = this._instantiationService.createInstance(TextResourceEditorInput, uri2, 'target', undefined, undefined, undefined);
 		this._editorInput = new DiffEditorInput('DiffEditor', undefined, editorinput1, editorinput2, true,
 			this.labelService, this.fileService);
 		this._editor.setInput(this._editorInput, undefined, undefined, cancellationTokenSource.token);

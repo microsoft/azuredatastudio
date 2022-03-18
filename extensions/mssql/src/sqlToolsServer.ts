@@ -3,15 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ServerProvider, IConfig, Events } from '@microsoft/ads-service-downloader';
+import { IConfig, Events } from '@microsoft/ads-service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { getCommonLaunchArgsAndCleanupOldLogFiles } from './utils';
+import { getCommonLaunchArgsAndCleanupOldLogFiles, getOrDownloadServer } from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature } from './features';
+import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature } from './features';
 import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import { SchemaCompareService } from './schemaCompare/schemaCompareService';
@@ -25,6 +25,7 @@ import { LanguageExtensionService } from './languageExtension/languageExtensionS
 import { SqlAssessmentService } from './sqlAssessment/sqlAssessmentService';
 import { NotebookConvertService } from './notebookConvert/notebookConvertService';
 import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
+import { SqlCredentialService } from './credentialstore/sqlCredentialService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -54,7 +55,7 @@ export class SqlToolsServer {
 					statusView.hide();
 				}, 1500);
 				vscode.commands.registerCommand('mssql.loadCompletionExtension', (params: CompletionExtensionParams) => {
-					this.client.sendRequest(CompletionExtLoadRequest.type, params);
+					return this.client.sendRequest(CompletionExtLoadRequest.type, params);
 				});
 				Telemetry.sendTelemetryEvent('startup/LanguageClientStarted', {
 					installationTime: String(installationComplete - installationStart),
@@ -70,7 +71,7 @@ export class SqlToolsServer {
 			return this.client;
 		} catch (e) {
 			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
-			vscode.window.showErrorMessage(localize('failedToStartServiceErrorMsg', "Failed to start {0}", Constants.serviceName));
+			void vscode.window.showErrorMessage(localize('failedToStartServiceErrorMsg', "Failed to start {0}", Constants.serviceName));
 			throw e;
 		}
 	}
@@ -82,24 +83,21 @@ export class SqlToolsServer {
 		this.config.installDirectory = path.join(configDir, this.config.installDirectory);
 		this.config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
 		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
-
-		const serverdownloader = new ServerProvider(this.config);
-		serverdownloader.eventEmitter.onAny(generateHandleServerProviderEvent());
-		return serverdownloader.getOrDownloadServer();
+		return getOrDownloadServer(this.config, handleServerProviderEvent);
 	}
 
 	private activateFeatures(context: AppContext): Promise<void> {
-		const credsStore = new CredentialStore(context.extensionContext.logPath, this.config);
+		const credsStore = new CredentialStore(context, this.config);
 		const resourceProvider = new AzureResourceProvider(context.extensionContext.logPath, this.config);
 		this.disposables.push(credsStore);
 		this.disposables.push(resourceProvider);
 		return Promise.all([credsStore.start(), resourceProvider.start()]).then();
 	}
 
-	dispose() {
+	async dispose(): Promise<void> {
 		this.disposables.forEach(d => d.dispose());
 		if (this.client) {
-			this.client.stop();
+			await this.client.stop();
 		}
 	}
 }
@@ -109,39 +107,37 @@ function generateServerOptions(logPath: string, executablePath: string): ServerO
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
 
-function generateHandleServerProviderEvent() {
+function handleServerProviderEvent(e: string, ...args: any[]): void {
 	let dots = 0;
-	return (e: string, ...args: any[]) => {
-		switch (e) {
-			case Events.INSTALL_START:
-				outputChannel.show(true);
-				statusView.show();
-				outputChannel.appendLine(localize('installingServiceChannelMsg', "Installing {0} to {1}", Constants.serviceName, args[0]));
-				statusView.text = localize('installingServiceStatusMsg', "Installing {0}", Constants.serviceName);
-				break;
-			case Events.INSTALL_END:
-				outputChannel.appendLine(localize('installedServiceChannelMsg', "Installed {0}", Constants.serviceName));
-				break;
-			case Events.DOWNLOAD_START:
-				outputChannel.appendLine(localize('downloadingServiceChannelMsg', "Downloading {0}", args[0]));
-				outputChannel.append(localize('downloadingServiceSizeChannelMsg', "({0} KB)", Math.ceil(args[1] / 1024).toLocaleString(vscode.env.language)));
-				statusView.text = localize('downloadingServiceStatusMsg', "Downloading {0}", Constants.serviceName);
-				break;
-			case Events.DOWNLOAD_PROGRESS:
-				let newDots = Math.ceil(args[0] / 5);
-				if (newDots > dots) {
-					outputChannel.append('.'.repeat(newDots - dots));
-					dots = newDots;
-				}
-				break;
-			case Events.DOWNLOAD_END:
-				outputChannel.appendLine(localize('downloadServiceDoneChannelMsg', "Done installing {0}", Constants.serviceName));
-				break;
-			case Events.ENTRY_EXTRACTED:
-				outputChannel.appendLine(localize('entryExtractedChannelMsg', "Extracted {0} ({1}/{2})", args[0], args[1], args[2]));
-				break;
-		}
-	};
+	switch (e) {
+		case Events.INSTALL_START:
+			outputChannel.show(true);
+			statusView.show();
+			outputChannel.appendLine(localize('installingServiceChannelMsg', "Installing {0} to {1}", Constants.serviceName, args[0]));
+			statusView.text = localize('installingServiceStatusMsg', "Installing {0}", Constants.serviceName);
+			break;
+		case Events.INSTALL_END:
+			outputChannel.appendLine(localize('installedServiceChannelMsg', "Installed {0}", Constants.serviceName));
+			break;
+		case Events.DOWNLOAD_START:
+			outputChannel.appendLine(localize('downloadingServiceChannelMsg', "Downloading {0}", args[0]));
+			outputChannel.append(localize('downloadingServiceSizeChannelMsg', "({0} KB)", Math.ceil(args[1] / 1024).toLocaleString(vscode.env.language)));
+			statusView.text = localize('downloadingServiceStatusMsg', "Downloading {0}", Constants.serviceName);
+			break;
+		case Events.DOWNLOAD_PROGRESS:
+			let newDots = Math.ceil(args[0] / 5);
+			if (newDots > dots) {
+				outputChannel.append('.'.repeat(newDots - dots));
+				dots = newDots;
+			}
+			break;
+		case Events.DOWNLOAD_END:
+			outputChannel.appendLine(localize('downloadServiceDoneChannelMsg', "Done installing {0}", Constants.serviceName));
+			break;
+		case Events.ENTRY_EXTRACTED:
+			outputChannel.appendLine(localize('entryExtractedChannelMsg', "Extracted {0} ({1}/{2})", args[0], args[1], args[2]));
+			break;
+	}
 }
 
 function getClientOptions(context: AppContext): ClientOptions {
@@ -168,6 +164,8 @@ function getClientOptions(context: AppContext): ClientOptions {
 			NotebookConvertService.asFeature(context),
 			ProfilerFeature,
 			SqlMigrationService.asFeature(context),
+			SqlCredentialService.asFeature(context),
+			TableDesignerFeature
 		],
 		outputChannel: new CustomOutputChannel()
 	};

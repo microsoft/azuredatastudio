@@ -12,7 +12,6 @@ import {
 import { GroupLayout, GroupContainerProperties, CssStyles } from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { endsWith } from 'vs/base/common/strings';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
@@ -107,7 +106,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout, GroupCont
 	public getContainerWidth(): string {
 		if (this._containerLayout && this._containerLayout.width) {
 			let width: string = this._containerLayout.width.toString();
-			if (!endsWith(width, '%') && !endsWith(width.toLowerCase(), 'px')) {
+			if (!width.endsWith('%') && !width.toLowerCase().endsWith('px')) {
 				width = width + 'px';
 			}
 			return width;

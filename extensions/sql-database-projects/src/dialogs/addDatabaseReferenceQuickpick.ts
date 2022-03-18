@@ -21,7 +21,6 @@ interface DbServerValues {
 
 /**
  * Create flow for adding a database reference using only VS Code-native APIs such as QuickPick
- * @param connectionInfo Optional connection info to use instead of prompting the user for a connection
  */
 export async function addDatabaseReferenceQuickpick(project: Project): Promise<AddDatabaseReferenceSettings | undefined> {
 
@@ -143,7 +142,7 @@ async function addDacpacReference(): Promise<IDacpacReferenceSettings | undefine
 	// 3. Prompt for dacpac location
 	// Show quick pick with just browse option to give user context about what the file dialog is for (since that doesn't always have a title)
 	const browseSelected = await vscode.window.showQuickPick(
-		[constants.browseEllipsis],
+		[constants.browseEllipsisWithIcon],
 		{ title: constants.selectDacpac, ignoreFocusOut: true });
 	if (!browseSelected) {
 		return undefined;

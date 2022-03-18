@@ -8,7 +8,6 @@ import 'vs/css!./media/highlight';
 import * as DOM from 'vs/base/browser/dom';
 
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener, ViewChildren, QueryList } from '@angular/core';
-import * as Mark from 'mark.js';
 
 import { localize } from 'vs/nls';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -23,24 +22,25 @@ import { IMarkdownRenderResult } from 'vs/editor/browser/core/markdownRenderer';
 
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
-import { CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICaretPosition, CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/services/notebook/browser/outputs/sanitizer';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
-import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
-import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { highlightSelectedText } from 'sql/workbench/contrib/notebook/browser/utils';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
-const findHighlightClass = 'rangeHighlight';
-const findRangeSpecificClass = 'rangeSpecificHighlight';
+
 @Component({
 	selector: TEXT_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./textCell.component.html'))
 })
 export class TextCellComponent extends CellView implements OnInit, OnChanges {
-	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
+	@ViewChild('preview', { read: ElementRef }) override output: ElementRef;
 	@ViewChildren(CodeComponent) private markdowncodeCell: QueryList<CodeComponent>;
 
 	@Input() cellModel: ICellModel;
@@ -53,15 +53,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._activeCellId = value;
 	}
 
-	@HostListener('document:keydown.escape', ['$event'])
-	handleKeyboardEvent() {
-		if (this.isEditMode) {
-			this.toggleEditMode(false);
-		}
-		this.cellModel.active = false;
-		this._model.updateActiveCell(undefined);
-	}
-
 	// Double click to edit text cell in notebook
 	@HostListener('dblclick', ['$event']) onDblClick() {
 		this.enableActiveCellEditOnDoubleClick();
@@ -70,17 +61,38 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@HostListener('document:keydown', ['$event'])
 	onkeydown(e: KeyboardEvent) {
 		if (DOM.getActiveElement() === this.output?.nativeElement && this.isActive() && this.cellModel?.currentMode === CellEditModes.WYSIWYG) {
-			// select the active .
-			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+			const keyEvent = new StandardKeyboardEvent(e);
+			// Select all text
+			if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_A) {
 				preventDefaultAndExecCommand(e, 'selectAll');
-			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y') && !this.markdownMode) {
+			} else if ((keyEvent.metaKey && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_Z) || (keyEvent.ctrlKey && keyEvent.keyCode === KeyCode.KEY_Y) && !this.markdownMode) {
+				// Redo text
 				this.redoRichTextChange();
-			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_Z) {
+				// Undo text
 				this.undoRichTextChange();
-			} else if (e.shiftKey && e.key === 'Tab') {
+			} else if (keyEvent.shiftKey && keyEvent.keyCode === KeyCode.Tab) {
+				// Outdent text
 				preventDefaultAndExecCommand(e, 'outdent');
-			} else if (e.key === 'Tab') {
+			} else if (keyEvent.keyCode === KeyCode.Tab) {
+				// Indent text
 				preventDefaultAndExecCommand(e, 'indent');
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_B) {
+				// Bold text
+				preventDefaultAndExecCommand(e, 'bold');
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_I) {
+				// Italicize text
+				preventDefaultAndExecCommand(e, 'italic');
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_U) {
+				// Underline text
+				preventDefaultAndExecCommand(e, 'underline');
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_K) {
+				// Code Block
+				preventDefaultAndExecCommand(e, 'formatBlock', false, 'pre');
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_H) {
+				// Highlight Text
+				DOM.EventHelper.stop(e, true);
+				highlightSelectedText();
 			}
 		}
 	}
@@ -91,7 +103,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private _previewMode: boolean = true;
 	private _markdownMode: boolean;
 	private _sanitizer: ISanitizer;
-	private _model: NotebookModel;
 	private _activeCellId: string;
 	private readonly _onDidClickLink = this._register(new Emitter<URI>());
 	private markdownRenderer: NotebookMarkdownRenderer;
@@ -101,8 +112,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public readonly onDidClickLink = this._onDidClickLink.event;
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
-	private _highlightRange: NotebookRange;
-	private _isFindActive: boolean = false;
+	private _editorHeight: number;
+	private readonly _markdownMaxHeight = 4000;
 
 	private readonly _undoStack: RichTextEditStack;
 	private readonly _redoStack: RichTextEditStack;
@@ -112,7 +123,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
-		@Inject(INotebookService) private _notebookService: INotebookService
+		@Inject(INotebookService) override notebookService: INotebookService
 	) {
 		super();
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
@@ -176,6 +187,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	ngOnInit() {
+		this._editorHeight = document.querySelector('.editor-container').clientHeight;
 		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
@@ -191,11 +203,47 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			}
 			this._changeRef.detectChanges();
 		}));
-		this._register(this.cellModel.onCellPreviewModeChanged(preview => {
-			this.previewMode = preview;
-			this.focusIfPreviewMode();
-		}));
-		this._register(this.cellModel.onCellMarkdownModeChanged(markdown => {
+		this._register(this.cellModel.onCurrentEditModeChanged(editMode => {
+			let markdown: boolean = editMode !== CellEditModes.WYSIWYG;
+			if (!markdown) {
+				let editorControl = this.cellEditors.length > 0 ? this.cellEditors[0].getEditor().getControl() : undefined;
+				if (editorControl) {
+					let selection = editorControl.getSelection();
+					this.cellModel.markdownCursorPosition = selection?.getPosition();
+				}
+			}
+			// On preview mode change, get the cursor position (get the position only when the selection node is a text node)
+			if (window.getSelection() && window.getSelection().focusNode?.nodeName === '#text' && window.getSelection().getRangeAt(0)) {
+				let selection = window.getSelection().getRangeAt(0);
+				// Check to see if the last cursor position is still the same and skip
+				if (selection.startOffset !== this.cellModel.richTextCursorPosition?.startOffset) {
+					// window.getSelection gives the exact html element and offsets of cursor location
+					// Since we only have the output element reference which is the parent of all html nodes
+					// we iterate through it's child nodes until we get the selection element and store the node indexes
+					// in the startElementNodes and endElementNodes and their offsets respectively.
+					let startElementNodes = [];
+					let startNode = selection.startContainer;
+					let endNode = selection.endContainer;
+					while (startNode !== this.output.nativeElement) {
+						startElementNodes.push(this.getNodeIndex(startNode));
+						startNode = startNode.parentNode;
+					}
+					let endElementNodes = [];
+					while (endNode !== this.output.nativeElement) {
+						endElementNodes.push(this.getNodeIndex(endNode));
+						endNode = endNode.parentNode;
+					}
+					// Create cursor position
+					let cursorPosition: ICaretPosition = {
+						startElementNodes: startElementNodes,
+						startOffset: selection.startOffset,
+						endElementNodes: endElementNodes,
+						endOffset: selection.endOffset
+					};
+					this.cellModel.richTextCursorPosition = cursorPosition;
+				}
+			}
+			this.previewMode = editMode !== CellEditModes.MARKDOWN;
 			this.markdownMode = markdown;
 			this.focusIfPreviewMode();
 		}));
@@ -215,6 +263,17 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				break;
 			}
 		}
+	}
+
+	getNodeIndex(n: Node): number {
+		let i = 0;
+		// walk up the node to the top and get it's index
+		n = n.previousSibling;
+		while (n) {
+			i++;
+			n = n.previousSibling;
+		}
+		return i;
 	}
 
 	public cellGuid(): string {
@@ -262,22 +321,39 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
 				this.addUndoElement(outputElement.innerHTML);
-
+				if (this.markdownMode) {
+					this.setSplitViewHeight();
+				}
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 				outputElement.focus();
-				if (this._isFindActive) {
+				if (this.isFindActive) {
 					this.addDecoration();
 				}
 			}
 		}
 	}
 
+	private setSplitViewHeight(): void {
+		// Set the same height for markdown editor and preview
+		this.setMarkdownEditorHeight(this._editorHeight);
+		let outputElement = <HTMLElement>this.output.nativeElement;
+		outputElement.style.maxHeight = this._editorHeight.toString() + 'px';
+		outputElement.style.overflowY = 'scroll';
+	}
+
+	private setMarkdownEditorHeight(height: number): void {
+		// Find cell editor provider via cell guid to set markdown editor max height
+		let cellEditorProvider = this.markdowncodeCell.find(c => c.cellGuid() === this.cellModel.cellGuid);
+		let markdownEditor = cellEditorProvider?.getEditor();
+		if (markdownEditor) {
+			markdownEditor.setMaximumHeight(height);
+		}
+	}
+
 	private updateCellSource(): void {
 		let textOutputElement = <HTMLElement>this.output.nativeElement;
 		let newCellSource: string = this._htmlMarkdownConverter.convert(textOutputElement.innerHTML);
-		// reset cell attachments to remove unused image data since we're going to go through each of them again
-		this.cellModel.attachments = {};
 		this.cellModel.source = newCellSource;
 		this._changeRef.detectChanges();
 	}
@@ -404,131 +480,54 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private focusIfPreviewMode(): void {
-		if (this.previewMode && !this.markdownMode) {
-			let outputElement = this.output?.nativeElement as HTMLElement;
-			if (outputElement) {
-				outputElement.focus();
+		if (this.previewMode) {
+			if (!this.markdownMode) {
+				let outputElement = this.output?.nativeElement as HTMLElement;
+				if (outputElement) {
+					outputElement.style.maxHeight = 'unset';
+					outputElement.focus();
+				}
+			} else {
+				this.setSplitViewHeight();
 			}
+			// Move cursor to the richTextCursorPosition
+			// We iterate through the output element childnodes to get to the element of cursor location
+			// If the elements exist, we set the selection, else the cursor defaults to beginning.
+			// Only do this if the cell is active so we don't steal the window selection from another cell
+			// since this function is called whenever any cell in the Notebook changes, not just ourself
+			if (this.isActive() && !this.markdownMode && this.cellModel.richTextCursorPosition) {
+				let selection = window.getSelection();
+				let htmlNodes = this.cellModel.richTextCursorPosition.startElementNodes;
+				let depthToNode = htmlNodes.length;
+				let startNodeElement: any = this.output.nativeElement;
+				while (depthToNode-- && startNodeElement) {
+					startNodeElement = startNodeElement.childNodes[htmlNodes[depthToNode]];
+				}
+				htmlNodes = this.cellModel.richTextCursorPosition.endElementNodes;
+				depthToNode = htmlNodes.length;
+				let endNodeElement: any = this.output.nativeElement;
+				while (depthToNode-- && endNodeElement) {
+					endNodeElement = endNodeElement?.childNodes[htmlNodes[depthToNode]];
+				}
+				// check to see if the nodes exist and set the cursor
+				if (startNodeElement && endNodeElement) {
+					// check the offset is still valid (element's text updates can make it invalid)
+					if (startNodeElement.length >= this.cellModel.richTextCursorPosition.startOffset && endNodeElement.length >= this.cellModel.richTextCursorPosition.endOffset) {
+						let range = document.createRange();
+						range.setStart(startNodeElement, this.cellModel.richTextCursorPosition.startOffset);
+						range.setEnd(endNodeElement, this.cellModel.richTextCursorPosition.endOffset);
+						selection.removeAllRanges();
+						selection.addRange(range);
+					}
+				}
+			}
+		} else {
+			this.setMarkdownEditorHeight(this._markdownMaxHeight);
 		}
 	}
 
 	protected isActive(): boolean {
 		return this.cellModel && this.cellModel.id === this.activeCellId;
-	}
-
-	public override deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
-		if (newDecorationsRange) {
-			this._isFindActive = true;
-			if (Array.isArray(newDecorationsRange)) {
-				this.highlightAllMatches();
-			} else {
-				this._highlightRange = newDecorationsRange;
-				this.addDecoration(newDecorationsRange);
-			}
-		}
-		if (oldDecorationsRange) {
-			if (Array.isArray(oldDecorationsRange)) {
-				this.removeDecoration();
-				this._isFindActive = false;
-			} else {
-				this._highlightRange = oldDecorationsRange === this._highlightRange ? undefined : this._highlightRange;
-				this.removeDecoration(oldDecorationsRange);
-			}
-		}
-	}
-
-	private addDecoration(range?: NotebookRange): void {
-		range = range ?? this._highlightRange;
-		if (this.output && this.output.nativeElement) {
-			this.highlightAllMatches();
-			if (range) {
-				let elements = this.getHtmlElements();
-				if (elements?.length >= range.startLineNumber) {
-					let elementContainingText = elements[range.startLineNumber - 1];
-					let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
-
-					markCurrent.markRanges([{
-						start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
-						length: range.endColumn - range.startColumn
-					}], {
-						className: findRangeSpecificClass,
-						each: function (node, range) {
-							// node is the marked DOM element
-							node.scrollIntoView({ behavior: 'smooth', block: 'center' });
-						}
-					});
-				}
-			}
-		}
-	}
-
-	private highlightAllMatches(): void {
-		if (this.output && this.output.nativeElement) {
-			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
-			let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
-			if (editor) {
-				let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
-				if (findModel?.findMatches?.length > 0) {
-					let searchString = findModel.findExpression;
-					markAllOccurances.mark(searchString, {
-						className: findHighlightClass
-					});
-				}
-			}
-		}
-	}
-
-	private removeDecoration(range?: NotebookRange): void {
-		if (this.output && this.output.nativeElement) {
-			if (range) {
-				let elements = this.getHtmlElements();
-				let elementContainingText = elements[range.startLineNumber - 1];
-				let markCurrent = new Mark(elementContainingText);
-				markCurrent.unmark({ acrossElements: true, className: findRangeSpecificClass });
-			} else {
-				let markAllOccurances = new Mark(this.output.nativeElement);
-				markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
-				markAllOccurances.unmark({ acrossElements: true, className: findRangeSpecificClass });
-				this._highlightRange = undefined;
-			}
-		}
-	}
-
-	private getHtmlElements(): any[] {
-		let hostElem = this.output?.nativeElement;
-		let children = [];
-		if (hostElem) {
-			for (let element of hostElem.children) {
-				if (element.nodeName.toLowerCase() === 'table') {
-					// add table header and table rows.
-					if (element.children.length > 0) {
-						children.push(element.children[0]);
-						if (element.children.length > 1) {
-							for (let trow of element.children[1].children) {
-								children.push(trow);
-							}
-						}
-					}
-				} else if (element.children.length > 1) {
-					children = children.concat(this.getChildren(element));
-				} else {
-					children.push(element);
-				}
-			}
-		}
-		return children;
-	}
-
-	private getChildren(parent: any): any[] {
-		let children: any = [];
-		if (parent.children.length > 1 && parent.nodeName.toLowerCase() !== 'li' && parent.nodeName.toLowerCase() !== 'p') {
-			for (let child of parent.children) {
-				children = children.concat(this.getChildren(child));
-			}
-		} else {
-			return parent;
-		}
-		return children;
 	}
 
 	private getRenderedTextOutput(): string[] {
@@ -549,15 +548,15 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (!this.isEditMode && this.doubleClickEditEnabled) {
 			this.toggleEditMode(true);
 		}
-		this.cellModel.active = true;
-		this._model.updateActiveCell(this.cellModel);
+		this._model.updateActiveCell(this.cellModel, true);
 	}
 }
 
-function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string) {
-	// use preventDefault() to avoid invoking the editor's select all
+function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string, showUI?: boolean, value?: string) {
+	// Use preventDefault() to avoid invoking the editor's select all and stopPropagation to prevent further propagation of the current event
+	e.stopPropagation();
 	e.preventDefault();
-	document.execCommand(commandId);
+	document.execCommand(commandId, showUI, value);
 }
 
 /**

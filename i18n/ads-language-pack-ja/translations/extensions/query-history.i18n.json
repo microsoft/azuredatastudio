@@ -9,9 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"queryHistory.displayName": "Query History",
-			"queryHistory.description": "以前に実行したクエリを表示して実行します",
 			"queryHistory.clear": "すべての履歴をクリア",
+			"queryHistory.description": "以前に実行したクエリを表示して実行します",
+			"queryHistory.displayName": "Query History",
 			"queryHistory.toggleCapture": "Query History キャプチャの切り替え"
 		}
 	}

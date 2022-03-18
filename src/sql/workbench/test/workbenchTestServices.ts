@@ -11,7 +11,7 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { TestObjectExplorerService } from 'sql/workbench/services/objectExplorer/test/browser/testObjectExplorerService';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { TestQueryEditorService } from 'sql/workbench/services/queryEditor/test/common/testQueryEditorService';
+import { TestQueryEditorService } from 'sql/workbench/services/queryEditor/test/browser/testQueryEditorService';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { TestQueryManagementService } from 'sql/workbench/services/query/test/common/testQueryManagementService';
 

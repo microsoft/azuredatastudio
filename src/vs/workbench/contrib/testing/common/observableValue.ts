@@ -1,9 +1,10 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Emitter, Event } from 'vs/base/common/event';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { StoredValue } from 'vs/workbench/contrib/testing/common/storedValue';
 
 export interface IObservableValue<T> {
@@ -16,8 +17,8 @@ export const staticObservableValue = <T>(value: T): IObservableValue<T> => ({
 	value,
 });
 
-export class MutableObservableValue<T> implements IObservableValue<T> {
-	private readonly changeEmitter = new Emitter<T>();
+export class MutableObservableValue<T> extends Disposable implements IObservableValue<T> {
+	private readonly changeEmitter = this._register(new Emitter<T>());
 
 	public readonly onDidChange = this.changeEmitter.event;
 
@@ -38,5 +39,7 @@ export class MutableObservableValue<T> implements IObservableValue<T> {
 		return o;
 	}
 
-	constructor(private _value: T) { }
+	constructor(private _value: T) {
+		super();
+	}
 }

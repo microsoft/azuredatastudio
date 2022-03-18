@@ -106,5 +106,13 @@
 	"cms.connectionOptions.packetSize.displayName": "Packet size",
 	"cms.connectionOptions.packetSize.description": "Size in bytes of the network packets used to communicate with an instance of SQL Server",
 	"cms.connectionOptions.typeSystemVersion.displayName": "Type system version",
-	"cms.connectionOptions.typeSystemVersion.description": "Indicates which server type system then provider will expose through the DataReader"
+	"cms.connectionOptions.typeSystemVersion.description": "Indicates which server type system then provider will expose through the DataReader",
+	"cms.connectionOptions.groupName.source": "Source",
+	"cms.connectionOptions.groupName.security": "Security",
+	"cms.connectionOptions.groupName.initialization": "Initialization",
+	"cms.connectionOptions.groupName.connectionResiliency": "Connection Resiliency",
+	"cms.connectionOptions.groupName.context": "Context",
+	"cms.connectionOptions.groupName.pooling": "Pooling",
+	"cms.connectionOptions.groupName.replication": "Replication",
+	"cms.connectionOptions.groupName.advanced": "Advanced"
 }

@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Conceptos básicos del lenguaje R",
-			"description": "Proporciona resaltado de sintaxis y correspondencia de corchetes en archivos de R."
+			"description": "Proporciona resaltado de sintaxis y correspondencia de corchetes en archivos de R.",
+			"displayName": "Conceptos básicos del lenguaje R"
 		}
 	}
 }

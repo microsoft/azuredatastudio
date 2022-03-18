@@ -8,22 +8,22 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Creación de extensiones",
-			"description": "Proporciona funcionalidad de detección de errores para la creación de extensiones."
+		"dist/extensionLinter": {
+			"dataUrlsNotValid": "Las direcciones URL de datos no son un origen de imagen válido.",
+			"embeddedSvgsNotValid": "Los SGV insertados no son un origen de imagen válido.",
+			"httpsRequired": "Las imágenes deben utilizar el protocolo HTTPS.",
+			"relativeBadgeUrlRequiresHttpsRepository": "Las direcciones URL relativas de distintivos requieren un repositorio con el protocolo HTTPS especificado en este archivo package.json.",
+			"relativeIconUrlRequiresHttpsRepository": "Un icono requiere un repositorio con el protocolo HTTPS especificado en este archivo package.json.",
+			"relativeUrlRequiresHttpsRepository": "Las direcciones URL relativas de imágenes requieren un repositorio con el protocolo HTTPS especificado en el archivo package.json.",
+			"svgsNotValid": "Los SVG no son un origen de imagen válido."
 		},
 		"dist/packageDocumentHelper": {
 			"languageSpecificEditorSettings": "Configuración del editor específica del lenguaje",
 			"languageSpecificEditorSettingsDescription": "Reemplazar configuración del editor para lenguaje"
 		},
-		"dist/extensionLinter": {
-			"httpsRequired": "Las imágenes deben utilizar el protocolo HTTPS.",
-			"svgsNotValid": "Los SVG no son un origen de imagen válido.",
-			"embeddedSvgsNotValid": "Los SGV insertados no son un origen de imagen válido.",
-			"dataUrlsNotValid": "Las direcciones URL de datos no son un origen de imagen válido.",
-			"relativeUrlRequiresHttpsRepository": "Las direcciones URL relativas de imágenes requieren un repositorio con el protocolo HTTPS especificado en el archivo package.json.",
-			"relativeIconUrlRequiresHttpsRepository": "Un icono requiere un repositorio con el protocolo HTTPS especificado en este archivo package.json.",
-			"relativeBadgeUrlRequiresHttpsRepository": "Las direcciones URL relativas de distintivos requieren un repositorio con el protocolo HTTPS especificado en este archivo package.json."
+		"package": {
+			"description": "Proporciona funcionalidad de detección de errores para la creación de extensiones.",
+			"displayName": "Creación de extensiones"
 		}
 	}
 }

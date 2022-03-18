@@ -7,13 +7,16 @@ import { localize } from 'vs/nls';
 import { BaseBinaryResourceEditor } from 'vs/workbench/browser/parts/editor/binaryEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { EditorInput, EditorOptions } from 'vs/workbench/common/editor';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { BINARY_FILE_EDITOR_ID } from 'vs/workbench/contrib/files/common/files';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
+import { BINARY_FILE_EDITOR_ID, BINARY_TEXT_FILE_MODE } from 'vs/workbench/contrib/files/common/files';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { EditorOverride } from 'vs/platform/editor/common/editor';
-import { IEditorOverrideService } from 'vs/workbench/services/editor/common/editorOverrideService';
+import { EditorResolution, IEditorOptions } from 'vs/platform/editor/common/editor';
+import { IEditorResolverService, ResolvedStatus, ResolvedEditor } from 'vs/workbench/services/editor/common/editorResolverService';
+import { isEditorInputWithOptions, IEditorInputWithOptionsAndGroup } from 'vs/workbench/common/editor'; // {{SQL CARBON EDIT}} Cast to avoid compiler errors
+import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 /**
  * An implementation of editor for binary files that cannot be displayed.
@@ -26,8 +29,9 @@ export class BinaryFileEditor extends BaseBinaryResourceEditor {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
 		@IEditorService private readonly editorService: IEditorService,
-		@IEditorOverrideService private readonly editorOverrideService: IEditorOverrideService,
-		@IStorageService storageService: IStorageService
+		@IEditorResolverService private readonly editorResolverService: IEditorResolverService,
+		@IStorageService storageService: IStorageService,
+		@IInstantiationService instantiationService: IInstantiationService
 	) {
 		super(
 			BinaryFileEditor.ID,
@@ -36,27 +40,62 @@ export class BinaryFileEditor extends BaseBinaryResourceEditor {
 			},
 			telemetryService,
 			themeService,
-			storageService
+			storageService,
+			instantiationService
 		);
 	}
 
-	private async openInternal(input: EditorInput, options: EditorOptions | undefined): Promise<void> {
-		if (input instanceof FileEditorInput && this.group) {
+	private async openInternal(input: EditorInput, options: IEditorOptions | undefined): Promise<void> {
+		if (input instanceof FileEditorInput && this.group?.activeEditor) {
 
-			// Enforce to open the input as text to enable our text based viewer
-			input.setForceOpenAsText();
+			// We operate on the active editor here to support re-opening
+			// diff editors where `input` may just be one side of the
+			// diff editor.
+			// Since `openInternal` can only ever be selected from the
+			// active editor of the group, this is a safe assumption.
+			// (https://github.com/microsoft/vscode/issues/124222)
+			const activeEditor = this.group.activeEditor;
+			const untypedActiveEditor = activeEditor?.toUntyped();
+			if (!untypedActiveEditor) {
+				return; // we need untyped editor support
+			}
 
-			// Try to let the user pick an override if there is one availabe
-			const overridenInput = await this.editorOverrideService.resolveEditorOverride(input, { ...options, override: EditorOverride.PICK, }, this.group);
+			// Try to let the user pick an editor
+			let resolvedEditor: ResolvedEditor | undefined = await this.editorResolverService.resolveEditor({
+				...untypedActiveEditor,
+				options: {
+					...options,
+					override: EditorResolution.PICK
+				}
+			}, this.group);
 
-			let newOptions = overridenInput?.options ?? options;
-			newOptions = { ...newOptions, override: EditorOverride.DISABLED };
-			// Replace the overrriden input, with the text based input
+			if (resolvedEditor === ResolvedStatus.NONE) {
+				resolvedEditor = undefined;
+			} else if (resolvedEditor === ResolvedStatus.ABORT) {
+				return;
+			}
+
+			// If the result if a file editor, the user indicated to open
+			// the binary file as text. As such we adjust the input for that.
+			if (isEditorInputWithOptions(resolvedEditor)) {
+				for (const editor of resolvedEditor.editor instanceof DiffEditorInput ? [resolvedEditor.editor.original, resolvedEditor.editor.modified] : [resolvedEditor.editor]) {
+					if (editor instanceof FileEditorInput) {
+						editor.setForceOpenAsText();
+						editor.setPreferredMode(BINARY_TEXT_FILE_MODE); // https://github.com/microsoft/vscode/issues/131076
+					}
+				}
+			}
+
+			resolvedEditor = resolvedEditor as IEditorInputWithOptionsAndGroup; // {{SQL CARBON EDIT}} Cast to avoid compiler errors
+			// Replace the active editor with the picked one
 			await this.editorService.replaceEditors([{
-				editor: input,
-				replacement: overridenInput?.editor ?? input,
-				options: newOptions,
-			}], overridenInput?.group ?? this.group);
+				editor: activeEditor,
+				replacement: resolvedEditor?.editor ?? input,
+				options: {
+					...resolvedEditor?.options ?? options,
+					override: EditorResolution.DISABLED
+				}
+			}], this.group);
 		}
 	}
 

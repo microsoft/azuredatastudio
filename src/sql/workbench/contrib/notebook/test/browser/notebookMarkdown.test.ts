@@ -7,9 +7,10 @@ import * as assert from 'assert';
 import * as marked from 'vs/base/common/marked/marked';
 import { NotebookMarkdownRenderer } from '../../browser/outputs/notebookMarkdown';
 import { URI } from 'vs/base/common/uri';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 
 suite('NotebookMarkdownRenderer', () => {
-	let notebookMarkdownRenderer = new NotebookMarkdownRenderer();
+	let notebookMarkdownRenderer = new NotebookMarkdownRenderer(new TestConfigurationService({ user: { 'notebook': { 'useNewMarkdownRenderer': true } } }));
 	test('image rendering conforms to default', () => {
 		const markdown = { value: `![image](someimageurl 'caption')` };
 		const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown(markdown);
@@ -17,7 +18,7 @@ suite('NotebookMarkdownRenderer', () => {
 		const imageFromMarked = marked(markdown.value, {
 			sanitize: true,
 			renderer
-		}).trim();
+		}).trim().replace('someimageurl', 'vscode-file://vscode-app/someimageurl');
 		assert.strictEqual(result.innerHTML, imageFromMarked);
 	});
 
@@ -25,40 +26,40 @@ suite('NotebookMarkdownRenderer', () => {
 		const markdown = { value: `![image](someimageurl)` };
 		const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown(markdown);
 		const renderer = new marked.Renderer();
-		const imageFromMarked = marked(markdown.value, {
+		let imageFromMarked = marked(markdown.value, {
 			sanitize: true,
 			renderer
-		}).trim();
+		}).trim().replace('someimageurl', 'vscode-file://vscode-app/someimageurl');
 		assert.strictEqual(result.innerHTML, imageFromMarked);
 	});
 
 	test('image width from title params', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![image](someimageurl|width=100 'caption')` });
-		assert.strictEqual(result.innerHTML, `<p><img src="someimageurl" alt="image" title="caption" width="100"></p>`);
+		assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/someimageurl" alt="image" title="caption" width="100"></p>`);
 	});
 
 	test('image height from title params', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![image](someimageurl|height=100 'caption')` });
-		assert.strictEqual(result.innerHTML, `<p><img src="someimageurl" alt="image" title="caption" height="100"></p>`);
+		assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/someimageurl" alt="image" title="caption" height="100"></p>`);
 	});
 
 	test('image width and height from title params', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![image](someimageurl|height=200,width=100 'caption')` });
-		assert.strictEqual(result.innerHTML, `<p><img src="someimageurl" alt="image" title="caption" width="100" height="200"></p>`);
+		assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/someimageurl" alt="image" title="caption" width="100" height="200"></p>`);
 	});
 
 	test('link from local file path', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[Link to File Path](someFileurl)`, isTrusted: true });
-		assert.strictEqual(result.innerHTML, `<p><a href="someFileurl" data-href="someFileurl" title="someFileurl" is-absolute="false">Link to File Path</a></p>`);
+		assert.strictEqual(result.innerHTML, `<p><a href="someFileurl" data-href="someFileurl" title="someFileurl" is-markdown="true" is-absolute="false">Link to File Path</a></p>`);
 	});
 
 	test('link from relative file path', () => {
 		notebookMarkdownRenderer.setNotebookURI(URI.parse(`foo/temp/file1.txt`));
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[Link to relative path](../test/build/someimageurl)`, isTrusted: true });
 		if (process.platform === 'win32') {
-			assert.strictEqual(result.innerHTML, `<p><a href="\\foo\\test\\build\\someimageurl" data-href="\\foo\\test\\build\\someimageurl" title="\\foo\\test\\build\\someimageurl" is-absolute="false">Link to relative path</a></p>`);
+			assert.strictEqual(result.innerHTML, `<p><a href="\\foo\\test\\build\\someimageurl" data-href="\\foo\\test\\build\\someimageurl" title="\\foo\\test\\build\\someimageurl" is-markdown="true" is-absolute="false">Link to relative path</a></p>`);
 		} else {
-			assert.strictEqual(result.innerHTML, `<p><a href="/foo/test/build/someimageurl" data-href="/foo/test/build/someimageurl" title="/foo/test/build/someimageurl" is-absolute="false">Link to relative path</a></p>`);
+			assert.strictEqual(result.innerHTML, `<p><a href="/foo/test/build/someimageurl" data-href="/foo/test/build/someimageurl" title="/foo/test/build/someimageurl" is-markdown="true" is-absolute="false">Link to relative path</a></p>`);
 		}
 	});
 
@@ -71,17 +72,17 @@ suite('NotebookMarkdownRenderer', () => {
 
 	test('email in markdown format renders properly', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[test@email.com](mailto:test@email.com)`, isTrusted: true });
-		assert.strictEqual(result.innerHTML, `<p><a href="mailto:test@email.com" data-href="mailto:test@email.com" title="mailto:test@email.com" is-absolute="false">test@email.com</a></p>`);
+		assert.strictEqual(result.innerHTML, `<p><a href="mailto:test@email.com" data-href="mailto:test@email.com" title="mailto:test@email.com" is-markdown="true" is-absolute="false">test@email.com</a></p>`);
 	});
 
 	test('email inserted directly renders properly', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `test@email.com`, isTrusted: true });
-		assert.strictEqual(result.innerHTML, `<p><a href="mailto:test@email.com" data-href="mailto:test@email.com" title="mailto:test@email.com" is-absolute="false">test@email.com</a></p>`);
+		assert.strictEqual(result.innerHTML, `<p><a href="mailto:test@email.com" data-href="mailto:test@email.com" title="mailto:test@email.com" is-markdown="true" is-absolute="false">test@email.com</a></p>`);
 	});
 
 	test('link to https with query parameters', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[test](https://www.test.com?test=&test2=)`, isTrusted: true });
-		assert.strictEqual(result.innerHTML, `<p><a href="https://www.test.com?test=&amp;test2=" data-href="https://www.test.com?test=&amp;test2=" title="https://www.test.com?test=&amp;test2=" is-absolute="false">test</a></p>`);
+		assert.strictEqual(result.innerHTML, `<p><a href="https://www.test.com?test=&amp;test2=" data-href="https://www.test.com?test=&amp;test2=" title="https://www.test.com?test=&amp;test2=" is-markdown="true" is-absolute="false">test</a></p>`);
 	});
 
 	test('cell attachment image', () => {
@@ -98,10 +99,46 @@ suite('NotebookMarkdownRenderer', () => {
 		assert.strictEqual(result.innerHTML, `<p><img src="attachment:ads.png" alt="altText"></p>`, 'Cell attachment name not found failed');
 
 		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachments:ads.png)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads2.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}') });
-		assert.strictEqual(result.innerHTML, `<p><img src="attachments:ads.png" alt="altText"></p>`, 'Cell attachment scheme mismatch failed');
+		assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/attachments:ads.png" alt="altText"></p>`, 'Cell attachment scheme mismatch failed');
 
 		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads.png)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads2.png":"image/png"}') });
 		assert.strictEqual(result.innerHTML, `<p><img src="attachment:ads.png" alt="altText"></p>`, 'Cell attachment no image data failed');
+	});
+
+	suite('Schema validation', function () {
+		test('https', () => {
+			const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![](https://example.com)` });
+			assert.strictEqual(result.innerHTML, `<p><img src="https://example.com/"></p>`, 'HTTPS schema link should not be modified');
+		});
+		test('http', () => {
+			const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![](http://example.com)` });
+			assert.strictEqual(result.innerHTML, `<p><img src="http://example.com/"></p>`, 'HTTP schema link should not be modified');
+		});
+		test('attachment & data', () => {
+			const result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads.png)`, isTrusted: false }, { cellAttachments: JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}') });
+			assert.strictEqual(result.innerHTML, `<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAggg==" alt="altText"></p>`, 'Cell with attachment should have attachment URI not be modified');
+		});
+		test('vscode-file', () => {
+			const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![](vscode-file://vscode-app/mypath)` });
+			assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/mypath"></p>`, 'vscode-file schema link should not be modified');
+		});
+		test('file', () => {
+			const filePath = URI.parse(__filename).fsPath;
+			const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![](${filePath})` });
+			let renderedPath = filePath.replace(/\\/g, '/');
+			// Unix filesystems start with / which is deduplicated in the final src URI - so just remove that now if it exists
+			renderedPath = renderedPath.startsWith('/') ? renderedPath.slice(1) : renderedPath;
+			assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/${renderedPath}"></p>`, 'file links should have vscode-file schema added');
+		});
+		test('unknown', () => {
+			const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![](unknown://some/path)` });
+			assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/unknown://some/path"></p>`, 'unknown schema should be treated like a path and have vscode-file schema added');
+		});
+	});
+
+	test('table followed by blank line with space and then header renders correctly (#16245)', function (): void {
+		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: '<table></table>\n \n### Hello', isTrusted: true });
+		assert.strictEqual(result.innerHTML, '<table></table>\n \n<h3 id="hello">Hello</h3>\n');
 	});
 
 	/**
@@ -116,7 +153,7 @@ suite('NotebookMarkdownRenderer', () => {
 		suite('Notebook 91e764e1-95ce-4101-a08b-d1d7888649a4', function (): void {
 			test('Cell 74d8d9db-1b08-4a50-ac2a-e35a16a6af07', function (): void {
 				const markdown = '1) Item 1\n\n2) Item 2\n\n 1) Sub-item 1\n\n 2) Sub-item 2\n\n';
-				const expectedValue = '<ol>\n<li><p>Item 1</p></li>\n<li><p>Item 2</p><ol>\n<li><p>Sub-item 1</p></li>\n<li><p>Sub-item 2</p></li>\n</ol>\n</li>\n</ol>\n';
+				const expectedValue = '<ol>\n<li><p>Item 1</p></li>\n<li><p>Item 2</p></li>\n<li><p>Sub-item 1</p></li>\n<li><p>Sub-item 2</p></li>\n</ol>\n';
 				const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
 				assert.strictEqual(result, expectedValue);
 			});
@@ -125,7 +162,7 @@ suite('NotebookMarkdownRenderer', () => {
 		suite('Notebook 15f7b65e-5bcf-43bd-9e75-84c47a0a6e84', function (): void {
 			test('Cell 8b48e63f-abdd-4306-a988-b673d13aab06', function (): void {
 				const markdown = '    ![](attachment:image.png)';
-				const expectedValue = '<pre><code>![](attachment:image.png)</code></pre>\n';
+				const expectedValue = '<pre><code>![](attachment:image.png)\n</code></pre>\n';
 				const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
 				assert.strictEqual(result, expectedValue);
 			});
@@ -134,7 +171,7 @@ suite('NotebookMarkdownRenderer', () => {
 		suite('Notebook e054f8e1-f014-4c7c-8a55-65bf13b22bb5', function (): void {
 			test('Cell 0981d264-25f5-489c-901b-74608297f7fc', function (): void {
 				const markdown = 'Some text **%appdata%\\*****Path\\\\To\\\\Folder\\\\<******FileName**>.ext** into **...\\\\Another\\\\****Path\\\\**\n\n';
-				const expectedValue = '<p>Some text <strong>%appdata%***</strong>Path\\To\\Folder\\&lt;******FileName**&gt;.ext** into <strong>...\\Another\\**</strong>Path\\**</p>';
+				const expectedValue = '<p>Some text **%appdata%***<strong>Path\\To\\Folder\\&lt;******FileName**&gt;.ext</strong> into **...\\Another\\***<em>Path\\*</em></p>';
 				const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
 				assert.strictEqual(result, expectedValue);
 			});
@@ -143,7 +180,7 @@ suite('NotebookMarkdownRenderer', () => {
 		suite('Notebook ????', function (): void {
 			test('Cell b74f16a2-5b2e-4e58-8c79-9688d6b1f62a', function (): void {
 				const markdown = '# Heading 1\n- Some text\n\n    \n\n- ## Heading 2';
-				const expectedValue = '<h1 id="heading-1">Heading 1</h1>\n<ul>\n<li>Some text</li>\n</ul>\n<ul>\n<li><h2 id="heading-2">Heading 2</h2>\n</li>\n</ul>\n';
+				const expectedValue = '<h1 id="heading-1">Heading 1</h1>\n<ul>\n<li><p>Some text</p></li>\n<li><h2 id="heading-2">Heading 2</h2>\n</li>\n</ul>\n';
 				const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
 				assert.strictEqual(result, expectedValue);
 			});
@@ -152,7 +189,7 @@ suite('NotebookMarkdownRenderer', () => {
 		suite('Notebook 56e15822-f884-42ed-944c-789ff8961ba9', function (): void {
 			test('Cell 8b341e16-113f-4ec4-b937-c02884bdb9f3', function (): void {
 				const markdown = 'Some text\n\n      Some more text';
-				const expectedValue = '<p>Some text</p><pre><code>  Some more text</code></pre>\n';
+				const expectedValue = '<p>Some text</p><pre><code>  Some more text\n</code></pre>\n';
 				const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
 				assert.strictEqual(result, expectedValue);
 			});
@@ -161,7 +198,7 @@ suite('NotebookMarkdownRenderer', () => {
 		suite('Notebook 03b95d90-a0fc-43c8-b77b-d506f2002904', function (): void {
 			test('Cell e557e19c-8afa-40e4-a61d-ab08443562ee', function (): void {
 				const markdown = '# heading\n##';
-				const expectedValue = '<h1 id="heading">heading</h1>\n<p>##</p>';
+				const expectedValue = '<h1 id="heading">heading</h1>\n<h2 id=""></h2>\n';
 				const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
 				assert.strictEqual(result, expectedValue);
 			});
@@ -170,14 +207,14 @@ suite('NotebookMarkdownRenderer', () => {
 		suite('Notebook 8c6d7dc3-4cc9-4b23-93f6-a556a6d5c6f2', function (): void {
 			test('Cell 241d5f74-ba48-4ec4-be0e-02182f20f691', function (): void {
 				const markdown = '1. List item text\n\n \n\n    a. sub-list item';
-				const expectedValue = '<ol>\n<li>List item text</li>\n</ol>\n<pre><code>a. sub-list item</code></pre>\n';
+				const expectedValue = '<ol>\n<li><p>List item text</p><p> a. sub-list item</p></li>\n</ol>\n';
 				const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
 				assert.strictEqual(result, expectedValue);
 			});
 
 			test('Cell 8e45da0e-5c24-469e-8ae5-671313bd54a1', function (): void {
 				const markdown = '1.  List Item\n\n    \n\n2.  List Item 2';
-				const expectedValue = '<ol>\n<li> List Item</li>\n</ol>\n<ol start="2">\n<li> List Item 2</li>\n</ol>\n';
+				const expectedValue = '<ol>\n<li><p>List Item</p></li>\n<li><p> List Item 2</p></li>\n</ol>\n';
 				const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
 				assert.strictEqual(result, expectedValue);
 			});
@@ -186,14 +223,14 @@ suite('NotebookMarkdownRenderer', () => {
 		suite('Notebook 1a0c01d2-a688-4e51-b39f-04cffb25e7ca', function (): void {
 			test('Cell a2b18efc-bb62-49fa-913d-e953677150ca', function (): void {
 				const markdown = '1. List Item\r\n\nText on new line\r\n\n    a. Sub List Item';
-				const expectedValue = '<ol>\n<li>List Item</li>\n</ol>\n<p>Text on new line</p><pre><code>a. Sub List Item</code></pre>\n';
+				const expectedValue = '<ol>\n<li>List Item</li>\n</ol>\n<p>Text on new line</p><pre><code>a. Sub List Item\n</code></pre>\n';
 				const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
 				assert.strictEqual(result, expectedValue);
 			});
 
 			test('Cell e6ad1eb3-7409-4199-9592-9d13f1e2d8a0', function (): void {
 				const markdown = '1. Text \n\nMore text \n\n    a. Sub-Text';
-				const expectedValue = '<ol>\n<li>Text </li>\n</ol>\n<p>More text </p><pre><code>a. Sub-Text</code></pre>\n';
+				const expectedValue = '<ol>\n<li>Text </li>\n</ol>\n<p>More text </p><pre><code>a. Sub-Text\n</code></pre>\n';
 				const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
 				assert.strictEqual(result, expectedValue);
 			});

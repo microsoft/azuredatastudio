@@ -7,7 +7,7 @@ import 'vs/css!./notebookViewsGrid';
 import { Component, OnInit, ViewChildren, QueryList, Input, Inject, forwardRef, ChangeDetectorRef, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { GridStack, GridStackEvent, GridStackNode } from 'gridstack';
+import { GridItemHTMLElement, GridStack, GridStackEvent, GridStackNode } from 'gridstack';
 import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { CardChangeEvent, CellChangeEvent, INotebookView, INotebookViewCard } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
@@ -43,8 +43,8 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	protected readonly tabTransfer = LocalSelectionTransfer.getInstance<NotebookViewsCardTabComponent>();
 
 	protected _options: INotebookViewsGridOptions = {
-		cellHeight: 60
-	};
+		cellHeight: 30
+	};;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -75,9 +75,13 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 		this._loaded = true;
 		this.detectChanges();
 
-		self._grid.on('added', function (e: Event, items: GridStackNode[]) { if (self._gridEnabled) { self.persist('added', items, self._grid, self._items); } });
-		self._grid.on('removed', function (e: Event, items: GridStackNode[]) { if (self._gridEnabled) { self.persist('removed', items, self._grid, self._items); } });
-		self._grid.on('change', function (e: Event, items: GridStackNode[]) { if (self._gridEnabled) { self.persist('change', items, self._grid, self._items); } });
+		let getGridStackItems = (items: GridStackNode[] | GridItemHTMLElement): GridStackNode[] => {
+			return Array.isArray(items) ? items : (items?.gridstackNode ? [items.gridstackNode] : []);
+		};
+
+		self._grid.on('added', function (e: Event, items: GridStackNode[] | GridItemHTMLElement) { if (self._gridEnabled) { self.persist('added', getGridStackItems(items), self._grid, self._items); } });
+		self._grid.on('removed', function (e: Event, items: GridStackNode[] | GridItemHTMLElement) { if (self._gridEnabled) { self.persist('removed', getGridStackItems(items), self._grid, self._items); } });
+		self._grid.on('change', function (e: Event, items: GridStackNode[] | GridItemHTMLElement) { if (self._gridEnabled) { self.persist('change', getGridStackItems(items), self._grid, self._items); } });
 	}
 
 	ngAfterContentChecked() {
@@ -87,6 +91,11 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 				this.destroyGrid();
 				this._grid = undefined;
 			}
+		}
+
+		if (this.model?.activeCell?.id !== this._activeCell?.id) {
+			this._activeCell = this.model.activeCell;
+			this.detectChanges();
 		}
 	}
 
@@ -109,6 +118,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 
 	private destroyGrid() {
 		if (this._grid) {
+			this._loaded = false;
 			this._gridEnabled = false;
 			this._grid.destroy(false);
 		}
@@ -131,12 +141,14 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 			alwaysShowResizeHandle: true,
 			styleInHead: true,
 			margin: 2,
+			cellHeight: this._options.cellHeight,
 			staticGrid: false,
 		});
 
+
 		this._gridEnabled = true;
 
-		//this.updateGrid();
+		this.updateGrid();
 	}
 
 	/**
@@ -150,11 +162,13 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 		this._grid.batchUpdate();
 		this.activeView.cells.forEach(cell => {
 			const el = this._grid.getGridItems().find(x => x.getAttribute('data-cell-id') === cell.cellGuid);
-			const cellData = this.activeView.getCellMetadata(cell);
-			this._grid.update(el, { x: cellData.x, y: cellData.y, w: cellData.width, h: cellData.height });
+			if (el) {
+				const cellData = this.activeView.getCellMetadata(cell);
+				this._grid.update(el, { x: cellData.x, y: cellData.y, w: cellData.width, h: cellData.height });
 
-			if (cellData?.hidden) {
-				this._grid.removeWidget(el, false); // Do not trigger event for batch update
+				if (cellData?.hidden) {
+					this._grid.removeWidget(el, false); // Do not trigger event for batch update
+				}
 			}
 		});
 		this._grid.commit();

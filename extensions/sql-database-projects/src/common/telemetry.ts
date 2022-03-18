@@ -15,7 +15,8 @@ export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, pack
 export enum TelemetryViews {
 	ProjectController = 'ProjectController',
 	SqlProjectPublishDialog = 'SqlProjectPublishDialog',
-	ProjectTree = 'ProjectTree'
+	ProjectTree = 'ProjectTree',
+	SqlBindingsQuickPick = 'SqlBindingsQuickPick'
 }
 
 export enum TelemetryActions {
@@ -32,5 +33,7 @@ export enum TelemetryActions {
 	build = 'build',
 	updateProjectForRoundtrip = 'updateProjectForRoundtrip',
 	changePlatformType = 'changePlatformType',
-	updateSystemDatabaseReferencesInProjFile = 'updateSystemDatabaseReferencesInProjFile'
+	updateSystemDatabaseReferencesInProjFile = 'updateSystemDatabaseReferencesInProjFile',
+	startAddSqlBinding = 'startAddSqlBinding',
+	finishAddSqlBinding = 'finishAddSqlBinding'
 }

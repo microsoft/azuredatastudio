@@ -8,35 +8,35 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"client\\dist\\node/jsonClient": {
+			"configureLimit": "使用設定 '{0}' 來設定限制。",
+			"goToSetting": "開啟設定",
+			"json.resolveError": "JSON: 結構描述解析錯誤",
+			"json.schemaResolutionDisabledMessage": "已停用下載結構描述。按一下以進行設定。",
+			"json.schemaResolutionErrorMessage": "無法解析結構描述。按一下以重試。",
+			"jsonserver.name": "JSON 語言伺服器",
+			"ok": "確定",
+			"schemaDownloadDisabled": "已透過設定 '{0}' 停用下載結構描述",
+			"untitled.schema": "無法載入 {0}",
+			"yes never again": "不再顯示"
+		},
 		"package": {
-			"displayName": "JSON 語言功能",
 			"description": "為 JSON 檔案提供豐富的語言支援",
+			"displayName": "JSON 語言功能",
+			"json.clickToRetry": "按一下以重試。",
+			"json.colorDecorators.enable.deprecationMessage": "設定 `json.colorDecorators.enable` 已淘汰，將改為 `editor.colorDecorators`。",
+			"json.colorDecorators.enable.desc": "啟用或停用彩色裝飾項目",
+			"json.enableSchemaDownload.desc": "若啟用，則可以從 http 和 https 位置擷取 JSON 結構描述。",
+			"json.format.enable.desc": "啟用/停用預設 JSON 格式器",
+			"json.maxItemsComputed.desc": "大綱符號和計算摺疊區域的數目上限 (因效能原因限制)。",
+			"json.maxItemsExceededInformation.desc": "超過大綱符號和摺疊區域的數目上限時顯示通知。",
+			"json.schemaResolutionErrorMessage": "無法解析結構描述。",
 			"json.schemas.desc": "在結構描述與目前專案的 JSON 檔案之間建立關聯。",
-			"json.schemas.url.desc": "目前目錄中的結構描述 URL 或結構描述相對路徑",
 			"json.schemas.fileMatch.desc": "各種在將 JSON 檔案解析為結構描述時，用以比對的檔案樣式。可使用 '*' 作為萬用字元，也可在開頭使用 '!' 來定義排除樣式。只要有一個比對樣式，就會比對檔案，而且最後一個比對樣式不得為排除樣式。",
 			"json.schemas.fileMatch.item.desc": "可包含 '*' 的檔案模式，在將 JSON 檔案解析成結構描述時的比對對象。",
 			"json.schemas.schema.desc": "指定 URL 的結構描述定義。只須提供結構描述以避免存取結構描述 URL。",
-			"json.format.enable.desc": "啟用/停用預設 JSON 格式器",
-			"json.tracing.desc": "追蹤 VS Code 與 JSON 語言伺服器之間的通訊。",
-			"json.colorDecorators.enable.desc": "啟用或停用彩色裝飾項目",
-			"json.colorDecorators.enable.deprecationMessage": "設定 `json.colorDecorators.enable` 已淘汰，將改為 `editor.colorDecorators`。",
-			"json.schemaResolutionErrorMessage": "無法解析結構描述。",
-			"json.clickToRetry": "按一下以重試。",
-			"json.maxItemsComputed.desc": "大綱符號和計算摺疊區域的數目上限 (因效能原因限制)。",
-			"json.maxItemsExceededInformation.desc": "超過大綱符號和摺疊區域的數目上限時顯示通知。",
-			"json.enableSchemaDownload.desc": "若啟用，則可以從 http 和 https 位置擷取 JSON 結構描述。"
-		},
-		"client\\dist\\node/jsonClient": {
-			"json.resolveError": "JSON: 結構描述解析錯誤",
-			"jsonserver.name": "JSON 語言伺服器",
-			"untitled.schema": "無法載入 {0}",
-			"schemaDownloadDisabled": "已透過設定 '{0}' 停用下載結構描述",
-			"ok": "確定",
-			"goToSetting": "開啟設定",
-			"yes never again": "不再顯示",
-			"configureLimit": "使用設定 '{0}' 來設定限制。",
-			"json.schemaResolutionErrorMessage": "無法解析結構描述。按一下以重試。",
-			"json.schemaResolutionDisabledMessage": "已停用下載結構描述。按一下以進行設定。"
+			"json.schemas.url.desc": "目前目錄中的結構描述 URL 或結構描述相對路徑",
+			"json.tracing.desc": "追蹤 VS Code 與 JSON 語言伺服器之間的通訊。"
 		}
 	}
 }

@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Markdown 語言基礎知識",
-			"description": "為 Markdown 提供程式碼片段和語法醒目提示。"
+			"description": "為 Markdown 提供程式碼片段和語法醒目提示。",
+			"displayName": "Markdown 語言基礎知識"
 		}
 	}
 }

@@ -6,7 +6,6 @@
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { assign } from 'vs/base/common/objects';
 
 export interface INewConnectionProfileGroup {
 	id?: string;
@@ -56,7 +55,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 			});
 		}
 
-		return assign({}, { name: this.name, id: this.id, parentId: this.parentId, children: subgroups, color: this.color, description: this.description });
+		return Object.assign({}, { name: this.name, id: this.id, parentId: this.parentId, children: subgroups, color: this.color, description: this.description });
 	}
 
 	public get groupName(): string {

@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Thème Monokai Dimmed",
 			"description": "Thème Monokai Dimmed pour Visual Studio Code",
+			"displayName": "Thème Monokai Dimmed",
 			"themeLabel": "Monokai estompé"
 		}
 	}

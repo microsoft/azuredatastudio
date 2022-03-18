@@ -628,10 +628,17 @@ export interface SchemaCompareGenerateScriptParams {
 	taskExecutionMode: TaskExecutionMode;
 }
 
-export interface SchemaComparePublishChangesParams {
+export interface SchemaComparePublishDatabaseChangesParams {
 	operationId: string;
 	targetServerName: string;
 	targetDatabaseName: string;
+	taskExecutionMode: TaskExecutionMode;
+}
+
+export interface SchemaComparePublishProjectChangesParams {
+	operationId: string;
+	targetProjectPath: string;
+	targetFolderStructure: mssql.ExtractTarget;
 	taskExecutionMode: TaskExecutionMode;
 }
 
@@ -673,7 +680,15 @@ export namespace SchemaCompareGenerateScriptRequest {
 }
 
 export namespace SchemaComparePublishChangesRequest {
-	export const type = new RequestType<SchemaComparePublishChangesParams, azdata.ResultStatus, void, void>('schemaCompare/publish');
+	export const type = new RequestType<SchemaComparePublishDatabaseChangesParams, azdata.ResultStatus, void, void>('schemaCompare/publish');
+}
+
+export namespace SchemaComparePublishDatabaseChangesRequest {
+	export const type = new RequestType<SchemaComparePublishDatabaseChangesParams, azdata.ResultStatus, void, void>('schemaCompare/publishDatabase');
+}
+
+export namespace SchemaComparePublishProjectChangesRequest {
+	export const type = new RequestType<SchemaComparePublishProjectChangesParams, mssql.SchemaComparePublishProjectResult, void, void>('schemaCompare/publishProject');
 }
 
 export namespace SchemaCompareGetDefaultOptionsRequest {
@@ -1023,4 +1038,79 @@ export namespace GetSqlMigrationAssessmentItemsRequest {
 	export const type = new RequestType<SqlMigrationAssessmentParams, mssql.AssessmentResult, void, void>('migration/getassessments');
 }
 
+export interface SqlMigrationSkuRecommendationsParams {
+	dataFolder: string;
+	perfQueryIntervalInSec: number;
+	targetPlatforms: string[];
+	targetSqlInstance: string;
+	targetPercentile: number;
+	scalingFactor: number;
+	startTime: string;
+	endTime: string;
+	includePreviewSkus: boolean;
+	databaseAllowList: string[];
+}
+
+export namespace GetSqlMigrationSkuRecommendationsRequest {
+	export const type = new RequestType<SqlMigrationSkuRecommendationsParams, mssql.SkuRecommendationResult, void, void>('migration/getskurecommendations');
+}
+
+export interface SqlMigrationStartPerfDataCollectionParams {
+	ownerUri: string,
+	dataFolder: string,
+	perfQueryIntervalInSec: number,
+	staticQueryIntervalInSec: number,
+	numberOfIterations: number
+}
+
+export namespace SqlMigrationStartPerfDataCollectionRequest {
+	export const type = new RequestType<SqlMigrationStartPerfDataCollectionParams, mssql.StartPerfDataCollectionResult, void, void>('migration/startperfdatacollection');
+}
+
+export interface SqlMigrationStopPerfDataCollectionParams {
+}
+
+export namespace SqlMigrationStopPerfDataCollectionRequest {
+	export const type = new RequestType<SqlMigrationStopPerfDataCollectionParams, mssql.StopPerfDataCollectionResult, void, void>('migration/stopperfdatacollection');
+}
+
+export interface SqlMigrationRefreshPerfDataCollectionParams {
+	lastRefreshTime: Date
+}
+
+export namespace SqlMigrationRefreshPerfDataCollectionRequest {
+	export const type = new RequestType<SqlMigrationRefreshPerfDataCollectionParams, mssql.RefreshPerfDataCollectionResult, void, void>('migration/refreshperfdatacollection');
+}
+
 // ------------------------------- <Sql Migration> -----------------------------
+
+// ------------------------------- < Table Designer > ------------------------------------
+
+export interface TableDesignerEditRequestParams {
+	tableInfo: azdata.designers.TableInfo,
+	tableChangeInfo: azdata.designers.DesignerEdit
+}
+
+export namespace InitializeTableDesignerRequest {
+	export const type = new RequestType<azdata.designers.TableInfo, azdata.designers.TableDesignerInfo, void, void>('tabledesigner/initialize');
+}
+
+export namespace ProcessTableDesignerEditRequest {
+	export const type = new RequestType<TableDesignerEditRequestParams, azdata.designers.DesignerEditResult, void, void>('tabledesigner/processedit');
+}
+
+export namespace PublishTableDesignerChangesRequest {
+	export const type = new RequestType<azdata.designers.TableInfo, azdata.designers.PublishChangesResult, void, void>('tabledesigner/publish');
+}
+
+export namespace TableDesignerGenerateScriptRequest {
+	export const type = new RequestType<azdata.designers.TableInfo, string, void, void>('tabledesigner/script');
+}
+
+export namespace TableDesignerGenerateChangePreviewReportRequest {
+	export const type = new RequestType<azdata.designers.TableInfo, string, void, void>('tabledesigner/generatepreviewreport');
+}
+export namespace DisposeTableDesignerRequest {
+	export const type = new RequestType<azdata.designers.TableInfo, void, void, void>('tabledesigner/dispose');
+}
+// ------------------------------- < Table Designer > ------------------------------------

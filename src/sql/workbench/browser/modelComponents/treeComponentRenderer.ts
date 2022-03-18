@@ -67,6 +67,13 @@ export class TreeDataTemplate extends Disposable {
 		}
 	}
 
+	/**
+	 * Sets the `aria-label` of the checkbox element associated with the tree node.
+	 */
+	public set checkboxLabel(value: string) {
+		this._checkbox.setAttribute('aria-label', value);
+	}
+
 	public set enableCheckbox(value: boolean) {
 		if (value === undefined) {
 			value = true;
@@ -140,11 +147,11 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 	 */
 	public renderElement(tree: ITree, element: ITreeComponentItem, templateId: string, templateData: TreeDataTemplate): void {
 		const icon = this.themeService.getColorTheme().type === ColorScheme.LIGHT ? element.icon : element.iconDark;
-		const iconUri = icon ? URI.revive(icon) : null;
-		templateData.icon.style.backgroundImage = iconUri ? `url('${iconUri.toString(true)}')` : '';
+		const iconUri = icon ? URI.revive(icon) : undefined;
+		templateData.icon.style.backgroundImage = dom.asCSSUrl(iconUri);
 		templateData.icon.style.backgroundRepeat = 'no-repeat';
 		templateData.icon.style.backgroundPosition = 'center';
-		dom.toggleClass(templateData.icon, 'model-view-tree-node-item-icon', !!icon);
+		templateData.icon.classList.toggle('model-view-tree-node-item-icon', !!icon);
 		if (element) {
 			element.onCheckedChanged = (checked: boolean) => {
 				this._dataProvider.onNodeCheckedChanged(element.handle, checked);
@@ -160,8 +167,13 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 		let label = treeNode.label;
 		templateData.label.textContent = label.label;
 		templateData.root.title = label.label;
-		templateData.checkboxState = this.getCheckboxState(treeNode);
-		templateData.enableCheckbox = treeNode.enabled;
+
+		if (templateData.checkbox) {
+			// Set the properties of the node's checkbox, if it is present
+			templateData.checkboxState = this.getCheckboxState(treeNode);
+			templateData.enableCheckbox = treeNode.enabled;
+			templateData.checkboxLabel = label.label;
+		}
 	}
 
 	private getCheckboxState(treeNode: ITreeComponentItem): TreeCheckboxState {

@@ -5,8 +5,8 @@
 
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IEditorInput, IEditorPane, GroupIdentifier, IEditorInputWithOptions, CloseDirection, IEditorPartOptions, IEditorPartOptionsChangeEvent, EditorsOrder, IVisibleEditorPane, IEditorCloseEvent, IEditorMoveEvent } from 'vs/workbench/common/editor';
-import { IEditorOptions, ITextEditorOptions } from 'vs/platform/editor/common/editor';
+import { IEditorInput, IEditorPane, GroupIdentifier, IEditorInputWithOptions, CloseDirection, IEditorPartOptions, IEditorPartOptionsChangeEvent, EditorsOrder, IVisibleEditorPane, IEditorCloseEvent, IEditorMoveEvent, IEditorOpenEvent, IUntypedEditorInput, isEditorInput } from 'vs/workbench/common/editor';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IDimension } from 'vs/editor/common/editorCommon';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -101,13 +101,19 @@ export interface ICloseAllEditorsOptions {
 export interface IEditorReplacement {
 	editor: IEditorInput;
 	replacement: IEditorInput;
-	options?: IEditorOptions | ITextEditorOptions;
+	options?: IEditorOptions;
 
 	/**
 	 * Skips asking the user for confirmation and doesn't
 	 * save the document. Only use this if you really need to!
 	 */
 	forceReplaceDirty?: boolean;
+}
+
+export function isEditorReplacement(replacement: unknown): replacement is IEditorReplacement {
+	const candidate = replacement as IEditorReplacement | undefined;
+
+	return isEditorInput(candidate?.editor) && isEditorInput(candidate?.replacement);
 }
 
 export const enum GroupsOrder {
@@ -169,6 +175,11 @@ export interface IEditorGroupsService {
 	readonly onDidChangeGroupIndex: Event<IEditorGroup>;
 
 	/**
+	 * An event for when the locked state of a group changes.
+	 */
+	readonly onDidChangeGroupLocked: Event<IEditorGroup>;
+
+	/**
 	 * The size of the editor groups area.
 	 */
 	readonly contentDimension: IDimension;
@@ -216,11 +227,6 @@ export interface IEditorGroupsService {
 	 * resolve.
 	 */
 	readonly whenRestored: Promise<void>;
-
-	/**
-	 * Will return `true` as soon as `whenRestored` is resolved.
-	 */
-	isRestored(): boolean;
 
 	/**
 	 * Find out if the editor group service has UI state to restore
@@ -295,7 +301,7 @@ export interface IEditorGroupsService {
 	 * @param source optional source to search from
 	 * @param wrap optionally wrap around if reaching the edge of groups
 	 */
-	findGroup(scope: IFindGroupScope, source?: IEditorGroup | GroupIdentifier, wrap?: boolean): IEditorGroup;
+	findGroup(scope: IFindGroupScope, source?: IEditorGroup | GroupIdentifier, wrap?: boolean): IEditorGroup | undefined;
 
 	/**
 	 * Add a new group to the editor area. A new group is added by splitting a provided one in
@@ -370,6 +376,7 @@ export const enum GroupChangeKind {
 	/* Group Changes */
 	GROUP_ACTIVE,
 	GROUP_INDEX,
+	GROUP_LOCKED,
 
 	/* Editor Changes */
 	EDITOR_OPEN,
@@ -377,6 +384,7 @@ export const enum GroupChangeKind {
 	EDITOR_MOVE,
 	EDITOR_ACTIVE,
 	EDITOR_LABEL,
+	EDITOR_CAPABILITIES,
 	EDITOR_PIN,
 	EDITOR_STICKY,
 	EDITOR_DIRTY
@@ -416,6 +424,12 @@ export interface IEditorGroup {
 	 * a different group.
 	 */
 	readonly onWillMoveEditor: Event<IEditorMoveEvent>;
+
+	/**
+	 * An event that is fired when an editor is about to be opened
+	 * in the group.
+	 */
+	readonly onWillOpenEditor: Event<IEditorOpenEvent>;
 
 	/**
 	 * A unique identifier of this group that remains identical even if the
@@ -471,6 +485,16 @@ export interface IEditorGroup {
 	readonly isEmpty: boolean;
 
 	/**
+	 * Whether this editor group is locked or not. Locked editor groups
+	 * will only be considered for editors to open in when the group is
+	 * explicitly provided for the editor.
+	 *
+	 * Note: editor group locking only applies when more than one group
+	 * is opened.
+	 */
+	readonly isLocked: boolean;
+
+	/**
 	 * The number of sticky editors in this group.
 	 */
 	readonly stickyCount: number;
@@ -519,7 +543,7 @@ export interface IEditorGroup {
 	 * @returns a promise that resolves around an IEditor instance unless
 	 * the call failed, or the editor was not opened as active editor.
 	 */
-	openEditor(editor: IEditorInput, options?: IEditorOptions | ITextEditorOptions): Promise<IEditorPane | undefined>;
+	openEditor(editor: IEditorInput, options?: IEditorOptions): Promise<IEditorPane | undefined>;
 
 	/**
 	 * Opens editors in this group.
@@ -544,26 +568,26 @@ export interface IEditorGroup {
 	/**
 	 * Find out if the provided editor is active in the group.
 	 */
-	isActive(editor: IEditorInput): boolean;
+	isActive(editor: IEditorInput | IUntypedEditorInput): boolean;
 
 	/**
 	 * Find out if a certain editor is included in the group.
 	 *
 	 * @param candidate the editor to find
 	 */
-	contains(candidate: IEditorInput): boolean;
+	contains(candidate: IEditorInput | IUntypedEditorInput): boolean;
 
 	/**
 	 * Move an editor from this group either within this group or to another group.
 	 */
-	moveEditor(editor: IEditorInput, target: IEditorGroup, options?: IEditorOptions | ITextEditorOptions): void;
+	moveEditor(editor: IEditorInput, target: IEditorGroup, options?: IEditorOptions): void;
 
 	/**
 	 * Copy an editor from this group to another group.
 	 *
 	 * Note: It is currently not supported to show the same editor more than once in the same group.
 	 */
-	copyEditor(editor: IEditorInput, target: IEditorGroup, options?: IEditorOptions | ITextEditorOptions): void;
+	copyEditor(editor: IEditorInput, target: IEditorGroup, options?: IEditorOptions): void;
 
 	/**
 	 * Close an editor from the group. This may trigger a confirmation dialog if
@@ -630,16 +654,28 @@ export interface IEditorGroup {
 	unstickEditor(editor?: IEditorInput): void;
 
 	/**
+	 * Whether this editor group should be locked or not.
+	 *
+	 * See {@linkcode IEditorGroup.isLocked `isLocked`}
+	 */
+	lock(locked: boolean): void;
+
+	/**
 	 * Move keyboard focus into the group.
 	 */
 	focus(): void;
 }
 
+export function isEditorGroup(obj: unknown): obj is IEditorGroup {
+	const group = obj as IEditorGroup | undefined;
+
+	return !!group && typeof group.id === 'number' && Array.isArray(group.editors);
+}
 
 //#region Editor Group Helpers
 
 export function preferredSideBySideGroupDirection(configurationService: IConfigurationService): GroupDirection.DOWN | GroupDirection.RIGHT {
-	const openSideBySideDirection = configurationService.getValue<'right' | 'down'>('workbench.editor.openSideBySideDirection');
+	const openSideBySideDirection = configurationService.getValue('workbench.editor.openSideBySideDirection');
 
 	if (openSideBySideDirection === 'down') {
 		return GroupDirection.DOWN;

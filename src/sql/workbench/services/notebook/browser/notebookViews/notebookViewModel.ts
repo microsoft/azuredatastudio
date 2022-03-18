@@ -21,11 +21,13 @@ function cellCollides(c1: INotebookViewCell, c2: INotebookViewCell): boolean {
 
 export class NotebookViewModel implements INotebookView {
 	private _onDeleted = new Emitter<INotebookView>();
+	private _onCellVisibilityChanged = new Emitter<ICellModel>();
 	private _isNew: boolean = false;
 	private _cards: INotebookViewCard[] = [];
 
 	public readonly guid: string;
 	public readonly onDeleted = this._onDeleted.event;
+	public readonly onCellVisibilityChanged = this._onCellVisibilityChanged.event;
 
 	constructor(
 		protected _name: string,
@@ -90,11 +92,11 @@ export class NotebookViewModel implements INotebookView {
 	}
 
 	protected initializeCell(cell: ICellModel, idx: number) {
-		let meta = this._notebookViews.getCellMetadata(cell);
+		let meta = this._notebookViews.getExtensionCellMetadata(cell);
 
 		if (!meta) {
 			this._notebookViews.initializeCell(cell);
-			meta = this._notebookViews.getCellMetadata(cell);
+			meta = this._notebookViews.getExtensionCellMetadata(cell);
 		}
 
 		// Ensure that we are not duplicting view entries in cell metadata
@@ -130,7 +132,7 @@ export class NotebookViewModel implements INotebookView {
 	}
 
 	public getCellMetadata(cell: ICellModel): INotebookViewCell {
-		const meta = this._notebookViews.getCellMetadata(cell);
+		const meta = this._notebookViews.getExtensionCellMetadata(cell);
 		return meta?.views?.find(view => view.guid === this.guid);
 	}
 
@@ -179,10 +181,12 @@ export class NotebookViewModel implements INotebookView {
 
 	public insertCell(cell: ICellModel) {
 		this.updateCell(cell, this, { hidden: false });
+		this._onCellVisibilityChanged.fire(cell);
 	}
 
 	public hideCell(cell: ICellModel) {
 		this.updateCell(cell, this, { hidden: true });
+		this._onCellVisibilityChanged.fire(cell);
 	}
 
 	public moveCell(cell: ICellModel, x: number, y: number) {

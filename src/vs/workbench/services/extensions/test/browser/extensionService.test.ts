@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
+import { ExtensionService as BrowserExtensionService } from 'vs/workbench/services/extensions/browser/extensionService';
+import { ExtensionRunningPreference } from 'vs/workbench/services/extensions/common/abstractExtensionService';
+import { ExtensionRunningLocation } from 'vs/workbench/services/extensions/common/extensions';
 
 suite('BrowserExtensionService', () => {
-	test('pickRunningLocation', () => {
-		assert(true); // {{SQL CARBON EDIT}} Workaround for error loading test modules when there's no imports in the file
-		/* {{SQL CARBON EDIT}} Disable broken tests for unused service
+	test.skip('pickRunningLocation', () => { // {{SQL CARBON EDIT}} Disable broken tests for unused service
 		assert.deepStrictEqual(BrowserExtensionService.pickRunningLocation([], false, false, ExtensionRunningPreference.None), ExtensionRunningLocation.None);
 		assert.deepStrictEqual(BrowserExtensionService.pickRunningLocation([], false, true, ExtensionRunningPreference.None), ExtensionRunningLocation.None);
 		assert.deepStrictEqual(BrowserExtensionService.pickRunningLocation([], true, false, ExtensionRunningPreference.None), ExtensionRunningLocation.None);
@@ -84,6 +85,5 @@ suite('BrowserExtensionService', () => {
 		assert.deepStrictEqual(BrowserExtensionService.pickRunningLocation(['workspace', 'web', 'ui'], false, true, ExtensionRunningPreference.None), ExtensionRunningLocation.Remote);
 		assert.deepStrictEqual(BrowserExtensionService.pickRunningLocation(['workspace', 'web', 'ui'], true, false, ExtensionRunningPreference.None), ExtensionRunningLocation.LocalWebWorker);
 		assert.deepStrictEqual(BrowserExtensionService.pickRunningLocation(['workspace', 'web', 'ui'], true, true, ExtensionRunningPreference.None), ExtensionRunningLocation.Remote);
-		*/
 	});
 });

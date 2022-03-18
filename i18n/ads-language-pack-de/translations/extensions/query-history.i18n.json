@@ -9,9 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"queryHistory.displayName": "Abfrageverlauf",
-			"queryHistory.description": "Zuvor ausgeführte Abfragen anzeigen und ausführen",
 			"queryHistory.clear": "Gesamten Verlauf löschen",
+			"queryHistory.description": "Zuvor ausgeführte Abfragen anzeigen und ausführen",
+			"queryHistory.displayName": "Abfrageverlauf",
 			"queryHistory.toggleCapture": "Erfassung des Abfrageverlaufs umschalten"
 		}
 	}

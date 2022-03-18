@@ -2,13 +2,13 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/xml-language-features/package" source-language="en" datatype="plaintext" target-language="fr">
     <body>
-      <trans-unit id="displayName">
-        <source xml:lang="en">XML Language Features</source>
-        <target state="translated">Fonctionnalités du langage XML</target>
-      </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">Provides rich language support for XML.</source>
         <target state="translated">Fournit une prise en charge riche de langage pour XML.</target>
+      </trans-unit>
+      <trans-unit id="displayName">
+        <source xml:lang="en">XML Language Features</source>
+        <target state="translated">Fonctionnalités du langage XML</target>
       </trans-unit>
     </body>
   </file>

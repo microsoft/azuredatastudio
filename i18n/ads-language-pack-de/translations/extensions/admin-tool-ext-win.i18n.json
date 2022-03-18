@@ -8,19 +8,19 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"adminToolExtWin.displayName": "Datenbankverwaltungstool-Erweiterungen für Windows",
-			"adminToolExtWin.description": "Hiermit werden Azure Data Studio zusätzliche Windows-spezifische Funktionen hinzugefügt.",
-			"adminToolExtWin.propertiesMenuItem": "Eigenschaften",
-			"adminToolExtWin.launchGswMenuItem": "Skripts generieren..."
-		},
 		"dist/main": {
-			"adminToolExtWin.noConnectionContextForProp": "Für \"handleLaunchSsmsMinPropertiesDialogCommand\" wurde kein ConnectionContext angegeben.",
-			"adminToolExtWin.noOENode": "Der Objekt-Explorer-Knoten konnte nicht aus dem connectionContext ermittelt werden: {0}",
-			"adminToolExtWin.noConnectionContextForGsw": "Für \"handleLaunchSsmsMinPropertiesDialogCommand\" wurde kein ConnectionContext angegeben.",
-			"adminToolExtWin.noConnectionProfile": "Über den connectionContext wurde kein connectionProfile angegeben: {0}",
 			"adminToolExtWin.launchingDialogStatus": "Das Dialogfeld wird gestartet...",
+			"adminToolExtWin.noConnectionContextForGsw": "Für \"handleLaunchSsmsMinPropertiesDialogCommand\" wurde kein ConnectionContext angegeben.",
+			"adminToolExtWin.noConnectionContextForProp": "Für \"handleLaunchSsmsMinPropertiesDialogCommand\" wurde kein ConnectionContext angegeben.",
+			"adminToolExtWin.noConnectionProfile": "Über den connectionContext wurde kein connectionProfile angegeben: {0}",
+			"adminToolExtWin.noOENode": "Der Objekt-Explorer-Knoten konnte nicht aus dem connectionContext ermittelt werden: {0}",
 			"adminToolExtWin.ssmsMinError": "Fehler beim Aufruf von SsmsMin mit den Argumenten \"{0}\": {1}"
+		},
+		"package": {
+			"adminToolExtWin.description": "Hiermit werden Azure Data Studio zusätzliche Windows-spezifische Funktionen hinzugefügt.",
+			"adminToolExtWin.displayName": "Datenbankverwaltungstool-Erweiterungen für Windows",
+			"adminToolExtWin.launchGswMenuItem": "Skripts generieren...",
+			"adminToolExtWin.propertiesMenuItem": "Eigenschaften"
 		}
 	}
 }

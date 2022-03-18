@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Markdown の基本言語サポート",
-			"description": "Markdown のスニペット、構文ハイライトを提供します。"
+			"description": "Markdown のスニペット、構文ハイライトを提供します。",
+			"displayName": "Markdown の基本言語サポート"
 		}
 	}
 }

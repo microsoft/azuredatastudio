@@ -8,19 +8,19 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"adminToolExtWin.displayName": "适用于 Windows 的数据库管理工具扩展",
-			"adminToolExtWin.description": "向 Azure Data Studio 添加其他特定于 Windows 的功能",
-			"adminToolExtWin.propertiesMenuItem": "属性",
-			"adminToolExtWin.launchGswMenuItem": "生成脚本…"
-		},
 		"dist/main": {
-			"adminToolExtWin.noConnectionContextForProp": "未为 handleLaunchSsmsMinPropertiesDialogCommand 提供 ConnectionContext",
-			"adminToolExtWin.noOENode": "无法由以下 connectionContex 确定对象资源管理器节点: {0}",
-			"adminToolExtWin.noConnectionContextForGsw": "未为 handleLaunchSsmsMinPropertiesDialogCommand 提供 ConnectionContext",
-			"adminToolExtWin.noConnectionProfile": "未从 connectionContext 提供任何 connectionProfile: {0}",
 			"adminToolExtWin.launchingDialogStatus": "正在启动对话…",
+			"adminToolExtWin.noConnectionContextForGsw": "未为 handleLaunchSsmsMinPropertiesDialogCommand 提供 ConnectionContext",
+			"adminToolExtWin.noConnectionContextForProp": "未为 handleLaunchSsmsMinPropertiesDialogCommand 提供 ConnectionContext",
+			"adminToolExtWin.noConnectionProfile": "未从 connectionContext 提供任何 connectionProfile: {0}",
+			"adminToolExtWin.noOENode": "无法由以下 connectionContex 确定对象资源管理器节点: {0}",
 			"adminToolExtWin.ssmsMinError": "使用参数“{0}”调用 SsmsMin 时出错 - {1}"
+		},
+		"package": {
+			"adminToolExtWin.description": "向 Azure Data Studio 添加其他特定于 Windows 的功能",
+			"adminToolExtWin.displayName": "适用于 Windows 的数据库管理工具扩展",
+			"adminToolExtWin.launchGswMenuItem": "生成脚本…",
+			"adminToolExtWin.propertiesMenuItem": "属性"
 		}
 	}
 }

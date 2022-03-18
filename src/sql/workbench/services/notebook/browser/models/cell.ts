@@ -12,7 +12,7 @@ import { localize } from 'vs/nls';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { CellTypes, CellType, NotebookChangeType, TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes, ICaretPosition, ICellEdit, CellEditType } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -29,8 +29,12 @@ import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbenc
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
+import { IPosition } from 'vs/editor/common/core/position';
+import { CellOutputEdit, CellOutputDataEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
+import { ILogService } from 'vs/platform/log/common/log';
+import { IModeService } from 'vs/editor/common/services/modeService';
+import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -57,6 +61,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _onTableUpdated = new Emitter<ITableUpdatedEvent>();
 	private _onCellModeChanged = new Emitter<boolean>();
 	private _onExecutionStateChanged = new Emitter<CellExecutionState>();
+	private _onCurrentEditModeChanged = new Emitter<CellEditModes>();
 	private _isTrusted: boolean;
 	private _active: boolean;
 	private _hover: boolean;
@@ -67,12 +72,11 @@ export class CellModel extends Disposable implements ICellModel {
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
-	private _metadata: nb.ICellMetadata;
+	private _metadata: ICellMetadata;
 	private _isCollapsed: boolean;
+	private _onLanguageChanged = new Emitter<string>();
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
-	private _onCellPreviewChanged = new Emitter<boolean>();
-	private _onCellMarkdownChanged = new Emitter<boolean>();
 	private _isCommandExecutionSettingEnabled: boolean = false;
 	private _showPreview: boolean = true;
 	private _showMarkdown: boolean = false;
@@ -85,13 +89,17 @@ export class CellModel extends Disposable implements ICellModel {
 	private _outputCounter = 0; // When re-executing the same cell, ensure that we apply chart options in the same order
 	private _attachments: nb.ICellAttachments | undefined;
 	private _preventNextChartCache: boolean = false;
+	private _lastEditMode: string | undefined;
+	public richTextCursorPosition: ICaretPosition | undefined;
+	public markdownCursorPosition: IPosition | undefined;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
 		@optional(INotebookService) private _notebookService?: INotebookService,
 		@optional(ICommandService) private _commandService?: ICommandService,
 		@optional(IConfigurationService) private _configurationService?: IConfigurationService,
-		@optional(IAdsTelemetryService) private _telemetryService?: IAdsTelemetryService,
+		@optional(ILogService) private _logService?: ILogService,
+		@optional(IModeService) private _modeService?: IModeService
 	) {
 		super();
 		this.id = `${modelId++}`;
@@ -103,7 +111,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this._source = '';
 		}
 
-		this._isEditMode = this._cellType !== CellTypes.Markdown;
+		this._isEditMode = false;
 		this._stdInVisible = false;
 		if (_options && _options.isTrusted) {
 			this._isTrusted = true;
@@ -118,6 +126,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public equals(other: ICellModel) {
 		return other !== undefined && other.id === this.id;
+	}
+
+	public get onLanguageChanged(): Event<string> {
+		return this._onLanguageChanged.event;
 	}
 
 	public get onCollapseStateChanged(): Event<boolean> {
@@ -226,8 +238,9 @@ export class CellModel extends Disposable implements ICellModel {
 	public set isEditMode(isEditMode: boolean) {
 		this._isEditMode = isEditMode;
 		if (this._isEditMode) {
-			this.showPreview = this._defaultTextEditMode !== TextCellEditModes.Markdown;
-			this.showMarkdown = this._defaultTextEditMode !== TextCellEditModes.RichText;
+			const newEditMode = this._lastEditMode ?? this._defaultTextEditMode;
+			this.showPreview = newEditMode !== TextCellEditModes.Markdown;
+			this.showMarkdown = newEditMode !== TextCellEditModes.RichText;
 		}
 		this._onCellModeChanged.fire(this._isEditMode);
 		// Note: this does not require a notebook update as it does not change overall state
@@ -305,6 +318,7 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public set source(newSource: string | string[]) {
+		this.cleanUnusedAttachments(Array.isArray(newSource) ? newSource.join() : newSource);
 		newSource = this.attachImageFromSource(newSource);
 		newSource = this.getMultilineSource(newSource);
 		if (this._source !== newSource) {
@@ -327,6 +341,22 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 		return newSource;
 	}
+
+	/**
+	 * Cleans up the attachments, removing any ones that aren't being currently used in the specified source string.
+	 * @param source The new source string to check for attachments being used
+	 */
+	private cleanUnusedAttachments(source: string): void {
+		const originalAttachments = this._attachments;
+		this._attachments = {};
+		// Find existing attachments in the form ![...](attachment:...) so that we can make sure we keep those attachments
+		const attachmentRegex = /!\[.*?\]\(attachment:(.*?)\)/g;
+		let match;
+		while (match = attachmentRegex.exec(source)) { // eslint-disable-line no-cond-assign
+			this._attachments[match[1]] = originalAttachments[match[1]];
+		}
+	}
+
 	/**
 	 * Gets unique attachment name to add to cell metadata
 	 * @param imgName a string defining name of the image.
@@ -363,6 +393,19 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._options.notebook.language;
 	}
 
+	public get displayLanguage(): string {
+		let result: string;
+		if (this._cellType === CellTypes.Markdown) {
+			result = 'Markdown';
+		} else if (this._modeService) {
+			let language = this._modeService.getLanguageName(this.language);
+			result = language ?? this.language;
+		} else {
+			result = this.language;
+		}
+		return result;
+	}
+
 	public get savedConnectionName(): string | undefined {
 		return this._savedConnectionName;
 	}
@@ -372,11 +415,19 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public setOverrideLanguage(newLanguage: string) {
-		this._language = newLanguage;
+		if (newLanguage !== this._language) {
+			this._language = newLanguage;
+			this._onLanguageChanged.fire(newLanguage);
+			this.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
+		}
 	}
 
 	public get onExecutionStateChange(): Event<CellExecutionState> {
 		return this._onExecutionStateChanged.event;
+	}
+
+	public get onCurrentEditModeChanged(): Event<CellEditModes> {
+		return this._onCurrentEditModeChanged.event;
 	}
 
 	private fireExecutionStateChanged(): void {
@@ -412,7 +463,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set showPreview(val: boolean) {
 		this._showPreview = val;
-		this._onCellPreviewChanged.fire(this._showPreview);
+		this.doModeUpdates();
 	}
 
 	public get showMarkdown(): boolean {
@@ -421,7 +472,14 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set showMarkdown(val: boolean) {
 		this._showMarkdown = val;
-		this._onCellMarkdownChanged.fire(this._showMarkdown);
+		this.doModeUpdates();
+	}
+
+	private doModeUpdates() {
+		if (this._isEditMode) {
+			this._lastEditMode = this._showPreview && this._showMarkdown ? TextCellEditModes.SplitView : (this._showMarkdown ? TextCellEditModes.Markdown : TextCellEditModes.RichText);
+		}
+		this._onCurrentEditModeChanged.fire(this.currentMode);
 	}
 
 	public get defaultTextEditMode(): string {
@@ -433,14 +491,6 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 	public set cellSourceChanged(val: boolean) {
 		this._cellSourceChanged = val;
-	}
-
-	public get onCellPreviewModeChanged(): Event<boolean> {
-		return this._onCellPreviewChanged.event;
-	}
-
-	public get onCellMarkdownModeChanged(): Event<boolean> {
-		return this._onCellMarkdownChanged.event;
 	}
 
 	public get onParameterStateChanged(): Event<boolean> {
@@ -559,9 +609,9 @@ export class CellModel extends Disposable implements ICellModel {
 				return false;
 			}
 			this._outputCounter = 0;
-			this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunCell)
-				.withAdditionalProperties({ cell_language: kernel.name })
-				.send();
+			// Hide IntelliSense suggestions list when running cell to match SSMS behavior
+			this._commandService.executeCommand('hideSuggestWidget');
+			this.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RunCell, { cell_language: kernel.name, azdata_cell_guid: this._cellGuid });
 			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
 			// This matches the same behavior as JupyterLab
 			if (this.future && this.future.inProgress) {
@@ -589,7 +639,11 @@ export class CellModel extends Disposable implements ICellModel {
 					if (tryMatchCellMagic(this.source[0]) !== ads_execute_command || !this._isCommandExecutionSettingEnabled) {
 						const future = kernel.requestExecute({
 							code: content,
-							stop_on_error: true
+							cellIndex: this.notebookModel.findCellIndex(this),
+							stop_on_error: true,
+							notebookUri: this.notebookModel.notebookUri,
+							cellUri: this.cellUri,
+							language: this.language
 						}, false);
 						this.setFuture(future as FutureInternal);
 						this.fireExecutionStateChanged();
@@ -701,7 +755,7 @@ export class CellModel extends Disposable implements ICellModel {
 		this._future = future;
 		future.setReplyHandler({ handle: (msg) => this.handleReply(msg) });
 		future.setIOPubHandler({ handle: (msg) => this.handleIOPub(msg) });
-		future.setStdInHandler({ handle: (msg) => this.handleSdtIn(msg) });
+		future.setStdInHandler({ handle: (msg) => this.handleStdIn(msg) });
 	}
 	/**
 	 * Clear outputs can be done as part of the "Clear Outputs" action on a cell or as part of running a cell
@@ -906,7 +960,7 @@ export class CellModel extends Disposable implements ICellModel {
 	 * components. If one is registered the cell will call and wait on it, if not
 	 * it will immediately return to unblock error handling
 	 */
-	private handleSdtIn(msg: nb.IStdinMessage): void | Thenable<void> {
+	private handleStdIn(msg: nb.IStdinMessage): void | Thenable<void> {
 		let handler = async () => {
 			if (!this._stdInHandler) {
 				// No-op
@@ -968,7 +1022,7 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 		this._attachments = cell.attachments;
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
-		this.setLanguageFromContents(cell);
+		this.setLanguageFromContents(cell.cell_type, cell.metadata);
 		this._savedConnectionName = this._metadata.connection_name;
 		if (cell.outputs) {
 			for (let output of cell.outputs) {
@@ -991,13 +1045,49 @@ export class CellModel extends Disposable implements ICellModel {
 		return CellEditModes.WYSIWYG;
 	}
 
-	private setLanguageFromContents(cell: nb.ICellContents): void {
-		if (cell.cell_type === CellTypes.Markdown) {
-			this._language = 'markdown';
-		} else if (cell.metadata && cell.metadata.language) {
-			this._language = cell.metadata.language;
+	public processEdits(edits: ICellEdit[]): void {
+		for (const edit of edits) {
+			switch (edit.type) {
+				case CellEditType.Output:
+					const outputEdit = edit as CellOutputEdit;
+					if (outputEdit.append) {
+						this._outputs.push(...outputEdit.outputs);
+					} else {
+						this._outputs = outputEdit.outputs;
+					}
+
+					break;
+				case CellEditType.OutputData:
+					const outputDataEdit = edit as CellOutputDataEdit;
+					const outputIndex = this._outputs.findIndex(o => outputDataEdit.outputId === o.id);
+					if (outputIndex > -1) {
+						const output = this._outputs[outputIndex] as nb.IExecuteResult;
+						// TODO: Append overwrites existing mime types currently
+						const newData = (edit as CellOutputDataEdit).append ?
+							Object.assign(output.data, outputDataEdit.data) :
+							outputDataEdit.data;
+						output.data = newData;
+						// We create a new object so that angular detects that the content has changed
+						this._outputs[outputIndex] = Object.assign({}, output);
+					} else {
+						this._logService.warn(`Unable to find output with ID ${outputDataEdit.outputId} when processing ReplaceOutputData`);
+					}
+					break;
+			}
 		}
-		// else skip, we set default language anyhow
+		this.fireOutputsChanged(false);
+	}
+
+	private setLanguageFromContents(cellType: string, metadata: ICellMetadata): void {
+		if (cellType === CellTypes.Markdown) {
+			this._language = 'markdown';
+		} else if (metadata?.language) {
+			this._language = metadata.language;
+		} else if (metadata?.dotnet_interactive?.language) {
+			this._language = `dotnet-interactive.${metadata.dotnet_interactive.language}`;
+		} else {
+			this._language = this._options?.notebook?.language;
+		}
 	}
 
 	private addOutput(output: nb.ICellOutput) {

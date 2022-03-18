@@ -76,7 +76,7 @@ export class BookTrustManager implements IBookTrustManager {
 		let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(constants.notebookConfigKey);
 		let storeInWorspace: boolean = this.hasWorkspaceFolders();
 
-		config.update(constants.trustedBooksConfigKey, bookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
+		void config.update(constants.trustedBooksConfigKey, bookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
 	}
 
 	hasWorkspaceFolders(): boolean {

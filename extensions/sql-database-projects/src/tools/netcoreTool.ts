@@ -7,23 +7,24 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import * as cp from 'promisify-child-process';
 import * as semver from 'semver';
 import { isNullOrUndefined } from 'util';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DoNotAskAgain, InstallNetCore, NetCoreInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, UpdateNetCoreLocation } from '../common/constants';
+import { DoNotAskAgain, Install, DotnetInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, UpdateDotnetLocation } from '../common/constants';
 import * as utils from '../common/utils';
+import { ShellCommandOptions, ShellExecutionHelper } from './shellExecutionHelper';
 const localize = nls.loadMessageBundle();
 
 export const DBProjectConfigurationKey: string = 'sqlDatabaseProjects';
 export const NetCoreInstallLocationKey: string = 'netCoreSDKLocation';
+export const DotnetInstallLocationKey: string = 'dotnetSDK Location';
 export const NetCoreDoNotAskAgainKey: string = 'netCoreDoNotAsk';
 export const NetCoreNonWindowsDefaultPath = '/usr/local/share';
 export const winPlatform: string = 'win32';
 export const macPlatform: string = 'darwin';
 export const linuxPlatform: string = 'linux';
-export const minSupportedNetCoreVersion: string = '3.1.0';
+export const minSupportedNetCoreVersionForBuild: string = '3.1.0'; // TODO: watch out for EOL support in Dec 2022 https://github.com/microsoft/azuredatastudio/issues/17800
 
 export const enum netCoreInstallState {
 	netCoreNotPresent,
@@ -33,13 +34,7 @@ export const enum netCoreInstallState {
 
 const dotnet = os.platform() === 'win32' ? 'dotnet.exe' : 'dotnet';
 
-export interface DotNetCommandOptions {
-	workingDirectory?: string;
-	additionalEnvironmentVariables?: NodeJS.ProcessEnv;
-	commandTitle?: string;
-	argument?: string;
-}
-export class NetCoreTool {
+export class NetCoreTool extends ShellExecutionHelper {
 
 	private osPlatform: string = os.platform();
 	private netCoreSdkInstalledVersion: string | undefined;
@@ -47,36 +42,40 @@ export class NetCoreTool {
 
 	/**
 	 * This method presents the installation dialog for .NET Core, if not already present/supported
+	 * @param skipVersionSupportedCheck If true then skip the check to determine whether the .NET version is supported (for commands that work on all versions)
 	 * @returns True if .NET version was found and is supported
 	 * 			False if .NET version isn't present or present but not supported
 	 */
-	public async findOrInstallNetCore(): Promise<boolean> {
-		if ((!this.isNetCoreInstallationPresent || !await this.isNetCoreVersionSupported())) {
-			if (vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
-				this.showInstallDialog();		// Removing await so that Build and extension load process doesn't wait on user input
+	public async findOrInstallNetCore(skipVersionSupportedCheck = false): Promise<boolean> {
+		if (!this.isNetCoreInstallationPresent || (this.isNetCoreInstallationPresent && !skipVersionSupportedCheck)) {
+			if ((!this.isNetCoreInstallationPresent || !await this.isNetCoreVersionSupportedForBuild())) {
+				if (vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
+					void this.showInstallDialog();		// Removing await so that Build and extension load process doesn't wait on user input
+				}
+				return false;
 			}
-			return false;
 		}
+
 		this.netCoreInstallState = netCoreInstallState.netCoreVersionSupported;
 		return true;
 	}
 
-
-	constructor(private _outputChannel: vscode.OutputChannel) {
+	constructor(_outputChannel: vscode.OutputChannel) {
+		super(_outputChannel);
 	}
 
 	public async showInstallDialog(): Promise<void> {
 		let result;
 		if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
-			result = await vscode.window.showErrorMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
+			result = await vscode.window.showErrorMessage(DotnetInstallationConfirmation, UpdateDotnetLocation, Install, DoNotAskAgain);
 		} else {
-			result = await vscode.window.showErrorMessage(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!), UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
+			result = await vscode.window.showErrorMessage(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!), UpdateDotnetLocation, Install, DoNotAskAgain);
 		}
 
-		if (result === UpdateNetCoreLocation) {
+		if (result === UpdateDotnetLocation) {
 			//open settings
 			await vscode.commands.executeCommand('workbench.action.openGlobalSettings');
-		} else if (result === InstallNetCore) {
+		} else if (result === Install) {
 			//open install link
 			const dotnetcoreURL = 'https://dotnet.microsoft.com/download/dotnet-core/3.1';
 			await vscode.env.openExternal(vscode.Uri.parse(dotnetcoreURL));
@@ -95,7 +94,7 @@ export class NetCoreTool {
 	}
 
 	public get netcoreInstallLocation(): string {
-		return vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreInstallLocationKey] ||
+		return vscode.workspace.getConfiguration(DBProjectConfigurationKey)[DotnetInstallLocationKey] ||
 			this.defaultLocalInstallLocationByDistribution;
 	}
 
@@ -128,16 +127,16 @@ export class NetCoreTool {
 	}
 
 	/**
-	 * This function checks if the installed dotnet version is atleast minSupportedNetCoreVersion.
-	 * Versions lower than minSupportedNetCoreVersion aren't supported for building projects.
+	 * This function checks if the installed dotnet version is at least minSupportedNetCoreVersionForBuild.
+	 * Versions lower than minSupportedNetCoreVersionForBuild aren't supported for building projects.
 	 * Returns: True if installed dotnet version is supported, false otherwise.
 	 * 			Undefined if dotnet isn't installed.
 	 */
-	private async isNetCoreVersionSupported(): Promise<boolean | undefined> {
+	private async isNetCoreVersionSupportedForBuild(): Promise<boolean | undefined> {
 		try {
 			const spawn = child_process.spawn;
 			let child: child_process.ChildProcessWithoutNullStreams;
-			let isSupported: boolean | undefined = undefined;
+			let isSupported: boolean = false;
 			const stdoutBuffers: Buffer[] = [];
 
 			child = spawn('dotnet --version', [], {
@@ -151,7 +150,7 @@ export class NetCoreTool {
 					this.netCoreSdkInstalledVersion = Buffer.concat(stdoutBuffers).toString('utf8').trim();
 
 					try {
-						if (semver.gte(this.netCoreSdkInstalledVersion, minSupportedNetCoreVersion)) {		// Net core version greater than or equal to minSupportedNetCoreVersion are supported for Build
+						if (semver.gte(this.netCoreSdkInstalledVersion, minSupportedNetCoreVersionForBuild)) {		// Net core version greater than or equal to minSupportedNetCoreVersion are supported for Build
 							isSupported = true;
 						} else {
 							isSupported = false;
@@ -183,14 +182,20 @@ export class NetCoreTool {
 		}
 	}
 
-	public async runDotnetCommand(options: DotNetCommandOptions): Promise<string> {
+	/**
+	 * Runs the specified dotnet command
+	 * @param options The options to use when launching the process
+	 * @param skipVersionSupportedCheck If true then skip the check to determine whether the .NET version is supported (for commands that work on all versions)
+	 * @returns
+	 */
+	public async runDotnetCommand(options: ShellCommandOptions, skipVersionSupportedCheck = false): Promise<string> {
 		if (options && options.commandTitle !== undefined && options.commandTitle !== null) {
 			this._outputChannel.appendLine(`\t[ ${options.commandTitle} ]`);
 		}
 
-		if (!(await this.findOrInstallNetCore())) {
+		if (!(await this.findOrInstallNetCore(skipVersionSupportedCheck))) {
 			if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
-				throw new DotNetError(NetCoreInstallationConfirmation);
+				throw new DotNetError(DotnetInstallationConfirmation);
 			} else {
 				throw new DotNetError(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!));
 			}
@@ -200,58 +205,11 @@ export class NetCoreTool {
 		const command = dotnetPath + ' ' + options.argument;
 
 		try {
-			return await this.runStreamedCommand(command, this._outputChannel, options);
+			return await this.runStreamedCommand(command, options);
 		} catch (error) {
 			this._outputChannel.append(localize('sqlDatabaseProject.RunCommand.ErroredOut', "\t>>> {0}   … errored out: {1}", command, utils.getErrorMessage(error))); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
 			throw error;
 		}
-	}
-
-	// spawns the dotnet command with arguments and redirects the error and output to ADS output channel
-	public async runStreamedCommand(command: string, outputChannel: vscode.OutputChannel, options?: DotNetCommandOptions): Promise<string> {
-		const stdoutData: string[] = [];
-		outputChannel.appendLine(`    > ${command}`);
-
-		const spawnOptions = {
-			cwd: options && options.workingDirectory,
-			env: Object.assign({}, process.env, options && options.additionalEnvironmentVariables),
-			encoding: 'utf8',
-			maxBuffer: 10 * 1024 * 1024, // 10 Mb of output can be captured.
-			shell: true,
-			detached: false,
-			windowsHide: true
-		};
-
-		const child = cp.spawn(command, [], spawnOptions);
-		outputChannel.show();
-
-		// Add listeners to print stdout and stderr and exit code
-		child.on('exit', (code: number | null, signal: string | null) => {
-			if (code !== null) {
-				outputChannel.appendLine(localize('sqlDatabaseProjects.RunStreamedCommand.ExitedWithCode', "    >>> {0}    … exited with code: {1}", command, code));
-			} else {
-				outputChannel.appendLine(localize('sqlDatabaseProjects.RunStreamedCommand.ExitedWithSignal', "    >>> {0}   … exited with signal: {1}", command, signal));
-			}
-		});
-
-		child.stdout!.on('data', (data: string | Buffer) => {
-			stdoutData.push(data.toString());
-			this.outputDataChunk(data, outputChannel, localize('sqlDatabaseProjects.RunCommand.stdout', "    stdout: "));
-		});
-
-		child.stderr!.on('data', (data: string | Buffer) => {
-			this.outputDataChunk(data, outputChannel, localize('sqlDatabaseProjects.RunCommand.stderr', "    stderr: "));
-		});
-		await child;
-
-		return stdoutData.join('');
-	}
-
-	private outputDataChunk(data: string | Buffer, outputChannel: vscode.OutputChannel, header: string): void {
-		data.toString().split(/\r?\n/)
-			.forEach(line => {
-				outputChannel.appendLine(header + line);
-			});
 	}
 }
 

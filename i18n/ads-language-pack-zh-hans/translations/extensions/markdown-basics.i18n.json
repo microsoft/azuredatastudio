@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Markdown 语言基础功能",
-			"description": "在 Markdown 文件中提供代码片段和语法高亮功能。"
+			"description": "在 Markdown 文件中提供代码片段和语法高亮功能。",
+			"displayName": "Markdown 语言基础功能"
 		}
 	}
 }

@@ -95,35 +95,35 @@ suite('SQL Drag And Drop Controller tests', () => {
 
 	test('create new serverTreeDragAndDrop object should create serverTreeDragAndDrop object successfully', async () => {
 
-		assert.equal(serverTreeDragAndDrop !== null || serverTreeDragAndDrop !== undefined, true);
+		assert.strictEqual(serverTreeDragAndDrop !== null || serverTreeDragAndDrop !== undefined, true);
 	});
 
 	test('able to get DragURI', async () => {
 		connectionProfileArray.forEach(connectionProfile => {
 			let uri = serverTreeDragAndDrop.getDragURI(testTree, connectionProfile);
-			assert.equal(connectionProfile.id, uri);
+			assert.strictEqual(connectionProfile.id, uri);
 		});
 
 		let uriGroup = serverTreeDragAndDrop.getDragURI(testTree, connectionProfileGroupId);
-		assert.equal(connectionProfileGroupId.id, uriGroup);
+		assert.strictEqual(connectionProfileGroupId.id, uriGroup);
 
 		let uriUndefined = serverTreeDragAndDrop.getDragURI(testTree, null);
-		assert.equal(null, uriUndefined);
+		assert.strictEqual(null, uriUndefined);
 
 	});
 
 	test('able to get DragLabel', async () => {
 		let label = serverTreeDragAndDrop.getDragLabel(testTree, connectionProfileArray);
-		assert.equal(connectionProfileArray[0].serverName, label);
+		assert.strictEqual(connectionProfileArray[0].serverName, label);
 
 		let labelGroup = serverTreeDragAndDrop.getDragLabel(testTree, connectionProfileGroupArray);
-		assert.equal(connectionProfileGroupArray[0].name, labelGroup);
+		assert.strictEqual(connectionProfileGroupArray[0].name, labelGroup);
 
 		let labelTreeNode = serverTreeDragAndDrop.getDragLabel(testTree, treeNodeArray);
-		assert.equal(treeNodeArray[0].label, labelTreeNode);
+		assert.strictEqual(treeNodeArray[0].label, labelTreeNode);
 
 		let labelUndefined = serverTreeDragAndDrop.getDragLabel(testTree, null);
-		assert.equal('', labelUndefined);
+		assert.strictEqual('', labelUndefined);
 
 	});
 

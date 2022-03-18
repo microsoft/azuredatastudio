@@ -8,18 +8,18 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Microsoft 帐户",
-			"description": "Microsoft 身份验证提供程序",
-			"signIn": "登录",
-			"signOut": "注销"
-		},
 		"dist/AADHelper": {
 			"signOut": "你已被注销，因为未能读取存储的身份验证信息。"
 		},
 		"dist/keychain": {
-			"troubleshooting": "故障排除指南",
-			"keychainWriteError": "将登录信息写入密钥链失败，出现错误“{0}”。"
+			"keychainWriteError": "将登录信息写入密钥链失败，出现错误“{0}”。",
+			"troubleshooting": "故障排除指南"
+		},
+		"package": {
+			"description": "Microsoft 身份验证提供程序",
+			"displayName": "Microsoft 帐户",
+			"signIn": "登录",
+			"signOut": "注销"
 		}
 	}
 }

@@ -1,47 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/asde-deployment/package" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="extension-displayName">
-      <source xml:lang="en">Azure SQL Edge Deployment Extension</source>
+    <trans-unit id="azure-info-section-title">
+      <source xml:lang="en">Azure information</source>
     </trans-unit>
-    <trans-unit id="extension-description">
-      <source xml:lang="en">Provides a notebook-based experience to deploy Azure SQL Edge</source>
+    <trans-unit id="azure_location">
+      <source xml:lang="en">Location</source>
     </trans-unit>
-    <trans-unit id="docker-container-name-field">
-      <source xml:lang="en">Container name</source>
+    <trans-unit id="azure_resource_group">
+      <source xml:lang="en">Resource group</source>
     </trans-unit>
-    <trans-unit id="docker-sql-password-field">
-      <source xml:lang="en">Azure SQL Edge instance (sa) password</source>
+    <trans-unit id="azure_subscription_id">
+      <source xml:lang="en">Subscription id</source>
+    </trans-unit>
+    <trans-unit id="device-id">
+      <source xml:lang="en">Device ID</source>
+    </trans-unit>
+    <trans-unit id="device-ip-address">
+      <source xml:lang="en">Device IP Address</source>
+    </trans-unit>
+    <trans-unit id="device-ip-address-description">
+      <source xml:lang="en">Will be used to connect to the Azure SQL Edge instance after deployment</source>
+    </trans-unit>
+    <trans-unit id="device-target-condition">
+      <source xml:lang="en">Target condition</source>
+    </trans-unit>
+    <trans-unit id="device-target-condition-learn-more">
+      <source xml:lang="en">Learn more about target condition</source>
     </trans-unit>
     <trans-unit id="docker-confirm-sql-password-field">
       <source xml:lang="en">Confirm password</source>
     </trans-unit>
-    <trans-unit id="docker-sql-port-field">
-      <source xml:lang="en">Azure SQL Edge Port</source>
+    <trans-unit id="docker-container-name-field">
+      <source xml:lang="en">Container name</source>
     </trans-unit>
-    <trans-unit id="microsoft-privacy-statement">
-      <source xml:lang="en">Microsoft Privacy Statement</source>
+    <trans-unit id="docker-imagetag-field">
+      <source xml:lang="en">Image tag</source>
     </trans-unit>
-    <trans-unit id="resource-type-sql-edge-display-name">
-      <source xml:lang="en">Azure SQL Edge</source>
-    </trans-unit>
-    <trans-unit id="resource-type-sql-edge-description">
-      <source xml:lang="en">Azure SQL Edge (Preview) is an optimized relational database engine geared for IoT and IoT Edge deployments.</source>
-    </trans-unit>
-    <trans-unit id="sql-edge-type-display-name">
-      <source xml:lang="en">Deployment target</source>
-    </trans-unit>
-    <trans-unit id="sql-edge-local-display-name">
-      <source xml:lang="en">Local container instance</source>
-    </trans-unit>
-    <trans-unit id="sql-edge-remote-display-name">
-      <source xml:lang="en">Remote container instance</source>
-    </trans-unit>
-    <trans-unit id="sql-edge-local-title">
-      <source xml:lang="en">Deploy Azure SQL Edge container instance on local machine</source>
-    </trans-unit>
-    <trans-unit id="docker-settings-section-title">
-      <source xml:lang="en">Docker settings</source>
+    <trans-unit id="docker-password-field">
+      <source xml:lang="en">Password</source>
     </trans-unit>
     <trans-unit id="docker-registry-field">
       <source xml:lang="en">Registry</source>
@@ -49,14 +46,17 @@
     <trans-unit id="docker-repository-field">
       <source xml:lang="en">Repository</source>
     </trans-unit>
-    <trans-unit id="docker-imagetag-field">
-      <source xml:lang="en">Image tag</source>
+    <trans-unit id="docker-settings-section-title">
+      <source xml:lang="en">Docker settings</source>
+    </trans-unit>
+    <trans-unit id="docker-sql-password-field">
+      <source xml:lang="en">Azure SQL Edge instance (sa) password</source>
+    </trans-unit>
+    <trans-unit id="docker-sql-port-field">
+      <source xml:lang="en">Azure SQL Edge Port</source>
     </trans-unit>
     <trans-unit id="docker-username-field">
       <source xml:lang="en">Username</source>
-    </trans-unit>
-    <trans-unit id="docker-password-field">
-      <source xml:lang="en">Password</source>
     </trans-unit>
     <trans-unit id="edge-agreement">
       <source xml:lang="en">I accept {0} and {1}.</source>
@@ -64,11 +64,8 @@
     <trans-unit id="edge-eula">
       <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
     </trans-unit>
-    <trans-unit id="sql-edge-remote-title">
-      <source xml:lang="en">Deploy Azure SQL Edge container instance on remote machine</source>
-    </trans-unit>
-    <trans-unit id="remote-info-section-title">
-      <source xml:lang="en">Target machine information</source>
+    <trans-unit id="edge-remote-password-field">
+      <source xml:lang="en">Password</source>
     </trans-unit>
     <trans-unit id="edge-remote-target-field">
       <source xml:lang="en">Name or IP address</source>
@@ -76,11 +73,50 @@
     <trans-unit id="edge-remote-username-field">
       <source xml:lang="en">Username</source>
     </trans-unit>
-    <trans-unit id="edge-remote-password-field">
-      <source xml:lang="en">Password</source>
+    <trans-unit id="extension-description">
+      <source xml:lang="en">Provides a notebook-based experience to deploy Azure SQL Edge</source>
+    </trans-unit>
+    <trans-unit id="extension-displayName">
+      <source xml:lang="en">Azure SQL Edge Deployment Extension</source>
+    </trans-unit>
+    <trans-unit id="iot-hub-name">
+      <source xml:lang="en">IoT Hub name</source>
+    </trans-unit>
+    <trans-unit id="microsoft-privacy-statement">
+      <source xml:lang="en">Microsoft Privacy Statement</source>
+    </trans-unit>
+    <trans-unit id="package-files">
+      <source xml:lang="en">SQL Server Package files</source>
+    </trans-unit>
+    <trans-unit id="package_path">
+      <source xml:lang="en">Package file</source>
+    </trans-unit>
+    <trans-unit id="package_path_description">
+      <source xml:lang="en">Path of the SQL Server package file(dacpac, bacpac) or compressed package file.</source>
+    </trans-unit>
+    <trans-unit id="remote-info-section-title">
+      <source xml:lang="en">Target machine information</source>
+    </trans-unit>
+    <trans-unit id="resource-type-sql-edge-description">
+      <source xml:lang="en">Azure SQL Edge (Preview) is an optimized relational database engine geared for IoT and IoT Edge deployments.</source>
+    </trans-unit>
+    <trans-unit id="resource-type-sql-edge-display-name">
+      <source xml:lang="en">Azure SQL Edge</source>
     </trans-unit>
     <trans-unit id="sql-edge-azure-display-name">
       <source xml:lang="en">New Azure IoT Hub and VM (password authentication)</source>
+    </trans-unit>
+    <trans-unit id="sql-edge-azure-multi-device-display-name">
+      <source xml:lang="en">Multiple devices of an Azure IoT Hub</source>
+    </trans-unit>
+    <trans-unit id="sql-edge-azure-multi-device-title">
+      <source xml:lang="en">Deploy Azure SQL Edge to multiple Azure IoT devices</source>
+    </trans-unit>
+    <trans-unit id="sql-edge-azure-single-device-display-name">
+      <source xml:lang="en">Existing device of an Azure IoT Hub</source>
+    </trans-unit>
+    <trans-unit id="sql-edge-azure-single-device-title">
+      <source xml:lang="en">Deploy Azure SQL Edge to an existing device</source>
     </trans-unit>
     <trans-unit id="sql-edge-azure-sshkey-display-name">
       <source xml:lang="en">New Azure IoT Hub and VM (ssh public key authentication)</source>
@@ -88,14 +124,23 @@
     <trans-unit id="sql-edge-azure-title">
       <source xml:lang="en">Deploy Azure SQL Edge to a new Azure VM via IoT hub</source>
     </trans-unit>
-    <trans-unit id="azure_subscription_id">
-      <source xml:lang="en">Subscription id</source>
+    <trans-unit id="sql-edge-local-display-name">
+      <source xml:lang="en">Local container instance</source>
     </trans-unit>
-    <trans-unit id="azure_resource_group">
-      <source xml:lang="en">Resource group</source>
+    <trans-unit id="sql-edge-local-title">
+      <source xml:lang="en">Deploy Azure SQL Edge container instance on local machine</source>
     </trans-unit>
-    <trans-unit id="azure_location">
-      <source xml:lang="en">Location</source>
+    <trans-unit id="sql-edge-remote-display-name">
+      <source xml:lang="en">Remote container instance</source>
+    </trans-unit>
+    <trans-unit id="sql-edge-remote-title">
+      <source xml:lang="en">Deploy Azure SQL Edge container instance on remote machine</source>
+    </trans-unit>
+    <trans-unit id="sql-edge-type-display-name">
+      <source xml:lang="en">Deployment target</source>
+    </trans-unit>
+    <trans-unit id="sqlserver-info-section-title">
+      <source xml:lang="en">Azure SQL Edge information</source>
     </trans-unit>
     <trans-unit id="vm_admin">
       <source xml:lang="en">VM admin username</source>
@@ -109,53 +154,8 @@
     <trans-unit id="vm_password_validation_error_message">
       <source xml:lang="en">VM password must be 12 to 123 characters in length and consists of upper case characters, lower case characters, numbers and special characters.</source>
     </trans-unit>
-    <trans-unit id="package_path">
-      <source xml:lang="en">Package file</source>
-    </trans-unit>
-    <trans-unit id="package_path_description">
-      <source xml:lang="en">Path of the SQL Server package file(dacpac, bacpac) or compressed package file.</source>
-    </trans-unit>
-    <trans-unit id="azure-info-section-title">
-      <source xml:lang="en">Azure information</source>
-    </trans-unit>
-    <trans-unit id="sqlserver-info-section-title">
-      <source xml:lang="en">Azure SQL Edge information</source>
-    </trans-unit>
-    <trans-unit id="package-files">
-      <source xml:lang="en">SQL Server Package files</source>
-    </trans-unit>
-    <trans-unit id="sql-edge-azure-single-device-display-name">
-      <source xml:lang="en">Existing device of an Azure IoT Hub</source>
-    </trans-unit>
-    <trans-unit id="sql-edge-azure-single-device-title">
-      <source xml:lang="en">Deploy Azure SQL Edge to an existing device</source>
-    </trans-unit>
-    <trans-unit id="iot-hub-name">
-      <source xml:lang="en">IoT Hub name</source>
-    </trans-unit>
-    <trans-unit id="device-id">
-      <source xml:lang="en">Device ID</source>
-    </trans-unit>
-    <trans-unit id="device-ip-address">
-      <source xml:lang="en">Device IP Address</source>
-    </trans-unit>
-    <trans-unit id="device-ip-address-description">
-      <source xml:lang="en">Will be used to connect to the Azure SQL Edge instance after deployment</source>
-    </trans-unit>
-    <trans-unit id="sql-edge-azure-multi-device-display-name">
-      <source xml:lang="en">Multiple devices of an Azure IoT Hub</source>
-    </trans-unit>
-    <trans-unit id="sql-edge-azure-multi-device-title">
-      <source xml:lang="en">Deploy Azure SQL Edge to multiple Azure IoT devices</source>
-    </trans-unit>
-    <trans-unit id="device-target-condition">
-      <source xml:lang="en">Target condition</source>
-    </trans-unit>
-    <trans-unit id="device-target-condition-learn-more">
-      <source xml:lang="en">Learn more about target condition</source>
-    </trans-unit>
     <trans-unit id="vm_ssh_public_key">
       <source xml:lang="en">SSH public key</source>
     </trans-unit>
-  </body></file>
+</body></file>
 </xliff>

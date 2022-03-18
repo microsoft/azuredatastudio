@@ -8,35 +8,35 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"client\\dist\\node/jsonClient": {
+			"configureLimit": "Verwenden Sie die Einstellung \"{0}\", um das Limit zu konfigurieren.",
+			"goToSetting": "Einstellungen öffnen",
+			"json.resolveError": "JSON: Schemaauflösungsfehler",
+			"json.schemaResolutionDisabledMessage": "Das Herunterladen von Schemas ist deaktiviert. Klicken Sie, um eine Konfiguration durchzuführen.",
+			"json.schemaResolutionErrorMessage": "Das Schema kann nicht aufgelöst werden. Klicken Sie, um es noch mal zu versuchen.",
+			"jsonserver.name": "JSON-Sprachserver",
+			"ok": "OK",
+			"schemaDownloadDisabled": "Das Herunterladen von Schemas wird über die Einstellung \"{0}\" deaktiviert.",
+			"untitled.schema": "\"{0}\" kann nicht geladen werden.",
+			"yes never again": "Nicht mehr anzeigen"
+		},
 		"package": {
-			"displayName": "JSON-Sprachfeatures",
 			"description": "Bietet umfangreiche Sprachunterstützung für JSON-Dateien.",
+			"displayName": "JSON-Sprachfeatures",
+			"json.clickToRetry": "Klicken Sie, um es noch mal zu versuchen.",
+			"json.colorDecorators.enable.deprecationMessage": "Die Einstellung \"json.colorDecorators.enable\" ist veraltet und wurde durch \"editor.colorDecorators\" ersetzt.",
+			"json.colorDecorators.enable.desc": "Aktiviert oder deaktiviert Farb-Decorators",
+			"json.enableSchemaDownload.desc": "Sofern aktiviert, können JSON-Schemas aus HTTP- und HTTPS-Speicherorten abgerufen werden.",
+			"json.format.enable.desc": "JSON-Standardformatierer aktivieren/deaktivieren",
+			"json.maxItemsComputed.desc": "Die maximale Anzahl der berechneten Umrisssymbole und Faltbereiche (aus Leistungsgründen begrenzt).",
+			"json.maxItemsExceededInformation.desc": "Hiermit wird eine Benachrichtigung angezeigt, wenn die maximale Anzahl von Gliederungssymbolen und Faltregionen überschritten wird.",
+			"json.schemaResolutionErrorMessage": "Das Schema kann nicht aufgelöst werden.",
 			"json.schemas.desc": "Hiermit werden Schemas JSON-Dateien im aktuellen Projekt zugeordnet.",
-			"json.schemas.url.desc": "Eine URL zu einem Schema oder ein relativer Pfad zu einem Schema im aktuellen Verzeichnis",
 			"json.schemas.fileMatch.desc": "Ein Array von Dateimustern für den Abgleich, wenn JSON-Dateien in Schemas aufgelöst werden. * kann als Platzhalterzeichen verwendet werden. Zudem können Ausschlussmuster definiert werden (mit ! beginnend). Eine Datei gilt als Übereinstimmung, wenn mindestens ein übereinstimmendes Muster vorhanden ist und das letzte übereinstimmende Muster kein Ausschlussmuster ist.",
 			"json.schemas.fileMatch.item.desc": "Ein Dateimuster, das \"*\" enthalten kann, zum Abgleich beim Auflösen von JSON-Dateien in Schemas",
 			"json.schemas.schema.desc": "Die Schemadefinition für die angegebene URL. Das Schema muss nur angegeben werden, um Zugriffe auf die Schema-URL zu vermeiden.",
-			"json.format.enable.desc": "JSON-Standardformatierer aktivieren/deaktivieren",
-			"json.tracing.desc": "Verfolgt die Kommunikation zwischen VS Code und JSON-Sprachserver nach.",
-			"json.colorDecorators.enable.desc": "Aktiviert oder deaktiviert Farb-Decorators",
-			"json.colorDecorators.enable.deprecationMessage": "Die Einstellung \"json.colorDecorators.enable\" ist veraltet und wurde durch \"editor.colorDecorators\" ersetzt.",
-			"json.schemaResolutionErrorMessage": "Das Schema kann nicht aufgelöst werden.",
-			"json.clickToRetry": "Klicken Sie, um es noch mal zu versuchen.",
-			"json.maxItemsComputed.desc": "Die maximale Anzahl der berechneten Umrisssymbole und Faltbereiche (aus Leistungsgründen begrenzt).",
-			"json.maxItemsExceededInformation.desc": "Hiermit wird eine Benachrichtigung angezeigt, wenn die maximale Anzahl von Gliederungssymbolen und Faltregionen überschritten wird.",
-			"json.enableSchemaDownload.desc": "Sofern aktiviert, können JSON-Schemas aus HTTP- und HTTPS-Speicherorten abgerufen werden."
-		},
-		"client\\dist\\node/jsonClient": {
-			"json.resolveError": "JSON: Schemaauflösungsfehler",
-			"jsonserver.name": "JSON-Sprachserver",
-			"untitled.schema": "\"{0}\" kann nicht geladen werden.",
-			"schemaDownloadDisabled": "Das Herunterladen von Schemas wird über die Einstellung \"{0}\" deaktiviert.",
-			"ok": "OK",
-			"goToSetting": "Einstellungen öffnen",
-			"yes never again": "Nicht mehr anzeigen",
-			"configureLimit": "Verwenden Sie die Einstellung \"{0}\", um das Limit zu konfigurieren.",
-			"json.schemaResolutionErrorMessage": "Das Schema kann nicht aufgelöst werden. Klicken Sie, um es noch mal zu versuchen.",
-			"json.schemaResolutionDisabledMessage": "Das Herunterladen von Schemas ist deaktiviert. Klicken Sie, um eine Konfiguration durchzuführen."
+			"json.schemas.url.desc": "Eine URL zu einem Schema oder ein relativer Pfad zu einem Schema im aktuellen Verzeichnis",
+			"json.tracing.desc": "Verfolgt die Kommunikation zwischen VS Code und JSON-Sprachserver nach."
 		}
 	}
 }

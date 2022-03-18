@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Thème Solarized Light",
 			"description": "Thème Solarized Light pour Visual Studio Code",
+			"displayName": "Thème Solarized Light",
 			"themeLabel": "Solaire clair"
 		}
 	}

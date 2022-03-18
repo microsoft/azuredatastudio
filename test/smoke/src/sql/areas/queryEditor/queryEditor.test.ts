@@ -4,10 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Application } from '../../../../../automation';
+import * as minimist from 'minimist';
+import { afterSuite, beforeSuite } from '../../../utils';
 
-export function setup() {
+export function setup(opts: minimist.ParsedArgs) {
 	describe('Query Editor', () => {
-		setupWeb();
+		setupCommonTests(opts);
 
 		it('can new file, connect and execute', async function () {
 			const app = this.app as Application;
@@ -27,7 +29,15 @@ export function setup() {
 	});
 }
 
-export function setupWeb() {
+export function setupWeb(opts: minimist.ParsedArgs) {
+	describe('Query Editor', () => {
+		setupCommonTests(opts);
+	});
+}
+
+function setupCommonTests(opts: minimist.ParsedArgs): void {
+	beforeSuite(opts);
+	afterSuite(opts);
 	afterEach(async function (): Promise<void> {
 		const app = this.app as Application;
 		await app.workbench.quickaccess.runCommand('workbench.action.closeAllEditors');

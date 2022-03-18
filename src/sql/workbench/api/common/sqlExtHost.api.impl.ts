@@ -36,6 +36,9 @@ import { IExtHostCommands } from 'vs/workbench/api/common/extHostCommands';
 import { ExtHostWorkspace } from 'sql/workbench/api/common/extHostWorkspace';
 import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitDataService';
 import { URI } from 'vs/base/common/uri';
+import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+import { ExtHostAzureAccount } from 'sql/workbench/api/common/extHostAzureAccount';
+import { IExtHostExtensionService } from 'vs/workbench/api/common/extHostExtensionService';
 
 export interface IAzdataExtensionApiFactory {
 	(extension: IExtensionDescription): typeof azdata;
@@ -48,22 +51,19 @@ export interface IExtensionApiFactory {
 
 export interface IAdsExtensionApiFactory {
 	azdata: IAzdataExtensionApiFactory;
+	extHostNotebook: ExtHostNotebook;
+	extHostNotebookDocumentsAndEditors: ExtHostNotebookDocumentsAndEditors;
 }
 
 /**
  * This method instantiates and returns the extension API surface
  */
 export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): IExtensionApiFactory {
-	const { azdata } = createAdsApiFactory(accessor);
+	const { azdata, extHostNotebook, extHostNotebookDocumentsAndEditors } = createAdsApiFactory(accessor);
 	return {
 		azdata,
-		vscode: vsApiFactory(accessor)
+		vscode: vsApiFactory(accessor, extHostNotebook, extHostNotebookDocumentsAndEditors)
 	};
-}
-
-
-export interface IAdsExtensionApiFactory {
-	azdata: IAzdataExtensionApiFactory;
 }
 
 /**
@@ -79,6 +79,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 
 	// Addressable instances
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
+	rpcProtocol.set(SqlExtHostContext.ExtHostAzureAccount, new ExtHostAzureAccount(accessor.get(IExtHostExtensionService)));
 	const extHostConnectionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnectionManagement(rpcProtocol));
 	const extHostCredentialManagement = rpcProtocol.set(SqlExtHostContext.ExtHostCredentialManagement, new ExtHostCredentialManagement(rpcProtocol));
 	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol, uriTransformer));
@@ -93,8 +94,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostDashboard = rpcProtocol.set(SqlExtHostContext.ExtHostDashboard, new ExtHostDashboard(rpcProtocol));
 	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol, extHostModelView, extHostBackgroundTaskManagement));
 	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
-	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
 	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol));
+	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol, extHostNotebookDocumentsAndEditors));
 	const extHostExtensionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostExtensionManagement, new ExtHostExtensionManagement(rpcProtocol));
 	const extHostWorkspace = rpcProtocol.set(SqlExtHostContext.ExtHostWorkspace, new ExtHostWorkspace(rpcProtocol));
 	return {
@@ -380,6 +381,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				return extHostDataProvider.$registerDataGridProvider(provider);
 			};
 
+			let registerTableDesignerProvider = (provider: azdata.designers.TableDesignerProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerTableDesignerProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof azdata.dataprotocol = {
 				registerBackupProvider,
@@ -400,6 +405,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				registerSerializationProvider,
 				registerSqlAssessmentServicesProvider,
 				registerDataGridProvider,
+				registerTableDesignerProvider,
 				onDidChangeLanguageFlavor(listener: (e: azdata.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -537,6 +543,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				get onDidOpenNotebookDocument() {
 					return extHostNotebookDocumentsAndEditors.onDidOpenNotebookDocument;
 				},
+				get onDidCloseNotebookDocument() {
+					return extHostNotebookDocumentsAndEditors.onDidCloseNotebookDocument;
+				},
 				get onDidChangeActiveNotebookEditor() {
 					return extHostNotebookDocumentsAndEditors.onDidChangeActiveNotebookEditor;
 				},
@@ -546,8 +555,11 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				showNotebookDocument(uri: vscode.Uri, showOptions: azdata.nb.NotebookShowOptions) {
 					return extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, showOptions);
 				},
-				registerNotebookProvider(provider: azdata.nb.NotebookProvider): vscode.Disposable {
-					return extHostNotebook.registerNotebookProvider(provider);
+				registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable {
+					return extHostNotebook.registerSerializationProvider(provider);
+				},
+				registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable {
+					return extHostNotebook.registerExecuteProvider(provider);
 				},
 				registerNavigationProvider(provider: azdata.nb.NavigationProvider): vscode.Disposable {
 					return extHostNotebookDocumentsAndEditors.registerNavigationProvider(provider);
@@ -559,6 +571,20 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			const sqlAssessment: typeof azdata.sqlAssessment = {
 				SqlAssessmentResultItemKind: sqlExtHostTypes.SqlAssessmentResultItemKind,
 				SqlAssessmentTargetType: sqlExtHostTypes.SqlAssessmentTargetType
+			};
+
+			const designers: typeof azdata.designers = {
+				TableProperty: sqlExtHostTypes.designers.TableProperty,
+				TableColumnProperty: sqlExtHostTypes.designers.TableColumnProperty,
+				TableForeignKeyProperty: sqlExtHostTypes.designers.TableForeignKeyProperty,
+				ForeignKeyColumnMappingProperty: sqlExtHostTypes.designers.ForeignKeyColumnMappingProperty,
+				TableCheckConstraintProperty: sqlExtHostTypes.designers.TableCheckConstraintProperty,
+				TableIndexProperty: sqlExtHostTypes.designers.TableIndexProperty,
+				TableIndexColumnSpecificationProperty: sqlExtHostTypes.designers.TableIndexColumnSpecificationProperty,
+				DesignerEditType: sqlExtHostTypes.designers.DesignerEditType,
+				openTableDesigner(providerId, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): Promise<void> {
+					return extHostDataProvider.$openTableDesigner(providerId, tableInfo, telemetryInfo);
+				}
 			};
 
 			return {
@@ -611,8 +637,11 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition,
 				TabOrientation: sqlExtHostTypes.TabOrientation,
 				sqlAssessment,
-				TextType: sqlExtHostTypes.TextType
+				TextType: sqlExtHostTypes.TextType,
+				designers: designers
 			};
-		}
+		},
+		extHostNotebook: extHostNotebook,
+		extHostNotebookDocumentsAndEditors: extHostNotebookDocumentsAndEditors
 	};
 }

@@ -8,10 +8,11 @@ import * as TypeMoq from 'typemoq';
 
 import { nb, ServerInfo } from 'azdata';
 import { getHostAndPortFromEndpoint, isStream, getProvidersForFileName, asyncForEach, clusterEndpointsProperty, getClusterEndpoints, RawEndpoint, IEndpoint, getStandardKernelsForProvider, IStandardKernelWithProvider, rewriteUrlUsingRegex } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
-import { INotebookService, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookService, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 import { RichTextEditStack } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
+import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 
 suite('notebookUtils', function (): void {
 	const mockNotebookService = TypeMoq.Mock.ofType<INotebookService>(NotebookServiceStub);
@@ -20,7 +21,14 @@ suite('notebookUtils', function (): void {
 	const testKernel: nb.IStandardKernel = {
 		name: 'testName',
 		displayName: 'testDisplayName',
-		connectionProviderIds: ['testId1', 'testId2']
+		connectionProviderIds: ['testId1', 'testId2'],
+		supportedLanguages: ['python']
+	};
+	const sqlStandardKernel: nb.IStandardKernel = {
+		name: notebookConstants.SQL,
+		displayName: notebookConstants.SQL,
+		connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER],
+		supportedLanguages: ['sql']
 	};
 
 	function setupMockNotebookService() {
@@ -34,10 +42,17 @@ suite('notebookUtils', function (): void {
 			});
 
 		// getStandardKernelsForProvider
-		mockNotebookService.setup(n => n.getStandardKernelsForProvider(TypeMoq.It.isAnyString()))
-			.returns((provider) => {
-				return [testKernel];
-			});
+		let returnHandler = (provider) => {
+			let result = undefined;
+			if (provider === testProvider) {
+				result = [testKernel];
+			} else if (provider === SQL_NOTEBOOK_PROVIDER) {
+				result = [sqlStandardKernel];
+			}
+			return Promise.resolve(result);
+		};
+		mockNotebookService.setup(n => n.getStandardKernelsForProvider(TypeMoq.It.isAnyString())).returns(returnHandler);
+		mockNotebookService.setup(n => n.getStandardKernelsForProvider(TypeMoq.It.isAnyString())).returns(returnHandler);
 	}
 
 	test('isStream Test', async function (): Promise<void> {
@@ -78,21 +93,25 @@ suite('notebookUtils', function (): void {
 	test('getStandardKernelsForProvider Test', async function (): Promise<void> {
 		setupMockNotebookService();
 
-		let result = getStandardKernelsForProvider(undefined, undefined);
+		let result = await getStandardKernelsForProvider(undefined, undefined);
 		assert.deepStrictEqual(result, []);
 
-		result = getStandardKernelsForProvider(undefined, mockNotebookService.object);
+		result = await getStandardKernelsForProvider(undefined, mockNotebookService.object);
 		assert.deepStrictEqual(result, []);
 
-		result = getStandardKernelsForProvider('testProvider', undefined);
+		result = await getStandardKernelsForProvider('testProvider', undefined);
 		assert.deepStrictEqual(result, []);
 
-		result = getStandardKernelsForProvider('testProvider', mockNotebookService.object);
+		result = await getStandardKernelsForProvider('NotARealProvider', mockNotebookService.object);
+		assert.deepStrictEqual(result, [Object.assign({ notebookProvider: 'NotARealProvider' }, sqlStandardKernel)]);
+
+		result = await getStandardKernelsForProvider('testProvider', mockNotebookService.object);
 		assert.deepStrictEqual(result, [<IStandardKernelWithProvider>{
 			name: 'testName',
 			displayName: 'testDisplayName',
 			connectionProviderIds: ['testId1', 'testId2'],
-			notebookProvider: 'testProvider'
+			notebookProvider: 'testProvider',
+			supportedLanguages: ['python']
 		}]);
 	});
 
@@ -151,20 +170,20 @@ suite('notebookUtils', function (): void {
 		assert.strictEqual(result, undefined);
 
 		result = extractCellMagicCommandPlusArgs('%%magic command', 'magic');
-		assert.equal(result.commandId, 'command');
-		assert.equal(result.args, '');
+		assert.strictEqual(result.commandId, 'command');
+		assert.strictEqual(result.args, '');
 
 		result = extractCellMagicCommandPlusArgs('%%magic command arg1', 'magic');
-		assert.equal(result.commandId, 'command');
-		assert.equal(result.args, 'arg1');
+		assert.strictEqual(result.commandId, 'command');
+		assert.strictEqual(result.args, 'arg1');
 
 		result = extractCellMagicCommandPlusArgs('%%magic command arg1 arg2', 'magic');
-		assert.equal(result.commandId, 'command');
-		assert.equal(result.args, 'arg1 arg2');
+		assert.strictEqual(result.commandId, 'command');
+		assert.strictEqual(result.args, 'arg1 arg2');
 
 		result = extractCellMagicCommandPlusArgs('%%magic command.id arg1 arg2 arg3', 'magic');
-		assert.equal(result.commandId, 'command.id');
-		assert.equal(result.args, 'arg1 arg2 arg3');
+		assert.strictEqual(result.commandId, 'command.id');
+		assert.strictEqual(result.args, 'arg1 arg2 arg3');
 	});
 
 	test('asyncForEach Test', async function (): Promise<void> {

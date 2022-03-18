@@ -23,6 +23,7 @@ import { ServerTreeRenderer } from 'sql/workbench/services/objectExplorer/browse
 import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 import { withNullAsUndefined } from 'vs/base/common/types';
+import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/common/nodeType';
 
 const DefaultConnectionIconClass = 'server-page';
 
@@ -168,6 +169,8 @@ class TreeNodeTemplate extends Disposable {
 		let iconName: string | undefined = undefined;
 		if (element.iconType) {
 			iconName = (typeof element.iconType === 'string') ? element.iconType : element.iconType.id;
+		} else if (instanceOfSqlThemeIcon(element.icon)) {
+			iconName = element.icon.id;
 		} else {
 			iconName = element.nodeTypeId;
 			if (element.nodeStatus) {
@@ -185,10 +188,13 @@ class TreeNodeTemplate extends Disposable {
 		this._icon.classList.remove(...tokens);
 		this._icon.classList.add('icon');
 		let iconLowerCaseName = iconName.toLocaleLowerCase();
-		this._icon.classList.add(iconLowerCaseName);
+		if (iconLowerCaseName) {
+			this._icon.classList.add(iconLowerCaseName);
+		}
 
-		if (element.iconPath) {
-			iconRenderer.putIcon(this._icon, element.iconPath);
+		iconRenderer.removeIcon(this._icon);
+		if (element.icon && !instanceOfSqlThemeIcon(element.icon)) {
+			iconRenderer.putIcon(this._icon, element.icon);
 		}
 
 		this._label.textContent = element.label;

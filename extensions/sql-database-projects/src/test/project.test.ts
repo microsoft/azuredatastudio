@@ -5,6 +5,7 @@
 
 import * as should from 'should';
 import * as path from 'path';
+import * as os from 'os';
 import * as sinon from 'sinon';
 import * as baselines from './baselines/baselines';
 import * as templates from '../templates/templates';
@@ -12,11 +13,12 @@ import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
-import { Project, EntryType, SystemDatabase, SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
+import { Project } from '../models/project';
 import { exists, convertSlashesForSqlProj } from '../common/utils';
 import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { SqlTargetPlatform } from 'sqldbproj';
+import { EntryType, SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase } from '../models/projectEntry';
 
 let projFilePath: string;
 
@@ -36,7 +38,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.files.filter(f => f.type === EntryType.File).length).equal(6);
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
 
-		should(project.files.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User')).not.equal(undefined); // mixed ItemGroup folder
+		should(project.files.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User\\')).not.equal(undefined); // mixed ItemGroup folder
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Views\\User\\Profile.sql')).not.equal(undefined); // mixed ItemGroup file
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === '..\\Test\\Test.sql')).not.equal(undefined); // mixed ItemGroup file
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'MyExternalStreamingJob.sql')).not.equal(undefined); // entry with custom attribute
@@ -825,6 +827,663 @@ describe('Project: sqlproj content operations', function (): void {
 				{ type: EntryType.Folder, relativePath: 'foo\\bar\\' },
 				{ type: EntryType.File, relativePath: 'foo\\bar\\test.sql' }]);
 	});
+
+	it('Should handle adding existing items to project', async function (): Promise<void> {
+		// Create new sqlproj
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projectFolder = path.dirname(projFilePath);
+
+		// Create 2 new files, a sql file and a txt file
+		const sqlFile = path.join(projectFolder, 'test.sql');
+		const txtFile = path.join(projectFolder, 'foo', 'test.txt');
+		await fs.writeFile(sqlFile, '');
+		await fs.mkdir(path.dirname(txtFile));
+		await fs.writeFile(txtFile, '');
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		// Add them as existing files
+		await project.addExistingItem(sqlFile);
+		await project.addExistingItem(txtFile);
+
+		// Validate files should have been added to project
+		should(project.files.length).equal(3, 'Three entries are expected in the project');
+		should(project.files.map(f => ({ type: f.type, relativePath: f.relativePath })))
+			.containDeep([
+				{ type: EntryType.Folder, relativePath: 'foo\\' },
+				{ type: EntryType.File, relativePath: 'test.sql' },
+				{ type: EntryType.File, relativePath: 'foo\\test.txt' }]);
+
+		// Validate project file XML
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Build Include="test.sql" />')).equal(true, projFileText);
+		should(projFileText.includes('<None Include="foo\\test.txt" />')).equal(true, projFileText);
+	});
+});
+
+describe('Project: sdk style project content operations', function (): void {
+	before(async function (): Promise<void> {
+		await baselines.loadBaselines();
+	});
+
+	beforeEach(function (): void {
+		sinon.restore();
+	});
+
+	it('Should read project from sqlproj and files and folders by globbing', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline);
+		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
+		const project: Project = await Project.openProject(projFilePath);
+
+		// Files and folders
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(3);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(13);
+
+		// SqlCmdVariables
+		should(Object.keys(project.sqlCmdVariables).length).equal(2);
+		should(project.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
+		should(project.sqlCmdVariables['BackupDatabaseName']).equal('MyBackupDatabase');
+
+		// Database references
+		// should only have one database reference even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
+		should(project.databaseReferences.length).equal(1);
+		should(project.databaseReferences[0].databaseName).containEql(constants.master);
+		should(project.databaseReferences[0] instanceof SystemDatabaseReferenceProjectEntry).equal(true);
+
+		// // Pre-post deployment scripts
+		should(project.preDeployScripts.length).equal(1);
+		should(project.postDeployScripts.length).equal(1);
+		should(project.noneDeployScripts.length).equal(2);
+		should(project.preDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment1.sql')).not.equal(undefined, 'File Script.PreDeployment1.sql not read');
+		should(project.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment2.sql')).not.equal(undefined, 'File Script.PreDeployment2.sql not read');
+		should(project.postDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PostDeployment1.sql')).not.equal(undefined, 'File Script.PostDeployment1.sql not read');
+		should(project.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'folder1\\Script.PostDeployment2.sql')).not.equal(undefined, 'File folder1\\Script.PostDeployment2.sql not read');
+	});
+
+	it('Should handle files listed in sqlproj', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline);
+		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		// Files and folders
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);
+
+		// these are also listed in the sqlproj, but there shouldn't be duplicate entries for them
+		should(project.files.filter(f => f.relativePath === 'folder1\\file2.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === 'file1.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === 'folder1\\').length).equal(1);
+	});
+
+	it('Should handle pre/post/none deploy scripts outside of project folder', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		const mainProjectPath =  path.join(testFolderPath, 'project');
+		const otherFolderPath = path.join(testFolderPath, 'other');
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithGlobsSpecifiedBaseline, mainProjectPath);
+		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+
+		// create files outside of project folder that are included in the project file
+		await fs.mkdir(otherFolderPath);
+		await testUtils.createOtherDummyFiles(otherFolderPath);
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		// verify files, folders, pre/post/none deploy scripts were loaded correctly
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(18);
+		should(project.preDeployScripts.length).equal(1);
+		should(project.postDeployScripts.length).equal(1);
+		should(project.noneDeployScripts.length).equal(1);
+	});
+
+	it('Should handle globbing patterns listed in sqlproj', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		const mainProjectPath =  path.join(testFolderPath, 'project');
+		const otherFolderPath = path.join(testFolderPath, 'other');
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithGlobsSpecifiedBaseline, mainProjectPath);
+		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+
+		// create files outside of project folder that are included in the project file
+		await fs.mkdir(otherFolderPath);
+		await testUtils.createOtherDummyFiles(otherFolderPath);
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(18);
+
+		// make sure all the correct files from the globbing patterns were included
+		// ..\other\folder1\test?.sql
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\test1.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\test2.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\testLongerName.sql').length).equal(0);
+
+		// ..\other\folder1\file*.sql
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\file1.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\file2.sql').length).equal(1);
+
+		// ..\other\folder2\*.sql
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder2\\file1.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder2\\file2.sql').length).equal(1);
+
+		// make sure no duplicates from folder1\*.sql
+		should(project.files.filter(f => f.relativePath === 'folder1\\file1.sql').length).equal(1);
+	});
+
+	it('Should handle Build Remove in sqlproj', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		const mainProjectPath =  path.join(testFolderPath, 'project');
+		const otherFolderPath = path.join(testFolderPath, 'other');
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithBuildRemoveBaseline, mainProjectPath);
+		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+
+		// create files outside of project folder that are included in the project file
+		await fs.mkdir(otherFolderPath);
+		await testUtils.createOtherDummyFiles(otherFolderPath);
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(7);
+
+		// make sure all the correct files from the globbing patterns were included and removed are evaluated in order
+
+		// <Build Include="..\other\folder1\file*.sql" />
+		// <Build Remove="..\other\folder1\file1.sql" />
+		// expected: ..\other\folder1\file1.sql is not included
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\file1.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\file2.sql').length).equal(1);
+
+		// <Build Include="..\other\folder2\file2.sql" />
+		// <Build Remove="..\other\folder2\**" />
+		// expected: ..\other\folder2\file2.sql is not included
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder2\\file1.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder2\\file2.sql').length).equal(0);
+
+		// <Build Remove="folder1\*.sql" />
+		// <Build Include="folder1\file2.sql" />
+		// expected: folder1\file2.sql is included
+		should(project.files.filter(f => f.relativePath === 'folder1\\file1.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === 'folder1\\file2.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === 'folder1\\file3.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === 'folder1\\file4.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === 'folder1\\file5.sql').length).equal(0);
+
+		// <Build Remove="folder2\file3.sql" />
+		// <Build Include="folder2\*.sql" />
+		// expected: folder2\file3.sql is included
+		should(project.files.filter(f => f.relativePath === 'folder2\\file1.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === 'folder2\\file2.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === 'folder2\\file3.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === 'folder2\\file4.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === 'folder2\\file5.sql').length).equal(1);
+
+		// <Build Remove="file1.sql" />
+		should(project.files.filter(f => f.relativePath === 'file1.sql').length).equal(0);
+	});
+
+	it('Should exclude pre/post/none deploy scripts correctly', async function (): Promise<void> {
+		const folderPath = await testUtils.generateTestFolderPath();
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newSdkStyleProjectSdkNodeBaseline, folderPath);
+
+		const project: Project = await Project.openProject(projFilePath);
+		await project.addScriptItem('Script.PreDeployment1.sql', 'fake contents', templates.preDeployScript);
+		await project.addScriptItem('Script.PreDeployment2.sql', 'fake contents', templates.preDeployScript);
+		await project.addScriptItem('Script.PostDeployment1.sql', 'fake contents', templates.postDeployScript);
+
+		// verify they were added to the sqlproj
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<PreDeploy Include="Script.PreDeployment1.sql" />')).equal(true);
+		should(projFileText.includes('<None Include="Script.PreDeployment2.sql" />')).equal(true);
+		should(projFileText.includes('<PostDeploy Include="Script.PostDeployment1.sql" />')).equal(true);
+		should(project.preDeployScripts.length).equal(1, 'Script.PreDeployment1.sql should have been added');
+		should(project.noneDeployScripts.length).equal(1, 'Script.PreDeployment2.sql should have been added');
+		should(project.preDeployScripts.length).equal(1, 'Script.PostDeployment1.sql should have been added');
+		should(project.files.length).equal(0, 'There should not be any files');
+
+		// exclude the pre/post/none deploy script
+		await project.exclude(project.preDeployScripts.find(f => f.relativePath === 'Script.PreDeployment1.sql')!);
+		await project.exclude(project.noneDeployScripts.find(f => f.relativePath === 'Script.PreDeployment2.sql')!);
+		await project.exclude(project.postDeployScripts.find(f => f.relativePath === 'Script.PostDeployment1.sql')!);
+
+		// verify they are excluded in the sqlproj
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<PreDeploy Include="Script.PreDeployment1.sql" />')).equal(false);
+		should(projFileText.includes('<None Include="Script.PreDeployment2.sql" />')).equal(false);
+		should(projFileText.includes('<PostDeploy Include="Script.PostDeployment1.sql" />')).equal(false);
+		should(projFileText.includes('<None Remove="Script.PreDeployment1.sql" />')).equal(true);
+		should(projFileText.includes('<None Remove="Script.PreDeployment2.sql" />')).equal(true);
+		should(projFileText.includes('<None Remove="Script.PostDeployment1.sql" />')).equal(true);
+
+		should(project.preDeployScripts.length).equal(0, 'Script.PreDeployment1.sql should have been removed');
+		should(project.noneDeployScripts.length).equal(0, 'Script.PreDeployment2.sql should have been removed');
+		should(project.postDeployScripts.length).equal(0, 'Script.PostDeployment1.sql should have been removed');
+		should(project.files.length).equal(0, 'There should not be any files after the excludes');
+	});
+
+	it('Should handle excluding files included by glob patterns', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		const mainProjectPath =  path.join(testFolderPath, 'project');
+		const otherFolderPath = path.join(testFolderPath, 'other');
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithGlobsSpecifiedBaseline, mainProjectPath);
+		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+
+		// create files outside of project folder that are included in the project file
+		await fs.mkdir(otherFolderPath);
+		await testUtils.createOtherDummyFiles(otherFolderPath);
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(18);
+
+		// exclude a file in the project's folder
+		should(project.files.filter(f => f.relativePath === 'folder1\\file1.sql').length).equal(1);
+		await project.exclude(project.files.find(f => f.relativePath === 'folder1\\file1.sql')!);
+		should(project.files.filter(f => f.relativePath === 'folder1\\file1.sql').length).equal(0);
+
+		// exclude explicitly included file from an outside folder
+		should(project.files.filter(f => f.relativePath === '..\\other\\file1.sql').length).equal(1);
+		await project.exclude(project.files.find(f => f.relativePath === '..\\other\\file1.sql')!);
+		should(project.files.filter(f => f.relativePath === '..\\other\\file1.sql').length).equal(0);
+
+		// exclude glob included file from an outside folder
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\test2.sql').length).equal(1);
+		await project.exclude(project.files.find(f => f.relativePath === '..\\other\\folder1\\test2.sql')!);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\test2.sql').length).equal(0);
+
+		// make sure a <Build Remove="folder\file1.sql"> was added
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Build Remove="folder1\\file1.sql" />')).equal(true, projFileText);
+
+		// make sure  <Build Include="..\other\file1.sql"> was removed and no <Build Remove"..."> was added for it
+		should(projFileText.includes('<Build Include="..\\other\\file1.sql" />')).equal(false, projFileText);
+		should(projFileText.includes('<Build Remove="..\\other\\file1.sql" />')).equal(false, projFileText);
+
+		// make sure a <Build Remove="..\other\folder1\test2.sql"> was added
+		should(projFileText.includes('<Build Remove="..\\other\\folder1\\test2.sql" />')).equal(true, projFileText);
+	});
+
+	it('Should only add Build entries to sqlproj for files not included by project folder glob and external streaming jobs', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		const folderPath = 'Stored Procedures\\';
+		const scriptPath = path.join(folderPath, 'Fake Stored Proc.sql');
+		const scriptContents = 'SELECT \'This is not actually a stored procedure.\'';
+
+		const scriptPathTagged = 'Fake External Streaming Job.sql';
+		const scriptContentsTagged = 'EXEC sys.sp_create_streaming_job \'job\', \'SELECT 7\'';
+
+		const outsideFolderScriptPath = path.join('..', 'Other Fake Stored Proc.sql');
+		const outsideFolderScriptContents = 'SELECT \'This is also not actually a stored procedure.\'';
+
+		const otherFolderPath = 'OtherFolder\\';
+
+		await project.addScriptItem(scriptPath, scriptContents);
+		await project.addScriptItem(scriptPathTagged, scriptContentsTagged, templates.externalStreamingJob);
+		await project.addScriptItem(outsideFolderScriptPath, outsideFolderScriptContents);
+		await project.addFolderItem(otherFolderPath);
+
+		const newProject = await Project.openProject(projFilePath);
+
+		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === convertSlashesForSqlProj(folderPath))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPath))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPathTagged))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPathTagged))?.sqlObjectType).equal(constants.ExternalStreamingJob);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(outsideFolderScriptPath))).not.equal(undefined);
+
+		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === convertSlashesForSqlProj(otherFolderPath))).not.equal(undefined);
+
+		// only the external streaming job and file outside of the project folder should have been added to the sqlproj
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Folder Include="Stored Procedures" />')).equal(false, projFileText);
+		should(projFileText.includes('<Build Include="Stored Procedures\\Fake Stored Proc.sql" />')).equal(false, projFileText);
+		should(projFileText.includes('<Build Include="Fake External Streaming Job.sql" Type="ExternalStreamingJob" />')).equal(true, projFileText);
+		should(projFileText.includes('<Build Include="..\\Other Fake Stored Proc.sql" />')).equal(true, projFileText);
+		should(projFileText.includes('<Folder Include="OtherFolder" />')).equal(false, projFileText);
+	});
+
+	it('Should handle excluding glob included folders', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline, testFolderPath);
+		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(13);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(3);
+		should(project.noneDeployScripts.length).equal(2);
+
+		// try to exclude a glob included folder
+		await project.exclude(project.files.find(f => f.relativePath === 'folder1\\')!);
+
+		// verify folder and contents are excluded
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(1);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(6);
+		should(project.noneDeployScripts.length).equal(1, 'Script.PostDeployment2.sql should have been excluded');
+		should(project.files.find(f => f.relativePath === 'folder1\\')).equal(undefined);
+
+		// verify sqlproj has glob exclude for folder, but not for files and inner folder
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Build Remove="folder1\\**" />')).equal(true, projFileText);
+		should(projFileText.includes('<Build Remove="folder1\\file1.sql" />')).equal(false, projFileText);
+		should(projFileText.includes('<Build Remove="folder1\\nestedFolder\\**" />')).equal(false, projFileText);
+	});
+
+	it('Should handle excluding nested glob included folders', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline, testFolderPath);
+		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(13);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(3);
+
+		// try to exclude a glob included folder
+		await project.exclude(project.files.find(f => f.relativePath === 'folder1\\nestedFolder\\')!);
+
+		// verify folder and contents are excluded
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);
+		should(project.files.find(f => f.relativePath === 'folder1\\nestedFolder\\')).equal(undefined);
+
+		// verify sqlproj has glob exclude for folder, but not for files
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Build Remove="folder1\\nestedFolder\\**" />')).equal(true, projFileText);
+		should(projFileText.includes('<Build Remove="folder1\\nestedFolder\\otherFile1.sql" />')).equal(false, projFileText);
+	});
+
+	it('Should handle excluding explicitly included folders', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline, testFolderPath);
+		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+		should(project.files.find(f => f.relativePath === 'folder1\\')!).not.equal(undefined);
+		should(project.files.find(f => f.relativePath === 'folder2\\')!).not.equal(undefined);
+
+		// try to exclude an explicitly included folder without trailing \ in sqlproj
+		await project.exclude(project.files.find(f => f.relativePath === 'folder1\\')!);
+
+		// verify folder and contents are excluded
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(1);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(6);
+		should(project.files.find(f => f.relativePath === 'folder1\\')).equal(undefined);
+
+		// try to exclude an explicitly included folder with trailing \ in sqlproj
+		await project.exclude(project.files.find(f => f.relativePath === 'folder2\\')!);
+
+		// verify folder and contents are excluded
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(0);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(1);
+		should(project.files.find(f => f.relativePath === 'folder2\\')).equal(undefined);
+
+		// make sure both folders are removed from sqlproj and remove entry is added
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Folder Include="folder1" />')).equal(false, projFileText);
+		should(projFileText.includes('<Folder Include="folder2\\" />')).equal(false, projFileText);
+
+		should(projFileText.includes('<Build Remove="folder1\\**" />')).equal(true, projFileText);
+		should(projFileText.includes('<Build Remove="folder2\\**" />')).equal(true, projFileText);
+	});
+
+	it('Should handle adding empty folders and removing the Folder entry when the folder is no longer empty', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline, testFolderPath);
+		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+		should(project.files.find(f => f.relativePath === 'folder1\\')!).not.equal(undefined);
+		should(project.files.find(f => f.relativePath === 'folder2\\')!).not.equal(undefined);
+
+		// try to add a new folder
+		await project.addFolderItem('folder3\\');
+
+		// try to add a new folder without trailing backslash
+		await project.addFolderItem('folder4');
+
+		// verify folders were added
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);
+		should(project.files.find(f => f.relativePath === 'folder3\\')).not.equal(undefined);
+		should(project.files.find(f => f.relativePath === 'folder4\\')).not.equal(undefined);
+
+		// verify folders were added and the entries have a backslash in the sqlproj
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Folder Include="folder3\\" />')).equal(true, projFileText);
+		should(projFileText.includes('<Folder Include="folder4\\" />')).equal(true, projFileText);
+
+		// add file to folder3
+		await project.addScriptItem(path.join('folder3', 'test.sql'), 'fake contents');
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(12);
+		should(project.files.find(f => f.relativePath === 'folder3\\test.sql')).not.equal(undefined);
+
+		// verify folder3 entry is no longer in sqlproj
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Folder Include="folder3\\" />')).equal(false, projFileText);
+		should(projFileText.includes('<Folder Include="folder4\\" />')).equal(true, projFileText);
+	});
+
+	it('Should handle adding nested empty folders', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline, testFolderPath);
+		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+
+		let project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+		should(project.files.find(f => f.relativePath === 'folder1\\')!).not.equal(undefined);
+		should(project.files.find(f => f.relativePath === 'folder2\\')!).not.equal(undefined);
+
+		// try to add a new folder
+		await project.addFolderItem('folder3\\');
+
+		// try to add a nested folder
+		await project.addFolderItem('folder3\\innerFolder\\');
+
+		// verify folders were added
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);
+		should(project.files.find(f => f.relativePath === 'folder3\\')).not.equal(undefined);
+		should(project.files.find(f => f.relativePath === 'folder3\\innerFolder\\')).not.equal(undefined);
+
+		// verify there's only one folder entry for the two folders that were added
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Folder Include="folder3\\" />')).equal(false, projFileText);
+		should(projFileText.includes('<Folder Include="folder3\\innerFolder\\" />')).equal(true, projFileText);
+
+		// load the project again and make sure both new folders get loaded
+		project = await Project.openProject(projFilePath);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
+		should(project.files.find(f => f.relativePath === 'folder3\\')!).not.equal(undefined, 'folder3\\ should be loaded');
+		should(project.files.find(f => f.relativePath === 'folder3\\innerFolder\\')!).not.equal(undefined, 'folder3\\innerFolder\\ should be loaded');
+
+		// add file to folder3
+		await project.addScriptItem(path.join('folder3', 'test.sql'), 'fake contents');
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(12);
+		should(project.files.find(f => f.relativePath === 'folder3\\test.sql')).not.equal(undefined, 'folder3\\test.sql should be in the project files');
+
+		// verify folder entry for innerFolder entry is still there
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Folder Include="folder3\\innerFolder\\" />')).equal(true, projFileText);
+
+		// load the project again and make sure the folders still get loaded
+		project = await Project.openProject(projFilePath);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(12);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
+		should(project.files.find(f => f.relativePath === 'folder3\\')!).not.equal(undefined, 'folder3\\ should be loaded');
+		should(project.files.find(f => f.relativePath === 'folder3\\innerFolder\\')!).not.equal(undefined, 'folder3\\innerFolder\\ should be loaded');
+	});
+
+	it('Should handle deleting empty folders', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newSdkStyleProjectSdkNodeBaseline, testFolderPath);
+
+		const project: Project = await Project.openProject(projFilePath);
+		const beforeProjFileText = (await fs.readFile(projFilePath)).toString();
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(0);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(0);
+
+		// add an empty folder
+		await project.addFolderItem('folder1');
+
+		// verify folder was added
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(1);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(0);
+		should(project.files.find(f => f.relativePath === 'folder1\\')).not.equal(undefined, 'folder1 should have been added');
+
+		// verify entry was added for the new empty folder in the sqlproj
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Folder Include="folder1\\" />')).equal(true, projFileText);
+
+		// delete the empty folder
+		await project.deleteFileFolder(project.files.find(f => f.relativePath === 'folder1\\')!);
+
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(0, 'folder1 should have been deleted');
+
+		// verify the folder entry was removed from the sqlproj and a Build Remove was not added
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.trimEnd() === beforeProjFileText.trimEnd()).equal(true, 'The sqlproj should not have changed after deleting folder1');
+	});
+
+	it('Should handle deleting not empty glob included folders', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline, testFolderPath);
+		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
+
+		const project: Project = await Project.openProject(projFilePath);
+		const beforeProjFileText = (await fs.readFile(projFilePath)).toString();
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(13);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(3);
+
+		// delete a folder with contents
+		await project.deleteFileFolder(project.files.find(f => f.relativePath === 'folder2\\')!);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(8);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+
+		// verify the folder entry was removed from the sqlproj and a Build Remove was not added
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.trimEnd() === beforeProjFileText.trimEnd()).equal(true, 'The sqlproj should not have changed after deleting folder2');
+	});
+
+	it('Should handle deleting explicitly included folders', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline, testFolderPath);
+		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(13);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(3);
+		should(project.files.find(f => f.relativePath === 'folder1\\')!).not.equal(undefined);
+		should(project.files.find(f => f.relativePath === 'folder2\\')!).not.equal(undefined);
+
+		// try to delete an explicitly included folder with the trailing \ in sqlproj
+		await project.deleteFileFolder(project.files.find(f => f.relativePath === 'folder2\\')!);
+
+		// verify the project not longer has folder2 and its contents
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(8);
+		should(project.files.find(f => f.relativePath === 'folder2\\')).equal(undefined);
+
+		// try to delete an explicitly included folder without trailing \ in sqlproj
+		await project.deleteFileFolder(project.files.find(f => f.relativePath === 'folder1\\')!);
+
+		// verify the project not longer has folder1 and its contents
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(0);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(1);
+		should(project.files.find(f => f.relativePath === 'folder1\\')).equal(undefined);
+
+		// make sure both folders are removed from sqlproj and Build Remove entries were not added
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Folder Include="folder1" />')).equal(false, projFileText);
+		should(projFileText.includes('<Folder Include="folder2\\" />')).equal(false, projFileText);
+
+		should(projFileText.includes('<Build Remove="folder1\\**" />')).equal(false, projFileText);
+		should(projFileText.includes('<Build Remove="folder2\\**" />')).equal(false, projFileText);
+	});
+
+	it('Should add a project guid if there is not one in the sqlproj', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectNoProjectGuidBaseline);
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+
+		// verify no project guid
+		should(projFileText.includes(constants.ProjectGuid)).equal(false);
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		// verify project guid was added
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(project.projectGuid).not.equal(undefined);
+		should(projFileText.includes(constants.ProjectGuid)).equal(true);
+	});
+
+	it('Should handle adding existing items to project', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline);
+		const projectFolder = path.dirname(projFilePath);
+
+		// Create a sql file inside project root
+		const sqlFile = path.join(projectFolder, 'test.sql');
+		await fs.writeFile(sqlFile, '');
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		// Add it as existing file
+		await project.addExistingItem(sqlFile);
+
+		// Validate it has been added to project
+		should(project.files.length).equal(1, 'Only one entry is expected in the project');
+		const sqlFileEntry = project.files.find(f => f.type === EntryType.File && f.relativePath === 'test.sql');
+		should(sqlFileEntry).not.equal(undefined);
+
+		// Validate project XML should not have changed as the file falls under default glob
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Build Include="test.sql" />')).equal(false, projFileText);
+
+		// Exclude this file, verify the <Build Remove=...> is added
+		await project.exclude(sqlFileEntry!);
+		should(project.files.length).equal(0, 'Project should not have any files remaining.');
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Build Remove="test.sql" />')).equal(true, projFileText);
+
+		// Add the file back, verify the <Build Remove=...> is no longer there
+		await project.addExistingItem(sqlFile);
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Build Remove="test.sql" />')).equal(false, projFileText);
+		should(projFileText.includes('<Build Include="test.sql" />')).equal(false, projFileText);
+
+		// Now create a txt file and add it to sqlproj
+		const txtFile = path.join(projectFolder, 'test.txt');
+		await fs.writeFile(txtFile, '');
+		await project.addExistingItem(txtFile);
+
+		// Validate the txt file is added as <None Include=...>
+		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'test.txt')).not.equal(undefined);
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<None Include="test.txt" />')).equal(true, projFileText);
+
+		// Test with a sql file that's outside project root
+		const externalSqlFile = path.join(os.tmpdir(), `Test_${new Date().getTime()}.sql`);
+		const externalFileRelativePath = convertSlashesForSqlProj(path.relative(projectFolder, externalSqlFile));
+		await fs.writeFile(externalSqlFile, '');
+		await project.addExistingItem(externalSqlFile);
+		should(project.files.find(f => f.type === EntryType.File && f.relativePath === externalFileRelativePath)).not.equal(undefined);
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes(`<Build Include="${externalFileRelativePath}" />`)).equal(true, projFileText);
+	});
 });
 
 describe('Project: add SQLCMD Variables', function (): void {
@@ -868,14 +1527,14 @@ describe('Project: properties', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectMissingVersionBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		should(() => project.getProjectTargetVersion()).throw("Invalid DSP in .sqlproj file");
+		should(() => project.getProjectTargetVersion()).throw('Invalid DSP in .sqlproj file');
 	});
 
 	it('Should throw on invalid target database version', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidVersionBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		should(() => project.getProjectTargetVersion()).throw("Invalid DSP in .sqlproj file");
+		should(() => project.getProjectTargetVersion()).throw('Invalid DSP in .sqlproj file');
 	});
 
 	it('Should read default database collation', async function (): Promise<void> {
@@ -897,13 +1556,17 @@ describe('Project: properties', function (): void {
 		const project = await Project.openProject(projFilePath);
 
 		should(() => project.getDatabaseDefaultCollation())
-			.throw("Invalid value specified for the property 'DefaultCollation' in .sqlproj file");
+			.throw('Invalid value specified for the property \'DefaultCollation\' in .sqlproj file');
 	});
 });
 
 describe('Project: round trip updates', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
+	});
+
+	beforeEach(function (): void {
+		sinon.restore();
 	});
 
 	it('Should update SSDT project to work in ADS', async function (): Promise<void> {
@@ -943,6 +1606,29 @@ describe('Project: round trip updates', function (): void {
 
 		should(project.importedTargets.length).equal(3); // additional target should exist by default
 	});
+
+	it('Should not show update project warning message when opening sdk style project using Sdk node', async function (): Promise<void> {
+		await shouldNotShowUpdateWarning(baselines.newSdkStyleProjectSdkNodeBaseline);
+	});
+
+	it('Should not show update project warning message when opening sdk style project using Project node with Sdk attribute', async function (): Promise<void> {
+		await shouldNotShowUpdateWarning(baselines.newSdkStyleProjectSdkProjectAttributeBaseline);
+	});
+
+	it('Should not show update project warning message when opening sdk style project using Import node with Sdk attribute', async function (): Promise<void> {
+		await shouldNotShowUpdateWarning(baselines.newStyleProjectSdkImportAttributeBaseline);
+	});
+
+	async function shouldNotShowUpdateWarning(baselineFile: string): Promise<void> {
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselineFile, folderPath);
+		const spy = sinon.spy(window, 'showWarningMessage');
+
+		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);
+		should(spy.notCalled).be.true();
+		should(project.isSdkStyleProject).be.true();
+	}
 });
 
 async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: string): Promise<void> {
@@ -960,5 +1646,3 @@ async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: 
 	should(stub.calledOnce).be.true('showWarningMessage should have been called exactly once');
 	sinon.restore();
 }
-
-

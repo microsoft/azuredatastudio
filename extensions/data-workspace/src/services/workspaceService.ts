@@ -16,6 +16,9 @@ import { TelemetryReporter, TelemetryViews, TelemetryActions } from '../common/t
 import { Deferred } from '../common/promise';
 import { getAzdataApi } from '../common/utils';
 
+const WorkspaceConfigurationName = 'dataworkspace';
+const ExcludedProjectsConfigurationName = 'excludedProjects';
+
 export class WorkspaceService implements IWorkspaceService {
 	private _onDidWorkspaceProjectsChange: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	readonly onDidWorkspaceProjectsChange: vscode.Event<void> = this._onDidWorkspaceProjectsChange?.event;
@@ -23,7 +26,7 @@ export class WorkspaceService implements IWorkspaceService {
 	private openedProjects: vscode.Uri[] | undefined = undefined;
 
 	constructor() {
-		this.getProjectsInWorkspace(undefined, true);
+		this.getProjectsInWorkspace(undefined, true).catch(err => console.error('Error initializing projects in workspace ', err));
 	}
 
 	get isProjectProviderAvailable(): boolean {
@@ -81,7 +84,7 @@ export class WorkspaceService implements IWorkspaceService {
 		for (const projectFile of projectFiles) {
 			if (previousProjects.includes(projectFile.path)) {
 				projectsAlreadyOpen.push(projectFile.fsPath);
-				vscode.window.showInformationMessage(constants.ProjectAlreadyOpened(projectFile.fsPath));
+				void vscode.window.showInformationMessage(constants.ProjectAlreadyOpened(projectFile.fsPath));
 			}
 			else {
 				newProjectAdded = true;
@@ -93,8 +96,14 @@ export class WorkspaceService implements IWorkspaceService {
 			}
 		}
 
-		// 3. If any new projects are detected, fire event to refresh projects tree
+		// 3. Check if the project was previously excluded and remove it from the list of excluded projects if it was
+		const excludedProjects = this.getWorkspaceConfigurationValue<string[]>(ExcludedProjectsConfigurationName);
+		const updatedExcludedProjects = excludedProjects.filter(excludedProj => !projectFiles.find(newProj => vscode.workspace.asRelativePath(newProj) === excludedProj));
+		if (excludedProjects.length !== updatedExcludedProjects.length) {
+			await this.setWorkspaceConfigurationValue(ExcludedProjectsConfigurationName, updatedExcludedProjects);
+		}
 
+		// 4. If any new projects are detected, fire event to refresh projects tree
 		if (newProjectAdded) {
 			this._onDidWorkspaceProjectsChange.fire();
 		}
@@ -126,6 +135,10 @@ export class WorkspaceService implements IWorkspaceService {
 		if (this.openedProjects === undefined) {
 			throw new Error(constants.openedProjectsUndefinedAfterRefresh);
 		}
+
+		// remove excluded projects specified in workspace file
+		const excludedProjects = this.getWorkspaceConfigurationValue<string[]>(ExcludedProjectsConfigurationName);
+		this.openedProjects = this.openedProjects.filter(project => !excludedProjects.find(excludedProject => excludedProject === vscode.workspace.asRelativePath(project)));
 
 		// filter by specified extension
 		if (ext) {
@@ -206,7 +219,7 @@ export class WorkspaceService implements IWorkspaceService {
 
 		try {
 			// show git output channel
-			vscode.commands.executeCommand('git.showOutput');
+			void vscode.commands.executeCommand('git.showOutput');
 			const repositoryPath = await vscode.window.withProgress(
 				opts,
 				(progress, token) => gitApi.clone(url!, { parentPath: localClonePath!, progress, recursive: true }, token)
@@ -214,9 +227,9 @@ export class WorkspaceService implements IWorkspaceService {
 
 			// get all the project files in the cloned repo and add them to workspace
 			const repoProjects = (await this.getAllProjectsInFolder(vscode.Uri.file(repositoryPath)));
-			this.addProjectsToWorkspace(repoProjects);
+			await this.addProjectsToWorkspace(repoProjects);
 		} catch (e) {
-			vscode.window.showErrorMessage(constants.gitCloneError);
+			void vscode.window.showErrorMessage(constants.gitCloneError);
 			console.error(e);
 		}
 	}
@@ -256,5 +269,29 @@ export class WorkspaceService implements IWorkspaceService {
 		if (extension.isActive && extension.exports && !ProjectProviderRegistry.providers.includes(extension.exports)) {
 			ProjectProviderRegistry.registerProvider(extension.exports, extension.id);
 		}
+	}
+
+	/**
+	 * Adds the specified project to list of projects to hide in projects viewlet. This list is kept track of in the workspace file
+	 * @param projectFile uri of project to remove from projects viewlet
+	 */
+	async removeProject(projectFile: vscode.Uri): Promise<void> {
+		TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectRemovedFromWorkspace)
+			.withAdditionalProperties({
+				projectType: path.extname(projectFile.fsPath)
+			}).send();
+
+		const excludedProjects = this.getWorkspaceConfigurationValue<string[]>(ExcludedProjectsConfigurationName);
+		excludedProjects.push(vscode.workspace.asRelativePath(projectFile.fsPath));
+		await this.setWorkspaceConfigurationValue(ExcludedProjectsConfigurationName, [...new Set(excludedProjects)]);
+		this._onDidWorkspaceProjectsChange.fire();
+	}
+
+	getWorkspaceConfigurationValue<T>(configurationName: string): T {
+		return vscode.workspace.getConfiguration(WorkspaceConfigurationName).get(configurationName) as T;
+	}
+
+	async setWorkspaceConfigurationValue(configurationName: string, value: any): Promise<void> {
+		await vscode.workspace.getConfiguration(WorkspaceConfigurationName).update(configurationName, value, vscode.ConfigurationTarget.Workspace);
 	}
 }

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { URI } from 'vs/base/common/uri';
@@ -24,7 +24,7 @@ export class TerminalDecorationsProvider implements IDecorationsProvider {
 	constructor(
 		@ITerminalService private readonly _terminalService: ITerminalService
 	) {
-		this._terminalService.onInstancePrimaryStatusChanged(e => this._onDidChange.fire([e.resource]));
+		this._terminalService.onDidChangeInstancePrimaryStatus(e => this._onDidChange.fire([e.resource]));
 	}
 
 	get onDidChange(): Event<URI[]> {
@@ -36,12 +36,11 @@ export class TerminalDecorationsProvider implements IDecorationsProvider {
 			return undefined;
 		}
 
-		const instanceId = parseInt(resource.fragment);
-		if (!instanceId) {
+		const instance = this._terminalService.getInstanceFromResource(resource);
+		if (!instance) {
 			return undefined;
 		}
 
-		const instance = this._terminalService.getInstanceFromId(parseInt(resource.fragment));
 		const primaryStatus = instance?.statusList?.primary;
 		if (!primaryStatus?.icon) {
 			return undefined;

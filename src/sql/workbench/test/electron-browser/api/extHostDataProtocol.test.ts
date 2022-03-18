@@ -52,10 +52,10 @@ suite('ExtHostDataProtocol', () => {
 		let allProviders = extHostDataProtocol.getProvidersByType<azdata.MetadataProvider>(DataProviderType.MetadataProvider);
 
 		// Then each provider was retrieved successfully
-		assert.equal(retrievedProvider1, extension1MetadataMock.object, 'Expected metadata provider was not retrieved for extension 1');
-		assert.equal(retrievedProvider2, extension2MetadataMock.object, 'Expected metadata provider was not retrieved for extension 2');
-		assert.equal(allProviders.length, 2, 'All metadata providers had unexpected length');
-		assert.equal(allProviders.some(provider => provider === extension1MetadataMock.object), true, 'All metadata providers did not include extension 1 metadata provider');
-		assert.equal(allProviders.some(provider => provider === extension2MetadataMock.object), true, 'All metadata providers did not include extension 2 metadata provider');
+		assert.strictEqual(retrievedProvider1, extension1MetadataMock.object, 'Expected metadata provider was not retrieved for extension 1');
+		assert.strictEqual(retrievedProvider2, extension2MetadataMock.object, 'Expected metadata provider was not retrieved for extension 2');
+		assert.strictEqual(allProviders.length, 2, 'All metadata providers had unexpected length');
+		assert.strictEqual(allProviders.some(provider => provider === extension1MetadataMock.object), true, 'All metadata providers did not include extension 1 metadata provider');
+		assert.strictEqual(allProviders.some(provider => provider === extension2MetadataMock.object), true, 'All metadata providers did not include extension 2 metadata provider');
 	});
 });

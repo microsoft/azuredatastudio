@@ -9,13 +9,13 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "기본 테마",
-			"description": "기본 Visual Studio 밝은 테마 및 어두운 테마",
-			"darkPlusColorThemeLabel": "어둡게+(기본 어둡게)",
-			"lightPlusColorThemeLabel": "밝게+(기본 밝게)",
 			"darkColorThemeLabel": "어둡게(Visual Studio)",
-			"lightColorThemeLabel": "밝게(Visual Studio)",
+			"darkPlusColorThemeLabel": "어둡게+(기본 어둡게)",
+			"description": "기본 Visual Studio 밝은 테마 및 어두운 테마",
+			"displayName": "기본 테마",
 			"hcColorThemeLabel": "고대비",
+			"lightColorThemeLabel": "밝게(Visual Studio)",
+			"lightPlusColorThemeLabel": "밝게+(기본 밝게)",
 			"minimalIconThemeLabel": "최소(Visual Studio Code)"
 		}
 	}

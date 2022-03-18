@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import { MigrationMode, MigrationStateModel, NetworkContainerType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
+import * as styles from '../../constants/styles';
 
 export class TargetDatabaseSummaryDialog {
 	private _dialogObject!: azdata.window.Dialog;
@@ -18,8 +19,8 @@ export class TargetDatabaseSummaryDialog {
 			this._tableLength = 800;
 			dialogWidth = 900;
 		} else {
-			this._tableLength = 200;
-			dialogWidth = 'narrow';
+			this._tableLength = 700;
+			dialogWidth = 'medium';
 		}
 		this._dialogObject = azdata.window.createModelViewDialog(
 			constants.DATABASE_TO_BE_MIGRATED,
@@ -36,7 +37,7 @@ export class TargetDatabaseSummaryDialog {
 			const databaseCount = this._view.modelBuilder.text().withProps({
 				value: constants.COUNT_DATABASES(this._model._migrationDbs.length),
 				CSSStyles: {
-					'font-size': '13px',
+					...styles.BODY_CSS,
 					'margin-bottom': '20px'
 				}
 			}).component();
@@ -118,6 +119,15 @@ export class TargetDatabaseSummaryDialog {
 					headerCssStyles: headerCssStyle,
 					hidden: this._model._databaseBackup.migrationMode === MigrationMode.ONLINE
 				});
+			} else {
+				columns.push({
+					valueType: azdata.DeclarativeDataType.string,
+					displayName: constants.NETWORK_SHARE_PATH,
+					isReadOnly: true,
+					width: columnWidth,
+					rowCssStyles: rowCssStyle,
+					headerCssStyles: headerCssStyle
+				});
 			}
 
 			const tableRows: azdata.DeclarativeTableCellValue[][] = [];
@@ -145,6 +155,10 @@ export class TargetDatabaseSummaryDialog {
 							value: this._model._databaseBackup.blobs[index].lastBackupFile!
 						});
 					}
+				} else {
+					tableRow.push({
+						value: this._model._databaseBackup.networkShares[index].networkShareLocation
+					});
 				}
 				tableRows.push(tableRow);
 			});

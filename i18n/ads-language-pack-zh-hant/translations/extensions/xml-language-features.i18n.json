@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "XML 語言功能",
-			"description": "為 XML 提供豐富的語言支援。"
+			"description": "為 XML 提供豐富的語言支援。",
+			"displayName": "XML 語言功能"
 		}
 	}
 }

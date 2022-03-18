@@ -110,7 +110,7 @@ export default class TreeComponent extends ComponentBase<azdata.TreeProperties> 
 				{
 					indentPixels: 10,
 					twistiePixels: 20,
-					ariaLabel: 'Tree Node'
+					ariaLabel: this.ariaLabel
 				});
 			this._tree.setInput(new Root());
 			this._tree.domFocus();
@@ -161,6 +161,13 @@ export default class TreeComponent extends ComponentBase<azdata.TreeProperties> 
 		super.setProperties(properties);
 		if (this._treeRenderer) {
 			this._treeRenderer.options.withCheckbox = this.withCheckbox;
+		}
+
+		if (this._tree) {
+			// If tree was already initialized, update its properties
+			if (this.ariaLabel) {
+				this._tree.ariaLabel = this.ariaLabel;
+			}
 		}
 	}
 

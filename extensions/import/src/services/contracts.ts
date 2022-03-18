@@ -53,6 +53,38 @@ export interface ColumnInfo {
 
 
 /**
+ * LearnTransformationRequest
+ * Send this request to learn a transformation and preview it
+ */
+const learnTransformationRequestName = 'flatfile/learnTransformation';
+
+export interface LearnTransformationParams {
+	columnNames: string[];
+	transformationExamples: string[];
+	transformationExampleRowIndices: number[];
+}
+
+export interface LearnTransformationResponse {
+	transformationPreview: string[];
+}
+
+
+/**
+* SaveTransformationRequest
+* Send this request to save a transformation to be applied on insertion into database
+*/
+const saveTransformationRequestName = 'flatfile/saveTransformation';
+
+export interface SaveTransformationParams {
+	derivedColumnName: string;
+}
+
+export interface SaveTransformationResponse {
+	numTransformations: number;
+}
+
+
+/**
  * PROSEDiscoveryRequest
  * Send this request to create a new PROSE session with a new file and preview it
  */
@@ -139,6 +171,14 @@ export namespace ChangeColumnSettingsRequest {
 	export const type = new RequestType<ChangeColumnSettingsParams, ChangeColumnSettingsResponse, void, void>(changeColumnSettingsRequestName);
 }
 
+export namespace LearnTransformationRequest {
+	export const type = new RequestType<LearnTransformationParams, LearnTransformationResponse, void, void>(learnTransformationRequestName);
+}
+
+export namespace SaveTransformationRequest {
+	export const type = new RequestType<SaveTransformationParams, SaveTransformationResponse, void, void>(saveTransformationRequestName);
+}
+
 
 export interface FlatFileProvider {
 	providerId?: string;
@@ -147,4 +187,6 @@ export interface FlatFileProvider {
 	sendInsertDataRequest(params: InsertDataParams): Thenable<InsertDataResponse>;
 	sendGetColumnInfoRequest(params: GetColumnInfoParams): Thenable<GetColumnInfoResponse>;
 	sendChangeColumnSettingsRequest(params: ChangeColumnSettingsParams): Thenable<ChangeColumnSettingsResponse>;
+	sendLearnTransformationRequest(params: LearnTransformationParams): Thenable<LearnTransformationResponse>;
+	sendSaveTransformationRequest(params: SaveTransformationParams): Thenable<SaveTransformationResponse>;
 }

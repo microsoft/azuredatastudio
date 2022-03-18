@@ -1,66 +1,422 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/cms/dist/cmsResource/cmsResourceCommands" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="cms.AddServerGroup">
+        <source xml:lang="en">Add Server Group</source>
+        <target state="translated">新增伺服器群組</target>
+      </trans-unit>
+      <trans-unit id="cms.Cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">取消</target>
+      </trans-unit>
+      <trans-unit id="cms.OK">
+        <source xml:lang="en">OK</source>
+        <target state="translated">確定</target>
+      </trans-unit>
+      <trans-unit id="cms.ServerGroupDescription">
+        <source xml:lang="en">Server Group Description</source>
+        <target state="translated">伺服器群組描述</target>
+      </trans-unit>
+      <trans-unit id="cms.ServerGroupName">
+        <source xml:lang="en">Server Group Name</source>
+        <target state="translated">伺服器群組名稱</target>
+      </trans-unit>
+      <trans-unit id="cms.confirmDeleteGroup">
+        <source xml:lang="en">Are you sure you want to delete</source>
+        <target state="translated">確定要刪除</target>
+      </trans-unit>
+      <trans-unit id="cms.confirmDeleteServer">
+        <source xml:lang="en">Are you sure you want to delete</source>
+        <target state="translated">確定要刪除</target>
+      </trans-unit>
+      <trans-unit id="cms.errors.azureNotAllowed">
+        <source xml:lang="en">Azure SQL Servers cannot be used as Central Management Servers</source>
+        <target state="translated">Azure SQL Servers 無法作為中央管理伺服器使用</target>
+      </trans-unit>
+      <trans-unit id="cms.errors.sameCmsServerName">
+        <source xml:lang="en">Central Management Server Group already has a Registered Server with the name {0}</source>
+        <target state="translated">中央管理伺服器群組已經有名稱為 {0} 的已註冊伺服器</target>
+      </trans-unit>
+      <trans-unit id="cms.errors.sameServerGroupName">
+        <source xml:lang="en">{0} already has a Server Group with the name {1}</source>
+        <target state="translated">{0} 已經有名稱為 {1} 的伺服器群組</target>
+      </trans-unit>
+      <trans-unit id="cms.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">否</target>
+      </trans-unit>
+      <trans-unit id="cms.yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">是</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/cms/dist/cmsResource/tree/cmsResourceEmptyTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="cms.resource.tree.CmsTreeNode.addCmsServerLabel">
+        <source xml:lang="en">Add Central Management Server...</source>
+        <target state="translated">新增中央管理伺服器...</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/cms/dist/cmsResource/tree/cmsResourceTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="cms.resource.cmsResourceTreeNode.noResourcesLabel">
+        <source xml:lang="en">No resources found</source>
+        <target state="translated">找不到任何資源</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/cms/dist/cmsResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="cms.resource.tree.treeProvider.loadError">
+        <source xml:lang="en">Unexpected error occurred while loading saved servers {0}</source>
+        <target state="translated">載入儲存的伺服器時發生未預期的錯誤 {0}</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.tree.treeProvider.loadingLabel">
+        <source xml:lang="en">Loading ...</source>
+        <target state="translated">正在載入...</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/cms/dist/cmsUtils" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="cms.errors.sameServerUnderCms">
+        <source xml:lang="en">You cannot add a shared registered server with the same name as the Configuration Server</source>
+        <target state="translated">您無法新增名稱與設定伺服器相同的共用已註冊伺服器</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/cms/package" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
-      <trans-unit id="cms.displayName">
-        <source xml:lang="en">SQL Server Central Management Servers</source>
-        <target state="translated">SQL Server 中央管理伺服器</target>
+      <trans-unit id="cloud.databaseProperties.azureEdition">
+        <source xml:lang="en">Edition</source>
+        <target state="translated">版本</target>
       </trans-unit>
-      <trans-unit id="cms.description">
-        <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>
-        <target state="translated">管理 SQL Server 中央管理伺服器的支援</target>
+      <trans-unit id="cloud.databaseProperties.compatibilityLevel">
+        <source xml:lang="en">Compatibility Level</source>
+        <target state="translated">相容性層級</target>
       </trans-unit>
-      <trans-unit id="cms.title">
-        <source xml:lang="en">Central Management Servers</source>
-        <target state="translated">中央管理伺服器</target>
+      <trans-unit id="cloud.databaseProperties.owner">
+        <source xml:lang="en">Owner</source>
+        <target state="translated">擁有者</target>
       </trans-unit>
-      <trans-unit id="cms.connectionProvider.displayName">
-        <source xml:lang="en">Microsoft SQL Server</source>
-        <target state="translated">Microsoft SQL Server</target>
+      <trans-unit id="cloud.databaseProperties.serviceLevelObjective">
+        <source xml:lang="en">Pricing Tier</source>
+        <target state="translated">定價層</target>
       </trans-unit>
-      <trans-unit id="cms.resource.explorer.title">
-        <source xml:lang="en">Central Management Servers</source>
-        <target state="translated">中央管理伺服器</target>
+      <trans-unit id="cloud.serverProperties.serverEdition">
+        <source xml:lang="en">Type</source>
+        <target state="translated">類型</target>
       </trans-unit>
-      <trans-unit id="cms.resource.refresh.title">
-        <source xml:lang="en">Refresh</source>
-        <target state="translated">重新整理</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.refreshServerGroup.title">
-        <source xml:lang="en">Refresh Server Group</source>
-        <target state="translated">重新整理伺服器群組</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.deleteRegisteredServer.title">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">刪除</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.addRegisteredServer.title">
-        <source xml:lang="en">New Server Registration...</source>
-        <target state="translated">新增伺服器註冊...</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.deleteServerGroup.title">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">刪除</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.addServerGroup.title">
-        <source xml:lang="en">New Server Group...</source>
-        <target state="translated">新增伺服器群組...</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.registerCmsServer.title">
-        <source xml:lang="en">Add Central Management Server</source>
-        <target state="translated">新增中央管理伺服器</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.deleteCmsServer.title">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">刪除</target>
+      <trans-unit id="cloud.serverProperties.serverVersion">
+        <source xml:lang="en">Version</source>
+        <target state="translated">版本</target>
       </trans-unit>
       <trans-unit id="cms.configuration.title">
         <source xml:lang="en">MSSQL configuration</source>
         <target state="translated">MSSQL 設定</target>
       </trans-unit>
-      <trans-unit id="cms.query.displayBitAsNumber">
-        <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
-        <target state="translated">BIT 資料行是否顯示為數字 (1 或 0)? 若為 False，BIT 資料行將會顯示為 'True' 或 'False'</target>
+      <trans-unit id="cms.connectionOptions.applicationIntent.description">
+        <source xml:lang="en">Declares the application workload type when connecting to a server</source>
+        <target state="translated">在連線至伺服器時宣告應用程式工作負載類型</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.applicationIntent.displayName">
+        <source xml:lang="en">Application intent</source>
+        <target state="translated">應用程式的意圖</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.applicationName.description">
+        <source xml:lang="en">The name of the application</source>
+        <target state="translated">應用程式的名稱</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.applicationName.displayName">
+        <source xml:lang="en">Application name</source>
+        <target state="translated">應用程式名稱</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.asynchronousProcessing.description">
+        <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
+        <target state="translated">若為 True，則允許使用 .Net Framework Data Provider 中的非同步功能</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.asynchronousProcessing.displayName">
+        <source xml:lang="en">Asynchronous processing</source>
+        <target state="translated">非同步處理</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
+        <source xml:lang="en">Attach DB filename</source>
+        <target state="translated">附加 DB 檔案名稱</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.attachedDBFileName.description">
+        <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
+        <target state="translated">主要檔案的名稱，包含可附加資料庫的完整路徑名稱</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.attachedDBFileName.displayName">
+        <source xml:lang="en">Attached DB file name</source>
+        <target state="translated">已附加的 DB 檔案名稱</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.authType.categoryValues.azureMFA">
+        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+        <target state="translated">Azure Active Directory - MFA 通用支援</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.authType.categoryValues.integrated">
+        <source xml:lang="en">Windows Authentication</source>
+        <target state="translated">Windows 驗證</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.authType.categoryValues.sqlLogin">
+        <source xml:lang="en">SQL Login</source>
+        <target state="translated">SQL 登入</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.authType.description">
+        <source xml:lang="en">Specifies the method of authenticating with SQL Server</source>
+        <target state="translated">指定向 SQL Server 驗證的方法</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.authType.displayName">
+        <source xml:lang="en">Authentication type</source>
+        <target state="translated">驗證類型</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.columnEncryptionSetting.description">
+        <source xml:lang="en">Default column encryption setting for all the commands on the connection</source>
+        <target state="translated">連線上所有命令的預設資料行加密設定</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.columnEncryptionSetting.displayName">
+        <source xml:lang="en">Column encryption</source>
+        <target state="translated">資料行加密</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectRetryCount.description">
+        <source xml:lang="en">Number of attempts to restore connection</source>
+        <target state="translated">嘗試還原連線的次數</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectRetryCount.displayName">
+        <source xml:lang="en">Connect retry count</source>
+        <target state="translated">連線重試計數</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectRetryInterval.description">
+        <source xml:lang="en">Delay between attempts to restore connection</source>
+        <target state="translated">嘗試還原連線之間的延遲</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectRetryInterval.displayName">
+        <source xml:lang="en">Connect retry interval</source>
+        <target state="translated">連線重試間隔</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectTimeout.description">
+        <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
+        <target state="translated">終止嘗試並產生錯誤前，要等待伺服器連線的時間長度 (秒)</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectTimeout.displayName">
+        <source xml:lang="en">Connect timeout</source>
+        <target state="translated">連線逾時</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectionName.description">
+        <source xml:lang="en">Custom name of the connection</source>
+        <target state="translated">連線的自訂名稱</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectionName.displayName">
+        <source xml:lang="en">Name (optional)</source>
+        <target state="translated">名稱 (選用)</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.contextConnection.description">
+        <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
+        <target state="translated">若為 True，則表示連線應來自 SQL 伺服器內容。僅可在於 SQL Server 處理序中執行時可用</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.contextConnection.displayName">
+        <source xml:lang="en">Context connection</source>
+        <target state="translated">內容連線</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.currentLanguage.description">
+        <source xml:lang="en">The SQL Server language record name</source>
+        <target state="translated">SQL Server 語言記錄名稱</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.currentLanguage.displayName">
+        <source xml:lang="en">Current language</source>
+        <target state="translated">目前的語言</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.encrypt.description">
+        <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
+        <target state="translated">若為 True，則 SQL Server 會在伺服器已安裝憑證的情況下，對用戶端和伺服器間傳送的所有資料使用 SSL 加密</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.encrypt.displayName">
+        <source xml:lang="en">Encrypt</source>
+        <target state="translated">加密</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.failoverPartner.description">
+        <source xml:lang="en">The name or network address of the instance of SQL Server that acts as a failover partner</source>
+        <target state="translated">充當容錯移轉夥伴之 SQL Server 執行個體的名稱或網路位址</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.failoverPartner.displayName">
+        <source xml:lang="en">Failover partner</source>
+        <target state="translated">容錯移轉夥伴</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.advanced">
+        <source xml:lang="en">Advanced</source>
+        <target state="translated">進階</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.connectionResiliency">
+        <source xml:lang="en">Connection Resiliency</source>
+        <target state="translated">恢復連接</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.context">
+        <source xml:lang="en">Context</source>
+        <target state="translated">內容</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.initialization">
+        <source xml:lang="en">Initialization</source>
+        <target state="translated">初始化</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.pooling">
+        <source xml:lang="en">Pooling</source>
+        <target state="translated">共用</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.replication">
+        <source xml:lang="en">Replication</source>
+        <target state="translated">複寫</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.security">
+        <source xml:lang="en">Security</source>
+        <target state="translated">安全性</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.source">
+        <source xml:lang="en">Source</source>
+        <target state="translated">來源</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.loadBalanceTimeout.description">
+        <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
+        <target state="translated">此連線在終結前於集區中存留的時間下限 (秒)</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.loadBalanceTimeout.displayName">
+        <source xml:lang="en">Load balance timeout</source>
+        <target state="translated">負載平衡逾時</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.maxPoolSize.description">
+        <source xml:lang="en">The maximum number of connections allowed in the pool</source>
+        <target state="translated">集區中允許的連線數上限</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.maxPoolSize.displayName">
+        <source xml:lang="en">Max pool size</source>
+        <target state="translated">集區大小上限</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.minPoolSize.description">
+        <source xml:lang="en">The minimum number of connections allowed in the pool</source>
+        <target state="translated">集區中允許的連線數下限</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.minPoolSize.displayName">
+        <source xml:lang="en">Min pool size</source>
+        <target state="translated">集區大小下限</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.multiSubnetFailover.displayName">
+        <source xml:lang="en">Multi subnet failover</source>
+        <target state="translated">多重子網路容錯移轉</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.multipleActiveResultSets.description">
+        <source xml:lang="en">When true, multiple result sets can be returned and read from one connection</source>
+        <target state="translated">若為 True，則可傳回多個結果集並從一個連線讀取</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.multipleActiveResultSets.displayName">
+        <source xml:lang="en">Multiple active result sets</source>
+        <target state="translated">Multiple Active Result Set</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.packetSize.description">
+        <source xml:lang="en">Size in bytes of the network packets used to communicate with an instance of SQL Server</source>
+        <target state="translated">用於和 SQL Server 執行個體通訊之網路封包的大小 (位元組)</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.packetSize.displayName">
+        <source xml:lang="en">Packet size</source>
+        <target state="translated">封包大小</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.password.description">
+        <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
+        <target state="translated">代表要在連線至資料來源時使用的密碼</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.password.displayName">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密碼</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.persistSecurityInfo.description">
+        <source xml:lang="en">When false, security-sensitive information, such as the password, is not returned as part of the connection</source>
+        <target state="translated">若為 False，則不會於連線中傳回密碼等安全性敏感資訊</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.persistSecurityInfo.displayName">
+        <source xml:lang="en">Persist security info</source>
+        <target state="translated">持續安全性資訊</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.pooling.description">
+        <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
+        <target state="translated">若為 True，則會從適當的集區提取連線物件，或在有需要時建立並新增至適當的集區</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.pooling.displayName">
+        <source xml:lang="en">Pooling</source>
+        <target state="translated">共用</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.port.displayName">
+        <source xml:lang="en">Port</source>
+        <target state="translated">連接埠</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.replication.description">
+        <source xml:lang="en">Used by SQL Server in Replication</source>
+        <target state="translated">由 SQL Server 在複寫中使用</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.replication.displayName">
+        <source xml:lang="en">Replication</source>
+        <target state="translated">複寫</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.serverDescription.description">
+        <source xml:lang="en">Description of the SQL Server instance</source>
+        <target state="translated">SQL Server 執行個體描述</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.serverDescription.displayName">
+        <source xml:lang="en">Server Description</source>
+        <target state="translated">伺服器描述</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.serverName.description">
+        <source xml:lang="en">Name of the SQL Server instance</source>
+        <target state="translated">SQL Server 執行個體的名稱</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.serverName.displayName">
+        <source xml:lang="en">Server</source>
+        <target state="translated">伺服器</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
+        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
+        <target state="translated">若為 True (且 encrypt=true)，則 SQL Server 會對用戶端和伺服器間傳送的所有資料使用 SSL 加密，而不驗證伺服器憑證</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.trustServerCertificate.displayName">
+        <source xml:lang="en">Trust server certificate</source>
+        <target state="translated">信任伺服器憑證</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.typeSystemVersion.description">
+        <source xml:lang="en">Indicates which server type system then provider will expose through the DataReader</source>
+        <target state="translated">指出會依序透過 DataReader 公開的伺服器類型系統和提供者</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.typeSystemVersion.displayName">
+        <source xml:lang="en">Type system version</source>
+        <target state="translated">鍵入系統版本</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.userName.description">
+        <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
+        <target state="translated">代表要在連線至資料來源時使用的使用者識別碼</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.userName.displayName">
+        <source xml:lang="en">User name</source>
+        <target state="translated">使用者名稱</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.workstationId.description">
+        <source xml:lang="en">The name of the workstation connecting to SQL Server</source>
+        <target state="translated">連線至 SQL Server 的工作站名稱</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.workstationId.displayName">
+        <source xml:lang="en">Workstation Id</source>
+        <target state="translated">工作站識別碼</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionProvider.displayName">
+        <source xml:lang="en">Microsoft SQL Server</source>
+        <target state="translated">Microsoft SQL Server</target>
+      </trans-unit>
+      <trans-unit id="cms.description">
+        <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>
+        <target state="translated">管理 SQL Server 中央管理伺服器的支援</target>
+      </trans-unit>
+      <trans-unit id="cms.displayName">
+        <source xml:lang="en">SQL Server Central Management Servers</source>
+        <target state="translated">SQL Server 中央管理伺服器</target>
       </trans-unit>
       <trans-unit id="cms.format.alignColumnDefinitionsInColumns">
         <source xml:lang="en">Should column definitions be aligned?</source>
@@ -86,25 +442,73 @@
         <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
         <target state="translated">[選用] 將偵錯記錄輸出至主控台 ([檢視] -&gt; [輸出])，並從下拉式清單選取適當的輸出通道</target>
       </trans-unit>
-      <trans-unit id="cms.tracingLevel">
-        <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-        <target state="translated">[選用] 後端服務的記錄層級。每當 Azure Data Studio 啟動，或是檔案已經有附加至該檔案的記錄項目時，Azure Data Studio 都會產生檔案名稱。如需清除舊記錄檔，請查看 logRetentionMinutes 和 logFilesRemovalLimit 設定。預設 tracingLevel 不會記錄太多項目。變更詳細資訊可能會導致大量記錄和記錄的磁碟空間需求。錯誤包含嚴重，警告包含錯誤，資訊包含警告而詳細資訊包含資訊</target>
+      <trans-unit id="cms.logFilesRemovalLimit">
+        <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
+        <target state="translated">具有到期的 logRetentionMinutes，且要於啟動時移除的舊檔案數上限。因為此限制而未清除的檔案，將於下次 Azure Data Studio 啟動時受到清除。</target>
       </trans-unit>
       <trans-unit id="cms.logRetentionMinutes">
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
         <target state="translated">為後端服務保留記錄檔的分鐘數。預設為 1 週。</target>
       </trans-unit>
-      <trans-unit id="cms.logFilesRemovalLimit">
-        <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
-        <target state="translated">具有到期的 logRetentionMinutes，且要於啟動時移除的舊檔案數上限。因為此限制而未清除的檔案，將於下次 Azure Data Studio 啟動時受到清除。</target>
+      <trans-unit id="cms.provider.displayName">
+        <source xml:lang="en">Microsoft SQL Server</source>
+        <target state="translated">Microsoft SQL Server</target>
+      </trans-unit>
+      <trans-unit id="cms.query.displayBitAsNumber">
+        <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
+        <target state="translated">BIT 資料行是否顯示為數字 (1 或 0)? 若為 False，BIT 資料行將會顯示為 'True' 或 'False'</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.addRegisteredServer.title">
+        <source xml:lang="en">New Server Registration...</source>
+        <target state="translated">新增伺服器註冊...</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.addServerGroup.title">
+        <source xml:lang="en">New Server Group...</source>
+        <target state="translated">新增伺服器群組...</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.deleteCmsServer.title">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">刪除</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.deleteRegisteredServer.title">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">刪除</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.deleteServerGroup.title">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">刪除</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.explorer.title">
+        <source xml:lang="en">Central Management Servers</source>
+        <target state="translated">中央管理伺服器</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.refresh.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">重新整理</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.refreshServerGroup.title">
+        <source xml:lang="en">Refresh Server Group</source>
+        <target state="translated">重新整理伺服器群組</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.registerCmsServer.title">
+        <source xml:lang="en">Add Central Management Server</source>
+        <target state="translated">新增中央管理伺服器</target>
+      </trans-unit>
+      <trans-unit id="cms.title">
+        <source xml:lang="en">Central Management Servers</source>
+        <target state="translated">中央管理伺服器</target>
+      </trans-unit>
+      <trans-unit id="cms.tracingLevel">
+        <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
+        <target state="translated">[選用] 後端服務的記錄層級。每當 Azure Data Studio 啟動，或是檔案已經有附加至該檔案的記錄項目時，Azure Data Studio 都會產生檔案名稱。如需清除舊記錄檔，請查看 logRetentionMinutes 和 logFilesRemovalLimit 設定。預設 tracingLevel 不會記錄太多項目。變更詳細資訊可能會導致大量記錄和記錄的磁碟空間需求。錯誤包含嚴重，警告包含錯誤，資訊包含警告而詳細資訊包含資訊</target>
       </trans-unit>
       <trans-unit id="ignorePlatformWarning">
         <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>
         <target state="translated">[選用] 不要顯示不支援的平台警告</target>
       </trans-unit>
-      <trans-unit id="onprem.databaseProperties.recoveryModel">
-        <source xml:lang="en">Recovery Model</source>
-        <target state="translated">復原模式</target>
+      <trans-unit id="onprem.databaseProperties.compatibilityLevel">
+        <source xml:lang="en">Compatibility Level</source>
+        <target state="translated">相容性層級</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.lastBackupDate">
         <source xml:lang="en">Last Database Backup</source>
@@ -114,21 +518,13 @@
         <source xml:lang="en">Last Log Backup</source>
         <target state="translated">上次記錄備份</target>
       </trans-unit>
-      <trans-unit id="onprem.databaseProperties.compatibilityLevel">
-        <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">相容性層級</target>
-      </trans-unit>
       <trans-unit id="onprem.databaseProperties.owner">
         <source xml:lang="en">Owner</source>
         <target state="translated">擁有者</target>
       </trans-unit>
-      <trans-unit id="onprem.serverProperties.serverVersion">
-        <source xml:lang="en">Version</source>
-        <target state="translated">版本</target>
-      </trans-unit>
-      <trans-unit id="onprem.serverProperties.serverEdition">
-        <source xml:lang="en">Edition</source>
-        <target state="translated">版本</target>
+      <trans-unit id="onprem.databaseProperties.recoveryModel">
+        <source xml:lang="en">Recovery Model</source>
+        <target state="translated">復原模式</target>
       </trans-unit>
       <trans-unit id="onprem.serverProperties.machineName">
         <source xml:lang="en">Computer Name</source>
@@ -138,377 +534,13 @@
         <source xml:lang="en">OS Version</source>
         <target state="translated">作業系統版本</target>
       </trans-unit>
-      <trans-unit id="cloud.databaseProperties.azureEdition">
+      <trans-unit id="onprem.serverProperties.serverEdition">
         <source xml:lang="en">Edition</source>
         <target state="translated">版本</target>
       </trans-unit>
-      <trans-unit id="cloud.databaseProperties.serviceLevelObjective">
-        <source xml:lang="en">Pricing Tier</source>
-        <target state="translated">定價層</target>
-      </trans-unit>
-      <trans-unit id="cloud.databaseProperties.compatibilityLevel">
-        <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">相容性層級</target>
-      </trans-unit>
-      <trans-unit id="cloud.databaseProperties.owner">
-        <source xml:lang="en">Owner</source>
-        <target state="translated">擁有者</target>
-      </trans-unit>
-      <trans-unit id="cloud.serverProperties.serverVersion">
+      <trans-unit id="onprem.serverProperties.serverVersion">
         <source xml:lang="en">Version</source>
         <target state="translated">版本</target>
-      </trans-unit>
-      <trans-unit id="cloud.serverProperties.serverEdition">
-        <source xml:lang="en">Type</source>
-        <target state="translated">類型</target>
-      </trans-unit>
-      <trans-unit id="cms.provider.displayName">
-        <source xml:lang="en">Microsoft SQL Server</source>
-        <target state="translated">Microsoft SQL Server</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectionName.displayName">
-        <source xml:lang="en">Name (optional)</source>
-        <target state="translated">名稱 (選用)</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectionName.description">
-        <source xml:lang="en">Custom name of the connection</source>
-        <target state="translated">連線的自訂名稱</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.serverName.displayName">
-        <source xml:lang="en">Server</source>
-        <target state="translated">伺服器</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.serverName.description">
-        <source xml:lang="en">Name of the SQL Server instance</source>
-        <target state="translated">SQL Server 執行個體的名稱</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.serverDescription.displayName">
-        <source xml:lang="en">Server Description</source>
-        <target state="translated">伺服器描述</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.serverDescription.description">
-        <source xml:lang="en">Description of the SQL Server instance</source>
-        <target state="translated">SQL Server 執行個體描述</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.authType.displayName">
-        <source xml:lang="en">Authentication type</source>
-        <target state="translated">驗證類型</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.authType.description">
-        <source xml:lang="en">Specifies the method of authenticating with SQL Server</source>
-        <target state="translated">指定向 SQL Server 驗證的方法</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.authType.categoryValues.sqlLogin">
-        <source xml:lang="en">SQL Login</source>
-        <target state="translated">SQL 登入</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.authType.categoryValues.integrated">
-        <source xml:lang="en">Windows Authentication</source>
-        <target state="translated">Windows 驗證</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.authType.categoryValues.azureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory - MFA 通用支援</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.userName.displayName">
-        <source xml:lang="en">User name</source>
-        <target state="translated">使用者名稱</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.userName.description">
-        <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
-        <target state="translated">代表要在連線至資料來源時使用的使用者識別碼</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.password.displayName">
-        <source xml:lang="en">Password</source>
-        <target state="translated">密碼</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.password.description">
-        <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
-        <target state="translated">代表要在連線至資料來源時使用的密碼</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.applicationIntent.displayName">
-        <source xml:lang="en">Application intent</source>
-        <target state="translated">應用程式的意圖</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.applicationIntent.description">
-        <source xml:lang="en">Declares the application workload type when connecting to a server</source>
-        <target state="translated">在連線至伺服器時宣告應用程式工作負載類型</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.asynchronousProcessing.displayName">
-        <source xml:lang="en">Asynchronous processing</source>
-        <target state="translated">非同步處理</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.asynchronousProcessing.description">
-        <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-        <target state="translated">若為 True，則允許使用 .Net Framework Data Provider 中的非同步功能</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectTimeout.displayName">
-        <source xml:lang="en">Connect timeout</source>
-        <target state="translated">連線逾時</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectTimeout.description">
-        <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
-        <target state="translated">終止嘗試並產生錯誤前，要等待伺服器連線的時間長度 (秒)</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.currentLanguage.displayName">
-        <source xml:lang="en">Current language</source>
-        <target state="translated">目前的語言</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.currentLanguage.description">
-        <source xml:lang="en">The SQL Server language record name</source>
-        <target state="translated">SQL Server 語言記錄名稱</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.columnEncryptionSetting.displayName">
-        <source xml:lang="en">Column encryption</source>
-        <target state="translated">資料行加密</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.columnEncryptionSetting.description">
-        <source xml:lang="en">Default column encryption setting for all the commands on the connection</source>
-        <target state="translated">連線上所有命令的預設資料行加密設定</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.encrypt.displayName">
-        <source xml:lang="en">Encrypt</source>
-        <target state="translated">加密</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.encrypt.description">
-        <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-        <target state="translated">若為 True，則 SQL Server 會在伺服器已安裝憑證的情況下，對用戶端和伺服器間傳送的所有資料使用 SSL 加密</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.persistSecurityInfo.displayName">
-        <source xml:lang="en">Persist security info</source>
-        <target state="translated">持續安全性資訊</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.persistSecurityInfo.description">
-        <source xml:lang="en">When false, security-sensitive information, such as the password, is not returned as part of the connection</source>
-        <target state="translated">若為 False，則不會於連線中傳回密碼等安全性敏感資訊</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.trustServerCertificate.displayName">
-        <source xml:lang="en">Trust server certificate</source>
-        <target state="translated">信任伺服器憑證</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
-        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="translated">若為 True (且 encrypt=true)，則 SQL Server 會對用戶端和伺服器間傳送的所有資料使用 SSL 加密，而不驗證伺服器憑證</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachedDBFileName.displayName">
-        <source xml:lang="en">Attached DB file name</source>
-        <target state="translated">已附加的 DB 檔案名稱</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachedDBFileName.description">
-        <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
-        <target state="translated">主要檔案的名稱，包含可附加資料庫的完整路徑名稱</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.contextConnection.displayName">
-        <source xml:lang="en">Context connection</source>
-        <target state="translated">內容連線</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.contextConnection.description">
-        <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
-        <target state="translated">若為 True，則表示連線應來自 SQL 伺服器內容。僅可在於 SQL Server 處理序中執行時可用</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.port.displayName">
-        <source xml:lang="en">Port</source>
-        <target state="translated">連接埠</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectRetryCount.displayName">
-        <source xml:lang="en">Connect retry count</source>
-        <target state="translated">連線重試計數</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectRetryCount.description">
-        <source xml:lang="en">Number of attempts to restore connection</source>
-        <target state="translated">嘗試還原連線的次數</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectRetryInterval.displayName">
-        <source xml:lang="en">Connect retry interval</source>
-        <target state="translated">連線重試間隔</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectRetryInterval.description">
-        <source xml:lang="en">Delay between attempts to restore connection</source>
-        <target state="translated">嘗試還原連線之間的延遲</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.applicationName.displayName">
-        <source xml:lang="en">Application name</source>
-        <target state="translated">應用程式名稱</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.applicationName.description">
-        <source xml:lang="en">The name of the application</source>
-        <target state="translated">應用程式的名稱</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.workstationId.displayName">
-        <source xml:lang="en">Workstation Id</source>
-        <target state="translated">工作站識別碼</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.workstationId.description">
-        <source xml:lang="en">The name of the workstation connecting to SQL Server</source>
-        <target state="translated">連線至 SQL Server 的工作站名稱</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.pooling.displayName">
-        <source xml:lang="en">Pooling</source>
-        <target state="translated">共用</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.pooling.description">
-        <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
-        <target state="translated">若為 True，則會從適當的集區提取連線物件，或在有需要時建立並新增至適當的集區</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.maxPoolSize.displayName">
-        <source xml:lang="en">Max pool size</source>
-        <target state="translated">集區大小上限</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.maxPoolSize.description">
-        <source xml:lang="en">The maximum number of connections allowed in the pool</source>
-        <target state="translated">集區中允許的連線數上限</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.minPoolSize.displayName">
-        <source xml:lang="en">Min pool size</source>
-        <target state="translated">集區大小下限</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.minPoolSize.description">
-        <source xml:lang="en">The minimum number of connections allowed in the pool</source>
-        <target state="translated">集區中允許的連線數下限</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.loadBalanceTimeout.displayName">
-        <source xml:lang="en">Load balance timeout</source>
-        <target state="translated">負載平衡逾時</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.loadBalanceTimeout.description">
-        <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
-        <target state="translated">此連線在終結前於集區中存留的時間下限 (秒)</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.replication.displayName">
-        <source xml:lang="en">Replication</source>
-        <target state="translated">複寫</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.replication.description">
-        <source xml:lang="en">Used by SQL Server in Replication</source>
-        <target state="translated">由 SQL Server 在複寫中使用</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
-        <source xml:lang="en">Attach DB filename</source>
-        <target state="translated">附加 DB 檔案名稱</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.failoverPartner.displayName">
-        <source xml:lang="en">Failover partner</source>
-        <target state="translated">容錯移轉夥伴</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.failoverPartner.description">
-        <source xml:lang="en">The name or network address of the instance of SQL Server that acts as a failover partner</source>
-        <target state="translated">充當容錯移轉夥伴之 SQL Server 執行個體的名稱或網路位址</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.multiSubnetFailover.displayName">
-        <source xml:lang="en">Multi subnet failover</source>
-        <target state="translated">多重子網路容錯移轉</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.multipleActiveResultSets.displayName">
-        <source xml:lang="en">Multiple active result sets</source>
-        <target state="translated">Multiple Active Result Set</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.multipleActiveResultSets.description">
-        <source xml:lang="en">When true, multiple result sets can be returned and read from one connection</source>
-        <target state="translated">若為 True，則可傳回多個結果集並從一個連線讀取</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.packetSize.displayName">
-        <source xml:lang="en">Packet size</source>
-        <target state="translated">封包大小</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.packetSize.description">
-        <source xml:lang="en">Size in bytes of the network packets used to communicate with an instance of SQL Server</source>
-        <target state="translated">用於和 SQL Server 執行個體通訊之網路封包的大小 (位元組)</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.typeSystemVersion.displayName">
-        <source xml:lang="en">Type system version</source>
-        <target state="translated">鍵入系統版本</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.typeSystemVersion.description">
-        <source xml:lang="en">Indicates which server type system then provider will expose through the DataReader</source>
-        <target state="translated">指出會依序透過 DataReader 公開的伺服器類型系統和提供者</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/dist/cmsResource/tree/cmsResourceTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hant">
-    <body>
-      <trans-unit id="cms.resource.cmsResourceTreeNode.noResourcesLabel">
-        <source xml:lang="en">No resources found</source>
-        <target state="translated">找不到任何資源</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/dist/cmsResource/tree/cmsResourceEmptyTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hant">
-    <body>
-      <trans-unit id="cms.resource.tree.CmsTreeNode.addCmsServerLabel">
-        <source xml:lang="en">Add Central Management Server...</source>
-        <target state="translated">新增中央管理伺服器...</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/dist/cmsResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="zh-Hant">
-    <body>
-      <trans-unit id="cms.resource.tree.treeProvider.loadError">
-        <source xml:lang="en">Unexpected error occurred while loading saved servers {0}</source>
-        <target state="translated">載入儲存的伺服器時發生未預期的錯誤 {0}</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.tree.treeProvider.loadingLabel">
-        <source xml:lang="en">Loading ...</source>
-        <target state="translated">正在載入...</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/dist/cmsResource/cmsResourceCommands" source-language="en" datatype="plaintext" target-language="zh-Hant">
-    <body>
-      <trans-unit id="cms.errors.sameCmsServerName">
-        <source xml:lang="en">Central Management Server Group already has a Registered Server with the name {0}</source>
-        <target state="translated">中央管理伺服器群組已經有名稱為 {0} 的已註冊伺服器</target>
-      </trans-unit>
-      <trans-unit id="cms.errors.azureNotAllowed">
-        <source xml:lang="en">Azure SQL Servers cannot be used as Central Management Servers</source>
-        <target state="translated">Azure SQL Servers 無法作為中央管理伺服器使用</target>
-      </trans-unit>
-      <trans-unit id="cms.confirmDeleteServer">
-        <source xml:lang="en">Are you sure you want to delete</source>
-        <target state="translated">確定要刪除</target>
-      </trans-unit>
-      <trans-unit id="cms.yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">是</target>
-      </trans-unit>
-      <trans-unit id="cms.no">
-        <source xml:lang="en">No</source>
-        <target state="translated">否</target>
-      </trans-unit>
-      <trans-unit id="cms.AddServerGroup">
-        <source xml:lang="en">Add Server Group</source>
-        <target state="translated">新增伺服器群組</target>
-      </trans-unit>
-      <trans-unit id="cms.OK">
-        <source xml:lang="en">OK</source>
-        <target state="translated">確定</target>
-      </trans-unit>
-      <trans-unit id="cms.Cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">取消</target>
-      </trans-unit>
-      <trans-unit id="cms.ServerGroupName">
-        <source xml:lang="en">Server Group Name</source>
-        <target state="translated">伺服器群組名稱</target>
-      </trans-unit>
-      <trans-unit id="cms.ServerGroupDescription">
-        <source xml:lang="en">Server Group Description</source>
-        <target state="translated">伺服器群組描述</target>
-      </trans-unit>
-      <trans-unit id="cms.errors.sameServerGroupName">
-        <source xml:lang="en">{0} already has a Server Group with the name {1}</source>
-        <target state="translated">{0} 已經有名稱為 {1} 的伺服器群組</target>
-      </trans-unit>
-      <trans-unit id="cms.confirmDeleteGroup">
-        <source xml:lang="en">Are you sure you want to delete</source>
-        <target state="translated">確定要刪除</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/dist/cmsUtils" source-language="en" datatype="plaintext" target-language="zh-Hant">
-    <body>
-      <trans-unit id="cms.errors.sameServerUnderCms">
-        <source xml:lang="en">You cannot add a shared registered server with the same name as the Configuration Server</source>
-        <target state="translated">您無法新增名稱與設定伺服器相同的共用已註冊伺服器</target>
       </trans-unit>
     </body>
   </file>

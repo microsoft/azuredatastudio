@@ -19,6 +19,12 @@
 		"*"
 	],
 	"main": "./out/extension",
+	"capabilities": {
+		"virtualWorkspaces": false,
+		"untrustedWorkspaces": {
+		  "supported": true
+		}
+	},
 	"forceReload": true,
 	"contributes": {
 		"commands": [

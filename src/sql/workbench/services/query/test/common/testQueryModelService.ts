@@ -45,6 +45,9 @@ export class TestQueryModelService implements IQueryModelService {
 	disposeQuery(uri: string): void {
 		throw new Error('Method not implemented.');
 	}
+	changeConnectionUri(newUri: string, oldUri: string): void {
+		throw new Error('Method not implemented.');
+	}
 	isRunningQuery(uri: string): boolean {
 		throw new Error('Method not implemented.');
 	}

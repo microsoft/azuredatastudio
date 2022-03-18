@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import * as resourceDeployment from 'resource-deployment';
 
 import { AppContext } from './appContext';
 import { AzureAccountProviderService } from './account-provider/azureAccountProviderService';
@@ -81,6 +80,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	if (!storagePath) {
 		return undefined;
 	}
+
+	// TODO: Since Code Grant auth doesnt work in web mode, enabling Device code auth by default for web mode. We can remove this once we have that working in web mode.
+	const config = vscode.workspace.getConfiguration('accounts.azure.auth');
+	if (vscode.env.uiKind === vscode.UIKind.Web) {
+		await config.update('deviceCode', true, vscode.ConfigurationTarget.Global);
+	}
+
 	updatePiiLoggingLevel();
 
 	// Create the provider service and activate
@@ -104,42 +110,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			await vscode.env.openExternal(vscode.Uri.parse(`${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`));
 		} else {
 			console.log(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
-			vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
+			void vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
 		}
-	});
-
-	// Don't block on this since there's a bit of a circular dependency here with the extension activation since resource deployment
-	// depends on this extension too. It's fine to wait a bit for that to finish before registering the provider
-	vscode.extensions.getExtension(resourceDeployment.extension.name).activate().then((api: resourceDeployment.IExtension) => {
-		context.subscriptions.push(api.registerValueProvider({
-			id: 'subscription-id-to-tenant-id',
-			getValue: async (triggerValue: string) => {
-				if (triggerValue === '') {
-					return '';
-				}
-				let accounts: azurecore.AzureAccount[] = [];
-				try {
-					accounts = await azdata.accounts.getAllAccounts();
-				} catch (err) {
-					console.warn(`Error fetching accounts for subscription-id-to-tenant-id provider : ${err}`);
-					return '';
-				}
-
-				for (const account of accounts) {
-					// Ignore any errors - they'll be logged in the called function and we still want to look
-					// at any subscriptions that are returned - worst case we'll just return an empty string if we didn't
-					// find the matching subscription
-					const subs = await azureResourceUtils.getSubscriptions(appContext, account, true);
-					const sub = subs.subscriptions.find(sub => sub.id === triggerValue);
-					if (sub) {
-						return sub.tenant;
-					}
-
-				}
-				console.error(`Unable to find subscription with ID ${triggerValue} when mapping subscription ID to tenant ID`);
-				return '';
-			}
-		}));
 	});
 
 	return {
@@ -307,3 +279,4 @@ function updatePiiLoggingLevel() {
 	const piiLogging: boolean = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('piiLogging');
 	Logger.piiLogging = piiLogging;
 }
+

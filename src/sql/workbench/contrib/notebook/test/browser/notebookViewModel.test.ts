@@ -11,7 +11,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { URI } from 'vs/base/common/uri';
 
-import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -24,7 +24,7 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
-import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
@@ -33,6 +33,8 @@ import { TestConfigurationService } from 'sql/platform/connection/test/common/te
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { NotebookViewModel } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -52,8 +54,8 @@ let initialNotebookContent: nb.INotebookContents = {
 			language: 'sql'
 		},
 	},
-	nbformat: 4,
-	nbformat_minor: 5
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let notebookContentWithoutMeta: nb.INotebookContents = {
@@ -67,8 +69,8 @@ let notebookContentWithoutMeta: nb.INotebookContents = {
 		execution_count: 1
 	}],
 	metadata: {},
-	nbformat: 4,
-	nbformat_minor: 5
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let defaultUri = URI.file('/some/path.ipynb');
@@ -79,7 +81,8 @@ let configurationService: IConfigurationService;
 
 suite('NotebookViewModel', function (): void {
 	let defaultViewName = 'Default New View';
-	let notebookManagers = [new NotebookManagerStub()];
+	let serializationManagers = [new SerializationManagerStub()];
+	let executeManagers = [new ExecuteManagerStub()];
 	let mockSessionManager: TypeMoq.Mock<nb.SessionManager>;
 	let memento: TypeMoq.Mock<Memento>;
 	let queryConnectionService: TypeMoq.Mock<TestConnectionManagementService>;
@@ -96,9 +99,9 @@ suite('NotebookViewModel', function (): void {
 
 		let cellsWithNewView = notebookViews.getCells().filter(cell => cell.views.find(v => v.guid === viewModel.guid));
 
-		assert.equal(cellsWithNewView.length, 2);
-		assert.equal(viewModel.cells.length, 2);
-		assert.equal(viewModel.name, defaultViewName);
+		assert.strictEqual(cellsWithNewView.length, 2);
+		assert.strictEqual(viewModel.cells.length, 2);
+		assert.strictEqual(viewModel.name, defaultViewName);
 	});
 
 	test('initialize notebook with no metadata', async function (): Promise<void> {
@@ -108,9 +111,9 @@ suite('NotebookViewModel', function (): void {
 
 		let cellsWithNewView = notebookViews.getCells().filter(cell => cell.views.find(v => v.guid === viewModel.guid));
 
-		assert.equal(cellsWithNewView.length, 2);
-		assert.equal(viewModel.cells.length, 2);
-		assert.equal(viewModel.name, defaultViewName);
+		assert.strictEqual(cellsWithNewView.length, 2);
+		assert.strictEqual(viewModel.cells.length, 2);
+		assert.strictEqual(viewModel.name, defaultViewName);
 	});
 
 	test('rename', async function (): Promise<void> {
@@ -125,7 +128,7 @@ suite('NotebookViewModel', function (): void {
 			exceptionThrown = true;
 		}
 
-		assert.equal(view.name, `${defaultViewName} 1`);
+		assert.strictEqual(view.name, `${defaultViewName} 1`);
 		assert(!exceptionThrown);
 	});
 
@@ -155,7 +158,7 @@ suite('NotebookViewModel', function (): void {
 
 		viewModel.hideCell(cellToHide);
 
-		assert.equal(viewModel.hiddenCells.length, 1);
+		assert.strictEqual(viewModel.hiddenCells.length, 1);
 		assert(viewModel.hiddenCells.includes(cellToHide));
 	});
 
@@ -183,8 +186,8 @@ suite('NotebookViewModel', function (): void {
 		viewModel.moveCell(cellToMove, 98, 99);
 		let cellMeta = viewModel.getCellMetadata(cellToMove);
 
-		assert.equal(cellMeta.x, 98);
-		assert.equal(cellMeta.y, 99);
+		assert.strictEqual(cellMeta.x, 98);
+		assert.strictEqual(cellMeta.y, 99);
 	});
 
 	test('resize cell', async function (): Promise<void> {
@@ -197,8 +200,8 @@ suite('NotebookViewModel', function (): void {
 		viewModel.resizeCell(cellToResize, 3, 4);
 		let cellMeta = viewModel.getCellMetadata(cellToResize);
 
-		assert.equal(cellMeta.width, 3);
-		assert.equal(cellMeta.height, 4);
+		assert.strictEqual(cellMeta.width, 3);
+		assert.strictEqual(cellMeta.height, 4);
 	});
 
 	test('get cell metadata', async function (): Promise<void> {
@@ -207,10 +210,10 @@ suite('NotebookViewModel', function (): void {
 		viewModel.initialize();
 
 		let cell = viewModel.cells[0];
-		let cellMeta = notebookViews.getCellMetadata(cell);
+		let cellMeta = notebookViews.getExtensionCellMetadata(cell);
 
 		assert(!isUndefinedOrNull(cellMeta.views.find(v => v.guid === viewModel.guid)));
-		assert.deepEqual(viewModel.getCellMetadata(cell), cellMeta.views.find(v => v.guid === viewModel.guid));
+		assert.deepStrictEqual(viewModel.getCellMetadata(cell), cellMeta.views.find(v => v.guid === viewModel.guid));
 	});
 
 	test('delete', async function (): Promise<void> {
@@ -239,9 +242,10 @@ suite('NotebookViewModel', function (): void {
 
 	function setupServices() {
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
-		notebookManagers[0].sessionManager = mockSessionManager.object;
-		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
-		capabilitiesService = TypeMoq.Mock.ofType(TestCapabilitiesService);
+		executeManagers[0].providerId = SQL_NOTEBOOK_PROVIDER;
+		executeManagers[0].sessionManager = mockSessionManager.object;
+		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
+		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 		memento.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
 		queryConnectionService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
@@ -252,8 +256,9 @@ suite('NotebookViewModel', function (): void {
 		defaultModelOptions = {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
-			notebookManagers,
-			contentManager: undefined,
+			serializationManagers: serializationManagers,
+			executeManagers: executeManagers,
+			contentLoader: undefined,
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
 			providerId: 'SQL',
@@ -265,11 +270,11 @@ suite('NotebookViewModel', function (): void {
 	}
 
 	async function initializeNotebookViewsExtension(contents: nb.INotebookContents): Promise<NotebookViewsExtension> {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(contents));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undefined);
 		await model.loadContents();
 		await model.requestModelLoad();
 

@@ -8,68 +8,68 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "SQL-Bewertung",
-			"description": "SQL-Bewertung für Azure Data Studio (Vorschau) bietet einen Mechanismus zum Auswerten der Konfiguration von SQL Server für bewährte Methoden.",
-			"dashboard.tabName": "SQL-Bewertung"
-		},
-		"dist/localized": {
-			"asmt.section.api.title": "Info",
-			"asmt.apiversion": "API-Version",
-			"asmt.rulesetversion": "Standardregelsatz",
-			"asmt.section.instance.title": "Details zur SQL Server-Instanz",
-			"asmt.serverversion": "Version",
-			"asmt.serveredition": "Edition",
-			"asmt.instancename": "Instanzname",
-			"asmt.osversion": "Betriebssystemversion",
-			"asmt.column.target": "Ziel",
-			"asmt.column.severity": "Schweregrad",
-			"asmt.column.message": "Meldung",
-			"asmt.column.checkId": "ID überprüfen",
-			"asmt.column.tags": "Tags",
-			"asmt.learnMore": "Weitere Informationen",
-			"asmt.sqlReportTitle": "SQL-Bewertungsbericht",
-			"asmt.sqlReport.resultForDatabase": "Ergebnisse für Datenbank",
-			"asmt.sqlReport.resultForInstance": "Ergebnisse für Server",
-			"asmt.sqlReport.Error": "Fehler",
-			"asmt.sqlReport.Warning": "Warnung",
-			"asmt.sqlReport.Info": "Information",
-			"asmt.column.helpLink": "Hilfelink",
-			"asmt.sqlReport.severityMsg": "{0}: {1} Element(e)"
-		},
 		"dist/assessmentResultGrid": {
-			"databaseIconLabel": "Datenbank",
-			"serverIconLabel": "Server",
 			"asmt.column.targetType": "Zieltyp",
 			"asmt.details.clickHere": "Klicken Sie hier",
-			"asmt.details.toLearnMore": " für weitere Informationen.",
+			"asmt.details.recommendation": "Empfehlung",
 			"asmt.details.ruleDescription": "Regelbeschreibung",
-			"asmt.details.recommendation": "Empfehlung"
+			"asmt.details.toLearnMore": " für weitere Informationen.",
+			"databaseIconLabel": "Datenbank",
+			"serverIconLabel": "Server"
+		},
+		"dist/localized": {
+			"asmt.apiversion": "API-Version",
+			"asmt.column.checkId": "ID überprüfen",
+			"asmt.column.helpLink": "Hilfelink",
+			"asmt.column.message": "Meldung",
+			"asmt.column.severity": "Schweregrad",
+			"asmt.column.tags": "Tags",
+			"asmt.column.target": "Ziel",
+			"asmt.instancename": "Instanzname",
+			"asmt.learnMore": "Weitere Informationen",
+			"asmt.osversion": "Betriebssystemversion",
+			"asmt.rulesetversion": "Standardregelsatz",
+			"asmt.section.api.title": "Info",
+			"asmt.section.instance.title": "Details zur SQL Server-Instanz",
+			"asmt.serveredition": "Edition",
+			"asmt.serverversion": "Version",
+			"asmt.sqlReport.Error": "Fehler",
+			"asmt.sqlReport.Info": "Information",
+			"asmt.sqlReport.Warning": "Warnung",
+			"asmt.sqlReport.resultForDatabase": "Ergebnisse für Datenbank",
+			"asmt.sqlReport.resultForInstance": "Ergebnisse für Server",
+			"asmt.sqlReport.severityMsg": "{0}: {1} Element(e)",
+			"asmt.sqlReportTitle": "SQL-Bewertungsbericht"
 		},
 		"dist/tabs/assessmentMainTab": {
-			"invokeAssessmentLabelServer": "Bewertung aufrufen",
-			"getAssessmentItemsServer": "Anwendbare Regeln anzeigen",
-			"invokeAssessmentLabelDatabase": "Bewertung für „{0}“ aufrufen",
-			"getAssessmentItemsDatabase": "Anwendbare Regeln für \"{0}\" anzeigen",
+			"asmtaction.label.cancel": "Abbrechen",
+			"asmtaction.label.open": "Öffnen",
+			"asmtaction.openReport": "Der Bericht wurde gespeichert. Möchten Sie ihn öffnen?",
 			"btnExportAsScript": "Als Skript exportieren",
 			"btnGeneratehtmlreport": "HTML-Bericht erstellen",
-			"asmtaction.openReport": "Der Bericht wurde gespeichert. Möchten Sie ihn öffnen?",
-			"asmtaction.label.open": "Öffnen",
-			"asmtaction.label.cancel": "Abbrechen",
-			"btnViewSamplesShort": "Alle auf GitHub anzeigen",
 			"btnViewSamples": "Alle Regeln anzeigen und weitere Informationen auf GitHub erhalten",
+			"btnViewSamplesShort": "Alle auf GitHub anzeigen",
+			"getAssessmentItemsDatabase": "Anwendbare Regeln für \"{0}\" anzeigen",
+			"getAssessmentItemsServer": "Anwendbare Regeln anzeigen",
+			"invokeAssessmentLabelDatabase": "Bewertung für „{0}“ aufrufen",
+			"invokeAssessmentLabelServer": "Bewertung aufrufen",
 			"msgBoxAsmtInfo": "SQL-Bewertungsinformationen",
+			"msgBoxCopied": "SQL-Bewertungsinformationen wurden kopiert",
 			"msgBoxCopyBtn": "Kopieren",
-			"ok": "OK",
-			"msgBoxCopied": "SQL-Bewertungsinformationen wurden kopiert"
+			"ok": "OK"
 		},
 		"dist/tabs/historyTab": {
 			"asmt.history.back": "<< Zurück",
 			"asmt.history.resultsTitle": "Bewertungsergebnisse aus {0}",
 			"asmt.history.summaryAsmtDate": "Bewertungsdatum",
 			"asmt.history.summaryError": "Fehler",
-			"asmt.history.summaryWarning": "Warnung",
-			"asmt.history.summaryInfo": "Information"
+			"asmt.history.summaryInfo": "Information",
+			"asmt.history.summaryWarning": "Warnung"
+		},
+		"package": {
+			"dashboard.tabName": "SQL-Bewertung",
+			"description": "SQL-Bewertung für Azure Data Studio (Vorschau) bietet einen Mechanismus zum Auswerten der Konfiguration von SQL Server für bewährte Methoden.",
+			"displayName": "SQL-Bewertung"
 		}
 	}
 }

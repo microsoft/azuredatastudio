@@ -8,22 +8,22 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Разработка расширения",
-			"description": "Предоставляет функции жанров для разработки расширений."
+		"dist/extensionLinter": {
+			"dataUrlsNotValid": "URL-адреса данных не являются допустимым источником изображений.",
+			"embeddedSvgsNotValid": "Встроенные файлы SVG не являются допустимым источником изображений.",
+			"httpsRequired": "Изображения должны использовать протокол HTTPS.",
+			"relativeBadgeUrlRequiresHttpsRepository": "Для использования относительных URL-адресов эмблем необходимо указать в файле package.json репозиторий, обращение к которому осуществляется по протоколу HTTPS. ",
+			"relativeIconUrlRequiresHttpsRepository": "Для этого значка необходимо указать в файле package.json репозиторий, обращение к которому осуществляется по протоколу HTTPS.",
+			"relativeUrlRequiresHttpsRepository": "Для использования относительных URL-адресов изображений необходимо указать в файле package.json репозиторий, обращение к которому осуществляется по протоколу HTTPS.",
+			"svgsNotValid": "Файлы SVG не являются допустимым источником изображений."
 		},
 		"dist/packageDocumentHelper": {
 			"languageSpecificEditorSettings": "Параметры редактора, определяемые языком",
 			"languageSpecificEditorSettingsDescription": "Переопределить параметры редактора для языка"
 		},
-		"dist/extensionLinter": {
-			"httpsRequired": "Изображения должны использовать протокол HTTPS.",
-			"svgsNotValid": "Файлы SVG не являются допустимым источником изображений.",
-			"embeddedSvgsNotValid": "Встроенные файлы SVG не являются допустимым источником изображений.",
-			"dataUrlsNotValid": "URL-адреса данных не являются допустимым источником изображений.",
-			"relativeUrlRequiresHttpsRepository": "Для использования относительных URL-адресов изображений необходимо указать в файле package.json репозиторий, обращение к которому осуществляется по протоколу HTTPS.",
-			"relativeIconUrlRequiresHttpsRepository": "Для этого значка необходимо указать в файле package.json репозиторий, обращение к которому осуществляется по протоколу HTTPS.",
-			"relativeBadgeUrlRequiresHttpsRepository": "Для использования относительных URL-адресов эмблем необходимо указать в файле package.json репозиторий, обращение к которому осуществляется по протоколу HTTPS. "
+		"package": {
+			"description": "Предоставляет функции жанров для разработки расширений.",
+			"displayName": "Разработка расширения"
 		}
 	}
 }

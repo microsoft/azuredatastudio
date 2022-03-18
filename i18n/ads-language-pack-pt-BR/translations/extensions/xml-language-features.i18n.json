@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Recursos de Linguagem XML",
-			"description": "Fornece suporte de linguagem avançada para XML."
+			"description": "Fornece suporte de linguagem avançada para XML.",
+			"displayName": "Recursos de Linguagem XML"
 		}
 	}
 }
