@@ -29,11 +29,11 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 		providers = notebookService.getProvidersForFileType(fileExt);
 	}
 	// Fallback to provider for default file type (assume this is a global handler)
-	if (!providers) {
+	if (!providers || providers.length === 0) {
 		providers = notebookService.getProvidersForFileType(DEFAULT_NOTEBOOK_FILETYPE);
 	}
 	// Finally if all else fails, use the built-in handler
-	if (!providers) {
+	if (!providers || providers.length === 0) {
 		providers = [DEFAULT_NOTEBOOK_PROVIDER];
 	}
 	return providers;
