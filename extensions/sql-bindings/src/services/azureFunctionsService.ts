@@ -81,6 +81,12 @@ export async function createAzureFunction(connectionString: string, schema: stri
 			let templateId: string = selectedBinding.type === BindingType.input ? constants.inputTemplateID : constants.outputTemplateID;
 			let objectName = utils.generateQuotedFullName(schema, table);
 
+			// We need to set the azureWebJobsStorage to a placeholder
+			// to suppress the warning for opening the wizard
+			// issue https://github.com/microsoft/azuredatastudio/issues/18780
+
+			await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectFile), constants.azureWebJobsStorageSetting, constants.azureWebJobsStoragePlaceholder);
+
 			// create C# Azure Function with SQL Binding
 			await azureFunctionApi.createFunction({
 				language: 'C#',
@@ -100,7 +106,6 @@ export async function createAzureFunction(connectionString: string, schema: stri
 		} finally {
 			newFunctionFileObject.watcherDisposable.dispose();
 		}
-		await azureFunctionsUtils.addNugetReferenceToProjectFile(projectFile);
 		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFile);
 	}
 }
