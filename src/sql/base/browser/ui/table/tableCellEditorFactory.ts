@@ -10,7 +10,6 @@ import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
-import { debounce } from 'vs/base/common/decorators';
 import { Event } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
@@ -69,7 +68,7 @@ export class TableCellEditorFactory {
 				self._options.editorStyler(this._input);
 				this._input.element.style.height = '100%';
 				this._input.focus();
-				this._input.onDidChange(async () => {
+				this._input.onLoseFocus(async () => {
 					await this.commitEdit();
 				});
 				this._register(this._input);
@@ -78,7 +77,6 @@ export class TableCellEditorFactory {
 				}));
 			}
 
-			@debounce(200)
 			private async commitEdit(): Promise<void> {
 				if (this.isValueChanged()) {
 					const item = this._args.grid.getDataItem(this._args.grid.getActiveCell().row);

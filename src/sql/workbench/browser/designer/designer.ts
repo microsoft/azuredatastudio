@@ -45,7 +45,6 @@ import { alert } from 'vs/base/browser/ui/aria/aria';
 import { layoutDesignerTable, TableHeaderRowHeight, TableRowHeight } from 'sql/workbench/browser/designer/designerTableUtil';
 import { Dropdown, IDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
-import { debounce } from 'vs/base/common/decorators';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -723,11 +722,9 @@ export class Designer extends Disposable implements IThemable {
 					ariaLabel: inputProperties.title,
 					type: inputProperties.inputType,
 				});
-				input.onDidChange(() => {
-					// The supress edit processing check is done in the handleEdit method, but since we have debounce operation on input box we
-					// have to do it here to avoid treating system originated value setting operation as user edits.
-					if (!this._supressEditProcessing) {
-						this.handleInputBoxEdit({ type: DesignerEditType.Update, path: propertyPath, value: input.value, source: view });
+				input.onLoseFocus((args) => {
+					if (args.hasChanged) {
+						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: args.value, source: view });
 					}
 				});
 				input.onInputFocus(() => {
@@ -942,11 +939,6 @@ export class Designer extends Disposable implements IThemable {
 
 		this.styleComponent(component);
 		return component;
-	}
-
-	@debounce(200)
-	private handleInputBoxEdit(edit: DesignerEdit) {
-		this.handleEdit(edit);
 	}
 
 	private startLoading(message: string, timeout: number): void {
