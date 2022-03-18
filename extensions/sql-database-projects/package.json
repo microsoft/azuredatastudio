@@ -470,7 +470,6 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "sinon": "^9.0.2",
-    "tslint": "^5.8.0",
     "typemoq": "^2.1.0",
     "@microsoft/vscodetestcover": "^1.2.0"
   },
