@@ -1,18 +1,11 @@
 # Change Log
 
-
- ## Version 1.35.0
-* Release date: February 24, 2022
+## Version 1.35.1
+* Release date: March 17, 2022
 * Release status: General Availability
-## What's new in this version
-* New Features:
-    *  Table Designer - Added functionality for creation and management of tables for SQL Servers. Built using DacFx framework 
-    *  Query Plan Viewer - Added functionality for users to view a graphic view of estimated and actual query plans without need for an extension 
-    *  Azure Arc Extension - Updated the Data Controller deployment wizard and the SQL Managed Instance - Azure Arc deployment wizard to reflect the deployment experience in Azure Portal
-
-* Bug Fixes:
-    *  Azure Arc Extension - SQL Managed Instance-Azure Arc is now fixed for both indirect connectivity mode and direct connectivity mode 
-    *  Notebooks - Support for keyboard navigation between cells to minimize mouse clicking
+## Hotfix release
+- Fix for [Excel number format #18615](https://github.com/microsoft/azuredatastudio/issues/18615)
+- Fix for [Geometry Data Type Returned as Unknown Charset in Results Grid #18630](https://github.com/microsoft/azuredatastudio/issues/18630)
 
 | Platform																|
 | ---------------------------------------	|
@@ -31,6 +24,19 @@
 [linux-zip]: https://go.microsoft.com/fwlink/?linkid=2187462
 [linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2187521
 [linux-deb]: https://go.microsoft.com/fwlink/?linkid=2187522
+
+ ## Version 1.35.0
+* Release date: February 24, 2022
+* Release status: General Availability
+## What's new in this version
+* New Features:
+    *  Table Designer - Added functionality for creation and management of tables for SQL Servers. Built using DacFx framework 
+    *  Query Plan Viewer - Added functionality for users to view a graphic view of estimated and actual query plans without need for an extension 
+    *  Azure Arc Extension - Updated the Data Controller deployment wizard and the SQL Managed Instance - Azure Arc deployment wizard to reflect the deployment experience in Azure Portal
+
+* Bug Fixes:
+    *  Azure Arc Extension - SQL Managed Instance-Azure Arc is now fixed for both indirect connectivity mode and direct connectivity mode 
+    *  Notebooks - Support for keyboard navigation between cells to minimize mouse clicking
 
  ## Version 1.34.0
 * Release date: December 15, 2021

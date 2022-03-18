@@ -814,8 +814,8 @@ export class MigrationCutoverDialog {
 				...styles.BODY_CSS,
 				'margin': '4px 0 12px',
 				'width': '100%',
-				'overflow': 'hidden',
-				'text-overflow': 'ellipses'
+				'overflow': 'visible',
+				'overflow-wrap': 'break-word'
 			}
 		}).component();
 

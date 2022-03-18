@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerPropertyPath, DesignerValidationError } from 'sql/workbench/browser/designer/interfaces';
+import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerPropertyPath, DesignerIssue, ScriptProperty } from 'sql/workbench/browser/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -22,7 +22,7 @@ const ErrorDialogTitle: string = localize('tableDesigner.ErrorDialogTitle', "Tab
 export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	private _viewModel: DesignerViewModel;
-	private _validationErrors?: DesignerValidationError[];
+	private _issues?: DesignerIssue[];
 	private _view: DesignerView;
 	private _valid: boolean = true;
 	private _dirty: boolean = false;
@@ -76,8 +76,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		return this._viewModel;
 	}
 
-	get validationErrors(): DesignerValidationError[] | undefined {
-		return this._validationErrors;
+	get issues(): DesignerIssue[] | undefined {
+		return this._issues;
 	}
 
 	processEdit(edit: DesignerEdit): void {
@@ -89,15 +89,22 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		this.updateState(this.valid, this.dirty, 'processEdit');
 		this._provider.processTableEdit(this.tableInfo, edit).then(
 			result => {
+				if (result.inputValidationError) {
+					this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.inputValidationError', "The input validation failed with error: {0}", result.inputValidationError));
+				}
 				this._viewModel = result.viewModel;
-				this._validationErrors = result.errors;
-				this.updateState(result.isValid, !equals(this._viewModel, this._originalViewModel), undefined);
+				if (result.view) {
+					this.setDesignerView(result.view);
+				}
+				this._issues = result.issues;
+				this.updateState(result.isValid, this.isDirty(), undefined);
 
 				this._onEditProcessed.fire({
 					edit: edit,
 					result: {
 						isValid: result.isValid,
-						errors: result.errors
+						issues: result.issues,
+						refreshView: !!result.view
 					}
 				});
 				editAction.withAdditionalMeasurements({
@@ -152,6 +159,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			const result = await this._provider.publishChanges(this.tableInfo);
 			this._viewModel = result.viewModel;
 			this._originalViewModel = result.viewModel;
+			this.setDesignerView(result.view);
 			saveNotificationHandle.updateMessage(localize('tableDesigner.publishChangeSuccess', "The changes have been successfully published."));
 			this.tableInfo = result.newTableInfo;
 			this.updateState(true, false);
@@ -173,10 +181,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			sticky: true
 		});
 
-		let report;
+		let previewReportResult: azdata.designers.GeneratePreviewReportResult;
 		try {
 			this.updateState(this.valid, this.dirty, 'generateReport');
-			report = await this._provider.generatePreviewReport(this.tableInfo);
+			previewReportResult = await this._provider.generatePreviewReport(this.tableInfo);
 			reportNotificationHandle.close();
 			this.updateState(this.valid, this.dirty);
 		} catch (error) {
@@ -184,8 +192,12 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			this.updateState(this.valid, this.dirty);
 			return;
 		}
+		if (previewReportResult.schemaValidationError) {
+			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.TableSchemaValidationError', "Table schema validation failed with error: {0}", previewReportResult.schemaValidationError));
+			return;
+		}
 		const dialog = this._instantiationService.createInstance(TableDesignerPublishDialog);
-		const result = await dialog.open(report);
+		const result = await dialog.open(previewReportResult.report, previewReportResult.mimeType);
 		if (result === TableDesignerPublishDialogResult.GenerateScript) {
 			await this.generateScript();
 		} else if (result === TableDesignerPublishDialogResult.UpdateDatabase) {
@@ -239,31 +251,35 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		this.updateState(true, this.tableInfo.isNewTable);
 		this._viewModel = designerInfo.viewModel;
 		this._originalViewModel = this.tableInfo.isNewTable ? undefined : deepClone(this._viewModel);
-		this.setDefaultData();
+		this.setDesignerView(designerInfo.view);
+	}
 
+	private setDesignerView(tableDesignerView: azdata.designers.TableDesignerView) {
 		const tabs = [];
 
-		if (designerInfo.view.columnTableOptions?.showTable) {
-			tabs.push(this.getColumnsTab(designerInfo.view.columnTableOptions, designerInfo.columnTypes));
+		if (tableDesignerView.columnTableOptions?.showTable) {
+			tabs.push(this.getColumnsTab(tableDesignerView.columnTableOptions));
 		}
 
-		if (designerInfo.view.foreignKeyTableOptions?.showTable) {
-			tabs.push(this.getForeignKeysTab(designerInfo.view.foreignKeyTableOptions));
+		tabs.push(this.getPrimaryKeyTab(tableDesignerView));
+
+		if (tableDesignerView.foreignKeyTableOptions?.showTable) {
+			tabs.push(this.getForeignKeysTab(tableDesignerView.foreignKeyTableOptions, tableDesignerView.foreignKeyColumnMappingTableOptions));
 		}
 
-		if (designerInfo.view.checkConstraintTableOptions?.showTable) {
-			tabs.push(this.getCheckConstraintsTab(designerInfo.view.checkConstraintTableOptions));
+		if (tableDesignerView.checkConstraintTableOptions?.showTable) {
+			tabs.push(this.getCheckConstraintsTab(tableDesignerView.checkConstraintTableOptions));
 		}
 
-		if (designerInfo.view.indexTableOptions?.showTable) {
-			tabs.push(this.getIndexesTab(designerInfo.view.indexTableOptions, designerInfo.view.indexColumnSpecificationTableOptions));
+		if (tableDesignerView.indexTableOptions?.showTable) {
+			tabs.push(this.getIndexesTab(tableDesignerView.indexTableOptions, tableDesignerView.indexColumnSpecificationTableOptions));
 		}
 
-		if (designerInfo.view.additionalTabs) {
-			tabs.push(...designerInfo.view.additionalTabs);
+		if (tableDesignerView.additionalTabs) {
+			tabs.push(...tableDesignerView.additionalTabs);
 		}
 
-		tabs.push(this.getGeneralTab(designerInfo));
+		tabs.push(this.getGeneralTab(tableDesignerView));
 
 		this._view = {
 			components: [{
@@ -279,7 +295,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		};
 	}
 
-	private getGeneralTab(designerInfo: azdata.designers.TableDesignerInfo): DesignerTab {
+	private getGeneralTab(tableDesignerView: azdata.designers.TableDesignerView): DesignerTab {
 		const generalTabComponents: DesignerDataPropertyInfo[] = [
 			{
 				componentType: 'dropdown',
@@ -287,7 +303,6 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				description: localize('designer.table.description.schema', "The schema that contains the table."),
 				componentProperties: <DropDownProperties>{
 					title: localize('tableDesigner.schemaTitle', "Schema"),
-					values: designerInfo.schemas
 				}
 			}, {
 				componentType: 'input',
@@ -299,8 +314,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}
 		];
 
-		if (designerInfo.view.additionalTableProperties) {
-			generalTabComponents.push(...designerInfo.view.additionalTableProperties);
+		if (tableDesignerView.additionalTableProperties) {
+			generalTabComponents.push(...tableDesignerView.additionalTableProperties);
 		}
 
 		return <DesignerTab>{
@@ -309,7 +324,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		};
 	}
 
-	private getColumnsTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions, columnTypes: string[]): DesignerTab {
+	private getColumnsTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions): DesignerTab {
 
 		const columnProperties: DesignerDataPropertyInfo[] = [
 			{
@@ -326,8 +341,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				description: localize('designer.column.description.dataType', "Displays the data type name for the column"),
 				componentProperties: {
 					title: localize('tableDesigner.columnTypeTitle', "Type"),
-					width: 100,
-					values: columnTypes
+					width: 100
 				}
 			}, {
 				componentType: 'input',
@@ -365,7 +379,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				description: localize('designer.column.description.precision', "For numeric data, the maximum number of decimal digits that can be stored in this database object."),
 				componentProperties: {
 					title: localize('tableDesigner.columnPrecisionTitle', "Precision"),
-					width: 60
+					width: 60,
+					inputType: 'number'
 				}
 			}, {
 				componentType: 'input',
@@ -373,7 +388,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				description: localize('designer.column.description.scale', "For numeric data, the maximum number of decimal digits that can be stored in this database object to the right of decimal point."),
 				componentProperties: {
 					title: localize('tableDesigner.columnScaleTitle', "Scale"),
-					width: 60
+					width: 60,
+					inputType: 'number'
 				}
 			}
 		];
@@ -404,14 +420,15 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						canAddRows: options.canAddRows,
 						canRemoveRows: options.canRemoveRows,
 						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
-						showRemoveRowConfirmation: options.showRemoveRowConfirmation
+						showRemoveRowConfirmation: options.showRemoveRowConfirmation,
+						labelForAddNewButton: options.labelForAddNewButton ?? localize('tableDesigner.addNewColumn', "New Column")
 					}
 				}
 			]
 		};
 	}
 
-	private getForeignKeysTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions): DesignerTab {
+	private getForeignKeysTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions, columnMappingTableOptions: azdata.designers.TableDesignerBuiltInTableViewOptions): DesignerTab {
 
 		const foreignKeyColumnMappingProperties: DesignerDataPropertyInfo[] = [
 			{
@@ -476,13 +493,12 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				group: localize('tableDesigner.foreignKeyColumns', "Columns"),
 				componentProperties: <DesignerTableProperties>{
 					ariaLabel: localize('tableDesigner.foreignKeyColumns', "Columns"),
-					columns: [designers.ForeignKeyColumnMappingProperty.Column, designers.ForeignKeyColumnMappingProperty.ForeignColumn],
-					itemProperties: foreignKeyColumnMappingProperties,
-					objectTypeDisplayName: '',
-					canAddRows: options.canAddRows,
-					canRemoveRows: options.canRemoveRows,
-					removeRowConfirmationMessage: options.removeRowConfirmationMessage,
-					showRemoveRowConfirmation: options.showRemoveRowConfirmation
+					columns: this.getTableDisplayProperties(columnMappingTableOptions, [designers.ForeignKeyColumnMappingProperty.Column, designers.ForeignKeyColumnMappingProperty.ForeignColumn]),
+					itemProperties: this.addAdditionalTableProperties(columnMappingTableOptions, foreignKeyColumnMappingProperties),
+					canAddRows: columnMappingTableOptions.canAddRows,
+					canRemoveRows: columnMappingTableOptions.canRemoveRows,
+					removeRowConfirmationMessage: columnMappingTableOptions.removeRowConfirmationMessage,
+					labelForAddNewButton: columnMappingTableOptions.labelForAddNewButton ?? localize('tableDesigner.addNewColumnMapping', "New Column Mapping")
 				}
 			}
 		];
@@ -502,10 +518,67 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						canAddRows: options.canAddRows,
 						canRemoveRows: options.canRemoveRows,
 						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
-						showRemoveRowConfirmation: options.showRemoveRowConfirmation
+						showRemoveRowConfirmation: options.showRemoveRowConfirmation,
+						labelForAddNewButton: options.labelForAddNewButton ?? localize('tableDesigner.addForeignKey', "New Foreign Key")
 					}
 				}
 			]
+		};
+	}
+
+	private getPrimaryKeyTab(view: azdata.designers.TableDesignerView): DesignerTab {
+		const options = view.primaryKeyColumnSpecificationTableOptions;
+		const columnSpecProperties: DesignerDataPropertyInfo[] = [
+			{
+				componentType: 'dropdown',
+				propertyName: designers.TableIndexColumnSpecificationProperty.Column,
+				description: localize('designer.index.column.description.name', "The name of the column."),
+				componentProperties: {
+					title: localize('tableDesigner.index.column.name', "Column"),
+					width: 100
+				}
+			}];
+
+		const tabComponents = [];
+		tabComponents.push(
+			{
+				componentType: 'input',
+				propertyName: designers.TableProperty.PrimaryKeyName,
+				showInPropertiesView: false,
+				description: localize('designer.table.primaryKeyName.description', "Name of the primary key."),
+				componentProperties: {
+					title: localize('tableDesigner.primaryKeyNameTitle', "Name")
+				}
+			});
+		if (view.additionalPrimaryKeyProperties) {
+			view.additionalPrimaryKeyProperties.forEach(component => {
+				component.showInPropertiesView = false;
+				tabComponents.push(component);
+			});
+		}
+		tabComponents.push({
+			componentType: 'table',
+			propertyName: designers.TableProperty.PrimaryKeyColumns,
+			showInPropertiesView: false,
+			description: localize('designer.table.primaryKeyColumns.description', "Columns in the primary key."),
+			componentProperties: <DesignerTableProperties>{
+				title: localize('tableDesigner.primaryKeyColumnsTitle', "Primary Key Columns"),
+				ariaLabel: localize('tableDesigner.primaryKeyColumnsTitle', "Primary Key Columns"),
+				columns: this.getTableDisplayProperties(options, [designers.TableIndexColumnSpecificationProperty.Column]),
+				itemProperties: this.addAdditionalTableProperties(options, columnSpecProperties),
+				objectTypeDisplayName: '',
+				canAddRows: options.canAddRows,
+				canRemoveRows: options.canRemoveRows,
+				removeRowConfirmationMessage: options.removeRowConfirmationMessage,
+				showRemoveRowConfirmation: options.showRemoveRowConfirmation,
+				showItemDetailInPropertiesView: false,
+				labelForAddNewButton: options.labelForAddNewButton ?? localize('tableDesigner.addNewColumnToPrimaryKey', "Add Column")
+			}
+		});
+
+		return <DesignerTab>{
+			title: localize('tableDesigner.PrimaryKeyTabTitle', "Primary Key"),
+			components: tabComponents
 		};
 	}
 
@@ -545,7 +618,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						canAddRows: options.canAddRows,
 						canRemoveRows: options.canRemoveRows,
 						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
-						showRemoveRowConfirmation: options.showRemoveRowConfirmation
+						showRemoveRowConfirmation: options.showRemoveRowConfirmation,
+						labelForAddNewButton: options.labelForAddNewButton ?? localize('tableDesigner.addNewCheckConstraint', "New Check Constraint")
 					}
 				}
 			]
@@ -584,8 +658,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					objectTypeDisplayName: '',
 					canAddRows: columnSpecTableOptions.canAddRows,
 					canRemoveRows: columnSpecTableOptions.canRemoveRows,
-					removeRowConfirmationMessage: options.removeRowConfirmationMessage,
-					showRemoveRowConfirmation: options.showRemoveRowConfirmation
+					removeRowConfirmationMessage: columnSpecTableOptions.removeRowConfirmationMessage,
+					showRemoveRowConfirmation: columnSpecTableOptions.showRemoveRowConfirmation,
+					labelForAddNewButton: columnSpecTableOptions.labelForAddNewButton ?? localize('tableDesigner.addNewColumnToIndex', "Add Column")
 				}
 			}
 		];
@@ -605,7 +680,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						canAddRows: options.canAddRows,
 						canRemoveRows: options.canRemoveRows,
 						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
-						showRemoveRowConfirmation: options.showRemoveRowConfirmation
+						showRemoveRowConfirmation: options.showRemoveRowConfirmation,
+						labelForAddNewButton: options.labelForAddNewButton ?? localize('tableDesigner.addNewIndex', "New Index")
 					}
 				}
 			]
@@ -623,19 +699,6 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		return properties;
 	}
 
-	private setDefaultData(): void {
-		const properties = Object.keys(this._viewModel);
-		this.setDefaultInputData(properties, designers.TableProperty.Name);
-		this.setDefaultInputData(properties, designers.TableProperty.Schema);
-		this.setDefaultInputData(properties, designers.TableProperty.Description);
-	}
-
-	private setDefaultInputData(allProperties: string[], property: string): void {
-		if (allProperties.indexOf(property) === -1) {
-			this._viewModel[property] = {};
-		}
-	}
-
 	private createTelemetryInfo(): ITelemetryEventProperties {
 		let telemetryInfo = {
 			provider: this._provider.providerId,
@@ -643,6 +706,21 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		};
 		Object.assign(telemetryInfo, this._telemetryInfo);
 		return telemetryInfo;
+	}
+
+	private isDirty(): boolean {
+		const copyOfViewModel = deepClone(this._viewModel);
+		const copyOfOriginalViewModel = deepClone(this._originalViewModel);
+		// The generated script might be slightly different even though the models are the same
+		// espeically the order of the description property statements.
+		// we should take the script out for comparison.
+		if (copyOfViewModel) {
+			delete copyOfViewModel[ScriptProperty];
+		}
+		if (copyOfOriginalViewModel) {
+			delete copyOfOriginalViewModel[ScriptProperty];
+		}
+		return !equals(copyOfViewModel, copyOfOriginalViewModel);
 	}
 
 	/**

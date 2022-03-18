@@ -9,17 +9,16 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
 import { CreateComponentsFunc } from 'sql/workbench/browser/designer/designer';
-
-const ButtonHeight = 30;
-const HorizontalPadding = 10;
-const VerticalPadding = 20;
+import { layoutDesignerTable } from 'sql/workbench/browser/designer/designerTableUtil';
 
 export class DesignerTabPanelView extends Disposable implements IPanelView {
+	private _viewContainer: HTMLElement;
 	private _componentsContainer: HTMLElement;
 	private _tables: Table<Slick.SlickData>[] = [];
 	constructor(private readonly _tab: DesignerTab, private _createComponents: CreateComponentsFunc) {
 		super();
-		this._componentsContainer = DOM.$('.components-grid');
+		this._viewContainer = DOM.$('.designer-tab-view');
+		this._componentsContainer = this._viewContainer.appendChild(DOM.$('.components-grid'));
 		const uiComponents = this._createComponents(this._componentsContainer, this._tab.components, DesignerRootObjectPath);
 		uiComponents.forEach(component => {
 			if (component instanceof Table) {
@@ -29,12 +28,12 @@ export class DesignerTabPanelView extends Disposable implements IPanelView {
 	}
 
 	render(container: HTMLElement): void {
-		container.appendChild(this._componentsContainer);
+		container.appendChild(this._viewContainer);
 	}
 
 	layout(dimension: DOM.Dimension): void {
 		this._tables.forEach(table => {
-			table.layout(new DOM.Dimension(dimension.width - HorizontalPadding, dimension.height - VerticalPadding - ButtonHeight));
+			layoutDesignerTable(table, dimension.width);
 		});
 	}
 }
