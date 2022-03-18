@@ -11,9 +11,9 @@ import * as constants from './constants';
 import { BindingType } from 'sql-bindings';
 import { ConnectionDetails, IConnectionInfo } from 'vscode-mssql';
 // https://github.com/microsoft/vscode-azurefunctions/blob/main/src/vscode-azurefunctions.api.d.ts
-import { AzureFunctionsExtensionApi } from '../typings/vscode-azurefunctions.api';
+import { AzureFunctionsExtensionApi } from '../../../types/vscode-azurefunctions.api';
 // https://github.com/microsoft/vscode-azuretools/blob/main/ui/api.d.ts
-import { AzureExtensionApiProvider } from '../typings/vscode-azuretools.api';
+import { AzureExtensionApiProvider } from '../../../types/vscode-azuretools.api';
 /**
  * Represents the settings in an Azure function project's locawl.settings.json file
  */

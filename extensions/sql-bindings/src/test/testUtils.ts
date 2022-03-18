@@ -236,10 +236,16 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 	sqlToolsServicePath: string = '';
 	dacFx: vscodeMssql.IDacFxService;
 	schemaCompare: vscodeMssql.ISchemaCompareService;
+	azureAccountService: vscodeMssql.IAzureAccountService;
 
 	constructor() {
 		this.dacFx = new MockDacFxMssqlService;
 		this.schemaCompare = new MockSchemaCompareService;
+		this.azureAccountService = TypeMoq.Mock.ofType<vscodeMssql.IAzureAccountService>().object;
+	}
+
+	promptForFirewallRule(_: string, __: vscodeMssql.IConnectionInfo): Promise<boolean> {
+		throw new Error('Method not implemented.');
 	}
 	sendRequest<P, R, E, R0>(_: RequestType<P, R, E, R0>, __?: P): Promise<R> {
 		throw new Error('Method not implemented.');
