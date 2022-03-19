@@ -12,6 +12,7 @@ import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { deepClone, findDropDownItemIndex, selectDropDownIndex, selectDefaultDropdownValue } from '../api/utils';
+import { azureResource } from 'azureResource';
 
 export class TargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -120,9 +121,14 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			const resourceDropdownValue = (<azdata.CategoryValue>this._azureResourceDropdown.value)?.displayName;
 			switch (this.migrationStateModel._targetType) {
 				case MigrationTargetType.SQLMI: {
-					if (!this.migrationStateModel._targetServerInstance ||
-						resourceDropdownValue === constants.NO_MANAGED_INSTANCE_FOUND) {
+					let targetMi = this.migrationStateModel._targetServerInstance as azureResource.AzureSqlManagedInstance;
+					if (!targetMi || resourceDropdownValue === constants.NO_MANAGED_INSTANCE_FOUND) {
 						errors.push(constants.INVALID_MANAGED_INSTANCE_ERROR);
+						break;
+					}
+					if (targetMi.properties.state !== 'Ready') {
+						errors.push(constants.MI_NOT_READY_ERROR(targetMi.name, targetMi.properties.state));
+						break;
 					}
 					break;
 				}
@@ -403,6 +409,17 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 					case MigrationTargetType.SQLMI:
 						this.migrationStateModel._targetServerInstance = this.migrationStateModel.getManagedInstance(selectedIndex);
+						if (this.migrationStateModel._targetServerInstance.properties.state !== 'Ready') {
+							this.wizard.message = {
+								text: constants.MI_NOT_READY_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.state),
+								level: azdata.window.MessageLevel.Error
+							};
+						} else {
+							this.wizard.message = {
+								text: '',
+								level: azdata.window.MessageLevel.Error
+							};
+						}
 						break;
 				}
 			} else {

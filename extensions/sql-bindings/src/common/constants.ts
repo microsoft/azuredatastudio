@@ -8,9 +8,40 @@ import * as utils from '../common/utils';
 
 const localize = nls.loadMessageBundle();
 
+// Azure Functions
+export const azureFunctionsExtensionName = 'ms-azuretools.vscode-azurefunctions';
+export const sqlConnectionString = 'SqlConnectionString';
+export const linkToAzureFunctionExtension = 'https://docs.microsoft.com/azure/azure-functions/functions-develop-vs-code';
+export const sqlBindingsDoc = 'https://aka.ms/sqlbindings';
+export const defaultSqlBindingTextLines =
+	[
+		'log.LogInformation(\"C# HTTP trigger function processed a request.\");',
+		'string name = req.Query[\"name\"];',
+		'string requestBody = await new StreamReader(req.Body).ReadToEndAsync();',
+		'dynamic data = JsonConvert.DeserializeObject(requestBody);',
+		'name = name ?? data?.name;',
+		'string responseMessage = string.IsNullOrEmpty(name) ? \"This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.\" : $\"Hello, {name}. This HTTP triggered function executed successfully.\";'
+	];
+export const defaultBindingResult = 'return new OkObjectResult(responseMessage);';
+export const sqlBindingResult = `return new OkObjectResult(result);`;
+export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
+export const functionNameTitle = localize('functionNameTitle', 'Function Name');
+export const selectProject = localize('selectProject', 'Select the Azure Function project for the SQL Binding');
+export const azureFunctionsExtensionNotFound = localize('azureFunctionsExtensionNotFound', 'The Azure Functions extension is required to create a new Azure Function with SQL binding but is not installed, install it now?');
+export const install = localize('install', 'Install');
+export const learnMore = localize('learnMore', 'Learn more');
+export const doNotInstall = localize('doNotInstall', 'Do not install');
+export const createProject = localize('createProject', 'Create Azure Function Project');
+export const selectAzureFunctionProjFolder = localize('selectAzureFunctionProjFolder', 'Select folder for the Azure Function project');
+export const timeoutExtensionError = localize('timeoutExtensionError', 'Timed out waiting for extension to install');
+export const timeoutAzureFunctionFileError = localize('timeoutAzureFunctionFileError', 'Timed out waiting for Azure Function file to be created');
+export const timeoutProjectError = localize('timeoutProjectError', 'Timed out waiting for project to be created');
+export const errorNewAzureFunction = localize('errorNewAzureFunction', 'Error creating new Azure Function: {0}');
+export const azureFunctionsExtensionNotInstalled = localize('azureFunctionsExtensionNotInstalled', 'Azure Functions extension must be installed in order to use this feature.');
+export const azureFunctionsProjectMustBeOpened = localize('azureFunctionsProjectMustBeOpened', 'A C# Azure Functions project must be present in order to create a new Azure Function for this table.');
+
 // Insert SQL binding
 export const hostFileName = 'host.json';
-export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
 export const placeHolderObject = '[dbo].[table1]';
 export const sqlBindingsHelpLink = 'https://github.com/Azure/azure-functions-sql-extension/blob/main/README.md';
 export const passwordPlaceholder = '******';
