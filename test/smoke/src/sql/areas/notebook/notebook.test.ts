@@ -59,12 +59,21 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.waitForColorization('6', 'mtk1'); // employees
 		});
 
-		it('can navigate cells with keyboard', async function () {
+		it('can enter and exit edit mode using keyboard nav', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
-			await app.workbench.sqlNotebook.addCell('code');
+			await app.workbench.sqlNotebook.addCellFromPlaceholder('Code');
+			await app.workbench.sqlNotebook.waitForPlaceholderGone();
+			assert(await app.workbench.sqlNotebook.isCodeCellInEditMode(), 'code cell should be in edit mode');
+			await app.code.dispatchKeybinding('escape');
+			assert(!(await app.workbench.sqlNotebook.isCodeCellInEditMode()), 'code cell should not be in edit mode');
 			await app.workbench.sqlNotebook.addCell('markdown');
-			await app.workbench.sqlNotebook.keyboardNav.exitEditMode();
+			assert(await app.workbench.sqlNotebook.isTextCellInEditMode(), 'text cell should be in edit mode');
+			await app.code.dispatchKeybinding('escape');
+			assert(!(await app.workbench.sqlNotebook.isTextCellInEditMode()), 'text cell should not be in edit mode');
+			// hitting escape twice deselects all cells
+			await app.code.dispatchKeybinding('escape');
+			await app.workbench.sqlNotebook.waitForActiveCellGone();
 		});
 
 		// Python Notebooks

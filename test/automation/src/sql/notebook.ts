@@ -15,13 +15,11 @@ export class Notebook {
 
 	public readonly notebookToolbar: NotebookToolbar;
 	public readonly textCellToolbar: TextCellToolbar;
-	public readonly keyboardNav: NotebooksKeyboardActions;
 	public readonly view: NotebookTreeView;
 
 	constructor(private code: Code, private quickAccess: QuickAccess, private quickInput: QuickInput, private editors: Editors) {
 		this.notebookToolbar = new NotebookToolbar(code);
 		this.textCellToolbar = new TextCellToolbar(code);
-		this.keyboardNav = new NotebooksKeyboardActions(code);
 		this.view = new NotebookTreeView(code, quickAccess);
 	}
 
@@ -49,6 +47,10 @@ export class Notebook {
 		}
 
 		await this.code.waitForElement('.notebook-cell.active');
+	}
+
+	async waitForActiveCellGone(): Promise<void> {
+		await this.code.waitForElementGone('.notebook-cell.active');
 	}
 
 	async runActiveCell(): Promise<void> {
@@ -134,6 +136,12 @@ export class Notebook {
 		await this.code.waitForElement(expectedResultSelector);
 	}
 
+	async isCodeCellInEditMode(): Promise<boolean> {
+		// verify that cell is in editmode
+		const element = await this.code.waitForElement(`.notebook-cell.active .monaco-editor`);
+		return element.className.includes('focused');
+	}
+
 	// Text Cell Actions
 
 	private static readonly textCellPreviewSelector = 'div.notebook-preview';
@@ -157,6 +165,12 @@ export class Notebook {
 			textSelector = `${textSelector} ${textStyle}`;
 		}
 		await this.code.waitForElement(textSelector, result => result?.textContent === text);
+	}
+
+	async isTextCellInEditMode(): Promise<boolean> {
+		// verify that cell is in editmode
+		const element = await this.code.waitForElement(`.notebook-cell.active ${Notebook.textCellPreviewSelector}`);
+		return element.attributes['contenteditable'] === 'true';
 	}
 
 	// Cell Output Actions
@@ -404,29 +418,5 @@ export class NotebookTreeView {
 
 	async waitForPinnedNotebookTreeViewGone(): Promise<void> {
 		await this.code.waitForElementGone(NotebookTreeView.pinnedNotebooksSelector);
-	}
-}
-
-export class NotebooksKeyboardActions {
-	constructor(private code: Code) { }
-
-	async selectPreviousCell(): Promise<void> {
-		await this.code.dispatchKeybinding('up');
-	}
-
-	async selectNextCell(): Promise<void> {
-		await this.code.dispatchKeybinding('down');
-	}
-
-	async enterEditMode(): Promise<void> {
-
-	}
-
-	async exitEditMode(): Promise<void> {
-
-	}
-
-	async exit(): Promise<void> {
-
 	}
 }
