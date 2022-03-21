@@ -145,6 +145,57 @@ export function setup(opts: minimist.ParsedArgs) {
 			});
 		});
 
+		describe('Cell Toolbar Actions', function () {
+			const sampleText: string = 'Test Text';
+			async function createCellAndSelectAllText(app: Application): Promise<void> {
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
+				await app.workbench.sqlNotebook.waitForPlaceholderGone();
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
+				await app.workbench.sqlNotebook.waitForTypeInEditor(sampleText);
+				await app.workbench.sqlNotebook.selectAllTextInEditor();
+			}
+
+			it('can bold selected text', async function () {
+				const app = this.app as Application;
+				await createCellAndSelectAllText(app);
+				await app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'strong');
+			});
+
+			it('can italicize selected text', async function () {
+				const app = this.app as Application;
+				await createCellAndSelectAllText(app);
+				await app.workbench.sqlNotebook.textCellToolbar.italicizeSelectedText();
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'i');
+			});
+
+			it('can underline selected text', async function () {
+				const app = this.app as Application;
+				await createCellAndSelectAllText(app);
+				await app.workbench.sqlNotebook.textCellToolbar.underlineSelectedText();
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'u');
+			});
+
+			it('can highlight selected text', async function () {
+				const app = this.app as Application;
+				await createCellAndSelectAllText(app);
+				await app.workbench.sqlNotebook.textCellToolbar.highlightSelectedText();
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'mark');
+			});
+
+			it('can codify selected text', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.textCellToolbar.codifySelectedText();
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'code');
+			});
+		});
+
 		describe('markdown', function () {
 			it('can create http link from markdown', async function () {
 				const app = this.app as Application;
