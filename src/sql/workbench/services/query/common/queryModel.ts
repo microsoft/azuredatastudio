@@ -16,7 +16,7 @@ import {
 	EditRevertCellResult,
 	ExecutionPlanOptions,
 	queryeditor,
-	ExecutionPlanGraph
+	executionPlan
 } from 'azdata';
 import { QueryInfo } from 'sql/workbench/services/query/common/queryModelService';
 import { IRange } from 'vs/editor/common/core/range';
@@ -34,7 +34,7 @@ export interface IQueryPlanInfo {
 export interface IExecutionPlanInfo {
 	providerId: string;
 	fileUri: string;
-	planGraphs: ExecutionPlanGraph[];
+	planGraphs: executionPlan.ExecutionPlanGraph[];
 }
 
 export interface IQueryInfo {

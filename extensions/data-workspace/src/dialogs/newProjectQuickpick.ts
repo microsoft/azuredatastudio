@@ -19,8 +19,12 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 		return {
 			label: projType.displayName,
 			description: projType.description,
-			id: projType.id
-		} as vscode.QuickPickItem & { id: string };
+			id: projType.id,
+			targetPlatforms: projType.targetPlatforms,
+			defaultTargetPlatform: projType.defaultTargetPlatform,
+			sdkOption: projType.sdkStyleOption,
+			sdkLearnMoreUrl: projType.sdkStyleLearnMoreUrl
+		} as vscode.QuickPickItem & { id: string, sdkOption?: boolean, targetPlatforms?: string[], defaultTargetPlatform?: string, sdkLearnMoreUrl?: string };
 	});
 
 	// 1. Prompt for project type
@@ -87,5 +91,79 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 		continue;
 	}
 
-	await workspaceService.createProject(projectName, vscode.Uri.file(projectLocation), projectType.id, undefined);
+	let targetPlatform;
+	if (projectType.targetPlatforms) {
+		// 4. Target platform of the project
+		let targetPlatforms: vscode.QuickPickItem[] = projectType.targetPlatforms.map(targetPlatform => { return { label: targetPlatform }; });
+
+		if (projectType.defaultTargetPlatform) {
+			// move the default target platform to be the first one in the list
+			const defaultIndex = targetPlatforms.findIndex(i => i.label === projectType.defaultTargetPlatform);
+			if (defaultIndex > -1) {
+				targetPlatforms.splice(defaultIndex, 1);
+			}
+
+			// add default next to the default target platform
+			targetPlatforms.unshift({ label: projectType.defaultTargetPlatform, description: constants.Default });
+		}
+
+		const selectedTargetPlatform = await vscode.window.showQuickPick(targetPlatforms, { title: constants.SelectTargetPlatform, ignoreFocusOut: true });
+		if (!selectedTargetPlatform) {
+			// User cancelled
+			return;
+		}
+
+		targetPlatform = selectedTargetPlatform.label;
+	}
+
+	let sdkStyle;
+	if (projectType.sdkOption) {
+		// 5. SDK-style project or not
+		const sdkLearnMoreButton: vscode.QuickInputButton = {
+			iconPath: new vscode.ThemeIcon('link-external'),
+			tooltip: constants.LearnMore
+		};
+		const quickPick = vscode.window.createQuickPick();
+		quickPick.items = [{ label: constants.YesRecommended }, { label: constants.No }];
+		quickPick.title = constants.SdkStyleProject;
+		quickPick.ignoreFocusOut = true;
+		const disposables: vscode.Disposable[] = [];
+
+		try {
+			if (projectType.sdkLearnMoreUrl) {
+				// add button to open sdkLearnMoreUrl if it was provided
+				quickPick.buttons = [sdkLearnMoreButton];
+				quickPick.placeholder = constants.SdkLearnMorePlaceholder;
+			}
+
+			let sdkStylePromise = new Promise<boolean | undefined>((resolve) => {
+				disposables.push(
+					quickPick.onDidHide(() => {
+						resolve(undefined);
+					}),
+					quickPick.onDidChangeSelection((item) => {
+						resolve(item[0].label === constants.YesRecommended);
+					}));
+
+				if (projectType.sdkLearnMoreUrl) {
+					disposables.push(quickPick.onDidTriggerButton(async () => {
+						await vscode.env.openExternal(vscode.Uri.parse(projectType.sdkLearnMoreUrl!));
+					}));
+				}
+			});
+
+			quickPick.show();
+			sdkStyle = await sdkStylePromise;
+			quickPick.hide();
+		} finally {
+			disposables.forEach(d => d.dispose());
+		}
+
+		if (sdkStyle === undefined) {
+			// User cancelled
+			return;
+		}
+	}
+
+	await workspaceService.createProject(projectName, vscode.Uri.file(projectLocation), projectType.id, targetPlatform, sdkStyle);
 }
