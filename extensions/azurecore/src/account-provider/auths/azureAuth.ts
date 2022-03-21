@@ -349,7 +349,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
 			Logger.verbose('Fetching tenants', tenantUri);
-			const tenantResponse = await this.makeGetRequest(tenantUri, token.token);
+			let tenantResponse = await this.makeGetRequest(tenantUri, token.token);
+			// multiple tenants in tenant response but not all have data, must parse through first
+			tenantResponse.data.value = tenantResponse.data.value.filter(((info: any) => {
+				return info !== undefined;
+			}));
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
 				Logger.verbose(`Tenant: ${tenantInfo.displayName}`);
 				return {
@@ -609,6 +613,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		};
 
 		const response = await axios.get(url, config);
+		Logger.info('Fetch tenants response: ', response.status);
 		Logger.pii('GET request ', [{ name: 'response', objOrArray: response.data.value ?? response.data }], [], url,);
 		return response;
 	}
