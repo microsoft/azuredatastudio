@@ -169,7 +169,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await createCellAndSelectAllText(app);
 				await app.workbench.sqlNotebook.textCellToolbar.italicizeSelectedText();
 				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'i');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'em');
 			});
 
 			it('can underline selected text', async function () {
@@ -190,9 +190,10 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			it('can codify selected text', async function () {
 				const app = this.app as Application;
+				await createCellAndSelectAllText(app);
 				await app.workbench.sqlNotebook.textCellToolbar.codifySelectedText();
 				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'code');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'pre', 'code');
 			});
 		});
 
