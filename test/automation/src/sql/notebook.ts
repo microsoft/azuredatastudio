@@ -155,7 +155,7 @@ export class Notebook {
 		if (textStyle) {
 			textSelector = `${textSelector} ${textStyle}`;
 		}
-		await this.code.waitForElement(textSelector, result => !!result?.textContent?.includes(text));
+		await this.code.waitForElement(textSelector, result => !!result?.textContent?.includes(text)); // Use includes to handle whitespace edge cases
 	}
 
 	// Cell Output Actions
