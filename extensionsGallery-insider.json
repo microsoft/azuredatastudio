@@ -4397,7 +4397,7 @@
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/22080.1/azuredatastudio-oracle-0.1.1.vsix"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/22080.1/azuredatastudio-oracle-0.1.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
