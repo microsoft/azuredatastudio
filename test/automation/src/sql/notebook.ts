@@ -150,12 +150,9 @@ export class Notebook {
 		await this.code.waitForElementGone(Notebook.doubleClickToEditSelector);
 	}
 
-	async waitForTextCellPreviewContent(text: string, fontType: 'p' | 'h1' | 'h2' | 'h3' | 'pre', textStyle?: 'strong' | 'i' | 'em' | 'u' | 'mark' | 'code'): Promise<void> {
-		let textSelector = `${Notebook.textCellPreviewSelector} ${fontType}`;
-		if (textStyle) {
-			textSelector = `${textSelector} ${textStyle}`;
-		}
-		await this.code.waitForElement(textSelector, result => !!result?.textContent?.includes(text)); // Use includes to handle whitespace edge cases
+	async waitForTextCellPreviewContent(text: string, selector: string): Promise<void> {
+		let textSelector = `${Notebook.textCellPreviewSelector} ${selector}`;
+		await this.code.waitForElement(textSelector, result => !!result?.textContent?.includes(text)); // Use includes to handle whitespace/quote edge cases
 	}
 
 	// Cell Output Actions

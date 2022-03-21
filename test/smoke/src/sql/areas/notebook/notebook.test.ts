@@ -31,7 +31,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.selectAllTextInEditor();
 			await app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
 			await app.code.dispatchKeybinding('escape');
-			await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'strong');
+			await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p strong');
 		});
 
 		it('can perform basic code cell functionality', async function () {
@@ -161,7 +161,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await createCellAndSelectAllText(app);
 				await app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
 				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'strong');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p strong');
 			});
 
 			it('can italicize selected text', async function () {
@@ -169,7 +169,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await createCellAndSelectAllText(app);
 				await app.workbench.sqlNotebook.textCellToolbar.italicizeSelectedText();
 				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'em');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p em');
 			});
 
 			it('can underline selected text', async function () {
@@ -177,7 +177,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await createCellAndSelectAllText(app);
 				await app.workbench.sqlNotebook.textCellToolbar.underlineSelectedText();
 				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'u');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p u');
 			});
 
 			it('can highlight selected text', async function () {
@@ -185,7 +185,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await createCellAndSelectAllText(app);
 				await app.workbench.sqlNotebook.textCellToolbar.highlightSelectedText();
 				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'mark');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p mark');
 			});
 
 			it('can codify selected text', async function () {
@@ -193,7 +193,23 @@ export function setup(opts: minimist.ParsedArgs) {
 				await createCellAndSelectAllText(app);
 				await app.workbench.sqlNotebook.textCellToolbar.codifySelectedText();
 				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'pre', 'code');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'pre code');
+			});
+
+			it('can bullet selected text', async function () {
+				const app = this.app as Application;
+				await createCellAndSelectAllText(app);
+				await app.workbench.sqlNotebook.textCellToolbar.insertList();
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'ul li');
+			});
+
+			it('can number selected text', async function () {
+				const app = this.app as Application;
+				await createCellAndSelectAllText(app);
+				await app.workbench.sqlNotebook.textCellToolbar.insertOrderedList();
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'ol li');
 			});
 		});
 
