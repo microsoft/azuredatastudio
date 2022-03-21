@@ -334,7 +334,6 @@ export class DataTierApplicationWizard {
 	}
 
 	private async extract(): Promise<mssql.DacFxResult> {
-		let additionalProps: TelemetryEventProperties = {};
 		let additionalMeasurements: TelemetryEventMeasures = {};
 
 		const service = await this.getService();
@@ -345,9 +344,8 @@ export class DataTierApplicationWizard {
 
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - extractStartTime);
 		additionalMeasurements.extractedDacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
-		additionalProps.version = this.model.version;
 
-		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.ExtractDacpac, additionalProps, additionalMeasurements);
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.ExtractDacpac, { version: this.model.version }, additionalMeasurements);
 
 		return result;
 	}
