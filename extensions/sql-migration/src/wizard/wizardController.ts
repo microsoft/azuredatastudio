@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import { MigrationStateModel, NetworkContainerType, Page } from '../models/stateMachine';
 import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';

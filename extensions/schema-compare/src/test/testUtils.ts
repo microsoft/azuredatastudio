@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import should = require('should');
 import { AssertionError } from 'assert';
 

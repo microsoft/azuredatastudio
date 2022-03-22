@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import type * as azdata from 'azdata';
 import * as constants from '../common/constants';
 import * as newProjectTool from '../tools/newProjectTool';

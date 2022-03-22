@@ -20,8 +20,6 @@ declare module 'azdata' {
 
 		export function registerBackupProvider(provider: BackupProvider): vscode.Disposable;
 
-		export function registerBlobProvider(provider: BlobProvider): vscode.Disposable;
-
 		export function registerRestoreProvider(provider: RestoreProvider): vscode.Disposable;
 
 		export function registerScriptingProvider(provider: ScriptingProvider): vscode.Disposable;

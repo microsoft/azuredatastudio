@@ -4,3 +4,4 @@
  *--------------------------------------------------------------------------------------------*/
 
 /// <reference path='../../extensions/azurecore/src/azurecore.d.ts' />
+/// <reference path='../../extensions/mssql/src/mssql.d.ts' />

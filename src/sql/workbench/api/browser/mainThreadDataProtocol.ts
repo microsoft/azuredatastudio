@@ -31,7 +31,6 @@ import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvide
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/common/interface';
-import { IBlobService } from 'sql/platform/blob/common/blobService';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -55,7 +54,6 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@IJobManagementService private _jobManagementService: IJobManagementService,
 		@IBackupService private _backupService: IBackupService,
 		@IRestoreService private _restoreService: IRestoreService,
-		@IBlobService private _blobService: IBlobService,
 		@ITaskService private _taskService: ITaskService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@ISerializationService private _serializationService: ISerializationService,
@@ -191,17 +189,6 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			},
 			getBackupConfigInfo(connectionUri: string): Thenable<azdata.BackupConfigInfo> {
 				return self._proxy.$getBackupConfigInfo(handle, connectionUri);
-			}
-		});
-
-		return undefined;
-	}
-
-	public $registerBlobProvider(providerId: string, handle: number): Promise<any> {
-		const self = this;
-		this._blobService.registerProvider(providerId, <azdata.BlobProvider>{
-			createSas(ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Thenable<azdata.CreateSasResponse> {
-				return self._proxy.$createSas(handle, ownerUri, blobContainerUri, blobContainerKey, storageAccountName, expirationDate);
 			}
 		});
 

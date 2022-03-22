@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as mssql from '../../mssql/src/mssql';
+import * as mssql from 'mssql';
 import { SchemaCompareMainWindow } from './schemaCompareMainWindow';
 
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<void> {

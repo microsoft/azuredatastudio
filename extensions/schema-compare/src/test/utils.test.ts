@@ -6,7 +6,7 @@
 import * as should from 'should';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as loc from '../localizedConstants';
 import * as TypeMoq from 'typemoq';
 import * as path from 'path';

@@ -38,6 +38,10 @@ export abstract class ExtHostAzureAccountShape {
 	public $getStorageAccountAccessKey(account: azurecore.AzureAccount, subscription: azurecore.AzureResourceSubscription, storageAccount: azurecore.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountAccessKeyResult> { throw ni(); }
 }
 
+export abstract class ExtHostAzureBlobShape {
+	public $createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<azdata.CreateSasResponse> { throw ni(); }
+}
+
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
 	$clear(handle: number, accountKey: azdata.AccountKey): Thenable<void> { throw ni(); }
@@ -620,6 +624,10 @@ export interface MainThreadAzureAccountShape extends IDisposable {
 
 }
 
+export interface MainThreadAzureBlobShape extends IDisposable {
+
+}
+
 export interface MainThreadResourceProviderShape extends IDisposable {
 	$registerResourceProvider(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any>;
 	$unregisterResourceProvider(handle: number): Thenable<any>;
@@ -629,7 +637,6 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerConnectionProvider(providerId: string, handle: number): Promise<any>;
 	$registerBackupProvider(providerId: string, handle: number): Promise<any>;
 	$registerRestoreProvider(providerId: string, handle: number): Promise<any>;
-	$registerBlobProvider(providerId: string, handle: number): Promise<any>;
 	$registerScriptingProvider(providerId: string, handle: number): Promise<any>;
 	$registerQueryProvider(providerId: string, handle: number): Promise<any>;
 	$registerProfilerProvider(providerId: string, handle: number): Promise<any>;
@@ -723,7 +730,8 @@ export const SqlMainContext = {
 	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook'),
 	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors'),
 	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement'),
-	MainThreadWorkspace: createMainId<MainThreadWorkspaceShape>('MainThreadWorkspace')
+	MainThreadWorkspace: createMainId<MainThreadWorkspaceShape>('MainThreadWorkspace'),
+	MainThreadAzureBlob: createMainId<MainThreadAzureBlobShape>('MainThreadAzureBlob'),
 };
 
 export const SqlExtHostContext = {
@@ -746,7 +754,8 @@ export const SqlExtHostContext = {
 	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook'),
 	ExtHostNotebookDocumentsAndEditors: createExtId<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors'),
 	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement'),
-	ExtHostWorkspace: createExtId<ExtHostWorkspaceShape>('ExtHostWorkspace')
+	ExtHostWorkspace: createExtId<ExtHostWorkspaceShape>('ExtHostWorkspace'),
+	ExtHostAzureBlob: createExtId<ExtHostAzureBlobShape>('ExtHostAzureBlob')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
