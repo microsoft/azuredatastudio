@@ -141,7 +141,7 @@ export class MockAzureFunctionService implements vscodeMssql.IAzureFunctionsServ
 }
 
 export class MockAccountService implements vscodeMssql.IAzureAccountService {
-	getAccount(): Promise<vscodeMssql.IAccount> { return Promise.reject('not implemented'); }
+	addAccount(): Promise<vscodeMssql.IAccount> { return Promise.reject('not implemented'); }
 	getAccounts(): Promise<vscodeMssql.IAccount[]> { return Promise.reject('not implemented'); }
 	getAccountSecurityToken(_: vscodeMssql.IAccount, __: string | undefined): Promise<vscodeMssql.Token> { return Promise.reject('not implemented'); }
 }
@@ -260,6 +260,9 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 		this.schemaCompare = new MockSchemaCompareService;
 		this.azureFunctions = new MockAzureFunctionService;
 		this.azureAccountService = new MockAccountService;
+	}
+	sendRequest<P, R, ___, ____>(_: any, __?: P): Promise<R> {
+		throw new Error('Method not implemented.');
 	}
 	createConnectionDetails(_: vscodeMssql.IConnectionInfo): vscodeMssql.ConnectionDetails {
 		throw new Error('Method not implemented.');

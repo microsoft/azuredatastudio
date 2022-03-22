@@ -292,15 +292,16 @@ export class DeployService {
 				workstationId: undefined,
 				profileName: profile.profileName,
 				expiresOn: undefined,
-				tenantId: undefined
+				tenantId: profile.tenantId
 			};
 			let connectionUrl = '';
 			try {
 				connectionUrl = await vscodeMssqlApi.connect(connectionProfile, saveConnectionAndPassword);
 			} catch (err) {
 				const firewallRuleError = <IFireWallRuleError>err;
-				if (firewallRuleError?.connectionUri) {
-					await vscodeMssqlApi.promptForFirewallRule(firewallRuleError.connectionUri, connectionProfile);
+				console.log(`!!!!! ${firewallRuleError} ${firewallRuleError.connectionUri}`);
+				if (err.connectionUri || firewallRuleError?.connectionUri) {
+					await vscodeMssqlApi.promptForFirewallRule(err.connectionUri, connectionProfile);
 				} else {
 					throw err;
 				}

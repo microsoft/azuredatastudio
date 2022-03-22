@@ -41,7 +41,7 @@ export class AzureSqlClient {
 
 	public static async getAccount(): Promise<IAccount> {
 		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
-		return await vscodeMssqlApi.azureAccountService.getAccount();
+		return await vscodeMssqlApi.azureAccountService.addAccount();
 	}
 
 	public static async getLocations(session: AzureAccountSession): Promise<Location[]> {

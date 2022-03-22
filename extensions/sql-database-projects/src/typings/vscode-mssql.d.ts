@@ -6,6 +6,7 @@
 declare module 'vscode-mssql' {
 
 	import * as vscode from 'vscode';
+	import { RequestType } from 'vscode-languageclient';
 
 	/**
 	 * Covers defining what the vscode-mssql extension exports to other extensions
@@ -67,10 +68,10 @@ declare module 'vscode-mssql' {
 		connect(connectionInfo: IConnectionInfo, saveConnection?: boolean): Promise<string>;
 
 		/**
-		 * Prompts the user to add firewall rule if connection failed with firerule error.
+		 * Prompts the user to add firewall rule if connection failed with a firewall error.
 		 * @param connectionUri The URI of the connection to add firewall rule to.
 		 * @param connectionInfo The connection info
-		 * @returns True if firewall rulle added
+		 * @returns True if firewall rule added
 		 */
 		promptForFirewallRule(connectionUri: string, connectionInfo: IConnectionInfo): Promise<boolean>;
 
@@ -99,12 +100,20 @@ declare module 'vscode-mssql' {
 		getConnectionString(connectionUriOrDetails: string | ConnectionDetails, includePassword?: boolean, includeApplicationName?: boolean): Promise<string>;
 
 		/**
-	 	 * Set connection details for the provided connection info
-	 	 * Able to use this for getConnectionString requests to STS that require ConnectionDetails type
-	 	 * @param connectionInfo connection info of the connection
-	 	 * @returns connection details credentials for the connection
-	 	 */
+		 * Set connection details for the provided connection info
+		 * Able to use this for getConnectionString requests to STS that require ConnectionDetails type
+		 * @param connectionInfo connection info of the connection
+		 * @returns connection details credentials for the connection
+		 */
 		createConnectionDetails(connectionInfo: IConnectionInfo): ConnectionDetails;
+
+		/**
+		 * Send a request to the SQL Tools Server client
+		 * @param requestType The type of the request
+		 * @param params The params to pass with the request
+		 * @returns A promise object for when the request receives a response
+		 */
+		sendRequest<P, R, E, R0>(requestType: RequestType<P, R, E>, params?: P): Promise<R>;
 	}
 
 	/**
@@ -422,7 +431,7 @@ declare module 'vscode-mssql' {
 		/**
 		 * Prompts user to login to Azure and returns the account
 		 */
-		getAccount(): Promise<IAccount>;
+		addAccount(): Promise<IAccount>;
 
 		/**
 		 * Returns current Azure accounts
