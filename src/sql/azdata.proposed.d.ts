@@ -1576,4 +1576,8 @@ declare module 'azdata' {
 		 */
 		graphFileType: string;
 	}
+
+	export interface CreateSasResponse {
+		sharedAccessSignature: string;
+	}
 }
