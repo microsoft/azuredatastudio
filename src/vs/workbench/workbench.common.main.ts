@@ -185,8 +185,12 @@ import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobServic
 import { AzureBlobService } from 'sql/workbench/services/azureBlob/browser/azureBlobService';
 =======
 import { IBlobService } from 'sql/platform/blob/common/blobService';
+<<<<<<< HEAD
 import { BlobService } from 'sql/platform/blob/common/blobServiceImpl';
 >>>>>>> 3dd52462dc (Moved createSas RPC to the BlobService)
+=======
+import { BlobService } from 'sql/workbench/services/blob/browser/blobService';
+>>>>>>> a13f25f6c6 (Relocated createSas RPC from sql-dataprotocolclient to the mssql)
 import { IBackupUiService } from 'sql/workbench/contrib/backup/common/backupUiService';
 import { BackupUiService } from 'sql/workbench/contrib/backup/browser/backupUiService';
 import { IRestoreDialogController, IRestoreService } from 'sql/workbench/services/restore/common/restoreService';

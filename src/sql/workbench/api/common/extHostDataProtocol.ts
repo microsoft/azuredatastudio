@@ -108,12 +108,6 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
-	$registerBlobProvider(provider: azdata.BlobProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider, DataProviderType.BlobProvider);
-		this._proxy.$registerBlobProvider(provider.providerId, provider.handle);
-		return rt;
-	}
-
 	$registerScriptingProvider(provider: azdata.ScriptingProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.ScriptingProvider);
 		this._proxy.$registerScriptingProvider(provider.providerId, provider.handle);

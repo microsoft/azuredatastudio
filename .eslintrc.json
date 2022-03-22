@@ -214,6 +214,7 @@
 					"azdata",
 					"mssql",
 					"azurecore",
+					"mssql",
 					"**/{vs,sql}/base/common/**",
 					"**/{vs,sql}/base/parts/*/common/**",
 					"**/{vs,sql}/platform/*/common/**"
@@ -476,6 +477,7 @@
 					"azdata",
 					"mssql",
 					"azurecore",
+					"mssql",
 					"vs/nls",
 					"**/{vs,sql}/base/common/**",
 					"**/{vs,sql}/platform/*/common/**",
@@ -583,6 +585,7 @@
 					"azdata",
 					"mssql",
 					"azurecore",
+					"mssql",
 					"vscode",
 					"**/{vs,sql}/base/**/{common,browser,worker}/**",
 					"**/{vs,sql}/platform/**/{common,browser}/**",

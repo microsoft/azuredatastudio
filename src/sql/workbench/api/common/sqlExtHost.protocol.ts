@@ -44,6 +44,10 @@ export abstract class ExtHostAzureAccountShape {
 	public $getStorageAccountAccessKey(account: azurecore.AzureAccount, subscription: azurecore.AzureResourceSubscription, storageAccount: azurecore.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountAccessKeyResult> { throw ni(); }
 }
 
+export abstract class ExtHostAzureBlobShape {
+	public $createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<azdata.CreateSasResponse> { throw ni(); }
+}
+
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
 	$clear(handle: number, accountKey: azdata.AccountKey): Thenable<void> { throw ni(); }
@@ -631,6 +635,10 @@ export interface MainThreadAzureBlobShape extends IDisposable {
 
 }
 export interface MainThreadAzureAccountShape extends IDisposable {
+
+}
+
+export interface MainThreadAzureBlobShape extends IDisposable {
 
 }
 
