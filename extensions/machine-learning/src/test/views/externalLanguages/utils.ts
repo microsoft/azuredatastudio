@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import { LanguageViewBase } from '../../../views/externalLanguages/languageViewBase';
-import * as mssql from '../../../../../mssql';
+import * as mssql from 'mssql';
 import { LanguageService } from '../../../externalLanguage/languageService';
 import { createViewContext } from '../utils';
 

@@ -7,7 +7,7 @@ import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as newProjectTool from '../tools/newProjectTool';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as path from 'path';
 
 import { IconPathHelper } from '../common/iconHelper';

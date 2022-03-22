@@ -5,19 +5,22 @@
 
 import * as mssql from 'mssql';
 import { AppContext } from '../appContext';
-import { SqlOpsDataClient, ISqlOpsFeature } from 'dataprotocol-client';
+import { ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
 import { ClientCapabilities } from 'vscode-languageclient';
 import * as constants from '../constants';
+import * as Utils from '../utils';
+import { CreateSasResponse } from 'azdata';
 import * as contracts from '../contracts';
 
-export class SqlMigrationService implements mssql.ISqlMigrationService {
+export class BlobService implements mssql.IBlobService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
-		return class extends SqlMigrationService {
+		return class extends BlobService {
 			constructor(client: SqlOpsDataClient) {
 				super(context, client);
 			}
 
 			fillClientCapabilities(capabilities: ClientCapabilities): void {
+				Utils.ensure(capabilities, 'blob')!.blob = true;
 			}
 
 			initialize(): void {
@@ -26,18 +29,17 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 	}
 
 	private constructor(context: AppContext, protected readonly client: SqlOpsDataClient) {
-		context.registerService(constants.SqlMigrationService, this);
+		context.registerService(constants.BlobService, this);
 	}
 
-	async getAssessments(ownerUri: string, databases: string[]): Promise<mssql.AssessmentResult | undefined> {
-		let params: contracts.SqlMigrationAssessmentParams = { ownerUri: ownerUri, databases: databases };
-		try {
-			return this.client.sendRequest(contracts.GetSqlMigrationAssessmentItemsRequest.type, params);
-		}
-		catch (e) {
-			this.client.logFailedRequest(contracts.GetSqlMigrationAssessmentItemsRequest.type, e);
-		}
-
-		return undefined;
+	public createSas(ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Thenable<CreateSasResponse> {
+		const params: contracts.CreateSasParams = { ownerUri, blobContainerUri, blobContainerKey, storageAccountName, expirationDate };
+		return this.client.sendRequest(contracts.CreateSasRequest.type, params).then(
+			undefined,
+			e => {
+				this.client.logFailedRequest(contracts.CreateSasRequest.type, e);
+				return Promise.resolve(undefined);
+			}
+		);
 	}
 }

@@ -181,7 +181,7 @@ import { JobManagementService } from 'sql/workbench/services/jobManagement/commo
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { BackupService } from 'sql/platform/backup/common/backupServiceImp';
 import { IBlobService } from 'sql/platform/blob/common/blobService';
-import { BlobService } from 'sql/platform/blob/common/blobServiceImpl';
+import { BlobService } from 'sql/workbench/services/blob/browser/blobService';
 import { IBackupUiService } from 'sql/workbench/contrib/backup/common/backupUiService';
 import { BackupUiService } from 'sql/workbench/contrib/backup/browser/backupUiService';
 import { IRestoreDialogController, IRestoreService } from 'sql/workbench/services/restore/common/restoreService';

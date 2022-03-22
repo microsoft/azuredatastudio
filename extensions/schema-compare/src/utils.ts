@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import type * as azdataType from 'azdata'; // eslint-disable-line no-duplicate-imports
 import * as vscode from 'vscode';
-import * as mssql from '../../mssql';
+import * as mssql from 'mssql';
 import * as os from 'os';
 import * as loc from './localizedConstants';
 import * as dataworkspace from 'dataworkspace';
