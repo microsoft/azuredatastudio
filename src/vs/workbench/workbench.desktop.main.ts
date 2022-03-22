@@ -84,10 +84,13 @@ import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboar
 import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/electron-browser/clipboardService';
 import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
 import { QueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryServiceImpl';
+import { IBlobService } from 'sql/platform/blob/common/blobService';
+import { BlobService } from 'sql/workbench/services/blob/browser/blobService';
 
 registerSingleton(ISqlOAuthService, SqlOAuthService);
 registerSingleton(sqlIClipboardService, sqlClipboardService);
 registerSingleton(IQueryHistoryService, QueryHistoryService);
+registerSingleton(IBlobService, BlobService);
 // {{SQL CARBON EDIT}} - End
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

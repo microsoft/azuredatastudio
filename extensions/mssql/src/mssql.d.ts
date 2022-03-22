@@ -48,6 +48,8 @@ declare module 'mssql' {
 		readonly sqlAssessment: ISqlAssessmentService;
 
 		readonly sqlMigration: ISqlMigrationService;
+
+		readonly blob: IBlobService;
 	}
 
 	/**
@@ -901,5 +903,13 @@ declare module 'mssql' {
 
 	export interface ISqlMigrationService {
 		getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
+	}
+
+
+	export interface IBlobService {
+		/**
+		* Create shared access signature for blob container
+		*/
+		createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<azdata.CreateSasResponse>;
 	}
 }

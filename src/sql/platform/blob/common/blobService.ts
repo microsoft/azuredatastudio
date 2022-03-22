@@ -15,8 +15,4 @@ export interface IBlobService {
 	* Create shared access signature for blob container
 	*/
 	createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<azdata.CreateSasResponse>;
-	/**
-	* Register a blob container provider
-	*/
-	registerProvider(providerId: string, provider: azdata.BlobProvider): void;
 }

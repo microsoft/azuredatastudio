@@ -37,6 +37,8 @@ import { ExtHostWorkspace } from 'sql/workbench/api/common/extHostWorkspace';
 import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitDataService';
 import { URI } from 'vs/base/common/uri';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+import { IExtHostExtensionService } from 'vs/workbench/api/common/extHostExtensionService';
+import { ExtHostAzureBlob } from 'sql/workbench/api/common/extHostAzureBlob';
 
 export interface IAzdataExtensionApiFactory {
 	(extension: IExtensionDescription): typeof azdata;
@@ -79,6 +81,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
 	const extHostConnectionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnectionManagement(rpcProtocol));
 	const extHostCredentialManagement = rpcProtocol.set(SqlExtHostContext.ExtHostCredentialManagement, new ExtHostCredentialManagement(rpcProtocol));
+	rpcProtocol.set(SqlExtHostContext.ExtHostAzureBlob, new ExtHostAzureBlob(accessor.get(IExtHostExtensionService)));
 	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol, uriTransformer));
 	const extHostObjectExplorer = rpcProtocol.set(SqlExtHostContext.ExtHostObjectExplorer, new ExtHostObjectExplorer(rpcProtocol, commands));
 	const extHostResourceProvider = rpcProtocol.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(rpcProtocol));
@@ -346,10 +349,6 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				return extHostDataProvider.$registerRestoreProvider(provider);
 			};
 
-			let registerBlobProvider = (provider: azdata.BlobProvider): vscode.Disposable => {
-				return extHostDataProvider.$registerBlobProvider(provider);
-			};
-
 			let registerMetadataProvider = (provider: azdata.MetadataProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerMetadataProvider(provider);
 			};
@@ -407,7 +406,6 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				registerSqlAssessmentServicesProvider,
 				registerDataGridProvider,
 				registerTableDesignerProvider,
-				registerBlobProvider,
 				onDidChangeLanguageFlavor(listener: (e: azdata.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
