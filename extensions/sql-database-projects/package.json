@@ -301,72 +301,72 @@
       "view/item/context": [
         {
           "command": "sqlDatabaseProjects.build",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "1_dbProjectsFirst@1"
         },
         {
           "command": "sqlDatabaseProjects.publish",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "1_dbProjectsFirst@2"
         },
         {
           "command": "sqlDatabaseProjects.schemaCompare",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/ && azdataAvailable",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && azdataAvailable",
           "group": "1_dbProjectsFirst@3"
         },
         {
           "command": "sqlDatabaseProjects.updateProjectFromDatabase",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/ && azdataAvailable",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && azdataAvailable",
           "group": "1_dbProjectsFirst@4"
         },
         {
           "command": "sqlDatabaseProjects.newItem",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/ || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "2_dbProjects_newMain@1"
         },
         {
           "command": "sqlDatabaseProjects.addExistingItem",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/ || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "2_dbProjects_newMain@2"
         },
         {
           "command": "sqlDatabaseProjects.newFolder",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/ || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "2_dbProjects_newMain@3"
         },
         {
           "command": "sqlDatabaseProjects.newTable",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/ || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@1"
         },
         {
           "command": "sqlDatabaseProjects.newView",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/ || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@2"
         },
         {
           "command": "sqlDatabaseProjects.newStoredProcedure",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/ || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@3"
         },
         {
           "command": "sqlDatabaseProjects.newExternalStreamingJob",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/ || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@4"
         },
         {
           "command": "sqlDatabaseProjects.newScript",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/ || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@7"
         },
         {
           "command": "sqlDatabaseProjects.newPreDeploymentScript",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/ || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@8"
         },
         {
           "command": "sqlDatabaseProjects.newPostDeploymentScript",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/ || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@9"
         },
         {
@@ -391,17 +391,17 @@
         },
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "9_dbProjectsLast@6"
         },
         {
           "command": "sqlDatabaseProjects.editProjectFile",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "9_dbProjectsLast@7"
         },
         {
           "command": "sqlDatabaseProjects.openContainingFolder",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.sdkProject)$/",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "9_dbProjectsLast@8"
         },
         {

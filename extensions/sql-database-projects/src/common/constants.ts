@@ -473,7 +473,7 @@ export const sqlAuth = 'SqlAuth';
 // Tree item types
 export enum DatabaseProjectItemType {
 	project = 'databaseProject.itemType.project',
-	sdkProject = 'databaseProject.itemType.sdkProject',
+	legacyProject = 'databaseProject.itemType.legacyProject',
 	folder = 'databaseProject.itemType.folder',
 	file = 'databaseProject.itemType.file',
 	externalStreamingJob = 'databaseProject.itemType.file.externalStreamingJob',
