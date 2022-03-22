@@ -68,6 +68,7 @@ export class InfoBox extends Disposable implements IThemable {
 			this.isClickable = (options.isClickable === true);
 			this.clickableButtonAriaLabel = options.clickableButtonAriaLabel;
 		}
+		this.updateClickableState();
 	}
 
 	public style(styles: IInfoBoxStyles): void {
@@ -125,21 +126,7 @@ export class InfoBox extends Disposable implements IThemable {
 			return;
 		}
 		this._isClickable = v;
-		if (this._isClickable) {
-			this._clickableIndicator.style.display = '';
-			this._clickableIndicator.tabIndex = 0;
-			this._infoBoxElement.style.cursor = 'pointer';
-			this._infoBoxElement.setAttribute('role', 'button');
-			this._textElement.style.maxWidth = 'calc(100% - 75px)';
-			this.registerClickListeners();
-		} else {
-			this._clickableIndicator.style.display = 'none';
-			this._clickableIndicator.tabIndex = -1;
-			this._infoBoxElement.style.cursor = 'default';
-			this._infoBoxElement.removeAttribute('role');
-			this._textElement.style.maxWidth = '';
-			this.unregisterClickListeners();
-		}
+		this.updateClickableState();
 	}
 
 	private registerClickListeners() {
@@ -191,6 +178,24 @@ export class InfoBox extends Disposable implements IThemable {
 					break;
 			}
 			this._infoBoxElement.style.backgroundColor = backgroundColor.toString();
+		}
+	}
+
+	private updateClickableState(): void {
+		if (this._isClickable) {
+			this._clickableIndicator.style.display = '';
+			this._clickableIndicator.tabIndex = 0;
+			this._infoBoxElement.style.cursor = 'pointer';
+			this._infoBoxElement.setAttribute('role', 'button');
+			this._textElement.style.maxWidth = 'calc(100% - 75px)';
+			this.registerClickListeners();
+		} else {
+			this._clickableIndicator.style.display = 'none';
+			this._clickableIndicator.tabIndex = -1;
+			this._infoBoxElement.style.cursor = 'default';
+			this._infoBoxElement.removeAttribute('role');
+			this._textElement.style.maxWidth = '';
+			this.unregisterClickListeners();
 		}
 	}
 }

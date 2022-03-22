@@ -130,53 +130,123 @@ declare module 'azdata' {
 		export const onDidCloseNotebookDocument: vscode.Event<NotebookDocument>;
 	}
 
-	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
-		| 'Float' | 'Image' | 'Int' | 'Money' | 'NChar' | 'NText' | 'NVarChar' | 'Real'
-		| 'UniqueIdentifier' | 'SmallDateTime' | 'SmallInt' | 'SmallMoney' | 'Text' | 'Timestamp'
-		| 'TinyInt' | 'VarBinary' | 'VarChar' | 'Variant' | 'Xml' | 'Udt' | 'Structured' | 'Date'
-		| 'Time' | 'DateTime2' | 'DateTimeOffset';
-
+	/**
+	 * The column information of a data set.
+	 */
 	export interface SimpleColumnInfo {
+		/**
+		 * The column name.
+		 */
 		name: string;
 		/**
-		 * This is expected to match the SqlDbTypes for serialization purposes
+		 * The data type of the column.
 		 */
-		dataTypeName: SqlDbType;
+		dataTypeName: string;
 	}
+
+	/**
+	 * The parameters for start data serialization request.
+	 */
 	export interface SerializeDataStartRequestParams {
 		/**
 		 * 'csv', 'json', 'excel', 'xml'
 		 */
 		saveFormat: string;
+		/**
+		 * The path of the target file.
+		 */
 		filePath: string;
+		/**
+		 * Whether the request is the last batch of the data set to be serialized.
+		 */
 		isLastBatch: boolean;
+		/**
+		 * Data to be serialized.
+		 */
 		rows: DbCellValue[][];
+		/**
+		 * The columns of the data set.
+		 */
 		columns: SimpleColumnInfo[];
+		/**
+		 * Whether to include column headers to the target file.
+		 */
 		includeHeaders?: boolean;
+		/**
+		 * The delimiter to seperate the cells.
+		 */
 		delimiter?: string;
+		/**
+		 * The line seperator.
+		 */
 		lineSeperator?: string;
+		/**
+		 * Character used for enclosing text fields when saving results as CSV.
+		 */
 		textIdentifier?: string;
+		/**
+		 * File encoding used when saving results as CSV.
+		 */
 		encoding?: string;
+		/**
+		 * When true, XML output will be formatted when saving results as XML.
+		 */
 		formatted?: boolean;
 	}
 
+	/**
+	 * The parameters for continue data serialization request.
+	 */
 	export interface SerializeDataContinueRequestParams {
+		/**
+		 * The path of the target file.
+		 */
 		filePath: string;
+		/**
+		 * Whether the request is the last batch.
+		 */
 		isLastBatch: boolean;
+		/**
+		 * Data to be serialized.
+		 */
 		rows: DbCellValue[][];
 	}
 
+	/**
+	 * The result of data serialization data request.
+	 */
 	export interface SerializeDataResult {
+		/**
+		 * The output message.
+		 */
 		messages?: string;
+		/**
+		 * Whether the serialization is succeeded.
+		 */
 		succeeded: boolean;
 	}
 
+	/**
+	 * The serialization provider.
+	 */
 	export interface SerializationProvider extends DataProvider {
+		/**
+		 * Start the data serialization.
+		 * @param requestParams the request parameters.
+		 */
 		startSerialization(requestParams: SerializeDataStartRequestParams): Thenable<SerializeDataResult>;
+		/**
+		 * Continue the data serialization.
+		 * @param requestParams the request parameters.
+		 */
 		continueSerialization(requestParams: SerializeDataContinueRequestParams): Thenable<SerializeDataResult>;
 	}
 
 	export namespace dataprotocol {
+		/**
+		 * Registers a SerializationProvider.
+		 * @param provider The data serialization provider.
+		 */
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
 		export function registerSqlAssessmentServicesProvider(provider: SqlAssessmentServicesProvider): vscode.Disposable;
 		/**
@@ -531,7 +601,7 @@ declare module 'azdata' {
 		/**
 		 * Contains execution plans returned by the database in ResultSets.
 		 */
-		executionPlans: ExecutionPlanGraph[];
+		executionPlans: executionPlan.ExecutionPlanGraph[];
 	}
 
 	export interface ObjectMetadata {
@@ -563,11 +633,13 @@ declare module 'azdata' {
 	}
 
 	export enum DataProviderType {
-		TableDesignerProvider = 'TableDesignerProvider'
+		TableDesignerProvider = 'TableDesignerProvider',
+		ExecutionPlanProvider = 'ExecutionPlanProvider'
 	}
 
 	export namespace dataprotocol {
 		export function registerTableDesignerProvider(provider: designers.TableDesignerProvider): vscode.Disposable;
+		export function registerExecutionPlanProvider(provider: executionPlan.ExecutionPlanProvider): vscode.Disposable;
 	}
 
 	export namespace designers {
@@ -990,6 +1062,14 @@ declare module 'azdata' {
 		export type DesignerEditPath = (string | number)[];
 
 		/**
+		 * Severity of the messages returned by the provider after processing an edit.
+		 * 'error': The issue must be fixed in order to commit the changes.
+		 * 'warning': Inform the user the potential risks with the current state. e.g. Having multiple edge constraints is only useful as a temporary state.
+		 * 'information': Informational message.
+		 */
+		export type DesignerIssueSeverity = 'error' | 'warning' | 'information';
+
+		/**
 		 * The result returned by the table designer provider after handling an edit request.
 		 */
 		export interface DesignerEditResult<T> {
@@ -1006,9 +1086,13 @@ declare module 'azdata' {
 			 */
 			isValid: boolean;
 			/**
-			 * Error messages of current state, and the property the caused the error.
+			 * Issues of current state.
 			 */
-			errors?: { message: string, propertyPath?: DesignerEditPath }[];
+			issues?: { severity: DesignerIssueSeverity, description: string, propertyPath?: DesignerEditPath }[];
+			/**
+			 * The input validation error.
+			 */
+			inputValidationError?: string;
 		}
 
 		/**
@@ -1038,141 +1122,161 @@ declare module 'azdata' {
 			 * Format (mimeType) of the report
 			 */
 			mimeType: string;
+			/**
+			 * The table schema validation error.
+			 */
+			schemaValidationError?: string;
 		}
 	}
 
-	export interface ExecutionPlanGraph {
-		/**
-		 * Root of the execution plan tree
-		 */
-		root: ExecutionPlanNode;
-		/**
-		 * Underlying query for the execution plan graph.
-		 */
-		query: string;
-		/**
-		 * String representation of graph
-		 */
-		graphFile: ExecutionPlanGraphFile;
-		/**
-		 * Query recommendations for optimizing performance
-		 */
-		recommendations: ExecutionPlanRecommendations[];
-	}
+	export namespace executionPlan {
+		export interface ExecutionPlanGraph {
+			/**
+			 * Root of the execution plan tree
+			 */
+			root: ExecutionPlanNode;
+			/**
+			 * Underlying query for the execution plan graph.
+			 */
+			query: string;
+			/**
+			 * String representation of graph
+			 */
+			graphFile: ExecutionPlanGraphInfo;
+			/**
+			 * Query recommendations for optimizing performance
+			 */
+			recommendations: ExecutionPlanRecommendations[];
+		}
 
-	export interface ExecutionPlanNode {
-		/**
-		 * Type of the node. This property determines the icon that is displayed for it
-		 */
-		type: string;
-		/**
-		 * Cost associated with the node
-		 */
-		cost: number;
-		/**
-		 * Cost of the node subtree
-		 */
-		subTreeCost: number;
-		/**
-		 * Relative cost of the node compared to its siblings.
-		 */
-		relativeCost: number;
-		/**
-		 * Time take by the node operation in milliseconds
-		 */
-		elapsedTimeInMs: number;
-		/**
-		 * Node properties to be shown in the tooltip
-		 */
-		properties: ExecutionPlanGraphElementProperty[];
-		/**
-		 * Display name for the node
-		 */
-		name: string;
-		/**
-		 * Description associated with the node.
-		 */
-		description: string;
-		/**
-		 * Subtext displayed under the node name
-		 */
-		subtext: string[];
-		/**
-		 * Direct children of the nodes.
-		 */
-		children: ExecutionPlanNode[];
-		/**
-		 * Edges corresponding to the children.
-		 */
-		edges: ExecutionPlanEdge[];
-	}
+		export interface ExecutionPlanNode {
+			/**
+			 * Type of the node. This property determines the icon that is displayed for it
+			 */
+			type: string;
+			/**
+			 * Cost associated with the node
+			 */
+			cost: number;
+			/**
+			 * Cost of the node subtree
+			 */
+			subTreeCost: number;
+			/**
+			 * Relative cost of the node compared to its siblings.
+			 */
+			relativeCost: number;
+			/**
+			 * Time take by the node operation in milliseconds
+			 */
+			elapsedTimeInMs: number;
+			/**
+			 * Node properties to be shown in the tooltip
+			 */
+			properties: ExecutionPlanGraphElementProperty[];
+			/**
+			 * Display name for the node
+			 */
+			name: string;
+			/**
+			 * Description associated with the node.
+			 */
+			description: string;
+			/**
+			 * Subtext displayed under the node name
+			 */
+			subtext: string[];
+			/**
+			 * Direct children of the nodes.
+			 */
+			children: ExecutionPlanNode[];
+			/**
+			 * Edges corresponding to the children.
+			 */
+			edges: ExecutionPlanEdge[];
+		}
 
-	export interface ExecutionPlanEdge {
-		/**
-		 * Count of the rows returned by the subtree of the edge.
-		 */
-		rowCount: number;
-		/**
-		 * Size of the rows returned by the subtree of the edge.
-		 */
-		rowSize: number;
-		/**
-		 * Edge properties to be shown in the tooltip.
-		 */
-		properties: ExecutionPlanGraphElementProperty[]
-	}
+		export interface ExecutionPlanEdge {
+			/**
+			 * Count of the rows returned by the subtree of the edge.
+			 */
+			rowCount: number;
+			/**
+			 * Size of the rows returned by the subtree of the edge.
+			 */
+			rowSize: number;
+			/**
+			 * Edge properties to be shown in the tooltip.
+			 */
+			properties: ExecutionPlanGraphElementProperty[]
+		}
 
-	export interface ExecutionPlanGraphElementProperty {
-		/**
-		 * Name of the property
-		 */
-		name: string;
-		/**
-		 * value for the property
-		 */
-		value: string | ExecutionPlanGraphElementProperty[];
-		/**
-		 * Flag to show/hide props in tooltip
-		 */
-		showInTooltip: boolean;
-		/**
-		 * Display order of property
-		 */
-		displayOrder: number;
-		/**
-		 *  Flag to indicate if the property has a longer value so that it will be shown at the bottom of the tooltip
-		 */
-		positionAtBottom: boolean;
-		/**
-		 * Display value of property to show in tooltip and other UI element.
-		 */
-		displayValue: string;
-	}
+		export interface ExecutionPlanGraphElementProperty {
+			/**
+			 * Name of the property
+			 */
+			name: string;
+			/**
+			 * value for the property
+			 */
+			value: string | ExecutionPlanGraphElementProperty[];
+			/**
+			 * Flag to show/hide props in tooltip
+			 */
+			showInTooltip: boolean;
+			/**
+			 * Display order of property
+			 */
+			displayOrder: number;
+			/**
+			 *  Flag to indicate if the property has a longer value so that it will be shown at the bottom of the tooltip
+			 */
+			positionAtBottom: boolean;
+			/**
+			 * Display value of property to show in tooltip and other UI element.
+			 */
+			displayValue: string;
+		}
 
-	export interface ExecutionPlanRecommendations {
-		/**
-		 * Text displayed in the show plan graph control description
-		 */
-		displayString: string;
-		/**
-		 * Query that is recommended to the user
-		 */
-		queryText: string;
-		/**
-		 * Query that will be opened in a new file once the user click on the recommendation
-		 */
-		queryWithDescription: string;
-	}
+		export interface ExecutionPlanRecommendations {
+			/**
+			 * Text displayed in the show plan graph control description
+			 */
+			displayString: string;
+			/**
+			 * Query that is recommended to the user
+			 */
+			queryText: string;
+			/**
+			 * Query that will be opened in a new file once the user click on the recommendation
+			 */
+			queryWithDescription: string;
+		}
 
-	export interface ExecutionPlanGraphFile {
-		/**
-		 * File contents
-		 */
-		graphFileContent: string;
-		/**
-		 * File type for execution plan. This will be the file type of the editor when the user opens the graph file
-		 */
-		graphFileType: string;
+		export interface ExecutionPlanGraphInfo {
+			/**
+			 * File contents
+			 */
+			graphFileContent: string;
+			/**
+			 * File type for execution plan. This will be the file type of the editor when the user opens the graph file
+			 */
+			graphFileType: string;
+		}
+
+		export interface GetExecutionPlanResult extends ResultStatus {
+			graphs: ExecutionPlanGraph[]
+		}
+
+		export interface ExecutionPlanProvider extends DataProvider {
+			// execution plan service methods
+
+			/**
+			 * Gets the execution plan graph from the provider for a given plan file
+			 * @param planFile file that contains the execution plan
+			 */
+			getExecutionPlan(planFile: ExecutionPlanGraphInfo): Thenable<GetExecutionPlanResult>;
+		}
 	}
 
 	/**

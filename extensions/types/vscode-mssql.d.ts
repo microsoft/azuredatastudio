@@ -41,9 +41,9 @@ declare module 'vscode-mssql' {
 		readonly schemaCompare: ISchemaCompareService;
 
 		/**
-		 * Service for accessing AzureFunctions functionality
+		 * Service for accessing Azure Account functionality
 		 */
-		readonly azureFunctions: IAzureFunctionsService;
+		readonly azureAccountService: IAzureAccountService;
 
 		/**
 		 * Service for accessing Azure Account functionality
@@ -113,7 +113,7 @@ declare module 'vscode-mssql' {
 		 * @param params The params to pass with the request
 		 * @returns A promise object for when the request receives a response
 		 */
-		sendRequest<P, R, E, R0>(requestType: RequestType<P, R, E>, params?: P): Promise<R>;
+		sendRequest<P, R, E, R0>(requestType: RequestType<P, R, E, R0>, params?: P): Promise<R>;
 	}
 
 	/**
@@ -444,24 +444,6 @@ declare module 'vscode-mssql' {
 		getAccountSecurityToken(account: IAccount, tenantId: string | undefined): Promise<Token>;
 	}
 
-	export interface IAzureFunctionsService {
-		/**
-		 * Adds a SQL Binding to a specified Azure function in a file
-		 * @param bindingType Type of SQL Binding
-		 * @param filePath Path of the file where the Azure Functions are
-		 * @param functionName Name of the function where the SQL Binding is to be added
-		 * @param objectName Name of Object for the SQL Query
-		 * @param connectionStringSetting Setting for the connection string
-		 */
-		addSqlBinding(bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string): Thenable<ResultStatus>;
-		/**
-		 * Gets the names of the Azure functions in the file
-		 * @param filePath Path of the file to get the Azure functions
-		 * @returns array of names of Azure functions in the file
-		 */
-		getAzureFunctions(filePath: string): Thenable<GetAzureFunctionsResult>;
-	}
-
 	export const enum TaskExecutionMode {
 		execute = 0,
 		script = 1,
@@ -739,64 +721,6 @@ declare module 'vscode-mssql' {
 		parentName?: string;
 
 		parentTypeName?: string;
-	}
-
-	/**
-	 * Azure functions binding type
-	 */
-	export const enum BindingType {
-		input,
-		output
-	}
-
-	/**
-	 * Parameters for adding a SQL binding to an Azure function
-	 */
-	export interface AddSqlBindingParams {
-		/**
-		 * Aboslute file path of file to add SQL binding
-		 */
-		filePath: string;
-
-		/**
-		 * Name of function to add SQL binding
-		 */
-		functionName: string;
-
-		/**
-		 * Name of object to use in SQL binding
-		 */
-		objectName: string;
-
-		/**
-		 * Type of Azure function binding
-		 */
-		bindingType: BindingType;
-
-		/**
-		 * Name of SQL connection string setting specified in local.settings.json
-		 */
-		connectionStringSetting: string;
-	}
-
-	/**
-	 * Parameters for getting the names of the Azure functions in a file
-	 */
-	export interface GetAzureFunctionsParams {
-		/**
-		 * Absolute file path of file to get Azure functions
-		 */
-		filePath: string;
-	}
-
-	/**
-	 * Result from a get Azure functions request
-	 */
-	export interface GetAzureFunctionsResult extends ResultStatus {
-		/**
-		 * Array of names of Azure functions in the file
-		 */
-		azureFunctions: string[];
 	}
 
 	/**
