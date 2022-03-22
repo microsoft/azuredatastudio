@@ -185,6 +185,11 @@
         "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
         "title": "%sqlDatabaseProjects.generateProjectFromOpenApiSpec%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.convertToSdkStyleProject",
+        "title": "%sqlDatabaseProjects.convertToSdkStyleProject%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -296,6 +301,10 @@
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.convertToSdkStyleProject",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -388,6 +397,11 @@
           "command": "sqlDatabaseProjects.delete",
           "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem == databaseProject.itemType.reference",
           "group": "9_dbProjectsLast@2"
+        },
+        {
+          "command": "sqlDatabaseProjects.convertToSdkStyleProject",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.legacyProject",
+          "group": "9_dbProjectsLast@5"
         },
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
