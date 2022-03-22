@@ -230,7 +230,7 @@ export class PublishDatabaseDialog {
 			await this.publish!(this.project, settings);
 		} else {
 			const dockerBaseImage = this.getBaseDockerImageName();
-			const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
+			const baseImages = getDockerBaseImages();
 			const imageInfo = baseImages.find(x => x.name === dockerBaseImage);
 			const settings: ILocalDbDeployProfile = {
 				localDbSetting: {
@@ -584,7 +584,7 @@ export class PublishDatabaseDialog {
 		});
 		const serverConfirmPasswordRow = this.createFormRow(view, constants.confirmServerPassword, this.serverConfigAdminPasswordTextBox);
 
-		const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
+		const baseImages = getDockerBaseImages();
 		this.baseDockerImageDropDown = view.modelBuilder.dropDown().withProps({
 			values: baseImages.map(x => x.name),
 			ariaLabel: constants.baseDockerImage,
@@ -610,7 +610,7 @@ export class PublishDatabaseDialog {
 			if (this.eulaCheckBox) {
 				this.eulaCheckBox.checked = false;
 			}
-			const baseImage = getDockerBaseImages(this.project.getProjectTargetVersion()).find(x => x.name === this.baseDockerImageDropDown?.value);
+			const baseImage = getDockerBaseImages().find(x => x.name === this.baseDockerImageDropDown?.value);
 			if (baseImage?.agreementInfo.link) {
 				const text = view.modelBuilder.text().withProps({
 					value: constants.eulaAgreementTemplate,

@@ -177,20 +177,6 @@ export class ProjectsController {
 
 		let newProjFileContents = creationParams.sdkStyle ? templates.macroExpansion(templates.newSdkSqlProjectTemplate, macroDict) : templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
 
-		switch (creationParams.projectTypeId) {
-			case constants.emptySqlDatabaseSdkProjectTypeId:
-				newProjFileContents = templates.macroExpansion(templates.newSdkSqlProjectTemplate, macroDict);
-				break;
-			case constants.emptySqlDatabaseProjectTypeId:
-				newProjFileContents = templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
-				break;
-			case constants.emptyAzureDbSqlDatabaseProjectTypeId:
-				newProjFileContents = templates.macroExpansion(templates.newAzureDbSqlProjectTemplate, macroDict);
-				break;
-			default:
-				newProjFileContents = templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
-				break;
-		}
 		let newProjFileName = creationParams.newProjName;
 
 		if (!newProjFileName.toLowerCase().endsWith(constants.sqlprojExtension)) {
@@ -198,7 +184,6 @@ export class ProjectsController {
 		}
 
 		const newProjFilePath = path.join(creationParams.folderUri.fsPath, path.parse(newProjFileName).name, newProjFileName);
-		const readmeFilePath = path.join(creationParams.folderUri.fsPath, path.parse(newProjFileName).name, 'readme.md');
 
 		if (await utils.exists(newProjFilePath)) {
 			throw new Error(constants.projectAlreadyExists(newProjFileName, path.parse(newProjFilePath).dir));
@@ -206,7 +191,6 @@ export class ProjectsController {
 
 		await fs.mkdir(path.dirname(newProjFilePath), { recursive: true });
 		await fs.writeFile(newProjFilePath, newProjFileContents);
-		await fs.writeFile(readmeFilePath, '');
 
 		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
 

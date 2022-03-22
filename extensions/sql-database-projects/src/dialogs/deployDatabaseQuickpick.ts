@@ -322,7 +322,7 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		return undefined;
 	}
 
-	const baseImages = uiUtils.getDockerBaseImages(project.getProjectTargetVersion());
+	const baseImages = uiUtils.getDockerBaseImages();
 	const baseImage = await vscode.window.showQuickPick(
 		baseImages.map(x => x.displayName),
 		{ title: constants.selectBaseImage, ignoreFocusOut: true });
