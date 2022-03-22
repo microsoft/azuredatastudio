@@ -142,6 +142,11 @@ export class Notebook {
 		return element.className.includes('focused');
 	}
 
+	async isCodeCellActive(): Promise<void> {
+		// code cell is the active cell
+		await this.code.waitForElement(`.notebook-cell.active .monaco-editor`);
+	}
+
 	// Text Cell Actions
 
 	private static readonly textCellPreviewSelector = 'div.notebook-preview';
@@ -171,6 +176,11 @@ export class Notebook {
 		// verify that cell is in editmode
 		const element = await this.code.waitForElement(`.notebook-cell.active ${Notebook.textCellPreviewSelector}`);
 		return element.attributes['contenteditable'] === 'true';
+	}
+
+	async isTextCellActive(): Promise<void> {
+		// text cell is the active cell
+		await this.code.waitForElement(`.notebook-cell.active ${Notebook.textCellPreviewSelector}`);
 	}
 
 	// Cell Output Actions

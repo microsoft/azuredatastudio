@@ -59,7 +59,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.waitForColorization('6', 'mtk1'); // employees
 		});
 
-		it('can enter and exit edit mode using keyboard nav', async function () {
+		it('can enter and exit edit mode and navigate using keyboard nav', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.addCellFromPlaceholder('Code');
@@ -71,7 +71,17 @@ export function setup(opts: minimist.ParsedArgs) {
 			assert(await app.workbench.sqlNotebook.isTextCellInEditMode(), 'text cell should be in edit mode');
 			await app.code.dispatchKeybinding('escape');
 			assert(!(await app.workbench.sqlNotebook.isTextCellInEditMode()), 'text cell should not be in edit mode');
+			await app.code.dispatchKeybinding('up');
+			await app.workbench.sqlNotebook.isCodeCellActive();
+			await app.code.dispatchKeybinding('enter');
+			assert(await app.workbench.sqlNotebook.isCodeCellInEditMode(), 'code cell should be in edit mode after hitting enter');
+			await app.code.dispatchKeybinding('escape');
+			await app.code.dispatchKeybinding('down');
+			await app.workbench.sqlNotebook.isTextCellActive();
+			await app.code.dispatchKeybinding('enter');
+			assert(await app.workbench.sqlNotebook.isTextCellInEditMode(), 'text cell should be in edit mode after hitting enter');
 			// hitting escape twice deselects all cells
+			await app.code.dispatchKeybinding('escape');
 			await app.code.dispatchKeybinding('escape');
 			await app.workbench.sqlNotebook.waitForActiveCellGone();
 		});
