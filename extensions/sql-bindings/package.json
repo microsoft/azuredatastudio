@@ -63,13 +63,12 @@
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^1.1.5",
     "fast-glob": "^3.2.7",
-    "jsonc-parser": "^2.3.1",
     "promisify-child-process": "^3.1.1",
-    "vscode-nls": "^4.1.2"
+    "vscode-nls": "^4.1.2",
+    "vscode-languageclient": "5.2.1"
   },
   "devDependencies": {
     "@types/node": "^14.14.16",
-    "tslint": "^5.8.0",
     "should": "^13.2.1",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",

@@ -139,7 +139,7 @@ export interface INotebookService {
 	 */
 	notifyCellExecutionStarted(): void;
 
-	createNotebookInput(options: INotebookShowOptions, resource?: UriComponents): Promise<IEditorInput | undefined>;
+	createNotebookInputFromContents(providerId: string, contents?: azdata.nb.INotebookContents, resource?: UriComponents): Promise<IEditorInput | undefined>;
 
 	openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined>;
 

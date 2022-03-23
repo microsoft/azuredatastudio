@@ -36,7 +36,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
-import { DesignerMessagesTabPanelView } from 'sql/workbench/browser/designer/designerMessagesTabPanelView';
+import { DesignerIssuesTabPanelView } from 'sql/workbench/browser/designer/designerIssuesTabPanelView';
 import { DesignerScriptEditorTabPanelView } from 'sql/workbench/browser/designer/designerScriptEditorTabPanelView';
 import { DesignerPropertyPathValidator } from 'sql/workbench/browser/designer/designerPropertyPathValidator';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -45,7 +45,6 @@ import { alert } from 'vs/base/browser/ui/aria/aria';
 import { layoutDesignerTable, TableHeaderRowHeight, TableRowHeight } from 'sql/workbench/browser/designer/designerTableUtil';
 import { Dropdown, IDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
-import { debounce } from 'vs/base/common/decorators';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -70,7 +69,7 @@ interface DesignerTableCellContext {
 }
 
 const ScriptTabId = 'scripts';
-const MessagesTabId = 'messages';
+const IssuesTabId = 'issues';
 
 export class Designer extends Disposable implements IThemable {
 	private _loadingSpinner: LoadingSpinner;
@@ -95,7 +94,7 @@ export class Designer extends Disposable implements IThemable {
 	private _inputDisposable: DisposableStore;
 	private _loadingTimeoutHandle: any;
 	private _groupHeaders: HTMLElement[] = [];
-	private _messagesView: DesignerMessagesTabPanelView;
+	private _issuesView: DesignerIssuesTabPanelView;
 	private _scriptEditorView: DesignerScriptEditorTabPanelView;
 	private _onStyleChangeEventEmitter = new Emitter<void>();
 
@@ -152,8 +151,8 @@ export class Designer extends Disposable implements IThemable {
 			onDidChange: Event.None
 		}, Sizing.Distribute);
 		this._scriptTabbedPannel = new TabbedPanel(this._editorContainer);
-		this._messagesView = this._instantiationService.createInstance(DesignerMessagesTabPanelView);
-		this._register(this._messagesView.onMessageSelected((path) => {
+		this._issuesView = this._instantiationService.createInstance(DesignerIssuesTabPanelView);
+		this._register(this._issuesView.onIssueSelected((path) => {
 			if (path && path.length > 0) {
 				this.selectProperty(path);
 			}
@@ -332,14 +331,14 @@ export class Designer extends Disposable implements IThemable {
 	private handleEditProcessedEvent(args: DesignerEditProcessedEventArgs): void {
 		const edit = args.edit;
 		this._supressEditProcessing = true;
-		if (!args.result.isValid) {
-			alert(localize('designer.errorCountAlert', "{0} validation errors found.", args.result.errors.length));
+		if (args.result.issues?.length > 0) {
+			alert(localize('designer.issueCountAlert', "{0} validation issues found.", args.result.issues.length));
 		}
 		try {
 			if (args.result.refreshView) {
 				this.refresh();
 				if (!args.result.isValid) {
-					this._scriptTabbedPannel.showTab(MessagesTabId);
+					this._scriptTabbedPannel.showTab(IssuesTabId);
 				}
 			} else {
 				this.updateComponentValues();
@@ -466,7 +465,7 @@ export class Designer extends Disposable implements IThemable {
 	}
 
 	private updateComponentValues(): void {
-		this.updateMessagesTab();
+		this.updateIssuesTab();
 		const viewModel = this._input.viewModel;
 		const scriptProperty = viewModel[ScriptProperty] as InputBoxProperties;
 		if (scriptProperty) {
@@ -477,23 +476,24 @@ export class Designer extends Disposable implements IThemable {
 		});
 	}
 
-	private updateMessagesTab(): void {
+	private updateIssuesTab(): void {
 		if (!this._input) {
 			return;
 		}
-		if (this._scriptTabbedPannel.contains(MessagesTabId)) {
-			this._scriptTabbedPannel.removeTab(MessagesTabId);
+		if (this._scriptTabbedPannel.contains(IssuesTabId)) {
+			this._scriptTabbedPannel.removeTab(IssuesTabId);
 		}
-		if (this._input.validationErrors === undefined || this._input.validationErrors.length === 0) {
+
+		if (this._input.issues === undefined || this._input.issues.length === 0) {
 			return;
 		}
 		this._scriptTabbedPannel.pushTab({
-			title: localize('designer.messagesTabTitle', "Errors ({0})", this._input.validationErrors.length),
-			identifier: MessagesTabId,
-			view: this._messagesView
+			title: localize('designer.issuesTabTitle', "Issues ({0})", this._input.issues.length),
+			identifier: IssuesTabId,
+			view: this._issuesView
 		});
-		this._scriptTabbedPannel.showTab(MessagesTabId);
-		this._messagesView.updateMessages(this._input.validationErrors);
+		this._scriptTabbedPannel.showTab(IssuesTabId);
+		this._issuesView.updateIssues(this._input.issues);
 	}
 
 	private selectProperty(path: DesignerPropertyPath, view?: DesignerUIArea, highlight: boolean = true): void {
@@ -722,11 +722,9 @@ export class Designer extends Disposable implements IThemable {
 					ariaLabel: inputProperties.title,
 					type: inputProperties.inputType,
 				});
-				input.onDidChange(() => {
-					// The supress edit processing check is done in the handleEdit method, but since we have debounce operation on input box we
-					// have to do it here to avoid treating system originated value setting operation as user edits.
-					if (!this._supressEditProcessing) {
-						this.handleInputBoxEdit({ type: DesignerEditType.Update, path: propertyPath, value: input.value, source: view });
+				input.onLoseFocus((args) => {
+					if (args.hasChanged) {
+						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: args.value, source: view });
 					}
 				});
 				input.onInputFocus(() => {
@@ -941,11 +939,6 @@ export class Designer extends Disposable implements IThemable {
 
 		this.styleComponent(component);
 		return component;
-	}
-
-	@debounce(200)
-	private handleInputBoxEdit(edit: DesignerEdit) {
-		this.handleEdit(edit);
 	}
 
 	private startLoading(message: string, timeout: number): void {

@@ -28,6 +28,7 @@ export interface ConnectionProviderProperties {
 	azureResource?: string;
 	connectionOptions: azdata.ConnectionOption[];
 	isQueryProvider?: boolean;
+	supportedExecutionPlanFileExtensions?: string[];
 }
 
 export interface ProviderFeatures {
