@@ -329,6 +329,13 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					width: 150
 				}
 			}, {
+				componentType: 'input',
+				propertyName: designers.TableColumnProperty.Description,
+				description: localize('designer.column.description.description', "Displays the description of the column"),
+				componentProperties: {
+					title: localize('tableDesigner.columnDescriptionTitle', "Description"),
+				}
+			}, {
 				componentType: 'dropdown',
 				propertyName: designers.TableColumnProperty.AdvancedType,
 				showInPropertiesView: false,
@@ -458,6 +465,14 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				}
 			},
 			{
+				componentType: 'input',
+				propertyName: designers.TableForeignKeyProperty.Description,
+				description: localize('designer.foreignkey.description.description', "The description of the foreign key."),
+				componentProperties: {
+					title: localize('tableDesigner.foreignKeyDescriptionTitle', "Description"),
+				}
+			},
+			{
 				componentType: 'dropdown',
 				propertyName: designers.TableForeignKeyProperty.ForeignTable,
 				description: localize('designer.foreignkey.description.primaryKeyTable', "The table which contains the primary or unique key column."),
@@ -547,6 +562,15 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				componentProperties: {
 					title: localize('tableDesigner.primaryKeyNameTitle', "Name")
 				}
+			},
+			{
+				componentType: 'input',
+				propertyName: designers.TableProperty.PrimaryKeyDescription,
+				showInPropertiesView: false,
+				description: localize('designer.table.primaryKeyDescription.description', "The description of the primary key."),
+				componentProperties: {
+					title: localize('tableDesigner.primaryKeyDescriptionTitle', "Description"),
+				}
 			});
 		if (view.additionalPrimaryKeyProperties) {
 			view.additionalPrimaryKeyProperties.forEach(component => {
@@ -589,6 +613,13 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				componentProperties: {
 					title: localize('tableDesigner.checkConstraintNameTitle', "Name"),
 					width: 200
+				}
+			}, {
+				componentType: 'input',
+				propertyName: designers.TableCheckConstraintProperty.Description,
+				description: localize('designer.checkConstraint.description.description', "The description of the check constraint."),
+				componentProperties: {
+					title: localize('tableDesigner.checkConstraintDescriptionTitle', "Description"),
 				}
 			}, {
 				componentType: 'input',
@@ -642,6 +673,14 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				description: localize('designer.index.description.name', "The name of the index."),
 				componentProperties: {
 					title: localize('tableDesigner.indexName', "Name"),
+					width: 200
+				}
+			}, {
+				componentType: 'input',
+				propertyName: designers.TableIndexProperty.Description,
+				description: localize('designer.index.description.description', "The description of the index."),
+				componentProperties: {
+					title: localize('tableDesigner.indexDescription', "Description"),
 					width: 200
 				}
 			}, {
