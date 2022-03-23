@@ -725,6 +725,10 @@ declare module 'azdata' {
 			 * Extension can store additional information that the provider needs to uniquely identify a table.
 			 */
 			[key: string]: any;
+			/**
+			 * Table Node subtype (Temporal/GraphNode/GraphEdge)
+			 */
+			tableSubType: string;
 		}
 
 		/**
@@ -739,6 +743,15 @@ declare module 'azdata' {
 			 * The initial state of the designer.
 			 */
 			viewModel: DesignerViewModel;
+		}
+
+		/**
+		 * Table node sub type (Temporal/GraphEdge/GraphNode)
+		 */
+		export enum TableSubType {
+			Temporal = 'Temporal',
+			GraphNode = 'GraphNode',
+			GraphEdge = 'GraphEdge'
 		}
 
 		/**

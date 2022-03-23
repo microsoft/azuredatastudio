@@ -23,6 +23,7 @@ export class TableDesignerInput extends EditorInput {
 	private _designerComponentInput: TableDesignerComponentInput;
 	private _title: string;
 	private _name: string;
+	private _tableSubType: string;
 
 	constructor(
 		private _provider: TableDesignerProvider,
@@ -42,6 +43,7 @@ export class TableDesignerInput extends EditorInput {
 				this._onDidChangeDirty.fire();
 			}
 		}));
+		this._tableSubType = tableInfo.tableSubType;
 		this.setEditorLabel();
 	}
 
@@ -52,7 +54,7 @@ export class TableDesignerInput extends EditorInput {
 	public get resource(): URI {
 		return URI.from({
 			scheme: Schemas.tableDesigner,
-			path: 'table-designer'
+			path: 'table-designer-' + this._tableSubType.toLowerCase()
 		});
 	}
 
