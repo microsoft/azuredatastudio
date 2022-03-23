@@ -5,8 +5,7 @@
 
 import 'vs/css!./media/messagePanel';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { IQueryMessage, IQueryResultsWriter } from 'sql/workbench/services/query/common/query';
-
+import { IQueryResultsWriter } from 'sql/workbench/services/query/common/query';
 import { ITreeRenderer, IDataSource, ITreeNode, ITreeContextMenuEvent } from 'vs/base/browser/ui/tree/tree';
 import { generateUuid } from 'vs/base/common/uuid';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -35,7 +34,7 @@ import { IRange } from 'vs/editor/common/core/range';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { MessagesPanelQueryResultsWriter } from 'sql/workbench/contrib/query/browser/messagesPanelQueryResultsWriter';
-import { FileQueryResultsWriter } from 'sql/workbench/contrib/query/browser/fileQueryResultsWriter';
+import { QueryResultsWriterFactory } from 'sql/workbench/contrib/query/browser/queryResultsWriterFactory';
 
 export interface IResultMessageIntern {
 	id?: string;
@@ -94,12 +93,12 @@ export class MessagePanel extends Disposable {
 	private container = $('.message-tree');
 	private styleElement = createStyleSheet(this.container);
 
-	private queryRunnerDisposables = this._register(new DisposableStore());
 	private _treeStates = new Map<string, IDataTreeViewState>();
 	private currentUri: string;
 
 	private tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>;
 	private runner: QueryRunner;
+	private queryResultsWriterFactory: QueryResultsWriterFactory;
 	private queryResultsWriter: IQueryResultsWriter;
 
 	constructor(
@@ -140,7 +139,16 @@ export class MessagePanel extends Disposable {
 		this._register(attachListStyler(this.tree, this.themeService));
 		this._register(this.themeService.onDidColorThemeChange(this.applyStyles, this));
 		this.applyStyles(this.themeService.getColorTheme());
-		this.queryResultsWriter = new MessagesPanelQueryResultsWriter(this.model, this.tree, this._treeStates, this.currentUri);
+		this.queryResultsWriterFactory = this.instantiationService.createInstance(QueryResultsWriterFactory, this.model, this.tree, this._treeStates);
+		this.queryResultsWriter = new MessagesPanelQueryResultsWriter(this.model, this.tree, this._treeStates);
+
+		this._register(this.editorService.onDidActiveEditorOutputModeChange(() => {
+			this.queryResultsWriter.reset();
+			this.queryResultsWriter.disable();
+			this.queryResultsWriter = this.queryResultsWriterFactory.getQueryResultsWriter();
+			this.queryResultsWriter.queryRunner = this.runner;
+			this.queryResultsWriter.enable();
+		}));
 	}
 
 	private onContextMenu(event: ITreeContextMenuEvent<IResultMessageIntern>): void {
@@ -194,53 +202,18 @@ export class MessagePanel extends Disposable {
 	}
 
 	public set queryRunner(runner: QueryRunner) {
-		this.runner = runner;
-
+		this.queryResultsWriter.disable();
 		if (this.currentUri) {
 			this._treeStates.set(this.currentUri, this.tree.getViewState());
 		}
 
-		this.queryRunnerDisposables.clear();
-		this.reset();
 		this.currentUri = runner.uri;
-		this.setSelectedQueryResultsWriter();
+		this.runner = runner;
 
-		this.queryRunnerDisposables.add(runner.onQueryStart(() => {
-			this.queryResultsWriter.reset();
-			this.setSelectedQueryResultsWriter();
-			this.queryResultsWriter.onQueryStart();
-		}));
-
-		this.queryRunnerDisposables.add(runner.onMessage((message) => {
-			this.queryResultsWriter.onMessage(message);
-		}));
-
-		this.queryRunnerDisposables.add(runner.onResultSet((resultSet) => {
-			this.queryResultsWriter.onResultSet(resultSet);
-		}));
-
-		this.queryRunnerDisposables.add(runner.onResultSetUpdate((resultSet) => {
-			this.queryResultsWriter.updateResultSet(resultSet);
-		}));
-
-		let editor = this.editorService.activeEditorPane as QueryEditor;
-		if (editor.queryResultsWriterStatus.isWritingToGrid()) {
-			this.onMessage(runner.messages, true);
-		}
-	}
-
-	private setSelectedQueryResultsWriter() {
-		let editor = this.editorService.activeEditorPane as QueryEditor;
-		if (editor.queryResultsWriterStatus.isWritingToGrid()) {
-			this.queryResultsWriter = new MessagesPanelQueryResultsWriter(this.model, this.tree, this._treeStates, this.currentUri);
-		}
-		else {
-			this.queryResultsWriter = this.instantiationService.createInstance(FileQueryResultsWriter, this.runner);
-		}
-	}
-
-	private onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
-		this.queryResultsWriter.onMessage(message, setInput);
+		this.reset();
+		this.queryResultsWriter = this.queryResultsWriterFactory.getQueryResultsWriter();
+		this.queryResultsWriter.queryRunner = runner;
+		this.queryResultsWriter.enable();
 	}
 
 	private applyStyles(theme: IColorTheme): void {

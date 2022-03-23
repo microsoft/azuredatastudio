@@ -101,6 +101,23 @@ export class GridPanel extends Disposable {
 				this.state.scrollPosition = e.scrollTop;
 			}
 		});
+
+		this._register(this.editorService.onDidActiveEditorOutputModeChange(() => {
+			let editor = this.editorService.activeEditorPane as QueryEditor;
+			this.isWritingResultsToGrid = editor.queryResultsWriterStatus.isWritingToGrid();
+
+			this.queryRunnerDisposables.clear();
+			if (!this.isWritingResultsToGrid) {
+				this.queryRunnerDisposables.add(this.runner.onQueryStart(() => {
+					// Clears any results remaining in the grid panel the next time a user executes
+					// a query using a different output mode.
+					this.clear();
+				}));
+			}
+			else {
+				this.registerToQueryRunner();
+			}
+		}));
 	}
 
 	public render(container: HTMLElement): void {
@@ -108,6 +125,10 @@ export class GridPanel extends Disposable {
 		this.container.style.height = '100%';
 
 		container.appendChild(this.container);
+	}
+
+	public get isShowingResultsOnGrid() {
+		return this.isWritingResultsToGrid;
 	}
 
 	public layout(size: Dimension): void {
@@ -127,29 +148,33 @@ export class GridPanel extends Disposable {
 		this.queryRunnerDisposables.clear();
 		this.reset();
 		this.runner = runner;
+		this.registerToQueryRunner();
+
+		if (!this.isWritingResultsToGrid) {
+			this.addResultSet(this.runner.batchSets.reduce<ResultSetSummary[]>((p, e) => {
+				if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.streaming) {
+					p = p.concat(e.resultSetSummaries ?? []);
+				} else {
+					p = p.concat(e.resultSetSummaries?.filter(c => c.complete) ?? []);
+				}
+				return p;
+			}, []));
+		}
+
+		if (this.state && this.state.scrollPosition) {
+			this.scrollableView.setScrollTop(this.state.scrollPosition);
+		}
+	}
+
+	private registerToQueryRunner() {
 		this.queryRunnerDisposables.add(this.runner.onResultSet(this.onResultSet, this));
 		this.queryRunnerDisposables.add(this.runner.onResultSetUpdate(this.updateResultSet, this));
 		this.queryRunnerDisposables.add(this.runner.onQueryStart(() => {
-			let editor = this.editorService.activeEditorPane as QueryEditor;
-			this.isWritingResultsToGrid = editor.queryResultsWriterStatus.isWritingToGrid();
-
 			if (this.state) {
 				this.state.tableStates = [];
 			}
 			this.reset();
 		}));
-		this.addResultSet(this.runner.batchSets.reduce<ResultSetSummary[]>((p, e) => {
-			if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.streaming) {
-				p = p.concat(e.resultSetSummaries ?? []);
-			} else {
-				p = p.concat(e.resultSetSummaries?.filter(c => c.complete) ?? []);
-			}
-			return p;
-		}, []));
-
-		if (this.state && this.state.scrollPosition) {
-			this.scrollableView.setScrollTop(this.state.scrollPosition);
-		}
 	}
 
 	public resetScrollPosition(): void {
@@ -157,11 +182,6 @@ export class GridPanel extends Disposable {
 	}
 
 	private onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
-		// Can exit early if not displaying results in the grid.
-		if (!this.isWritingResultsToGrid) {
-			return;
-		}
-
 		let resultsToAdd: ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
 			resultsToAdd = [resultSet];
@@ -191,11 +211,6 @@ export class GridPanel extends Disposable {
 	}
 
 	private updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
-		// Can exit early if not displaying results in the grid.
-		if (!this.isWritingResultsToGrid) {
-			return;
-		}
-
 		let resultsToUpdate: ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
 			resultsToUpdate = [resultSet];
@@ -229,10 +244,6 @@ export class GridPanel extends Disposable {
 	}
 
 	private addResultSet(resultSet: ResultSetSummary[]) {
-		if (!this.isWritingResultsToGrid) {
-			return;
-		}
-
 		const tables: Array<GridTable<any>> = [];
 
 		for (const set of resultSet) {

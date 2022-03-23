@@ -7,15 +7,14 @@ import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/for
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { GetLocalizedXMLShowPlanColumnName } from 'sql/workbench/contrib/query/browser/gridPanel';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
-import { IQueryMessage, ResultSetSummary, IQueryResultsWriter, MessageType } from 'sql/workbench/services/query/common/query';
+import { IQueryMessage, ResultSetSummary, MessageType, IQueryResultsWriter } from 'sql/workbench/services/query/common/query';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
 import { asArray } from 'vs/base/common/arrays';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { isArray } from 'vs/base/common/types';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
-import * as nls from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -23,7 +22,9 @@ import { Progress } from 'vs/platform/progress/common/progress';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 
-export class FileQueryResultsWriter implements IQueryResultsWriter {
+export class FileQueryResultsWriter extends Disposable implements IQueryResultsWriter {
+	protected queryRunnerDisposables = this._register(new DisposableStore());
+	private runner: QueryRunner;
 	private messages: Array<IQueryMessage> = [];
 	private formattedQueryResults: Array<string> = [];
 	private tables: Array<Table> = [];
@@ -35,20 +36,53 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 	private readonly newLineEscapeSequence: string = this.textResourcePropertiesService.getEOL(undefined);
 
 	constructor(
-		private runner: QueryRunner,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IUntitledTextEditorService private readonly untitledEditorService: IUntitledTextEditorService,
 		@IEditorService private readonly editorService: IEditorService,
 		@ILogService private readonly logService: ILogService,
 		@IConfigurationService private configurationService: IConfigurationService,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
-	) { }
-
-	public onQueryStart() {
-		this.reset();
+	) {
+		super();
 	}
 
-	public onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
+	public enable(): void {
+		this.queryRunnerDisposables.add(this.runner.onQueryStart(() => {
+			this.reset();
+		}));
+
+		this.queryRunnerDisposables.add(this.runner.onMessage((message) => {
+			this.onMessage(message);
+		}));
+
+		this.queryRunnerDisposables.add(this.runner.onResultSet((resultSet) => {
+			this.onResultSet(resultSet);
+		}));
+
+		this.queryRunnerDisposables.add(this.runner.onResultSetUpdate((resultSet) => {
+			this.updateResultSet(resultSet);
+		}));
+	}
+
+	public disable(): void {
+		this.queryRunnerDisposables.clear();
+	}
+
+	public reset() {
+		this.messages = [];
+		this.formattedQueryResults = [];
+		this.tables = [];
+		this.numQueriesToFormat = 0;
+		this.queryContainsError = false;
+		this.closingMessageIncluded = false;
+		this.hasCreatedResultsFile = false;
+	}
+
+	public set queryRunner(runner: QueryRunner) {
+		this.runner = runner;
+	}
+
+	private onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
 		this.numQueriesToFormat++;
 		let resultsToAdd = asArray(resultSet);
 
@@ -62,7 +96,7 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 		}
 	}
 
-	public async updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
+	private async updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
 		let resultSetSummaries = asArray(resultSet);
 
 		if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.streaming) {
@@ -82,7 +116,7 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 		}
 	}
 
-	public async onMessage(incomingMessage: IQueryMessage | IQueryMessage[]) {
+	private async onMessage(incomingMessage: IQueryMessage | IQueryMessage[]) {
 		if (isArray(incomingMessage)) {
 			incomingMessage.forEach(m => {
 				if (m.isError) {
@@ -103,16 +137,6 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 		if (!this.hasCreatedResultsFile && this.closingMessageIncluded && this.queryContainsError && this.numQueriesToFormat === 0) {
 			await this.createResultsFile();
 		}
-	}
-
-	public reset() {
-		this.messages = [];
-		this.formattedQueryResults = [];
-		this.tables = [];
-		this.numQueriesToFormat = 0;
-		this.queryContainsError = false;
-		this.closingMessageIncluded = false;
-		this.hasCreatedResultsFile = false;
 	}
 
 	private addResultSet(resultSetSummaries: ResultSetSummary[]) {

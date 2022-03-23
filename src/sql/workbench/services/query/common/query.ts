@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { IRange } from 'vs/editor/common/core/range';
 
 export interface IColumn {
@@ -88,9 +89,8 @@ export interface ICellValue {
 }
 
 export interface IQueryResultsWriter {
-	onQueryStart(): void | Promise<void>;
-	onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]): void | Promise<void>;
-	updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]): void | Promise<void>;
-	onMessage(incomingMessage: IQueryMessage | IQueryMessage[], setInput?: boolean): void | Promise<void>;
+	enable(): void;
+	disable(): void;
 	reset(): void;
+	set queryRunner(runner: QueryRunner);
 }
