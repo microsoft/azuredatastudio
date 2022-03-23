@@ -146,7 +146,7 @@ export function setup(opts: minimist.ParsedArgs) {
 		});
 
 		describe('Cell Toolbar Actions', function () {
-			async function verifyCellToolbarBehavior(app: Application, toolbarAction: () => Promise<void>, selector: string): Promise<void> {
+			async function verifyCellToolbarBehavior(app: Application, toolbarAction: () => Promise<void>, selector: string, checkIfGone: boolean = false): Promise<void> {
 				const sampleText: string = 'Test Text';
 
 				await app.workbench.sqlNotebook.newUntitledNotebook();
@@ -158,7 +158,11 @@ export function setup(opts: minimist.ParsedArgs) {
 
 				await toolbarAction();
 				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, selector);
+				if (checkIfGone) {
+					await app.workbench.sqlNotebook.waitForTextCellPreviewContentGone(selector);
+				} else {
+					await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, selector);
+				}
 			}
 
 			it('can bold selected text', async function () {
@@ -169,7 +173,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			it('can undo bold text', async function () {
 				const app = this.app as Application;
 				let boldText = () => app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
-				await verifyCellToolbarBehavior(app, () => boldText().then(() => boldText()), 'p');
+				await verifyCellToolbarBehavior(app, () => boldText().then(() => boldText()), 'p strong', true);
 			});
 
 			it('can italicize selected text', async function () {
@@ -179,8 +183,8 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			it('can undo italic text', async function () {
 				const app = this.app as Application;
-				let italicsText = () => app.workbench.sqlNotebook.textCellToolbar.italicizeSelectedText();
-				await verifyCellToolbarBehavior(app, () => italicsText().then(() => italicsText()), 'p');
+				let italicText = () => app.workbench.sqlNotebook.textCellToolbar.italicizeSelectedText();
+				await verifyCellToolbarBehavior(app, () => italicText().then(() => italicText()), 'p em', true);
 			});
 
 			it('can underline selected text', async function () {
@@ -191,7 +195,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			it('can undo underlined text', async function () {
 				const app = this.app as Application;
 				let underlineText = () => app.workbench.sqlNotebook.textCellToolbar.underlineSelectedText();
-				await verifyCellToolbarBehavior(app, () => underlineText().then(() => underlineText()), 'p');
+				await verifyCellToolbarBehavior(app, () => underlineText().then(() => underlineText()), 'p u', true);
 			});
 
 			it('can highlight selected text', async function () {
@@ -202,7 +206,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			it('can undo highlighted text', async function () {
 				const app = this.app as Application;
 				let highlightText = () => app.workbench.sqlNotebook.textCellToolbar.highlightSelectedText();
-				await verifyCellToolbarBehavior(app, () => highlightText().then(() => highlightText()).then(() => highlightText()), 'p');
+				await verifyCellToolbarBehavior(app, () => highlightText().then(() => highlightText()), 'p mark', true);
 			});
 
 			it('can codify selected text', async function () {
@@ -218,7 +222,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			it('can undo bulleted text', async function () {
 				const app = this.app as Application;
 				let insertList = () => app.workbench.sqlNotebook.textCellToolbar.insertList();
-				await verifyCellToolbarBehavior(app, () => insertList().then(() => insertList()), 'p');
+				await verifyCellToolbarBehavior(app, () => insertList().then(() => insertList()), 'ul li', true);
 			});
 
 			it('can number selected text', async function () {
@@ -229,7 +233,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			it('can undo numbered text', async function () {
 				const app = this.app as Application;
 				let orderedList = () => app.workbench.sqlNotebook.textCellToolbar.insertOrderedList();
-				await verifyCellToolbarBehavior(app, () => orderedList().then(() => orderedList()), 'p');
+				await verifyCellToolbarBehavior(app, () => orderedList().then(() => orderedList()), 'ol li', true);
 			});
 		});
 
