@@ -23,7 +23,7 @@ export class TableDesignerInput extends EditorInput {
 	private _designerComponentInput: TableDesignerComponentInput;
 	private _title: string;
 	private _name: string;
-	private _tableSubType: string;
+	private _tableSubType: azdata.designers.TableSubType;
 
 	constructor(
 		private _provider: TableDesignerProvider,
