@@ -146,70 +146,90 @@ export function setup(opts: minimist.ParsedArgs) {
 		});
 
 		describe('Cell Toolbar Actions', function () {
-			const sampleText: string = 'Test Text';
-			async function createCellAndSelectAllText(app: Application): Promise<void> {
+			async function verifyCellToolbarBehavior(app: Application, toolbarAction: () => Promise<void>, selector: string): Promise<void> {
+				const sampleText: string = 'Test Text';
+
 				await app.workbench.sqlNotebook.newUntitledNotebook();
 				await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
 				await app.workbench.sqlNotebook.waitForPlaceholderGone();
 				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
 				await app.workbench.sqlNotebook.waitForTypeInEditor(sampleText);
 				await app.workbench.sqlNotebook.selectAllTextInEditor();
+
+				await toolbarAction();
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, selector);
 			}
 
 			it('can bold selected text', async function () {
 				const app = this.app as Application;
-				await createCellAndSelectAllText(app);
-				await app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
-				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p strong');
+				await verifyCellToolbarBehavior(app, () => app.workbench.sqlNotebook.textCellToolbar.boldSelectedText(), 'p strong');
+			});
+
+			it('can undo bold text', async function () {
+				const app = this.app as Application;
+				let boldText = () => app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
+				await verifyCellToolbarBehavior(app, () => boldText().then(() => boldText()), 'p');
 			});
 
 			it('can italicize selected text', async function () {
 				const app = this.app as Application;
-				await createCellAndSelectAllText(app);
-				await app.workbench.sqlNotebook.textCellToolbar.italicizeSelectedText();
-				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p em');
+				await verifyCellToolbarBehavior(app, () => app.workbench.sqlNotebook.textCellToolbar.italicizeSelectedText(), 'p em');
+			});
+
+			it('can undo italic text', async function () {
+				const app = this.app as Application;
+				let italicsText = () => app.workbench.sqlNotebook.textCellToolbar.italicizeSelectedText();
+				await verifyCellToolbarBehavior(app, () => italicsText().then(() => italicsText()), 'p');
 			});
 
 			it('can underline selected text', async function () {
 				const app = this.app as Application;
-				await createCellAndSelectAllText(app);
-				await app.workbench.sqlNotebook.textCellToolbar.underlineSelectedText();
-				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p u');
+				await verifyCellToolbarBehavior(app, () => app.workbench.sqlNotebook.textCellToolbar.underlineSelectedText(), 'p u');
+			});
+
+			it('can undo underlined text', async function () {
+				const app = this.app as Application;
+				let underlineText = () => app.workbench.sqlNotebook.textCellToolbar.underlineSelectedText();
+				await verifyCellToolbarBehavior(app, () => underlineText().then(() => underlineText()), 'p');
 			});
 
 			it('can highlight selected text', async function () {
 				const app = this.app as Application;
-				await createCellAndSelectAllText(app);
-				await app.workbench.sqlNotebook.textCellToolbar.highlightSelectedText();
-				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p mark');
+				await verifyCellToolbarBehavior(app, () => app.workbench.sqlNotebook.textCellToolbar.highlightSelectedText(), 'p mark');
+			});
+
+			it('can undo highlighted text', async function () {
+				const app = this.app as Application;
+				let highlightText = () => app.workbench.sqlNotebook.textCellToolbar.highlightSelectedText();
+				await verifyCellToolbarBehavior(app, () => highlightText().then(() => highlightText()).then(() => highlightText()), 'p');
 			});
 
 			it('can codify selected text', async function () {
 				const app = this.app as Application;
-				await createCellAndSelectAllText(app);
-				await app.workbench.sqlNotebook.textCellToolbar.codifySelectedText();
-				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'pre code');
+				await verifyCellToolbarBehavior(app, () => app.workbench.sqlNotebook.textCellToolbar.codifySelectedText(), 'pre code');
 			});
 
 			it('can bullet selected text', async function () {
 				const app = this.app as Application;
-				await createCellAndSelectAllText(app);
-				await app.workbench.sqlNotebook.textCellToolbar.insertList();
-				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'ul li');
+				await verifyCellToolbarBehavior(app, () => app.workbench.sqlNotebook.textCellToolbar.insertList(), 'ul li');
+			});
+
+			it('can undo bulleted text', async function () {
+				const app = this.app as Application;
+				let insertList = () => app.workbench.sqlNotebook.textCellToolbar.insertList();
+				await verifyCellToolbarBehavior(app, () => insertList().then(() => insertList()), 'p');
 			});
 
 			it('can number selected text', async function () {
 				const app = this.app as Application;
-				await createCellAndSelectAllText(app);
-				await app.workbench.sqlNotebook.textCellToolbar.insertOrderedList();
-				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'ol li');
+				await verifyCellToolbarBehavior(app, () => app.workbench.sqlNotebook.textCellToolbar.insertOrderedList(), 'ol li');
+			});
+
+			it('can undo numbered text', async function () {
+				const app = this.app as Application;
+				let orderedList = () => app.workbench.sqlNotebook.textCellToolbar.insertOrderedList();
+				await verifyCellToolbarBehavior(app, () => orderedList().then(() => orderedList()), 'p');
 			});
 		});
 
