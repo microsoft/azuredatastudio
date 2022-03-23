@@ -157,7 +157,7 @@ export class Notebook {
 
 	async waitForTextCellPreviewContentGone(selector: string): Promise<void> {
 		let textSelector = `${Notebook.textCellPreviewSelector} ${selector}`;
-		await this.code.waitForElementGone(textSelector); // Use includes to handle whitespace/quote edge cases
+		await this.code.waitForElementGone(textSelector);
 	}
 
 	// Cell Output Actions
