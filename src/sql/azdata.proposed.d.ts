@@ -726,9 +726,9 @@ declare module 'azdata' {
 			 */
 			[key: string]: any;
 			/**
-			 * Table Node subtype (Temporal/GraphNode/GraphEdge)
+			 * Table Node subtype
 			 */
-			tableSubType: string;
+			tableSubType: TableSubType;
 		}
 
 		/**
@@ -746,7 +746,7 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * Table node sub type (Temporal/GraphEdge/GraphNode)
+		 * Table node sub type
 		 */
 		export enum TableSubType {
 			Temporal = 'Temporal',
