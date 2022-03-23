@@ -1114,18 +1114,3 @@ export namespace DisposeTableDesignerRequest {
 	export const type = new RequestType<azdata.designers.TableInfo, void, void, void>('tabledesigner/dispose');
 }
 // ------------------------------- < Table Designer > ------------------------------------
-
-// ------------------------------- < Azure Blob > ------------------------------------
-export interface CreateSasParams {
-	ownerUri: string;
-	blobContainerUri: string;
-	blobContainerKey: string;
-	storageAccountName: string;
-	expirationDate: string;
-}
-
-export namespace CreateSasRequest {
-	export const type = new RequestType<CreateSasParams, azdata.CreateSasResponse, void, void>('blob/createsas');
-}
-
-// ------------------------------- < Azure Blob > ------------------------------------
