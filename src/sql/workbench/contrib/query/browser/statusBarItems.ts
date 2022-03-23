@@ -5,6 +5,7 @@
 
 import { parseNumAsTimeString } from 'sql/platform/connection/common/utils';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
+import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ICellValue } from 'sql/workbench/services/query/common/query';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
@@ -16,6 +17,7 @@ import { localize } from 'vs/nls';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from 'vs/workbench/services/statusbar/common/statusbar';
+
 export class TimeElapsedStatusBarContributions extends Disposable implements IWorkbenchContribution {
 
 	private static readonly ID = 'status.query.timeElapsed';
@@ -313,5 +315,51 @@ export class QueryResultSelectionSummaryStatusBarContribution extends Disposable
 			ariaLabel: summaryText
 		});
 		this.show();
+	}
+}
+
+export class QueryResultsEditorOutputModeStatusBarContribution extends Disposable implements IWorkbenchContribution {
+
+	private static readonly ID = 'status.query.editor-output-mode';
+	private readonly name = localize('status.query.editor-output-mode', 'Results to File');
+
+	constructor(
+		@IStatusbarService private readonly statusbarService: IStatusbarService,
+		@IEditorService private readonly editorService: IEditorService
+	) {
+		super();
+		this._register(
+			this.statusbarService.addEntry({
+				name: this.name,
+				text: localize('query.status.editor-output-status', "Results to File"),
+				ariaLabel: localize('query.status.editor-output-status', "Results to File")
+			},
+				QueryResultsEditorOutputModeStatusBarContribution.ID,
+				StatusbarAlignment.RIGHT, 100)
+		);
+
+		this._register(this.editorService.onDidActiveEditorChange(this.update, this));
+		this._register(this.editorService.onDidActiveEditorOutputModeChange(this.update, this));
+		this.update();
+	}
+
+	private update() {
+		this.hide();
+
+		let editor = this.editorService.activeEditorPane as QueryEditor;
+		if (editor.queryResultsWriterStatus.isWritingToFIle()) {
+			this.show();
+		}
+		else {
+			this.hide();
+		}
+	}
+
+	private hide() {
+		this.statusbarService.updateEntryVisibility(QueryResultsEditorOutputModeStatusBarContribution.ID, false);
+	}
+
+	private show() {
+		this.statusbarService.updateEntryVisibility(QueryResultsEditorOutputModeStatusBarContribution.ID, true);
 	}
 }

@@ -3,12 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { IRange } from 'vs/editor/common/core/range';
 
 export interface IColumn {
 	columnName: string;
 	isXml?: boolean;
 	isJson?: boolean;
+	columnSize?: number;
+	dataTypeName?: string;
 }
 
 export type VisualizationType = 'bar' | 'count' | 'doughnut' | 'horizontalBar' | 'image' | 'line' | 'pie' | 'scatter' | 'table' | 'timeSeries';
@@ -48,6 +51,14 @@ export interface IQueryMessage {
 	time?: string;
 	message: string;
 	range?: IRange;
+	hasRowCount?: boolean;
+	messageType?: MessageType;
+}
+
+export enum MessageType {
+	normal,
+	queryStart,
+	queryEnd
 }
 
 export interface IResultMessage {
@@ -55,6 +66,7 @@ export interface IResultMessage {
 	isError: boolean;
 	time?: string;
 	message: string;
+	hasRowCount?: boolean;
 }
 
 export interface QueryExecuteSubsetParams {
@@ -74,4 +86,11 @@ export interface ICellValue {
 	displayValue: string;
 	isNull?: boolean;
 	invariantCultureDisplayValue?: string;
+}
+
+export interface IQueryResultsWriter {
+	enable(): void;
+	disable(): void;
+	reset(): void;
+	set queryRunner(runner: QueryRunner);
 }

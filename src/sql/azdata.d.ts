@@ -942,6 +942,11 @@ declare module 'azdata' {
 		numberOfRows: number;
 	}
 
+	/**
+	 * Result message object with timestamp and actual message that comes from STS.
+	 * A result message is any message that appears in the messages panel when a query
+	 * is executed.
+	 */
 	export interface IResultMessage {
 		batchId?: number | undefined;
 		isError: boolean;

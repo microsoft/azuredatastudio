@@ -8,6 +8,22 @@
 import * as vscode from 'vscode';
 
 declare module 'azdata' {
+	/**
+	 * Result message object with timestamp and actual message that comes from STS.
+	 * A result message is any message that appears in the messages panel when a query
+	 * is executed.
+	 */
+	export interface IResultMessage {
+		/**
+		 * Flag to indicate if the incoming result message marks the completion of a query statement.
+		 *
+		 * This flag will be set to true if a message like, "2 row(s) affected" is received and is intended to
+		 * alleviate the need for string comparisons to detect the row count message at the end of a query statement,
+		 * so that query results can be interpolated with query messages.
+		 */
+		hasRowCount?: boolean;
+	}
+
 	export namespace nb {
 		export interface NotebookDocument {
 			/**

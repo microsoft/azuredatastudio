@@ -5,15 +5,14 @@
 
 import 'vs/css!./media/messagePanel';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { IQueryMessage } from 'sql/workbench/services/query/common/query';
-
+import { IQueryResultsWriter } from 'sql/workbench/services/query/common/query';
 import { ITreeRenderer, IDataSource, ITreeNode, ITreeContextMenuEvent } from 'vs/base/browser/ui/tree/tree';
 import { generateUuid } from 'vs/base/common/uuid';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { WorkbenchDataTree } from 'vs/platform/list/browser/listService';
-import { isArray, isString } from 'vs/base/common/types';
+import { isString } from 'vs/base/common/types';
 import { Disposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { $, Dimension, createStyleSheet, addStandardDisposableGenericMouseDownListner } from 'vs/base/browser/dom';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
@@ -34,6 +33,8 @@ import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
 import { IRange } from 'vs/editor/common/core/range';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { MessagesPanelQueryResultsWriter } from 'sql/workbench/contrib/query/browser/messagesPanelQueryResultsWriter';
+import { QueryResultsWriterFactory } from 'sql/workbench/contrib/query/browser/queryResultsWriterFactory';
 
 export interface IResultMessageIntern {
 	id?: string;
@@ -92,19 +93,22 @@ export class MessagePanel extends Disposable {
 	private container = $('.message-tree');
 	private styleElement = createStyleSheet(this.container);
 
-	private queryRunnerDisposables = this._register(new DisposableStore());
 	private _treeStates = new Map<string, IDataTreeViewState>();
-	private currenturi: string;
+	private currentUri: string;
 
 	private tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>;
+	private runner: QueryRunner;
+	private queryResultsWriterFactory: QueryResultsWriterFactory;
+	private queryResultsWriter: IQueryResultsWriter;
 
 	constructor(
-		@IInstantiationService instantiationService: IInstantiationService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IThemeService private readonly themeService: IThemeService,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IClipboardService private readonly clipboardService: IClipboardService,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
-		@IConfigurationService private configurationService: IConfigurationService
+		@IConfigurationService private configurationService: IConfigurationService,
+		@IEditorService private readonly editorService: IEditorService
 	) {
 		super();
 		const wordWrap = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').messages.wordwrap;
@@ -135,6 +139,16 @@ export class MessagePanel extends Disposable {
 		this._register(attachListStyler(this.tree, this.themeService));
 		this._register(this.themeService.onDidColorThemeChange(this.applyStyles, this));
 		this.applyStyles(this.themeService.getColorTheme());
+		this.queryResultsWriterFactory = this.instantiationService.createInstance(QueryResultsWriterFactory, this.model, this.tree, this._treeStates);
+		this.queryResultsWriter = new MessagesPanelQueryResultsWriter(this.model, this.tree, this._treeStates);
+
+		this._register(this.editorService.onDidActiveEditorOutputModeChange(() => {
+			this.queryResultsWriter.reset();
+			this.queryResultsWriter.disable();
+			this.queryResultsWriter = this.queryResultsWriterFactory.getQueryResultsWriter();
+			this.queryResultsWriter.queryRunner = this.runner;
+			this.queryResultsWriter.enable();
+		}));
 	}
 
 	private onContextMenu(event: ITreeContextMenuEvent<IResultMessageIntern>): void {
@@ -188,28 +202,18 @@ export class MessagePanel extends Disposable {
 	}
 
 	public set queryRunner(runner: QueryRunner) {
-		if (this.currenturi) {
-			this._treeStates.set(this.currenturi, this.tree.getViewState());
+		this.queryResultsWriter.disable();
+		if (this.currentUri) {
+			this._treeStates.set(this.currentUri, this.tree.getViewState());
 		}
-		this.queryRunnerDisposables.clear();
-		this.reset();
-		this.currenturi = runner.uri;
-		this.queryRunnerDisposables.add(runner.onQueryStart(() => this.reset()));
-		this.queryRunnerDisposables.add(runner.onMessage(e => this.onMessage(e)));
-		this.onMessage(runner.messages, true);
-	}
 
-	private onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
-		if (isArray(message)) {
-			this.model.messages.push(...message);
-		} else {
-			this.model.messages.push(message);
-		}
-		if (setInput) {
-			this.tree.setInput(this.model, this._treeStates.get(this.currenturi));
-		} else {
-			this.tree.updateChildren();
-		}
+		this.currentUri = runner.uri;
+		this.runner = runner;
+
+		this.reset();
+		this.queryResultsWriter = this.queryResultsWriterFactory.getQueryResultsWriter();
+		this.queryResultsWriter.queryRunner = runner;
+		this.queryResultsWriter.enable();
 	}
 
 	private applyStyles(theme: IColorTheme): void {
@@ -226,9 +230,7 @@ export class MessagePanel extends Disposable {
 	}
 
 	private reset() {
-		this.model.messages = [];
-		this.model.totalExecuteMessage = undefined;
-		this.tree.updateChildren();
+		this.queryResultsWriter.reset();
 	}
 
 	public clear() {

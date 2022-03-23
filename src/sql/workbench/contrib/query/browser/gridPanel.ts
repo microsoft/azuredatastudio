@@ -51,6 +51,7 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 import { FilterButtonWidth, HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -65,6 +66,14 @@ const ACTIONBAR_HEIGHT = 120;
 // this handles min size if rows is greater than the min grid visible rows
 const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 
+const LOCALIZED_XML_SHOWPLAN_COLUMN_NAME = localize('xmlShowplan', "XML Showplan");
+
+export function GetLocalizedXMLShowPlanColumnName(column: IColumn): string {
+	return column.columnName === 'Microsoft SQL Server 2005 XML Showplan'
+		? LOCALIZED_XML_SHOWPLAN_COLUMN_NAME
+		: escape(column.columnName);
+}
+
 export class GridPanel extends Disposable {
 	private container = document.createElement('div');
 	private scrollableView: ScrollableView;
@@ -73,6 +82,7 @@ export class GridPanel extends Disposable {
 	private queryRunnerDisposables = this._register(new DisposableStore());
 
 	private runner: QueryRunner;
+	private isWritingResultsToGrid: boolean;
 
 	private maximizedGrid: GridTable<any>;
 	private _state: GridPanelState | undefined;
@@ -82,6 +92,7 @@ export class GridPanel extends Disposable {
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@ILogService private readonly logService: ILogService,
 		@IThemeService private readonly themeService: IThemeService,
+		@IEditorService private readonly editorService: IEditorService
 	) {
 		super();
 		this.scrollableView = new ScrollableView(this.container);
@@ -90,6 +101,23 @@ export class GridPanel extends Disposable {
 				this.state.scrollPosition = e.scrollTop;
 			}
 		});
+
+		this._register(this.editorService.onDidActiveEditorOutputModeChange(() => {
+			let editor = this.editorService.activeEditorPane as QueryEditor;
+			this.isWritingResultsToGrid = editor.queryResultsWriterStatus.isWritingToGrid();
+
+			this.queryRunnerDisposables.clear();
+			if (!this.isWritingResultsToGrid) {
+				this.queryRunnerDisposables.add(this.runner.onQueryStart(() => {
+					// Clears any results remaining in the grid panel the next time a user executes
+					// a query using a different output mode.
+					this.clear();
+				}));
+			}
+			else {
+				this.registerToQueryRunner();
+			}
+		}));
 	}
 
 	public render(container: HTMLElement): void {
@@ -99,11 +127,19 @@ export class GridPanel extends Disposable {
 		container.appendChild(this.container);
 	}
 
+	public get isShowingResultsOnGrid() {
+		return this.isWritingResultsToGrid;
+	}
+
 	public layout(size: Dimension): void {
 		this.scrollableView.layout(size.height, size.width);
 	}
 
 	public focus(): void {
+		if (!this.isWritingResultsToGrid) {
+			return;
+		}
+
 		// will need to add logic to save the focused grid and focus that
 		this.tables[0].focus();
 	}
@@ -112,14 +148,8 @@ export class GridPanel extends Disposable {
 		this.queryRunnerDisposables.clear();
 		this.reset();
 		this.runner = runner;
-		this.queryRunnerDisposables.add(this.runner.onResultSet(this.onResultSet, this));
-		this.queryRunnerDisposables.add(this.runner.onResultSetUpdate(this.updateResultSet, this));
-		this.queryRunnerDisposables.add(this.runner.onQueryStart(() => {
-			if (this.state) {
-				this.state.tableStates = [];
-			}
-			this.reset();
-		}));
+		this.registerToQueryRunner();
+
 		this.addResultSet(this.runner.batchSets.reduce<ResultSetSummary[]>((p, e) => {
 			if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.streaming) {
 				p = p.concat(e.resultSetSummaries ?? []);
@@ -132,6 +162,17 @@ export class GridPanel extends Disposable {
 		if (this.state && this.state.scrollPosition) {
 			this.scrollableView.setScrollTop(this.state.scrollPosition);
 		}
+	}
+
+	private registerToQueryRunner() {
+		this.queryRunnerDisposables.add(this.runner.onResultSet(this.onResultSet, this));
+		this.queryRunnerDisposables.add(this.runner.onResultSetUpdate(this.updateResultSet, this));
+		this.queryRunnerDisposables.add(this.runner.onQueryStart(() => {
+			if (this.state) {
+				this.state.tableStates = [];
+			}
+			this.reset();
+		}));
 	}
 
 	public resetScrollPosition(): void {
@@ -399,9 +440,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 			return <Slick.Column<T>>{
 				id: i.toString(),
-				name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
-					? localize('xmlShowplan', "XML Showplan")
-					: escape(c.columnName),
+				name: GetLocalizedXMLShowPlanColumnName(c),
 				field: i.toString(),
 				formatter: isLinked ? hyperLinkFormatter : textFormatter,
 				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined

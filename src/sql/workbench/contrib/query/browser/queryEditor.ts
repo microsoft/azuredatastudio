@@ -45,6 +45,7 @@ import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
+import { QueryResultsWriterMode, QueryResultsWriterStatus } from 'sql/workbench/contrib/query/common/queryResultsWriterStatus';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -85,6 +86,8 @@ export class QueryEditor extends EditorPane {
 	private queryEditorVisible: IContextKey<boolean>;
 
 	private editorMemento: IEditorMemento<IQueryEditorViewState>;
+
+	private resultsWriterStatus: { [uri: string]: QueryResultsWriterStatus } = {};
 
 	//actions
 	private _runQueryAction: actions.RunQueryAction;
@@ -662,5 +665,28 @@ export class QueryEditor extends EditorPane {
 
 	public chart(dataId: { batchId: number, resultId: number }): void {
 		this.resultsEditor.chart(dataId);
+	}
+
+	public get queryResultsWriterStatus() {
+		let writerStatus = this.resultsWriterStatus[this.input.uri];
+		if (writerStatus === undefined) {
+			writerStatus = new QueryResultsWriterStatus();
+			this.resultsWriterStatus[this.input.uri] = writerStatus;
+		}
+
+		return writerStatus;
+	}
+
+	public set queryResultsWriterMode(mode: QueryResultsWriterMode) {
+		let writerStatus = this.resultsWriterStatus[this.input.uri];
+		if (writerStatus === undefined) {
+			writerStatus = new QueryResultsWriterStatus(mode);
+			this.resultsWriterStatus[this.input.uri] = writerStatus;
+		}
+		else {
+			this.resultsWriterStatus[this.input.uri].mode = mode;
+		}
+
+		this.editorService.activeEditorOutputModeChanged();
 	}
 }

@@ -27,7 +27,7 @@ import { localize } from 'vs/nls';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
-import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, QueryStatusStatusBarContributions, QueryResultSelectionSummaryStatusBarContribution } from 'sql/workbench/contrib/query/browser/statusBarItems';
+import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, QueryStatusStatusBarContributions, QueryResultSelectionSummaryStatusBarContribution, QueryResultsEditorOutputModeStatusBarContribution } from 'sql/workbench/contrib/query/browser/statusBarItems';
 import { SqlFlavorStatusbarItem, ChangeFlavorAction } from 'sql/workbench/contrib/query/browser/flavorStatus';
 import { EditorExtensions, IEditorFactoryRegistry } from 'vs/workbench/common/editor';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
@@ -47,6 +47,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/file
 import { IEditorResolverService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorResolverService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { QueryResultsToFileAction, QueryResultsToGridAction } from 'sql/workbench/contrib/query/browser/queryResultsDisplayActions';
 
 export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
@@ -225,6 +226,25 @@ actionRegistry.registerWorkbenchAction(
 		ChangeFlavorAction.LABEL
 	),
 	'Change Language Flavor'
+);
+
+// Query Result writer actions
+actionRegistry.registerWorkbenchAction(
+	SyncActionDescriptor.create(
+		QueryResultsToGridAction,
+		QueryResultsToGridAction.ID,
+		QueryResultsToGridAction.LABEL
+	),
+	'Query Results to Grid'
+);
+
+actionRegistry.registerWorkbenchAction(
+	SyncActionDescriptor.create(
+		QueryResultsToFileAction,
+		QueryResultsToFileAction.ID,
+		QueryResultsToFileAction.LABEL
+	),
+	'Query Results to File'
 );
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
@@ -491,6 +511,7 @@ workbenchRegistry.registerWorkbenchContribution(RowCountStatusBarContributions, 
 workbenchRegistry.registerWorkbenchContribution(QueryStatusStatusBarContributions, LifecyclePhase.Restored);
 workbenchRegistry.registerWorkbenchContribution(SqlFlavorStatusbarItem, LifecyclePhase.Restored);
 workbenchRegistry.registerWorkbenchContribution(QueryResultSelectionSummaryStatusBarContribution, LifecyclePhase.Restored);
+workbenchRegistry.registerWorkbenchContribution(QueryResultsEditorOutputModeStatusBarContribution, LifecyclePhase.Restored);
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
