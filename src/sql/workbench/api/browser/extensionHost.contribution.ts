@@ -2,10 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-<<<<<<< HEAD
-=======
 import './mainThreadAzureBlob';
->>>>>>> f023bb0c06 (Relocated createSas RPC from sql-dataprotocolclient to the mssql)
 import './mainThreadAccountManagement';
 import './mainThreadBackgroundTaskManagement';
 import './mainThreadConnectionManagement';
