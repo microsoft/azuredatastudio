@@ -42,6 +42,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 	private serializationManagers: ISerializationManager[] = [];
 	private executeManagers: IExecuteManager[] = [];
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
+	private _isLoading: boolean = true;
 
 	public model: NotebookModel;
 	public views: NotebookViewsExtension;
@@ -81,14 +82,27 @@ export class NotebookEditorComponent extends AngularDisposable {
 		}
 	}
 
-	private async doLoad(): Promise<void> {
-		await this.createModelAndLoadContents();
-		await this.setSerializationManager();
-		await this.setExecuteManager();
-		await this.loadModel();
+	public get isLoading(): boolean {
+		return this._isLoading;
+	}
 
-		this.setActiveView();
-		this._modelReadyDeferred.resolve(this.model);
+	private setLoading(isLoading: boolean): void {
+		this._isLoading = isLoading;
+		this.detectChanges();
+	}
+
+	private async doLoad(): Promise<void> {
+		try {
+			await this.createModelAndLoadContents();
+			await this.setSerializationManager();
+			await this.setExecuteManager();
+			await this.loadModel();
+
+			this.setActiveView();
+			this._modelReadyDeferred.resolve(this.model);
+		} finally {
+			this.setLoading(false);
+		}
 	}
 
 	private async loadModel(): Promise<void> {
