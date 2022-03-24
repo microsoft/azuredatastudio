@@ -123,6 +123,12 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		});
 	}
 
+	compareExecutionPlanGraph(firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo): Promise<azdata.executionPlan.ExecutionPlanComparisonResult> {
+		return this._runAction(firstPlanFile.graphFileType, (runner) => {
+			return runner.compareExecutionPlanGraph(firstPlanFile, secondPlanFile);
+		});
+	}
+
 	getSupportedExecutionPlanExtensionsForProvider(providerId: string): string[] | undefined {
 		return this._capabilitiesService.getCapabilities(providerId).connection.supportedExecutionPlanFileExtensions;
 	}

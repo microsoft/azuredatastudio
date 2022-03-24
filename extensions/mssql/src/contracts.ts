@@ -1126,4 +1126,13 @@ export namespace GetExecutionPlanRequest {
 	export const type = new RequestType<GetExecutionPlanParams, azdata.executionPlan.GetExecutionPlanResult, void, void>('queryexecutionplan/getexecutionplan');
 }
 
+export interface ExecutionPlanComparisonParams {
+	firstExecutionPlanGraphInfo: azdata.executionPlan.ExecutionPlanGraphInfo;
+	secondExecutionPlanGraphInfo: azdata.executionPlan.ExecutionPlanGraphInfo;
+}
+
+export namespace ExecutionPlanComparisonRequest {
+	export const type = new RequestType<ExecutionPlanComparisonParams, azdata.executionPlan.ExecutionPlanComparisonResult, void, void>('executionPlan/compareExecutionPlanGraph');
+}
+
 // ------------------------------- < Execution Plan > ------------------------------------
