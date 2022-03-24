@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as mssql from '../../mssql';
+import * as mssql from 'mssql';
 import { SqlAssessmentMainTab } from './tabs/assessmentMainTab';
 import { SqlAssessmentHistoryTab } from './tabs/historyTab';
 import { AssessmentEngine } from './engine';
