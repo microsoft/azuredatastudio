@@ -25,6 +25,8 @@ import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ExecutionPlanTab } from 'sql/workbench/contrib/executionPlan/browser/executionPlan';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
@@ -175,7 +177,8 @@ export class QueryResultsView extends Disposable {
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IQueryModelService private queryModelService: IQueryModelService,
 		@INotificationService private notificationService: INotificationService,
-		@ILogService private logService: ILogService
+		@ILogService private logService: ILogService,
+		@IEditorService private readonly editorService: IEditorService
 	) {
 		super();
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
@@ -208,7 +211,9 @@ export class QueryResultsView extends Disposable {
 
 	private setQueryRunner(runner: QueryRunner) {
 		const activeTab = this._input?.state.activeTab;
-		if (this.hasResults(runner)) {
+		let editor = this.editorService.activeEditorPane as QueryEditor;
+		let writingResultsToGrid = editor.queryResultsWriterStatus.isWritingToGrid();
+		if (this.hasResults(runner) && writingResultsToGrid) {
 			this.showResults();
 		} else {
 			if (runner.isExecuting) { // in case we don't have results yet, but we also have already started executing
