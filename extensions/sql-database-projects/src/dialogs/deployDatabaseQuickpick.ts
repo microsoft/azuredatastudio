@@ -75,8 +75,6 @@ export async function launchDeployAppIntegrationQuickpick(project: Project): Pro
 
 async function launchEulaQuickPick(imageInfo: DockerImageInfo | undefined): Promise<boolean> {
 	let eulaAccepted: boolean = false;
-	//const baseImages = uiUtils.getDockerBaseImages();
-	//const imageInfo = baseImages.find(x => x.name === baseImage);
 	const agreementInfo = imageInfo?.agreementInfo;
 	if (agreementInfo) {
 		const openEulaButton: vscode.QuickInputButton = {
@@ -324,7 +322,7 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 
 	const baseImages = uiUtils.getDockerBaseImages();
 	const baseImage = await vscode.window.showQuickPick(
-		baseImages.map(x => x.displayName),
+		baseImages.map(x => x.name),
 		{ title: constants.selectBaseImage, ignoreFocusOut: true });
 
 	// Return when user hits escape
@@ -332,7 +330,7 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		return undefined;
 	}
 
-	const imageInfo = baseImages.find(x => x.displayName === baseImage);
+	const imageInfo = baseImages.find(x => x.name === baseImage);
 	const eulaAccepted = await launchEulaQuickPick(imageInfo);
 	if (!eulaAccepted) {
 		return undefined;

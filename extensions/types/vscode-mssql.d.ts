@@ -46,11 +46,6 @@ declare module 'vscode-mssql' {
 		readonly azureAccountService: IAzureAccountService;
 
 		/**
-		 * Service for accessing Azure Account functionality
-		 */
-		readonly azureAccountService: IAzureAccountService;
-
-		/**
 		 * Prompts the user to select an existing connection or create a new one, and then returns the result
 		 * @param ignoreFocusOut Whether the quickpick prompt ignores focus out (default false)
 		 */

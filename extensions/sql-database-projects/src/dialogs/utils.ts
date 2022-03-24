@@ -34,7 +34,6 @@ export function getDockerBaseImages(): DockerImageInfo[] {
 	return [
 		{
 			name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2017-latest`,
-			displayName: 'SQL Server 2017',
 			agreementInfo: {
 				link: {
 					text: constants.eulaAgreementTitle,
@@ -44,7 +43,6 @@ export function getDockerBaseImages(): DockerImageInfo[] {
 		},
 		{
 			name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2019-latest`,
-			displayName: 'SQL Server 2019',
 			agreementInfo: {
 				link: {
 					text: constants.eulaAgreementTitle,
@@ -54,7 +52,6 @@ export function getDockerBaseImages(): DockerImageInfo[] {
 		},
 		{
 			name: `${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}:latest`,
-			displayName: 'SQL Server Edge',
 			agreementInfo: {
 				link: {
 					text: constants.edgeEulaAgreementTitle,

@@ -7,7 +7,6 @@ import { IDeploySettings } from '../IDeploySettings';
 import type * as azdataType from 'azdata';
 //import { AzureSubscription } from '../../../azure-account.api';
 import { ResourceGroup } from '@azure/arm-resources';
-import * as coreAuth from '@azure/core-auth';
 import { AzureAccountSession } from './azureSqlClient';
 
 export enum AppSettingType {
@@ -50,13 +49,11 @@ export interface ISqlConnectionProperties {
 	port: number,
 	dbName: string,
 	profileName?: string,
-	connectionRetryTimeout?: number,
-	accessToken?: coreAuth.AccessToken
+	connectionRetryTimeout?: number
 }
 
 export interface DockerImageInfo {
 	name: string,
-	displayName: string,
 	agreementInfo: AgreementInfo
 }
 export interface AgreementInfo {

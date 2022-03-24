@@ -299,7 +299,6 @@ export class DeployService {
 				connectionUrl = await vscodeMssqlApi.connect(connectionProfile, saveConnectionAndPassword);
 			} catch (err) {
 				const firewallRuleError = <IFireWallRuleError>err;
-				console.log(`!!!!! ${firewallRuleError} ${firewallRuleError.connectionUri}`);
 				if (err.connectionUri || firewallRuleError?.connectionUri) {
 					await vscodeMssqlApi.promptForFirewallRule(err.connectionUri, connectionProfile);
 				} else {
