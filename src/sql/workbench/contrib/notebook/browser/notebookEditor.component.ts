@@ -29,6 +29,7 @@ import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookV
 import { Deferred } from 'sql/base/common/promise';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
+import { localize } from 'vs/nls';
 
 export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 
@@ -49,6 +50,9 @@ export class NotebookEditorComponent extends AngularDisposable {
 	public activeView: INotebookView;
 	public viewMode: ViewMode;
 	public ViewMode = ViewMode; //For use of the enum in the template
+
+	public readonly loadingMessage = localize('loadingNotebookMessage', "Loading notebook");
+	public readonly loadingCompletedMessage = localize('loadingNotebookCompletedMessage', "Loading notebook completed");
 
 	constructor(
 		@Inject(ILogService) private readonly logService: ILogService,
