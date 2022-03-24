@@ -67,8 +67,9 @@ declare module 'dataworkspace' {
 		 * @param location the parent directory of the project
 		 * @param projectTypeId the identifier of the selected project type
 		 * @param projectTargetPlatform the target platform of the project
+		 * @param sdkStyleProject whether or not a project is SDK-style
 		 */
-		createProject(name: string, location: vscode.Uri, projectTypeId: string, projectTargetPlatform?: string): Promise<vscode.Uri>;
+		createProject(name: string, location: vscode.Uri, projectTypeId: string, projectTargetPlatform?: string, sdkStyleProject?: boolean): Promise<vscode.Uri>;
 
 		/**
 		 * Gets the project data corresponding to the project file, to be placed in the dashboard container
@@ -131,14 +132,14 @@ declare module 'dataworkspace' {
 		readonly defaultTargetPlatform?: string;
 
 		/**
-		 * Link display value for a link at the end of the project description. linkLocation also needs to be set to use this
+		 * Whether or not sdk style project is an option
 		 */
-		readonly linkDisplayValue?: string;
+		readonly sdkStyleOption?: boolean;
 
 		/**
-		 * Location where clicking on the linkDisplayValue will go to
+		 * Location where clicking on the Learn More next to SDK style checkbox will go. sdkStyleOption needs to be set to true to use this
 		 */
-		readonly linkLocation?: string
+		readonly sdkStyleLearnMoreUrl?: string
 	}
 
 	/**

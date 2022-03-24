@@ -13,6 +13,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 
 import type * as azdata from 'azdata';
 import type * as vscode from 'vscode';
+import type * as azurecore from 'azurecore';
 
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/workbench/services/tasks/common/tasks';
@@ -29,6 +30,10 @@ import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
 import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { TreeDataTransferDTO } from 'vs/workbench/api/common/shared/treeDataTransfer';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+
+export abstract class ExtHostAzureAccountShape {
+	public $getSubscriptions(account: azurecore.AzureAccount, ignoreErrors?: boolean, selectedOnly?: boolean): Thenable<azurecore.GetSubscriptionsResult> { throw ni(); }
+}
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -536,7 +541,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Process the table edit.
 	 */
-	$processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> { throw ni(); }
+	$processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult<azdata.designers.TableDesignerView>> { throw ni(); }
 
 	/**
 	 * Publish the table designer changes.
@@ -551,7 +556,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Generate preview report.
 	 */
-	$generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> { throw ni(); }
+	$generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.GeneratePreviewReportResult> { throw ni(); }
 
 	/**
 	 * Dispose the table designer.
@@ -562,6 +567,11 @@ export abstract class ExtHostDataProtocolShape {
 	 * Open a new instance of table designer.
 	 */
 	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): void { throw ni(); }
+
+	/**
+	 * Gets the generic execution plan graph for a plan file.
+	 */
+	$getExecutionPlan(handle: number, planFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.GetExecutionPlanResult> { throw ni(); }
 }
 
 /**
@@ -603,6 +613,10 @@ export interface MainThreadAccountManagementShape extends IDisposable {
 	$getAccountsForProvider(providerId: string): Thenable<azdata.Account[]>;
 }
 
+export interface MainThreadAzureAccountShape extends IDisposable {
+
+}
+
 export interface MainThreadResourceProviderShape extends IDisposable {
 	$registerResourceProvider(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any>;
 	$unregisterResourceProvider(handle: number): Thenable<any>;
@@ -628,6 +642,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerSqlAssessmentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerDataGridProvider(providerId: string, title: string, handle: number): void;
 	$registerTableDesignerProvider(providerId: string, handle: number): Promise<any>;
+	$registerExecutionPlanProvider(providerId: string, handle: number): void;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
@@ -652,7 +667,6 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void;
 	$onJobDataUpdated(handle: Number): void;
 	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): void;
-
 	/**
 	 * Callback when a session has completed initialization
 	 */
@@ -688,6 +702,7 @@ function ni() { return new Error('Not implemented'); }
 export const SqlMainContext = {
 	// SQL entries
 	MainThreadAccountManagement: createMainId<MainThreadAccountManagementShape>('MainThreadAccountManagement'),
+	MainThreadAzureAccount: createMainId<MainThreadAzureAccountShape>('MainThreadAzureAccount'),
 	MainThreadConnectionManagement: createMainId<MainThreadConnectionManagementShape>('MainThreadConnectionManagement'),
 	MainThreadCredentialManagement: createMainId<MainThreadCredentialManagementShape>('MainThreadCredentialManagement'),
 	MainThreadDataProtocol: createMainId<MainThreadDataProtocolShape>('MainThreadDataProtocol'),
@@ -709,6 +724,7 @@ export const SqlMainContext = {
 
 export const SqlExtHostContext = {
 	ExtHostAccountManagement: createExtId<ExtHostAccountManagementShape>('ExtHostAccountManagement'),
+	ExtHostAzureAccount: createExtId<ExtHostAzureAccountShape>('ExtHostAzureAccount'),
 	ExtHostConnectionManagement: createExtId<ExtHostConnectionManagementShape>('ExtHostConnectionManagement'),
 	ExtHostCredentialManagement: createExtId<ExtHostCredentialManagementShape>('ExtHostCredentialManagement'),
 	ExtHostDataProtocol: createExtId<ExtHostDataProtocolShape>('ExtHostDataProtocol'),
@@ -945,7 +961,8 @@ export interface MainThreadNotebookShape extends IDisposable {
 	$unregisterExecuteProvider(handle: number): void;
 	$onFutureMessage(futureId: number, type: FutureMessageType, payload: azdata.nb.IMessage): void;
 	$onFutureDone(futureId: number, done: INotebookFutureDone): void;
-	$updateProviderDescriptionLanguages(providerId: string, languages: string[]): void;
+	$updateProviderKernels(providerId: string, languages: azdata.nb.IStandardKernel[]): void;
+	$updateKernelLanguages(providerId: string, kernelName: string, languages: string[]): void;
 }
 
 export interface INotebookDocumentsAndEditorsDelta {
@@ -1000,6 +1017,7 @@ export interface ExtHostNotebookDocumentsAndEditorsShape {
 export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable {
 	$trySetTrusted(_uri: UriComponents, isTrusted: boolean): Thenable<boolean>;
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
+	$tryCreateNotebookDocument(providerId: string, contents?: azdata.nb.INotebookContents): Promise<UriComponents>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string>;
 	$tryApplyEdits(id: string, modelVersionId: number, edits: INotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
 	$runCell(id: string, cellUri: UriComponents): Promise<boolean>;
@@ -1008,7 +1026,6 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$clearAllOutputs(id: string): Promise<boolean>;
 	$changeKernel(id: string, kernel: azdata.nb.IKernelSpec): Promise<boolean>;
 	$registerNavigationProvider(providerId: string, handle: number);
-	$createNotebookDocument(providerId: string, contents: azdata.nb.INotebookContents): Promise<azdata.nb.NotebookDocument>;
 }
 
 export interface ExtHostExtensionManagementShape {

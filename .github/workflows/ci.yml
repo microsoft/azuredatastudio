@@ -13,7 +13,7 @@ on:
 jobs:
   windows:
     name: Windows
-    runs-on: windows-latest
+    runs-on: windows-2019
     timeout-minutes: 30
     env:
       CHILD_CONCURRENCY: "1"
@@ -136,7 +136,7 @@ jobs:
 
       - name: Run Unit Tests (Electron)
         id: electron-unit-tests
-        run: DISPLAY=:10 ./scripts/test.sh --runGlob "**/sql/**/*.test.js" # {{SQL CARBON EDIT}} Run only our tests with coverage. Disable for now since it's currently broken --coverage
+        run: DISPLAY=:10 ./scripts/test.sh --runGlob "**/sql/**/*.test.js" --coverage
 
       - name: Run Extension Unit Tests (Electron)
         id: electron-extension-unit-tests

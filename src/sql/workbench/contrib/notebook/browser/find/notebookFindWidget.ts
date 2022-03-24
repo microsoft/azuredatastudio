@@ -337,15 +337,15 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 	}
 
 	private _onFindInputKeyDown(e: IKeyboardEvent): void {
-
+		// focus on findWidget after navigating to result to prevent manually selecting the findInput to go to the next result
 		if (e.equals(KeyCode.Enter)) {
-			this._notebookController.getAction(ACTION_IDS.FIND_NEXT).run().then(null, onUnexpectedError);
+			this._notebookController.getAction(ACTION_IDS.FIND_NEXT).run().then(null, onUnexpectedError).finally(() => this._findInput.focus());
 			e.preventDefault();
 			return;
 		}
-
+		// focus on findWidget after navigating to result to prevent manually selecting findInput to go to the previous result
 		if (e.equals(KeyMod.Shift | KeyCode.Enter)) {
-			this._notebookController.getAction(ACTION_IDS.FIND_PREVIOUS).run().then(null, onUnexpectedError);
+			this._notebookController.getAction(ACTION_IDS.FIND_PREVIOUS).run().then(null, onUnexpectedError).finally(() => this._findInput.focus());
 			e.preventDefault();
 			return;
 		}

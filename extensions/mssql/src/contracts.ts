@@ -1096,7 +1096,7 @@ export namespace InitializeTableDesignerRequest {
 }
 
 export namespace ProcessTableDesignerEditRequest {
-	export const type = new RequestType<TableDesignerEditRequestParams, azdata.designers.DesignerEditResult, void, void>('tabledesigner/processedit');
+	export const type = new RequestType<TableDesignerEditRequestParams, azdata.designers.DesignerEditResult<azdata.designers.TableDesignerView>, void, void>('tabledesigner/processedit');
 }
 
 export namespace PublishTableDesignerChangesRequest {
@@ -1108,9 +1108,22 @@ export namespace TableDesignerGenerateScriptRequest {
 }
 
 export namespace TableDesignerGenerateChangePreviewReportRequest {
-	export const type = new RequestType<azdata.designers.TableInfo, string, void, void>('tabledesigner/generatepreviewreport');
+	export const type = new RequestType<azdata.designers.TableInfo, azdata.designers.GeneratePreviewReportResult, void, void>('tabledesigner/generatepreviewreport');
 }
 export namespace DisposeTableDesignerRequest {
 	export const type = new RequestType<azdata.designers.TableInfo, void, void, void>('tabledesigner/dispose');
 }
 // ------------------------------- < Table Designer > ------------------------------------
+
+
+// ------------------------------- < Execution Plan > ------------------------------------
+
+export interface GetExecutionPlanParams {
+	graphInfo: azdata.executionPlan.ExecutionPlanGraphInfo,
+}
+
+export namespace GetExecutionPlanRequest {
+	export const type = new RequestType<GetExecutionPlanParams, azdata.executionPlan.GetExecutionPlanResult, void, void>('queryexecutionplan/getexecutionplan');
+}
+
+// ------------------------------- < Execution Plan > ------------------------------------

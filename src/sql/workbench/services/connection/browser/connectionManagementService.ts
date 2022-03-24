@@ -23,8 +23,8 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { Deferred } from 'sql/base/common/promise';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
+import { AzureResource, ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 import * as azdata from 'azdata';
 
