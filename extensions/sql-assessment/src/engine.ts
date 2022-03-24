@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as mssql from '../../mssql';
+import * as mssql from 'mssql';
 import * as azdata from 'azdata';
 import { createHistoryFileName, readHistoryFileNames, getAssessmentDate, TargetWithChildren } from './utils';
 import { promises as fs } from 'fs';
