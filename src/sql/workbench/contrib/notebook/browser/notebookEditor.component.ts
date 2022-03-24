@@ -30,6 +30,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { localize } from 'vs/nls';
+import * as path from 'vs/base/common/path';
 
 export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 
@@ -50,9 +51,6 @@ export class NotebookEditorComponent extends AngularDisposable {
 	public activeView: INotebookView;
 	public viewMode: ViewMode;
 	public ViewMode = ViewMode; //For use of the enum in the template
-
-	public readonly loadingMessage = localize('loadingNotebookMessage', "Loading notebook");
-	public readonly loadingCompletedMessage = localize('loadingNotebookCompletedMessage', "Loading notebook completed");
 
 	constructor(
 		@Inject(ILogService) private readonly logService: ILogService,
@@ -86,6 +84,14 @@ export class NotebookEditorComponent extends AngularDisposable {
 		}
 	}
 
+	public get loadingMessage() {
+		return localize('loadingNotebookMessage', "Loading notebook {0}", path.basename(this._notebookParams.notebookUri.path));
+	}
+
+	public get loadingCompletedMessage() {
+		return localize('loadingNotebookCompletedMessage', "Loading notebook {0} completed", path.basename(this._notebookParams.notebookUri.path));
+	}
+
 	public get isLoading(): boolean {
 		return this._isLoading;
 	}
@@ -98,15 +104,15 @@ export class NotebookEditorComponent extends AngularDisposable {
 	private async doLoad(): Promise<void> {
 		try {
 			await this.createModelAndLoadContents();
-			await this.setSerializationManager();
-			await this.setExecuteManager();
-			await this.loadModel();
-
-			this.setActiveView();
-			this._modelReadyDeferred.resolve(this.model);
 		} finally {
 			this.setLoading(false);
 		}
+		await this.setSerializationManager();
+		await this.setExecuteManager();
+		await this.loadModel();
+
+		this.setActiveView();
+		this._modelReadyDeferred.resolve(this.model);
 	}
 
 	private async loadModel(): Promise<void> {
