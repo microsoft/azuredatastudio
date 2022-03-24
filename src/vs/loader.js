@@ -789,6 +789,7 @@ var AMDLoader;
                 catch (_e) {
                     recorder.record(61 /* CachedDataMissed */, cachedDataPath);
                 }
+                // {{SQL CARBON EDIT}} Add more details to compile error
                 var script;
                 try {
                     script = new that._vm.Script(scriptSource, options);
@@ -857,6 +858,7 @@ var AMDLoader;
         NodeScriptLoader.prototype._createAndEvalScript = function (moduleManager, contents, options, callback, errorback) {
             var recorder = moduleManager.getRecorder();
             recorder.record(31 /* NodeBeginEvaluatingScript */, options.filename);
+            // {{SQL CARBON EDIT}} Add more details to compile error
             var script;
             try {
                 script = new this._vm.Script(contents, options);
