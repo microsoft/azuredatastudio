@@ -5,7 +5,7 @@
 
 import * as should from 'should';
 import * as vscode from 'vscode';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as TypeMoq from 'typemoq';
 import * as loc from '../localizedConstants';
 import 'mocha';
@@ -67,7 +67,7 @@ describe('SchemaCompareMainWindow.start @DacFx@', function (): void {
 		let sc = new SchemaCompareTestService();
 
 		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object, null);
-		await result.start({connectionProfile: mockIConnectionProfile});
+		await result.start({ connectionProfile: mockIConnectionProfile });
 
 		should.notEqual(result.sourceEndpointInfo, undefined);
 		should.equal(result.sourceEndpointInfo.endpointType, mssql.SchemaCompareEndpointType.Database);
@@ -502,7 +502,8 @@ describe('SchemaCompareMainWindow.execute @DacFx@', function (): void {
 			selectSourceButtonState: true,
 			selectTargetButtonState: true,
 			generateScriptButtonState: true,
-			applyButtonState: true} );
+			applyButtonState: true
+		});
 	});
 
 });

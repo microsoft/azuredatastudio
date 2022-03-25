@@ -7,7 +7,7 @@ import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as newProjectTool from '../tools/newProjectTool';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as path from 'path';
 
 import { IconPathHelper } from '../common/iconHelper';
@@ -92,6 +92,16 @@ export class CreateProjectFromDatabaseDialog {
 				label: constants.sdkStyleProject
 			}).component();
 
+			const sdkLearnMore = view.modelBuilder.hyperlink().withProps({
+				label: constants.learnMore,
+				url: constants.sdkLearnMoreUrl
+			}).component();
+
+			const sdkFormComponentGroup = view.modelBuilder.flexContainer()
+				.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
+				.withItems([this.sdkStyleCheckbox, sdkLearnMore], { CSSStyles: { flex: '0 0 auto', 'margin-right': '10px' } })
+				.component();
+
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
 					{
@@ -117,7 +127,7 @@ export class CreateProjectFromDatabaseDialog {
 								component: createProjectSettingsFormSection,
 							},
 							{
-								component: this.sdkStyleCheckbox
+								component: sdkFormComponentGroup
 							}
 						]
 					}
@@ -371,7 +381,7 @@ export class CreateProjectFromDatabaseDialog {
 			filePath: this.projectLocationTextBox!.value!,
 			version: '1.0.0.0',
 			extractTarget: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
-			sdkStyle: this.sdkStyleCheckbox?.checked
+			sdkStyle: this.sdkStyleCheckbox?.checked!
 		};
 
 		azdataApi!.window.closeDialog(this.dialog);

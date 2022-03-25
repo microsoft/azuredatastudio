@@ -76,6 +76,8 @@ export interface INotebookService {
 
 	getStandardKernelsForProvider(provider: string): Promise<azdata.nb.IStandardKernel[] | undefined>;
 
+	getSupportedLanguagesForProvider(provider: string, kernelDisplayName?: string): Promise<string[]>;
+
 	getOrCreateSerializationManager(providerId: string, uri: URI): Promise<ISerializationManager>;
 
 	getOrCreateExecuteManager(providerId: string, uri: URI): Thenable<IExecuteManager>;
@@ -137,7 +139,7 @@ export interface INotebookService {
 	 */
 	notifyCellExecutionStarted(): void;
 
-	createNotebookInput(options: INotebookShowOptions, resource?: UriComponents): Promise<IEditorInput | undefined>;
+	createNotebookInputFromContents(providerId: string, contents?: azdata.nb.INotebookContents, resource?: UriComponents): Promise<IEditorInput | undefined>;
 
 	openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined>;
 

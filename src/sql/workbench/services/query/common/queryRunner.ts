@@ -387,7 +387,7 @@ export default class QueryRunner extends Disposable {
 		}
 	}
 
-	public handleExecutionPlanAvailable(executionPlans: azdata.ExecutionPlanGraph[] | undefined) {
+	public handleExecutionPlanAvailable(executionPlans: azdata.executionPlan.ExecutionPlanGraph[] | undefined) {
 		if (executionPlans) {
 			this._onExecutionPlanAvailable.fire({
 				providerId: mssqlProviderName,

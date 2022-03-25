@@ -122,7 +122,7 @@ export class NotebookModelStub implements INotebookModel {
 	getMetaValue(key: string) {
 		throw new Error('Method not implemented.');
 	}
-	addCell(cellType: CellType, index?: number): void {
+	addCell(cellType: CellType, index?: number, language?: string): void {
 		throw new Error('Method not implemented.');
 	}
 	moveCell(cellModel: ICellModel, direction: MoveDirection): void {
@@ -235,7 +235,10 @@ export class ServerManagerStub implements nb.ServerManager {
 }
 
 export class NotebookServiceStub implements INotebookService {
-	createNotebookInput(options: INotebookShowOptions, resource?: UriComponents): Promise<IEditorInput> {
+	getSupportedLanguagesForProvider(provider: string, kernelDisplayName?: string): Promise<string[]> {
+		throw new Error('Method not implemented.');
+	}
+	createNotebookInputFromContents(providerId: string, contents?: nb.INotebookContents, resource?: UriComponents): Promise<IEditorInput> {
 		throw new Error('Method not implemented.');
 	}
 	_serviceBrand: undefined;

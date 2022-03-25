@@ -74,7 +74,7 @@ export class AddCellAction extends Action {
 				}
 			}
 			if (context?.model) {
-				context.model.addCell(this.cellType, index);
+				context.model.addCell(this.cellType, index, context.cell.metadata?.language);
 				context.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.AddCell, { cell_type: this.cellType });
 			}
 		} else {

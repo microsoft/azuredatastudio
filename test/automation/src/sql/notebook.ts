@@ -10,6 +10,7 @@ import { Editors } from '../editors';
 import { IElement } from '..';
 
 const winOrCtrl = process.platform === 'win32' ? 'win' : 'ctrl';
+const ctrlOrCmd = process.platform === 'win32' ? 'ctrl' : 'cmd';
 
 export class Notebook {
 
@@ -87,7 +88,7 @@ export class Notebook {
 	public async selectAllTextInEditor(): Promise<void> {
 		const editor = '.notebook-cell.active .monaco-editor';
 		await this.code.waitAndClick(editor);
-		await this.code.dispatchKeybinding('cmd+a');
+		await this.code.dispatchKeybinding(ctrlOrCmd + '+a');
 	}
 
 	private static readonly placeholderSelector = 'div.placeholder-cell-component';
@@ -164,12 +165,9 @@ export class Notebook {
 		await this.code.waitForElementGone(Notebook.doubleClickToEditSelector);
 	}
 
-	async waitForTextCellPreviewContent(text: string, fontType: 'p' | 'h1' | 'h2' | 'h3', textStyle?: 'strong' | 'i' | 'u' | 'mark'): Promise<void> {
-		let textSelector = `${Notebook.textCellPreviewSelector} ${fontType}`;
-		if (textStyle) {
-			textSelector = `${textSelector} ${textStyle}`;
-		}
-		await this.code.waitForElement(textSelector, result => result?.textContent === text);
+	async waitForTextCellPreviewContent(text: string, selector: string): Promise<void> {
+		let textSelector = `${Notebook.textCellPreviewSelector} ${selector}`;
+		await this.code.waitForElement(textSelector, result => !!result?.textContent?.includes(text)); // Use includes to handle whitespace/quote edge cases
 	}
 
 	async isTextCellInEditMode(): Promise<boolean> {
@@ -233,7 +231,7 @@ export class Notebook {
 }
 
 export class TextCellToolbar {
-	private static readonly textCellToolbar = 'text-cell-component markdown-toolbar-component ul.actions-container';
+	private static readonly textCellToolbar = 'text-cell-component markdown-toolbar-component ul.actions-container li.action-item';
 
 	constructor(private code: Code) { }
 
@@ -246,7 +244,7 @@ export class TextCellToolbar {
 	}
 
 	public async italicizeSelectedText(): Promise<void> {
-		await this.clickToolbarButton('Italics');
+		await this.clickToolbarButton('Italic');
 	}
 
 	public async underlineSelectedText(): Promise<void> {
@@ -258,7 +256,7 @@ export class TextCellToolbar {
 	}
 
 	public async codifySelectedText(): Promise<void> {
-		await this.clickToolbarButton('Code');
+		await this.clickToolbarButton('Insert code');
 	}
 
 	public async insertLink(): Promise<void> {
@@ -266,11 +264,11 @@ export class TextCellToolbar {
 	}
 
 	public async insertList(): Promise<void> {
-		await this.clickToolbarButton('List');
+		await this.clickToolbarButton('Insert list');
 	}
 
 	public async insertOrderedList(): Promise<void> {
-		await this.clickToolbarButton('Ordered list');
+		await this.clickToolbarButton('Insert ordered list');
 	}
 
 	public async changeSelectedTextSize(): Promise<void> {

@@ -16,10 +16,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		return;
 	}
 
-	/* tslint:disable:no-unused-expression */
 	new HostSessionManager(context, vslsApi);
 	new GuestSessionManager(context, vslsApi);
-	/* tslint:enable:no-unused-expression */
 }
 
 export function deactivate(): void {

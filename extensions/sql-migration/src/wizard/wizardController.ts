@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import { MigrationStateModel, NetworkContainerType, Page } from '../models/stateMachine';
 import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
@@ -165,6 +165,7 @@ export class WizardController {
 			'subscriptionId': this._model._targetSubscription?.id,
 			'resourceGroup': this._model._resourceGroup?.name,
 			'targetType': this._model._targetType,
+			'tenantId': this._model?._azureAccount?.properties?.tenants[0]?.id
 		};
 	}
 }

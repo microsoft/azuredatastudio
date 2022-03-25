@@ -12,7 +12,6 @@ import {
 import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { Dropdown, IDropdownOptions } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
@@ -26,6 +25,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { errorForeground, inputValidationErrorBorder } from 'vs/platform/theme/common/colorRegistry';
+import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 
 @Component({
 	selector: 'modelview-dropdown',

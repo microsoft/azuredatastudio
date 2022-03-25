@@ -154,6 +154,17 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 				}
 			}
 		},
+		monitor: {
+			logAnalytics: {
+				workspace: {
+					list: async (resourceGroup?: string, subscription?: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+						await localAzDiscovered;
+						validateAz(azToolService.localAz);
+						return azToolService.localAz!.monitor.logAnalytics.workspace.list(resourceGroup, subscription, additionalEnvVars);
+					}
+				}
+			}
+		},
 		getPath: async () => {
 			await localAzDiscovered;
 			throwIfNoAz(azToolService.localAz);
