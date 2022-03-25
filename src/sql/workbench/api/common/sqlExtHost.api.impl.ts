@@ -37,7 +37,6 @@ import { ExtHostWorkspace } from 'sql/workbench/api/common/extHostWorkspace';
 import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitDataService';
 import { URI } from 'vs/base/common/uri';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
-import { IExtHostExtensionService } from 'vs/workbench/api/common/extHostExtensionService';
 import { ExtHostAzureBlob } from 'sql/workbench/api/common/extHostAzureBlob';
 import { ExtHostAzureAccount } from 'sql/workbench/api/common/extHostAzureAccount';
 import { IExtHostExtensionService } from 'vs/workbench/api/common/extHostExtensionService';
