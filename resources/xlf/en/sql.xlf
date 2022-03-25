@@ -3412,6 +3412,14 @@ Error: {1}</source>
       <source xml:lang="en">Notebook Editor</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/notebook/browser/notebookEditor.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="loadingNotebookCompletedMessage">
+      <source xml:lang="en">Loading notebook {0} completed</source>
+    </trans-unit>
+    <trans-unit id="loadingNotebookMessage">
+      <source xml:lang="en">Loading notebook {0}</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet" source-language="en" datatype="plaintext"><body>
     <trans-unit id="notebookExplorer.name">
       <source xml:lang="en">Notebooks</source>

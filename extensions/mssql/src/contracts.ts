@@ -7,7 +7,7 @@ import { NotificationType, RequestType } from 'vscode-languageclient';
 import { ITelemetryEventProperties, ITelemetryEventMeasures } from './telemetry';
 import * as azdata from 'azdata';
 import { ConnectParams } from 'dataprotocol-client/lib/protocol';
-import * as mssql from './mssql';
+import * as mssql from 'mssql';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -1123,7 +1123,16 @@ export interface GetExecutionPlanParams {
 }
 
 export namespace GetExecutionPlanRequest {
-	export const type = new RequestType<GetExecutionPlanParams, azdata.executionPlan.GetExecutionPlanResult, void, void>('queryexecutionplan/getexecutionplan');
+	export const type = new RequestType<GetExecutionPlanParams, azdata.executionPlan.GetExecutionPlanResult, void, void>('queryExecutionPlan/getExecutionPlan');
+}
+
+export interface ExecutionPlanComparisonParams {
+	firstExecutionPlanGraphInfo: azdata.executionPlan.ExecutionPlanGraphInfo;
+	secondExecutionPlanGraphInfo: azdata.executionPlan.ExecutionPlanGraphInfo;
+}
+
+export namespace ExecutionPlanComparisonRequest {
+	export const type = new RequestType<ExecutionPlanComparisonParams, azdata.executionPlan.ExecutionPlanComparisonResult, void, void>('queryExecutionPlan/compareExecutionPlanGraph');
 }
 
 // ------------------------------- < Execution Plan > ------------------------------------

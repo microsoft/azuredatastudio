@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../localizedConstants';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as utils from '../utils';
 import { SelectOperationPage } from './pages/selectOperationpage';
 import { DeployConfigPage } from './pages/deployConfigPage';
