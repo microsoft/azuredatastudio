@@ -86,11 +86,14 @@ import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common
 import { QueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryServiceImpl';
 import { IBlobService } from 'sql/platform/blob/common/blobService';
 import { BlobService } from 'sql/workbench/services/blob/browser/blobService';
+import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
+import { AzureAccountService } from 'sql/workbench/services/azureAccount/browser/azureAccountService';
 
 registerSingleton(ISqlOAuthService, SqlOAuthService);
 registerSingleton(sqlIClipboardService, sqlClipboardService);
 registerSingleton(IQueryHistoryService, QueryHistoryService);
 registerSingleton(IBlobService, BlobService);
+registerSingleton(IAzureAccountService, AzureAccountService);
 // {{SQL CARBON EDIT}} - End
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

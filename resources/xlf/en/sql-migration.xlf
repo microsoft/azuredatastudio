@@ -303,6 +303,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.database.backup.load.error">
       <source xml:lang="en">An error occurred while accessing database details.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.database.checksum.info.text">
+      <source xml:lang="en">Ensure that your backups were taken with the WITH CHECKSUM option.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.database.migration.mode.description">
       <source xml:lang="en">To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.</source>
     </trans-unit>
@@ -338,6 +341,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.page.title">
       <source xml:lang="en">Database backup</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.private.endpoint.info.text">
+      <source xml:lang="en">Ensure that the Azure Storage account does not use a private endpoint.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.to.be.migrated">
       <source xml:lang="en">Database to be migrated</source>
@@ -432,6 +438,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.instance">
       <source xml:lang="en">Instance</source>
     </trans-unit>
+    <trans-unit id="sql.migration.invalid.account.error">
+      <source xml:lang="en">To continue, select a valid Azure account.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.invalid.blob.container.error">
       <source xml:lang="en">To continue, select a valid blob container for source database '{0}'.</source>
     </trans-unit>
@@ -464,6 +473,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.invalid.resourceGroup.error">
       <source xml:lang="en">To continue, select a valid resource group.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.invalid.savedInfo">
+      <source xml:lang="en">Cannot retrieve saved session. Try again by selecting new session.</source>
     </trans-unit>
     <trans-unit id="sql.migration.invalid.service.name.error">
       <source xml:lang="en">Enter a valid name for the Migration Service.</source>
@@ -548,6 +560,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.location">
       <source xml:lang="en">Location</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.mi.not.ready">
+      <source xml:lang="en">The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.</source>
     </trans-unit>
     <trans-unit id="sql.migration.migration.completed">
       <source xml:lang="en">Migrations completed</source>
@@ -747,11 +762,8 @@ This may take some time.</source>
     <trans-unit id="sql.migration.resourceGroups">
       <source xml:lang="en">Resource group</source>
     </trans-unit>
-    <trans-unit id="sql.migration.resume.continue">
-      <source xml:lang="en">Continue last migration attempt...</source>
-    </trans-unit>
-    <trans-unit id="sql.migration.resume.start">
-      <source xml:lang="en">Start with migration assessment again (recommended)</source>
+    <trans-unit id="sql.migration.resume.session">
+      <source xml:lang="en">Resume previously saved session</source>
     </trans-unit>
     <trans-unit id="sql.migration.resume.title">
       <source xml:lang="en">Run migration workflow again</source>
@@ -778,7 +790,7 @@ This may take some time.</source>
       <source xml:lang="en">Next</source>
     </trans-unit>
     <trans-unit id="sql.migration.saved.assessment.result">
-      <source xml:lang="en">Saved assessment result</source>
+      <source xml:lang="en">Saved session</source>
     </trans-unit>
     <trans-unit id="sql.migration.search">
       <source xml:lang="en">Search</source>
@@ -1009,7 +1021,7 @@ This may take some time.</source>
       <source xml:lang="en">Data storage requirement</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.db.card.title">
-      <source xml:lang="en">Azure SQL Database (PaaS)</source>
+      <source xml:lang="en">Azure SQL Database</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.gb">
       <source xml:lang="en">{0} GB</source>
@@ -1036,7 +1048,7 @@ This may take some time.</source>
       <source xml:lang="en">Memory requirement</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.mi.card.title">
-      <source xml:lang="en">Azure SQL Managed Instance (PaaS)</source>
+      <source xml:lang="en">Azure SQL Managed Instance</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.ms">
       <source xml:lang="en">{0} ms</source>
@@ -1087,10 +1099,10 @@ This may take some time.</source>
       <source xml:lang="en">Azure recommendation</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.recommendation.view.assessment.mi">
-      <source xml:lang="en">To migrate to Azure SQL Managed Instance (PaaS), view assessment results and select one or more databases.</source>
+      <source xml:lang="en">To migrate to Azure SQL Managed Instance, view assessment results and select one or more databases.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.recommendation.view.assessment.vm">
-      <source xml:lang="en">To migrate to SQL Server on Azure Virtual Machine (IaaS), view assessment results and select one or more databases.</source>
+      <source xml:lang="en">To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.recommendationReason">
       <source xml:lang="en">Recommendation reason</source>
@@ -1195,7 +1207,7 @@ This may take some time.</source>
       <source xml:lang="en">View details</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.vm.card.title">
-      <source xml:lang="en">SQL Server on Azure Virtual Machine (IaaS)</source>
+      <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
     </trans-unit>
     <trans-unit id="sql.migration.source.configuration">
       <source xml:lang="en">Source configuration</source>
@@ -1235,6 +1247,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.start.migration.button">
       <source xml:lang="en">Start migration</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.start.session">
+      <source xml:lang="en">Start a new session</source>
     </trans-unit>
     <trans-unit id="sql.migration.start.time">
       <source xml:lang="en">Start time</source>
@@ -1352,6 +1367,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.type.label">
       <source xml:lang="en">Type:</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.unavailable.managedInstance">
+      <source xml:lang="en">(Unavailable) {0}</source>
     </trans-unit>
     <trans-unit id="sql.migration.unique.name">
       <source xml:lang="en">Select a unique name for this target database</source>

@@ -43,16 +43,20 @@ export class SqlCredentialService extends SqlOpsFeature<any> {
 
 			protected override registerProvider(options: any): Disposable {
 				let readCredential = async (credentialId: string): Promise<azdata.Credential> => {
+					if (Utils.isLinux) {
+						const password = await this._secretStorage.get(credentialId);
+						return {
+							credentialId: credentialId,
+							password: password
+						};
+					}
 					return this._client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId, password: undefined });
 				};
 
 				let saveCredential = async (credentialId: string, password: string): Promise<boolean> => {
 					if (Utils.isLinux) {
-						/**
-						 * This is only done for linux because this is going to be
-						 * the default credential system for linux in the next release
-						 */
 						await this._secretStorage.store(credentialId, password);
+						return true;
 					}
 					return this._client.sendRequest(Contracts.SaveCredentialRequest.type, { credentialId, password });
 				};
@@ -61,6 +65,7 @@ export class SqlCredentialService extends SqlOpsFeature<any> {
 					if (Utils.isLinux) {
 						try {
 							await this._secretStorage.delete(credentialId);
+							return true;
 						} catch (e) {
 							console.log('credential does not exist in native secret store');
 						}

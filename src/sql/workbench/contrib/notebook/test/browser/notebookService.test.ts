@@ -236,7 +236,8 @@ suite.skip('NotebookService:', function (): void {
 			standardKernels: [{
 				name: 'kernel1',
 				connectionProviderIds: [],
-				displayName: 'Kernel 1'
+				displayName: 'Kernel 1',
+				supportedLanguages: ['python']
 			}],
 			provider: 'otherProvider'
 		};

@@ -6,6 +6,7 @@
 import { Application } from '../../../../../automation';
 import * as minimist from 'minimist';
 import { afterSuite, beforeSuite } from '../../../utils';
+import * as assert from 'assert';
 
 export function setup(opts: minimist.ParsedArgs) {
 	describe('Notebook', () => {
@@ -30,7 +31,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.selectAllTextInEditor();
 			await app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
 			await app.code.dispatchKeybinding('escape');
-			await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'strong');
+			await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p strong');
 		});
 
 		it('can perform basic code cell functionality', async function () {
@@ -143,7 +144,132 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.waitForTrustedElements();
 			});
 		});
+
+		describe('Cell Toolbar Actions', function () {
+			const sampleText: string = 'Test Text';
+			async function createCellAndSelectAllText(app: Application): Promise<void> {
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
+				await app.workbench.sqlNotebook.waitForPlaceholderGone();
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
+				await app.workbench.sqlNotebook.waitForTypeInEditor(sampleText);
+				await app.workbench.sqlNotebook.selectAllTextInEditor();
+			}
+
+			it('can bold selected text', async function () {
+				const app = this.app as Application;
+				await createCellAndSelectAllText(app);
+				await app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p strong');
+			});
+
+			it('can italicize selected text', async function () {
+				const app = this.app as Application;
+				await createCellAndSelectAllText(app);
+				await app.workbench.sqlNotebook.textCellToolbar.italicizeSelectedText();
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p em');
+			});
+
+			it('can underline selected text', async function () {
+				const app = this.app as Application;
+				await createCellAndSelectAllText(app);
+				await app.workbench.sqlNotebook.textCellToolbar.underlineSelectedText();
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p u');
+			});
+
+			it('can highlight selected text', async function () {
+				const app = this.app as Application;
+				await createCellAndSelectAllText(app);
+				await app.workbench.sqlNotebook.textCellToolbar.highlightSelectedText();
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p mark');
+			});
+
+			it('can codify selected text', async function () {
+				const app = this.app as Application;
+				await createCellAndSelectAllText(app);
+				await app.workbench.sqlNotebook.textCellToolbar.codifySelectedText();
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'pre code');
+			});
+
+			it('can bullet selected text', async function () {
+				const app = this.app as Application;
+				await createCellAndSelectAllText(app);
+				await app.workbench.sqlNotebook.textCellToolbar.insertList();
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'ul li');
+			});
+
+			it('can number selected text', async function () {
+				const app = this.app as Application;
+				await createCellAndSelectAllText(app);
+				await app.workbench.sqlNotebook.textCellToolbar.insertOrderedList();
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'ol li');
+			});
+		});
+
+		describe('markdown', function () {
+			it('can create http link from markdown', async function () {
+				const app = this.app as Application;
+				const markdownString = '[Microsoft homepage](http://www.microsoft.com)';
+				const linkSelector = '.notebook-cell.active .notebook-text a[href=\'http://www.microsoft.com\']';
+				await verifyElementRendered(app, markdownString, linkSelector);
+			});
+			it('can create img from markdown', async function () {
+				const app = this.app as Application;
+				const markdownString = '![Churn-Index](https://www.ngdata.com/wp-content/uploads/2016/05/churn.jpg)';
+				// Verify image with the correct src and alt attributes is created
+				const imgSelector = '.notebook-cell.active .notebook-text img[src=\'https://www.ngdata.com/wp-content/uploads/2016/05/churn.jpg\'][alt=\'Churn-Index\']';
+				await verifyElementRendered(app, markdownString, imgSelector);
+			});
+		});
+
+		describe('Cell Actions', function () {
+			it('can change cell language', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
+				await app.workbench.sqlNotebook.addCellFromPlaceholder('Code');
+				await app.workbench.sqlNotebook.waitForPlaceholderGone();
+
+				const languagePickerButton = '.notebook-cell.active .cellLanguage';
+				await app.code.waitAndClick(languagePickerButton);
+
+				await app.workbench.quickinput.waitForQuickInputElements(names => names[0] === 'SQL');
+				await app.code.waitAndClick('.quick-input-widget .quick-input-list .monaco-list-row');
+
+				let element = await app.code.waitForElement(languagePickerButton);
+				assert.strictEqual(element.textContent?.trim(), 'SQL');
+			});
+		});
 	});
+}
+
+/**
+ * Verifies that the given markdown string is rendered into the expected HTML element in split view, rich text view
+ * and the text cell outside of edit mode.
+ * @param app The application
+ * @param markdownString The markdown text to enter for the element to render
+ * @param element The query selector for the element that is expected to be rendered
+ */
+async function verifyElementRendered(app: Application, markdownString: string, element: string): Promise<void> {
+	await app.workbench.sqlNotebook.newUntitledNotebook();
+	await app.workbench.sqlNotebook.addCell('markdown');
+	await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
+	await app.workbench.sqlNotebook.waitForTypeInEditor(markdownString);
+	// Verify link is shown in split view
+	await app.code.waitForElement(element);
+	await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Rich Text View');
+	// Verify link is shown in WYSIWYG view
+	await app.code.waitForElement(element);
+	// Verify link is shown outside of edit mode
+	await app.code.dispatchKeybinding('escape');
+	await app.code.waitForElement(element);
 }
 
 async function openAndRunNotebook(app: Application, filename: string): Promise<void> {

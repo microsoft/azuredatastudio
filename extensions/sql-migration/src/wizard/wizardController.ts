@@ -165,6 +165,7 @@ export class WizardController {
 			'subscriptionId': this._model._targetSubscription?.id,
 			'resourceGroup': this._model._resourceGroup?.name,
 			'targetType': this._model._targetType,
+			'tenantId': this._model?._azureAccount?.properties?.tenants[0]?.id
 		};
 	}
 }

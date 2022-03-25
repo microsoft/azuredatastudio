@@ -11,7 +11,7 @@ import * as path from 'path';
 import { getCommonLaunchArgsAndCleanupOldLogFiles, getOrDownloadServer } from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature } from './features';
+import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature } from './features';
 import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import { SchemaCompareService } from './schemaCompare/schemaCompareService';
@@ -167,7 +167,8 @@ function getClientOptions(context: AppContext): ClientOptions {
 			SqlMigrationService.asFeature(context),
 			SqlCredentialService.asFeature(context),
 			TableDesignerFeature,
-			BlobService.asFeature(context)
+			BlobService.asFeature(context),
+			ExecutionPlanServiceFeature
 		],
 		outputChannel: new CustomOutputChannel()
 	};

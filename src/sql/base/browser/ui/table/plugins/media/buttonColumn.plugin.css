@@ -12,6 +12,11 @@
 	padding-bottom: 0px;
 }
 
+.slick-plugin-button:disabled {
+	cursor: not-allowed;
+	opacity: 0.4;
+}
+
 .slick-plugin-button.slick-plugin-text-button {
 	border-width: 1px;
 	width: 100%;
@@ -27,4 +32,3 @@
 	border-width: 0px;
 	background-color: transparent;
 }
-

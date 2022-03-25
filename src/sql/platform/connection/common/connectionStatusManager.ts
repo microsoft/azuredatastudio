@@ -9,12 +9,9 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { StopWatch } from 'vs/base/common/stopwatch';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { join } from 'vs/base/common/path';
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
-import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { values } from 'vs/base/common/collections';
 import { Schemas } from 'vs/base/common/network';
 
@@ -24,9 +21,7 @@ export class ConnectionStatusManager {
 
 	constructor(
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@ILogService private _logService: ILogService,
-		@IEnvironmentService private _environmentService: IEnvironmentService,
-		@INotificationService private _notificationService: INotificationService) {
+		@ILogService private _logService: ILogService) {
 		this._connections = {};
 	}
 
@@ -143,10 +138,6 @@ export class ConnectionStatusManager {
 		let connection = this._connections[summary.ownerUri];
 		if (!connection) {
 			this._logService.error(`OnConnectionComplete but no connection found '${summary.ownerUri}' Connections = [${Object.keys(this._connections)}]`);
-			this._notificationService.notify({
-				severity: Severity.Error,
-				message: `An unexpected error occurred while connecting. Please [file an issue](command:workbench.action.openIssueReporter) with the title 'Unexpected Error Occurred while Connecting' and include the log file [${join(this._environmentService.logsPath, 'renderer1.log')}](command:workbench.action.openLogsFolder)`
-			});
 			// Bail out at this point - there's nothing else we can do since this is an unexpected state.
 			throw new Error('Unexpected error occurred while connecting.');
 		}

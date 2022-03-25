@@ -383,7 +383,8 @@ export enum DataProviderType {
 	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
 	DataGridProvider = 'DataGridProvider',
 	TableDesignerProvider = 'TableDesignerProvider',
-	BlobProvider = 'BlobProvider'
+	BlobProvider = 'BlobProvider',
+	ExecutionPlanProvider = 'ExecutionPlanProvider'
 }
 
 export enum DeclarativeDataType {
@@ -431,7 +432,6 @@ export class TreeComponentItem extends vsExtTypes.TreeItem {
 	checked?: boolean;
 }
 
-// Accounts interfaces.ts > AzureResource should also be updated
 export enum AzureResource {
 	ResourceManagement = 0,
 	Sql = 1,
@@ -550,6 +550,19 @@ export class SqlThemeIcon {
 
 	private constructor(id: string) {
 		this.id = id;
+	}
+}
+
+export interface ICellMetadata {
+	language?: string | undefined;
+	tags?: string[] | undefined;
+	azdata_cell_guid?: string | undefined;
+	connection_name?: string;
+	/**
+	 * .NET Interactive metadata. This is only required for compatibility with the .NET Interactive extension.
+	 */
+	dotnet_interactive?: {
+		language: string;
 	}
 }
 
@@ -954,7 +967,9 @@ export namespace designers {
 		Script = 'script',
 		ForeignKeys = 'foreignKeys',
 		CheckConstraints = 'checkConstraints',
-		Indexes = 'indexes'
+		Indexes = 'indexes',
+		PrimaryKeyName = 'primaryKeyName',
+		PrimaryKeyColumns = 'primaryKeyColumns'
 	}
 
 	export enum TableColumnProperty {

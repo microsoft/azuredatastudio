@@ -12,6 +12,7 @@ import { MigrationMode, MigrationStateModel, NetworkContainerType, SavedInfo } f
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { WizardController } from '../../wizard/wizardController';
 import { getMigrationModeEnum, getMigrationTargetTypeEnum } from '../../constants/helper';
+import * as constants from '../../constants/strings';
 
 export class RetryMigrationDialog {
 	private _context: vscode.ExtensionContext;
@@ -30,21 +31,18 @@ export class RetryMigrationDialog {
 		savedInfo = {
 			closedPage: 0,
 
-			// AzureAccount
-			azureAccount: migration.azureAccount,
-			azureTenant: migration.azureAccount.properties.tenants[0],
-
 			// DatabaseSelector
-			selectedDatabases: [],
+			databaseAssessment: [sourceDatabaseName],
 
 			// SKURecommendation
-			databaseAssessment: [],
 			databaseList: [sourceDatabaseName],
-			migrationDatabases: [],
 			serverAssessment: null,
 			skuRecommendation: null,
-
 			migrationTargetType: getMigrationTargetTypeEnum(migration)!,
+
+			// TargetSelection
+			azureAccount: migration.azureAccount,
+			azureTenant: migration.azureAccount.properties.tenants[0],
 			subscription: migration.subscription,
 			location: location,
 			resourceGroup: {
@@ -58,14 +56,13 @@ export class RetryMigrationDialog {
 			migrationMode: getMigrationModeEnum(migration),
 
 			// DatabaseBackup
-			targetSubscription: migration.subscription,
 			targetDatabaseNames: [migration.migrationContext.name],
 			networkContainerType: null,
 			networkShares: [],
 			blobs: [],
 
 			// Integration Runtime
-			migrationServiceId: migration.migrationContext.properties.migrationService,
+			sqlMigrationService: migration.controller,
 		};
 
 		const getStorageAccountResourceGroup = (storageAccountResourceId: string) => {
@@ -151,7 +148,11 @@ export class RetryMigrationDialog {
 		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 		const stateModel = this.createMigrationStateModel(this._migration, connectionId, serverName, api, location!);
 
-		const wizardController = new WizardController(this._context, stateModel);
-		await wizardController.openWizard(stateModel.sourceConnectionId);
+		if (stateModel.loadSavedInfo()) {
+			const wizardController = new WizardController(this._context, stateModel);
+			await wizardController.openWizard(stateModel.sourceConnectionId);
+		} else {
+			void vscode.window.showInformationMessage(constants.MIGRATION_CANNOT_RETRY);
+		}
 	}
 }

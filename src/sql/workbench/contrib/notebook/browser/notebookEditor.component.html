@@ -4,6 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
+<loading-spinner class="editorLoader" [loading]="isLoading" [loadingMessage]="loadingMessage" [loadingCompletedMessage]="loadingCompletedMessage"></loading-spinner>
 <!-- Notebook View -->
 <notebook-component *ngIf="viewMode === ViewMode.Notebook" [_views]="views" [_model]="model"></notebook-component>
 <!-- Dashboard View -->

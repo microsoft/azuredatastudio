@@ -44,6 +44,11 @@ export interface DesignerComponentInput {
 	readonly viewModel: DesignerViewModel;
 
 	/**
+	 * Gets the issues.
+	 */
+	readonly issues: DesignerIssue[] | undefined;
+
+	/**
 	 * Start initilizing the designer input object.
 	 */
 	initialize(): void;
@@ -76,7 +81,8 @@ export interface DesignerComponentInput {
 }
 
 export interface DesignerUIState {
-	activeTabId: PanelTabIdentifier;
+	activeContentTabId: PanelTabIdentifier;
+	activeScriptTabId: PanelTabIdentifier;
 }
 
 export type DesignerAction = 'publish' | 'initialize' | 'processEdit' | 'generateScript' | 'generateReport';
@@ -98,6 +104,7 @@ export interface DesignerState {
 
 export const NameProperty = 'name';
 export const ScriptProperty = 'script';
+export const CanBeDeletedProperty = 'canBeDeleted';
 
 export interface DesignerView {
 	components?: DesignerDataPropertyInfo[]
@@ -143,6 +150,7 @@ export interface CategoryValue {
 export interface DropDownProperties extends ComponentProperties {
 	value?: string | CategoryValue;
 	values?: string[] | CategoryValue[];
+	isEditable?: boolean;
 }
 
 export interface CheckBoxProperties extends ComponentProperties {
@@ -175,7 +183,6 @@ export interface DesignerTableProperties extends ComponentProperties {
 	 * Whether user can add new rows to the table. The default value is true.
 	 */
 	canAddRows?: boolean;
-
 	/**
 	 * Whether user can remove rows from the table. The default value is true.
 	 */
@@ -188,10 +195,19 @@ export interface DesignerTableProperties extends ComponentProperties {
 	 * The confirmation message to be displayed when user removes a row.
 	 */
 	removeRowConfirmationMessage?: string;
+	/**
+	 * Whether to show the item detail in properties view. The default value is true.
+	 */
+	showItemDetailInPropertiesView?: boolean;
+	/**
+	 * The label of the add new button. The default value is 'Add New'.
+	 */
+	labelForAddNewButton?: string;
 }
 
 export interface DesignerTableComponentRowData {
-	[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+	[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties | boolean;
+	canBeDeleted?: boolean;
 }
 
 
@@ -203,16 +219,23 @@ export enum DesignerEditType {
 
 export interface DesignerEdit {
 	type: DesignerEditType;
-	path: DesignerEditPath;
+	path: DesignerPropertyPath;
 	value?: any;
+	source: DesignerUIArea;
 }
 
-export type DesignerEditPath = (string | number)[];
-export const DesignerRootObjectPath: DesignerEditPath = [];
+export type DesignerUIArea = 'PropertiesView' | 'ScriptView' | 'TopContentView' | 'TabsView';
+
+export type DesignerPropertyPath = (string | number)[];
+export const DesignerRootObjectPath: DesignerPropertyPath = [];
+
+export type DesignerIssueSeverity = 'error' | 'warning' | 'information';
+export type DesignerIssue = { description: string, propertyPath?: DesignerPropertyPath, severity: DesignerIssueSeverity };
 
 export interface DesignerEditResult {
 	isValid: boolean;
-	errors?: { message: string, property?: DesignerEditPath }[];
+	refreshView?: boolean;
+	issues?: DesignerIssue[];
 }
 
 export interface DesignerTextEditor {

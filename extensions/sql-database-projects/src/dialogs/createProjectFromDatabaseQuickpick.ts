@@ -139,6 +139,7 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 		projName: projectName,
 		filePath: projectLocation,
 		version: '1.0.0.0',
-		extractTarget: mapExtractTargetEnum(folderStructure)
+		extractTarget: mapExtractTargetEnum(folderStructure),
+		sdkStyle: false // todo: add sdkstyle option to quickpick
 	};
 }

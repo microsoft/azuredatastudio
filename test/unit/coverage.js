@@ -41,7 +41,7 @@ exports.createReport = function (isSingle) {
 		Object.keys(transformed.data).forEach((file) => {
 			const entry = transformed.data[file];
 			const fixedPath = fixPath(entry.path);
-			if (fixedPath.includes('\\vs\\') || fixedPath.includes('/vs/')) { return; } // {{SQL CARBON EDIT}} skip vscode files
+			if (fixedPath.includes(`/vs/`)  || fixedPath.includes('\\vs\\') || path.basename(fixedPath) === 'marked.js') { return; } // {{SQL CARBON EDIT}} skip vscode files and imported marked.js
 			entry.data.path = fixedPath;
 			newData[fixedPath] = entry;
 		});

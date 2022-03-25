@@ -37,7 +37,7 @@ export class QueryPlanEditorOverrideContribution extends Disposable implements I
 
 	private registerEditorOverride(): void {
 		this._editorResolverService.registerEditor(
-			'*.sqlplan',
+			'', //Removing sqlplan glob pattern. TODO: to be removed entirely from ADS.
 			{
 				id: QueryPlanEditor.ID,
 				label: QueryPlanEditor.LABEL,

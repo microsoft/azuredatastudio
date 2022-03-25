@@ -905,7 +905,6 @@ declare module 'mssql' {
 		getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
 	}
 
-
 	export interface IBlobService {
 		/**
 		* Create shared access signature for blob container

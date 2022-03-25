@@ -120,8 +120,8 @@ export class TabbedPanel extends Disposable {
 		this._styleElement.remove();
 	}
 
-	public contains(tab: IPanelTab): boolean {
-		return this._tabMap.has(tab.identifier);
+	public contains(tabId: string): boolean {
+		return this._tabMap.has(tabId);
 	}
 
 	public pushTab(tab: IPanelTab, index?: number, destroyTabBody?: boolean): PanelTabIdentifier {

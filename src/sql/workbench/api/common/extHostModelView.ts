@@ -2085,6 +2085,7 @@ class InfoBoxComponentWrapper extends ComponentWrapper implements azdata.InfoBox
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.InfoBox, id, logService);
 		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<void>());
 	}
 
 	public get style(): azdata.InfoBoxStyle {
@@ -2109,6 +2110,27 @@ class InfoBoxComponentWrapper extends ComponentWrapper implements azdata.InfoBox
 
 	public set announceText(v: boolean) {
 		this.setProperty('announceText', v);
+	}
+
+	public get isClickable(): boolean {
+		return this.properties['isClickable'];
+	}
+
+	public set isClickable(v: boolean) {
+		this.setProperty('isClickable', v);
+	}
+
+	public get clickableButtonAriaLabel(): string {
+		return this.properties['clickableButtonAriaLabel'];
+	}
+
+	public set clickableButtonAriaLabel(v: string) {
+		this.setProperty('clickableButtonAriaLabel', v);
+	}
+
+	public get onDidClick(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
 	}
 }
 
