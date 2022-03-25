@@ -11,12 +11,13 @@ import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
 import * as vscode from 'vscode';
+import * as fse from 'fs-extra';
 import type * as azdataType from 'azdata';
 import * as dataworkspace from 'dataworkspace';
 import type * as mssqlVscode from 'vscode-mssql';
 
 import { promises as fs } from 'fs';
-import * as fse from 'fs-extra';
+
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, reservedProjectFolders } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
@@ -200,9 +201,14 @@ export class ProjectsController {
 		// Copy project readme
 		if (targetPlatformToAssets?.has(targetPlatform) && (targetPlatformToAssets?.get(targetPlatform)?.readmeFolder)) {
 			const readmeFolder = targetPlatformToAssets.get(targetPlatform)?.readmeFolder;
+
 			if (readmeFolder) {
-				await fs.copyFile(path.join(readmeFolder, 'README.md'), path.join(projectFolderPath, 'README.md'));
-				await fse.copy(path.join(readmeFolder, 'assets'), path.join(projectFolderPath, 'assets'));
+				const readmeFile = path.join(readmeFolder, 'README.md');
+				const folderExists = await utils.exists(readmeFile);
+				if (folderExists) {
+					await fs.copyFile(readmeFile, path.join(projectFolderPath, 'README.md'));
+					await fse.copy(path.join(readmeFolder, 'assets'), path.join(projectFolderPath, 'assets'));
+				}
 			}
 		}
 

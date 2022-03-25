@@ -4,7 +4,7 @@
 Microsoft Azure SQL Database Local Development experience for Azure Data Studio and VS Code provides a way to design, edit, build/validate, publish and run schemas for Azure SQL databases from a source-controlled project to one or more offline database instances, running in a containerized environment that offers closest fidelity with what Azure SQL Database public service. Once development gets to a more mature stage, developers can easily publish the same project to public service from the same environment, and manage the entire lifecycle of their databases (e.g. manage schema drifts and such).
 
 ## VS Code
-Microsoft SQL Server Database Projects for Azure Data Studio and VS Code provides a way to design, edit, and publish and runvi schemas for Azure SQL databases from a source-controlled project.
+Microsoft SQL Server Database Projects for Azure Data Studio and VS Code provides a way to design, edit, and publish and run schemas for Azure SQL databases from a source-controlled project.
 
 ## Getting Started with Database Projects
 •	Create a new database project by going to the Projects viewlet or by searching Projects: New in the command palette.
