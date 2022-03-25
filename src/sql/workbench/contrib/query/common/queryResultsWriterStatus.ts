@@ -11,8 +11,6 @@ export enum QueryResultsWriterMode {
 }
 
 export class QueryResultsWriterStatus extends Disposable {
-	public static instance: QueryResultsWriterStatus = undefined;
-
 	private writerMode: QueryResultsWriterMode;
 
 	constructor(mode: QueryResultsWriterMode = QueryResultsWriterMode.ToGrid) {
