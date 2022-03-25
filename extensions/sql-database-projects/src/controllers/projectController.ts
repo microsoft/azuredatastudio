@@ -198,7 +198,7 @@ export class ProjectsController {
 		await fs.writeFile(newProjFilePath, newProjFileContents);
 
 		// Copy project readme
-		if (targetPlatformToAssets.has(targetPlatform) && (targetPlatformToAssets.get(targetPlatform)?.readmeFolder)) {
+		if (targetPlatformToAssets?.has(targetPlatform) && (targetPlatformToAssets?.get(targetPlatform)?.readmeFolder)) {
 			const readmeFolder = targetPlatformToAssets.get(targetPlatform)?.readmeFolder;
 			if (readmeFolder) {
 				await fs.copyFile(path.join(readmeFolder, 'README.md'), path.join(projectFolderPath, 'README.md'));
