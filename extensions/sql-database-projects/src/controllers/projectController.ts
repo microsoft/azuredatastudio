@@ -863,6 +863,24 @@ export class ProjectsController {
 	}
 
 	/**
+	 * Converts a legacy style project to an SDK-style project
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
+	public async convertToSdkStyleProject(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(context);
+
+		await project.convertProjectToSdkStyle();
+		void this.reloadProject(context);
+
+		// show message that project file can be simplified
+		const result = await vscode.window.showInformationMessage(constants.projectUpdatedToSdkStyle(project.projectFileName), constants.learnMore);
+
+		if (result === constants.learnMore) {
+			void vscode.env.openExternal(vscode.Uri.parse(constants.sdkLearnMoreUrl!));
+		}
+	}
+
+	/**
 	 * Adds a database reference to the project
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
