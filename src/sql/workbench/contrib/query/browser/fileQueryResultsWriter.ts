@@ -51,16 +51,16 @@ export class FileQueryResultsWriter extends Disposable implements IQueryResultsW
 			this.reset();
 		}));
 
-		this.queryRunnerDisposables.add(this.runner.onMessage((message) => {
-			this.onMessage(message);
+		this.queryRunnerDisposables.add(this.runner.onMessage(async (message) => {
+			await this.onMessage(message);
 		}));
 
 		this.queryRunnerDisposables.add(this.runner.onResultSet((resultSet) => {
 			this.onResultSet(resultSet);
 		}));
 
-		this.queryRunnerDisposables.add(this.runner.onResultSetUpdate((resultSet) => {
-			this.updateResultSet(resultSet);
+		this.queryRunnerDisposables.add(this.runner.onResultSetUpdate(async (resultSet) => {
+			await this.updateResultSet(resultSet);
 		}));
 	}
 
