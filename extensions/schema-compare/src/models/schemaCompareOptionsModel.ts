@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as loc from '../localizedConstants';
-import * as mssql from '../../../mssql/src/mssql';
+import * as mssql from 'mssql';
 import { isNullOrUndefined } from 'util';
 
 export class SchemaCompareOptionsModel {

@@ -1293,6 +1293,18 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.TableSchemaValidationE" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) rror" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Table schema validation failed with error: {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[表架构验证失败，出现错误: {0}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.addNewColumnToPrimaryK" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ey" ItemType="0" PsrId="308" Leaf="true">
@@ -3147,20 +3159,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.errorCountAlert" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} validation errors found.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[发现 {0} 个验证错误。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.generalGroupName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[General]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[常规]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.issueCountAlert" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0} validation issues found.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已找到 {0} 个验证问题。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.issuesTabTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Issues ({0})]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[问题({0})]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3179,15 +3200,6 @@
           <Val><![CDATA[Designer is loaded]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[已加载设计器]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.messagesTabTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Errors ({0})]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[错误({0})]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3291,11 +3303,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/browser/designer/designerMessagesTabPanelView.designer.MessageListAriaLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/browser/designer/designerIssuesTabPanelView.designer.IssueListAriaLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Errors]]></Val>
+          <Val><![CDATA[Issues]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[错误]]></Val>
+            <Val><![CDATA[问题]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6771,6 +6783,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlan.executionPlanFileLoadingComplete" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Execution plans are generated]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已生成执行计划]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlan.executionPlanFileLoadingFailed" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Failed to load execution plan]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[未能加载执行计划]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlan.executionPlanFitGraphLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Zoom to fit]]></Val>
@@ -6843,11 +6873,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlan.loadingExecutionPlanFile" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Generating execution plans]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在生成执行计划]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlan.openQueryAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Query]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[打开查询]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor.executionPlanEditor" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Query Execution Plan Editor]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[查询执行计划编辑器]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14352,6 +14400,33 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/executionPlan/common/executionPlanService.noHandlerRegistered" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[No valid execution plan handler is registered]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[未注册有效的执行计划处理程序]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/executionPlan/common/executionPlanService.providerIdNotValidError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Valid provider is required in order to interact with ExecutionPlanService]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[如果要与 ExecutionPlanService 交互，需要有效的提供程序]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/executionPlan/common/executionPlanService.selectExecutionPlanProvider" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select a provider to open execution plan]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[选择提供程序以打开执行计划]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/fileBrowser/browser/fileBrowserDialog.fileBrowser.discard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Discard]]></Val>
@@ -16721,6 +16796,15 @@
           <Val><![CDATA[Indexes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[索引]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.inputValidationError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The input validation failed with error: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[输入验证失败，出现错误: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

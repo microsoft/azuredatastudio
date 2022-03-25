@@ -1948,6 +1948,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.mi.not.ready" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[受控執行個體 '{0}' 無法用於移轉，因為它目前處於 '{1}' 狀態。若要繼續，請選取可用的受控執行個體。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.migration.completed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Migrations completed]]></Val>
@@ -4527,6 +4536,15 @@
           <Val><![CDATA[Type:]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[類型:]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.unavailable.managedInstance" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[(Unavailable) {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(無法使用) {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
