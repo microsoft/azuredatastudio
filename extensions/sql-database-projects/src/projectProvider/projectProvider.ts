@@ -35,36 +35,38 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * Gets the supported project types
 	 */
 	get supportedProjectTypes(): dataworkspace.IProjectType[] {
-		return [{
-			id: constants.emptySqlDatabaseProjectTypeId,
-			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
-			displayName: constants.emptyProjectTypeDisplayName,
-			description: constants.emptyProjectTypeDescription,
-			icon: IconPathHelper.colorfulSqlProject,
-			targetPlatforms: Array.from(constants.targetPlatformToVersion.keys()),
-			defaultTargetPlatform: constants.defaultTargetPlatform,
-			sdkStyleOption: true,
-			sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl
-		},
-		{
-			id: constants.edgeSqlDatabaseProjectTypeId,
-			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
-			displayName: constants.edgeProjectTypeDisplayName,
-			description: constants.edgeProjectTypeDescription,
-			icon: IconPathHelper.sqlEdgeProject,
-			sdkStyleOption: true,
-			sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl
-		},
-		{
-			id: constants.emptyAzureDbSqlDatabaseProjectTypeId,
-			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
-			displayName: constants.emptyAzureDbProjectTypeDisplayName,
-			description: constants.emptyAzureDbProjectTypeDescription,
-			defaultTargetPlatform: sqldbproj.SqlTargetPlatform.sqlAzure,
-			icon: IconPathHelper.sqlDbProject,
-			sdkStyleOption: true,
-			sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl
-		}];
+		return [
+			{
+				id: constants.emptyAzureDbSqlDatabaseProjectTypeId,
+				projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
+				displayName: constants.emptyAzureDbProjectTypeDisplayName,
+				description: constants.emptyAzureDbProjectTypeDescription,
+				defaultTargetPlatform: sqldbproj.SqlTargetPlatform.sqlAzure,
+				icon: IconPathHelper.sqlDbProject,
+				sdkStyleOption: true,
+				sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl
+			},
+			{
+				id: constants.emptySqlDatabaseProjectTypeId,
+				projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
+				displayName: constants.emptyProjectTypeDisplayName,
+				description: constants.emptyProjectTypeDescription,
+				icon: IconPathHelper.colorfulSqlProject,
+				targetPlatforms: Array.from(constants.targetPlatformToVersion.keys()),
+				defaultTargetPlatform: constants.defaultTargetPlatform,
+				sdkStyleOption: true,
+				sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl
+			},
+			{
+				id: constants.edgeSqlDatabaseProjectTypeId,
+				projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
+				displayName: constants.edgeProjectTypeDisplayName,
+				description: constants.edgeProjectTypeDescription,
+				icon: IconPathHelper.sqlEdgeProject,
+				sdkStyleOption: true,
+				sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl
+			}
+		];
 	}
 
 	/**

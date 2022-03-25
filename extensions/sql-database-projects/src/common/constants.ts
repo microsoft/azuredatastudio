@@ -25,20 +25,20 @@ export const sqlProjectSdk = 'Microsoft.Build.Sql';
 
 // Project Provider
 export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
-export const emptyProjectTypeDisplayName = localize('emptyProjectTypeDisplayName', "SQL Database");
-export const emptyProjectTypeDescription = localize('emptyProjectTypeDescription', "Develop and publish schemas for SQL databases starting from an empty project");
+export const emptyProjectTypeDisplayName = localize('emptyProjectTypeDisplayName', "SQL Server Database");
+export const emptyProjectTypeDescription = localize('emptyProjectTypeDescription', "Develop and publish schemas for SQL Server databases starting from an empty project");
 
 export const edgeSqlDatabaseProjectTypeId = 'SqlDbEdgeProj';
-export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "SQL Edge");
-export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription', "Start with the core pieces to develop and publish schemas for SQL Edge");
+export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "Azure SQL Edge Database");
+export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription', "Start with the core pieces to develop and publish schemas for Azure SQL Edge Database");
 
 export const emptySqlDatabaseSdkProjectTypeId = 'EmptySqlDbSdkProj';
 export const emptySdkProjectTypeDisplayName = localize('emptySdkProjectTypeDisplayName', "SQL Database (SDK)");
 export const emptySdkProjectTypeDescription = localize('emptySdkProjectTypeDescription', "Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.");
 
 export const emptyAzureDbSqlDatabaseProjectTypeId = 'EmptyAzureSqlDbProj';
-export const emptyAzureDbProjectTypeDisplayName = localize('emptyAzureDbProjectTypeDisplayName', "Azure SQL DB");
-export const emptyAzureDbProjectTypeDescription = localize('emptyAzureDbProjectTypeDescription', "Develop and publish schemas for Azure SQL DB starting from an empty project");
+export const emptyAzureDbProjectTypeDisplayName = localize('emptyAzureDbProjectTypeDisplayName', "Azure SQL Database");
+export const emptyAzureDbProjectTypeDescription = localize('emptyAzureDbProjectTypeDescription', "Develop and publish schemas for Azure SQL Database starting from an empty project");
 
 // Dashboard
 export const addItemAction = localize('addItemAction', "Add Item");

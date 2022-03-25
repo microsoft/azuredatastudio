@@ -16,6 +16,7 @@ import * as dataworkspace from 'dataworkspace';
 import type * as mssqlVscode from 'vscode-mssql';
 
 import { promises as fs } from 'fs';
+import * as fse from 'fs-extra';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, reservedProjectFolders } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
@@ -46,6 +47,7 @@ import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQu
 import { IDeployProfile } from '../models/deploy/deployProfile';
 import { EntryType, FileProjectEntry, IDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
 import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updateProject';
+import { targetPlatformToAssets } from '../projectProvider/projectAssets';
 
 const maxTableLength = 10;
 
@@ -169,10 +171,12 @@ export class ProjectsController {
 			throw new Error(constants.invalidTargetPlatform(creationParams.targetPlatform, Array.from(constants.targetPlatformToVersion.keys())));
 		}
 
+		const targetPlatform = creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP;
+
 		const macroDict: Record<string, string> = {
 			'PROJECT_NAME': creationParams.newProjName,
 			'PROJECT_GUID': creationParams.projectGuid ?? UUID.generateUuid().toUpperCase(),
-			'PROJECT_DSP': creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP
+			'PROJECT_DSP': targetPlatform
 		};
 
 		let newProjFileContents = creationParams.sdkStyle ? templates.macroExpansion(templates.newSdkSqlProjectTemplate, macroDict) : templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
@@ -189,8 +193,18 @@ export class ProjectsController {
 			throw new Error(constants.projectAlreadyExists(newProjFileName, path.parse(newProjFilePath).dir));
 		}
 
-		await fs.mkdir(path.dirname(newProjFilePath), { recursive: true });
+		const projectFolderPath = path.dirname(newProjFilePath);
+		await fs.mkdir(projectFolderPath, { recursive: true });
 		await fs.writeFile(newProjFilePath, newProjFileContents);
+
+		// Copy project readme
+		if (targetPlatformToAssets.has(targetPlatform) && (targetPlatformToAssets.get(targetPlatform)?.readmeFolder)) {
+			const readmeFolder = targetPlatformToAssets.get(targetPlatform)?.readmeFolder;
+			if (readmeFolder) {
+				await fs.copyFile(path.join(readmeFolder, 'README.md'), path.join(projectFolderPath, 'README.md'));
+				await fse.copy(path.join(readmeFolder, 'assets'), path.join(projectFolderPath, 'assets'));
+			}
+		}
 
 		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
 
