@@ -75,7 +75,7 @@ export async function setLocalAppSetting(projectFolder: string, key: string, val
 	}
 
 	settings.Values[key] = value;
-	void fs.promises.writeFile(localSettingsPath, JSON.stringify(settings, undefined, 2));
+	fs.writeFileSync(localSettingsPath, JSON.stringify(settings, undefined, 2));
 
 	return true;
 }
