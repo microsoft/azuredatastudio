@@ -464,6 +464,9 @@ export class KernelStub implements nb.IKernel {
 	interrupt(): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
+	restart(): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export class FutureStub implements nb.IFuture {

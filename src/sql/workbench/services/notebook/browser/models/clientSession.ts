@@ -332,7 +332,18 @@ export class ClientSession implements IClientSession {
 	 * this is a no-op, and resolves with `false`.
 	 */
 	restart(): Promise<boolean> {
-		throw new Error('Not implemented');
+		if (!this._session?.kernel) {
+			return Promise.resolve(false);
+		}
+		let restartCompleted = new Deferred<boolean>();
+		this._session?.kernel?.restart().then(() => {
+			this.options.notificationService.info(localize('kernelRestartedSuccessfully', 'Kernel restarted successfully'));
+			restartCompleted.resolve(true);
+		}, err => {
+			this.options.notificationService.error(localize('kernelRestartFailed', 'Kernel restart failed: {0}', err));
+			restartCompleted.resolve(false);
+		});
+		return restartCompleted.promise;
 	}
 
 	/**

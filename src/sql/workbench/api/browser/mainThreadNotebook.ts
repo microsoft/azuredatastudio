@@ -484,6 +484,10 @@ class KernelWrapper implements azdata.nb.IKernel {
 	interrupt(): Thenable<void> {
 		return this._proxy.ext.$interruptKernel(this.kernelDetails.kernelId);
 	}
+
+	restart(): Thenable<void> {
+		return this._proxy.ext.$restartKernel(this.kernelDetails.kernelId);
+	}
 }
 
 
