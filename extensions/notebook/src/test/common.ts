@@ -308,6 +308,9 @@ export class TestKernel implements azdata.nb.IKernel {
 	interrupt(): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
+	restart(): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
 }
 //#endregion
 
