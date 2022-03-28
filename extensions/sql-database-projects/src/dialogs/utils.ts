@@ -31,6 +31,13 @@ export function getAgreementDisplayText(agreementInfo: AgreementInfo): string {
 	return constants.eulaAgreementText(agreementInfo.link!.text);
 }
 
+/**
+ * Returns the title for SQL server based on the target version
+ */
+export function getPublishServerName(target: string): string {
+	return target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure) ? constants.AzureSqlServerName : constants.SqlServerName;
+}
+
 export function getDockerBaseImages(target: string): DockerImageInfo[] {
 	if (target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure)) {
 		return [{
