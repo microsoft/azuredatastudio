@@ -8,7 +8,7 @@ import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
-import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs } from '../api/azure';
+import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs, getResourceGroupByName, sortResourceArrayByName } from '../api/azure';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
@@ -953,14 +953,39 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return getLocationDisplayName(location);
 	}
 
-	public async getAzureResourceGroupDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+	public async getAzureResourceGroupDropdownValues(resourceType: azureResource.AzureResourceType, subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
 		let resourceGroupValues: azdata.CategoryValue[] = [];
 		try {
 			if (this._azureAccount && subscription) {
-				this._resourceGroups = await getResourceGroups(this._azureAccount, subscription);
+
+				switch (resourceType) {
+					case azureResource.AzureResourceType.sqlManagedInstance:
+						let managedInstances = await getAvailableManagedInstanceProducts(this._azureAccount, subscription);
+						this._resourceGroups = await Promise.all(managedInstances.map(async (mi) => {
+							return await getResourceGroupByName(this._azureAccount, subscription, mi.resourceGroup!);
+						}));
+						break;
+					case azureResource.AzureResourceType.storageAccount:
+						let storageAccounts = await getAvailableStorageAccounts(this._azureAccount, subscription);
+						this._resourceGroups = await Promise.all(storageAccounts.map(async (sa) => {
+							return await getResourceGroupByName(this._azureAccount, subscription, sa.resourceGroup!);
+						}));
+						break;
+					case azureResource.AzureResourceType.databaseMigrationService:
+						let dmsInstances = await getSqlMigrationServices(this._azureAccount, subscription);
+						this._resourceGroups = await Promise.all(dmsInstances.map(async (dms) => {
+							return await getResourceGroupByName(this._azureAccount, subscription, dms.properties.resourceGroup);
+						}));
+						break;
+					default:
+						this._resourceGroups = await getResourceGroups(this._azureAccount, subscription);
+				}
 			} else {
 				this._resourceGroups = [];
 			}
+
+			// to-do: remove duplicates from the list
+			sortResourceArrayByName(this._resourceGroups);
 
 			this._resourceGroups.forEach((rg) => {
 				resourceGroupValues.push({
@@ -1272,7 +1297,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		let sqlMigrationServiceValues: azdata.CategoryValue[] = [];
 		try {
 			if (this._azureAccount && subscription && resourceGroupName && this._targetServerInstance) {
-				this._sqlMigrationServices = (await getSqlMigrationServices(this._azureAccount, subscription, resourceGroupName?.toLowerCase(), this._sessionId)).filter(sms => sms.location.toLowerCase() === this._targetServerInstance.location.toLowerCase());
+				this._sqlMigrationServices = (await getSqlMigrationServices(this._azureAccount, subscription)).filter(sms => sms.location.toLowerCase() === this._targetServerInstance.location.toLowerCase() && sms.properties.resourceGroup.toLowerCase() === resourceGroupName.toLowerCase());
 			} else {
 				this._sqlMigrationServices = [];
 			}

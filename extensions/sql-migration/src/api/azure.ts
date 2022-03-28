@@ -56,6 +56,19 @@ export async function getResourceGroups(account: azdata.Account, subscription: S
 	return result.resourceGroups;
 }
 
+//
+export async function getResourceGroupByName(account: azdata.Account, subscription: Subscription, resourceGroupName: string): Promise<azureResource.AzureResourceResourceGroup> {
+	const api = await getAzureCoreAPI();
+	const path = encodeURI(`/subscriptions/${subscription.id}/resourcegroups/${resourceGroupName}?api-version=2021-04-01`);
+
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.toString());
+	}
+
+	return response.response.data;
+}
+
 export async function createResourceGroup(account: azdata.Account, subscription: Subscription, resourceGroupName: string, location: string): Promise<azureResource.AzureResourceResourceGroup> {
 	const api = await getAzureCoreAPI();
 	const result = await api.createResourceGroup(account, subscription, resourceGroupName, location, false);
@@ -153,10 +166,26 @@ export async function getSqlMigrationService(account: azdata.Account, subscripti
 	return response.response.data;
 }
 
-export async function getSqlMigrationServices(account: azdata.Account, subscription: Subscription, resouceGroupName: string, sessionId: string): Promise<SqlMigrationService[]> {
+// old one
+// export async function getSqlMigrationServices(account: azdata.Account, subscription: Subscription, resouceGroupName: string, sessionId: string): Promise<SqlMigrationService[]> {
+// 	const api = await getAzureCoreAPI();
+// 	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${resouceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices?api-version=2020-09-01-preview`);
+// 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
+// 	if (response.errors.length > 0) {
+// 		throw new Error(response.errors.toString());
+// 	}
+// 	sortResourceArrayByName(response.response.data.value);
+// 	response.response.data.value.forEach((sms: SqlMigrationService) => {
+// 		sms.properties.resourceGroup = getResourceGroupFromId(sms.id);
+// 	});
+// 	return response.response.data.value;
+// }
+
+// Brian's change
+export async function getSqlMigrationServices(account: azdata.Account, subscription: Subscription): Promise<SqlMigrationService[]> {
 	const api = await getAzureCoreAPI();
-	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${resouceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices?api-version=2020-09-01-preview`);
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
+	const path = encodeURI(`/subscriptions/${subscription.id}/providers/Microsoft.DataMigration/sqlMigrationServices?api-version=2022-01-30-preview`);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
@@ -339,7 +368,7 @@ export async function getLocationDisplayName(location: string): Promise<string> 
 }
 
 type SortableAzureResources = AzureProduct | azureResource.FileShare | azureResource.BlobContainer | azureResource.Blob | azureResource.AzureResourceSubscription | SqlMigrationService;
-function sortResourceArrayByName(resourceArray: SortableAzureResources[]): void {
+export function sortResourceArrayByName(resourceArray: SortableAzureResources[]): void {
 	if (!resourceArray) {
 		return;
 	}

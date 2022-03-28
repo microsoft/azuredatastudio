@@ -27,7 +27,8 @@ declare module 'azureResource' {
 			postgresServer = 'microsoft.dbforpostgresql/servers',
 			azureArcService = 'microsoft.azuredata/datacontrollers',
 			storageAccount = 'microsoft.storage/storageaccounts',
-			logAnalytics = 'microsoft.operationalinsights/workspaces'
+			logAnalytics = 'microsoft.operationalinsights/workspaces',
+			databaseMigrationService = 'microsoft.datamigration/sqlmigrationservices'
 		}
 
 		export interface IAzureResourceProvider extends DataProvider {
