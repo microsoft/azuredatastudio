@@ -221,10 +221,8 @@ export async function launchPublishTargetOption(project: Project): Promise<const
 
 	switch (publishOption) {
 		case constants.publishToExistingServer(name):
-
 			return constants.PublishTargetType.existingServer;
 		case constants.publishToDockerContainer(name):
-
 			return constants.PublishTargetType.docker;
 		default:
 			return constants.PublishTargetType.existingServer;
