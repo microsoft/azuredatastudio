@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { SqlTargetPlatform } from 'sqldbproj';
 import * as constants from '../common/constants';
 import { AgreementInfo, DockerImageInfo } from '../models/deploy/deployProfile';
 
@@ -28,6 +29,13 @@ export function getConnectionName(connection: any): string {
 
 export function getAgreementDisplayText(agreementInfo: AgreementInfo): string {
 	return constants.eulaAgreementText(agreementInfo.link!.text);
+}
+
+/**
+ * Returns the title for SQL server based on the target version
+ */
+export function getPublishServerName(target: string): string {
+	return target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure) ? constants.AzureSqlServerName : constants.SqlServerName;
 }
 
 export function getDockerBaseImages(): DockerImageInfo[] {
