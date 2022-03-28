@@ -626,17 +626,13 @@ export class Project implements ISqlProject {
 		// make backup copy of project
 		await fs.copyFile(this._projectFilePath, this._projectFilePath + '_backup');
 
-		// remove SSDT and ADS SqlTargets imports
+		// remove SSDT and ADS SqlTasks imports
 		const importsToRemove = [];
 		for (let i = 0; i < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import).length; i++) {
 			const importTarget = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import)[i];
-
-			const condition = importTarget.getAttribute(constants.Condition);
 			const projectAttributeVal = importTarget.getAttribute(constants.Project);
 
-			if (condition === constants.NetCoreCondition && projectAttributeVal === constants.NetCoreTargets
-				|| condition === constants.RoundTripSqlDbPresentCondition && projectAttributeVal === constants.SqlDbTargets
-				|| condition === constants.RoundTripSqlDbNotPresentCondition && projectAttributeVal === constants.MsBuildtargets) {
+			if (projectAttributeVal === constants.NetCoreTargets || projectAttributeVal === constants.SqlDbTargets || projectAttributeVal === constants.MsBuildtargets) {
 				importsToRemove.push(importTarget);
 			}
 		}
