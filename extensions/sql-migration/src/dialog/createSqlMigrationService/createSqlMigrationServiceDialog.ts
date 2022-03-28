@@ -369,7 +369,7 @@ export class CreateSqlMigrationServiceDialog {
 	private async populateResourceGroups(): Promise<void> {
 		this.migrationServiceResourceGroupDropdown.loading = true;
 		try {
-			this.migrationServiceResourceGroupDropdown.values = (await this._model.getAzureResourceGroupDropdownValues(azureResource.AzureResourceType.storageAccount, this._model._targetSubscription)).map(v => {
+			this.migrationServiceResourceGroupDropdown.values = (await this._model.getAzureResourceGroupDropdownValues(azureResource.AzureResourceType.databaseMigrationService, this._model._targetSubscription)).map(v => {
 				return {
 					name: v.displayName,
 					displayName: v.displayName
