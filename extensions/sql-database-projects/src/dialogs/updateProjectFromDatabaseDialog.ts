@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import type * as azdata from 'azdata';
 import * as constants from '../common/constants';
 import * as newProjectTool from '../tools/newProjectTool';
@@ -234,6 +234,10 @@ export class UpdateProjectFromDatabaseDialog {
 		let values = [];
 		try {
 			values = await this.getDatabaseValues(connectionProfile.connectionId);
+
+			// move system dbs to the bottom of the list so it's easier to find user dbs
+			const systemDbs = values.filter(db => constants.systemDbs.includes(db));
+			values = values.filter(db => !constants.systemDbs.includes(db)).concat(systemDbs);
 		} catch (e) {
 			// if the user doesn't have access to master, just set the database of the connection profile
 			values = [connectionProfile.databaseName];

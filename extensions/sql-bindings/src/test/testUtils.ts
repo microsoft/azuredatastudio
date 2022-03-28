@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
-import * as mssql from '../../../mssql/src/mssql';
+import * as mssql from 'mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import { RequestType } from 'vscode-languageclient';
 

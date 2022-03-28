@@ -1577,7 +1577,7 @@ describe('Project: round trip updates', function (): void {
 		await testUpdateInRoundTrip(baselines.SSDTUpdatedProjectBaseline, baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaseline);
 	});
 
-	it('Should update SSDT project to work in ADS handling pre-exsiting targets', async function (): Promise<void> {
+	it('Should update SSDT project to work in ADS handling pre-existing targets', async function (): Promise<void> {
 		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithBeforeBuildTarget, baselines.SSDTProjectBaselineWithBeforeBuildTargetAfterUpdate);
 	});
 
@@ -1646,3 +1646,55 @@ async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: 
 	should(stub.calledOnce).be.true('showWarningMessage should have been called exactly once');
 	sinon.restore();
 }
+
+describe('Project: legacy to SDK-style updates', function (): void {
+	before(async function (): Promise<void> {
+		await baselines.loadBaselines();
+	});
+
+	beforeEach(function (): void {
+		sinon.restore();
+	});
+
+	it('Should update legacy style project to SDK-style', async function (): Promise<void> {
+		const projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(project.importedTargets.length).equal(3, 'SSDT and ADS imports should be in the project');
+		should(project.isSdkStyleProject).equal(false);
+		await project.convertProjectToSdkStyle();
+
+		should(await exists(projFilePath + '_backup')).equal(true, 'Backup file should have been generated before the project was updated');
+		should(project.importedTargets.length).equal(0, 'SSDT and ADS imports should have been removed');
+		should(project.isSdkStyleProject).equal(true);
+	});
+
+	it('Should not update project and no backup file should be created when project is already SDK-style', async function (): Promise<void> {
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline, folderPath);
+
+		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);
+		should(project.isSdkStyleProject).equal(true);
+		await project.convertProjectToSdkStyle();
+
+		should(await exists(sqlProjPath + '_backup')).equal(false, 'No backup file should have been created');
+		should(project.isSdkStyleProject).equal(true);
+	});
+
+	it('Should not update project and no backup file should be created when it is an SSDT project that has not been updated to work in ADS', async function (): Promise<void> {
+		sinon.stub(window, 'showWarningMessage').returns(<any>Promise.resolve(constants.noString));
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
+
+		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);
+		should(project.isSdkStyleProject).equal(false);
+		should(project.importedTargets.length).equal(2, 'Project should have 2 SSDT imports');
+		await project.convertProjectToSdkStyle();
+
+		should(await exists(sqlProjPath + '_backup')).equal(false, 'No backup file should have been created');
+		should(project.importedTargets.length).equal(2, 'Project imports should not have been changed');
+		should(project.isSdkStyleProject).equal(false);
+	});
+});

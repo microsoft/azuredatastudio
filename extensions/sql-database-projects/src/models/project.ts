@@ -617,6 +617,45 @@ export class Project implements ISqlProject {
 		await this.createCleanFileNode(beforeBuildNode);
 	}
 
+	public async convertProjectToSdkStyle(): Promise<void> {
+		// don't do anything if the project is already SDK style or it's an SSDT project that hasn't been updated to build in ADS
+		if (this.isSdkStyleProject || !this._importedTargets.includes(constants.NetCoreTargets)) {
+			return;
+		}
+
+		// make backup copy of project
+		await fs.copyFile(this._projectFilePath, this._projectFilePath + '_backup');
+
+		// remove SSDT and ADS SqlTasks imports
+		const importsToRemove = [];
+		for (let i = 0; i < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import).length; i++) {
+			const importTarget = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import)[i];
+			const projectAttributeVal = importTarget.getAttribute(constants.Project);
+
+			if (projectAttributeVal === constants.NetCoreTargets || projectAttributeVal === constants.SqlDbTargets || projectAttributeVal === constants.MsBuildtargets) {
+				importsToRemove.push(importTarget);
+			}
+		}
+
+		const parent = importsToRemove[0]?.parentNode;
+		importsToRemove.forEach(i => { parent?.removeChild(i); });
+
+		// add SDK node
+		const sdkNode = this.projFileXmlDoc!.createElement(constants.Sdk);
+		sdkNode.setAttribute(constants.Name, constants.sqlProjectSdk);
+		sdkNode.setAttribute(constants.Version, constants.sqlProjectSdkVersion);
+
+		const projectNode = this.projFileXmlDoc!.documentElement;
+		projectNode.insertBefore(sdkNode, projectNode.firstChild);
+
+		// TODO: also update system dacpac path, but might as well wait for them to get included in the SDK since the path will probably change again
+
+		// TODO: remove Build includes and folder includes. Make sure the same files and folders are being included and there aren't extra files included by the default **/*.sql glob
+
+		await this.serializeToProjFile(this.projFileXmlDoc!);
+		await this.readProjFile();
+	}
+
 	private async createCleanFileNode(parentNode: Element): Promise<void> {
 		const deleteFileNode = this.projFileXmlDoc!.createElement(constants.Delete);
 		deleteFileNode.setAttribute(constants.Files, constants.ProjJsonToClean);

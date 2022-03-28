@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 
 export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 
@@ -18,10 +18,6 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 		else {
 			this.testState = testStateScmp.SUCCESS_EQUAL;
 		}
-	}
-
-	schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-		throw new Error('Method not implemented.');
 	}
 
 	schemaComparePublishDatabaseChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {

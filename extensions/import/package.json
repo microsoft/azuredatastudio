@@ -79,7 +79,7 @@
 	"dependencies": {
 		"dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.3.0",
 		"htmlparser2": "^3.10.1",
-		"@microsoft/ads-service-downloader": "0.2.3",
+		"@microsoft/ads-service-downloader": "0.2.4",
 		"vscode-extension-telemetry": "0.4.2",
 		"vscode-nls": "^3.2.1"
 	},
