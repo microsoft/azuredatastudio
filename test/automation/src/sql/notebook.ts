@@ -233,8 +233,18 @@ export class TextCellToolbar {
 		await this.clickToolbarButton('Insert code');
 	}
 
-	public async insertLink(): Promise<void> {
-		throw new Error('Method not implemented.');
+	public async insertLink(linkLabel: string, linkUrl: string): Promise<void> {
+		await this.clickToolbarButton('Insert link');
+
+		const linkDialogSelector = 'div.modal.callout-dialog div.modal-body div.monaco-inputbox';
+		const displayTextSelector = linkDialogSelector + ' input[title="Text to dislay"]';
+		this.code.waitForSetValue(displayTextSelector, linkLabel);
+
+		const addressTextSelector = linkDialogSelector + ' input[title="Link to an existing file or web page"]';
+		this.code.waitForSetValue(addressTextSelector, linkUrl);
+
+		const insertButtonSelector = 'div.modal.callout-dialog div.modal-body a[aria-label="Insert"].monaco-text-button';
+		this.code.waitAndClick(insertButtonSelector);
 	}
 
 	public async insertList(): Promise<void> {

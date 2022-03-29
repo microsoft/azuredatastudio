@@ -243,6 +243,19 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.code.dispatchKeybinding('escape');
 				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p');
 			});
+
+			it('can insert link', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
+				await app.workbench.sqlNotebook.waitForPlaceholderGone();
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
+				await app.workbench.sqlNotebook.waitForTypeInEditor('');
+
+				await app.workbench.sqlNotebook.textCellToolbar.insertLink(sampleText, sampleText);
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'a');
+			});
 		});
 
 		describe('markdown', function () {
