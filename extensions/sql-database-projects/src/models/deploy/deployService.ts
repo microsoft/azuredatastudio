@@ -310,7 +310,7 @@ export class DeployService {
 	public async getConnection(profile: ILocalDbSetting, saveConnectionAndPassword: boolean, database: string): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		let connection = await utils.retry(
-			constants.connectingToSqlServerOnDockerMessage,
+			constants.connectingToSqlServerMessage,
 			async () => {
 				return await this.connectToDatabase(profile, saveConnectionAndPassword, database);
 			},
