@@ -54,6 +54,7 @@ export interface ISqlConnectionProperties {
 
 export interface DockerImageInfo {
 	name: string,
+	displayName: string,
 	agreementInfo: AgreementInfo
 }
 export interface AgreementInfo {

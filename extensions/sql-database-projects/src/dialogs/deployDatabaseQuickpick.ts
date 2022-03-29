@@ -117,6 +117,7 @@ async function launchEulaQuickPick(imageInfo: DockerImageInfo | undefined): Prom
 
 export async function launchCreateAzureServerQuickPick(project: Project): Promise<ISqlDbDeployProfile | undefined> {
 
+	const name = uiUtils.getPublishServerName(project.getProjectTargetVersion());
 	const client = AzureSqlClient;
 	const accounts = await client.getAccounts();
 	const accountOptions = accounts.map(x => x.displayInfo?.displayName || '');
@@ -210,7 +211,7 @@ export async function launchCreateAzureServerQuickPick(project: Project): Promis
 
 	let user: string | undefined = '';
 	user = await vscode.window.showInputBox({
-		title: constants.enterUser,
+		title: constants.enterUser(name),
 		ignoreFocusOut: true,
 		value: user,
 		password: false
@@ -224,10 +225,10 @@ export async function launchCreateAzureServerQuickPick(project: Project): Promis
 
 	let password: string | undefined = '';
 	password = await vscode.window.showInputBox({
-		title: constants.enterPassword,
+		title: constants.enterPassword(name),
 		ignoreFocusOut: true,
 		value: password,
-		validateInput: input => !utils.isValidSQLPassword(input) ? constants.invalidSQLPasswordMessage : undefined,
+		validateInput: input => !utils.isValidSQLPassword(input) ? constants.invalidSQLPasswordMessage(name) : undefined,
 		password: true
 	}
 	);
@@ -239,10 +240,10 @@ export async function launchCreateAzureServerQuickPick(project: Project): Promis
 
 	let confirmPassword: string | undefined = '';
 	confirmPassword = await vscode.window.showInputBox({
-		title: constants.confirmPassword,
+		title: constants.confirmPassword(name),
 		ignoreFocusOut: true,
 		value: confirmPassword,
-		validateInput: input => input !== password ? constants.passwordNotMatch : undefined,
+		validateInput: input => input !== password ? constants.passwordNotMatch(name) : undefined,
 		password: true
 	}
 	);
@@ -275,10 +276,11 @@ export async function launchCreateAzureServerQuickPick(project: Project): Promis
  * Create flow for publishing a database to docker container using only VS Code-native APIs such as QuickPick
  */
 export async function launchPublishToDockerContainerQuickpick(project: Project): Promise<ILocalDbDeployProfile | undefined> {
+	const name = uiUtils.getPublishServerName(project.getProjectTargetVersion());
 	let localDbSetting: ILocalDbSetting | undefined;
 	// Deploy to docker selected
 	let portNumber = await vscode.window.showInputBox({
-		title: constants.enterPortNumber,
+		title: constants.enterPortNumber(name),
 		ignoreFocusOut: true,
 		value: constants.defaultPortNumber,
 		validateInput: input => !utils.validateSqlServerPortNumber(input) ? constants.portMustBeNumber : undefined
@@ -292,10 +294,10 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 
 	let password: string | undefined = '';
 	password = await vscode.window.showInputBox({
-		title: constants.enterPassword,
+		title: constants.enterPassword(name),
 		ignoreFocusOut: true,
 		value: password,
-		validateInput: input => !utils.isValidSQLPassword(input) ? constants.invalidSQLPasswordMessage : undefined,
+		validateInput: input => !utils.isValidSQLPassword(input) ? constants.invalidSQLPasswordMessage(name) : undefined,
 		password: true
 	}
 	);
@@ -307,10 +309,10 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 
 	let confirmPassword: string | undefined = '';
 	confirmPassword = await vscode.window.showInputBox({
-		title: constants.confirmPassword,
+		title: constants.confirmPassword(name),
 		ignoreFocusOut: true,
 		value: confirmPassword,
-		validateInput: input => input !== password ? constants.passwordNotMatch : undefined,
+		validateInput: input => input !== password ? constants.passwordNotMatch(name) : undefined,
 		password: true
 	}
 	);
@@ -320,22 +322,21 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		return undefined;
 	}
 
-	const baseImages = uiUtils.getDockerBaseImages();
+	const baseImages = uiUtils.getDockerBaseImages(project.getProjectTargetVersion());
 	const baseImage = await vscode.window.showQuickPick(
-		baseImages.map(x => x.name),
-		{ title: constants.selectBaseImage, ignoreFocusOut: true });
+		baseImages.map(x => x.displayName),
+		{ title: constants.selectBaseImage(name), ignoreFocusOut: true });
 
 	// Return when user hits escape
 	if (!baseImage) {
 		return undefined;
 	}
 
-	const imageInfo = baseImages.find(x => x.name === baseImage);
+	const imageInfo = baseImages.find(x => x.displayName === baseImage);
 	const eulaAccepted = await launchEulaQuickPick(imageInfo);
 	if (!eulaAccepted) {
 		return undefined;
 	}
-
 
 	localDbSetting = {
 		serverName: constants.defaultLocalServerName,
