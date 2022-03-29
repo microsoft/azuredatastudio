@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
-import { ITreeNodeInfo } from 'vscode-mssql';
+import { IConnectionInfo, ITreeNodeInfo } from 'vscode-mssql';
 import { IExtension, BindingType } from 'sql-bindings';
 import { getAzdataApi, getVscodeMssqlApi } from './common/utils';
 import { addSqlBinding, createAzureFunction, getAzureFunctions } from './services/azureFunctionsService';
@@ -40,8 +40,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		promptForBindingType: async () => {
 			return promptForBindingType();
 		},
-		promptForObjectName: async (bindingType: BindingType) => {
-			return promptForObjectName(bindingType);
+		promptForObjectName: async (bindingType: BindingType, connectionInfo?: IConnectionInfo | undefined) => {
+			return promptForObjectName(bindingType, connectionInfo);
 		},
 		promptAndUpdateConnectionStringSetting: async (projectUri: vscode.Uri | undefined) => {
 			return promptAndUpdateConnectionStringSetting(projectUri);

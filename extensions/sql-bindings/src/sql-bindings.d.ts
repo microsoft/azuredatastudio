@@ -7,6 +7,7 @@
 declare module 'sql-bindings' {
 
 	import * as vscode from 'vscode';
+	import { IConnectionInfo } from 'vscode-mssql';
 
 	export const enum extension {
 		name = 'Microsoft.sql-bindings',
@@ -36,13 +37,13 @@ declare module 'sql-bindings' {
 		 * Prompts the user to enter object name for the SQL query
 		 * @param bindingType Type of SQL Binding
 		 */
-		promptForObjectName(bindingType: BindingType): Promise<string | undefined>;
+		promptForObjectName(bindingType: BindingType, connectionInfo?: IConnectionInfo | undefined): Promise<string | undefined>;
 
 		/**
 		 * Prompts the user to enter connection setting and updates it from AF project
 		 * @param projectUri Azure Function project uri
 		 */
-		 promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined): Promise<string | undefined>;
+		 promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined): Promise<IConnectionStringResult | undefined>;
 
 		/**
 		 * Gets the names of the Azure Functions in the file
@@ -116,6 +117,11 @@ declare module 'sql-bindings' {
 		 * Array of names of Azure Functions in the file
 		 */
 		azureFunctions: string[];
+	}
+
+	export interface IConnectionStringResult {
+		connectionStringSettingName: string | undefined;
+		connectionInfo?: IConnectionInfo;
 	}
 
 }

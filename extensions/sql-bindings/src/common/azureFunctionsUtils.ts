@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as utils from './utils';
 import * as constants from './constants';
-import { BindingType } from 'sql-bindings';
+import { BindingType, IConnectionStringResult } from 'sql-bindings';
 import { ConnectionDetails, IConnectionInfo } from 'vscode-mssql';
 // https://github.com/microsoft/vscode-azurefunctions/blob/main/src/vscode-azurefunctions.api.d.ts
 import { AzureFunctionsExtensionApi } from '../../../types/vscode-azurefunctions.api';
@@ -311,21 +311,63 @@ export async function promptForBindingType(): Promise<(vscode.QuickPickItem & { 
  * Prompts the user to enter object name for the SQL query
  * @param bindingType Type of SQL Binding
  */
-export async function promptForObjectName(bindingType: BindingType): Promise<string | undefined> {
-	return vscode.window.showInputBox({
-		prompt: bindingType === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
-		placeHolder: constants.placeHolderObject,
-		validateInput: input => input ? undefined : constants.nameMustNotBeEmpty,
-		ignoreFocusOut: true
-	});
+export async function promptForObjectName(bindingType: BindingType, connectionInfo?: IConnectionInfo): Promise<string | undefined> {
+	// show the connection string methods (user input and connection profile options)
+	const listOfObjectNameMethods = [constants.objectName, constants.userObjectName];
+	while (true) {
+		const selectedObjectNameMethod = await vscode.window.showQuickPick(listOfObjectNameMethods, {
+			canPickMany: false,
+			title: constants.selectObjectName,
+			ignoreFocusOut: true
+		});
+		if (!selectedObjectNameMethod) {
+			// User cancelled
+			return;
+		}
+		if (selectedObjectNameMethod === constants.userObjectName) {
+			return vscode.window.showInputBox({
+				prompt: bindingType === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
+				placeHolder: constants.placeHolderObject,
+				validateInput: input => input ? undefined : constants.nameMustNotBeEmpty,
+				ignoreFocusOut: true
+			}) ?? '';
+		} else {
+			const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+			if (!connectionInfo) {
+				return;
+			}
+			let connectionURI = await vscodeMssqlApi.connect(connectionInfo);
+			let listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
+
+			const selectedDatabase = (await vscode.window.showQuickPick(listDatabases, {
+				canPickMany: false,
+				title: constants.selectDatabase,
+				ignoreFocusOut: true
+			}));
+
+			return selectedDatabase;
+
+			// TO DO
+			/* let listTables = await vscodeMssqlApi.listTables(selectedDatabase);
+			const selectedTable = (await vscode.window.showQuickPick(listTables, {
+				canPickMany: false,
+				title: constants.selectTableOrView,
+				ignoreFocusOut: true
+			}));
+
+			return selectedTable;
+			*/
+		}
+	}
 }
 
 /**
  * Prompts the user to enter connection setting and updates it from AF project
  * @param projectUri Azure Function project uri
  */
-export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined): Promise<string | undefined> {
+export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined): Promise<IConnectionStringResult | undefined> {
 	let connectionStringSettingName: string | undefined;
+	let connectionInfo: IConnectionInfo | undefined;
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 
 	// show the settings from project's local.settings.json if there's an AF functions project
@@ -391,7 +433,6 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 
 					let connectionString: string = '';
 					let includePassword: string | undefined;
-					let connectionInfo: IConnectionInfo | undefined;
 					let connectionDetails: ConnectionDetails;
 					if (selectedConnectionStringMethod === constants.userConnectionString) {
 						// User chooses to enter connection string manually
@@ -495,5 +536,5 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 			ignoreFocusOut: true
 		});
 	}
-	return connectionStringSettingName;
+	return { connectionStringSettingName, connectionInfo };
 }
