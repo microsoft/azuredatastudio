@@ -250,11 +250,10 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
 				await app.workbench.sqlNotebook.waitForPlaceholderGone();
 				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
-				await app.workbench.sqlNotebook.waitForTypeInEditor('');
 
 				await app.workbench.sqlNotebook.textCellToolbar.insertLink(sampleText, sampleText);
 				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'a');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p a');
 			});
 		});
 
