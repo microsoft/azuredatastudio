@@ -143,11 +143,11 @@ export class MessagePanel extends Disposable {
 		this.queryResultsWriter = new MessagesPanelQueryResultsWriter(this.model, this.tree, this._treeStates);
 
 		this._register(this.editorService.onDidActiveEditorOutputModeChange(() => {
-			this.queryResultsWriter.reset();
-			this.queryResultsWriter.disable();
+			this.queryResultsWriter.clear();
+			this.queryResultsWriter.unsubscribeFromQueryRunner();
 			this.queryResultsWriter = this.queryResultsWriterFactory.getQueryResultsWriter();
 			this.queryResultsWriter.queryRunner = this.runner;
-			this.queryResultsWriter.enable();
+			this.queryResultsWriter.subscribeToQueryRunner();
 		}));
 	}
 
@@ -202,7 +202,7 @@ export class MessagePanel extends Disposable {
 	}
 
 	public set queryRunner(runner: QueryRunner) {
-		this.queryResultsWriter.disable();
+		this.queryResultsWriter.unsubscribeFromQueryRunner();
 		if (this.currentUri) {
 			this._treeStates.set(this.currentUri, this.tree.getViewState());
 		}
@@ -213,7 +213,7 @@ export class MessagePanel extends Disposable {
 		this.reset();
 		this.queryResultsWriter = this.queryResultsWriterFactory.getQueryResultsWriter();
 		this.queryResultsWriter.queryRunner = runner;
-		this.queryResultsWriter.enable();
+		this.queryResultsWriter.subscribeToQueryRunner();
 	}
 
 	private applyStyles(theme: IColorTheme): void {
@@ -230,7 +230,7 @@ export class MessagePanel extends Disposable {
 	}
 
 	private reset() {
-		this.queryResultsWriter.reset();
+		this.queryResultsWriter.clear();
 	}
 
 	public clear() {

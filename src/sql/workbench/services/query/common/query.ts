@@ -89,8 +89,20 @@ export interface ICellValue {
 }
 
 export interface IQueryResultsWriter {
-	enable(): void;
-	disable(): void;
-	reset(): void;
+	/**
+	 * subscribes the writer to query runner callbacks like onMessage, onResultSet, etc.
+	 */
+	subscribeToQueryRunner(): void;
+	/**
+	 * unsubscribes the writer from query runner callbacks like onMessage, onResultSet, etc.
+	 */
+	unsubscribeFromQueryRunner(): void;
+	/**
+	 * Clears out any previous query results.
+	 */
+	clear(): void;
+	/**
+	 * Setter for the query runner instance the writer will subscribe to.
+	 */
 	set queryRunner(runner: QueryRunner);
 }

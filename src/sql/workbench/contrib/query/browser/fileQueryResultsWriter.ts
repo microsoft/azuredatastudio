@@ -46,9 +46,9 @@ export class FileQueryResultsWriter extends Disposable implements IQueryResultsW
 		super();
 	}
 
-	public enable(): void {
+	public subscribeToQueryRunner(): void {
 		this.queryRunnerDisposables.add(this.runner.onQueryStart(() => {
-			this.reset();
+			this.clear();
 		}));
 
 		this.queryRunnerDisposables.add(this.runner.onMessage(async (message) => {
@@ -64,11 +64,11 @@ export class FileQueryResultsWriter extends Disposable implements IQueryResultsW
 		}));
 	}
 
-	public disable(): void {
+	public unsubscribeFromQueryRunner(): void {
 		this.queryRunnerDisposables.clear();
 	}
 
-	public reset() {
+	public clear() {
 		this.messages = [];
 		this.formattedQueryResults = [];
 		this.tables = [];

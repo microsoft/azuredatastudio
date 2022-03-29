@@ -30,7 +30,7 @@ export class QueryResultsWriterStatus extends Disposable {
 		return this.writerMode === QueryResultsWriterMode.ToGrid;
 	}
 
-	public isWritingToFIle(): boolean {
+	public isWritingToFile(): boolean {
 		return this.writerMode === QueryResultsWriterMode.ToFile;
 	}
 }

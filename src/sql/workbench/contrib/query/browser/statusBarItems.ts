@@ -347,7 +347,7 @@ export class QueryResultsEditorOutputModeStatusBarContribution extends Disposabl
 		this.hide();
 
 		let editor = this.editorService.activeEditorPane as QueryEditor;
-		if (editor?.queryResultsWriterStatus.isWritingToFIle()) {
+		if (editor?.queryResultsWriterStatus.isWritingToFile()) {
 			this.show();
 		}
 		else {

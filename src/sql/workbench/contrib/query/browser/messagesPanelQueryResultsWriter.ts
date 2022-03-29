@@ -26,9 +26,9 @@ export class MessagesPanelQueryResultsWriter extends Disposable implements IQuer
 		super();
 	}
 
-	public enable(): void {
+	public subscribeToQueryRunner(): void {
 		this.queryRunnerDisposables.add(this.runner.onQueryStart(() => {
-			this.reset();
+			this.clear();
 		}));
 
 		this.queryRunnerDisposables.add(this.runner.onMessage((resultMessage) => {
@@ -38,17 +38,17 @@ export class MessagesPanelQueryResultsWriter extends Disposable implements IQuer
 		this.onMessage(this.runner.messages, true);
 	}
 
-	public disable(): void {
+	public unsubscribeFromQueryRunner(): void {
 		this.queryRunnerDisposables.clear();
 	}
 
-	public reset(): void {
+	public clear(): void {
 		this.model.messages = [];
 		this.model.totalExecuteMessage = undefined;
 		this.tree.updateChildren();
 	}
 
-	set queryRunner(runner: QueryRunner) {
+	public set queryRunner(runner: QueryRunner) {
 		this.runner = runner;
 		this.currentUri = runner.uri;
 	}

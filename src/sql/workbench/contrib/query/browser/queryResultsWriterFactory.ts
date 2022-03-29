@@ -27,7 +27,7 @@ export class QueryResultsWriterFactory {
 	getQueryResultsWriter(): IQueryResultsWriter {
 		let editor = this.editorService.activeEditorPane as QueryEditor;
 		if (editor.queryResultsWriterStatus.isWritingToGrid()) {
-			return new MessagesPanelQueryResultsWriter(this.model, this.tree, this.treeStates);
+			return this.instantiationService.createInstance(MessagesPanelQueryResultsWriter, this.model, this.tree, this.treeStates);
 		}
 		else {
 			return this.instantiationService.createInstance(FileQueryResultsWriter);
