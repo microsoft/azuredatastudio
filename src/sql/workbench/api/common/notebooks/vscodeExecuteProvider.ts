@@ -156,6 +156,10 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	public async interrupt(): Promise<void> {
 		return;
 	}
+
+	public async restart(): Promise<void> {
+		return;
+	}
 }
 
 class VSCodeSession implements azdata.nb.ISession {

@@ -382,6 +382,10 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		});
 	}
 
+	restart(): Thenable<void> {
+		return Promise.reject(localize('SqlKernelRestartNotSupported', 'SQL kernel restart not supported'));
+	}
+
 	private addQueryEventListeners(queryRunner: QueryRunner): void {
 		this._register(queryRunner.onQueryEnd(() => {
 			this.queryComplete().catch(error => {
