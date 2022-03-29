@@ -3215,6 +3215,9 @@ Error: {1}</source>
     <trans-unit id="notebookViews.enabled">
       <source xml:lang="en">(Preview) Enable Notebook Views</source>
     </trans-unit>
+    <trans-unit id="restartNotebookKernel">
+      <source xml:lang="en">Restart Notebook Kernel</source>
+    </trans-unit>
     <trans-unit id="search.actionsPosition">
       <source xml:lang="en">Controls the positioning of the actionbar on rows in the search view.</source>
     </trans-unit>
@@ -5341,6 +5344,12 @@ Error: {1}</source>
     <trans-unit id="kernelRequiresConnection">
       <source xml:lang="en">Kernel '{0}' was not found. The default kernel will be used instead.</source>
     </trans-unit>
+    <trans-unit id="kernelRestartFailed">
+      <source xml:lang="en">Kernel restart failed: {0}</source>
+    </trans-unit>
+    <trans-unit id="kernelRestartedSuccessfully">
+      <source xml:lang="en">Kernel restarted successfully</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/notebook/browser/models/notebookContexts" source-language="en" datatype="plaintext"><body>
     <trans-unit id="localhost">
@@ -5411,6 +5420,9 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/notebook/browser/sql/sqlSessionManager" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="SqlKernelRestartNotSupported">
+      <source xml:lang="en">SQL kernel restart not supported</source>
+    </trans-unit>
     <trans-unit id="connectionRequired">
       <source xml:lang="en">A connection must be chosen to run notebook cells</source>
     </trans-unit>
