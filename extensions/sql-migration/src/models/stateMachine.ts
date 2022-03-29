@@ -8,7 +8,7 @@ import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
-import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs, getResourceGroupByName, sortResourceArrayByName } from '../api/azure';
+import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs, sortResourceArrayByName, getFullResourceGroupFromId } from '../api/azure';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
@@ -957,35 +957,55 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		let resourceGroupValues: azdata.CategoryValue[] = [];
 		try {
 			if (this._azureAccount && subscription) {
-
 				switch (resourceType) {
 					case azureResource.AzureResourceType.sqlManagedInstance:
 						let managedInstances = await getAvailableManagedInstanceProducts(this._azureAccount, subscription);
 						this._resourceGroups = await Promise.all(managedInstances.map(async (mi) => {
-							return await getResourceGroupByName(this._azureAccount, subscription, mi.resourceGroup!);
+							return <azureResource.AzureResourceResourceGroup>{
+								id: getFullResourceGroupFromId(mi.id),
+								name: mi.resourceGroup!,
+								subscription: {
+									id: mi.subscriptionId
+								},
+								tenant: mi.tenantId,
+							};
 						}));
 						break;
 					case azureResource.AzureResourceType.storageAccount:
 						let storageAccounts = await getAvailableStorageAccounts(this._azureAccount, subscription);
 						this._resourceGroups = await Promise.all(storageAccounts.map(async (sa) => {
-							return await getResourceGroupByName(this._azureAccount, subscription, sa.resourceGroup!);
+							return <azureResource.AzureResourceResourceGroup>{
+								id: getFullResourceGroupFromId(sa.id),
+								name: sa.resourceGroup!,
+								subscription: {
+									id: sa.subscriptionId
+								},
+								tenant: sa.tenantId,
+							};
 						}));
 						break;
 					case azureResource.AzureResourceType.databaseMigrationService:
 						let dmsInstances = await getSqlMigrationServices(this._azureAccount, subscription);
 						this._resourceGroups = await Promise.all(dmsInstances.map(async (dms) => {
-							return await getResourceGroupByName(this._azureAccount, subscription, dms.properties.resourceGroup);
+							return <azureResource.AzureResourceResourceGroup>{
+								id: getFullResourceGroupFromId(dms.id),
+								name: dms.properties.name,
+								subscription: {
+									id: dms.properties.subscriptionId
+								}
+							};
 						}));
 						break;
 					default:
 						this._resourceGroups = await getResourceGroups(this._azureAccount, subscription);
 				}
+
+				// remove duplicates
+				this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
+				sortResourceArrayByName(this._resourceGroups);
 			} else {
 				this._resourceGroups = [];
 			}
-
-			// to-do: remove duplicates from the list
-			sortResourceArrayByName(this._resourceGroups);
 
 			this._resourceGroups.forEach((rg) => {
 				resourceGroupValues.push({

@@ -56,18 +56,6 @@ export async function getResourceGroups(account: azdata.Account, subscription: S
 	return result.resourceGroups;
 }
 
-export async function getResourceGroupByName(account: azdata.Account, subscription: Subscription, resourceGroupName: string): Promise<azureResource.AzureResourceResourceGroup> {
-	const api = await getAzureCoreAPI();
-	const path = encodeURI(`/subscriptions/${subscription.id}/resourcegroups/${resourceGroupName}?api-version=2021-04-01`);
-
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
-	if (response.errors.length > 0) {
-		throw new Error(response.errors.toString());
-	}
-
-	return response.response.data;
-}
-
 export async function createResourceGroup(account: azdata.Account, subscription: Subscription, resourceGroupName: string, location: string): Promise<azureResource.AzureResourceResourceGroup> {
 	const api = await getAzureCoreAPI();
 	const result = await api.createResourceGroup(account, subscription, resourceGroupName, location, false);
