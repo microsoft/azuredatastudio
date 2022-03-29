@@ -169,6 +169,13 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	/**
+	 * Fire event to refresh projects tree
+	 */
+	public refreshProjectsTree(): void {
+		this._onDidWorkspaceProjectsChange.fire();
+	}
+
+	/**
 	 * Returns an array of all the supported projects in the folder
 	 * @param folder folder to look look for projects
 	 * @returns array of file URIs for supported projects

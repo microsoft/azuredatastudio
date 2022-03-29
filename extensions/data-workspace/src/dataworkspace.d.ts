@@ -34,6 +34,11 @@ declare module 'dataworkspace' {
 		showProjectsView(): void;
 
 		/**
+		 * Refreshes the projects tree
+		 */
+		refreshProjectsTree(): void;
+
+		/**
 		 * Returns the default location to save projects
 		 */
 		defaultProjectSaveLocation: vscode.Uri | undefined;
