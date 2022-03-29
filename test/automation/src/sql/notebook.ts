@@ -245,8 +245,11 @@ export class TextCellToolbar {
 		await this.clickToolbarButton('Insert ordered list');
 	}
 
-	public async changeSelectedTextSize(): Promise<void> {
-		throw new Error('Method not implemented.');
+	public async changeSelectedTextSize(textSize: 'Heading 1' | 'Heading 2' | 'Heading 3' | 'Paragraph'): Promise<void> {
+		const actionSelector = `${TextCellToolbar.textCellToolbar} div.monaco-dropdown a.action-label`;
+		await this.code.waitAndClick(actionSelector);
+		const menuItemSelector = `div.monaco-menu-container div.monaco-menu a.action-menu-item span[aria-label="${textSize}"]`;
+		await this.code.waitAndClick(menuItemSelector);
 	}
 
 	private async clickToolbarButton(buttonTitle: string) {
