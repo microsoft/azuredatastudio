@@ -23,7 +23,7 @@
       <source xml:lang="en">Refresh</source>
     </trans-unit>
     <trans-unit id="dataworkspace.NewProjectDialogTitle">
-      <source xml:lang="en">Create new project</source>
+      <source xml:lang="en">Create new database project</source>
     </trans-unit>
     <trans-unit id="dataworkspace.Type">
       <source xml:lang="en">Type</source>
@@ -134,7 +134,7 @@
       <source xml:lang="en">Select Project Location</source>
     </trans-unit>
     <trans-unit id="dataworkspace.selectProjectType">
-      <source xml:lang="en">Select Project Type</source>
+      <source xml:lang="en">Select Database Project Type</source>
     </trans-unit>
     <trans-unit id="dataworkspace.selectTargetPlatform">
       <source xml:lang="en">Select Target Platform</source>
