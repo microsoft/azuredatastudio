@@ -353,7 +353,7 @@ export class ClientSessionStub implements IClientSession {
 	selectKernel(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
-	restart(): Promise<boolean> {
+	restart(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 	setPath(path: string): Promise<void> {

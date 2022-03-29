@@ -135,7 +135,7 @@ declare module 'azdata' {
 			 * Restart a kernel.
 			 *
 			 * #### Notes
-			 * Uses the [Jupyter Notebook API](http://petstore.swagger.io/?url=https://raw.githubusercontent.com/jupyter/notebook/master/notebook/services/api/api.yaml#!/kernels).
+			 * Uses the [Jupyter Notebook API](http://petstore.swagger.io/?url=https://raw.githubusercontent.com/jupyter/notebook/4.x/notebook/services/api/api.yaml#!/kernels).
 			 *
 			 * The promise is fulfilled on a valid response and rejected otherwise.
 			 *
