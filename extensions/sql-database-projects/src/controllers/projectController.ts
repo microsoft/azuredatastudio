@@ -563,7 +563,7 @@ export class ProjectsController {
 
 		const result: mssql.SchemaComparePublishProjectResult = await service.schemaComparePublishProjectChanges(operationId, projectPath, fs, utils.getAzdataApi()!.TaskExecutionMode.execute);
 
-		if (result.errorMessage === '') {
+		if (!result.errorMessage) {
 			const project = await Project.openProject(projectFilePath);
 
 			let toAdd: vscode.Uri[] = [];
