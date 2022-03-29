@@ -235,16 +235,15 @@ export class TextCellToolbar {
 
 	public async insertLink(linkLabel: string, linkUrl: string): Promise<void> {
 		await this.clickToolbarButton('Insert link');
+		const linkDialogSelector = 'div.callout-dialog[aria-label="Insert link"]';
+		const displayTextSelector = `${linkDialogSelector} input[aria-label="Text to dislay"]`;
+		await this.code.waitForSetValue(displayTextSelector, linkLabel);
 
-		const linkDialogSelector = 'div.modal.callout-dialog div.modal-body div.monaco-inputbox';
-		const displayTextSelector = linkDialogSelector + ' input[title="Text to dislay"]';
-		this.code.waitForSetValue(displayTextSelector, linkLabel);
+		const addressTextSelector = `${linkDialogSelector} input[aria-label="Link to an existing file or web page"]`;
+		await this.code.waitForSetValue(addressTextSelector, linkUrl);
 
-		const addressTextSelector = linkDialogSelector + ' input[title="Link to an existing file or web page"]';
-		this.code.waitForSetValue(addressTextSelector, linkUrl);
-
-		const insertButtonSelector = 'div.modal.callout-dialog div.modal-body a[aria-label="Insert"].monaco-text-button';
-		this.code.waitAndClick(insertButtonSelector);
+		const insertButtonSelector = `${linkDialogSelector} a[aria-label="Insert"]`;
+		await this.code.waitAndClick(insertButtonSelector);
 	}
 
 	public async insertList(): Promise<void> {
