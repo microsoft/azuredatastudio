@@ -9,10 +9,10 @@ import * as utils from '../common/utils';
 import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
 import * as constants from '../common/constants';
 import * as azureFunctionsContracts from '../contracts/azureFunctions/azureFunctionsContracts';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { AddSqlBindingParams, BindingType, GetAzureFunctionsParams, GetAzureFunctionsResult, ResultStatus } from 'sql-bindings';
 
 export const hostFileName: string = 'host.json';
-
 
 export async function createAzureFunction(connectionString: string, schema: string, table: string): Promise<void> {
 	const azureFunctionApi = await azureFunctionsUtils.getAzureFunctionsExtensionApi();
@@ -30,6 +30,7 @@ export async function createAzureFunction(connectionString: string, schema: stri
 			void vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(constants.sqlBindingsDoc));
 			return;
 		} else if (projectCreate === constants.createProject) {
+			TelemetryReporter.sendActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.helpCreateAzureFunction);
 			// start the create azure function project flow
 			try {
 				// because of an AF extension API issue, we have to get the newly created file by adding a watcher
@@ -44,6 +45,7 @@ export async function createAzureFunction(connectionString: string, schema: stri
 				}
 			} catch (error) {
 				void vscode.window.showErrorMessage(utils.formatString(constants.errorNewAzureFunction, error.message ?? error));
+				TelemetryReporter.sendErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.helpCreateAzureFunction);
 				return;
 			} finally {
 				newHostProjectFile.watcherDisposable.dispose();
@@ -76,6 +78,7 @@ export async function createAzureFunction(connectionString: string, schema: stri
 			if (!selectedBinding) {
 				return;
 			}
+			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding).withAdditionalProperties({ bindingType: selectedBinding.label }).send();
 
 			// set the templateId based on the selected binding type
 			let templateId: string = selectedBinding.type === BindingType.input ? constants.inputTemplateID : constants.outputTemplateID;
@@ -103,11 +106,15 @@ export async function createAzureFunction(connectionString: string, schema: stri
 			// check for the new function file to be created and dispose of the file system watcher
 			const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
 			await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
+			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.finishCreateAzureFunctionWithSqlBinding)
+				.withAdditionalProperties({ bindingType: selectedBinding.label })
+				.send();
 		} finally {
 			newFunctionFileObject.watcherDisposable.dispose();
 		}
 		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFile);
 	}
+	TelemetryReporter.sendErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.finishCreateAzureFunctionWithSqlBinding);
 }
 
 /**

@@ -9,6 +9,7 @@ import { getAzdataApi, getVscodeMssqlApi } from './common/utils';
 import { addSqlBinding, createAzureFunction, getAzureFunctions } from './services/azureFunctionsService';
 import { launchAddSqlBindingQuickpick } from './dialogs/addSqlBindingQuickpick';
 import { promptForBindingType, promptAndUpdateConnectionStringSetting, promptForObjectName } from './common/azureFunctionsUtils';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from './common/telemetry';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const vscodeMssqlApi = await getVscodeMssqlApi();
@@ -31,6 +32,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		}
 		const connectionDetails = vscodeMssqlApi.createConnectionDetails(connectionInfo);
 		const connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
+		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding)
+			.withConnectionInfo(connectionInfo);
 		await createAzureFunction(connectionString, node.metadata.schema, node.metadata.name);
 	}));
 	return {

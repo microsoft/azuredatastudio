@@ -53,22 +53,28 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 	}));
 
 	if (!azureFunctionName) {
+		TelemetryReporter.sendErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getAzureFunctionProject);
 		return;
 	}
+	TelemetryReporter.sendActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getAzureFunctionProject);
 
 	// 2. select input or output binding
 	const selectedBinding = await azureFunctionsUtils.promptForBindingType();
 
 	if (!selectedBinding) {
+		TelemetryReporter.sendErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getBindingType);
 		return;
 	}
+	TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getBindingType).withAdditionalProperties({ bindingType: selectedBinding.label }).send();
 
 	// 3. ask for object name for the binding
 	const objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding.type);
 
 	if (!objectName) {
+		TelemetryReporter.sendErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getObjectName);
 		return;
 	}
+	TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getObjectName).withAdditionalProperties({ bindingType: selectedBinding.label }).send();
 
 	// 4. ask for connection string setting name
 	let projectUri: vscode.Uri | undefined;
@@ -80,8 +86,10 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 
 	let connectionStringSettingName = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(projectUri);
 	if (!connectionStringSettingName) {
+		TelemetryReporter.sendErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.updateConnectionString);
 		return;
 	}
+	TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.updateConnectionString).withAdditionalProperties({ bindingType: selectedBinding.label }).send();
 
 	// 5. insert binding
 	try {
