@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as vscodeMssql from 'vscode-mssql';
 import * as mssql from 'mssql';
 import * as templates from '../templates/templates';
+import * as projectAssets from '../projectProvider/projectAssets';
 import * as path from 'path';
 
 import { ProjectsController } from './projectController';
@@ -80,6 +81,7 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.addDatabaseReference', async (node: WorkspaceTreeItem) => { return this.projectsController.addDatabaseReference(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.openContainingFolder', async (node: WorkspaceTreeItem) => { return this.projectsController.openContainingFolder(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.editProjectFile', async (node: WorkspaceTreeItem) => { return this.projectsController.editProjectFile(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.convertToSdkStyleProject', async (node: WorkspaceTreeItem) => { return this.projectsController.convertToSdkStyleProject(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.delete', async (node: WorkspaceTreeItem) => { return this.projectsController.delete(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: WorkspaceTreeItem) => { return this.projectsController.exclude(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.changeTargetPlatform', async (node: WorkspaceTreeItem) => { return this.projectsController.changeTargetPlatform(node); });
@@ -88,6 +90,7 @@ export default class MainController implements vscode.Disposable {
 		IconPathHelper.setExtensionContext(this.extensionContext);
 
 		await templates.loadTemplates(path.join(this.context.extensionPath, 'resources', 'templates'));
+		projectAssets.loadAssets(path.join(this.context.extensionPath, 'resources', 'projectAssets'));
 	}
 
 	public dispose(): void {
