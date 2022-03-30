@@ -2142,7 +2142,7 @@ class InfoBoxComponentWrapper extends ComponentWrapper implements azdata.InfoBox
 		return emitter && emitter.event;
 	}
 
-	public get onLinkClick(): vscode.Event<azdata.InfoBoxLinkClickEvent> {
+	public get onLinkClick(): vscode.Event<azdata.InfoBoxLinkClickEventArgs> {
 		let emitter = this._emitterMap.get(ComponentEventType.onChildClick);
 		return emitter && emitter.event;
 	}

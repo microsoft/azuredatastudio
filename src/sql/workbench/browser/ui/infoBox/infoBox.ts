@@ -53,8 +53,8 @@ export class InfoBox extends Disposable implements IThemable {
 	get onDidClick(): Event<void> { return this._onDidClick.event; }
 
 	private _linkListenersDisposableStore = new DisposableStore();
-	private _onLinkClick: Emitter<azdata.InfoBoxLinkClickEvent> = this._register(new Emitter<azdata.InfoBoxLinkClickEvent>());
-	get onLinkClick(): Event<azdata.InfoBoxLinkClickEvent> { return this._onLinkClick.event; }
+	private _onLinkClick: Emitter<azdata.InfoBoxLinkClickEventArgs> = this._register(new Emitter<azdata.InfoBoxLinkClickEventArgs>());
+	get onLinkClick(): Event<azdata.InfoBoxLinkClickEventArgs> { return this._onLinkClick.event; }
 
 	constructor(
 		container: HTMLElement,
