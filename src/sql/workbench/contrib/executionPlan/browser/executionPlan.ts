@@ -41,7 +41,7 @@ import { URI } from 'vs/base/common/uri';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
-import { InfoBox } from 'sql/base/browser/ui/infoBox/infoBox';
+import { InfoBox } from 'sql/workbench/browser/ui/infoBox/infoBox';
 
 let azdataGraph = azdataGraphModule();
 
@@ -157,7 +157,7 @@ export class ExecutionPlanView implements IPanelView {
 			}
 			this._loadingSpinner.loadingCompletedMessage = localize('executionPlanFileLoadingComplete', "Execution plans are generated");
 		} catch (e) {
-			this._loadingErrorInfoBox = new InfoBox(this._container, {
+			this._loadingErrorInfoBox = this.instantiationService.createInstance(InfoBox, this._container, {
 				text: e.toString(),
 				style: 'error',
 				isClickable: false
