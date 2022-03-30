@@ -13,7 +13,7 @@ import { ITelemetryEventProperties, Telemetry } from '../telemetry';
 export function registerTableDesignerCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newTable', async (context: azdata.ObjectExplorerContext) => {
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
-		const tableIcon = context.nodeInfo.nodeSubType as azdata.designers.TableIcon ?? azdata.designers.TableIcon.Basic;
+		const tableIcon = context.nodeInfo.nodeSubType as azdata.designers.TableIcon;
 		const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: context.connectionProfile.serverName,
@@ -32,8 +32,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		const schema = context.nodeInfo.metadata.schema;
 		const name = context.nodeInfo.metadata.name;
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
-		const tableIcon = context.nodeInfo.nodeSubType === '' ? azdata.designers.TableIcon.Basic :
-			context.nodeInfo.nodeSubType as azdata.designers.TableIcon;
+		const tableIcon = context.nodeInfo.nodeSubType as azdata.designers.TableIcon;
 		const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: server,
