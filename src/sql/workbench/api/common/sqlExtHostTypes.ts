@@ -1017,7 +1017,7 @@ export namespace designers {
 		Update = 2
 	}
 
-	export enum TableIconType {
+	export enum TableIcon {
 		Basic = 'Basic',
 		Temporal = 'Temporal',
 		GraphEdge = 'GraphEdge',

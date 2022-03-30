@@ -726,9 +726,10 @@ declare module 'azdata' {
 			 */
 			[key: string]: any;
 			/**
-			 * Table icon type that's shown in the editor tab
+			 * Table icon type that's shown in the editor tab. Default is the basic
+			 * table icon.
 			 */
-			tableIconType?: TableIconType;
+			tableIcon?: TableIcon;
 		}
 
 		/**
@@ -748,7 +749,7 @@ declare module 'azdata' {
 		/**
 		 * Table icon that's shown on the editor tab
 		 */
-		export enum TableIconType {
+		export enum TableIcon {
 			Basic = 'Basic',
 			Temporal = 'Temporal',
 			GraphNode = 'GraphNode',
