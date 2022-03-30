@@ -4576,8 +4576,8 @@
 					"shortDescription": ".NET Interactive Notebooks for Azure Data Studio.",
 					"publisher": {
 						"displayName": "Microsoft",
-						"publisherId": "Microsoft",
-						"publisherName": "Microsoft"
+						"publisherId": "ms-dotnettools",
+						"publisherName": "ms-dotnettools"
 					},
 					"versions": [
 						{
@@ -4637,8 +4637,8 @@
 					"shortDescription": "Jupyter notebook support, interactive programming and computing that supports Intellisense, debugging and more.",
 					"publisher": {
 						"displayName": "Microsoft",
-						"publisherId": "Microsoft",
-						"publisherName": "Microsoft"
+						"publisherId": "ms-toolsai",
+						"publisherName": "ms-toolsai"
 					},
 					"versions": [
 						{
