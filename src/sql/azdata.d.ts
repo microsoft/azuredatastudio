@@ -3964,18 +3964,22 @@ declare module 'azdata' {
 		 * Title of editor
 		 */
 		title: string;
+
 		/**
 		 * The content inside the left text editor
 		 */
 		contentLeft: string;
+
 		/**
 		 * The content inside the right text editor
 		 */
 		contentRight: string;
+
 		/**
 		 * The language mode for this text editor. The language mode is SQL by default.
 		 */
 		languageMode?: string;
+
 		/**
 		 * Toggle for whether the editor should be automatically resized or not
 		 */
