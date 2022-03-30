@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
-import * as mssql from '../../../../mssql';
+import * as mssql from 'mssql';
 
 export class SkuRecommendationResultsDialog {
 

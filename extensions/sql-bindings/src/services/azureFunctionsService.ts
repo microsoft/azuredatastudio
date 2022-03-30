@@ -55,7 +55,6 @@ export async function createAzureFunction(connectionString: string, schema: stri
 		// because of an AF extension API issue, we have to get the newly created file by adding a watcher
 		// issue: https://github.com/microsoft/vscode-azurefunctions/issues/2908
 		const newFunctionFileObject = azureFunctionsUtils.waitForNewFunctionFile(projectFile);
-		let functionFile: string;
 		let functionName: string;
 
 		try {
@@ -71,41 +70,43 @@ export async function createAzureFunction(connectionString: string, schema: stri
 				return;
 			}
 
-			// create C# HttpTrigger
+			// select input or output binding
+			const selectedBinding = await azureFunctionsUtils.promptForBindingType();
+
+			if (!selectedBinding) {
+				return;
+			}
+
+			// set the templateId based on the selected binding type
+			let templateId: string = selectedBinding.type === BindingType.input ? constants.inputTemplateID : constants.outputTemplateID;
+			let objectName = utils.generateQuotedFullName(schema, table);
+
+			// We need to set the azureWebJobsStorage to a placeholder
+			// to suppress the warning for opening the wizard
+			// issue https://github.com/microsoft/azuredatastudio/issues/18780
+
+			await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectFile), constants.azureWebJobsStorageSetting, constants.azureWebJobsStoragePlaceholder);
+
+			// create C# Azure Function with SQL Binding
 			await azureFunctionApi.createFunction({
 				language: 'C#',
-				templateId: 'HttpTrigger',
+				templateId: templateId,
 				functionName: functionName,
+				functionSettings: {
+					connectionStringSetting: constants.sqlConnectionStringSetting,
+					...(selectedBinding.type === BindingType.input && { object: objectName }),
+					...(selectedBinding.type === BindingType.output && { table: objectName })
+				},
 				folderPath: projectFile
 			});
 
 			// check for the new function file to be created and dispose of the file system watcher
 			const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
-			functionFile = await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
+			await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
 		} finally {
 			newFunctionFileObject.watcherDisposable.dispose();
 		}
-
-		// select input or output binding
-		const selectedBinding = await azureFunctionsUtils.promptForBindingType();
-
-		if (!selectedBinding) {
-			return;
-		}
-
-		await azureFunctionsUtils.addNugetReferenceToProjectFile(projectFile);
 		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFile);
-
-		let objectName = utils.generateQuotedFullName(schema, table);
-		await addSqlBinding(
-			selectedBinding.type,
-			functionFile,
-			functionName,
-			objectName,
-			constants.sqlConnectionString
-		);
-
-		azureFunctionsUtils.overwriteAzureFunctionMethodBody(functionFile);
 	}
 }
 

@@ -128,6 +128,24 @@ declare module 'azdata' {
 		 * An event that is emitted when a [notebook document](#NotebookDocument) is closed.
 		 */
 		export const onDidCloseNotebookDocument: vscode.Event<NotebookDocument>;
+
+		export interface IKernel {
+
+			/**
+			 * Restart a kernel.
+			 *
+			 * #### Notes
+			 * Uses the [Jupyter Notebook API](http://petstore.swagger.io/?url=https://raw.githubusercontent.com/jupyter/notebook/4.x/notebook/services/api/api.yaml#!/kernels).
+			 *
+			 * The promise is fulfilled on a valid response and rejected otherwise.
+			 *
+			 * It is assumed that the API call does not mutate the kernel id or name.
+			 *
+			 * The promise will be rejected if the kernel status is `Dead` or if the
+			 * request fails or the response is invalid.
+			 */
+			restart(): Thenable<void>;
+		}
 	}
 
 	/**
@@ -1268,6 +1286,38 @@ declare module 'azdata' {
 			graphs: ExecutionPlanGraph[]
 		}
 
+		export interface ExecutionGraphComparisonResult {
+			/**
+			 * The base ExecutionPlanNode for the ExecutionGraphComparisonResult.
+			 */
+			baseNode: ExecutionPlanNode;
+			/**
+			 * The children of the ExecutionGraphComparisonResult.
+			 */
+			children: ExecutionGraphComparisonResult[];
+			/**
+			 * The group index of the ExecutionGraphComparisonResult.
+			 */
+			groupIndex: number;
+			/**
+			 * Flag to indicate if the ExecutionGraphComparisonResult has a matching node in the compared execution plan.
+			 */
+			hasMatch: boolean;
+			/**
+			 * List of matching nodes for the ExecutionGraphComparisonResult.
+			 */
+			matchingNodes: ExecutionGraphComparisonResult[];
+			/**
+			 * The parent of the ExecutionGraphComparisonResult.
+			 */
+			parentNode: ExecutionGraphComparisonResult;
+		}
+
+		export interface ExecutionPlanComparisonResult extends ResultStatus {
+			firstComparisonResult: ExecutionGraphComparisonResult;
+			secondComparisonResult: ExecutionGraphComparisonResult;
+		}
+
 		export interface ExecutionPlanProvider extends DataProvider {
 			// execution plan service methods
 
@@ -1276,6 +1326,12 @@ declare module 'azdata' {
 			 * @param planFile file that contains the execution plan
 			 */
 			getExecutionPlan(planFile: ExecutionPlanGraphInfo): Thenable<GetExecutionPlanResult>;
+			/**
+			 * Compares two execution plans and identifies matching regions in both execution plans.
+			 * @param firstPlanFile file that contains the first execution plan.
+			 * @param secondPlanFile file that contains the second execution plan.
+			 */
+			compareExecutionPlanGraph(firstPlanFile: ExecutionPlanGraphInfo, secondPlanFile: ExecutionPlanGraphInfo): Thenable<ExecutionPlanComparisonResult>;
 		}
 	}
 

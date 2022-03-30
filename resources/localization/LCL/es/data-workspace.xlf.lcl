@@ -127,6 +127,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.default" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Default]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Predeterminado]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.enterProjectName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter Project Name]]></Val>
@@ -405,6 +414,15 @@
           <Val><![CDATA[Select Project Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Seleccionar tipo de proyecto]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.selectTargetPlatform" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select Target Platform]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Seleccionar plataforma de destino]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

@@ -9,7 +9,7 @@ import * as contracts from '../contracts';
 import { AppContext } from '../appContext';
 import { ConnectParams, ClientCapabilities } from 'dataprotocol-client/lib/protocol';
 import { SqlOpsDataClient, ISqlOpsFeature } from 'dataprotocol-client';
-import { ListRegisteredServersResult, ICmsService } from '../mssql';
+import { ListRegisteredServersResult, ICmsService } from 'mssql';
 import * as Utils from '../utils';
 
 export class CmsService implements ICmsService {

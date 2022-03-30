@@ -789,7 +789,13 @@ var AMDLoader;
                 catch (_e) {
                     recorder.record(61 /* CachedDataMissed */, cachedDataPath);
                 }
-                var script = new that._vm.Script(scriptSource, options);
+                // {{SQL CARBON EDIT}} Add more details to compile error
+                var script;
+                try {
+                    script = new that._vm.Script(scriptSource, options);
+                } catch (err) {
+                    throw new Error(`Error compiling ${filename}. ${err}`);
+                }
                 var compileWrapper = script.runInThisContext(options);
                 // run script
                 var dirname = that._path.dirname(filename);
@@ -852,7 +858,13 @@ var AMDLoader;
         NodeScriptLoader.prototype._createAndEvalScript = function (moduleManager, contents, options, callback, errorback) {
             var recorder = moduleManager.getRecorder();
             recorder.record(31 /* NodeBeginEvaluatingScript */, options.filename);
-            var script = new this._vm.Script(contents, options);
+            // {{SQL CARBON EDIT}} Add more details to compile error
+            var script;
+            try {
+                script = new this._vm.Script(contents, options);
+            } catch (err) {
+                throw new Error(`Error compiling ${options.filename}. ${err}`);
+            }
             var ret = script.runInThisContext(options);
             var globalDefineFunc = moduleManager.getGlobalAMDDefineFunc();
             var receivedDefineCall = false;

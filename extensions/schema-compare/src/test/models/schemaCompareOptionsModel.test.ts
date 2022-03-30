@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as should from 'should';
-import * as mssql from '../../../../mssql/src/mssql';
-import {SchemaCompareOptionsModel} from '../../models/schemaCompareOptionsModel';
+import * as mssql from 'mssql';
+import { SchemaCompareOptionsModel } from '../../models/schemaCompareOptionsModel';
 
 describe('Schema Compare Options Model', () => {
 	it('Should create model and set options successfully', function (): void {
@@ -39,7 +39,7 @@ describe('Schema Compare Options Model', () => {
 	});
 });
 
-const defaultOptions: mssql.DeploymentOptions =  {
+const defaultOptions: mssql.DeploymentOptions = {
 	ignoreTableOptions: false,
 	ignoreSemicolonBetweenStatements: false,
 	ignoreRouteLifetime: false,

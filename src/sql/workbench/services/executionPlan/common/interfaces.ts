@@ -22,6 +22,12 @@ export interface IExecutionPlanService {
 	 * Gets an execution plan for the given planFile.
 	 */
 	getExecutionPlan(planFile: azdata.executionPlan.ExecutionPlanGraphInfo): Promise<azdata.executionPlan.GetExecutionPlanResult>;
+	/**
+	 * Compares two execution plans and identifies matching regions in both execution plans.
+	 * @param firstPlanFile file that contains the first execution plan.
+	 * @param secondPlanFile file that contains the second execution plan.
+	 */
+	compareExecutionPlanGraph(firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo): Promise<azdata.executionPlan.ExecutionPlanComparisonResult>;
 
 	/**
 	 * Get execution plan file extensions supported by the provider.

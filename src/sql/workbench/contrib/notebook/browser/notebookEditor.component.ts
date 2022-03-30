@@ -29,6 +29,8 @@ import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookV
 import { Deferred } from 'sql/base/common/promise';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
+import { localize } from 'vs/nls';
+import * as path from 'vs/base/common/path';
 
 export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 
@@ -42,6 +44,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 	private serializationManagers: ISerializationManager[] = [];
 	private executeManagers: IExecuteManager[] = [];
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
+	private _isLoading: boolean = true;
 
 	public model: NotebookModel;
 	public views: NotebookViewsExtension;
@@ -81,8 +84,29 @@ export class NotebookEditorComponent extends AngularDisposable {
 		}
 	}
 
+	public get loadingMessage() {
+		return localize('loadingNotebookMessage', "Loading notebook {0}", path.basename(this._notebookParams.notebookUri.path));
+	}
+
+	public get loadingCompletedMessage() {
+		return localize('loadingNotebookCompletedMessage', "Loading notebook {0} completed", path.basename(this._notebookParams.notebookUri.path));
+	}
+
+	public get isLoading(): boolean {
+		return this._isLoading;
+	}
+
+	private setLoading(isLoading: boolean): void {
+		this._isLoading = isLoading;
+		this.detectChanges();
+	}
+
 	private async doLoad(): Promise<void> {
-		await this.createModelAndLoadContents();
+		try {
+			await this.createModelAndLoadContents();
+		} finally {
+			this.setLoading(false);
+		}
 		await this.setSerializationManager();
 		await this.setExecuteManager();
 		await this.loadModel();

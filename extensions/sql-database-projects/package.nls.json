@@ -32,6 +32,7 @@
 	"sqlDatabaseProjects.editProjectFile": "Edit .sqlproj File",
 	"sqlDatabaseProjects.changeTargetPlatform": "Change Target Platform",
 	"sqlDatabaseProjects.generateProjectFromOpenApiSpec": "Generate SQL Project from OpenAPI/Swagger spec",
+	"sqlDatabaseProjects.convertToSdkStyleProject": "Convert to SDK-style project",
 
 	"sqlDatabaseProjects.Settings": "Database Projects",
 	"sqlDatabaseProjects.dotnetInstallLocation": "Full path to .NET SDK on the machine.",

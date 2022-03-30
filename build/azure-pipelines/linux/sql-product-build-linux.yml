@@ -119,7 +119,7 @@ steps:
 
   - script: |
       set -e
-      DISPLAY=:10 ./scripts/test.sh --build --tfs "Unit Tests" # Disable code coverage since it's currently broken --coverage
+      DISPLAY=:10 ./scripts/test.sh --build --tfs "Unit Tests" --coverage
     displayName: Run unit tests (Electron)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 

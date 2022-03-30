@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../localizedConstants';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as utils from '../utils';
 import { SelectOperationPage } from './pages/selectOperationpage';
 import { DeployConfigPage } from './pages/deployConfigPage';
@@ -307,7 +307,9 @@ export class DataTierApplicationWizard {
 	private cancelDataTierApplicationWizard(): void {
 		TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, 'WizardCanceled')
 			.withAdditionalProperties({
-				isPotentialDataLoss: this.model.potentialDataLoss?.toString()
+				isPotentialDataLoss: this.model.potentialDataLoss?.toString(),
+				page: this.wizard.currentPage.toString(),
+				selectedOperation: this.selectedOperation.toString()
 			}).send();
 	}
 
@@ -343,7 +345,7 @@ export class DataTierApplicationWizard {
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - extractStartTime);
 		additionalMeasurements.extractedDacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
 
-		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.ExtractDacpac, undefined, additionalMeasurements);
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.ExtractDacpac, { version: this.model.version }, additionalMeasurements);
 
 		return result;
 	}

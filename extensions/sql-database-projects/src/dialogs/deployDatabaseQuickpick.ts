@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as uiUtils from './utils';
-import { AppSettingType, IDeployAppIntegrationProfile, IDeployProfile, ILocalDbSetting } from '../models/deploy/deployProfile';
+import { AppSettingType, DockerImageInfo, IDeployAppIntegrationProfile, IDeployProfile, ILocalDbSetting } from '../models/deploy/deployProfile';
 import { Project } from '../models/project';
 import { getPublishDatabaseSettings } from './publishDatabaseQuickpick';
 import * as path from 'path';
@@ -70,10 +70,8 @@ export async function launchDeployAppIntegrationQuickpick(project: Project): Pro
 	};
 }
 
-async function launchEulaQuickPick(baseImage: string): Promise<boolean> {
+async function launchEulaQuickPick(imageInfo: DockerImageInfo | undefined): Promise<boolean> {
 	let eulaAccepted: boolean = false;
-	const baseImages = uiUtils.getDockerBaseImages();
-	const imageInfo = baseImages.find(x => x.name === baseImage);
 	const agreementInfo = imageInfo?.agreementInfo;
 	if (agreementInfo) {
 		const openEulaButton: vscode.QuickInputButton = {
@@ -119,10 +117,11 @@ async function launchEulaQuickPick(baseImage: string): Promise<boolean> {
  */
 export async function launchPublishToDockerContainerQuickpick(project: Project): Promise<IDeployProfile | undefined> {
 
+	const name = uiUtils.getPublishServerName(project.getProjectTargetVersion());
 	let localDbSetting: ILocalDbSetting | undefined;
 	// Deploy to docker selected
 	let portNumber = await vscode.window.showInputBox({
-		title: constants.enterPortNumber,
+		title: constants.enterPortNumber(name),
 		ignoreFocusOut: true,
 		value: constants.defaultPortNumber,
 		validateInput: input => !utils.validateSqlServerPortNumber(input) ? constants.portMustBeNumber : undefined
@@ -136,10 +135,10 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 
 	let password: string | undefined = '';
 	password = await vscode.window.showInputBox({
-		title: constants.enterPassword,
+		title: constants.enterPassword(name),
 		ignoreFocusOut: true,
 		value: password,
-		validateInput: input => !utils.isValidSQLPassword(input) ? constants.invalidSQLPasswordMessage : undefined,
+		validateInput: input => !utils.isValidSQLPassword(input) ? constants.invalidSQLPasswordMessage(name) : undefined,
 		password: true
 	}
 	);
@@ -151,10 +150,10 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 
 	let confirmPassword: string | undefined = '';
 	confirmPassword = await vscode.window.showInputBox({
-		title: constants.confirmPassword,
+		title: constants.confirmPassword(name),
 		ignoreFocusOut: true,
 		value: confirmPassword,
-		validateInput: input => input !== password ? constants.passwordNotMatch : undefined,
+		validateInput: input => input !== password ? constants.passwordNotMatch(name) : undefined,
 		password: true
 	}
 	);
@@ -164,22 +163,21 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		return undefined;
 	}
 
-	const baseImages = uiUtils.getDockerBaseImages();
+	const baseImages = uiUtils.getDockerBaseImages(project.getProjectTargetVersion());
 	const baseImage = await vscode.window.showQuickPick(
-		baseImages.map(x => x.name),
-		{ title: constants.selectBaseImage, ignoreFocusOut: true });
+		baseImages.map(x => x.displayName),
+		{ title: constants.selectBaseImage(name), ignoreFocusOut: true });
 
 	// Return when user hits escape
 	if (!baseImage) {
 		return undefined;
 	}
 
-	const eulaAccepted = await launchEulaQuickPick(baseImage);
+	const imageInfo = baseImages.find(x => x.displayName === baseImage);
+	const eulaAccepted = await launchEulaQuickPick(imageInfo);
 	if (!eulaAccepted) {
 		return undefined;
 	}
-
-	const imageInfo = baseImages.find(x => x.name === baseImage);
 
 	localDbSetting = {
 		serverName: constants.defaultLocalServerName,
@@ -187,7 +185,7 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		dbName: project.projectFileName,
 		password: password,
 		port: +portNumber,
-		dockerBaseImage: baseImage,
+		dockerBaseImage: imageInfo?.name || '',
 		dockerBaseImageEula: imageInfo?.agreementInfo?.link?.url || ''
 	};
 
