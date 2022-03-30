@@ -136,9 +136,11 @@ export class InfoBox extends Disposable implements IThemable {
 				const placeholderIndex = text.indexOf(`{${i}}`);
 				if (placeholderIndex < 0) {
 					this._logService.warn(`Could not find placeholder text {${i}} in text ${text}`);
+					// Just continue on so we at least show the rest of the text if just one was missed or something
 					continue;
 				}
 
+				// First insert any text from the start of the current string fragment up to the placeholder
 				let curText = text.slice(0, placeholderIndex);
 				if (curText) {
 					const span = DOM.$('span');
@@ -146,6 +148,7 @@ export class InfoBox extends Disposable implements IThemable {
 					this._textElement.appendChild(span);
 				}
 
+				// Now insert the link element
 				const link = this._links[i];
 				const linkElement = DOM.$('a', {
 					href: link.url === '' ? ' ' : link.url
