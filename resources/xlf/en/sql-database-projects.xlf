@@ -65,7 +65,7 @@
       <source xml:lang="en">New SQL project name</source>
     </trans-unit>
     <trans-unit id="baseDockerImage">
-      <source xml:lang="en">Base SQL Server Docker image</source>
+      <source xml:lang="en">Base {0} Docker image</source>
     </trans-unit>
     <trans-unit id="browseButtonText">
       <source xml:lang="en">Browse folder</source>
@@ -116,10 +116,10 @@
       <source xml:lang="en">View changes in Schema Compare</source>
     </trans-unit>
     <trans-unit id="confirmPassword">
-      <source xml:lang="en">Confirm SQL server admin password</source>
+      <source xml:lang="en">Confirm {0} admin password</source>
     </trans-unit>
     <trans-unit id="confirmServerPassword">
-      <source xml:lang="en">Confirm SQL Server admin password</source>
+      <source xml:lang="en">Confirm {0} admin password</source>
     </trans-unit>
     <trans-unit id="connectingToSqlServerOnDockerMessage">
       <source xml:lang="en">Connecting to SQL Server on Docker</source>
@@ -326,10 +326,10 @@
       <source xml:lang="en">Enter new value for variable '{0}'</source>
     </trans-unit>
     <trans-unit id="enterPassword">
-      <source xml:lang="en">Enter SQL Server admin password</source>
+      <source xml:lang="en">Enter {0} admin password</source>
     </trans-unit>
     <trans-unit id="enterPortNumber">
-      <source xml:lang="en">Enter SQL server port number or press enter to use the default value</source>
+      <source xml:lang="en">Enter {0} port number or press enter to use the default value</source>
     </trans-unit>
     <trans-unit id="enterSystemDbName">
       <source xml:lang="en">Enter a database name for this system database</source>
@@ -445,7 +445,7 @@
       <source xml:lang="en">Invalid value specified for the property '{0}' in .sqlproj file</source>
     </trans-unit>
     <trans-unit id="invalidSQLPassword">
-      <source xml:lang="en">SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
+      <source xml:lang="en">{0} password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
     </trans-unit>
     <trans-unit id="invalidSqlConnectionString">
       <source xml:lang="en">Invalid SQL connection string</source>
@@ -544,7 +544,7 @@
       <source xml:lang="en">Cannot access parent of provided tree item</source>
     </trans-unit>
     <trans-unit id="passwordNotMatch">
-      <source xml:lang="en">SQL Server password doesn't match the confirmation password</source>
+      <source xml:lang="en">{0} password doesn't match the confirmation password</source>
     </trans-unit>
     <trans-unit id="portMustNotBeNumber">
       <source xml:lang="en">Port must a be number</source>
@@ -603,6 +603,9 @@
     <trans-unit id="projectToUpdatePlaceholderText">
       <source xml:lang="en">Select project file</source>
     </trans-unit>
+    <trans-unit id="projectUpdatedToSdkStyle">
+      <source xml:lang="en">The project {0} has been updated to be an SDK-style project. Click 'Learn More' for details on the Microsoft.Build.Sql SDK and ways to simplify the project file.</source>
+    </trans-unit>
     <trans-unit id="publish">
       <source xml:lang="en">Publish</source>
     </trans-unit>
@@ -625,10 +628,10 @@
       <source xml:lang="en">Failed to publish to container. {0}</source>
     </trans-unit>
     <trans-unit id="publishToDockerContainer">
-      <source xml:lang="en">Publish to new server in a container</source>
+      <source xml:lang="en">Publish to new {0} local development container</source>
     </trans-unit>
     <trans-unit id="publishToExistingServer">
-      <source xml:lang="en">Publish to existing server</source>
+      <source xml:lang="en">Publish to an existing {0}</source>
     </trans-unit>
     <trans-unit id="publishingProjectMessage">
       <source xml:lang="en">Publishing project in a container...</source>
@@ -697,7 +700,7 @@
       <source xml:lang="en">sec</source>
     </trans-unit>
     <trans-unit id="selectBaseImage">
-      <source xml:lang="en">Select the base SQL Server docker image</source>
+      <source xml:lang="en">Select the base {0} docker image</source>
     </trans-unit>
     <trans-unit id="selectConnection">
       <source xml:lang="en">Select connection</source>
@@ -742,10 +745,10 @@
       <source xml:lang="en">Server name</source>
     </trans-unit>
     <trans-unit id="serverPassword">
-      <source xml:lang="en">SQL Server admin password</source>
+      <source xml:lang="en">{0} admin password</source>
     </trans-unit>
     <trans-unit id="serverPortNumber">
-      <source xml:lang="en">SQL server port number</source>
+      <source xml:lang="en">{0} port number</source>
     </trans-unit>
     <trans-unit id="serverVariable">
       <source xml:lang="en">Server variable</source>

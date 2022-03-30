@@ -230,7 +230,7 @@ export class PublishDatabaseDialog {
 			await this.publish!(this.project, settings);
 		} else {
 			const dockerBaseImage = this.getBaseDockerImageName();
-			const baseImages = getDockerBaseImages();
+			const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
 			const imageInfo = baseImages.find(x => x.name === dockerBaseImage);
 			const settings: IDeployProfile = {
 				localDbSetting: {
@@ -315,7 +315,7 @@ export class PublishDatabaseDialog {
 	}
 
 	public getBaseDockerImageName(): string {
-		return <string>this.baseDockerImageDropDown?.value ?? '';
+		return (<azdataType.CategoryValue>this.baseDockerImageDropDown?.value)?.name ?? '';
 	}
 
 	public getDefaultDatabaseName(): string {
@@ -586,9 +586,10 @@ export class PublishDatabaseDialog {
 		});
 		const serverConfirmPasswordRow = this.createFormRow(view, constants.confirmServerPassword(name), this.serverConfigAdminPasswordTextBox);
 
-		const baseImages = getDockerBaseImages();
+		const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
+		const baseImagesValues: azdataType.CategoryValue[] = baseImages.map(x => { return { name: x.name, displayName: x.displayName }; });
 		this.baseDockerImageDropDown = view.modelBuilder.dropDown().withProps({
-			values: baseImages.map(x => x.name),
+			values: baseImagesValues,
 			ariaLabel: constants.baseDockerImage(name),
 			width: cssStyles.publishDialogTextboxWidth,
 			enabled: true
@@ -612,7 +613,7 @@ export class PublishDatabaseDialog {
 			if (this.eulaCheckBox) {
 				this.eulaCheckBox.checked = false;
 			}
-			const baseImage = getDockerBaseImages().find(x => x.name === this.baseDockerImageDropDown?.value);
+			const baseImage = getDockerBaseImages(this.project.getProjectTargetVersion()).find(x => x.name === (<azdataType.CategoryValue>this.baseDockerImageDropDown?.value).name);
 			if (baseImage?.agreementInfo.link) {
 				const text = view.modelBuilder.text().withProps({
 					value: constants.eulaAgreementTemplate,

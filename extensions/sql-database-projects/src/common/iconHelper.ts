@@ -16,6 +16,7 @@ export class IconPathHelper {
 	public static databaseProject: IconPath;
 	public static colorfulSqlProject: IconPath;
 	public static sqlEdgeProject: IconPath;
+	public static azureSqlDbProject: IconPath;
 
 	public static dataSourceGroup: IconPath;
 	public static dataSourceSql: IconPath;
@@ -48,6 +49,7 @@ export class IconPathHelper {
 		IconPathHelper.databaseProject = IconPathHelper.makeIcon('databaseProject');
 		IconPathHelper.colorfulSqlProject = IconPathHelper.makeIcon('colorfulSqlProject', true);
 		IconPathHelper.sqlEdgeProject = IconPathHelper.makeIcon('sqlEdgeProject', true);
+		IconPathHelper.azureSqlDbProject = IconPathHelper.makeIcon('azure', true);
 
 		IconPathHelper.dataSourceGroup = IconPathHelper.makeIcon('dataSourceGroup');
 		IconPathHelper.dataSourceSql = IconPathHelper.makeIcon('dataSource-sql');
