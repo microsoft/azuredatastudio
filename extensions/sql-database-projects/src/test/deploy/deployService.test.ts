@@ -11,16 +11,18 @@ import { DeployService } from '../../models/deploy/deployService';
 import { Project } from '../../models/project';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { AppSettingType, ILocalDbDeployProfile } from '../../models/deploy/deployProfile';
+import { AppSettingType, ILocalDbDeployProfile, ISqlDbDeployProfile } from '../../models/deploy/deployProfile';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as constants from '../../common/constants';
 import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
 import * as TypeMoq from 'typemoq';
+import { AzureSqlClient } from '../../models/deploy/azureSqlClient';
 
 export interface TestContext {
 	outputChannel: vscode.OutputChannel;
+	azureSqlClient: TypeMoq.IMock<AzureSqlClient>;
 }
 
 export const mockConnectionResult: azdata.ConnectionResult = {
@@ -47,7 +49,8 @@ export function createContext(): TestContext {
 			show: () => { },
 			hide: () => { },
 			dispose: () => { }
-		}
+		},
+		azureSqlClient: TypeMoq.Mock.ofType(AzureSqlClient)
 	};
 }
 
@@ -85,7 +88,7 @@ describe('deploy service', function (): void {
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
 		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
 		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
-		const deployService = new DeployService(testContext.outputChannel, shellExecutionHelper.object);
+		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
 		sandbox.stub(azdata.connection, 'connect').returns(Promise.resolve(mockConnectionResult));
 		sandbox.stub(azdata.connection, 'getUriForConnection').returns(Promise.resolve('connection'));
 		sandbox.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
@@ -115,7 +118,7 @@ describe('deploy service', function (): void {
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
 		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
 		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.reject('error'));
-		const deployService = new DeployService(testContext.outputChannel, shellExecutionHelper.object);
+		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
 		sandbox.stub(azdata.tasks, 'startBackgroundOperation').callThrough();
 
 		await should(deployService.deployToContainer(deployProfile, project1)).rejected();
@@ -137,7 +140,7 @@ describe('deploy service', function (): void {
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
 		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
 		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
-		const deployService = new DeployService(testContext.outputChannel, shellExecutionHelper.object);
+		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
 		let connectionStub = sandbox.stub(azdata.connection, 'connect');
 		connectionStub.onFirstCall().returns(Promise.resolve(mockFailedConnectionResult));
 		connectionStub.onSecondCall().returns(Promise.resolve(mockConnectionResult));
@@ -195,7 +198,7 @@ describe('deploy service', function (): void {
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
 		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
 		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
-		const deployService = new DeployService(testContext.outputChannel, shellExecutionHelper.object);
+		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
 
 		await deployService.updateAppSettings(appInteg, deployProfile);
 		let newContent = JSON.parse(fse.readFileSync(filePath, 'utf8'));
@@ -246,7 +249,7 @@ describe('deploy service', function (): void {
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
 		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
 		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
-		const deployService = new DeployService(testContext.outputChannel, shellExecutionHelper.object);
+		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
 		let connection = new azdata.connection.ConnectionProfile();
 		sandbox.stub(azdata.connection, 'getConnection').returns(Promise.resolve(connection));
 
@@ -263,7 +266,7 @@ describe('deploy service', function (): void {
 		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(`id
 		id2
 		id3`));
-		const deployService = new DeployService(testContext.outputChannel, shellExecutionHelper.object);
+		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
 		const ids = await deployService.getCurrentDockerContainer('label');
 		await deployService.cleanDockerObjects(ids, ['docker stop', 'docker rm']);
 		shellExecutionHelper.verify(x => x.runStreamedCommand(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(7));
@@ -271,7 +274,7 @@ describe('deploy service', function (): void {
 
 	it('Should create docker image info correctly', () => {
 		const testContext = createContext();
-		const deployService = new DeployService(testContext.outputChannel);
+		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel);
 		const id = UUID.generateUuid().toLocaleLowerCase();
 		const baseImage = 'baseImage:latest';
 		const tag = baseImage.replace(':', '-').replace(constants.sqlServerDockerRegistry, '').replace(/[^a-zA-Z0-9_,\-]/g, '').toLocaleLowerCase();
@@ -310,5 +313,34 @@ describe('deploy service', function (): void {
 			containerName: `${constants.dockerImageNamePrefix}-${imageProjectName}-${id}`,
 			tag: `${constants.dockerImageNamePrefix}-${imageProjectName}-${tag}`
 		});
+	});
+
+	it('Should create a new Azure SQL server successfully', async function (): Promise<void> {
+		const testContext = createContext();
+		const deployProfile: ISqlDbDeployProfile = {
+			sqlDbSetting: {
+				dbName: 'test',
+				password: 'PLACEHOLDER',
+				port: 1433,
+				serverName: 'localhost',
+				userName: 'sa',
+				connectionRetryTimeout: 1,
+				resourceGroup: undefined!,
+				subscription: undefined!,
+				location: undefined!
+			}
+		};
+		const fullyQualifiedDomainName = 'servername';
+		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
+		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
+		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
+		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
+		testContext.azureSqlClient.setup(x => x.createServer(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(fullyQualifiedDomainName));
+		sandbox.stub(azdata.connection, 'connect').returns(Promise.resolve(mockConnectionResult));
+		sandbox.stub(azdata.connection, 'getUriForConnection').returns(Promise.resolve('connection'));
+
+		let connection = await deployService.createNewAzureSqlServer(deployProfile);
+		should(connection).equals('connection');
+		should(deployProfile.sqlDbSetting?.serverName).equal(fullyQualifiedDomainName);
 	});
 });

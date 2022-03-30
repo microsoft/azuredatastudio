@@ -115,11 +115,10 @@ async function launchEulaQuickPick(imageInfo: DockerImageInfo | undefined): Prom
 	return false;
 }
 
-export async function launchCreateAzureServerQuickPick(project: Project): Promise<ISqlDbDeployProfile | undefined> {
+export async function launchCreateAzureServerQuickPick(project: Project, azureSqlClient: AzureSqlClient): Promise<ISqlDbDeployProfile | undefined> {
 
 	const name = uiUtils.getPublishServerName(project.getProjectTargetVersion());
-	const client = AzureSqlClient;
-	const accounts = await client.getAccounts();
+	const accounts = await azureSqlClient.getAccounts();
 	const accountOptions = accounts.map(x => x.displayInfo?.displayName || '');
 	accountOptions.unshift(constants.azureAddAccount);
 
@@ -134,7 +133,7 @@ export async function launchCreateAzureServerQuickPick(project: Project): Promis
 	}
 
 	if (accountOption === constants.azureAddAccount) {
-		account = await client.getAccount();
+		account = await azureSqlClient.getAccount();
 	} else {
 		account = accounts.find(x => x.displayInfo.displayName === accountOption);
 	}
@@ -143,7 +142,7 @@ export async function launchCreateAzureServerQuickPick(project: Project): Promis
 		return;
 	}
 
-	const subscriptions = await client.getSubscriptions(account);
+	const subscriptions = await azureSqlClient.getSubscriptions(account);
 
 	const subscriptionName = await vscode.window.showQuickPick(
 		subscriptions.map(x => x.subscription.displayName || ''),
@@ -160,7 +159,7 @@ export async function launchCreateAzureServerQuickPick(project: Project): Promis
 		return undefined;
 	}
 
-	const resourceGroups = await client.getResourceGroups(subscription);
+	const resourceGroups = await azureSqlClient.getResourceGroups(subscription);
 	const resourceGroupName = await vscode.window.showQuickPick(
 		resourceGroups.map(x => x.name || ''),
 		{ title: constants.resourceGroup, ignoreFocusOut: true });
@@ -177,7 +176,7 @@ export async function launchCreateAzureServerQuickPick(project: Project): Promis
 		return undefined;
 	}
 
-	let locations = await client.getLocations(subscription);
+	let locations = await azureSqlClient.getLocations(subscription);
 	if (resourceGroup.location) {
 		const defaultLocation = locations.find(x => x.name === resourceGroup.location);
 		if (defaultLocation) {

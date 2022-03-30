@@ -48,6 +48,7 @@ import { ILocalDbDeployProfile, ISqlDbDeployProfile } from '../models/deploy/dep
 import { EntryType, FileProjectEntry, IDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
 import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updateProject';
 import { targetPlatformToAssets } from '../projectProvider/projectAssets';
+import { AzureSqlClient } from '../models/deploy/azureSqlClient';
 
 const maxTableLength = 10;
 
@@ -75,6 +76,7 @@ export class ProjectsController {
 	private buildInfo: DashboardData[] = [];
 	private publishInfo: PublishData[] = [];
 	private deployService: DeployService;
+	private azureSqlClient: AzureSqlClient;
 	private autorestHelper: AutorestHelper;
 
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
@@ -82,7 +84,8 @@ export class ProjectsController {
 	constructor(private _outputChannel: vscode.OutputChannel) {
 		this.netCoreTool = new NetCoreTool(this._outputChannel);
 		this.buildHelper = new BuildHelper();
-		this.deployService = new DeployService(this._outputChannel);
+		this.azureSqlClient = new AzureSqlClient();
+		this.deployService = new DeployService(this.azureSqlClient, this._outputChannel);
 		this.autorestHelper = new AutorestHelper(this._outputChannel);
 	}
 
@@ -285,17 +288,36 @@ export class ProjectsController {
 		}
 	}
 
+	/**
+	 * Publishes a project to a new Azure server
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project or the Project itself
+	 * @param deployProfile deploy profile
+	 */
 	public async publishToAzure(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: ISqlDbDeployProfile): Promise<void> {
-		const project: Project = this.getProjectFromContext(context);
-		this._outputChannel.appendLine(`Creating SQL server '${deployProfile?.sqlDbSetting?.serverName}' in Azure ... `);
-		void utils.showInfoMessageWithOutputChannel(`Creating SQL server '${deployProfile?.sqlDbSetting?.serverName}' in Azure ... `, this._outputChannel);
-		const connectionUri = await this.deployService.deployToAzure(deployProfile);
-		if (deployProfile?.deploySettings && deployProfile?.sqlDbSetting && connectionUri) {
-			if (deployProfile && connectionUri) {
-				deployProfile.deploySettings.connectionUri = connectionUri;
-				await this.publishOrScriptProject(project, deployProfile.deploySettings, true);
-				await this.deployService.getConnection(deployProfile.sqlDbSetting, true, deployProfile.sqlDbSetting.dbName);
+		try {
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishToNewAzureServer);
+			const project: Project = this.getProjectFromContext(context);
+			if (deployProfile?.deploySettings && deployProfile?.sqlDbSetting) {
+				void utils.showInfoMessageWithOutputChannel(constants.creatingAzureSqlServer(deployProfile?.sqlDbSetting?.serverName), this._outputChannel);
+				const connectionUri = await this.deployService.createNewAzureSqlServer(deployProfile);
+				if (connectionUri) {
+					deployProfile.deploySettings.connectionUri = connectionUri;
+					const publishResult = await this.publishOrScriptProject(project, deployProfile.deploySettings, true);
+					if (publishResult && publishResult.success) {
+						if (deployProfile.sqlDbSetting) {
+							await this.deployService.getConnection(deployProfile.sqlDbSetting, true, deployProfile.sqlDbSetting.dbName);
+						}
+						void vscode.window.showInformationMessage(constants.publishProjectSucceed);
+					} else {
+						void utils.showErrorMessageWithOutputChannel(constants.publishToNewAzureServerFailed, publishResult?.errorMessage || '', this._outputChannel);
+					}
+				} else {
+					void utils.showErrorMessageWithOutputChannel(constants.publishToNewAzureServerFailed, constants.deployProjectFailedMessage, this._outputChannel);
+				}
 			}
+		} catch (error) {
+			void utils.showErrorMessageWithOutputChannel(constants.publishToNewAzureServerFailed, error, this._outputChannel);
+			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishToNewAzureServer);
 		}
 	}
 
@@ -381,11 +403,11 @@ export class ProjectsController {
 
 		if (publishTarget === constants.PublishTargetType.docker) {
 			const deployProfile = await launchPublishToDockerContainerQuickpick(project);
-			if (deployProfile?.deploySettings) {
+			if (deployProfile?.deploySettings && deployProfile?.localDbSetting) {
 				await this.publishToDockerContainer(project, deployProfile);
 			}
 		} else if (publishTarget === constants.PublishTargetType.newAzureServer) {
-			const settings = await launchCreateAzureServerQuickPick(project);
+			const settings = await launchCreateAzureServerQuickPick(project, this.azureSqlClient);
 
 			if (settings?.deploySettings && settings?.sqlDbSetting) {
 				await this.publishToAzure(project, settings);

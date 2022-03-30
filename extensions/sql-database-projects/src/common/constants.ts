@@ -147,10 +147,11 @@ export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not 
 // Deploy
 export const SqlServerName = 'SQL server';
 export const AzureSqlServerName = 'Azure SQL server';
+export const AzureSqlLogicalServerName = 'Azure SQL logical server';
 export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
 export function publishToExistingServer(name: string) { return localize('publishToExistingServer', "Publish to an existing {0}", name); }
 export function publishToDockerContainer(name: string) { return localize('publishToDockerContainer', "Publish to new {0} local development container", name); }
-export const publishToNewAzureServer = localize('publishToNewAzureServer', "Publish to new Azure SQL server");
+export const publishToNewAzureServer = localize('publishToNewAzureServer', "Publish to new Azure SQL logical server");
 export const azureServerName = localize('azureServerName', "Azure SQL server name");
 export const azureSubscription = localize('azureSubscription', "Azure subscription");
 export const resourceGroup = localize('resourceGroup', "Resource group");
@@ -215,8 +216,11 @@ export const serverCreated = localize('serverCreated', "Server created");
 export const deployProjectFailedMessage = localize('deployProjectFailedMessage', "Failed to open a connection to the deployed database'");
 export const containerAlreadyExistForProject = localize('containerAlreadyExistForProject', "Containers already exist for this project. Do you want to delete them before deploying a new one?");
 export const checkoutOutputMessage = localize('checkoutOutputMessage', "Check output pane for more details");
+export function creatingAzureSqlServer(name: string): string { return localize('creatingAzureSqlServer', "Creating Azure SQL Server '{0}' ...", name); }
+export function azureSqlServerCreated(name: string): string { return localize('azureSqlServerCreated', "Azure SQL Server '{0}' created", name); }
 export function taskFailedError(taskName: string, err: string): string { return localize('taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
 export function publishToContainerFailed(errorMessage: string) { return localize('publishToContainerFailed', "Failed to publish to container. {0}", errorMessage); }
+export function publishToNewAzureServerFailed(errorMessage: string) { return localize('publishToNewAzureServerFailed', "Failed to publish to new Azure SQL server. {0}", errorMessage); }
 export function deployAppSettingUpdateFailed(appSetting: string) { return localize('deployAppSettingUpdateFailed', "Failed to update app setting '{0}'", appSetting); }
 export function deployAppSettingUpdating(appSetting: string) { return localize('deployAppSettingUpdating', "Updating app setting: '{0}'", appSetting); }
 export function connectionFailedError(error: string) { return localize('connectionFailedError', "Connection failed error: '{0}'", error); }

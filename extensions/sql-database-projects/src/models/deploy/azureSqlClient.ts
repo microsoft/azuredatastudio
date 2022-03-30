@@ -7,6 +7,7 @@ import { SubscriptionClient, Subscription, Location } from '@azure/arm-subscript
 import { SqlManagementClient, Server } from '@azure/arm-sql';
 import * as coreAuth from '@azure/core-auth';
 import { ResourceManagementClient, ResourceGroup } from '@azure/arm-resources';
+import { PagedAsyncIterableIterator } from '@azure/core-paging';
 import * as utils from '../../common/utils';
 import { IAccount, Tenant, Token } from 'vscode-mssql';
 export interface AzureAccountSession {
@@ -16,69 +17,78 @@ export interface AzureAccountSession {
 	token: Token
 }
 
+/**
+ * TokenCredential wrapper to only return the given token
+ */
 class SQLTokenCredential implements coreAuth.TokenCredential {
-	/**
-	 *
-	 */
-	constructor(private _token: Token) {
 
+	constructor(private _token: Token) {
 	}
-	public getToken(scopes: string | string[], options?: coreAuth.GetTokenOptions): Promise<coreAuth.AccessToken | null> {
-		console.log(scopes);
-		console.log(options);
+
+	public getToken(_: string | string[], __?: coreAuth.GetTokenOptions): Promise<coreAuth.AccessToken | null> {
 		return Promise.resolve({
 			token: this._token.token,
 			expiresOnTimestamp: this._token.expiresOn || 0
 		});
 	}
 }
+
+/**
+ * Client module to call Azure APIs for getting or creating resources
+ */
 export class AzureSqlClient {
 
-	public static async getAccounts(): Promise<IAccount[]> {
+	/**
+	 * Returns existing Azure accounts
+	 */
+	public async getAccounts(): Promise<IAccount[]> {
 		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 		return await vscodeMssqlApi.azureAccountService.getAccounts();
 	}
 
-	public static async getAccount(): Promise<IAccount> {
+	/**
+	 * Prompt user to login to Azure and returns the account
+	 * @returns Azure account that user logged in to
+	 */
+	public async getAccount(): Promise<IAccount> {
 		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 		return await vscodeMssqlApi.azureAccountService.addAccount();
 	}
 
-	public static async getLocations(session: AzureAccountSession): Promise<Location[]> {
-		let locations: Location[] = [];
+	/**
+	 * Returns Azure locations for given subscription
+	 */
+	public async getLocations(session: AzureAccountSession): Promise<Location[]> {
 		const subClient = new SubscriptionClient(new SQLTokenCredential(session.token));
 		if (!session?.subscription?.subscriptionId) {
 			return [];
 		}
 		const locationsPages = await subClient.subscriptions.listLocations(session.subscription.subscriptionId);
-		let nextLocation = await locationsPages.next();
-		while (!nextLocation.done) {
-			locations.push(nextLocation.value);
-			nextLocation = await locationsPages.next();
-		}
-		return locations;
+		return await this.getAllValues(locationsPages, (v) => v);
 	}
 
-	public static async getSubscriptions(account: IAccount): Promise<AzureAccountSession[]> {
+	/**
+	 * Returns Azure subscriptions for given account
+	 */
+	public async getSubscriptions(account: IAccount): Promise<AzureAccountSession[]> {
 		try {
-			const subscriptions: AzureAccountSession[] = [];
+			let subscriptions: AzureAccountSession[] = [];
 			const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 			const tenants = <Tenant[]>account.properties.tenants;
 			for (const tenantId of tenants.map(t => t.id)) {
 				const token = await vscodeMssqlApi.azureAccountService.getAccountSecurityToken(account, tenantId);
 				const subClient = new SubscriptionClient(new SQLTokenCredential(token));
 				const newSubPages = await subClient.subscriptions.list();
-				let nextSub = await newSubPages.next();
-				while (!nextSub.done) {
-					subscriptions.push({
-						subscription: nextSub.value,
+				const array = await this.getAllValues<Subscription, AzureAccountSession>(newSubPages, (nextSub) => {
+					return {
+						subscription: nextSub,
 						tenantId: tenantId,
 						account: account,
 						token: token
 
-					});
-					nextSub = await newSubPages.next();
-				}
+					};
+				});
+				subscriptions = subscriptions.concat(array);
 			}
 
 			return subscriptions;
@@ -88,7 +98,10 @@ export class AzureSqlClient {
 		}
 	}
 
-	public static async createServer(session: AzureAccountSession, resourceGroup: ResourceGroup, serverName: string, parameters: Server): Promise<Server | undefined> {
+	/**
+	 * Creates a new Azure SQL server for given subscription, resource group and location
+	 */
+	public async createServer(session: AzureAccountSession, resourceGroup: ResourceGroup, serverName: string, parameters: Server): Promise<string | undefined> {
 		const credential = new SQLTokenCredential(session.token);
 		if (session?.subscription.subscriptionId && resourceGroup?.name) {
 			const sqlClient: SqlManagementClient = new SqlManagementClient(credential, session.subscription.subscriptionId);
@@ -97,35 +110,41 @@ export class AzureSqlClient {
 					const currentServer = await sqlClient.servers.get(resourceGroup.name,
 						serverName);
 					if (currentServer) {
-						// TODO: error for existing server
-						return currentServer;
+						// TODO: error for existing server or should we accept existing servers?
+						return currentServer.fullyQualifiedDomainName;
 					}
 				} catch {
-					// Ignore the error if
+					// Ignore the error if server doesn't exist
 				}
 				const result = await sqlClient.servers.beginCreateOrUpdateAndWait(resourceGroup.name,
 					serverName, parameters);
 
-				return result;
+				return result.fullyQualifiedDomainName;
 			}
 		}
 		return undefined;
 	}
 
-	public static async getResourceGroups(session: AzureAccountSession): Promise<Array<ResourceGroup> | []> {
-		const groups: ResourceGroup[] = [];
-
+	/**
+	 * Returns Azure resource groups for given subscription
+	 */
+	public async getResourceGroups(session: AzureAccountSession): Promise<Array<ResourceGroup> | []> {
 		if (session?.subscription?.subscriptionId) {
 			const resourceGroupClient = new ResourceManagementClient(new SQLTokenCredential(session.token), session.subscription.subscriptionId);
 
 			const newGroupsPages = await resourceGroupClient.resourceGroups.list();
-			let nextGroup = await newGroupsPages.next();
-			while (!nextGroup.done) {
-				groups.push(nextGroup.value);
-				nextGroup = await newGroupsPages.next();
-			}
-			return groups;
+			return await this.getAllValues(newGroupsPages, (v) => v);
 		}
 		return [];
+	}
+
+	private async getAllValues<T, TResult>(pages: PagedAsyncIterableIterator<T>, convertor: (input: T) => TResult): Promise<TResult[]> {
+		let values: TResult[] = [];
+		let newValue = await pages.next();
+		while (!newValue.done) {
+			values.push(convertor(newValue.value));
+			newValue = await pages.next();
+		}
+		return values;
 	}
 }

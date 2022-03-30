@@ -23,7 +23,7 @@ interface DockerImageSpec {
 }
 export class DeployService {
 
-	constructor(private _outputChannel: vscode.OutputChannel, shellExecutionHelper: ShellExecutionHelper | undefined = undefined) {
+	constructor(private _azureSqlClient = new AzureSqlClient(), private _outputChannel: vscode.OutputChannel, shellExecutionHelper: ShellExecutionHelper | undefined = undefined) {
 		this._shellExecutionHelper = shellExecutionHelper ?? new ShellExecutionHelper(this._outputChannel);
 	}
 
@@ -124,22 +124,34 @@ export class DeployService {
 		return { label: imageLabel, tag: imageTag, containerName: dockerName };
 	}
 
-	public async deployToAzure(profile: ISqlDbDeployProfile | undefined): Promise<string | undefined> {
+	/**
+	 * Creates a new Azure Sql server and tries to connect to the new server. If connection fails because of firewall rule, it prompts user to add firewall rule settings
+	 * @param profile Azure Sql server settings
+	 * @returns connection url for the new server
+	 */
+	public async createNewAzureSqlServer(profile: ISqlDbDeployProfile | undefined): Promise<string | undefined> {
 		if (!profile?.sqlDbSetting || !profile?.deploySettings) {
 			return undefined;
 		}
-		const azureSqlClient = AzureSqlClient;
-		const server = await azureSqlClient.createServer(profile.sqlDbSetting.subscription, profile?.sqlDbSetting.resourceGroup, profile?.sqlDbSetting.serverName, {
+
+		this.logToOutput(constants.creatingAzureSqlServer(profile?.sqlDbSetting?.serverName));
+
+		// Create the server
+		const server = await this._azureSqlClient.createServer(profile.sqlDbSetting.subscription, profile?.sqlDbSetting.resourceGroup, profile?.sqlDbSetting.serverName, {
 			location: profile?.sqlDbSetting?.location,
 			administratorLogin: profile?.sqlDbSetting.userName,
 			administratorLoginPassword: profile?.sqlDbSetting.password
 		});
-		if (server && server.fullyQualifiedDomainName) {
+		if (server && server) {
 			this._outputChannel.appendLine(constants.serverCreated);
-			profile.sqlDbSetting.serverName = server.fullyQualifiedDomainName;
-		}
+			profile.sqlDbSetting.serverName = server;
 
-		return await this.getConnection(profile.sqlDbSetting, false, 'master');
+			this.logToOutput(constants.azureSqlServerCreated(profile?.sqlDbSetting?.serverName));
+
+			// Connect to the server
+			return await this.getConnection(profile.sqlDbSetting, false, 'master');
+		}
+		return undefined;
 	}
 
 	public async deployToContainer(profile: ILocalDbDeployProfile, project: Project): Promise<string | undefined> {
@@ -299,7 +311,7 @@ export class DeployService {
 				connectionUrl = await vscodeMssqlApi.connect(connectionProfile, saveConnectionAndPassword);
 			} catch (err) {
 				const firewallRuleError = <IFireWallRuleError>err;
-				if (err.connectionUri || firewallRuleError?.connectionUri) {
+				if (firewallRuleError?.connectionUri) {
 					await vscodeMssqlApi.promptForFirewallRule(err.connectionUri, connectionProfile);
 				} else {
 					throw err;
