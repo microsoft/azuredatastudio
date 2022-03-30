@@ -13,8 +13,8 @@ import { ITelemetryEventProperties, Telemetry } from '../telemetry';
 export function registerTableDesignerCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newTable', async (context: azdata.ObjectExplorerContext) => {
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
-		const tableSubType = context.nodeInfo.nodeSubType as azdata.designers.TableSubType ?? azdata.designers.TableSubType.Temporal;
-		const telemetryInfo = await getTelemetryInfo(context, tableSubType);
+		const tableIconType = context.nodeInfo.nodeSubType as azdata.designers.TableIconType ?? azdata.designers.TableIconType.Basic;
+		const telemetryInfo = await getTelemetryInfo(context, tableIconType);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: context.connectionProfile.serverName,
 			database: context.connectionProfile.databaseName,
@@ -22,7 +22,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			id: generateUuid(),
 			connectionString: connectionString,
 			accessToken: context.connectionProfile.options.azureAccountToken,
-			tableSubType: tableSubType
+			tableIconType: tableIconType
 		}, telemetryInfo);
 	}));
 
@@ -32,8 +32,9 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		const schema = context.nodeInfo.metadata.schema;
 		const name = context.nodeInfo.metadata.name;
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
-		const tableSubType = context.nodeInfo.nodeSubType as azdata.designers.TableSubType ?? azdata.designers.TableSubType.Temporal;
-		const telemetryInfo = await getTelemetryInfo(context, tableSubType);
+		const tableIconType = context.nodeInfo.nodeSubType === '' ? azdata.designers.TableIconType.Basic :
+			context.nodeInfo.nodeSubType as azdata.designers.TableIconType;
+		const telemetryInfo = await getTelemetryInfo(context, tableIconType);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: server,
 			database: database,
@@ -43,7 +44,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			id: `${sqlProviderName}|${server}|${database}|${schema}|${name}`,
 			connectionString: connectionString,
 			accessToken: context.connectionProfile.options.azureAccountToken,
-			tableSubType: tableSubType
+			tableIconType: tableIconType
 		}, telemetryInfo);
 	}));
 }

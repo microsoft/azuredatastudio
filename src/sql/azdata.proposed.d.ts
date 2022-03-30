@@ -726,9 +726,9 @@ declare module 'azdata' {
 			 */
 			[key: string]: any;
 			/**
-			 * Table Node subtype
+			 * Table icon type that's shown in the editor tab
 			 */
-			tableSubType: TableSubType;
+			tableIconType?: TableIconType;
 		}
 
 		/**
@@ -746,9 +746,10 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * Table node sub type
+		 * Table icon that's shown on the editor tab
 		 */
-		export enum TableSubType {
+		export enum TableIconType {
+			Basic = 'Basic',
 			Temporal = 'Temporal',
 			GraphNode = 'GraphNode',
 			GraphEdge = 'GraphEdge'
