@@ -233,14 +233,14 @@ export class TextCellToolbar {
 		await this.clickToolbarButton('Insert code');
 	}
 
-	public async insertLink(linkLabel: string, linkUrl: string): Promise<void> {
+	public async insertLink(linkLabel: string, linkAddress: string): Promise<void> {
 		await this.clickToolbarButton('Insert link');
-		const linkDialogSelector = 'div.modal.callout-dialog[aria-label=\"Insert link\"]';
-		const displayTextSelector = `${linkDialogSelector} input[title=\"Text to dislay\"]`;
+		const linkDialogSelector = 'div.modal.callout-dialog[aria-label="Insert link"]';
+		const displayTextSelector = `${linkDialogSelector} input[aria-label="Text to display"]`;
 		await this.code.waitForSetValue(displayTextSelector, linkLabel);
 
-		const addressTextSelector = `${linkDialogSelector} input[title=\"Link to an existing file or web page\"]`;
-		await this.code.waitForSetValue(addressTextSelector, linkUrl);
+		const addressTextSelector = `${linkDialogSelector} input[aria-label="Address"]`;
+		await this.code.waitForSetValue(addressTextSelector, linkAddress);
 
 		await this.code.dispatchKeybinding('enter');
 	}
