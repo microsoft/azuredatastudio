@@ -384,7 +384,7 @@ export class ProjectsController {
 			if (deployProfile?.deploySettings) {
 				await this.publishToDockerContainer(project, deployProfile);
 			}
-		} else if (publishTarget === constants.publishToNewAzureServer) {
+		} else if (publishTarget === constants.PublishTargetType.newAzureServer) {
 			const settings = await launchCreateAzureServerQuickPick(project);
 
 			if (settings?.deploySettings && settings?.sqlDbSetting) {

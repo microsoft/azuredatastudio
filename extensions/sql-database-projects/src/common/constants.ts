@@ -555,4 +555,5 @@ export function getTargetPlatformFromVersion(version: string): string {
 export enum PublishTargetType {
 	existingServer = 'existingServer',
 	docker = 'docker',
+	newAzureServer = 'newAzureServer'
 }
