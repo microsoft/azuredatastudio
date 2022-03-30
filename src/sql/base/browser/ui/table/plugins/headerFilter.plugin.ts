@@ -262,8 +262,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		for (let i = 0; i < filterItems.length; i++) {
 			const filtered = workingFilters.some(x => x === filterItems[i]);
 			// work item to remove the 'Error:' string check: https://github.com/microsoft/azuredatastudio/issues/15206
-			if (filterItems[i] && filterItems[i].indexOf('Error:') < 0) {
-				this.listData.push(new TableFilterListElement(filterItems[i], filtered));
+			const filterItem = filterItems[i];
+			if (!filterItem || filterItem.indexOf('Error:') < 0) {
+				this.listData.push(new TableFilterListElement(filterItem, filtered));
 			}
 		}
 
@@ -543,8 +544,20 @@ class TableFilterListElement {
 	constructor(val: string, checked: boolean) {
 		this.value = val;
 		this._checked = checked;
+
+		// Handle the values that are visually hard to differentiate.
+		if (val === undefined) {
+			this.displayText = localize('tableFilter.nullDisplayText', "NULL");
+		} else if (val === '') {
+			this.displayText = localize('tableFilter.emptyStringDisplayText', "Empty String");
+		} else if (val.trim() === '') {
+			this.displayText = localize('tableFilter.whiteSpacesDisplayText', "Whitespace ({0})", val.length);
+		} else {
+			this.displayText = val;
+		}
 	}
 
+	public displayText: string;
 	public value: string;
 
 	public onCheckStateChanged = this._onCheckStateChanged.event;
@@ -605,9 +618,11 @@ class TableFilterListRenderer implements IListRenderer<TableFilterListElement, T
 			templateData.checkbox.checked = e;
 		}));
 		templateData.checkbox.checked = element.checked;
-		templateData.checkbox.setAttribute('aria-label', element.value);
-		templateData.text.innerText = element.value;
-		templateData.label.title = element.value;
+		templateData.checkbox.setAttribute('aria-label', element.displayText);
+		templateData.text.innerText = element.displayText;
+		templateData.label.title = element.displayText;
+		// Use italic to match the style that NULL value is displayed in the grid.
+		templateData.label.style.fontStyle = element.displayText === element.value ? 'normal' : 'italic';
 	}
 
 	disposeElement?(element: TableFilterListElement, index: number, templateData: TableFilterListItemTemplate, height: number): void {
