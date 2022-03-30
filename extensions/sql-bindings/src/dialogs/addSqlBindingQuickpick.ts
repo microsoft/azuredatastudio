@@ -53,7 +53,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 	}));
 
 	if (!azureFunctionName) {
-		TelemetryReporter.sendErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getAzureFunctionProject);
+		TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.exitSqlBindingsQuickpick).send();
 		return;
 	}
 	TelemetryReporter.sendActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getAzureFunctionProject);
@@ -62,19 +62,19 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 	const selectedBinding = await azureFunctionsUtils.promptForBindingType();
 
 	if (!selectedBinding) {
-		TelemetryReporter.sendErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getBindingType);
+		TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.exitSqlBindingsQuickpick).send();
 		return;
 	}
-	TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getBindingType).withAdditionalProperties({ bindingType: selectedBinding.label }).send();
+	TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getBindingType).withAdditionalProperties({ bindingType: selectedBinding.type }).send();
 
 	// 3. ask for object name for the binding
 	const objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding.type);
 
 	if (!objectName) {
-		TelemetryReporter.sendErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getObjectName);
+		TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.exitSqlBindingsQuickpick).withAdditionalProperties({ bindingType: selectedBinding.type }).send();
 		return;
 	}
-	TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getObjectName).withAdditionalProperties({ bindingType: selectedBinding.label }).send();
+	TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getObjectName).withAdditionalProperties({ bindingType: selectedBinding.type }).send();
 
 	// 4. ask for connection string setting name
 	let projectUri: vscode.Uri | undefined;
@@ -86,10 +86,10 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 
 	let connectionStringSettingName = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(projectUri);
 	if (!connectionStringSettingName) {
-		TelemetryReporter.sendErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.updateConnectionString);
+		TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.exitSqlBindingsQuickpick).withAdditionalProperties({ bindingType: selectedBinding.type }).send();
 		return;
 	}
-	TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.updateConnectionString).withAdditionalProperties({ bindingType: selectedBinding.label }).send();
+	TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.updateConnectionString).withAdditionalProperties({ bindingType: selectedBinding.type }).send();
 
 	// 5. insert binding
 	try {
@@ -102,7 +102,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 		}
 
 		TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding)
-			.withAdditionalProperties({ bindingType: selectedBinding.label })
+			.withAdditionalProperties({ bindingType: selectedBinding.type })
 			.send();
 	} catch (e) {
 		void vscode.window.showErrorMessage(utils.getErrorMessage(e));
