@@ -4601,6 +4601,10 @@
 							],
 							"properties": [
 								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": "Microsoft.jupyter"
+								},
+								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": "*"
 								},
