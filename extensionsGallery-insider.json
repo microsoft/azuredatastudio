@@ -4577,7 +4577,7 @@
 					"publisher": {
 						"displayName": "Microsoft",
 						"publisherId": "ms-dotnettools",
-						"publisherName": "Microsoft"
+						"publisherName": "ms-dotnettools"
 					},
 					"versions": [
 						{
@@ -4638,7 +4638,7 @@
 					"publisher": {
 						"displayName": "Microsoft",
 						"publisherId": "ms-toolsai",
-						"publisherName": "Microsoft"
+						"publisherName": "ms-toolsai"
 					},
 					"versions": [
 						{
