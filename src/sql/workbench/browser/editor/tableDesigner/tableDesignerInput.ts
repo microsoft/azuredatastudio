@@ -31,10 +31,10 @@ export class TableDesignerInput extends EditorInput {
 	private _name: string;
 	private _tableIcon: azdata.designers.TableIcon;
 	private _tableIconMap: Map<TableIcon, string> = new Map<TableIcon, string>([
-		[TableIcon.Basic, 'table-designer-basic'],
-		[TableIcon.Temporal, 'table-designer-temporal'],
-		[TableIcon.GraphEdge, 'table-designer-graphedge'],
-		[TableIcon.GraphNode, 'table-designer-graphnode']
+		[TableIcon.Basic, 'table-basic'],
+		[TableIcon.Temporal, 'table-temporal'],
+		[TableIcon.GraphEdge, 'table-graphedge'],
+		[TableIcon.GraphNode, 'table-graphnode']
 	]);
 
 

@@ -1518,16 +1518,16 @@
 		"scmp_dark": {
 			"iconPath": "./images/scmp_inverse.svg"
 		},
-		"table-designer-basic": {
+		"table-basic": {
 			"iconPath": "./images/table-basic.svg"
 		},
-		"table-designer-temporal": {
+		"table-temporal": {
 			"iconPath": "./images/table-temporal.svg"
 		},
-		"table-designer-graphnode": {
+		"table-graphnode": {
 			"iconPath": "./images/table-graphnode.svg"
 		},
-		"table-designer-graphedge": {
+		"table-graphedge": {
 			"iconPath": "./images/table-graphedge.svg"
 		}
 	},
@@ -1827,10 +1827,10 @@
 		"dashboard": "_shell",
 		"profiler": "_csv",
 		"Schema Compare": "scmp_dark",
-		"table-designer-basic": "table-designer-basic",
-		"table-designer-temporal": "table-designer-temporal",
-		"table-designer-graphnode": "table-designer-graphnode",
-		"table-designer-graphedge": "table-designer-graphedge"
+		"table-basic": "table-basic",
+		"table-temporal": "table-temporal",
+		"table-graphnode": "table-graphnode",
+		"table-graphedge": "table-graphedge"
 	},
 	"languageIds": {
 		"bat": "_windows",
