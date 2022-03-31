@@ -1718,6 +1718,7 @@ describe('Project: legacy to SDK-style updates', function (): void {
 
 		await project.convertProjectToSdkStyle();
 
+		should(project.isSdkStyleProject).equal(true);
 		const projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText.includes('<Build Include=')).equal(false, 'All Build Includes should have been removed');
 		should(projFileText.match(/<Build Remove=\W+(?:\w+\W+){0,2}?file1.sql/g)?.length).equal(3, 'There should be 3 Build Removes for the 3 file1.sql files');
