@@ -626,6 +626,29 @@ export class Project implements ISqlProject {
 		// make backup copy of project
 		await fs.copyFile(this._projectFilePath, this._projectFilePath + '_backup');
 
+		// remove Build includes and folder includes
+		const beforeFiles = this.files.filter(f => f.type === EntryType.File);
+		const beforeFolders = this.files.filter(f => f.type === EntryType.Folder);
+
+		// remove Build includes
+		for (const file of beforeFiles) {
+			// only remove build includes in the same folder as the project
+			if (!file.relativePath.includes('..')) {
+				await this.exclude(file);
+			}
+		}
+
+		// remove Folder includes
+		for (const folder of beforeFolders) {
+			await this.exclude(folder);
+		}
+
+		// remove "Properties" folder if it's there. This isn't tracked in the project's folders because ADS doesn't support it - it's a reserved folder
+		// only used for the UI in SSDT
+		try {
+			await this.removeFolderFromProjFile('Properties');
+		} catch { }
+
 		// remove SSDT and ADS SqlTasks imports
 		const importsToRemove = [];
 		for (let i = 0; i < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import).length; i++) {
@@ -650,10 +673,23 @@ export class Project implements ISqlProject {
 
 		// TODO: also update system dacpac path, but might as well wait for them to get included in the SDK since the path will probably change again
 
-		// TODO: remove Build includes and folder includes. Make sure the same files and folders are being included and there aren't extra files included by the default **/*.sql glob
-
 		await this.serializeToProjFile(this.projFileXmlDoc!);
 		await this.readProjFile();
+
+		// Make sure the same files included as before and there aren't extra files included by the default **/*.sql glob
+		for (const file of this.files.filter(f => f.type === EntryType.File)) {
+			if (!beforeFiles.find(f => f.pathForSqlProj() === file.pathForSqlProj())) {
+				await this.exclude(file);
+			}
+		}
+
+		// add any folders that were previously specified in the sqlproj, but aren't included by the **/*.sql glob
+		const folders = this.files.filter(f => f.type === EntryType.Folder);
+		for (const folder of beforeFolders) {
+			if (!folders.find(f => f.relativePath === folder.relativePath)) {
+				await this.addFolderItem(folder.relativePath);
+			}
+		}
 	}
 
 	private async createCleanFileNode(parentNode: Element): Promise<void> {
