@@ -140,13 +140,13 @@ export async function createAzureFunction(connectionString: string, schema: stri
 			const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
 			await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
 			propertyBag.quickPickStep = quickPickStep;
-			propertyBag.exitReason = 'finishCreate';
+			exitReason = 'finishCreate';
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.finishCreateAzureFunctionWithSqlBinding)
 				.withAdditionalProperties(propertyBag)
 				.withConnectionInfo(connectionInfo).send();
 		} catch (e) {
 			propertyBag.quickPickStep = quickPickStep;
-			propertyBag.exitReason = 'error';
+			exitReason = 'error';
 			void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 
 			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, utils.getErrorType(e))
