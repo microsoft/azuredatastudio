@@ -888,15 +888,19 @@ export class ProjectsController {
 	public async convertToSdkStyleProject(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
 
-		await project.convertProjectToSdkStyle();
-		void this.reloadProject(context);
+		await vscode.window.showWarningMessage(constants.convertToSdkStyleConfirmation(project.projectFileName), { modal: true }, constants.yesString).then(async (result) => {
+			if (result === constants.yesString) {
+				await project.convertProjectToSdkStyle();
+				void this.reloadProject(context);
 
-		// show message that project file can be simplified
-		const result = await vscode.window.showInformationMessage(constants.projectUpdatedToSdkStyle(project.projectFileName), constants.learnMore);
+				// show message that project file can be simplified
+				const result = await vscode.window.showInformationMessage(constants.projectUpdatedToSdkStyle(project.projectFileName), constants.learnMore);
 
-		if (result === constants.learnMore) {
-			void vscode.env.openExternal(vscode.Uri.parse(constants.sdkLearnMoreUrl!));
-		}
+				if (result === constants.learnMore) {
+					void vscode.env.openExternal(vscode.Uri.parse(constants.sdkLearnMoreUrl!));
+				}
+			}
+		});
 	}
 
 	/**
