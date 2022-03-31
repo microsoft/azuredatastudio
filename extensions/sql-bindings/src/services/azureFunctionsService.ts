@@ -16,13 +16,14 @@ import { IConnectionInfo } from 'vscode-mssql';
 export const hostFileName: string = 'host.json';
 
 export async function createAzureFunction(connectionString: string, schema: string, table: string, connectionInfo: IConnectionInfo): Promise<void> {
-	let quickPickStep: string = '';
 	let propertyBag: { [key: string]: string } = {};
+	let quickPickStep: string = '';
+
 	TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding)
 		.withConnectionInfo(connectionInfo).send();
+	quickPickStep = 'getAzureFunctionsExtensionApi';
 	const azureFunctionApi = await azureFunctionsUtils.getAzureFunctionsExtensionApi();
 	if (!azureFunctionApi) {
-		quickPickStep = 'getAzureFunctionsExtensionApi';
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
 			.withConnectionInfo(connectionInfo)
 			.withAdditionalProperties(propertyBag).send();
@@ -140,6 +141,7 @@ export async function createAzureFunction(connectionString: string, schema: stri
 				.withAdditionalProperties({ bindingType: selectedBinding.type })
 				.withConnectionInfo(connectionInfo).send();
 		} finally {
+			propertyBag.quickPickStep = quickPickStep;
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
 				.withConnectionInfo(connectionInfo)
 				.withAdditionalProperties(propertyBag).send();
