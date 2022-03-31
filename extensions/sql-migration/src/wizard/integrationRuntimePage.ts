@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
+import { AzureResourceType, MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import { CreateSqlMigrationServiceDialog } from '../dialog/createSqlMigrationService/createSqlMigrationServiceDialog';
 import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
@@ -15,7 +15,6 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { logError, TelemetryViews } from '../telemtery';
 import { findDropDownItemIndex, selectDefaultDropdownValue } from '../api/utils';
 import * as styles from '../constants/styles';
-import { azureResource } from 'azureResource';
 
 export class IntergrationRuntimePage extends MigrationWizardPage {
 
@@ -380,7 +379,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		this._resourceGroupDropdown.loading = true;
 		this._dmsDropdown.loading = true;
 		try {
-			this._resourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(azureResource.AzureResourceType.storageAccount, this.migrationStateModel._targetSubscription);
+			this._resourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(AzureResourceType.StorageAccount, this.migrationStateModel._targetSubscription);
 			const resourceGroup = (this.migrationStateModel._sqlMigrationService)
 				? getFullResourceGroupFromId(this.migrationStateModel._sqlMigrationService?.id)
 				: undefined;

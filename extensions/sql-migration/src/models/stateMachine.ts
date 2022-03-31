@@ -78,6 +78,14 @@ export enum PerformanceDataSourceOptions {
 	CollectData = 'CollectData',
 	OpenExisting = 'OpenExisting',
 }
+
+export enum AzureResourceType {
+	ManagedInstance,
+	VirtualMachine,
+	StorageAccount,
+	SqlMigrationService
+}
+
 export interface DatabaseBackupModel {
 	migrationMode: MigrationMode;
 	networkContainerType: NetworkContainerType;
@@ -953,12 +961,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return getLocationDisplayName(location);
 	}
 
-	public async getAzureResourceGroupDropdownValues(resourceType: azureResource.AzureResourceType, subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+	public async getAzureResourceGroupDropdownValues(resourceType: AzureResourceType, subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
 		let resourceGroupValues: azdata.CategoryValue[] = [];
 		try {
 			if (this._azureAccount && subscription) {
 				switch (resourceType) {
-					case azureResource.AzureResourceType.sqlManagedInstance:
+					case AzureResourceType.ManagedInstance:
 						let managedInstances = await getAvailableManagedInstanceProducts(this._azureAccount, subscription);
 						this._resourceGroups = await Promise.all(managedInstances.map(async (mi) => {
 							return <azureResource.AzureResourceResourceGroup>{
@@ -971,7 +979,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							};
 						}));
 						break;
-					case azureResource.AzureResourceType.storageAccount:
+					case AzureResourceType.VirtualMachine:
+						// todo
+						break;
+					case AzureResourceType.StorageAccount:
 						let storageAccounts = await getAvailableStorageAccounts(this._azureAccount, subscription);
 						this._resourceGroups = await Promise.all(storageAccounts.map(async (sa) => {
 							return <azureResource.AzureResourceResourceGroup>{
@@ -984,7 +995,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							};
 						}));
 						break;
-					case azureResource.AzureResourceType.databaseMigrationService:
+					case AzureResourceType.SqlMigrationService:
 						let dmsInstances = await getSqlMigrationServices(this._azureAccount, subscription);
 						this._resourceGroups = await Promise.all(dmsInstances.map(async (dms) => {
 							return <azureResource.AzureResourceResourceGroup>{
