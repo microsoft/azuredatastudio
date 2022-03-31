@@ -179,6 +179,7 @@ declare module 'sqldbproj' {
 		sqlServer2017 = 'SQL Server 2017',
 		sqlServer2019 = 'SQL Server 2019',
 		sqlAzure = 'Microsoft Azure SQL Database',
-		sqlDW = 'Microsoft Azure SQL Data Warehouse'
+		sqlDW = 'Microsoft Azure SQL Data Warehouse',
+		sqlEdge = 'Microsoft Azure SQL Edge'
 	}
 }

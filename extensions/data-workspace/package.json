@@ -133,12 +133,12 @@
       "view/item/context": [
         {
           "command": "projects.manageProject",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project && azdataAvailable",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && azdataAvailable",
           "group": "0_projectsFirst@1"
         },
         {
           "command": "projects.removeProject",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "9_dbProjectsLast@9"
         }
       ]

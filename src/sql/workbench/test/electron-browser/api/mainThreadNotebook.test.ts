@@ -252,6 +252,9 @@ class ExtHostNotebookStub implements ExtHostNotebookShape {
 	$interruptKernel(kernelId: number): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
+	$restartKernel(kernelId: number): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
 	$sendInputReply(futureId: number, content: azdata.nb.IInputReply): void {
 		throw new Error('Method not implemented.');
 	}

@@ -239,6 +239,24 @@ CommandsRegistry.registerCommand({
 	}
 });
 
+CommandsRegistry.registerCommand({
+	id: 'notebook.restartKernel',
+	handler: async (accessor: ServicesAccessor) => {
+		const editorService: IEditorService = accessor.get(IEditorService);
+		if (editorService.activeEditor instanceof NotebookInput) {
+			await editorService.activeEditor.notebookModel?.clientSession?.restart();
+		}
+	}
+});
+
+MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
+	command: {
+		id: 'notebook.restartKernel',
+		title: localize('restartNotebookKernel', "Restart Notebook Kernel"),
+	},
+	when: ContextKeyExpr.and(ActiveEditorContext.isEqualTo(NotebookEditor.ID))
+});
+
 MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 	command: {
 		id: TOGGLE_TAB_FOCUS_COMMAND_ID,
