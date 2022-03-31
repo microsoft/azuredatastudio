@@ -251,9 +251,11 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.waitForPlaceholderGone();
 				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
 
-				await app.workbench.sqlNotebook.textCellToolbar.insertLink(sampleText, sampleText);
+				const sampleLabel = 'TestLinkLabel';
+				const sampleAddress = 'TestLinkAddress';
+				await app.workbench.sqlNotebook.textCellToolbar.insertLink(sampleLabel, sampleAddress);
 				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p a');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleLabel, `p a[href$="${sampleAddress}"]`);
 			});
 		});
 
