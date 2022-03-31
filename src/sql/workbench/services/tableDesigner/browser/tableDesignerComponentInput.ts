@@ -109,6 +109,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				});
 				editAction.withAdditionalMeasurements({
 					'elapsedTimeMs': new Date().getTime() - startTime
+				}).withAdditionalProperties({
+					isNode: result.isNode,
+					isEdge: result.isEdge,
+					isSystemVersioned: result.isSystemVersioned
 				}).send();
 			},
 			error => {
@@ -166,6 +170,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			this._onRefreshRequested.fire();
 			publishEvent.withAdditionalMeasurements({
 				'elapsedTimeMs': new Date().getTime() - startTime
+			}).withAdditionalProperties({
+				isNode: result.isNode,
+				isEdge: result.isEdge,
+				isSystemVersioned: result.isSystemVersioned
 			}).send();
 		} catch (error) {
 			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.publishChangeError', "An error occured while publishing changes: {0}", error?.message ?? error));

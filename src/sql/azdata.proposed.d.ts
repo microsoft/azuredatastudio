@@ -1111,6 +1111,18 @@ declare module 'azdata' {
 			 * The input validation error.
 			 */
 			inputValidationError?: string;
+			/**
+			 * Boolean stating whether it's an edge
+			 */
+			isEdge: boolean;
+			/**
+			 * Boolean stating whether it's a node
+			 */
+			isNode: boolean;
+			/**
+			 * Boolean stating whether it's system versioned
+			 */
+			isSystemVersioned: boolean;
 		}
 
 		/**
@@ -1129,6 +1141,18 @@ declare module 'azdata' {
 			 * The new view.
 			 */
 			view: TableDesignerView;
+			/**
+			 * Boolean stating whether it's an edge
+			 */
+			isEdge: boolean;
+			/**
+			 * Boolean stating whether it's a node
+			 */
+			isNode: boolean;
+			/**
+			 * Boolean stating whether it's system versioned
+			 */
+			isSystemVersioned: boolean;
 		}
 
 		export interface GeneratePreviewReportResult {
