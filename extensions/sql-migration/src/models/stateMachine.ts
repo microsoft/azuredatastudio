@@ -8,7 +8,7 @@ import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
-import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs, sortResourceArrayByName, getFullResourceGroupFromId } from '../api/azure';
+import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs, sortResourceArrayByName, getFullResourceGroupFromId, getResourceGroupFromId } from '../api/azure';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
@@ -980,7 +980,17 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						}));
 						break;
 					case AzureResourceType.VirtualMachine:
-						// todo
+						let virtualMachines = await getAvailableSqlVMs(this._azureAccount, subscription);
+						this._resourceGroups = await Promise.all(virtualMachines.map(async (vm) => {
+							return <azureResource.AzureResourceResourceGroup>{
+								id: getFullResourceGroupFromId(vm.id),
+								name: getResourceGroupFromId(vm.id),
+								subscription: {
+									id: vm.subscriptionId
+								},
+								tenant: vm.tenantId,
+							};
+						}));
 						break;
 					case AzureResourceType.StorageAccount:
 						let storageAccounts = await getAvailableStorageAccounts(this._azureAccount, subscription);
@@ -1115,8 +1125,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		let virtualMachineValues: azdata.CategoryValue[] = [];
 		try {
 			if (this._azureAccount && subscription && location && resourceGroup) {
-				this._targetSqlVirtualMachines = (await getAvailableSqlVMs(this._azureAccount, subscription, resourceGroup)).filter((virtualMachine) => {
-					if (virtualMachine?.location?.toLowerCase() === location?.name?.toLowerCase()) {
+				this._targetSqlVirtualMachines = (await getAvailableSqlVMs(this._azureAccount, subscription)).filter((virtualMachine) => {
+					if (virtualMachine?.location?.toLowerCase() === location?.name?.toLowerCase() && getResourceGroupFromId(virtualMachine.id).toLowerCase() === resourceGroup?.name.toLowerCase()) {
 						if (virtualMachine.properties.sqlImageOffer) {
 							return virtualMachine.properties.sqlImageOffer.toLowerCase().includes('-ws'); //filtering out all non windows sql vms.
 						}
@@ -1124,6 +1134,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					}
 					return false;
 				});
+
 				virtualMachineValues = this._targetSqlVirtualMachines.map((virtualMachine) => {
 					return {
 						name: virtualMachine.id,

@@ -482,7 +482,14 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	public async populateResourceGroupDropdown(): Promise<void> {
 		try {
 			this.updateDropdownLoadingStatus(TargetDropDowns.ResourceGroup, true);
-			this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(AzureResourceType.ManagedInstance, this.migrationStateModel._targetSubscription);
+			switch (this.migrationStateModel._targetType) {
+				case MigrationTargetType.SQLMI:
+					this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(AzureResourceType.ManagedInstance, this.migrationStateModel._targetSubscription);
+					break;
+				case MigrationTargetType.SQLVM:
+					this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(AzureResourceType.VirtualMachine, this.migrationStateModel._targetSubscription);
+					break;
+			}
 			selectDefaultDropdownValue(this._azureResourceGroupDropdown, this.migrationStateModel._resourceGroup?.id, false);
 		} catch (e) {
 			console.log(e);
