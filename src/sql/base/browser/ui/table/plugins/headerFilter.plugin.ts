@@ -258,6 +258,16 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			}
 		}
 
+		// Sort the list to make it easier to find a string
+		filterItems.sort();
+
+		// Promote undefined (NULL) to be always at the top of the list
+		const nullValueIndex = filterItems.indexOf(undefined);
+		if (nullValueIndex !== -1) {
+			filterItems.splice(nullValueIndex, 1);
+			filterItems.unshift(undefined);
+		}
+
 		this.listData = [];
 		for (let i = 0; i < filterItems.length; i++) {
 			const filtered = workingFilters.some(x => x === filterItems[i]);
@@ -547,11 +557,9 @@ class TableFilterListElement {
 
 		// Handle the values that are visually hard to differentiate.
 		if (val === undefined) {
-			this.displayText = localize('tableFilter.nullDisplayText', "NULL");
+			this.displayText = localize('tableFilter.nullDisplayText', "(NULL)");
 		} else if (val === '') {
-			this.displayText = localize('tableFilter.emptyStringDisplayText', "Empty String");
-		} else if (val.trim() === '') {
-			this.displayText = localize('tableFilter.whiteSpacesDisplayText', "Whitespace ({0})", val.length);
+			this.displayText = localize('tableFilter.blankStringDisplayText', "(Blanks)");
 		} else {
 			this.displayText = val;
 		}
