@@ -254,9 +254,9 @@ export class TextCellToolbar {
 	}
 
 	public async changeSelectedTextSize(textSize: 'Heading 1' | 'Heading 2' | 'Heading 3' | 'Paragraph'): Promise<void> {
-		const actionSelector = `${TextCellToolbar.textCellToolbar} div.monaco-dropdown a.action-label`;
+		const actionSelector = `${TextCellToolbar.textCellToolbar} .monaco-dropdown a.action-label`;
 		await this.code.waitAndClick(actionSelector);
-		const menuItemSelector = `div.monaco-menu-container div.monaco-menu a.action-menu-item span[aria-label="${textSize}"]`;
+		const menuItemSelector = `.monaco-menu-container .monaco-menu a.action-menu-item[title="${textSize}"]`;
 		await this.code.waitAndClick(menuItemSelector);
 	}
 
