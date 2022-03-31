@@ -87,7 +87,7 @@ describe('deploy service', function (): void {
 		const project1 = await Project.openProject(vscode.Uri.file(projFilePath).fsPath);
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
 		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
-		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
+			undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
 		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
 		sandbox.stub(azdata.connection, 'connect').returns(Promise.resolve(mockConnectionResult));
 		sandbox.stub(azdata.connection, 'getUriForConnection').returns(Promise.resolve('connection'));
@@ -117,7 +117,7 @@ describe('deploy service', function (): void {
 		const project1 = await Project.openProject(vscode.Uri.file(projFilePath).fsPath);
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
 		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
-		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.reject('error'));
+			undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.reject('error'));
 		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
 		sandbox.stub(azdata.tasks, 'startBackgroundOperation').callThrough();
 
@@ -139,7 +139,7 @@ describe('deploy service', function (): void {
 
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
 		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
-		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
+			undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
 		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
 		let connectionStub = sandbox.stub(azdata.connection, 'connect');
 		connectionStub.onFirstCall().returns(Promise.resolve(mockFailedConnectionResult));
@@ -197,7 +197,7 @@ describe('deploy service', function (): void {
 
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
 		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
-		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
+			undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
 		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
 
 		await deployService.updateAppSettings(appInteg, deployProfile);
@@ -248,7 +248,7 @@ describe('deploy service', function (): void {
 		};
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
 		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
-		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
+			undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
 		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
 		let connection = new azdata.connection.ConnectionProfile();
 		sandbox.stub(azdata.connection, 'getConnection').returns(Promise.resolve(connection));
@@ -263,7 +263,7 @@ describe('deploy service', function (): void {
 		const testContext = createContext();
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
 		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
-		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(`id
+			undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(`id
 		id2
 		id3`));
 		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
@@ -325,22 +325,37 @@ describe('deploy service', function (): void {
 				serverName: 'localhost',
 				userName: 'sa',
 				connectionRetryTimeout: 1,
-				resourceGroup: undefined!,
-				subscription: undefined!,
-				location: undefined!
+				resourceGroupName: 'resourceGroups',
+				subscriptionId: 'subscriptionId',
+				token: {
+					key: '',
+					token: '',
+					tokenType: '',
+				},
+				location: 'location'
 			}
 		};
 		const fullyQualifiedDomainName = 'servername';
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
 		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
-		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
-		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
-		testContext.azureSqlClient.setup(x => x.createServer(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(fullyQualifiedDomainName));
+			undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
+		if (deployProfile?.sqlDbSetting) {
+			testContext.azureSqlClient.setup(x => x.createServer(
+				deployProfile.sqlDbSetting?.subscriptionId || '',
+				deployProfile.sqlDbSetting?.resourceGroupName || '',
+				deployProfile.sqlDbSetting?.serverName || '',
+				{
+					location: deployProfile?.sqlDbSetting?.location || '',
+					administratorLogin: deployProfile?.sqlDbSetting?.userName,
+					administratorLoginPassword: deployProfile?.sqlDbSetting?.password
+				},
+				deployProfile.sqlDbSetting?.token || undefined!)).returns(() => Promise.resolve(fullyQualifiedDomainName));
+		}
 		sandbox.stub(azdata.connection, 'connect').returns(Promise.resolve(mockConnectionResult));
 		sandbox.stub(azdata.connection, 'getUriForConnection').returns(Promise.resolve('connection'));
-
+		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
 		let connection = await deployService.createNewAzureSqlServer(deployProfile);
-		should(connection).equals('connection');
 		should(deployProfile.sqlDbSetting?.serverName).equal(fullyQualifiedDomainName);
+		should(connection).equals('connection');
 	});
 });

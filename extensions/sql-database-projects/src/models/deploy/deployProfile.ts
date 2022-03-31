@@ -5,9 +5,7 @@
 
 import { IDeploySettings } from '../IDeploySettings';
 import type * as azdataType from 'azdata';
-//import { AzureSubscription } from '../../../azure-account.api';
-import { ResourceGroup } from '@azure/arm-resources';
-import { AzureAccountSession } from './azureSqlClient';
+import { Token } from 'vscode-mssql';
 
 export enum AppSettingType {
 	None,
@@ -30,8 +28,9 @@ export interface IDeployAppIntegrationProfile {
 }
 
 export interface ISqlDbSetting extends ISqlConnectionProperties {
-	subscription: AzureAccountSession,
-	resourceGroup: ResourceGroup,
+	subscriptionId: string,
+	token: Token,
+	resourceGroupName: string,
 	location: string
 }
 
