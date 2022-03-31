@@ -23,6 +23,17 @@ export interface IPackageInfo {
 	aiKey: string;
 }
 
+interface TimeoutError extends Error {
+}
+
+interface TimeoutErrorConstructor extends ErrorConstructor {
+	new(message?: string): TimeoutError;
+	(message?: string): TimeoutError;
+	readonly prototype: TimeoutError;
+}
+
+declare let TimeoutError: TimeoutErrorConstructor;
+
 /**
  * Consolidates on the error message string
  */
@@ -128,7 +139,7 @@ export function generateQuotedFullName(schema: string, objectName: string): stri
 export function timeoutPromise(errorMessage: string, ms: number = 10000): Promise<string> {
 	return new Promise((_, reject) => {
 		setTimeout(() => {
-			reject(new Error(errorMessage));
+			reject(new TimeoutError(errorMessage));
 		}, ms);
 	});
 }
@@ -173,3 +184,11 @@ export function getPackageInfo(): IPackageInfo {
 		aiKey: packageJson.aiKey
 	};
 }
+export function getErrorType(error: any): string | undefined {
+	if (error instanceof TimeoutError) {
+		return 'TimeoutError';
+	} else {
+		return 'UnknownError';
+	}
+}
+

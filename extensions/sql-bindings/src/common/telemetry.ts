@@ -15,17 +15,19 @@ export enum TelemetryViews {
 }
 
 export enum TelemetryActions {
-	startCreateAzureFunction = 'startCreateAzureFunction',
-	helpCreateAzureFunction = 'helpCreateAzureFunction',
+	// Create Azure Function with Sql Binding from Table
 	startCreateAzureFunctionWithSqlBinding = 'startCreateAzureFunctionWithSqlBinding',
+	helpCreateAzureFunctionProject = 'helpCreateAzureFunctionProject',
+	learnMore = 'learnMore',
 	finishCreateAzureFunctionWithSqlBinding = 'finishCreateAzureFunctionWithSqlBinding',
+	exitCreateAzureFunctionQuickpick = 'exitCreateAzureFunctionQuickpick',
+
+	// Add SQL Binding to Azure Function
 	startAddSqlBinding = 'startAddSqlBinding',
 	getAzureFunctionProject = 'getAzureFunctionProject',
 	getBindingType = 'getBindingType',
 	getObjectName = 'getObjectName',
 	updateConnectionString = 'updateConnectionString',
 	finishAddSqlBinding = 'finishAddSqlBinding',
-	exitCreateAzureFunctionQuickpick = 'exitCreateAzureFunctionQuickpick',
 	exitSqlBindingsQuickpick = 'exitSqlBindingsQuickpick',
-	learnMore = 'learnMore',
 }
