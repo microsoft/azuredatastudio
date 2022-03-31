@@ -9,19 +9,22 @@ import * as uuid from 'uuid';
 import * as fs from 'fs';
 import * as rimraf from 'rimraf';
 import * as should from 'should';
-import * as sinon from'sinon';
+import * as sinon from 'sinon';
 import { promisify } from 'util';
 import * as constants from '../../common/constants';
 import * as azureFunctionsUtils from '../../common/azureFunctionsUtils';
+import { assert } from 'console';
 
 let rootFolderPath: string;
 let localSettingsPath: string;
+let projectFilePath: string;
 
 describe('Tests to verify Azure Functions Utils functions', function (): void {
-	this.beforeEach(async () => {
+	beforeEach(async () => {
 		rootFolderPath = path.join(os.tmpdir(), `AzureFunctionTest_${uuid.v4()}`);
 		await fs.mkdirSync(rootFolderPath);
 		localSettingsPath = path.join(rootFolderPath, `local.settings.json`);
+		projectFilePath = path.join(rootFolderPath, `test.csproj`);
 		await fs.writeFileSync(localSettingsPath, `{"IsEncrypted": false,
 		"Values": {"test1": "test1", "test2": "test2", "test3":"test3"}}`);
 	});
@@ -36,13 +39,14 @@ describe('Tests to verify Azure Functions Utils functions', function (): void {
 	it('Should show error message if local.settings.json throws', async () => {
 		let errorMsg = 'Error reading local.settings.json';
 		should(fs.existsSync(localSettingsPath)).equals(true);
-		const spy = sinon.spy(vscode.window, 'showErrorMessage');
-		sinon.stub(azureFunctionsUtils,'getLocalSettingsJson').withArgs(localSettingsPath).returns(Promise.reject(new Error(errorMsg)));
-
-		await azureFunctionsUtils.getLocalSettingsJson(localSettingsPath);
-
-		should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
-		should(spy.calledWith(errorMsg)).be.true(`showErrorMessage not called with expected message '${errorMsg}' Actual '${spy.getCall(0).args[0]}'`);
+		const getLocalSettingsSpy = sinon.spy(azureFunctionsUtils, 'getLocalSettingsJson');
+		sinon.stub(JSON, 'parse').withArgs(sinon.match.any).throws(new Error(errorMsg));
+		try {
+			await getLocalSettingsSpy(localSettingsPath);
+		} catch {
+			// no-op
+		}
+		assert(getLocalSettingsSpy.threw());
 	});
 
 	it('Should set local.settings.json with new value', async () => {
@@ -73,6 +77,22 @@ describe('Tests to verify Azure Functions Utils functions', function (): void {
 		should(settings.Values!['test1']).equals('test1');
 	});
 
+	it('Should get settings file give project file', async () => {
+		const settingsFile = await azureFunctionsUtils.getSettingsFile(projectFilePath);
+		should(settingsFile).equals(path.join(rootFolderPath, 'local.settings.json'));
+	});
+
+	it('Should add connection string to local.settings.file', async () => {
+		const connectionString = 'testConnectionString';
+		let settings = await azureFunctionsUtils.getLocalSettingsJson(localSettingsPath);
+		should(Object.keys(settings.Values!).length).equals(3);
+
+		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFilePath);
+
+		settings = await azureFunctionsUtils.getLocalSettingsJson(localSettingsPath);
+		should(Object.keys(settings.Values!).length).equals(4);
+		should(settings.Values![constants.sqlConnectionStringSetting]).equals(connectionString);
+	});
 
 	afterEach(async function (): Promise<void> {
 		if (fs.existsSync(rootFolderPath)) {
@@ -81,3 +101,4 @@ describe('Tests to verify Azure Functions Utils functions', function (): void {
 		sinon.restore();
 	});
 });
+
