@@ -1978,10 +1978,6 @@ declare module 'azdata' {
 		getRestoreConfigInfo(connectionUri: string): Thenable<RestoreConfigInfo>;
 	}
 
-	export interface AzureBlobProvider extends DataProvider {
-		createSas(ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse>;
-	}
-
 	export interface RestoreInfo {
 		options: { [key: string]: any };
 		taskExecutionMode?: TaskExecutionMode | undefined;
@@ -5135,8 +5131,7 @@ declare module 'azdata' {
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 		IconProvider = 'IconProvider',
 		SerializationProvider = 'SerializationProvider',
-		SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
-		AzureBlobProvider = 'AzureBlobProvider'
+		SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider'
 	}
 
 	/**

@@ -5,27 +5,11 @@
 
 import * as mssql from 'mssql';
 import { AppContext } from '../appContext';
-import { ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
-import { ClientCapabilities } from 'vscode-languageclient';
+import { SqlOpsDataClient } from 'dataprotocol-client';
 import * as constants from '../constants';
-import * as Utils from '../utils';
 import * as contracts from '../contracts';
 
 export class AzureBlobService implements mssql.IAzureBlobService {
-	public static asFeature(context: AppContext): ISqlOpsFeature {
-		return class extends AzureBlobService {
-			constructor(client: SqlOpsDataClient) {
-				super(context, client);
-			}
-
-			fillClientCapabilities(capabilities: ClientCapabilities): void {
-				Utils.ensure(capabilities, 'blob')!.blob = true;
-			}
-
-			initialize(): void {
-			}
-		};
-	}
 
 	private constructor(context: AppContext, protected readonly client: SqlOpsDataClient) {
 		context.registerService(constants.AzureBlobService, this);
