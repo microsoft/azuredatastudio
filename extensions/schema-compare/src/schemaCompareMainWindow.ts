@@ -914,6 +914,7 @@ export class SchemaCompareMainWindow {
 				} else if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
 					const workspaceApi = getDataWorkspaceExtensionApi();
 					workspaceApi.showProjectsView();
+					workspaceApi.refreshProjectsTree();
 
 					void vscode.window.showInformationMessage(loc.applySuccess);
 				}
