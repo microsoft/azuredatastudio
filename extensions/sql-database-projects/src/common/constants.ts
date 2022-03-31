@@ -106,7 +106,7 @@ export function deleteReferenceConfirmation(toDelete: string) { return localize(
 export function selectTargetPlatform(currentTargetPlatform: string) { return localize('selectTargetPlatform', "Current target platform: {0}. Select new target platform", currentTargetPlatform); }
 export function currentTargetPlatform(projectName: string, currentTargetPlatform: string) { return localize('currentTargetPlatform', "Target platform of the project {0} is now {1}", projectName, currentTargetPlatform); }
 export function projectUpdatedToSdkStyle(projectName: string) { return localize('projectUpdatedToSdkStyle', "The project {0} has been updated to be an SDK-style project. Click 'Learn More' for details on the Microsoft.Build.Sql SDK and ways to simplify the project file.", projectName); }
-export function convertToSdkStyleConfirmation(projectName: string) { return localize('convertToSdkStyleConfirmation', "The project '{0}' will no longer be compatible with SSDT after converting it to SDK-style. A backup copy of the project file will be created in the project folder prior to conversion. Continue with converting to SDK-style project?", projectName); }
+export function convertToSdkStyleConfirmation(projectName: string) { return localize('convertToSdkStyleConfirmation', "The project '{0}' will no longer be compatible with the Solution Explorer in SSDT after conversion. Support for this will be added in a future release of SSDT. A backup copy of the project file will be created in the project folder prior to conversion. Continue with converting to SDK-style project?", projectName); }
 
 // Publish dialog strings
 
