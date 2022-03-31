@@ -1112,17 +1112,9 @@ declare module 'azdata' {
 			 */
 			inputValidationError?: string;
 			/**
-			 * Boolean stating whether it's an edge
+			 * Properties related to the table to be captured
 			 */
-			isEdge: boolean;
-			/**
-			 * Boolean stating whether it's a node
-			 */
-			isNode: boolean;
-			/**
-			 * Boolean stating whether it's system versioned
-			 */
-			isSystemVersioned: boolean;
+			propertyBag?: { [key: string]: string };
 		}
 
 		/**
@@ -1142,17 +1134,9 @@ declare module 'azdata' {
 			 */
 			view: TableDesignerView;
 			/**
-			 * Boolean stating whether it's an edge
+			 * Properties related to the table to be captured
 			 */
-			isEdge: boolean;
-			/**
-			 * Boolean stating whether it's a node
-			 */
-			isNode: boolean;
-			/**
-			 * Boolean stating whether it's system versioned
-			 */
-			isSystemVersioned: boolean;
+			propertyBag?: { [key: string]: string };
 		}
 
 		export interface GeneratePreviewReportResult {
