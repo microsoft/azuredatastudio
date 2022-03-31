@@ -34,7 +34,7 @@ declare module 'dataworkspace' {
 		showProjectsView(): void;
 
 		/**
-		 * Refreshes the projects tree
+		 * Fires event to refresh the project tree. The tree is not guaranteed to be refreshed after this call returns
 		 */
 		refreshProjectsTree(): void;
 
