@@ -18,12 +18,14 @@ export const hostFileName: string = 'host.json';
 export async function createAzureFunction(connectionString: string, schema: string, table: string, connectionInfo: IConnectionInfo): Promise<void> {
 	let propertyBag: { [key: string]: string } = {};
 	let quickPickStep: string = '';
+	let exitReason: string = 'cancelled';
 
 	TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding)
 		.withConnectionInfo(connectionInfo).send();
 	quickPickStep = 'getAzureFunctionsExtensionApi';
 	const azureFunctionApi = await azureFunctionsUtils.getAzureFunctionsExtensionApi();
 	if (!azureFunctionApi) {
+		propertyBag.exitReason = exitReason;
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
 			.withConnectionInfo(connectionInfo)
 			.withAdditionalProperties(propertyBag).send();
@@ -137,11 +139,21 @@ export async function createAzureFunction(connectionString: string, schema: stri
 			// check for the new function file to be created and dispose of the file system watcher
 			const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
 			await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
+			propertyBag.quickPickStep = quickPickStep;
+			propertyBag.exitReason = 'finishCreate';
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.finishCreateAzureFunctionWithSqlBinding)
-				.withAdditionalProperties({ bindingType: selectedBinding.type })
+				.withAdditionalProperties(propertyBag)
 				.withConnectionInfo(connectionInfo).send();
+		} catch (e) {
+			propertyBag.quickPickStep = quickPickStep;
+			propertyBag.exitReason = 'error';
+			void vscode.window.showErrorMessage(utils.getErrorMessage(e));
+
+			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, utils.getErrorType(e))
+				.withAdditionalProperties(propertyBag).send();
 		} finally {
 			propertyBag.quickPickStep = quickPickStep;
+			propertyBag.exitReason = exitReason;
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
 				.withConnectionInfo(connectionInfo)
 				.withAdditionalProperties(propertyBag).send();

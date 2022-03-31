@@ -12,9 +12,10 @@ import { addSqlBinding, getAzureFunctions } from '../services/azureFunctionsServ
 
 export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined): Promise<void> {
 	let quickPickStep: string = '';
+	let exitReason: string = 'cancelled';
 	let propertyBag: { [key: string]: string } = {};
-	TelemetryReporter.sendActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.startAddSqlBinding);
 
+	TelemetryReporter.sendActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.startAddSqlBinding);
 	if (!uri) {
 		// this command only shows in the command palette when the active editor is a .cs file, so we can safely assume that's the scenario
 		// when this is called without a uri
@@ -110,17 +111,26 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 					.withAdditionalProperties(propertyBag).send();
 				return;
 			}
+			propertyBag.exitReason = 'done';
 			TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding)
 				.withAdditionalProperties(propertyBag).send();
 
 		} catch (e) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(e));
-			TelemetryReporter.createErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding)
+			TelemetryReporter.createErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding, undefined, utils.getErrorType(e))
 				.withAdditionalProperties(propertyBag).send();
 			return;
 		}
+	} catch (e) {
+		propertyBag.quickPickStep = quickPickStep;
+		propertyBag.exitReason = 'error';
+		void vscode.window.showErrorMessage(utils.getErrorMessage(e));
+
+		TelemetryReporter.createErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.exitSqlBindingsQuickpick, undefined, utils.getErrorType(e))
+			.withAdditionalProperties(propertyBag).send();
 	} finally {
 		propertyBag.quickPickStep = quickPickStep;
+		propertyBag.exitReason = exitReason;
 		TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.exitSqlBindingsQuickpick)
 			.withAdditionalProperties(propertyBag).send();
 	}

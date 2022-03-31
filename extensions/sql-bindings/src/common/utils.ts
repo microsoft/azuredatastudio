@@ -23,16 +23,7 @@ export interface IPackageInfo {
 	aiKey: string;
 }
 
-interface TimeoutError extends Error {
-}
-
-interface TimeoutErrorConstructor extends ErrorConstructor {
-	new(message?: string): TimeoutError;
-	(message?: string): TimeoutError;
-	readonly prototype: TimeoutError;
-}
-
-declare let TimeoutError: TimeoutErrorConstructor;
+export class TimeoutError extends Error { }
 
 /**
  * Consolidates on the error message string
