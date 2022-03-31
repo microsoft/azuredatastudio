@@ -9,12 +9,11 @@ import { ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
 import { ClientCapabilities } from 'vscode-languageclient';
 import * as constants from '../constants';
 import * as Utils from '../utils';
-import { CreateSasResponse } from 'azdata';
 import * as contracts from '../contracts';
 
-export class BlobService implements mssql.IBlobService {
+export class AzureBlobService implements mssql.IAzureBlobService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
-		return class extends BlobService {
+		return class extends AzureBlobService {
 			constructor(client: SqlOpsDataClient) {
 				super(context, client);
 			}
@@ -29,10 +28,10 @@ export class BlobService implements mssql.IBlobService {
 	}
 
 	private constructor(context: AppContext, protected readonly client: SqlOpsDataClient) {
-		context.registerService(constants.BlobService, this);
+		context.registerService(constants.AzureBlobService, this);
 	}
 
-	public createSas(ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Thenable<CreateSasResponse> {
+	public createSas(ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse> {
 		const params: contracts.CreateSasParams = { ownerUri, blobContainerUri, blobContainerKey, storageAccountName, expirationDate };
 		return this.client.sendRequest(contracts.CreateSasRequest.type, params).then(
 			undefined,

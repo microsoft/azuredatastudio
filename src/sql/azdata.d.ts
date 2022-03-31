@@ -5,6 +5,7 @@
 
 declare module 'azdata' {
 	import * as vscode from 'vscode';
+	import * as mssql from 'mssql';
 
 	/**
 	 * The version of the application.
@@ -1965,10 +1966,6 @@ declare module 'azdata' {
 		taskId: number;
 	}
 
-	export interface CreateSasResponse {
-		sharedAccessSignature: string;
-	}
-
 	export interface BackupProvider extends DataProvider {
 		backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: TaskExecutionMode): Thenable<BackupResponse>;
 		getBackupConfigInfo(connectionUri: string): Thenable<BackupConfigInfo>;
@@ -1981,8 +1978,8 @@ declare module 'azdata' {
 		getRestoreConfigInfo(connectionUri: string): Thenable<RestoreConfigInfo>;
 	}
 
-	export interface BlobProvider extends DataProvider {
-		createSas(ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Thenable<CreateSasResponse>;
+	export interface AzureBlobProvider extends DataProvider {
+		createSas(ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse>;
 	}
 
 	export interface RestoreInfo {
@@ -5139,7 +5136,7 @@ declare module 'azdata' {
 		IconProvider = 'IconProvider',
 		SerializationProvider = 'SerializationProvider',
 		SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
-		BlobProvider = 'BlobProvider'
+		AzureBlobProvider = 'AzureBlobProvider'
 	}
 
 	/**

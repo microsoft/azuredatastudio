@@ -43,7 +43,7 @@ export const objectExplorerPrefix: string = 'objectexplorer://';
 export const SqlAssessmentService = 'sqlAssessmentService';
 export const SqlMigrationService = 'sqlMigrationService';
 export const NotebookConvertService = 'notebookConvertService';
-export const BlobService = 'blobService';
+export const AzureBlobService = 'azureBlobService';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext'

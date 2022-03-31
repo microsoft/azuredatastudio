@@ -26,7 +26,7 @@ import { SqlAssessmentService } from './sqlAssessment/sqlAssessmentService';
 import { NotebookConvertService } from './notebookConvert/notebookConvertService';
 import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
 import { SqlCredentialService } from './credentialstore/sqlCredentialService';
-import { BlobService } from './blob/blobService';
+import { AzureBlobService } from './blob/blobService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -167,7 +167,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 			SqlMigrationService.asFeature(context),
 			SqlCredentialService.asFeature(context),
 			TableDesignerFeature,
-			BlobService.asFeature(context),
+			AzureBlobService.asFeature(context),
 			ExecutionPlanServiceFeature
 		],
 		outputChannel: new CustomOutputChannel()

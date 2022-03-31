@@ -1301,8 +1301,4 @@ declare module 'azdata' {
 		 */
 		clickableButtonAriaLabel?: string;
 	}
-
-	export interface CreateSasResponse {
-		sharedAccessSignature: string;
-	}
 }

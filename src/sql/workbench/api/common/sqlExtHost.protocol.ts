@@ -14,6 +14,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import type * as azdata from 'azdata';
 import type * as vscode from 'vscode';
 import type * as azurecore from 'azurecore';
+import type * as mssql from 'mssql';
 
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/workbench/services/tasks/common/tasks';
@@ -32,9 +33,9 @@ import { TreeDataTransferDTO } from 'vs/workbench/api/common/shared/treeDataTran
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 
 export abstract class ExtHostAzureBlobShape {
-	public $createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<azdata.CreateSasResponse> { throw ni(); }
+	public $createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse> { throw ni(); }
 }
-  export abstract class ExtHostAzureAccountShape {
+export abstract class ExtHostAzureAccountShape {
 	public $getSubscriptions(account: azurecore.AzureAccount, ignoreErrors?: boolean, selectedOnly?: boolean): Thenable<azurecore.GetSubscriptionsResult> { throw ni(); }
 }
 
@@ -322,7 +323,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Creates shared access key
 	 */
-	$createSas(handle: number, ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Thenable<azdata.CreateSasResponse> { throw ni(); }
+	$createSas(handle: number, ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse> { throw ni(); }
 
 	/**
 	 * Restores a database

@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as mssql from 'mssql';
 import { ExtHostAzureBlobShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
@@ -14,7 +13,7 @@ export class ExtHostAzureBlob extends ExtHostAzureBlobShape {
 		super();
 	}
 
-	public override $createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<azdata.CreateSasResponse> {
+	public override $createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse> {
 		const api = this.getApi();
 		return api.blob.createSas(connectionUri, blobContainerUri, blobStorageKey, storageAccountName, expirationDate);
 	}

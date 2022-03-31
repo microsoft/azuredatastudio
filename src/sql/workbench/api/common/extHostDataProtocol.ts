@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import * as mssql from 'mssql';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
@@ -572,8 +573,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.BackupProvider>(handle).getBackupConfigInfo(connectionUri);
 	}
 
-	public override $createSas(handle: number, ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Thenable<azdata.CreateSasResponse> {
-		return this._resolveProvider<azdata.BlobProvider>(handle).createSas(ownerUri, blobContainerUri, blobContainerKey, storageAccountName, expirationDate);
+	public override $createSas(handle: number, ownerUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse> {
+		return this._resolveProvider<azdata.AzureBlobProvider>(handle).createSas(ownerUri, blobContainerUri, blobContainerKey, storageAccountName, expirationDate);
 	}
 
 	/**

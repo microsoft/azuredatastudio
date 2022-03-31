@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import type * as azdata from 'azdata';
+import type * as mssql from 'mssql';
 import { Disposable } from 'vs/base/common/lifecycle';
 import {
 	ExtHostAzureBlobShape,
@@ -13,8 +13,8 @@ import {
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { IBlobService } from 'sql/platform/blob/common/blobService';
-import { BlobService } from 'sql/workbench/services/blob/browser/blobService';
+import { IAzureBlobService } from 'sql/platform/blob/common/blobService';
+import { AzureBlobService } from 'sql/workbench/services/blob/browser/blobService';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAzureBlob)
 export class MainThreadBlob extends Disposable implements MainThreadAzureBlobShape {
@@ -23,14 +23,14 @@ export class MainThreadBlob extends Disposable implements MainThreadAzureBlobSha
 
 	constructor(
 		extHostContext: IExtHostContext,
-		@IBlobService azureAccountService: IBlobService
+		@IAzureBlobService azureBlobService: IAzureBlobService
 	) {
 		super();
 		this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostAzureBlob);
-		(azureAccountService as BlobService).registerProxy(this);
+		(azureBlobService as AzureBlobService).registerProxy(this);
 	}
 
-	public createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<azdata.CreateSasResponse> {
+	public createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse> {
 		return this._proxy.$createSas(connectionUri, blobContainerUri, blobStorageKey, storageAccountName, expirationDate);
 	}
 }

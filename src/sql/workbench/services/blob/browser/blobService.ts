@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
-import { IBlobService } from 'sql/platform/blob/common/blobService';
+import * as mssql from 'mssql';
+import { IAzureBlobService } from 'sql/platform/blob/common/blobService';
 import { MainThreadBlob } from 'sql/workbench/api/browser/mainThreadAzureBlob';
 
-export class BlobService implements IBlobService {
+export class AzureBlobService implements IAzureBlobService {
 
 	public _serviceBrand: undefined;
 	private _proxy: MainThreadBlob;
@@ -21,7 +21,7 @@ export class BlobService implements IBlobService {
 		this._proxy = proxy;
 	}
 
-	public createSas(connectionUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Thenable<azdata.CreateSasResponse> {
+	public createSas(connectionUri: string, blobContainerUri: string, blobContainerKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse> {
 		this.checkProxy();
 		return this._proxy.createSas(connectionUri, blobContainerUri, blobContainerKey, storageAccountName, expirationDate);
 	}

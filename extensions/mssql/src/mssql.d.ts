@@ -49,7 +49,7 @@ declare module 'mssql' {
 
 		readonly sqlMigration: ISqlMigrationService;
 
-		readonly blob: IBlobService;
+		readonly blob: IAzureBlobService;
 	}
 
 	/**
@@ -905,10 +905,14 @@ declare module 'mssql' {
 		getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
 	}
 
-	export interface IBlobService {
+	export interface CreateSasResponse {
+		sharedAccessSignature: string;
+	}
+
+	export interface IAzureBlobService {
 		/**
 		* Create shared access signature for blob container
 		*/
-		createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<azdata.CreateSasResponse>;
+		createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<CreateSasResponse>;
 	}
 }

@@ -383,7 +383,7 @@ export enum DataProviderType {
 	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
 	DataGridProvider = 'DataGridProvider',
 	TableDesignerProvider = 'TableDesignerProvider',
-	BlobProvider = 'BlobProvider',
+	AzureBlobProvider = 'AzureBlobProvider',
 	ExecutionPlanProvider = 'ExecutionPlanProvider'
 }
 
