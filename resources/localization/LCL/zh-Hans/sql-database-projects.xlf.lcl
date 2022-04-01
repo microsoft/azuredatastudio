@@ -237,10 +237,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.baseDockerImage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Base SQL Server Docker image]]></Val>
+          <Val><![CDATA[Base {0} Docker image]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[基本 SQL Server Docker 映像]]></Val>
+            <Val><![CDATA[基础 {0} Docker 映像]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Base SQL Server Docker image]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -393,28 +396,37 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.confirmPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Confirm SQL server admin password]]></Val>
+          <Val><![CDATA[Confirm {0} admin password]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[确认 SQL Server 管理员密码]]></Val>
+            <Val><![CDATA[确认 {0} 管理员密码]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Confirm SQL server admin password]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.confirmServerPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Confirm SQL Server admin password]]></Val>
+          <Val><![CDATA[Confirm {0} admin password]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[确认 SQL Server 管理员密码]]></Val>
+            <Val><![CDATA[确认 {0} 管理员密码]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Confirm SQL Server admin password]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.connectingToSqlServerOnDockerMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Connecting to SQL Server on Docker]]></Val>
+          <Val><![CDATA[Connecting to SQL Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[连接到 Docker 上的 SQL Server]]></Val>
+            <Val><![CDATA[正在连接到 SQL Server]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Connecting to SQL Server on Docker]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -921,37 +933,67 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.edgeProjectTypeDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Start with the core pieces to develop and publish schemas for SQL Edge]]></Val>
+          <Val><![CDATA[Start with the core pieces to develop and publish schemas for Azure SQL Edge Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[从核心部分开始开发和发布 SQL Edge 的架构]]></Val>
+            <Val><![CDATA[从核心部分开始开发和发布 Azure SQL Edge 数据库的架构]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Start with the core pieces to develop and publish schemas for SQL Edge]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.edgeProjectTypeDisplayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[SQL Edge]]></Val>
+          <Val><![CDATA[Azure SQL Edge Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL Edge 数据库]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
             <Val><![CDATA[SQL Edge]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.emptyAzureDbProjectTypeDescription" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Develop and publish schemas for Azure SQL Database starting from an empty project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[从空项目开始开发和发布 Azure SQL 数据库架构]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.emptyAzureDbProjectTypeDisplayName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure SQL Database]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL 数据库]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.emptyProjectTypeDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Develop and publish schemas for SQL databases starting from an empty project]]></Val>
+          <Val><![CDATA[Develop and publish schemas for SQL Server databases starting from an empty project]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[从空项目开始开发和发布 SQL 数据库架构]]></Val>
+            <Val><![CDATA[从空项目开始开发和发布 SQL Server 数据库架构]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Develop and publish schemas for SQL databases starting from an empty project]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.emptyProjectTypeDisplayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[SQL Database]]></Val>
+          <Val><![CDATA[SQL Server Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL 数据库]]></Val>
+            <Val><![CDATA[SQL Server 数据库]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[SQL Database]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1029,24 +1071,24 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.enterPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter SQL Server admin password]]></Val>
+          <Val><![CDATA[Enter {0} admin password]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[输入 SQL Server 管理员密码]]></Val>
+            <Val><![CDATA[输入 {0} 管理员密码]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Enter password]]></Val>
+            <Val><![CDATA[Enter SQL Server admin password]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.enterPortNumber" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter SQL server port number or press enter to use the default value]]></Val>
+          <Val><![CDATA[Enter {0} port number or press enter to use the default value]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[输入 SQL Server 端口号或按 Enter 以使用默认值]]></Val>
+            <Val><![CDATA[输入 {0} 端口号或按 Enter 以使用默认值]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Enter port number or press enter to use the default value]]></Val>
+            <Val><![CDATA[Enter SQL server port number or press enter to use the default value]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1389,10 +1431,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.invalidSQLPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy]]></Val>
+          <Val><![CDATA[{0} password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL Server 密码不符合密码复杂性要求。有关详细信息，请参阅 https://docs.microsoft.com/sql/relational-databases/security/password-policy]]></Val>
+            <Val><![CDATA[{0} 密码不符合密码复杂性要求。有关详细信息，请参阅 https://docs.microsoft.com/sql/relational-databases/security/password-policy]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1692,10 +1737,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.passwordNotMatch" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[SQL Server password doesn't match the confirmation password]]></Val>
+          <Val><![CDATA[{0} password doesn't match the confirmation password]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL Server 密码与确认密码不匹配]]></Val>
+            <Val><![CDATA[{0} 密码与确认密码不匹配]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[SQL Server password doesn't match the confirmation password]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1873,6 +1921,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.projectUpdatedToSdkStyle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The project {0} has been updated to be an SDK-style project. Click 'Learn More' for details on the Microsoft.Build.Sql SDK and ways to simplify the project file.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[项目 {0} 已更新为 SDK 样式项目。单击“了解详细信息”，了解有关 Microsoft.Build.Sql SDK 的详细信息以及简化项目文件的方法。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.publish" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Publish]]></Val>
@@ -1941,22 +1998,25 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.publishToDockerContainer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Publish to new server in a container]]></Val>
+          <Val><![CDATA[Publish to new {0} local development container]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[发布到容器中的新服务器]]></Val>
+            <Val><![CDATA[发布到新 {0} 本地开发容器]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Publish to docker container]]></Val>
+            <Val><![CDATA[Publish to new server in a container]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.publishToExistingServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Publish to existing server]]></Val>
+          <Val><![CDATA[Publish to an existing {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[发布到现有服务器]]></Val>
+            <Val><![CDATA[发布到现有 {0}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Publish to existing server]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2166,10 +2226,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.selectBaseImage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Select the base SQL Server docker image]]></Val>
+          <Val><![CDATA[Select the base {0} docker image]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[选择基本 SQL Server docker 映像]]></Val>
+            <Val><![CDATA[选择基础 {0} docker 映像]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Select the base SQL Server docker image]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2304,19 +2367,25 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.serverPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[SQL Server admin password]]></Val>
+          <Val><![CDATA[{0} admin password]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[服务器管理员密码]]></Val>
+            <Val><![CDATA[{0} 管理员密码]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[SQL Server admin password]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.serverPortNumber" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[SQL server port number]]></Val>
+          <Val><![CDATA[{0} port number]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL Server 商品号]]></Val>
+            <Val><![CDATA[{0} 端口号]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[SQL server port number]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2781,6 +2850,15 @@
           <Val><![CDATA[Close Database Project]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[关闭数据库项目]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.convertToSdkStyleProject" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Convert to SDK-style project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[转换为 SDK 样式项目]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
