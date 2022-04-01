@@ -383,11 +383,7 @@ export enum DataProviderType {
 	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
 	DataGridProvider = 'DataGridProvider',
 	TableDesignerProvider = 'TableDesignerProvider',
-<<<<<<< HEAD
 	ExecutionPlanProvider = 'ExecutionPlanProvider'
-=======
-	BlobProvider = 'BlobProvider'
->>>>>>> 3dd52462dc (Moved createSas RPC to the BlobService)
 }
 
 export enum DeclarativeDataType {

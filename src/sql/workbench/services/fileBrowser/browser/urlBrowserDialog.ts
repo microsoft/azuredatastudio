@@ -30,7 +30,7 @@ import { Account } from 'azdata';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
 import { Blob, BlobContainer, AzureGraphResource, AzureResourceSubscription, GetBlobsResult } from 'azurecore';
-import { IBlobService } from 'sql/platform/blob/common/blobService';
+import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
 
 
 const ERROR_GETTING_BLOB_CONTAINERS = localize('urlbrowserdialog.getblobcontainerserror', "Error getting blob containers");
@@ -82,7 +82,7 @@ export class UrlBrowserDialog extends Modal {
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@IAzureAccountService private _azureAccountService: IAzureAccountService,
-		@IBlobService private _blobService: IBlobService
+		@IAzureBlobService private _blobService: IAzureBlobService
 	) {
 		super(title, TelemetryKeys.ModalDialogName.FileBrowser, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'flyout', hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
 		//this._viewModel = this._instantiationService.createInstance(FileBrowserViewModel);

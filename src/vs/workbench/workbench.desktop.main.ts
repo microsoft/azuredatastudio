@@ -88,15 +88,12 @@ import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobServic
 import { AzureBlobService } from 'sql/workbench/services/azureBlob/browser/azureBlobService';
 import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
 import { AzureAccountService } from 'sql/workbench/services/azureAccount/browser/azureAccountService';
-import { IBlobService } from 'sql/platform/blob/common/blobService';
-import { BlobService } from 'sql/workbench/services/blob/browser/blobService';
 
 registerSingleton(ISqlOAuthService, SqlOAuthService);
 registerSingleton(sqlIClipboardService, sqlClipboardService);
 registerSingleton(IQueryHistoryService, QueryHistoryService);
 registerSingleton(IAzureBlobService, AzureBlobService);
 registerSingleton(IAzureAccountService, AzureAccountService);
-registerSingleton(IBlobService, BlobService);
 // {{SQL CARBON EDIT}} - End
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
