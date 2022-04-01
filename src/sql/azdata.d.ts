@@ -5,7 +5,6 @@
 
 declare module 'azdata' {
 	import * as vscode from 'vscode';
-	import * as mssql from 'mssql';
 
 	/**
 	 * The version of the application.

@@ -41,7 +41,7 @@ export function createMssqlApi(context: AppContext, sqlToolsServer: SqlToolsServ
 		get sqlMigration() {
 			return context.getService<ISqlMigrationService>(constants.SqlMigrationService);
 		},
-		get blob() {
+		get azureBlob() {
 			return context.getService<IAzureBlobService>(constants.AzureBlobService);
 		}
 	};

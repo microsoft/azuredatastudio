@@ -15,7 +15,7 @@ export class ExtHostAzureBlob extends ExtHostAzureBlobShape {
 
 	public override $createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse> {
 		const api = this.getApi();
-		return api.blob.createSas(connectionUri, blobContainerUri, blobStorageKey, storageAccountName, expirationDate);
+		return api.azureBlob.createSas(connectionUri, blobContainerUri, blobStorageKey, storageAccountName, expirationDate);
 	}
 
 	private getApi(): mssql.IExtension {

@@ -49,7 +49,7 @@ declare module 'mssql' {
 
 		readonly sqlMigration: ISqlMigrationService;
 
-		readonly blob: IAzureBlobService;
+		readonly azureBlob: IAzureBlobService;
 	}
 
 	/**

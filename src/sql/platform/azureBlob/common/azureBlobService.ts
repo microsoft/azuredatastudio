@@ -14,5 +14,5 @@ export interface IAzureBlobService {
 	/**
 	* Create shared access signature for blob container
 	*/
-	createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse>;
+	createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Promise<mssql.CreateSasResponse>;
 }
