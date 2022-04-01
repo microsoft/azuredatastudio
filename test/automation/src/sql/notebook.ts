@@ -256,7 +256,7 @@ export class TextCellToolbar {
 	public async changeSelectedTextSize(textSize: 'Heading 1' | 'Heading 2' | 'Heading 3' | 'Paragraph'): Promise<void> {
 		const actionSelector = `${TextCellToolbar.textCellToolbar} .monaco-dropdown a.heading-dropdown`;
 		await this.code.waitAndClick(actionSelector);
-		const menuItemSelector = `.monaco-menu-container .monaco-menu a.action-menu-item[title="${textSize}"]`;
+		const menuItemSelector = `.context-view.monaco-menu-container .monaco-menu .action-menu-item[title="${textSize}"]`;
 		await this.code.waitAndClick(menuItemSelector);
 	}
 
