@@ -264,7 +264,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				this.migrationStateModel._azureAccount.properties.tenants = [this.migrationStateModel.getTenant(selectedIndex)];
 			}
 			await this.populateSubscriptionDropdown();
-			await this.populateLocationDropdown();
 		}));
 
 		this._accountTenantFlexContainer = this._view.modelBuilder.flexContainer()
