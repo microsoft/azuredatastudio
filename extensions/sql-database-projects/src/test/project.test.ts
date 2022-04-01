@@ -1784,6 +1784,24 @@ describe('Project: legacy to SDK-style updates', function (): void {
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(beforeFolderCount, 'Same number of folders should be included after Folder Includes are removed');
 	});
 
+	it('Should rollback changes if there was an error during conversion to SDK-style', async function (): Promise<void> {
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline, folderPath);
+		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);
+		should(project.isSdkStyleProject).equal(false);
+
+		// add an empty folder so that addFolderItem() will get called during the conversion. Empty folders aren't included by glob, so they need to be added to the sqlproj
+		// to show up in the project tree
+		await project.addFolderItem('folder1');
+
+		sinon.stub(Project.prototype, 'addFolderItem').throwsException('error');
+		const result = await project.convertProjectToSdkStyle();
+
+		should(result).equal(false);
+		should(project.isSdkStyleProject).equal(false);
+		should(project.importedTargets.length).equal(3, 'SSDT and ADS imports should still be there');
+	});
+
 	it('Should not update project and no backup file should be created when project is already SDK-style', async function (): Promise<void> {
 		// setup test files
 		const folderPath = await testUtils.generateTestFolderPath();
