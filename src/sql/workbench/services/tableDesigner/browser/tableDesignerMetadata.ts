@@ -14,7 +14,7 @@ export class TableDesignerMetadata {
 	]);
 
 	/**
-	 *
+	 * Validates given metadata and adds metadata from the allowed list
 	 * @param providerId provider ID for the table designer provider
 	 * @param metadata incoming metadata from the table designer provider
 	 * @returns filtered metadata with only allowed metadata
