@@ -743,6 +743,11 @@ declare module 'azdata' {
 			 * Extension can store additional information that the provider needs to uniquely identify a table.
 			 */
 			[key: string]: any;
+			/**
+			 * Table icon type that's shown in the editor tab. Default is the basic
+			 * table icon.
+			 */
+			tableIcon?: TableIcon;
 		}
 
 		/**
@@ -757,6 +762,16 @@ declare module 'azdata' {
 			 * The initial state of the designer.
 			 */
 			viewModel: DesignerViewModel;
+		}
+
+		/**
+		 * Table icon that's shown on the editor tab
+		 */
+		export enum TableIcon {
+			Basic = 'Basic',
+			Temporal = 'Temporal',
+			GraphNode = 'GraphNode',
+			GraphEdge = 'GraphEdge'
 		}
 
 		/**
