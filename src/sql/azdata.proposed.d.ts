@@ -1112,7 +1112,7 @@ declare module 'azdata' {
 			 */
 			inputValidationError?: string;
 			/**
-			 * Metadata related to the table to be captured
+			 * Metadata related to the table
 			 */
 			metadata?: { [key: string]: string };
 		}
