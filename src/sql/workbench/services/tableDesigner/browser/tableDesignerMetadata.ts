@@ -1,0 +1,35 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+export class TableDesignerMetadata {
+
+	// Allowed metadata for every provider
+	public static mssqlAllowedMetdata: Set<string> = new Set(['isNode', 'isEdge', 'isSystemVersioned']);
+
+	// Provider ID to allowed metadata list set mapping
+	public static providerMetadataMap: Map<string, Set<string>> = new Map<string, Set<string>>([
+		['MSSQL', TableDesignerMetadata.mssqlAllowedMetdata]
+	]);
+
+	/**
+	 *
+	 * @param providerId provider ID for the table designer provider
+	 * @param metadata incoming metadata from the table designer provider
+	 * @returns filtered metadata with only allowed metadata
+	 */
+	public static getValidMetadata(providerId: string, metadata: { [key: string]: string }): { [key: string]: string } {
+		if (!TableDesignerMetadata.providerMetadataMap.has(providerId)) {
+			return undefined;
+		}
+		const allowedSet = TableDesignerMetadata.providerMetadataMap.get(providerId);
+		for (const key of Object.keys(metadata)) {
+			if (!allowedSet.has(key)) {
+				delete metadata[key];
+			}
+		}
+		return metadata;
+	}
+
+}

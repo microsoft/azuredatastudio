@@ -1112,9 +1112,9 @@ declare module 'azdata' {
 			 */
 			inputValidationError?: string;
 			/**
-			 * Properties related to the table to be captured
+			 * Metadata related to the table to be captured
 			 */
-			propertyBag?: { [key: string]: string };
+			metadata?: { [key: string]: string };
 		}
 
 		/**
@@ -1134,9 +1134,9 @@ declare module 'azdata' {
 			 */
 			view: TableDesignerView;
 			/**
-			 * Properties related to the table to be captured
+			 * Metadata related to the table to be captured
 			 */
-			propertyBag?: { [key: string]: string };
+			metadata?: { [key: string]: string };
 		}
 
 		export interface GeneratePreviewReportResult {
@@ -1152,6 +1152,10 @@ declare module 'azdata' {
 			 * The table schema validation error.
 			 */
 			schemaValidationError?: string;
+			/**
+			 * Metadata related to the table to be captured
+			 */
+			metadata?: { [key: string]: string };
 		}
 	}
 
