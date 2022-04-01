@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { getStorageAccountAccessKeys } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { AzureResourceType, Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, NetworkShare, StateChangeEvent } from '../models/stateMachine';
+import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, NetworkShare, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
@@ -1261,7 +1261,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadNetworkStorageResourceGroup(): Promise<void> {
 		this._networkShareStorageAccountResourceGroupDropdown.loading = true;
 		try {
-			this._networkShareStorageAccountResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(AzureResourceType.StorageAccount, this.migrationStateModel._databaseBackup.subscription);
+			this._networkShareStorageAccountResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupForStorageAccountsDropdownValues(this.migrationStateModel._databaseBackup.subscription);
 			selectDefaultDropdownValue(this._networkShareStorageAccountResourceGroupDropdown, this.migrationStateModel._databaseBackup?.networkShares[0]?.resourceGroup?.id, false);
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingNetworkStorageResourceGroup', error);
@@ -1288,7 +1288,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobResourceGroup(): Promise<void> {
 		this._blobContainerResourceGroupDropdowns.forEach(v => v.loading = true);
 		try {
-			const resourceGroupValues = await this.migrationStateModel.getAzureResourceGroupDropdownValues(AzureResourceType.StorageAccount, this.migrationStateModel._databaseBackup.subscription);
+			const resourceGroupValues = await this.migrationStateModel.getAzureResourceGroupForStorageAccountsDropdownValues(this.migrationStateModel._databaseBackup.subscription);
 			this._blobContainerResourceGroupDropdowns.forEach((dropDown, index) => {
 				dropDown.values = resourceGroupValues;
 				selectDefaultDropdownValue(dropDown, this.migrationStateModel._databaseBackup?.blobs[index]?.resourceGroup?.id, false);

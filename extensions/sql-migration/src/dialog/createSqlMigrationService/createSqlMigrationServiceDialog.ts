@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { createSqlMigrationService, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlMigrationService } from '../../api/azure';
-import { AzureResourceType, MigrationStateModel, NetworkContainerType } from '../../models/stateMachine';
+import { MigrationStateModel, NetworkContainerType } from '../../models/stateMachine';
 import { logError, TelemetryViews } from '../../telemtery';
 import * as constants from '../../constants/strings';
 import * as os from 'os';
@@ -369,7 +369,7 @@ export class CreateSqlMigrationServiceDialog {
 	private async populateResourceGroups(): Promise<void> {
 		this.migrationServiceResourceGroupDropdown.loading = true;
 		try {
-			this.migrationServiceResourceGroupDropdown.values = (await this._model.getAzureResourceGroupDropdownValues(AzureResourceType.SqlMigrationService, this._model._targetSubscription)).map(v => {
+			this.migrationServiceResourceGroupDropdown.values = (await this._model.getAzureResourceGroupForSqlMigrationServicesDropdownValues(this._model._targetSubscription)).map(v => {
 				return {
 					name: v.displayName,
 					displayName: v.displayName
