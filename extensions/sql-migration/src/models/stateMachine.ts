@@ -8,7 +8,7 @@ import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
-import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs, sortResourceArrayByName, getFullResourceGroupFromId, getResourceGroupFromId } from '../api/azure';
+import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs, sortResourceArrayByName, getFullResourceGroupFromId, getResourceGroupFromId, getResourceGroups } from '../api/azure';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
@@ -954,6 +954,40 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return getLocationDisplayName(location);
 	}
 
+	public async getAzureResourceGroupDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+		let resourceGroupValues: azdata.CategoryValue[] = [];
+		try {
+			if (this._azureAccount && subscription) {
+				this._resourceGroups = await getResourceGroups(this._azureAccount, subscription);
+			} else {
+				this._resourceGroups = [];
+			}
+			this._resourceGroups.forEach((rg) => {
+				resourceGroupValues.push({
+					name: rg.id,
+					displayName: rg.name
+				});
+			});
+			if (resourceGroupValues.length === 0) {
+				resourceGroupValues = [
+					{
+						displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+						name: ''
+					}
+				];
+			}
+		} catch (e) {
+			console.log(e);
+			resourceGroupValues = [
+				{
+					displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+					name: ''
+				}
+			];
+		}
+		return resourceGroupValues;
+	}
+
 	public async getAzureResourceGroupForManagedInstancesDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
 		let resourceGroupValues: azdata.CategoryValue[] = [];
 		try {
@@ -962,7 +996,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				this._resourceGroups = await Promise.all(managedInstances.map(async (mi) => {
 					return <azureResource.AzureResourceResourceGroup>{
 						id: getFullResourceGroupFromId(mi.id),
-						name: mi.resourceGroup!,
+						name: getResourceGroupFromId(mi.id),
 						subscription: {
 							id: mi.subscriptionId
 						},
@@ -1062,7 +1096,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				this._resourceGroups = await Promise.all(storageAccounts.map(async (sa) => {
 					return <azureResource.AzureResourceResourceGroup>{
 						id: getFullResourceGroupFromId(sa.id),
-						name: sa.resourceGroup!,
+						name: getResourceGroupFromId(sa.id),
 						subscription: {
 							id: sa.subscriptionId
 						},
@@ -1112,7 +1146,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				this._resourceGroups = await Promise.all(dmsInstances.map(async (dms) => {
 					return <azureResource.AzureResourceResourceGroup>{
 						id: getFullResourceGroupFromId(dms.id),
-						name: dms.properties.name,
+						name: getResourceGroupFromId(dms.id),
 						subscription: {
 							id: dms.properties.subscriptionId
 						}
