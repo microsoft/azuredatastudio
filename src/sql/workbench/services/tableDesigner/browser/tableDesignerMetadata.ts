@@ -17,9 +17,9 @@ export class TableDesignerMetadata {
 	 * Validates given metadata and adds metadata from the allowed list
 	 * @param providerId provider ID for the table designer provider
 	 * @param metadata incoming metadata from the table designer provider
-	 * @returns filtered metadata with only allowed metadata
+	 * @returns filtered telemetry info with only allowed metadata points
 	 */
-	public static getValidMetadata(providerId: string, metadata: { [key: string]: string }): { [key: string]: string } {
+	public static getTelemetryInfo(providerId: string, metadata: { [key: string]: string }): { [key: string]: string } {
 		if (!TableDesignerMetadata.providerMetadataMap.has(providerId)) {
 			return undefined;
 		}

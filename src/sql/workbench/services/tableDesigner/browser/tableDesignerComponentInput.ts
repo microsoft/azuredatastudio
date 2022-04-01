@@ -108,10 +108,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						refreshView: !!result.view
 					}
 				});
-				const validatedMetadata = TableDesignerMetadata.getValidMetadata(this._provider.providerId, result.metadata);
+				const metadataTelemetryInfo = TableDesignerMetadata.getTelemetryInfo(this._provider.providerId, result.metadata);
 				editAction.withAdditionalMeasurements({
 					'elapsedTimeMs': new Date().getTime() - startTime
-				}).withAdditionalProperties(validatedMetadata).send();
+				}).withAdditionalProperties(metadataTelemetryInfo).send();
 			},
 			error => {
 				this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.errorProcessingEdit', "An error occured while processing the change: {0}", error?.message ?? error));
@@ -166,10 +166,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			this.tableInfo = result.newTableInfo;
 			this.updateState(true, false);
 			this._onRefreshRequested.fire();
-			const validatedMetadata = TableDesignerMetadata.getValidMetadata(this._provider.providerId, result.metadata);
+			const metadataTelemetryInfo = TableDesignerMetadata.getTelemetryInfo(this._provider.providerId, result.metadata);
 			publishEvent.withAdditionalMeasurements({
 				'elapsedTimeMs': new Date().getTime() - startTime
-			}).withAdditionalProperties(validatedMetadata).send();
+			}).withAdditionalProperties(metadataTelemetryInfo).send();
 		} catch (error) {
 			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.publishChangeError', "An error occured while publishing changes: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
@@ -190,10 +190,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		try {
 			this.updateState(this.valid, this.dirty, 'generateReport');
 			previewReportResult = await this._provider.generatePreviewReport(this.tableInfo);
-			const validatedMetadata = TableDesignerMetadata.getValidMetadata(this._provider.providerId, previewReportResult.metadata);
+			const metadataTelemetryInfo = TableDesignerMetadata.getTelemetryInfo(this._provider.providerId, previewReportResult.metadata);
 			generatePreviewEvent.withAdditionalMeasurements({
 				'elapsedTimeMs': new Date().getTime() - startTime
-			}).withAdditionalProperties(validatedMetadata).send();
+			}).withAdditionalProperties(metadataTelemetryInfo).send();
 			reportNotificationHandle.close();
 			this.updateState(this.valid, this.dirty);
 		} catch (error) {
