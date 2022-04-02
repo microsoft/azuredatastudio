@@ -75,10 +75,13 @@
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.NewProjectDialogTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Create new project]]></Val>
+          <Val><![CDATA[Create new database project]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Criar um novo projeto]]></Val>
+            <Val><![CDATA[Criar novo projeto de banco de dados]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Create new project]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -411,10 +414,13 @@
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.selectProjectType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Select Project Type]]></Val>
+          <Val><![CDATA[Select Database Project Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Selecionar o tipo de projeto]]></Val>
+            <Val><![CDATA[Selecionar tipo de projeto de banco de dados]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Select Project Type]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

@@ -107,6 +107,7 @@ export function selectTargetPlatform(currentTargetPlatform: string) { return loc
 export function currentTargetPlatform(projectName: string, currentTargetPlatform: string) { return localize('currentTargetPlatform', "Target platform of the project {0} is now {1}", projectName, currentTargetPlatform); }
 export function projectUpdatedToSdkStyle(projectName: string) { return localize('projectUpdatedToSdkStyle', "The project {0} has been updated to be an SDK-style project. Click 'Learn More' for details on the Microsoft.Build.Sql SDK and ways to simplify the project file.", projectName); }
 export function convertToSdkStyleConfirmation(projectName: string) { return localize('convertToSdkStyleConfirmation', "The project '{0}' will not be fully compatible with SSDT after conversion. A backup copy of the project file will be created in the project folder prior to conversion. More information is available at https://aka.ms/sqlprojsdk. Continue with converting to SDK-style project?", projectName); }
+export function updatedToSdkStyleError(projectName: string) { return localize('updatedToSdkStyleError', "Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.", projectName); }
 
 // Publish dialog strings
 

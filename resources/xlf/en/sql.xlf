@@ -94,6 +94,12 @@
     <trans-unit id="table.sortDescending">
       <source xml:lang="en">Sort Descending</source>
     </trans-unit>
+    <trans-unit id="tableFilter.blankStringDisplayText">
+      <source xml:lang="en">(Blanks)</source>
+    </trans-unit>
+    <trans-unit id="tableFilter.nullDisplayText">
+      <source xml:lang="en">(NULL)</source>
+    </trans-unit>
     <trans-unit id="tableFilter.selectedCount">
       <source xml:lang="en">{0} Selected</source>
       <note>This tells the user how many items are selected in the list</note>

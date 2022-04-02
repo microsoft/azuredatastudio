@@ -65,10 +65,6 @@ export enum MssqlClusterItemsSubType {
 	Spark = ':spark:'
 }
 
-export enum TableType {
-	Basic = 'basic'
-}
-
 // SPARK JOB SUBMISSION //////////////////////////////////////////////////////////
 export const mssqlClusterNewNotebookTask = 'mssqlCluster.task.newNotebook';
 export const mssqlClusterOpenNotebookTask = 'mssqlCluster.task.openNotebook';

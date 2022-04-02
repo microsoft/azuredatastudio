@@ -10,10 +10,24 @@ const packageInfo = getPackageInfo()!;
 export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 
 export enum TelemetryViews {
-	SqlBindingsQuickPick = 'SqlBindingsQuickPick'
+	SqlBindingsQuickPick = 'SqlBindingsQuickPick',
+	CreateAzureFunctionWithSqlBinding = 'CreateAzureFunctionWithSqlBinding'
 }
 
 export enum TelemetryActions {
+	// Create Azure Function with Sql Binding from Table
+	startCreateAzureFunctionWithSqlBinding = 'startCreateAzureFunctionWithSqlBinding',
+	helpCreateAzureFunctionProject = 'helpCreateAzureFunctionProject',
+	learnMore = 'learnMore',
+	finishCreateAzureFunctionWithSqlBinding = 'finishCreateAzureFunctionWithSqlBinding',
+	exitCreateAzureFunctionQuickpick = 'exitCreateAzureFunctionQuickpick',
+
+	// Add SQL Binding to Azure Function
 	startAddSqlBinding = 'startAddSqlBinding',
-	finishAddSqlBinding = 'finishAddSqlBinding'
+	getAzureFunctionProject = 'getAzureFunctionProject',
+	getBindingType = 'getBindingType',
+	getObjectName = 'getObjectName',
+	updateConnectionString = 'updateConnectionString',
+	finishAddSqlBinding = 'finishAddSqlBinding',
+	exitSqlBindingsQuickpick = 'exitSqlBindingsQuickpick',
 }

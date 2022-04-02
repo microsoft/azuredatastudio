@@ -743,6 +743,11 @@ declare module 'azdata' {
 			 * Extension can store additional information that the provider needs to uniquely identify a table.
 			 */
 			[key: string]: any;
+			/**
+			 * Table icon type that's shown in the editor tab. Default is the basic
+			 * table icon.
+			 */
+			tableIcon?: TableIcon;
 		}
 
 		/**
@@ -757,6 +762,16 @@ declare module 'azdata' {
 			 * The initial state of the designer.
 			 */
 			viewModel: DesignerViewModel;
+		}
+
+		/**
+		 * Table icon that's shown on the editor tab
+		 */
+		export enum TableIcon {
+			Basic = 'Basic',
+			Temporal = 'Temporal',
+			GraphNode = 'GraphNode',
+			GraphEdge = 'GraphEdge'
 		}
 
 		/**
@@ -1111,6 +1126,10 @@ declare module 'azdata' {
 			 * The input validation error.
 			 */
 			inputValidationError?: string;
+			/**
+			 * Metadata related to the table
+			 */
+			metadata?: { [key: string]: string };
 		}
 
 		/**
@@ -1129,6 +1148,10 @@ declare module 'azdata' {
 			 * The new view.
 			 */
 			view: TableDesignerView;
+			/**
+			 * Metadata related to the table to be captured
+			 */
+			metadata?: { [key: string]: string };
 		}
 
 		export interface GeneratePreviewReportResult {
@@ -1144,6 +1167,10 @@ declare module 'azdata' {
 			 * The table schema validation error.
 			 */
 			schemaValidationError?: string;
+			/**
+			 * Metadata related to the table to be captured
+			 */
+			metadata?: { [key: string]: string };
 		}
 	}
 
