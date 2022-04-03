@@ -238,8 +238,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.baseDockerImage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Base {0} Docker image]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Imagen de Docker de base SQL Server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Imagen de Docker base {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Base SQL Server Docker image]]></Val>
@@ -397,8 +397,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.confirmPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Confirm {0} admin password]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Confirmar contraseña de administrador de SQL Server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmar la contraseña de administrador de {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Confirm SQL server admin password]]></Val>
@@ -409,8 +409,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.confirmServerPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Confirm {0} admin password]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Confirmar contraseña de administrador de SQL Server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmar la contraseña de administrador de {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Confirm SQL Server admin password]]></Val>
@@ -421,8 +421,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.connectingToSqlServerOnDockerMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connecting to SQL Server]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Conexión a SQL Server en Docker]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Conexión a SQL Server]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Connecting to SQL Server on Docker]]></Val>
@@ -934,8 +934,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.edgeProjectTypeDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Start with the core pieces to develop and publish schemas for Azure SQL Edge Database]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Comience con las partes principales para desarrollar y publicar esquemas para SQL Edge.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Comience con las partes principales para desarrollar y publicar esquemas para Azure SQL Edge Database.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Start with the core pieces to develop and publish schemas for SQL Edge]]></Val>
@@ -946,8 +946,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.edgeProjectTypeDisplayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Edge Database]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[SQL Edge]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL Edge Database]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[SQL Edge]]></Val>
@@ -958,6 +958,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.emptyAzureDbProjectTypeDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Develop and publish schemas for Azure SQL Database starting from an empty project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Permite desarrollar y publicar esquemas para Azure SQL Database a partir de un proyecto vacío.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -965,7 +968,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL Database]]></Val>
+            <Val><![CDATA[Azure SQL Database]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -973,8 +976,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.emptyProjectTypeDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Develop and publish schemas for SQL Server databases starting from an empty project]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Desarrolle y publique esquemas para bases de datos SQL a partir de un proyecto vacío.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Desarrolle y publique esquemas para bases de datos SQL Server a partir de un proyecto vacío.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Develop and publish schemas for SQL databases starting from an empty project]]></Val>
@@ -986,7 +989,7 @@
         <Str Cat="Text">
           <Val><![CDATA[SQL Server Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Base de datos de SQL Server]]></Val>
+            <Val><![CDATA[Base de datos de SQL Server]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[SQL Database]]></Val>
@@ -1069,8 +1072,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.enterPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter {0} admin password]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Introduzca la contraseña de administrador de SQL Server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Escriba la contraseña del administrador {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Enter SQL Server admin password]]></Val>
@@ -1081,8 +1084,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.enterPortNumber" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter {0} port number or press enter to use the default value]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Escriba el número de puerto de SQL Server o presione Entrar para usar el valor predeterminado.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Escriba el número de puerto {0} o presione Entrar para usar el valor predeterminado]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Enter SQL server port number or press enter to use the default value]]></Val>
@@ -1429,8 +1432,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.invalidSQLPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[La contraseña de SQL Server no cumple el requisito de complejidad de la contraseña. Para obtener más información, consulte https://docs.microsoft.com/sql/relational-databases/security/password-policy]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La contraseña de {0} no cumple el requisito de complejidad de la contraseña. Para obtener más información, consulte https://docs.microsoft.com/sql/relational-databases/security/password-policy]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy]]></Val>
@@ -1735,8 +1738,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.passwordNotMatch" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} password doesn't match the confirmation password]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[La contraseña de SQL Server no coincide con la contraseña de confirmación.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La contraseña de {0} no coincide con la contraseña de confirmación.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[SQL Server password doesn't match the confirmation password]]></Val>
@@ -1921,6 +1924,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.projectUpdatedToSdkStyle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The project {0} has been updated to be an SDK-style project. Click 'Learn More' for details on the Microsoft.Build.Sql SDK and ways to simplify the project file.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[El proyecto {0} se ha actualizado para que sea un proyecto de estilo SDK. Haga clic en \"Más información\" para obtener detalles sobre el SDK de Microsoft.Build.Sql y las formas de simplificar el archivo de proyecto.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1993,8 +1999,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.publishToDockerContainer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Publish to new {0} local development container]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Publicar en un nuevo servidor en un contenedor]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Publicar en el nuevo contenedor de desarrollo local de {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Publish to new server in a container]]></Val>
@@ -2005,8 +2011,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.publishToExistingServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Publish to an existing {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Publicar en un servidor existente]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Publicar en un {0} existente]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Publish to existing server]]></Val>
@@ -2221,8 +2227,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.selectBaseImage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select the base {0} docker image]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Seleccione la imagen base de Docker SQL Server.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Seleccionar la imagen base {0} de Docker]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Select the base SQL Server docker image]]></Val>
@@ -2362,8 +2368,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.serverPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} admin password]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Contraseña de administrador de SQL Server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Contraseña de administrador {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[SQL Server admin password]]></Val>
@@ -2374,8 +2380,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.serverPortNumber" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} port number]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Número de puerto de SQL Server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Número de puerto {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[SQL server port number]]></Val>
@@ -2851,6 +2857,9 @@
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.convertToSdkStyleProject" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Convert to SDK-style project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Convertir a proyecto de estilo SDK]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
