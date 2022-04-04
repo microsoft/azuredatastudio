@@ -346,7 +346,6 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 			'AZURE_FUNCTION_PROXY_DISABLE_LOCAL_CALL',
 			'AZURE_FUNCTION_PROXY_BACKEND_URL_DECODE_SLASHES',
 			'AZURE_FUNCTIONS_ENVIRONMENT',
-			'AzureFunctionsJobHost__*',
 			'AzureWebJobsDashboard',
 			'AzureWebJobsDisableHomepage',
 			'AzureWebJobsDotNetReleaseCompilation',
@@ -388,7 +387,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 			'WEBSITE_NODE_DEFAULT_VERSION',
 			'WEBSITE_RUN_FROM_PACKAGE',
 			'WEBSITE_TIME_ZONE',
-			'WEBSITE_VNET_ROUTE_ALL]'
+			'WEBSITE_VNET_ROUTE_ALL'
 		];
 
 		let connectionStringSettings: (vscode.QuickPickItem)[] = [];
