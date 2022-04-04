@@ -80,4 +80,4 @@ export const enterPasswordManually = localize('enterPasswordManually', 'Enter pa
 export const userPasswordLater = localize('userPasswordLater', 'In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.');
 export const openFile = localize('openFile', "Open File");
 export const closeButton = localize('closeButton', "Close");
-export function addSqlBinding(functionName: string) { return localize('addSqlBinding', 'Adding SQL Binding to function "{0}"'), functionName; }
+export function addSqlBinding(functionName: string) { return localize('addSqlBinding', 'Adding SQL Binding to function "{0}"...'), functionName; }
