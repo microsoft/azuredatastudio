@@ -592,8 +592,6 @@ declare module 'azdata' {
 		context: { [key: string]: string | boolean | number } | string | boolean | number | undefined
 	}
 
-
-
 	export enum ColumnType {
 		icon = 3,
 		hyperlink = 4,
