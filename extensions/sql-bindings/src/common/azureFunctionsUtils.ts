@@ -393,17 +393,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 
 		let connectionStringSettings: (vscode.QuickPickItem)[] = [];
 		if (settings?.Values) {
-			connectionStringSettings = removeKnownSettings(settings.Values, knownSettings);
-		}
-
-		// remove known settings from connectionStringSettingName prompt
-		function removeKnownSettings(settings: { [key: string]: string }, knownSettings: string[]): (vscode.QuickPickItem)[] {
-			for (const setting of Object.keys(settings)) {
-				if (!knownSettings.includes(setting)) {
-					connectionStringSettings.push({ label: setting } as vscode.QuickPickItem);
-				}
-			}
-			return connectionStringSettings;
+			connectionStringSettings = Object.keys(settings.Values).filter(setting => !knownSettings.includes(setting)).map(setting => { return { label: setting }; });
 		}
 
 		connectionStringSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon });
