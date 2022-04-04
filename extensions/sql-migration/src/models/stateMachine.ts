@@ -993,7 +993,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		try {
 			if (this._azureAccount && subscription) {
 				let managedInstances = await getAvailableManagedInstanceProducts(this._azureAccount, subscription);
-				this._resourceGroups = await Promise.all(managedInstances.map(async (mi) => {
+				this._resourceGroups = managedInstances.map((mi) => {
 					return <azureResource.AzureResourceResourceGroup>{
 						id: getFullResourceGroupFromId(mi.id),
 						name: getResourceGroupFromId(mi.id),
@@ -1002,7 +1002,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						},
 						tenant: mi.tenantId,
 					};
-				}));
+				});
 
 				// remove duplicates
 				this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
@@ -1043,7 +1043,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		try {
 			if (this._azureAccount && subscription) {
 				let virtualMachines = await getAvailableSqlVMs(this._azureAccount, subscription);
-				this._resourceGroups = await Promise.all(virtualMachines.map(async (vm) => {
+				this._resourceGroups = virtualMachines.map((vm) => {
 					return <azureResource.AzureResourceResourceGroup>{
 						id: getFullResourceGroupFromId(vm.id),
 						name: getResourceGroupFromId(vm.id),
@@ -1052,7 +1052,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						},
 						tenant: vm.tenantId,
 					};
-				}));
+				});
 
 				// remove duplicates
 				this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
@@ -1093,7 +1093,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		try {
 			if (this._azureAccount && subscription) {
 				let storageAccounts = await getAvailableStorageAccounts(this._azureAccount, subscription);
-				this._resourceGroups = await Promise.all(storageAccounts.map(async (sa) => {
+				this._resourceGroups = storageAccounts.map((sa) => {
 					return <azureResource.AzureResourceResourceGroup>{
 						id: getFullResourceGroupFromId(sa.id),
 						name: getResourceGroupFromId(sa.id),
@@ -1102,7 +1102,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						},
 						tenant: sa.tenantId,
 					};
-				}));
+				});
 
 				// remove duplicates
 				this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
@@ -1143,7 +1143,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		try {
 			if (this._azureAccount && subscription) {
 				let dmsInstances = await getSqlMigrationServices(this._azureAccount, subscription);
-				this._resourceGroups = await Promise.all(dmsInstances.map(async (dms) => {
+				this._resourceGroups = dmsInstances.map((dms) => {
 					return <azureResource.AzureResourceResourceGroup>{
 						id: getFullResourceGroupFromId(dms.id),
 						name: getResourceGroupFromId(dms.id),
@@ -1151,7 +1151,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							id: dms.properties.subscriptionId
 						}
 					};
-				}));
+				});
 
 				// remove duplicates
 				this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
