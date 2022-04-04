@@ -193,7 +193,15 @@ export async function addSqlBinding(
 
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 
-	return vscodeMssqlApi.sendRequest(azureFunctionsContracts.AddSqlBindingRequest.type, params);
+	return await vscode.window.withProgress(
+		{
+			location: vscode.ProgressLocation.Notification,
+			title: constants.addSqlBinding(functionName),
+			cancellable: false
+		}, async (_progress, _token) => {
+			return vscodeMssqlApi.sendRequest(azureFunctionsContracts.AddSqlBindingRequest.type, params);
+		}
+	);
 }
 
 /**
