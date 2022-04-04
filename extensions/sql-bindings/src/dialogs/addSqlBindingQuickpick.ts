@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as uuid from 'uuid';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
@@ -11,9 +12,10 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { addSqlBinding, getAzureFunctions } from '../services/azureFunctionsService';
 
 export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined): Promise<void> {
+	let sessionId: string = uuid.v4();
 	let quickPickStep: string = '';
 	let exitReason: string = 'cancelled';
-	let propertyBag: { [key: string]: string } = {};
+	let propertyBag: { [key: string]: string } = { sessionId: sessionId };
 
 	TelemetryReporter.sendActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.startAddSqlBinding);
 	if (!uri) {
