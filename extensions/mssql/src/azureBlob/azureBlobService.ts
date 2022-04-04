@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as mssql from 'mssql';
+import type * as mssql from 'mssql';
 import { SqlOpsDataClient } from 'dataprotocol-client';
 import * as contracts from '../contracts';
 
