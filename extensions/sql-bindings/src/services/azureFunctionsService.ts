@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as uuid from 'uuid';
 import * as utils from '../common/utils';
 import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
 import * as constants from '../common/constants';
@@ -16,7 +17,8 @@ import { IConnectionInfo } from 'vscode-mssql';
 export const hostFileName: string = 'host.json';
 
 export async function createAzureFunction(connectionString: string, schema: string, table: string, connectionInfo: IConnectionInfo): Promise<void> {
-	let propertyBag: { [key: string]: string } = {};
+	let sessionId: string = uuid.v4();
+	let propertyBag: { [key: string]: string } = { sessionId: sessionId };
 	let quickPickStep: string = '';
 	let exitReason: string = 'cancelled';
 
