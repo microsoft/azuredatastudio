@@ -101,7 +101,7 @@ export abstract class ExecutionPlanPropertiesViewBase {
 	}
 
 	public setTitle(v: string): void {
-		this._titleBarTextContainer.innerHTML = v;
+		this._titleBarTextContainer.innerText = v;
 	}
 
 	public setHeader(c: HTMLElement): void {
