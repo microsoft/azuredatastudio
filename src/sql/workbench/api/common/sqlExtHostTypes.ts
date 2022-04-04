@@ -903,7 +903,8 @@ export enum ColumnType {
 	checkBox = 1,
 	button = 2,
 	icon = 3,
-	hyperlink = 4
+	hyperlink = 4,
+	contextMenu = 5
 }
 
 export enum ActionOnCellCheckboxCheck {
