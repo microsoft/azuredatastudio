@@ -1125,7 +1125,7 @@ export interface CreateSasParams {
 }
 
 export namespace CreateSasRequest {
-	export const type = new RequestType<CreateSasParams, mssql.CreateSasResponse, void, void>('blob/createsas');
+	export const type = new RequestType<CreateSasParams, mssql.CreateSasResponse, void, void>('blob/createSas');
 }
 
 // ------------------------------- < Azure Blob > ------------------------------------
