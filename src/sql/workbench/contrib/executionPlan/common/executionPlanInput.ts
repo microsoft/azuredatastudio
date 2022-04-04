@@ -15,12 +15,21 @@ export class ExecutionPlanInput extends EditorInput {
 	public static SCHEMA: string = 'executionplan';
 
 	private _content?: string;
+	public _executionPlanFileViewUUID: string;
 
 	constructor(
 		private _uri: URI,
 		@ITextFileService private readonly _fileService: ITextFileService,
 	) {
 		super();
+	}
+
+	public get executionPlanFileViewUUID(): string {
+		return this._executionPlanFileViewUUID;
+	}
+
+	public set executionPlanFileViewUUID(v: string) {
+		this._executionPlanFileViewUUID = v;
 	}
 
 	override get typeId(): string {
@@ -31,7 +40,10 @@ export class ExecutionPlanInput extends EditorInput {
 		return path.basename(this._uri.fsPath);
 	}
 
-	public get content(): string | undefined {
+	public async content(): Promise<string> {
+		if (!this._content) {
+			this._content = (await this._fileService.read(this._uri, { acceptTextOnly: true })).value;
+		}
 		return this._content;
 	}
 

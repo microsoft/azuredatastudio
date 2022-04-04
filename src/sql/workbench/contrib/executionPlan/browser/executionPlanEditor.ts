@@ -10,55 +10,74 @@ import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/common/executionPlanInput';
-import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
-import { ExecutionPlanView } from 'sql/workbench/contrib/executionPlan/browser/executionPlan';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { CancellationToken } from 'vs/base/common/cancellation';
+import { ExecutionPlanFileView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileView';
+import { generateUuid } from 'vs/base/common/uuid';
+import { ExecutionPlanFileViewCache } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileViewCache';
 
 export class ExecutionPlanEditor extends EditorPane {
 
 	public static ID: string = 'workbench.editor.executionplan';
 	public static LABEL: string = localize('executionPlanEditor', "Query Execution Plan Editor");
 
-	private view: ExecutionPlanView;
+	private _viewCache: ExecutionPlanFileViewCache = ExecutionPlanFileViewCache.getInstance();
+
+	private _parentContainer: HTMLElement;
 
 	constructor(
-		@IInstantiationService instantiationService: IInstantiationService,
+		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
 		@IStorageService storageService: IStorageService,
 	) {
 		super(ExecutionPlanEditor.ID, telemetryService, themeService, storageService);
-		this.view = this._register(instantiationService.createInstance(ExecutionPlanView));
 	}
 
 	/**
 	 * Called to create the editor in the parent element.
 	 */
 	public createEditor(parent: HTMLElement): void {
+		this._parentContainer = parent;
 		//Enable scrollbars when drawing area is larger than viewport
 		parent.style.overflow = 'auto';
-		this.view.render(parent);
 	}
 
-	/**
-	 * Updates the internal variable keeping track of the editor's size, and re-calculates the sash position.
-	 * To be called when the container of this editor changes size.
-	 */
 	public layout(dimension: DOM.Dimension): void {
-		this.view.layout(dimension);
 	}
 
-	public override async setInput(input: ExecutionPlanInput, options: IEditorOptions, context: IEditorOpenContext): Promise<void> {
-		if (this.input instanceof ExecutionPlanInput && this.input.matches(input)) {
-			return Promise.resolve(undefined);
+	public override async setInput(newInput: ExecutionPlanInput, options: IEditorOptions, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
+		const oldInput = this.input as ExecutionPlanInput;
+
+		// returning if the new input is same as old input
+		if (oldInput && newInput.matches(oldInput)) {
+			return Promise.resolve();
 		}
-		await input.resolve();
-		await super.setInput(input, options, context, CancellationToken.None);
-		this.view.loadGraphFile({
-			graphFileContent: input.content,
-			graphFileType: input.getFileExtension().replace('.', '')
-		});
+
+		super.setInput(newInput, options, context, token);
+
+		// clearing old input view if present in the editor
+		if (oldInput?._executionPlanFileViewUUID) {
+			const oldView = this._viewCache.executionPlanFileViewMap.get(oldInput._executionPlanFileViewUUID);
+			oldView.onHide(this._parentContainer);
+		}
+
+		// if new input already has a view we are just making it visible here.
+		let newView = this._viewCache.executionPlanFileViewMap.get(newInput.executionPlanFileViewUUID);
+		if (newView) {
+			newView.onShow(this._parentContainer);
+		} else {
+			// creating a new view for the new input
+			newInput._executionPlanFileViewUUID = generateUuid();
+			newView = this._register(this._instantiationService.createInstance(ExecutionPlanFileView));
+			newView.onShow(this._parentContainer);
+			newView.loadGraphFile({
+				graphFileContent: await newInput.content(),
+				graphFileType: newInput.getFileExtension().replace('.', '')
+			});
+			this._viewCache.executionPlanFileViewMap.set(newInput._executionPlanFileViewUUID, newView);
+		}
 	}
 }

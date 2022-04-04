@@ -12,7 +12,7 @@ import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connect
 import { Button } from 'sql/base/browser/ui/button/button';
 import { removeLineBreaks } from 'sql/base/common/strings';
 
-export class PlanHeader {
+export class ExecutionPlanViewHeader {
 
 	private _graphIndex: number;    // Index of the graph in the view
 	private _relativeCost: number;  // Relative cost of the graph to the script
