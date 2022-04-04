@@ -521,22 +521,21 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			this._contextMenuColumns[col.value].onClick((state) => {
 				const cellValue = state.item[col.value];
 				const actions: IAction[] = [];
-				let addSeparator = false;
-				for (const [index, command] of cellValue.commands.entries()) {
-					const isCommand = typeof command === 'string';
-					if (addSeparator || (!isCommand && index !== 0)) {
-						actions.push(new Separator());
-					}
-					if (typeof command === 'string') {
-						addSeparator = false;
-						actions.push(this.createMenuItem(command));
+				cellValue.commands.forEach((c, i) => {
+					if (typeof c === 'string') {
+						actions.push(this.createMenuItem(c));
 					} else {
-						addSeparator = true;
-						actions.push(...command.map(cmd => {
+						if (actions.length !== 0) {
+							actions.push(new Separator());
+						}
+						actions.push(...c.map(cmd => {
 							return this.createMenuItem(cmd);
 						}));
+						if (i !== cellValue.commands.length - 1) {
+							actions.push(new Separator());
+						}
 					}
-				}
+				});
 
 				this.contextMenuService.showContextMenu({
 					getAnchor: () => {

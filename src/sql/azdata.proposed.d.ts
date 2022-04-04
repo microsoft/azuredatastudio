@@ -589,7 +589,7 @@ declare module 'azdata' {
 		/**
 		 * context that will be passed to the commands.
 		 */
-		context: { [key: string]: string | boolean | number } | string | boolean | number | undefined
+		context?: { [key: string]: string | boolean | number } | string | boolean | number | undefined
 	}
 
 	export enum ColumnType {
@@ -631,7 +631,7 @@ declare module 'azdata' {
 		action: ActionOnCellCheckboxCheck;
 	}
 
-	export interface ContextMenuColumn extends IconColumnOptions, TableColumn {
+	export interface ContextMenuColumn extends TableColumn {
 	}
 
 	export interface QueryExecuteResultSetNotificationParams {

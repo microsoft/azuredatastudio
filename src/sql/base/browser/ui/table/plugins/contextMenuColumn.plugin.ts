@@ -8,6 +8,10 @@ import { localize } from 'vs/nls';
 
 export interface ContextMenuCellValue {
 	/**
+	 * The title of the hyperlink. By default, the title is 'Show Actions'
+	 */
+	title?: string;
+	/**
 	 * commands for the menu. Use an array for a group and menu separators will be added.
 	 */
 	commands: (string | string[])[];
