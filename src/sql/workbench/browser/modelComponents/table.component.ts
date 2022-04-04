@@ -546,15 +546,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 					},
 					getActions: () => actions,
 					getActionsContext: () => cellValue.context,
-					onHide: (cancel) => {
-						if (cancel) {
-							/**
-							 * If the context menu is closed by using the escape key we change
-							 * the focus back to the table. In case an option is selected, we
-							 * will let users handle the focus
-							 */
-							this.focus();
-						}
+					onHide: () => {
+						this.focus();
 					}
 				});
 			})
