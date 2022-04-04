@@ -173,3 +173,12 @@ export function getPackageInfo(): IPackageInfo {
 		aiKey: packageJson.aiKey
 	};
 }
+
+export function listTablesQuery(database: string): string {
+	return `select table_name from ${database}.INFORMATION_SCHEMA.TABLES where TABLE_TYPE = 'BASE TABLE'`;
+
+}
+
+export function listViewsQuery(database: string): string {
+	return `select table_name from ${database}.INFORMATION_SCHEMA.VIEWS`;
+}

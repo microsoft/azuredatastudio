@@ -85,3 +85,5 @@ export const objectName = localize('objectName', 'Select SQL table or view name'
 export const userObjectName = localize('userObjectName', 'Enter SQL table or view to query');
 export const selectDatabase = localize('selectDatabase', 'Select Database');
 export const selectTableOrView = localize('selectTableOrView', 'Select table or view to query');
+export const selectTable = localize('selectTable', 'Select table to use');
+export const selectView = localize('selectView', 'Select view to use');

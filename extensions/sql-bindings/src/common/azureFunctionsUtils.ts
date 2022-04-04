@@ -9,6 +9,7 @@ import * as utils from './utils';
 import * as constants from './constants';
 import { BindingType, IConnectionStringResult } from 'sql-bindings';
 import { ConnectionDetails, IConnectionInfo } from 'vscode-mssql';
+import * as azureFunctionsContracts from '../contracts/azureFunctions/azureFunctionsContracts';
 // https://github.com/microsoft/vscode-azurefunctions/blob/main/src/vscode-azurefunctions.api.d.ts
 import { AzureFunctionsExtensionApi } from '../../../types/vscode-azurefunctions.api';
 // https://github.com/microsoft/vscode-azuretools/blob/main/ui/api.d.ts
@@ -345,18 +346,51 @@ export async function promptForObjectName(bindingType: BindingType, connectionIn
 				ignoreFocusOut: true
 			}));
 
-			return selectedDatabase;
+			if (!selectedDatabase) {
+				// User cancelled
+				return;
+			}
 
-			// TO DO
-			/* let listTables = await vscodeMssqlApi.listTables(selectedDatabase);
-			const selectedTable = (await vscode.window.showQuickPick(listTables, {
+			const listOfTableOrView = [constants.selectTable, constants.selectView];
+			const selectedObjectToQuery = await vscode.window.showQuickPick(listOfTableOrView, {
 				canPickMany: false,
 				title: constants.selectTableOrView,
 				ignoreFocusOut: true
-			}));
+			});
+			if (!selectedObjectToQuery) {
+				// User cancelled
+				return;
+			}
 
-			return selectedTable;
-			*/
+			let selectedObjectName: string[] | undefined = [];
+			if (selectedObjectToQuery === constants.selectTable) {
+				// Create query to get list of tables from database selected
+				const params = { ownerUri: connectionURI, query: utils.listTablesQuery(selectedDatabase) };
+				let listTables = await vscodeMssqlApi.sendRequest(azureFunctionsContracts.QueryExecuteStringRequest.type, params);
+				console.log(listTables);
+				// selectedObjectName = await vscode.window.showQuickPick(listTables, {
+				// 	canPickMany: false,
+				// 	title: constants.selectTable,
+				// 	ignoreFocusOut: true
+				// });
+			} else {
+				// Create query to get list of tables from database selected
+				const params = { ownerUri: connectionURI, query: utils.listViewsQuery(selectedDatabase) };
+				let listViews = await vscodeMssqlApi.sendRequest(azureFunctionsContracts.QueryExecuteStringRequest.type, params);
+				console.log(listViews);
+				// selectedObjectName = await vscode.window.showQuickPick(listViews, {
+				// 	canPickMany: false,
+				// 	title: constants.selectView,
+				// 	ignoreFocusOut: true
+				// });
+			}
+
+			if (!selectedObjectName) {
+				// User cancelled
+				return;
+			}
+
+			// return selectedObjectName;
 		}
 	}
 }
