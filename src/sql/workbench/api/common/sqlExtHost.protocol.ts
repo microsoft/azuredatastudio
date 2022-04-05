@@ -952,6 +952,7 @@ export interface ExtHostNotebookShape {
 	$requestComplete(kernelId: number, content: azdata.nb.ICompleteRequest): Thenable<azdata.nb.ICompleteReplyMsg>;
 	$requestExecute(kernelId: number, content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails>;
 	$interruptKernel(kernelId: number): Thenable<void>;
+	$restartKernel(kernelId: number): Thenable<void>;
 
 	// Future APIs
 	$sendInputReply(futureId: number, content: azdata.nb.IInputReply): void;

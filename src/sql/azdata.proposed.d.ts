@@ -128,6 +128,24 @@ declare module 'azdata' {
 		 * An event that is emitted when a [notebook document](#NotebookDocument) is closed.
 		 */
 		export const onDidCloseNotebookDocument: vscode.Event<NotebookDocument>;
+
+		export interface IKernel {
+
+			/**
+			 * Restart a kernel.
+			 *
+			 * #### Notes
+			 * Uses the [Jupyter Notebook API](http://petstore.swagger.io/?url=https://raw.githubusercontent.com/jupyter/notebook/4.x/notebook/services/api/api.yaml#!/kernels).
+			 *
+			 * The promise is fulfilled on a valid response and rejected otherwise.
+			 *
+			 * It is assumed that the API call does not mutate the kernel id or name.
+			 *
+			 * The promise will be rejected if the kernel status is `Dead` or if the
+			 * request fails or the response is invalid.
+			 */
+			restart(): Thenable<void>;
+		}
 	}
 
 	/**
@@ -725,6 +743,11 @@ declare module 'azdata' {
 			 * Extension can store additional information that the provider needs to uniquely identify a table.
 			 */
 			[key: string]: any;
+			/**
+			 * Table icon type that's shown in the editor tab. Default is the basic
+			 * table icon.
+			 */
+			tableIcon?: TableIcon;
 		}
 
 		/**
@@ -739,6 +762,16 @@ declare module 'azdata' {
 			 * The initial state of the designer.
 			 */
 			viewModel: DesignerViewModel;
+		}
+
+		/**
+		 * Table icon that's shown on the editor tab
+		 */
+		export enum TableIcon {
+			Basic = 'Basic',
+			Temporal = 'Temporal',
+			GraphNode = 'GraphNode',
+			GraphEdge = 'GraphEdge'
 		}
 
 		/**
@@ -1093,6 +1126,10 @@ declare module 'azdata' {
 			 * The input validation error.
 			 */
 			inputValidationError?: string;
+			/**
+			 * Metadata related to the table
+			 */
+			metadata?: { [key: string]: string };
 		}
 
 		/**
@@ -1111,6 +1148,10 @@ declare module 'azdata' {
 			 * The new view.
 			 */
 			view: TableDesignerView;
+			/**
+			 * Metadata related to the table to be captured
+			 */
+			metadata?: { [key: string]: string };
 		}
 
 		export interface GeneratePreviewReportResult {
@@ -1126,6 +1167,10 @@ declare module 'azdata' {
 			 * The table schema validation error.
 			 */
 			schemaValidationError?: string;
+			/**
+			 * Metadata related to the table to be captured
+			 */
+			metadata?: { [key: string]: string };
 		}
 	}
 
