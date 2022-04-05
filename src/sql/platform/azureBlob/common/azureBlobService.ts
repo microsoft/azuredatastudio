@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import * as mssql from 'mssql';
+import type * as mssql from 'mssql';
 
 export const SERVICE_ID = 'azureBlobService';
 

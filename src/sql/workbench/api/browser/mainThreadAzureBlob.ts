@@ -17,7 +17,7 @@ import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobServic
 import { AzureBlobService } from 'sql/workbench/services/azureBlob/browser/azureBlobService';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAzureBlob)
-export class MainThreadBlob extends Disposable implements MainThreadAzureBlobShape {
+export class MainThreadAzureBlob extends Disposable implements MainThreadAzureBlobShape {
 	private _proxy: ExtHostAzureBlobShape;
 	public _serviceBrand: undefined;
 
