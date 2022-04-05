@@ -211,6 +211,54 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.code.dispatchKeybinding('escape');
 				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'ol li');
 			});
+
+			// Text size tests are disabled because the text size dropdown
+			// is not clickable on Unix from the smoke tests
+			// it('can change text size to Heading 1', async function () {
+			// 	const app = this.app as Application;
+			// 	await createCellAndSelectAllText(app);
+			// 	await app.workbench.sqlNotebook.textCellToolbar.changeSelectedTextSize('Heading 1');
+			// 	await app.code.dispatchKeybinding('escape');
+			// 	await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'h1');
+			// });
+
+			// it('can change text size to Heading 2', async function () {
+			// 	const app = this.app as Application;
+			// 	await createCellAndSelectAllText(app);
+			// 	await app.workbench.sqlNotebook.textCellToolbar.changeSelectedTextSize('Heading 2');
+			// 	await app.code.dispatchKeybinding('escape');
+			// 	await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'h2');
+			// });
+
+			// it('can change text size to Heading 3', async function () {
+			// 	const app = this.app as Application;
+			// 	await createCellAndSelectAllText(app);
+			// 	await app.workbench.sqlNotebook.textCellToolbar.changeSelectedTextSize('Heading 3');
+			// 	await app.code.dispatchKeybinding('escape');
+			// 	await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'h3');
+			// });
+
+			// it('can change text size to Paragraph', async function () {
+			// 	const app = this.app as Application;
+			// 	await createCellAndSelectAllText(app);
+			// 	await app.workbench.sqlNotebook.textCellToolbar.changeSelectedTextSize('Paragraph');
+			// 	await app.code.dispatchKeybinding('escape');
+			// 	await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p');
+			// });
+
+			it('can insert link', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
+				await app.workbench.sqlNotebook.waitForPlaceholderGone();
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
+
+				const sampleLabel = 'Microsoft';
+				const sampleAddress = 'https://www.microsoft.com';
+				await app.workbench.sqlNotebook.textCellToolbar.insertLink(sampleLabel, sampleAddress);
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleLabel, `p a[href="${sampleAddress}"]`);
+			});
 		});
 
 		describe('markdown', function () {
