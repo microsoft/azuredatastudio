@@ -253,12 +253,13 @@ export class TextCellToolbar {
 		await this.clickToolbarButton('Insert ordered list');
 	}
 
-	public async changeSelectedTextSize(textSize: 'Heading 1' | 'Heading 2' | 'Heading 3' | 'Paragraph'): Promise<void> {
-		const actionSelector = `${TextCellToolbar.textCellToolbar} .monaco-dropdown a.heading-dropdown`;
-		await this.code.waitAndClick(actionSelector);
-		const menuItemSelector = `.context-view.monaco-menu-container .monaco-menu .action-menu-item[title="${textSize}"]`;
-		await this.code.waitAndClick(menuItemSelector);
-	}
+	// Disabled since the text size dropdown is not clickable on Unix from smoke tests
+	// public async changeSelectedTextSize(textSize: 'Heading 1' | 'Heading 2' | 'Heading 3' | 'Paragraph'): Promise<void> {
+	// 	const actionSelector = `${TextCellToolbar.textCellToolbar} .monaco-dropdown a.heading-dropdown`;
+	// 	await this.code.waitAndClick(actionSelector);
+	// 	const menuItemSelector = `.context-view.monaco-menu-container .monaco-menu .action-menu-item[title="${textSize}"]`;
+	// 	await this.code.waitAndClick(menuItemSelector);
+	// }
 
 	private async clickToolbarButton(buttonTitle: string) {
 		const actionSelector = `${TextCellToolbar.textCellToolbar} a[title="${buttonTitle}"]`;

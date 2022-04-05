@@ -212,37 +212,39 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'ol li');
 			});
 
-			it('can change text size to Heading 1', async function () {
-				const app = this.app as Application;
-				await createCellAndSelectAllText(app);
-				await app.workbench.sqlNotebook.textCellToolbar.changeSelectedTextSize('Heading 1');
-				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'h1');
-			});
+			// Text size tests are disabled because the text size dropdown
+			// is not clickable on Unix from the smoke tests
+			// it('can change text size to Heading 1', async function () {
+			// 	const app = this.app as Application;
+			// 	await createCellAndSelectAllText(app);
+			// 	await app.workbench.sqlNotebook.textCellToolbar.changeSelectedTextSize('Heading 1');
+			// 	await app.code.dispatchKeybinding('escape');
+			// 	await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'h1');
+			// });
 
-			it('can change text size to Heading 2', async function () {
-				const app = this.app as Application;
-				await createCellAndSelectAllText(app);
-				await app.workbench.sqlNotebook.textCellToolbar.changeSelectedTextSize('Heading 2');
-				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'h2');
-			});
+			// it('can change text size to Heading 2', async function () {
+			// 	const app = this.app as Application;
+			// 	await createCellAndSelectAllText(app);
+			// 	await app.workbench.sqlNotebook.textCellToolbar.changeSelectedTextSize('Heading 2');
+			// 	await app.code.dispatchKeybinding('escape');
+			// 	await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'h2');
+			// });
 
-			it('can change text size to Heading 3', async function () {
-				const app = this.app as Application;
-				await createCellAndSelectAllText(app);
-				await app.workbench.sqlNotebook.textCellToolbar.changeSelectedTextSize('Heading 3');
-				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'h3');
-			});
+			// it('can change text size to Heading 3', async function () {
+			// 	const app = this.app as Application;
+			// 	await createCellAndSelectAllText(app);
+			// 	await app.workbench.sqlNotebook.textCellToolbar.changeSelectedTextSize('Heading 3');
+			// 	await app.code.dispatchKeybinding('escape');
+			// 	await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'h3');
+			// });
 
-			it('can change text size to Paragraph', async function () {
-				const app = this.app as Application;
-				await createCellAndSelectAllText(app);
-				await app.workbench.sqlNotebook.textCellToolbar.changeSelectedTextSize('Paragraph');
-				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p');
-			});
+			// it('can change text size to Paragraph', async function () {
+			// 	const app = this.app as Application;
+			// 	await createCellAndSelectAllText(app);
+			// 	await app.workbench.sqlNotebook.textCellToolbar.changeSelectedTextSize('Paragraph');
+			// 	await app.code.dispatchKeybinding('escape');
+			// 	await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p');
+			// });
 
 			it('can insert link', async function () {
 				const app = this.app as Application;
