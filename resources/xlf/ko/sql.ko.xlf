@@ -1,5 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="src/sql/base/browser/ui/editableDropdown/browser/dropdown" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="editableDropdown.errorValidate">
+        <source xml:lang="en">Must be an option from the list</source>
+        <target state="translated">목록에 있는 옵션이어야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="selectBox">
+        <source xml:lang="en">Select Box</source>
+        <target state="translated">Box 선택</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="loadingCompletedMessage">
@@ -126,6 +138,14 @@
         <source xml:lang="en">Sort Descending</source>
         <target state="translated">내림차순 정렬</target>
       </trans-unit>
+      <trans-unit id="tableFilter.blankStringDisplayText">
+        <source xml:lang="en">(Blanks)</source>
+        <target state="new">(Blanks)</target>
+      </trans-unit>
+      <trans-unit id="tableFilter.nullDisplayText">
+        <source xml:lang="en">(NULL)</source>
+        <target state="new">(NULL)</target>
+      </trans-unit>
       <trans-unit id="tableFilter.selectedCount">
         <source xml:lang="en">{0} Selected</source>
         <note>This tells the user how many items are selected in the list</note>
@@ -207,6 +227,10 @@
       <trans-unit id="default">
         <source xml:lang="en">Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.</source>
         <target state="translated">자동 업데이트 확인을 사용하도록 설정합니다. Azure Data Studio에서 정기적으로 업데이트를 자동 확인합니다.</target>
+      </trans-unit>
+      <trans-unit id="docNotFoundForUriError">
+        <source xml:lang="en">Could not open a notebook document for the specified URI.</source>
+        <target state="translated">지정한 URI의 Notebook 문서를 열 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="enable locally">
         <source xml:lang="en">Please reload Azure Data Studio to enable this extension locally.</source>
@@ -315,13 +339,17 @@
         <source xml:lang="en">Would you like to change Azure Data Studio's UI language to {0} and restart?</source>
         <target state="translated">Azure Data Studio의 UI 언어를 {0}(으)로 변경하고 다시 시작하시겠습니까?</target>
       </trans-unit>
+      <trans-unit id="vscodeDocCreationFailedError">
+        <source xml:lang="en">Failed to create notebook document.</source>
+        <target state="translated">Notebook 문서를 만들지 못했습니다.</target>
+      </trans-unit>
       <trans-unit id="vscodeFunctionalityNotSupportedError">
         <source xml:lang="en">This VS Code functionality is not supported in Azure Data Studio.</source>
         <target state="translated">이 VS Code 기능은 Azure Data Studio에서 지원되지 않습니다.</target>
       </trans-unit>
       <trans-unit id="vscodeInvalidArgumentsError">
-        <source xml:lang="en">Invalid arguments</source>
-        <target state="translated">잘못된 인수</target>
+        <source xml:lang="en">Invalid arguments.</source>
+        <target state="translated">잘못된 인수입니다.</target>
       </trans-unit>
       <trans-unit id="watermark.newNotebook">
         <source xml:lang="en">New Notebook</source>
@@ -338,18 +366,6 @@
       <trans-unit id="workspace.trust.emptyWindow.description">
         <source xml:lang="en">Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.</source>
         <target state="translated">빈 창이 기본적으로 Azure Data Studio 내에서 신뢰할 수 있는지 여부를 제어합니다. '#{0}#’와(과) 함께 사용하는 경우 빈 창에서 메시지를 표시하지 않고 Azure Data Studio 전체 기능을 사용하도록 설정할 수 있습니다.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/base/parts/editableDropdown/browser/dropdown" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="editableDropdown.errorValidate">
-        <source xml:lang="en">Must be an option from the list</source>
-        <target state="translated">목록에 있는 옵션이어야 합니다.</target>
-      </trans-unit>
-      <trans-unit id="selectBox">
-        <source xml:lang="en">Select Box</source>
-        <target state="translated">Box 선택</target>
       </trans-unit>
     </body>
   </file>
@@ -903,6 +919,14 @@
         <source xml:lang="en">General</source>
         <target state="translated">일반</target>
       </trans-unit>
+      <trans-unit id="designer.issueCountAlert">
+        <source xml:lang="en">{0} validation issues found.</source>
+        <target state="translated">유효성 검사 문제를 {0}개 발견했습니다.</target>
+      </trans-unit>
+      <trans-unit id="designer.issuesTabTitle">
+        <source xml:lang="en">Issues ({0})</source>
+        <target state="translated">문제({0}개)</target>
+      </trans-unit>
       <trans-unit id="designer.loadingDesigner">
         <source xml:lang="en">Loading designer...</source>
         <target state="translated">디자이너를 로드하는 중...</target>
@@ -910,6 +934,10 @@
       <trans-unit id="designer.loadingDesignerCompleted">
         <source xml:lang="en">Designer is loaded</source>
         <target state="translated">디자이너가 로드되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="designer.newRowButtonAriaLabel">
+        <source xml:lang="en">Add new row to '{0}' table</source>
+        <target state="translated">'{0}' 테이블에 새 행 추가</target>
       </trans-unit>
       <trans-unit id="designer.newRowText">
         <source xml:lang="en">Add New</source>
@@ -943,9 +971,21 @@
         <source xml:lang="en">Remove</source>
         <target state="translated">제거</target>
       </trans-unit>
+      <trans-unit id="designer.scriptTabTitle">
+        <source xml:lang="en">Scripts</source>
+        <target state="translated">스크립트</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.unknownComponentType">
         <source xml:lang="en">The component type: {0} is not supported</source>
         <target state="translated">구성 요소 형식: {0}이(가) 지원되지 않음</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/browser/designer/designerIssuesTabPanelView" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="designer.IssueListAriaLabel">
+        <source xml:lang="en">Issues</source>
+        <target state="translated">문제</target>
       </trans-unit>
     </body>
   </file>
@@ -3166,6 +3206,168 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlan" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="executionPlan.SaveFileDescription">
+        <source xml:lang="en">Execution Plan Files</source>
+        <target state="translated">실행 계획 파일</target>
+      </trans-unit>
+      <trans-unit id="executionPlanCustomZoom">
+        <source xml:lang="en">Custom Zoom</source>
+        <target state="translated">사용자 지정 확대/축소</target>
+      </trans-unit>
+      <trans-unit id="executionPlanFileLoadingComplete">
+        <source xml:lang="en">Execution plans are generated</source>
+        <target state="translated">실행 계획을 생성합니다.</target>
+      </trans-unit>
+      <trans-unit id="executionPlanFileLoadingFailed">
+        <source xml:lang="en">Failed to load execution plan</source>
+        <target state="translated">실행 계획을 로드하지 못함</target>
+      </trans-unit>
+      <trans-unit id="executionPlanFitGraphLabel">
+        <source xml:lang="en">Zoom to fit</source>
+        <target state="translated">크기에 맞게</target>
+      </trans-unit>
+      <trans-unit id="executionPlanOpenGraphFile">
+        <source xml:lang="en">Show Query Plan XML</source>
+        <target state="translated">쿼리 계획 XML 표시</target>
+      </trans-unit>
+      <trans-unit id="executionPlanPropertiesActionLabel">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">속성</target>
+      </trans-unit>
+      <trans-unit id="executionPlanSavePlanXML">
+        <source xml:lang="en">Save Plan File</source>
+        <target state="translated">계획 파일 저장</target>
+      </trans-unit>
+      <trans-unit id="executionPlanSearchNodeAction">
+        <source xml:lang="en">Find Node</source>
+        <target state="translated">노드 찾기</target>
+      </trans-unit>
+      <trans-unit id="executionPlanTitle">
+        <source xml:lang="en">Query Plan (Preview)</source>
+        <target state="translated">쿼리 계획(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="executionPlanZoomInActionLabel">
+        <source xml:lang="en">Zoom In</source>
+        <target state="translated">확대</target>
+      </trans-unit>
+      <trans-unit id="executionPlanZoomOutActionLabel">
+        <source xml:lang="en">Zoom Out</source>
+        <target state="translated">축소</target>
+      </trans-unit>
+      <trans-unit id="loadingExecutionPlanFile">
+        <source xml:lang="en">Generating execution plans</source>
+        <target state="translated">실행 계획을 생성하는 중</target>
+      </trans-unit>
+      <trans-unit id="openQueryAction">
+        <source xml:lang="en">Open Query</source>
+        <target state="translated">쿼리 열기</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="executionPlanEditor">
+        <source xml:lang="en">Query Execution Plan Editor</source>
+        <target state="translated">실행 계획 편집기 쿼리</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="executionPlanPropertiesEdgeOperationName">
+        <source xml:lang="en">Edge</source>
+        <target state="translated">Edge</target>
+      </trans-unit>
+      <trans-unit id="executionPlanPropertyViewClose">
+        <source xml:lang="en">Close</source>
+        <target state="translated">닫기</target>
+      </trans-unit>
+      <trans-unit id="executionPlanPropertyViewSortAlphabetically">
+        <source xml:lang="en">Alphabetical</source>
+        <target state="translated">사전순</target>
+      </trans-unit>
+      <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
+        <source xml:lang="en">Categorized</source>
+        <target state="translated">항목별</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameNameColumnHeader">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameValueColumnHeader">
+        <source xml:lang="en">Value</source>
+        <target state="translated">값</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewTitle">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">속성</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/planHeader" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="planHeaderIndexAndCost">
+        <source xml:lang="en">Query {0}: Query cost (relative to the script): {1}%</source>
+        <note>{0} is the index of the graph in the execution plan tab
+{1} is the relative cost in percentage of the graph to the rest of the graphs in execution plan tab </note>
+        <target state="translated">쿼리 {0}: 쿼리 비용(스크립트 기준): {1}%</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="cancelCustomZoomAction">
+        <source xml:lang="en">Close (Escape)</source>
+        <target state="translated">닫기(이스케이프)</target>
+      </trans-unit>
+      <trans-unit id="customZoomApplyButton">
+        <source xml:lang="en">Apply</source>
+        <target state="translated">적용</target>
+      </trans-unit>
+      <trans-unit id="customZoomApplyButtonTitle">
+        <source xml:lang="en">Apply Zoom (Enter)</source>
+        <target state="translated">확대/축소 적용(Enter)</target>
+      </trans-unit>
+      <trans-unit id="invalidCustomZoomError">
+        <source xml:lang="en">Select a zoom value between 1 to 200</source>
+        <target state="translated">1~200 사이의 확대/축소 값 선택</target>
+      </trans-unit>
+      <trans-unit id="qpZoomValueLabel">
+        <source xml:lang="en">Zoom (percent)</source>
+        <target state="translated">확대/축소(백분율)</target>
+      </trans-unit>
+      <trans-unit id="zoomAction">
+        <source xml:lang="en">Zoom (Enter)</source>
+        <target state="translated">확대/축소(Enter)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="cancelSearchAction">
+        <source xml:lang="en">Close (Escape)</source>
+        <target state="translated">닫기(이스케이프)</target>
+      </trans-unit>
+      <trans-unit id="executionPlanSearchTypeContains">
+        <source xml:lang="en">Contains</source>
+        <target state="translated">포함</target>
+      </trans-unit>
+      <trans-unit id="executionPlanSearchTypeEquals">
+        <source xml:lang="en">Equals</source>
+        <target state="translated">같음</target>
+      </trans-unit>
+      <trans-unit id="nextSearchItemAction">
+        <source xml:lang="en">Next Match (Enter)</source>
+        <target state="translated">다음 일치 항목(Enter)</target>
+      </trans-unit>
+      <trans-unit id="previousSearchItemAction">
+        <source xml:lang="en">Previous Match (Shift+Enter)</source>
+        <target state="translated">이전 일치 항목(Shift+Enter)</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/extensions/browser/contributionRenders" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="insight condition">
@@ -3898,9 +4100,21 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/code.component" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="cellLanguageDescription">
+        <source xml:lang="en">({0}) - Current Language</source>
+        <target state="translated">({0}) - 현재 언어</target>
+      </trans-unit>
+      <trans-unit id="cellLanguageDescriptionConfigured">
+        <source xml:lang="en">({0})</source>
+        <target state="translated">({0})</target>
+      </trans-unit>
       <trans-unit id="parametersText">
         <source xml:lang="en">Parameters</source>
         <target state="translated">매개 변수</target>
+      </trans-unit>
+      <trans-unit id="selectCellLanguage">
+        <source xml:lang="en">Select Cell Language Mode</source>
+        <target state="translated">셀 언어 모드 선택</target>
       </trans-unit>
     </body>
   </file>
@@ -4298,6 +4512,10 @@ Error: {1}</source>
         <source xml:lang="en">(Preview) Enable Notebook Views</source>
         <target state="translated">(미리 보기) 전자 필기장 보기 사용</target>
       </trans-unit>
+      <trans-unit id="restartNotebookKernel">
+        <source xml:lang="en">Restart Notebook Kernel</source>
+        <target state="translated">Notebook 커널 다시 시작</target>
+      </trans-unit>
       <trans-unit id="search.actionsPosition">
         <source xml:lang="en">Controls the positioning of the actionbar on rows in the search view.</source>
         <target state="translated">검색 보기에서 행의 작업 모음 위치를 제어합니다.</target>
@@ -4561,6 +4779,18 @@ Error: {1}</source>
       <trans-unit id="notebookEditor.name">
         <source xml:lang="en">Notebook Editor</source>
         <target state="translated">Notebook 편집기</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/notebook/browser/notebookEditor.component" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="loadingNotebookCompletedMessage">
+        <source xml:lang="en">Loading notebook {0} completed</source>
+        <target state="translated">전자 필기장 {0} 로드가 완료됨</target>
+      </trans-unit>
+      <trans-unit id="loadingNotebookMessage">
+        <source xml:lang="en">Loading notebook {0}</source>
+        <target state="translated">전자 필기장 {0} 로드하는 중</target>
       </trans-unit>
     </body>
   </file>
@@ -5730,136 +5960,6 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/queryplan2/browser/planHeader" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="planHeaderIndexAndCost">
-        <source xml:lang="en">Query {0}: Query cost (relative to the script): {1}%</source>
-        <note>{0} is the index of the graph in the execution plan tab
-{1} is the relative cost in percentage of the graph to the rest of the graphs in execution plan tab </note>
-        <target state="translated">쿼리 {0}: 쿼리 비용(스크립트 기준): {1}%</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/queryplan2/browser/queryPlan" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="openQueryAction">
-        <source xml:lang="en">Open Query</source>
-        <target state="translated">쿼리 열기</target>
-      </trans-unit>
-      <trans-unit id="queryPlanCustomZoom">
-        <source xml:lang="en">Custom Zoom</source>
-        <target state="translated">사용자 지정 확대/축소</target>
-      </trans-unit>
-      <trans-unit id="queryPlanFitGraphLabel">
-        <source xml:lang="en">Zoom to fit</source>
-        <target state="translated">크기에 맞게</target>
-      </trans-unit>
-      <trans-unit id="queryPlanOpenGraphFile">
-        <source xml:lang="en">Open Plan File</source>
-        <target state="new">Open Plan File</target>
-      </trans-unit>
-      <trans-unit id="queryPlanPropertiesActionLabel">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">속성</target>
-      </trans-unit>
-      <trans-unit id="queryPlanSavePlanXML">
-        <source xml:lang="en">Save Plan File</source>
-        <target state="new">Save Plan File</target>
-      </trans-unit>
-      <trans-unit id="queryPlanSearchNodeAction">
-        <source xml:lang="en">SearchNode</source>
-        <target state="translated">SearchNode</target>
-      </trans-unit>
-      <trans-unit id="queryPlanTitle">
-        <source xml:lang="en">Query Plan (Preview)</source>
-        <target state="new">Query Plan (Preview)</target>
-      </trans-unit>
-      <trans-unit id="queryPlanZoomInActionLabel">
-        <source xml:lang="en">Zoom In</source>
-        <target state="translated">확대</target>
-      </trans-unit>
-      <trans-unit id="queryPlanZoomOutActionLabel">
-        <source xml:lang="en">Zoom Out</source>
-        <target state="translated">축소</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="nodePropertyViewNameNameColumnHeader">
-        <source xml:lang="en">Name</source>
-        <target state="new">Name</target>
-      </trans-unit>
-      <trans-unit id="nodePropertyViewNameValueColumnHeader">
-        <source xml:lang="en">Value</source>
-        <target state="new">Value</target>
-      </trans-unit>
-      <trans-unit id="nodePropertyViewTitle">
-        <source xml:lang="en">Properties</source>
-        <target state="new">Properties</target>
-      </trans-unit>
-      <trans-unit id="executionPlanPropertiesEdgeOperationName">
-        <source xml:lang="en">Edge</source>
-        <target state="new">Edge</target>
-      </trans-unit>
-      <trans-unit id="executionPlanPropertyViewClose">
-        <source xml:lang="en">Close</source>
-        <target state="new">Close</target>
-      </trans-unit>
-      <trans-unit id="executionPlanPropertyViewSortAlphabetically">
-        <source xml:lang="en">Alphabetical</source>
-        <target state="new">Alphabetical</target>
-      </trans-unit>
-      <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
-        <source xml:lang="en">Categorized</source>
-        <target state="new">Categorized</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="cancelCustomZoomAction">
-        <source xml:lang="en">Close (Escape)</source>
-        <target state="new">Close (Escape)</target>
-      </trans-unit>
-      <trans-unit id="invalidCustomZoomError">
-        <source xml:lang="en">Select a zoom value between 1 to 200</source>
-        <target state="new">Select a zoom value between 1 to 200</target>
-      </trans-unit>
-      <trans-unit id="qpZoomValueLabel">
-        <source xml:lang="en">Zoom (percent)</source>
-        <target state="new">Zoom (percent)</target>
-      </trans-unit>
-      <trans-unit id="zoomAction">
-        <source xml:lang="en">Zoom (Enter)</source>
-        <target state="new">Zoom (Enter)</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="cancelSearchAction">
-        <source xml:lang="en">Close (Escape)</source>
-        <target state="new">Close (Escape)</target>
-      </trans-unit>
-      <trans-unit id="nextSearchItemAction">
-        <source xml:lang="en">Next Match (Enter)</source>
-        <target state="new">Next Match (Enter)</target>
-      </trans-unit>
-      <trans-unit id="previousSearchItemAction">
-        <source xml:lang="en">Previous Match (Shift+Enter)</source>
-        <target state="new">Previous Match (Shift+Enter)</target>
-      </trans-unit>
-      <trans-unit id="executionPlanSearchTypeContains">
-        <source xml:lang="en">Contains</source>
-        <target state="new">Contains</target>
-      </trans-unit>
-      <trans-unit id="executionPlanSearchTypeEquals">
-        <source xml:lang="en">Equals</source>
-        <target state="new">Equals</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="deployment.title">
@@ -6580,6 +6680,10 @@ Error: {1}</source>
         <source xml:lang="en">You didn't select any authentication provider. Please try again.</source>
         <target state="translated">인증 공급자를 선택하지 않았습니다. 다시 시도하세요.</target>
       </trans-unit>
+      <trans-unit id="accountDialog.loadingProviderLabel">
+        <source xml:lang="en">Loading accounts...</source>
+        <target state="translated">계정 로드 중...</target>
+      </trans-unit>
       <trans-unit id="accountDialog.noAccountLabel">
         <source xml:lang="en">There is no linked account. Please add an account.</source>
         <target state="translated">연결된 계정이 없습니다. 계정을 추가하세요.</target>
@@ -7082,6 +7186,22 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/executionPlan/common/executionPlanService" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="noHandlerRegistered">
+        <source xml:lang="en">No valid execution plan handler is registered</source>
+        <target state="translated">유효한 실행 계획 처리기가 등록되지 않았습니다.</target>
+      </trans-unit>
+      <trans-unit id="providerIdNotValidError">
+        <source xml:lang="en">Valid provider is required in order to interact with ExecutionPlanService</source>
+        <target state="translated">ExecutionPlanService와 상호 작용하려면 유효한 공급자가 필요합니다.</target>
+      </trans-unit>
+      <trans-unit id="selectExecutionPlanProvider">
+        <source xml:lang="en">Select a provider to open execution plan</source>
+        <target state="translated">실행 계획을 열 공급자 선택</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/fileBrowser/browser/fileBrowserDialog" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="fileBrowser.discard">
@@ -7208,7 +7328,7 @@ Error: {1}</source>
       <trans-unit id="insightsDidNotFindResolvedFile">
         <source xml:lang="en">Could not find query file at any of the following paths :
  {0}</source>
-        <target state="translated">다음 경로에서 쿼리 파일을 찾을 수 없습니다.
+        <target state="translated">다음 경로에서 쿼리 파일을 찾을 수 없습니다. 
  {0}</target>
       </trans-unit>
     </body>
@@ -7368,8 +7488,16 @@ Error: {1}</source>
         <target state="translated">Notebook 세션을 시작하는 동안 오류가 발생했습니다.</target>
       </trans-unit>
       <trans-unit id="kernelRequiresConnection">
-        <source xml:lang="en">Kernel {0} was not found. The default kernel will be used instead.</source>
-        <target state="translated">{0} 커널을 찾을 수 없습니다. 대신 기본 커널이 사용됩니다.</target>
+        <source xml:lang="en">Kernel '{0}' was not found. The default kernel will be used instead.</source>
+        <target state="translated">‘{0}’ 커널을 찾을 수 없습니다. 기본 커널을 대신 사용합니다.</target>
+      </trans-unit>
+      <trans-unit id="kernelRestartFailed">
+        <source xml:lang="en">Kernel restart failed: {0}</source>
+        <target state="translated">커널 다시 시작 실패: {0}</target>
+      </trans-unit>
+      <trans-unit id="kernelRestartedSuccessfully">
+        <source xml:lang="en">Kernel restarted successfully</source>
+        <target state="translated">커널을 다시 시작했습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -7433,6 +7561,10 @@ Error: {1}</source>
         <source xml:lang="en">Waiting for Execute Provider availability timed out for notebook provider '{0}'</source>
         <target state="translated">전자 필기장 공급자자 '{0}'에 대한 실행 공급자 가용성 대기 시간이 초과되었습니다.</target>
       </trans-unit>
+      <trans-unit id="failedToCreateNotebookInput">
+        <source xml:lang="en">Failed to create notebook input for provider '{0}'</source>
+        <target state="translated">'{0}' 공급자에 대한 Notebook 입력을 만들지 못했습니다.</target>
+      </trans-unit>
       <trans-unit id="notebookServiceNoProvider">
         <source xml:lang="en">Notebook provider does not exist</source>
         <target state="translated">Notebook 공급자가 없습니다.</target>
@@ -7469,6 +7601,10 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/services/notebook/browser/sql/sqlSessionManager" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="SqlKernelRestartNotSupported">
+        <source xml:lang="en">SQL kernel restart not supported</source>
+        <target state="translated">SQL 커널 다시 시작이 지원되지 않음</target>
+      </trans-unit>
       <trans-unit id="connectionRequired">
         <source xml:lang="en">A connection must be chosen to run notebook cells</source>
         <target state="translated">Notebook 셀을 실행하려면 연결을 선택해야 합니다.</target>
@@ -8213,9 +8349,17 @@ Error: {1}</source>
         <source xml:lang="en">The schema that contains the table.</source>
         <target state="translated">테이블을 포함하는 스키마입니다.</target>
       </trans-unit>
+      <trans-unit id="designer.table.primaryKeyColumns.description">
+        <source xml:lang="en">Columns in the primary key.</source>
+        <target state="translated">기본 키의 열입니다.</target>
+      </trans-unit>
+      <trans-unit id="designer.table.primaryKeyName.description">
+        <source xml:lang="en">Name of the primary key.</source>
+        <target state="translated">기본 키의 이름입니다.</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.ErrorDialogTitle">
         <source xml:lang="en">Table Designer Error</source>
-        <target state="new">Table Designer Error</target>
+        <target state="translated">테이블 디자이너 오류</target>
       </trans-unit>
       <trans-unit id="tableDesigner.ForeignKeyTypeName">
         <source xml:lang="en">Foreign Key</source>
@@ -8228,6 +8372,42 @@ Error: {1}</source>
       <trans-unit id="tableDesigner.IndexTypeName">
         <source xml:lang="en">Index</source>
         <target state="translated">인덱스</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.PrimaryKeyTabTitle">
+        <source xml:lang="en">Primary Key</source>
+        <target state="translated">기본 키</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.TableSchemaValidationError">
+        <source xml:lang="en">Table schema validation failed with error: {0}</source>
+        <target state="translated">테이블 스키마 유효성을 검사하지 못했습니다(오류: {0}).</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.addForeignKey">
+        <source xml:lang="en">New Foreign Key</source>
+        <target state="translated">새 외래 키</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.addNewCheckConstraint">
+        <source xml:lang="en">New Check Constraint</source>
+        <target state="translated">새 CHECK 제약 조건</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.addNewColumn">
+        <source xml:lang="en">New Column</source>
+        <target state="translated">새 열</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.addNewColumnMapping">
+        <source xml:lang="en">New Column Mapping</source>
+        <target state="translated">새 열 매핑</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.addNewColumnToIndex">
+        <source xml:lang="en">Add Column</source>
+        <target state="translated">열 추가</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.addNewColumnToPrimaryKey">
+        <source xml:lang="en">Add Column</source>
+        <target state="translated">열 추가</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.addNewIndex">
+        <source xml:lang="en">New Index</source>
+        <target state="translated">새 인덱스</target>
       </trans-unit>
       <trans-unit id="tableDesigner.checkConstraintExpressionTitle">
         <source xml:lang="en">Expression</source>
@@ -8365,9 +8545,21 @@ Error: {1}</source>
         <source xml:lang="en">Indexes</source>
         <target state="translated">인덱스</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.inputValidationError">
+        <source xml:lang="en">The input validation failed with error: {0}</source>
+        <target state="translated">입력 유효성을 검사하지 못했습니다(오류: {0}).</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.nameTitle">
         <source xml:lang="en">Table name</source>
         <target state="translated">테이블 이름</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.primaryKeyColumnsTitle">
+        <source xml:lang="en">Primary Key Columns</source>
+        <target state="translated">기본 키 열</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.primaryKeyNameTitle">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
       </trans-unit>
       <trans-unit id="tableDesigner.publishChangeError">
         <source xml:lang="en">An error occured while publishing changes: {0}</source>

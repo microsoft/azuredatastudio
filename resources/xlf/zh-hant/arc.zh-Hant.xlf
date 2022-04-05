@@ -373,6 +373,10 @@
         <source xml:lang="en">Error connecting to controller. {0}</source>
         <target state="translated">連線至控制器時發生錯誤。{0}</target>
       </trans-unit>
+      <trans-unit id="arc.errorListingLogAnalyticsWorkspaces">
+        <source xml:lang="en">Error listing Log Analytics workspaces {0}</source>
+        <target state="translated">列出 Log Analytics 工作區 {0} 時發生錯誤</target>
+      </trans-unit>
       <trans-unit id="arc.errorVerifyingPassword">
         <source xml:lang="en">Error encountered while verifying password. {0}</source>
         <target state="translated">驗證密碼時發生錯誤。{0}</target>
@@ -1393,6 +1397,18 @@
         <source xml:lang="en">Location</source>
         <target state="translated">位置</target>
       </trans-unit>
+      <trans-unit id="arc.data.controller.log.analytics.primary.key">
+        <source xml:lang="en">Log Analytics primary key</source>
+        <target state="translated">記錄分析主要金鑰</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.log.analytics.workspace.id">
+        <source xml:lang="en">Log Analytics workspace ID</source>
+        <target state="translated">Log Analytics 工作區識別碼</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.log.analytics.workspace.names">
+        <source xml:lang="en">Log Analytics workspace</source>
+        <target state="translated">Log Analytics 工作區</target>
+      </trans-unit>
       <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.confirm.password">
         <source xml:lang="en">Confirm password</source>
         <target state="translated">確認密碼</target>
@@ -1803,7 +1819,7 @@
       </trans-unit>
       <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.description">
         <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>
-        <target state="new">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</target>
+        <target state="translated">從 Azure SQL 受控執行個體 - Azure Arc (包括一般用途和商務關鍵性) 可用的最新 V 核心服務層級中選取。</target>
       </trans-unit>
       <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.text">
         <source xml:lang="en">Learn more</source>
@@ -1843,11 +1859,11 @@
       </trans-unit>
       <trans-unit id="arc.sql.high.availability">
         <source xml:lang="en">High availability</source>
-        <target state="new">High availability</target>
+        <target state="translated">高可用性</target>
       </trans-unit>
       <trans-unit id="arc.sql.high.availability.description">
         <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</source>
-        <target state="new">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</target>
+        <target state="translated">為求高可用性啟用其他複本。下方選取的計算與儲存體組態將會套用至所有複本。</target>
       </trans-unit>
       <trans-unit id="arc.sql.instance.name">
         <source xml:lang="en">Instance name</source>
@@ -1887,7 +1903,7 @@
       </trans-unit>
       <trans-unit id="arc.sql.one.replica">
         <source xml:lang="en">1 replica</source>
-        <target state="new">1 replica</target>
+        <target state="translated">1 個複本</target>
       </trans-unit>
       <trans-unit id="arc.sql.pitr.description">
         <source xml:lang="en">Point in time restore</source>
@@ -1907,15 +1923,15 @@
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.business.critical">
         <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
-        <target state="new">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</target>
+        <target state="translated">[預覽] 商務關鍵性 (無限虛擬核心及 RAM，進階高可用性)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.description">
         <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>
-        <target state="new">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</target>
+        <target state="translated">從 Azure SQL 受控執行個體 - Azure Arc (包括一般用途和商務關鍵性) 可用的最新 V 核心服務層級中選取。</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.general.purpose">
         <source xml:lang="en">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</source>
-        <target state="new">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</target>
+        <target state="translated">一般用途 (最高 24 個虛擬核心及 128 Gi RAM，標準高可用性)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.label">
         <source xml:lang="en">Service Tier</source>
@@ -1947,11 +1963,11 @@
       </trans-unit>
       <trans-unit id="arc.sql.three.replicas">
         <source xml:lang="en">3 replicas</source>
-        <target state="new">3 replicas</target>
+        <target state="translated">3 個複本</target>
       </trans-unit>
       <trans-unit id="arc.sql.two.replicas">
         <source xml:lang="en">2 replicas</source>
-        <target state="new">2 replicas</target>
+        <target state="translated">2 個複本</target>
       </trans-unit>
       <trans-unit id="arc.sql.username">
         <source xml:lang="en">Username</source>
