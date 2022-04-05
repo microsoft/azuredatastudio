@@ -577,9 +577,25 @@ declare module 'azdata' {
 		url?: string;
 	}
 
+	export interface ContextMenuColumnCellValue {
+		/**
+		 * The title of the hyperlink. By default, the title is 'Show Actions'
+		 */
+		title?: string;
+		/**
+		 * commands for the menu. Use an array for a group and menu separators will be added.
+		 */
+		commands: (string | string[])[];
+		/**
+		 * context that will be passed to the commands.
+		 */
+		context?: { [key: string]: string | boolean | number } | string | boolean | number | undefined
+	}
+
 	export enum ColumnType {
 		icon = 3,
-		hyperlink = 4
+		hyperlink = 4,
+		contextMenu = 5
 	}
 
 	export interface TableColumn {
@@ -613,6 +629,9 @@ declare module 'azdata' {
 
 	export interface CheckboxColumn extends TableColumn {
 		action: ActionOnCellCheckboxCheck;
+	}
+
+	export interface ContextMenuColumn extends TableColumn {
 	}
 
 	export interface QueryExecuteResultSetNotificationParams {
