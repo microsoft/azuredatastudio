@@ -83,7 +83,6 @@ export async function createAzureFunction(connectionString: string, schema: stri
 	if (projectFile) {
 		// because of an AF extension API issue, we have to get the newly created file by adding a watcher
 		// issue: https://github.com/microsoft/vscode-azurefunctions/issues/2908
-		const newFunctionFileObject = azureFunctionsUtils.waitForNewFunctionFile(projectFile);
 		let functionName: string;
 
 		try {
@@ -138,9 +137,6 @@ export async function createAzureFunction(connectionString: string, schema: stri
 				folderPath: projectFile
 			});
 
-			// check for the new function file to be created and dispose of the file system watcher
-			const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
-			await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
 			propertyBag.quickPickStep = quickPickStep;
 			exitReason = 'finishCreate';
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.finishCreateAzureFunctionWithSqlBinding)
@@ -159,7 +155,6 @@ export async function createAzureFunction(connectionString: string, schema: stri
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
 				.withConnectionInfo(connectionInfo)
 				.withAdditionalProperties(propertyBag).send();
-			newFunctionFileObject.watcherDisposable.dispose();
 		}
 		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFile);
 	} else {
