@@ -695,9 +695,10 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 					if (account && account.properties.tenants.length > 1) {
 						let tenant = account.properties.tenants.find(tenant => tenant.id === tenantId);
-						if (tenant) {
-							this._azureTenantDropdown.selectWithOptionName(tenant.displayName);
+						if (!tenant) {
+							tenant = account.properties.tenants.find(tenant => tenant.displayName === this._azureTenantDropdown.values[0]);
 						}
+						this._azureTenantDropdown.selectWithOptionName(tenant.displayName);
 						this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
 					}
 				}).catch(err => this._logService.error(`Unexpected error populating initial Azure Account options : ${err}`));
