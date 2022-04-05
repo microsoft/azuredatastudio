@@ -17,14 +17,17 @@ import { MigrationModePage } from './migrationModePage';
 import { DatabaseSelectorPage } from './databaseSelectorPage';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
 import * as styles from '../constants/styles';
+import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
+import { azureResource } from 'azureResource';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
 	private _wizardObject!: azdata.window.Wizard;
-	private _model!: MigrationStateModel;
 	private _disposables: vscode.Disposable[] = [];
-	constructor(private readonly extensionContext: vscode.ExtensionContext, model: MigrationStateModel) {
-		this._model = model;
+	constructor(
+		private readonly extensionContext: vscode.ExtensionContext,
+		private readonly _model: MigrationStateModel,
+		private readonly _onClosedCallback: () => void) {
 	}
 
 	public async openWizard(connectionId: string): Promise<void> {
@@ -111,6 +114,8 @@ export class WizardController {
 
 		this._model.extensionContext.subscriptions.push(this._wizardObject.doneButton.onClick(async (e) => {
 			await stateModel.startMigration();
+			await this.updateServiceContext(stateModel);
+			this._onClosedCallback();
 		}));
 		this._disposables.push(saveAndCloseButton.onClick(async () => {
 			await stateModel.saveInfo(serverName, this._wizardObject.currentPage);
@@ -144,6 +149,26 @@ export class WizardController {
 					'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 				}, {});
 		}));
+	}
+
+	private async updateServiceContext(stateModel: MigrationStateModel): Promise<void> {
+		await MigrationLocalStorage.saveMigrationServiceContext(
+			await azdata.connection.getCurrentConnection(),
+			<MigrationServiceContext>{
+				azureAccount: stateModel._azureAccount,
+				tenant: stateModel._azureTenant,
+				subscription: this._getSubscriptionById(
+					stateModel._subscriptions,
+					stateModel._sqlMigrationService?.properties.subscriptionId),
+				location: stateModel._sqlMigrationService?.location,
+				resourceGroup: stateModel._sqlMigrationService?.properties.resourceGroup,
+				migrationService: stateModel._sqlMigrationService,
+			});
+	}
+
+	private _getSubscriptionById(subscriptions: azureResource.AzureResourceSubscription[], id?: string) {
+		const subscription = subscriptions.find(sub => sub.id === id);
+		return subscription;
 	}
 
 	private async sendPageButtonClickEvent(pageChangeInfo: azdata.window.WizardPageChangeInfo) {

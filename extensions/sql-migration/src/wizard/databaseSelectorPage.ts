@@ -8,43 +8,16 @@ import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
-import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { debounce } from '../api/utils';
 import * as styles from '../constants/styles';
-import { selectDatabasesFromList } from '../constants/helper';
-
-const styleLeft: azdata.CssStyles = {
-	'border': 'none',
-	'text-align': 'left',
-	'white-space': 'nowrap',
-	'text-overflow': 'ellipsis',
-	'overflow': 'hidden',
-	'box-shadow': '0px -1px 0px 0px rgba(243, 242, 241, 1) inset'
-};
-
-const styleCheckBox: azdata.CssStyles = {
-	'border': 'none',
-	'text-align': 'left',
-	'white-space': 'nowrap',
-	'text-overflow': 'ellipsis',
-	'overflow': 'hidden',
-};
-
-const styleRight: azdata.CssStyles = {
-	'border': 'none',
-	'text-align': 'right',
-	'white-space': 'nowrap',
-	'text-overflow': 'ellipsis',
-	'overflow': 'hidden',
-	'box-shadow': '0px -1px 0px 0px rgba(243, 242, 241, 1) inset'
-};
+import { IconPathHelper } from '../constants/iconPathHelper';
 
 export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
-	private _databaseSelectorTable!: azdata.DeclarativeTableComponent;
+	private _databaseSelectorTable!: azdata.TableComponent;
 	private _dbNames!: string[];
 	private _dbCount!: azdata.TextComponent;
-	private _databaseTableValues!: azdata.DeclarativeTableCellValue[][];
+	private _databaseTableValues!: any[];
 	private _disposables: vscode.Disposable[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
@@ -115,7 +88,6 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
 	}
 
-
 	private createSearchComponent(): azdata.DivContainer {
 		let resourceSearchBox = this._view.modelBuilder.inputBox().withProps({
 			stopEnterPropagation: true,
@@ -137,74 +109,36 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	}
 
 	@debounce(500)
-	private _filterTableList(value: string): void {
+	private async _filterTableList(value: string, selectedList?: string[]): Promise<void> {
+		const selectedRows: number[] = [];
+		const selectedDatabases = selectedList || this.selectedDbs();
+		let tableRows = this._databaseTableValues;
 		if (this._databaseTableValues && value?.length > 0) {
-			const filter: number[] = [];
-			this._databaseTableValues.forEach((row, index) => {
-				// undo when bug #16445 is fixed
-				// const flexContainer: azdata.FlexContainer = row[1]?.value as azdata.FlexContainer;
-				// const textComponent: azdata.TextComponent = flexContainer?.items[1] as azdata.TextComponent;
-				// const cellText = textComponent?.value?.toLowerCase();
-				const text = row[1]?.value as string;
-				const cellText = text?.toLowerCase();
-				const searchText: string = value?.toLowerCase();
-				if (cellText?.includes(searchText)) {
-					filter.push(index);
-				}
-			});
-
-			this._databaseSelectorTable.setFilter(filter);
-		} else {
-			this._databaseSelectorTable.setFilter(undefined);
+			tableRows = this._databaseTableValues
+				.filter(row => {
+					const searchText = value?.toLowerCase();
+					return row[2]?.toLowerCase()?.indexOf(searchText) > -1	// database name
+						|| row[3]?.toLowerCase()?.indexOf(searchText) > -1	// state
+						|| row[4]?.toLowerCase()?.indexOf(searchText) > -1  // size
+						|| row[5]?.toLowerCase()?.indexOf(searchText) > -1;	// last backup date
+				});
 		}
+
+		for (let row = 0; row < tableRows.length; row++) {
+			const database: string = tableRows[row][2];
+			if (selectedDatabases.includes(database)) {
+				selectedRows.push(row);
+			}
+		}
+
+		await this._databaseSelectorTable.updateProperty('data', tableRows);
+		this._databaseSelectorTable.selectedRows = selectedRows;
+		await this.updateValuesOnSelection();
 	}
 
 
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
-		const providerId = (await this.migrationStateModel.getSourceConnectionProfile()).providerId;
-		const metaDataService = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(providerId, azdata.DataProviderType.MetadataProvider);
-		const ownerUri = await azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId);
-		const results = <azdata.DatabaseInfo[]>await metaDataService.getDatabases(ownerUri);
-		const excludeDbs: string[] = [
-			'master',
-			'tempdb',
-			'msdb',
-			'model'
-		];
-		this._dbNames = [];
-		let finalResult = results.filter((db) => !excludeDbs.includes(db.options.name));
-		finalResult.sort((a, b) => a.options.name.localeCompare(b.options.name));
-		this._databaseTableValues = [];
-		for (let index in finalResult) {
-			let selectable = true;
-			if (constants.OFFLINE_CAPS.includes(finalResult[index].options.state)) {
-				selectable = false;
-			}
-			this._databaseTableValues.push([
-				{
-					value: false,
-					style: styleCheckBox,
-					enabled: selectable
-				},
-				{
-					value: this.createIconTextCell(IconPathHelper.sqlDatabaseLogo, finalResult[index].options.name),
-					style: styleLeft
-				},
-				{
-					value: `${finalResult[index].options.state}`,
-					style: styleLeft
-				},
-				{
-					value: `${finalResult[index].options.sizeInMB}`,
-					style: styleRight
-				},
-				{
-					value: `${finalResult[index].options.lastBackup}`,
-					style: styleLeft
-				}
-			]);
-			this._dbNames.push(finalResult[index].options.name);
-		}
+		await this._loadDatabaseList(this.migrationStateModel, this.migrationStateModel._assessedDatabaseList);
 
 		const text = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_FOR_ASSESSMENT_DESCRIPTION,
@@ -214,70 +148,84 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		}).component();
 
 		this._dbCount = this._view.modelBuilder.text().withProps({
-			value: constants.DATABASES_SELECTED(this.selectedDbs.length, this._databaseTableValues.length),
+			value: constants.DATABASES_SELECTED(
+				this.selectedDbs().length,
+				this._databaseTableValues.length),
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin-top': '8px'
 			}
 		}).component();
 
-		this._databaseSelectorTable = this._view.modelBuilder.declarativeTable().withProps(
-			{
-				enableRowSelection: true,
-				width: '100%',
-				CSSStyles: {
-					'border': 'none'
-				},
+		const cssClass = 'no-borders';
+
+		this._databaseSelectorTable = this._view.modelBuilder.table()
+			.withProps({
+				data: [],
+				width: 650,
+				height: '100%',
+				forceFitColumns: azdata.ColumnSizingMode.ForceFit,
 				columns: [
+					<azdata.CheckboxColumn>{
+						value: '',
+						width: 10,
+						type: azdata.ColumnType.checkBox,
+						action: azdata.ActionOnCellCheckboxCheck.selectRow,
+						resizable: false,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
 					{
-						displayName: '',
-						valueType: azdata.DeclarativeDataType.boolean,
+						value: 'databaseicon',
+						name: '',
 						width: 20,
-						isReadOnly: false,
-						showCheckAll: true,
-						headerCssStyles: styleCheckBox
+						type: azdata.ColumnType.icon,
+						headerCssClass: cssClass,
+						cssClass: cssClass,
+						resizable: false,
 					},
 					{
-						displayName: constants.DATABASE,
-						// undo when bug #16445 is fixed
-						// valueType: azdata.DeclarativeDataType.component,
-						valueType: azdata.DeclarativeDataType.string,
-						width: '100%',
-						isReadOnly: true,
-						headerCssStyles: styleLeft
+						name: constants.DATABASE,
+						value: 'database',
+						type: azdata.ColumnType.text,
+						width: 360,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
 					},
 					{
-						displayName: constants.STATUS,
-						valueType: azdata.DeclarativeDataType.string,
-						width: 100,
-						isReadOnly: true,
-						headerCssStyles: styleLeft
+						name: constants.STATUS,
+						value: 'status',
+						type: azdata.ColumnType.text,
+						width: 80,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
 					},
 					{
-						displayName: constants.SIZE,
-						valueType: azdata.DeclarativeDataType.string,
-						width: 125,
-						isReadOnly: true,
-						headerCssStyles: styleRight
+						name: constants.SIZE,
+						value: 'size',
+						type: azdata.ColumnType.text,
+						width: 80,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
 					},
 					{
-						displayName: constants.LAST_BACKUP,
-						valueType: azdata.DeclarativeDataType.string,
-						width: 150,
-						isReadOnly: true,
-						headerCssStyles: styleLeft
-					}
+						name: constants.LAST_BACKUP,
+						value: 'lastBackup',
+						type: azdata.ColumnType.text,
+						width: 130,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
 				]
-			}
-		).component();
+			}).component();
 
-		this._databaseTableValues = selectDatabasesFromList(this.migrationStateModel._databasesForAssessment, this._databaseTableValues);
-		await this._databaseSelectorTable.setDataValues(this._databaseTableValues);
-		await this.updateValuesOnSelection();
-
-		this._disposables.push(this._databaseSelectorTable.onDataChanged(async () => {
+		this._disposables.push(this._databaseSelectorTable.onRowSelected(async (e) => {
 			await this.updateValuesOnSelection();
 		}));
+
+		// load unfiltered table list and pre-select list of databases saved in state
+		await this._filterTableList('', this.migrationStateModel._databasesForAssessment);
+
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			height: '100%',
@@ -293,65 +241,60 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		return flex;
 	}
 
+	private async _loadDatabaseList(stateMachine: MigrationStateModel, selectedDatabases: string[]): Promise<void> {
+		const providerId = (await stateMachine.getSourceConnectionProfile()).providerId;
+		const metaDataService = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(
+			providerId,
+			azdata.DataProviderType.MetadataProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(
+			stateMachine.sourceConnectionId);
+		const excludeDbs: string[] = [
+			'master',
+			'tempdb',
+			'msdb',
+			'model'
+		];
+		const databaseList = (<azdata.DatabaseInfo[]>await metaDataService
+			.getDatabases(ownerUri))
+			.filter(database => !excludeDbs.includes(database.options.name))
+			|| [];
+
+		databaseList.sort((a, b) => a.options.name.localeCompare(b.options.name));
+		this._dbNames = [];
+
+		this._databaseTableValues = databaseList.map(database => {
+			const databaseName = database.options.name;
+			this._dbNames.push(databaseName);
+			return [
+				selectedDatabases?.indexOf(databaseName) > -1,
+				<azdata.IconColumnCellValue>{
+					icon: IconPathHelper.sqlDatabaseLogo,
+					title: databaseName,
+				},
+				databaseName,
+				database.options.state,
+				database.options.sizeInMB,
+				database.options.lastBackup,
+			];
+		}) || [];
+	}
+
 	public selectedDbs(): string[] {
-		let result: string[] = [];
-		this._databaseSelectorTable?.dataValues?.forEach((arr, index) => {
-			if (arr[0].value === true) {
-				result.push(this._dbNames[index]);
-			}
-		});
-		return result;
+		const rows = this._databaseSelectorTable?.data || [];
+		const databases = this._databaseSelectorTable?.selectedRows || [];
+		return databases
+			.filter(row => row < rows.length)
+			.map(row => rows[row][2])
+			|| [];
 	}
 
 	private async updateValuesOnSelection() {
+		const selectedDatabases = this.selectedDbs() || [];
 		await this._dbCount.updateProperties({
-			'value': constants.DATABASES_SELECTED(this.selectedDbs().length, this._databaseTableValues.length)
+			'value': constants.DATABASES_SELECTED(
+				selectedDatabases.length,
+				this._databaseSelectorTable.data?.length || 0)
 		});
-		this.migrationStateModel._databasesForAssessment = this.selectedDbs();
+		this.migrationStateModel._databasesForAssessment = selectedDatabases;
 	}
-
-	// undo when bug #16445 is fixed
-	private createIconTextCell(icon: IconPath, text: string): string {
-		return text;
-	}
-	// private createIconTextCell(icon: IconPath, text: string): azdata.FlexContainer {
-	// 	const cellContainer = this._view.modelBuilder.flexContainer().withProps({
-	// 		CSSStyles: {
-	// 			'justify-content': 'left'
-	// 		}
-	// 	}).component();
-
-	// 	const iconComponent = this._view.modelBuilder.image().withProps({
-	// 		iconPath: icon,
-	// 		iconWidth: '16px',
-	// 		iconHeight: '16px',
-	// 		width: '20px',
-	// 		height: '20px'
-	// 	}).component();
-	// 	cellContainer.addItem(iconComponent, {
-	// 		flex: '0',
-	// 		CSSStyles: {
-	// 			'width': '32px'
-	// 		}
-	// 	});
-
-	// 	const textComponent = this._view.modelBuilder.text().withProps({
-	// 		value: text,
-	// 		title: text,
-	// 		CSSStyles: {
-	// 			'margin': '0px',
-	// 			'width': '110px'
-	// 		}
-	// 	}).component();
-
-	// 	cellContainer.addItem(textComponent, {
-	// 		CSSStyles: {
-	// 			'width': 'auto'
-	// 		}
-	// 	});
-
-	// 	return cellContainer;
-	// }
-	// undo when bug #16445 is fixed
-
 }

@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { BackupFileInfoStatus, MigrationContext, MigrationStatus } from '../../models/migrationLocalStorage';
+import { BackupFileInfoStatus, MigrationServiceContext, MigrationStatus } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialogModel } from './migrationCutoverDialogModel';
 import * as loc from '../../constants/strings';
 import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, getMigrationStatusImage, SupportedAutoRefreshIntervals, clearDialogMessage, displayDialogErrorMessage } from '../../api/utils';
@@ -15,17 +15,16 @@ import { ConfirmCutoverDialog } from './confirmCutoverDialog';
 import { logError, TelemetryViews } from '../../telemtery';
 import { RetryMigrationDialog } from '../retryMigration/retryMigrationDialog';
 import * as styles from '../../constants/styles';
-import { canRetryMigration } from '../../constants/helper';
+import { canRetryMigration, getMigrationStatus, isBlobMigration, isOfflineMigation } from '../../constants/helper';
+import { DatabaseMigration, getResourceName } from '../../api/azure';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 30000;
 const statusImageSize: number = 14;
 
 export class MigrationCutoverDialog {
-	private _context: vscode.ExtensionContext;
 	private _dialogObject!: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
 	private _model: MigrationCutoverDialogModel;
-	private _migration: MigrationContext;
 
 	private _databaseTitleName!: azdata.TextComponent;
 	private _cutoverButton!: azdata.ButtonComponent;
@@ -60,10 +59,13 @@ export class MigrationCutoverDialog {
 
 	readonly _infoFieldWidth: string = '250px';
 
-	constructor(context: vscode.ExtensionContext, migration: MigrationContext) {
-		this._context = context;
-		this._migration = migration;
-		this._model = new MigrationCutoverDialogModel(migration);
+	constructor(
+		private readonly _context: vscode.ExtensionContext,
+		private readonly _serviceContext: MigrationServiceContext,
+		private readonly _migration: DatabaseMigration,
+		private readonly _onClosedCallback: () => void) {
+
+		this._model = new MigrationCutoverDialogModel(_serviceContext, _migration);
 		this._dialogObject = azdata.window.createModelViewDialog('', 'MigrationCutoverDialog', 'wide');
 	}
 
@@ -262,7 +264,7 @@ export class MigrationCutoverDialog {
 				...styles.PAGE_TITLE_CSS
 			},
 			width: 950,
-			value: this._model._migration.migrationContext.properties.sourceDatabaseName
+			value: this._model._migration.properties.sourceDatabaseName
 		}).component();
 
 		const databaseSubTitle = this._view.modelBuilder.text().withProps({
@@ -314,7 +316,7 @@ export class MigrationCutoverDialog {
 			enabled: false,
 			CSSStyles: {
 				...styles.BODY_CSS,
-				'display': this._isOnlineMigration() ? 'block' : 'none'
+				'display': isOfflineMigation(this._model._migration) ? 'none' : 'block'
 			}
 		}).component();
 
@@ -329,9 +331,7 @@ export class MigrationCutoverDialog {
 			}
 		}));
 
-		headerActions.addItem(this._cutoverButton, {
-			flex: '0'
-		});
+		headerActions.addItem(this._cutoverButton, { flex: '0' });
 
 		this._cancelButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.cancel,
@@ -377,7 +377,11 @@ export class MigrationCutoverDialog {
 		this._disposables.push(this._retryButton.onDidClick(
 			async (e) => {
 				await this.refreshStatus();
-				let retryMigrationDialog = new RetryMigrationDialog(this._context, this._migration);
+				let retryMigrationDialog = new RetryMigrationDialog(
+					this._context,
+					this._serviceContext,
+					this._migration,
+					this._onClosedCallback);
 				await retryMigrationDialog.openDialog();
 			}
 		));
@@ -443,11 +447,11 @@ export class MigrationCutoverDialog {
 			}
 		}).component();
 
-		this._newSupportRequest.onDidClick(async (e) => {
-			const serviceId = this._model._migration.controller.id;
+		this._disposables.push(this._newSupportRequest.onDidClick(async (e) => {
+			const serviceId = this._model._migration.properties.migrationService;
 			const supportUrl = `https://portal.azure.com/#resource${serviceId}/supportrequest`;
 			await vscode.env.openExternal(vscode.Uri.parse(supportUrl));
-		});
+		}));
 
 		headerActions.addItem(this._newSupportRequest, {
 			flex: '0',
@@ -519,12 +523,12 @@ export class MigrationCutoverDialog {
 		addInfoFieldToContainer(this._targetServerInfoField, flexTarget);
 		addInfoFieldToContainer(this._targetVersionInfoField, flexTarget);
 
-		const isBlobMigration = this._model.isBlobMigration();
+		const _isBlobMigration = isBlobMigration(this._model._migration);
 		const flexStatus = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
 		}).component();
 		this._migrationStatusInfoField = await this.createInfoField(loc.MIGRATION_STATUS, '', false, ' ');
-		this._fullBackupFileOnInfoField = await this.createInfoField(loc.FULL_BACKUP_FILES, '', isBlobMigration);
+		this._fullBackupFileOnInfoField = await this.createInfoField(loc.FULL_BACKUP_FILES, '', _isBlobMigration);
 		this._backupLocationInfoField = await this.createInfoField(loc.BACKUP_LOCATION, '');
 		addInfoFieldToContainer(this._migrationStatusInfoField, flexStatus);
 		addInfoFieldToContainer(this._fullBackupFileOnInfoField, flexStatus);
@@ -533,10 +537,10 @@ export class MigrationCutoverDialog {
 		const flexFile = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
 		}).component();
-		this._lastLSNInfoField = await this.createInfoField(loc.LAST_APPLIED_LSN, '', isBlobMigration);
+		this._lastLSNInfoField = await this.createInfoField(loc.LAST_APPLIED_LSN, '', _isBlobMigration);
 		this._lastAppliedBackupInfoField = await this.createInfoField(loc.LAST_APPLIED_BACKUP_FILES, '');
-		this._lastAppliedBackupTakenOnInfoField = await this.createInfoField(loc.LAST_APPLIED_BACKUP_FILES_TAKEN_ON, '', isBlobMigration);
-		this._currentRestoringFileInfoField = await this.createInfoField(loc.CURRENTLY_RESTORING_FILE, '', !isBlobMigration);
+		this._lastAppliedBackupTakenOnInfoField = await this.createInfoField(loc.LAST_APPLIED_BACKUP_FILES_TAKEN_ON, '', _isBlobMigration);
+		this._currentRestoringFileInfoField = await this.createInfoField(loc.CURRENTLY_RESTORING_FILE, '', !_isBlobMigration);
 		addInfoFieldToContainer(this._lastLSNInfoField, flexFile);
 		addInfoFieldToContainer(this._lastAppliedBackupInfoField, flexFile);
 		addInfoFieldToContainer(this._lastAppliedBackupTakenOnInfoField, flexFile);
@@ -568,7 +572,7 @@ export class MigrationCutoverDialog {
 			|| status === MigrationStatus.Completing
 			|| status === MigrationStatus.Canceling;
 
-		if (shouldRefresh(this.getMigrationStatus())) {
+		if (shouldRefresh(this._getMigrationStatus())) {
 			const classVariable = this;
 			clearInterval(this._autoRefreshHandle);
 			if (interval !== -1) {
@@ -578,16 +582,7 @@ export class MigrationCutoverDialog {
 	}
 
 	private getMigrationDetails(): string {
-		if (this._model.migrationOpStatus) {
-			return (JSON.stringify(
-				{
-					'async-operation-details': this._model.migrationOpStatus,
-					'details': this._model.migrationStatus
-				}
-				, undefined, 2));
-		} else {
-			return (JSON.stringify(this._model.migrationStatus, undefined, 2));
-		}
+		return JSON.stringify(this._model.migrationStatus, undefined, 2);
 	}
 
 	private async refreshStatus(): Promise<void> {
@@ -598,18 +593,13 @@ export class MigrationCutoverDialog {
 		try {
 			clearDialogMessage(this._dialogObject);
 
-			if (this._isOnlineMigration()) {
-				await this._cutoverButton.updateCssStyles({
-					'display': 'block'
-				});
-			}
+			await this._cutoverButton.updateCssStyles(
+				{ 'display': isOfflineMigation(this._model._migration) ? 'none' : 'block' });
 
 			this.isRefreshing = true;
 			this._refreshLoader.loading = true;
 			await this._model.fetchStatus();
 			const errors = [];
-			errors.push(this._model.migrationOpStatus.error?.message);
-			errors.push(this._model._migration.asyncOperationResult?.error?.message);
 			errors.push(this._model.migrationStatus.properties.provisioningError);
 			errors.push(this._model.migrationStatus.properties.migrationFailureError?.message);
 			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
@@ -626,12 +616,12 @@ export class MigrationCutoverDialog {
 				description: this.getMigrationDetails()
 			};
 			const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
-			const sqlServerName = this._model._migration.sourceConnectionProfile.serverName;
-			const sourceDatabaseName = this._model._migration.migrationContext.properties.sourceDatabaseName;
+			const sqlServerName = this._model._migration.properties.sourceServerName;
+			const sourceDatabaseName = this._model._migration.properties.sourceDatabaseName;
 			const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
 			const sqlServerVersion = versionName ? versionName : sqlServerInfo.serverVersion;
-			const targetDatabaseName = this._model._migration.migrationContext.name;
-			const targetServerName = this._model._migration.targetManagedInstance.name;
+			const targetDatabaseName = this._model._migration.name;
+			const targetServerName = getResourceName(this._model._migration.id);
 			let targetServerVersion;
 			if (this._model.migrationStatus.id.includes('managedInstances')) {
 				targetServerVersion = loc.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
@@ -677,21 +667,23 @@ export class MigrationCutoverDialog {
 			this._targetServerInfoField.text.value = targetServerName;
 			this._targetVersionInfoField.text.value = targetServerVersion;
 
-			const migrationStatusTextValue = this.getMigrationStatus();
+			const migrationStatusTextValue = this._getMigrationStatus();
 			this._migrationStatusInfoField.text.value = migrationStatusTextValue ?? '-';
 			this._migrationStatusInfoField.icon!.iconPath = getMigrationStatusImage(migrationStatusTextValue);
 
 			this._fullBackupFileOnInfoField.text.value = this._model.migrationStatus?.properties?.migrationStatusDetails?.fullBackupSetInfo?.listOfBackupFiles[0]?.fileName! ?? '-';
 
 			let backupLocation;
-			const isBlobMigration = this._model.isBlobMigration();
+			const _isBlobMigration = isBlobMigration(this._model._migration);
 			// Displaying storage accounts and blob container for azure blob backups.
-			if (isBlobMigration) {
-				const storageAccountResourceId = this._model._migration.migrationContext.properties.backupConfiguration?.sourceLocation?.azureBlob?.storageAccountResourceId;
-				const blobContainerName = this._model._migration.migrationContext.properties.backupConfiguration?.sourceLocation?.azureBlob?.blobContainerName;
-				backupLocation = `${storageAccountResourceId?.split('/').pop()} - ${blobContainerName}`;
+			if (_isBlobMigration) {
+				const storageAccountResourceId = this._model._migration.properties.backupConfiguration?.sourceLocation?.azureBlob?.storageAccountResourceId;
+				const blobContainerName = this._model._migration.properties.backupConfiguration?.sourceLocation?.azureBlob?.blobContainerName;
+				backupLocation = storageAccountResourceId && blobContainerName
+					? `${storageAccountResourceId?.split('/').pop()} - ${blobContainerName}`
+					: undefined;
 			} else {
-				const fileShare = this._model._migration.migrationContext.properties.backupConfiguration?.sourceLocation?.fileShare;
+				const fileShare = this._model._migration.properties.backupConfiguration?.sourceLocation?.fileShare;
 				backupLocation = fileShare?.path! ?? '-';
 			}
 			this._backupLocationInfoField.text.value = backupLocation ?? '-';
@@ -700,7 +692,7 @@ export class MigrationCutoverDialog {
 			this._lastAppliedBackupInfoField.text.value = this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename ?? '-';
 			this._lastAppliedBackupTakenOnInfoField.text.value = lastAppliedBackupFileTakenOn! ? convertIsoTimeToLocalTime(lastAppliedBackupFileTakenOn).toLocaleString() : '-';
 
-			if (isBlobMigration) {
+			if (_isBlobMigration) {
 				if (!this._model.migrationStatus.properties.migrationStatusDetails?.currentRestoringFilename) {
 					this._currentRestoringFileInfoField.text.value = '-';
 				} else if (this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename === this._model.migrationStatus.properties.migrationStatusDetails?.currentRestoringFilename) {
@@ -752,7 +744,7 @@ export class MigrationCutoverDialog {
 
 			this._cutoverButton.enabled = false;
 			if (migrationStatusTextValue === MigrationStatus.InProgress) {
-				if (isBlobMigration) {
+				if (_isBlobMigration) {
 					if (this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename) {
 						this._cutoverButton.enabled = true;
 					}
@@ -856,21 +848,14 @@ export class MigrationCutoverDialog {
 		};
 	}
 
-	private _isOnlineMigration(): boolean {
-		return this._model._migration.migrationContext.properties.offlineConfiguration?.offline?.valueOf() ? false : true;
-	}
-
 	private _shouldDisplayBackupFileTable(): boolean {
-		return !this._model.isBlobMigration();
+		return !isBlobMigration(this._model._migration);
 	}
 
-	private getMigrationStatus(): string {
-		if (this._model.migrationStatus) {
-			return this._model.migrationStatus.properties.migrationStatus
-				?? this._model.migrationStatus.properties.provisioningState;
-		}
-		return this._model._migration.migrationContext.properties.migrationStatus
-			?? this._model._migration.migrationContext.properties.provisioningState;
+	private _getMigrationStatus(): string {
+		return this._model.migrationStatus
+			? getMigrationStatus(this._model.migrationStatus)
+			: getMigrationStatus(this._model._migration);
 	}
 }
 
