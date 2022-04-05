@@ -81,3 +81,5 @@ export const userPasswordLater = localize('userPasswordLater', 'In order to user
 export const openFile = localize('openFile', "Open File");
 export const closeButton = localize('closeButton', "Close");
 export function addSqlBinding(functionName: string) { return localize('addSqlBinding', 'Adding SQL Binding to function "{0}"...'), functionName; }
+export const selectDatabase = localize('selectDatabase', 'Select Database');
+
