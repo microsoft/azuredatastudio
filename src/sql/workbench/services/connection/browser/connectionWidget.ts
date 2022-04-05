@@ -686,8 +686,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			}
 
 			if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
-				let tenantId = connectionInfo.azureTenantId;
 				this.fillInAzureAccountOptions().then(async () => {
+					let tenantId = connectionInfo.azureTenantId;
 					let accountName = (this.authType === AuthenticationType.AzureMFA)
 						? connectionInfo.azureAccount : connectionInfo.userName;
 					this._azureAccountDropdown.selectWithOptionName(this.getModelValue(accountName));
@@ -695,10 +695,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 					if (account && account.properties.tenants.length > 1) {
 						let tenant = account.properties.tenants.find(tenant => tenant.id === tenantId);
-						if (!tenant) {
-							tenant = account.properties.tenants.find(tenant => tenant.displayName === this._azureTenantDropdown.values[0]);
+						if (tenant) {
+							this._azureTenantDropdown.selectWithOptionName(tenant.displayName);
 						}
-						this._azureTenantDropdown.selectWithOptionName(tenant.displayName);
 						this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
 					}
 				}).catch(err => this._logService.error(`Unexpected error populating initial Azure Account options : ${err}`));
