@@ -3491,14 +3491,14 @@
 					},
 					"versions": [
 						{
-							"version": "18.0.5",
-							"lastUpdated": "2/15/2022",
+							"version": "18.0.11",
+							"lastUpdated": "4/5/2022",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/WakaTime/vsextensions/vscode-wakatime/18.0.5/vspackage"
+									"source": "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/WakaTime/vsextensions/vscode-wakatime/18.0.11/vspackage"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3524,7 +3524,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.52.0"
+									"value": ">=1.59.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
