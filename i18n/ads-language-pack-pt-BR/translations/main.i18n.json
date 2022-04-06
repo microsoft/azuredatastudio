@@ -9956,8 +9956,8 @@
 			"table.selectAll": "Selecionar tudo",
 			"table.sortAscending": "Classificação Crescente",
 			"table.sortDescending": "Classificação Decrescente",
-			"tableFilter.blankStringDisplayText": "(Blanks)",
-			"tableFilter.nullDisplayText": "(NULL)",
+			"tableFilter.blankStringDisplayText": "(Em branco)",
+			"tableFilter.nullDisplayText": "(NULO)",
 			"tableFilter.selectedCount": "{0} selecionado(s)",
 			"tableFilter.visibleCount": "{0} resultados"
 		},
@@ -12364,6 +12364,9 @@
 			"noHandlerRegistered": "Nenhum manipulador de plano de execução válido está registrado",
 			"providerIdNotValidError": "O provedor válido é necessário para interagir com ExecutionPlanService",
 			"selectExecutionPlanProvider": "Selecionar um provedor para abrir o plano de execução"
+		},
+		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
+			"table.showActions": "Show Actions"
 		}
 	}
 }

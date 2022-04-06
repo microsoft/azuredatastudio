@@ -9956,7 +9956,7 @@
 			"table.selectAll": "全選",
 			"table.sortAscending": "遞增排序",
 			"table.sortDescending": "遞減排序",
-			"tableFilter.blankStringDisplayText": "(Blanks)",
+			"tableFilter.blankStringDisplayText": "(空白)",
 			"tableFilter.nullDisplayText": "(NULL)",
 			"tableFilter.selectedCount": "已選取 {0} 個",
 			"tableFilter.visibleCount": "{0} 個結果"
@@ -12364,6 +12364,9 @@
 			"noHandlerRegistered": "未登錄有效的執行計畫處理常式",
 			"providerIdNotValidError": "需要有效的提供者才能與 ExecutionPlanService 互動",
 			"selectExecutionPlanProvider": "選取要開啟執行計畫的提供者"
+		},
+		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
+			"table.showActions": "Show Actions"
 		}
 	}
 }

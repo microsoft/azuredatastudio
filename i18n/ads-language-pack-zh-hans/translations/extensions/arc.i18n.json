@@ -536,7 +536,7 @@
 			"resource.type.arc.postgres.display.name": "PostgreSQL 超大规模服务器组 - Azure Arc",
 			"resource.type.arc.sql.description": "客户管理的环境中面向应用开发人员的托管 SQL 实例服务",
 			"resource.type.arc.sql.display.name": "Azure SQL 托管实例 - Azure Arc",
-			"resource.type.azure.arc.description": "创建 Azure Arc 数据控制器",
+			"resource.type.azure.arc.description": "Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.",
 			"resource.type.azure.arc.display.name": "Azure Arc 数据控制器",
 			"should.be.integer": "值必须为整数",
 			"worker.node.count.should.not.be.one": "不支持值为 1。"

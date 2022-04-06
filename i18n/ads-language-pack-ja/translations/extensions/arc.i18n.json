@@ -536,7 +536,7 @@
 			"resource.type.arc.postgres.display.name": "PostgreSQL Hyperscale サーバー グループ - Azure Arc",
 			"resource.type.arc.sql.description": "ユーザーが管理する環境内のアプリ開発者向けのマネージド SQL インスタンス サービス",
 			"resource.type.arc.sql.display.name": "Azure SQL Managed Instance - Azure Arc",
-			"resource.type.azure.arc.description": "Azure Arc データ コントローラーの作成",
+			"resource.type.azure.arc.description": "Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.",
 			"resource.type.azure.arc.display.name": "Azure Arc データ コントローラー",
 			"should.be.integer": "値は整数でなければなりません",
 			"worker.node.count.should.not.be.one": "1 の値はサポートされていません。"
