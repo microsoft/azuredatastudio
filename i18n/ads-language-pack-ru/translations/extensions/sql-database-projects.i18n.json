@@ -295,7 +295,7 @@
 			"updateProjectForRoundTrip": "Для сборки проекта \"{0}\" необходимо обновить целевые объекты, ссылки и ссылки на системную базу данных. Если проект был создан в SSDT, он продолжит работать в обоих инструментах. Вы хотите обновить проект?",
 			"updateProjectFromDatabaseDialogName": "Обновить проект из базы данных",
 			"updateText": "Обновить",
-			"updatedToSdkStyleError": "Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.",
+			"updatedToSdkStyleError": "Не удалось преобразовать проект {0} в стиль SDK. Выполнен откат в .sqlproj",
 			"updatingProjectFromDatabase": "Идет обновление {0} из {1}...",
 			"userSelectionCancelled": "Пользователь отменил выбор способа выполнения автоматического восстановления.",
 			"userSelectionInstallGlobally": "Пользователь выбрал глобальное автоматическое восстановление. Идет установка сейчас...",

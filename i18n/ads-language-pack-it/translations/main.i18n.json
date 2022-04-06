@@ -9956,7 +9956,7 @@
 			"table.selectAll": "Seleziona tutto",
 			"table.sortAscending": "Ordinamento crescente",
 			"table.sortDescending": "Ordinamento decrescente",
-			"tableFilter.blankStringDisplayText": "(Blanks)",
+			"tableFilter.blankStringDisplayText": "(Vuoti)",
 			"tableFilter.nullDisplayText": "(NULL)",
 			"tableFilter.selectedCount": "{0} selezionati",
 			"tableFilter.visibleCount": "{0} risultati"
@@ -12364,6 +12364,9 @@
 			"noHandlerRegistered": "Nessun gestore di piani di esecuzione valido registrato",
 			"providerIdNotValidError": "Per interagire con ExecutionPlanService è necessario un provider valido",
 			"selectExecutionPlanProvider": "Selezionare un provider per aprire il piano di esecuzione"
+		},
+		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
+			"table.showActions": "Show Actions"
 		}
 	}
 }

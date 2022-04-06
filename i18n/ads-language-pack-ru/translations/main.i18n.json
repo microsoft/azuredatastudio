@@ -9956,8 +9956,8 @@
 			"table.selectAll": "Выбрать все",
 			"table.sortAscending": "Сортировка по возрастанию",
 			"table.sortDescending": "Сортировка по убыванию",
-			"tableFilter.blankStringDisplayText": "(Blanks)",
-			"tableFilter.nullDisplayText": "(NULL)",
+			"tableFilter.blankStringDisplayText": "(Пустые)",
+			"tableFilter.nullDisplayText": "NULL",
 			"tableFilter.selectedCount": "Выбрано: {0}",
 			"tableFilter.visibleCount": "Результатов: {0}"
 		},
@@ -12364,6 +12364,9 @@
 			"noHandlerRegistered": "Допустимый обработчик планов выполнения не зарегистрирован",
 			"providerIdNotValidError": "Для взаимодействия с ExecutionPlanService требуется допустимый поставщик",
 			"selectExecutionPlanProvider": "Выберите поставщика, чтобы открыть план выполнения"
+		},
+		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
+			"table.showActions": "Show Actions"
 		}
 	}
 }

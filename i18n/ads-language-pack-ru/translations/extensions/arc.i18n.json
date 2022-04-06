@@ -536,7 +536,7 @@
 			"resource.type.arc.postgres.display.name": "Группа серверов гипермасштабирования PostgreSQL — Azure Arc",
 			"resource.type.arc.sql.description": "Управляемая служба экземпляра SQL для разработчиков приложений в управляемой клиентом среде",
 			"resource.type.arc.sql.display.name": "Управляемый экземпляр SQL Azure — Azure Arc",
-			"resource.type.azure.arc.description": "Создание контроллера данных Azure Arc",
+			"resource.type.azure.arc.description": "Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.",
 			"resource.type.azure.arc.display.name": "Контроллер данных Azure Arc",
 			"should.be.integer": "Значение должно быть целым числом",
 			"worker.node.count.should.not.be.one": "Значение 1 не поддерживается."
