@@ -917,6 +917,7 @@ declare module 'mssql' {
 		 * @param blobStorageKey The key used to access the storage account
 		 * @param storageAccountName The name of the storage account the SAS will be created for
 		 * @param expirationDate The expiration date of the SAS
+		 * @returns A created shared access signature token
 		 */
 		createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Promise<CreateSasResponse>;
 	}

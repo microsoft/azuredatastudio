@@ -5,19 +5,19 @@
 
 import * as mssql from 'mssql';
 import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
-import { MainThreadBlob } from 'sql/workbench/api/browser/mainThreadAzureBlob';
+import { MainThreadAzureBlob } from 'sql/workbench/api/browser/mainThreadAzureBlob';
 
 export class AzureBlobService implements IAzureBlobService {
 
 	public _serviceBrand: undefined;
-	private _proxy: MainThreadBlob;
+	private _proxy: MainThreadAzureBlob;
 
 	/**
 	 * Internal use only, do not call! This is called once on startup by the proxy object used
 	 * to communicate with the extension host once it's been created.
 	 * @param proxy The proxy to use to communicate with the mssql extension
 	 */
-	public registerProxy(proxy: MainThreadBlob) {
+	public registerProxy(proxy: MainThreadAzureBlob) {
 		this._proxy = proxy;
 	}
 
