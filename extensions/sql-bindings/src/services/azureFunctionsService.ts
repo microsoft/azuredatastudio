@@ -60,18 +60,26 @@ export async function createAzureFunction(connectionString: string, schema: stri
 				// issue: https://github.com/microsoft/vscode-azurefunctions/issues/3052
 				newHostProjectFile = await azureFunctionsUtils.waitForNewHostFile();
 				await azureFunctionApi.createFunction({});
-				const timeoutForHostFile = utils.timeoutPromise(constants.timeoutProjectError);
+				const timeoutForHostFile = utils.timeoutPromise('');
 				hostFile = await Promise.race([newHostProjectFile.filePromise, timeoutForHostFile]);
 				if (hostFile) {
 					// start the add sql binding flow
 					projectFile = await azureFunctionsUtils.getAzureFunctionProject();
 				}
 			} catch (error) {
-				void vscode.window.showErrorMessage(utils.formatString(constants.errorNewAzureFunction, error.message ?? error));
 				let errorType = utils.getErrorType(error);
+				if (errorType === 'TimeoutError') {
+					// timeout error will only happen if the user cancels the wizard
+					console.log('User cancelled out of the create Azure Function with SQL Binding wizard');
+				} else {
+					// else an error would occur during the createFunction
+					exitReason = 'error';
+					void vscode.window.showErrorMessage(utils.formatString(constants.errorNewAzureFunction, error.message ?? error));
+				}
 				TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.helpCreateAzureFunctionProject, undefined, errorType).send();
 				return;
 			} finally {
+				propertyBag.exitReason = exitReason;
 				TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
 					.withConnectionInfo(connectionInfo)
 					.withAdditionalProperties(propertyBag).send();
