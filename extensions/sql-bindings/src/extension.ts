@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
+import * as constants from './common/constants';
 import { ITreeNodeInfo } from 'vscode-mssql';
 import { IExtension, BindingType } from 'sql-bindings';
 import { getAzdataApi, getVscodeMssqlApi } from './common/utils';
@@ -17,7 +18,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	context.subscriptions.push(vscode.commands.registerCommand('sqlBindings.addSqlBinding', async (uri: vscode.Uri | undefined) => { return launchAddSqlBindingQuickpick(uri); }));
 	// Generate Azure Function command
 	context.subscriptions.push(vscode.commands.registerCommand('sqlBindings.createAzureFunction', async (node: ITreeNodeInfo) => {
-		let connectionInfo = node.connectionInfo;
+		if (!node) {
+			let openServerPane = await vscode.window.showErrorMessage(constants.chooseAConnection,
+				constants.openPane, constants.learnMore);
+			if (openServerPane === constants.openPane) {
+				// open SQL Server connections pane
+				await vscode.commands.executeCommand('objectExplorer.focus');
+			} else if (openServerPane === constants.learnMore) {
+				void vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(constants.sqlBindingsDoc));
+			}
+			return;
+		}
+
+		let connectionInfo = node?.connectionInfo;
 		// set the database containing the selected table so it can be used
 		// for the initial catalog property of the connection string
 		let newNode: ITreeNodeInfo = node;

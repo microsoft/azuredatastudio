@@ -32,6 +32,8 @@ export const timeoutProjectError = localize('timeoutProjectError', 'Timed out wa
 export const errorNewAzureFunction = localize('errorNewAzureFunction', 'Error creating new Azure Function: {0}');
 export const azureFunctionsExtensionNotInstalled = localize('azureFunctionsExtensionNotInstalled', 'Azure Functions extension must be installed in order to use this feature.');
 export const azureFunctionsProjectMustBeOpened = localize('azureFunctionsProjectMustBeOpened', 'A C# Azure Functions project must be present in order to create a new Azure Function for this table.');
+export const chooseAConnection = localize('chooseAConnection', 'A SQL Server table must be selected to use this feature.');
+export const openPane = localize('openPane', 'SQL Server Connections');
 
 // Insert SQL binding
 export const hostFileName = 'host.json';
