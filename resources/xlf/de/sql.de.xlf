@@ -100,6 +100,14 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/base/browser/ui/table/plugins/contextMenuColumn.plugin" source-language="en" datatype="plaintext" target-language="de">
+    <body>
+      <trans-unit id="table.showActions">
+        <source xml:lang="en">Show Actions</source>
+        <target state="new">Show Actions</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/base/browser/ui/table/plugins/headerFilter.plugin" source-language="en" datatype="plaintext" target-language="de">
     <body>
       <trans-unit id="headerFilter.cancel">
@@ -140,7 +148,7 @@
       </trans-unit>
       <trans-unit id="tableFilter.blankStringDisplayText">
         <source xml:lang="en">(Blanks)</source>
-        <target state="new">(Blanks)</target>
+        <target state="translated">(Leer)</target>
       </trans-unit>
       <trans-unit id="tableFilter.nullDisplayText">
         <source xml:lang="en">(NULL)</source>
