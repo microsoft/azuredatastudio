@@ -40,8 +40,7 @@
       {
         "command": "sqlBindings.createAzureFunction",
         "title": "%sqlBindings.createAzureFunction%",
-        "category": "MS SQL",
-        "when": "view == objectExplorer && viewItem == Table && !azdataAvailable"
+        "category": "MS SQL"
       }
     ],
     "menus": {
@@ -49,12 +48,17 @@
         {
           "command": "sqlBindings.addSqlBinding",
           "when": "editorLangId == csharp && !azdataAvailable && resourceScheme != untitled"
+        },
+        {
+          "command": "sqlBindings.createAzureFunction",
+          "when": "view == objectExplorer && viewItem == Table && !azdataAvailable",
+          "group": "zAzure_Function@1"
         }
       ],
       "view/item/context": [
         {
           "command": "sqlBindings.createAzureFunction",
-          "when": "view == objectExplorer && viewItem == Table",
+          "when": "view == objectExplorer && viewItem == Table && !azdataAvailable",
           "group": "zAzure_Function@1"
         }
       ]
