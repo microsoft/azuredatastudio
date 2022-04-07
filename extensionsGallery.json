@@ -3358,7 +3358,8 @@
 							]
 						}
 					],
-					"statistics": []
+					"statistics": [],
+					"flags": ""
 				},
 				{
 					"extensionId": "69",
@@ -4305,7 +4306,8 @@
 							]
 						}
 					],
-					"statistics": []
+					"statistics": [],
+					"flags": ""
 				},
 				{
 					"extensionId": "85",
