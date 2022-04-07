@@ -104,7 +104,7 @@
     <body>
       <trans-unit id="table.showActions">
         <source xml:lang="en">Show Actions</source>
-        <target state="new">Show Actions</target>
+        <target state="translated">アクションの表示</target>
       </trans-unit>
     </body>
   </file>
@@ -152,7 +152,7 @@
       </trans-unit>
       <trans-unit id="tableFilter.nullDisplayText">
         <source xml:lang="en">(NULL)</source>
-        <target state="new">(NULL)</target>
+        <target state="translated">(NULL)</target>
       </trans-unit>
       <trans-unit id="tableFilter.selectedCount">
         <source xml:lang="en">{0} Selected</source>
