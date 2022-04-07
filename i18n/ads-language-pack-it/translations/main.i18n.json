@@ -12366,7 +12366,7 @@
 			"selectExecutionPlanProvider": "Selezionare un provider per aprire il piano di esecuzione"
 		},
 		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
-			"table.showActions": "Show Actions"
+			"table.showActions": "Mostra azioni"
 		}
 	}
 }

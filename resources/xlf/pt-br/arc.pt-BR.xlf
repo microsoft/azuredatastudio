@@ -2117,7 +2117,7 @@
       </trans-unit>
       <trans-unit id="resource.type.azure.arc.description">
         <source xml:lang="en">Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.</source>
-        <target state="new">Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.</target>
+        <target state="translated">Cria um controlador de dados do Azure Arc. Certifique-se de executado o logon no az antes de iniciar este assistente.</target>
       </trans-unit>
       <trans-unit id="resource.type.azure.arc.display.name">
         <source xml:lang="en">Azure Arc data controller</source>

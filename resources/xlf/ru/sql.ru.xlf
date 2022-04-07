@@ -104,7 +104,7 @@
     <body>
       <trans-unit id="table.showActions">
         <source xml:lang="en">Show Actions</source>
-        <target state="new">Show Actions</target>
+        <target state="translated">Показать действия</target>
       </trans-unit>
     </body>
   </file>
