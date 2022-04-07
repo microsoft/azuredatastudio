@@ -73,7 +73,7 @@ export async function createAzureFunction(connectionString: string, schema: stri
 				if (errorType === 'TimeoutError') {
 					// this error can be cause by many different scenarios including timeout or error occurred during createFunction
 					exitReason = 'timeout';
-					console.log('Error creating azure function project');
+					console.log('Timed out waiting for Azure Function project to be created. This may not necessarily be an error, for example if the user canceled out of the create flow.');
 				} else {
 					// else an error would occur during the createFunction
 					exitReason = 'error';
@@ -165,7 +165,7 @@ export async function createAzureFunction(connectionString: string, schema: stri
 			if (errorType === 'TimeoutError') {
 				// this error can be cause by many different scenarios including timeout or error occurred during createFunction
 				exitReason = 'timeout';
-				console.log('Error creating azure function project');
+				console.log('Timed out waiting for Azure Function project to be created. This may not necessarily be an error, for example if the user canceled out of the create flow.');
 			} else {
 				// else an error would occur during the createFunction
 				exitReason = 'error';
