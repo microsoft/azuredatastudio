@@ -40,6 +40,6 @@ The following command will create a `coverage` folder at the root of the workspa
 
 	.\scripts\test.bat --coverage
 
-NOTE: When running locally the coverage will be generated for the .js files because the sourcemaps
-are inlined. You can run `yarn compile-build` to generate the source maps and then re-run the test script
-to see the coverage for the .ts files (but will have to re-run every time you make a change).
+NOTE: When running locally the coverage will be generated for the .js files because by default the sourcemaps
+are inlined. To fix this set the environment variable `SQL_NO_INLINE_SOURCEMAP` to `1`, re-run the
+compile/watch task and then re-run the test script with coverage enabled.

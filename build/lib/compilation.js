@@ -37,7 +37,7 @@ function createCompile(src, build, emitError) {
     const sourcemaps = require('gulp-sourcemaps');
     const projectPath = path.join(__dirname, '../../', src, 'tsconfig.json');
     const overrideOptions = Object.assign(Object.assign({}, getTypeScriptCompilerOptions(src)), { inlineSources: Boolean(build) });
-    if (!build) {
+    if (!build && !process.env['SQL_NO_INLINE_SOURCEMAP']) {
         overrideOptions.inlineSourceMap = true;
     }
     const compilation = tsb.create(projectPath, overrideOptions, false, err => reporter(err));
