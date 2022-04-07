@@ -9956,7 +9956,7 @@
 			"table.selectAll": "全选",
 			"table.sortAscending": "升序排序",
 			"table.sortDescending": "降序排序",
-			"tableFilter.blankStringDisplayText": "(Blanks)",
+			"tableFilter.blankStringDisplayText": "(空白)",
 			"tableFilter.nullDisplayText": "(NULL)",
 			"tableFilter.selectedCount": "已选择 {0} 项",
 			"tableFilter.visibleCount": "{0} 个结果"
@@ -12364,6 +12364,9 @@
 			"noHandlerRegistered": "未注册有效的执行计划处理程序",
 			"providerIdNotValidError": "如果要与 ExecutionPlanService 交互，需要有效的提供程序",
 			"selectExecutionPlanProvider": "选择提供程序以打开执行计划"
+		},
+		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
+			"table.showActions": "显示操作"
 		}
 	}
 }

@@ -2116,8 +2116,8 @@
         <target state="translated">Azure SQL Managed Instance - Azure Arc</target>
       </trans-unit>
       <trans-unit id="resource.type.azure.arc.description">
-        <source xml:lang="en">Creates an Azure Arc data controller</source>
-        <target state="translated">Azure Arc 데이터 컨트롤러 만들기</target>
+        <source xml:lang="en">Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.</source>
+        <target state="new">Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.</target>
       </trans-unit>
       <trans-unit id="resource.type.azure.arc.display.name">
         <source xml:lang="en">Azure Arc data controller</source>

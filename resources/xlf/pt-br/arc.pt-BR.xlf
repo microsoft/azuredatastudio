@@ -2116,8 +2116,8 @@
         <target state="translated">Instância Gerenciada de SQL do Azure – Azure Arc</target>
       </trans-unit>
       <trans-unit id="resource.type.azure.arc.description">
-        <source xml:lang="en">Creates an Azure Arc data controller</source>
-        <target state="translated">Criar um controlador de dados Azure Arc</target>
+        <source xml:lang="en">Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.</source>
+        <target state="translated">Cria um controlador de dados do Azure Arc. Certifique-se de executado o logon no az antes de iniciar este assistente.</target>
       </trans-unit>
       <trans-unit id="resource.type.azure.arc.display.name">
         <source xml:lang="en">Azure Arc data controller</source>

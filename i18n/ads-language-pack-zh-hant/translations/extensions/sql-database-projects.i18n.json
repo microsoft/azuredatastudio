@@ -295,7 +295,7 @@
 			"updateProjectForRoundTrip": "目標、參考和系統資料庫參考需要更新，以建置專案 '{0}'。如果專案是在 SSDT 中建立，它會繼續在這兩個工具中運作。是否要更新專案?",
 			"updateProjectFromDatabaseDialogName": "從資料庫更新專案",
 			"updateText": "更新",
-			"updatedToSdkStyleError": "Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.",
+			"updatedToSdkStyleError": "將專案 {0} 轉換成 SDK 樣式失敗。已回復對 .sqlproj 所做的變更。",
 			"updatingProjectFromDatabase": "正在從 {1} 更新 {0}...",
 			"userSelectionCancelled": "使用者已取消選取如何執行自動 autorest。",
 			"userSelectionInstallGlobally": "使用者已選取全域安裝 autorest。正在安裝...",

@@ -2116,8 +2116,8 @@
         <target state="translated">Azure SQL 受控執行個體 - Azure Arc</target>
       </trans-unit>
       <trans-unit id="resource.type.azure.arc.description">
-        <source xml:lang="en">Creates an Azure Arc data controller</source>
-        <target state="translated">建立 Azure Arc 資料控制器</target>
+        <source xml:lang="en">Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.</source>
+        <target state="translated">建立 Azure Arc 資料控制器。啟動此精靈之前，請先確認您已執行 AZ 登入。</target>
       </trans-unit>
       <trans-unit id="resource.type.azure.arc.display.name">
         <source xml:lang="en">Azure Arc data controller</source>

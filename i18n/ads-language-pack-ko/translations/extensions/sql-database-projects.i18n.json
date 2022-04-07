@@ -295,7 +295,7 @@
 			"updateProjectForRoundTrip": "'{0}' 프로젝트를 빌드하려면 대상, 참조 및 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 생성된 경우 두 도구 모두에서 계속 작동합니다. 프로젝트를 업데이트하시겠습니까?",
 			"updateProjectFromDatabaseDialogName": "데이터베이스의 프로젝트 업데이트",
 			"updateText": "업데이트",
-			"updatedToSdkStyleError": "Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.",
+			"updatedToSdkStyleError": "{0} 프로젝트에서 SDK 스타일로 변환하지 못했습니다. .sqlproj에 대한 변경 내용이 롤백되었습니다.",
 			"updatingProjectFromDatabase": "{1}의 {0}을(를) 업데이트하는 중...",
 			"userSelectionCancelled": "사용자가 autorest 실행 방법에 대한 선택을 취소했습니다.",
 			"userSelectionInstallGlobally": "autorest를 전역적으로 설치하도록 선택한 사용자입니다. 지금 설치 중입니다...",

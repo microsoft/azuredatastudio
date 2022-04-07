@@ -9956,7 +9956,7 @@
 			"table.selectAll": "すべて選択",
 			"table.sortAscending": "昇順で並べ替え",
 			"table.sortDescending": "降順で並べ替え",
-			"tableFilter.blankStringDisplayText": "(Blanks)",
+			"tableFilter.blankStringDisplayText": "(空白)",
 			"tableFilter.nullDisplayText": "(NULL)",
 			"tableFilter.selectedCount": "{0} 件選択済み",
 			"tableFilter.visibleCount": "{0} 件の結果"
@@ -12364,6 +12364,9 @@
 			"noHandlerRegistered": "有効な実行プラン ハンドラーが登録されていません",
 			"providerIdNotValidError": "ExecutionPlanService と対話するには、有効なプロバイダーが必要です",
 			"selectExecutionPlanProvider": "実行プランを開くプロバイダーを選択する"
+		},
+		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
+			"table.showActions": "アクションの表示"
 		}
 	}
 }

@@ -536,7 +536,7 @@
 			"resource.type.arc.postgres.display.name": "Groupes de serveurs PostgreSQL Hyperscale : Azure Arc",
 			"resource.type.arc.sql.description": "Service managé d'instance SQL pour les développeurs d'applications dans un environnement géré par le client",
 			"resource.type.arc.sql.display.name": "Azure SQL Managed Instance - Azure Arc",
-			"resource.type.azure.arc.description": "Crée un contrôleur de données Azure Arc",
+			"resource.type.azure.arc.description": "Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.",
 			"resource.type.azure.arc.display.name": "Contrôleur de données Azure Arc",
 			"should.be.integer": "La valeur doit être un entier",
 			"worker.node.count.should.not.be.one": "La valeur de 1 n'est pas prise en charge."
