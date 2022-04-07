@@ -34,6 +34,10 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 		@IInstantiationService instantiationService: IInstantiationService,
 	) {
 		super(description, text, results, connectionManagementService, queryModelService, configurationService, instantiationService);
+		// Set the mode explicitely to stop the auto language detection service from changing the mode unexpectedly.
+		// the auto language detection service won't do the language change only if the mode is explicitely set.
+		// if the mode (e.g. kusto, sql) do not exist for whatever reason, we will default it to sql.
+		text.setMode(text.getMode() ?? 'sql');
 	}
 
 	public override resolve(): Promise<IUntitledTextEditorModel & IResolvedTextEditorModel> {

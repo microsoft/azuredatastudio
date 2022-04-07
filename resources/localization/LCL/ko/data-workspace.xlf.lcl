@@ -75,10 +75,13 @@
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.NewProjectDialogTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Create new project]]></Val>
+          <Val><![CDATA[Create new database project]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[새 프로젝트 만들기]]></Val>
+            <Val><![CDATA[새 데이터베이스 프로젝트 만들기]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Create new project]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -123,6 +126,15 @@
           <Val><![CDATA[Create]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[만들기]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.default" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Default]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[기본값]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -402,9 +414,21 @@
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.selectProjectType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Select Project Type]]></Val>
+          <Val><![CDATA[Select Database Project Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[프로젝트 형식 선택]]></Val>
+            <Val><![CDATA[데이터베이스 프로젝트 유형 선택]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Select Project Type]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.selectTargetPlatform" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select Target Platform]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[대상 플랫폼 선택]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

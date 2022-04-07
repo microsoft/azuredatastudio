@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, MigrationTargetType, PerformanceDataSourceOptions, StateChangeEvent } from '../models/stateMachine';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';

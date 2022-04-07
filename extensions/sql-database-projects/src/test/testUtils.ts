@@ -203,9 +203,11 @@ export async function createListOfFiles(filePath?: string): Promise<Uri[]> {
  * 			- Script.PostDeployment2.sql
  *
  */
-export async function createOtherDummyFiles(testFolderPath: string): Promise<string> {
+export async function createOtherDummyFiles(testFolderPath: string): Promise<Uri[]> {
+	const filesList: Uri[] = [];
 	let filePath = path.join(testFolderPath, 'file1.sql');
 	await fs.writeFile(filePath, '');
+	filesList.push(Uri.file(filePath));
 
 	for (let dirCount = 1; dirCount <= 2; dirCount++) {
 		let dirName = path.join(testFolderPath, `folder${dirCount}`);
@@ -214,23 +216,31 @@ export async function createOtherDummyFiles(testFolderPath: string): Promise<str
 		for (let fileCount = 1; fileCount <= 2; fileCount++) {
 			let fileName = path.join(dirName, `file${fileCount}.sql`);
 			await fs.writeFile(fileName, '');
+			filesList.push(Uri.file(fileName));
 		}
 	}
 
 	const test1 = path.join(testFolderPath, 'folder1', 'test1.sql');
 	await fs.writeFile(test1, '');
+	filesList.push(Uri.file(test1));
 	const test2 = path.join(testFolderPath, 'folder1', 'test2.sql');
 	await fs.writeFile(test2, '');
+	filesList.push(Uri.file(test2));
 	const testLongerName = path.join(testFolderPath, 'folder1', 'testLongerName.sql');
 	await fs.writeFile(testLongerName, '');
+	filesList.push(Uri.file(testLongerName));
 
 	const preDeploymentScript = path.join(testFolderPath, 'folder2', 'Script.PreDeployment1.sql');
 	await fs.writeFile(preDeploymentScript, '');
+	filesList.push(Uri.file(preDeploymentScript));
 
 	const postDeploymentScript1 = path.join(testFolderPath, 'folder2', 'Script.PostDeployment1.sql');
 	await fs.writeFile(postDeploymentScript1, '');
+	filesList.push(Uri.file(preDeploymentScript));
 
 	const postDeploymentScript2 = path.join(testFolderPath, 'folder2', 'Script.PostDeployment2.sql');
 	await fs.writeFile(postDeploymentScript2, '');
-	return testFolderPath;
+	filesList.push(Uri.file(postDeploymentScript2));
+
+	return filesList;
 }

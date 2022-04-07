@@ -86,8 +86,8 @@ declare module 'sql-bindings' {
 	 * Azure Functions binding type
 	 */
 	export const enum BindingType {
-		input,
-		output
+		input = 'input',
+		output = 'output'
 	}
 
 	/**

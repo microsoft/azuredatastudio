@@ -10,7 +10,7 @@ import * as constants from './constants';
 import * as path from 'path';
 import * as glob from 'fast-glob';
 import * as dataworkspace from 'dataworkspace';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import * as fse from 'fs-extra';
 import * as which from 'which';

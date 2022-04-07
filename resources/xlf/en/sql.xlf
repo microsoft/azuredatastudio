@@ -66,6 +66,11 @@
       <source xml:lang="en">Select/Deselect All</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/base/browser/ui/table/plugins/contextMenuColumn.plugin" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="table.showActions">
+      <source xml:lang="en">Show Actions</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/base/browser/ui/table/plugins/headerFilter.plugin" source-language="en" datatype="plaintext"><body>
     <trans-unit id="headerFilter.cancel">
       <source xml:lang="en">Cancel</source>
@@ -93,6 +98,12 @@
     </trans-unit>
     <trans-unit id="table.sortDescending">
       <source xml:lang="en">Sort Descending</source>
+    </trans-unit>
+    <trans-unit id="tableFilter.blankStringDisplayText">
+      <source xml:lang="en">(Blanks)</source>
+    </trans-unit>
+    <trans-unit id="tableFilter.nullDisplayText">
+      <source xml:lang="en">(NULL)</source>
     </trans-unit>
     <trans-unit id="tableFilter.selectedCount">
       <source xml:lang="en">{0} Selected</source>
@@ -3215,6 +3226,9 @@ Error: {1}</source>
     <trans-unit id="notebookViews.enabled">
       <source xml:lang="en">(Preview) Enable Notebook Views</source>
     </trans-unit>
+    <trans-unit id="restartNotebookKernel">
+      <source xml:lang="en">Restart Notebook Kernel</source>
+    </trans-unit>
     <trans-unit id="search.actionsPosition">
       <source xml:lang="en">Controls the positioning of the actionbar on rows in the search view.</source>
     </trans-unit>
@@ -3410,6 +3424,14 @@ Error: {1}</source>
   <file original="src/sql/workbench/contrib/notebook/browser/notebookEditor" source-language="en" datatype="plaintext"><body>
     <trans-unit id="notebookEditor.name">
       <source xml:lang="en">Notebook Editor</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/notebook/browser/notebookEditor.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="loadingNotebookCompletedMessage">
+      <source xml:lang="en">Loading notebook {0} completed</source>
+    </trans-unit>
+    <trans-unit id="loadingNotebookMessage">
+      <source xml:lang="en">Loading notebook {0}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet" source-language="en" datatype="plaintext"><body>
@@ -5333,6 +5355,12 @@ Error: {1}</source>
     <trans-unit id="kernelRequiresConnection">
       <source xml:lang="en">Kernel '{0}' was not found. The default kernel will be used instead.</source>
     </trans-unit>
+    <trans-unit id="kernelRestartFailed">
+      <source xml:lang="en">Kernel restart failed: {0}</source>
+    </trans-unit>
+    <trans-unit id="kernelRestartedSuccessfully">
+      <source xml:lang="en">Kernel restarted successfully</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/notebook/browser/models/notebookContexts" source-language="en" datatype="plaintext"><body>
     <trans-unit id="localhost">
@@ -5403,6 +5431,9 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/notebook/browser/sql/sqlSessionManager" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="SqlKernelRestartNotSupported">
+      <source xml:lang="en">SQL kernel restart not supported</source>
+    </trans-unit>
     <trans-unit id="connectionRequired">
       <source xml:lang="en">A connection must be chosen to run notebook cells</source>
     </trans-unit>

@@ -1221,10 +1221,25 @@ export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		const compareExecutionPlanGraph = (firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.ExecutionPlanComparisonResult> => {
+			const params: contracts.ExecutionPlanComparisonParams = {
+				firstExecutionPlanGraphInfo: firstPlanFile,
+				secondExecutionPlanGraphInfo: secondPlanFile
+			};
+
+			return client.sendRequest(contracts.ExecutionPlanComparisonRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.ExecutionPlanComparisonRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
 		return azdata.dataprotocol.registerExecutionPlanProvider({
 			providerId: client.providerId,
-			getExecutionPlan
+			getExecutionPlan,
+			compareExecutionPlanGraph
 		});
 	}
 }
-

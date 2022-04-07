@@ -9,7 +9,8 @@ import { QuickInput } from '../quickinput';
 import { Editors } from '../editors';
 import { IElement } from '..';
 
-const winOrCtrl = process.platform === 'win32' ? 'win' : 'ctrl';
+const winOrCtrl = process.platform === 'darwin' ? 'ctrl' : 'win';
+const ctrlOrCmd = process.platform === 'darwin' ? 'cmd' : 'ctrl';
 
 export class Notebook {
 
@@ -83,7 +84,7 @@ export class Notebook {
 	public async selectAllTextInEditor(): Promise<void> {
 		const editor = '.notebook-cell.active .monaco-editor';
 		await this.code.waitAndClick(editor);
-		await this.code.dispatchKeybinding('cmd+a');
+		await this.code.dispatchKeybinding(ctrlOrCmd + '+a');
 	}
 
 	private static readonly placeholderSelector = 'div.placeholder-cell-component';
@@ -149,12 +150,14 @@ export class Notebook {
 		await this.code.waitForElementGone(Notebook.doubleClickToEditSelector);
 	}
 
-	async waitForTextCellPreviewContent(text: string, fontType: 'p' | 'h1' | 'h2' | 'h3', textStyle?: 'strong' | 'i' | 'u' | 'mark'): Promise<void> {
-		let textSelector = `${Notebook.textCellPreviewSelector} ${fontType}`;
-		if (textStyle) {
-			textSelector = `${textSelector} ${textStyle}`;
-		}
-		await this.code.waitForElement(textSelector, result => result?.textContent === text);
+	async waitForTextCellPreviewContent(text: string, selector: string): Promise<void> {
+		let textSelector = `${Notebook.textCellPreviewSelector} ${selector}`;
+		await this.code.waitForElement(textSelector, result => !!result?.textContent?.includes(text)); // Use includes to handle whitespace/quote edge cases
+	}
+
+	async waitForTextCellPreviewContentGone(selector: string): Promise<void> {
+		let textSelector = `${Notebook.textCellPreviewSelector} ${selector}`;
+		await this.code.waitForElementGone(textSelector);
 	}
 
 	// Cell Output Actions
@@ -207,7 +210,7 @@ export class Notebook {
 }
 
 export class TextCellToolbar {
-	private static readonly textCellToolbar = 'text-cell-component markdown-toolbar-component ul.actions-container';
+	private static readonly textCellToolbar = 'text-cell-component markdown-toolbar-component ul.actions-container li.action-item';
 
 	constructor(private code: Code) { }
 
@@ -220,7 +223,7 @@ export class TextCellToolbar {
 	}
 
 	public async italicizeSelectedText(): Promise<void> {
-		await this.clickToolbarButton('Italics');
+		await this.clickToolbarButton('Italic');
 	}
 
 	public async underlineSelectedText(): Promise<void> {
@@ -232,24 +235,36 @@ export class TextCellToolbar {
 	}
 
 	public async codifySelectedText(): Promise<void> {
-		await this.clickToolbarButton('Code');
+		await this.clickToolbarButton('Insert code');
 	}
 
-	public async insertLink(): Promise<void> {
-		throw new Error('Method not implemented.');
+	public async insertLink(linkLabel: string, linkAddress: string): Promise<void> {
+		await this.clickToolbarButton('Insert link');
+		const linkDialogSelector = 'div.modal.callout-dialog[aria-label="Insert link"]';
+		const displayTextSelector = `${linkDialogSelector} input[aria-label="Text to display"]`;
+		await this.code.waitForSetValue(displayTextSelector, linkLabel);
+
+		const addressTextSelector = `${linkDialogSelector} input[aria-label="Address"]`;
+		await this.code.waitForSetValue(addressTextSelector, linkAddress);
+
+		await this.code.dispatchKeybinding('enter');
 	}
 
 	public async insertList(): Promise<void> {
-		await this.clickToolbarButton('List');
+		await this.clickToolbarButton('Insert list');
 	}
 
 	public async insertOrderedList(): Promise<void> {
-		await this.clickToolbarButton('Ordered list');
+		await this.clickToolbarButton('Insert ordered list');
 	}
 
-	public async changeSelectedTextSize(): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
+	// Disabled since the text size dropdown is not clickable on Unix from smoke tests
+	// public async changeSelectedTextSize(textSize: 'Heading 1' | 'Heading 2' | 'Heading 3' | 'Paragraph'): Promise<void> {
+	// 	const actionSelector = `${TextCellToolbar.textCellToolbar} .monaco-dropdown a.heading-dropdown`;
+	// 	await this.code.waitAndClick(actionSelector);
+	// 	const menuItemSelector = `.context-view.monaco-menu-container .monaco-menu .action-menu-item[title="${textSize}"]`;
+	// 	await this.code.waitAndClick(menuItemSelector);
+	// }
 
 	private async clickToolbarButton(buttonTitle: string) {
 		const actionSelector = `${TextCellToolbar.textCellToolbar} a[title="${buttonTitle}"]`;

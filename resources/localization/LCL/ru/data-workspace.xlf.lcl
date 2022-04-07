@@ -75,10 +75,13 @@
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.NewProjectDialogTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Create new project]]></Val>
+          <Val><![CDATA[Create new database project]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Создание проекта]]></Val>
+            <Val><![CDATA[Создать новый проект базы данных]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Create new project]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -123,6 +126,15 @@
           <Val><![CDATA[Create]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Создать]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.default" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Default]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[По умолчанию]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -402,9 +414,21 @@
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.selectProjectType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Select Project Type]]></Val>
+          <Val><![CDATA[Select Database Project Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выбрать файл проекта]]></Val>
+            <Val><![CDATA[Выбрать тип проекта базы данных]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Select Project Type]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.selectTargetPlatform" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select Target Platform]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выбрать целевую платформу]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

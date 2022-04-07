@@ -109,6 +109,10 @@ export class JupyterKernel implements nb.IKernel {
 	interrupt(): Promise<void> {
 		return this.kernelImpl.interrupt();
 	}
+
+	restart(): Promise<void> {
+		return this.kernelImpl.restart();
+	}
 }
 
 export class JupyterFuture implements nb.IFuture {

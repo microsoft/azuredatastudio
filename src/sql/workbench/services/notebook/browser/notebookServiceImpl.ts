@@ -510,7 +510,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	getProvidersForFileType(fileType: string): string[] | undefined {
 		let provDescriptions = this._fileToProviderDescriptions.get(fileType.toLowerCase());
 		let providers = provDescriptions?.map(provider => provider.provider);
-		return [...new Set(providers)]; // Remove duplicates
+		return providers ? [...new Set(providers)] : undefined; // Use a set to remove duplicates
 	}
 
 	public async getStandardKernelsForProvider(provider: string): Promise<nb.IStandardKernel[] | undefined> {

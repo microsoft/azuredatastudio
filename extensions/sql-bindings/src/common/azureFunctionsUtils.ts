@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as os from 'os';
 import * as fs from 'fs';
 import * as vscode from 'vscode';
 import * as path from 'path';
@@ -11,9 +10,9 @@ import * as constants from './constants';
 import { BindingType } from 'sql-bindings';
 import { ConnectionDetails, IConnectionInfo } from 'vscode-mssql';
 // https://github.com/microsoft/vscode-azurefunctions/blob/main/src/vscode-azurefunctions.api.d.ts
-import { AzureFunctionsExtensionApi } from '../typings/vscode-azurefunctions.api';
+import { AzureFunctionsExtensionApi } from '../../../types/vscode-azurefunctions.api';
 // https://github.com/microsoft/vscode-azuretools/blob/main/ui/api.d.ts
-import { AzureExtensionApiProvider } from '../typings/vscode-azuretools.api';
+import { AzureExtensionApiProvider } from '../../../types/vscode-azuretools.api';
 /**
  * Represents the settings in an Azure function project's locawl.settings.json file
  */
@@ -134,32 +133,6 @@ export async function getAzureFunctionsExtensionApi(): Promise<AzureFunctionsExt
 }
 
 /**
- * TODO REMOVE defaultSqlBindingTextLines
- * Overwrites the Azure function methods body to work with the binding
- * @param filePath is the path for the function file (.cs for C# functions)
- */
-export function overwriteAzureFunctionMethodBody(filePath: string): void {
-	let defaultBindedFunctionText = fs.readFileSync(filePath, 'utf-8');
-	// Replace default binding text
-	let newValueLines = defaultBindedFunctionText.split(os.EOL);
-	const defaultFunctionTextToSkip = new Set(constants.defaultSqlBindingTextLines);
-	let replacedValueLines = [];
-	for (let defaultLine of newValueLines) {
-		// Skipped lines
-		if (defaultFunctionTextToSkip.has(defaultLine.trimStart())) {
-			continue;
-		} else if (defaultLine.trimStart() === constants.defaultBindingResult) { // Result change
-			replacedValueLines.push(defaultLine.replace(constants.defaultBindingResult, constants.sqlBindingResult));
-		} else {
-			// Normal lines to be included
-			replacedValueLines.push(defaultLine);
-		}
-	}
-	defaultBindedFunctionText = replacedValueLines.join(os.EOL);
-	fs.writeFileSync(filePath, defaultBindedFunctionText, 'utf-8');
-}
-
-/**
  * Gets the azure function project for the user to choose from a list of projects files
  * If only one project is found that project is used to add the binding to
  * if no project is found, user is informed there needs to be a C# Azure Functions project
@@ -276,7 +249,7 @@ export async function addNugetReferenceToProjectFile(selectedProjectFile: string
 export async function addConnectionStringToConfig(connectionString: string, projectFile: string): Promise<void> {
 	const settingsFile = await getSettingsFile(projectFile);
 	if (settingsFile) {
-		await setLocalAppSetting(path.dirname(settingsFile), constants.sqlConnectionString, connectionString);
+		await setLocalAppSetting(path.dirname(settingsFile), constants.sqlConnectionStringSetting, connectionString);
 	}
 }
 
@@ -365,20 +338,68 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 			return;
 		}
 
-		let existingSettings: (vscode.QuickPickItem)[] = [];
+		// Known Azure settings reference for Azure Functions
+		// https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+		const knownSettings: string[] = [
+			'APPINSIGHTS_INSTRUMENTATIONKEY',
+			'APPLICATIONINSIGHTS_CONNECTION_STRING',
+			'AZURE_FUNCTION_PROXY_DISABLE_LOCAL_CALL',
+			'AZURE_FUNCTION_PROXY_BACKEND_URL_DECODE_SLASHES',
+			'AZURE_FUNCTIONS_ENVIRONMENT',
+			'AzureWebJobsDashboard',
+			'AzureWebJobsDisableHomepage',
+			'AzureWebJobsDotNetReleaseCompilation',
+			'AzureWebJobsFeatureFlags',
+			'AzureWebJobsKubernetesSecretName',
+			'AzureWebJobsSecretStorageKeyVaultClientId',
+			'AzureWebJobsSecretStorageKeyVaultClientSecret',
+			'AzureWebJobsSecretStorageKeyVaultName',
+			'AzureWebJobsSecretStorageKeyVaultTenantId',
+			'AzureWebJobsSecretStorageKeyVaultUri',
+			'AzureWebJobsSecretStorageSas',
+			'AzureWebJobsSecretStorageType',
+			'AzureWebJobsStorage',
+			'AzureWebJobs_TypeScriptPath',
+			'DOCKER_SHM_SIZE',
+			'FUNCTION_APP_EDIT_MODE',
+			'FUNCTIONS_EXTENSION_VERSION',
+			'FUNCTIONS_V2_COMPATIBILITY_MODE',
+			'FUNCTIONS_WORKER_PROCESS_COUNT',
+			'FUNCTIONS_WORKER_RUNTIME',
+			'FUNCTIONS_WORKER_SHARED_MEMORY_DATA_TRANSFER_ENABLED',
+			'MDMaxBackgroundUpgradePeriod',
+			'MDNewSnapshotCheckPeriod',
+			'MDMinBackgroundUpgradePeriod',
+			'PIP_EXTRA_INDEX_URL',
+			'PYTHON_ISOLATE_WORKER_DEPENDENCIES (Preview)',
+			'PYTHON_ENABLE_DEBUG_LOGGING',
+			'PYTHON_ENABLE_WORKER_EXTENSIONS',
+			'PYTHON_THREADPOOL_THREAD_COUNT',
+			'SCALE_CONTROLLER_LOGGING_ENABLED',
+			'SCM_LOGSTREAM_TIMEOUT',
+			'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING',
+			'WEBSITE_CONTENTOVERVNET',
+			'WEBSITE_CONTENTSHARE',
+			'WEBSITE_SKIP_CONTENTSHARE_VALIDATION',
+			'WEBSITE_DNS_SERVER',
+			'WEBSITE_ENABLE_BROTLI_ENCODING',
+			'WEBSITE_MAX_DYNAMIC_APPLICATION_SCALE_OUT',
+			'WEBSITE_NODE_DEFAULT_VERSION',
+			'WEBSITE_RUN_FROM_PACKAGE',
+			'WEBSITE_TIME_ZONE',
+			'WEBSITE_VNET_ROUTE_ALL'
+		];
+
+		let connectionStringSettings: (vscode.QuickPickItem)[] = [];
 		if (settings?.Values) {
-			existingSettings = Object.keys(settings.Values).map(setting => {
-				return {
-					label: setting
-				} as vscode.QuickPickItem;
-			});
+			connectionStringSettings = Object.keys(settings.Values).filter(setting => !knownSettings.includes(setting)).map(setting => { return { label: setting }; });
 		}
 
-		existingSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon });
-		let sqlConnectionStringSettingExists = existingSettings.find(s => s.label === constants.sqlConnectionStringSetting);
+		connectionStringSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon });
+		let sqlConnectionStringSettingExists = connectionStringSettings.find(s => s.label === constants.sqlConnectionStringSetting);
 
 		while (!connectionStringSettingName) {
-			const selectedSetting = await vscode.window.showQuickPick(existingSettings, {
+			const selectedSetting = await vscode.window.showQuickPick(connectionStringSettings, {
 				canPickMany: false,
 				title: constants.selectSetting,
 				ignoreFocusOut: true

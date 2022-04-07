@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import { SqlDatabaseTree } from './sqlDatabasesTree';
-import { SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
+import { SqlMigrationImpactedObjectInfo } from 'mssql';
 import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
 
 export type Issues = {
