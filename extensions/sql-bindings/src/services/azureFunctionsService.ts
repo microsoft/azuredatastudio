@@ -16,7 +16,7 @@ import { IConnectionInfo } from 'vscode-mssql';
 
 export const hostFileName: string = 'host.json';
 
-export async function createAzureFunction(connectionString: string, schema: string, table: string, connectionInfo: IConnectionInfo): Promise<void> {
+export async function createAzureFunction(connectionString: string, connectionInfo: IConnectionInfo, objectName: string, binding: (vscode.QuickPickItem & { type: BindingType; }) | undefined): Promise<void> {
 	let sessionId: string = uuid.v4();
 	let propertyBag: { [key: string]: string } = { sessionId: sessionId };
 	let quickPickStep: string = '';
@@ -89,6 +89,8 @@ export async function createAzureFunction(connectionString: string, schema: stri
 		try {
 			// get function name from user
 			quickPickStep = 'getAzureFunctionName';
+			// remove the prefix and brackets for function name
+			let table = objectName.substring(objectName.indexOf('.') + 1).replace(/[\[\]']+/g, '');
 			let uniqueFunctionName = await utils.getUniqueFileName(path.dirname(projectFile), table);
 			functionName = await vscode.window.showInputBox({
 				title: constants.functionNameTitle,
@@ -105,10 +107,14 @@ export async function createAzureFunction(connectionString: string, schema: stri
 
 			// select input or output binding
 			quickPickStep = 'getBindingType';
-			const selectedBinding = await azureFunctionsUtils.promptForBindingType();
-
-			if (!selectedBinding) {
-				return;
+			let selectedBinding: (vscode.QuickPickItem & { type: BindingType; }) | undefined;
+			if (binding) {
+				selectedBinding = binding;
+			} else {
+				selectedBinding = await azureFunctionsUtils.promptForBindingType();
+				if (!selectedBinding) {
+					return;
+				}
 			}
 			propertyBag.bindingType = selectedBinding.type;
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding)
@@ -117,7 +123,6 @@ export async function createAzureFunction(connectionString: string, schema: stri
 
 			// set the templateId based on the selected binding type
 			let templateId: string = selectedBinding.type === BindingType.input ? constants.inputTemplateID : constants.outputTemplateID;
-			let objectName = utils.generateQuotedFullName(schema, table);
 
 			// We need to set the azureWebJobsStorage to a placeholder
 			// to suppress the warning for opening the wizard
