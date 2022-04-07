@@ -72,6 +72,10 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 			// prompt user for object name to create function from
 			objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding.type);
+			if (!objectName) {
+				// user cancelled
+				return;
+			}
 
 		} catch (e) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(e));
@@ -79,6 +83,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			exitReason = 'error';
 			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, utils.getErrorType(e))
 				.withAdditionalProperties(propertyBag).send();
+			return;
 		}
 	} else {
 		quickPickStep = 'launchFromTable';
@@ -108,10 +113,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			.withAdditionalProperties(propertyBag).withConnectionInfo(connectionInfo).send();
 
 		objectName = utils.generateQuotedFullName(node.metadata.schema, node.metadata.name);
-	}
-	if (!objectName || !connectionInfo || !selectedBindingType) {
-		// User cancelled
-		return;
 	}
 	const connectionDetails = vscodeMssqlApi.createConnectionDetails(connectionInfo);
 	const connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
@@ -183,14 +184,14 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		try {
 			// get function name from user
 			quickPickStep = 'getAzureFunctionName';
-			// remove the prefix and brackets for function name
-			let table = utils.checkBrackets(objectName);
-			let uniqueFunctionName = await utils.getUniqueFileName(path.dirname(projectFile), table);
+			// remove special characters from function name
+			let uniqueObjectName = utils.getUniqueObjectName(objectName);
+			let uniqueFunctionName = await utils.getUniqueFileName(path.dirname(projectFile), uniqueObjectName);
 			functionName = await vscode.window.showInputBox({
 				title: constants.functionNameTitle,
 				value: uniqueFunctionName,
 				ignoreFocusOut: true,
-				validateInput: input => input ? undefined : constants.nameMustNotBeEmpty
+				validateInput: input => utils.checkInput(input) ? undefined : constants.nameCheck
 			}) as string;
 			if (!functionName) {
 				return;

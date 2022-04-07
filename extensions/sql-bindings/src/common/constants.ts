@@ -44,6 +44,7 @@ export const azureFunctionLocalSettingsFileName = 'local.settings.json';
 export const vscodeOpenCommand = 'vscode.open';
 
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
+export const nameCheck = localize('nameCheck', "Name must not be empty or include special characters");
 export const yesString = localize('yesString', "Yes");
 export const noString = localize('noString', "No");
 export const input = localize('input', "Input");

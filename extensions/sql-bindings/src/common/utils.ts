@@ -162,16 +162,26 @@ export function escapeClosingBrackets(str: string): string {
 	return str.replace(']', ']]');
 }
 
-export function checkBrackets(objectName: string): string {
-	if (objectName.includes('.')) {
-		// remove schema from object name
-		let table = objectName.substring(objectName.lastIndexOf('.') + 1);
-		if (table.includes('[') && table.includes(']')) {
-			table = table.replace(/[\[\]']+/g, '');
-		}
-		return table;
+/**
+ * Gets a unique object name by removing all special characters
+ * @param objectName can include brackets/periods and user entered special characters
+ * @returns the object name without any special characters
+ */
+export function getUniqueObjectName(objectName: string): string {
+	return objectName.replace(/[^a-zA-Z0-9 ]/g, '');
+}
+
+/**
+ * Check to see if the input from user entered is valid
+ * @param input from user input
+ * @returns false if the input is empty or has special characters, true if the input is valid
+ */
+export function checkInput(input: string): boolean {
+	if (input) {
+		const specialChars = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+		return specialChars.test(input);
 	}
-	return objectName;
+	return false;
 }
 
 /**
