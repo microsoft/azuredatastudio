@@ -126,7 +126,7 @@ export class ExecutionPlanPropertiesView {
 		attachTableStyler(this._table, this._themeService);
 	}
 
-	public set graphElement(element: azdata.ExecutionPlanNode | azdata.ExecutionPlanEdge) {
+	public set graphElement(element: azdata.executionPlan.ExecutionPlanNode | azdata.executionPlan.ExecutionPlanEdge) {
 		this._model.graphElement = element;
 		this.sortPropertiesByImportance();
 		this.renderView();
@@ -186,7 +186,7 @@ export class ExecutionPlanPropertiesView {
 
 	private renderView(): void {
 		if (this._model.graphElement) {
-			const nodeName = (<azdata.ExecutionPlanNode>this._model.graphElement).name;
+			const nodeName = (<azdata.executionPlan.ExecutionPlanNode>this._model.graphElement).name;
 			this._operationName.innerText = nodeName ? removeLineBreaks(nodeName) : localize('executionPlanPropertiesEdgeOperationName', "Edge"); //since edges do not have names like node, we set the operation name to 'Edge'
 		}
 		this._tableContainer.scrollTo(0, 0);
@@ -201,7 +201,7 @@ export class ExecutionPlanPropertiesView {
 		this._table.resizeCanvas();
 	}
 
-	private convertPropertiesToTableRows(props: azdata.ExecutionPlanGraphElementProperty[], parentIndex: number, indent: number, rows: { [key: string]: string }[] = []): { [key: string]: string }[] {
+	private convertPropertiesToTableRows(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[], parentIndex: number, indent: number, rows: { [key: string]: string }[] = []): { [key: string]: string }[] {
 		if (!props) {
 			return rows;
 		}
@@ -228,7 +228,7 @@ export class ExecutionPlanPropertiesView {
 }
 
 export interface GraphElementPropertyViewData {
-	graphElement: azdata.ExecutionPlanNode | azdata.ExecutionPlanEdge;
+	graphElement: azdata.executionPlan.ExecutionPlanNode | azdata.executionPlan.ExecutionPlanEdge;
 }
 
 export class ClosePropertyViewAction extends Action {

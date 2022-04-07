@@ -31,8 +31,8 @@
         <target state="translated">새로 고침</target>
       </trans-unit>
       <trans-unit id="dataworkspace.NewProjectDialogTitle">
-        <source xml:lang="en">Create new project</source>
-        <target state="translated">새 프로젝트 만들기</target>
+        <source xml:lang="en">Create new database project</source>
+        <target state="translated">새 데이터베이스 프로젝트 만들기</target>
       </trans-unit>
       <trans-unit id="dataworkspace.Type">
         <source xml:lang="en">Type</source>
@@ -54,6 +54,10 @@
         <source xml:lang="en">Create</source>
         <target state="translated">만들기</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.default">
+        <source xml:lang="en">Default</source>
+        <target state="translated">기본값</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.enterProjectName">
         <source xml:lang="en">Enter Project Name</source>
         <target state="translated">프로젝트 이름 입력</target>
@@ -70,6 +74,10 @@
         <source xml:lang="en">Git repository URL</source>
         <target state="translated">GIT 리포지토리 URL</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.learnMore">
+        <source xml:lang="en">Learn More</source>
+        <target state="translated">자세한 정보</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.localClonePathPlaceholder">
         <source xml:lang="en">Select location to clone repository locally</source>
         <target state="translated">리포지토리를 로컬로 복제할 위치 선택</target>
@@ -85,6 +93,10 @@
       <trans-unit id="dataworkspace.nameCannotBeEmpty">
         <source xml:lang="en">Name cannot be empty</source>
         <target state="translated">이름은 비워 둘 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">아니요</target>
       </trans-unit>
       <trans-unit id="dataworkspace.ok">
         <source xml:lang="en">OK</source>
@@ -150,6 +162,14 @@
         <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?</source>
         <target state="translated">프로젝트를 작업 영역에 추가하려면 Azure Data Studio를 다시 시작해야 합니다. 지금 다시 시작하시겠습니까?</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.sdkLearnMorePlaceholder">
+        <source xml:lang="en">Click "Learn More" button for more information about SDK-style projects</source>
+        <target state="translated">SDK 스타일 프로젝트에 관한 자세한 내용을 보려면 "자세한 정보" 버튼을 클릭합니다.</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.sdkStyleProject">
+        <source xml:lang="en">SDK-style project (Preview)</source>
+        <target state="translated">SDK 스타일 프로젝트(미리 보기)</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.select">
         <source xml:lang="en">Select</source>
         <target state="translated">선택</target>
@@ -159,8 +179,12 @@
         <target state="translated">프로젝트 위치 선택</target>
       </trans-unit>
       <trans-unit id="dataworkspace.selectProjectType">
-        <source xml:lang="en">Select Project Type</source>
-        <target state="translated">프로젝트 형식 선택</target>
+        <source xml:lang="en">Select Database Project Type</source>
+        <target state="translated">데이터베이스 프로젝트 유형 선택</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.selectTargetPlatform">
+        <source xml:lang="en">Select Target Platform</source>
+        <target state="translated">대상 플랫폼 선택</target>
       </trans-unit>
       <trans-unit id="dataworkspace.targetPlatform">
         <source xml:lang="en">Target Platform</source>
@@ -169,6 +193,10 @@
       <trans-unit id="dataworkspace.workspacePlaceholder">
         <source xml:lang="en">Select workspace ({0}) file</source>
         <target state="translated">작업 영역({0}) 파일 선택</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.yesRecommended">
+        <source xml:lang="en">Yes (Recommended)</source>
+        <target state="translated">예(권장)</target>
       </trans-unit>
       <trans-unit id="fileDoesNotExist">
         <source xml:lang="en">File '{0}' doesn't exist</source>

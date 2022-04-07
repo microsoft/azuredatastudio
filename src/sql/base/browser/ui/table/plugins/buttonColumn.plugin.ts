@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/buttonColumn.plugin';
 import 'vs/css!./media/iconColumn';
-import { BaseClickableColumn, getIconCellValue, IconColumnOptions } from 'sql/base/browser/ui/table/plugins/tableColumn';
+import { BaseClickableColumn, ClickableColumnOptions, getIconCellValue, IconColumnOptions } from 'sql/base/browser/ui/table/plugins/tableColumn';
 import { escape } from 'sql/base/common/strings';
 
 export interface ButtonCellValue {
@@ -13,7 +13,7 @@ export interface ButtonCellValue {
 	title: string;
 }
 
-export interface ButtonColumnOptions extends IconColumnOptions {
+export interface ButtonColumnOptions extends IconColumnOptions, ClickableColumnOptions {
 	/**
 	 * Whether to show the text.
 	 */
@@ -23,7 +23,7 @@ export interface ButtonColumnOptions extends IconColumnOptions {
 export class ButtonColumn<T extends Slick.SlickData> extends BaseClickableColumn<T> {
 
 	constructor(private options: ButtonColumnOptions) {
-		super();
+		super(options);
 	}
 
 	public get definition(): Slick.Column<T> {
@@ -39,7 +39,8 @@ export class ButtonColumn<T extends Slick.SlickData> extends BaseClickableColumn
 				}
 				const buttonTypeCssClass = this.options.showText ? 'slick-plugin-button slick-plugin-text-button' : 'slick-plugin-button slick-plugin-image-only-button';
 				const buttonText = this.options.showText ? escapedTitle : '';
-				return `<button tabindex=-1 class="${iconCssClasses} ${buttonTypeCssClass}" title="${escapedTitle}" aria-label="${escapedTitle}">${buttonText}</button>`;
+				const disabledAttribute = this.isCellEnabled(row, cell) ? '' : 'disabled';
+				return `<button tabindex=-1 class="${iconCssClasses} ${buttonTypeCssClass}" title="${escapedTitle}" aria-label="${escapedTitle}" ${disabledAttribute}>${buttonText}</button>`;
 			},
 			name: this.options.name,
 			resizable: this.options.resizable,

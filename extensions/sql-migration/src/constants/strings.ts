@@ -248,6 +248,10 @@ export function AZURE_SQL_TARGET_PAGE_DESCRIPTION(targetInstance: string = 'inst
 export const AZURE_SQL_DATABASE_MANAGED_INSTANCE = localize('sql.migration.azure.sql.database.managed.instance', "Azure SQL Managed Instance");
 export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instance found.");
 export const INVALID_MANAGED_INSTANCE_ERROR = localize('sql.migration.invalid.managedInstance.error', "To continue, select a valid managed instance.");
+export function UNAVAILABLE_MANAGED_INSTANCE_PREFIX(miName: string): string {
+	return localize('sql.migration.unavailable.managedInstance', "(Unavailable) {0}", miName);
+}
+
 
 // Virtual Machine
 export const AZURE_SQL_DATABASE_VIRTUAL_MACHINE = localize('sql.migration.azure.sql.database.virtual.machine', "SQL Server on Azure Virtual Machines");
@@ -290,10 +294,14 @@ export function ACCOUNT_ACCESS_ERROR(account: AzureAccount, error: Error) {
 		`${account?.properties?.tenants[0]?.displayName} (${account?.properties?.tenants[0]?.userId})`,
 		error.message);
 }
+export function MI_NOT_READY_ERROR(miName: string, state: string): string {
+	return localize('sql.migration.mi.not.ready', "The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.", miName, state);
+}
 
 // database backup page
 export const DATABASE_BACKUP_PAGE_TITLE = localize('sql.migration.database.page.title', "Database backup");
 export const DATABASE_BACKUP_PAGE_DESCRIPTION = localize('sql.migration.database.page.description', "Select the location of the database backups to use during migration.");
+export const DATABASE_BACKUP_CHECKSUM_INFO_TEXT = localize('sql.migration.database.checksum.info.text', "Ensure that your backups were taken with the WITH CHECKSUM option.");
 export const DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL = localize('sql.migration.nc.network.share.radio.label', "My database backups are on a network share");
 export const DATABASE_BACKUP_NC_BLOB_STORAGE_RADIO_LABEL = localize('sql.migration.nc.blob.storage.radio.label', "My database backups are in an Azure Storage Blob Container");
 export const DATABASE_BACKUP_NETWORK_SHARE_HEADER_TEXT = localize('sql.migration.network.share.header.text', "Network share details");
@@ -308,6 +316,7 @@ export const DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_LABEL = localize('sql.migrat
 export const DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_PLACEHOLDER = localize('sql.migration.network.share.password.placeholder', "Enter password.");
 export const DATABASE_BACKUP_NETWORK_SHARE_AZURE_ACCOUNT_HEADER = localize('sql.migration.network.share.azure.header', "Storage account details");
 export const DATABASE_BACKUP_NETWORK_SHARE_AZURE_ACCOUNT_HELP = localize('sql.migration.network.share.azure.help', "Provide the Azure Storage account where the backups will be uploaded to.");
+export const DATABASE_BACKUP_PRIVATE_ENDPOINT_INFO_TEXT = localize('sql.migration.database.private.endpoint.info.text', "Ensure that the Azure Storage account does not use a private endpoint.");
 export const DUPLICATE_NAME_ERROR = localize('sql.migration.unique.name', "Select a unique name for this target database");
 export function DATABASE_ALREADY_EXISTS_MI(dbName: string, targetName: string): string {
 	return localize('sql.migration.database.already.exists', "Database '{0}' already exists on the target managed instance '{1}'.", dbName, targetName);

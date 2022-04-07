@@ -31,8 +31,8 @@
         <target state="translated">刷新</target>
       </trans-unit>
       <trans-unit id="dataworkspace.NewProjectDialogTitle">
-        <source xml:lang="en">Create new project</source>
-        <target state="translated">创建新项目</target>
+        <source xml:lang="en">Create new database project</source>
+        <target state="translated">创建新数据库项目</target>
       </trans-unit>
       <trans-unit id="dataworkspace.Type">
         <source xml:lang="en">Type</source>
@@ -54,6 +54,10 @@
         <source xml:lang="en">Create</source>
         <target state="translated">创建</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.default">
+        <source xml:lang="en">Default</source>
+        <target state="translated">默认</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.enterProjectName">
         <source xml:lang="en">Enter Project Name</source>
         <target state="translated">输入项目名</target>
@@ -70,6 +74,10 @@
         <source xml:lang="en">Git repository URL</source>
         <target state="translated">Git 存储库 URL</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.learnMore">
+        <source xml:lang="en">Learn More</source>
+        <target state="translated">了解详细信息</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.localClonePathPlaceholder">
         <source xml:lang="en">Select location to clone repository locally</source>
         <target state="translated">选择本地克隆存储库的位置</target>
@@ -85,6 +93,10 @@
       <trans-unit id="dataworkspace.nameCannotBeEmpty">
         <source xml:lang="en">Name cannot be empty</source>
         <target state="translated">名称不能为空</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">否</target>
       </trans-unit>
       <trans-unit id="dataworkspace.ok">
         <source xml:lang="en">OK</source>
@@ -150,6 +162,14 @@
         <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?</source>
         <target state="translated">需要重启 Azure Data Studio 才能将项目添加到工作区。立即重启?</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.sdkLearnMorePlaceholder">
+        <source xml:lang="en">Click "Learn More" button for more information about SDK-style projects</source>
+        <target state="translated">单击“了解详细信息”按钮了解有关 SDK 样式项目的详细信息</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.sdkStyleProject">
+        <source xml:lang="en">SDK-style project (Preview)</source>
+        <target state="translated">SDK 样式项目(预览版)</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.select">
         <source xml:lang="en">Select</source>
         <target state="translated">选择</target>
@@ -159,8 +179,12 @@
         <target state="translated">选择项目位置</target>
       </trans-unit>
       <trans-unit id="dataworkspace.selectProjectType">
-        <source xml:lang="en">Select Project Type</source>
-        <target state="translated">选择项目类型</target>
+        <source xml:lang="en">Select Database Project Type</source>
+        <target state="translated">选择数据库项目类型</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.selectTargetPlatform">
+        <source xml:lang="en">Select Target Platform</source>
+        <target state="translated">选择目标平台</target>
       </trans-unit>
       <trans-unit id="dataworkspace.targetPlatform">
         <source xml:lang="en">Target Platform</source>
@@ -169,6 +193,10 @@
       <trans-unit id="dataworkspace.workspacePlaceholder">
         <source xml:lang="en">Select workspace ({0}) file</source>
         <target state="translated">选择工作区({0})文件</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.yesRecommended">
+        <source xml:lang="en">Yes (Recommended)</source>
+        <target state="translated">是(推荐)</target>
       </trans-unit>
       <trans-unit id="fileDoesNotExist">
         <source xml:lang="en">File '{0}' doesn't exist</source>

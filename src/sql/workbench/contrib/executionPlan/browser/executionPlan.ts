@@ -39,17 +39,20 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { URI } from 'vs/base/common/uri';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
+import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
+import { InfoBox } from 'sql/base/browser/ui/infoBox/infoBox';
 
 let azdataGraph = azdataGraphModule();
 
-export interface InternalExecutionPlanNode extends azdata.ExecutionPlanNode {
+export interface InternalExecutionPlanNode extends azdata.executionPlan.ExecutionPlanNode {
 	/**
 	 * Unique internal id given to graph node by ADS.
 	 */
 	id?: string;
 }
 
-export interface InternalExecutionPlanEdge extends azdata.ExecutionPlanEdge {
+export interface InternalExecutionPlanEdge extends azdata.executionPlan.ExecutionPlanEdge {
 	/**
 	 * Unique internal id given to graph edge by ADS.
 	 */
@@ -78,17 +81,22 @@ export class ExecutionPlanTab implements IPanelTab {
 }
 
 export class ExecutionPlanView implements IPanelView {
+	private _loadingSpinner: LoadingSpinner;
+	private _loadingErrorInfoBox: InfoBox;
 	private _eps?: ExecutionPlan[] = [];
-	private _graphs?: azdata.ExecutionPlanGraph[] = [];
+	private _graphs?: azdata.executionPlan.ExecutionPlanGraph[] = [];
 	private _container = DOM.$('.eps-container');
+
+	private _planCache: Map<string, azdata.executionPlan.ExecutionPlanGraph[]> = new Map();
 
 	constructor(
 		@IInstantiationService private instantiationService: IInstantiationService,
+		@IExecutionPlanService private executionPlanService: IExecutionPlanService
 	) {
 	}
 
-	public render(container: HTMLElement): void {
-		container.appendChild(this._container);
+	public render(parent: HTMLElement): void {
+		parent.appendChild(this._container);
 	}
 
 	dispose() {
@@ -106,7 +114,11 @@ export class ExecutionPlanView implements IPanelView {
 		DOM.clearNode(this._container);
 	}
 
-	public addGraphs(newGraphs: azdata.ExecutionPlanGraph[] | undefined) {
+	/**
+	 * Adds executionPlanGraph to the graph controller.
+	 * @param newGraphs ExecutionPlanGraphs to be added.
+	 */
+	public addGraphs(newGraphs: azdata.executionPlan.ExecutionPlanGraph[] | undefined) {
 		if (newGraphs) {
 			newGraphs.forEach(g => {
 				const ep = this.instantiationService.createInstance(ExecutionPlan, this._container, this._eps.length + 1);
@@ -115,6 +127,45 @@ export class ExecutionPlanView implements IPanelView {
 				this._graphs.push(g);
 				this.updateRelativeCosts();
 			});
+		}
+	}
+
+	/**
+	 * Loads the graph file by converting the file to generic executionPlan graphs.
+	 * This feature requires the right providers to be registered that can handle
+	 * the graphFileType in the graphFile
+	 * Please note: this method clears the existing graph in the graph control
+	 * @param graphFile graph file to be loaded.
+	 * @returns
+	 */
+	public async loadGraphFile(graphFile: azdata.executionPlan.ExecutionPlanGraphInfo) {
+		this.clear();
+		this._loadingSpinner = new LoadingSpinner(this._container, { showText: true, fullSize: true });
+		this._loadingSpinner.loadingMessage = localize('loadingExecutionPlanFile', "Generating execution plans");
+		try {
+			this._loadingSpinner.loading = true;
+			if (this._planCache.has(graphFile.graphFileContent)) {
+				this.addGraphs(this._planCache.get(graphFile.graphFileContent));
+				return;
+			} else {
+				const graphs = (await this.executionPlanService.getExecutionPlan({
+					graphFileContent: graphFile.graphFileContent,
+					graphFileType: graphFile.graphFileType
+				})).graphs;
+				this.addGraphs(graphs);
+				this._planCache.set(graphFile.graphFileContent, graphs);
+			}
+			this._loadingSpinner.loadingCompletedMessage = localize('executionPlanFileLoadingComplete', "Execution plans are generated");
+		} catch (e) {
+			this._loadingErrorInfoBox = new InfoBox(this._container, {
+				text: e.toString(),
+				style: 'error',
+				isClickable: false
+			});
+			this._loadingErrorInfoBox.isClickable = false;
+			this._loadingSpinner.loadingCompletedMessage = localize('executionPlanFileLoadingFailed', "Failed to load execution plan");
+		} finally {
+			this._loadingSpinner.loading = false;
 		}
 	}
 
@@ -132,7 +183,7 @@ export class ExecutionPlanView implements IPanelView {
 }
 
 export class ExecutionPlan implements ISashLayoutProvider {
-	private _graphModel?: azdata.ExecutionPlanGraph;
+	private _graphModel?: azdata.executionPlan.ExecutionPlanGraph;
 
 	private _container: HTMLElement;
 
@@ -327,7 +378,7 @@ export class ExecutionPlan implements ISashLayoutProvider {
 		return diagramEdge;
 	}
 
-	private populateProperties(props: azdata.ExecutionPlanGraphElementProperty[]) {
+	private populateProperties(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[]) {
 		return props.filter(e => isString(e.displayValue) && e.showInTooltip)
 			.sort((a, b) => a.displayOrder - b.displayOrder)
 			.map(e => {
@@ -347,7 +398,7 @@ export class ExecutionPlan implements ISashLayoutProvider {
 
 	private createPlanDiagram(container: HTMLElement) {
 		let diagramRoot: any = new Object();
-		let graphRoot: azdata.ExecutionPlanNode = this._graphModel.root;
+		let graphRoot: azdata.executionPlan.ExecutionPlanNode = this._graphModel.root;
 
 		this.populate(graphRoot, diagramRoot);
 		this.azdataGraphDiagram = new azdataGraph.azdataQueryPlan(container, diagramRoot, executionPlanNodeIconPaths);
@@ -385,7 +436,7 @@ export class ExecutionPlan implements ISashLayoutProvider {
 	}
 
 
-	public set graphModel(graph: azdata.ExecutionPlanGraph | undefined) {
+	public set graphModel(graph: azdata.executionPlan.ExecutionPlanGraph | undefined) {
 		this._graphModel = graph;
 		if (this._graphModel) {
 			this.planHeader.graphIndex = this._graphIndex;
@@ -420,7 +471,7 @@ export class ExecutionPlan implements ISashLayoutProvider {
 		}
 	}
 
-	public get graphModel(): azdata.ExecutionPlanGraph | undefined {
+	public get graphModel(): azdata.executionPlan.ExecutionPlanGraph | undefined {
 		return this._graphModel;
 	}
 

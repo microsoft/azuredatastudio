@@ -447,7 +447,11 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 
 	private async assignProviders(): Promise<void> {
 		await this.extensionService.whenInstalledExtensionsRegistered();
-		let providerIds: string[] = getProvidersForFileName(this._title, this.notebookService);
+		let mode: string;
+		if (this._textInput instanceof UntitledTextEditorInput) {
+			mode = this._textInput.model.getMode();
+		}
+		let providerIds: string[] = getProvidersForFileName(this._title, this.notebookService, mode);
 		if (providerIds && providerIds.length > 0) {
 			this._providerId = providerIds.filter(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER)[0];
 			this._providers = providerIds;

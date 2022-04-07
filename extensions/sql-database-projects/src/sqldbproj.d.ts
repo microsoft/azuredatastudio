@@ -173,14 +173,13 @@ declare module 'sqldbproj' {
 	 * Target platforms for a sql project
 	 */
 	export const enum SqlTargetPlatform {
-		sqlServer2005 = 'SQL Server 2005',
-		sqlServer2008 = 'SQL Server 2008',
 		sqlServer2012 = 'SQL Server 2012',
 		sqlServer2014 = 'SQL Server 2014',
 		sqlServer2016 = 'SQL Server 2016',
 		sqlServer2017 = 'SQL Server 2017',
 		sqlServer2019 = 'SQL Server 2019',
-		sqlAzure = 'Microsoft Azure SQL Database',
-		sqlDW = 'Microsoft Azure SQL Data Warehouse'
+		sqlAzure = 'Azure SQL Database',
+		sqlDW = 'Azure Synapse Dedicated SQL Pool',
+		sqlEdge = 'Azure SQL Edge'
 	}
 }

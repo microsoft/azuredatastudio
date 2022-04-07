@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publisher": "Microsoft",
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
@@ -359,6 +359,49 @@
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
                             "value": "Direct"
+                          }
+                        },
+                        {
+                          "type": "options",
+                          "label": "%arc.data.controller.log.analytics.workspace.names%",
+                          "variableName": "AZDATA_NB_VAR_LOG_ANALYTICS_WORKSPACE_NAMES",
+                          "required": true,
+                          "options": {
+                            "source": {
+                              "providerId": "arc.logAnalyticsWorkspaceNames"
+                            },
+                            "optionsType": "dropdown"
+                          },
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_AUTO_UPLOAD_LOGS",
+                            "value": "true"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "label": "%arc.data.controller.log.analytics.workspace.id%",
+                          "required": true,
+                          "isEvaluated": true,
+                          "variableName": "AZDATA_NB_VAR_LOG_ANALYTICS_WORKSPACE_ID",
+                          "valueProvider": {
+                            "providerId": "workspace-name-to-id",
+                            "triggerFields": [
+                              "AZDATA_NB_VAR_LOG_ANALYTICS_WORKSPACE_NAMES"
+                            ]
+                          },
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_AUTO_UPLOAD_LOGS",
+                            "value": "true"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "label": "%arc.data.controller.log.analytics.primary.key%",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_LOG_ANALYTICS_PRIMARY_KEY",
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_AUTO_UPLOAD_LOGS",
+                            "value": "true"
                           }
                         }
                       ]
@@ -1390,6 +1433,9 @@
     "resourceDeploymentOptionsSources": [
       {
         "id": "arc.controllers"
+      },
+      {
+        "id": "arc.logAnalyticsWorkspaceNames"
       }
     ]
   },

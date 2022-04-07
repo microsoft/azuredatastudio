@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 
 import * as azdata from 'azdata';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { InfoBox, InfoBoxStyle } from 'sql/base/browser/ui/infoBox/infoBox';
@@ -41,6 +41,12 @@ export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxCompon
 		if (this._container) {
 			this._infoBox = new InfoBox(this._container.nativeElement);
 			this._register(attachInfoBoxStyler(this._infoBox, this.themeService));
+			this._infoBox.onDidClick(e => {
+				this.fireEvent({
+					eventType: ComponentEventType.onDidClick,
+					args: e
+				});
+			});
 			this.updateInfoBox();
 		}
 	}
@@ -65,6 +71,8 @@ export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxCompon
 			this._infoBox.announceText = this.announceText;
 			this._infoBox.infoBoxStyle = this.style;
 			this._infoBox.text = this.text;
+			this._infoBox.isClickable = this.isClickable;
+			this._infoBox.clickableButtonAriaLabel = this.clickableButtonAriaLabel;
 		}
 	}
 
@@ -78,5 +86,13 @@ export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxCompon
 
 	public get announceText(): boolean {
 		return this.getPropertyOrDefault<boolean>((props) => props.announceText, false);
+	}
+
+	public get isClickable(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.isClickable, false);
+	}
+
+	public get clickableButtonAriaLabel(): string {
+		return this.getPropertyOrDefault<string>((props) => props.clickableButtonAriaLabel, '');
 	}
 }

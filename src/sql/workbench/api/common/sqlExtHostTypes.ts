@@ -382,7 +382,8 @@ export enum DataProviderType {
 	IconProvider = 'IconProvider',
 	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
 	DataGridProvider = 'DataGridProvider',
-	TableDesignerProvider = 'TableDesignerProvider'
+	TableDesignerProvider = 'TableDesignerProvider',
+	ExecutionPlanProvider = 'ExecutionPlanProvider'
 }
 
 export enum DeclarativeDataType {
@@ -543,6 +544,8 @@ export class SqlThemeIcon {
 	static readonly ExternalTable = new SqlThemeIcon('ExternalTable');
 	static readonly ColumnMasterKey = new SqlThemeIcon('ColumnMasterKey');
 	static readonly ColumnEncryptionKey = new SqlThemeIcon('ColumnEncryptionKey');
+	static readonly GraphEdge = new SqlThemeIcon('GraphEdge');
+	static readonly GraphNode = new SqlThemeIcon('GraphNode');
 
 	public readonly id: string;
 
@@ -900,7 +903,8 @@ export enum ColumnType {
 	checkBox = 1,
 	button = 2,
 	icon = 3,
-	hyperlink = 4
+	hyperlink = 4,
+	contextMenu = 5
 }
 
 export enum ActionOnCellCheckboxCheck {
@@ -965,7 +969,9 @@ export namespace designers {
 		Script = 'script',
 		ForeignKeys = 'foreignKeys',
 		CheckConstraints = 'checkConstraints',
-		Indexes = 'indexes'
+		Indexes = 'indexes',
+		PrimaryKeyName = 'primaryKeyName',
+		PrimaryKeyColumns = 'primaryKeyColumns'
 	}
 
 	export enum TableColumnProperty {
@@ -1010,5 +1016,12 @@ export namespace designers {
 		Add = 0,
 		Remove = 1,
 		Update = 2
+	}
+
+	export enum TableIcon {
+		Basic = 'Basic',
+		Temporal = 'Temporal',
+		GraphEdge = 'GraphEdge',
+		GraphNode = 'GraphNode'
 	}
 }

@@ -30,7 +30,7 @@ describe('BuildHelper: Build Helper tests', function (): void {
 		const resultArg = buildHelper.constructBuildArguments('dummy\\project path\\more space in path', 'dummy\\dll path', true);
 
 		if (os.platform() === 'win32') {
-			should(resultArg).equal(' build "dummy\\\\project path\\\\more space in path" /p:NetCoreBuild=true /p:SystemDacpacsLocation=="dummy\\\\dll path"');
+			should(resultArg).equal(' build "dummy\\\\project path\\\\more space in path" /p:NetCoreBuild=true /p:SystemDacpacsLocation="dummy\\\\dll path"');
 		}
 		else {
 			should(resultArg).equal(' build "dummy/project path/more space in path" /p:NetCoreBuild=true /p:SystemDacpacsLocation="dummy/dll path"');

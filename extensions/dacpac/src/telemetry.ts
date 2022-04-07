@@ -14,10 +14,14 @@ let packageInfo = Utils.getPackageInfo(packageJson);
 export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 
 export enum TelemetryViews {
-	DataTierApplicationWizard = 'DataTierApplicationWizard',
-	DeployDacpac = 'DeployDacpac',
-	DeployPlanPage = 'DeployPlanPage',
-	ExportBacpac = 'ExportBacpac',
-	ExtractDacpac = 'ExtractDacpac',
-	ImportBacpac = 'ImportBacpac'
+	DataTierApplicationWizard = 'DataTierApplicationWizard'
+}
+
+export enum TelemetryAction {
+	DeployDacpac = 'DeployDacpacOperation',
+	GenerateScript = 'GenerateDeployScriptOperation',
+	GenerateDeployPlan = 'GenerateDeployPlan',
+	ExtractDacpac = 'ExtractDacpacOperation',
+	ExportBacpac = 'ExportBacpacOperation',
+	ImportBacpac = 'ImportBacpacOperation'
 }

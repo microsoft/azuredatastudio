@@ -224,12 +224,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 
 	//#region Extension accessible methods
 	async createNotebookDocument(providerId: string, contents?: azdata.nb.INotebookContents): Promise<URI> {
-		let options: INotebookShowOptions = {};
-		if (contents) {
-			options.providerId = providerId;
-			options.initialContent = JSON.stringify(contents);
-		}
-		let uriComps = await this._proxy.$tryCreateNotebookDocument(options);
+		let uriComps = await this._proxy.$tryCreateNotebookDocument(providerId, contents);
 		let uri = URI.revive(uriComps);
 		let notebookCells = contents?.cells?.map<azdata.nb.NotebookCell>(cellContents => {
 			return {

@@ -9956,6 +9956,8 @@
 			"table.selectAll": "全选",
 			"table.sortAscending": "升序排序",
 			"table.sortDescending": "降序排序",
+			"tableFilter.blankStringDisplayText": "(空白)",
+			"tableFilter.nullDisplayText": "(NULL)",
 			"tableFilter.selectedCount": "已选择 {0} 项",
 			"tableFilter.visibleCount": "{0} 个结果"
 		},
@@ -9980,6 +9982,7 @@
 			"dataExplorer.context": "dataexplorer 项上下文菜单",
 			"dataGrid.context": "数据网格项上下文菜单",
 			"default": "启用自动更新检查。Azure Data Studio 将定期自动检查更新。",
+			"docNotFoundForUriError": "无法打开指定的 URI 的笔记本文档。",
 			"enable locally": "请重新加载 Azure Data Studio 以在本地启用此扩展。",
 			"enable remote": "请重新加载 Azure Data Studio 以在 {0} 中启用此扩展。",
 			"enableWindowsBackgroundUpdates": "启用在 Windows 上后台下载和安装新的 Azure Data Studio 版本",
@@ -10006,16 +10009,13 @@
 			"sql.watcherExclude": "配置文件路径的 glob 模式以从文件监视排除。模式必须在绝对路径上匹配(例如 ** 前缀或完整路径需正确匹配，以及路径内以“/**”前缀开头，例如“**/build/output/**”或“/Users/name/workspaces/project/build/output/**”)。更改此设置需要重启。如果在启动时遇到 Azure Data Studio 消耗大量 CPU 时间，则可以排除大型文件夹以减少初始加载。",
 			"uninstallExtensionComplete": "请重新加载 Azure Data Studio 以完成扩展 {0} 的卸载。",
 			"updateLocale": "是否要将 Azure Data Studio 的 UI 语言更改为 {0} 并重启?",
+			"vscodeDocCreationFailedError": "未能创建笔记本文档。",
 			"vscodeFunctionalityNotSupportedError": "Azure Data Studio 中不支持此 VS Code 功能。",
-			"vscodeInvalidArgumentsError": "无效参数",
+			"vscodeInvalidArgumentsError": "参数无效。",
 			"watermark.newNotebook": "新建笔记本",
 			"watermark.newSqlFile": "新建 SQL 文件",
 			"workspace.trust.description": "控制是否在 Azure Data Studio 内启用工作区信任。",
 			"workspace.trust.emptyWindow.description": "控制空窗口在 zure Data Studio 中是否默认受信任。当与 `#{0}#` 一起使用时，可以启用 zure Data Studio 的完整功能，而无需在空窗口中进行提示。"
-		},
-		"sql/base/parts/editableDropdown/browser/dropdown": {
-			"editableDropdown.errorValidate": "必须是列表中的选项",
-			"selectBox": "选择框"
 		},
 		"sql/platform/accounts/common/accountActions": {
 			"NoAccountToRefresh": "没有可刷新的帐户",
@@ -10171,8 +10171,11 @@
 		"sql/workbench/browser/designer/designer": {
 			"designer.defaultRemoveRowConfirmationMessage": "是否确实要删除该行?",
 			"designer.generalGroupName": "常规",
+			"designer.issueCountAlert": "已找到 {0} 个验证问题。",
+			"designer.issuesTabTitle": "问题({0})",
 			"designer.loadingDesigner": "正在加载设计器...",
 			"designer.loadingDesignerCompleted": "已加载设计器",
+			"designer.newRowButtonAriaLabel": "将新行添加到 \\\"{0}\\\" 表",
 			"designer.newRowText": "新增",
 			"designer.processing": "正在处理...",
 			"designer.processingChanges": "正在处理更改...",
@@ -10181,6 +10184,7 @@
 			"designer.publishChangesCompleted": "已发布更改",
 			"designer.publishingChanges": "正在发布更改...",
 			"designer.removeRowText": "删除",
+			"designer.scriptTabTitle": "脚本",
 			"tableDesigner.unknownComponentType": "组件类型: 不支持 {0}"
 		},
 		"sql/workbench/browser/designer/designerPropertiesPane": {
@@ -11027,7 +11031,10 @@
 			"textPreview": "文本单元格"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
-			"parametersText": "参数"
+			"cellLanguageDescription": "({0}) - 当前语言",
+			"cellLanguageDescriptionConfigured": "({0})",
+			"parametersText": "参数",
+			"selectCellLanguage": "选择单元格语言模式"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/codeActions": {
 			"errorRunCell": "上次运行时出错。请单击以重新运行",
@@ -11137,6 +11144,7 @@
 			"notebook.useNewMarkdownRenderer": "是否对 Notebook 使用较新版本的 Markdown 呈现器。这可能会导致 Markdown 的呈现方式与以前的版本不同。",
 			"notebookViews": "Notebook 视图",
 			"notebookViews.enabled": "(预览)启用笔记本视图",
+			"restartNotebookKernel": "重启笔记本内核",
 			"search.actionsPosition": "在搜索视图中控制操作栏的位置。",
 			"search.actionsPositionAuto": "当搜索视图较窄时将操作栏置于右侧，当搜索视图较宽时，将它紧接在内容之后。",
 			"search.actionsPositionRight": "始终将操作栏放置在右侧。",
@@ -11732,6 +11740,7 @@
 			"accountDialog.addConnection": "添加帐户",
 			"accountDialog.close": "关闭",
 			"accountDialog.didNotPickAuthProvider": "你没有选择任何身份验证提供程序。请重试。",
+			"accountDialog.loadingProviderLabel": "正在加载帐户...",
 			"accountDialog.noAccountLabel": "没有链接的帐户。请添加一个帐户。",
 			"accountDialog.noCloudsRegistered": "你没有启用云。请转到“设置”-> 搜索 Azure 帐户配置 -> 至少启用一个云",
 			"accountExplorer.name": "帐户",
@@ -11966,7 +11975,9 @@
 			"NoExecuteManager": "服务器无法启动，因为没有为此笔记本文件类型定义提供程序。",
 			"ServerNotStarted": "由于未知原因，服务器未启动",
 			"clientSession.unknownError": "启动笔记本会话时出错",
-			"kernelRequiresConnection": "未找到内核 {0}。将改为使用默认内核。"
+			"kernelRequiresConnection": "未找到内核 {0}。将改为使用默认内核。",
+			"kernelRestartFailed": "内核重启失败: {0}",
+			"kernelRestartedSuccessfully": "已成功重启内核"
 		},
 		"sql/workbench/services/notebook/browser/models/notebookContexts": {
 			"localhost": "localhost",
@@ -11985,6 +11996,7 @@
 		},
 		"sql/workbench/services/notebook/browser/notebookServiceImpl": {
 			"executeProviderTimeout": "等待笔记本提供程序 \"{0}\" 的执行提供程序时超时",
+			"failedToCreateNotebookInput": "无法为提供程序 \\\"{0}\\\" 创建笔记本输入",
 			"notebookServiceNoProvider": "笔记本提供程序不存在",
 			"notebookUriNotDefined": "创建笔记本管理器时未传递 URI",
 			"serializationProviderTimeout": "等待笔记本提供程序 \"{0}\" 的序列化提供程序可用时超时",
@@ -11997,6 +12009,7 @@
 			"notebookView.untitledView": "无标题视图"
 		},
 		"sql/workbench/services/notebook/browser/sql/sqlSessionManager": {
+			"SqlKernelRestartNotSupported": "不支持 SQL 内核重启",
 			"connectionRequired": "必须选择连接才能运行笔记本单元格",
 			"sqlKernelError": "SQL 内核错误",
 			"sqlMaxRowsDisplayed": "显示了前 {0} 行。"
@@ -12205,10 +12218,21 @@
 			"designer.table.description.description": "表的说明。",
 			"designer.table.description.name": "表对象的名称。",
 			"designer.table.description.schema": "包含该表的架构。",
-			"tableDesigner.ErrorDialogTitle": "Table Designer Error",
+			"designer.table.primaryKeyColumns.description": "主键中的列。",
+			"designer.table.primaryKeyName.description": "主键的名称。",
+			"tableDesigner.ErrorDialogTitle": "表设计器错误",
 			"tableDesigner.ForeignKeyTypeName": "外键",
 			"tableDesigner.ForeignTableName": "外部表",
 			"tableDesigner.IndexTypeName": "索引",
+			"tableDesigner.PrimaryKeyTabTitle": "主键",
+			"tableDesigner.TableSchemaValidationError": "表架构验证失败，出现错误: {0}",
+			"tableDesigner.addForeignKey": "新建外键",
+			"tableDesigner.addNewCheckConstraint": "新建 CHECK 约束",
+			"tableDesigner.addNewColumn": "新建列",
+			"tableDesigner.addNewColumnMapping": "新建列映射",
+			"tableDesigner.addNewColumnToIndex": "添加列",
+			"tableDesigner.addNewColumnToPrimaryKey": "添加列",
+			"tableDesigner.addNewIndex": "新建索引",
 			"tableDesigner.checkConstraintExpressionTitle": "表达式",
 			"tableDesigner.checkConstraintNameTitle": "名称",
 			"tableDesigner.checkConstraintTypeName": "CHECK 约束",
@@ -12243,7 +12267,10 @@
 			"tableDesigner.indexColumns": "列",
 			"tableDesigner.indexName": "名称",
 			"tableDesigner.indexesTabTitle": "索引",
+			"tableDesigner.inputValidationError": "输入验证失败，出现错误: {0}",
 			"tableDesigner.nameTitle": "表名",
+			"tableDesigner.primaryKeyColumnsTitle": "主键列",
+			"tableDesigner.primaryKeyNameTitle": "名称",
 			"tableDesigner.publishChangeError": "发布更改时出错: {0}",
 			"tableDesigner.publishChangeSuccess": "更改已成功发布。",
 			"tableDesigner.savingChanges": "正在发布表设计器更改...",
@@ -12262,43 +12289,6 @@
 		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
 			"errorStartBeforeReady": "无法启动会话，管理器尚未初始化"
 		},
-		"sql/workbench/contrib/queryplan2/browser/planHeader": {
-			"planHeaderIndexAndCost": "查询 {0}: 查询成本(相对于脚本): {1}%"
-		},
-		"sql/workbench/contrib/queryplan2/browser/queryPlan": {
-			"openQueryAction": "打开查询",
-			"queryPlanCustomZoom": "自定义显示比例",
-			"queryPlanFitGraphLabel": "缩放到合适大小",
-			"queryPlanOpenGraphFile": "Open Plan File",
-			"queryPlanPropertiesActionLabel": "属性",
-			"queryPlanSavePlanXML": "Save Plan File",
-			"queryPlanSearchNodeAction": "SearchNode",
-			"queryPlanTitle": "Query Plan (Preview)",
-			"queryPlanZoomInActionLabel": "放大",
-			"queryPlanZoomOutActionLabel": "缩小"
-		},
-		"sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView": {
-			"nodePropertyViewNameNameColumnHeader": "Name",
-			"nodePropertyViewNameValueColumnHeader": "Value",
-			"nodePropertyViewTitle": "Properties",
-			"queryPlanPropertiesEdgeOperationName": "Edge",
-			"queryPlanPropertyViewClose": "Close",
-			"queryPlanPropertyViewSortAlphabetically": "Alphabetical",
-			"queryPlanPropertyViewSortByDisplayOrde": "Categorized"
-		},
-		"sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget": {
-			"cancelCustomZoomAction": "Close (Escape)",
-			"invalidCustomZoomError": "Select a zoom value between 1 to 200",
-			"qpZoomValueLabel": "Zoom (percent)",
-			"zoomAction": "Zoom (Enter)"
-		},
-		"sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget": {
-			"cancelSearchAction": "Close (Escape)",
-			"nextSearchItemAction": "Next Match (Enter)",
-			"previousSearchItemAction": "Previous Match (Shift+Enter)",
-			"queryPlanSearchTypeContains": "Contains",
-			"queryPlanSearchTypeEquals": "Equals"
-		},
 		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
 			"tableDesigner.PreviewFeature": "预览功能"
 		},
@@ -12312,6 +12302,71 @@
 			"tableDesigner.cancel": "取消",
 			"tableDesigner.generateScript": "生成脚本",
 			"tableDesigner.previewDatabaseUpdates": "预览数据库更新"
+		},
+		"sql/base/browser/ui/editableDropdown/browser/dropdown": {
+			"editableDropdown.errorValidate": "必须是列表中的选项",
+			"selectBox": "选择框"
+		},
+		"sql/workbench/browser/designer/designerIssuesTabPanelView": {
+			"designer.IssueListAriaLabel": "问题"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlan": {
+			"executionPlan.SaveFileDescription": "执行计划文件",
+			"executionPlanCustomZoom": "自定义显示比例",
+			"executionPlanFileLoadingComplete": "已生成执行计划",
+			"executionPlanFileLoadingFailed": "未能加载执行计划",
+			"executionPlanFitGraphLabel": "缩放到合适大小",
+			"executionPlanOpenGraphFile": "显示查询计划 XML",
+			"executionPlanPropertiesActionLabel": "属性",
+			"executionPlanSavePlanXML": "保存计划文件",
+			"executionPlanSearchNodeAction": "查找节点",
+			"executionPlanTitle": "查询计划(预览)",
+			"executionPlanZoomInActionLabel": "放大",
+			"executionPlanZoomOutActionLabel": "缩小",
+			"loadingExecutionPlanFile": "正在生成执行计划",
+			"openQueryAction": "打开查询"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
+			"executionPlanEditor": "查询执行计划编辑器"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView": {
+			"executionPlanPropertiesEdgeOperationName": "边缘",
+			"executionPlanPropertyViewClose": "关闭",
+			"executionPlanPropertyViewSortAlphabetically": "按字母顺序",
+			"executionPlanPropertyViewSortByDisplayOrder": "按分类顺序",
+			"nodePropertyViewNameNameColumnHeader": "名称",
+			"nodePropertyViewNameValueColumnHeader": "值",
+			"nodePropertyViewTitle": "属性"
+		},
+		"sql/workbench/contrib/executionPlan/browser/planHeader": {
+			"planHeaderIndexAndCost": "查询 {0}: 查询成本(相对于脚本): {1}%"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
+			"cancelCustomZoomAction": "关闭(转义)",
+			"customZoomApplyButton": "应用",
+			"customZoomApplyButtonTitle": "应用缩放(Enter)",
+			"invalidCustomZoomError": "选择介于 1 到 200 之间的缩放值",
+			"qpZoomValueLabel": "缩放(%)",
+			"zoomAction": "缩放(Enter)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget": {
+			"cancelSearchAction": "关闭(转义)",
+			"executionPlanSearchTypeContains": "包含",
+			"executionPlanSearchTypeEquals": "等于",
+			"nextSearchItemAction": "下一个匹配项(Enter)",
+			"previousSearchItemAction": "上一个匹配项(Shift+Enter)"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookEditor.component": {
+			"loadingNotebookCompletedMessage": "已完成加载笔记本 {0}",
+			"loadingNotebookMessage": "正在加载笔记本 {0}"
+		},
+		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"noHandlerRegistered": "未注册有效的执行计划处理程序",
+			"providerIdNotValidError": "如果要与 ExecutionPlanService 交互，需要有效的提供程序",
+			"selectExecutionPlanProvider": "选择提供程序以打开执行计划"
+		},
+		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
+			"table.showActions": "Show Actions"
 		}
 	}
 }

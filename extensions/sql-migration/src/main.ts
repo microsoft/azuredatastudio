@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { WizardController } from './wizard/wizardController';
-import * as mssql from '../../mssql';
+import * as mssql from 'mssql';
 import { promises as fs } from 'fs';
 import * as loc from './constants/strings';
 import { MigrationNotebookInfo, NotebookPathHelper } from './constants/notebookPathHelper';

@@ -169,6 +169,13 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	/**
+	 * Fire event to refresh projects tree
+	 */
+	public refreshProjectsTree(): void {
+		this._onDidWorkspaceProjectsChange.fire();
+	}
+
+	/**
 	 * Returns an array of all the supported projects in the folder
 	 * @param folder folder to look look for projects
 	 * @returns array of file URIs for supported projects
@@ -197,10 +204,10 @@ export class WorkspaceService implements IWorkspaceService {
 		return ProjectProviderRegistry.getProviderByProjectExtension(projectType);
 	}
 
-	async createProject(name: string, location: vscode.Uri, projectTypeId: string, projectTargetVersion?: string): Promise<vscode.Uri> {
+	async createProject(name: string, location: vscode.Uri, projectTypeId: string, projectTargetVersion?: string, sdkStyleProject?: boolean): Promise<vscode.Uri> {
 		const provider = ProjectProviderRegistry.getProviderByProjectType(projectTypeId);
 		if (provider) {
-			const projectFile = await provider.createProject(name, location, projectTypeId, projectTargetVersion);
+			const projectFile = await provider.createProject(name, location, projectTypeId, projectTargetVersion, sdkStyleProject);
 			await this.addProjectsToWorkspace([projectFile]);
 			this._onDidWorkspaceProjectsChange.fire();
 			return projectFile;

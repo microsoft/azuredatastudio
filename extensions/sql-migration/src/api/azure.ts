@@ -99,9 +99,9 @@ export type SqlVMServer = {
 	tenantId: string,
 	subscriptionId: string
 };
-export async function getAvailableSqlVMs(account: azdata.Account, subscription: Subscription, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<SqlVMServer[]> {
+export async function getAvailableSqlVMs(account: azdata.Account, subscription: Subscription): Promise<SqlVMServer[]> {
 	const api = await getAzureCoreAPI();
-	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${resourceGroup.name}/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines?api-version=2017-03-01-preview`);
+	const path = encodeURI(`/subscriptions/${subscription.id}/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines?api-version=2021-11-01-preview`);
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
@@ -360,7 +360,7 @@ export async function getLocationDisplayName(location: string): Promise<string> 
 }
 
 type SortableAzureResources = AzureProduct | azureResource.FileShare | azureResource.BlobContainer | azureResource.Blob | azureResource.AzureResourceSubscription | SqlMigrationService;
-function sortResourceArrayByName(resourceArray: SortableAzureResources[]): void {
+export function sortResourceArrayByName(resourceArray: SortableAzureResources[]): void {
 	if (!resourceArray) {
 		return;
 	}

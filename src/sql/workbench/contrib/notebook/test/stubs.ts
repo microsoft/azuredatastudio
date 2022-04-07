@@ -238,7 +238,7 @@ export class NotebookServiceStub implements INotebookService {
 	getSupportedLanguagesForProvider(provider: string, kernelDisplayName?: string): Promise<string[]> {
 		throw new Error('Method not implemented.');
 	}
-	createNotebookInput(options: INotebookShowOptions, resource?: UriComponents): Promise<IEditorInput> {
+	createNotebookInputFromContents(providerId: string, contents?: nb.INotebookContents, resource?: UriComponents): Promise<IEditorInput> {
 		throw new Error('Method not implemented.');
 	}
 	_serviceBrand: undefined;
@@ -353,7 +353,7 @@ export class ClientSessionStub implements IClientSession {
 	selectKernel(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
-	restart(): Promise<boolean> {
+	restart(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 	setPath(path: string): Promise<void> {
@@ -462,6 +462,9 @@ export class KernelStub implements nb.IKernel {
 		throw new Error('Method not implemented.');
 	}
 	interrupt(): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	restart(): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
 }
