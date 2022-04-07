@@ -277,6 +277,7 @@ export class NotebookService extends Disposable implements INotebookService {
 
 		let options: INotebookShowOptions = {
 			providerId: providerId,
+			initialContent: contents,
 			initialTextContent: serializedContent
 		};
 		return this.createNotebookInput(options, resource);
