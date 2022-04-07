@@ -44,10 +44,9 @@ function createCompile(src: string, build: boolean, emitError?: boolean) {
 
 	const projectPath = path.join(__dirname, '../../', src, 'tsconfig.json');
 	const overrideOptions = { ...getTypeScriptCompilerOptions(src), inlineSources: Boolean(build) };
-	// {{SQL CARBON EDIT}} Never inline source maps so that generating local coverage works
-	// if (!build) {
-	// 	// overrideOptions.inlineSourceMap = true;
-	// }
+	if (!build) {
+		overrideOptions.inlineSourceMap = true;
+	}
 
 	const compilation = tsb.create(projectPath, overrideOptions, false, err => reporter(err));
 
