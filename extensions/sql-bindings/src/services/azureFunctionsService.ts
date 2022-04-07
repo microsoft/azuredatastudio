@@ -67,11 +67,23 @@ export async function createAzureFunction(connectionString: string, schema: stri
 					projectFile = await azureFunctionsUtils.getAzureFunctionProject();
 				}
 			} catch (error) {
-				void vscode.window.showErrorMessage(utils.formatString(constants.errorNewAzureFunction, error.message ?? error));
 				let errorType = utils.getErrorType(error);
-				TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.helpCreateAzureFunctionProject, undefined, errorType).send();
+				propertyBag.quickPickStep = quickPickStep;
+
+				if (errorType === 'TimeoutError') {
+					// this error can be cause by many different scenarios including timeout or error occurred during createFunction
+					exitReason = 'timeout';
+					console.log('Error creating azure function project');
+				} else {
+					// else an error would occur during the createFunction
+					exitReason = 'error';
+					void vscode.window.showErrorMessage(utils.formatString(constants.errorNewAzureFunction, error.message ?? error));
+				}
+				TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, errorType)
+					.withAdditionalProperties(propertyBag).send();
 				return;
 			} finally {
+				propertyBag.exitReason = exitReason;
 				TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
 					.withConnectionInfo(connectionInfo)
 					.withAdditionalProperties(propertyBag).send();
@@ -161,6 +173,7 @@ export async function createAzureFunction(connectionString: string, schema: stri
 			}
 			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, errorType)
 				.withAdditionalProperties(propertyBag).send();
+			return;
 		} finally {
 			propertyBag.quickPickStep = quickPickStep;
 			propertyBag.exitReason = exitReason;
