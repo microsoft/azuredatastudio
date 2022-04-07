@@ -41,7 +41,7 @@
         "command": "sqlBindings.createAzureFunction",
         "title": "%sqlBindings.createAzureFunction%",
         "category": "MS SQL",
-        "when": "view == objectExplorer && viewItem == Table"
+        "when": "view == objectExplorer && viewItem == Table && !azdataAvailable"
       }
     ],
     "menus": {
