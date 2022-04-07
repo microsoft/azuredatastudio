@@ -538,7 +538,7 @@ export class RunParametersAction extends TooltipFromLabelAction {
 		let untitledUriPath = this._notebookService.getUntitledUriPath(path.basename(uri.fsPath));
 		let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: untitledUriPath });
 		this._notebookService.openNotebook(untitledUri, {
-			initialContent: JSON.stringify(modelContents),
+			initialTextContent: JSON.stringify(modelContents),
 			preserveFocus: true
 		});
 	}

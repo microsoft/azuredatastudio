@@ -1009,7 +1009,8 @@ export interface INotebookShowOptions {
 	providerId?: string;
 	connectionProfile?: azdata.IConnectionProfile;
 	defaultKernel?: azdata.nb.IKernelSpec;
-	initialContent?: string;
+	initialContent?: azdata.nb.INotebookContents;
+	initialTextContent?: string;
 	initialDirtyState?: boolean;
 }
 
