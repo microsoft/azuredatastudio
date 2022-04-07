@@ -50,12 +50,12 @@ export class DashboardWidget {
 	private _view!: azdata.ModelView;
 	private _inProgressMigrationButton!: StatusCard;
 	private _inProgressWarningMigrationButton!: StatusCard;
+	private _allMigrationButton!: StatusCard;
 	private _successfulMigrationButton!: StatusCard;
 	private _failedMigrationButton!: StatusCard;
 	private _completingMigrationButton!: StatusCard;
 	private _selectServiceText!: azdata.TextComponent;
 	private _serviceContextButton!: azdata.ButtonComponent;
-	private _viewAllMigrationsButton!: azdata.ButtonComponent;
 
 	private _autoRefreshHandle!: NodeJS.Timeout;
 	private _disposables: vscode.Disposable[] = [];
@@ -112,11 +112,12 @@ export class DashboardWidget {
 					'margin': '0 24px'
 				}
 			});
-			this._disposables.push(this._view.onClosed(e => {
-				clearInterval(this._autoRefreshHandle);
-				this._disposables.forEach(
-					d => { try { d.dispose(); } catch { } });
-			}));
+			this._disposables.push(
+				this._view.onClosed(e => {
+					clearInterval(this._autoRefreshHandle);
+					this._disposables.forEach(
+						d => { try { d.dispose(); } catch { } });
+				}));
 
 			await view.initializeModel(container);
 			await this.refreshMigrations();
@@ -234,11 +235,12 @@ export class DashboardWidget {
 				'transition': 'all .5s ease',
 			}
 		}).component();
-		this._disposables.push(buttonContainer.onDidClick(async () => {
-			if (taskMetaData.command) {
-				await vscode.commands.executeCommand(taskMetaData.command);
-			}
-		}));
+		this._disposables.push(
+			buttonContainer.onDidClick(async () => {
+				if (taskMetaData.command) {
+					await vscode.commands.executeCommand(taskMetaData.command);
+				}
+			}));
 		return view.modelBuilder.divContainer().withItems([buttonContainer]).component();
 	}
 
@@ -256,7 +258,6 @@ export class DashboardWidget {
 		}
 
 		this.isRefreshing = true;
-		this._viewAllMigrationsButton.enabled = false;
 		this._migrationStatusCardLoadingContainer.loading = true;
 		let migrations: DatabaseMigration[] = [];
 		try {
@@ -290,6 +291,7 @@ export class DashboardWidget {
 		this._updateStatusCard(migrations, this._successfulMigrationButton, AdsMigrationStatus.SUCCEEDED, true);
 		this._updateStatusCard(migrations, this._failedMigrationButton, AdsMigrationStatus.FAILED);
 		this._updateStatusCard(migrations, this._completingMigrationButton, AdsMigrationStatus.COMPLETING);
+		this._updateStatusCard(migrations, this._allMigrationButton, AdsMigrationStatus.ALL, true);
 
 		await this._updateSummaryStatus();
 		this.isRefreshing = false;
@@ -322,26 +324,27 @@ export class DashboardWidget {
 				}
 			}).component();
 
-		const statusIcon = this._view.modelBuilder.image().withProps({
-			iconPath: cardIconPath!.light,
-			iconHeight: 24,
-			iconWidth: 24,
-			height: 32,
-			CSSStyles: {
-				'margin': '0 8px'
-			}
-		}).component();
+		const statusIcon = this._view.modelBuilder.image()
+			.withProps({
+				iconPath: cardIconPath!.light,
+				iconHeight: 24,
+				iconWidth: 24,
+				height: 32,
+				CSSStyles: { 'margin': '0 8px' }
+			}).component();
 
-		const textContainer = this._view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column'
-		}).component();
+		const textContainer = this._view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.component();
 
-		const cardTitleText = this._view.modelBuilder.text().withProps({ value: cardTitle }).withProps({
-			CSSStyles: {
-				...styles.SECTION_HEADER_CSS,
-				'width': '240px'
-			}
-		}).component();
+		const cardTitleText = this._view.modelBuilder.text()
+			.withProps({ value: cardTitle })
+			.withProps({
+				CSSStyles: {
+					...styles.SECTION_HEADER_CSS,
+					'width': '240px',
+				}
+			}).component();
 		textContainer.addItem(cardTitleText);
 
 		const cardCount = this._view.modelBuilder.text().withProps({
@@ -356,30 +359,31 @@ export class DashboardWidget {
 		let warningContainer;
 		let warningText;
 		if (hasSubtext) {
-			const warningIcon = this._view.modelBuilder.image().withProps({
-				iconPath: IconPathHelper.warning,
-				iconWidth: 12,
-				iconHeight: 12,
-				width: 12,
-				height: 18
-			}).component();
+			const warningIcon = this._view.modelBuilder.image()
+				.withProps({
+					iconPath: IconPathHelper.warning,
+					iconWidth: 12,
+					iconHeight: 12,
+					width: 12,
+					height: 18,
+				}).component();
 
 			const warningDescription = '';
-			warningText = this._view.modelBuilder.text().withProps({ value: warningDescription }).withProps({
-				CSSStyles: {
-					...styles.BODY_CSS,
-					'padding-left': '8px',
-				}
-			}).component();
+			warningText = this._view.modelBuilder.text().withProps({ value: warningDescription })
+				.withProps({
+					CSSStyles: {
+						...styles.BODY_CSS,
+						'padding-left': '8px',
+					}
+				}).component();
 
-			warningContainer = this._view.modelBuilder.flexContainer().withItems([
-				warningIcon,
-				warningText
-			], {
-				flex: '0 0 auto'
-			}).withProps({
-				CSSStyles: { 'align-items': 'center' }
-			}).component();
+			warningContainer = this._view.modelBuilder.flexContainer()
+				.withItems(
+					[warningIcon, warningText],
+					{ flex: '0 0 auto' })
+				.withProps({
+					CSSStyles: { 'align-items': 'center' }
+				}).component();
 
 			textContainer.addItem(warningContainer);
 		}
@@ -454,57 +458,36 @@ export class DashboardWidget {
 			}
 		}).component();
 
-		this._viewAllMigrationsButton = view.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.view,
-			iconHeight: 22,
-			iconWidth: 22,
-			label: loc.VIEW_ALL,
-			title: loc.VIEW_ALL,
-			width: 100,
-			CSSStyles: { ...styles.BODY_CSS }
-		}).component();
-
-		this._disposables.push(this._viewAllMigrationsButton.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(
-				this._context,
-				AdsMigrationStatus.ALL,
-				this._onDialogClosed);
-			await dialog.initialize();
-		}));
-
-		const buttonContainer = view.modelBuilder.flexContainer().component();
+		const buttonContainer = view.modelBuilder.flexContainer()
+			.withProps({
+				CSSStyles: {
+					'justify-content': 'left',
+					'align-iems': 'center',
+				},
+			})
+			.component();
 
 		buttonContainer.addItem(
-			await this.createServiceSelector(this._view), {
-			CSSStyles: {
-				'padding-left': '5px',
-				'border-right': '1px solid',
-				'margin-right': '5px',
-			}
-		});
+			await this.createServiceSelector(this._view));
 
-		buttonContainer.addItem(this._viewAllMigrationsButton, {});
+		this._selectServiceText = view.modelBuilder.text()
+			.withProps({
+				value: loc.SELECT_SERVICE_MESSAGE,
+				CSSStyles: {
+					'font-size': '12px',
+					'margin': '10px',
+					'font-weight': '350',
+					'text-align': 'center',
+					'display': 'none'
+				}
+			}).component();
 
-		this._selectServiceText = view.modelBuilder.text().withProps({
-			value: loc.SELECT_SERVICE_MESSAGE,
-			width: 188,
-			height: 34,
-			CSSStyles: {
-				...styles.NOTE_CSS,
-				'margin': 'auto',
-				'text-align': 'center',
-				'display': 'none'
-			}
-		}).component();
-
-		const header = view.modelBuilder.flexContainer().withItems(
-			[
+		const header = view.modelBuilder.flexContainer()
+			.withItems([
 				statusContainerTitle,
 				buttonContainer,
-			]
-		).withLayout({
-			flexFlow: 'column',
-		}).component();
+			]).withLayout({ flexFlow: 'column', })
+			.component();
 
 		this._migrationStatusCardsContainer = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
@@ -512,78 +495,102 @@ export class DashboardWidget {
 
 		await this._updateSummaryStatus();
 
+		// in progress
 		this._inProgressMigrationButton = this.createStatusCard(
 			IconPathHelper.inProgressMigration,
 			loc.MIGRATION_IN_PROGRESS);
-		this._disposables.push(this._inProgressMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(
-				this._context,
-				AdsMigrationStatus.ONGOING,
-				this._onDialogClosed);
-			await dialog.initialize();
-		}));
+		this._disposables.push(
+			this._inProgressMigrationButton.container.onDidClick(async (e) => {
+				const dialog = new MigrationStatusDialog(
+					this._context,
+					AdsMigrationStatus.ONGOING,
+					this._onDialogClosed);
+				await dialog.initialize();
+			}));
 
 		this._migrationStatusCardsContainer.addItem(
 			this._inProgressMigrationButton.container);
 
+		// in progress warning
 		this._inProgressWarningMigrationButton = this.createStatusCard(
 			IconPathHelper.inProgressMigration,
 			loc.MIGRATION_IN_PROGRESS,
 			true);
-		this._disposables.push(this._inProgressWarningMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(
-				this._context,
-				AdsMigrationStatus.ONGOING,
-				this._onDialogClosed);
-			await dialog.initialize();
-		}));
+		this._disposables.push(
+			this._inProgressWarningMigrationButton.container.onDidClick(async (e) => {
+				const dialog = new MigrationStatusDialog(
+					this._context,
+					AdsMigrationStatus.ONGOING,
+					this._onDialogClosed);
+				await dialog.initialize();
+			}));
 
 		this._migrationStatusCardsContainer.addItem(
 			this._inProgressWarningMigrationButton.container);
 
+		// successful
 		this._successfulMigrationButton = this.createStatusCard(
 			IconPathHelper.completedMigration,
 			loc.MIGRATION_COMPLETED);
-		this._disposables.push(this._successfulMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(
-				this._context,
-				AdsMigrationStatus.SUCCEEDED,
-				this._onDialogClosed);
-			await dialog.initialize();
-		}));
+		this._disposables.push(
+			this._successfulMigrationButton.container.onDidClick(async (e) => {
+				const dialog = new MigrationStatusDialog(
+					this._context,
+					AdsMigrationStatus.SUCCEEDED,
+					this._onDialogClosed);
+				await dialog.initialize();
+			}));
 		this._migrationStatusCardsContainer.addItem(
 			this._successfulMigrationButton.container);
 
+		// completing
 		this._completingMigrationButton = this.createStatusCard(
 			IconPathHelper.completingCutover,
 			loc.MIGRATION_CUTOVER_CARD);
-		this._disposables.push(this._completingMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(
-				this._context,
-				AdsMigrationStatus.COMPLETING,
-				this._onDialogClosed);
-			await dialog.initialize();
-		}));
+		this._disposables.push(
+			this._completingMigrationButton.container.onDidClick(async (e) => {
+				const dialog = new MigrationStatusDialog(
+					this._context,
+					AdsMigrationStatus.COMPLETING,
+					this._onDialogClosed);
+				await dialog.initialize();
+			}));
 		this._migrationStatusCardsContainer.addItem(
 			this._completingMigrationButton.container);
 
+		// failed
 		this._failedMigrationButton = this.createStatusCard(
 			IconPathHelper.error,
 			loc.MIGRATION_FAILED);
-		this._disposables.push(this._failedMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(
-				this._context,
-				AdsMigrationStatus.FAILED,
-				this._onDialogClosed);
-			await dialog.initialize();
-		}));
+		this._disposables.push(
+			this._failedMigrationButton.container.onDidClick(async (e) => {
+				const dialog = new MigrationStatusDialog(
+					this._context,
+					AdsMigrationStatus.FAILED,
+					this._onDialogClosed);
+				await dialog.initialize();
+			}));
 		this._migrationStatusCardsContainer.addItem(
 			this._failedMigrationButton.container);
+
+		// all migrations
+		this._allMigrationButton = this.createStatusCard(
+			IconPathHelper.view,
+			loc.VIEW_ALL);
+		this._disposables.push(
+			this._allMigrationButton.container.onDidClick(async (e) => {
+				const dialog = new MigrationStatusDialog(
+					this._context,
+					AdsMigrationStatus.ALL,
+					this._onDialogClosed);
+				await dialog.initialize();
+			}));
+		this._migrationStatusCardsContainer.addItem(
+			this._allMigrationButton.container);
 
 		this._migrationStatusCardLoadingContainer = view.modelBuilder.loadingComponent()
 			.withItem(this._migrationStatusCardsContainer)
 			.component();
-
 		statusContainer.addItem(header, { CSSStyles: { 'margin-bottom': '16px' } });
 		statusContainer.addItem(this._selectServiceText, {});
 		statusContainer.addItem(this._migrationStatusCardLoadingContainer, {});
@@ -593,7 +600,6 @@ export class DashboardWidget {
 	private async _updateSummaryStatus(): Promise<void> {
 		const serviceContext = await getServiceContext();
 		const isContextValid = isServiceContextValid(serviceContext);
-		this._viewAllMigrationsButton.enabled = isContextValid;
 		await this._selectServiceText.updateCssStyles({ 'display': isContextValid ? 'none' : 'block' });
 		await this._migrationStatusCardsContainer.updateCssStyles({ 'visibility': isContextValid ? 'visible' : 'hidden' });
 	}
@@ -607,15 +613,18 @@ export class DashboardWidget {
 				iconWidth: 22,
 				label: serviceContextLabel,
 				title: serviceContextLabel,
-				width: 290,
+				description: loc.MIGRATION_SERVICE_DESCRIPTION,
+				buttonType: azdata.ButtonType.Informational,
+				width: 375,
 				CSSStyles: { ...BUTTON_CSS },
 			})
 			.component();
 
-		this._disposables.push(this._serviceContextButton.onDidClick(async () => {
-			const dialog = new SelectMigrationServiceDialog(this._onDialogClosed);
-			await dialog.initialize();
-		}));
+		this._disposables.push(
+			this._serviceContextButton.onDidClick(async () => {
+				const dialog = new SelectMigrationServiceDialog(this._onDialogClosed);
+				await dialog.initialize();
+			}));
 
 		return this._serviceContextButton;
 	}
@@ -623,13 +632,13 @@ export class DashboardWidget {
 	private createVideoLinks(view: azdata.ModelView): azdata.Component {
 		const linksContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
-			width: '400px',
+			width: '440px',
 			height: '360px',
 			justifyContent: 'flex-start',
 		}).withProps({
 			CSSStyles: {
 				'border': '1px solid rgba(0, 0, 0, 0.1)',
-				'padding': '16px',
+				'padding': '5px',
 				'overflow': 'scroll',
 			}
 		}).component();
@@ -741,11 +750,12 @@ export class DashboardWidget {
 				...styles.BODY_CSS
 			}
 		}).component();
-		this._disposables.push(video1Container.onDidClick(async () => {
-			if (linkMetaData.link) {
-				await vscode.env.openExternal(vscode.Uri.parse(linkMetaData.link));
-			}
-		}));
+		this._disposables.push(
+			video1Container.onDidClick(async () => {
+				if (linkMetaData.link) {
+					await vscode.env.openExternal(vscode.Uri.parse(linkMetaData.link));
+				}
+			}));
 		videosContainer.addItem(video1Container, {
 			CSSStyles: {
 				'background-image': `url(${vscode.Uri.file(<string>linkMetaData.iconPath?.light)})`,

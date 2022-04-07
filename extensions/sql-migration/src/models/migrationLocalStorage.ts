@@ -56,8 +56,8 @@ export function isServiceContextValid(serviceContext: MigrationServiceContext): 
 export async function getSelectedServiceStatus(): Promise<string> {
 	const serviceContext = await getServiceContext();
 	const serviceName = serviceContext?.migrationService?.name;
-	return isServiceContextValid(serviceContext)
-		? `Service: ${serviceName}`
+	return serviceName && isServiceContextValid(serviceContext)
+		? loc.MIGRATION_SERVICE_SERVICE_PROMPT(serviceName)
 		: loc.MIGRATION_SERVICE_SELECT_SERVICE_PROMPT;
 }
 

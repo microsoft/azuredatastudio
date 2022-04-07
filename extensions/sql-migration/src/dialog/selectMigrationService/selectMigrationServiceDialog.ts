@@ -13,8 +13,8 @@ import * as constants from '../../constants/strings';
 import { findDropDownItemIndex, selectDefaultDropdownValue, deepClone } from '../../api/utils';
 import { getFullResourceGroupFromId, getLocations, getSqlMigrationServices, getSubscriptions, SqlMigrationService } from '../../api/azure';
 
-const CONTROL_MARGIN = '10px';
-const INPUT_COMPONENT_WIDTH = '300px';
+const CONTROL_MARGIN = '20px';
+const INPUT_COMPONENT_WIDTH = '100%';
 const STYLE_HIDE = { 'display': 'none' };
 const STYLE_ShOW = { 'display': 'inline' };
 export const BODY_CSS = {
@@ -54,14 +54,14 @@ export class SelectMigrationServiceDialog {
 	private _azureResourceGroupDropdown!: azdata.DropDownComponent;
 	private _azureServiceDropdownLabel!: azdata.TextComponent;
 	private _azureServiceDropdown!: azdata.DropDownComponent;
-	private _deleteConfigurationCheckBox!: azdata.CheckBoxComponent;
+	private _deleteButton!: azdata.window.Button;
 
 	constructor(
 		private _onClosedCallback: () => void) {
 		this._dialog = azdata.window.createModelViewDialog(
 			constants.MIGRATION_SERVICE_SELECT_TITLE,
 			'SelectMigraitonServiceDialog',
-			400,
+			460,
 			'normal');
 	}
 
@@ -79,6 +79,21 @@ export class SelectMigrationServiceDialog {
 		});
 
 		this._dialog.okButton.label = constants.MIGRATION_SERVICE_SELECT_APPLY_LABEL;
+		this._dialog.okButton.position = 'left';
+		this._dialog.cancelButton.position = 'right';
+
+		this._deleteButton = azdata.window.createButton(
+			constants.MIGRATION_SERVICE_DELETE,
+			'right');
+		this._disposables.push(
+			this._deleteButton.onClick(async (value) => {
+				await MigrationLocalStorage.saveMigrationServiceContext(
+					this._currentConnection,
+					{});
+				azdata.window.closeDialog(this._dialog);
+			}));
+		this._dialog.customButtons = [this._deleteButton];
+
 		azdata.window.openDialog(this._dialog);
 	}
 
@@ -102,19 +117,20 @@ export class SelectMigrationServiceDialog {
 	}
 
 	private _createHeading(): azdata.TextComponent {
-		return this._view.modelBuilder.text().withProps({
-			value: constants.MIGRATION_SERVICE_SELECT_HEADING,
-			CSSStyles: { ...styles.BODY_CSS }
-		}).component();
+		return this._view.modelBuilder.text()
+			.withProps({
+				value: constants.MIGRATION_SERVICE_SELECT_HEADING,
+				CSSStyles: { ...styles.BODY_CSS }
+			}).component();
 	}
 
 	private _createAzureAccountsDropdown(): azdata.FlexContainer {
-		const azureAccountLabel = this._view.modelBuilder.text().withProps({
-			value: constants.ACCOUNTS_SELECTION_PAGE_TITLE,
-			width: INPUT_COMPONENT_WIDTH,
-			requiredIndicator: true,
-			CSSStyles: { ...LABEL_CSS }
-		}).component();
+		const azureAccountLabel = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.ACCOUNTS_SELECTION_PAGE_TITLE,
+				requiredIndicator: true,
+				CSSStyles: { ...LABEL_CSS }
+			}).component();
 		this._azureAccountsDropdown = this._view.modelBuilder.dropDown()
 			.withProps({
 				ariaLabel: constants.ACCOUNTS_SELECTION_PAGE_TITLE,
@@ -133,14 +149,12 @@ export class SelectMigrationServiceDialog {
 			await this._populateTentantsDropdown();
 		}));
 
-		const linkAccountButton = this._view.modelBuilder
-			.hyperlink()
+		const linkAccountButton = this._view.modelBuilder.hyperlink()
 			.withProps({
 				label: constants.ACCOUNT_LINK_BUTTON_LABEL,
 				url: '',
 				CSSStyles: { ...styles.BODY_CSS },
-			})
-			.component();
+			}).component();
 
 		this._disposables.push(linkAccountButton.onDidClick(async (event) => {
 			await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
@@ -154,15 +168,15 @@ export class SelectMigrationServiceDialog {
 				azureAccountLabel,
 				this._azureAccountsDropdown,
 				linkAccountButton,
-			])
-			.component();
+			]).component();
 	}
 
 	private _createAzureTenantContainer(): azdata.FlexContainer {
-		const azureTenantDropdownLabel = this._view.modelBuilder.text().withProps({
-			value: constants.AZURE_TENANT,
-			CSSStyles: { ...LABEL_CSS, ...TENANT_DROPDOWN_CSS },
-		}).component();
+		const azureTenantDropdownLabel = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.AZURE_TENANT,
+				CSSStyles: { ...LABEL_CSS, ...TENANT_DROPDOWN_CSS },
+			}).component();
 		this._accountTenantDropdown = this._view.modelBuilder.dropDown()
 			.withProps({
 				ariaLabel: constants.AZURE_TENANT,
@@ -195,7 +209,6 @@ export class SelectMigrationServiceDialog {
 			.withProps({
 				value: constants.SUBSCRIPTION,
 				description: constants.TARGET_SUBSCRIPTION_INFO,
-				width: INPUT_COMPONENT_WIDTH,
 				requiredIndicator: true,
 				CSSStyles: { ...LABEL_CSS }
 			}).component();
@@ -221,7 +234,6 @@ export class SelectMigrationServiceDialog {
 			.withProps({
 				value: constants.LOCATION,
 				description: constants.TARGET_LOCATION_INFO,
-				width: INPUT_COMPONENT_WIDTH,
 				requiredIndicator: true,
 				CSSStyles: { ...LABEL_CSS }
 			}).component();
@@ -247,7 +259,6 @@ export class SelectMigrationServiceDialog {
 			.withProps({
 				value: constants.RESOURCE_GROUP,
 				description: constants.TARGET_RESOURCE_GROUP_INFO,
-				width: INPUT_COMPONENT_WIDTH,
 				requiredIndicator: true,
 				CSSStyles: { ...LABEL_CSS }
 			}).component();
@@ -273,7 +284,6 @@ export class SelectMigrationServiceDialog {
 			.withProps({
 				value: constants.MIGRATION_SERVICE_SELECT_SERVICE_LABEL,
 				description: constants.TARGET_RESOURCE_INFO,
-				width: INPUT_COMPONENT_WIDTH,
 				requiredIndicator: true,
 				CSSStyles: { ...LABEL_CSS }
 			}).component();
@@ -292,27 +302,15 @@ export class SelectMigrationServiceDialog {
 			this._serviceContext.migrationService = (selectedIndex > -1)
 				? this._sqlMigrationServices.find(service => service.name === value)
 				: undefined!;
-			this._updateButtonState();
+			await this._updateButtonState();
 		}));
 
-		this._deleteConfigurationCheckBox = this._view.modelBuilder.checkBox()
-			.withProps({
-				label: 'Clear current service selection',
-				checked: false,
-				CSSStyles: { 'margin-top': '1es' },
-			}).component();
-
-		this._disposables.push(this._deleteConfigurationCheckBox.onChanged(async (value) => {
-			this._updateButtonState();
-		}));
-
-		this._disposables.push(this._dialog.okButton.onClick(async (value) => {
-			await MigrationLocalStorage.saveMigrationServiceContext(
-				this._currentConnection,
-				this._deleteConfigurationCheckBox.checked
-					? {}
-					: this._serviceContext);
-		}));
+		this._disposables.push(
+			this._dialog.okButton.onClick(async (value) => {
+				await MigrationLocalStorage.saveMigrationServiceContext(
+					this._currentConnection,
+					this._serviceContext);
+			}));
 
 		return this._view.modelBuilder.flexContainer()
 			.withItems([
@@ -324,16 +322,12 @@ export class SelectMigrationServiceDialog {
 				this._azureResourceGroupDropdown,
 				this._azureServiceDropdownLabel,
 				this._azureServiceDropdown,
-				this._deleteConfigurationCheckBox,
-			]).withLayout({
-				flexFlow: 'column',
-			}).component();
+			]).withLayout({ flexFlow: 'column' })
+			.component();
 	}
 
-	private _updateButtonState(): void {
-		this._dialog.okButton.enabled =
-			this._serviceContext.migrationService !== undefined ||
-			this._deleteConfigurationCheckBox.checked === true;
+	private async _updateButtonState(): Promise<void> {
+		this._dialog.okButton.enabled = this._serviceContext.migrationService !== undefined;
 	}
 
 	private async _populateAzureAccountsDropdown(): Promise<void> {

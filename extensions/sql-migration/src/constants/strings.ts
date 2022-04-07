@@ -443,7 +443,7 @@ export const CREATE = localize('sql.migration.create', "Create");
 export const CANCEL = localize('sql.migration.cancel', "Cancel");
 export const TYPE = localize('sql.migration.type', "Type");
 export const USER_ACCOUNT = localize('sql.migration.path.user.account', "User account");
-export const VIEW_ALL = localize('sql.migration.view.all', "View all");
+export const VIEW_ALL = localize('sql.migration.view.all', "All database migrations");
 export const TARGET = localize('sql.migration.target', "Target");
 export const AZURE_SQL = localize('sql.migration.azure.sql', "Azure SQL");
 export const CLOSE = localize('sql.migration.close', "Close");
@@ -498,9 +498,9 @@ export const PRE_REQ_1 = localize('sql.migration.pre.req.1', "Azure account deta
 export const PRE_REQ_2 = localize('sql.migration.pre.req.2', "Azure SQL Managed Instance or SQL Server on Azure Virtual Machine");
 export const PRE_REQ_3 = localize('sql.migration.pre.req.3', "Backup location details");
 export const MIGRATION_IN_PROGRESS = localize('sql.migration.migration.in.progress', "Database migrations in progress");
-export const MIGRATION_FAILED = localize('sql.migration.failed', "Migrations failed");
-export const MIGRATION_COMPLETED = localize('sql.migration.migration.completed', "Migrations completed");
-export const MIGRATION_CUTOVER_CARD = localize('sql.migration.cutover.card', "Completing cutover");
+export const MIGRATION_FAILED = localize('sql.migration.failed', "Database migrations failed");
+export const MIGRATION_COMPLETED = localize('sql.migration.migration.completed', "Database migrations completed");
+export const MIGRATION_CUTOVER_CARD = localize('sql.migration.cutover.card', "Database migrations completing cutover");
 export const MIGRATION_NOT_STARTED = localize('sql.migration.migration.not.started', "Migrations not started");
 export const SHOW_STATUS = localize('sql.migration.show.status', "Show status");
 export function MIGRATION_INPROGRESS_WARNING(count: number) {
@@ -743,8 +743,13 @@ export const INVALID_OWNER_URI = localize('sql.migration.invalid.owner.uri.error
 export const DATABASE_BACKUP_PAGE_LOAD_ERROR = localize('sql.migration.database.backup.load.error', 'An error occurred while accessing database details.');
 
 // Migration Service Section Dialog
-export const MIGRATION_SERVICE_SELECT_TITLE = localize('sql.migration.select.service.title', 'Select SQL Migration Service');
+export const MIGRATION_SERVICE_SELECT_TITLE = localize('sql.migration.select.service.title', 'Select Database Migration Service');
 export const MIGRATION_SERVICE_SELECT_APPLY_LABEL = localize('sql.migration.select.service.apply.label', 'Apply');
-export const MIGRATION_SERVICE_SELECT_HEADING = localize('sql.migration.select.service.heading', 'Filter the migration list by SQL Migration Service');
-export const MIGRATION_SERVICE_SELECT_SERVICE_LABEL = localize('sql.migration.select.service.service.label', 'SQL Migration Service');
-export const MIGRATION_SERVICE_SELECT_SERVICE_PROMPT = localize('sql.migration.select.service.prompt', 'Select and monitor a SQL Migration Service');
+export const MIGRATION_SERVICE_DELETE = localize('sql.migration.select.service.delete.label', 'Delete');
+export const MIGRATION_SERVICE_SELECT_HEADING = localize('sql.migration.select.service.heading', 'Filter the migration list by Database Migration Service');
+export const MIGRATION_SERVICE_SELECT_SERVICE_LABEL = localize('sql.migration.select.service.service.label', 'Azure Database Migration Service');
+export const MIGRATION_SERVICE_SELECT_SERVICE_PROMPT = localize('sql.migration.select.service.prompt', 'Select a Database Migration Service');
+export function MIGRATION_SERVICE_SERVICE_PROMPT(serviceName: string): string {
+	return localize('sql.migration.service.prompt', '{0} (change)', serviceName);
+}
+export const MIGRATION_SERVICE_DESCRIPTION = localize('sql.migration.select.service.description', 'Azure Database Migration Service');

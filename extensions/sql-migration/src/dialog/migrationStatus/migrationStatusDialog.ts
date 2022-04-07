@@ -74,7 +74,9 @@ export class MigrationStatusDialog {
 				],
 				{ horizontal: false }
 			);
-			const form = formBuilder.withLayout({ width: '100%' }).component();
+			const form = formBuilder
+				.withLayout({ width: '100%' })
+				.component();
 			this._disposables.push(this._view.onClosed(e => {
 				clearInterval(this._autoRefreshHandle);
 				this._disposables.forEach(
@@ -106,25 +108,26 @@ export class MigrationStatusDialog {
 	private canCutoverMigration = (status: string | undefined) => status === MigrationStatus.InProgress;
 
 	private async createSearchAndRefreshContainer(): Promise<azdata.FlexContainer> {
-		this._searchBox = this._view.modelBuilder.inputBox().withProps({
-			stopEnterPropagation: true,
-			placeHolder: loc.SEARCH_FOR_MIGRATIONS,
-			width: '360px'
-		}).component();
+		this._searchBox = this._view.modelBuilder.inputBox()
+			.withProps({
+				stopEnterPropagation: true,
+				placeHolder: loc.SEARCH_FOR_MIGRATIONS,
+				width: '360px'
+			}).component();
+		this._disposables.push(
+			this._searchBox.onTextChanged(
+				async (value) => await this.populateMigrationTable()));
 
-		this._disposables.push(this._searchBox.onTextChanged(async (value) => {
-			await this.populateMigrationTable();
-		}));
-
-		this._refresh = this._view.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.refresh,
-			iconHeight: '16px',
-			iconWidth: '20px',
-			label: loc.REFRESH_BUTTON_LABEL,
-		}).component();
-
-		this._disposables.push(this._refresh.onDidClick(
-			async (e) => { await this.refreshTable(); }));
+		this._refresh = this._view.modelBuilder.button()
+			.withProps({
+				iconPath: IconPathHelper.refresh,
+				iconHeight: '16px',
+				iconWidth: '20px',
+				label: loc.REFRESH_BUTTON_LABEL,
+			}).component();
+		this._disposables.push(
+			this._refresh.onDidClick(
+				async (e) => await this.refreshTable()));
 
 		this._statusDropdown = this._view.modelBuilder.dropDown()
 			.withProps({
@@ -132,7 +135,6 @@ export class MigrationStatusDialog {
 				values: this._model.statusDropdownValues,
 				width: '220px'
 			}).component();
-
 		this._disposables.push(
 			this._statusDropdown.onValueChanged(
 				async (value) => await this.populateMigrationTable()));
@@ -155,8 +157,7 @@ export class MigrationStatusDialog {
 					'font-weight': '600',
 					'margin': '3px 0 0 0',
 				},
-			})
-			.component();
+			}).component();
 
 		const serviceContextLabel = await getSelectedServiceStatus();
 		this._serviceContextButton = this._view.modelBuilder.button()
@@ -166,10 +167,10 @@ export class MigrationStatusDialog {
 				iconWidth: 22,
 				label: serviceContextLabel,
 				title: serviceContextLabel,
-				width: 200,
-				description: 'this is a description',
-			})
-			.component();
+				description: loc.MIGRATION_SERVICE_DESCRIPTION,
+				buttonType: azdata.ButtonType.Informational,
+				width: 270,
+			}).component();
 
 		const onDialogClosed = async (): Promise<void> => {
 			const label = await getSelectedServiceStatus();
@@ -178,17 +179,22 @@ export class MigrationStatusDialog {
 			await this.refreshTable();
 		};
 
-		this._disposables.push(this._serviceContextButton.onDidClick(async () => {
-			const dialog = new SelectMigrationServiceDialog(onDialogClosed);
-			await dialog.initialize();
-		}));
+		this._disposables.push(
+			this._serviceContextButton.onDidClick(
+				async () => {
+					const dialog = new SelectMigrationServiceDialog(onDialogClosed);
+					await dialog.initialize();
+				}));
 
 		const flexContainer = this._view.modelBuilder.flexContainer()
 			.withProps({
-				width: 900,
+				width: '100%',
 				CSSStyles: {
 					'justify-content': 'left',
-					'align-iems': 'center',
+					'align-items': 'center',
+					'padding': '0px',
+					'display': 'flex',
+					'flex-direction': 'row',
 				},
 			}).component();
 
@@ -200,13 +206,10 @@ export class MigrationStatusDialog {
 		flexContainer.addItem(this._refreshLoader, { flex: '0 0 auto', CSSStyles: { 'margin-left': '20px' } });
 
 		this.setAutoRefresh(refreshFrequency);
-		const container = this._view.modelBuilder.flexContainer().withProps({
-			width: 1000
-		}).component();
-		container.addItem(flexContainer, {
-			flex: '0 0 auto',
-			CSSStyles: { 'width': '980px' }
-		});
+		const container = this._view.modelBuilder.flexContainer()
+			.withProps({ width: 1245 })
+			.component();
+		container.addItem(flexContainer, { flex: '0 0 auto', });
 		return container;
 	}
 
@@ -494,19 +497,13 @@ export class MigrationStatusDialog {
 	private createStatusTable(): azdata.TableComponent {
 		const headerCssStyles = undefined;
 		const rowCssStyles = undefined;
-		const largerColumnWidth = 190;
-		const largeColumnWidth = 140;
-		const mediumColumnWidth = 120;
-		const smallColumnWidth = 95;
-		const smallerColumnWidth = 65;
 
 		this._statusTable = this._view.modelBuilder.table().withProps({
 			ariaLabel: loc.MIGRATION_STATUS,
 			data: [],
-			forceFitColumns: azdata.ColumnSizingMode.AutoFit,
-			position: 'sticky',
+			forceFitColumns: azdata.ColumnSizingMode.ForceFit,
 			height: '600px',
-			width: '1140px',
+			width: '1095px',
 			display: 'grid',
 			columns: [
 				<azdata.HyperlinkColumn>{
@@ -514,7 +511,7 @@ export class MigrationStatusDialog {
 					headerCssClass: headerCssStyles,
 					name: loc.DATABASE,
 					value: 'database',
-					width: largerColumnWidth,
+					width: 190,
 					type: azdata.ColumnType.hyperlink,
 					icon: IconPathHelper.sqlDatabaseLogo,
 					showText: true,
@@ -524,7 +521,7 @@ export class MigrationStatusDialog {
 					headerCssClass: headerCssStyles,
 					name: loc.STATUS_COLUMN,
 					value: 'status',
-					width: mediumColumnWidth,
+					width: 120,
 					type: azdata.ColumnType.hyperlink,
 				},
 				{
@@ -532,7 +529,7 @@ export class MigrationStatusDialog {
 					headerCssClass: headerCssStyles,
 					name: loc.MIGRATION_MODE,
 					value: 'mode',
-					width: smallColumnWidth,
+					width: 85,
 					type: azdata.ColumnType.text,
 				},
 				{
@@ -540,7 +537,7 @@ export class MigrationStatusDialog {
 					headerCssClass: headerCssStyles,
 					name: loc.AZURE_SQL_TARGET,
 					value: 'targetType',
-					width: largeColumnWidth,
+					width: 120,
 					type: azdata.ColumnType.text,
 				},
 				{
@@ -548,7 +545,7 @@ export class MigrationStatusDialog {
 					headerCssClass: headerCssStyles,
 					name: loc.TARGET_AZURE_SQL_INSTANCE_NAME,
 					value: 'targetName',
-					width: largeColumnWidth,
+					width: 125,
 					type: azdata.ColumnType.text,
 				},
 				{
@@ -556,7 +553,7 @@ export class MigrationStatusDialog {
 					headerCssClass: headerCssStyles,
 					name: loc.DATABASE_MIGRATION_SERVICE,
 					value: 'migrationService',
-					width: largeColumnWidth,
+					width: 140,
 					type: azdata.ColumnType.text,
 				},
 				{
@@ -564,7 +561,7 @@ export class MigrationStatusDialog {
 					headerCssClass: headerCssStyles,
 					name: loc.DURATION,
 					value: 'duration',
-					width: smallerColumnWidth,
+					width: 50,
 					type: azdata.ColumnType.text,
 				},
 				{
@@ -572,7 +569,7 @@ export class MigrationStatusDialog {
 					headerCssClass: headerCssStyles,
 					name: loc.START_TIME,
 					value: 'startTime',
-					width: mediumColumnWidth,
+					width: 115,
 					type: azdata.ColumnType.text,
 				},
 				{
@@ -580,7 +577,7 @@ export class MigrationStatusDialog {
 					headerCssClass: headerCssStyles,
 					name: loc.FINISH_TIME,
 					value: 'finishTime',
-					width: mediumColumnWidth,
+					width: 115,
 					type: azdata.ColumnType.text,
 				},
 			]

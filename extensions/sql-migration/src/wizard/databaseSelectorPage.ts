@@ -158,7 +158,6 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		}).component();
 
 		const cssClass = 'no-borders';
-
 		this._databaseSelectorTable = this._view.modelBuilder.table()
 			.withProps({
 				data: [],
@@ -178,7 +177,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 					{
 						value: 'databaseicon',
 						name: '',
-						width: 20,
+						width: 10,
 						type: azdata.ColumnType.icon,
 						headerCssClass: cssClass,
 						cssClass: cssClass,

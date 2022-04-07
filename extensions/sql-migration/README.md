@@ -1,5 +1,5 @@
 # Azure SQL Migration
-The Azure SQL Migration extension in Azure Data Studio brings together a simplified assessment and migration experience that delivers the following capabilities:
+The Azure SQL Migration extension in Azure Data Studio brings together a simplified assessment, recommendation and migration experience that delivers the following capabilities:
 - A responsive user interface that provides an easy-to-navigate step-by-step wizard to deliver an integrated assessment, Azure recommendation and migration experience.
 - An enhanced assessment engine that can assess SQL Server instances and identify databases that are ready for migration to Azure SQL Managed Instance or SQL Server on Azure Virtual Machines.
 - SKU recommender to collect performance data from the source SQL Server instance to generate right-sized Azure SQL recommendation.
