@@ -31,7 +31,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		}
 		const connectionDetails = vscodeMssqlApi.createConnectionDetails(connectionInfo);
 		const connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
-		await createAzureFunction(connectionString, node.metadata.schema, node.metadata.name);
+		await createAzureFunction(connectionString, node.metadata.schema, node.metadata.name, connectionInfo);
 	}));
 	return {
 		addSqlBinding: async (bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string) => {

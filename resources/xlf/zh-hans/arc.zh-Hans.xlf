@@ -373,6 +373,10 @@
         <source xml:lang="en">Error connecting to controller. {0}</source>
         <target state="translated">连接到控制器时出现错误。{0}</target>
       </trans-unit>
+      <trans-unit id="arc.errorListingLogAnalyticsWorkspaces">
+        <source xml:lang="en">Error listing Log Analytics workspaces {0}</source>
+        <target state="translated">列出 Log Analytics 工作区 {0} 时出错</target>
+      </trans-unit>
       <trans-unit id="arc.errorVerifyingPassword">
         <source xml:lang="en">Error encountered while verifying password. {0}</source>
         <target state="translated">验证密码时遇到错误。{0}</target>
@@ -1393,6 +1397,18 @@
         <source xml:lang="en">Location</source>
         <target state="translated">位置</target>
       </trans-unit>
+      <trans-unit id="arc.data.controller.log.analytics.primary.key">
+        <source xml:lang="en">Log Analytics primary key</source>
+        <target state="translated">Log Analytics 主键</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.log.analytics.workspace.id">
+        <source xml:lang="en">Log Analytics workspace ID</source>
+        <target state="translated">Log Analytics 工作区 ID</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.log.analytics.workspace.names">
+        <source xml:lang="en">Log Analytics workspace</source>
+        <target state="translated">Log Analytics 工作区</target>
+      </trans-unit>
       <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.confirm.password">
         <source xml:lang="en">Confirm password</source>
         <target state="translated">确认密码</target>
@@ -1803,7 +1819,7 @@
       </trans-unit>
       <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.description">
         <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>
-        <target state="new">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</target>
+        <target state="translated">从可用于 SQL 托管实例 - Azure Arc 的最新 vCore 服务层(包括常规用途和业务关键型)中进行选择。</target>
       </trans-unit>
       <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.text">
         <source xml:lang="en">Learn more</source>
@@ -1843,11 +1859,11 @@
       </trans-unit>
       <trans-unit id="arc.sql.high.availability">
         <source xml:lang="en">High availability</source>
-        <target state="new">High availability</target>
+        <target state="translated">高可用性</target>
       </trans-unit>
       <trans-unit id="arc.sql.high.availability.description">
         <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</source>
-        <target state="new">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</target>
+        <target state="translated">启用其他副本以实现高可用性。所选的计算和存储配置将应用于所有副本。</target>
       </trans-unit>
       <trans-unit id="arc.sql.instance.name">
         <source xml:lang="en">Instance name</source>
@@ -1887,7 +1903,7 @@
       </trans-unit>
       <trans-unit id="arc.sql.one.replica">
         <source xml:lang="en">1 replica</source>
-        <target state="new">1 replica</target>
+        <target state="translated">1 个副本</target>
       </trans-unit>
       <trans-unit id="arc.sql.pitr.description">
         <source xml:lang="en">Point in time restore</source>
@@ -1907,15 +1923,15 @@
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.business.critical">
         <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
-        <target state="new">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</target>
+        <target state="translated">[预览] 业务关键(无限制的 vCore 和 RAM，高级高可用性)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.description">
         <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>
-        <target state="new">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</target>
+        <target state="translated">从可用于 SQL 托管实例 - Azure Arc 的最新 vCore 服务层(包括常规用途和业务关键型)中进行选择。</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.general.purpose">
         <source xml:lang="en">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</source>
-        <target state="new">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</target>
+        <target state="translated">常规用途(最多 24 个 Vcore 和 128 Gi RAM，标准高可用性)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.label">
         <source xml:lang="en">Service Tier</source>
@@ -1947,11 +1963,11 @@
       </trans-unit>
       <trans-unit id="arc.sql.three.replicas">
         <source xml:lang="en">3 replicas</source>
-        <target state="new">3 replicas</target>
+        <target state="translated">3 个副本</target>
       </trans-unit>
       <trans-unit id="arc.sql.two.replicas">
         <source xml:lang="en">2 replicas</source>
-        <target state="new">2 replicas</target>
+        <target state="translated">2 个副本</target>
       </trans-unit>
       <trans-unit id="arc.sql.username">
         <source xml:lang="en">Username</source>
@@ -2100,8 +2116,8 @@
         <target state="translated">Azure SQL 托管实例 - Azure Arc</target>
       </trans-unit>
       <trans-unit id="resource.type.azure.arc.description">
-        <source xml:lang="en">Creates an Azure Arc data controller</source>
-        <target state="translated">创建 Azure Arc 数据控制器</target>
+        <source xml:lang="en">Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.</source>
+        <target state="new">Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.</target>
       </trans-unit>
       <trans-unit id="resource.type.azure.arc.display.name">
         <source xml:lang="en">Azure Arc data controller</source>
