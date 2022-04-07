@@ -139,7 +139,7 @@ export async function createAzureFunction(connectionString: string, schema: stri
 			});
 
 			// check for the new function file to be created and dispose of the file system watcher
-			const timeoutForFunctionFile = utils.timeoutPromise('');
+			const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
 			await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
 			propertyBag.quickPickStep = quickPickStep;
 			exitReason = 'finishCreate';
@@ -149,14 +149,15 @@ export async function createAzureFunction(connectionString: string, schema: stri
 		} catch (e) {
 			let errorType = utils.getErrorType(e);
 			propertyBag.quickPickStep = quickPickStep;
-			void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 
 			if (errorType === 'TimeoutError') {
-				// timeout error will only happen if the user cancels the wizard
-				console.log('User cancelled out of the create Azure Function with SQL Binding wizard');
+				// this error can be cause by many different scenarios including timeout or error occurred during createFunction
+				exitReason = 'timeout';
+				console.log('Error creating azure function project');
 			} else {
 				// else an error would occur during the createFunction
 				exitReason = 'error';
+				void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 			}
 			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, errorType)
 				.withAdditionalProperties(propertyBag).send();
