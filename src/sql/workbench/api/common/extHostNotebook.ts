@@ -213,6 +213,11 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return kernel.interrupt();
 	}
 
+	$restartKernel(kernelId: number): Thenable<void> {
+		let kernel = this._getAdapter<azdata.nb.IKernel>(kernelId);
+		return kernel.restart();
+	}
+
 	$sendInputReply(futureId: number, content: azdata.nb.IInputReply): void {
 		let future = this._getAdapter<azdata.nb.IFuture>(futureId);
 		return future.sendInputReply(content);

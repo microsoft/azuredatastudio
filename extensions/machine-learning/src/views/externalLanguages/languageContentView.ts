@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as mssql from '../../../../mssql';
+import * as mssql from 'mssql';
 import { LanguageViewBase } from './languageViewBase';
 import * as constants from '../../common/constants';
 import { ApiWrapper } from '../../common/apiWrapper';

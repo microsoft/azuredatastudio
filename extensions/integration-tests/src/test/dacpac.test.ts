@@ -9,7 +9,7 @@ import * as utils from './utils';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as vscode from 'vscode';
 import { getStandaloneServer } from './testConfig';
 import * as assert from 'assert';

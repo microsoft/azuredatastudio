@@ -9956,6 +9956,8 @@
 			"table.selectAll": "全選",
 			"table.sortAscending": "遞增排序",
 			"table.sortDescending": "遞減排序",
+			"tableFilter.blankStringDisplayText": "(空白)",
+			"tableFilter.nullDisplayText": "(NULL)",
 			"tableFilter.selectedCount": "已選取 {0} 個",
 			"tableFilter.visibleCount": "{0} 個結果"
 		},
@@ -9980,6 +9982,7 @@
 			"dataExplorer.context": "Dataexplorer 項目操作功能表",
 			"dataGrid.context": "資料格項目操作功能表",
 			"default": "啟用自動更新檢查。Azure Data Studio 會自動並定期檢查更新。",
+			"docNotFoundForUriError": "無法開啟指定 URI 的筆記本文件。",
 			"enable locally": "請重新載入 Azure Data Studio 以在本機啟用此延伸模組。",
 			"enable remote": "請重新載入 Azure Data Studio 以在 {0} 中啟用此延伸模組。",
 			"enableWindowsBackgroundUpdates": "啟用以在 Windows 背景中下載並安裝新的 Azure Data Studio 版本",
@@ -10006,16 +10009,13 @@
 			"sql.watcherExclude": "設定檔案路徑的 Glob 模式以從檔案監看排除。模式必須符合絕對路徑，即以 `**/` 或完整路徑為前置詞以正確符合，並以 `/**` 為後置詞以符合路徑中的檔案 (例如 `**/build/output/**` 或 `/Users/name/workspaces/project/build/output/**`)。必須先重新開機才能變更此設定。若是發生 Azure Data Studio 在啟動時耗用大量 CPU 時間的情況，可以排除較大的資料夾以降低起始負載。",
 			"uninstallExtensionComplete": "請重新載入 Azure Data Studio 以完成延伸模組 {0} 的解除安裝。",
 			"updateLocale": "您想要變更 Azure Data Studio 的 UI 語言為 {0} 並重新啟動嗎?",
+			"vscodeDocCreationFailedError": "無法建立筆記本文件。",
 			"vscodeFunctionalityNotSupportedError": "Azure Data Studio 不支持此 VS Code 功能。",
-			"vscodeInvalidArgumentsError": "引數無效",
+			"vscodeInvalidArgumentsError": "無效的引數。",
 			"watermark.newNotebook": "新增筆記本",
 			"watermark.newSqlFile": "新增 SQL 檔案",
 			"workspace.trust.description": "控制是否在 Azure Data Studio 內啟用工作區信任。",
 			"workspace.trust.emptyWindow.description": "控制在 Azure Data Studio 內是否預設信任空白視窗。與 '#{0}#' 一起使用時，您可以啟用 Azure Data Studio 的完整功能，而不需要在空白視窗中提示。"
-		},
-		"sql/base/parts/editableDropdown/browser/dropdown": {
-			"editableDropdown.errorValidate": "必須是清單中的選項",
-			"selectBox": "選取方塊"
 		},
 		"sql/platform/accounts/common/accountActions": {
 			"NoAccountToRefresh": "沒有要重新整理的帳戶",
@@ -10171,8 +10171,11 @@
 		"sql/workbench/browser/designer/designer": {
 			"designer.defaultRemoveRowConfirmationMessage": "確定要移除列嗎?",
 			"designer.generalGroupName": "一般",
+			"designer.issueCountAlert": "找到 {0} 個驗證問題。",
+			"designer.issuesTabTitle": "問題 ({0})",
 			"designer.loadingDesigner": "正在載入設計工具...",
 			"designer.loadingDesignerCompleted": "設計工具已載入",
+			"designer.newRowButtonAriaLabel": "將新資料列新增至 '{0}' 資料表",
 			"designer.newRowText": "新增",
 			"designer.processing": "正在處理...",
 			"designer.processingChanges": "正在處理變更...",
@@ -10181,6 +10184,7 @@
 			"designer.publishChangesCompleted": "已發佈變更",
 			"designer.publishingChanges": "正在發佈變更...",
 			"designer.removeRowText": "移除",
+			"designer.scriptTabTitle": "指令碼",
 			"tableDesigner.unknownComponentType": "不支援元件類型 {0}"
 		},
 		"sql/workbench/browser/designer/designerPropertiesPane": {
@@ -11027,7 +11031,10 @@
 			"textPreview": "文字資料格"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
-			"parametersText": "參數"
+			"cellLanguageDescription": "({0}) - 目前的語言",
+			"cellLanguageDescriptionConfigured": "({0})",
+			"parametersText": "參數",
+			"selectCellLanguage": "選取儲存格語言模式"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/codeActions": {
 			"errorRunCell": "上一個執行發生錯誤。按一下即可重新執行",
@@ -11137,6 +11144,7 @@
 			"notebook.useNewMarkdownRenderer": "是否要為筆記本使用 Markdown 轉譯器的較新版本。這可能會導致呈現的 Markdown 與先前版本不同。",
 			"notebookViews": "筆記本檢視",
 			"notebookViews.enabled": "(預覽)啟用筆記本檢視",
+			"restartNotebookKernel": "重新啟動筆記本核心",
 			"search.actionsPosition": "控制動作列在搜尋檢視列上的位置。",
 			"search.actionsPositionAuto": "當搜尋檢視較窄時，將動作列放在右邊，當搜尋檢視較寬時，立即放於內容之後。",
 			"search.actionsPositionRight": "永遠將動作列放在右邊。",
@@ -11732,6 +11740,7 @@
 			"accountDialog.addConnection": "新增帳戶",
 			"accountDialog.close": "關閉",
 			"accountDialog.didNotPickAuthProvider": "您未選取任何驗證提供者。請再試一次。",
+			"accountDialog.loadingProviderLabel": "正在載入帳戶...",
 			"accountDialog.noAccountLabel": "沒有任何已連結帳戶。請新增帳戶。",
 			"accountDialog.noCloudsRegistered": "您未啟用任何雲端。前往 [設定] -> [搜尋 Azure 帳戶組態] -> 啟用至少一個雲端",
 			"accountExplorer.name": "帳戶",
@@ -11966,7 +11975,9 @@
 			"NoExecuteManager": "伺服器無法啟動，因為未為此筆記本檔案類型定義提供者。",
 			"ServerNotStarted": "伺服器因為不明原因而未啟動",
 			"clientSession.unknownError": "啟動筆記本工作階段時發生錯誤",
-			"kernelRequiresConnection": "找不到核心 {0}。會改用預設核心。"
+			"kernelRequiresConnection": "找不到核心 {0}。會改用預設核心。",
+			"kernelRestartFailed": "核心重新開機失敗: {0}",
+			"kernelRestartedSuccessfully": "已成功重新啟動核心"
 		},
 		"sql/workbench/services/notebook/browser/models/notebookContexts": {
 			"localhost": "localhost",
@@ -11985,6 +11996,7 @@
 		},
 		"sql/workbench/services/notebook/browser/notebookServiceImpl": {
 			"executeProviderTimeout": "正在等候筆記本提供者 '{0}' 之執行提供者顯示狀態的逾時",
+			"failedToCreateNotebookInput": "無法建立提供者 '{0}' 的筆記本輸入",
 			"notebookServiceNoProvider": "Notebook 提供者不存在",
 			"notebookUriNotDefined": "建立筆記本管理員時未傳遞任何 URI",
 			"serializationProviderTimeout": "正在等候筆記本提供者 '{0}' 之序列化提供者顯示狀態的逾時",
@@ -11997,6 +12009,7 @@
 			"notebookView.untitledView": "未命名的檢視"
 		},
 		"sql/workbench/services/notebook/browser/sql/sqlSessionManager": {
+			"SqlKernelRestartNotSupported": "不支援 SQL 核心重新啟動",
 			"connectionRequired": "必須選擇連線來執行筆記本資料格",
 			"sqlKernelError": "SQL 核心錯誤",
 			"sqlMaxRowsDisplayed": "目前顯示前 {0} 列。"
@@ -12205,10 +12218,21 @@
 			"designer.table.description.description": "資料表的描述。",
 			"designer.table.description.name": "資料表物件的名稱。",
 			"designer.table.description.schema": "包含資料表的結構描述。",
-			"tableDesigner.ErrorDialogTitle": "Table Designer Error",
+			"designer.table.primaryKeyColumns.description": "主鍵中的資料行。",
+			"designer.table.primaryKeyName.description": "主鍵的名稱。",
+			"tableDesigner.ErrorDialogTitle": "資料表設計工具錯誤",
 			"tableDesigner.ForeignKeyTypeName": "外部索引鍵",
 			"tableDesigner.ForeignTableName": "外部資料表",
 			"tableDesigner.IndexTypeName": "索引",
+			"tableDesigner.PrimaryKeyTabTitle": "主索引鍵",
+			"tableDesigner.TableSchemaValidationError": "資料表結構描述驗證失敗，錯誤為: {0}",
+			"tableDesigner.addForeignKey": "新增外部索引鍵",
+			"tableDesigner.addNewCheckConstraint": "新增 CHECK 條件約束",
+			"tableDesigner.addNewColumn": "新增資料行",
+			"tableDesigner.addNewColumnMapping": "資料行對應",
+			"tableDesigner.addNewColumnToIndex": "加入資料行",
+			"tableDesigner.addNewColumnToPrimaryKey": "加入資料行",
+			"tableDesigner.addNewIndex": "新增索引",
 			"tableDesigner.checkConstraintExpressionTitle": "運算式",
 			"tableDesigner.checkConstraintNameTitle": "名稱",
 			"tableDesigner.checkConstraintTypeName": "檢查條件約束",
@@ -12243,7 +12267,10 @@
 			"tableDesigner.indexColumns": "資料行",
 			"tableDesigner.indexName": "名稱",
 			"tableDesigner.indexesTabTitle": "索引",
+			"tableDesigner.inputValidationError": "輸入驗證失敗，錯誤為: {0}",
 			"tableDesigner.nameTitle": "資料表名稱",
+			"tableDesigner.primaryKeyColumnsTitle": "主索引鍵資料行",
+			"tableDesigner.primaryKeyNameTitle": "名稱",
 			"tableDesigner.publishChangeError": "發佈變更時發生錯誤: {0}",
 			"tableDesigner.publishChangeSuccess": "已成功發佈變更。",
 			"tableDesigner.savingChanges": "正在發佈資料表設計工具變更...",
@@ -12262,43 +12289,6 @@
 		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
 			"errorStartBeforeReady": "無法啟動工作階段，管理員尚未初始化"
 		},
-		"sql/workbench/contrib/queryplan2/browser/planHeader": {
-			"planHeaderIndexAndCost": "查詢 {0}: 查詢成本 (相對於指令碼): {1}%"
-		},
-		"sql/workbench/contrib/queryplan2/browser/queryPlan": {
-			"openQueryAction": "開啟查詢",
-			"queryPlanCustomZoom": "自訂縮放",
-			"queryPlanFitGraphLabel": "縮放至適當比例",
-			"queryPlanOpenGraphFile": "Open Plan File",
-			"queryPlanPropertiesActionLabel": "屬性",
-			"queryPlanSavePlanXML": "Save Plan File",
-			"queryPlanSearchNodeAction": "SearchNode",
-			"queryPlanTitle": "Query Plan (Preview)",
-			"queryPlanZoomInActionLabel": "放大",
-			"queryPlanZoomOutActionLabel": "縮小"
-		},
-		"sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView": {
-			"nodePropertyViewNameNameColumnHeader": "Name",
-			"nodePropertyViewNameValueColumnHeader": "Value",
-			"nodePropertyViewTitle": "Properties",
-			"queryPlanPropertiesEdgeOperationName": "Edge",
-			"queryPlanPropertyViewClose": "Close",
-			"queryPlanPropertyViewSortAlphabetically": "Alphabetical",
-			"queryPlanPropertyViewSortByDisplayOrde": "Categorized"
-		},
-		"sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget": {
-			"cancelCustomZoomAction": "Close (Escape)",
-			"invalidCustomZoomError": "Select a zoom value between 1 to 200",
-			"qpZoomValueLabel": "Zoom (percent)",
-			"zoomAction": "Zoom (Enter)"
-		},
-		"sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget": {
-			"cancelSearchAction": "Close (Escape)",
-			"nextSearchItemAction": "Next Match (Enter)",
-			"previousSearchItemAction": "Previous Match (Shift+Enter)",
-			"queryPlanSearchTypeContains": "Contains",
-			"queryPlanSearchTypeEquals": "Equals"
-		},
 		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
 			"tableDesigner.PreviewFeature": "預覽功能"
 		},
@@ -12312,6 +12302,71 @@
 			"tableDesigner.cancel": "取消",
 			"tableDesigner.generateScript": "產生指令碼",
 			"tableDesigner.previewDatabaseUpdates": "預覽資料庫更新"
+		},
+		"sql/base/browser/ui/editableDropdown/browser/dropdown": {
+			"editableDropdown.errorValidate": "必須是清單中的選項",
+			"selectBox": "選取方塊"
+		},
+		"sql/workbench/browser/designer/designerIssuesTabPanelView": {
+			"designer.IssueListAriaLabel": "問題"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlan": {
+			"executionPlan.SaveFileDescription": "執行計畫檔案",
+			"executionPlanCustomZoom": "自訂縮放",
+			"executionPlanFileLoadingComplete": "產生執行計畫",
+			"executionPlanFileLoadingFailed": "無法載入執行計畫",
+			"executionPlanFitGraphLabel": "縮放至適當比例",
+			"executionPlanOpenGraphFile": "顯示查詢計劃 XML",
+			"executionPlanPropertiesActionLabel": "屬性",
+			"executionPlanSavePlanXML": "儲存計畫檔案",
+			"executionPlanSearchNodeAction": "尋找節點",
+			"executionPlanTitle": "查詢計劃 (預覽)",
+			"executionPlanZoomInActionLabel": "放大",
+			"executionPlanZoomOutActionLabel": "縮小",
+			"loadingExecutionPlanFile": "產生執行計畫",
+			"openQueryAction": "開啟查詢"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
+			"executionPlanEditor": "查詢執行計畫編輯器"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView": {
+			"executionPlanPropertiesEdgeOperationName": "邊緣",
+			"executionPlanPropertyViewClose": "關閉",
+			"executionPlanPropertyViewSortAlphabetically": "字母順序",
+			"executionPlanPropertyViewSortByDisplayOrder": "已分類",
+			"nodePropertyViewNameNameColumnHeader": "名稱",
+			"nodePropertyViewNameValueColumnHeader": "值",
+			"nodePropertyViewTitle": "屬性"
+		},
+		"sql/workbench/contrib/executionPlan/browser/planHeader": {
+			"planHeaderIndexAndCost": "查詢 {0}: 查詢成本 (相對於指令碼): {1}%"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
+			"cancelCustomZoomAction": "關閉 (逸出)",
+			"customZoomApplyButton": "套用",
+			"customZoomApplyButtonTitle": "套用縮放 (輸入)",
+			"invalidCustomZoomError": "選取介於 1 到 200 之間的縮放值",
+			"qpZoomValueLabel": "顯示比例 (百分比)",
+			"zoomAction": "縮放 (輸入)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget": {
+			"cancelSearchAction": "關閉 (逸出)",
+			"executionPlanSearchTypeContains": "包含",
+			"executionPlanSearchTypeEquals": "等於",
+			"nextSearchItemAction": "下一個相符項目 (Enter)",
+			"previousSearchItemAction": "上一個相符項目 (Shift+Enter)"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookEditor.component": {
+			"loadingNotebookCompletedMessage": "已完成載入筆記本 {0}",
+			"loadingNotebookMessage": "正在載入筆記本 {0}"
+		},
+		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"noHandlerRegistered": "未登錄有效的執行計畫處理常式",
+			"providerIdNotValidError": "需要有效的提供者才能與 ExecutionPlanService 互動",
+			"selectExecutionPlanProvider": "選取要開啟執行計畫的提供者"
+		},
+		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
+			"table.showActions": "Show Actions"
 		}
 	}
 }

@@ -17,6 +17,7 @@ import { TableDesignerPublishDialogResult, TableDesignerPublishDialog } from 'sq
 import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { TelemetryAction, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { TableDesignerMetadata } from 'sql/workbench/services/tableDesigner/browser/tableDesignerMetadata';
 
 const ErrorDialogTitle: string = localize('tableDesigner.ErrorDialogTitle', "Table Designer Error");
 export class TableDesignerComponentInput implements DesignerComponentInput {
@@ -107,9 +108,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						refreshView: !!result.view
 					}
 				});
+				const metadataTelemetryInfo = TableDesignerMetadata.getTelemetryInfo(this._provider.providerId, result.metadata);
 				editAction.withAdditionalMeasurements({
 					'elapsedTimeMs': new Date().getTime() - startTime
-				}).send();
+				}).withAdditionalProperties(metadataTelemetryInfo).send();
 			},
 			error => {
 				this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.errorProcessingEdit', "An error occured while processing the change: {0}", error?.message ?? error));
@@ -164,9 +166,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			this.tableInfo = result.newTableInfo;
 			this.updateState(true, false);
 			this._onRefreshRequested.fire();
+			const metadataTelemetryInfo = TableDesignerMetadata.getTelemetryInfo(this._provider.providerId, result.metadata);
 			publishEvent.withAdditionalMeasurements({
 				'elapsedTimeMs': new Date().getTime() - startTime
-			}).send();
+			}).withAdditionalProperties(metadataTelemetryInfo).send();
 		} catch (error) {
 			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.publishChangeError', "An error occured while publishing changes: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
@@ -180,16 +183,23 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			message: localize('tableDesigner.generatingPreviewReport', "Generating preview report..."),
 			sticky: true
 		});
-
+		const telemetryInfo = this.createTelemetryInfo();
+		const generatePreviewEvent = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.GeneratePreviewReport).withAdditionalProperties(telemetryInfo);
+		const startTime = new Date().getTime();
 		let previewReportResult: azdata.designers.GeneratePreviewReportResult;
 		try {
 			this.updateState(this.valid, this.dirty, 'generateReport');
 			previewReportResult = await this._provider.generatePreviewReport(this.tableInfo);
+			const metadataTelemetryInfo = TableDesignerMetadata.getTelemetryInfo(this._provider.providerId, previewReportResult.metadata);
+			generatePreviewEvent.withAdditionalMeasurements({
+				'elapsedTimeMs': new Date().getTime() - startTime
+			}).withAdditionalProperties(metadataTelemetryInfo).send();
 			reportNotificationHandle.close();
 			this.updateState(this.valid, this.dirty);
 		} catch (error) {
 			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.generatePreviewReportError', "An error occured while generating preview report: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
+			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.GeneratePreviewReport).withAdditionalProperties(telemetryInfo).send();
 			return;
 		}
 		if (previewReportResult.schemaValidationError) {

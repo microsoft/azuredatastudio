@@ -353,7 +353,7 @@ export class ClientSessionStub implements IClientSession {
 	selectKernel(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
-	restart(): Promise<boolean> {
+	restart(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 	setPath(path: string): Promise<void> {
@@ -462,6 +462,9 @@ export class KernelStub implements nb.IKernel {
 		throw new Error('Method not implemented.');
 	}
 	interrupt(): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	restart(): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
 }

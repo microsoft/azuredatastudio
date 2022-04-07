@@ -338,20 +338,68 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 			return;
 		}
 
-		let existingSettings: (vscode.QuickPickItem)[] = [];
+		// Known Azure settings reference for Azure Functions
+		// https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings
+		const knownSettings: string[] = [
+			'APPINSIGHTS_INSTRUMENTATIONKEY',
+			'APPLICATIONINSIGHTS_CONNECTION_STRING',
+			'AZURE_FUNCTION_PROXY_DISABLE_LOCAL_CALL',
+			'AZURE_FUNCTION_PROXY_BACKEND_URL_DECODE_SLASHES',
+			'AZURE_FUNCTIONS_ENVIRONMENT',
+			'AzureWebJobsDashboard',
+			'AzureWebJobsDisableHomepage',
+			'AzureWebJobsDotNetReleaseCompilation',
+			'AzureWebJobsFeatureFlags',
+			'AzureWebJobsKubernetesSecretName',
+			'AzureWebJobsSecretStorageKeyVaultClientId',
+			'AzureWebJobsSecretStorageKeyVaultClientSecret',
+			'AzureWebJobsSecretStorageKeyVaultName',
+			'AzureWebJobsSecretStorageKeyVaultTenantId',
+			'AzureWebJobsSecretStorageKeyVaultUri',
+			'AzureWebJobsSecretStorageSas',
+			'AzureWebJobsSecretStorageType',
+			'AzureWebJobsStorage',
+			'AzureWebJobs_TypeScriptPath',
+			'DOCKER_SHM_SIZE',
+			'FUNCTION_APP_EDIT_MODE',
+			'FUNCTIONS_EXTENSION_VERSION',
+			'FUNCTIONS_V2_COMPATIBILITY_MODE',
+			'FUNCTIONS_WORKER_PROCESS_COUNT',
+			'FUNCTIONS_WORKER_RUNTIME',
+			'FUNCTIONS_WORKER_SHARED_MEMORY_DATA_TRANSFER_ENABLED',
+			'MDMaxBackgroundUpgradePeriod',
+			'MDNewSnapshotCheckPeriod',
+			'MDMinBackgroundUpgradePeriod',
+			'PIP_EXTRA_INDEX_URL',
+			'PYTHON_ISOLATE_WORKER_DEPENDENCIES (Preview)',
+			'PYTHON_ENABLE_DEBUG_LOGGING',
+			'PYTHON_ENABLE_WORKER_EXTENSIONS',
+			'PYTHON_THREADPOOL_THREAD_COUNT',
+			'SCALE_CONTROLLER_LOGGING_ENABLED',
+			'SCM_LOGSTREAM_TIMEOUT',
+			'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING',
+			'WEBSITE_CONTENTOVERVNET',
+			'WEBSITE_CONTENTSHARE',
+			'WEBSITE_SKIP_CONTENTSHARE_VALIDATION',
+			'WEBSITE_DNS_SERVER',
+			'WEBSITE_ENABLE_BROTLI_ENCODING',
+			'WEBSITE_MAX_DYNAMIC_APPLICATION_SCALE_OUT',
+			'WEBSITE_NODE_DEFAULT_VERSION',
+			'WEBSITE_RUN_FROM_PACKAGE',
+			'WEBSITE_TIME_ZONE',
+			'WEBSITE_VNET_ROUTE_ALL'
+		];
+
+		let connectionStringSettings: (vscode.QuickPickItem)[] = [];
 		if (settings?.Values) {
-			existingSettings = Object.keys(settings.Values).map(setting => {
-				return {
-					label: setting
-				} as vscode.QuickPickItem;
-			});
+			connectionStringSettings = Object.keys(settings.Values).filter(setting => !knownSettings.includes(setting)).map(setting => { return { label: setting }; });
 		}
 
-		existingSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon });
-		let sqlConnectionStringSettingExists = existingSettings.find(s => s.label === constants.sqlConnectionStringSetting);
+		connectionStringSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon });
+		let sqlConnectionStringSettingExists = connectionStringSettings.find(s => s.label === constants.sqlConnectionStringSetting);
 
 		while (!connectionStringSettingName) {
-			const selectedSetting = await vscode.window.showQuickPick(existingSettings, {
+			const selectedSetting = await vscode.window.showQuickPick(connectionStringSettings, {
 				canPickMany: false,
 				title: constants.selectSetting,
 				ignoreFocusOut: true

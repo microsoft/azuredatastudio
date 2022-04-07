@@ -14,7 +14,7 @@
 	"arc.openDashboard": "Manage",
 
 	"resource.type.azure.arc.display.name": "Azure Arc data controller",
-	"resource.type.azure.arc.description": "Creates an Azure Arc data controller",
+	"resource.type.azure.arc.description": "Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.",
 	"arc.data.controller.new.wizard.title": "Create Azure Arc data controller",
 	"arc.data.controller.cluster.environment.title": "What is your target existing Kubernetes cluster environment?",
 	"arc.data.controller.select.cluster.title": "Select from existing Kubernetes clusters",

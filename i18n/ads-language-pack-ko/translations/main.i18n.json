@@ -9956,6 +9956,8 @@
 			"table.selectAll": "모두 선택",
 			"table.sortAscending": "오름차순 정렬",
 			"table.sortDescending": "내림차순 정렬",
+			"tableFilter.blankStringDisplayText": "(필드 값 없음)",
+			"tableFilter.nullDisplayText": "(null)",
 			"tableFilter.selectedCount": "{0} 선택됨",
 			"tableFilter.visibleCount": "{0}개 결과"
 		},
@@ -9980,6 +9982,7 @@
 			"dataExplorer.context": "dataexplorer 항목 상황에 맞는 메뉴",
 			"dataGrid.context": "데이터 약식 표 항목 상황에 맞는 메뉴",
 			"default": "자동 업데이트 확인을 사용하도록 설정합니다. Azure Data Studio에서 정기적으로 업데이트를 자동 확인합니다.",
+			"docNotFoundForUriError": "지정한 URI의 Notebook 문서를 열 수 없습니다.",
 			"enable locally": "이 확장을 로컬에서 사용하려면 Azure Data Studio를 다시 로드하세요.",
 			"enable remote": "{0}에서 이 확장을 사용하도록 설정하려면 Azure Data Studio를 다시 로드하세요.",
 			"enableWindowsBackgroundUpdates": "새로운 Azure Data Studio 버전을 Windows 백그라운드에 다운로드 및 설치하려면 사용하도록 설정",
@@ -10006,16 +10009,13 @@
 			"sql.watcherExclude": "파일 감시에서 제외할 파일 경로의 GLOB 패턴을 구성합니다. 패턴은 절대 경로에서 일치해야 합니다. 즉, 적절하게 일치하려면 접두사가 '**/'이거나 전체 경로여야 하고, 경로 내 파일과 일치하려면 접미사가 '/**'여야 합니다(예: '**/build/output/**' 또는 '/Users/name/workspaces/project/build/output/**'). 이 설정을 변경하려면 다시 시작해야 합니다. 시작할 때 Azure Data Studio에서 CPU 시간을 많이 소비하는 경우 큰 폴더를 제외하여 초기 로드를 줄일 수 있습니다.",
 			"uninstallExtensionComplete": "Azure Data Studio를 다시 로드하여 이 확장 {0}의 제거를 완료하세요.",
 			"updateLocale": "Azure Data Studio의 UI 언어를 {0}(으)로 변경하고 다시 시작하시겠습니까?",
+			"vscodeDocCreationFailedError": "Notebook 문서를 만들지 못했습니다.",
 			"vscodeFunctionalityNotSupportedError": "이 VS Code 기능은 Azure Data Studio에서 지원되지 않습니다.",
-			"vscodeInvalidArgumentsError": "잘못된 인수",
+			"vscodeInvalidArgumentsError": "잘못된 인수입니다.",
 			"watermark.newNotebook": "새 Notebook",
 			"watermark.newSqlFile": "새 SQL 파일",
 			"workspace.trust.description": "Azure Data Studio 내에서 작업 영역 신뢰를 사용할지 여부를 제어합니다.",
 			"workspace.trust.emptyWindow.description": "빈 창이 기본적으로 Azure Data Studio 내에서 신뢰할 수 있는지 여부를 제어합니다. '#{0}#’와(과) 함께 사용하는 경우 빈 창에서 메시지를 표시하지 않고 Azure Data Studio 전체 기능을 사용하도록 설정할 수 있습니다."
-		},
-		"sql/base/parts/editableDropdown/browser/dropdown": {
-			"editableDropdown.errorValidate": "목록에 있는 옵션이어야 합니다.",
-			"selectBox": "Box 선택"
 		},
 		"sql/platform/accounts/common/accountActions": {
 			"NoAccountToRefresh": "새로 고칠 계정이 없습니다.",
@@ -10171,8 +10171,11 @@
 		"sql/workbench/browser/designer/designer": {
 			"designer.defaultRemoveRowConfirmationMessage": "행을 제거하시겠습니까?",
 			"designer.generalGroupName": "일반",
+			"designer.issueCountAlert": "유효성 검사 문제를 {0}개 발견했습니다.",
+			"designer.issuesTabTitle": "문제({0}개)",
 			"designer.loadingDesigner": "디자이너를 로드하는 중...",
 			"designer.loadingDesignerCompleted": "디자이너가 로드되었습니다.",
+			"designer.newRowButtonAriaLabel": "'{0}' 테이블에 새 행 추가",
 			"designer.newRowText": "새로 추가",
 			"designer.processing": "처리 중...",
 			"designer.processingChanges": "변경 내용 처리 중...",
@@ -10181,6 +10184,7 @@
 			"designer.publishChangesCompleted": "변경 사항이 게시되었습니다.",
 			"designer.publishingChanges": "변경 내용을 게시하는 중...",
 			"designer.removeRowText": "제거",
+			"designer.scriptTabTitle": "스크립트",
 			"tableDesigner.unknownComponentType": "구성 요소 형식: {0}이(가) 지원되지 않음"
 		},
 		"sql/workbench/browser/designer/designerPropertiesPane": {
@@ -11027,7 +11031,10 @@
 			"textPreview": "텍스트 셀"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
-			"parametersText": "매개 변수"
+			"cellLanguageDescription": "({0}) - 현재 언어",
+			"cellLanguageDescriptionConfigured": "({0})",
+			"parametersText": "매개 변수",
+			"selectCellLanguage": "셀 언어 모드 선택"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/codeActions": {
 			"errorRunCell": "마지막 실행 시 오류가 발생했습니다. 다시 실행하려면 클릭하세요.",
@@ -11137,6 +11144,7 @@
 			"notebook.useNewMarkdownRenderer": "전자 필기장에 최신 버전의 Markdown 렌더러를 사용할지 여부입니다. 이로 인해 Markdown이 이전 버전과 다르게 렌더링될 수 있습니다.",
 			"notebookViews": "전자 필기장 보기",
 			"notebookViews.enabled": "(미리 보기) 전자 필기장 보기 사용",
+			"restartNotebookKernel": "Notebook 커널 다시 시작",
 			"search.actionsPosition": "검색 보기에서 행의 작업 모음 위치를 제어합니다.",
 			"search.actionsPositionAuto": "검색 보기가 좁을 때는 오른쪽에, 그리고 검색 보기가 넓을 때는 콘텐츠 바로 뒤에 작업 모음을 배치합니다.",
 			"search.actionsPositionRight": "작업 모음을 항상 오른쪽에 배치합니다.",
@@ -11732,6 +11740,7 @@
 			"accountDialog.addConnection": "계정 추가",
 			"accountDialog.close": "닫기",
 			"accountDialog.didNotPickAuthProvider": "인증 공급자를 선택하지 않았습니다. 다시 시도하세요.",
+			"accountDialog.loadingProviderLabel": "계정 로드 중...",
 			"accountDialog.noAccountLabel": "연결된 계정이 없습니다. 계정을 추가하세요.",
 			"accountDialog.noCloudsRegistered": "클라우드를 사용할 수 없습니다. [설정] -> [Azure 계정 구성 검색] -> [하나 이상의 클라우드 사용]으로 이동합니다.",
 			"accountExplorer.name": "계정",
@@ -11966,7 +11975,9 @@
 			"NoExecuteManager": "이 전자 필기장 파일 형식에 대해 공급자가 정의되지 않았기 때문에 서버를 시작할 수 없습니다.",
 			"ServerNotStarted": "알 수 없는 이유로 서버가 시작되지 않았습니다.",
 			"clientSession.unknownError": "Notebook 세션을 시작하는 동안 오류가 발생했습니다.",
-			"kernelRequiresConnection": "{0} 커널을 찾을 수 없습니다. 대신 기본 커널이 사용됩니다."
+			"kernelRequiresConnection": "‘{0}’ 커널을 찾을 수 없습니다. 기본 커널을 대신 사용합니다.",
+			"kernelRestartFailed": "커널 다시 시작 실패: {0}",
+			"kernelRestartedSuccessfully": "커널을 다시 시작했습니다."
 		},
 		"sql/workbench/services/notebook/browser/models/notebookContexts": {
 			"localhost": "localhost",
@@ -11985,6 +11996,7 @@
 		},
 		"sql/workbench/services/notebook/browser/notebookServiceImpl": {
 			"executeProviderTimeout": "전자 필기장 공급자자 '{0}'에 대한 실행 공급자 가용성 대기 시간이 초과되었습니다.",
+			"failedToCreateNotebookInput": "'{0}' 공급자에 대한 Notebook 입력을 만들지 못했습니다.",
 			"notebookServiceNoProvider": "Notebook 공급자가 없습니다.",
 			"notebookUriNotDefined": "Notebook 관리자를 만들 때 URI가 전달되지 않았습니다.",
 			"serializationProviderTimeout": "전자 필기장 공급자 '{0}'에 대한 serialization 공급자 가용성 대기 시간이 초과되었습니다.",
@@ -11997,6 +12009,7 @@
 			"notebookView.untitledView": "제목 없는 보기"
 		},
 		"sql/workbench/services/notebook/browser/sql/sqlSessionManager": {
+			"SqlKernelRestartNotSupported": "SQL 커널 다시 시작이 지원되지 않음",
 			"connectionRequired": "Notebook 셀을 실행하려면 연결을 선택해야 합니다.",
 			"sqlKernelError": "SQL 커널 오류",
 			"sqlMaxRowsDisplayed": "상위 {0}개 행을 표시합니다."
@@ -12205,10 +12218,21 @@
 			"designer.table.description.description": "테이블에 대한 설명입니다.",
 			"designer.table.description.name": "테이블 개체의 이름입니다.",
 			"designer.table.description.schema": "테이블을 포함하는 스키마입니다.",
-			"tableDesigner.ErrorDialogTitle": "Table Designer Error",
+			"designer.table.primaryKeyColumns.description": "기본 키의 열입니다.",
+			"designer.table.primaryKeyName.description": "기본 키의 이름입니다.",
+			"tableDesigner.ErrorDialogTitle": "테이블 디자이너 오류",
 			"tableDesigner.ForeignKeyTypeName": "외래 키",
 			"tableDesigner.ForeignTableName": "외부 테이블",
 			"tableDesigner.IndexTypeName": "인덱스",
+			"tableDesigner.PrimaryKeyTabTitle": "기본 키",
+			"tableDesigner.TableSchemaValidationError": "테이블 스키마 유효성을 검사하지 못했습니다(오류: {0}).",
+			"tableDesigner.addForeignKey": "새 외래 키",
+			"tableDesigner.addNewCheckConstraint": "새 CHECK 제약 조건",
+			"tableDesigner.addNewColumn": "새 열",
+			"tableDesigner.addNewColumnMapping": "새 열 매핑",
+			"tableDesigner.addNewColumnToIndex": "열 추가",
+			"tableDesigner.addNewColumnToPrimaryKey": "열 추가",
+			"tableDesigner.addNewIndex": "새 인덱스",
 			"tableDesigner.checkConstraintExpressionTitle": "식",
 			"tableDesigner.checkConstraintNameTitle": "이름",
 			"tableDesigner.checkConstraintTypeName": "CHECK 제약 조건",
@@ -12243,7 +12267,10 @@
 			"tableDesigner.indexColumns": "열",
 			"tableDesigner.indexName": "이름",
 			"tableDesigner.indexesTabTitle": "인덱스",
+			"tableDesigner.inputValidationError": "입력 유효성을 검사하지 못했습니다(오류: {0}).",
 			"tableDesigner.nameTitle": "테이블 이름",
+			"tableDesigner.primaryKeyColumnsTitle": "기본 키 열",
+			"tableDesigner.primaryKeyNameTitle": "이름",
 			"tableDesigner.publishChangeError": "변경 내용을 게시하는 동안 오류가 발생했습니다. {0}",
 			"tableDesigner.publishChangeSuccess": "변경 내용을 게시했습니다.",
 			"tableDesigner.savingChanges": "테이블 디자이너 변경 내용을 게시하는 중...",
@@ -12262,43 +12289,6 @@
 		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
 			"errorStartBeforeReady": "세션을 시작할 수 없습니다. 관리자가 아직 초기화되지 않았습니다."
 		},
-		"sql/workbench/contrib/queryplan2/browser/planHeader": {
-			"planHeaderIndexAndCost": "쿼리 {0}: 쿼리 비용(스크립트 기준): {1}%"
-		},
-		"sql/workbench/contrib/queryplan2/browser/queryPlan": {
-			"openQueryAction": "쿼리 열기",
-			"queryPlanCustomZoom": "사용자 지정 확대/축소",
-			"queryPlanFitGraphLabel": "크기에 맞게",
-			"queryPlanOpenGraphFile": "Open Plan File",
-			"queryPlanPropertiesActionLabel": "속성",
-			"queryPlanSavePlanXML": "Save Plan File",
-			"queryPlanSearchNodeAction": "SearchNode",
-			"queryPlanTitle": "Query Plan (Preview)",
-			"queryPlanZoomInActionLabel": "확대",
-			"queryPlanZoomOutActionLabel": "축소"
-		},
-		"sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView": {
-			"nodePropertyViewNameNameColumnHeader": "Name",
-			"nodePropertyViewNameValueColumnHeader": "Value",
-			"nodePropertyViewTitle": "Properties",
-			"queryPlanPropertiesEdgeOperationName": "Edge",
-			"queryPlanPropertyViewClose": "Close",
-			"queryPlanPropertyViewSortAlphabetically": "Alphabetical",
-			"queryPlanPropertyViewSortByDisplayOrde": "Categorized"
-		},
-		"sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget": {
-			"cancelCustomZoomAction": "Close (Escape)",
-			"invalidCustomZoomError": "Select a zoom value between 1 to 200",
-			"qpZoomValueLabel": "Zoom (percent)",
-			"zoomAction": "Zoom (Enter)"
-		},
-		"sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget": {
-			"cancelSearchAction": "Close (Escape)",
-			"nextSearchItemAction": "Next Match (Enter)",
-			"previousSearchItemAction": "Previous Match (Shift+Enter)",
-			"queryPlanSearchTypeContains": "Contains",
-			"queryPlanSearchTypeEquals": "Equals"
-		},
 		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
 			"tableDesigner.PreviewFeature": "미리 보기 기능"
 		},
@@ -12312,6 +12302,71 @@
 			"tableDesigner.cancel": "취소",
 			"tableDesigner.generateScript": "스크립트 생성",
 			"tableDesigner.previewDatabaseUpdates": "데이터베이스 업데이트 미리 보기"
+		},
+		"sql/base/browser/ui/editableDropdown/browser/dropdown": {
+			"editableDropdown.errorValidate": "목록에 있는 옵션이어야 합니다.",
+			"selectBox": "Box 선택"
+		},
+		"sql/workbench/browser/designer/designerIssuesTabPanelView": {
+			"designer.IssueListAriaLabel": "문제"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlan": {
+			"executionPlan.SaveFileDescription": "실행 계획 파일",
+			"executionPlanCustomZoom": "사용자 지정 확대/축소",
+			"executionPlanFileLoadingComplete": "실행 계획을 생성합니다.",
+			"executionPlanFileLoadingFailed": "실행 계획을 로드하지 못함",
+			"executionPlanFitGraphLabel": "크기에 맞게",
+			"executionPlanOpenGraphFile": "쿼리 계획 XML 표시",
+			"executionPlanPropertiesActionLabel": "속성",
+			"executionPlanSavePlanXML": "계획 파일 저장",
+			"executionPlanSearchNodeAction": "노드 찾기",
+			"executionPlanTitle": "쿼리 계획(미리 보기)",
+			"executionPlanZoomInActionLabel": "확대",
+			"executionPlanZoomOutActionLabel": "축소",
+			"loadingExecutionPlanFile": "실행 계획을 생성하는 중",
+			"openQueryAction": "쿼리 열기"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
+			"executionPlanEditor": "실행 계획 편집기 쿼리"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView": {
+			"executionPlanPropertiesEdgeOperationName": "Edge",
+			"executionPlanPropertyViewClose": "닫기",
+			"executionPlanPropertyViewSortAlphabetically": "사전순",
+			"executionPlanPropertyViewSortByDisplayOrder": "항목별",
+			"nodePropertyViewNameNameColumnHeader": "이름",
+			"nodePropertyViewNameValueColumnHeader": "값",
+			"nodePropertyViewTitle": "속성"
+		},
+		"sql/workbench/contrib/executionPlan/browser/planHeader": {
+			"planHeaderIndexAndCost": "쿼리 {0}: 쿼리 비용(스크립트 기준): {1}%"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
+			"cancelCustomZoomAction": "닫기(이스케이프)",
+			"customZoomApplyButton": "적용",
+			"customZoomApplyButtonTitle": "확대/축소 적용(Enter)",
+			"invalidCustomZoomError": "1~200 사이의 확대/축소 값 선택",
+			"qpZoomValueLabel": "확대/축소(백분율)",
+			"zoomAction": "확대/축소(Enter)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget": {
+			"cancelSearchAction": "닫기(이스케이프)",
+			"executionPlanSearchTypeContains": "포함",
+			"executionPlanSearchTypeEquals": "같음",
+			"nextSearchItemAction": "다음 일치 항목(Enter)",
+			"previousSearchItemAction": "이전 일치 항목(Shift+Enter)"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookEditor.component": {
+			"loadingNotebookCompletedMessage": "전자 필기장 {0} 로드가 완료됨",
+			"loadingNotebookMessage": "전자 필기장 {0} 로드하는 중"
+		},
+		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"noHandlerRegistered": "유효한 실행 계획 처리기가 등록되지 않았습니다.",
+			"providerIdNotValidError": "ExecutionPlanService와 상호 작용하려면 유효한 공급자가 필요합니다.",
+			"selectExecutionPlanProvider": "실행 계획을 열 공급자 선택"
+		},
+		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
+			"table.showActions": "Show Actions"
 		}
 	}
 }

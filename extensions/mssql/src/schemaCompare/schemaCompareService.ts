@@ -6,7 +6,7 @@
 import { AppContext } from '../appContext';
 import { SqlOpsDataClient, ISqlOpsFeature } from 'dataprotocol-client';
 import * as constants from '../constants';
-import * as mssql from '../mssql';
+import * as mssql from 'mssql';
 import * as Utils from '../utils';
 import { ClientCapabilities } from 'vscode-languageclient';
 import * as azdata from 'azdata';
@@ -50,15 +50,6 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 			e => {
 				this.client.logFailedRequest(contracts.SchemaCompareGenerateScriptRequest.type, e);
 				return Promise.resolve(undefined);
-			}
-		);
-	}
-
-	public schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-		const params: contracts.SchemaComparePublishDatabaseChangesParams = { operationId: operationId, targetServerName: targetServerName, targetDatabaseName: targetDatabaseName, taskExecutionMode: taskExecutionMode };
-		return this.client.sendRequest(contracts.SchemaComparePublishChangesRequest.type, params).then(undefined,
-			e => {
-				this.client.logFailedRequest(contracts.SchemaComparePublishChangesRequest.type, e); return Promise.resolve(undefined);
 			}
 		);
 	}

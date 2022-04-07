@@ -4,13 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as constants from '../common/constants';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as os from 'os';
 import * as path from 'path';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
 import * as vscode from 'vscode';
+import * as fse from 'fs-extra';
 import type * as azdataType from 'azdata';
 import * as dataworkspace from 'dataworkspace';
 import type * as mssqlVscode from 'vscode-mssql';
@@ -46,6 +47,7 @@ import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQu
 import { IDeployProfile } from '../models/deploy/deployProfile';
 import { EntryType, FileProjectEntry, IDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
 import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updateProject';
+import { targetPlatformToAssets } from '../projectProvider/projectAssets';
 
 const maxTableLength = 10;
 
@@ -169,10 +171,12 @@ export class ProjectsController {
 			throw new Error(constants.invalidTargetPlatform(creationParams.targetPlatform, Array.from(constants.targetPlatformToVersion.keys())));
 		}
 
+		const targetPlatform = creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP;
+
 		const macroDict: Record<string, string> = {
 			'PROJECT_NAME': creationParams.newProjName,
 			'PROJECT_GUID': creationParams.projectGuid ?? UUID.generateUuid().toUpperCase(),
-			'PROJECT_DSP': creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP
+			'PROJECT_DSP': targetPlatform
 		};
 
 		let newProjFileContents = creationParams.sdkStyle ? templates.macroExpansion(templates.newSdkSqlProjectTemplate, macroDict) : templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
@@ -189,8 +193,23 @@ export class ProjectsController {
 			throw new Error(constants.projectAlreadyExists(newProjFileName, path.parse(newProjFilePath).dir));
 		}
 
-		await fs.mkdir(path.dirname(newProjFilePath), { recursive: true });
+		const projectFolderPath = path.dirname(newProjFilePath);
+		await fs.mkdir(projectFolderPath, { recursive: true });
 		await fs.writeFile(newProjFilePath, newProjFileContents);
+
+		// Copy project readme
+		if (targetPlatformToAssets?.has(targetPlatform) && (targetPlatformToAssets?.get(targetPlatform)?.readmeFolder)) {
+			const readmeFolder = targetPlatformToAssets.get(targetPlatform)?.readmeFolder;
+
+			if (readmeFolder) {
+				const readmeFile = path.join(readmeFolder, 'README.md');
+				const folderExists = await utils.exists(readmeFile);
+				if (folderExists) {
+					await fs.copyFile(readmeFile, path.join(projectFolderPath, 'README.md'));
+					await fse.copy(path.join(readmeFolder, 'assets'), path.join(projectFolderPath, 'assets'));
+				}
+			}
+		}
 
 		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
 
@@ -339,14 +358,14 @@ export class ProjectsController {
 	* Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
 	*/
 	private async publishDatabase(project: Project): Promise<void> {
-		const publishTarget = await launchPublishTargetOption();
+		const publishTarget = await launchPublishTargetOption(project);
 
 		// Return when user hits escape
 		if (!publishTarget) {
 			return undefined;
 		}
 
-		if (publishTarget === constants.publishToDockerContainer) {
+		if (publishTarget === constants.PublishTargetType.docker) {
 			const deployProfile = await launchPublishToDockerContainerQuickpick(project);
 			if (deployProfile?.deploySettings) {
 				await this.publishToDockerContainer(project, deployProfile);
@@ -544,7 +563,7 @@ export class ProjectsController {
 
 		const result: mssql.SchemaComparePublishProjectResult = await service.schemaComparePublishProjectChanges(operationId, projectPath, fs, utils.getAzdataApi()!.TaskExecutionMode.execute);
 
-		if (result.errorMessage === '') {
+		if (!result.errorMessage) {
 			const project = await Project.openProject(projectFilePath);
 
 			let toAdd: vscode.Uri[] = [];
@@ -859,6 +878,28 @@ export class ProjectsController {
 		if (selectedTargetPlatform) {
 			await project.changeTargetPlatform(constants.targetPlatformToVersion.get(selectedTargetPlatform)!);
 			void vscode.window.showInformationMessage(constants.currentTargetPlatform(project.projectFileName, constants.getTargetPlatformFromVersion(project.getProjectTargetVersion())));
+		}
+	}
+
+	/**
+	 * Converts a legacy style project to an SDK-style project
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
+	public async convertToSdkStyleProject(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(context);
+		const updateResult = await project.convertProjectToSdkStyle();
+
+		if (!updateResult) {
+			void vscode.window.showErrorMessage(constants.updatedToSdkStyleError(project.projectFileName));
+		} else {
+			void this.reloadProject(context);
+
+			// show message that project file can be simplified
+			const result = await vscode.window.showInformationMessage(constants.projectUpdatedToSdkStyle(project.projectFileName), constants.learnMore);
+
+			if (result === constants.learnMore) {
+				void vscode.env.openExternal(vscode.Uri.parse(constants.sdkLearnMoreUrl!));
+			}
 		}
 	}
 

@@ -78,7 +78,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	@Input() _views: NotebookViewsExtension;
 
 	protected _actionBar: Taskbar;
-	protected isLoading: boolean;
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 	private _trustedAction: TrustedAction;
 	private _runAllCellsAction: RunAllCellsAction;
@@ -112,7 +111,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
-		this.isLoading = true;
 		this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
@@ -438,17 +436,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					}
 				} else {
 					this.setViewInErrorState(localize('displayFailed', "Could not display contents: {0}", getErrorMessage(error)));
-					this.setLoading(false);
 					this._modelReadyDeferred.reject(error);
 					this.notebookService.addNotebookEditor(this);
 				}
 			}
 		}
-	}
-
-	private setLoading(isLoading: boolean): void {
-		this.isLoading = isLoading;
-		this.detectChanges();
 	}
 
 	private async registerModel(): Promise<void> {
@@ -461,7 +453,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(this._model.layoutChanged(() => this.detectChanges()));
 		this._register(this.model.onScroll.event(() => this._onScroll.fire()));
 
-		this.setLoading(false);
 		// Check if URI fragment is present; if it is, navigate to section by default
 		this.navigateToSectionIfURIFragmentExists();
 		this.updateToolbarComponents();
