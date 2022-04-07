@@ -185,6 +185,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _trustedCacheQueue: URI[] = [];
 	private _unTrustedCacheQueue: URI[] = [];
 	private _onCodeCellExecutionStart: Emitter<void> = new Emitter<void>();
+	private _notebookInputsMap: Map<string, IEditorInput> = new Map();
 
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
@@ -287,6 +288,9 @@ export class NotebookService extends Disposable implements INotebookService {
 		let uri: URI;
 		if (resource) {
 			uri = URI.revive(resource);
+			if (this._notebookInputsMap.has(uri.toString())) {
+				return this._notebookInputsMap.get(uri.toString());
+			}
 		} else {
 			uri = this.getUntitledFileUri();
 		}
@@ -329,6 +333,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			throw new Error(localize('failedToCreateNotebookInput', "Failed to create notebook input for provider '{0}'", options.providerId));
 		}
 
+		this._notebookInputsMap.set(uri.toString(), fileInput);
 		return fileInput;
 	}
 
@@ -618,6 +623,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (this._editors.delete(editor.id)) {
 			this._onNotebookEditorRemove.fire(editor);
 		}
+		this._notebookInputsMap.delete(editor.notebookParams.notebookUri.toString());
+
 		// Remove the manager from the tracked list, and let the notebook provider know that it should update its mappings
 		this.sendNotebookCloseToProvider(editor);
 	}
