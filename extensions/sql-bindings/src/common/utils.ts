@@ -162,6 +162,18 @@ export function escapeClosingBrackets(str: string): string {
 	return str.replace(']', ']]');
 }
 
+export function checkBrackets(objectName: string): string {
+	if (objectName.includes('.')) {
+		// remove schema from object name
+		let table = objectName.substring(objectName.lastIndexOf('.') + 1);
+		if (table.includes('[') && table.includes(']')) {
+			table = table.replace(/[\[\]']+/g, '');
+		}
+		return table;
+	}
+	return objectName;
+}
+
 /**
  * Gets the package info for the extension based on where the extension is installed
  * @returns the package info object
