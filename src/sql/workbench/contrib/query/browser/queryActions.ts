@@ -46,6 +46,7 @@ import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { gen3Version, sqlDataWarehouse } from 'sql/platform/connection/common/constants';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
+import { QueryResultsWriterMode } from 'sql/workbench/contrib/query/common/queryResultsWriterStatus';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -838,5 +839,32 @@ export class ExportAsNotebookAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		this._commandService.executeCommand('mssql.exportSqlAsNotebook', this.editor.input.uri);
+	}
+}
+
+/**
+ * Action class that sends query results to a file.
+ */
+export class ResultsToFileAction extends QueryTaskbarAction {
+	public static IconClass = '';
+	public static ID = 'ResultsToFile';
+
+	constructor(
+		editor: QueryEditor,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService
+	) {
+		super(connectionManagementService, editor, ResultsToFileAction.ID, ResultsToFileAction.IconClass);
+		this.label = 'Results to File';
+	}
+
+	public override async run(): Promise<void> {
+		if (this.editor.queryResultsWriterStatus.isWritingToFile()) {
+			this.editor.queryResultsWriterMode = QueryResultsWriterMode.ToGrid;
+			this.label = 'Results to File';
+		}
+		else {
+			this.editor.queryResultsWriterMode = QueryResultsWriterMode.ToFile;
+			this.label = 'Results to Grid';
+		}
 	}
 }
