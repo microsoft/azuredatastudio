@@ -536,7 +536,7 @@
 			"resource.type.arc.postgres.display.name": "Grupos de servidores de Hiperescala do PostgreSQL - Azure Arc",
 			"resource.type.arc.sql.description": "Serviço de Instância SQL gerenciado para desenvolvedores de aplicativos em um ambiente gerenciado pelo cliente",
 			"resource.type.arc.sql.display.name": "Instância Gerenciada de SQL do Azure – Azure Arc",
-			"resource.type.azure.arc.description": "Criar um controlador de dados Azure Arc",
+			"resource.type.azure.arc.description": "Cria um controlador de dados do Azure Arc. Certifique-se de executado o logon no az antes de iniciar este assistente.",
 			"resource.type.azure.arc.display.name": "Controlador de dados do Azure Arc",
 			"should.be.integer": "O valor deve ser um inteiro",
 			"worker.node.count.should.not.be.one": "O valor 1 não é compatível."

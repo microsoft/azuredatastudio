@@ -295,7 +295,7 @@
 			"updateProjectForRoundTrip": "プロジェクト '{0}' をビルドするには、ターゲット、参照、そしてシステム データベース参照を更新する必要があります。SSDT にプロジェクトが作成された場合、それは両方のツール上で引き続き機能します。プロジェクトを更新しますか?",
 			"updateProjectFromDatabaseDialogName": "データベースからプロジェクトを更新する",
 			"updateText": "更新",
-			"updatedToSdkStyleError": "Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.",
+			"updatedToSdkStyleError": "プロジェクト{0} を SDK スタイルに変換できませんでした。.sqlproj への変更がロールバックされました。",
 			"updatingProjectFromDatabase": "{1} から {0} を更新しています...",
 			"userSelectionCancelled": "autorest の実行方法の選択がユーザーによって取り消されました。",
 			"userSelectionInstallGlobally": "ユーザーは autorest のグローバル インストールを選択しました。今すぐインストールしています...",

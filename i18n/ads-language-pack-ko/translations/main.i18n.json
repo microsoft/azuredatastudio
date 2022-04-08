@@ -9956,8 +9956,8 @@
 			"table.selectAll": "모두 선택",
 			"table.sortAscending": "오름차순 정렬",
 			"table.sortDescending": "내림차순 정렬",
-			"tableFilter.blankStringDisplayText": "(Blanks)",
-			"tableFilter.nullDisplayText": "(NULL)",
+			"tableFilter.blankStringDisplayText": "(필드 값 없음)",
+			"tableFilter.nullDisplayText": "(null)",
 			"tableFilter.selectedCount": "{0} 선택됨",
 			"tableFilter.visibleCount": "{0}개 결과"
 		},
@@ -12364,6 +12364,9 @@
 			"noHandlerRegistered": "유효한 실행 계획 처리기가 등록되지 않았습니다.",
 			"providerIdNotValidError": "ExecutionPlanService와 상호 작용하려면 유효한 공급자가 필요합니다.",
 			"selectExecutionPlanProvider": "실행 계획을 열 공급자 선택"
+		},
+		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
+			"table.showActions": "작업 표시"
 		}
 	}
 }

@@ -536,7 +536,7 @@
 			"resource.type.arc.postgres.display.name": "PostgreSQL Hyperscale-Servergruppen – Azure Arc",
 			"resource.type.arc.sql.description": "Verwalteter SQL-Instanzdienst für App-Entwickler in einer kundenseitig verwalteten Umgebung",
 			"resource.type.arc.sql.display.name": "Azure SQL Managed Instance – Azure Arc",
-			"resource.type.azure.arc.description": "Erstellt einen Azure Arc-Datencontroller",
+			"resource.type.azure.arc.description": "Erstellt einen Azure Arc-Datencontroller. Stellen Sie sicher, dass Sie „az login“ ausgeführt haben, bevor Sie diesen Assistenten starten.",
 			"resource.type.azure.arc.display.name": "Azure Arc-Datencontroller",
 			"should.be.integer": "Der Wert muss eine ganze Zahl sein.",
 			"worker.node.count.should.not.be.one": "Der Wert 1 wird nicht unterstützt."
