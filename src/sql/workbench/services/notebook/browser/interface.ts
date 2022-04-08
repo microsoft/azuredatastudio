@@ -10,9 +10,9 @@ import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/bro
 import { IEditorInput } from 'vs/workbench/common/editor';
 
 export interface INotebookInput extends IEditorInput {
-	defaultKernel?: azdata.nb.IKernelSpec,
-	connectionProfile?: azdata.IConnectionProfile,
-	notebookContents?: azdata.nb.INotebookContents,
+	defaultKernel?: azdata.nb.IKernelSpec;
+	connectionProfile?: azdata.IConnectionProfile;
+	setNotebookContents(contents: azdata.nb.INotebookContents): void;
 	isDirty(): boolean;
 	setDirty(boolean);
 	readonly notebookUri: URI;

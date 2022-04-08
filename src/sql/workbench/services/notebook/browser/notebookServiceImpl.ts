@@ -317,7 +317,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (isINotebookInput(fileInput)) {
 				fileInput.defaultKernel = options.defaultKernel;
 				fileInput.connectionProfile = options.connectionProfile;
-				fileInput.notebookContents = options.notebookContents;
+				fileInput.setNotebookContents(options.notebookContents);
 
 				if (isUntitled) {
 					let untitledModel = await fileInput.resolve();

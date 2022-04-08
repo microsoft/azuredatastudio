@@ -320,13 +320,9 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		return this._connectionProfile;
 	}
 
-	public set notebookContents(value: azdata.nb.INotebookContents) {
+	public setNotebookContents(value: azdata.nb.INotebookContents) {
 		this._notebookContents = value;
 		(this.contentLoader as NotebookEditorContentLoader).notebookContents = value;
-	}
-
-	public get notebookContents(): azdata.nb.INotebookContents {
-		return this._notebookContents;
 	}
 
 	public get standardKernels(): IStandardKernelWithProvider[] {
