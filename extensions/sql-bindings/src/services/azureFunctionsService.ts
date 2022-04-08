@@ -20,33 +20,68 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 	// telemetry properties for create azure function
 	let sessionId: string = uuid.v4();
 	let propertyBag: { [key: string]: string } = { sessionId: sessionId };
-	let quickPickStep: string = '';
+	let telemetryStep: string = '';
 	let exitReason: string = 'cancelled';
 	TelemetryReporter.sendActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding);
-
-	let selectedBindingType: BindingType | undefined;
+	// const newFunctionFileObject = azureFunctionsUtils.waitForNewFunctionFile(projectFile);
 	let connectionInfo: IConnectionInfo | undefined;
-	let connectionURI: string;
-	let listDatabases: string[] | undefined;
-	let objectName: string | undefined;
-	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
-	if (!node) {
-		// if user selects command in command palette we prompt user for information
-		quickPickStep = 'launchFromCommandPalette';
-		try {
-			// Ask binding type for promptObjectName
-			quickPickStep = 'getBindingType';
-			let selectedBinding = await azureFunctionsUtils.promptForBindingType();
-			if (!selectedBinding) {
+
+	try {
+		const azureFunctionApi = await azureFunctionsUtils.getAzureFunctionsExtensionApi();
+		if (!azureFunctionApi) {
+			propertyBag.exitReason = exitReason;
+			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
+				// .withConnectionInfo(node?.connectionInfo)
+				.withAdditionalProperties(propertyBag).send();
+			return;
+		}
+		/**
+		 * Prompts user for azure function project path to use
+		 * If multiple found in workspace we prompt user to pick one
+		 * If one found in workspace we use that
+		 * If none found in workspace we show error message but continue with createFunction message
+		 */
+		let projectFile = await azureFunctionsUtils.getAzureFunctionProject();
+
+		if (!projectFile) {
+			// show warning message that user needs an azure function project to create a function
+			let projectCreate = await vscode.window.showErrorMessage(constants.azureFunctionsProjectMustBeOpened, constants.learnMore);
+			if (projectCreate === constants.learnMore) {
+				telemetryStep = 'learnMore';
+				void vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(constants.sqlBindingsDoc));
+				TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.learnMore)
+					// .withConnectionInfo(connectionInfo)
+					.withAdditionalProperties(propertyBag).send();
 				return;
 			}
-			selectedBindingType = selectedBinding.type;
-			propertyBag.bindingType = selectedBindingType;
-			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding)
-				.withAdditionalProperties(propertyBag).send();
+			// set projectFile to empty string so we know that the user is creating a new azure function project
+			projectFile = '';
+		}
+
+		// Prompt user for binding type
+		telemetryStep = 'getBindingType';
+		let selectedBindingType: BindingType | undefined;
+		let selectedBinding = await azureFunctionsUtils.promptForBindingType();
+		if (!selectedBinding) {
+			return;
+		}
+		selectedBindingType = selectedBinding.type;
+		propertyBag.bindingType = selectedBindingType;
+		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding)
+			.withAdditionalProperties(propertyBag).send();
+
+
+		// Get connection string parameters and construct object name from prompt or connectionInfo given
+		let connectionURI: string;
+		let listDatabases: string[] | undefined;
+		let objectName: string | undefined;
+		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+		if (!node) {
+			// if user selects command in command palette we prompt user for information
+			telemetryStep = 'launchFromCommandPalette';
 
 			// prompt user for connection profile to get connection info
-			quickPickStep = 'getConnectionInfo';
+			telemetryStep = 'getConnectionProfile';
 			connectionInfo = await vscodeMssqlApi.promptForConnection(true);
 			if (!connectionInfo) {
 				// User cancelled
@@ -56,6 +91,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				.withAdditionalProperties(propertyBag).withConnectionInfo(connectionInfo).send();
 
 			// list databases based on connection profile selected
+			telemetryStep = 'getDatabase';
 			connectionURI = await vscodeMssqlApi.connect(connectionInfo);
 			listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
 			const selectedDatabase = (await vscode.window.showQuickPick(listDatabases, {
@@ -71,203 +107,112 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			connectionInfo.database = selectedDatabase;
 
 			// prompt user for object name to create function from
+			telemetryStep = 'getObjectName';
 			objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding.type);
 			if (!objectName) {
 				// user cancelled
 				return;
 			}
-
-		} catch (e) {
-			void vscode.window.showErrorMessage(utils.getErrorMessage(e));
-			propertyBag.quickPickStep = quickPickStep;
-			exitReason = 'error';
-			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, utils.getErrorType(e))
-				.withAdditionalProperties(propertyBag).send();
-			return;
-		}
-	} else {
-		quickPickStep = 'launchFromTable';
-		connectionInfo = node.connectionInfo;
-		// set the database containing the selected table so it can be used
-		// for the initial catalog property of the connection string
-		let newNode: ITreeNodeInfo = node;
-		while (newNode) {
-			if (newNode.nodeType === 'Database') {
-				connectionInfo.database = newNode.metadata.name;
-				break;
-			} else {
-				newNode = newNode.parentNode;
+		} else {
+			// if user selects table in tree view we use connection info from Object Explorer node
+			telemetryStep = 'launchFromTable';
+			connectionInfo = node.connectionInfo;
+			// set the database containing the selected table so it can be used
+			// for the initial catalog property of the connection string
+			let newNode: ITreeNodeInfo = node;
+			while (newNode) {
+				if (newNode.nodeType === 'Database') {
+					connectionInfo.database = newNode.metadata.name;
+					break;
+				} else {
+					newNode = newNode.parentNode;
+				}
 			}
-		}
-		// Ask binding type for promptObjectName
-		quickPickStep = 'getBindingType';
-		let selectedBinding = await azureFunctionsUtils.promptForBindingType();
 
-		if (!selectedBinding) {
-			// User cancelled
+			objectName = utils.generateQuotedFullName(node.metadata.schema, node.metadata.name);
+		}
+		telemetryStep = 'getConnectionString';
+		const connectionDetails = vscodeMssqlApi.createConnectionDetails(connectionInfo);
+		const connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
+
+		// get function name from user
+		telemetryStep = 'getAzureFunctionName';
+		let functionName: string;
+		// remove special characters from function name
+		let uniqueObjectName = utils.santizeObjectName(objectName);
+		let uniqueFunctionName = await utils.getUniqueFileName(uniqueObjectName, path.dirname(projectFile));
+		functionName = await vscode.window.showInputBox({
+			title: constants.functionNameTitle,
+			value: uniqueFunctionName,
+			ignoreFocusOut: true,
+			validateInput: input => utils.validateFunctionName(input)
+		}) as string;
+		if (!functionName) {
 			return;
 		}
-		selectedBindingType = selectedBinding.type;
-		propertyBag.bindingType = selectedBinding.type;
-		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding)
-			.withAdditionalProperties(propertyBag).withConnectionInfo(connectionInfo).send();
+		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.getAzureFunctionProject)
+			.withAdditionalProperties(propertyBag)
+			.withConnectionInfo(connectionInfo).send();
 
-		objectName = utils.generateQuotedFullName(node.metadata.schema, node.metadata.name);
-	}
-	const connectionDetails = vscodeMssqlApi.createConnectionDetails(connectionInfo);
-	const connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
+		// set the templateId based on the selected binding type
+		telemetryStep = 'getTemplateId';
+		let templateId: string = selectedBindingType === BindingType.input ? constants.inputTemplateID : constants.outputTemplateID;
 
-	TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding)
-		.withConnectionInfo(connectionInfo).send();
-	quickPickStep = 'getAzureFunctionsExtensionApi';
-	const azureFunctionApi = await azureFunctionsUtils.getAzureFunctionsExtensionApi();
-	if (!azureFunctionApi) {
-		propertyBag.exitReason = exitReason;
-		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
-			.withConnectionInfo(connectionInfo)
+		// We need to set the azureWebJobsStorage to a placeholder
+		// to suppress the warning for opening the wizard
+		// issue https://github.com/microsoft/azuredatastudio/issues/18780
+		telemetryStep = 'setAzureWebJobsStorage';
+		await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectFile), constants.azureWebJobsStorageSetting, constants.azureWebJobsStoragePlaceholder);
+
+		// prompt for Connection String Setting Name
+		telemetryStep = 'getConnectionStringSettingName';
+		const connectionStringSettingName = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(vscode.Uri.file(projectFile), connectionString);
+
+		// create C# Azure Function with SQL Binding
+		telemetryStep = 'createFunctionAPI';
+		await azureFunctionApi.createFunction({
+			language: 'C#',
+			templateId: templateId,
+			functionName: functionName,
+			functionSettings: {
+				connectionStringSetting: connectionStringSettingName,
+				...(selectedBindingType === BindingType.input && { object: objectName }),
+				...(selectedBindingType === BindingType.output && { table: objectName })
+			},
+			folderPath: projectFile
+		});
+
+		// check for the new function file to be created and dispose of the file system watcher
+		// const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
+		// await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
+		propertyBag.telemetryStep = telemetryStep;
+		exitReason = 'finishCreate';
+		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.finishCreateAzureFunctionWithSqlBinding)
+			.withAdditionalProperties(propertyBag)
+			.withConnectionInfo(connectionInfo).send();
+		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFile, connectionStringSettingName);
+	} catch (error) {
+		let errorType = utils.getErrorType(error);
+		propertyBag.telemetryStep = telemetryStep;
+
+		if (errorType === 'TimeoutError') {
+			// this error can be cause by many different scenarios including timeout or error occurred during createFunction
+			exitReason = 'timeout';
+			console.log('Timed out waiting for Azure Function project to be created. This may not necessarily be an error, for example if the user canceled out of the create flow.');
+		} else {
+			// else an error would occur during the createFunction
+			exitReason = 'error';
+			void vscode.window.showErrorMessage(utils.formatString(constants.errorNewAzureFunction, error.message ?? error));
+		}
+		TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, errorType)
 			.withAdditionalProperties(propertyBag).send();
 		return;
-
-	}
-	let projectFile = await azureFunctionsUtils.getAzureFunctionProject();
-	let newHostProjectFile!: azureFunctionsUtils.IFileFunctionObject;
-	let hostFile: string;
-
-	if (!projectFile) {
-		let projectCreate = await vscode.window.showErrorMessage(constants.azureFunctionsProjectMustBeOpened,
-			constants.createProject, constants.learnMore);
-		if (projectCreate === constants.learnMore) {
-			quickPickStep = 'learnMore';
-			void vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(constants.sqlBindingsDoc));
-			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.learnMore)
-				.withConnectionInfo(connectionInfo)
-				.withAdditionalProperties(propertyBag).send();
-			return;
-		} else if (projectCreate === constants.createProject) {
-			quickPickStep = 'helpCreateAzureFunctionProject';
-			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.helpCreateAzureFunctionProject)
-				.withConnectionInfo(connectionInfo)
-				.withAdditionalProperties(propertyBag).send();
-
-			// start the create azure function project flow
-			try {
-				// because of an AF extension API issue, we have to get the newly created file by adding a watcher
-				// issue: https://github.com/microsoft/vscode-azurefunctions/issues/3052
-				newHostProjectFile = await azureFunctionsUtils.waitForNewHostFile();
-				await azureFunctionApi.createFunction({ language: 'C#', targetFramework: 'netcoreapp3.1' });
-				const timeoutForHostFile = utils.timeoutPromise(constants.timeoutProjectError);
-				hostFile = await Promise.race([newHostProjectFile.filePromise, timeoutForHostFile]);
-				if (hostFile) {
-					// start the add sql binding flow
-					projectFile = await azureFunctionsUtils.getAzureFunctionProject();
-				}
-			} catch (error) {
-				let errorType = utils.getErrorType(error);
-				propertyBag.quickPickStep = quickPickStep;
-
-				if (errorType === 'TimeoutError') {
-					// this error can be cause by many different scenarios including timeout or error occurred during createFunction
-					exitReason = 'timeout';
-					console.log('Timed out waiting for Azure Function project to be created. This may not necessarily be an error, for example if the user canceled out of the create flow.');
-				} else {
-					// else an error would occur during the createFunction
-					exitReason = 'error';
-					void vscode.window.showErrorMessage(utils.formatString(constants.errorNewAzureFunction, error.message ?? error));
-				}
-				TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, errorType)
-					.withAdditionalProperties(propertyBag).send();
-				return;
-			} finally {
-				propertyBag.exitReason = exitReason;
-				TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
-					.withConnectionInfo(connectionInfo)
-					.withAdditionalProperties(propertyBag).send();
-				newHostProjectFile.watcherDisposable.dispose();
-			}
-		}
-	}
-
-	if (projectFile) {
-		// because of an AF extension API issue, we have to get the newly created file by adding a watcher
-		// issue: https://github.com/microsoft/vscode-azurefunctions/issues/2908
-		const newFunctionFileObject = azureFunctionsUtils.waitForNewFunctionFile(projectFile);
-		let functionName: string;
-
-		try {
-			// get function name from user
-			quickPickStep = 'getAzureFunctionName';
-			// remove special characters from function name
-			let uniqueObjectName = utils.santizeObjectName(objectName);
-			let uniqueFunctionName = await utils.getUniqueFileName(path.dirname(projectFile), uniqueObjectName);
-			functionName = await vscode.window.showInputBox({
-				title: constants.functionNameTitle,
-				value: uniqueFunctionName,
-				ignoreFocusOut: true,
-				validateInput: input => utils.validateFunctionName(input)
-			}) as string;
-			if (!functionName) {
-				return;
-			}
-			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.getAzureFunctionProject)
-				.withAdditionalProperties(propertyBag)
-				.withConnectionInfo(connectionInfo).send();
-
-			// set the templateId based on the selected binding type
-			let templateId: string = selectedBindingType === BindingType.input ? constants.inputTemplateID : constants.outputTemplateID;
-
-			// We need to set the azureWebJobsStorage to a placeholder
-			// to suppress the warning for opening the wizard
-			// issue https://github.com/microsoft/azuredatastudio/issues/18780
-			await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectFile), constants.azureWebJobsStorageSetting, constants.azureWebJobsStoragePlaceholder);
-
-			// create C# Azure Function with SQL Binding
-			await azureFunctionApi.createFunction({
-				language: 'C#',
-				templateId: templateId,
-				functionName: functionName,
-				functionSettings: {
-					connectionStringSetting: constants.sqlConnectionStringSetting,
-					...(selectedBindingType === BindingType.input && { object: objectName }),
-					...(selectedBindingType === BindingType.output && { table: objectName })
-				},
-				folderPath: projectFile
-			});
-
-			// check for the new function file to be created and dispose of the file system watcher
-			const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
-			await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
-			propertyBag.quickPickStep = quickPickStep;
-			exitReason = 'finishCreate';
-			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.finishCreateAzureFunctionWithSqlBinding)
-				.withAdditionalProperties(propertyBag)
-				.withConnectionInfo(connectionInfo).send();
-		} catch (e) {
-			let errorType = utils.getErrorType(e);
-			propertyBag.quickPickStep = quickPickStep;
-
-			if (errorType === 'TimeoutError') {
-				// this error can be cause by many different scenarios including timeout or error occurred during createFunction
-				exitReason = 'timeout';
-				console.log('Timed out waiting for Azure Function project to be created. This may not necessarily be an error, for example if the user canceled out of the create flow.');
-			} else {
-				// else an error would occur during the createFunction
-				exitReason = 'error';
-				void vscode.window.showErrorMessage(utils.getErrorMessage(e));
-			}
-			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, errorType)
-				.withAdditionalProperties(propertyBag).send();
-			return;
-		} finally {
-			propertyBag.quickPickStep = quickPickStep;
-			propertyBag.exitReason = exitReason;
-			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
-				.withConnectionInfo(connectionInfo)
-				.withAdditionalProperties(propertyBag).send();
-			newFunctionFileObject.watcherDisposable.dispose();
-		}
-		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFile);
-	} else {
-		TelemetryReporter.sendErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.finishCreateAzureFunctionWithSqlBinding);
+	} finally {
+		propertyBag.telemetryStep = telemetryStep;
+		propertyBag.exitReason = exitReason;
+		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
+			.withAdditionalProperties(propertyBag).send();
+		// newFunctionFileObject.watcherDisposable.dispose();
 	}
 }
 

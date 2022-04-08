@@ -246,10 +246,11 @@ export async function addNugetReferenceToProjectFile(selectedProjectFile: string
  * Adds the Sql Connection String to the local.settings.json
  * @param connectionString of the SQL Server connection that was chosen by the user
  */
-export async function addConnectionStringToConfig(connectionString: string, projectFile: string): Promise<void> {
+export async function addConnectionStringToConfig(connectionString: string, projectFile: string, settingName?: string): Promise<void> {
 	const settingsFile = await getSettingsFile(projectFile);
+	let connectionStringSettingName = settingName ? settingName : constants.sqlConnectionStringSetting;
 	if (settingsFile) {
-		await setLocalAppSetting(path.dirname(settingsFile), constants.sqlConnectionStringSetting, connectionString);
+		await setLocalAppSetting(path.dirname(settingsFile), connectionStringSettingName, connectionString);
 	}
 }
 
@@ -324,8 +325,9 @@ export async function promptForObjectName(bindingType: BindingType): Promise<str
  * Prompts the user to enter connection setting and updates it from AF project
  * @param projectUri Azure Function project uri
  */
-export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined): Promise<string | undefined> {
+export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined, existingConnectionString?: string): Promise<string | undefined> {
 	let connectionStringSettingName: string | undefined;
+	let connectionString: string = existingConnectionString ?? '';
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 
 	// show the settings from project's local.settings.json if there's an AF functions project
@@ -437,7 +439,6 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 						return;
 					}
 
-					let connectionString: string = '';
 					let includePassword: string | undefined;
 					let connectionInfo: IConnectionInfo | undefined;
 					let connectionDetails: ConnectionDetails;

@@ -140,11 +140,16 @@ export function timeoutPromise(errorMessage: string, ms: number = 10000): Promis
  * Gets a unique file name
  * Increment the file name by adding 1 to function name if the file already exists
  * Undefined if the filename suffix count becomes greater than 1024
- * @param folderPath selected project folder path
  * @param fileName base filename to use
+ * @param folderPath selected project folder path
  * @returns a promise with the unique file name, or undefined
  */
-export async function getUniqueFileName(folderPath: string, fileName: string): Promise<string | undefined> {
+export async function getUniqueFileName(fileName: string, folderPath?: string,): Promise<string | undefined> {
+	if (!folderPath) {
+		// user is creating a brand new azure function project
+		return;
+	}
+
 	let count: number = 0;
 	const maxCount: number = 1024;
 	let uniqueFileName = fileName;
