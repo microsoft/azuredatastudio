@@ -66,6 +66,7 @@ export const enum TelemetryAction {
 	DeleteAgentProxy = 'DeleteAgentProxy',
 	DeleteConnection = 'DeleteConnection',
 	DeleteServerGroup = 'DeleteServerGroup',
+	EstimatedQueryExecutionPlan = 'EstimatedQueryExecutionPlan',
 	CancelQuery = 'CancelQuery',
 	ChartCreated = 'ChartCreated',
 	Click = 'Click',

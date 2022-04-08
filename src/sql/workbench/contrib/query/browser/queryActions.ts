@@ -39,13 +39,15 @@ import { OEAction } from 'sql/workbench/services/objectExplorer/browser/objectEx
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
+import { ExecutionPlanOptions, IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IRange } from 'vs/editor/common/core/range';
 import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { gen3Version, sqlDataWarehouse } from 'sql/platform/connection/common/constants';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
+import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -297,13 +299,18 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 
 	constructor(
 		editor: QueryEditor,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private connectionService: IConnectionManagementService,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IAdsTelemetryService private adsTelemetryService: IAdsTelemetryService
 	) {
 		super(connectionManagementService, editor, EstimatedQueryPlanAction.ID, EstimatedQueryPlanAction.EnabledClass);
 		this.label = nls.localize('estimatedQueryPlan', "Explain");
 	}
 
 	public override async run(): Promise<void> {
+		let planOptions = { displayEstimatedQueryPlan: true } as ExecutionPlanOptions;
+		this.addTelemetry(TelemetryKeys.TelemetryAction.EstimatedQueryExecutionPlan, this.editor.input.uri, planOptions);
+
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
@@ -327,6 +334,20 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 				displayEstimatedQueryPlan: true
 			});
 		}
+	}
+
+	private addTelemetry(eventName: string, ownerUri: string, runOptions?: ExecutionPlanOptions): void {
+		const providerId: string = this.connectionService.getProviderIdFromUri(ownerUri);
+		const data: ITelemetryEventProperties = {
+			provider: providerId,
+		};
+		if (runOptions) {
+			Object.assign(data, {
+				displayEstimatedQueryPlan: runOptions.displayEstimatedQueryPlan,
+				displayActualQueryPlan: runOptions.displayActualQueryPlan
+			});
+		}
+		this.adsTelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, eventName).withAdditionalProperties(data).send();
 	}
 }
 
