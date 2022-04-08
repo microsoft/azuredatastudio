@@ -31,7 +31,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.selectAllTextInEditor();
 			await app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
 			await app.code.dispatchKeybinding('escape');
-			await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'strong');
+			await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p strong');
 		});
 
 		it('can perform basic code cell functionality', async function () {
@@ -142,6 +142,158 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
 				await app.workbench.sqlNotebook.notebookToolbar.waitForTrustedIcon();
 				await app.workbench.sqlNotebook.waitForTrustedElements();
+			});
+		});
+
+		describe('Cell Toolbar Actions', function () {
+			async function verifyCellToolbarBehavior(app: Application, toolbarAction: () => Promise<void>, selector: string, checkIfGone: boolean = false): Promise<void> {
+				const sampleText: string = 'Test Text';
+
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
+				await app.workbench.sqlNotebook.waitForPlaceholderGone();
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
+				await app.workbench.sqlNotebook.waitForTypeInEditor(sampleText);
+				await app.workbench.sqlNotebook.selectAllTextInEditor();
+
+				await toolbarAction();
+				await app.code.dispatchKeybinding('escape');
+				if (checkIfGone) {
+					await app.workbench.sqlNotebook.waitForTextCellPreviewContentGone(selector);
+				} else {
+					await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, selector);
+				}
+			}
+
+			it('can bold selected text', async function () {
+				const app = this.app as Application;
+				await verifyCellToolbarBehavior(app, () => app.workbench.sqlNotebook.textCellToolbar.boldSelectedText(), 'p strong');
+			});
+
+			it('can undo bold text', async function () {
+				const app = this.app as Application;
+				await verifyCellToolbarBehavior(app, async () => {
+					await app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
+					await app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
+				}, 'p strong', true);
+			});
+
+			it('can italicize selected text', async function () {
+				const app = this.app as Application;
+				await verifyCellToolbarBehavior(app, () => app.workbench.sqlNotebook.textCellToolbar.italicizeSelectedText(), 'p em');
+			});
+
+			it('can undo italic text', async function () {
+				const app = this.app as Application;
+				await verifyCellToolbarBehavior(app, async () => {
+					await app.workbench.sqlNotebook.textCellToolbar.italicizeSelectedText();
+					await app.workbench.sqlNotebook.textCellToolbar.italicizeSelectedText();
+				}, 'p em', true);
+			});
+
+			it('can underline selected text', async function () {
+				const app = this.app as Application;
+				await verifyCellToolbarBehavior(app, () => app.workbench.sqlNotebook.textCellToolbar.underlineSelectedText(), 'p u');
+			});
+
+			it('can undo underlined text', async function () {
+				const app = this.app as Application;
+				await verifyCellToolbarBehavior(app, async () => {
+					await app.workbench.sqlNotebook.textCellToolbar.underlineSelectedText();
+					await app.workbench.sqlNotebook.textCellToolbar.underlineSelectedText();
+				}, 'p u', true);
+			});
+
+			it('can highlight selected text', async function () {
+				const app = this.app as Application;
+				await verifyCellToolbarBehavior(app, () => app.workbench.sqlNotebook.textCellToolbar.highlightSelectedText(), 'p mark');
+			});
+
+			it('can undo highlighted text', async function () {
+				const app = this.app as Application;
+				await verifyCellToolbarBehavior(app, async () => {
+					await app.workbench.sqlNotebook.textCellToolbar.highlightSelectedText();
+					await app.workbench.sqlNotebook.textCellToolbar.highlightSelectedText();
+				}, 'p mark', true);
+			});
+
+			it('can codify selected text', async function () {
+				const app = this.app as Application;
+				await verifyCellToolbarBehavior(app, () => app.workbench.sqlNotebook.textCellToolbar.codifySelectedText(), 'pre code');
+			});
+
+			it('can bullet selected text', async function () {
+				const app = this.app as Application;
+				await verifyCellToolbarBehavior(app, () => app.workbench.sqlNotebook.textCellToolbar.insertList(), 'ul li');
+			});
+
+			it('can undo bulleted text', async function () {
+				const app = this.app as Application;
+				await verifyCellToolbarBehavior(app, async () => {
+					await app.workbench.sqlNotebook.textCellToolbar.insertList();
+					await app.workbench.sqlNotebook.textCellToolbar.insertList();
+				}, 'ul li', true);
+			});
+
+			it('can number selected text', async function () {
+				const app = this.app as Application;
+				await verifyCellToolbarBehavior(app, () => app.workbench.sqlNotebook.textCellToolbar.insertOrderedList(), 'ol li');
+			});
+
+			it('can undo numbered text', async function () {
+				const app = this.app as Application;
+				await verifyCellToolbarBehavior(app, async () => {
+					await app.workbench.sqlNotebook.textCellToolbar.insertOrderedList();
+					await app.workbench.sqlNotebook.textCellToolbar.insertOrderedList();
+				}, 'ol li', true);
+			});
+
+			// Text size tests are disabled because the text size dropdown
+			// is not clickable on Unix from the smoke tests
+			// it('can change text size to Heading 1', async function () {
+			// 	const app = this.app as Application;
+			// 	await createCellAndSelectAllText(app);
+			// 	await app.workbench.sqlNotebook.textCellToolbar.changeSelectedTextSize('Heading 1');
+			// 	await app.code.dispatchKeybinding('escape');
+			// 	await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'h1');
+			// });
+
+			// it('can change text size to Heading 2', async function () {
+			// 	const app = this.app as Application;
+			// 	await createCellAndSelectAllText(app);
+			// 	await app.workbench.sqlNotebook.textCellToolbar.changeSelectedTextSize('Heading 2');
+			// 	await app.code.dispatchKeybinding('escape');
+			// 	await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'h2');
+			// });
+
+			// it('can change text size to Heading 3', async function () {
+			// 	const app = this.app as Application;
+			// 	await createCellAndSelectAllText(app);
+			// 	await app.workbench.sqlNotebook.textCellToolbar.changeSelectedTextSize('Heading 3');
+			// 	await app.code.dispatchKeybinding('escape');
+			// 	await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'h3');
+			// });
+
+			// it('can change text size to Paragraph', async function () {
+			// 	const app = this.app as Application;
+			// 	await createCellAndSelectAllText(app);
+			// 	await app.workbench.sqlNotebook.textCellToolbar.changeSelectedTextSize('Paragraph');
+			// 	await app.code.dispatchKeybinding('escape');
+			// 	await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p');
+			// });
+
+			it('can insert link', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
+				await app.workbench.sqlNotebook.waitForPlaceholderGone();
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
+
+				const sampleLabel = 'Microsoft';
+				const sampleAddress = 'https://www.microsoft.com';
+				await app.workbench.sqlNotebook.textCellToolbar.insertLink(sampleLabel, sampleAddress);
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleLabel, `p a[href="${sampleAddress}"]`);
 			});
 		});
 

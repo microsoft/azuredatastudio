@@ -66,6 +66,11 @@
       <source xml:lang="en">Select/Deselect All</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/base/browser/ui/table/plugins/contextMenuColumn.plugin" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="table.showActions">
+      <source xml:lang="en">Show Actions</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/base/browser/ui/table/plugins/headerFilter.plugin" source-language="en" datatype="plaintext"><body>
     <trans-unit id="headerFilter.cancel">
       <source xml:lang="en">Cancel</source>
@@ -93,6 +98,12 @@
     </trans-unit>
     <trans-unit id="table.sortDescending">
       <source xml:lang="en">Sort Descending</source>
+    </trans-unit>
+    <trans-unit id="tableFilter.blankStringDisplayText">
+      <source xml:lang="en">(Blanks)</source>
+    </trans-unit>
+    <trans-unit id="tableFilter.nullDisplayText">
+      <source xml:lang="en">(NULL)</source>
     </trans-unit>
     <trans-unit id="tableFilter.selectedCount">
       <source xml:lang="en">{0} Selected</source>
@@ -648,20 +659,20 @@
     <trans-unit id="designer.defaultRemoveRowConfirmationMessage">
       <source xml:lang="en">Are you sure you want to remove the row?</source>
     </trans-unit>
-    <trans-unit id="designer.errorCountAlert">
-      <source xml:lang="en">{0} validation errors found.</source>
-    </trans-unit>
     <trans-unit id="designer.generalGroupName">
       <source xml:lang="en">General</source>
+    </trans-unit>
+    <trans-unit id="designer.issueCountAlert">
+      <source xml:lang="en">{0} validation issues found.</source>
+    </trans-unit>
+    <trans-unit id="designer.issuesTabTitle">
+      <source xml:lang="en">Issues ({0})</source>
     </trans-unit>
     <trans-unit id="designer.loadingDesigner">
       <source xml:lang="en">Loading designer...</source>
     </trans-unit>
     <trans-unit id="designer.loadingDesignerCompleted">
       <source xml:lang="en">Designer is loaded</source>
-    </trans-unit>
-    <trans-unit id="designer.messagesTabTitle">
-      <source xml:lang="en">Errors ({0})</source>
     </trans-unit>
     <trans-unit id="designer.newRowButtonAriaLabel">
       <source xml:lang="en">Add new row to '{0}' table</source>
@@ -697,9 +708,9 @@
       <source xml:lang="en">The component type: {0} is not supported</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/browser/designer/designerMessagesTabPanelView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="designer.MessageListAriaLabel">
-      <source xml:lang="en">Errors</source>
+  <file original="src/sql/workbench/browser/designer/designerIssuesTabPanelView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.IssueListAriaLabel">
+      <source xml:lang="en">Issues</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/designer/designerPropertiesPane" source-language="en" datatype="plaintext"><body>
@@ -2280,6 +2291,12 @@
     <trans-unit id="executionPlanCustomZoom">
       <source xml:lang="en">Custom Zoom</source>
     </trans-unit>
+    <trans-unit id="executionPlanFileLoadingComplete">
+      <source xml:lang="en">Execution plans are generated</source>
+    </trans-unit>
+    <trans-unit id="executionPlanFileLoadingFailed">
+      <source xml:lang="en">Failed to load execution plan</source>
+    </trans-unit>
     <trans-unit id="executionPlanFitGraphLabel">
       <source xml:lang="en">Zoom to fit</source>
     </trans-unit>
@@ -2304,8 +2321,16 @@
     <trans-unit id="executionPlanZoomOutActionLabel">
       <source xml:lang="en">Zoom Out</source>
     </trans-unit>
+    <trans-unit id="loadingExecutionPlanFile">
+      <source xml:lang="en">Generating execution plans</source>
+    </trans-unit>
     <trans-unit id="openQueryAction">
       <source xml:lang="en">Open Query</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanEditor">
+      <source xml:lang="en">Query Execution Plan Editor</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext"><body>
@@ -3201,6 +3226,9 @@ Error: {1}</source>
     <trans-unit id="notebookViews.enabled">
       <source xml:lang="en">(Preview) Enable Notebook Views</source>
     </trans-unit>
+    <trans-unit id="restartNotebookKernel">
+      <source xml:lang="en">Restart Notebook Kernel</source>
+    </trans-unit>
     <trans-unit id="search.actionsPosition">
       <source xml:lang="en">Controls the positioning of the actionbar on rows in the search view.</source>
     </trans-unit>
@@ -3396,6 +3424,14 @@ Error: {1}</source>
   <file original="src/sql/workbench/contrib/notebook/browser/notebookEditor" source-language="en" datatype="plaintext"><body>
     <trans-unit id="notebookEditor.name">
       <source xml:lang="en">Notebook Editor</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/notebook/browser/notebookEditor.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="loadingNotebookCompletedMessage">
+      <source xml:lang="en">Loading notebook {0} completed</source>
+    </trans-unit>
+    <trans-unit id="loadingNotebookMessage">
+      <source xml:lang="en">Loading notebook {0}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet" source-language="en" datatype="plaintext"><body>
@@ -4750,6 +4786,9 @@ Error: {1}</source>
     <trans-unit id="accountDialog.didNotPickAuthProvider">
       <source xml:lang="en">You didn't select any authentication provider. Please try again.</source>
     </trans-unit>
+    <trans-unit id="accountDialog.loadingProviderLabel">
+      <source xml:lang="en">Loading accounts...</source>
+    </trans-unit>
     <trans-unit id="accountDialog.noAccountLabel">
       <source xml:lang="en">There is no linked account. Please add an account.</source>
     </trans-unit>
@@ -5103,6 +5142,17 @@ Error: {1}</source>
       <source xml:lang="en">Warning</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/executionPlan/common/executionPlanService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="noHandlerRegistered">
+      <source xml:lang="en">No valid execution plan handler is registered</source>
+    </trans-unit>
+    <trans-unit id="providerIdNotValidError">
+      <source xml:lang="en">Valid provider is required in order to interact with ExecutionPlanService</source>
+    </trans-unit>
+    <trans-unit id="selectExecutionPlanProvider">
+      <source xml:lang="en">Select a provider to open execution plan</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/fileBrowser/browser/fileBrowserDialog" source-language="en" datatype="plaintext"><body>
     <trans-unit id="fileBrowser.discard">
       <source xml:lang="en">Discard</source>
@@ -5305,6 +5355,12 @@ Error: {1}</source>
     <trans-unit id="kernelRequiresConnection">
       <source xml:lang="en">Kernel '{0}' was not found. The default kernel will be used instead.</source>
     </trans-unit>
+    <trans-unit id="kernelRestartFailed">
+      <source xml:lang="en">Kernel restart failed: {0}</source>
+    </trans-unit>
+    <trans-unit id="kernelRestartedSuccessfully">
+      <source xml:lang="en">Kernel restarted successfully</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/notebook/browser/models/notebookContexts" source-language="en" datatype="plaintext"><body>
     <trans-unit id="localhost">
@@ -5375,6 +5431,9 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/notebook/browser/sql/sqlSessionManager" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="SqlKernelRestartNotSupported">
+      <source xml:lang="en">SQL kernel restart not supported</source>
+    </trans-unit>
     <trans-unit id="connectionRequired">
       <source xml:lang="en">A connection must be chosen to run notebook cells</source>
     </trans-unit>
@@ -5932,6 +5991,9 @@ Error: {1}</source>
     <trans-unit id="tableDesigner.PrimaryKeyTabTitle">
       <source xml:lang="en">Primary Key</source>
     </trans-unit>
+    <trans-unit id="tableDesigner.TableSchemaValidationError">
+      <source xml:lang="en">Table schema validation failed with error: {0}</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.addForeignKey">
       <source xml:lang="en">New Foreign Key</source>
     </trans-unit>
@@ -6054,6 +6116,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.indexesTabTitle">
       <source xml:lang="en">Indexes</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.inputValidationError">
+      <source xml:lang="en">The input validation failed with error: {0}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.nameTitle">
       <source xml:lang="en">Table name</source>

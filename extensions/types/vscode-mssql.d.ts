@@ -6,6 +6,7 @@
 declare module 'vscode-mssql' {
 
 	import * as vscode from 'vscode';
+	import { RequestType } from 'vscode-languageclient';
 
 	/**
 	 * Covers defining what the vscode-mssql extension exports to other extensions
@@ -40,9 +41,9 @@ declare module 'vscode-mssql' {
 		readonly schemaCompare: ISchemaCompareService;
 
 		/**
-		 * Service for accessing AzureFunctions functionality
+		 * Service for accessing Azure Account functionality
 		 */
-		readonly azureFunctions: IAzureFunctionsService;
+		readonly azureAccountService: IAzureAccountService;
 
 		/**
 		 * Prompts the user to select an existing connection or create a new one, and then returns the result
@@ -60,6 +61,14 @@ declare module 'vscode-mssql' {
 		 * @returns The URI associated with this connection
 		 */
 		connect(connectionInfo: IConnectionInfo, saveConnection?: boolean): Promise<string>;
+
+		/**
+		 * Prompts the user to add firewall rule if connection failed with a firewall error.
+		 * @param connectionUri The URI of the connection to add firewall rule to.
+		 * @param connectionInfo The connection info
+		 * @returns True if firewall rule added
+		 */
+		promptForFirewallRule(connectionUri: string, connectionInfo: IConnectionInfo): Promise<boolean>;
 
 		/**
 		 * Lists the databases for a given connection. Must be given an already-opened connection to succeed.
@@ -84,6 +93,22 @@ declare module 'vscode-mssql' {
 		 * @returns connection string for the connection
 		 */
 		getConnectionString(connectionUriOrDetails: string | ConnectionDetails, includePassword?: boolean, includeApplicationName?: boolean): Promise<string>;
+
+		/**
+		 * Set connection details for the provided connection info
+		 * Able to use this for getConnectionString requests to STS that require ConnectionDetails type
+		 * @param connectionInfo connection info of the connection
+		 * @returns connection details credentials for the connection
+		 */
+		createConnectionDetails(connectionInfo: IConnectionInfo): ConnectionDetails;
+
+		/**
+		 * Send a request to the SQL Tools Server client
+		 * @param requestType The type of the request
+		 * @param params The params to pass with the request
+		 * @returns A promise object for when the request receives a response
+		 */
+		sendRequest<P, R, E, R0>(requestType: RequestType<P, R, E, R0>, params?: P): Promise<R>;
 	}
 
 	/**
@@ -119,6 +144,11 @@ declare module 'vscode-mssql' {
 		 * accountId
 		 */
 		accountId: string | undefined;
+
+		/**
+		 * tenantId
+		 */
+		tenantId: string | undefined;
 
 		/**
 		 * The port number to connect to.
@@ -279,22 +309,134 @@ declare module 'vscode-mssql' {
 		validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
 	}
 
-	export interface IAzureFunctionsService {
+	/**
+	 * Represents a tenant information for an account.
+	 */
+	export interface Tenant {
+		id: string;
+		displayName: string;
+		userId?: string;
+		tenantCategory?: string;
+	}
+
+	/**
+	 * Error that connect method throws if connection fails because of a fire wall rule error.
+	 */
+	export interface IFireWallRuleError extends Error {
+		connectionUri: string;
+	}
+
+	/**
+	 * Represents a key that identifies an account.
+	 */
+	export interface IAccountKey {
 		/**
-		 * Adds a SQL Binding to a specified Azure function in a file
-		 * @param bindingType Type of SQL Binding
-		 * @param filePath Path of the file where the Azure Functions are
-		 * @param functionName Name of the function where the SQL Binding is to be added
-		 * @param objectName Name of Object for the SQL Query
-		 * @param connectionStringSetting Setting for the connection string
+		 * Identifier for the account, unique to the provider
 		 */
-		addSqlBinding(bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string): Thenable<ResultStatus>;
+		id: string;
 		/**
-		 * Gets the names of the Azure functions in the file
-		 * @param filePath Path of the file to get the Azure functions
-		 * @returns array of names of Azure functions in the file
+		 * Identifier of the provider
 		 */
-		getAzureFunctions(filePath: string): Thenable<GetAzureFunctionsResult>;
+		providerId: string;
+		/**
+		 * Version of the account
+		 */
+		accountVersion?: any;
+	}
+
+
+	export enum AccountType {
+		Microsoft = 'microsoft',
+		WorkSchool = 'work_school'
+	}
+
+	/**
+	 * Represents display information for an account.
+	 */
+	export interface IAccountDisplayInfo {
+		/**
+		 * account provider (eg, Work/School vs Microsoft Account)
+		 */
+		accountType: AccountType;
+		/**
+		 * User id that identifies the account, such as "user@contoso.com".
+		 */
+		userId: string;
+		/**
+		 * A display name that identifies the account, such as "User Name".
+		 */
+		displayName: string;
+		/**
+		 * email for AAD
+		 */
+		email?: string;
+		/**
+		 * name of account
+		 */
+		name: string;
+	}
+
+	export interface IAccount {
+		/**
+		 * The key that identifies the account
+		 */
+		key: IAccountKey;
+		/**
+		 * Display information for the account
+		 */
+		displayInfo: IAccountDisplayInfo;
+		/**
+		 * Custom properties stored with the account
+		 */
+		properties: any;
+		/**
+		 * Indicates if the account needs refreshing
+		 */
+		isStale: boolean;
+		/**
+		 * Indicates if the account is signed in
+		 */
+		isSignedIn?: boolean;
+	}
+
+	export interface TokenKey {
+		/**
+		 * Account Key - uniquely identifies an account
+		 */
+		key: string;
+	}
+	export interface AccessToken extends TokenKey {
+		/**
+		 * Access Token
+		 */
+		token: string;
+		/**
+		 * Access token expiry timestamp
+		 */
+		expiresOn?: number;
+	}
+	export interface Token extends AccessToken {
+		/**
+		 * TokenType
+		 */
+		tokenType: string;
+	}
+
+	export interface IAzureAccountService {
+		/**
+		 * Prompts user to login to Azure and returns the account
+		 */
+		addAccount(): Promise<IAccount>;
+
+		/**
+		 * Returns current Azure accounts
+		 */
+		getAccounts(): Promise<IAccount[]>;
+
+		/**
+		 * Returns an access token for given user and tenant
+		 */
+		getAccountSecurityToken(account: IAccount, tenantId: string | undefined): Promise<Token>;
 	}
 
 	export const enum TaskExecutionMode {
@@ -574,64 +716,6 @@ declare module 'vscode-mssql' {
 		parentName?: string;
 
 		parentTypeName?: string;
-	}
-
-	/**
-	 * Azure functions binding type
-	 */
-	export const enum BindingType {
-		input,
-		output
-	}
-
-	/**
-	 * Parameters for adding a SQL binding to an Azure function
-	 */
-	export interface AddSqlBindingParams {
-		/**
-		 * Aboslute file path of file to add SQL binding
-		 */
-		filePath: string;
-
-		/**
-		 * Name of function to add SQL binding
-		 */
-		functionName: string;
-
-		/**
-		 * Name of object to use in SQL binding
-		 */
-		objectName: string;
-
-		/**
-		 * Type of Azure function binding
-		 */
-		bindingType: BindingType;
-
-		/**
-		 * Name of SQL connection string setting specified in local.settings.json
-		 */
-		connectionStringSetting: string;
-	}
-
-	/**
-	 * Parameters for getting the names of the Azure functions in a file
-	 */
-	export interface GetAzureFunctionsParams {
-		/**
-		 * Absolute file path of file to get Azure functions
-		 */
-		filePath: string;
-	}
-
-	/**
-	 * Result from a get Azure functions request
-	 */
-	export interface GetAzureFunctionsResult extends ResultStatus {
-		/**
-		 * Array of names of Azure functions in the file
-		 */
-		azureFunctions: string[];
 	}
 
 	/**

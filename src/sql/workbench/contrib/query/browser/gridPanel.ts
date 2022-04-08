@@ -491,7 +491,14 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			(offset, count) => { return this.loadData(offset, count); },
 			undefined,
 			undefined,
-			(data: ICellValue) => { return data.isNull ? undefined : data?.displayValue; },
+			(data: ICellValue) => {
+				if (!data || data.isNull) {
+					return undefined;
+				}
+				// If the string only contains whitespaces, it will be treated as empty string to make the filtering easier.
+				// Note: this is the display string and does not impact the export/copy features.
+				return data.displayValue.trim() === '' ? '' : data.displayValue;
+			},
 			{
 				inMemoryDataProcessing: this.options.inMemoryDataProcessing,
 				inMemoryDataCountThreshold: this.options.inMemoryDataCountThreshold

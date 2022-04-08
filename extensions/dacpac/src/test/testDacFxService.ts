@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as mssql from '../../../mssql/src/mssql';
+import * as mssql from 'mssql';
 
 export const deployOperationId = 'deploy dacpac';
 export const extractOperationId = 'extract dacpac';

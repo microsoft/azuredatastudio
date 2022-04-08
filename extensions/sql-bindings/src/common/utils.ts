@@ -6,7 +6,7 @@
 import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as vscodeMssql from 'vscode-mssql';
-import * as fse from 'fs-extra';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as glob from 'fast-glob';
 import * as cp from 'child_process';
@@ -15,6 +15,15 @@ export interface ValidationResult {
 	errorMessage: string;
 	validated: boolean
 }
+
+export interface IPackageInfo {
+	name: string;
+	fullName: string;
+	version: string;
+	aiKey: string;
+}
+
+export class TimeoutError extends Error { }
 
 /**
  * Consolidates on the error message string
@@ -25,26 +34,9 @@ export function getErrorMessage(error: any): string {
 		: typeof error === 'string' ? error : `${JSON.stringify(error, undefined, '\t')}`;
 }
 
-export async function getAzureFunctionService(): Promise<vscodeMssql.IAzureFunctionsService> {
-	if (getAzdataApi()) {
-		// this isn't supported in ADS
-		throw new Error('Azure Functions service is not supported in Azure Data Studio');
-	} else {
-		const api = await getVscodeMssqlApi();
-		return api.azureFunctions;
-	}
-}
-
 export async function getVscodeMssqlApi(): Promise<vscodeMssql.IExtension> {
 	const ext = vscode.extensions.getExtension(vscodeMssql.extension.name) as vscode.Extension<vscodeMssql.IExtension>;
 	return ext.activate();
-}
-
-export interface IPackageInfo {
-	name: string;
-	fullName: string;
-	version: string;
-	aiKey: string;
 }
 
 // Try to load the azdata API - but gracefully handle the failure in case we're running
@@ -66,14 +58,6 @@ try {
  */
 export function getAzdataApi(): typeof azdataType | undefined {
 	return azdataApi;
-}
-
-export async function createFolderIfNotExist(folderPath: string): Promise<void> {
-	try {
-		await fse.mkdir(folderPath);
-	} catch {
-		// Ignore if failed
-	}
 }
 
 export async function executeCommand(command: string, cwd?: string): Promise<string> {
@@ -110,6 +94,75 @@ export async function getAllProjectsInFolder(folder: vscode.Uri, projectExtensio
 }
 
 /**
+ * Format a string. Behaves like C#'s string.Format() function.
+ */
+export function formatString(str: string, ...args: any[]): string {
+	// This is based on code originally from https://github.com/Microsoft/vscode/blob/master/src/vs/nls.js
+	// License: https://github.com/Microsoft/vscode/blob/master/LICENSE.txt
+	let result: string;
+	if (args.length === 0) {
+		result = str;
+	} else {
+		result = str.replace(/\{(\d+)\}/g, (match, rest) => {
+			let index = rest[0];
+			return typeof args[index] !== 'undefined' ? args[index] : match;
+		});
+	}
+	return result;
+}
+
+/**
+ * Generates a quoted full name for the object
+ * @param schema of the object
+ * @param objectName object chosen by the user
+ * @returns the quoted and escaped full name of the specified schema and object
+ */
+export function generateQuotedFullName(schema: string, objectName: string): string {
+	return `[${escapeClosingBrackets(schema)}].[${escapeClosingBrackets(objectName)}]`;
+}
+
+/**
+ * Returns a promise that will reject after the specified timeout
+ * @param errorMessage error message to be returned in the rejection
+ * @param ms timeout in milliseconds. Default is 10 seconds
+ * @returns a promise that rejects after the specified timeout
+ */
+export function timeoutPromise(errorMessage: string, ms: number = 10000): Promise<string> {
+	return new Promise((_, reject) => {
+		setTimeout(() => {
+			reject(new TimeoutError(errorMessage));
+		}, ms);
+	});
+}
+
+/**
+ * Gets a unique file name
+ * Increment the file name by adding 1 to function name if the file already exists
+ * Undefined if the filename suffix count becomes greater than 1024
+ * @param folderPath selected project folder path
+ * @param fileName base filename to use
+ * @returns a promise with the unique file name, or undefined
+ */
+export async function getUniqueFileName(folderPath: string, fileName: string): Promise<string | undefined> {
+	let count: number = 0;
+	const maxCount: number = 1024;
+	let uniqueFileName = fileName;
+
+	while (count < maxCount) {
+		if (!fs.existsSync(path.join(folderPath, uniqueFileName + '.cs'))) {
+			return uniqueFileName;
+		}
+		count += 1;
+		uniqueFileName = fileName + count.toString();
+	}
+	return undefined;
+}
+
+export function escapeClosingBrackets(str: string): string {
+	return str.replace(']', ']]');
+}
+
+/**
  * Gets the package info for the extension based on where the extension is installed
  * @returns the package info object
  */
@@ -122,3 +175,11 @@ export function getPackageInfo(): IPackageInfo {
 		aiKey: packageJson.aiKey
 	};
 }
+export function getErrorType(error: any): string | undefined {
+	if (error instanceof TimeoutError) {
+		return 'TimeoutError';
+	} else {
+		return 'UnknownError';
+	}
+}
+

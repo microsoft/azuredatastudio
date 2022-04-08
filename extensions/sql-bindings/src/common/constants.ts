@@ -8,9 +8,33 @@ import * as utils from '../common/utils';
 
 const localize = nls.loadMessageBundle();
 
+// Azure Functions
+export const azureFunctionsExtensionName = 'ms-azuretools.vscode-azurefunctions';
+export const linkToAzureFunctionExtension = 'https://docs.microsoft.com/azure/azure-functions/functions-develop-vs-code';
+export const sqlBindingsDoc = 'https://aka.ms/sqlbindings';
+export const sqlConnectionStringSetting = 'SqlConnectionString';
+export const azureWebJobsStorageSetting = 'AzureWebJobsStorage';
+export const azureWebJobsStoragePlaceholder = 'Enter your Azure Web Jobs storage connection string';
+export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
+export const inputTemplateID = 'SqlInputBinding';
+export const outputTemplateID = 'SqlOutputBinding';
+export const functionNameTitle = localize('functionNameTitle', 'Function Name');
+export const selectProject = localize('selectProject', 'Select the Azure Function project for the SQL Binding');
+export const azureFunctionsExtensionNotFound = localize('azureFunctionsExtensionNotFound', 'The Azure Functions extension is required to create a new Azure Function with SQL binding but is not installed, install it now?');
+export const install = localize('install', 'Install');
+export const learnMore = localize('learnMore', 'Learn more');
+export const doNotInstall = localize('doNotInstall', 'Do not install');
+export const createProject = localize('createProject', 'Create Azure Function Project');
+export const selectAzureFunctionProjFolder = localize('selectAzureFunctionProjFolder', 'Select folder for the Azure Function project');
+export const timeoutExtensionError = localize('timeoutExtensionError', 'Timed out waiting for extension to install');
+export const timeoutAzureFunctionFileError = localize('timeoutAzureFunctionFileError', 'Timed out waiting for Azure Function file to be created');
+export const timeoutProjectError = localize('timeoutProjectError', 'Timed out waiting for project to be created');
+export const errorNewAzureFunction = localize('errorNewAzureFunction', 'Error creating new Azure Function: {0}');
+export const azureFunctionsExtensionNotInstalled = localize('azureFunctionsExtensionNotInstalled', 'Azure Functions extension must be installed in order to use this feature.');
+export const azureFunctionsProjectMustBeOpened = localize('azureFunctionsProjectMustBeOpened', 'A C# Azure Functions project must be present in order to create a new Azure Function for this table.');
+
 // Insert SQL binding
 export const hostFileName = 'host.json';
-export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
 export const placeHolderObject = '[dbo].[table1]';
 export const sqlBindingsHelpLink = 'https://github.com/Azure/azure-functions-sql-extension/blob/main/README.md';
 export const passwordPlaceholder = '******';
@@ -34,7 +58,6 @@ export const noAzureFunctionsProjectsInWorkspace = localize('noAzureFunctionsPro
 export const addPackage = localize('addPackage', "Add Package");
 export const createNewLocalAppSetting = localize('createNewLocalAppSetting', 'Create new local app setting');
 export const createNewLocalAppSettingWithIcon = `$(add) ${createNewLocalAppSetting}`;
-export const sqlConnectionStringSetting = 'SqlConnectionString';
 export const valueMustNotBeEmpty = localize('valueMustNotBeEmpty', "Value must not be empty");
 export const enterConnectionStringSettingName = localize('enterConnectionStringSettingName', "Enter connection string setting name");
 export const enterConnectionString = localize('enterConnectionString', "Enter connection string");
@@ -57,3 +80,4 @@ export const enterPasswordManually = localize('enterPasswordManually', 'Enter pa
 export const userPasswordLater = localize('userPasswordLater', 'In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.');
 export const openFile = localize('openFile', "Open File");
 export const closeButton = localize('closeButton', "Close");
+export function addSqlBinding(functionName: string) { return localize('addSqlBinding', 'Adding SQL Binding to function "{0}"...'), functionName; }

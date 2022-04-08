@@ -329,6 +329,14 @@
           "Notebook"
         ],
         "configuration": "./language-configuration.json"
+      }, {
+        "id": "dib",
+        "extensions": [
+          ".dib"
+        ],
+        "aliases": [
+          ".NET Interactive Notebook"
+        ]
       }
     ],
     "menus": {
@@ -779,7 +787,8 @@
     "@microsoft/vscodetestcover": "^1.2.0"
   },
   "resolutions": {
-    "url-parse": "^1.5.8"
+    "url-parse": "^1.5.8",
+    "moment": "^2.29.2"
   },
   "enableProposedApi": true
 }

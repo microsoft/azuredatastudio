@@ -271,7 +271,8 @@ export class DeployService {
 				typeSystemVersion: undefined,
 				workstationId: undefined,
 				profileName: profile.profileName,
-				expiresOn: undefined
+				expiresOn: undefined,
+				tenantId: undefined
 			};
 			let connectionUrl = await vscodeMssqlApi.connect(connectionProfile, saveConnectionAndPassword);
 			return connectionUrl;
@@ -309,7 +310,7 @@ export class DeployService {
 	public async getConnection(profile: ILocalDbSetting, saveConnectionAndPassword: boolean, database: string): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		let connection = await utils.retry(
-			constants.connectingToSqlServerOnDockerMessage,
+			constants.connectingToSqlServerMessage,
 			async () => {
 				return await this.connectToDatabase(profile, saveConnectionAndPassword, database);
 			},

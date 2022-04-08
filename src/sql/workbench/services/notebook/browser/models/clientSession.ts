@@ -323,16 +323,27 @@ export class ClientSession implements IClientSession {
 	/**
 	 * Restart the session.
 	 *
-	 * @returns A promise that resolves with whether the kernel has restarted.
+	 * @returns A promise that resolves when the kernel has restarted.
 	 *
 	 * #### Notes
-	 * If there is a running kernel, present a dialog.
-	 * If there is no kernel, we start a kernel with the last run
-	 * kernel name and resolves with `true`. If no kernel has been started,
-	 * this is a no-op, and resolves with `false`.
+	 * If there is an existing kernel, restart it and resolve.
+	 * If no kernel has been started, this is a no-op, and resolves.
+	 * Reject on error.
 	 */
-	restart(): Promise<boolean> {
-		throw new Error('Not implemented');
+	restart(): Promise<void> {
+		if (!this._session?.kernel) {
+			// no-op if no kernel is present
+			return Promise.resolve();
+		}
+		let restartCompleted = new Deferred<void>();
+		this._session?.kernel?.restart().then(() => {
+			this.options.notificationService.info(localize('kernelRestartedSuccessfully', 'Kernel restarted successfully'));
+			restartCompleted.resolve();
+		}, err => {
+			this.options.notificationService.error(localize('kernelRestartFailed', 'Kernel restart failed: {0}', err));
+			restartCompleted.reject(err);
+		});
+		return restartCompleted.promise;
 	}
 
 	/**

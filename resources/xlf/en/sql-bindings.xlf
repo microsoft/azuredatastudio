@@ -10,8 +10,20 @@
     <trans-unit id="addPackageReferenceMessage">
       <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
     </trans-unit>
+    <trans-unit id="addSqlBinding">
+      <source xml:lang="en">Adding SQL Binding to function "{0}"...</source>
+    </trans-unit>
     <trans-unit id="addSqlBindingPackageError">
       <source xml:lang="en">Error adding Sql Binding extension package to project</source>
+    </trans-unit>
+    <trans-unit id="azureFunctionsExtensionNotFound">
+      <source xml:lang="en">The Azure Functions extension is required to create a new Azure Function with SQL binding but is not installed, install it now?</source>
+    </trans-unit>
+    <trans-unit id="azureFunctionsExtensionNotInstalled">
+      <source xml:lang="en">Azure Functions extension must be installed in order to use this feature.</source>
+    </trans-unit>
+    <trans-unit id="azureFunctionsProjectMustBeOpened">
+      <source xml:lang="en">A C# Azure Functions project must be present in order to create a new Azure Function for this table.</source>
     </trans-unit>
     <trans-unit id="closeButton">
       <source xml:lang="en">Close</source>
@@ -28,6 +40,12 @@
     <trans-unit id="createNewLocalAppSetting">
       <source xml:lang="en">Create new local app setting</source>
     </trans-unit>
+    <trans-unit id="createProject">
+      <source xml:lang="en">Create Azure Function Project</source>
+    </trans-unit>
+    <trans-unit id="doNotInstall">
+      <source xml:lang="en">Do not install</source>
+    </trans-unit>
     <trans-unit id="enterConnectionString">
       <source xml:lang="en">Enter connection string</source>
     </trans-unit>
@@ -40,11 +58,17 @@
     <trans-unit id="enterPasswordPrompt">
       <source xml:lang="en">Enter the password to be used for the connection string</source>
     </trans-unit>
+    <trans-unit id="errorNewAzureFunction">
+      <source xml:lang="en">Error creating new Azure Function: {0}</source>
+    </trans-unit>
     <trans-unit id="failedToGetConnectionString">
       <source xml:lang="en">An error occurred generating the connection string for the selected connection</source>
     </trans-unit>
     <trans-unit id="failedToParse">
       <source xml:lang="en">Failed to parse "{0}": {1}.</source>
+    </trans-unit>
+    <trans-unit id="functionNameTitle">
+      <source xml:lang="en">Function Name</source>
     </trans-unit>
     <trans-unit id="includePassword">
       <source xml:lang="en">Do you want to include the password from this connection in your local.settings.json file?</source>
@@ -52,8 +76,14 @@
     <trans-unit id="input">
       <source xml:lang="en">Input</source>
     </trans-unit>
+    <trans-unit id="install">
+      <source xml:lang="en">Install</source>
+    </trans-unit>
     <trans-unit id="jsonParseError">
       <source xml:lang="en">{0} near line "{1}", column "{2}"</source>
+    </trans-unit>
+    <trans-unit id="learnMore">
+      <source xml:lang="en">Learn more</source>
     </trans-unit>
     <trans-unit id="moreInformation">
       <source xml:lang="en">More Information</source>
@@ -85,6 +115,9 @@
     <trans-unit id="selectAzureFunction">
       <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
     </trans-unit>
+    <trans-unit id="selectAzureFunctionProjFolder">
+      <source xml:lang="en">Select folder for the Azure Function project</source>
+    </trans-unit>
     <trans-unit id="selectBindingType">
       <source xml:lang="en">Select type of binding</source>
     </trans-unit>
@@ -94,6 +127,9 @@
     <trans-unit id="selectConnectionString">
       <source xml:lang="en">Select SQL connection string method</source>
     </trans-unit>
+    <trans-unit id="selectProject">
+      <source xml:lang="en">Select the Azure Function project for the SQL Binding</source>
+    </trans-unit>
     <trans-unit id="selectSetting">
       <source xml:lang="en">Select SQL connection string setting from local.settings.json</source>
     </trans-unit>
@@ -102,6 +138,15 @@
     </trans-unit>
     <trans-unit id="sqlTableToUpsert">
       <source xml:lang="en">SQL table to upsert into</source>
+    </trans-unit>
+    <trans-unit id="timeoutAzureFunctionFileError">
+      <source xml:lang="en">Timed out waiting for Azure Function file to be created</source>
+    </trans-unit>
+    <trans-unit id="timeoutExtensionError">
+      <source xml:lang="en">Timed out waiting for extension to install</source>
+    </trans-unit>
+    <trans-unit id="timeoutProjectError">
+      <source xml:lang="en">Timed out waiting for project to be created</source>
     </trans-unit>
     <trans-unit id="unableToSetConnectionString">
       <source xml:lang="en">Failed to set connection string app setting</source>
@@ -128,6 +173,9 @@
     </trans-unit>
     <trans-unit id="sqlBindings.addSqlBinding">
       <source xml:lang="en">Add SQL Binding (preview)</source>
+    </trans-unit>
+    <trans-unit id="sqlBindings.createAzureFunction">
+      <source xml:lang="en">Create Azure Function with SQL binding</source>
     </trans-unit>
 </body></file>
 </xliff>

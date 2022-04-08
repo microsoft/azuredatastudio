@@ -14,7 +14,7 @@ import * as baselines from './baselines/baselines';
 import * as templates from '../templates/templates';
 import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as utils from '../common/utils';
 
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';

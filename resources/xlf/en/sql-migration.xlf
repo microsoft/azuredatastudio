@@ -561,6 +561,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.location">
       <source xml:lang="en">Location</source>
     </trans-unit>
+    <trans-unit id="sql.migration.mi.not.ready">
+      <source xml:lang="en">The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.migration.completed">
       <source xml:lang="en">Migrations completed</source>
     </trans-unit>
@@ -1364,6 +1367,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.type.label">
       <source xml:lang="en">Type:</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.unavailable.managedInstance">
+      <source xml:lang="en">(Unavailable) {0}</source>
     </trans-unit>
     <trans-unit id="sql.migration.unique.name">
       <source xml:lang="en">Select a unique name for this target database</source>

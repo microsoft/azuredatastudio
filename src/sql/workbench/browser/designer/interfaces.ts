@@ -44,9 +44,9 @@ export interface DesignerComponentInput {
 	readonly viewModel: DesignerViewModel;
 
 	/**
-	 * Gets the validation errors.
+	 * Gets the issues.
 	 */
-	readonly validationErrors: DesignerValidationError[] | undefined;
+	readonly issues: DesignerIssue[] | undefined;
 
 	/**
 	 * Start initilizing the designer input object.
@@ -229,12 +229,13 @@ export type DesignerUIArea = 'PropertiesView' | 'ScriptView' | 'TopContentView' 
 export type DesignerPropertyPath = (string | number)[];
 export const DesignerRootObjectPath: DesignerPropertyPath = [];
 
-export type DesignerValidationError = { message: string, propertyPath?: DesignerPropertyPath };
+export type DesignerIssueSeverity = 'error' | 'warning' | 'information';
+export type DesignerIssue = { description: string, propertyPath?: DesignerPropertyPath, severity: DesignerIssueSeverity };
 
 export interface DesignerEditResult {
 	isValid: boolean;
 	refreshView?: boolean;
-	errors?: DesignerValidationError[];
+	issues?: DesignerIssue[];
 }
 
 export interface DesignerTextEditor {

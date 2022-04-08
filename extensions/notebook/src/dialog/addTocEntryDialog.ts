@@ -99,7 +99,8 @@ export class AddTocEntryDialog {
 	public async createFile(fileName: string, titleName: string): Promise<boolean> {
 		try {
 			const dirPath = this._bookItem.contextValue === BookTreeItemType.savedBook ? this._bookItem.rootContentPath : path.dirname(this._bookItem.book.contentPath);
-			const filePath = path.posix.join(dirPath, fileName).concat(this._extension);
+			// For sections, we pass the name of the section in the path to create a directory with the same name
+			const filePath = this._isSection ? path.posix.join(dirPath, titleName, fileName).concat(this._extension) : path.posix.join(dirPath, fileName).concat(this._extension);
 			await this.validatePath(dirPath, fileName.concat(this._extension));
 			const pathDetails = new TocEntryPathHandler(filePath, this._bookItem.rootContentPath, titleName);
 			await this._tocManager.addNewTocEntry(pathDetails, this._bookItem, this._isSection);

@@ -22,10 +22,6 @@
         <source xml:lang="en">Publish History</source>
         <target state="translated">Publicar histórico</target>
       </trans-unit>
-      <trans-unit id="SettingAlreadyExists">
-        <source xml:lang="en">Local app setting '{0}' already exists. Overwrite?</source>
-        <target state="translated">A configuração do aplicativo local '{0}' já existe. Substituir?</target>
-      </trans-unit>
       <trans-unit id="Status">
         <source xml:lang="en">Status</source>
         <target state="translated">Status</target>
@@ -66,18 +62,6 @@
         <source xml:lang="en">Add Item</source>
         <target state="translated">Adicionar item</target>
       </trans-unit>
-      <trans-unit id="addPackage">
-        <source xml:lang="en">Add Package</source>
-        <target state="translated">Adicionar Pacote</target>
-      </trans-unit>
-      <trans-unit id="addPackageReferenceMessage">
-        <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
-        <target state="translated">Para usar as associações SQL, certifique-se de que seu projeto do Azure Functions tem uma referência a {0}</target>
-      </trans-unit>
-      <trans-unit id="addSqlBindingPackageError">
-        <source xml:lang="en">Error adding Sql Binding extension package to project</source>
-        <target state="translated">Erro ao adicionar o pacote de extensão da Associação Sql ao projeto</target>
-      </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
         <target state="translated">Deseja atualizar o arquivo local.settings.json da Função do Azure com a nova cadeia de conexão?</target>
@@ -103,8 +87,8 @@
         <target state="translated">Novo nome do projeto SQL</target>
       </trans-unit>
       <trans-unit id="baseDockerImage">
-        <source xml:lang="en">Base SQL Server Docker image</source>
-        <target state="translated">Imagem base do Docker do SQL Server</target>
+        <source xml:lang="en">Base {0} Docker image</source>
+        <target state="translated">Imagem base {0} do Docker</target>
       </trans-unit>
       <trans-unit id="browseButtonText">
         <source xml:lang="en">Browse folder</source>
@@ -166,45 +150,29 @@
         <source xml:lang="en">Cleaning existing deployments...</source>
         <target state="translated">Limpando implantações existentes...</target>
       </trans-unit>
-      <trans-unit id="closeButton">
-        <source xml:lang="en">Close</source>
-        <target state="translated">Fechar</target>
-      </trans-unit>
       <trans-unit id="compareActionRadiButtonLabel">
         <source xml:lang="en">View changes in Schema Compare</source>
         <target state="translated">Exibir as alterações na Comparação de Esquemas</target>
       </trans-unit>
       <trans-unit id="confirmPassword">
-        <source xml:lang="en">Confirm SQL server admin password</source>
-        <target state="translated">Confirmar senha de administrador do SQL Server</target>
+        <source xml:lang="en">Confirm {0} admin password</source>
+        <target state="translated">Confirme {0} senha de administrador</target>
       </trans-unit>
       <trans-unit id="confirmServerPassword">
-        <source xml:lang="en">Confirm SQL Server admin password</source>
-        <target state="translated">Confirmar SQL Server senha de administrador</target>
+        <source xml:lang="en">Confirm {0} admin password</source>
+        <target state="translated">Confirme {0} senha de administrador</target>
       </trans-unit>
       <trans-unit id="connectingToSqlServerOnDockerMessage">
-        <source xml:lang="en">Connecting to SQL Server on Docker</source>
-        <target state="translated">Conectando-se ao SQL Server no Docker</target>
+        <source xml:lang="en">Connecting to SQL Server</source>
+        <target state="translated">Conectando ao SQL Server</target>
       </trans-unit>
       <trans-unit id="connectionFailedError">
         <source xml:lang="en">Connection failed error: '{0}'</source>
         <target state="translated">Erro de falha na conexão: '{0}'</target>
       </trans-unit>
-      <trans-unit id="connectionProfile">
-        <source xml:lang="en">Select a connection profile</source>
-        <target state="translated">Selecionar um perfil de conexão</target>
-      </trans-unit>
       <trans-unit id="connectionRadioButtonLabel">
         <source xml:lang="en">Connections</source>
         <target state="translated">Conexões</target>
-      </trans-unit>
-      <trans-unit id="connectionStringSetting">
-        <source xml:lang="en">Connection string setting name</source>
-        <target state="translated">Nome da configuração da cadeia de conexão</target>
-      </trans-unit>
-      <trans-unit id="connectionStringSettingPlaceholder">
-        <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
-        <target state="translated">Configuração da cadeia de conexão especificada em "local.settings.json"</target>
       </trans-unit>
       <trans-unit id="containerAlreadyExistForProject">
         <source xml:lang="en">Containers already exist for this project. Do you want to delete them before deploying a new one?</source>
@@ -213,10 +181,6 @@
       <trans-unit id="createNew">
         <source xml:lang="en">Create New</source>
         <target state="translated">Criar Novo</target>
-      </trans-unit>
-      <trans-unit id="createNewLocalAppSetting">
-        <source xml:lang="en">Create new local app setting</source>
-        <target state="translated">Criar nova configuração de aplicativo local</target>
       </trans-unit>
       <trans-unit id="createProjectDialogOkButtonText">
         <source xml:lang="en">Create</source>
@@ -423,20 +387,28 @@
         <target state="translated">Contrato de licença do SQL do Microsoft Azure no Edge</target>
       </trans-unit>
       <trans-unit id="edgeProjectTypeDescription">
-        <source xml:lang="en">Start with the core pieces to develop and publish schemas for SQL Edge</source>
-        <target state="translated">Inicie com as partes principais para desenvolver e publicar esquemas do SQL no Edge </target>
+        <source xml:lang="en">Start with the core pieces to develop and publish schemas for Azure SQL Edge Database</source>
+        <target state="translated">Inicie com as partes principais para desenvolver e publicar esquemas do banco de dados SQL do Azure no Edge</target>
       </trans-unit>
       <trans-unit id="edgeProjectTypeDisplayName">
-        <source xml:lang="en">SQL Edge</source>
-        <target state="translated">SQL Edge</target>
+        <source xml:lang="en">Azure SQL Edge Database</source>
+        <target state="translated">Banco de dados SQL do Azure no Edge</target>
+      </trans-unit>
+      <trans-unit id="emptyAzureDbProjectTypeDescription">
+        <source xml:lang="en">Develop and publish schemas for Azure SQL Database starting from an empty project</source>
+        <target state="translated">Desenvolva e publique esquemas para bancos de dados SQL do Azure a partir de um projeto vazio</target>
+      </trans-unit>
+      <trans-unit id="emptyAzureDbProjectTypeDisplayName">
+        <source xml:lang="en">Azure SQL Database</source>
+        <target state="translated">Banco de dados SQL do Azure</target>
       </trans-unit>
       <trans-unit id="emptyProjectTypeDescription">
-        <source xml:lang="en">Develop and publish schemas for SQL databases starting from an empty project</source>
-        <target state="translated">Desenvolva e publique esquemas para bancos de dados SQL de um projeto vazio</target>
+        <source xml:lang="en">Develop and publish schemas for SQL Server databases starting from an empty project</source>
+        <target state="translated">Desenvolva e publique esquemas para bancos de dados SQL Server a partir de um projeto vazio</target>
       </trans-unit>
       <trans-unit id="emptyProjectTypeDisplayName">
-        <source xml:lang="en">SQL Database</source>
-        <target state="translated">Banco de dados SQL</target>
+        <source xml:lang="en">SQL Server Database</source>
+        <target state="translated">Banco de Dados SQL Server</target>
       </trans-unit>
       <trans-unit id="emptySdkProjectTypeDescription">
         <source xml:lang="en">Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.</source>
@@ -450,10 +422,6 @@
         <source xml:lang="en">Enter a template for SQL connection string</source>
         <target state="translated">Insira um modelo para a cadeia de conexão do SQL</target>
       </trans-unit>
-      <trans-unit id="enterConnectionString">
-        <source xml:lang="en">Enter connection string</source>
-        <target state="translated">Insira uma cadeia de conexão</target>
-      </trans-unit>
       <trans-unit id="enterConnectionStringEnvName">
         <source xml:lang="en">Enter connection string environment variable name</source>
         <target state="translated">Insira o nome da variável de ambiente da cadeia de conexão</target>
@@ -461,10 +429,6 @@
       <trans-unit id="enterConnectionStringEnvNameDescription">
         <source xml:lang="en">Enter environment variable for SQL connection string</source>
         <target state="translated">Inserir variável de ambiente para cadeia de conexão do SQL</target>
-      </trans-unit>
-      <trans-unit id="enterConnectionStringSettingName">
-        <source xml:lang="en">Enter connection string setting name</source>
-        <target state="translated">Insira o nome da configuração da cadeia de conexão</target>
       </trans-unit>
       <trans-unit id="enterConnectionStringTemplate">
         <source xml:lang="en">Enter connection string template</source>
@@ -479,20 +443,12 @@
         <target state="translated">Inserir novo valor para a variável '{0}'</target>
       </trans-unit>
       <trans-unit id="enterPassword">
-        <source xml:lang="en">Enter SQL Server admin password</source>
-        <target state="translated">Insira a senha de administrador do SQL Server</target>
-      </trans-unit>
-      <trans-unit id="enterPasswordManually">
-        <source xml:lang="en">Enter password or press escape to cancel</source>
-        <target state="translated">Digite a senha ou pressione escapar para cancelar</target>
-      </trans-unit>
-      <trans-unit id="enterPasswordPrompt">
-        <source xml:lang="en">Enter the password to be used for the connection string</source>
-        <target state="translated">Insira a senha a ser usada para a cadeia de conexão</target>
+        <source xml:lang="en">Enter {0} admin password</source>
+        <target state="translated">Insira {0} senha de administrador</target>
       </trans-unit>
       <trans-unit id="enterPortNumber">
-        <source xml:lang="en">Enter SQL server port number or press enter to use the default value</source>
-        <target state="translated">Insira o número da porta do SQL Server ou pressione Enter para usar o valor padrão</target>
+        <source xml:lang="en">Enter {0} port number or press enter to use the default value</source>
+        <target state="translated">Insira {0} número da porta ou pressione Enter para usar o valor padrão</target>
       </trans-unit>
       <trans-unit id="enterSystemDbName">
         <source xml:lang="en">Enter a database name for this system database</source>
@@ -547,14 +503,6 @@
       <trans-unit id="extractTargetRequired">
         <source xml:lang="en">Target information for extract is required to create database project.</source>
         <target state="translated">Para criar um projeto de banco de dados são necessárias as informações alvo para realizar a coleta.</target>
-      </trans-unit>
-      <trans-unit id="failedToGetConnectionString">
-        <source xml:lang="en">An error occurred generating the connection string for the selected connection</source>
-        <target state="translated">Erro ao gerar a cadeia de conexão para a conexão selecionada</target>
-      </trans-unit>
-      <trans-unit id="failedToParse">
-        <source xml:lang="en">Failed to parse "{0}": {1}.</source>
-        <target state="translated">Falha ao analisar "{0}": {1}.</target>
       </trans-unit>
       <trans-unit id="file">
         <source xml:lang="en">File</source>
@@ -624,14 +572,6 @@
         <source xml:lang="en">Import Elements</source>
         <target state="translated">Importar Elementos</target>
       </trans-unit>
-      <trans-unit id="includePassword">
-        <source xml:lang="en">Do you want to include the password from this connection in your local.settings.json file?</source>
-        <target state="translated">Deseja incluir a senha desta conexão em seu arquivo local.settings.json?</target>
-      </trans-unit>
-      <trans-unit id="input">
-        <source xml:lang="en">Input</source>
-        <target state="translated">Entrada</target>
-      </trans-unit>
       <trans-unit id="installGlobally">
         <source xml:lang="en">Install globally</source>
         <target state="translated">Instale globalmente</target>
@@ -661,8 +601,8 @@
         <target state="translated">Valor inválido especificado para a propriedade '{0}' no arquivo .sqlproj</target>
       </trans-unit>
       <trans-unit id="invalidSQLPassword">
-        <source xml:lang="en">SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
-        <target state="translated">SQL Server senha não atende ao requisito de complexidade de senha. Para obter mais informações, consulte https://docs.microsoft.com/sql/relational-databases/security/password-policy</target>
+        <source xml:lang="en">{0} password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
+        <target state="translated">{0} senha não atende ao requisito de complexidade de senha. Para obter mais informações, consulte https://docs.microsoft.com/sql/relational-databases/security/password-policy</target>
       </trans-unit>
       <trans-unit id="invalidSqlConnectionString">
         <source xml:lang="en">Invalid SQL connection string</source>
@@ -671,10 +611,6 @@
       <trans-unit id="invalidTargetPlatform">
         <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
         <target state="translated">Plataforma de destino inválida: {0}. Plataformas de destino suportadas: {1}</target>
-      </trans-unit>
-      <trans-unit id="jsonParseError">
-        <source xml:lang="en">{0} near line "{1}", column "{2}"</source>
-        <target state="translated">{0} próximo à linha "{1}", coluna "{2}"</target>
       </trans-unit>
       <trans-unit id="learnMore">
         <source xml:lang="en">Learn More</source>
@@ -695,10 +631,6 @@
       <trans-unit id="missingVersion">
         <source xml:lang="en">Missing 'version' entry in {0}</source>
         <target state="translated">Entrada 'version' ausente no {0}</target>
-      </trans-unit>
-      <trans-unit id="moreInformation">
-        <source xml:lang="en">More Information</source>
-        <target state="translated">Mais Informações</target>
       </trans-unit>
       <trans-unit id="msec">
         <source xml:lang="en">msec</source>
@@ -723,14 +655,6 @@
       <trans-unit id="newObjectNamePrompt">
         <source xml:lang="en">New {0} name:</source>
         <target state="translated">Novo nome {0}:</target>
-      </trans-unit>
-      <trans-unit id="noAzureFunctionsInFile">
-        <source xml:lang="en">No Azure functions in the current active file</source>
-        <target state="translated">Nenhuma função do Azure no arquivo ativo atual</target>
-      </trans-unit>
-      <trans-unit id="noAzureFunctionsProjectsInWorkspace">
-        <source xml:lang="en">No Azure functions projects found in the workspace</source>
-        <target state="translated">Nenhum projeto do Azure Functions encontrado no espaço de trabalho</target>
       </trans-unit>
       <trans-unit id="noDataSourcesFile">
         <source xml:lang="en">No {0} found</source>
@@ -800,14 +724,6 @@
         <source xml:lang="en">Open License Agreement</source>
         <target state="translated">Abrir o Contrato de Licença</target>
       </trans-unit>
-      <trans-unit id="openFile">
-        <source xml:lang="en">Open File</source>
-        <target state="translated">Abrir Arquivo</target>
-      </trans-unit>
-      <trans-unit id="output">
-        <source xml:lang="en">Output</source>
-        <target state="translated">Saída</target>
-      </trans-unit>
       <trans-unit id="outsideFolderPath">
         <source xml:lang="en">Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.</source>
         <target state="translated">Não há suporte para itens com caminho absoluto fora da pasta do projeto. Certifique-se de que os caminhos no arquivo de projeto sejam relativos à pasta do projeto.</target>
@@ -817,8 +733,8 @@
         <target state="translated">Não é possível acessar o pai do item de árvore fornecido</target>
       </trans-unit>
       <trans-unit id="passwordNotMatch">
-        <source xml:lang="en">SQL Server password doesn't match the confirmation password</source>
-        <target state="translated">A senha do SQL Server não corresponde à senha de confirmação</target>
+        <source xml:lang="en">{0} password doesn't match the confirmation password</source>
+        <target state="translated">{0} senha não corresponde à senha de confirmação</target>
       </trans-unit>
       <trans-unit id="portMustNotBeNumber">
         <source xml:lang="en">Port must a be number</source>
@@ -896,6 +812,10 @@
         <source xml:lang="en">Select project file</source>
         <target state="translated">Selecionar o arquivo do projeto</target>
       </trans-unit>
+      <trans-unit id="projectUpdatedToSdkStyle">
+        <source xml:lang="en">The project {0} has been updated to be an SDK-style project. Click 'Learn More' for details on the Microsoft.Build.Sql SDK and ways to simplify the project file.</source>
+        <target state="translated">O projeto {0} foi atualizado para ser um projeto no estilo SDK. Clique em 'Saiba Mais' para obter detalhes sobre o SDK do Microsoft.Build.Sql e maneiras de simplificar o arquivo de projeto.</target>
+      </trans-unit>
       <trans-unit id="publish">
         <source xml:lang="en">Publish</source>
         <target state="translated">Publicar</target>
@@ -925,12 +845,12 @@
         <target state="translated">Falha ao publicar no contêiner. {0}</target>
       </trans-unit>
       <trans-unit id="publishToDockerContainer">
-        <source xml:lang="en">Publish to new server in a container</source>
-        <target state="translated">Publicar em um novo servidor em um contêiner</target>
+        <source xml:lang="en">Publish to new {0} local development container</source>
+        <target state="translated">Publicar em um novo {0} contêiner de desenvolvimento local</target>
       </trans-unit>
       <trans-unit id="publishToExistingServer">
-        <source xml:lang="en">Publish to existing server</source>
-        <target state="translated">Publicar no servidor existente</target>
+        <source xml:lang="en">Publish to an existing {0}</source>
+        <target state="translated">Publicar em uma {0} existente</target>
       </trans-unit>
       <trans-unit id="publishingProjectMessage">
         <source xml:lang="en">Publishing project in a container...</source>
@@ -981,20 +901,12 @@
         <target state="translated">Executar por meio de npx</target>
       </trans-unit>
       <trans-unit id="runningDockerMessage">
-        <source xml:lang="en">Building and running the docker container ...</source>
-        <target state="translated">Compilando e executando o contêiner do Docker...</target>
+        <source xml:lang="en">Running the docker container ...</source>
+        <target state="translated">Executando o contêiner do Docker ...</target>
       </trans-unit>
       <trans-unit id="sameDatabase">
         <source xml:lang="en">Same database</source>
         <target state="translated">Mesmo banco de dados</target>
-      </trans-unit>
-      <trans-unit id="save">
-        <source xml:lang="en">Save</source>
-        <target state="translated">Salvar</target>
-      </trans-unit>
-      <trans-unit id="saveChangesInFile">
-        <source xml:lang="en">There are unsaved changes in the current file. Save now?</source>
-        <target state="translated">Há alterações não salvas no arquivo atual. Salvar agora?</target>
       </trans-unit>
       <trans-unit id="schema">
         <source xml:lang="en">Schema</source>
@@ -1021,36 +933,20 @@
         <target state="translated">Script</target>
       </trans-unit>
       <trans-unit id="sdkStyleProject">
-        <source xml:lang="en">SDK-style project</source>
-        <target state="new">SDK-style project</target>
+        <source xml:lang="en">SDK-style project (Preview)</source>
+        <target state="translated">Projeto no estilo SDK (versão prévia)</target>
       </trans-unit>
       <trans-unit id="sec">
         <source xml:lang="en">sec</source>
         <target state="translated">seg</target>
       </trans-unit>
-      <trans-unit id="selectAzureFunction">
-        <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
-        <target state="translated">Selecione uma função do Azure no arquivo atual para adicionar associação SQL para</target>
-      </trans-unit>
       <trans-unit id="selectBaseImage">
-        <source xml:lang="en">Select the base SQL Server docker image</source>
-        <target state="translated">Selecione a imagem do docker SQL Server base</target>
-      </trans-unit>
-      <trans-unit id="selectBindingType">
-        <source xml:lang="en">Select type of binding</source>
-        <target state="translated">Selecione o tipo de associação</target>
+        <source xml:lang="en">Select the base {0} docker image</source>
+        <target state="translated">Selecione a imagem base {0} do Docker</target>
       </trans-unit>
       <trans-unit id="selectConnection">
         <source xml:lang="en">Select connection</source>
         <target state="translated">Selecionar a conexão</target>
-      </trans-unit>
-      <trans-unit id="selectConnectionError">
-        <source xml:lang="en">Failed to set connection string app setting: {0}</source>
-        <target state="translated">Falha ao definir a configuração do aplicativo da cadeia de conexão: {0}</target>
-      </trans-unit>
-      <trans-unit id="selectConnectionString">
-        <source xml:lang="en">Select SQL connection string method</source>
-        <target state="translated">Selecionar método de cadeia de conexão SQL</target>
       </trans-unit>
       <trans-unit id="selectDacpac">
         <source xml:lang="en">Select .dacpac</source>
@@ -1059,6 +955,10 @@
       <trans-unit id="selectDatabase">
         <source xml:lang="en">Select database</source>
         <target state="translated">Selecionar o banco de dados</target>
+      </trans-unit>
+      <trans-unit id="selectFileString">
+        <source xml:lang="en">Select File</source>
+        <target state="translated">Selecionar Arquivo</target>
       </trans-unit>
       <trans-unit id="selectFolderStructure">
         <source xml:lang="en">Select folder structure</source>
@@ -1079,10 +979,6 @@
       <trans-unit id="selectPublishOption">
         <source xml:lang="en">Select where to publish the project to</source>
         <target state="translated">Selecionar onde publicar o projeto</target>
-      </trans-unit>
-      <trans-unit id="selectSetting">
-        <source xml:lang="en">Select SQL connection string setting from local.settings.json</source>
-        <target state="translated">Selecione a configuração da cadeia de conexão SQL em local.settings.jsem</target>
       </trans-unit>
       <trans-unit id="selectSpecFile">
         <source xml:lang="en">Select OpenAPI/Swagger spec file</source>
@@ -1105,12 +1001,12 @@
         <target state="translated">Nome do servidor</target>
       </trans-unit>
       <trans-unit id="serverPassword">
-        <source xml:lang="en">SQL Server admin password</source>
-        <target state="translated">Senha de administrador do SQL Server</target>
+        <source xml:lang="en">{0} admin password</source>
+        <target state="translated">{0} senha de administrador</target>
       </trans-unit>
       <trans-unit id="serverPortNumber">
-        <source xml:lang="en">SQL server port number</source>
-        <target state="translated">Número da porta do SQL Server</target>
+        <source xml:lang="en">{0} port number</source>
+        <target state="translated">{0} número da porta</target>
       </trans-unit>
       <trans-unit id="serverVariable">
         <source xml:lang="en">Server variable</source>
@@ -1164,14 +1060,6 @@
         <source xml:lang="en">Database Projects</source>
         <target state="translated">Projetos de Banco de Dados</target>
       </trans-unit>
-      <trans-unit id="sqlTableOrViewToQuery">
-        <source xml:lang="en">SQL table or view to query</source>
-        <target state="translated">Tabela ou exibição SQL para consulta</target>
-      </trans-unit>
-      <trans-unit id="sqlTableToUpsert">
-        <source xml:lang="en">SQL table to upsert into</source>
-        <target state="translated">Tabela SQL para upsert into</target>
-      </trans-unit>
       <trans-unit id="storedProcedureFriendlyName">
         <source xml:lang="en">Stored Procedure</source>
         <target state="translated">Procedimento armazenado</target>
@@ -1224,10 +1112,6 @@
         <source xml:lang="en">Unable to locate '{0}' target: '{1}'</source>
         <target state="translated">Não é possível localizar '{0}' destino: '{1}'</target>
       </trans-unit>
-      <trans-unit id="unableToSetConnectionString">
-        <source xml:lang="en">Failed to set connection string app setting</source>
-        <target state="translated">Falha ao definir a configuração do aplicativo da cadeia de conexão</target>
-      </trans-unit>
       <trans-unit id="unexpectedProjectContext">
         <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
         <target state="translated">Não é possível estabelecer o contexto do projeto.  Comando invocado de um local inesperado: {0}</target>
@@ -1264,17 +1148,13 @@
         <source xml:lang="en">Update</source>
         <target state="translated">Atualizar</target>
       </trans-unit>
+      <trans-unit id="updatedToSdkStyleError">
+        <source xml:lang="en">Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.</source>
+        <target state="translated">A conversão do projeto {0} para o estilo SDK não foi bem-sucedida. As alterações no .sqlproj foram revertidas.</target>
+      </trans-unit>
       <trans-unit id="updatingProjectFromDatabase">
         <source xml:lang="en">Updating {0} from {1}...</source>
         <target state="translated">Atualizando {0} de {1}...</target>
-      </trans-unit>
-      <trans-unit id="userConnectionString">
-        <source xml:lang="en">Enter connection string</source>
-        <target state="translated">Inserir cadeia de conexão</target>
-      </trans-unit>
-      <trans-unit id="userPasswordLater">
-        <source xml:lang="en">In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.</source>
-        <target state="translated">Para usar a cadeia de conexão SQL posteriormente, você precisará inserir manualmente a senha em seu arquivo local.settings.json.</target>
       </trans-unit>
       <trans-unit id="userSelectionCancelled">
         <source xml:lang="en">User has cancelled selection for how to run autorest.</source>
@@ -1291,10 +1171,6 @@
       <trans-unit id="valueCannotBeEmpty">
         <source xml:lang="en">Value cannot be empty</source>
         <target state="translated">O valor não pode estar vazio</target>
-      </trans-unit>
-      <trans-unit id="valueMustNotBeEmpty">
-        <source xml:lang="en">Value must not be empty</source>
-        <target state="translated">O valor não pode ser vazio</target>
       </trans-unit>
       <trans-unit id="viewFriendlyName">
         <source xml:lang="en">View</source>
@@ -1344,9 +1220,9 @@
         <source xml:lang="en">Add Database Reference</source>
         <target state="translated">Adicionar a referência do banco de dados</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.addSqlBinding">
-        <source xml:lang="en">Add SQL Binding (preview)</source>
-        <target state="translated">Adicionar Associação SQL (versão prévia)</target>
+      <trans-unit id="sqlDatabaseProjects.addExistingItem">
+        <source xml:lang="en">Add Existing Item...</source>
+        <target state="translated">Adicionar Item Existente...</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
         <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
@@ -1363,6 +1239,10 @@
       <trans-unit id="sqlDatabaseProjects.close">
         <source xml:lang="en">Close Database Project</source>
         <target state="translated">Fechar Projeto de Banco de Dados</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.convertToSdkStyleProject">
+        <source xml:lang="en">Convert to SDK-style project</source>
+        <target state="translated">Converter em projeto no estilo SDK</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.createProjectFromDatabase">
         <source xml:lang="en">Create Project From Database</source>

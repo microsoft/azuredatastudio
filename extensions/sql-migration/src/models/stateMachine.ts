@@ -7,8 +7,8 @@ import * as azdata from 'azdata';
 import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
-import * as mssql from '../../../mssql';
-import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs } from '../api/azure';
+import * as mssql from 'mssql';
+import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs, sortResourceArrayByName, getFullResourceGroupFromId, getResourceGroupFromId, getResourceGroups } from '../api/azure';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
@@ -78,6 +78,7 @@ export enum PerformanceDataSourceOptions {
 	CollectData = 'CollectData',
 	OpenExisting = 'OpenExisting',
 }
+
 export interface DatabaseBackupModel {
 	migrationMode: MigrationMode;
 	networkContainerType: NetworkContainerType;
@@ -961,6 +962,203 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			} else {
 				this._resourceGroups = [];
 			}
+			this._resourceGroups.forEach((rg) => {
+				resourceGroupValues.push({
+					name: rg.id,
+					displayName: rg.name
+				});
+			});
+			if (resourceGroupValues.length === 0) {
+				resourceGroupValues = [
+					{
+						displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+						name: ''
+					}
+				];
+			}
+		} catch (e) {
+			console.log(e);
+			resourceGroupValues = [
+				{
+					displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+					name: ''
+				}
+			];
+		}
+		return resourceGroupValues;
+	}
+
+	public async getAzureResourceGroupForManagedInstancesDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+		let resourceGroupValues: azdata.CategoryValue[] = [];
+		try {
+			if (this._azureAccount && subscription) {
+				let managedInstances = await getAvailableManagedInstanceProducts(this._azureAccount, subscription);
+				this._resourceGroups = managedInstances.map((mi) => {
+					return <azureResource.AzureResourceResourceGroup>{
+						id: getFullResourceGroupFromId(mi.id),
+						name: getResourceGroupFromId(mi.id),
+						subscription: {
+							id: mi.subscriptionId
+						},
+						tenant: mi.tenantId,
+					};
+				});
+
+				// remove duplicates
+				this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
+				sortResourceArrayByName(this._resourceGroups);
+			} else {
+				this._resourceGroups = [];
+			}
+
+			this._resourceGroups.forEach((rg) => {
+				resourceGroupValues.push({
+					name: rg.id,
+					displayName: rg.name
+				});
+			});
+
+			if (resourceGroupValues.length === 0) {
+				resourceGroupValues = [
+					{
+						displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+						name: ''
+					}
+				];
+			}
+		} catch (e) {
+			console.log(e);
+			resourceGroupValues = [
+				{
+					displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+					name: ''
+				}
+			];
+		}
+		return resourceGroupValues;
+	}
+
+	public async getAzureResourceGroupForVirtualMachinesDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+		let resourceGroupValues: azdata.CategoryValue[] = [];
+		try {
+			if (this._azureAccount && subscription) {
+				let virtualMachines = await getAvailableSqlVMs(this._azureAccount, subscription);
+				this._resourceGroups = virtualMachines.map((vm) => {
+					return <azureResource.AzureResourceResourceGroup>{
+						id: getFullResourceGroupFromId(vm.id),
+						name: getResourceGroupFromId(vm.id),
+						subscription: {
+							id: vm.subscriptionId
+						},
+						tenant: vm.tenantId,
+					};
+				});
+
+				// remove duplicates
+				this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
+				sortResourceArrayByName(this._resourceGroups);
+			} else {
+				this._resourceGroups = [];
+			}
+
+			this._resourceGroups.forEach((rg) => {
+				resourceGroupValues.push({
+					name: rg.id,
+					displayName: rg.name
+				});
+			});
+
+			if (resourceGroupValues.length === 0) {
+				resourceGroupValues = [
+					{
+						displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+						name: ''
+					}
+				];
+			}
+		} catch (e) {
+			console.log(e);
+			resourceGroupValues = [
+				{
+					displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+					name: ''
+				}
+			];
+		}
+		return resourceGroupValues;
+	}
+
+	public async getAzureResourceGroupForStorageAccountsDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+		let resourceGroupValues: azdata.CategoryValue[] = [];
+		try {
+			if (this._azureAccount && subscription) {
+				let storageAccounts = await getAvailableStorageAccounts(this._azureAccount, subscription);
+				this._resourceGroups = storageAccounts.map((sa) => {
+					return <azureResource.AzureResourceResourceGroup>{
+						id: getFullResourceGroupFromId(sa.id),
+						name: getResourceGroupFromId(sa.id),
+						subscription: {
+							id: sa.subscriptionId
+						},
+						tenant: sa.tenantId,
+					};
+				});
+
+				// remove duplicates
+				this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
+				sortResourceArrayByName(this._resourceGroups);
+			} else {
+				this._resourceGroups = [];
+			}
+
+			this._resourceGroups.forEach((rg) => {
+				resourceGroupValues.push({
+					name: rg.id,
+					displayName: rg.name
+				});
+			});
+
+			if (resourceGroupValues.length === 0) {
+				resourceGroupValues = [
+					{
+						displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+						name: ''
+					}
+				];
+			}
+		} catch (e) {
+			console.log(e);
+			resourceGroupValues = [
+				{
+					displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+					name: ''
+				}
+			];
+		}
+		return resourceGroupValues;
+	}
+
+	public async getAzureResourceGroupForSqlMigrationServicesDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+		let resourceGroupValues: azdata.CategoryValue[] = [];
+		try {
+			if (this._azureAccount && subscription) {
+				let dmsInstances = await getSqlMigrationServices(this._azureAccount, subscription);
+				this._resourceGroups = dmsInstances.map((dms) => {
+					return <azureResource.AzureResourceResourceGroup>{
+						id: getFullResourceGroupFromId(dms.id),
+						name: getResourceGroupFromId(dms.id),
+						subscription: {
+							id: dms.properties.subscriptionId
+						}
+					};
+				});
+
+				// remove duplicates
+				this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
+				sortResourceArrayByName(this._resourceGroups);
+			} else {
+				this._resourceGroups = [];
+			}
 
 			this._resourceGroups.forEach((rg) => {
 				resourceGroupValues.push({
@@ -1008,10 +1206,21 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 
 			this._targetManagedInstances.forEach((managedInstance) => {
-				managedInstanceValues.push({
-					name: managedInstance.id,
-					displayName: `${managedInstance.name}`
-				});
+				let managedInstanceValue: azdata.CategoryValue;
+
+				if (managedInstance.properties.state === 'Ready') {
+					managedInstanceValue = {
+						name: managedInstance.id,
+						displayName: `${managedInstance.name}`
+					};
+				} else {
+					managedInstanceValue = {
+						name: managedInstance.id,
+						displayName: constants.UNAVAILABLE_MANAGED_INSTANCE_PREFIX(managedInstance.name)
+					};
+				}
+
+				managedInstanceValues.push(managedInstanceValue);
 			});
 
 			if (managedInstanceValues.length === 0) {
@@ -1048,8 +1257,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		let virtualMachineValues: azdata.CategoryValue[] = [];
 		try {
 			if (this._azureAccount && subscription && location && resourceGroup) {
-				this._targetSqlVirtualMachines = (await getAvailableSqlVMs(this._azureAccount, subscription, resourceGroup)).filter((virtualMachine) => {
-					if (virtualMachine?.location?.toLowerCase() === location?.name?.toLowerCase()) {
+				this._targetSqlVirtualMachines = (await getAvailableSqlVMs(this._azureAccount, subscription)).filter((virtualMachine) => {
+					if (virtualMachine?.location?.toLowerCase() === location?.name?.toLowerCase() && getResourceGroupFromId(virtualMachine.id).toLowerCase() === resourceGroup?.name.toLowerCase()) {
 						if (virtualMachine.properties.sqlImageOffer) {
 							return virtualMachine.properties.sqlImageOffer.toLowerCase().includes('-ws'); //filtering out all non windows sql vms.
 						}
@@ -1057,6 +1266,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					}
 					return false;
 				});
+
 				virtualMachineValues = this._targetSqlVirtualMachines.map((virtualMachine) => {
 					return {
 						name: virtualMachine.id,
@@ -1261,7 +1471,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		let sqlMigrationServiceValues: azdata.CategoryValue[] = [];
 		try {
 			if (this._azureAccount && subscription && resourceGroupName && this._targetServerInstance) {
-				this._sqlMigrationServices = (await getSqlMigrationServices(this._azureAccount, subscription, resourceGroupName?.toLowerCase(), this._sessionId)).filter(sms => sms.location.toLowerCase() === this._targetServerInstance.location.toLowerCase());
+				this._sqlMigrationServices = (await getSqlMigrationServices(this._azureAccount, subscription)).filter(sms => sms.location.toLowerCase() === this._targetServerInstance.location.toLowerCase() && sms.properties.resourceGroup.toLowerCase() === resourceGroupName.toLowerCase());
 			} else {
 				this._sqlMigrationServices = [];
 			}
