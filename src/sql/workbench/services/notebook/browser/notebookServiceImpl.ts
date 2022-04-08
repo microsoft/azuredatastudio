@@ -271,7 +271,7 @@ export class NotebookService extends Disposable implements INotebookService {
 
 		let serializedContent: string;
 		if (contents) {
-			// Have to serialize contents again first, since our notebook code assumes input is based on the raw file contents
+			// Have to serialize contents again first, since we need raw file contents for the intial text model content
 			let manager = await this.getOrCreateSerializationManager(providerId, uri);
 			serializedContent = await manager.contentManager.serializeNotebook(contents);
 		}
