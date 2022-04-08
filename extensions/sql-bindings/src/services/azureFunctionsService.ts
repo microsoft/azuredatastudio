@@ -197,13 +197,13 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			// get function name from user
 			quickPickStep = 'getAzureFunctionName';
 			// remove special characters from function name
-			let uniqueObjectName = utils.getUniqueObjectName(objectName);
+			let uniqueObjectName = utils.santizeObjectName(objectName);
 			let uniqueFunctionName = await utils.getUniqueFileName(path.dirname(projectFile), uniqueObjectName);
 			functionName = await vscode.window.showInputBox({
 				title: constants.functionNameTitle,
 				value: uniqueFunctionName,
 				ignoreFocusOut: true,
-				validateInput: input => utils.checkInput(input) ? undefined : constants.nameCheck
+				validateInput: input => utils.validateFunctionName(input)
 			}) as string;
 			if (!functionName) {
 				return;
