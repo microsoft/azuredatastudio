@@ -56,7 +56,11 @@ export class TableDesignerInput extends EditorInput {
 				this._onDidChangeDirty.fire();
 			}
 		}));
-		this._tableIcon = tableInfo.tableIcon ?? TableIcon.Basic;
+		if (!tableInfo.tableIcon || tableInfo.tableIcon.toString() === '') {
+			this._tableIcon = TableIcon.Basic;
+		} else {
+			this._tableIcon = tableInfo.tableIcon.toString() as TableIcon;
+		}
 		this.setEditorLabel();
 	}
 
