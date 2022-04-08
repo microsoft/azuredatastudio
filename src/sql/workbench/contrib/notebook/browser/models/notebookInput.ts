@@ -322,7 +322,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 
 	public set notebookContents(value: azdata.nb.INotebookContents) {
 		this._notebookContents = value;
-		(this.contentLoader as NotebookEditorContentLoader).initialContent = value;
+		(this.contentLoader as NotebookEditorContentLoader).notebookContents = value;
 	}
 
 	public get notebookContents(): azdata.nb.INotebookContents {
@@ -552,13 +552,13 @@ export class NotebookEditorContentLoader implements IContentLoader {
 	constructor(
 		private notebookInput: NotebookInput,
 		private contentManager: azdata.nb.ContentManager,
-		public initialContent: azdata.nb.INotebookContents | undefined) {
+		public notebookContents: azdata.nb.INotebookContents | undefined) {
 	}
 
 	async loadContent(): Promise<azdata.nb.INotebookContents> {
 		let notebookContents: azdata.nb.INotebookContents;
-		if (this.initialContent) {
-			notebookContents = this.initialContent;
+		if (this.notebookContents) {
+			notebookContents = this.notebookContents;
 		} else {
 			let notebookEditorModel = await this.notebookInput.resolve();
 			notebookContents = await this.contentManager.deserializeNotebook(notebookEditorModel.contentString);
