@@ -807,6 +807,7 @@ declare module 'azdata' {
 			CheckConstraints = 'checkConstraints',
 			Indexes = 'indexes',
 			PrimaryKeyName = 'primaryKeyName',
+			PrimaryKeyDescription = 'primaryKeyDescription',
 			PrimaryKeyColumns = 'primaryKeyColumns'
 		}
 		/**
@@ -818,7 +819,9 @@ declare module 'azdata' {
 			DefaultValue = 'defaultValue',
 			Length = 'length',
 			Name = 'name',
+			Description = 'description',
 			Type = 'type',
+			AdvancedType = 'advancedType',
 			IsPrimaryKey = 'isPrimaryKey',
 			Precision = 'precision',
 			Scale = 'scale'
@@ -830,6 +833,7 @@ declare module 'azdata' {
 		 */
 		export enum TableForeignKeyProperty {
 			Name = 'name',
+			Description = 'description',
 			ForeignTable = 'foreignTable',
 			OnDeleteAction = 'onDeleteAction',
 			OnUpdateAction = 'onUpdateAction',
@@ -850,6 +854,7 @@ declare module 'azdata' {
 		 */
 		export enum TableCheckConstraintProperty {
 			Name = 'name',
+			Description = 'description',
 			Expression = 'expression'
 		}
 
@@ -859,6 +864,7 @@ declare module 'azdata' {
 		 */
 		export enum TableIndexProperty {
 			Name = 'name',
+			Description = 'description',
 			Columns = 'columns'
 		}
 
@@ -924,7 +930,7 @@ declare module 'azdata' {
 			*/
 			primaryKeyColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
 			/**
-			 * Additional primary key properties. Common primary key properties: primaryKeyName.
+			 * Additional primary key properties. Common primary key properties: primaryKeyName, primaryKeyDescription.
 			 */
 			additionalPrimaryKeyProperties?: DesignerDataPropertyInfo[];
 		}

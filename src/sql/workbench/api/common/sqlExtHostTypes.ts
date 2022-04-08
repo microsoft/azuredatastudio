@@ -971,11 +971,14 @@ export namespace designers {
 		CheckConstraints = 'checkConstraints',
 		Indexes = 'indexes',
 		PrimaryKeyName = 'primaryKeyName',
+		PrimaryKeyDescription = 'primaryKeyDescription',
 		PrimaryKeyColumns = 'primaryKeyColumns'
 	}
 
 	export enum TableColumnProperty {
 		Name = 'name',
+		Description = 'description',
+		AdvancedType = 'advancedType',
 		Type = 'type',
 		AllowNulls = 'allowNulls',
 		DefaultValue = 'defaultValue',
@@ -987,6 +990,7 @@ export namespace designers {
 
 	export enum TableForeignKeyProperty {
 		Name = 'name',
+		Description = 'description',
 		ForeignTable = 'foreignTable',
 		OnDeleteAction = 'onDeleteAction',
 		OnUpdateAction = 'onUpdateAction',
@@ -1000,11 +1004,13 @@ export namespace designers {
 
 	export enum TableCheckConstraintProperty {
 		Name = 'name',
+		Description = 'description',
 		Expression = 'expression'
 	}
 
 	export enum TableIndexProperty {
 		Name = 'name',
+		Description = 'description',
 		Columns = 'columns'
 	}
 
