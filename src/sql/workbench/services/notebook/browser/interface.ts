@@ -12,7 +12,7 @@ import { IEditorInput } from 'vs/workbench/common/editor';
 export interface INotebookInput extends IEditorInput {
 	defaultKernel?: azdata.nb.IKernelSpec,
 	connectionProfile?: azdata.IConnectionProfile,
-	initialContent?: azdata.nb.INotebookContents,
+	notebookContents?: azdata.nb.INotebookContents,
 	isDirty(): boolean;
 	setDirty(boolean);
 	readonly notebookUri: URI;

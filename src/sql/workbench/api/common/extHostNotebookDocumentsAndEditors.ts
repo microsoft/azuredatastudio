@@ -269,9 +269,9 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 			options.defaultKernel = showOptions.defaultKernel;
 			if (showOptions.initialContent) {
 				if (typeof (showOptions.initialContent) !== 'string') {
-					options.initialTextContent = JSON.stringify(showOptions.initialContent);
+					options.initialContent = JSON.stringify(showOptions.initialContent);
 				} else {
-					options.initialTextContent = showOptions.initialContent;
+					options.initialContent = showOptions.initialContent;
 				}
 			}
 			options.initialDirtyState = showOptions.initialDirtyState;

@@ -278,8 +278,8 @@ export class NotebookService extends Disposable implements INotebookService {
 
 		let options: INotebookShowOptions = {
 			providerId: providerId,
-			initialContent: contents,
-			initialTextContent: serializedContent
+			notebookContents: contents,
+			initialContent: serializedContent
 		};
 		return this.createNotebookInput(options, resource);
 	}
@@ -299,11 +299,11 @@ export class NotebookService extends Disposable implements INotebookService {
 		let fileInput: IEditorInput;
 		let languageMode = options.providerId === INTERACTIVE_PROVIDER_ID ? INTERACTIVE_LANGUAGE_MODE : DEFAULT_NB_LANGUAGE_MODE;
 		if (isUntitled && path.isAbsolute(uri.fsPath)) {
-			const model = this._untitledEditorService.create({ associatedResource: uri, mode: languageMode, initialValue: options.initialTextContent });
+			const model = this._untitledEditorService.create({ associatedResource: uri, mode: languageMode, initialValue: options.initialContent });
 			fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 		} else {
 			if (isUntitled) {
-				const model = this._untitledEditorService.create({ untitledResource: uri, mode: languageMode, initialValue: options.initialTextContent });
+				const model = this._untitledEditorService.create({ untitledResource: uri, mode: languageMode, initialValue: options.initialContent });
 				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 			} else {
 				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: languageMode });
@@ -317,7 +317,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (isINotebookInput(fileInput)) {
 				fileInput.defaultKernel = options.defaultKernel;
 				fileInput.connectionProfile = options.connectionProfile;
-				fileInput.initialContent = options.initialContent;
+				fileInput.notebookContents = options.notebookContents;
 
 				if (isUntitled) {
 					let untitledModel = await fileInput.resolve();
