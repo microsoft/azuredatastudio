@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as glob from 'fast-glob';
 import * as cp from 'child_process';
+import * as constants from '../common/constants';
 
 export interface ValidationResult {
 	errorMessage: string;
@@ -160,6 +161,30 @@ export async function getUniqueFileName(folderPath: string, fileName: string): P
 
 export function escapeClosingBrackets(str: string): string {
 	return str.replace(']', ']]');
+}
+
+/**
+ * Removes all special characters from object name
+ * @param objectName can include brackets/periods and user entered special characters
+ * @returns the object name without any special characters
+ */
+export function santizeObjectName(objectName: string): string {
+	return objectName.replace(/[^a-zA-Z0-9 ]/g, '');
+}
+
+/**
+ * Check to see if the input from user entered is valid
+ * @param input from user input
+ * @returns returns error if the input is empty or has special characters, undefined if the input is valid
+ */
+export function validateFunctionName(input: string): string | undefined {
+	const specialChars = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+	if (!input) {
+		return constants.nameMustNotBeEmpty;
+	} else if (specialChars.test(input)) {
+		return constants.hasSpecialCharacters;
+	}
+	return undefined;
 }
 
 /**
