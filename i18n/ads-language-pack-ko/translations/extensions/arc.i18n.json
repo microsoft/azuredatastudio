@@ -536,7 +536,7 @@
 			"resource.type.arc.postgres.display.name": "PostgreSQL 하이퍼스케일 서버 그룹 - Azure Arc",
 			"resource.type.arc.sql.description": "고객 관리형 환경의 앱 개발자를 위한 관리형 SQL 인스턴스 서비스",
 			"resource.type.arc.sql.display.name": "Azure SQL Managed Instance - Azure Arc",
-			"resource.type.azure.arc.description": "Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.",
+			"resource.type.azure.arc.description": "Azure Arc 데이터 컨트롤러를 만듭니다. 이 마법사를 시작하려면 먼저 az 로그인을 실행해야 합니다.",
 			"resource.type.azure.arc.display.name": "Azure Arc 데이터 컨트롤러",
 			"should.be.integer": "값은 정수여야 함",
 			"worker.node.count.should.not.be.one": "값 1은 지원되지 않습니다."
