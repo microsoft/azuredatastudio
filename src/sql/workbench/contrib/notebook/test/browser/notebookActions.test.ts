@@ -306,7 +306,7 @@ suite('Notebook Actions', function (): void {
 		// Run Parameters Action
 		await action.run(testUri);
 		let testShowOptions = {
-			initialTextContent: JSON.stringify(mockNotebookModel.toJSON()),
+			initialContent: JSON.stringify(mockNotebookModel.toJSON()),
 			preserveFocus: true
 		};
 		assert.call(mockNotebookService.object.openNotebook(testUri, testShowOptions), 'Should Open Parameterized Notebook');
