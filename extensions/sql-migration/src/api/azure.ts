@@ -312,7 +312,7 @@ export async function getServiceMigrations(account: azdata.Account, subscription
 
 export async function getMigrationTargetInstance(account: azdata.Account, subscription: Subscription, migration: DatabaseMigration): Promise<SqlManagedInstance | SqlVMServer> {
 	const targetServerId = getMigrationTargetId(migration);
-	const path = encodeURI(`${targetServerId}?api-version=2022-01-01`);
+	const path = encodeURI(`${targetServerId}?api-version=2021-11-01-preview`);
 	const api = await getAzureCoreAPI();
 	const response = await api.makeAzureRestRequest(
 		account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, undefined, undefined);
@@ -377,7 +377,7 @@ export function sortResourceArrayByName(resourceArray: SortableAzureResources[])
 
 export function getMigrationTargetId(migration: DatabaseMigration): string {
 	// `${targetServerId}/providers/Microsoft.DataMigration/databaseMigrations/${targetDatabaseName}?api-version=2022-01-30-preview`
-	const paths = migration.id.split('/providers/', 1);
+	const paths = migration.id.split('/providers/Microsoft.DataMigration/', 1);
 	return paths[0];
 }
 
