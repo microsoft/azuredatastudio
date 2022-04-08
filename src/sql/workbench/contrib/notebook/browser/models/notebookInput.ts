@@ -222,7 +222,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	private _providers: string[];
 	private _standardKernels: IStandardKernelWithProvider[];
 	private _connectionProfile: IConnectionProfile;
-	private _initialContent: azdata.nb.INotebookContents;
+	private _notebookContents: azdata.nb.INotebookContents;
 	private _defaultKernel: azdata.nb.IKernelSpec;
 	public hasBootstrapped = false;
 	// Holds the HTML content for the editor when the editor discards this input and loads another
@@ -284,7 +284,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	public get contentLoader(): IContentLoader {
 		if (!this._contentLoader) {
 			let contentManager = this.instantiationService.createInstance(LocalContentManager);
-			this._contentLoader = this.instantiationService.createInstance(NotebookEditorContentLoader, this, contentManager, this._initialContent);
+			this._contentLoader = this.instantiationService.createInstance(NotebookEditorContentLoader, this, contentManager, this._notebookContents);
 		}
 		return this._contentLoader;
 	}
@@ -321,12 +321,12 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	}
 
 	public set notebookContents(value: azdata.nb.INotebookContents) {
-		this._initialContent = value;
+		this._notebookContents = value;
 		(this.contentLoader as NotebookEditorContentLoader).initialContent = value;
 	}
 
 	public get notebookContents(): azdata.nb.INotebookContents {
-		return this._initialContent;
+		return this._notebookContents;
 	}
 
 	public get standardKernels(): IStandardKernelWithProvider[] {
@@ -471,7 +471,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 				this._standardKernels.push(...standardKernels);
 			}
 			let serializationProvider = await this.notebookService.getOrCreateSerializationManager(this._providerId, this._resource);
-			this._contentLoader = this.instantiationService.createInstance(NotebookEditorContentLoader, this, serializationProvider.contentManager, this._initialContent);
+			this._contentLoader = this.instantiationService.createInstance(NotebookEditorContentLoader, this, serializationProvider.contentManager, this._notebookContents);
 		}
 	}
 
