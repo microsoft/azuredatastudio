@@ -32,6 +32,8 @@ export const timeoutProjectError = localize('timeoutProjectError', 'Timed out wa
 export const errorNewAzureFunction = localize('errorNewAzureFunction', 'Error creating new Azure Function: {0}');
 export const azureFunctionsExtensionNotInstalled = localize('azureFunctionsExtensionNotInstalled', 'Azure Functions extension must be installed in order to use this feature.');
 export const azureFunctionsProjectMustBeOpened = localize('azureFunctionsProjectMustBeOpened', 'A C# Azure Functions project must be present in order to create a new Azure Function for this table.');
+export const needConnection = localize('needConnection', 'A connection is required to use Azure Function with SQL Binding');
+export const selectDatabase = localize('selectDatabase', 'Select Database');
 
 // Insert SQL binding
 export const hostFileName = 'host.json';
@@ -42,6 +44,7 @@ export const azureFunctionLocalSettingsFileName = 'local.settings.json';
 export const vscodeOpenCommand = 'vscode.open';
 
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
+export const hasSpecialCharacters = localize('hasSpecialCharacters', "Name must not include special characters");
 export const yesString = localize('yesString', "Yes");
 export const noString = localize('noString', "No");
 export const input = localize('input', "Input");

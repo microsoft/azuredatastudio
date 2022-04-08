@@ -53,6 +53,7 @@
 			"connectionFailedError": "연결 실패 오류: '{0}'",
 			"connectionRadioButtonLabel": "연결",
 			"containerAlreadyExistForProject": "이 프로젝트에 대한 컨테이너가 이미 있습니다. 새 항목을 배포하기 전에 삭제하시겠습니까?",
+			"convertToSdkStyleConfirmation": "The project '{0}' will not be fully compatible with SSDT after conversion. A backup copy of the project file will be created in the project folder prior to conversion. More information is available at https://aka.ms/sqlprojsdk. Continue with converting to SDK-style project?",
 			"createNew": "새로 만들기",
 			"createProjectDialogOkButtonText": "만들기",
 			"createProjectFromDatabaseDialogName": "데이터베이스에서 프로젝트 만들기",
