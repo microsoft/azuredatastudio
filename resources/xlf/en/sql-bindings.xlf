@@ -70,6 +70,9 @@
     <trans-unit id="functionNameTitle">
       <source xml:lang="en">Function Name</source>
     </trans-unit>
+    <trans-unit id="hasSpecialCharacters">
+      <source xml:lang="en">Name must not include special characters</source>
+    </trans-unit>
     <trans-unit id="includePassword">
       <source xml:lang="en">Do you want to include the password from this connection in your local.settings.json file?</source>
     </trans-unit>
@@ -90,6 +93,9 @@
     </trans-unit>
     <trans-unit id="nameMustNotBeEmpty">
       <source xml:lang="en">Name must not be empty</source>
+    </trans-unit>
+    <trans-unit id="needConnection">
+      <source xml:lang="en">A connection is required to use Azure Function with SQL Binding</source>
     </trans-unit>
     <trans-unit id="noAzureFunctionsInFile">
       <source xml:lang="en">No Azure functions in the current active file</source>
@@ -126,6 +132,9 @@
     </trans-unit>
     <trans-unit id="selectConnectionString">
       <source xml:lang="en">Select SQL connection string method</source>
+    </trans-unit>
+    <trans-unit id="selectDatabase">
+      <source xml:lang="en">Select Database</source>
     </trans-unit>
     <trans-unit id="selectProject">
       <source xml:lang="en">Select the Azure Function project for the SQL Binding</source>
