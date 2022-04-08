@@ -269,17 +269,9 @@ export class NotebookService extends Disposable implements INotebookService {
 			resource = uri;
 		}
 
-		let serializedContent: string;
-		if (contents) {
-			// Have to serialize contents again first, since we need raw file contents for the intial text model content
-			let manager = await this.getOrCreateSerializationManager(providerId, uri);
-			serializedContent = await manager.contentManager.serializeNotebook(contents);
-		}
-
 		let options: INotebookShowOptions = {
 			providerId: providerId,
-			notebookContents: contents,
-			initialContent: serializedContent
+			initialContent: contents
 		};
 		return this.createNotebookInput(options, resource);
 	}
@@ -298,12 +290,21 @@ export class NotebookService extends Disposable implements INotebookService {
 
 		let fileInput: IEditorInput;
 		let languageMode = options.providerId === INTERACTIVE_PROVIDER_ID ? INTERACTIVE_LANGUAGE_MODE : DEFAULT_NB_LANGUAGE_MODE;
+		let initialStringContents: string;
+		if (options.initialContent) {
+			if (typeof options.initialContent === 'string') {
+				initialStringContents = options.initialContent;
+			} else {
+				let manager = await this.getOrCreateSerializationManager(options.providerId, uri);
+				initialStringContents = await manager.contentManager.serializeNotebook(options.initialContent);
+			}
+		}
 		if (isUntitled && path.isAbsolute(uri.fsPath)) {
-			const model = this._untitledEditorService.create({ associatedResource: uri, mode: languageMode, initialValue: options.initialContent });
+			const model = this._untitledEditorService.create({ associatedResource: uri, mode: languageMode, initialValue: initialStringContents });
 			fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 		} else {
 			if (isUntitled) {
-				const model = this._untitledEditorService.create({ untitledResource: uri, mode: languageMode, initialValue: options.initialContent });
+				const model = this._untitledEditorService.create({ untitledResource: uri, mode: languageMode, initialValue: initialStringContents });
 				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 			} else {
 				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: languageMode });
@@ -317,7 +318,9 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (isINotebookInput(fileInput)) {
 				fileInput.defaultKernel = options.defaultKernel;
 				fileInput.connectionProfile = options.connectionProfile;
-				fileInput.setNotebookContents(options.notebookContents);
+				if (typeof options.initialContent !== 'string') {
+					fileInput.setNotebookContents(options.initialContent);
+				}
 
 				if (isUntitled) {
 					let untitledModel = await fileInput.resolve();
