@@ -12366,7 +12366,7 @@
 			"selectExecutionPlanProvider": "选择提供程序以打开执行计划"
 		},
 		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
-			"table.showActions": "Show Actions"
+			"table.showActions": "显示操作"
 		}
 	}
 }

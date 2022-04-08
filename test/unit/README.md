@@ -30,7 +30,7 @@ Unit tests from layers `common` and `browser` are run inside `chromium`, `webkit
 
 ## Coverage
 
-The following command will create a `coverage` folder at the root of the workspace:
+The following command will create a `coverage` folder in the `.build` folder at the root of the workspace:
 
 **OS X and Linux**
 
@@ -38,4 +38,8 @@ The following command will create a `coverage` folder at the root of the workspa
 
 **Windows**
 
-	scripts\test --coverage
+	.\scripts\test.bat --coverage
+
+NOTE: When running locally the coverage will be generated for the .js files because by default the sourcemaps
+are inlined. To fix this set the environment variable `SQL_NO_INLINE_SOURCEMAP` to `1`, re-run the
+compile/watch task and then re-run the test script with coverage enabled.
