@@ -256,7 +256,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		do {
 			uri = URI.from({ scheme: Schemas.untitled, path: `Notebook-${counter}` });
 			counter++;
-		} while (this._untitledEditorService.get(uri));
+		} while (this._untitledEditorService.get(uri) || this._notebookInputsMap.has(uri.toString())); // Also have to check stored inputs, since those might not be opened in an editor yet.
 		return uri;
 	}
 
