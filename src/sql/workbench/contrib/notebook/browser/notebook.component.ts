@@ -342,7 +342,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public updateActiveCell(cell: ICellModel) {
-		this._model.updateActiveCell(cell, cell.cellType === 'code');
+		this._model.updateActiveCell(cell);
 	}
 
 	// Handles double click to edit icon change
