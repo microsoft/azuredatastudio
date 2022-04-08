@@ -297,7 +297,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public selectCell(cell: ICellModel) {
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
 			this.model.updateActiveCell(cell);
-			this.detectChanges();
 		}
 	}
 
@@ -340,7 +339,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	public unselectActiveCell() {
 		this.model.updateActiveCell(undefined);
-		this.detectChanges();
+	}
+
+	public updateActiveCell(cell: ICellModel) {
+		this._model.updateActiveCell(cell);
 	}
 
 	// Handles double click to edit icon change
@@ -446,6 +448,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(this._model.contentChanged((change) => this.handleContentChanged(change)));
 		this._register(this._model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider)));
 		this._register(this._model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs)));
+		this._register(this._model.onActiveCellChanged(() => this.detectChanges()));
 		this._register(this._model.onCellTypeChanged(() => this.detectChanges()));
 		this._register(this._model.layoutChanged(() => this.detectChanges()));
 		this._register(this.model.onScroll.event(() => this._onScroll.fire()));
