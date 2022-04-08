@@ -10,7 +10,7 @@
 	<div #container class="scrollable" style="flex: 1 1 auto; position: relative; outline: none" (click)="clickOffCell($event)" (scroll)="scrollHandler($event)">
 		<loading-spinner [loading]="isLoading"></loading-spinner>
 		<div *ngFor="let cell of cells">
-			<div id="{{ cell.id }}" class="notebook-cell" (click)="clickOnCell(cell, $event)" [class.active]="cell.active" (focus)="updateActiveCell(cell, true)" tabindex="0" attr.aria-label="{{ cell.cellLabel }}">
+			<div id="{{ cell.id }}" class="notebook-cell" (click)="clickOnCell(cell, $event)" [class.active]="cell.active" (focus)="updateActiveCell(cell)" tabindex="0" attr.aria-label="{{ cell.cellLabel }}">
 				<cell-toolbar-component *ngIf="cell.active" [cellModel]="cell" [model]="model"></cell-toolbar-component>
 				<code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
 				</code-cell-component>
