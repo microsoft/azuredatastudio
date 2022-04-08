@@ -104,21 +104,20 @@ class SQLMigration {
 			if (api) {
 				this.stateModel = new MigrationStateModel(this.context, connectionId, api.sqlMigration);
 				this.context.subscriptions.push(this.stateModel);
-				let savedInfo = this.checkSavedInfo(serverName);
+				const savedInfo = this.checkSavedInfo(serverName);
 				if (savedInfo) {
 					this.stateModel.savedInfo = savedInfo;
 					this.stateModel.serverName = serverName;
-					let savedAssessmentDialog = new SavedAssessmentDialog(
+					const savedAssessmentDialog = new SavedAssessmentDialog(
 						this.context,
 						this.stateModel,
-						async () => await widget.refreshMigrations());
-
+						async () => await widget?.onDialogClosed());
 					await savedAssessmentDialog.openDialog();
 				} else {
 					const wizardController = new WizardController(
 						this.context,
 						this.stateModel,
-						async () => await widget?.refreshMigrations());
+						async () => await widget?.onDialogClosed());
 					await wizardController.openWizard(connectionId);
 				}
 			}

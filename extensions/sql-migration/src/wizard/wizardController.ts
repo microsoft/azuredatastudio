@@ -27,7 +27,7 @@ export class WizardController {
 	constructor(
 		private readonly extensionContext: vscode.ExtensionContext,
 		private readonly _model: MigrationStateModel,
-		private readonly _onClosedCallback: () => void) {
+		private readonly _onClosedCallback: () => Promise<void>) {
 	}
 
 	public async openWizard(connectionId: string): Promise<void> {
@@ -108,15 +108,12 @@ export class WizardController {
 		});
 
 		await Promise.all(wizardSetupPromises);
-		this._model.extensionContext.subscriptions.push(this._wizardObject.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
-			await pages[0].onPageEnter(pageChangeInfo);
-		}));
+		this._model.extensionContext.subscriptions.push(
+			this._wizardObject.onPageChanged(
+				async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
+					await pages[0].onPageEnter(pageChangeInfo);
+				}));
 
-		this._model.extensionContext.subscriptions.push(this._wizardObject.doneButton.onClick(async (e) => {
-			await stateModel.startMigration();
-			await this.updateServiceContext(stateModel);
-			this._onClosedCallback();
-		}));
 		this._disposables.push(saveAndCloseButton.onClick(async () => {
 			await stateModel.saveInfo(serverName, this._wizardObject.currentPage);
 			await this._wizardObject.close();
@@ -139,36 +136,65 @@ export class WizardController {
 
 		this._wizardObject.doneButton.label = loc.START_MIGRATION_TEXT;
 
-		this._disposables.push(this._wizardObject.doneButton.onClick(e => {
-			sendSqlMigrationActionEvent(
-				TelemetryViews.SqlMigrationWizard,
-				TelemetryAction.PageButtonClick,
-				{
-					...this.getTelemetryProps(),
-					'buttonPressed': TelemetryAction.Done,
-					'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
-				}, {});
-		}));
+		this._disposables.push(
+			this._wizardObject.doneButton.onClick(async (e) => {
+				await stateModel.startMigration();
+				await this.updateServiceContext(stateModel);
+				await this._onClosedCallback();
+
+				sendSqlMigrationActionEvent(
+					TelemetryViews.SqlMigrationWizard,
+					TelemetryAction.PageButtonClick,
+					{
+						...this.getTelemetryProps(),
+						'buttonPressed': TelemetryAction.Done,
+						'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
+					}, {});
+			}));
 	}
 
 	private async updateServiceContext(stateModel: MigrationStateModel): Promise<void> {
-		await MigrationLocalStorage.saveMigrationServiceContext(
-			await azdata.connection.getCurrentConnection(),
+		const resourceGroup = this._getResourceGroupByName(
+			stateModel._resourceGroups,
+			stateModel._sqlMigrationService?.properties.resourceGroup);
+
+		const subscription = this._getSubscriptionFromResourceId(
+			stateModel._subscriptions,
+			resourceGroup?.id);
+
+		const location = this._getLocationByValue(
+			stateModel._locations,
+			stateModel._sqlMigrationService?.location);
+
+		return await MigrationLocalStorage.saveMigrationServiceContext(
 			<MigrationServiceContext>{
 				azureAccount: stateModel._azureAccount,
 				tenant: stateModel._azureTenant,
-				subscription: this._getSubscriptionById(
-					stateModel._subscriptions,
-					stateModel._sqlMigrationService?.properties.subscriptionId),
-				location: stateModel._sqlMigrationService?.location,
-				resourceGroup: stateModel._sqlMigrationService?.properties.resourceGroup,
+				subscription: subscription,
+				location: location,
+				resourceGroup: resourceGroup,
 				migrationService: stateModel._sqlMigrationService,
 			});
 	}
 
-	private _getSubscriptionById(subscriptions: azureResource.AzureResourceSubscription[], id?: string) {
-		const subscription = subscriptions.find(sub => sub.id === id);
-		return subscription;
+	private _getResourceGroupByName(resourceGroups: azureResource.AzureResourceResourceGroup[], displayName?: string): azureResource.AzureResourceResourceGroup | undefined {
+		return resourceGroups.find(rg => rg.name === displayName);
+	}
+
+	private _getLocationByValue(locations: azureResource.AzureLocation[], name?: string): azureResource.AzureLocation | undefined {
+		return locations.find(loc => loc.name === name);
+	}
+
+	private _getSubscriptionFromResourceId(subscriptions: azureResource.AzureResourceSubscription[], resourceId?: string): azureResource.AzureResourceSubscription | undefined {
+		let parts = resourceId?.split('/subscriptions/');
+		if (parts?.length && parts?.length > 1) {
+			parts = parts[1]?.split('/resourcegroups/');
+			if (parts?.length && parts?.length > 0) {
+				const subscriptionId: string = parts[0];
+				return subscriptions.find(sub => sub.id === subscriptionId, 1);
+			}
+		}
+		return undefined;
 	}
 
 	private async sendPageButtonClickEvent(pageChangeInfo: azdata.window.WizardPageChangeInfo) {

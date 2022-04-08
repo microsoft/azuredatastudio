@@ -25,7 +25,7 @@ export class SavedAssessmentDialog {
 	constructor(
 		context: vscode.ExtensionContext,
 		stateModel: MigrationStateModel,
-		private readonly _onClosedCallback: () => void) {
+		private readonly _onClosedCallback: () => Promise<void>) {
 		this.stateModel = stateModel;
 		this.context = context;
 	}

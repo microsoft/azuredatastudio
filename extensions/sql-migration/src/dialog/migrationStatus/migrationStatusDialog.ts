@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { getCurrentMigrations, getSelectedServiceStatus, getServiceContext, MigrationStatus } from '../../models/migrationLocalStorage';
+import { getCurrentMigrations, getSelectedServiceStatus, MigrationLocalStorage, MigrationStatus } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
 import { AdsMigrationStatus, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
@@ -52,7 +52,7 @@ export class MigrationStatusDialog {
 	constructor(
 		context: vscode.ExtensionContext,
 		private _filter: AdsMigrationStatus,
-		private _onClosedCallback: () => void) {
+		private _onClosedCallback: () => Promise<void>) {
 
 		this._context = context;
 		this._model = new MigrationStatusDialogModel([]);
@@ -77,13 +77,14 @@ export class MigrationStatusDialog {
 			const form = formBuilder
 				.withLayout({ width: '100%' })
 				.component();
-			this._disposables.push(this._view.onClosed(e => {
-				clearInterval(this._autoRefreshHandle);
-				this._disposables.forEach(
-					d => { try { d.dispose(); } catch { } });
+			this._disposables.push(
+				this._view.onClosed(async e => {
+					clearInterval(this._autoRefreshHandle);
+					this._disposables.forEach(
+						d => { try { d.dispose(); } catch { } });
 
-				this._onClosedCallback();
-			}));
+					await this._onClosedCallback();
+				}));
 
 			await view.initializeModel(form);
 			return await this.refreshTable();
@@ -232,7 +233,7 @@ export class MigrationStatusDialog {
 
 					if (this.canCutoverMigration(migration?.properties.migrationStatus)) {
 						const cutoverDialogModel = new MigrationCutoverDialogModel(
-							await getServiceContext(),
+							await MigrationLocalStorage.getMigrationServiceContext(),
 							migration!);
 						await cutoverDialogModel.fetchStatus();
 						const dialog = new ConfirmCutoverDialog(cutoverDialogModel);
@@ -256,7 +257,7 @@ export class MigrationStatusDialog {
 					const migration = this._model._migrations.find(migration => migration.id === migrationId);
 					const dialog = new MigrationCutoverDialog(
 						this._context,
-						await getServiceContext(),
+						await MigrationLocalStorage.getMigrationServiceContext(),
 						migration!,
 						this._onClosedCallback);
 					await dialog.initialize();
@@ -283,7 +284,7 @@ export class MigrationStatusDialog {
 				try {
 					const migration = this._model._migrations.find(migration => migration.id === migrationId);
 					const dialog = new SqlMigrationServiceDetailsDialog(
-						await getServiceContext(),
+						await MigrationLocalStorage.getMigrationServiceContext(),
 						migration!);
 					await dialog.initialize();
 				} catch (e) {
@@ -298,7 +299,7 @@ export class MigrationStatusDialog {
 					clearDialogMessage(this._dialogObject);
 					const migration = this._model._migrations.find(migration => migration.id === migrationId);
 					const cutoverDialogModel = new MigrationCutoverDialogModel(
-						await getServiceContext(),
+						await MigrationLocalStorage.getMigrationServiceContext(),
 						migration!);
 					await cutoverDialogModel.fetchStatus();
 					await vscode.env.clipboard.writeText(JSON.stringify(cutoverDialogModel.migrationStatus, undefined, 2));
@@ -320,7 +321,7 @@ export class MigrationStatusDialog {
 						void vscode.window.showInformationMessage(loc.CANCEL_MIGRATION_CONFIRMATION, loc.YES, loc.NO).then(async (v) => {
 							if (v === loc.YES) {
 								const cutoverDialogModel = new MigrationCutoverDialogModel(
-									await getServiceContext(),
+									await MigrationLocalStorage.getMigrationServiceContext(),
 									migration!);
 								await cutoverDialogModel.fetchStatus();
 								await cutoverDialogModel.cancelMigration();
@@ -348,7 +349,7 @@ export class MigrationStatusDialog {
 					if (canRetryMigration(migration?.properties.migrationStatus)) {
 						let retryMigrationDialog = new RetryMigrationDialog(
 							this._context,
-							await getServiceContext(),
+							await MigrationLocalStorage.getMigrationServiceContext(),
 							migration!,
 							this._onClosedCallback);
 						await retryMigrationDialog.openDialog();
@@ -591,7 +592,7 @@ export class MigrationStatusDialog {
 					const migration = this._filteredMigrations[rowState.row];
 					const dialog = new MigrationCutoverDialog(
 						this._context,
-						await getServiceContext(),
+						await MigrationLocalStorage.getMigrationServiceContext(),
 						migration,
 						this._onClosedCallback);
 					await dialog.initialize();

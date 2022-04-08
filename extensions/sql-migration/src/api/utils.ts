@@ -160,12 +160,13 @@ export function selectDropDownIndex(dropDown: DropDownComponent, index: number):
 
 export function findDropDownItemIndex(dropDown: DropDownComponent, value: string, useDisplayName: boolean = true): number {
 	if (dropDown.values && value) {
+		const searachValue = value?.toLowerCase();
 		if (useDisplayName) {
 			return dropDown.values.findIndex((v: any) =>
-				(v as CategoryValue)?.displayName?.toLowerCase() === value?.toLowerCase());
+				(v as CategoryValue)?.displayName?.toLowerCase() === searachValue);
 		} else {
 			return dropDown.values.findIndex((v: any) =>
-				(v as CategoryValue)?.name?.toLowerCase() === value?.toLowerCase());
+				(v as CategoryValue)?.name?.toLowerCase() === searachValue);
 		}
 	}
 

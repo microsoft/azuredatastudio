@@ -15,7 +15,7 @@ import * as styles from '../constants/styles';
 import * as nls from 'vscode-nls';
 import { SelectMigrationServiceDialog } from '../dialog/selectMigrationService/selectMigrationServiceDialog';
 import { DatabaseMigration } from '../api/azure';
-import { getCurrentMigrations, getSelectedServiceStatus, getServiceContext, isServiceContextValid } from '../models/migrationLocalStorage';
+import { getCurrentMigrations, getSelectedServiceStatus, isServiceContextValid, MigrationLocalStorage } from '../models/migrationLocalStorage';
 const localize = nls.loadMessageBundle();
 
 interface IActionMetadata {
@@ -61,7 +61,7 @@ export class DashboardWidget {
 	private _disposables: vscode.Disposable[] = [];
 	private isRefreshing: boolean = false;
 
-	private _onDialogClosed = async (): Promise<void> => {
+	public onDialogClosed = async (): Promise<void> => {
 		const label = await getSelectedServiceStatus();
 		this._serviceContextButton.label = label;
 		this._serviceContextButton.title = label;
@@ -442,12 +442,12 @@ export class DashboardWidget {
 		const statusContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '400px',
-			height: '360px',
+			height: '385px',
 			justifyContent: 'flex-start',
 		}).withProps({
 			CSSStyles: {
 				'border': '1px solid rgba(0, 0, 0, 0.1)',
-				'padding': '16px'
+				'padding': '10px',
 			}
 		}).component();
 
@@ -490,7 +490,11 @@ export class DashboardWidget {
 			.component();
 
 		this._migrationStatusCardsContainer = view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'column' })
+			.withLayout({
+				flexFlow: 'column',
+				height: '272px',
+			})
+			.withProps({ CSSStyles: { 'overflow': 'hidden auto' } })
 			.component();
 
 		await this._updateSummaryStatus();
@@ -504,7 +508,7 @@ export class DashboardWidget {
 				const dialog = new MigrationStatusDialog(
 					this._context,
 					AdsMigrationStatus.ONGOING,
-					this._onDialogClosed);
+					this.onDialogClosed);
 				await dialog.initialize();
 			}));
 
@@ -521,7 +525,7 @@ export class DashboardWidget {
 				const dialog = new MigrationStatusDialog(
 					this._context,
 					AdsMigrationStatus.ONGOING,
-					this._onDialogClosed);
+					this.onDialogClosed);
 				await dialog.initialize();
 			}));
 
@@ -537,7 +541,7 @@ export class DashboardWidget {
 				const dialog = new MigrationStatusDialog(
 					this._context,
 					AdsMigrationStatus.SUCCEEDED,
-					this._onDialogClosed);
+					this.onDialogClosed);
 				await dialog.initialize();
 			}));
 		this._migrationStatusCardsContainer.addItem(
@@ -552,7 +556,7 @@ export class DashboardWidget {
 				const dialog = new MigrationStatusDialog(
 					this._context,
 					AdsMigrationStatus.COMPLETING,
-					this._onDialogClosed);
+					this.onDialogClosed);
 				await dialog.initialize();
 			}));
 		this._migrationStatusCardsContainer.addItem(
@@ -567,7 +571,7 @@ export class DashboardWidget {
 				const dialog = new MigrationStatusDialog(
 					this._context,
 					AdsMigrationStatus.FAILED,
-					this._onDialogClosed);
+					this.onDialogClosed);
 				await dialog.initialize();
 			}));
 		this._migrationStatusCardsContainer.addItem(
@@ -582,7 +586,7 @@ export class DashboardWidget {
 				const dialog = new MigrationStatusDialog(
 					this._context,
 					AdsMigrationStatus.ALL,
-					this._onDialogClosed);
+					this.onDialogClosed);
 				await dialog.initialize();
 			}));
 		this._migrationStatusCardsContainer.addItem(
@@ -591,14 +595,14 @@ export class DashboardWidget {
 		this._migrationStatusCardLoadingContainer = view.modelBuilder.loadingComponent()
 			.withItem(this._migrationStatusCardsContainer)
 			.component();
-		statusContainer.addItem(header, { CSSStyles: { 'margin-bottom': '16px' } });
+		statusContainer.addItem(header, { CSSStyles: { 'margin-bottom': '10px' } });
 		statusContainer.addItem(this._selectServiceText, {});
 		statusContainer.addItem(this._migrationStatusCardLoadingContainer, {});
 		return statusContainer;
 	}
 
 	private async _updateSummaryStatus(): Promise<void> {
-		const serviceContext = await getServiceContext();
+		const serviceContext = await MigrationLocalStorage.getMigrationServiceContext();
 		const isContextValid = isServiceContextValid(serviceContext);
 		await this._selectServiceText.updateCssStyles({ 'display': isContextValid ? 'none' : 'block' });
 		await this._migrationStatusCardsContainer.updateCssStyles({ 'visibility': isContextValid ? 'visible' : 'hidden' });
@@ -622,7 +626,7 @@ export class DashboardWidget {
 
 		this._disposables.push(
 			this._serviceContextButton.onDidClick(async () => {
-				const dialog = new SelectMigrationServiceDialog(this._onDialogClosed);
+				const dialog = new SelectMigrationServiceDialog(this.onDialogClosed);
 				await dialog.initialize();
 			}));
 
@@ -630,18 +634,19 @@ export class DashboardWidget {
 	}
 
 	private createVideoLinks(view: azdata.ModelView): azdata.Component {
-		const linksContainer = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column',
-			width: '440px',
-			height: '360px',
-			justifyContent: 'flex-start',
-		}).withProps({
-			CSSStyles: {
-				'border': '1px solid rgba(0, 0, 0, 0.1)',
-				'padding': '5px',
-				'overflow': 'scroll',
-			}
-		}).component();
+		const linksContainer = view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'column',
+				width: '440px',
+				height: '385px',
+				justifyContent: 'flex-start',
+			}).withProps({
+				CSSStyles: {
+					'border': '1px solid rgba(0, 0, 0, 0.1)',
+					'padding': '10px',
+					'overflow': 'scroll',
+				}
+			}).component();
 		const titleComponent = view.modelBuilder.text().withProps({
 			value: loc.HELP_TITLE,
 			CSSStyles: {

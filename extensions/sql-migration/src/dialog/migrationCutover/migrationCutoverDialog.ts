@@ -63,7 +63,7 @@ export class MigrationCutoverDialog {
 		private readonly _context: vscode.ExtensionContext,
 		private readonly _serviceContext: MigrationServiceContext,
 		private readonly _migration: DatabaseMigration,
-		private readonly _onClosedCallback: () => void) {
+		private readonly _onClosedCallback: () => Promise<void>) {
 
 		this._model = new MigrationCutoverDialogModel(_serviceContext, _migration);
 		this._dialogObject = azdata.window.createModelViewDialog('', 'MigrationCutoverDialog', 'wide');

@@ -39,7 +39,6 @@ export class SelectMigrationServiceDialog {
 	private _view!: azdata.ModelView;
 	private _disposables: vscode.Disposable[] = [];
 	private _serviceContext!: MigrationServiceContext;
-	private _currentConnection!: azdata.connection.ConnectionProfile;
 	private _azureAccounts!: azdata.Account[];
 	private _accountTenants!: azurecore.Tenant[];
 	private _subscriptions!: azureResource.AzureResourceSubscription[];
@@ -57,7 +56,7 @@ export class SelectMigrationServiceDialog {
 	private _deleteButton!: azdata.window.Button;
 
 	constructor(
-		private _onClosedCallback: () => void) {
+		private readonly _onClosedCallback: () => Promise<void>) {
 		this._dialog = azdata.window.createModelViewDialog(
 			constants.MIGRATION_SERVICE_SELECT_TITLE,
 			'SelectMigraitonServiceDialog',
@@ -66,15 +65,13 @@ export class SelectMigrationServiceDialog {
 	}
 
 	async initialize(): Promise<void> {
+		this._serviceContext = await MigrationLocalStorage.getMigrationServiceContext();
+
 		await this._dialog.registerContent(async (view: azdata.ModelView) => {
 			this._disposables.push(view.onClosed(e => {
 				this._disposables.forEach(
 					d => { try { d.dispose(); } catch { } });
-
-				this._onClosedCallback();
 			}));
-			this._currentConnection = await azdata.connection.getCurrentConnection();
-			this._serviceContext = await MigrationLocalStorage.getMigrationServiceContext(this._currentConnection);
 			await this.registerContent(view);
 		});
 
@@ -87,9 +84,8 @@ export class SelectMigrationServiceDialog {
 			'right');
 		this._disposables.push(
 			this._deleteButton.onClick(async (value) => {
-				await MigrationLocalStorage.saveMigrationServiceContext(
-					this._currentConnection,
-					{});
+				await MigrationLocalStorage.saveMigrationServiceContext({});
+				await this._onClosedCallback();
 				azdata.window.closeDialog(this._dialog);
 			}));
 		this._dialog.customButtons = [this._deleteButton];
@@ -144,7 +140,7 @@ export class SelectMigrationServiceDialog {
 		this._disposables.push(this._azureAccountsDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._azureAccountsDropdown, value);
 			this._serviceContext.azureAccount = (selectedIndex > -1)
-				? this._azureAccounts[selectedIndex]
+				? deepClone(this._azureAccounts[selectedIndex])
 				: undefined!;
 			await this._populateTentantsDropdown();
 		}));
@@ -225,7 +221,7 @@ export class SelectMigrationServiceDialog {
 		this._disposables.push(this._azureSubscriptionDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._azureSubscriptionDropdown, value);
 			this._serviceContext.subscription = (selectedIndex > -1)
-				? this._subscriptions[selectedIndex]
+				? deepClone(this._subscriptions[selectedIndex])
 				: undefined!;
 			await this._populateLocationDropdown();
 		}));
@@ -250,7 +246,7 @@ export class SelectMigrationServiceDialog {
 		this._disposables.push(this._azureLocationDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._azureLocationDropdown, value);
 			this._serviceContext.location = (selectedIndex > -1)
-				? this._locations[selectedIndex]
+				? deepClone(this._locations[selectedIndex])
 				: undefined!;
 			await this._populateResourceGroupDropdown();
 		}));
@@ -275,7 +271,7 @@ export class SelectMigrationServiceDialog {
 		this._disposables.push(this._azureResourceGroupDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._azureResourceGroupDropdown, value);
 			this._serviceContext.resourceGroup = (selectedIndex > -1)
-				? this._resourceGroups[selectedIndex]
+				? deepClone(this._resourceGroups[selectedIndex])
 				: undefined!;
 			await this._populateMigrationServiceDropdown();
 		}));
@@ -300,16 +296,15 @@ export class SelectMigrationServiceDialog {
 		this._disposables.push(this._azureServiceDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._azureServiceDropdown, value, true);
 			this._serviceContext.migrationService = (selectedIndex > -1)
-				? this._sqlMigrationServices.find(service => service.name === value)
+				? deepClone(this._sqlMigrationServices.find(service => service.name === value))
 				: undefined!;
 			await this._updateButtonState();
 		}));
 
 		this._disposables.push(
 			this._dialog.okButton.onClick(async (value) => {
-				await MigrationLocalStorage.saveMigrationServiceContext(
-					this._currentConnection,
-					this._serviceContext);
+				await MigrationLocalStorage.saveMigrationServiceContext(this._serviceContext);
+				await this._onClosedCallback();
 			}));
 
 		return this._view.modelBuilder.flexContainer()

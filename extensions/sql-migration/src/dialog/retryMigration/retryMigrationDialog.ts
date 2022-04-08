@@ -20,7 +20,7 @@ export class RetryMigrationDialog {
 		private readonly _context: vscode.ExtensionContext,
 		private readonly _serviceContext: MigrationServiceContext,
 		private readonly _migration: DatabaseMigration,
-		private readonly _onClosedCallback: () => void) {
+		private readonly _onClosedCallback: () => Promise<void>) {
 	}
 
 	private async createMigrationStateModel(serviceContext: MigrationServiceContext, migration: DatabaseMigration, connectionId: string, serverName: string, api: mssql.IExtension, location: azureResource.AzureLocation): Promise<MigrationStateModel> {

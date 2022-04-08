@@ -18,17 +18,24 @@ export class MigrationLocalStorage {
 		MigrationLocalStorage.context = context;
 	}
 
-	public static async getMigrationServiceContext(connectionProfile: azdata.connection.ConnectionProfile): Promise<MigrationServiceContext> {
-		const serverContextKey = `${this.mementoToken}.${connectionProfile.serverName}.serviceContext`;
-		return deepClone(await this.context.globalState.get(serverContextKey)) || {};
+	public static async getMigrationServiceContext(): Promise<MigrationServiceContext> {
+		const connectionProfile = await azdata.connection.getCurrentConnection();
+		if (connectionProfile) {
+			const serverContextKey = `${this.mementoToken}.${connectionProfile.serverName}.serviceContext`;
+			return deepClone(await this.context.globalState.get(serverContextKey)) || {};
+		}
+		return {};
 	}
 
-	public static async saveMigrationServiceContext(connectionProfile: azdata.connection.ConnectionProfile, serviceContext: MigrationServiceContext): Promise<void> {
-		const serverContextKey = `${this.mementoToken}.${connectionProfile.serverName}.serviceContext`;
-		return await this.context.globalState.update(serverContextKey, deepClone(serviceContext));
+	public static async saveMigrationServiceContext(serviceContext: MigrationServiceContext): Promise<void> {
+		const connectionProfile = await azdata.connection.getCurrentConnection();
+		if (connectionProfile) {
+			const serverContextKey = `${this.mementoToken}.${connectionProfile.serverName}.serviceContext`;
+			return await this.context.globalState.update(serverContextKey, deepClone(serviceContext));
+		}
 	}
 
-	public static async refreshMigrationAzureAccount(connectionProfile: azdata.connection.ConnectionProfile, serviceContext: MigrationServiceContext, migration: DatabaseMigration): Promise<void> {
+	public static async refreshMigrationAzureAccount(serviceContext: MigrationServiceContext, migration: DatabaseMigration): Promise<void> {
 		if (serviceContext.azureAccount?.isStale) {
 			const accounts = await azdata.accounts.getAllAccounts();
 			const account = accounts.find(a => !a.isStale && a.key.accountId === serviceContext.azureAccount?.key.accountId);
@@ -37,7 +44,7 @@ export class MigrationLocalStorage {
 				const subscription = subscriptions.find(s => s.id === serviceContext.subscription?.id);
 				if (subscription) {
 					serviceContext.azureAccount = account;
-					await this.saveMigrationServiceContext(connectionProfile, serviceContext);
+					await this.saveMigrationServiceContext(serviceContext);
 				}
 			}
 		}
@@ -45,29 +52,26 @@ export class MigrationLocalStorage {
 }
 
 export function isServiceContextValid(serviceContext: MigrationServiceContext): boolean {
-	return (serviceContext.azureAccount?.isStale === false &&
+	return (
+		serviceContext.azureAccount?.isStale === false &&
 		serviceContext.location?.id !== undefined &&
 		serviceContext.migrationService?.id !== undefined &&
 		serviceContext.resourceGroup?.id !== undefined &&
 		serviceContext.subscription?.id !== undefined &&
-		serviceContext.tenant?.id !== undefined);
+		serviceContext.tenant?.id !== undefined
+	);
 }
 
 export async function getSelectedServiceStatus(): Promise<string> {
-	const serviceContext = await getServiceContext();
+	const serviceContext = await MigrationLocalStorage.getMigrationServiceContext();
 	const serviceName = serviceContext?.migrationService?.name;
 	return serviceName && isServiceContextValid(serviceContext)
 		? loc.MIGRATION_SERVICE_SERVICE_PROMPT(serviceName)
 		: loc.MIGRATION_SERVICE_SELECT_SERVICE_PROMPT;
 }
 
-export async function getServiceContext(): Promise<MigrationServiceContext> {
-	const connectionProfile = await azdata.connection.getCurrentConnection();
-	return await MigrationLocalStorage.getMigrationServiceContext(connectionProfile);
-}
-
 export async function getCurrentMigrations(): Promise<DatabaseMigration[]> {
-	const serviceContext = await getServiceContext();
+	const serviceContext = await MigrationLocalStorage.getMigrationServiceContext();
 	return isServiceContextValid(serviceContext)
 		? await getServiceMigrations(
 			serviceContext.azureAccount!,
