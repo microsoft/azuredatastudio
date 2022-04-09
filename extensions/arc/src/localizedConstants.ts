@@ -337,6 +337,7 @@ export const loadingClusterContextsError = (error: any): string => localize('arc
 
 // Upgrade
 export const upgradeManagement = localize('arc.upgradeManagement', "Upgrade Management");
+export const currentControllerVersion = localize('arc.currentControllerVersion', "Current controller version: ");
 export const availableUpgrades = localize('arc.availableUpgrades', "Available Upgrades");
 export const availableUpgradesDescription = localize('arc.availableUpgradesDescription', "Available upgrades for this resource are listed below. You can apply upgrades by selecting an upgrade below.");
 export const onlyNextImmediateVersion = localize('arc.onlyNextImmediateVersion', "Currently, only upgrades to the next immediate version is supported.");
@@ -348,3 +349,4 @@ export const upgradeDataController = localize('arc.upgradeDataController', "Upgr
 export const areYouSure = localize('arc.areYouSure', "Are you sure you want to apply the selected upgrade?");
 export const upgradeDialog = localize('arc.upgradeDialog', "During a data controller upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the data controller will not cause downtime for the data services (SQL Managed Instance or PostgreSQL Hyperscale server).");
 export function errorListingLogAnalyticsWorkspaces(error: any): string { return localize('arc.errorListingLogAnalyticsWorkspaces', "Error listing Log Analytics workspaces {0}", getErrorMessage(error, true)); }
+export const noUpgrades = localize('arc.noUpgrades', 'The current version is the latest version. No upgrades available.');

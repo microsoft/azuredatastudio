@@ -12,7 +12,6 @@ import { IconPathHelper, cssStyles, ConnectionMode } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 // import { RPModel, DatabaseModel, systemDbs } from '../../../models/miaaModel';
 import { ControllerModel } from '../../../models/controllerModel';
-import { systemDbs } from '../../../models/miaaModel';
 // import { ConfigureRPOSqlDialog } from '../../dialogs/configureRPOSqlDialog';
 import { UpgradeController } from '../../dialogs/upgradeController';
 
@@ -122,6 +121,13 @@ export class ControllerUpgradesPage extends DashboardPage {
 			], { CSSStyles: { 'margin-right': '5px' } }).component();
 
 		content.addItem(upgradesInfoAndLink, { CSSStyles: { 'min-height': '30px' } });
+
+		const infoOnlyNextImmediateVersion = this.modelView.modelBuilder.text().withProps({
+			value: loc.onlyNextImmediateVersion,
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
+		}).component();
+
+		content.addItem(infoOnlyNextImmediateVersion, { CSSStyles: { 'min-height': '30px' } });
 
 		// Create loaded components
 
@@ -306,15 +312,27 @@ export class ControllerUpgradesPage extends DashboardPage {
 		).component();
 	}
 
-	private handleDatabasesUpdated(): void {
-		// 	// If we were able to get the databases it means we have a good connection so update the username too
-		// let databaseDisplay = this._controllerModel.databases.map(d => [
-		// 	d.name,
-		// 	d.earliestBackup,
-		// 	d.lastBackup,
-		// 	this.createRestoreButton(d)]);
+	private formatTableData(result: azExt.AzOutput<azExt.DcListUpgradesResult>): (string | azdata.ButtonComponent)[][] {
+		let formattedValues: (string | azdata.ButtonComponent)[][] = [];
+		const versions = result.stdout.versions;
+		const dates = result.stdout.dates;
+		const currentVersion = result.stdout.currentVersion;
+		const nextVersion = this.getNextUpgrade(result.stdout.versions, result.stdout.currentVersion);
+		for (let i = 0; i < versions.length; i++) {
+			if (versions[i] === currentVersion) {
+				formattedValues.push([versions[i], dates[i], '', this.createUpgradeButton('Current version', false, '')]);
+			} else if (versions[i] === nextVersion) {
+				formattedValues.push([versions[i], dates[i], '', this.createUpgradeButton('Upgrade', true, nextVersion)]);
+			} else {
+				formattedValues.push([versions[i], dates[i], '', '']);
+			}
+		}
+		return formattedValues;
+	}
 
-		let databaseDisplay = [['a', 'b', 'c', this.createUpgradeButton('d')], ['A', 'B', 'C', 'D']];
+	private async handleDatabasesUpdated(): Promise<void> {
+		const result = await this._azApi.az.arcdata.dc.listUpgrades(this._controllerModel.info.namespace);
+		let databaseDisplay = this.formatTableData(result);
 		let databasesValues = databaseDisplay.map(d => {
 			return d.map((value: any): azdata.DeclarativeTableCellValue => {
 				return { value: value };
@@ -358,10 +376,10 @@ export class ControllerUpgradesPage extends DashboardPage {
 	}
 
 	//Create restore button for every database entry in the database table
-	private createUpgradeButton(db: string): azdata.ButtonComponent | string {
+	private createUpgradeButton(label: string, enabled: boolean, nextVersion: string): azdata.ButtonComponent | string {
 		const upgradeButton = this.modelView.modelBuilder.button().withProps({
-			enabled: systemDbs.indexOf(db) > -1 ? false : true,
-			iconPath: IconPathHelper.openInTab,
+			enabled: enabled,
+			label: label,
 		}).component();
 
 		this.disposables.push(
@@ -390,12 +408,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token): Promise<void> => {
-								const result = await this._azApi.az.arcdata.dc.listUpgrades(this._controllerModel.info.namespace);
-								const versions = result.stdout.versions;
-								const currentVersion = result.stdout.currentVersion;
-								const nextVersion = this.getNextUpgrade(versions, currentVersion);
-
-								if (nextVersion) {
+								if (nextVersion !== '') {
 									if (this._controllerModel.info.connectionMode === ConnectionMode.direct) {
 										await this._azApi.az.arcdata.dc.upgrade(
 											nextVersion,
@@ -414,7 +427,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 										);
 									}
 								} else {
-									console.error('The current version is the latest version. No upgrades available.');
+									vscode.window.showInformationMessage(loc.noUpgrades);
 								}
 
 								try {
@@ -423,14 +436,6 @@ export class ControllerUpgradesPage extends DashboardPage {
 									vscode.window.showErrorMessage(loc.refreshFailed(error));
 								}
 							}
-							// async (_progress, _token): Promise<void> => {
-							// 	await this._azApi.az.arcdata.dc.upgrade();
-							// 	try {
-							// 		await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
-							// 	} catch (error) {
-							// 		vscode.window.showErrorMessage(loc.refreshFailed(error));
-							// 	}
-							// }
 						);
 					} catch (error) {
 						vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));

@@ -101,11 +101,19 @@ export class AzTool implements azExt.IAzApi {
 				const argsArray = ['arcdata', 'dc', 'list-upgrades'];
 				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
 				if (usek8s) { argsArray.push('--use-k8s'); }
+
 				const output = await this.executeCommand<string>(argsArray, additionalEnvVars);
+				const versions = <string[]>parseDcListUpgrades(output.stdout);
+				const currentVersion = <string>parseCurrentVersion(output.stdout);
+				let dates: string[] = [];
+				for (let i = 0; i < versions.length; i++) {
+					dates.push(parseReleaseDateFromUpgrade(versions[i]));
+				}
 				return {
 					stdout: {
-						versions: <string[]>parseDcListUpgrades(output.stdout),
-						currentVersion: <string>parseCurrentVersion(output.stdout)
+						versions: versions,
+						currentVersion: currentVersion,
+						dates: dates
 					},
 					stderr: output.stderr
 				};
@@ -608,6 +616,21 @@ function parseDcListUpgrades(raw: string): string[] | undefined {
 		versions.push(result);
 	}
 	return <string[]>versions;
+}
+
+/**
+ * Parses out the release date from the upgrade version number and formats it into MM/DD/YYYY format.
+ * For example: v1.4.1_2022-03-08 ==> 03/08/2022
+ * @param raw The raw upgrade version number, such as: v1.4.1_2022-03-08
+ */
+function parseReleaseDateFromUpgrade(raw: string): string {
+	let formattedDate = '';
+	const exp = /^v\d*.\d*.\d*_(\d*).(\d*).(\d*.\d)/;
+	let rawDate = exp.exec(raw);
+	if (rawDate) {
+		formattedDate += rawDate[2] + '/' + rawDate[3] + '/' + rawDate[1];
+	}
+	return formattedDate;
 }
 
 /**
