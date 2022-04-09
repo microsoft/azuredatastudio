@@ -148,7 +148,7 @@ export class TableCellEditorFactory {
 				container.style.height = '100%';
 				container.style.width = '100%';
 				if (isEditable) {
-					this._component = new Dropdown(container, self._contextViewProvider);
+					this._component = new Dropdown(container, self._contextViewProvider, { strictSelection: false });
 					this._component.onValueChange(async () => {
 						await this.commitEdit();
 					});
