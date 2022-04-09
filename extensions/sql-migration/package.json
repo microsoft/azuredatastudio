@@ -17,7 +17,6 @@
 		"onCommand:sqlmigration.start",
 		"onCommand:sqlmigration.newsupportrequest",
 		"onCommand:sqlmigration.sendfeedback",
-		"onCommand:sqlmigration.refreshmigrations",
 		"onCommand:sqlmigration.openNotebooks"
 	],
 	"capabilities": {
@@ -53,12 +52,6 @@
 				"title": "%send-feedback-command%",
 				"category": "%migration-command-category%",
 				"icon": "./images/sendFeedback.svg"
-			},
-			{
-				"command": "sqlmigration.refreshmigrations",
-				"title": "%refresh-migrations-command%",
-				"category": "%migration-command-category%",
-        "icon": "./images/refresh.svg"
 			},
 			{
 				"command": "sqlmigration.openNotebooks",
@@ -112,10 +105,6 @@
 					"when": "false"
 				},
 				{
-					"command": "sqlmigration.refreshmigrations",
-					"when": "false"
-				},
-				{
 					"command": "sqlmigration.cutover",
 					"when": "false"
 				},
@@ -166,8 +155,7 @@
 								"tasks-widget": [
 									"sqlmigration.start",
 									"sqlmigration.newsupportrequest",
-									"sqlmigration.sendfeedback",
-									"sqlmigration.refreshmigrations"
+									"sqlmigration.sendfeedback"
 								]
 							}
 						},

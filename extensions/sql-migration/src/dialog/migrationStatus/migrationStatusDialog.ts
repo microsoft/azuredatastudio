@@ -10,7 +10,7 @@ import { getCurrentMigrations, getSelectedServiceStatus, MigrationLocalStorage, 
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
 import { AdsMigrationStatus, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
-import { clearDialogMessage, convertTimeDifferenceToDuration, displayDialogErrorMessage, filterMigrations, getMigrationStatusImage, SupportedAutoRefreshIntervals } from '../../api/utils';
+import { clearDialogMessage, convertTimeDifferenceToDuration, displayDialogErrorMessage, filterMigrations, getMigrationStatusImage } from '../../api/utils';
 import { SqlMigrationServiceDetailsDialog } from '../sqlMigrationService/sqlMigrationServiceDetailsDialog';
 import { ConfirmCutoverDialog } from '../migrationCutover/confirmCutoverDialog';
 import { MigrationCutoverDialogModel } from '../migrationCutover/migrationCutoverDialogModel';
@@ -19,8 +19,6 @@ import { RetryMigrationDialog } from '../retryMigration/retryMigrationDialog';
 import { DatabaseMigration, getResourceName } from '../../api/azure';
 import { logError, TelemetryViews } from '../../telemtery';
 import { SelectMigrationServiceDialog } from '../selectMigrationService/selectMigrationServiceDialog';
-
-const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
 
 const MenuCommands = {
 	Cutover: 'sqlmigration.cutover',
@@ -206,20 +204,11 @@ export class MigrationStatusDialog {
 		flexContainer.addItem(this._refresh, { flex: '0', CSSStyles: { 'margin-left': '20px' } });
 		flexContainer.addItem(this._refreshLoader, { flex: '0 0 auto', CSSStyles: { 'margin-left': '20px' } });
 
-		this.setAutoRefresh(refreshFrequency);
 		const container = this._view.modelBuilder.flexContainer()
 			.withProps({ width: 1245 })
 			.component();
 		container.addItem(flexContainer, { flex: '0 0 auto', });
 		return container;
-	}
-
-	private setAutoRefresh(interval: SupportedAutoRefreshIntervals): void {
-		const classVariable = this;
-		clearInterval(this._autoRefreshHandle);
-		if (interval !== -1) {
-			this._autoRefreshHandle = setInterval(async function () { await classVariable.refreshTable(); }, interval);
-		}
 	}
 
 	private registerCommands(): void {

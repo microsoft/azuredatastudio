@@ -9,7 +9,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { BackupFileInfoStatus, MigrationServiceContext, MigrationStatus } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialogModel } from './migrationCutoverDialogModel';
 import * as loc from '../../constants/strings';
-import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, getMigrationStatusImage, SupportedAutoRefreshIntervals, clearDialogMessage, displayDialogErrorMessage } from '../../api/utils';
+import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, getMigrationStatusImage, clearDialogMessage, displayDialogErrorMessage } from '../../api/utils';
 import { EOL } from 'os';
 import { ConfirmCutoverDialog } from './confirmCutoverDialog';
 import { logError, TelemetryViews } from '../../telemtery';
@@ -18,7 +18,6 @@ import * as styles from '../../constants/styles';
 import { canRetryMigration, getMigrationStatus, isBlobMigration, isOfflineMigation } from '../../constants/helper';
 import { DatabaseMigration, getResourceName } from '../../api/azure';
 
-const refreshFrequency: SupportedAutoRefreshIntervals = 30000;
 const statusImageSize: number = 14;
 
 export class MigrationCutoverDialog {
@@ -232,9 +231,8 @@ export class MigrationCutoverDialog {
 						d => { try { d.dispose(); } catch { } });
 				}));
 
-				return view.initializeModel(form).then(async (value) => {
-					await this.refreshStatus();
-				});
+				await view.initializeModel(form);
+				await this.refreshStatus();
 			} catch (e) {
 				logError(TelemetryViews.MigrationCutoverDialog, 'IntializingFailed', e);
 			}
@@ -284,8 +282,6 @@ export class MigrationCutoverDialog {
 			width: 950
 		}).component();
 
-		this.setAutoRefresh(refreshFrequency);
-
 		const titleLogoContainer = this._view.modelBuilder.flexContainer().withProps({
 			width: 1000
 		}).component();
@@ -324,7 +320,6 @@ export class MigrationCutoverDialog {
 			await this.refreshStatus();
 			const dialog = new ConfirmCutoverDialog(this._model);
 			await dialog.initialize();
-			await this.refreshStatus();
 
 			if (this._model.CutoverError) {
 				displayDialogErrorMessage(this._dialogObject, loc.MIGRATION_CUTOVER_ERROR, this._model.CutoverError);
@@ -377,7 +372,7 @@ export class MigrationCutoverDialog {
 		this._disposables.push(this._retryButton.onDidClick(
 			async (e) => {
 				await this.refreshStatus();
-				let retryMigrationDialog = new RetryMigrationDialog(
+				const retryMigrationDialog = new RetryMigrationDialog(
 					this._context,
 					this._serviceContext,
 					this._migration,
@@ -401,12 +396,14 @@ export class MigrationCutoverDialog {
 			}
 		}).component();
 
-		this._disposables.push(this._refreshButton.onDidClick(
-			async (e) => await this.refreshStatus()));
+		this._disposables.push(
+			this._refreshButton.onDidClick(async (e) => {
+				this._refreshButton.enabled = false;
+				await this.refreshStatus();
+				this._refreshButton.enabled = true;
+			}));
 
-		headerActions.addItem(this._refreshButton, {
-			flex: '0',
-		});
+		headerActions.addItem(this._refreshButton, { flex: '0' });
 
 		this._copyDatabaseMigrationDetails = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.copy,
@@ -429,9 +426,7 @@ export class MigrationCutoverDialog {
 
 		headerActions.addItem(this._copyDatabaseMigrationDetails, {
 			flex: '0',
-			CSSStyles: {
-				'margin-left': '5px'
-			}
+			CSSStyles: { 'margin-left': '5px' }
 		});
 
 		// create new support request button.  Hiding button until sql migration support has been setup.
@@ -565,22 +560,6 @@ export class MigrationCutoverDialog {
 		return flexInfo;
 	}
 
-	private setAutoRefresh(interval: SupportedAutoRefreshIntervals): void {
-		const shouldRefresh = (status: string | undefined) => !status
-			|| status === MigrationStatus.InProgress
-			|| status === MigrationStatus.Creating
-			|| status === MigrationStatus.Completing
-			|| status === MigrationStatus.Canceling;
-
-		if (shouldRefresh(this._getMigrationStatus())) {
-			const classVariable = this;
-			clearInterval(this._autoRefreshHandle);
-			if (interval !== -1) {
-				this._autoRefreshHandle = setInterval(async function () { await classVariable.refreshStatus(); }, interval);
-			}
-		}
-	}
-
 	private getMigrationDetails(): string {
 		return JSON.stringify(this._model.migrationStatus, undefined, 2);
 	}
@@ -634,30 +613,30 @@ export class MigrationCutoverDialog {
 
 			const tableData: ActiveBackupFileSchema[] = [];
 
-			this._model.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.forEach((activeBackupSet) => {
+			this._model.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.forEach(
+				(activeBackupSet) => {
+					if (this._shouldDisplayBackupFileTable()) {
+						tableData.push(
+							...activeBackupSet.listOfBackupFiles.map(f => {
+								return {
+									fileName: f.fileName,
+									type: activeBackupSet.backupType,
+									status: f.status,
+									dataUploaded: `${convertByteSizeToReadableUnit(f.dataWritten)} / ${convertByteSizeToReadableUnit(f.totalSize)}`,
+									copyThroughput: (f.copyThroughput) ? (f.copyThroughput / 1024).toFixed(2) : '-',
+									backupStartTime: activeBackupSet.backupStartDate,
+									firstLSN: activeBackupSet.firstLSN,
+									lastLSN: activeBackupSet.lastLSN
+								};
+							})
+						);
+					}
 
-				if (this._shouldDisplayBackupFileTable()) {
-					tableData.push(
-						...activeBackupSet.listOfBackupFiles.map(f => {
-							return {
-								fileName: f.fileName,
-								type: activeBackupSet.backupType,
-								status: f.status,
-								dataUploaded: `${convertByteSizeToReadableUnit(f.dataWritten)} / ${convertByteSizeToReadableUnit(f.totalSize)}`,
-								copyThroughput: (f.copyThroughput) ? (f.copyThroughput / 1024).toFixed(2) : '-',
-								backupStartTime: activeBackupSet.backupStartDate,
-								firstLSN: activeBackupSet.firstLSN,
-								lastLSN: activeBackupSet.lastLSN
-							};
-						})
-					);
-				}
-
-				if (activeBackupSet.listOfBackupFiles[0].fileName === this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename) {
-					lastAppliedSSN = activeBackupSet.lastLSN;
-					lastAppliedBackupFileTakenOn = activeBackupSet.backupFinishDate;
-				}
-			});
+					if (activeBackupSet.listOfBackupFiles[0].fileName === this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename) {
+						lastAppliedSSN = activeBackupSet.lastLSN;
+						lastAppliedBackupFileTakenOn = activeBackupSet.backupFinishDate;
+					}
+				});
 
 			this._sourceDatabaseInfoField.text.value = sourceDatabaseName;
 			this._sourceDetailsInfoField.text.value = sqlServerName;

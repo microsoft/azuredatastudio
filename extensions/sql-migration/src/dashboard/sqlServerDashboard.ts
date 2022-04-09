@@ -10,7 +10,7 @@ import * as loc from '../constants/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatusDialog';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
-import { filterMigrations, SupportedAutoRefreshIntervals } from '../api/utils';
+import { filterMigrations } from '../api/utils';
 import * as styles from '../constants/styles';
 import * as nls from 'vscode-nls';
 import { SelectMigrationServiceDialog } from '../dialog/selectMigrationService/selectMigrationServiceDialog';
@@ -27,7 +27,6 @@ interface IActionMetadata {
 }
 
 const maxWidth = 800;
-const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
 const BUTTON_CSS = {
 	'font-size': '13px',
 	'line-height': '18px',
@@ -56,6 +55,7 @@ export class DashboardWidget {
 	private _completingMigrationButton!: StatusCard;
 	private _selectServiceText!: azdata.TextComponent;
 	private _serviceContextButton!: azdata.ButtonComponent;
+	private _refreshButton!: azdata.ButtonComponent;
 
 	private _autoRefreshHandle!: NodeJS.Timeout;
 	private _disposables: vscode.Disposable[] = [];
@@ -125,8 +125,6 @@ export class DashboardWidget {
 	}
 
 	private createHeader(view: azdata.ModelView): azdata.FlexContainer {
-		this.setAutoRefresh(refreshFrequency);
-
 		const header = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: maxWidth,
@@ -242,14 +240,6 @@ export class DashboardWidget {
 				}
 			}));
 		return view.modelBuilder.divContainer().withItems([buttonContainer]).component();
-	}
-
-	private setAutoRefresh(interval: SupportedAutoRefreshIntervals): void {
-		const classVariable = this;
-		clearInterval(this._autoRefreshHandle);
-		if (interval !== -1) {
-			this._autoRefreshHandle = setInterval(async function () { await classVariable.refreshMigrations(); }, interval);
-		}
 	}
 
 	public async refreshMigrations(): Promise<void> {
@@ -451,12 +441,39 @@ export class DashboardWidget {
 			}
 		}).component();
 
-		const statusContainerTitle = view.modelBuilder.text().withProps({
-			value: loc.DATABASE_MIGRATION_STATUS,
-			CSSStyles: {
-				...styles.SECTION_HEADER_CSS
-			}
-		}).component();
+		const statusContainerTitle = view.modelBuilder.text()
+			.withProps({
+				value: loc.DATABASE_MIGRATION_STATUS,
+				width: '100%',
+				CSSStyles: { ...styles.SECTION_HEADER_CSS }
+			}).component();
+
+		this._refreshButton = view.modelBuilder.button()
+			.withProps({
+				label: loc.REFRESH,
+				iconPath: IconPathHelper.refresh,
+				iconHeight: 16,
+				iconWidth: 16,
+				width: 70,
+				CSSStyles: { 'float': 'right' }
+			}).component();
+
+		const statusHeadingContainer = view.modelBuilder.flexContainer()
+			.withItems([
+				statusContainerTitle,
+				this._refreshButton,
+			]).withLayout({
+				alignContent: 'center',
+				alignItems: 'center',
+				flexFlow: 'row',
+			}).component();
+
+		this._disposables.push(
+			this._refreshButton.onDidClick(async (e) => {
+				this._refreshButton.enabled = false;
+				await this.refreshMigrations();
+				this._refreshButton.enabled = true;
+			}));
 
 		const buttonContainer = view.modelBuilder.flexContainer()
 			.withProps({
@@ -483,10 +500,8 @@ export class DashboardWidget {
 			}).component();
 
 		const header = view.modelBuilder.flexContainer()
-			.withItems([
-				statusContainerTitle,
-				buttonContainer,
-			]).withLayout({ flexFlow: 'column', })
+			.withItems([statusHeadingContainer, buttonContainer])
+			.withLayout({ flexFlow: 'column', })
 			.component();
 
 		this._migrationStatusCardsContainer = view.modelBuilder.flexContainer()
@@ -513,7 +528,8 @@ export class DashboardWidget {
 			}));
 
 		this._migrationStatusCardsContainer.addItem(
-			this._inProgressMigrationButton.container);
+			this._inProgressMigrationButton.container,
+			{ flex: '0 0 auto' });
 
 		// in progress warning
 		this._inProgressWarningMigrationButton = this.createStatusCard(
@@ -530,7 +546,8 @@ export class DashboardWidget {
 			}));
 
 		this._migrationStatusCardsContainer.addItem(
-			this._inProgressWarningMigrationButton.container);
+			this._inProgressWarningMigrationButton.container,
+			{ flex: '0 0 auto' });
 
 		// successful
 		this._successfulMigrationButton = this.createStatusCard(
@@ -545,7 +562,8 @@ export class DashboardWidget {
 				await dialog.initialize();
 			}));
 		this._migrationStatusCardsContainer.addItem(
-			this._successfulMigrationButton.container);
+			this._successfulMigrationButton.container,
+			{ flex: '0 0 auto' });
 
 		// completing
 		this._completingMigrationButton = this.createStatusCard(
@@ -560,7 +578,8 @@ export class DashboardWidget {
 				await dialog.initialize();
 			}));
 		this._migrationStatusCardsContainer.addItem(
-			this._completingMigrationButton.container);
+			this._completingMigrationButton.container,
+			{ flex: '0 0 auto' });
 
 		// failed
 		this._failedMigrationButton = this.createStatusCard(
@@ -575,7 +594,8 @@ export class DashboardWidget {
 				await dialog.initialize();
 			}));
 		this._migrationStatusCardsContainer.addItem(
-			this._failedMigrationButton.container);
+			this._failedMigrationButton.container,
+			{ flex: '0 0 auto' });
 
 		// all migrations
 		this._allMigrationButton = this.createStatusCard(
@@ -590,7 +610,8 @@ export class DashboardWidget {
 				await dialog.initialize();
 			}));
 		this._migrationStatusCardsContainer.addItem(
-			this._allMigrationButton.container);
+			this._allMigrationButton.container,
+			{ flex: '0 0 auto' });
 
 		this._migrationStatusCardLoadingContainer = view.modelBuilder.loadingComponent()
 			.withItem(this._migrationStatusCardsContainer)
@@ -606,6 +627,7 @@ export class DashboardWidget {
 		const isContextValid = isServiceContextValid(serviceContext);
 		await this._selectServiceText.updateCssStyles({ 'display': isContextValid ? 'none' : 'block' });
 		await this._migrationStatusCardsContainer.updateCssStyles({ 'visibility': isContextValid ? 'visible' : 'hidden' });
+		this._refreshButton.enabled = isContextValid;
 	}
 
 	private async createServiceSelector(view: azdata.ModelView): Promise<azdata.Component> {

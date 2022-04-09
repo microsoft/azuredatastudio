@@ -139,8 +139,6 @@ export function convertIsoTimeToLocalTime(isoTime: string): Date {
 	return new Date(isoDate.getTime() + (isoDate.getTimezoneOffset() * 60000));
 }
 
-export type SupportedAutoRefreshIntervals = -1 | 15000 | 30000 | 60000 | 180000 | 300000;
-
 export function selectDefaultDropdownValue(dropDown: DropDownComponent, value?: string, useDisplayName: boolean = true): void {
 	const selectedIndex = value ? findDropDownItemIndex(dropDown, value, useDisplayName) : -1;
 	if (selectedIndex > -1) {
