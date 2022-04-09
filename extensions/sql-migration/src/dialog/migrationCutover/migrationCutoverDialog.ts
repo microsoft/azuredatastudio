@@ -50,7 +50,6 @@ export class MigrationCutoverDialog {
 
 	private _fileCount!: azdata.TextComponent;
 	private _fileTable!: azdata.DeclarativeTableComponent;
-	private _autoRefreshHandle!: any;
 	private _disposables: vscode.Disposable[] = [];
 	private _emptyTableFill!: azdata.FlexContainer;
 
@@ -225,11 +224,11 @@ export class MigrationCutoverDialog {
 				);
 				const form = formBuilder.withLayout({ width: '100%' }).component();
 
-				this._disposables.push(this._view.onClosed(e => {
-					clearInterval(this._autoRefreshHandle);
-					this._disposables.forEach(
-						d => { try { d.dispose(); } catch { } });
-				}));
+				this._disposables.push(
+					this._view.onClosed(e => {
+						this._disposables.forEach(
+							d => { try { d.dispose(); } catch { } });
+					}));
 
 				await view.initializeModel(form);
 				await this.refreshStatus();
@@ -242,9 +241,6 @@ export class MigrationCutoverDialog {
 		this._dialogObject.cancelButton.hidden = true;
 		this._dialogObject.okButton.label = loc.CLOSE;
 
-		this._disposables.push(this._dialogObject.okButton.onClick(e => {
-			clearInterval(this._autoRefreshHandle);
-		}));
 		azdata.window.openDialog(this._dialogObject);
 	}
 

@@ -41,7 +41,6 @@ export class MigrationStatusDialog {
 	private _statusDropdown!: azdata.DropDownComponent;
 	private _statusTable!: azdata.TableComponent;
 	private _refreshLoader!: azdata.LoadingComponent;
-	private _autoRefreshHandle!: NodeJS.Timeout;
 	private _disposables: vscode.Disposable[] = [];
 	private _filteredMigrations: DatabaseMigration[] = [];
 
@@ -65,19 +64,17 @@ export class MigrationStatusDialog {
 		tab.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
 			this.registerCommands();
-			const formBuilder = view.modelBuilder.formContainer().withFormItems(
-				[
-					{ component: await this.createSearchAndRefreshContainer() },
-					{ component: this.createStatusTable() }
-				],
-				{ horizontal: false }
-			);
-			const form = formBuilder
-				.withLayout({ width: '100%' })
+			const form = view.modelBuilder.formContainer()
+				.withFormItems(
+					[
+						{ component: await this.createSearchAndRefreshContainer() },
+						{ component: this.createStatusTable() }
+					],
+					{ horizontal: false }
+				).withLayout({ width: '100%' })
 				.component();
 			this._disposables.push(
 				this._view.onClosed(async e => {
-					clearInterval(this._autoRefreshHandle);
 					this._disposables.forEach(
 						d => { try { d.dispose(); } catch { } });
 
@@ -90,9 +87,6 @@ export class MigrationStatusDialog {
 		this._dialogObject.content = [tab];
 		this._dialogObject.cancelButton.hidden = true;
 		this._dialogObject.okButton.label = loc.CLOSE;
-		this._disposables.push(this._dialogObject.okButton.onClick(e => {
-			clearInterval(this._autoRefreshHandle);
-		}));
 		azdata.window.openDialog(this._dialogObject);
 	}
 

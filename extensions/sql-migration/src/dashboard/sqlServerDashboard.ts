@@ -57,7 +57,6 @@ export class DashboardWidget {
 	private _serviceContextButton!: azdata.ButtonComponent;
 	private _refreshButton!: azdata.ButtonComponent;
 
-	private _autoRefreshHandle!: NodeJS.Timeout;
 	private _disposables: vscode.Disposable[] = [];
 	private isRefreshing: boolean = false;
 
@@ -114,7 +113,6 @@ export class DashboardWidget {
 			});
 			this._disposables.push(
 				this._view.onClosed(e => {
-					clearInterval(this._autoRefreshHandle);
 					this._disposables.forEach(
 						d => { try { d.dispose(); } catch { } });
 				}));
