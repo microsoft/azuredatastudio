@@ -101,9 +101,11 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 
 		this._el = DOM.append(container, DOM.$('.monaco-dropdown'));
 		this._el.style.width = '100%';
+		this._el.style.height = '100%';
 
 		this._inputContainer = DOM.append(this._el, DOM.$('.dropdown-input.select-container'));
 		this._inputContainer.style.width = '100%';
+		this._inputContainer.style.height = '100%';
 		this._selectListContainer = DOM.$('div');
 
 		this._input = new InputBox(this._inputContainer, contextViewService, {
@@ -166,7 +168,6 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 					this._input.validate();
 					this._onBlur.fire();
 					this._hideList();
-					e.stopPropagation();
 					break;
 				case KeyCode.DownArrow:
 					if (!this._isDropDownVisible) {
