@@ -289,6 +289,27 @@ export class CancelQueryAction extends QueryTaskbarAction {
 	}
 }
 
+export class QueryPlanTelemetry {
+	constructor(
+		@IConnectionManagementService private connectionService: IConnectionManagementService,
+		@IAdsTelemetryService private adsTelemetryService: IAdsTelemetryService
+	) { }
+
+	public addTelemetry(eventName: string, ownerUri: string, runOptions?: ExecutionPlanOptions): void {
+		const providerId: string = this.connectionService.getProviderIdFromUri(ownerUri);
+		const data: ITelemetryEventProperties = {
+			provider: providerId,
+		};
+		if (runOptions) {
+			Object.assign(data, {
+				displayEstimatedQueryPlan: runOptions.displayEstimatedQueryPlan,
+				displayActualQueryPlan: runOptions.displayActualQueryPlan
+			});
+		}
+		this.adsTelemetryService.createActionEvent(TelemetryKeys.TelemetryView.QueryEditor, eventName).withAdditionalProperties(data).send();
+	}
+}
+
 /**
  * Action class that runs a query in the active SQL text document.
  */
@@ -297,19 +318,21 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 	public static EnabledClass = 'estimatedQueryPlan';
 	public static ID = 'estimatedQueryPlanAction';
 
+	private queryPlanTelemetry: QueryPlanTelemetry;
+
 	constructor(
 		editor: QueryEditor,
-		@IConnectionManagementService private connectionService: IConnectionManagementService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IAdsTelemetryService private adsTelemetryService: IAdsTelemetryService
+		@IInstantiationService private instantiationService: IInstantiationService
 	) {
 		super(connectionManagementService, editor, EstimatedQueryPlanAction.ID, EstimatedQueryPlanAction.EnabledClass);
 		this.label = nls.localize('estimatedQueryPlan', "Explain");
+		this.queryPlanTelemetry = this.instantiationService.createInstance(QueryPlanTelemetry);
 	}
 
 	public override async run(): Promise<void> {
 		let planOptions = { displayEstimatedQueryPlan: true } as ExecutionPlanOptions;
-		this.addTelemetry(TelemetryKeys.TelemetryAction.EstimatedQueryExecutionPlan, this.editor.input.uri, planOptions);
+		this.queryPlanTelemetry.addTelemetry(TelemetryKeys.TelemetryAction.EstimatedQueryExecutionPlan, this.editor.input.uri, planOptions);
 
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
@@ -334,20 +357,6 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 				displayEstimatedQueryPlan: true
 			});
 		}
-	}
-
-	private addTelemetry(eventName: string, ownerUri: string, runOptions?: ExecutionPlanOptions): void {
-		const providerId: string = this.connectionService.getProviderIdFromUri(ownerUri);
-		const data: ITelemetryEventProperties = {
-			provider: providerId,
-		};
-		if (runOptions) {
-			Object.assign(data, {
-				displayEstimatedQueryPlan: runOptions.displayEstimatedQueryPlan,
-				displayActualQueryPlan: runOptions.displayActualQueryPlan
-			});
-		}
-		this.adsTelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, eventName).withAdditionalProperties(data).send();
 	}
 }
 

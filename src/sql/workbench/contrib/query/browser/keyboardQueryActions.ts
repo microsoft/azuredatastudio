@@ -23,8 +23,9 @@ import { INotificationService, Severity } from 'vs/platform/notification/common/
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { QueryPlanTelemetry } from 'sql/workbench/contrib/query/browser/queryActions';
 
 const singleQuote = '\'';
 
@@ -212,39 +213,27 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 	public static ID = 'runCurrentQueryWithActualPlanKeyboardAction';
 	public static LABEL = nls.localize('runCurrentQueryWithActualPlanKeyboardAction', "Run Current Query with Actual Plan");
 
+	private queryPlanTelemetry: QueryPlanTelemetry;
+
 	constructor(
 		id: string,
 		label: string,
 		@IEditorService private _editorService: IEditorService,
-		@IAdsTelemetryService private adsTelemetryService: IAdsTelemetryService,
-		@IConnectionManagementService private connectionService: IConnectionManagementService
+		@IInstantiationService InstantiationService: IInstantiationService
 	) {
 		super(id, label);
 		this.enabled = true;
+		this.queryPlanTelemetry = InstantiationService.createInstance(QueryPlanTelemetry);
 	}
 
 	public override run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			let planOptions = { displayActualQueryPlan: true } as ExecutionPlanOptions;
-			this.addTelemetry(TelemetryKeys.TelemetryAction.ActualQueryExecutionPlan, editor.input.uri, planOptions);
+			this.queryPlanTelemetry.addTelemetry(TelemetryKeys.TelemetryAction.ActualQueryExecutionPlan, editor.input.uri, planOptions);
 			editor.runCurrentQueryWithActualPlan();
 		}
 		return Promise.resolve(null);
-	}
-
-	private addTelemetry(eventName: string, ownerUri: string, runOptions?: ExecutionPlanOptions): void {
-		const providerId: string = this.connectionService.getProviderIdFromUri(ownerUri);
-		const data: ITelemetryEventProperties = {
-			provider: providerId,
-		};
-		if (runOptions) {
-			Object.assign(data, {
-				displayEstimatedQueryPlan: runOptions.displayEstimatedQueryPlan,
-				displayActualQueryPlan: runOptions.displayActualQueryPlan
-			});
-		}
-		this.adsTelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, eventName).withAdditionalProperties(data).send();
 	}
 }
 

@@ -42,6 +42,7 @@ export const enum TelemetryView {
 	ExtensionRecommendationDialog = 'ExtensionRecommendationDialog',
 	Notebook = 'Notebook',
 	ResultsPanel = 'ResultsPanel',
+	QueryEditor = 'QueryEditor',
 	Shell = 'Shell',
 	SqlAssessment = 'SqlAssessment',
 	TableDesigner = 'TableDesigner'
