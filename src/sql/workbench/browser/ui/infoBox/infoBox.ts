@@ -190,7 +190,7 @@ export class InfoBox extends Disposable implements IThemable {
 				text = text.slice(placeholderIndex + 3);
 			}
 
-			if (text && typeof text === 'string') {
+			if (text) {
 				const span = DOM.$('span');
 				span.innerText = text;
 				this._textElement.appendChild(span);
