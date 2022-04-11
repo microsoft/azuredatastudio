@@ -9,6 +9,7 @@ import { ADSNotebookController } from 'sql/workbench/api/common/notebooks/adsNot
 import * as nls from 'vs/nls';
 import { convertToVSCodeNotebookCell } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { URI } from 'vs/base/common/uri';
 
 class VSCodeFuture implements azdata.nb.IFuture {
 	private _inProgress = true;
@@ -136,11 +137,18 @@ class VSCodeKernel implements azdata.nb.IKernel {
 		return Promise.resolve(this.spec);
 	}
 
+	private activeRequest: azdata.nb.IExecuteRequest;
+	private cleanUpActiveExecution(cellUri: URI) {
+		this.activeRequest = undefined;
+		this._controller.removeCellExecution(cellUri);
+	}
+
 	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
 		let executePromise: Promise<void>;
 		if (this._controller.executeHandler) {
+			this.activeRequest = content;
 			let cell = convertToVSCodeNotebookCell(CellTypes.Code, content.cellIndex, content.cellUri, content.notebookUri, content.language ?? this._kernelSpec.language, content.code);
-			executePromise = Promise.resolve(this._controller.executeHandler([cell], cell.notebook, this._controller));
+			executePromise = Promise.resolve(this._controller.executeHandler([cell], cell.notebook, this._controller)).then(() => this.cleanUpActiveExecution(content.cellUri));
 		} else {
 			executePromise = Promise.resolve();
 		}
@@ -154,7 +162,17 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	}
 
 	public async interrupt(): Promise<void> {
-		return;
+		if (this.activeRequest) {
+			if (this._controller.interruptHandler) {
+				await this._controller.interruptHandler.call(this._controller, <vscode.NotebookDocument>{
+					uri: this.activeRequest.notebookUri
+				});
+			} else {
+				let exec = this._controller.getCellExecution(this.activeRequest.cellUri);
+				exec?.tokenSource.cancel();
+			}
+			this.cleanUpActiveExecution(this.activeRequest.cellUri);
+		}
 	}
 
 	public async restart(): Promise<void> {

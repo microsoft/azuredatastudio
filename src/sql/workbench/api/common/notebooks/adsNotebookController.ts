@@ -14,7 +14,7 @@ import { URI } from 'vs/base/common/uri';
 import { NotebookCellExecutionTaskState } from 'vs/workbench/api/common/extHostNotebookKernels';
 import { asArray } from 'vs/base/common/arrays';
 import { convertToADSCellOutput } from 'sql/workbench/api/common/notebooks/notebookUtils';
-import { CancellationToken } from 'vs/base/common/cancellation';
+import { CancellationTokenSource } from 'vs/base/common/cancellation';
 
 type SelectionChangedEvent = { selected: boolean, notebook: vscode.NotebookDocument; };
 type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };
@@ -142,8 +142,19 @@ export class ADSNotebookController implements vscode.NotebookController {
 		this._kernelData.supportsInterrupt = Boolean(value);
 	}
 
+	private readonly _execMap: Map<string, ADSNotebookCellExecution> = new Map();
+	public getCellExecution(cellUri: URI): ADSNotebookCellExecution | undefined {
+		return this._execMap.get(cellUri.toString());
+	}
+
+	public removeCellExecution(cellUri: URI): void {
+		this._execMap.delete(cellUri.toString());
+	}
+
 	public createNotebookCellExecution(cell: vscode.NotebookCell): vscode.NotebookCellExecution {
-		return new ADSNotebookCellExecution(cell, this._extHostNotebookDocumentsAndEditors);
+		let exec = new ADSNotebookCellExecution(cell, this._extHostNotebookDocumentsAndEditors);
+		this._execMap.set(cell.document.uri.toString(), exec);
+		return exec;
 	}
 
 	public dispose(): void {
@@ -166,6 +177,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 	private _executionOrder: number;
 	private _state = NotebookCellExecutionTaskState.Init;
+	private _cancellationSource = new CancellationTokenSource();
 	constructor(private readonly _cell: vscode.NotebookCell, private readonly _extHostNotebookDocumentsAndEditors: ExtHostNotebookDocumentsAndEditors) {
 		this._executionOrder = this._cell.executionSummary?.executionOrder ?? -1;
 	}
@@ -174,8 +186,12 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 		return this._cell;
 	}
 
+	public get tokenSource(): vscode.CancellationTokenSource {
+		return this._cancellationSource;
+	}
+
 	public get token(): vscode.CancellationToken {
-		return CancellationToken.None;
+		return this._cancellationSource.token;
 	}
 
 	public get executionOrder(): number {
