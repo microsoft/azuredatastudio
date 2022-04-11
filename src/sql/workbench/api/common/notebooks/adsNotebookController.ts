@@ -37,6 +37,8 @@ export class ADSNotebookController implements vscode.NotebookController {
 	private readonly _languagesAdded = new Deferred<void>();
 	private readonly _executionHandlerAdded = new Deferred<void>();
 
+	private readonly _execMap: Map<string, ADSNotebookCellExecution> = new Map();
+
 	constructor(
 		private _extension: IExtensionDescription,
 		private _id: string,
@@ -145,17 +147,16 @@ export class ADSNotebookController implements vscode.NotebookController {
 		this._kernelData.supportsInterrupt = Boolean(value);
 	}
 
-	private readonly _execMap: Map<string, ADSNotebookCellExecution> = new Map();
 	public getCellExecution(cellUri: string): ADSNotebookCellExecution | undefined {
 		return this._execMap.get(cellUri);
 	}
 
-	public getNotebookDocument(notebookUri: string): azdata.nb.NotebookDocument {
-		return this._getDocHandler(notebookUri);
-	}
-
 	public removeCellExecution(cellUri: string): void {
 		this._execMap.delete(cellUri);
+	}
+
+	public getNotebookDocument(notebookUri: string): azdata.nb.NotebookDocument {
+		return this._getDocHandler(notebookUri);
 	}
 
 	public createNotebookCellExecution(cell: vscode.NotebookCell): vscode.NotebookCellExecution {
