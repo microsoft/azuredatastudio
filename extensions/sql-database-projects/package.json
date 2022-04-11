@@ -399,11 +399,6 @@
           "group": "9_dbProjectsLast@2"
         },
         {
-          "command": "sqlDatabaseProjects.convertToSdkStyleProject",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.legacyProject",
-          "group": "9_dbProjectsLast@5"
-        },
-        {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
           "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "9_dbProjectsLast@6"
