@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/executionPlan';
-import type * as azdata from 'azdata';
+import * as azdata from 'azdata';
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { localize } from 'vs/nls';
 import { dispose } from 'vs/base/common/lifecycle';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import * as DOM from 'vs/base/browser/dom';
 import * as azdataGraphModule from 'azdataGraph';
-import { customZoomIconClassNames, openPlanFileIconClassNames, openPropertiesIconClassNames, openQueryIconClassNames, executionPlanNodeIconPaths, savePlanIconClassNames, searchIconClassNames, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { customZoomIconClassNames, openPlanFileIconClassNames, openPropertiesIconClassNames, openQueryIconClassNames, executionPlanNodeIconPaths, savePlanIconClassNames, searchIconClassNames, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames, badgeIconPaths } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { isString } from 'vs/base/common/types';
 import { PlanHeader } from 'sql/workbench/contrib/executionPlan/browser/planHeader';
 import { ExecutionPlanPropertiesView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView';
@@ -57,6 +57,12 @@ export interface InternalExecutionPlanEdge extends azdata.executionPlan.Executio
 	 * Unique internal id given to graph edge by ADS.
 	 */
 	id?: string;
+}
+
+export enum BadgeType {
+	WARNING = 0,
+	CRITICALWARNING = 1,
+	PARALLELISM = 2
 }
 
 export class ExecutionPlanTab implements IPanelTab {
@@ -362,10 +368,48 @@ export class ExecutionPlan implements ISashLayoutProvider {
 			}
 		}
 
+		if (node.badges) {
+			diagramNode.badges = [];
+			for (let i = 0; i < node.badges.length; i++) {
+				diagramNode.badges.push(this.getBadgeTypeString(node.badges[i].type));
+			}
+		}
+
 		if (node.description) {
 			diagramNode.description = node.description;
 		}
 		return diagramNode;
+	}
+
+	private getBadgeTypeString(badgeType: BadgeType): {
+		type: string,
+		tooltip: string
+	} {
+		/**
+		 * TODO: Need to figure out if tooltip have to be removed. For now, they are empty
+		 */
+		switch (badgeType) {
+			case BadgeType.WARNING:
+				return {
+					type: 'warning',
+					tooltip: ''
+				};
+			case BadgeType.CRITICALWARNING:
+				return {
+					type: 'criticalWarning',
+					tooltip: ''
+				};
+			case BadgeType.PARALLELISM:
+				return {
+					type: 'parallelism',
+					tooltip: ''
+				};
+			default:
+				return {
+					type: 'warning',
+					tooltip: ''
+				};
+		}
 	}
 
 	private populateEdges(edge: InternalExecutionPlanEdge, diagramEdge: any) {
@@ -401,7 +445,7 @@ export class ExecutionPlan implements ISashLayoutProvider {
 		let graphRoot: azdata.executionPlan.ExecutionPlanNode = this._graphModel.root;
 
 		this.populate(graphRoot, diagramRoot);
-		this.azdataGraphDiagram = new azdataGraph.azdataQueryPlan(container, diagramRoot, executionPlanNodeIconPaths);
+		this.azdataGraphDiagram = new azdataGraph.azdataQueryPlan(container, diagramRoot, executionPlanNodeIconPaths, badgeIconPaths);
 
 		this.azdataGraphDiagram.graph.setCellsMovable(false); // preventing drag and drop of graph nodes.
 		this.azdataGraphDiagram.graph.setCellsDisconnectable(false); // preventing graph edges to be disconnected from source and target nodes.
@@ -434,7 +478,6 @@ export class ExecutionPlan implements ISashLayoutProvider {
 			}
 		});
 	}
-
 
 	public set graphModel(graph: azdata.executionPlan.ExecutionPlanGraph | undefined) {
 		this._graphModel = graph;

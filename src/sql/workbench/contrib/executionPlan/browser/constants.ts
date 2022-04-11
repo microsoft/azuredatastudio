@@ -249,6 +249,14 @@ export let executionPlanNodeIconPaths =
 	unionAll: imageBasePath + 'union_all.png'
 };
 
+export const badgeIconPaths = {
+	warning: imageBasePath + 'overlay_warning.svg',
+
+	parallelism: imageBasePath + 'overlay_parallelism.svg',
+
+	criticalWarning: imageBasePath + 'overlay_critical_warning.svg'
+};
+
 const parentContainer = 'qps-container';
 export const savePlanIconClassNames = [parentContainer, 'save-plan-icon'].join(' ');
 export const openPropertiesIconClassNames = [parentContainer, 'open-properties-icon'].join(' ');
