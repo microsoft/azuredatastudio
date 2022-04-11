@@ -119,6 +119,7 @@ export class InfoBox extends Disposable implements IThemable {
 
 	public set links(v: azdata.LinkArea[]) {
 		this._links = v ?? [];
+		this.createTextWithHyperlinks();
 	}
 
 	public get text(): string {
@@ -128,41 +129,64 @@ export class InfoBox extends Disposable implements IThemable {
 	public set text(text: string) {
 		if (this._text !== text) {
 			this._text = text;
+			this.createTextWithHyperlinks();
+		}
+	}
 
-			DOM.clearNode(this._textElement);
-			this._linkListenersDisposableStore.clear();
+	public createTextWithHyperlinks() {
+		let text = this._text;
+		DOM.clearNode(this._textElement);
+		this._linkListenersDisposableStore.clear();
 
-			for (let i = 0; i < this._links.length; i++) {
-				const placeholderIndex = text.indexOf(`{${i}}`);
-				if (placeholderIndex < 0) {
-					this._logService.warn(`Could not find placeholder text {${i}} in text ${text}`);
-					// Just continue on so we at least show the rest of the text if just one was missed or something
-					continue;
+		for (let i = 0; i < this._links.length; i++) {
+			const placeholderIndex = text.indexOf(`{${i}}`);
+			if (placeholderIndex < 0) {
+				this._logService.warn(`Could not find placeholder text {${i}} in text ${text}`);
+				// Just continue on so we at least show the rest of the text if just one was missed or something
+				continue;
+			}
+
+			// First insert any text from the start of the current string fragment up to the placeholder
+			let curText = text.slice(0, placeholderIndex);
+			if (curText) {
+				const span = DOM.$('span');
+				span.innerText = text.slice(0, placeholderIndex);
+				this._textElement.appendChild(span);
+			}
+
+			// Now insert the link element
+			const link = this._links[i];
+
+			/**
+			 * If the url is empty, electron displays the link as visited.
+			 * TODO: Investigate why it happens and fix the issue iin electron/vsbase.
+			 */
+			const linkElement = DOM.$('a', {
+				href: link.url === '' ? ' ' : link.url
+			});
+
+			linkElement.innerText = link.text;
+
+			if (link.accessibilityInformation) {
+				linkElement.setAttribute('aria-label', link.accessibilityInformation.label);
+				if (link.accessibilityInformation.role) {
+					linkElement.setAttribute('role', link.accessibilityInformation.role);
 				}
-
-				// First insert any text from the start of the current string fragment up to the placeholder
-				let curText = text.slice(0, placeholderIndex);
-				if (curText) {
-					const span = DOM.$('span');
-					span.innerText = text.slice(0, placeholderIndex);
-					this._textElement.appendChild(span);
-				}
-
-				// Now insert the link element
-				const link = this._links[i];
-				const linkElement = DOM.$('a', {
-					href: link.url === '' ? ' ' : link.url
+			}
+			this._linkListenersDisposableStore.add(DOM.addDisposableListener(linkElement, DOM.EventType.CLICK, e => {
+				this._onLinkClick.fire({
+					index: i,
+					link: link
 				});
-
-				linkElement.innerText = link.text;
-
-				if (link.accessibilityInformation) {
-					linkElement.setAttribute('aria-label', link.accessibilityInformation.label);
-					if (link.accessibilityInformation.role) {
-						linkElement.setAttribute('role', link.accessibilityInformation.role);
-					}
+				if (link.url) {
+					this.openLink(link.url);
 				}
-				this._linkListenersDisposableStore.add(DOM.addDisposableListener(linkElement, DOM.EventType.CLICK, e => {
+				e.stopPropagation();
+			}));
+
+			this._linkListenersDisposableStore.add(DOM.addDisposableListener(linkElement, DOM.EventType.KEY_PRESS, e => {
+				const event = new StandardKeyboardEvent(e);
+				if (this._isClickable && (event.equals(KeyCode.Enter) || !event.equals(KeyCode.Space))) {
 					this._onLinkClick.fire({
 						index: i,
 						link: link
@@ -171,38 +195,24 @@ export class InfoBox extends Disposable implements IThemable {
 						this.openLink(link.url);
 					}
 					e.stopPropagation();
-				}));
-
-				this._linkListenersDisposableStore.add(DOM.addDisposableListener(linkElement, DOM.EventType.KEY_PRESS, e => {
-					const event = new StandardKeyboardEvent(e);
-					if (this._isClickable && (event.equals(KeyCode.Enter) || !event.equals(KeyCode.Space))) {
-						this._onLinkClick.fire({
-							index: i,
-							link: link
-						});
-						if (link.url) {
-							this.openLink(link.url);
-						}
-						e.stopPropagation();
-					}
-				}));
-				this._textElement.appendChild(linkElement);
-				text = text.slice(placeholderIndex + 3);
-			}
-
-			if (text) {
-				const span = DOM.$('span');
-				span.innerText = text;
-				this._textElement.appendChild(span);
-			}
-
-			if (this.announceText) {
-				if (this.infoBoxStyle === 'warning' || this.infoBoxStyle === 'error') {
-					alert(text);
 				}
-				else {
-					status(text);
-				}
+			}));
+			this._textElement.appendChild(linkElement);
+			text = text.slice(placeholderIndex + 3);
+		}
+
+		if (text) {
+			const span = DOM.$('span');
+			span.innerText = text;
+			this._textElement.appendChild(span);
+		}
+
+		if (this.announceText) {
+			if (this.infoBoxStyle === 'warning' || this.infoBoxStyle === 'error') {
+				alert(text);
+			}
+			else {
+				status(text);
 			}
 		}
 	}
