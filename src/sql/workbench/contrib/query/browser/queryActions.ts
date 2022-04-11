@@ -289,7 +289,10 @@ export class CancelQueryAction extends QueryTaskbarAction {
 	}
 }
 
-export class QueryPlanTelemetry {
+/**
+ * Telemetry helper class for query plan related actions.
+ */
+export class QueryPlanTelemetryHelper {
 	constructor(
 		@IConnectionManagementService private connectionService: IConnectionManagementService,
 		@IAdsTelemetryService private adsTelemetryService: IAdsTelemetryService
@@ -318,7 +321,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 	public static EnabledClass = 'estimatedQueryPlan';
 	public static ID = 'estimatedQueryPlanAction';
 
-	private queryPlanTelemetry: QueryPlanTelemetry;
+	private queryPlanTelemetry: QueryPlanTelemetryHelper;
 
 	constructor(
 		editor: QueryEditor,
@@ -327,7 +330,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 	) {
 		super(connectionManagementService, editor, EstimatedQueryPlanAction.ID, EstimatedQueryPlanAction.EnabledClass);
 		this.label = nls.localize('estimatedQueryPlan', "Explain");
-		this.queryPlanTelemetry = this.instantiationService.createInstance(QueryPlanTelemetry);
+		this.queryPlanTelemetry = this.instantiationService.createInstance(QueryPlanTelemetryHelper);
 	}
 
 	public override async run(): Promise<void> {
