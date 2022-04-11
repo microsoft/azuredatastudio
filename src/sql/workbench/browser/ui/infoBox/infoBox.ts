@@ -58,7 +58,7 @@ export class InfoBox extends Disposable implements IThemable {
 
 	constructor(
 		container: HTMLElement,
-		options: InfoBoxOptions,
+		options: InfoBoxOptions | undefined,
 		@IOpenerService private _openerService: IOpenerService,
 		@ILogService private _logService: ILogService
 	) {
