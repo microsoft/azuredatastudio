@@ -73,6 +73,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	private readonly _name: string;
 	private readonly _info: azdata.nb.IInfoReply;
 	private readonly _kernelSpec: azdata.nb.IKernelSpec;
+	private _activeRequest: azdata.nb.IExecuteRequest;
 
 	constructor(private readonly _controller: ADSNotebookController, private readonly _options: azdata.nb.ISessionOptions) {
 		this._id = this._options.kernelId ?? (VSCodeKernel.kernelId++).toString();
@@ -138,16 +139,15 @@ class VSCodeKernel implements azdata.nb.IKernel {
 		return Promise.resolve(this.spec);
 	}
 
-	private activeRequest: azdata.nb.IExecuteRequest;
 	private cleanUpActiveExecution(cellUri: string) {
-		this.activeRequest = undefined;
+		this._activeRequest = undefined;
 		this._controller.removeCellExecution(cellUri);
 	}
 
 	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
 		let executePromise: Promise<void>;
 		if (this._controller.executeHandler) {
-			this.activeRequest = content;
+			this._activeRequest = content;
 			let cell = convertToVSCodeNotebookCell(CellTypes.Code, content.cellIndex, URI.parse(content.cellUri), URI.parse(content.notebookUri), content.language ?? this._kernelSpec.language, content.code);
 			executePromise = Promise.resolve(this._controller.executeHandler([cell], cell.notebook, this._controller)).then(() => this.cleanUpActiveExecution(content.cellUri));
 		} else {
@@ -163,15 +163,15 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	}
 
 	public async interrupt(): Promise<void> {
-		if (this.activeRequest) {
+		if (this._activeRequest) {
 			if (this._controller.interruptHandler) {
-				let doc = this._controller.getNotebookDocument(this.activeRequest.notebookUri);
+				let doc = this._controller.getNotebookDocument(this._activeRequest.notebookUri);
 				await this._controller.interruptHandler.call(this._controller, new VSCodeNotebookDocument(doc));
 			} else {
-				let exec = this._controller.getCellExecution(this.activeRequest.cellUri);
+				let exec = this._controller.getCellExecution(this._activeRequest.cellUri);
 				exec?.tokenSource.cancel();
 			}
-			this.cleanUpActiveExecution(this.activeRequest.cellUri);
+			this.cleanUpActiveExecution(this._activeRequest.cellUri);
 		}
 	}
 
