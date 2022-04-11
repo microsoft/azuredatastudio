@@ -1031,3 +1031,11 @@ export namespace designers {
 		GraphNode = 'GraphNode'
 	}
 }
+
+export namespace executionPlan {
+	export enum BadgeType {
+		Warning = 0,
+		CriticalWarning = 1,
+		Parallelism = 2
+	}
+}
