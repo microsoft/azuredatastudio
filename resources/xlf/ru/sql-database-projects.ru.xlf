@@ -178,6 +178,10 @@
         <source xml:lang="en">Containers already exist for this project. Do you want to delete them before deploying a new one?</source>
         <target state="translated">Контейнеры для этого проекта уже существуют. Вы хотите удалить их перед развертыванием нового?</target>
       </trans-unit>
+      <trans-unit id="convertToSdkStyleConfirmation">
+        <source xml:lang="en">The project '{0}' will not be fully compatible with SSDT after conversion. A backup copy of the project file will be created in the project folder prior to conversion. More information is available at https://aka.ms/sqlprojsdk. Continue with converting to SDK-style project?</source>
+        <target state="new">The project '{0}' will not be fully compatible with SSDT after conversion. A backup copy of the project file will be created in the project folder prior to conversion. More information is available at https://aka.ms/sqlprojsdk. Continue with converting to SDK-style project?</target>
+      </trans-unit>
       <trans-unit id="createNew">
         <source xml:lang="en">Create New</source>
         <target state="translated">Создать</target>

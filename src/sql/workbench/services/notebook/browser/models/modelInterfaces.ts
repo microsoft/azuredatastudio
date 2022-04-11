@@ -499,6 +499,7 @@ export interface ITableUpdatedEvent {
 export interface ICellModel {
 	cellUri: URI;
 	id: string;
+	cellLabel: string;
 	readonly language: string;
 	readonly displayLanguage: string;
 	readonly cellGuid: string;

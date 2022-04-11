@@ -53,6 +53,7 @@
 			"connectionFailedError": "連線失敗。錯誤: '{0}'",
 			"connectionRadioButtonLabel": "連線",
 			"containerAlreadyExistForProject": "此專案的容器已存在。您要先刪除這些檔案再部署新的嗎?",
+			"convertToSdkStyleConfirmation": "The project '{0}' will not be fully compatible with SSDT after conversion. A backup copy of the project file will be created in the project folder prior to conversion. More information is available at https://aka.ms/sqlprojsdk. Continue with converting to SDK-style project?",
 			"createNew": "新建立",
 			"createProjectDialogOkButtonText": "建立",
 			"createProjectFromDatabaseDialogName": "從資料庫建立專案",
