@@ -105,7 +105,7 @@ describe('Add SQL Binding quick pick', () => {
 		// give object name
 		let inputBoxStub = sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves('dbo.table1');
 
-		// select connection profile
+		// select connection string setting name
 		quickpickStub.onThirdCall().resolves({ label: constants.createNewLocalAppSettingWithIcon });
 
 		// give connection string setting name
@@ -117,8 +117,8 @@ describe('Add SQL Binding quick pick', () => {
 		await launchAddSqlBindingQuickpick(vscode.Uri.file('testUri'));
 
 		// should go back to the select connection string methods
-		should(quickpickStub.callCount === 5);
-		should(quickpickStub.getCall(4).args).deepEqual([
+		should(quickpickStub.callCount === 4);
+		should(quickpickStub.getCall(3).args).deepEqual([
 			[constants.connectionProfile, constants.userConnectionString],
 			{
 				canPickMany: false,
