@@ -292,7 +292,7 @@ export class CancelQueryAction extends QueryTaskbarAction {
 /**
  * Telemetry helper class for query plan related actions.
  */
-export class QueryPlanTelemetryHelper {
+export class ExecutionPlanTelemetryHelper {
 	constructor(
 		@IConnectionManagementService private connectionService: IConnectionManagementService,
 		@IAdsTelemetryService private adsTelemetryService: IAdsTelemetryService,
@@ -327,7 +327,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 	public static EnabledClass = 'estimatedQueryPlan';
 	public static ID = 'estimatedQueryPlanAction';
 
-	private queryPlanTelemetry: QueryPlanTelemetryHelper;
+	private executionPlanTelemetry: ExecutionPlanTelemetryHelper;
 
 	constructor(
 		editor: QueryEditor,
@@ -336,12 +336,12 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 	) {
 		super(connectionManagementService, editor, EstimatedQueryPlanAction.ID, EstimatedQueryPlanAction.EnabledClass);
 		this.label = nls.localize('estimatedQueryPlan', "Explain");
-		this.queryPlanTelemetry = this.instantiationService.createInstance(QueryPlanTelemetryHelper);
+		this.executionPlanTelemetry = this.instantiationService.createInstance(ExecutionPlanTelemetryHelper);
 	}
 
 	public override async run(): Promise<void> {
 		let planOptions = { displayEstimatedQueryPlan: true } as ExecutionPlanOptions;
-		this.queryPlanTelemetry.addTelemetry(TelemetryKeys.TelemetryAction.ViewExecutionPlan, this.editor.input.uri, planOptions);
+		this.executionPlanTelemetry.addTelemetry(TelemetryKeys.TelemetryAction.ViewExecutionPlan, this.editor.input.uri, planOptions);
 
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {

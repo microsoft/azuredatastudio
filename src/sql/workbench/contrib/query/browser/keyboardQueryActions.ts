@@ -25,7 +25,7 @@ import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorI
 import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { QueryPlanTelemetryHelper } from 'sql/workbench/contrib/query/browser/queryActions';
+import { ExecutionPlanTelemetryHelper } from 'sql/workbench/contrib/query/browser/queryActions';
 
 const singleQuote = '\'';
 
@@ -213,7 +213,7 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 	public static ID = 'runCurrentQueryWithActualPlanKeyboardAction';
 	public static LABEL = nls.localize('runCurrentQueryWithActualPlanKeyboardAction', "Run Current Query with Actual Plan");
 
-	private queryPlanTelemetry: QueryPlanTelemetryHelper;
+	private executionPlanTelemetry: ExecutionPlanTelemetryHelper;
 
 	constructor(
 		id: string,
@@ -223,14 +223,14 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 	) {
 		super(id, label);
 		this.enabled = true;
-		this.queryPlanTelemetry = instantiationService.createInstance(QueryPlanTelemetryHelper);
+		this.executionPlanTelemetry = instantiationService.createInstance(ExecutionPlanTelemetryHelper);
 	}
 
 	public override run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			let planOptions = { displayActualQueryPlan: true } as ExecutionPlanOptions;
-			this.queryPlanTelemetry.addTelemetry(TelemetryKeys.TelemetryAction.ViewExecutionPlan, editor.input.uri, planOptions);
+			this.executionPlanTelemetry.addTelemetry(TelemetryKeys.TelemetryAction.ViewExecutionPlan, editor.input.uri, planOptions);
 			editor.runCurrentQueryWithActualPlan();
 		}
 		return Promise.resolve(null);
