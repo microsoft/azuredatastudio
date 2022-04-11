@@ -32,7 +32,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		if (!azureFunctionApi) {
 			propertyBag.exitReason = exitReason;
 			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
-				// .withConnectionInfo(node?.connectionInfo)
 				.withAdditionalProperties(propertyBag).send();
 			return;
 		}
@@ -183,7 +182,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		let templateId: string = selectedBindingType === BindingType.input ? constants.inputTemplateID : constants.outputTemplateID;
 
 		// We need to set the azureWebJobsStorage to a placeholder
-		// to suppress the warning for opening the wizard
+		// to suppress the warning for opening the wizard - but will ask them to overwrite if they are creating new azureFunction
 		// issue https://github.com/microsoft/azuredatastudio/issues/18780
 		telemetryStep = 'setAzureWebJobsStorage';
 		await azureFunctionsUtils.setLocalAppSetting(projectFolder, constants.azureWebJobsStorageSetting, constants.azureWebJobsStoragePlaceholder);
@@ -207,9 +206,26 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				...(selectedBindingType === BindingType.input && { object: objectName }),
 				...(selectedBindingType === BindingType.output && { table: objectName })
 			},
-			folderPath: projectFolder
+			folderPath: projectFolder,
+			suppressCreateProjectPrompt: true
 		});
 
+		if (isCreateNewProject) {
+			// for a new azure function project we need to get the newly create Azure Function project path so that we can set the connection string in local.settings.json that was created after the createFunction API call
+			projectFile = await azureFunctionsUtils.getAzureFunctionProject();
+			if (!projectFile) {
+				return;
+			}
+			let settingsFile = await azureFunctionsUtils.getSettingsFile(projectFile);
+			if (!settingsFile) {
+				return;
+			}
+			let connectionString = await azureFunctionsUtils.promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo, settingsFile);
+			if (!connectionString) {
+				return;
+			}
+			void azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFile, connectionStringSettingName);
+		}
 		// check for the new function file to be created and dispose of the file system watcher
 		const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
 		await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
@@ -219,15 +235,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			.withAdditionalProperties(propertyBag)
 			.withConnectionInfo(connectionInfo).send();
 
-		if (isCreateNewProject) {
-			// for a new azure function project we need to get the newly create Azure Function project path so that we can set the connection string in local.settings.json that was created after the createFunction API call
-			projectFile = await azureFunctionsUtils.getAzureFunctionProject();
-			if (!projectFile) {
-				return;
-			}
-			let newConnectionString = await azureFunctionsUtils.promptConnectionStringPassword(connectionString, connectionInfo);
-			void azureFunctionsUtils.addConnectionStringToConfig(newConnectionString, projectFile, connectionStringSettingName);
-		}
 	} catch (error) {
 		let errorType = utils.getErrorType(error);
 		propertyBag.telemetryStep = telemetryStep;
