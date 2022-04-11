@@ -593,6 +593,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				}
 			};
 
+			const executionPlan: typeof azdata.executionPlan = {
+				BadgeType: sqlExtHostTypes.executionPlan.BadgeType
+			};
+
 			return {
 				version: initData.version,
 				accounts,
@@ -644,7 +648,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TabOrientation: sqlExtHostTypes.TabOrientation,
 				sqlAssessment,
 				TextType: sqlExtHostTypes.TextType,
-				designers: designers
+				designers: designers,
+				executionPlan: executionPlan
 			};
 		},
 		extHostNotebook: extHostNotebook,
