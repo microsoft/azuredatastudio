@@ -298,6 +298,24 @@ export function MI_NOT_READY_ERROR(miName: string, state: string): string {
 	return localize('sql.migration.mi.not.ready', "The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.", miName, state);
 }
 
+export const SIGN_IN_TO_AZURE = localize('sql.migration.select.service.sign.in', "SIgn in to Azure...");
+export const SELECT_AZURE_ACCOUNT_FOR_SUBSCRIPTIONS = localize('sql.migration.select.service.select.account', "Select an account with one or more subscriptions.");
+export const SELECT_SUBSCRIPTION_FOR_LOCATIONS = localize('sql.migration.select.service.select.subscription', "Select a subscription with one or more locations.");
+export const SELECT_LOCATION_FOR_RESOURCEGROUPS = localize('sql.migration.select.service.select.resourcegroup', "Select a location with one or more resource groups.");
+export const SELECT_RESOURCE_GROUP_FOR_SERVICES = localize('sql.migration.select.service.select.service', "Select a resource group with one or more database migration services.");
+export const SELECT_AN_ACCOUNT = localize('sql.migration.select.service.select.a.', "Select an account");
+export const SELECT_A_TENANT = localize('sql.migration.select.service.select.a.tenant', "Select a tenant");
+export const SELECT_A_SUBSCRIPTION = localize('sql.migration.select.service.select.a.subscription', "Select a subscription");
+export const SELECT_A_LOCATION = localize('sql.migration.select.service.select.a.location', "Select a location");
+export const SELECT_A_RESOURCE_GROUP = localize('sql.migration.select.service.select.a.resource.group', "Select a resource group");
+export const SELECT_A_SERVICE = localize('sql.migration.select.service.select.a.service', "Selectc a database migration service");
+export const SELECT_ACCOUNT_ERROR = localize('sql.migration.select.service.select.account.error', "An error occurred while loading available Azure accounts.");
+export const SELECT_TENANT_ERROR = localize('sql.migration.select.service.select.tenant.error', "An error occurred while loading available Azure account tenants.");
+export const SELECT_SUBSCRIPTION_ERROR = localize('sql.migration.select.service.select.subscription.error', "An error occurred while loading account subscriptions. Please check your Azure connection and try again.");
+export const SELECT_LOCATION_ERROR = localize('sql.migration.select.service.select.location.error', "An error occurred while loading locations. Please check your Azure connection and try again.");
+export const SELECT_RESOURCE_GROUP_ERROR = localize('sql.migration.select.service.select.resource.group.error', "An error occurred while loading available resource groups. Please check your Azure connection and try again.");
+export const SELECT_SERVICE_ERROR = localize('sql.migration.select.service.select.service.error', "An error occurred while loading available database migration servers. Please check your Azure connection and try again.");
+
 // database backup page
 export const DATABASE_BACKUP_PAGE_TITLE = localize('sql.migration.database.page.title', "Database backup");
 export const DATABASE_BACKUP_PAGE_DESCRIPTION = localize('sql.migration.database.page.description', "Select the location of the database backups to use during migration.");
@@ -494,7 +512,7 @@ export const NOTEBOOK_OPEN_ERROR = localize('sql.migration.notebook.open.error',
 
 // Dashboard
 export function DASHBOARD_REFRESH_MIGRATIONS(error: string): string {
-	return localize('sql.migration.refresh.migrations.error', "An error occurred while refreshing the migrations list: '{0}'", error);
+	return localize('sql.migration.refresh.migrations.error', "An error occurred while refreshing the migrations list: '{0}'.  Please check your linked azure connection and click refresh try again.", error);
 }
 export const DASHBOARD_TITLE = localize('sql.migration.dashboard.title', "Azure SQL Migration");
 export const DASHBOARD_DESCRIPTION = localize('sql.migration.dashboard.description', "Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance or SQL Server on Azure Virtual Machines.");

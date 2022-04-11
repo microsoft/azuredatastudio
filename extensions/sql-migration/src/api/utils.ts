@@ -140,34 +140,35 @@ export function convertIsoTimeToLocalTime(isoTime: string): Date {
 }
 
 export function selectDefaultDropdownValue(dropDown: DropDownComponent, value?: string, useDisplayName: boolean = true): void {
-	const selectedIndex = value ? findDropDownItemIndex(dropDown, value, useDisplayName) : -1;
-	if (selectedIndex > -1) {
-		selectDropDownIndex(dropDown, selectedIndex);
-	} else {
-		selectDropDownIndex(dropDown, 0);
+	if (dropDown.values && dropDown.values.length > 0) {
+		const selectedIndex = value ? findDropDownItemIndex(dropDown, value, useDisplayName) : -1;
+		if (selectedIndex > -1) {
+			selectDropDownIndex(dropDown, selectedIndex);
+		} else {
+			selectDropDownIndex(dropDown, 0);
+		}
 	}
 }
 
 export function selectDropDownIndex(dropDown: DropDownComponent, index: number): void {
-	if (index >= 0 && dropDown.values && index <= dropDown.values.length - 1) {
-		dropDown.value = dropDown.values[index];
-	} else if (dropDown.values?.length === 0) {
-		dropDown.value = undefined;
+	if (dropDown.values && dropDown.values.length > 0) {
+		if (index >= 0 && index <= dropDown.values.length - 1) {
+			dropDown.value = dropDown.values[index] as CategoryValue;
+			return;
+		}
 	}
+	dropDown.value = undefined;
 }
 
 export function findDropDownItemIndex(dropDown: DropDownComponent, value: string, useDisplayName: boolean = true): number {
-	if (dropDown.values && value) {
+	if (value && dropDown.values && dropDown.values.length > 0) {
 		const searachValue = value?.toLowerCase();
-		if (useDisplayName) {
-			return dropDown.values.findIndex((v: any) =>
-				(v as CategoryValue)?.displayName?.toLowerCase() === searachValue);
-		} else {
-			return dropDown.values.findIndex((v: any) =>
+		return useDisplayName
+			? dropDown.values.findIndex((v: any) =>
+				(v as CategoryValue)?.displayName?.toLowerCase() === searachValue)
+			: dropDown.values.findIndex((v: any) =>
 				(v as CategoryValue)?.name?.toLowerCase() === searachValue);
-		}
 	}
-
 	return -1;
 }
 
