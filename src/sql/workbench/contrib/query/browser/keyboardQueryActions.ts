@@ -230,7 +230,7 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			let planOptions = { displayActualQueryPlan: true } as ExecutionPlanOptions;
-			this.queryPlanTelemetry.addTelemetry(TelemetryKeys.TelemetryAction.ActualQueryExecutionPlan, editor.input.uri, planOptions);
+			this.queryPlanTelemetry.addTelemetry(TelemetryKeys.TelemetryAction.QueryExecutionPlan, editor.input.uri, planOptions);
 			editor.runCurrentQueryWithActualPlan();
 		}
 		return Promise.resolve(null);

@@ -53,7 +53,6 @@ export const enum TelemetryError {
 }
 
 export const enum TelemetryAction {
-	ActualQueryExecutionPlan = 'ActualQueryExecutionPlan',
 	AddServerGroup = 'AddServerGroup',
 	adsCommandExecuted = 'adsCommandExecuted',
 	ConnectToServer = 'ConnectToServer',
@@ -68,7 +67,6 @@ export const enum TelemetryAction {
 	DeleteAgentProxy = 'DeleteAgentProxy',
 	DeleteConnection = 'DeleteConnection',
 	DeleteServerGroup = 'DeleteServerGroup',
-	EstimatedQueryExecutionPlan = 'EstimatedQueryExecutionPlan',
 	CancelQuery = 'CancelQuery',
 	ChartCreated = 'ChartCreated',
 	Click = 'Click',
@@ -86,6 +84,7 @@ export const enum TelemetryAction {
 	ObjectExplorerExpand = 'ObjectExplorerExpand',
 	Open = 'Open',
 	PublishChanges = 'PublishChanges',
+	QueryExecutionPlan = 'QueryExecutionPlan',
 	RestoreRequested = 'RestoreRequested',
 	RunAgentJob = 'RunAgentJob',
 	RunQuery = 'RunQuery',

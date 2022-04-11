@@ -305,8 +305,8 @@ export class QueryPlanTelemetryHelper {
 		};
 		if (runOptions) {
 			Object.assign(data, {
-				displayEstimatedQueryPlan: runOptions.displayEstimatedQueryPlan,
-				displayActualQueryPlan: runOptions.displayActualQueryPlan
+				displayEstimatedQueryPlan: runOptions.displayEstimatedQueryPlan ?? false,
+				displayActualQueryPlan: runOptions.displayActualQueryPlan ?? false
 			});
 		}
 		this.adsTelemetryService.createActionEvent(TelemetryKeys.TelemetryView.QueryEditor, eventName).withAdditionalProperties(data).send();
@@ -335,7 +335,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		let planOptions = { displayEstimatedQueryPlan: true } as ExecutionPlanOptions;
-		this.queryPlanTelemetry.addTelemetry(TelemetryKeys.TelemetryAction.EstimatedQueryExecutionPlan, this.editor.input.uri, planOptions);
+		this.queryPlanTelemetry.addTelemetry(TelemetryKeys.TelemetryAction.QueryExecutionPlan, this.editor.input.uri, planOptions);
 
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
