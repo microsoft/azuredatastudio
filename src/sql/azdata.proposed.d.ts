@@ -1276,7 +1276,7 @@ declare module 'azdata' {
 			 */
 			type: BadgeType;
 			/**
-			 * Text to display for the overlay tooltip
+			 *  Warning/parallelism badges applicable to the current node
 			 */
 			tooltip: string;
 		}
