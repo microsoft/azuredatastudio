@@ -22,7 +22,7 @@ type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };
 type ExecutionHandler = (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>;
 type LanguagesHandler = (languages: string[]) => void;
 type InterruptHandler = (notebook: vscode.NotebookDocument) => void | Promise<void>;
-type GetDocHandler = (notebookUri: URI) => azdata.nb.NotebookDocument;
+type GetDocHandler = (notebookUri: string) => azdata.nb.NotebookDocument;
 
 /**
  * A VS Code Notebook Controller that is used as part of converting VS Code notebook extension APIs into ADS equivalents.
@@ -146,16 +146,16 @@ export class ADSNotebookController implements vscode.NotebookController {
 	}
 
 	private readonly _execMap: Map<string, ADSNotebookCellExecution> = new Map();
-	public getCellExecution(cellUri: URI): ADSNotebookCellExecution | undefined {
-		return this._execMap.get(cellUri.toString());
+	public getCellExecution(cellUri: string): ADSNotebookCellExecution | undefined {
+		return this._execMap.get(cellUri);
 	}
 
-	public getNotebookDocument(notebookUri: URI): azdata.nb.NotebookDocument {
+	public getNotebookDocument(notebookUri: string): azdata.nb.NotebookDocument {
 		return this._getDocHandler(notebookUri);
 	}
 
-	public removeCellExecution(cellUri: URI): void {
-		this._execMap.delete(cellUri.toString());
+	public removeCellExecution(cellUri: string): void {
+		this._execMap.delete(cellUri);
 	}
 
 	public createNotebookCellExecution(cell: vscode.NotebookCell): vscode.NotebookCellExecution {

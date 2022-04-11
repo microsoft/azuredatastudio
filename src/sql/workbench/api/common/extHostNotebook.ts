@@ -264,7 +264,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		id: string,
 		viewType: string,
 		label: string,
-		getDocHandler: (notebookUri: URI) => azdata.nb.NotebookDocument,
+		getDocHandler: (notebookUri: string) => azdata.nb.NotebookDocument,
 		execHandler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>,
 		rendererScripts?: vscode.NotebookRendererScript[]
 	): vscode.NotebookController {

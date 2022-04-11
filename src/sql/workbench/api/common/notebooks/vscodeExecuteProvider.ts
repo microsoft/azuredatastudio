@@ -9,8 +9,8 @@ import { ADSNotebookController } from 'sql/workbench/api/common/notebooks/adsNot
 import * as nls from 'vs/nls';
 import { convertToVSCodeNotebookCell } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
-import { URI } from 'vs/base/common/uri';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
+import { URI } from 'vs/base/common/uri';
 
 class VSCodeFuture implements azdata.nb.IFuture {
 	private _inProgress = true;
@@ -139,7 +139,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	}
 
 	private activeRequest: azdata.nb.IExecuteRequest;
-	private cleanUpActiveExecution(cellUri: URI) {
+	private cleanUpActiveExecution(cellUri: string) {
 		this.activeRequest = undefined;
 		this._controller.removeCellExecution(cellUri);
 	}
@@ -148,7 +148,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 		let executePromise: Promise<void>;
 		if (this._controller.executeHandler) {
 			this.activeRequest = content;
-			let cell = convertToVSCodeNotebookCell(CellTypes.Code, content.cellIndex, content.cellUri, content.notebookUri, content.language ?? this._kernelSpec.language, content.code);
+			let cell = convertToVSCodeNotebookCell(CellTypes.Code, content.cellIndex, URI.parse(content.cellUri), URI.parse(content.notebookUri), content.language ?? this._kernelSpec.language, content.code);
 			executePromise = Promise.resolve(this._controller.executeHandler([cell], cell.notebook, this._controller)).then(() => this.cleanUpActiveExecution(content.cellUri));
 		} else {
 			executePromise = Promise.resolve();
