@@ -250,11 +250,11 @@ export let executionPlanNodeIconPaths =
 };
 
 export const badgeIconPaths = {
-	warning: imageBasePath + 'overlay_warning.svg',
+	warning: imageBasePath + 'badge_warning.svg',
 
-	parallelism: imageBasePath + 'overlay_parallelism.svg',
+	parallelism: imageBasePath + 'badge_parallelism.svg',
 
-	criticalWarning: imageBasePath + 'overlay_critical_warning.svg'
+	criticalWarning: imageBasePath + 'badge_critical_warning.svg'
 };
 
 const parentContainer = 'qps-container';
