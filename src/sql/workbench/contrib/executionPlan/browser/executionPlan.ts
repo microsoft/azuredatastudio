@@ -61,7 +61,7 @@ export interface InternalExecutionPlanEdge extends azdata.executionPlan.Executio
 
 export enum BadgeType {
 	WARNING = 0,
-	CRITICALWARNING = 1,
+	CRITICAL_WARNING = 1,
 	PARALLELISM = 2
 }
 
@@ -394,7 +394,7 @@ export class ExecutionPlan implements ISashLayoutProvider {
 					type: 'warning',
 					tooltip: ''
 				};
-			case BadgeType.CRITICALWARNING:
+			case BadgeType.CRITICAL_WARNING:
 				return {
 					type: 'criticalWarning',
 					tooltip: ''

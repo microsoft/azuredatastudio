@@ -1035,7 +1035,7 @@ export namespace designers {
 export namespace executionPlan {
 	export enum BadgeType {
 		WARNING = 0,
-		CRITICALWARNING = 1,
+		CRITICAL_WARNING = 1,
 		PARALLELISM = 2
 	}
 }

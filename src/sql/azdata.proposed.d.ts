@@ -1283,7 +1283,7 @@ declare module 'azdata' {
 
 		export enum BadgeType {
 			WARNING = 0,
-			CRITICALWARNING = 1,
+			CRITICAL_WARNING = 1,
 			PARALLELISM = 2
 		}
 
