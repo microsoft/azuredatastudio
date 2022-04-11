@@ -1265,7 +1265,7 @@ declare module 'azdata' {
 			 */
 			edges: ExecutionPlanEdge[];
 			/**
-			 * Add badge icon to nodes like warnings and parallelism
+			 * Warning/parallelism badges applicable to the current node
 			 */
 			badges: ExecutionPlanBadge[];
 		}
@@ -1276,7 +1276,7 @@ declare module 'azdata' {
 			 */
 			type: BadgeType;
 			/**
-			 *  Warning/parallelism badges applicable to the current node
+			 * Text to display for the overlay tooltip
 			 */
 			tooltip: string;
 		}
