@@ -23,8 +23,9 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 	let telemetryStep: string = '';
 	let exitReason: string = 'cancelled';
 	TelemetryReporter.sendActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding);
-	// const newFunctionFileObject = azureFunctionsUtils.waitForNewFunctionFile(projectFile);
 	let connectionInfo: IConnectionInfo | undefined;
+	let isCreateNewProject: boolean = false;
+	let newFunctionFileObject: azureFunctionsUtils.IFileFunctionObject;
 
 	try {
 		const azureFunctionApi = await azureFunctionsUtils.getAzureFunctionsExtensionApi();
@@ -42,21 +43,44 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		 * If none found in workspace we show error message but continue with createFunction message
 		 */
 		let projectFile = await azureFunctionsUtils.getAzureFunctionProject();
-
+		let projectFolder: string;
 		if (!projectFile) {
-			// show warning message that user needs an azure function project to create a function
-			let projectCreate = await vscode.window.showErrorMessage(constants.azureFunctionsProjectMustBeOpened, constants.learnMore);
-			if (projectCreate === constants.learnMore) {
-				telemetryStep = 'learnMore';
-				void vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(constants.sqlBindingsDoc));
-				TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.learnMore)
-					// .withConnectionInfo(connectionInfo)
-					.withAdditionalProperties(propertyBag).send();
-				return;
+			while (true) {
+				// show warning message that user needs an azure function project to create a function
+				let projectCreate = await vscode.window.showErrorMessage(constants.azureFunctionsProjectMustBeOpened,
+					constants.createProject, constants.learnMore);
+				if (projectCreate === constants.learnMore) {
+					telemetryStep = 'learnMore';
+					void vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(constants.sqlBindingsDoc));
+					TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.learnMore)
+						.withAdditionalProperties(propertyBag).send();
+					return;
+				} else if (projectCreate === constants.createProject) {
+					telemetryStep = 'helpCreateAzureFunctionProject';
+					TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.helpCreateAzureFunctionProject)
+						.withAdditionalProperties(propertyBag).send();
+
+					isCreateNewProject = true;
+					// set projectFile to empty string so we know that the user is creating a new azure function project
+					projectFile = '';
+					let workspaceFolder = vscode.workspace.rootPath;
+					if (!workspaceFolder) {
+						// user does not have a workspace open and therefore will have to pick a folder to create the project in
+						void vscode.window.showErrorMessage(constants.workspaceMustBeUsed);
+					} else {
+						projectFolder = workspaceFolder;
+						break;
+					}
+				} else {
+					return;
+				}
 			}
-			// set projectFile to empty string so we know that the user is creating a new azure function project
-			projectFile = '';
+		} else {
+			projectFolder = path.dirname(projectFile);
 		}
+		// create a system file watcher for the project folder
+		newFunctionFileObject = azureFunctionsUtils.waitForNewFunctionFile(projectFolder);
+
 
 		// Prompt user for binding type
 		telemetryStep = 'getBindingType';
@@ -140,7 +164,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		let functionName: string;
 		// remove special characters from function name
 		let uniqueObjectName = utils.santizeObjectName(objectName);
-		let uniqueFunctionName = await utils.getUniqueFileName(uniqueObjectName, path.dirname(projectFile));
+		let uniqueFunctionName = await utils.getUniqueFileName(uniqueObjectName, projectFolder);
 		functionName = await vscode.window.showInputBox({
 			title: constants.functionNameTitle,
 			value: uniqueFunctionName,
@@ -162,16 +186,20 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		// to suppress the warning for opening the wizard
 		// issue https://github.com/microsoft/azuredatastudio/issues/18780
 		telemetryStep = 'setAzureWebJobsStorage';
-		await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectFile), constants.azureWebJobsStorageSetting, constants.azureWebJobsStoragePlaceholder);
+		await azureFunctionsUtils.setLocalAppSetting(projectFolder, constants.azureWebJobsStorageSetting, constants.azureWebJobsStoragePlaceholder);
 
 		// prompt for Connection String Setting Name
-		telemetryStep = 'getConnectionStringSettingName';
-		const connectionStringSettingName = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(vscode.Uri.file(projectFile), connectionString);
+		let connectionStringSettingName: string | undefined = constants.sqlConnectionStringSetting;
+		if (!isCreateNewProject) {
+			telemetryStep = 'getConnectionStringSettingName';
+			connectionStringSettingName = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(vscode.Uri.parse(projectFile), connectionString, connectionInfo);
+		}
 
 		// create C# Azure Function with SQL Binding
 		telemetryStep = 'createFunctionAPI';
 		await azureFunctionApi.createFunction({
 			language: 'C#',
+			targetFramework: 'netcoreapp3.1',
 			templateId: templateId,
 			functionName: functionName,
 			functionSettings: {
@@ -179,22 +207,30 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				...(selectedBindingType === BindingType.input && { object: objectName }),
 				...(selectedBindingType === BindingType.output && { table: objectName })
 			},
-			folderPath: projectFile
+			folderPath: projectFolder
 		});
 
 		// check for the new function file to be created and dispose of the file system watcher
-		// const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
-		// await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
+		const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
+		await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
 		propertyBag.telemetryStep = telemetryStep;
 		exitReason = 'finishCreate';
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.finishCreateAzureFunctionWithSqlBinding)
 			.withAdditionalProperties(propertyBag)
 			.withConnectionInfo(connectionInfo).send();
-		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFile, connectionStringSettingName);
+
+		if (isCreateNewProject) {
+			// for a new azure function project we need to get the newly create Azure Function project path so that we can set the connection string in local.settings.json that was created after the createFunction API call
+			projectFile = await azureFunctionsUtils.getAzureFunctionProject();
+			if (!projectFile) {
+				return;
+			}
+			let newConnectionString = await azureFunctionsUtils.promptConnectionStringPassword(connectionString, connectionInfo);
+			void azureFunctionsUtils.addConnectionStringToConfig(newConnectionString, projectFile, connectionStringSettingName);
+		}
 	} catch (error) {
 		let errorType = utils.getErrorType(error);
 		propertyBag.telemetryStep = telemetryStep;
-
 		if (errorType === 'TimeoutError') {
 			// this error can be cause by many different scenarios including timeout or error occurred during createFunction
 			exitReason = 'timeout';
@@ -212,7 +248,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		propertyBag.exitReason = exitReason;
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
 			.withAdditionalProperties(propertyBag).send();
-		// newFunctionFileObject.watcherDisposable.dispose();
+		newFunctionFileObject!.watcherDisposable.dispose();
 	}
 }
 
