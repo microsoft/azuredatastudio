@@ -219,18 +219,18 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 		id: string,
 		label: string,
 		@IEditorService private _editorService: IEditorService,
-		@IInstantiationService InstantiationService: IInstantiationService
+		@IInstantiationService instantiationService: IInstantiationService
 	) {
 		super(id, label);
 		this.enabled = true;
-		this.queryPlanTelemetry = InstantiationService.createInstance(QueryPlanTelemetryHelper);
+		this.queryPlanTelemetry = instantiationService.createInstance(QueryPlanTelemetryHelper);
 	}
 
 	public override run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			let planOptions = { displayActualQueryPlan: true } as ExecutionPlanOptions;
-			this.queryPlanTelemetry.addTelemetry(TelemetryKeys.TelemetryAction.QueryExecutionPlan, editor.input.uri, planOptions);
+			this.queryPlanTelemetry.addTelemetry(TelemetryKeys.TelemetryAction.ViewExecutionPlan, editor.input.uri, planOptions);
 			editor.runCurrentQueryWithActualPlan();
 		}
 		return Promise.resolve(null);

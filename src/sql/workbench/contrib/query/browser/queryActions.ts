@@ -295,21 +295,27 @@ export class CancelQueryAction extends QueryTaskbarAction {
 export class QueryPlanTelemetryHelper {
 	constructor(
 		@IConnectionManagementService private connectionService: IConnectionManagementService,
-		@IAdsTelemetryService private adsTelemetryService: IAdsTelemetryService
+		@IAdsTelemetryService private adsTelemetryService: IAdsTelemetryService,
+		@ILogService private readonly logService: ILogService
 	) { }
 
 	public addTelemetry(eventName: string, ownerUri: string, runOptions?: ExecutionPlanOptions): void {
-		const providerId: string = this.connectionService.getProviderIdFromUri(ownerUri);
-		const data: ITelemetryEventProperties = {
-			provider: providerId,
-		};
-		if (runOptions) {
-			Object.assign(data, {
-				displayEstimatedQueryPlan: runOptions.displayEstimatedQueryPlan ?? false,
-				displayActualQueryPlan: runOptions.displayActualQueryPlan ?? false
-			});
+		try {
+			const providerId: string = this.connectionService.getProviderIdFromUri(ownerUri);
+			const data: ITelemetryEventProperties = {
+				provider: providerId,
+			};
+			if (runOptions) {
+				Object.assign(data, {
+					displayEstimatedQueryPlan: runOptions.displayEstimatedQueryPlan ?? false,
+					displayActualQueryPlan: runOptions.displayActualQueryPlan ?? false
+				});
+			}
+			this.adsTelemetryService.createActionEvent(TelemetryKeys.TelemetryView.QueryEditor, eventName).withAdditionalProperties(data).send();
 		}
-		this.adsTelemetryService.createActionEvent(TelemetryKeys.TelemetryView.QueryEditor, eventName).withAdditionalProperties(data).send();
+		catch (err) {
+			this.logService.error('An error was encountered while adding execution plan telemetry.', err);
+		}
 	}
 }
 
@@ -335,7 +341,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		let planOptions = { displayEstimatedQueryPlan: true } as ExecutionPlanOptions;
-		this.queryPlanTelemetry.addTelemetry(TelemetryKeys.TelemetryAction.QueryExecutionPlan, this.editor.input.uri, planOptions);
+		this.queryPlanTelemetry.addTelemetry(TelemetryKeys.TelemetryAction.ViewExecutionPlan, this.editor.input.uri, planOptions);
 
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {

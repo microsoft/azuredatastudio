@@ -84,7 +84,6 @@ export const enum TelemetryAction {
 	ObjectExplorerExpand = 'ObjectExplorerExpand',
 	Open = 'Open',
 	PublishChanges = 'PublishChanges',
-	QueryExecutionPlan = 'QueryExecutionPlan',
 	RestoreRequested = 'RestoreRequested',
 	RunAgentJob = 'RunAgentJob',
 	RunQuery = 'RunQuery',
@@ -94,7 +93,8 @@ export const enum TelemetryAction {
 	StopAgentJob = 'StopAgentJob',
 	WizardPagesNavigation = 'WizardPagesNavigation',
 	SearchStarted = 'SearchStarted',
-	SearchCompleted = 'SearchCompleted'
+	SearchCompleted = 'SearchCompleted',
+	ViewExecutionPlan = 'ViewExecutionPlan'
 }
 
 export const enum NbTelemetryAction {
