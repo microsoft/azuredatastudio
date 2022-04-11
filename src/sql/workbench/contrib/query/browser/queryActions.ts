@@ -341,7 +341,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		let planOptions = { displayEstimatedQueryPlan: true } as ExecutionPlanOptions;
-		this.executionPlanTelemetry.addTelemetry(TelemetryKeys.TelemetryAction.ViewExecutionPlan, this.editor.input.uri, planOptions);
+		this.executionPlanTelemetry.addTelemetry(TelemetryKeys.TelemetryAction.RunQuery, this.editor.input.uri, planOptions);
 
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
