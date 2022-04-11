@@ -22,19 +22,24 @@ export const msdbDacpac = 'msdb.dacpac';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 export const sqlProjectSdk = 'Microsoft.Build.Sql';
+export const sqlProjectSdkVersion = '0.1.3-preview';
 
 // Project Provider
 export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
-export const emptyProjectTypeDisplayName = localize('emptyProjectTypeDisplayName', "SQL Database");
-export const emptyProjectTypeDescription = localize('emptyProjectTypeDescription', "Develop and publish schemas for SQL databases starting from an empty project");
+export const emptyProjectTypeDisplayName = localize('emptyProjectTypeDisplayName', "SQL Server Database");
+export const emptyProjectTypeDescription = localize('emptyProjectTypeDescription', "Develop and publish schemas for SQL Server databases starting from an empty project");
 
 export const edgeSqlDatabaseProjectTypeId = 'SqlDbEdgeProj';
-export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "SQL Edge");
-export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription', "Start with the core pieces to develop and publish schemas for SQL Edge");
+export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "Azure SQL Edge Database");
+export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription', "Start with the core pieces to develop and publish schemas for Azure SQL Edge Database");
 
 export const emptySqlDatabaseSdkProjectTypeId = 'EmptySqlDbSdkProj';
 export const emptySdkProjectTypeDisplayName = localize('emptySdkProjectTypeDisplayName', "SQL Database (SDK)");
 export const emptySdkProjectTypeDescription = localize('emptySdkProjectTypeDescription', "Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.");
+
+export const emptyAzureDbSqlDatabaseProjectTypeId = 'EmptyAzureSqlDbProj';
+export const emptyAzureDbProjectTypeDisplayName = localize('emptyAzureDbProjectTypeDisplayName', "Azure SQL Database");
+export const emptyAzureDbProjectTypeDescription = localize('emptyAzureDbProjectTypeDescription', "Develop and publish schemas for Azure SQL Database starting from an empty project");
 
 // Dashboard
 export const addItemAction = localize('addItemAction', "Add Item");
@@ -93,13 +98,16 @@ export const defaultProjectNameStarter = localize('defaultProjectNameStarter', "
 export const location = localize('location', "Location");
 export const reloadProject = localize('reloadProject', "Would you like to reload your database project?");
 export const learnMore = localize('learnMore', "Learn More");
-export const sdkLearnMoreUrl = 'https://github.com/microsoft/DacFx/tree/main/src/Microsoft.Build.Sql';
+export const sdkLearnMoreUrl = 'https://aka.ms/sqlprojsdk';
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
 export function deleteReferenceConfirmation(toDelete: string) { return localize('deleteReferenceConfirmation', "Are you sure you want to delete the reference to {0}?", toDelete); }
 export function selectTargetPlatform(currentTargetPlatform: string) { return localize('selectTargetPlatform', "Current target platform: {0}. Select new target platform", currentTargetPlatform); }
 export function currentTargetPlatform(projectName: string, currentTargetPlatform: string) { return localize('currentTargetPlatform', "Target platform of the project {0} is now {1}", projectName, currentTargetPlatform); }
+export function projectUpdatedToSdkStyle(projectName: string) { return localize('projectUpdatedToSdkStyle', "The project {0} has been updated to be an SDK-style project. Click 'Learn More' for details on the Microsoft.Build.Sql SDK and ways to simplify the project file.", projectName); }
+export function convertToSdkStyleConfirmation(projectName: string) { return localize('convertToSdkStyleConfirmation', "The project '{0}' will not be fully compatible with SSDT after conversion. A backup copy of the project file will be created in the project folder prior to conversion. More information is available at https://aka.ms/sqlprojsdk. Continue with converting to SDK-style project?", projectName); }
+export function updatedToSdkStyleError(projectName: string) { return localize('updatedToSdkStyleError', "Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.", projectName); }
 
 // Publish dialog strings
 
@@ -139,22 +147,24 @@ export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 
 // Deploy
+export const SqlServerName = 'SQL server';
+export const AzureSqlServerName = 'Azure SQL server';
 export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
-export const publishToExistingServer = localize('publishToExistingServer', "Publish to existing server");
-export const publishToDockerContainer = localize('publishToDockerContainer', "Publish to new server in a container");
-export const enterPortNumber = localize('enterPortNumber', "Enter SQL server port number or press enter to use the default value");
-export const serverPortNumber = localize('serverPortNumber', "SQL server port number");
-export const serverPassword = localize('serverPassword', "SQL Server admin password");
-export const confirmServerPassword = localize('confirmServerPassword', "Confirm SQL Server admin password");
-export const baseDockerImage = localize('baseDockerImage', "Base SQL Server Docker image");
+export function publishToExistingServer(name: string) { return localize('publishToExistingServer', "Publish to an existing {0}", name); }
+export function publishToDockerContainer(name: string) { return localize('publishToDockerContainer', "Publish to new {0} local development container", name); }
+export function enterPortNumber(name: string) { return localize('enterPortNumber', "Enter {0} port number or press enter to use the default value", name); }
+export function serverPortNumber(name: string) { return localize('serverPortNumber', "{0} port number", name); }
+export function serverPassword(name: string) { return localize('serverPassword', "{0} admin password", name); }
+export function confirmServerPassword(name: string) { return localize('confirmServerPassword', "Confirm {0} admin password", name); }
+export function baseDockerImage(name: string) { return localize('baseDockerImage', "Base {0} Docker image", name); }
 export const publishTo = localize('publishTo', "Publish Target");
 export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
 export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
-export const enterPassword = localize('enterPassword', "Enter SQL Server admin password");
-export const confirmPassword = localize('confirmPassword', "Confirm SQL server admin password");
-export const selectBaseImage = localize('selectBaseImage', "Select the base SQL Server docker image");
-export const invalidSQLPasswordMessage = localize('invalidSQLPassword', "SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy");
-export const passwordNotMatch = localize('passwordNotMatch', "SQL Server password doesn't match the confirmation password");
+export function enterPassword(name: string) { return localize('enterPassword', "Enter {0} admin password", name); }
+export function confirmPassword(name: string) { return localize('confirmPassword', "Confirm {0} admin password", name); }
+export function selectBaseImage(name: string) { return localize('selectBaseImage', "Select the base {0} docker image", name); }
+export function invalidSQLPasswordMessage(name: string) { return localize('invalidSQLPassword', "{0} password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy", name); }
+export function passwordNotMatch(name: string) { return localize('passwordNotMatch', "{0} password doesn't match the confirmation password", name); }
 export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be number");
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
@@ -195,7 +205,7 @@ export const runningDockerMessage = localize('runningDockerMessage', "Running th
 export function dockerNotRunningError(error: string) { return localize('dockerNotRunningError', "Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'", error || ''); }
 export const dockerContainerNotRunningErrorMessage = localize('dockerContainerNotRunningErrorMessage', "Docker container is not running");
 export const dockerContainerFailedToRunErrorMessage = localize('dockerContainerFailedToRunErrorMessage', "Failed to run the docker container");
-export const connectingToSqlServerOnDockerMessage = localize('connectingToSqlServerOnDockerMessage', "Connecting to SQL Server on Docker");
+export const connectingToSqlServerMessage = localize('connectingToSqlServerOnDockerMessage', "Connecting to SQL Server");
 export const deployProjectFailedMessage = localize('deployProjectFailedMessage', "Failed to open a connection to the deployed database'");
 export const containerAlreadyExistForProject = localize('containerAlreadyExistForProject', "Containers already exist for this project. Do you want to delete them before deploying a new one?");
 export const checkoutOutputMessage = localize('checkoutOutputMessage', "Check output pane for more details");
@@ -473,6 +483,7 @@ export const sqlAuth = 'SqlAuth';
 // Tree item types
 export enum DatabaseProjectItemType {
 	project = 'databaseProject.itemType.project',
+	legacyProject = 'databaseProject.itemType.legacyProject',
 	folder = 'databaseProject.itemType.folder',
 	file = 'databaseProject.itemType.file',
 	externalStreamingJob = 'databaseProject.itemType.file.externalStreamingJob',
@@ -532,4 +543,9 @@ export const defaultDSP = targetPlatformToVersion.get(defaultTargetPlatform)!;
  */
 export function getTargetPlatformFromVersion(version: string): string {
 	return Array.from(targetPlatformToVersion.keys()).filter(k => targetPlatformToVersion.get(k) === version)[0];
+}
+
+export enum PublishTargetType {
+	existingServer = 'existingServer',
+	docker = 'docker',
 }

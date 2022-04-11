@@ -65,7 +65,7 @@
       <source xml:lang="en">New SQL project name</source>
     </trans-unit>
     <trans-unit id="baseDockerImage">
-      <source xml:lang="en">Base SQL Server Docker image</source>
+      <source xml:lang="en">Base {0} Docker image</source>
     </trans-unit>
     <trans-unit id="browseButtonText">
       <source xml:lang="en">Browse folder</source>
@@ -116,13 +116,13 @@
       <source xml:lang="en">View changes in Schema Compare</source>
     </trans-unit>
     <trans-unit id="confirmPassword">
-      <source xml:lang="en">Confirm SQL server admin password</source>
+      <source xml:lang="en">Confirm {0} admin password</source>
     </trans-unit>
     <trans-unit id="confirmServerPassword">
-      <source xml:lang="en">Confirm SQL Server admin password</source>
+      <source xml:lang="en">Confirm {0} admin password</source>
     </trans-unit>
     <trans-unit id="connectingToSqlServerOnDockerMessage">
-      <source xml:lang="en">Connecting to SQL Server on Docker</source>
+      <source xml:lang="en">Connecting to SQL Server</source>
     </trans-unit>
     <trans-unit id="connectionFailedError">
       <source xml:lang="en">Connection failed error: '{0}'</source>
@@ -132,6 +132,9 @@
     </trans-unit>
     <trans-unit id="containerAlreadyExistForProject">
       <source xml:lang="en">Containers already exist for this project. Do you want to delete them before deploying a new one?</source>
+    </trans-unit>
+    <trans-unit id="convertToSdkStyleConfirmation">
+      <source xml:lang="en">The project '{0}' will not be fully compatible with SSDT after conversion. A backup copy of the project file will be created in the project folder prior to conversion. More information is available at https://aka.ms/sqlprojsdk. Continue with converting to SDK-style project?</source>
     </trans-unit>
     <trans-unit id="createNew">
       <source xml:lang="en">Create New</source>
@@ -290,16 +293,22 @@
       <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
     </trans-unit>
     <trans-unit id="edgeProjectTypeDescription">
-      <source xml:lang="en">Start with the core pieces to develop and publish schemas for SQL Edge</source>
+      <source xml:lang="en">Start with the core pieces to develop and publish schemas for Azure SQL Edge Database</source>
     </trans-unit>
     <trans-unit id="edgeProjectTypeDisplayName">
-      <source xml:lang="en">SQL Edge</source>
+      <source xml:lang="en">Azure SQL Edge Database</source>
+    </trans-unit>
+    <trans-unit id="emptyAzureDbProjectTypeDescription">
+      <source xml:lang="en">Develop and publish schemas for Azure SQL Database starting from an empty project</source>
+    </trans-unit>
+    <trans-unit id="emptyAzureDbProjectTypeDisplayName">
+      <source xml:lang="en">Azure SQL Database</source>
     </trans-unit>
     <trans-unit id="emptyProjectTypeDescription">
-      <source xml:lang="en">Develop and publish schemas for SQL databases starting from an empty project</source>
+      <source xml:lang="en">Develop and publish schemas for SQL Server databases starting from an empty project</source>
     </trans-unit>
     <trans-unit id="emptyProjectTypeDisplayName">
-      <source xml:lang="en">SQL Database</source>
+      <source xml:lang="en">SQL Server Database</source>
     </trans-unit>
     <trans-unit id="emptySdkProjectTypeDescription">
       <source xml:lang="en">Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.</source>
@@ -326,10 +335,10 @@
       <source xml:lang="en">Enter new value for variable '{0}'</source>
     </trans-unit>
     <trans-unit id="enterPassword">
-      <source xml:lang="en">Enter SQL Server admin password</source>
+      <source xml:lang="en">Enter {0} admin password</source>
     </trans-unit>
     <trans-unit id="enterPortNumber">
-      <source xml:lang="en">Enter SQL server port number or press enter to use the default value</source>
+      <source xml:lang="en">Enter {0} port number or press enter to use the default value</source>
     </trans-unit>
     <trans-unit id="enterSystemDbName">
       <source xml:lang="en">Enter a database name for this system database</source>
@@ -445,7 +454,7 @@
       <source xml:lang="en">Invalid value specified for the property '{0}' in .sqlproj file</source>
     </trans-unit>
     <trans-unit id="invalidSQLPassword">
-      <source xml:lang="en">SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
+      <source xml:lang="en">{0} password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
     </trans-unit>
     <trans-unit id="invalidSqlConnectionString">
       <source xml:lang="en">Invalid SQL connection string</source>
@@ -544,7 +553,7 @@
       <source xml:lang="en">Cannot access parent of provided tree item</source>
     </trans-unit>
     <trans-unit id="passwordNotMatch">
-      <source xml:lang="en">SQL Server password doesn't match the confirmation password</source>
+      <source xml:lang="en">{0} password doesn't match the confirmation password</source>
     </trans-unit>
     <trans-unit id="portMustNotBeNumber">
       <source xml:lang="en">Port must a be number</source>
@@ -603,6 +612,9 @@
     <trans-unit id="projectToUpdatePlaceholderText">
       <source xml:lang="en">Select project file</source>
     </trans-unit>
+    <trans-unit id="projectUpdatedToSdkStyle">
+      <source xml:lang="en">The project {0} has been updated to be an SDK-style project. Click 'Learn More' for details on the Microsoft.Build.Sql SDK and ways to simplify the project file.</source>
+    </trans-unit>
     <trans-unit id="publish">
       <source xml:lang="en">Publish</source>
     </trans-unit>
@@ -625,10 +637,10 @@
       <source xml:lang="en">Failed to publish to container. {0}</source>
     </trans-unit>
     <trans-unit id="publishToDockerContainer">
-      <source xml:lang="en">Publish to new server in a container</source>
+      <source xml:lang="en">Publish to new {0} local development container</source>
     </trans-unit>
     <trans-unit id="publishToExistingServer">
-      <source xml:lang="en">Publish to existing server</source>
+      <source xml:lang="en">Publish to an existing {0}</source>
     </trans-unit>
     <trans-unit id="publishingProjectMessage">
       <source xml:lang="en">Publishing project in a container...</source>
@@ -697,7 +709,7 @@
       <source xml:lang="en">sec</source>
     </trans-unit>
     <trans-unit id="selectBaseImage">
-      <source xml:lang="en">Select the base SQL Server docker image</source>
+      <source xml:lang="en">Select the base {0} docker image</source>
     </trans-unit>
     <trans-unit id="selectConnection">
       <source xml:lang="en">Select connection</source>
@@ -742,10 +754,10 @@
       <source xml:lang="en">Server name</source>
     </trans-unit>
     <trans-unit id="serverPassword">
-      <source xml:lang="en">SQL Server admin password</source>
+      <source xml:lang="en">{0} admin password</source>
     </trans-unit>
     <trans-unit id="serverPortNumber">
-      <source xml:lang="en">SQL server port number</source>
+      <source xml:lang="en">{0} port number</source>
     </trans-unit>
     <trans-unit id="serverVariable">
       <source xml:lang="en">Server variable</source>
@@ -852,6 +864,9 @@
     <trans-unit id="updateText">
       <source xml:lang="en">Update</source>
     </trans-unit>
+    <trans-unit id="updatedToSdkStyleError">
+      <source xml:lang="en">Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.</source>
+    </trans-unit>
     <trans-unit id="updatingProjectFromDatabase">
       <source xml:lang="en">Updating {0} from {1}...</source>
     </trans-unit>
@@ -914,6 +929,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.close">
       <source xml:lang="en">Close Database Project</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.convertToSdkStyleProject">
+      <source xml:lang="en">Convert to SDK-style project</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.createProjectFromDatabase">
       <source xml:lang="en">Create Project From Database</source>

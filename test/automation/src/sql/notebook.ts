@@ -9,8 +9,8 @@ import { QuickInput } from '../quickinput';
 import { Editors } from '../editors';
 import { IElement } from '..';
 
-const winOrCtrl = process.platform === 'win32' ? 'win' : 'ctrl';
-const ctrlOrCmd = process.platform === 'win32' ? 'ctrl' : 'cmd';
+const winOrCtrl = process.platform === 'darwin' ? 'ctrl' : 'win';
+const ctrlOrCmd = process.platform === 'darwin' ? 'cmd' : 'ctrl';
 
 export class Notebook {
 
@@ -180,6 +180,10 @@ export class Notebook {
 		// text cell is the active cell
 		await this.code.waitForElement(`.notebook-cell.active ${Notebook.textCellPreviewSelector}`);
 	}
+	async waitForTextCellPreviewContentGone(selector: string): Promise<void> {
+		let textSelector = `${Notebook.textCellPreviewSelector} ${selector}`;
+		await this.code.waitForElementGone(textSelector);
+	}
 
 	// Cell Output Actions
 
@@ -259,8 +263,16 @@ export class TextCellToolbar {
 		await this.clickToolbarButton('Insert code');
 	}
 
-	public async insertLink(): Promise<void> {
-		throw new Error('Method not implemented.');
+	public async insertLink(linkLabel: string, linkAddress: string): Promise<void> {
+		await this.clickToolbarButton('Insert link');
+		const linkDialogSelector = 'div.modal.callout-dialog[aria-label="Insert link"]';
+		const displayTextSelector = `${linkDialogSelector} input[aria-label="Text to display"]`;
+		await this.code.waitForSetValue(displayTextSelector, linkLabel);
+
+		const addressTextSelector = `${linkDialogSelector} input[aria-label="Address"]`;
+		await this.code.waitForSetValue(addressTextSelector, linkAddress);
+
+		await this.code.dispatchKeybinding('enter');
 	}
 
 	public async insertList(): Promise<void> {
@@ -271,9 +283,13 @@ export class TextCellToolbar {
 		await this.clickToolbarButton('Insert ordered list');
 	}
 
-	public async changeSelectedTextSize(): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
+	// Disabled since the text size dropdown is not clickable on Unix from smoke tests
+	// public async changeSelectedTextSize(textSize: 'Heading 1' | 'Heading 2' | 'Heading 3' | 'Paragraph'): Promise<void> {
+	// 	const actionSelector = `${TextCellToolbar.textCellToolbar} .monaco-dropdown a.heading-dropdown`;
+	// 	await this.code.waitAndClick(actionSelector);
+	// 	const menuItemSelector = `.context-view.monaco-menu-container .monaco-menu .action-menu-item[title="${textSize}"]`;
+	// 	await this.code.waitAndClick(menuItemSelector);
+	// }
 
 	private async clickToolbarButton(buttonTitle: string) {
 		const actionSelector = `${TextCellToolbar.textCellToolbar} a[title="${buttonTitle}"]`;

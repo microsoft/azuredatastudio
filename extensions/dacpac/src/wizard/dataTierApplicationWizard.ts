@@ -279,8 +279,8 @@ export class DataTierApplicationWizard {
 			}
 		}
 
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(this.getOperationErrorMessage(this.selectedOperation, result?.errorMessage));
+		if (!result?.success && result.errorMessage) {
+			vscode.window.showErrorMessage(this.getOperationErrorMessage(this.selectedOperation, result.errorMessage));
 		}
 
 		return result;

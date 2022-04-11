@@ -544,6 +544,8 @@ export class SqlThemeIcon {
 	static readonly ExternalTable = new SqlThemeIcon('ExternalTable');
 	static readonly ColumnMasterKey = new SqlThemeIcon('ColumnMasterKey');
 	static readonly ColumnEncryptionKey = new SqlThemeIcon('ColumnEncryptionKey');
+	static readonly GraphEdge = new SqlThemeIcon('GraphEdge');
+	static readonly GraphNode = new SqlThemeIcon('GraphNode');
 
 	public readonly id: string;
 
@@ -901,7 +903,8 @@ export enum ColumnType {
 	checkBox = 1,
 	button = 2,
 	icon = 3,
-	hyperlink = 4
+	hyperlink = 4,
+	contextMenu = 5
 }
 
 export enum ActionOnCellCheckboxCheck {
@@ -968,11 +971,14 @@ export namespace designers {
 		CheckConstraints = 'checkConstraints',
 		Indexes = 'indexes',
 		PrimaryKeyName = 'primaryKeyName',
+		PrimaryKeyDescription = 'primaryKeyDescription',
 		PrimaryKeyColumns = 'primaryKeyColumns'
 	}
 
 	export enum TableColumnProperty {
 		Name = 'name',
+		Description = 'description',
+		AdvancedType = 'advancedType',
 		Type = 'type',
 		AllowNulls = 'allowNulls',
 		DefaultValue = 'defaultValue',
@@ -984,6 +990,7 @@ export namespace designers {
 
 	export enum TableForeignKeyProperty {
 		Name = 'name',
+		Description = 'description',
 		ForeignTable = 'foreignTable',
 		OnDeleteAction = 'onDeleteAction',
 		OnUpdateAction = 'onUpdateAction',
@@ -997,11 +1004,13 @@ export namespace designers {
 
 	export enum TableCheckConstraintProperty {
 		Name = 'name',
+		Description = 'description',
 		Expression = 'expression'
 	}
 
 	export enum TableIndexProperty {
 		Name = 'name',
+		Description = 'description',
 		Columns = 'columns'
 	}
 
@@ -1013,5 +1022,12 @@ export namespace designers {
 		Add = 0,
 		Remove = 1,
 		Update = 2
+	}
+
+	export enum TableIcon {
+		Basic = 'Basic',
+		Temporal = 'Temporal',
+		GraphEdge = 'GraphEdge',
+		GraphNode = 'GraphNode'
 	}
 }

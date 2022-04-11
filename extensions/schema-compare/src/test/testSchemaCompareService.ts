@@ -20,10 +20,6 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 		}
 	}
 
-	schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-		throw new Error('Method not implemented.');
-	}
-
 	schemaComparePublishDatabaseChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
 		throw new Error('Method not implemented.');
 	}

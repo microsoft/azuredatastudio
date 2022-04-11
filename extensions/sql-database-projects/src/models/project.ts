@@ -617,6 +617,92 @@ export class Project implements ISqlProject {
 		await this.createCleanFileNode(beforeBuildNode);
 	}
 
+	public async convertProjectToSdkStyle(): Promise<boolean> {
+		// don't do anything if the project is already SDK style or it's an SSDT project that hasn't been updated to build in ADS
+		if (this.isSdkStyleProject || !this._importedTargets.includes(constants.NetCoreTargets)) {
+			return false;
+		}
+
+		// make backup copy of project
+		await fs.copyFile(this._projectFilePath, this._projectFilePath + '_backup');
+
+		try {
+			// remove Build includes and folder includes
+			const beforeFiles = this.files.filter(f => f.type === EntryType.File);
+			const beforeFolders = this.files.filter(f => f.type === EntryType.Folder);
+
+			// remove Build includes
+			for (const file of beforeFiles) {
+				// only remove build includes in the same folder as the project
+				if (!file.relativePath.includes('..')) {
+					await this.exclude(file);
+				}
+			}
+
+			// remove Folder includes
+			for (const folder of beforeFolders) {
+				await this.exclude(folder);
+			}
+
+			// remove "Properties" folder if it's there. This isn't tracked in the project's folders here because ADS doesn't support it.
+			// It's a reserved folder only used for the UI in SSDT
+			try {
+				await this.removeFolderFromProjFile('Properties');
+			} catch { }
+
+			// remove SSDT and ADS SqlTasks imports
+			const importsToRemove = [];
+			for (let i = 0; i < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import).length; i++) {
+				const importTarget = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import)[i];
+				const projectAttributeVal = importTarget.getAttribute(constants.Project);
+
+				if (projectAttributeVal === constants.NetCoreTargets || projectAttributeVal === constants.SqlDbTargets || projectAttributeVal === constants.MsBuildtargets) {
+					importsToRemove.push(importTarget);
+				}
+			}
+
+			const parent = importsToRemove[0]?.parentNode;
+			importsToRemove.forEach(i => { parent?.removeChild(i); });
+
+			// add SDK node
+			const sdkNode = this.projFileXmlDoc!.createElement(constants.Sdk);
+			sdkNode.setAttribute(constants.Name, constants.sqlProjectSdk);
+			sdkNode.setAttribute(constants.Version, constants.sqlProjectSdkVersion);
+
+			const projectNode = this.projFileXmlDoc!.documentElement;
+			projectNode.insertBefore(sdkNode, projectNode.firstChild);
+
+			// TODO: also update system dacpac path, but might as well wait for them to get included in the SDK since the path will probably change again
+
+			await this.serializeToProjFile(this.projFileXmlDoc!);
+			await this.readProjFile();
+
+			// Make sure the same files are included as before and there aren't extra files included by the default **/*.sql glob
+			for (const file of this.files.filter(f => f.type === EntryType.File)) {
+				if (!beforeFiles.find(f => f.pathForSqlProj() === file.pathForSqlProj())) {
+					await this.exclude(file);
+				}
+			}
+
+			// add back any folders that were previously specified in the sqlproj, but aren't included by the **/*.sql glob because they're empty
+			const folders = this.files.filter(f => f.type === EntryType.Folder);
+			for (const folder of beforeFolders) {
+				if (!folders.find(f => f.relativePath === folder.relativePath)) {
+					await this.addFolderItem(folder.relativePath);
+				}
+			}
+		} catch (e) {
+			console.error(e);
+
+			// if there was an uncaught error during conversion, rollback project update
+			await fs.copyFile(this._projectFilePath + '_backup', this._projectFilePath);
+			await this.readProjFile();
+			return false;
+		}
+
+		return true;
+	}
+
 	private async createCleanFileNode(parentNode: Element): Promise<void> {
 		const deleteFileNode = this.projFileXmlDoc!.createElement(constants.Delete);
 		deleteFileNode.setAttribute(constants.Files, constants.ProjJsonToClean);

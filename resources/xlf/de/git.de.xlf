@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="missOrInvalid">
         <source xml:lang="en">Missing or invalid credentials.</source>
-        <target state="new">Missing or invalid credentials.</target>
+        <target state="translated">Fehlende oder ungültige Anmeldeinformationen.</target>
       </trans-unit>
     </body>
   </file>
@@ -12,19 +12,19 @@
     <body>
       <trans-unit id="no">
         <source xml:lang="en">No</source>
-        <target state="new">No</target>
+        <target state="translated">Nein</target>
       </trans-unit>
       <trans-unit id="not now">
         <source xml:lang="en">Ask Me Later</source>
-        <target state="new">Ask Me Later</target>
+        <target state="translated">Erneut nachfragen</target>
       </trans-unit>
       <trans-unit id="suggest auto fetch">
         <source xml:lang="en">Would you like Azure Data Studio to [periodically run 'git fetch']({0})?</source>
-        <target state="new">Would you like Azure Data Studio to [periodically run 'git fetch']({0})?</target>
+        <target state="translated">Möchten Sie, dass Azure Data Studio [regelmäßig „git fetch“ ausführt] ({0})?</target>
       </trans-unit>
       <trans-unit id="yes">
         <source xml:lang="en">Yes</source>
-        <target state="new">Yes</target>
+        <target state="translated">Ja</target>
       </trans-unit>
     </body>
   </file>
@@ -32,683 +32,683 @@
     <body>
       <trans-unit id="HEAD not available">
         <source xml:lang="en">HEAD version of '{0}' is not available.</source>
-        <target state="new">HEAD version of '{0}' is not available.</target>
+        <target state="translated">Es ist keine HEAD-Version von „{0}“ verfügbar.</target>
       </trans-unit>
       <trans-unit id="add">
         <source xml:lang="en">Add to Workspace</source>
-        <target state="new">Add to Workspace</target>
+        <target state="translated">Zum Arbeitsbereich hinzufügen</target>
       </trans-unit>
       <trans-unit id="add remote">
         <source xml:lang="en">Add a new remote...</source>
-        <target state="new">Add a new remote...</target>
+        <target state="translated">Neues Remoterepository hinzufügen...</target>
       </trans-unit>
       <trans-unit id="addFrom">
         <source xml:lang="en">Add remote from URL</source>
-        <target state="new">Add remote from URL</target>
+        <target state="translated">Remoterepository aus URL hinzufügen</target>
       </trans-unit>
       <trans-unit id="addfrom">
         <source xml:lang="en">Add remote from {0}</source>
-        <target state="new">Add remote from {0}</target>
+        <target state="translated">Remoterepository aus {0} hinzufügen</target>
       </trans-unit>
       <trans-unit id="addremote">
         <source xml:lang="en">Add Remote</source>
-        <target state="new">Add Remote</target>
+        <target state="translated">Remoterepository hinzufügen</target>
       </trans-unit>
       <trans-unit id="always">
         <source xml:lang="en">Always</source>
-        <target state="new">Always</target>
+        <target state="translated">Immer</target>
       </trans-unit>
       <trans-unit id="are you sure">
         <source xml:lang="en">This will create a Git repository in '{0}'. Are you sure you want to continue?</source>
-        <target state="new">This will create a Git repository in '{0}'. Are you sure you want to continue?</target>
+        <target state="translated">Erstellt ein Git-Repository unter '{0}'. Sind Sie sicher das Sie weiterfahren möchten?</target>
       </trans-unit>
       <trans-unit id="auth failed">
         <source xml:lang="en">Failed to authenticate to git remote.</source>
-        <target state="new">Failed to authenticate to git remote.</target>
+        <target state="translated">Fehler bei der Authentifizierung beim Git-Remoterepository.</target>
       </trans-unit>
       <trans-unit id="auth failed specific">
         <source xml:lang="en">Failed to authenticate to git remote:
 
 {0}</source>
-        <target state="new">Failed to authenticate to git remote:
+        <target state="translated">Fehler bei der Authentifizierung beim Git-Remoterepository:
 
 {0}</target>
       </trans-unit>
       <trans-unit id="branch already exists">
         <source xml:lang="en">A branch named '{0}' already exists</source>
-        <target state="new">A branch named '{0}' already exists</target>
+        <target state="translated">Ein Branch namens „{0}“ bereits vorhanden.</target>
       </trans-unit>
       <trans-unit id="branch name">
         <source xml:lang="en">Branch name</source>
-        <target state="new">Branch name</target>
+        <target state="translated">Branchname</target>
       </trans-unit>
       <trans-unit id="branch name format invalid">
         <source xml:lang="en">Branch name needs to match regex: {0}</source>
-        <target state="new">Branch name needs to match regex: {0}</target>
+        <target state="translated">Der Name des Branches muss mit RegEx übereinstimmen: {0}</target>
       </trans-unit>
       <trans-unit id="cant push">
         <source xml:lang="en">Can't push refs to remote. Try running 'Pull' first to integrate your changes.</source>
-        <target state="new">Can't push refs to remote. Try running 'Pull' first to integrate your changes.</target>
+        <target state="translated">Verweise können nicht per Push an einen Remotespeicherort übertragen werden. Führen Sie zuerst „Pull“ aus, um Ihre Änderungen zu integrieren.</target>
       </trans-unit>
       <trans-unit id="changed">
         <source xml:lang="en">Log level changed to: {0}</source>
-        <target state="new">Log level changed to: {0}</target>
+        <target state="translated">Protokollebene geändert in: {0}</target>
       </trans-unit>
       <trans-unit id="checkout detached">
         <source xml:lang="en">Checkout detached...</source>
-        <target state="new">Checkout detached...</target>
+        <target state="translated">Getrennte auschecken...</target>
       </trans-unit>
       <trans-unit id="choose">
         <source xml:lang="en">Choose Folder...</source>
-        <target state="new">Choose Folder...</target>
+        <target state="translated">Ordner auswählen...</target>
       </trans-unit>
       <trans-unit id="clean repo">
         <source xml:lang="en">Please clean your repository working tree before checkout.</source>
-        <target state="new">Please clean your repository working tree before checkout.</target>
+        <target state="translated">Bereinigen Sie Ihre Repository-Arbeitsstruktur vor Auftragsabschluss.</target>
       </trans-unit>
       <trans-unit id="clonefrom">
         <source xml:lang="en">Clone from {0}</source>
-        <target state="new">Clone from {0}</target>
+        <target state="translated">Aus „{0}“ klonen</target>
       </trans-unit>
       <trans-unit id="cloning">
         <source xml:lang="en">Cloning git repository '{0}'...</source>
-        <target state="new">Cloning git repository '{0}'...</target>
+        <target state="translated">Das Git-Repository „{0}“ wird geklont...</target>
       </trans-unit>
       <trans-unit id="commit">
         <source xml:lang="en">Commit Staged Changes</source>
-        <target state="new">Commit Staged Changes</target>
+        <target state="translated">Gestagete Änderungen committen</target>
       </trans-unit>
       <trans-unit id="commit anyway">
         <source xml:lang="en">Create Empty Commit</source>
-        <target state="new">Create Empty Commit</target>
+        <target state="translated">Leeren Commit erstellen</target>
       </trans-unit>
       <trans-unit id="commit hash">
         <source xml:lang="en">Commit Hash</source>
-        <target state="new">Commit Hash</target>
+        <target state="translated">Commithash</target>
       </trans-unit>
       <trans-unit id="commit message">
         <source xml:lang="en">Commit message</source>
-        <target state="new">Commit message</target>
+        <target state="translated">Commit-Nachricht</target>
       </trans-unit>
       <trans-unit id="commitMessageWithHeadLabel2">
         <source xml:lang="en">Message (commit on '{0}')</source>
-        <target state="new">Message (commit on '{0}')</target>
+        <target state="translated">Nachricht (Commit für „{0}“)</target>
       </trans-unit>
       <trans-unit id="confirm delete">
         <source xml:lang="en">Are you sure you want to DELETE {0}?
 This is IRREVERSIBLE!
 This file will be FOREVER LOST if you proceed.</source>
-        <target state="new">Are you sure you want to DELETE {0}?
-This is IRREVERSIBLE!
-This file will be FOREVER LOST if you proceed.</target>
+        <target state="translated">Möchten Sie {0} LÖSCHEN?
+Dieser Vorgang ist UNUMKEHRBAR.
+Wenn Sie fortfahren, geht die Datei DAUERHAFT VERLOREN.</target>
       </trans-unit>
       <trans-unit id="confirm delete multiple">
         <source xml:lang="en">Are you sure you want to DELETE {0} files?
 This is IRREVERSIBLE!
 These files will be FOREVER LOST if you proceed.</source>
-        <target state="new">Are you sure you want to DELETE {0} files?
-This is IRREVERSIBLE!
-These files will be FOREVER LOST if you proceed.</target>
+        <target state="translated">Möchten Sie {0} Dateien LÖSCHEN?
+Dieser Vorgang ist UNUMKEHRBAR.
+Wenn Sie fortfahren, gehen diese Dateien DAUERHAFT VERLOREN.</target>
       </trans-unit>
       <trans-unit id="confirm discard">
         <source xml:lang="en">Are you sure you want to discard changes in {0}?</source>
-        <target state="new">Are you sure you want to discard changes in {0}?</target>
+        <target state="translated">Möchten Sie die Änderungen in {0} wirklich verwerfen?</target>
       </trans-unit>
       <trans-unit id="confirm discard all">
         <source xml:lang="en">Are you sure you want to discard ALL changes in {0} files?
 This is IRREVERSIBLE!
 Your current working set will be FOREVER LOST if you proceed.</source>
-        <target state="new">Are you sure you want to discard ALL changes in {0} files?
-This is IRREVERSIBLE!
-Your current working set will be FOREVER LOST if you proceed.</target>
+        <target state="translated">Möchten Sie ALLE Änderungen in {0} Dateien verwerfen?
+Dieser Vorgang ist UNUMKEHRBAR.
+Wenn Sie fortfahren, geht Ihr aktueller Arbeitssatz DAUERHAFT VERLOREN.</target>
       </trans-unit>
       <trans-unit id="confirm discard all 2">
         <source xml:lang="en">{0}
 
 This is IRREVERSIBLE, your current working set will be FOREVER LOST.</source>
-        <target state="new">{0}
+        <target state="translated">{0}
 
-This is IRREVERSIBLE, your current working set will be FOREVER LOST.</target>
+Dieser Vorgang ist UNUMKEHRBAR, und Ihr aktueller Arbeitssatz geht DAUERHAFT VERLOREN.</target>
       </trans-unit>
       <trans-unit id="confirm discard all single">
         <source xml:lang="en">Are you sure you want to discard changes in {0}?</source>
-        <target state="new">Are you sure you want to discard changes in {0}?</target>
+        <target state="translated">Möchten Sie die Änderungen in {0} wirklich verwerfen?</target>
       </trans-unit>
       <trans-unit id="confirm discard multiple">
         <source xml:lang="en">Are you sure you want to discard changes in {0} files?</source>
-        <target state="new">Are you sure you want to discard changes in {0} files?</target>
+        <target state="translated">Möchten Sie wirklich Änderungen in {0} Dateien verwerfen?</target>
       </trans-unit>
       <trans-unit id="confirm emtpy commit">
         <source xml:lang="en">Are you sure you want to create an empty commit?</source>
-        <target state="new">Are you sure you want to create an empty commit?</target>
+        <target state="translated">Möchten Sie wirklich einen leeren Commit erstellen?</target>
       </trans-unit>
       <trans-unit id="confirm force delete branch">
         <source xml:lang="en">The branch '{0}' is not fully merged. Delete anyway?</source>
-        <target state="new">The branch '{0}' is not fully merged. Delete anyway?</target>
+        <target state="translated">Der Branch '{0}' ist noch nicht vollständig zusammengeführt. Trotzdem löschen?</target>
       </trans-unit>
       <trans-unit id="confirm force push">
         <source xml:lang="en">You are about to force push your changes, this can be destructive and could inadvertently overwrite changes made by others.
 
 Are you sure to continue?</source>
-        <target state="new">You are about to force push your changes, this can be destructive and could inadvertently overwrite changes made by others.
+        <target state="translated">Sie sind dabei, einen erzwungenen Push für Ihre Änderungen durchzuführen. Dieser Vorgang kann negative Auswirkungen haben und die Änderungen anderer Benutzer überschreiben.
 
-Are you sure to continue?</target>
+Möchten Sie fortfahren?</target>
       </trans-unit>
       <trans-unit id="confirm no verify commit">
         <source xml:lang="en">You are about to commit your changes without verification, this skips pre-commit hooks and can be undesirable.
 
 Are you sure to continue?</source>
-        <target state="new">You are about to commit your changes without verification, this skips pre-commit hooks and can be undesirable.
+        <target state="translated">Sie sind im Begriff, Ihre Änderungen ohne Überprüfung zu commiten. Hierdurch werden pre-commit-Hooks übersprungen, was möglicherweise nicht erwünscht ist.
 
-Are you sure to continue?</target>
+Möchten Sie den Vorgang fortsetzen?</target>
       </trans-unit>
       <trans-unit id="confirm publish branch">
         <source xml:lang="en">The branch '{0}' has no upstream branch. Would you like to publish this branch?</source>
-        <target state="new">The branch '{0}' has no upstream branch. Would you like to publish this branch?</target>
+        <target state="translated">Der Branch „{0}“ verfügt über keinen Upstreambranch. Möchten Sie diesen Branch veröffentlichen?</target>
       </trans-unit>
       <trans-unit id="confirm restore">
         <source xml:lang="en">Are you sure you want to restore {0}?</source>
-        <target state="new">Are you sure you want to restore {0}?</target>
+        <target state="translated">Möchten Sie {0} wirklich wiederherstellen?</target>
       </trans-unit>
       <trans-unit id="confirm restore multiple">
         <source xml:lang="en">Are you sure you want to restore {0} files?</source>
-        <target state="new">Are you sure you want to restore {0} files?</target>
+        <target state="translated">Möchten Sie {0} Dateien wirklich wiederherstellen?</target>
       </trans-unit>
       <trans-unit id="confirm stage file with merge conflicts">
         <source xml:lang="en">Are you sure you want to stage {0} with merge conflicts?</source>
-        <target state="new">Are you sure you want to stage {0} with merge conflicts?</target>
+        <target state="translated">Möchten Sie {0} mit Mergingkonflikten bereitstellen?</target>
       </trans-unit>
       <trans-unit id="confirm stage files with merge conflicts">
         <source xml:lang="en">Are you sure you want to stage {0} files with merge conflicts?</source>
-        <target state="new">Are you sure you want to stage {0} files with merge conflicts?</target>
+        <target state="translated">Möchten Sie {0} Dateien mit Mergingkonflikten bereitstellen?</target>
       </trans-unit>
       <trans-unit id="create branch">
         <source xml:lang="en">Create new branch...</source>
-        <target state="new">Create new branch...</target>
+        <target state="translated">Neuen Branch erstellen...</target>
       </trans-unit>
       <trans-unit id="create branch from">
         <source xml:lang="en">Create new branch from...</source>
-        <target state="new">Create new branch from...</target>
+        <target state="translated">Neuen Branch erstellen aus...</target>
       </trans-unit>
       <trans-unit id="create repo">
         <source xml:lang="en">Initialize Repository</source>
-        <target state="new">Initialize Repository</target>
+        <target state="translated">Repository initialisieren</target>
       </trans-unit>
       <trans-unit id="current">
         <source xml:lang="en">Current</source>
-        <target state="new">Current</target>
+        <target state="translated">Aktuell</target>
       </trans-unit>
       <trans-unit id="delete">
         <source xml:lang="en">Delete File</source>
-        <target state="new">Delete File</target>
+        <target state="translated">Datei löschen</target>
       </trans-unit>
       <trans-unit id="delete branch">
         <source xml:lang="en">Delete Branch</source>
-        <target state="new">Delete Branch</target>
+        <target state="translated">Branch löschen</target>
       </trans-unit>
       <trans-unit id="delete file">
         <source xml:lang="en">Delete file</source>
-        <target state="new">Delete file</target>
+        <target state="translated">Datei löschen</target>
       </trans-unit>
       <trans-unit id="delete files">
         <source xml:lang="en">Delete Files</source>
-        <target state="new">Delete Files</target>
+        <target state="translated">Dateien löschen</target>
       </trans-unit>
       <trans-unit id="deleted by them">
         <source xml:lang="en">File '{0}' was deleted by them and modified by us.
 
 What would you like to do?</source>
-        <target state="new">File '{0}' was deleted by them and modified by us.
+        <target state="translated">Die Datei „{0}“ wurde von Dritten gelöscht und von uns geändert.
 
-What would you like to do?</target>
+Was möchten Sie tun?</target>
       </trans-unit>
       <trans-unit id="deleted by us">
         <source xml:lang="en">File '{0}' was deleted by us and modified by them.
 
 What would you like to do?</source>
-        <target state="new">File '{0}' was deleted by us and modified by them.
+        <target state="translated">Die Datei „{0}“ wurde von uns gelöscht und von Dritten geändert.
 
-What would you like to do?</target>
+Was möchten Sie tun?</target>
       </trans-unit>
       <trans-unit id="discard">
         <source xml:lang="en">Discard Changes</source>
-        <target state="new">Discard Changes</target>
+        <target state="translated">Änderungen verwerfen</target>
       </trans-unit>
       <trans-unit id="discardAll">
         <source xml:lang="en">Discard All {0} Files</source>
-        <target state="new">Discard All {0} Files</target>
+        <target state="translated">Alle {0} Dateien verwerfen</target>
       </trans-unit>
       <trans-unit id="discardAll multiple">
         <source xml:lang="en">Discard 1 File</source>
-        <target state="new">Discard 1 File</target>
+        <target state="translated">Eine Datei verwerfen</target>
       </trans-unit>
       <trans-unit id="force">
         <source xml:lang="en">Force Checkout</source>
-        <target state="new">Force Checkout</target>
+        <target state="translated">Auschecken erzwingen</target>
       </trans-unit>
       <trans-unit id="force push not allowed">
         <source xml:lang="en">Force push is not allowed, please enable it with the 'git.allowForcePush' setting.</source>
-        <target state="new">Force push is not allowed, please enable it with the 'git.allowForcePush' setting.</target>
+        <target state="translated">Erzwungene Pushes sind nicht zulässig. Aktivieren Sie diese bitte über die Einstellung „git.allowForcePush“.</target>
       </trans-unit>
       <trans-unit id="git error">
         <source xml:lang="en">Git error</source>
-        <target state="new">Git error</target>
+        <target state="translated">Git-Fehler</target>
       </trans-unit>
       <trans-unit id="git error details">
         <source xml:lang="en">Git: {0}</source>
-        <target state="new">Git: {0}</target>
+        <target state="translated">Git: {0}</target>
       </trans-unit>
       <trans-unit id="git.title.diff">
         <source xml:lang="en">{0} ⟷ {1}</source>
-        <target state="new">{0} ⟷ {1}</target>
+        <target state="translated">{0} ⟷ {1}</target>
       </trans-unit>
       <trans-unit id="git.title.diffRefs">
         <source xml:lang="en">{0} ({1}) ⟷ {0} ({2})</source>
-        <target state="new">{0} ({1}) ⟷ {0} ({2})</target>
+        <target state="translated">{0} ({1}) ⟷ {0} ({2})</target>
       </trans-unit>
       <trans-unit id="git.title.index">
         <source xml:lang="en">{0} (Index)</source>
-        <target state="new">{0} (Index)</target>
+        <target state="translated">{0} (Index)</target>
       </trans-unit>
       <trans-unit id="git.title.ref">
         <source xml:lang="en">{0} ({1})</source>
-        <target state="new">{0} ({1})</target>
+        <target state="translated">{0} ({1})</target>
       </trans-unit>
       <trans-unit id="git.title.workingTree">
         <source xml:lang="en">{0} (Working Tree)</source>
-        <target state="new">{0} (Working Tree)</target>
+        <target state="translated">{0} (Arbeitsstruktur)</target>
       </trans-unit>
       <trans-unit id="init">
         <source xml:lang="en">Pick workspace folder to initialize git repo in</source>
-        <target state="new">Pick workspace folder to initialize git repo in</target>
+        <target state="translated">Arbeitsbereichsordner auswählen, in dem das Git-Repository initialisiert wird</target>
       </trans-unit>
       <trans-unit id="init repo">
         <source xml:lang="en">Initialize Repository</source>
-        <target state="new">Initialize Repository</target>
+        <target state="translated">Repository initialisieren</target>
       </trans-unit>
       <trans-unit id="invalid branch name">
         <source xml:lang="en">Invalid branch name</source>
-        <target state="new">Invalid branch name</target>
+        <target state="translated">Ungültiger Branchname</target>
       </trans-unit>
       <trans-unit id="keep ours">
         <source xml:lang="en">Keep Our Version</source>
-        <target state="new">Keep Our Version</target>
+        <target state="translated">Unsere Version beibehalten</target>
       </trans-unit>
       <trans-unit id="keep theirs">
         <source xml:lang="en">Keep Their Version</source>
-        <target state="new">Keep Their Version</target>
+        <target state="translated">Deren Version beibehalten</target>
       </trans-unit>
       <trans-unit id="learn more">
         <source xml:lang="en">Learn More</source>
-        <target state="new">Learn More</target>
+        <target state="translated">Weitere Informationen</target>
       </trans-unit>
       <trans-unit id="local changes">
         <source xml:lang="en">Your local changes would be overwritten by checkout.</source>
-        <target state="new">Your local changes would be overwritten by checkout.</target>
+        <target state="translated">Ihre lokalen Änderungen werden durch Auschecken überschrieben.</target>
       </trans-unit>
       <trans-unit id="merge commit">
         <source xml:lang="en">The last commit was a merge commit. Are you sure you want to undo it?</source>
-        <target state="new">The last commit was a merge commit. Are you sure you want to undo it?</target>
+        <target state="translated">Der letzte Commit war ein Mergecommit. Möchten Sie den Vorgang wirklich rückgängig machen?</target>
       </trans-unit>
       <trans-unit id="merge conflicts">
         <source xml:lang="en">There are merge conflicts. Resolve them before committing.</source>
-        <target state="new">There are merge conflicts. Resolve them before committing.</target>
+        <target state="translated">Es liegen Zusammenführungskonflikte vor. Beheben Sie die Konflikte vor dem Committen.</target>
       </trans-unit>
       <trans-unit id="missing user info">
         <source xml:lang="en">Make sure you configure your 'user.name' and 'user.email' in git.</source>
-        <target state="new">Make sure you configure your 'user.name' and 'user.email' in git.</target>
+        <target state="translated">Stellen Sie sicher, dass Sie in git Ihren „user.name“ und Ihre „user.email“ konfigurieren.</target>
       </trans-unit>
       <trans-unit id="never">
         <source xml:lang="en">Never</source>
-        <target state="new">Never</target>
+        <target state="translated">Nie</target>
       </trans-unit>
       <trans-unit id="never again">
         <source xml:lang="en">OK, Don't Show Again</source>
-        <target state="new">OK, Don't Show Again</target>
+        <target state="translated">OK, nicht mehr anzeigen</target>
       </trans-unit>
       <trans-unit id="never ask again">
         <source xml:lang="en">OK, Don't Ask Again</source>
-        <target state="new">OK, Don't Ask Again</target>
+        <target state="translated">OK, nicht mehr fragen</target>
       </trans-unit>
       <trans-unit id="no changes">
         <source xml:lang="en">There are no changes to commit.</source>
-        <target state="new">There are no changes to commit.</target>
+        <target state="translated">Keine Änderungen zum Speichern vorhanden.</target>
       </trans-unit>
       <trans-unit id="no changes stash">
         <source xml:lang="en">There are no changes to stash.</source>
-        <target state="new">There are no changes to stash.</target>
+        <target state="translated">Es sind keine Änderungen vorhanden, für die ein Stash ausgeführt werden kann.</target>
       </trans-unit>
       <trans-unit id="no more">
         <source xml:lang="en">Can't undo because HEAD doesn't point to any commit.</source>
-        <target state="new">Can't undo because HEAD doesn't point to any commit.</target>
+        <target state="translated">Die Aktion kann nicht rückgängig gemacht werden, da HEAD nicht auf einen Commit verweist.</target>
       </trans-unit>
       <trans-unit id="no rebase">
         <source xml:lang="en">No rebase in progress.</source>
-        <target state="new">No rebase in progress.</target>
+        <target state="translated">Es wird kein Rebase ausgeführt.</target>
       </trans-unit>
       <trans-unit id="no remotes added">
         <source xml:lang="en">Your repository has no remotes.</source>
-        <target state="new">Your repository has no remotes.</target>
+        <target state="translated">In Ihrem Repository liegen keine Remoteelemente vor.</target>
       </trans-unit>
       <trans-unit id="no remotes to fetch">
         <source xml:lang="en">This repository has no remotes configured to fetch from.</source>
-        <target state="new">This repository has no remotes configured to fetch from.</target>
+        <target state="translated">In diesem Repository wurden keine Remoteelemente konfiguriert, aus denen ein Abrufen erfolgt.</target>
       </trans-unit>
       <trans-unit id="no remotes to publish">
         <source xml:lang="en">Your repository has no remotes configured to publish to.</source>
-        <target state="new">Your repository has no remotes configured to publish to.</target>
+        <target state="translated">In Ihrem Repository wurden keine Remoteelemente für die Veröffentlichung konfiguriert.</target>
       </trans-unit>
       <trans-unit id="no remotes to pull">
         <source xml:lang="en">Your repository has no remotes configured to pull from.</source>
-        <target state="new">Your repository has no remotes configured to pull from.</target>
+        <target state="translated">In Ihrem Repository wurden keine Remoteelemente für den Pull konfiguriert.</target>
       </trans-unit>
       <trans-unit id="no remotes to push">
         <source xml:lang="en">Your repository has no remotes configured to push to.</source>
-        <target state="new">Your repository has no remotes configured to push to.</target>
+        <target state="translated">In Ihrem Repository wurden keine Remoteelemente für den Push konfiguriert.</target>
       </trans-unit>
       <trans-unit id="no staged changes">
         <source xml:lang="en">There are no staged changes to commit.
 
 Would you like to stage all your changes and commit them directly?</source>
-        <target state="new">There are no staged changes to commit.
+        <target state="translated">Es sind keine gestageten Änderungen vorhanden, für die ein Commit durchgeführt werden kann.
 
-Would you like to stage all your changes and commit them directly?</target>
+Möchten Sie all Ihre Änderungen stagen und direkt committen?</target>
       </trans-unit>
       <trans-unit id="no stashes">
         <source xml:lang="en">There are no stashes in the repository.</source>
-        <target state="new">There are no stashes in the repository.</target>
+        <target state="translated">Das Repository enthält keine Stashes.</target>
       </trans-unit>
       <trans-unit id="no tags">
         <source xml:lang="en">This repository has no tags.</source>
-        <target state="new">This repository has no tags.</target>
+        <target state="translated">Dieses Repository hat keine Tags.</target>
       </trans-unit>
       <trans-unit id="no verify commit not allowed">
         <source xml:lang="en">Commits without verification are not allowed, please enable them with the 'git.allowNoVerifyCommit' setting.</source>
-        <target state="new">Commits without verification are not allowed, please enable them with the 'git.allowNoVerifyCommit' setting.</target>
+        <target state="translated">Commits ohne Überprüfung sind nicht zulässig, aktivieren Sie sie mit der Einstellung „git.allowNoVerifyCommit“.</target>
       </trans-unit>
       <trans-unit id="nobranch">
         <source xml:lang="en">Please check out a branch to push to a remote.</source>
-        <target state="new">Please check out a branch to push to a remote.</target>
+        <target state="translated">Wählen Sie ein Branch für den Push zu einem Remoteelement aus.</target>
       </trans-unit>
       <trans-unit id="ok">
         <source xml:lang="en">OK</source>
-        <target state="new">OK</target>
+        <target state="translated">OK</target>
       </trans-unit>
       <trans-unit id="open git log">
         <source xml:lang="en">Open Git Log</source>
-        <target state="new">Open Git Log</target>
+        <target state="translated">Git-Protokoll öffnen</target>
       </trans-unit>
       <trans-unit id="open repo">
         <source xml:lang="en">Open Repository</source>
-        <target state="new">Open Repository</target>
+        <target state="translated">Repository öffnen</target>
       </trans-unit>
       <trans-unit id="openrepo">
         <source xml:lang="en">Open</source>
-        <target state="new">Open</target>
+        <target state="translated">Öffnen</target>
       </trans-unit>
       <trans-unit id="openreponew">
         <source xml:lang="en">Open in New Window</source>
-        <target state="new">Open in New Window</target>
+        <target state="translated">In neuem Fenster öffnen</target>
       </trans-unit>
       <trans-unit id="pick branch pull">
         <source xml:lang="en">Pick a branch to pull from</source>
-        <target state="new">Pick a branch to pull from</target>
+        <target state="translated">Branch für Pull auswählen</target>
       </trans-unit>
       <trans-unit id="pick provider">
         <source xml:lang="en">Pick a provider to publish the branch '{0}' to:</source>
-        <target state="new">Pick a provider to publish the branch '{0}' to:</target>
+        <target state="translated">Wählen Sie einen Anbieter aus, um den Branch „{0}“ hier zu veröffentlichen:</target>
       </trans-unit>
       <trans-unit id="pick remote">
         <source xml:lang="en">Pick a remote to publish the branch '{0}' to:</source>
-        <target state="new">Pick a remote to publish the branch '{0}' to:</target>
+        <target state="translated">Remotespeicherort auswählen, an dem der Branch „{0}“ veröffentlicht wird:</target>
       </trans-unit>
       <trans-unit id="pick remote pull repo">
         <source xml:lang="en">Pick a remote to pull the branch from</source>
-        <target state="new">Pick a remote to pull the branch from</target>
+        <target state="translated">Remoteelement zum Pullen des Branch auswählen</target>
       </trans-unit>
       <trans-unit id="pick stash to apply">
         <source xml:lang="en">Pick a stash to apply</source>
-        <target state="new">Pick a stash to apply</target>
+        <target state="translated">Stash zum Anwenden auswählen</target>
       </trans-unit>
       <trans-unit id="pick stash to drop">
         <source xml:lang="en">Pick a stash to drop</source>
-        <target state="new">Pick a stash to drop</target>
+        <target state="translated">Zu löschenden Stash auswählen</target>
       </trans-unit>
       <trans-unit id="pick stash to pop">
         <source xml:lang="en">Pick a stash to pop</source>
-        <target state="new">Pick a stash to pop</target>
+        <target state="translated">Wählen Sie einen Stash aus, für den ein Pop ausgeführt werden soll.</target>
       </trans-unit>
       <trans-unit id="proposeopen">
         <source xml:lang="en">Would you like to open the cloned repository?</source>
-        <target state="new">Would you like to open the cloned repository?</target>
+        <target state="translated">Möchten Sie das geklonte Repository öffnen?</target>
       </trans-unit>
       <trans-unit id="proposeopen init">
         <source xml:lang="en">Would you like to open the initialized repository?</source>
-        <target state="new">Would you like to open the initialized repository?</target>
+        <target state="translated">Möchten Sie das initialisierte Repository öffnen?</target>
       </trans-unit>
       <trans-unit id="proposeopen2">
         <source xml:lang="en">Would you like to open the cloned repository, or add it to the current workspace?</source>
-        <target state="new">Would you like to open the cloned repository, or add it to the current workspace?</target>
+        <target state="translated">Möchten Sie das geklonte Repository öffnen oder es zum aktuellen Arbeitsbereich hinzufügen?</target>
       </trans-unit>
       <trans-unit id="proposeopen2 init">
         <source xml:lang="en">Would you like to open the initialized repository, or add it to the current workspace?</source>
-        <target state="new">Would you like to open the initialized repository, or add it to the current workspace?</target>
+        <target state="translated">Möchten Sie das initialisierte Repository öffnen oder es zum aktuellen Arbeitsbereich hinzufügen?</target>
       </trans-unit>
       <trans-unit id="provide branch name">
         <source xml:lang="en">Please provide a new branch name</source>
-        <target state="new">Please provide a new branch name</target>
+        <target state="translated">Bitte geben Sie einen neuen Branchnamen an.</target>
       </trans-unit>
       <trans-unit id="provide commit hash">
         <source xml:lang="en">Please provide the commit hash</source>
-        <target state="new">Please provide the commit hash</target>
+        <target state="translated">Geben Sie den Commithash an.</target>
       </trans-unit>
       <trans-unit id="provide commit message">
         <source xml:lang="en">Please provide a commit message</source>
-        <target state="new">Please provide a commit message</target>
+        <target state="translated">Geben Sie eine Commit-Nachrichte ein.</target>
       </trans-unit>
       <trans-unit id="provide remote name">
         <source xml:lang="en">Please provide a remote name</source>
-        <target state="new">Please provide a remote name</target>
+        <target state="translated">Remotenamen angeben</target>
       </trans-unit>
       <trans-unit id="provide stash message">
         <source xml:lang="en">Optionally provide a stash message</source>
-        <target state="new">Optionally provide a stash message</target>
+        <target state="translated">Geben Sie optional eine Stash-Nachricht ein.</target>
       </trans-unit>
       <trans-unit id="provide tag message">
         <source xml:lang="en">Please provide a message to annotate the tag</source>
-        <target state="new">Please provide a message to annotate the tag</target>
+        <target state="translated">Geben Sie eine Meldung ein, um das Tag mit einer Anmerkung zu versehen.</target>
       </trans-unit>
       <trans-unit id="provide tag name">
         <source xml:lang="en">Please provide a tag name</source>
-        <target state="new">Please provide a tag name</target>
+        <target state="translated">Geben Sie einen Tagnamen an.</target>
       </trans-unit>
       <trans-unit id="publish to">
         <source xml:lang="en">Publish to {0}</source>
-        <target state="new">Publish to {0}</target>
+        <target state="translated">In „{0}“ veröffentlichen</target>
       </trans-unit>
       <trans-unit id="remote already exists">
         <source xml:lang="en">Remote '{0}' already exists.</source>
-        <target state="new">Remote '{0}' already exists.</target>
+        <target state="translated">Remote-'{0}' ist bereits vorhanden.</target>
       </trans-unit>
       <trans-unit id="remote branch at">
         <source xml:lang="en">Remote branch at {0}</source>
-        <target state="new">Remote branch at {0}</target>
+        <target state="translated">Remotebranch unter {0}</target>
       </trans-unit>
       <trans-unit id="remote name">
         <source xml:lang="en">Remote name</source>
-        <target state="new">Remote name</target>
+        <target state="translated">Remotename</target>
       </trans-unit>
       <trans-unit id="remote name format invalid">
         <source xml:lang="en">Remote name format invalid</source>
-        <target state="new">Remote name format invalid</target>
+        <target state="translated">Ungültiges Format des Remotenamens</target>
       </trans-unit>
       <trans-unit id="remove remote">
         <source xml:lang="en">Pick a remote to remove</source>
-        <target state="new">Pick a remote to remove</target>
+        <target state="translated">Remote zum Entfernen auswählen</target>
       </trans-unit>
       <trans-unit id="repourl">
         <source xml:lang="en">Clone from URL</source>
-        <target state="new">Clone from URL</target>
+        <target state="translated">Repository-URL</target>
       </trans-unit>
       <trans-unit id="restore file">
         <source xml:lang="en">Restore file</source>
-        <target state="new">Restore file</target>
+        <target state="translated">Datei wiederherstellen</target>
       </trans-unit>
       <trans-unit id="restore files">
         <source xml:lang="en">Restore files</source>
-        <target state="new">Restore files</target>
+        <target state="translated">Dateien wiederherstellen</target>
       </trans-unit>
       <trans-unit id="save and commit">
         <source xml:lang="en">Save All &amp; Commit</source>
-        <target state="new">Save All &amp; Commit</target>
+        <target state="translated">Alle speichern &amp; committen</target>
       </trans-unit>
       <trans-unit id="save and stash">
         <source xml:lang="en">Save All &amp; Stash</source>
-        <target state="new">Save All &amp; Stash</target>
+        <target state="translated">Alle speichern und stashen</target>
       </trans-unit>
       <trans-unit id="select a branch to merge from">
         <source xml:lang="en">Select a branch to merge from</source>
-        <target state="new">Select a branch to merge from</target>
+        <target state="translated">Branch für die Zusammenführung auswählen</target>
       </trans-unit>
       <trans-unit id="select a branch to rebase onto">
         <source xml:lang="en">Select a branch to rebase onto</source>
-        <target state="new">Select a branch to rebase onto</target>
+        <target state="translated">Branch für Rebase auswählen</target>
       </trans-unit>
       <trans-unit id="select a ref to checkout">
         <source xml:lang="en">Select a ref to checkout</source>
-        <target state="new">Select a ref to checkout</target>
+        <target state="translated">Referenz zum Auschecken auswählen</target>
       </trans-unit>
       <trans-unit id="select a ref to checkout detached">
         <source xml:lang="en">Select a ref to checkout in detached mode</source>
-        <target state="new">Select a ref to checkout in detached mode</target>
+        <target state="translated">Referenz zum Auschecken im getrennten Modus auswählen</target>
       </trans-unit>
       <trans-unit id="select a ref to create a new branch from">
         <source xml:lang="en">Select a ref to create the '{0}' branch from</source>
-        <target state="new">Select a ref to create the '{0}' branch from</target>
+        <target state="translated">Verweis auswählen, aus dem der Branch „{0}“ erstellt werden soll</target>
       </trans-unit>
       <trans-unit id="select a tag to delete">
         <source xml:lang="en">Select a tag to delete</source>
-        <target state="new">Select a tag to delete</target>
+        <target state="translated">Zu löschendes Tag auswählen</target>
       </trans-unit>
       <trans-unit id="select branch to delete">
         <source xml:lang="en">Select a branch to delete</source>
-        <target state="new">Select a branch to delete</target>
+        <target state="translated">Wählen Sie einen Branch zum Löschen aus</target>
       </trans-unit>
       <trans-unit id="select log level">
         <source xml:lang="en">Select log level</source>
-        <target state="new">Select log level</target>
+        <target state="translated">Protokollstufe auswählen</target>
       </trans-unit>
       <trans-unit id="selectFolder">
         <source xml:lang="en">Select Repository Location</source>
-        <target state="new">Select Repository Location</target>
+        <target state="translated">Repositoryspeicherort auswählen</target>
       </trans-unit>
       <trans-unit id="show command output">
         <source xml:lang="en">Show Command Output</source>
-        <target state="new">Show Command Output</target>
+        <target state="translated">Befehlsausgabe anzeigen</target>
       </trans-unit>
       <trans-unit id="stash">
         <source xml:lang="en">Stash Anyway</source>
-        <target state="new">Stash Anyway</target>
+        <target state="translated">Dennoch stashen</target>
       </trans-unit>
       <trans-unit id="stash merge conflicts">
         <source xml:lang="en">There were merge conflicts while applying the stash.</source>
-        <target state="new">There were merge conflicts while applying the stash.</target>
+        <target state="translated">Beim Anwenden des Stashes sind Merge-Konflikte aufgetreten.</target>
       </trans-unit>
       <trans-unit id="stash message">
         <source xml:lang="en">Stash message</source>
-        <target state="new">Stash message</target>
+        <target state="translated">Stash-Nachricht</target>
       </trans-unit>
       <trans-unit id="stashcheckout">
         <source xml:lang="en">Stash &amp; Checkout</source>
-        <target state="new">Stash &amp; Checkout</target>
+        <target state="translated">Stashen und auschecken</target>
       </trans-unit>
       <trans-unit id="sure drop">
         <source xml:lang="en">Are you sure you want to drop the stash: {0}?</source>
-        <target state="new">Are you sure you want to drop the stash: {0}?</target>
+        <target state="translated">Möchten Sie den folgenden Stash löschen: {0}?</target>
       </trans-unit>
       <trans-unit id="sync is unpredictable">
         <source xml:lang="en">This action will push and pull commits to and from '{0}/{1}'.</source>
-        <target state="new">This action will push and pull commits to and from '{0}/{1}'.</target>
+        <target state="translated">Durch diese Aktion werden Commits per Push in bzw. per Pull aus „{0}/{1}“ übertragen.</target>
       </trans-unit>
       <trans-unit id="tag at">
         <source xml:lang="en">Tag at {0}</source>
-        <target state="new">Tag at {0}</target>
+        <target state="translated">Tag bei {0}</target>
       </trans-unit>
       <trans-unit id="tag message">
         <source xml:lang="en">Message</source>
-        <target state="new">Message</target>
+        <target state="translated">Nachricht</target>
       </trans-unit>
       <trans-unit id="tag name">
         <source xml:lang="en">Tag name</source>
-        <target state="new">Tag name</target>
+        <target state="translated">Tag-Name</target>
       </trans-unit>
       <trans-unit id="there are untracked files">
         <source xml:lang="en">There are {0} untracked files which will be DELETED FROM DISK if discarded.</source>
-        <target state="new">There are {0} untracked files which will be DELETED FROM DISK if discarded.</target>
+        <target state="translated">Es sind {0} nicht verfolgte Dateien vorhanden, die VOM DATENTRÄGER GELÖSCHT werden, wenn sie verworfen werden.</target>
       </trans-unit>
       <trans-unit id="there are untracked files single">
         <source xml:lang="en">The following untracked file will be DELETED FROM DISK if discarded: {0}.</source>
-        <target state="new">The following untracked file will be DELETED FROM DISK if discarded: {0}.</target>
+        <target state="translated">Die folgende nicht verfolgte Datei wird VOM DATENTRÄGER GELÖSCHT, wenn sie verworfen wird: {0}.</target>
       </trans-unit>
       <trans-unit id="undo commit">
         <source xml:lang="en">Undo merge commit</source>
-        <target state="new">Undo merge commit</target>
+        <target state="translated">Mergecommit rückgängig machen</target>
       </trans-unit>
       <trans-unit id="unsaved files">
         <source xml:lang="en">There are {0} unsaved files.
 
 Would you like to save them before committing?</source>
-        <target state="new">There are {0} unsaved files.
+        <target state="translated">{0} Dateien wurden nicht gespeichert.
 
-Would you like to save them before committing?</target>
+Möchten Sie diese vor dem Commit speichern?</target>
       </trans-unit>
       <trans-unit id="unsaved files single">
         <source xml:lang="en">The following file has unsaved changes which won't be included in the commit if you proceed: {0}.
 
 Would you like to save it before committing?</source>
-        <target state="new">The following file has unsaved changes which won't be included in the commit if you proceed: {0}.
+        <target state="translated">Die folgende Datei umfasst noch nicht gespeicherte Änderungen, die beim Fortsetzen des Vorgangs nicht in den Commit einbezogen werden: {0}.
 
-Would you like to save it before committing?</target>
+Möchten Sie vor dem Commit speichern?</target>
       </trans-unit>
       <trans-unit id="unsaved stash files">
         <source xml:lang="en">There are {0} unsaved files.
 
 Would you like to save them before stashing?</source>
-        <target state="new">There are {0} unsaved files.
+        <target state="translated">{0} Dateien wurden nicht gespeichert.
 
-Would you like to save them before stashing?</target>
+Möchten Sie diese vor dem Stashen speichern?</target>
       </trans-unit>
       <trans-unit id="unsaved stash files single">
         <source xml:lang="en">The following file has unsaved changes which won't be included in the stash if you proceed: {0}.
 
 Would you like to save it before stashing?</source>
-        <target state="new">The following file has unsaved changes which won't be included in the stash if you proceed: {0}.
+        <target state="translated">Die folgende Datei umfasst nicht gespeicherte Änderungen, die beim Fortsetzen des Vorgangs nicht in den Stash einbezogen werden: {0}.
 
-Would you like to save it before stashing?</target>
+Möchten Sie sie vor dem Stashen speichern?</target>
       </trans-unit>
       <trans-unit id="warn untracked">
         <source xml:lang="en">This will DELETE {0} untracked files!
 This is IRREVERSIBLE!
 These files will be FOREVER LOST.</source>
-        <target state="new">This will DELETE {0} untracked files!
-This is IRREVERSIBLE!
-These files will be FOREVER LOST.</target>
+        <target state="translated">Hierdurch werden {0} nicht nachverfolgte Dateien GELÖSCHT!
+Dieser Vorgang ist UNUMKEHRBAR.
+Die Dateien gehen DAUERHAFT VERLOREN.</target>
       </trans-unit>
       <trans-unit id="yes">
         <source xml:lang="en">Yes</source>
-        <target state="new">Yes</target>
+        <target state="translated">Ja</target>
       </trans-unit>
       <trans-unit id="yes discard tracked">
         <source xml:lang="en">Discard 1 Tracked File</source>
-        <target state="new">Discard 1 Tracked File</target>
+        <target state="translated">1 verfolgte Datei verwerfen</target>
       </trans-unit>
       <trans-unit id="yes discard tracked multiple">
         <source xml:lang="en">Discard {0} Tracked Files</source>
-        <target state="new">Discard {0} Tracked Files</target>
+        <target state="translated">{0} verfolgte Dateien verwerfen</target>
       </trans-unit>
       <trans-unit id="yes never again">
         <source xml:lang="en">Yes, Don't Show Again</source>
-        <target state="new">Yes, Don't Show Again</target>
+        <target state="translated">Ja, nicht mehr anzeigen</target>
       </trans-unit>
     </body>
   </file>
@@ -716,15 +716,15 @@ These files will be FOREVER LOST.</target>
     <body>
       <trans-unit id="skipped">
         <source xml:lang="en">Skipped found git in: {0}</source>
-        <target state="new">Skipped found git in: {0}</target>
+        <target state="translated">Gefundenes Git wurde übersprungen in: {0}</target>
       </trans-unit>
       <trans-unit id="using git">
         <source xml:lang="en">Using git {0} from {1}</source>
-        <target state="new">Using git {0} from {1}</target>
+        <target state="translated">Verwenden von Git {0} von {1}</target>
       </trans-unit>
       <trans-unit id="validating">
         <source xml:lang="en">Validating found git in: {0}</source>
-        <target state="new">Validating found git in: {0}</target>
+        <target state="translated">Gefundenes Git wurde überprüft in: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -732,19 +732,19 @@ These files will be FOREVER LOST.</target>
     <body>
       <trans-unit id="no repositories">
         <source xml:lang="en">There are no available repositories</source>
-        <target state="new">There are no available repositories</target>
+        <target state="translated">Es sind keine verfügbaren Repositorys vorhanden.</target>
       </trans-unit>
       <trans-unit id="not supported">
         <source xml:lang="en">Absolute paths not supported in 'git.scanRepositories' setting.</source>
-        <target state="new">Absolute paths not supported in 'git.scanRepositories' setting.</target>
+        <target state="translated">Absolute Pfade werden in der Einstellung „git.canRepositories“ nicht unterstützt.</target>
       </trans-unit>
       <trans-unit id="pick repo">
         <source xml:lang="en">Choose a repository</source>
-        <target state="new">Choose a repository</target>
+        <target state="translated">Repository auswählen</target>
       </trans-unit>
       <trans-unit id="too many submodules">
         <source xml:lang="en">The '{0}' repository has {1} submodules which won't be opened automatically. You can still open each one individually by opening a file within.</source>
-        <target state="new">The '{0}' repository has {1} submodules which won't be opened automatically. You can still open each one individually by opening a file within.</target>
+        <target state="translated">Das Repository „{0}“ enthält {1} Submodule, die nicht automatisch geöffnet werden. Sie könne Sie einzeln öffnen, indem Sie darin erhaltene Datei öffnen.</target>
       </trans-unit>
     </body>
   </file>
@@ -752,39 +752,39 @@ These files will be FOREVER LOST.</target>
     <body>
       <trans-unit id="branch name">
         <source xml:lang="en">Branch name</source>
-        <target state="new">Branch name</target>
+        <target state="translated">Branchname</target>
       </trans-unit>
       <trans-unit id="error">
         <source xml:lang="en">$(error) Error: {0}</source>
-        <target state="new">$(error) Error: {0}</target>
+        <target state="translated">$(error) Fehler: {0}</target>
       </trans-unit>
       <trans-unit id="none found">
         <source xml:lang="en">No remote repositories found.</source>
-        <target state="new">No remote repositories found.</target>
+        <target state="translated">Keine Remoterepositorys gefunden.</target>
       </trans-unit>
       <trans-unit id="pick url">
         <source xml:lang="en">Choose a URL to clone from.</source>
-        <target state="new">Choose a URL to clone from.</target>
+        <target state="translated">Wählen Sie eine URL für den Klonvorgang aus.</target>
       </trans-unit>
       <trans-unit id="provide url">
         <source xml:lang="en">Provide repository URL</source>
-        <target state="new">Provide repository URL</target>
+        <target state="translated">Repository-URL angeben</target>
       </trans-unit>
       <trans-unit id="provide url or pick">
         <source xml:lang="en">Provide repository URL or pick a repository source.</source>
-        <target state="new">Provide repository URL or pick a repository source.</target>
+        <target state="translated">Geben Sie die Repository-URL an, oder wählen Sie eine Repositoryquelle aus.</target>
       </trans-unit>
       <trans-unit id="type to filter">
         <source xml:lang="en">Repository name</source>
-        <target state="new">Repository name</target>
+        <target state="translated">Repositoryname</target>
       </trans-unit>
       <trans-unit id="type to search">
         <source xml:lang="en">Repository name (type to search)</source>
-        <target state="new">Repository name (type to search)</target>
+        <target state="translated">Repositoryname (zur Suche eingeben)</target>
       </trans-unit>
       <trans-unit id="url">
         <source xml:lang="en">URL</source>
-        <target state="new">URL</target>
+        <target state="translated">URL</target>
       </trans-unit>
     </body>
   </file>
@@ -792,203 +792,203 @@ These files will be FOREVER LOST.</target>
     <body>
       <trans-unit id="add known">
         <source xml:lang="en">Would you like to add '{0}' to .gitignore?</source>
-        <target state="new">Would you like to add '{0}' to .gitignore?</target>
+        <target state="translated">Möchten Sie „{0}“ zu .gitignore hinzufügen?</target>
       </trans-unit>
       <trans-unit id="added by them">
         <source xml:lang="en">Conflict: Added By Them</source>
-        <target state="new">Conflict: Added By Them</target>
+        <target state="translated">Konflikt: von Anderen hinzugefügt</target>
       </trans-unit>
       <trans-unit id="added by us">
         <source xml:lang="en">Conflict: Added By Us</source>
-        <target state="new">Conflict: Added By Us</target>
+        <target state="translated">Konflikt: von uns hinzugefügt</target>
       </trans-unit>
       <trans-unit id="always pull">
         <source xml:lang="en">Always Pull</source>
-        <target state="new">Always Pull</target>
+        <target state="translated">Immer pullen</target>
       </trans-unit>
       <trans-unit id="both added">
         <source xml:lang="en">Conflict: Both Added</source>
-        <target state="new">Conflict: Both Added</target>
+        <target state="translated">Konflikt: beide hinzugefügt</target>
       </trans-unit>
       <trans-unit id="both deleted">
         <source xml:lang="en">Conflict: Both Deleted</source>
-        <target state="new">Conflict: Both Deleted</target>
+        <target state="translated">Konflikt: beide gelöscht</target>
       </trans-unit>
       <trans-unit id="both modified">
         <source xml:lang="en">Conflict: Both Modified</source>
-        <target state="new">Conflict: Both Modified</target>
+        <target state="translated">Konflikt: beide geändert</target>
       </trans-unit>
       <trans-unit id="changes">
         <source xml:lang="en">Changes</source>
-        <target state="new">Changes</target>
+        <target state="translated">Änderungen</target>
       </trans-unit>
       <trans-unit id="commit">
         <source xml:lang="en">Commit</source>
-        <target state="new">Commit</target>
+        <target state="translated">Commit</target>
       </trans-unit>
       <trans-unit id="commit in rebase">
         <source xml:lang="en">It's not possible to change the commit message in the middle of a rebase. Please complete the rebase operation and use interactive rebase instead.</source>
-        <target state="new">It's not possible to change the commit message in the middle of a rebase. Please complete the rebase operation and use interactive rebase instead.</target>
+        <target state="translated">Die Commit-Nachricht kann während der Rebase-Ausführung nicht geändert werden. Verwenden Sie stattdessen den interaktiven Rebase-Vorgang und schließen Sie die Rebase-Ausführung ab.</target>
       </trans-unit>
       <trans-unit id="commitMessage">
         <source xml:lang="en">Message ({0} to commit)</source>
-        <target state="new">Message ({0} to commit)</target>
+        <target state="translated">Nachricht ({0} für Commit)</target>
       </trans-unit>
       <trans-unit id="commitMessageCountdown">
         <source xml:lang="en">{0} characters left in current line</source>
-        <target state="new">{0} characters left in current line</target>
+        <target state="translated">{0} Zeichen in der aktuellen Zeile verbleibend</target>
       </trans-unit>
       <trans-unit id="commitMessageWarning">
         <source xml:lang="en">{0} characters over {1} in current line</source>
-        <target state="new">{0} characters over {1} in current line</target>
+        <target state="translated">{0} Zeichen über {1} in der aktuellen Zeile</target>
       </trans-unit>
       <trans-unit id="commitMessageWhitespacesOnlyWarning">
         <source xml:lang="en">Current commit message only contains whitespace characters</source>
-        <target state="new">Current commit message only contains whitespace characters</target>
+        <target state="translated">Die aktuelle Commitnachricht enthält nur Leerzeichen.</target>
       </trans-unit>
       <trans-unit id="commitMessageWithHeadLabel">
         <source xml:lang="en">Message ({0} to commit on '{1}')</source>
-        <target state="new">Message ({0} to commit on '{1}')</target>
+        <target state="translated">Nachricht ({0} für Commit in „{1}“)</target>
       </trans-unit>
       <trans-unit id="deleted">
         <source xml:lang="en">Deleted</source>
-        <target state="new">Deleted</target>
+        <target state="translated">Gelöscht</target>
       </trans-unit>
       <trans-unit id="deleted by them">
         <source xml:lang="en">Conflict: Deleted By Them</source>
-        <target state="new">Conflict: Deleted By Them</target>
+        <target state="translated">Konflikt: von Anderen gelöscht</target>
       </trans-unit>
       <trans-unit id="deleted by us">
         <source xml:lang="en">Conflict: Deleted By Us</source>
-        <target state="new">Conflict: Deleted By Us</target>
+        <target state="translated">Konflikt: von uns gelöscht</target>
       </trans-unit>
       <trans-unit id="dont pull">
         <source xml:lang="en">Don't Pull</source>
-        <target state="new">Don't Pull</target>
+        <target state="translated">Nicht pullen</target>
       </trans-unit>
       <trans-unit id="git.title.deleted">
         <source xml:lang="en">{0} (Deleted)</source>
-        <target state="new">{0} (Deleted)</target>
+        <target state="translated">{0} (gelöscht)</target>
       </trans-unit>
       <trans-unit id="git.title.index">
         <source xml:lang="en">{0} (Index)</source>
-        <target state="new">{0} (Index)</target>
+        <target state="translated">{0} (Index)</target>
       </trans-unit>
       <trans-unit id="git.title.ours">
         <source xml:lang="en">{0} (Ours)</source>
-        <target state="new">{0} (Ours)</target>
+        <target state="translated">{0} (unseres)</target>
       </trans-unit>
       <trans-unit id="git.title.theirs">
         <source xml:lang="en">{0} (Theirs)</source>
-        <target state="new">{0} (Theirs)</target>
+        <target state="translated">{0} (ihres)</target>
       </trans-unit>
       <trans-unit id="git.title.untracked">
         <source xml:lang="en">{0} (Untracked)</source>
-        <target state="new">{0} (Untracked)</target>
+        <target state="translated">{0} (keine Nachverfolgung)</target>
       </trans-unit>
       <trans-unit id="git.title.workingTree">
         <source xml:lang="en">{0} (Working Tree)</source>
-        <target state="new">{0} (Working Tree)</target>
+        <target state="translated">{0} (Arbeitsstruktur)</target>
       </trans-unit>
       <trans-unit id="huge">
         <source xml:lang="en">The git repository at '{0}' has too many active changes, only a subset of Git features will be enabled.</source>
-        <target state="new">The git repository at '{0}' has too many active changes, only a subset of Git features will be enabled.</target>
+        <target state="translated">Das Git-Repository unter {0} umfasst zu viele aktive Änderungen. Nur ein Teil der Git-Features wird aktiviert.</target>
       </trans-unit>
       <trans-unit id="ignored">
         <source xml:lang="en">Ignored</source>
-        <target state="new">Ignored</target>
+        <target state="translated">Ignoriert</target>
       </trans-unit>
       <trans-unit id="index added">
         <source xml:lang="en">Index Added</source>
-        <target state="new">Index Added</target>
+        <target state="translated">Index hinzugefügt</target>
       </trans-unit>
       <trans-unit id="index copied">
         <source xml:lang="en">Index Copied</source>
-        <target state="new">Index Copied</target>
+        <target state="translated">Index kopiert</target>
       </trans-unit>
       <trans-unit id="index deleted">
         <source xml:lang="en">Index Deleted</source>
-        <target state="new">Index Deleted</target>
+        <target state="translated">Index gelöscht</target>
       </trans-unit>
       <trans-unit id="index modified">
         <source xml:lang="en">Index Modified</source>
-        <target state="new">Index Modified</target>
+        <target state="translated">Index geändert</target>
       </trans-unit>
       <trans-unit id="index renamed">
         <source xml:lang="en">Index Renamed</source>
-        <target state="new">Index Renamed</target>
+        <target state="translated">Index umbenannt</target>
       </trans-unit>
       <trans-unit id="intent to add">
         <source xml:lang="en">Intent to Add</source>
-        <target state="new">Intent to Add</target>
+        <target state="translated">Hinzuzufügende Absicht</target>
       </trans-unit>
       <trans-unit id="merge changes">
         <source xml:lang="en">Merge Changes</source>
-        <target state="new">Merge Changes</target>
+        <target state="translated">Änderungen zusammenführen</target>
       </trans-unit>
       <trans-unit id="modified">
         <source xml:lang="en">Modified</source>
-        <target state="new">Modified</target>
+        <target state="translated">Geändert</target>
       </trans-unit>
       <trans-unit id="neveragain">
         <source xml:lang="en">Don't Show Again</source>
-        <target state="new">Don't Show Again</target>
+        <target state="translated">Nicht mehr anzeigen</target>
       </trans-unit>
       <trans-unit id="open">
         <source xml:lang="en">Open</source>
-        <target state="new">Open</target>
+        <target state="translated">Öffnen</target>
       </trans-unit>
       <trans-unit id="pull">
         <source xml:lang="en">Pull</source>
-        <target state="new">Pull</target>
+        <target state="translated">Pull</target>
       </trans-unit>
       <trans-unit id="pull branch maybe rebased">
         <source xml:lang="en">It looks like the current branch '{0}' might have been rebased. Are you sure you still want to pull into it?</source>
-        <target state="new">It looks like the current branch '{0}' might have been rebased. Are you sure you still want to pull into it?</target>
+        <target state="translated">Offenbar wurde für den aktuellen Branch („{0}“) ein Rebase ausgeführt. Möchten Sie ihn dennoch als Ziel für den Pullvorgang verwenden?</target>
       </trans-unit>
       <trans-unit id="pull maybe rebased">
         <source xml:lang="en">It looks like the current branch might have been rebased. Are you sure you still want to pull into it?</source>
-        <target state="new">It looks like the current branch might have been rebased. Are you sure you still want to pull into it?</target>
+        <target state="translated">Offenbar wurde für den aktuellen Branch ein Rebase ausgeführt. Möchten Sie ihn dennoch als Ziel für den Pullvorgang verwenden?</target>
       </trans-unit>
       <trans-unit id="pull n">
         <source xml:lang="en">Pull {0} commits from {1}/{2}</source>
-        <target state="new">Pull {0} commits from {1}/{2}</target>
+        <target state="translated">{0} Commits aus {1}/{2} per Pull übertragen</target>
       </trans-unit>
       <trans-unit id="pull push n">
         <source xml:lang="en">Pull {0} and push {1} commits between {2}/{3}</source>
-        <target state="new">Pull {0} and push {1} commits between {2}/{3}</target>
+        <target state="translated">{0} Commits per Pull und {1} Commits per Push zwischen {2}/{3} übertragen</target>
       </trans-unit>
       <trans-unit id="push n">
         <source xml:lang="en">Push {0} commits to {1}/{2}</source>
-        <target state="new">Push {0} commits to {1}/{2}</target>
+        <target state="translated">{0} Commits per Push nach {1}/{2} übertragen</target>
       </trans-unit>
       <trans-unit id="push success">
         <source xml:lang="en">Successfully pushed.</source>
-        <target state="new">Successfully pushed.</target>
+        <target state="translated">Push wurde erfolgreich ausgeführt.</target>
       </trans-unit>
       <trans-unit id="staged changes">
         <source xml:lang="en">Staged Changes</source>
-        <target state="new">Staged Changes</target>
+        <target state="translated">Gestagete Änderungen</target>
       </trans-unit>
       <trans-unit id="sync changes">
         <source xml:lang="en">Synchronize Changes</source>
-        <target state="new">Synchronize Changes</target>
+        <target state="translated">Änderungen synchronisieren</target>
       </trans-unit>
       <trans-unit id="sync is unpredictable">
         <source xml:lang="en">Syncing. Cancelling may cause serious damages to the repository</source>
-        <target state="new">Syncing. Cancelling may cause serious damages to the repository</target>
+        <target state="translated">Synchronisierung wird durchgeführt. Das Abbrechen des Vorgangs kann zu schweren Schäden am Repository führen.</target>
       </trans-unit>
       <trans-unit id="untracked">
         <source xml:lang="en">Untracked</source>
-        <target state="new">Untracked</target>
+        <target state="translated">Nicht verfolgt</target>
       </trans-unit>
       <trans-unit id="untracked changes">
         <source xml:lang="en">Untracked Changes</source>
-        <target state="new">Untracked Changes</target>
+        <target state="translated">Nicht nachverfolgte Änderungen</target>
       </trans-unit>
       <trans-unit id="yes">
         <source xml:lang="en">Yes</source>
-        <target state="new">Yes</target>
+        <target state="translated">Ja</target>
       </trans-unit>
     </body>
   </file>
@@ -996,27 +996,27 @@ These files will be FOREVER LOST.</target>
     <body>
       <trans-unit id="checkout">
         <source xml:lang="en">Checkout branch/tag...</source>
-        <target state="new">Checkout branch/tag...</target>
+        <target state="translated">Branch/Tag auschecken...</target>
       </trans-unit>
       <trans-unit id="publish changes">
         <source xml:lang="en">Publish Changes</source>
-        <target state="new">Publish Changes</target>
+        <target state="translated">Änderungen veröffentlichen</target>
       </trans-unit>
       <trans-unit id="publish to">
         <source xml:lang="en">Publish to {0}</source>
-        <target state="new">Publish to {0}</target>
+        <target state="translated">In „{0}“ veröffentlichen</target>
       </trans-unit>
       <trans-unit id="publish to...">
         <source xml:lang="en">Publish to...</source>
-        <target state="new">Publish to...</target>
+        <target state="translated">Veröffentlichen in...</target>
       </trans-unit>
       <trans-unit id="rebasing">
         <source xml:lang="en">Rebasing</source>
-        <target state="new">Rebasing</target>
+        <target state="translated">Rebase wird ausgeführt</target>
       </trans-unit>
       <trans-unit id="syncing changes">
         <source xml:lang="en">Synchronizing Changes...</source>
-        <target state="new">Synchronizing Changes...</target>
+        <target state="translated">Änderungen werden synchronisiert...</target>
       </trans-unit>
     </body>
   </file>
@@ -1024,37 +1024,37 @@ These files will be FOREVER LOST.</target>
     <body>
       <trans-unit id="git.index">
         <source xml:lang="en">Index</source>
-        <target state="new">Index</target>
+        <target state="translated">Index</target>
       </trans-unit>
       <trans-unit id="git.timeline.detail">
         <source xml:lang="en">{0}  — {1}
 {2}
 
 {3}</source>
-        <target state="new">{0}  — {1}
+        <target state="translated">{0}  — {1}
 {2}
 
 {3}</target>
       </trans-unit>
       <trans-unit id="git.timeline.source">
         <source xml:lang="en">Git History</source>
-        <target state="new">Git History</target>
+        <target state="translated">Git-Verlauf</target>
       </trans-unit>
       <trans-unit id="git.timeline.stagedChanges">
         <source xml:lang="en">Staged Changes</source>
-        <target state="new">Staged Changes</target>
+        <target state="translated">Gestagete Änderungen</target>
       </trans-unit>
       <trans-unit id="git.timeline.uncommitedChanges">
         <source xml:lang="en">Uncommitted Changes</source>
-        <target state="new">Uncommitted Changes</target>
+        <target state="translated">Ausgecheckte Änderungen</target>
       </trans-unit>
       <trans-unit id="git.timeline.you">
         <source xml:lang="en">You</source>
-        <target state="new">You</target>
+        <target state="translated">Sie</target>
       </trans-unit>
       <trans-unit id="git.workingTree">
         <source xml:lang="en">Working Tree</source>
-        <target state="new">Working Tree</target>
+        <target state="translated">Arbeitsstruktur</target>
       </trans-unit>
     </body>
   </file>
@@ -1062,885 +1062,885 @@ These files will be FOREVER LOST.</target>
     <body>
       <trans-unit id="colors.added">
         <source xml:lang="en">Color for added resources.</source>
-        <target state="new">Color for added resources.</target>
+        <target state="translated">Farbe für hinzugefügte Ressourcen.</target>
       </trans-unit>
       <trans-unit id="colors.conflict">
         <source xml:lang="en">Color for resources with conflicts.</source>
-        <target state="new">Color for resources with conflicts.</target>
+        <target state="translated">Farbe für Ressourcen mit Konflikten.</target>
       </trans-unit>
       <trans-unit id="colors.deleted">
         <source xml:lang="en">Color for deleted resources.</source>
-        <target state="new">Color for deleted resources.</target>
+        <target state="translated">Farbe für gelöschte Ressourcen.</target>
       </trans-unit>
       <trans-unit id="colors.ignored">
         <source xml:lang="en">Color for ignored resources.</source>
-        <target state="new">Color for ignored resources.</target>
+        <target state="translated">Farbe für ignorierte Ressourcen.</target>
       </trans-unit>
       <trans-unit id="colors.modified">
         <source xml:lang="en">Color for modified resources.</source>
-        <target state="new">Color for modified resources.</target>
+        <target state="translated">Farbe für geänderte Ressourcen.</target>
       </trans-unit>
       <trans-unit id="colors.renamed">
         <source xml:lang="en">Color for renamed or copied resources.</source>
-        <target state="new">Color for renamed or copied resources.</target>
+        <target state="translated">Farbe für umbenannte oder kopierte Ressourcen.</target>
       </trans-unit>
       <trans-unit id="colors.stageDeleted">
         <source xml:lang="en">Color for deleted resources which have been staged.</source>
-        <target state="new">Color for deleted resources which have been staged.</target>
+        <target state="translated">Farbe für gelöschte Ressourcen, die gestaget wurden.</target>
       </trans-unit>
       <trans-unit id="colors.stageModified">
         <source xml:lang="en">Color for modified resources which have been staged.</source>
-        <target state="new">Color for modified resources which have been staged.</target>
+        <target state="translated">Farbe für geänderte Ressourcen, die gestaget wurden.</target>
       </trans-unit>
       <trans-unit id="colors.submodule">
         <source xml:lang="en">Color for submodule resources.</source>
-        <target state="new">Color for submodule resources.</target>
+        <target state="translated">Farbe für Submodul-Ressourcen.</target>
       </trans-unit>
       <trans-unit id="colors.untracked">
         <source xml:lang="en">Color for untracked resources.</source>
-        <target state="new">Color for untracked resources.</target>
+        <target state="translated">Farbe für nicht verfolgte Ressourcen.</target>
       </trans-unit>
       <trans-unit id="command.addRemote">
         <source xml:lang="en">Add Remote...</source>
-        <target state="new">Add Remote...</target>
+        <target state="translated">Remoterepository hinzufügen...</target>
       </trans-unit>
       <trans-unit id="command.branch">
         <source xml:lang="en">Create Branch...</source>
-        <target state="new">Create Branch...</target>
+        <target state="translated">Branch wird erstellt...</target>
       </trans-unit>
       <trans-unit id="command.branchFrom">
         <source xml:lang="en">Create Branch From...</source>
-        <target state="new">Create Branch From...</target>
+        <target state="translated">Branch erstellen aus...</target>
       </trans-unit>
       <trans-unit id="command.checkout">
         <source xml:lang="en">Checkout to...</source>
-        <target state="new">Checkout to...</target>
+        <target state="translated">Auschecken an...</target>
       </trans-unit>
       <trans-unit id="command.checkoutDetached">
         <source xml:lang="en">Checkout to (Detached)...</source>
-        <target state="new">Checkout to (Detached)...</target>
+        <target state="translated">Auschecken an (getrennt)...</target>
       </trans-unit>
       <trans-unit id="command.cherryPick">
         <source xml:lang="en">Cherry Pick...</source>
-        <target state="new">Cherry Pick...</target>
+        <target state="translated">Cherry-Pick...</target>
       </trans-unit>
       <trans-unit id="command.clean">
         <source xml:lang="en">Discard Changes</source>
-        <target state="new">Discard Changes</target>
+        <target state="translated">Änderungen verwerfen</target>
       </trans-unit>
       <trans-unit id="command.cleanAll">
         <source xml:lang="en">Discard All Changes</source>
-        <target state="new">Discard All Changes</target>
+        <target state="translated">Alle Änderungen verwerfen</target>
       </trans-unit>
       <trans-unit id="command.cleanAllTracked">
         <source xml:lang="en">Discard All Tracked Changes</source>
-        <target state="new">Discard All Tracked Changes</target>
+        <target state="translated">Alle nachverfolgten Änderungen verwerfen</target>
       </trans-unit>
       <trans-unit id="command.cleanAllUntracked">
         <source xml:lang="en">Discard All Untracked Changes</source>
-        <target state="new">Discard All Untracked Changes</target>
+        <target state="translated">Alle nicht nachverfolgten Änderungen verwerfen</target>
       </trans-unit>
       <trans-unit id="command.clone">
         <source xml:lang="en">Clone</source>
-        <target state="new">Clone</target>
+        <target state="translated">Klonen</target>
       </trans-unit>
       <trans-unit id="command.cloneRecursive">
         <source xml:lang="en">Clone (Recursive)</source>
-        <target state="new">Clone (Recursive)</target>
+        <target state="translated">Klonen (rekursiv)</target>
       </trans-unit>
       <trans-unit id="command.close">
         <source xml:lang="en">Close Repository</source>
-        <target state="new">Close Repository</target>
+        <target state="translated">Repository schließen</target>
       </trans-unit>
       <trans-unit id="command.commit">
         <source xml:lang="en">Commit</source>
-        <target state="new">Commit</target>
+        <target state="translated">Commit</target>
       </trans-unit>
       <trans-unit id="command.commitAll">
         <source xml:lang="en">Commit All</source>
-        <target state="new">Commit All</target>
+        <target state="translated">Commit für alle ausführen</target>
       </trans-unit>
       <trans-unit id="command.commitAllAmend">
         <source xml:lang="en">Commit All (Amend)</source>
-        <target state="new">Commit All (Amend)</target>
+        <target state="translated">Commit für alle ausführen (Ändern)</target>
       </trans-unit>
       <trans-unit id="command.commitAllAmendNoVerify">
         <source xml:lang="en">Commit All (Amend, No Verify)</source>
-        <target state="new">Commit All (Amend, No Verify)</target>
+        <target state="translated">Alle committen (ändern, keine Überprüfung)</target>
       </trans-unit>
       <trans-unit id="command.commitAllNoVerify">
         <source xml:lang="en">Commit All (No Verify)</source>
-        <target state="new">Commit All (No Verify)</target>
+        <target state="translated">Alle committen (keine Überprüfung)</target>
       </trans-unit>
       <trans-unit id="command.commitAllSigned">
         <source xml:lang="en">Commit All (Signed Off)</source>
-        <target state="new">Commit All (Signed Off)</target>
+        <target state="translated">Alle committen (unterzeichnet)</target>
       </trans-unit>
       <trans-unit id="command.commitAllSignedNoVerify">
         <source xml:lang="en">Commit All (Signed Off, No Verify)</source>
-        <target state="new">Commit All (Signed Off, No Verify)</target>
+        <target state="translated">Alle committen (abgemeldet, keine Überprüfung)</target>
       </trans-unit>
       <trans-unit id="command.commitEmpty">
         <source xml:lang="en">Commit Empty</source>
-        <target state="new">Commit Empty</target>
+        <target state="translated">Leer committen</target>
       </trans-unit>
       <trans-unit id="command.commitEmptyNoVerify">
         <source xml:lang="en">Commit Empty (No Verify)</source>
-        <target state="new">Commit Empty (No Verify)</target>
+        <target state="translated">Commit leer (keine Überprüfung)</target>
       </trans-unit>
       <trans-unit id="command.commitNoVerify">
         <source xml:lang="en">Commit (No Verify)</source>
-        <target state="new">Commit (No Verify)</target>
+        <target state="translated">Commit ausführen (keine Überprüfung)</target>
       </trans-unit>
       <trans-unit id="command.commitStaged">
         <source xml:lang="en">Commit Staged</source>
-        <target state="new">Commit Staged</target>
+        <target state="translated">Gestagetes committen</target>
       </trans-unit>
       <trans-unit id="command.commitStagedAmend">
         <source xml:lang="en">Commit Staged (Amend)</source>
-        <target state="new">Commit Staged (Amend)</target>
+        <target state="translated">Gestagetes committen (Ändern)</target>
       </trans-unit>
       <trans-unit id="command.commitStagedAmendNoVerify">
         <source xml:lang="en">Commit Staged (Amend, No Verify)</source>
-        <target state="new">Commit Staged (Amend, No Verify)</target>
+        <target state="translated">Commit gestaget (ändern, keine Überprüfung)</target>
       </trans-unit>
       <trans-unit id="command.commitStagedNoVerify">
         <source xml:lang="en">Commit Staged (No Verify)</source>
-        <target state="new">Commit Staged (No Verify)</target>
+        <target state="translated">Commit gestaget (keine Überprüfung)</target>
       </trans-unit>
       <trans-unit id="command.commitStagedSigned">
         <source xml:lang="en">Commit Staged (Signed Off)</source>
-        <target state="new">Commit Staged (Signed Off)</target>
+        <target state="translated">Gestagetes committen (signiert)</target>
       </trans-unit>
       <trans-unit id="command.commitStagedSignedNoVerify">
         <source xml:lang="en">Commit Staged (Signed Off, No Verify)</source>
-        <target state="new">Commit Staged (Signed Off, No Verify)</target>
+        <target state="translated">Commit gestaget (abgemeldet, keine Überprüfung)</target>
       </trans-unit>
       <trans-unit id="command.createTag">
         <source xml:lang="en">Create Tag</source>
-        <target state="new">Create Tag</target>
+        <target state="translated">Tag erstellen</target>
       </trans-unit>
       <trans-unit id="command.deleteBranch">
         <source xml:lang="en">Delete Branch...</source>
-        <target state="new">Delete Branch...</target>
+        <target state="translated">Branch löschen...</target>
       </trans-unit>
       <trans-unit id="command.deleteTag">
         <source xml:lang="en">Delete Tag</source>
-        <target state="new">Delete Tag</target>
+        <target state="translated">Tag löschen</target>
       </trans-unit>
       <trans-unit id="command.fetch">
         <source xml:lang="en">Fetch</source>
-        <target state="new">Fetch</target>
+        <target state="translated">Abrufen</target>
       </trans-unit>
       <trans-unit id="command.fetchAll">
         <source xml:lang="en">Fetch From All Remotes</source>
-        <target state="new">Fetch From All Remotes</target>
+        <target state="translated">Von allen Remotes holen</target>
       </trans-unit>
       <trans-unit id="command.fetchPrune">
         <source xml:lang="en">Fetch (Prune)</source>
-        <target state="new">Fetch (Prune)</target>
+        <target state="translated">Abrufen (Prune)</target>
       </trans-unit>
       <trans-unit id="command.ignore">
         <source xml:lang="en">Add to .gitignore</source>
-        <target state="new">Add to .gitignore</target>
+        <target state="translated">Zu .gitignore hinzufügen</target>
       </trans-unit>
       <trans-unit id="command.init">
         <source xml:lang="en">Initialize Repository</source>
-        <target state="new">Initialize Repository</target>
+        <target state="translated">Repository initialisieren</target>
       </trans-unit>
       <trans-unit id="command.merge">
         <source xml:lang="en">Merge Branch...</source>
-        <target state="new">Merge Branch...</target>
+        <target state="translated">Branch zusammenführen...</target>
       </trans-unit>
       <trans-unit id="command.openAllChanges">
         <source xml:lang="en">Open All Changes</source>
-        <target state="new">Open All Changes</target>
+        <target state="translated">Alle Änderungen öffnen</target>
       </trans-unit>
       <trans-unit id="command.openChange">
         <source xml:lang="en">Open Changes</source>
-        <target state="new">Open Changes</target>
+        <target state="translated">Offene Änderungen</target>
       </trans-unit>
       <trans-unit id="command.openFile">
         <source xml:lang="en">Open File</source>
-        <target state="new">Open File</target>
+        <target state="translated">Datei öffnen</target>
       </trans-unit>
       <trans-unit id="command.openHEADFile">
         <source xml:lang="en">Open File (HEAD)</source>
-        <target state="new">Open File (HEAD)</target>
+        <target state="translated">Datei öffnen (HEAD)</target>
       </trans-unit>
       <trans-unit id="command.openRepository">
         <source xml:lang="en">Open Repository</source>
-        <target state="new">Open Repository</target>
+        <target state="translated">Repository öffnen</target>
       </trans-unit>
       <trans-unit id="command.publish">
         <source xml:lang="en">Publish Branch...</source>
-        <target state="new">Publish Branch...</target>
+        <target state="translated">Branch veröffentlichen...</target>
       </trans-unit>
       <trans-unit id="command.pull">
         <source xml:lang="en">Pull</source>
-        <target state="new">Pull</target>
+        <target state="translated">Pull</target>
       </trans-unit>
       <trans-unit id="command.pullFrom">
         <source xml:lang="en">Pull from...</source>
-        <target state="new">Pull from...</target>
+        <target state="translated">Pullen von...</target>
       </trans-unit>
       <trans-unit id="command.pullRebase">
         <source xml:lang="en">Pull (Rebase)</source>
-        <target state="new">Pull (Rebase)</target>
+        <target state="translated">Pull (Rebase)</target>
       </trans-unit>
       <trans-unit id="command.push">
         <source xml:lang="en">Push</source>
-        <target state="new">Push</target>
+        <target state="translated">Push</target>
       </trans-unit>
       <trans-unit id="command.pushFollowTags">
         <source xml:lang="en">Push (Follow Tags)</source>
-        <target state="new">Push (Follow Tags)</target>
+        <target state="translated">Push (Tags folgen)</target>
       </trans-unit>
       <trans-unit id="command.pushFollowTagsForce">
         <source xml:lang="en">Push (Follow Tags, Force)</source>
-        <target state="new">Push (Follow Tags, Force)</target>
+        <target state="translated">Push (Tags folgen, Erzwingen)</target>
       </trans-unit>
       <trans-unit id="command.pushForce">
         <source xml:lang="en">Push (Force)</source>
-        <target state="new">Push (Force)</target>
+        <target state="translated">Push (Erzwingen)</target>
       </trans-unit>
       <trans-unit id="command.pushTags">
         <source xml:lang="en">Push Tags</source>
-        <target state="new">Push Tags</target>
+        <target state="translated">Tags pushen</target>
       </trans-unit>
       <trans-unit id="command.pushTo">
         <source xml:lang="en">Push to...</source>
-        <target state="new">Push to...</target>
+        <target state="translated">Push zu...</target>
       </trans-unit>
       <trans-unit id="command.pushToForce">
         <source xml:lang="en">Push to... (Force)</source>
-        <target state="new">Push to... (Force)</target>
+        <target state="translated">Push zu... (Erzwingen)</target>
       </trans-unit>
       <trans-unit id="command.rebase">
         <source xml:lang="en">Rebase Branch...</source>
-        <target state="new">Rebase Branch...</target>
+        <target state="translated">Rebase für Branch ausführen...</target>
       </trans-unit>
       <trans-unit id="command.rebaseAbort">
         <source xml:lang="en">Abort Rebase</source>
-        <target state="new">Abort Rebase</target>
+        <target state="translated">Rebase abbrechen</target>
       </trans-unit>
       <trans-unit id="command.refresh">
         <source xml:lang="en">Refresh</source>
-        <target state="new">Refresh</target>
+        <target state="translated">Aktualisieren</target>
       </trans-unit>
       <trans-unit id="command.removeRemote">
         <source xml:lang="en">Remove Remote</source>
-        <target state="new">Remove Remote</target>
+        <target state="translated">Remote entfernen</target>
       </trans-unit>
       <trans-unit id="command.rename">
         <source xml:lang="en">Rename</source>
-        <target state="new">Rename</target>
+        <target state="translated">Umbenennen</target>
       </trans-unit>
       <trans-unit id="command.renameBranch">
         <source xml:lang="en">Rename Branch...</source>
-        <target state="new">Rename Branch...</target>
+        <target state="translated">Branch umbenennen...</target>
       </trans-unit>
       <trans-unit id="command.restoreCommitTemplate">
         <source xml:lang="en">Restore Commit Template</source>
-        <target state="new">Restore Commit Template</target>
+        <target state="translated">Commitvorlage wiederherstellen</target>
       </trans-unit>
       <trans-unit id="command.revealInExplorer">
         <source xml:lang="en">Reveal in Side Bar</source>
-        <target state="new">Reveal in Side Bar</target>
+        <target state="translated">In Seitenleiste anzeigen</target>
       </trans-unit>
       <trans-unit id="command.revertChange">
         <source xml:lang="en">Revert Change</source>
-        <target state="new">Revert Change</target>
+        <target state="translated">Änderung zurücksetzen</target>
       </trans-unit>
       <trans-unit id="command.revertSelectedRanges">
         <source xml:lang="en">Revert Selected Ranges</source>
-        <target state="new">Revert Selected Ranges</target>
+        <target state="translated">Ausgewählte Bereiche zurücksetzen</target>
       </trans-unit>
       <trans-unit id="command.setLogLevel">
         <source xml:lang="en">Set Log Level...</source>
-        <target state="new">Set Log Level...</target>
+        <target state="translated">Protokollstufe festlegen...</target>
       </trans-unit>
       <trans-unit id="command.showOutput">
         <source xml:lang="en">Show Git Output</source>
-        <target state="new">Show Git Output</target>
+        <target state="translated">Git-Ausgabe anzeigen</target>
       </trans-unit>
       <trans-unit id="command.stage">
         <source xml:lang="en">Stage Changes</source>
-        <target state="new">Stage Changes</target>
+        <target state="translated">Änderungen bereitstellen</target>
       </trans-unit>
       <trans-unit id="command.stageAll">
         <source xml:lang="en">Stage All Changes</source>
-        <target state="new">Stage All Changes</target>
+        <target state="translated">Alle Änderungen bereitstellen</target>
       </trans-unit>
       <trans-unit id="command.stageAllMerge">
         <source xml:lang="en">Stage All Merge Changes</source>
-        <target state="new">Stage All Merge Changes</target>
+        <target state="translated">Alle zusammengeführten Änderungen stagen</target>
       </trans-unit>
       <trans-unit id="command.stageAllTracked">
         <source xml:lang="en">Stage All Tracked Changes</source>
-        <target state="new">Stage All Tracked Changes</target>
+        <target state="translated">Alle nachverfolgten Änderungen bereitstellen</target>
       </trans-unit>
       <trans-unit id="command.stageAllUntracked">
         <source xml:lang="en">Stage All Untracked Changes</source>
-        <target state="new">Stage All Untracked Changes</target>
+        <target state="translated">Alle nicht nachverfolgten Änderungen bereitstellen</target>
       </trans-unit>
       <trans-unit id="command.stageChange">
         <source xml:lang="en">Stage Change</source>
-        <target state="new">Stage Change</target>
+        <target state="translated">Änderung bereitstellen</target>
       </trans-unit>
       <trans-unit id="command.stageSelectedRanges">
         <source xml:lang="en">Stage Selected Ranges</source>
-        <target state="new">Stage Selected Ranges</target>
+        <target state="translated">Gewählte Bereiche staffeln</target>
       </trans-unit>
       <trans-unit id="command.stash">
         <source xml:lang="en">Stash</source>
-        <target state="new">Stash</target>
+        <target state="translated">Stash ausführen</target>
       </trans-unit>
       <trans-unit id="command.stashApply">
         <source xml:lang="en">Apply Stash...</source>
-        <target state="new">Apply Stash...</target>
+        <target state="translated">Stash anwenden...</target>
       </trans-unit>
       <trans-unit id="command.stashApplyLatest">
         <source xml:lang="en">Apply Latest Stash</source>
-        <target state="new">Apply Latest Stash</target>
+        <target state="translated">Neuesten Stash anwenden</target>
       </trans-unit>
       <trans-unit id="command.stashDrop">
         <source xml:lang="en">Drop Stash...</source>
-        <target state="new">Drop Stash...</target>
+        <target state="translated">Stash löschen...</target>
       </trans-unit>
       <trans-unit id="command.stashIncludeUntracked">
         <source xml:lang="en">Stash (Include Untracked)</source>
-        <target state="new">Stash (Include Untracked)</target>
+        <target state="translated">Stash (einschließlich nicht verfolgt)</target>
       </trans-unit>
       <trans-unit id="command.stashPop">
         <source xml:lang="en">Pop Stash...</source>
-        <target state="new">Pop Stash...</target>
+        <target state="translated">Pop für Stash ausführen...</target>
       </trans-unit>
       <trans-unit id="command.stashPopLatest">
         <source xml:lang="en">Pop Latest Stash</source>
-        <target state="new">Pop Latest Stash</target>
+        <target state="translated">Pop für letzten Stash ausführen</target>
       </trans-unit>
       <trans-unit id="command.sync">
         <source xml:lang="en">Sync</source>
-        <target state="new">Sync</target>
+        <target state="translated">Synchronisierung</target>
       </trans-unit>
       <trans-unit id="command.syncRebase">
         <source xml:lang="en">Sync (Rebase)</source>
-        <target state="new">Sync (Rebase)</target>
+        <target state="translated">Sync (Rebase)</target>
       </trans-unit>
       <trans-unit id="command.timelineCompareWithSelected">
         <source xml:lang="en">Compare with Selected</source>
-        <target state="new">Compare with Selected</target>
+        <target state="translated">Mit Auswahl vergleichen</target>
       </trans-unit>
       <trans-unit id="command.timelineCopyCommitId">
         <source xml:lang="en">Copy Commit ID</source>
-        <target state="new">Copy Commit ID</target>
+        <target state="translated">Commit-ID kopieren</target>
       </trans-unit>
       <trans-unit id="command.timelineCopyCommitMessage">
         <source xml:lang="en">Copy Commit Message</source>
-        <target state="new">Copy Commit Message</target>
+        <target state="translated">Commitnachricht kopieren</target>
       </trans-unit>
       <trans-unit id="command.timelineOpenDiff">
         <source xml:lang="en">Open Changes</source>
-        <target state="new">Open Changes</target>
+        <target state="translated">Offene Änderungen</target>
       </trans-unit>
       <trans-unit id="command.timelineSelectForCompare">
         <source xml:lang="en">Select for Compare</source>
-        <target state="new">Select for Compare</target>
+        <target state="translated">Für Vergleich auswählen</target>
       </trans-unit>
       <trans-unit id="command.undoCommit">
         <source xml:lang="en">Undo Last Commit</source>
-        <target state="new">Undo Last Commit</target>
+        <target state="translated">Letzten Commit rückgängig machen</target>
       </trans-unit>
       <trans-unit id="command.unstage">
         <source xml:lang="en">Unstage Changes</source>
-        <target state="new">Unstage Changes</target>
+        <target state="translated">Bereitstellung der Änderungen aufheben</target>
       </trans-unit>
       <trans-unit id="command.unstageAll">
         <source xml:lang="en">Unstage All Changes</source>
-        <target state="new">Unstage All Changes</target>
+        <target state="translated">Bereitstellung aller Änderungen aufheben</target>
       </trans-unit>
       <trans-unit id="command.unstageSelectedRanges">
         <source xml:lang="en">Unstage Selected Ranges</source>
-        <target state="new">Unstage Selected Ranges</target>
+        <target state="translated">Bereitstellung gewählter Bereiche aufheben</target>
       </trans-unit>
       <trans-unit id="config.allowForcePush">
         <source xml:lang="en">Controls whether force push (with or without lease) is enabled.</source>
-        <target state="new">Controls whether force push (with or without lease) is enabled.</target>
+        <target state="translated">Steuert, ob erzwungene Pushes (mit oder ohne Lease) aktiviert sind.</target>
       </trans-unit>
       <trans-unit id="config.allowNoVerifyCommit">
         <source xml:lang="en">Controls whether commits without running pre-commit and commit-msg hooks are allowed.</source>
-        <target state="new">Controls whether commits without running pre-commit and commit-msg hooks are allowed.</target>
+        <target state="translated">Hiermit wird gesteuert, ob Commits ohne Ausführung von pre-commit- und commit-msg-Hooks zulässig sind.</target>
       </trans-unit>
       <trans-unit id="config.alwaysShowStagedChangesResourceGroup">
         <source xml:lang="en">Always show the Staged Changes resource group.</source>
-        <target state="new">Always show the Staged Changes resource group.</target>
+        <target state="translated">Ressourcengruppe für gestagete Änderungen immer anzeigen.</target>
       </trans-unit>
       <trans-unit id="config.alwaysSignOff">
         <source xml:lang="en">Controls the signoff flag for all commits.</source>
-        <target state="new">Controls the signoff flag for all commits.</target>
+        <target state="translated">Legt das signoff-Flag für alle Commits fest.</target>
       </trans-unit>
       <trans-unit id="config.autoRepositoryDetection">
         <source xml:lang="en">Configures when repositories should be automatically detected.</source>
-        <target state="new">Configures when repositories should be automatically detected.</target>
+        <target state="translated">Legt fest, in welchen Fällen Repositorys automatisch erkannt werden sollen.</target>
       </trans-unit>
       <trans-unit id="config.autoRepositoryDetection.false">
         <source xml:lang="en">Disable automatic repository scanning.</source>
-        <target state="new">Disable automatic repository scanning.</target>
+        <target state="translated">Automatisches Durchsuchen von Repositorys deaktiveren.</target>
       </trans-unit>
       <trans-unit id="config.autoRepositoryDetection.openEditors">
         <source xml:lang="en">Scan for parent folders of open files.</source>
-        <target state="new">Scan for parent folders of open files.</target>
+        <target state="translated">Nach übergeordneten Ordnern von geöffneten Dateien suchen.</target>
       </trans-unit>
       <trans-unit id="config.autoRepositoryDetection.subFolders">
         <source xml:lang="en">Scan for subfolders of the currently opened folder.</source>
-        <target state="new">Scan for subfolders of the currently opened folder.</target>
+        <target state="translated">Nach Unterordnern des aktuell geöffneten Ordners suchen.</target>
       </trans-unit>
       <trans-unit id="config.autoRepositoryDetection.true">
         <source xml:lang="en">Scan for both subfolders of the current opened folder and parent folders of open files.</source>
-        <target state="new">Scan for both subfolders of the current opened folder and parent folders of open files.</target>
+        <target state="translated">Sowohl nach Unterordnern des aktuell geöffneten Ordners als auch nach übergeordneten Ordnern von geöffneten Dateien suchen.</target>
       </trans-unit>
       <trans-unit id="config.autoStash">
         <source xml:lang="en">Stash any changes before pulling and restore them after successful pull.</source>
-        <target state="new">Stash any changes before pulling and restore them after successful pull.</target>
+        <target state="translated">Führen Sie für Änderungen einen Stash aus, bevor Sie sie pullen, und stellen Sie sie nach einem erfolgreichen Pull wieder her.</target>
       </trans-unit>
       <trans-unit id="config.autofetch">
         <source xml:lang="en">When set to true, commits will automatically be fetched from the default remote of the current Git repository. Setting to `all` will fetch from all remotes.</source>
-        <target state="new">When set to true, commits will automatically be fetched from the default remote of the current Git repository. Setting to `all` will fetch from all remotes.</target>
+        <target state="translated">Bei Festlegung auf TRUE werden Commits automatisch aus dem Standardremoteverzeichnis des aktuellen Git-Repositorys abgerufen. Bei Festlegung auf „Alle“ erfolgt der Abruf aus allen Remoteverzeichnissen.</target>
       </trans-unit>
       <trans-unit id="config.autofetchPeriod">
         <source xml:lang="en">Duration in seconds between each automatic git fetch, when `#git.autofetch#` is enabled.</source>
-        <target state="new">Duration in seconds between each automatic git fetch, when `#git.autofetch#` is enabled.</target>
+        <target state="translated">Dauer in Sekunden zwischen jeder automatischen Git-Abrufung, wenn „#git.autofetch#“ aktiviert ist.</target>
       </trans-unit>
       <trans-unit id="config.autorefresh">
         <source xml:lang="en">Whether auto refreshing is enabled.</source>
-        <target state="new">Whether auto refreshing is enabled.</target>
+        <target state="translated">Gibt an, ob die automatische Aktualisierung aktiviert ist.</target>
       </trans-unit>
       <trans-unit id="config.branchSortOrder">
         <source xml:lang="en">Controls the sort order for branches.</source>
-        <target state="new">Controls the sort order for branches.</target>
+        <target state="translated">Steuert die Sortierreihenfolge für Branches.</target>
       </trans-unit>
       <trans-unit id="config.branchValidationRegex">
         <source xml:lang="en">A regular expression to validate new branch names.</source>
-        <target state="new">A regular expression to validate new branch names.</target>
+        <target state="translated">Regulärer Ausdruck zum Validieren neuer Branch-Namen.</target>
       </trans-unit>
       <trans-unit id="config.branchWhitespaceChar">
         <source xml:lang="en">The character to replace whitespace in new branch names.</source>
-        <target state="new">The character to replace whitespace in new branch names.</target>
+        <target state="translated">Zeichen, mit dem Leerzeichen im Namen neuer Branches ersetzt werden sollen.</target>
       </trans-unit>
       <trans-unit id="config.checkoutType">
         <source xml:lang="en">Controls what type of git refs are listed when running `Checkout to...`.</source>
-        <target state="new">Controls what type of git refs are listed when running `Checkout to...`.</target>
+        <target state="translated">Legt fest, welche Git-Referenzen aufgelistet werden, wenn „Auschecken an...“ ausgeführt wird.</target>
       </trans-unit>
       <trans-unit id="config.checkoutType.local">
         <source xml:lang="en">Local branches</source>
-        <target state="new">Local branches</target>
+        <target state="translated">Lokale Branches</target>
       </trans-unit>
       <trans-unit id="config.checkoutType.remote">
         <source xml:lang="en">Remote branches</source>
-        <target state="new">Remote branches</target>
+        <target state="translated">Remotebranches</target>
       </trans-unit>
       <trans-unit id="config.checkoutType.tags">
         <source xml:lang="en">Tags</source>
-        <target state="new">Tags</target>
+        <target state="translated">Tags</target>
       </trans-unit>
       <trans-unit id="config.confirmEmptyCommits">
         <source xml:lang="en">Always confirm the creation of empty commits for the 'Git: Commit Empty' command.</source>
-        <target state="new">Always confirm the creation of empty commits for the 'Git: Commit Empty' command.</target>
+        <target state="translated">Bestätigen Sie die Erstellung leerer Commits für den Befehl „Git: Commit Empty“ immer.</target>
       </trans-unit>
       <trans-unit id="config.confirmForcePush">
         <source xml:lang="en">Controls whether to ask for confirmation before force-pushing.</source>
-        <target state="new">Controls whether to ask for confirmation before force-pushing.</target>
+        <target state="translated">Steuert, ob der Benutzer vor einem erzwungenen Push zur Bestätigung aufgefordert wird.</target>
       </trans-unit>
       <trans-unit id="config.confirmNoVerifyCommit">
         <source xml:lang="en">Controls whether to ask for confirmation before committing without verification.</source>
-        <target state="new">Controls whether to ask for confirmation before committing without verification.</target>
+        <target state="translated">Steuert, ob vor dem Committen eine Bestätigung ohne Überprüfung angefragt werden soll.</target>
       </trans-unit>
       <trans-unit id="config.confirmSync">
         <source xml:lang="en">Confirm before synchronizing git repositories.</source>
-        <target state="new">Confirm before synchronizing git repositories.</target>
+        <target state="translated">Vor dem Synchronisieren von Git-Repositorys bestätigen.</target>
       </trans-unit>
       <trans-unit id="config.countBadge">
         <source xml:lang="en">Controls the Git count badge.</source>
-        <target state="new">Controls the Git count badge.</target>
+        <target state="translated">Steuert den Git-Anzahlbadge.</target>
       </trans-unit>
       <trans-unit id="config.countBadge.all">
         <source xml:lang="en">Count all changes.</source>
-        <target state="new">Count all changes.</target>
+        <target state="translated">Alle Änderungen zählen.</target>
       </trans-unit>
       <trans-unit id="config.countBadge.off">
         <source xml:lang="en">Turn off counter.</source>
-        <target state="new">Turn off counter.</target>
+        <target state="translated">Zähler deaktivieren.</target>
       </trans-unit>
       <trans-unit id="config.countBadge.tracked">
         <source xml:lang="en">Count only tracked changes.</source>
-        <target state="new">Count only tracked changes.</target>
+        <target state="translated">Nur nachverfolgte Änderungen zählen.</target>
       </trans-unit>
       <trans-unit id="config.decorations.enabled">
         <source xml:lang="en">Controls whether Git contributes colors and badges to the Explorer and the Open Editors view.</source>
-        <target state="new">Controls whether Git contributes colors and badges to the Explorer and the Open Editors view.</target>
+        <target state="translated">Legt fest, ob Git Farben und Badges für die Explorer-Ansicht und die Ansicht „Geöffnete Editoren“ bereitstellt.</target>
       </trans-unit>
       <trans-unit id="config.defaultCloneDirectory">
         <source xml:lang="en">The default location to clone a git repository.</source>
-        <target state="new">The default location to clone a git repository.</target>
+        <target state="translated">Das Standardspeicherort für einen Klon eines Git-Repositorys.</target>
       </trans-unit>
       <trans-unit id="config.detectSubmodules">
         <source xml:lang="en">Controls whether to automatically detect git submodules.</source>
-        <target state="new">Controls whether to automatically detect git submodules.</target>
+        <target state="translated">Steuert, ob Git-Submodule automatisch erkannt werden.</target>
       </trans-unit>
       <trans-unit id="config.detectSubmodulesLimit">
         <source xml:lang="en">Controls the limit of git submodules detected.</source>
-        <target state="new">Controls the limit of git submodules detected.</target>
+        <target state="translated">Steuert die Begrenzung der Git-Submodule.</target>
       </trans-unit>
       <trans-unit id="config.discardAllScope">
         <source xml:lang="en">Controls what changes are discarded by the `Discard all changes` command. `all` discards all changes. `tracked` discards only tracked files. `prompt` shows a prompt dialog every time the action is run.</source>
-        <target state="new">Controls what changes are discarded by the `Discard all changes` command. `all` discards all changes. `tracked` discards only tracked files. `prompt` shows a prompt dialog every time the action is run.</target>
+        <target state="translated">Legt fest, welche Änderungen vom Befehl „Alle Änderungen verwerfen“ verworfen werden. „all“ verwirft alle Änderungen. „tracked“ verwirft nur verfolgte Dateien. „prompt“ zeigt immer eine Eingabeaufforderung an, wenn die Aktion ausgeführt wird.</target>
       </trans-unit>
       <trans-unit id="config.enableCommitSigning">
         <source xml:lang="en">Enables commit signing with GPG or X.509.</source>
-        <target state="new">Enables commit signing with GPG or X.509.</target>
+        <target state="translated">Aktiviert die Commitsignierung mit GPG oder X.509.</target>
       </trans-unit>
       <trans-unit id="config.enableSmartCommit">
         <source xml:lang="en">Commit all changes when there are no staged changes.</source>
-        <target state="new">Commit all changes when there are no staged changes.</target>
+        <target state="translated">Alle Änderungen committen, wenn keine gestageten Änderungen vorhanden sind.</target>
       </trans-unit>
       <trans-unit id="config.enableStatusBarSync">
         <source xml:lang="en">Controls whether the Git Sync command appears in the status bar.</source>
-        <target state="new">Controls whether the Git Sync command appears in the status bar.</target>
+        <target state="translated">Steuert, ob der Git Sync-Befehl in der Statusleiste angezeigt wird.</target>
       </trans-unit>
       <trans-unit id="config.enabled">
         <source xml:lang="en">Whether git is enabled.</source>
-        <target state="new">Whether git is enabled.</target>
+        <target state="translated">Legt fest, ob Git aktiviert ist.</target>
       </trans-unit>
       <trans-unit id="config.fetchOnPull">
         <source xml:lang="en">When enabled, fetch all branches when pulling. Otherwise, fetch just the current one.</source>
-        <target state="new">When enabled, fetch all branches when pulling. Otherwise, fetch just the current one.</target>
+        <target state="translated">Wenn aktiviert, beim Pullen alle Branches abrufen. Andernfalls nur den aktuellen abrufen.</target>
       </trans-unit>
       <trans-unit id="config.followTagsWhenSync">
         <source xml:lang="en">Follow push all tags when running the sync command.</source>
-        <target state="new">Follow push all tags when running the sync command.</target>
+        <target state="translated">Führt einen Pushvorgang für alle Tags durch, wenn der Synchronisierungsbefehl ausgeführt wird.</target>
       </trans-unit>
       <trans-unit id="config.ignoreLegacyWarning">
         <source xml:lang="en">Ignores the legacy Git warning.</source>
-        <target state="new">Ignores the legacy Git warning.</target>
+        <target state="translated">Ignoriert die Legacy-Git-Warnung.</target>
       </trans-unit>
       <trans-unit id="config.ignoreLimitWarning">
         <source xml:lang="en">Ignores the warning when there are too many changes in a repository.</source>
-        <target state="new">Ignores the warning when there are too many changes in a repository.</target>
+        <target state="translated">Ignoriert die Warnung bei zu hoher Anzahl von Änderungen in einem Repository.</target>
       </trans-unit>
       <trans-unit id="config.ignoreMissingGitWarning">
         <source xml:lang="en">Ignores the warning when Git is missing.</source>
-        <target state="new">Ignores the warning when Git is missing.</target>
+        <target state="translated">Ignoriert die Warnung, wenn Git nicht vorhanden ist.</target>
       </trans-unit>
       <trans-unit id="config.ignoreRebaseWarning">
         <source xml:lang="en">Ignores the warning when it looks like the branch might have been rebased when pulling.</source>
-        <target state="new">Ignores the warning when it looks like the branch might have been rebased when pulling.</target>
+        <target state="translated">Ignoriert die Warnung beim Pullvorgang, wenn für den Branch möglicherweise ein Rebase ausgeführt wurde.</target>
       </trans-unit>
       <trans-unit id="config.ignoreSubmodules">
         <source xml:lang="en">Ignore modifications to submodules in the file tree.</source>
-        <target state="new">Ignore modifications to submodules in the file tree.</target>
+        <target state="translated">Ignoriert Änderungen an Untermodulen in der Dateistruktur.</target>
       </trans-unit>
       <trans-unit id="config.ignoreWindowsGit27Warning">
         <source xml:lang="en">Ignores the warning when Git 2.25 - 2.26 is installed on Windows.</source>
-        <target state="new">Ignores the warning when Git 2.25 - 2.26 is installed on Windows.</target>
+        <target state="translated">Ignoriert die Warnung, wenn Git 2.25–2.26 unter Windows installiert ist.</target>
       </trans-unit>
       <trans-unit id="config.ignoredRepositories">
         <source xml:lang="en">List of git repositories to ignore.</source>
-        <target state="new">List of git repositories to ignore.</target>
+        <target state="translated">Liste der zu ignorierenden Git-Repositorys.</target>
       </trans-unit>
       <trans-unit id="config.inputValidation">
         <source xml:lang="en">Controls when to show commit message input validation.</source>
-        <target state="new">Controls when to show commit message input validation.</target>
+        <target state="translated">Steuert, wann die Commit-Meldung der Eingabevalidierung angezeigt wird.</target>
       </trans-unit>
       <trans-unit id="config.inputValidationLength">
         <source xml:lang="en">Controls the commit message length threshold for showing a warning.</source>
-        <target state="new">Controls the commit message length threshold for showing a warning.</target>
+        <target state="translated">Steuert, ab welcher Länge für Commit-Nachrichten eine Warnung eingeblendet werden soll.</target>
       </trans-unit>
       <trans-unit id="config.inputValidationSubjectLength">
         <source xml:lang="en">Controls the commit message subject length threshold for showing a warning. Unset it to inherit the value of `config.inputValidationLength`.</source>
-        <target state="new">Controls the commit message subject length threshold for showing a warning. Unset it to inherit the value of `config.inputValidationLength`.</target>
+        <target state="translated">Legt den Grenzwert der Länge des Betreffs der Commitmeldung beim Anzeigen einer Warnung fest. Heben Sie die Festlegung auf, um den Wert von „config.inputValidationLength“ zu erben.</target>
       </trans-unit>
       <trans-unit id="config.openAfterClone">
         <source xml:lang="en">Controls whether to open a repository automatically after cloning.</source>
-        <target state="new">Controls whether to open a repository automatically after cloning.</target>
+        <target state="translated">Steuert, ob ein Repository nach dem Klonen automatisch geöffnet wird.</target>
       </trans-unit>
       <trans-unit id="config.openAfterClone.always">
         <source xml:lang="en">Always open in current window.</source>
-        <target state="new">Always open in current window.</target>
+        <target state="translated">Öffnet Elemente immer im aktuellen Fenster.</target>
       </trans-unit>
       <trans-unit id="config.openAfterClone.alwaysNewWindow">
         <source xml:lang="en">Always open in a new window.</source>
-        <target state="new">Always open in a new window.</target>
+        <target state="translated">Öffnet Elemente immer in einem neuen Fenster.</target>
       </trans-unit>
       <trans-unit id="config.openAfterClone.prompt">
         <source xml:lang="en">Always prompt for action.</source>
-        <target state="new">Always prompt for action.</target>
+        <target state="translated">Fordert immer eine Aktion an.</target>
       </trans-unit>
       <trans-unit id="config.openAfterClone.whenNoFolderOpen">
         <source xml:lang="en">Only open in current window when no folder is opened.</source>
-        <target state="new">Only open in current window when no folder is opened.</target>
+        <target state="translated">Öffnet Elemente nur dann im aktuellen Fenster, wenn kein Ordner geöffnet ist.</target>
       </trans-unit>
       <trans-unit id="config.openDiffOnClick">
         <source xml:lang="en">Controls whether the diff editor should be opened when clicking a change. Otherwise the regular editor will be opened.</source>
-        <target state="new">Controls whether the diff editor should be opened when clicking a change. Otherwise the regular editor will be opened.</target>
+        <target state="translated">Steuert, ob der Diff-Editor geöffnet werden soll, wenn Sie auf eine Änderung klicken. Ansonsten wird der normale Editor geöffnet.</target>
       </trans-unit>
       <trans-unit id="config.path">
         <source xml:lang="en">Path and filename of the git executable, e.g. `C:\Program Files\Git\bin\git.exe` (Windows). This can also be an array of string values containing multiple paths to look up.</source>
-        <target state="new">Path and filename of the git executable, e.g. `C:\Program Files\Git\bin\git.exe` (Windows). This can also be an array of string values containing multiple paths to look up.</target>
+        <target state="translated">Der Pfad und der Dateiname der ausführbaren Git-Datei, beispielsweise „C:\Programme\Git\bin\git.exe“ (Windows). Hierbei kann es sich auch um Array mit Zeichenfolgenwerten handeln, die mehrere Pfade für die Suche enthalten.</target>
       </trans-unit>
       <trans-unit id="config.postCommitCommand">
         <source xml:lang="en">Runs a git command after a successful commit.</source>
-        <target state="new">Runs a git command after a successful commit.</target>
+        <target state="translated">Führt einen Git-Befehl nach erfolgreichem Commit aus.</target>
       </trans-unit>
       <trans-unit id="config.postCommitCommand.none">
         <source xml:lang="en">Don't run any command after a commit.</source>
-        <target state="new">Don't run any command after a commit.</target>
+        <target state="translated">Führen Sie keinen Befehl nach einem Commit aus.</target>
       </trans-unit>
       <trans-unit id="config.postCommitCommand.push">
         <source xml:lang="en">Run 'Git Push' after a successful commit.</source>
-        <target state="new">Run 'Git Push' after a successful commit.</target>
+        <target state="translated">Führen Sie „Git Push“ nach einem erfolgreichen Commit aus.</target>
       </trans-unit>
       <trans-unit id="config.postCommitCommand.sync">
         <source xml:lang="en">Run 'Git Sync' after a successful commit.</source>
-        <target state="new">Run 'Git Sync' after a successful commit.</target>
+        <target state="translated">Führen Sie „Git Sync“ nach einem erfolgreichen Commit aus.</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeCommit">
         <source xml:lang="en">Controls whether Git should check for unsaved files before committing.</source>
-        <target state="new">Controls whether Git should check for unsaved files before committing.</target>
+        <target state="translated">Legt fest, ob Git vor dem einchecken nach nicht gespeicherten Dateien suchen soll.</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeCommit.always">
         <source xml:lang="en">Check for any unsaved files.</source>
-        <target state="new">Check for any unsaved files.</target>
+        <target state="translated">Hiermit prüfen Sie auf nicht gespeicherte Dateien.</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeCommit.never">
         <source xml:lang="en">Disable this check.</source>
-        <target state="new">Disable this check.</target>
+        <target state="translated">Hiermit wird diese Prüfung deaktiviert.</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeCommit.staged">
         <source xml:lang="en">Check only for unsaved staged files.</source>
-        <target state="new">Check only for unsaved staged files.</target>
+        <target state="translated">Hiermit prüfen Sie nur auf nicht gespeicherte gestagete Dateien.</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeStash">
         <source xml:lang="en">Controls whether Git should check for unsaved files before stashing changes.</source>
-        <target state="new">Controls whether Git should check for unsaved files before stashing changes.</target>
+        <target state="translated">Legt fest, ob Git vor dem Stashen von Änderungen nach nicht gespeicherten Dateien suchen soll.</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeStash.always">
         <source xml:lang="en">Check for any unsaved files.</source>
-        <target state="new">Check for any unsaved files.</target>
+        <target state="translated">Hiermit prüfen Sie auf nicht gespeicherte Dateien.</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeStash.never">
         <source xml:lang="en">Disable this check.</source>
-        <target state="new">Disable this check.</target>
+        <target state="translated">Deaktiviert diese Prüfung.</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeStash.staged">
         <source xml:lang="en">Check only for unsaved staged files.</source>
-        <target state="new">Check only for unsaved staged files.</target>
+        <target state="translated">Hiermit prüfen Sie nur auf nicht gespeicherte gestagete Dateien.</target>
       </trans-unit>
       <trans-unit id="config.pruneOnFetch">
         <source xml:lang="en">Prune when fetching.</source>
-        <target state="new">Prune when fetching.</target>
+        <target state="translated">Löscht Elemente beim Abrufen.</target>
       </trans-unit>
       <trans-unit id="config.pullTags">
         <source xml:lang="en">Fetch all tags when pulling.</source>
-        <target state="new">Fetch all tags when pulling.</target>
+        <target state="translated">Hiermit werden alle Tags beim Pullvorgang abgerufen.</target>
       </trans-unit>
       <trans-unit id="config.rebaseWhenSync">
         <source xml:lang="en">Force git to use rebase when running the sync command.</source>
-        <target state="new">Force git to use rebase when running the sync command.</target>
+        <target state="translated">Erzwingen, dass Git „rebase“ verwendet, wenn der Synchronisierungsbefehl ausgeführt wird.</target>
       </trans-unit>
       <trans-unit id="config.requireGitUserConfig">
         <source xml:lang="en">Controls whether to require explicit Git user configuration or allow Git to guess if missing.</source>
-        <target state="new">Controls whether to require explicit Git user configuration or allow Git to guess if missing.</target>
+        <target state="translated">Steuert, ob eine explizite Git-Benutzerkonfiguration erforderlich ist oder ob Git Annahmen treffen soll, falls die Konfiguration fehlt.</target>
       </trans-unit>
       <trans-unit id="config.scanRepositories">
         <source xml:lang="en">List of paths to search for git repositories in.</source>
-        <target state="new">List of paths to search for git repositories in.</target>
+        <target state="translated">Liste mit Pfaden, an denen nach Git-Repositorys gesucht wird.</target>
       </trans-unit>
       <trans-unit id="config.showCommitInput">
         <source xml:lang="en">Controls whether to show the commit input in the Git source control panel.</source>
-        <target state="new">Controls whether to show the commit input in the Git source control panel.</target>
+        <target state="translated">Steuert, ob die Commiteingabe im Panel für die Git-Quellcodeverwaltung angezeigt wird.</target>
       </trans-unit>
       <trans-unit id="config.showInlineOpenFileAction">
         <source xml:lang="en">Controls whether to show an inline Open File action in the Git changes view.</source>
-        <target state="new">Controls whether to show an inline Open File action in the Git changes view.</target>
+        <target state="translated">Steuert, ob eine Inlineaktion zum Öffnen der Datei in der Ansicht „Git-Änderungen“ angezeigt wird.</target>
       </trans-unit>
       <trans-unit id="config.showProgress">
         <source xml:lang="en">Controls whether git actions should show progress.</source>
-        <target state="new">Controls whether git actions should show progress.</target>
+        <target state="translated">Steuert, ob für Git-Aktionen der Fortschritt zu sehen ist.</target>
       </trans-unit>
       <trans-unit id="config.showPushSuccessNotification">
         <source xml:lang="en">Controls whether to show a notification when a push is successful.</source>
-        <target state="new">Controls whether to show a notification when a push is successful.</target>
+        <target state="translated">Legt fest, ob bei einem erfolgreichen Push eine Benachrichtigung angezeigt werden soll.</target>
       </trans-unit>
       <trans-unit id="config.smartCommitChanges">
         <source xml:lang="en">Control which changes are automatically staged by Smart Commit.</source>
-        <target state="new">Control which changes are automatically staged by Smart Commit.</target>
+        <target state="translated">Hiermit steuern Sie, welche Änderungen beim intelligenten Commit automatisch gestaget werden.</target>
       </trans-unit>
       <trans-unit id="config.smartCommitChanges.all">
         <source xml:lang="en">Automatically stage all changes.</source>
-        <target state="new">Automatically stage all changes.</target>
+        <target state="translated">Hiermit werden alle Änderungen automatisch gestaget.</target>
       </trans-unit>
       <trans-unit id="config.smartCommitChanges.tracked">
         <source xml:lang="en">Automatically stage tracked changes only.</source>
-        <target state="new">Automatically stage tracked changes only.</target>
+        <target state="translated">Es wurden nur nachverfolgte Änderungen automatisch gestaget.</target>
       </trans-unit>
       <trans-unit id="config.suggestSmartCommit">
         <source xml:lang="en">Suggests to enable smart commit (commit all changes when there are no staged changes).</source>
-        <target state="new">Suggests to enable smart commit (commit all changes when there are no staged changes).</target>
+        <target state="translated">Schlägt das Aktivieren intelligenter Commits vor. Dabei werden alle Änderungen committet, wenn keine gestageten Änderungen vorliegen.</target>
       </trans-unit>
       <trans-unit id="config.supportCancellation">
         <source xml:lang="en">Controls whether a notification comes up when running the Sync action, which allows the user to cancel the operation.</source>
-        <target state="new">Controls whether a notification comes up when running the Sync action, which allows the user to cancel the operation.</target>
+        <target state="translated">Steuert, ob bei Ausführung der Synchronisierungsaktion eine Benachrichtigung angezeigt wird, sodass der Benutzer den Vorgang abbrechen kann.</target>
       </trans-unit>
       <trans-unit id="config.terminalAuthentication">
         <source xml:lang="en">Controls whether to enable Azure Data Studio to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</source>
-        <target state="new">Controls whether to enable Azure Data Studio to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</target>
+        <target state="translated">Steuert, ob Azure Data Studio als Authentifizierungshandler für git-Prozesse aktiviert werden soll, die im integrierten Terminal erzeugt werden. Hinweis: Terminals müssen neu gestartet werden, damit eine Änderung dieser Einstellung wirksam wird.</target>
       </trans-unit>
       <trans-unit id="config.timeline.date">
         <source xml:lang="en">Controls which date to use for items in the Timeline view.</source>
-        <target state="new">Controls which date to use for items in the Timeline view.</target>
+        <target state="translated">Steuert, welches Datum für Elemente in der Zeitachsenansicht verwendet werden soll.</target>
       </trans-unit>
       <trans-unit id="config.timeline.date.authored">
         <source xml:lang="en">Use the authored date</source>
-        <target state="new">Use the authored date</target>
+        <target state="translated">Erstellungsdatum verwenden</target>
       </trans-unit>
       <trans-unit id="config.timeline.date.committed">
         <source xml:lang="en">Use the committed date</source>
-        <target state="new">Use the committed date</target>
+        <target state="translated">Commitdatum verwenden</target>
       </trans-unit>
       <trans-unit id="config.timeline.showAuthor">
         <source xml:lang="en">Controls whether to show the commit author in the Timeline view.</source>
-        <target state="new">Controls whether to show the commit author in the Timeline view.</target>
+        <target state="translated">Steuert, ob der Commitautor in der Zeitachsenansicht angezeigt wird.</target>
       </trans-unit>
       <trans-unit id="config.untrackedChanges">
         <source xml:lang="en">Controls how untracked changes behave.</source>
-        <target state="new">Controls how untracked changes behave.</target>
+        <target state="translated">Legt fest, wie sich nicht nachverfolgte Änderungen verhalten.</target>
       </trans-unit>
       <trans-unit id="config.untrackedChanges.hidden">
         <source xml:lang="en">Untracked changes are hidden and excluded from several actions.</source>
-        <target state="new">Untracked changes are hidden and excluded from several actions.</target>
+        <target state="translated">Nicht nachverfolgte Änderungen werden ausgeblendet und von mehreren Aktionen ausgeschlossen.</target>
       </trans-unit>
       <trans-unit id="config.untrackedChanges.mixed">
         <source xml:lang="en">All changes, tracked and untracked, appear together and behave equally.</source>
-        <target state="new">All changes, tracked and untracked, appear together and behave equally.</target>
+        <target state="translated">Alle Änderungen (nachverfolgte und nicht nachverfolgte) werden zusammen angezeigt und verhalten sich identisch.</target>
       </trans-unit>
       <trans-unit id="config.untrackedChanges.separate">
         <source xml:lang="en">Untracked changes appear separately in the Source Control view. They are also excluded from several actions.</source>
-        <target state="new">Untracked changes appear separately in the Source Control view. They are also excluded from several actions.</target>
+        <target state="translated">Nicht nachverfolgte Änderungen werden separat in der Quellcodeverwaltung angezeigt. Sie sind zudem von mehreren Aktionen ausgeschlossen.</target>
       </trans-unit>
       <trans-unit id="config.useCommitInputAsStashMessage">
         <source xml:lang="en">Controls whether to use the message from the commit input box as the default stash message.</source>
-        <target state="new">Controls whether to use the message from the commit input box as the default stash message.</target>
+        <target state="translated">Steuert, ob die Nachricht aus dem Commiteingabefeld als Standardstashnachricht verwendet wird.</target>
       </trans-unit>
       <trans-unit id="config.useForcePushWithLease">
         <source xml:lang="en">Controls whether force pushing uses the safer force-with-lease variant.</source>
-        <target state="new">Controls whether force pushing uses the safer force-with-lease variant.</target>
+        <target state="translated">Steuert, ob erzwungene Pushes die sicherere Variante mit Leases verwenden.</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">Git SCM Integration</source>
-        <target state="new">Git SCM Integration</target>
+        <target state="translated">Git SCM-Integration</target>
       </trans-unit>
       <trans-unit id="displayName">
         <source xml:lang="en">Git</source>
-        <target state="new">Git</target>
+        <target state="translated">Git</target>
       </trans-unit>
       <trans-unit id="submenu.branch">
         <source xml:lang="en">Branch</source>
-        <target state="new">Branch</target>
+        <target state="translated">Branch</target>
       </trans-unit>
       <trans-unit id="submenu.changes">
         <source xml:lang="en">Changes</source>
-        <target state="new">Changes</target>
+        <target state="translated">Änderungen</target>
       </trans-unit>
       <trans-unit id="submenu.commit">
         <source xml:lang="en">Commit</source>
-        <target state="new">Commit</target>
+        <target state="translated">Commit</target>
       </trans-unit>
       <trans-unit id="submenu.commit.amend">
         <source xml:lang="en">Amend</source>
-        <target state="new">Amend</target>
+        <target state="translated">Korrigieren</target>
       </trans-unit>
       <trans-unit id="submenu.commit.signoff">
         <source xml:lang="en">Sign Off</source>
-        <target state="new">Sign Off</target>
+        <target state="translated">Abmelden</target>
       </trans-unit>
       <trans-unit id="submenu.explorer">
         <source xml:lang="en">Git</source>
-        <target state="new">Git</target>
+        <target state="translated">Git</target>
       </trans-unit>
       <trans-unit id="submenu.pullpush">
         <source xml:lang="en">Pull, Push</source>
-        <target state="new">Pull, Push</target>
+        <target state="translated">Pull, Push</target>
       </trans-unit>
       <trans-unit id="submenu.remotes">
         <source xml:lang="en">Remote</source>
-        <target state="new">Remote</target>
+        <target state="translated">Remote</target>
       </trans-unit>
       <trans-unit id="submenu.stash">
         <source xml:lang="en">Stash</source>
-        <target state="new">Stash</target>
+        <target state="translated">Stash ausführen</target>
       </trans-unit>
       <trans-unit id="submenu.tags">
         <source xml:lang="en">Tags</source>
-        <target state="new">Tags</target>
+        <target state="translated">Tags</target>
       </trans-unit>
       <trans-unit id="view.workbench.cloneRepository">
         <source xml:lang="en">You can clone a repository locally.
 [Clone Repository](command:git.clone 'Clone a repository once the git extension has activated')</source>
-        <target state="new">You can clone a repository locally.
-[Clone Repository](command:git.clone 'Clone a repository once the git extension has activated')</target>
+        <target state="translated">Sie können ein Repository lokal klonen.
+[Repository klonen](command:git.clone 'Clone a repository once the git extension has activated')</target>
       </trans-unit>
       <trans-unit id="view.workbench.learnMore">
         <source xml:lang="en">To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
-        <target state="new">To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</target>
+        <target state="translated">Weitere Informationen zur Verwendung von Git und Quellcodeverwaltung in Azure Data Studio [finden Sie in unserer Dokumentation](https://aka.ms/vscode-scm).</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.disabled">
         <source xml:lang="en">If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
-        <target state="new">If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
-To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</target>
+        <target state="translated">Wenn Sie Git-Features verwenden möchten, müssen Sie Git in Ihren [Einstellungen](command:workbench.action.openSettings?%5B%22git.enabled%22%5D) aktivieren.
+Weitere Informationen zur Verwendung von Git und der Quellcodeverwaltung in Azure Data Studio finden Sie [in unserer Dokumentation](https://aka.ms/vscode-scm).</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.empty">
         <source xml:lang="en">In order to use git features, you can open a folder containing a git repository or clone from a URL.
 [Open Folder](command:vscode.openFolder)
 [Clone Repository](command:git.clone)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
-        <target state="new">In order to use git features, you can open a folder containing a git repository or clone from a URL.
-[Open Folder](command:vscode.openFolder)
-[Clone Repository](command:git.clone)
-To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</target>
+        <target state="translated">Zum Verwenden von Git-Features können Sie einen Ordner mit einem Git-Repository öffnen oder das Repository von einer URL klonen.
+[Ordner öffnen](command:vscode.openFolder)
+[Repository klonen](command:git.clone)
+Weitere Informationen zur Verwendung von Git und der Quellcodeverwaltung in Azure Data Studio [finden Sie in unserer Dokumentation](https://aka.ms/vscode-scm).</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.emptyWorkspace">
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories.
 [Add Folder to Workspace](command:workbench.action.addRootFolder)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
-        <target state="new">The workspace currently open doesn't have any folders containing git repositories.
-[Add Folder to Workspace](command:workbench.action.addRootFolder)
-To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</target>
+        <target state="translated">Der derzeit geöffnete Arbeitsbereich verfügt über keine Ordner, die Git-Repositorys enthalten.
+[Ordner zum Arbeitsbereich hinzufügen](command:workbench.action.addRootFolder)
+Weitere Informationen zur Verwendung von Git und der Quellcodeverwaltung in Azure Data Studio finden Sie [in unserer Dokumentation](https://aka.ms/vscode-scm).</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.folder">
         <source xml:lang="en">The folder currently open doesn't have a git repository. You can initialize a repository which will enable source control features powered by git.
 [Initialize Repository](command:git.init?%5Btrue%5D)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
-        <target state="new">The folder currently open doesn't have a git repository. You can initialize a repository which will enable source control features powered by git.
-[Initialize Repository](command:git.init?%5Btrue%5D)
-To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</target>
+        <target state="translated">Der aktuell geöffnete Ordner enthält kein Git-Repository. Sie können ein Repository initialisieren, wodurch die Git-Features zur Quellcodeverwaltung aktiviert werden.
+[Repository initialisieren](command:git.init?%5Btrue%5D)
+Weitere Informationen zur Verwendung von Git und der Quellcodeverwaltung in Azure Data Studio finden Sie [in unserer Dokumentation](https://aka.ms/vscode-scm).</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.missing">
         <source xml:lang="en">A valid git installation was not detected, more details can be found in the [git output](command:git.showOutput).
 Please [install git](https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs](https://aka.ms/vscode-scm).
 If you're using a different version control system, you can [search the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.</source>
-        <target state="new">A valid git installation was not detected, more details can be found in the [git output](command:git.showOutput).
-Please [install git](https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs](https://aka.ms/vscode-scm).
-If you're using a different version control system, you can [search the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.</target>
+        <target state="translated">Eine gültige Git-Installation wurde nicht erkannt. Weitere Details finden Sie in der [Git-Ausgabe](command:git.showOutput).
+Bitte [installieren Sie Git](https://git-scm.com/), oder informieren Sie sich in [unserer Dokumentation](https://aka.ms/vscode-scm) darüber, wie Sie Git und die Quellcodeverwaltung in Azure Data Studio verwenden.
+Wenn Sie ein anderes Versionskontrollsystem verwenden, können Sie [im Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) nach zusätzlichen Erweiterungen suchen.</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.workspace">
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.
 [Initialize Repository](command:git.init)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
-        <target state="new">The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.
-[Initialize Repository](command:git.init)
-To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</target>
+        <target state="translated">Der aktuell geöffnete Arbeitsbereich enthält keine Ordner mit Git-Repositorys. Sie können ein Repository für einen Ordner initialisieren, wodurch die Git-Features zur Quellcodeverwaltung aktiviert werden.
+[Repository initialisieren](command:git.init)
+Weitere Informationen zur Verwendung von Git und der Quellcodeverwaltung in Azure Data Studio finden Sie [ in unserer Dokumentation](https://aka.ms/vscode-scm).</target>
       </trans-unit>
     </body>
   </file>
