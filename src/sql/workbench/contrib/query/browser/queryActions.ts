@@ -290,7 +290,7 @@ export class CancelQueryAction extends QueryTaskbarAction {
 }
 
 /**
- * Telemetry helper class for query plan related actions.
+ * Telemetry helper class for execution plan related actions.
  */
 export class ExecutionPlanTelemetryHelper {
 	constructor(
