@@ -10,6 +10,7 @@ import * as nls from 'vs/nls';
 import { convertToVSCodeNotebookCell } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { URI } from 'vs/base/common/uri';
+import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 
 class VSCodeFuture implements azdata.nb.IFuture {
 	private _inProgress = true;
@@ -164,9 +165,8 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	public async interrupt(): Promise<void> {
 		if (this.activeRequest) {
 			if (this._controller.interruptHandler) {
-				await this._controller.interruptHandler.call(this._controller, <vscode.NotebookDocument>{
-					uri: this.activeRequest.notebookUri
-				});
+				let doc = this._controller.getNotebookDocument(this.activeRequest.notebookUri);
+				await this._controller.interruptHandler.call(this._controller, new VSCodeNotebookDocument(doc));
 			} else {
 				let exec = this._controller.getCellExecution(this.activeRequest.cellUri);
 				exec?.tokenSource.cancel();

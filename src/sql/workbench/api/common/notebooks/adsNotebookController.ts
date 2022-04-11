@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type * as vscode from 'vscode';
+import type * as azdata from 'azdata';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { INotebookKernelDto2 } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -21,6 +22,7 @@ type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };
 type ExecutionHandler = (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>;
 type LanguagesHandler = (languages: string[]) => void;
 type InterruptHandler = (notebook: vscode.NotebookDocument) => void | Promise<void>;
+type GetDocHandler = (notebookUri: URI) => azdata.nb.NotebookDocument;
 
 /**
  * A VS Code Notebook Controller that is used as part of converting VS Code notebook extension APIs into ADS equivalents.
@@ -42,7 +44,8 @@ export class ADSNotebookController implements vscode.NotebookController {
 		private _label: string,
 		private _extHostNotebookDocumentsAndEditors: ExtHostNotebookDocumentsAndEditors,
 		private _languagesHandler: LanguagesHandler,
-		private _handler?: ExecutionHandler,
+		private _getDocHandler: GetDocHandler,
+		private _execHandler?: ExecutionHandler,
 		preloads?: vscode.NotebookRendererScript[]
 	) {
 		this._kernelData = {
@@ -53,7 +56,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 			label: this._label || this._extension.identifier.value,
 			preloads: preloads ? preloads.map(extHostTypeConverters.NotebookRendererScript.from) : []
 		};
-		if (this._handler) {
+		if (this._execHandler) {
 			this._executionHandlerAdded.resolve();
 		}
 	}
@@ -125,11 +128,11 @@ export class ADSNotebookController implements vscode.NotebookController {
 	}
 
 	public get executeHandler(): ExecutionHandler {
-		return this._handler;
+		return this._execHandler;
 	}
 
 	public set executeHandler(value: ExecutionHandler) {
-		this._handler = value;
+		this._execHandler = value;
 		this._executionHandlerAdded.resolve();
 	}
 
@@ -145,6 +148,10 @@ export class ADSNotebookController implements vscode.NotebookController {
 	private readonly _execMap: Map<string, ADSNotebookCellExecution> = new Map();
 	public getCellExecution(cellUri: URI): ADSNotebookCellExecution | undefined {
 		return this._execMap.get(cellUri.toString());
+	}
+
+	public getNotebookDocument(notebookUri: URI): azdata.nb.NotebookDocument {
+		return this._getDocHandler(notebookUri);
 	}
 
 	public removeCellExecution(cellUri: URI): void {

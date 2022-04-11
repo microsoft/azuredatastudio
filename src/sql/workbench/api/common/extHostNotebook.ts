@@ -259,9 +259,17 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return this.registerSerializationProvider(serializationProvider);
 	}
 
-	createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController {
+	createNotebookController(
+		extension: IExtensionDescription,
+		id: string,
+		viewType: string,
+		label: string,
+		getDocHandler: (notebookUri: URI) => azdata.nb.NotebookDocument,
+		execHandler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>,
+		rendererScripts?: vscode.NotebookRendererScript[]
+	): vscode.NotebookController {
 		let languagesHandler = (languages: string[]) => this._proxy.$updateKernelLanguages(viewType, viewType, languages);
-		let controller = new ADSNotebookController(extension, id, viewType, label, this._extHostNotebookDocumentsAndEditors, languagesHandler, handler, extension.enableProposedApi ? rendererScripts : undefined);
+		let controller = new ADSNotebookController(extension, id, viewType, label, this._extHostNotebookDocumentsAndEditors, languagesHandler, getDocHandler, execHandler, extension.enableProposedApi ? rendererScripts : undefined);
 		let newKernel: azdata.nb.IStandardKernel = {
 			name: viewType,
 			displayName: controller.label,
