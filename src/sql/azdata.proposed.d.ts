@@ -1282,9 +1282,9 @@ declare module 'azdata' {
 		}
 
 		export enum BadgeType {
-			WARNING = 0,
-			CRITICAL_WARNING = 1,
-			PARALLELISM = 2
+			Warning = 0,
+			CriticalWarning = 1,
+			Parallelism = 2
 		}
 
 		export interface ExecutionPlanEdge {

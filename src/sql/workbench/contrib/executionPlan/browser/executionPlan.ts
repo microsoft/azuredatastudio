@@ -5,6 +5,7 @@
 
 import 'vs/css!./media/executionPlan';
 import * as azdata from 'azdata';
+import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { localize } from 'vs/nls';
 import { dispose } from 'vs/base/common/lifecycle';
@@ -57,12 +58,6 @@ export interface InternalExecutionPlanEdge extends azdata.executionPlan.Executio
 	 * Unique internal id given to graph edge by ADS.
 	 */
 	id?: string;
-}
-
-export enum BadgeType {
-	WARNING = 0,
-	CRITICAL_WARNING = 1,
-	PARALLELISM = 2
 }
 
 export class ExecutionPlanTab implements IPanelTab {
@@ -381,34 +376,31 @@ export class ExecutionPlan implements ISashLayoutProvider {
 		return diagramNode;
 	}
 
-	private getBadgeTypeString(badgeType: BadgeType): {
+	private getBadgeTypeString(badgeType: sqlExtHostType.executionPlan.BadgeType): {
 		type: string,
 		tooltip: string
-	} {
+	} | undefined {
 		/**
 		 * TODO: Need to figure out if tooltip have to be removed. For now, they are empty
 		 */
 		switch (badgeType) {
-			case BadgeType.WARNING:
+			case sqlExtHostType.executionPlan.BadgeType.Warning:
 				return {
 					type: 'warning',
 					tooltip: ''
 				};
-			case BadgeType.CRITICAL_WARNING:
+			case sqlExtHostType.executionPlan.BadgeType.CriticalWarning:
 				return {
 					type: 'criticalWarning',
 					tooltip: ''
 				};
-			case BadgeType.PARALLELISM:
+			case sqlExtHostType.executionPlan.BadgeType.Parallelism:
 				return {
 					type: 'parallelism',
 					tooltip: ''
 				};
 			default:
-				return {
-					type: 'warning',
-					tooltip: ''
-				};
+				return undefined;
 		}
 	}
 
