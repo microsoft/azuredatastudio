@@ -1585,7 +1585,7 @@
       <source xml:lang="en">Azure SQL managed instance - Azure Arc</source>
     </trans-unit>
     <trans-unit id="resource.type.azure.arc.description">
-      <source xml:lang="en">Creates an Azure Arc data controller</source>
+      <source xml:lang="en">Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.</source>
     </trans-unit>
     <trans-unit id="resource.type.azure.arc.display.name">
       <source xml:lang="en">Azure Arc data controller</source>

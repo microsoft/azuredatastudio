@@ -22,10 +22,6 @@
         <source xml:lang="en">Publish History</source>
         <target state="translated">發佈歷程記錄</target>
       </trans-unit>
-      <trans-unit id="SettingAlreadyExists">
-        <source xml:lang="en">Local app setting '{0}' already exists. Overwrite?</source>
-        <target state="translated">本機應用程式設定 '{0}' 已經存在。要覆寫嗎?</target>
-      </trans-unit>
       <trans-unit id="Status">
         <source xml:lang="en">Status</source>
         <target state="translated">狀態</target>
@@ -66,18 +62,6 @@
         <source xml:lang="en">Add Item</source>
         <target state="translated">新增項目</target>
       </trans-unit>
-      <trans-unit id="addPackage">
-        <source xml:lang="en">Add Package</source>
-        <target state="translated">新增套件</target>
-      </trans-unit>
-      <trans-unit id="addPackageReferenceMessage">
-        <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
-        <target state="translated">若要使用 SQL 繫結，請確定您的 Azure Functions 專案具有 {0} 參考</target>
-      </trans-unit>
-      <trans-unit id="addSqlBindingPackageError">
-        <source xml:lang="en">Error adding Sql Binding extension package to project</source>
-        <target state="translated">將 SQL 繫結延伸模組套件新增至專案時發生錯誤</target>
-      </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
         <target state="translated">是否要以新的連接字串更新 Azure Function local.settings.json?</target>
@@ -103,8 +87,8 @@
         <target state="translated">新增 SQL 專案名稱</target>
       </trans-unit>
       <trans-unit id="baseDockerImage">
-        <source xml:lang="en">Base SQL Server Docker image</source>
-        <target state="translated">基底 SQL Server Docker 映像</target>
+        <source xml:lang="en">Base {0} Docker image</source>
+        <target state="translated">基底 {0} Docker 映像</target>
       </trans-unit>
       <trans-unit id="browseButtonText">
         <source xml:lang="en">Browse folder</source>
@@ -166,57 +150,41 @@
         <source xml:lang="en">Cleaning existing deployments...</source>
         <target state="translated">正在清除現有的部署...</target>
       </trans-unit>
-      <trans-unit id="closeButton">
-        <source xml:lang="en">Close</source>
-        <target state="translated">關閉</target>
-      </trans-unit>
       <trans-unit id="compareActionRadiButtonLabel">
         <source xml:lang="en">View changes in Schema Compare</source>
         <target state="translated">在結構描述比較中檢視變更</target>
       </trans-unit>
       <trans-unit id="confirmPassword">
-        <source xml:lang="en">Confirm SQL server admin password</source>
-        <target state="translated">確認 SQL Server 管理員密碼</target>
+        <source xml:lang="en">Confirm {0} admin password</source>
+        <target state="translated">確認 {0} 系統管理員密碼</target>
       </trans-unit>
       <trans-unit id="confirmServerPassword">
-        <source xml:lang="en">Confirm SQL Server admin password</source>
-        <target state="translated">確認 SQL Server 管理員密碼</target>
+        <source xml:lang="en">Confirm {0} admin password</source>
+        <target state="translated">確認 {0} 系統管理員密碼</target>
       </trans-unit>
       <trans-unit id="connectingToSqlServerOnDockerMessage">
-        <source xml:lang="en">Connecting to SQL Server on Docker</source>
-        <target state="translated">在 Docker 上連接至 SQL Server</target>
+        <source xml:lang="en">Connecting to SQL Server</source>
+        <target state="translated">連接到 SQL Server</target>
       </trans-unit>
       <trans-unit id="connectionFailedError">
         <source xml:lang="en">Connection failed error: '{0}'</source>
         <target state="translated">連線失敗。錯誤: '{0}'</target>
       </trans-unit>
-      <trans-unit id="connectionProfile">
-        <source xml:lang="en">Select a connection profile</source>
-        <target state="translated">選取連接設定檔</target>
-      </trans-unit>
       <trans-unit id="connectionRadioButtonLabel">
         <source xml:lang="en">Connections</source>
         <target state="translated">連線</target>
-      </trans-unit>
-      <trans-unit id="connectionStringSetting">
-        <source xml:lang="en">Connection string setting name</source>
-        <target state="translated">連接字串設定名稱</target>
-      </trans-unit>
-      <trans-unit id="connectionStringSettingPlaceholder">
-        <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
-        <target state="translated">在 "local.settings.json" 中指定的連接字串設定</target>
       </trans-unit>
       <trans-unit id="containerAlreadyExistForProject">
         <source xml:lang="en">Containers already exist for this project. Do you want to delete them before deploying a new one?</source>
         <target state="translated">此專案的容器已存在。您要先刪除這些檔案再部署新的嗎?</target>
       </trans-unit>
+      <trans-unit id="convertToSdkStyleConfirmation">
+        <source xml:lang="en">The project '{0}' will not be fully compatible with SSDT after conversion. A backup copy of the project file will be created in the project folder prior to conversion. More information is available at https://aka.ms/sqlprojsdk. Continue with converting to SDK-style project?</source>
+        <target state="new">The project '{0}' will not be fully compatible with SSDT after conversion. A backup copy of the project file will be created in the project folder prior to conversion. More information is available at https://aka.ms/sqlprojsdk. Continue with converting to SDK-style project?</target>
+      </trans-unit>
       <trans-unit id="createNew">
         <source xml:lang="en">Create New</source>
         <target state="translated">新建立</target>
-      </trans-unit>
-      <trans-unit id="createNewLocalAppSetting">
-        <source xml:lang="en">Create new local app setting</source>
-        <target state="translated">建立新的本機應用程式設定</target>
       </trans-unit>
       <trans-unit id="createProjectDialogOkButtonText">
         <source xml:lang="en">Create</source>
@@ -423,20 +391,28 @@
         <target state="translated">Microsoft Azure SQL Edge 授權合約</target>
       </trans-unit>
       <trans-unit id="edgeProjectTypeDescription">
-        <source xml:lang="en">Start with the core pieces to develop and publish schemas for SQL Edge</source>
-        <target state="translated">從核心元件開始開發及發佈 SQL Edge 的結構描述</target>
+        <source xml:lang="en">Start with the core pieces to develop and publish schemas for Azure SQL Edge Database</source>
+        <target state="translated">從核心元件開始開發及發佈 Azure SQL Edge 資料庫的結構描述</target>
       </trans-unit>
       <trans-unit id="edgeProjectTypeDisplayName">
-        <source xml:lang="en">SQL Edge</source>
-        <target state="translated">SQL Edge</target>
+        <source xml:lang="en">Azure SQL Edge Database</source>
+        <target state="translated">Azure SQL Edge 資料庫</target>
+      </trans-unit>
+      <trans-unit id="emptyAzureDbProjectTypeDescription">
+        <source xml:lang="en">Develop and publish schemas for Azure SQL Database starting from an empty project</source>
+        <target state="translated">為從空白專案開始的 Azure SQL 資料庫開發及發佈結構描述</target>
+      </trans-unit>
+      <trans-unit id="emptyAzureDbProjectTypeDisplayName">
+        <source xml:lang="en">Azure SQL Database</source>
+        <target state="translated">Azure SQL Database</target>
       </trans-unit>
       <trans-unit id="emptyProjectTypeDescription">
-        <source xml:lang="en">Develop and publish schemas for SQL databases starting from an empty project</source>
-        <target state="translated">為從空白專案開始的 SQL 資料庫開發及發佈結構描述</target>
+        <source xml:lang="en">Develop and publish schemas for SQL Server databases starting from an empty project</source>
+        <target state="translated">為從空白專案開始的 SQL Server 資料庫開發及發佈結構描述</target>
       </trans-unit>
       <trans-unit id="emptyProjectTypeDisplayName">
-        <source xml:lang="en">SQL Database</source>
-        <target state="translated">SQL Database</target>
+        <source xml:lang="en">SQL Server Database</source>
+        <target state="translated">SQL Server 資料庫</target>
       </trans-unit>
       <trans-unit id="emptySdkProjectTypeDescription">
         <source xml:lang="en">Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.</source>
@@ -450,10 +426,6 @@
         <source xml:lang="en">Enter a template for SQL connection string</source>
         <target state="translated">輸入 SQL 連接字串的範本</target>
       </trans-unit>
-      <trans-unit id="enterConnectionString">
-        <source xml:lang="en">Enter connection string</source>
-        <target state="translated">輸入連接字串</target>
-      </trans-unit>
       <trans-unit id="enterConnectionStringEnvName">
         <source xml:lang="en">Enter connection string environment variable name</source>
         <target state="translated">輸入連接字串環境變數名稱</target>
@@ -461,10 +433,6 @@
       <trans-unit id="enterConnectionStringEnvNameDescription">
         <source xml:lang="en">Enter environment variable for SQL connection string</source>
         <target state="translated">輸入 SQL 連接字串的環境變數</target>
-      </trans-unit>
-      <trans-unit id="enterConnectionStringSettingName">
-        <source xml:lang="en">Enter connection string setting name</source>
-        <target state="translated">輸入連接字串設定名稱</target>
       </trans-unit>
       <trans-unit id="enterConnectionStringTemplate">
         <source xml:lang="en">Enter connection string template</source>
@@ -479,20 +447,12 @@
         <target state="translated">輸入變數 '{0}' 的新值</target>
       </trans-unit>
       <trans-unit id="enterPassword">
-        <source xml:lang="en">Enter SQL Server admin password</source>
-        <target state="translated">輸入 SQL Server 管理員密碼</target>
-      </trans-unit>
-      <trans-unit id="enterPasswordManually">
-        <source xml:lang="en">Enter password or press escape to cancel</source>
-        <target state="translated">輸入密碼或按 ESC 鍵取消</target>
-      </trans-unit>
-      <trans-unit id="enterPasswordPrompt">
-        <source xml:lang="en">Enter the password to be used for the connection string</source>
-        <target state="translated">輸入用於連接字串的密碼</target>
+        <source xml:lang="en">Enter {0} admin password</source>
+        <target state="translated">輸入 {0} 系統管理員密碼</target>
       </trans-unit>
       <trans-unit id="enterPortNumber">
-        <source xml:lang="en">Enter SQL server port number or press enter to use the default value</source>
-        <target state="translated">輸入 SQL Server 連接埠號碼或按 Enter 以使用預設值</target>
+        <source xml:lang="en">Enter {0} port number or press enter to use the default value</source>
+        <target state="translated">輸入 {0} 連接埠號碼或按 Enter 以使用預設值</target>
       </trans-unit>
       <trans-unit id="enterSystemDbName">
         <source xml:lang="en">Enter a database name for this system database</source>
@@ -547,14 +507,6 @@
       <trans-unit id="extractTargetRequired">
         <source xml:lang="en">Target information for extract is required to create database project.</source>
         <target state="translated">需要供解壓縮的目標資訊才能建立資料庫專案。</target>
-      </trans-unit>
-      <trans-unit id="failedToGetConnectionString">
-        <source xml:lang="en">An error occurred generating the connection string for the selected connection</source>
-        <target state="translated">為選取的連線產生連接字串時發生錯誤</target>
-      </trans-unit>
-      <trans-unit id="failedToParse">
-        <source xml:lang="en">Failed to parse "{0}": {1}.</source>
-        <target state="translated">無法剖析 "{0}": {1}。</target>
       </trans-unit>
       <trans-unit id="file">
         <source xml:lang="en">File</source>
@@ -624,14 +576,6 @@
         <source xml:lang="en">Import Elements</source>
         <target state="translated">匯入元素</target>
       </trans-unit>
-      <trans-unit id="includePassword">
-        <source xml:lang="en">Do you want to include the password from this connection in your local.settings.json file?</source>
-        <target state="translated">是否要在 local.settings.json 檔案中包含來自此連線的密碼?</target>
-      </trans-unit>
-      <trans-unit id="input">
-        <source xml:lang="en">Input</source>
-        <target state="translated">輸入</target>
-      </trans-unit>
       <trans-unit id="installGlobally">
         <source xml:lang="en">Install globally</source>
         <target state="translated">全域安裝</target>
@@ -661,8 +605,8 @@
         <target state="translated">在 .sqlproj 中為屬性 '{0}' 指定的值無效</target>
       </trans-unit>
       <trans-unit id="invalidSQLPassword">
-        <source xml:lang="en">SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
-        <target state="translated">SQL Server 密碼不符合密碼複雜度要求。如需詳細資訊，請參閱 https://docs.microsoft.com/sql/relational-databases/security/password-policy</target>
+        <source xml:lang="en">{0} password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
+        <target state="translated">{0} 密碼不符合密碼複雜度要求。如需詳細資訊，請參閱 https://docs.microsoft.com/sql/relational-databases/security/password-policy</target>
       </trans-unit>
       <trans-unit id="invalidSqlConnectionString">
         <source xml:lang="en">Invalid SQL connection string</source>
@@ -671,10 +615,6 @@
       <trans-unit id="invalidTargetPlatform">
         <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
         <target state="translated">目標平台無效: {0}。支援的目標平台: {1}</target>
-      </trans-unit>
-      <trans-unit id="jsonParseError">
-        <source xml:lang="en">{0} near line "{1}", column "{2}"</source>
-        <target state="translated">{0} 接近行 "{1}"，資料行 "{2}"</target>
       </trans-unit>
       <trans-unit id="learnMore">
         <source xml:lang="en">Learn More</source>
@@ -695,10 +635,6 @@
       <trans-unit id="missingVersion">
         <source xml:lang="en">Missing 'version' entry in {0}</source>
         <target state="translated">遺漏了 {0} 的 'version' 項目</target>
-      </trans-unit>
-      <trans-unit id="moreInformation">
-        <source xml:lang="en">More Information</source>
-        <target state="translated">詳細資訊</target>
       </trans-unit>
       <trans-unit id="msec">
         <source xml:lang="en">msec</source>
@@ -723,14 +659,6 @@
       <trans-unit id="newObjectNamePrompt">
         <source xml:lang="en">New {0} name:</source>
         <target state="translated">新的 {0} 名稱:</target>
-      </trans-unit>
-      <trans-unit id="noAzureFunctionsInFile">
-        <source xml:lang="en">No Azure functions in the current active file</source>
-        <target state="translated">目前的作用中檔案中沒有任何 Azure 函式</target>
-      </trans-unit>
-      <trans-unit id="noAzureFunctionsProjectsInWorkspace">
-        <source xml:lang="en">No Azure functions projects found in the workspace</source>
-        <target state="translated">在工作區中找不到任何 Azure 函式專案</target>
       </trans-unit>
       <trans-unit id="noDataSourcesFile">
         <source xml:lang="en">No {0} found</source>
@@ -800,14 +728,6 @@
         <source xml:lang="en">Open License Agreement</source>
         <target state="translated">開啟授權合約</target>
       </trans-unit>
-      <trans-unit id="openFile">
-        <source xml:lang="en">Open File</source>
-        <target state="translated">開啟檔案</target>
-      </trans-unit>
-      <trans-unit id="output">
-        <source xml:lang="en">Output</source>
-        <target state="translated">輸出</target>
-      </trans-unit>
       <trans-unit id="outsideFolderPath">
         <source xml:lang="en">Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.</source>
         <target state="translated">不支援在專案資料夾外具有絕對路徑的專案。請確定專案檔中的路徑與專案資料夾相對。</target>
@@ -817,8 +737,8 @@
         <target state="translated">無法存取提供之樹狀項目的父代</target>
       </trans-unit>
       <trans-unit id="passwordNotMatch">
-        <source xml:lang="en">SQL Server password doesn't match the confirmation password</source>
-        <target state="translated">SQL Server 密碼與確認密碼不相符</target>
+        <source xml:lang="en">{0} password doesn't match the confirmation password</source>
+        <target state="translated">{0} 密碼與確認密碼不相符</target>
       </trans-unit>
       <trans-unit id="portMustNotBeNumber">
         <source xml:lang="en">Port must a be number</source>
@@ -896,6 +816,10 @@
         <source xml:lang="en">Select project file</source>
         <target state="translated">選取專案檔</target>
       </trans-unit>
+      <trans-unit id="projectUpdatedToSdkStyle">
+        <source xml:lang="en">The project {0} has been updated to be an SDK-style project. Click 'Learn More' for details on the Microsoft.Build.Sql SDK and ways to simplify the project file.</source>
+        <target state="translated">專案 {0} 已更新為 SDK 樣式專案。按一下 [深入了解] 以取得 Microsoft.Build.Sql SDK 的詳細資料，以及簡化專案檔的方式。</target>
+      </trans-unit>
       <trans-unit id="publish">
         <source xml:lang="en">Publish</source>
         <target state="translated">發佈</target>
@@ -925,12 +849,12 @@
         <target state="translated">無法發佈至容器。{0}</target>
       </trans-unit>
       <trans-unit id="publishToDockerContainer">
-        <source xml:lang="en">Publish to new server in a container</source>
-        <target state="translated">發行至容器中的新伺服器</target>
+        <source xml:lang="en">Publish to new {0} local development container</source>
+        <target state="translated">發佈到新的 {0} 本機開發容器</target>
       </trans-unit>
       <trans-unit id="publishToExistingServer">
-        <source xml:lang="en">Publish to existing server</source>
-        <target state="translated">發佈到現有的伺服器</target>
+        <source xml:lang="en">Publish to an existing {0}</source>
+        <target state="translated">發佈到現有的 {0}</target>
       </trans-unit>
       <trans-unit id="publishingProjectMessage">
         <source xml:lang="en">Publishing project in a container...</source>
@@ -981,20 +905,12 @@
         <target state="translated">透過 npx 執行</target>
       </trans-unit>
       <trans-unit id="runningDockerMessage">
-        <source xml:lang="en">Building and running the docker container ...</source>
-        <target state="translated">建置並執行 Docker 容器...</target>
+        <source xml:lang="en">Running the docker container ...</source>
+        <target state="translated">正在執行 Docker 容器...</target>
       </trans-unit>
       <trans-unit id="sameDatabase">
         <source xml:lang="en">Same database</source>
         <target state="translated">相同資料庫</target>
-      </trans-unit>
-      <trans-unit id="save">
-        <source xml:lang="en">Save</source>
-        <target state="translated">儲存</target>
-      </trans-unit>
-      <trans-unit id="saveChangesInFile">
-        <source xml:lang="en">There are unsaved changes in the current file. Save now?</source>
-        <target state="translated">目前的檔案中有未儲存的變更。要立即儲存嗎?</target>
       </trans-unit>
       <trans-unit id="schema">
         <source xml:lang="en">Schema</source>
@@ -1021,36 +937,20 @@
         <target state="translated">指令碼</target>
       </trans-unit>
       <trans-unit id="sdkStyleProject">
-        <source xml:lang="en">SDK-style project</source>
-        <target state="new">SDK-style project</target>
+        <source xml:lang="en">SDK-style project (Preview)</source>
+        <target state="translated">SDK 樣式專案 (預覽)</target>
       </trans-unit>
       <trans-unit id="sec">
         <source xml:lang="en">sec</source>
         <target state="translated">秒</target>
       </trans-unit>
-      <trans-unit id="selectAzureFunction">
-        <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
-        <target state="translated">在目前檔案中選取要新增 SQL 繫結的 Azure 函式</target>
-      </trans-unit>
       <trans-unit id="selectBaseImage">
-        <source xml:lang="en">Select the base SQL Server docker image</source>
-        <target state="translated">選取基底 SQL Server docker 映像</target>
-      </trans-unit>
-      <trans-unit id="selectBindingType">
-        <source xml:lang="en">Select type of binding</source>
-        <target state="translated">選取繫結類型</target>
+        <source xml:lang="en">Select the base {0} docker image</source>
+        <target state="translated">選取基底 {0} docker 映像</target>
       </trans-unit>
       <trans-unit id="selectConnection">
         <source xml:lang="en">Select connection</source>
         <target state="translated">選取連線</target>
-      </trans-unit>
-      <trans-unit id="selectConnectionError">
-        <source xml:lang="en">Failed to set connection string app setting: {0}</source>
-        <target state="translated">無法設定連接字串應用程式設定: {0}</target>
-      </trans-unit>
-      <trans-unit id="selectConnectionString">
-        <source xml:lang="en">Select SQL connection string method</source>
-        <target state="translated">選取 SQL 連接字串方法</target>
       </trans-unit>
       <trans-unit id="selectDacpac">
         <source xml:lang="en">Select .dacpac</source>
@@ -1059,6 +959,10 @@
       <trans-unit id="selectDatabase">
         <source xml:lang="en">Select database</source>
         <target state="translated">選取資料庫</target>
+      </trans-unit>
+      <trans-unit id="selectFileString">
+        <source xml:lang="en">Select File</source>
+        <target state="translated">選取檔案</target>
       </trans-unit>
       <trans-unit id="selectFolderStructure">
         <source xml:lang="en">Select folder structure</source>
@@ -1079,10 +983,6 @@
       <trans-unit id="selectPublishOption">
         <source xml:lang="en">Select where to publish the project to</source>
         <target state="translated">選取要將專案發佈的位置</target>
-      </trans-unit>
-      <trans-unit id="selectSetting">
-        <source xml:lang="en">Select SQL connection string setting from local.settings.json</source>
-        <target state="translated">從 local.settings.json 選取 SQL 連接字串設定</target>
       </trans-unit>
       <trans-unit id="selectSpecFile">
         <source xml:lang="en">Select OpenAPI/Swagger spec file</source>
@@ -1105,12 +1005,12 @@
         <target state="translated">伺服器名稱</target>
       </trans-unit>
       <trans-unit id="serverPassword">
-        <source xml:lang="en">SQL Server admin password</source>
-        <target state="translated">SQL Server 系統管理員密碼</target>
+        <source xml:lang="en">{0} admin password</source>
+        <target state="translated">{0} 系統管理員密碼</target>
       </trans-unit>
       <trans-unit id="serverPortNumber">
-        <source xml:lang="en">SQL server port number</source>
-        <target state="translated">SQL Server 連接埠號碼</target>
+        <source xml:lang="en">{0} port number</source>
+        <target state="translated">{0} 連接埠號碼</target>
       </trans-unit>
       <trans-unit id="serverVariable">
         <source xml:lang="en">Server variable</source>
@@ -1164,14 +1064,6 @@
         <source xml:lang="en">Database Projects</source>
         <target state="translated">資料庫專案</target>
       </trans-unit>
-      <trans-unit id="sqlTableOrViewToQuery">
-        <source xml:lang="en">SQL table or view to query</source>
-        <target state="translated">要查詢的 SQL 資料表或檢視</target>
-      </trans-unit>
-      <trans-unit id="sqlTableToUpsert">
-        <source xml:lang="en">SQL table to upsert into</source>
-        <target state="translated">要 upsert 的目標 SQL 資料表</target>
-      </trans-unit>
       <trans-unit id="storedProcedureFriendlyName">
         <source xml:lang="en">Stored Procedure</source>
         <target state="translated">預存程序</target>
@@ -1224,10 +1116,6 @@
         <source xml:lang="en">Unable to locate '{0}' target: '{1}'</source>
         <target state="translated">找不到 '{0}' 目標: '{1}'</target>
       </trans-unit>
-      <trans-unit id="unableToSetConnectionString">
-        <source xml:lang="en">Failed to set connection string app setting</source>
-        <target state="translated">無法設定連接字串應用程式設定</target>
-      </trans-unit>
       <trans-unit id="unexpectedProjectContext">
         <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
         <target state="translated">無法建立專案內容。從未預期的位置叫用的命令: {0}</target>
@@ -1264,17 +1152,13 @@
         <source xml:lang="en">Update</source>
         <target state="translated">更新</target>
       </trans-unit>
+      <trans-unit id="updatedToSdkStyleError">
+        <source xml:lang="en">Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.</source>
+        <target state="translated">將專案 {0} 轉換成 SDK 樣式失敗。已回復對 .sqlproj 所做的變更。</target>
+      </trans-unit>
       <trans-unit id="updatingProjectFromDatabase">
         <source xml:lang="en">Updating {0} from {1}...</source>
         <target state="translated">正在從 {1} 更新 {0}...</target>
-      </trans-unit>
-      <trans-unit id="userConnectionString">
-        <source xml:lang="en">Enter connection string</source>
-        <target state="translated">輸入連接字串</target>
-      </trans-unit>
-      <trans-unit id="userPasswordLater">
-        <source xml:lang="en">In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.</source>
-        <target state="translated">為了稍後使用 SQL 連接字串，您必須在 local.settings.json 檔案中手動輸入密碼。</target>
       </trans-unit>
       <trans-unit id="userSelectionCancelled">
         <source xml:lang="en">User has cancelled selection for how to run autorest.</source>
@@ -1291,10 +1175,6 @@
       <trans-unit id="valueCannotBeEmpty">
         <source xml:lang="en">Value cannot be empty</source>
         <target state="translated">值不得空白</target>
-      </trans-unit>
-      <trans-unit id="valueMustNotBeEmpty">
-        <source xml:lang="en">Value must not be empty</source>
-        <target state="translated">值不得為空白</target>
       </trans-unit>
       <trans-unit id="viewFriendlyName">
         <source xml:lang="en">View</source>
@@ -1344,9 +1224,9 @@
         <source xml:lang="en">Add Database Reference</source>
         <target state="translated">新增資料庫參考</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.addSqlBinding">
-        <source xml:lang="en">Add SQL Binding (preview)</source>
-        <target state="translated">新增 SQL 繫結 (預覽)</target>
+      <trans-unit id="sqlDatabaseProjects.addExistingItem">
+        <source xml:lang="en">Add Existing Item...</source>
+        <target state="translated">新增現有項目(_I)...</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
         <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
@@ -1363,6 +1243,10 @@
       <trans-unit id="sqlDatabaseProjects.close">
         <source xml:lang="en">Close Database Project</source>
         <target state="translated">關閉資料庫專案</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.convertToSdkStyleProject">
+        <source xml:lang="en">Convert to SDK-style project</source>
+        <target state="translated">轉換成 SDK 樣式專案</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.createProjectFromDatabase">
         <source xml:lang="en">Create Project From Database</source>

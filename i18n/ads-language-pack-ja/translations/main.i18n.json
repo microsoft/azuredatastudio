@@ -9956,6 +9956,8 @@
 			"table.selectAll": "すべて選択",
 			"table.sortAscending": "昇順で並べ替え",
 			"table.sortDescending": "降順で並べ替え",
+			"tableFilter.blankStringDisplayText": "(空白)",
+			"tableFilter.nullDisplayText": "(NULL)",
 			"tableFilter.selectedCount": "{0} 件選択済み",
 			"tableFilter.visibleCount": "{0} 件の結果"
 		},
@@ -9980,6 +9982,7 @@
 			"dataExplorer.context": "データエクスプローラー項目のコンテキスト メニュー",
 			"dataGrid.context": "データ グリッド項目のコンテキスト メニュー",
 			"default": "自動更新チェックを有効にします。Azure Data Studio は、更新プログラムを自動的かつ定期的に確認します。",
+			"docNotFoundForUriError": "指定した URI のノートブック ドキュメントを開けませんでした。",
 			"enable locally": "この拡張機能をローカルで有効にするには、Azure Data Studio を再度読み込んでください。",
 			"enable remote": "この拡張機能を {0} で有効にするには、Azure Data Studio を再度読み込んでください。",
 			"enableWindowsBackgroundUpdates": "Windows で新しい Azure Data Studio バージョンをバックグラウンドでダウンロードしてインストールできるようにする",
@@ -10006,16 +10009,13 @@
 			"sql.watcherExclude": "ファイル監視から除外するファイル パスの glob パターンを構成します。パターンは絶対パスで一致する必要があります。つまり、パス内のファイル (`**/build/output/**` や `/Users/name/workspaces/project/build/output/**` など) と一致するには、プレフィックスに `**/` または完全なパスが正しく一致し、サフィックスが `/**` である必要があります。この設定を変更するには、再起動が必要です。起動時に Azure Data Stuidio が多くの CPU 時間を消費する場合は、大きなフォルダーを除外して初期負荷を減らすことができます。",
 			"uninstallExtensionComplete": "拡張機能 {0}のアンインストールを完了するには、Azure Data Studio を再度読み込んでください。",
 			"updateLocale": "Azure Data Studio の UI 言語を {0} に変更して再起動しますか?",
+			"vscodeDocCreationFailedError": "ノートブック ドキュメントを作成できませんでした。",
 			"vscodeFunctionalityNotSupportedError": "この VS Code 機能は、Azure Data Studio ではサポートされていません。",
 			"vscodeInvalidArgumentsError": "引数が無効です。",
 			"watermark.newNotebook": "新しいノートブック",
 			"watermark.newSqlFile": "新しい SQL ファイル",
 			"workspace.trust.description": "Azure Data Studio 内でワークスペースの信頼を有効にするかどうかを制御します。",
 			"workspace.trust.emptyWindow.description": "空のウィンドウを Azure Data Studio 内で既定で信頼するかどうかを制御します。'#{0}#' と共に使用すると、空のウィンドウでプロンプトを表示せずに、Azure Data Studio のすべての機能を有効にすることができます。"
-		},
-		"sql/base/parts/editableDropdown/browser/dropdown": {
-			"editableDropdown.errorValidate": "一覧からオプションを選択する必要があります",
-			"selectBox": "ボックスを選択"
 		},
 		"sql/platform/accounts/common/accountActions": {
 			"NoAccountToRefresh": "更新するアカウントはありません",
@@ -10171,8 +10171,11 @@
 		"sql/workbench/browser/designer/designer": {
 			"designer.defaultRemoveRowConfirmationMessage": "この行を削除しますか?",
 			"designer.generalGroupName": "全般",
+			"designer.issueCountAlert": "{0} 件の検証の問題が見つかりました。",
+			"designer.issuesTabTitle": "問題 ({0} 件)",
 			"designer.loadingDesigner": "デザイナーの読み込み中...",
 			"designer.loadingDesignerCompleted": "デザイナーが読み込まれます",
+			"designer.newRowButtonAriaLabel": "`{0}` テーブルに新しい行を追加する",
 			"designer.newRowText": "新規追加",
 			"designer.processing": "処理中...",
 			"designer.processingChanges": "変更の処理中...",
@@ -10181,6 +10184,7 @@
 			"designer.publishChangesCompleted": "変更が公開されました",
 			"designer.publishingChanges": "変更をパブリッシュしています...",
 			"designer.removeRowText": "削除",
+			"designer.scriptTabTitle": "スクリプト",
 			"tableDesigner.unknownComponentType": "コンポーネントの種類: {0} はサポートされていません"
 		},
 		"sql/workbench/browser/designer/designerPropertiesPane": {
@@ -11027,7 +11031,10 @@
 			"textPreview": "テキスト セル"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
-			"parametersText": "パラメーター"
+			"cellLanguageDescription": "({0}) - 現在の言語",
+			"cellLanguageDescriptionConfigured": "({0})",
+			"parametersText": "パラメーター",
+			"selectCellLanguage": "セルの言語モードを選択する"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/codeActions": {
 			"errorRunCell": "最後の実行でエラーが発生しました。もう一度実行するにはクリックしてください",
@@ -11137,6 +11144,7 @@
 			"notebook.useNewMarkdownRenderer": "ノートブック用のマークダウン レンダラーの新しいバージョンを使用するかどうか。これにより、マークダウンが以前のバージョンとは異なる方法でレンダリングされる可能性があります。",
 			"notebookViews": "ノートブック ビュー",
 			"notebookViews.enabled": "(プレビュー) ノートブック ビューを有効にする",
+			"restartNotebookKernel": "ノートブックのカーネルを再起動する",
 			"search.actionsPosition": "検索ビューの行内のアクションバーの位置を制御します。",
 			"search.actionsPositionAuto": "検索ビューが狭い場合はアクションバーを右に、検索ビューが広い場合はコンテンツの直後にアクションバーを配置します。",
 			"search.actionsPositionRight": "アクションバーを常に右側に表示します。",
@@ -11732,6 +11740,7 @@
 			"accountDialog.addConnection": "アカウントを追加する",
 			"accountDialog.close": "閉じる",
 			"accountDialog.didNotPickAuthProvider": "認証プロバイダーを選択していません。もう一度お試しください。",
+			"accountDialog.loadingProviderLabel": "アカウントを読み込んでいます...",
 			"accountDialog.noAccountLabel": "リンクされているアカウントはありません。アカウントを追加してください。",
 			"accountDialog.noCloudsRegistered": "有効にされているクラウドがありません。[設定] -> [Azure アカウント構成の検索] に移動し、 少なくとも 1 つのクラウドを有効にしてください",
 			"accountExplorer.name": "アカウント",
@@ -11966,7 +11975,9 @@
 			"NoExecuteManager": "このノートブック ファイルの種類にプロバイダーが定義されていないため、サーバーを起動できませんでした。",
 			"ServerNotStarted": "不明な理由によりサーバーが起動しませんでした",
 			"clientSession.unknownError": "ノートブック セッションの開始中にエラーが発生しました。",
-			"kernelRequiresConnection": "カーネル {0} が見つかりませんでした。既定のカーネルが代わりに使用されます。"
+			"kernelRequiresConnection": "カーネル '{0}' が見つかりませんでした。既定のカーネルが代わりに使用されます。",
+			"kernelRestartFailed": "カーネルの再起動に失敗しました: {0}",
+			"kernelRestartedSuccessfully": "カーネルが正常に再起動されました"
 		},
 		"sql/workbench/services/notebook/browser/models/notebookContexts": {
 			"localhost": "localhost",
@@ -11985,6 +11996,7 @@
 		},
 		"sql/workbench/services/notebook/browser/notebookServiceImpl": {
 			"executeProviderTimeout": "ノートブック プロバイダー '{0}' の実行プロバイダーの可用性待機がタイムアウトしました",
+			"failedToCreateNotebookInput": "プロバイダー `{0}` のノートブック入力を作成できませんでした",
 			"notebookServiceNoProvider": "ノートブック プロバイダーが存在しません",
 			"notebookUriNotDefined": "ノートブック マネージャーを作成するときに URI が渡されませんでした",
 			"serializationProviderTimeout": "ノートブック プロバイダー '{0}' のシリアル化プロバイダーの可用性待機がタイムアウトしました",
@@ -11997,6 +12009,7 @@
 			"notebookView.untitledView": "無題のビュー"
 		},
 		"sql/workbench/services/notebook/browser/sql/sqlSessionManager": {
+			"SqlKernelRestartNotSupported": "SQL カーネルの再起動はサポートされていません",
 			"connectionRequired": "ノートブックのセルを実行するには、接続を選択する必要があります",
 			"sqlKernelError": "SQL カーネル エラー",
 			"sqlMaxRowsDisplayed": "上位 {0} 行を表示しています。"
@@ -12205,10 +12218,21 @@
 			"designer.table.description.description": "テーブルの説明です。",
 			"designer.table.description.name": "テーブル オブジェクトの名前です。",
 			"designer.table.description.schema": "テーブルを含むスキーマです。",
-			"tableDesigner.ErrorDialogTitle": "Table Designer Error",
+			"designer.table.primaryKeyColumns.description": "主キーの列。",
+			"designer.table.primaryKeyName.description": "主キーの名前。",
+			"tableDesigner.ErrorDialogTitle": "テーブル デザイナー エラー",
 			"tableDesigner.ForeignKeyTypeName": "外部キー",
 			"tableDesigner.ForeignTableName": "外部テーブル",
 			"tableDesigner.IndexTypeName": "インデックス",
+			"tableDesigner.PrimaryKeyTabTitle": "主キー",
+			"tableDesigner.TableSchemaValidationError": "テーブル スキーマの検証に失敗しました。エラー: {0}",
+			"tableDesigner.addForeignKey": "新しい外部キー",
+			"tableDesigner.addNewCheckConstraint": "新しい Check 制約",
+			"tableDesigner.addNewColumn": "新しい列",
+			"tableDesigner.addNewColumnMapping": "新しい列マッピング",
+			"tableDesigner.addNewColumnToIndex": "列の追加",
+			"tableDesigner.addNewColumnToPrimaryKey": "列の追加",
+			"tableDesigner.addNewIndex": "新しいインデックス",
 			"tableDesigner.checkConstraintExpressionTitle": "式",
 			"tableDesigner.checkConstraintNameTitle": "名前",
 			"tableDesigner.checkConstraintTypeName": "制約のチェック",
@@ -12243,7 +12267,10 @@
 			"tableDesigner.indexColumns": "列",
 			"tableDesigner.indexName": "名前",
 			"tableDesigner.indexesTabTitle": "インデックス",
+			"tableDesigner.inputValidationError": "入力の検証に失敗しました。エラー: {0}",
 			"tableDesigner.nameTitle": "テーブル名",
+			"tableDesigner.primaryKeyColumnsTitle": "主キー列",
+			"tableDesigner.primaryKeyNameTitle": "名前",
 			"tableDesigner.publishChangeError": "変更の発行中にエラーが発生しました: {0}",
 			"tableDesigner.publishChangeSuccess": "変更が正常に公開されました。",
 			"tableDesigner.savingChanges": "テーブル デザイナーの変更点をパブリッシュしています...",
@@ -12262,43 +12289,6 @@
 		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
 			"errorStartBeforeReady": "セッションを開始できません。マネージャーがまだ初期化されていません"
 		},
-		"sql/workbench/contrib/queryplan2/browser/planHeader": {
-			"planHeaderIndexAndCost": "クエリ {0}: クエリ コスト (スクリプトに対する相対): {1}%"
-		},
-		"sql/workbench/contrib/queryplan2/browser/queryPlan": {
-			"openQueryAction": "クエリを開く",
-			"queryPlanCustomZoom": "ズームの指定",
-			"queryPlanFitGraphLabel": "ウィンドウのサイズに合わせて拡大",
-			"queryPlanOpenGraphFile": "Open Plan File",
-			"queryPlanPropertiesActionLabel": "プロパティ",
-			"queryPlanSavePlanXML": "Save Plan File",
-			"queryPlanSearchNodeAction": "SearchNode",
-			"queryPlanTitle": "Query Plan (Preview)",
-			"queryPlanZoomInActionLabel": "拡大",
-			"queryPlanZoomOutActionLabel": "縮小"
-		},
-		"sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView": {
-			"nodePropertyViewNameNameColumnHeader": "Name",
-			"nodePropertyViewNameValueColumnHeader": "Value",
-			"nodePropertyViewTitle": "Properties",
-			"queryPlanPropertiesEdgeOperationName": "Edge",
-			"queryPlanPropertyViewClose": "Close",
-			"queryPlanPropertyViewSortAlphabetically": "Alphabetical",
-			"queryPlanPropertyViewSortByDisplayOrde": "Categorized"
-		},
-		"sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget": {
-			"cancelCustomZoomAction": "Close (Escape)",
-			"invalidCustomZoomError": "Select a zoom value between 1 to 200",
-			"qpZoomValueLabel": "Zoom (percent)",
-			"zoomAction": "Zoom (Enter)"
-		},
-		"sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget": {
-			"cancelSearchAction": "Close (Escape)",
-			"nextSearchItemAction": "Next Match (Enter)",
-			"previousSearchItemAction": "Previous Match (Shift+Enter)",
-			"queryPlanSearchTypeContains": "Contains",
-			"queryPlanSearchTypeEquals": "Equals"
-		},
 		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
 			"tableDesigner.PreviewFeature": "プレビュー機能"
 		},
@@ -12312,6 +12302,71 @@
 			"tableDesigner.cancel": "取り消す",
 			"tableDesigner.generateScript": "スクリプトの生成",
 			"tableDesigner.previewDatabaseUpdates": "データベース更新のプレビュー"
+		},
+		"sql/base/browser/ui/editableDropdown/browser/dropdown": {
+			"editableDropdown.errorValidate": "一覧からオプションを選択する必要があります",
+			"selectBox": "ボックスを選択"
+		},
+		"sql/workbench/browser/designer/designerIssuesTabPanelView": {
+			"designer.IssueListAriaLabel": "問題"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlan": {
+			"executionPlan.SaveFileDescription": "実行プラン ファイル",
+			"executionPlanCustomZoom": "ズームの指定",
+			"executionPlanFileLoadingComplete": "実行プランが生成されます",
+			"executionPlanFileLoadingFailed": "実行プランを読み込めませんでした",
+			"executionPlanFitGraphLabel": "ウィンドウのサイズに合わせて拡大",
+			"executionPlanOpenGraphFile": "クエリ プラン XML の表示",
+			"executionPlanPropertiesActionLabel": "プロパティ",
+			"executionPlanSavePlanXML": "プラン ファイルの保存",
+			"executionPlanSearchNodeAction": "ノードの検索",
+			"executionPlanTitle": "クエリ プラン (プレビュー)",
+			"executionPlanZoomInActionLabel": "拡大",
+			"executionPlanZoomOutActionLabel": "縮小",
+			"loadingExecutionPlanFile": "実行プランの生成",
+			"openQueryAction": "クエリを開く"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
+			"executionPlanEditor": "クエリ実行プラン エディター"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView": {
+			"executionPlanPropertiesEdgeOperationName": "Edge",
+			"executionPlanPropertyViewClose": "閉じる",
+			"executionPlanPropertyViewSortAlphabetically": "アルファベット順",
+			"executionPlanPropertyViewSortByDisplayOrder": "項目別",
+			"nodePropertyViewNameNameColumnHeader": "名前",
+			"nodePropertyViewNameValueColumnHeader": "値",
+			"nodePropertyViewTitle": "プロパティ"
+		},
+		"sql/workbench/contrib/executionPlan/browser/planHeader": {
+			"planHeaderIndexAndCost": "クエリ {0}: クエリ コスト (スクリプトに対する相対): {1}%"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
+			"cancelCustomZoomAction": "閉じる (Esc)",
+			"customZoomApplyButton": "適用",
+			"customZoomApplyButtonTitle": "ズームの適用 (Enter)",
+			"invalidCustomZoomError": "1 〜 200 の間のズーム値を選択します",
+			"qpZoomValueLabel": "ズーム (%)",
+			"zoomAction": "ズーム (Enter)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget": {
+			"cancelSearchAction": "閉じる (Esc)",
+			"executionPlanSearchTypeContains": "含む",
+			"executionPlanSearchTypeEquals": "等しい",
+			"nextSearchItemAction": "次の一致 (Enter)",
+			"previousSearchItemAction": "前の一致 (Shift + Enter)"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookEditor.component": {
+			"loadingNotebookCompletedMessage": "ノートブック {0} の読み込みが完了しました",
+			"loadingNotebookMessage": "ノートブック {0}を読み込んでいます"
+		},
+		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"noHandlerRegistered": "有効な実行プラン ハンドラーが登録されていません",
+			"providerIdNotValidError": "ExecutionPlanService と対話するには、有効なプロバイダーが必要です",
+			"selectExecutionPlanProvider": "実行プランを開くプロバイダーを選択する"
+		},
+		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
+			"table.showActions": "アクションの表示"
 		}
 	}
 }

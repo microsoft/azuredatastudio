@@ -249,6 +249,14 @@ export let executionPlanNodeIconPaths =
 	unionAll: imageBasePath + 'union_all.png'
 };
 
+export const badgeIconPaths = {
+	warning: imageBasePath + 'badge_warning.svg',
+
+	parallelism: imageBasePath + 'badge_parallelism.svg',
+
+	criticalWarning: imageBasePath + 'badge_critical_warning.svg'
+};
+
 export const savePlanIconClassNames = 'ep-save-plan-icon';
 export const openPropertiesIconClassNames = 'ep-open-properties-icon';
 export const openQueryIconClassNames = 'ep-open-query-icon';

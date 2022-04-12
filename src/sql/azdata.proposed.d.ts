@@ -577,9 +577,25 @@ declare module 'azdata' {
 		url?: string;
 	}
 
+	export interface ContextMenuColumnCellValue {
+		/**
+		 * The title of the hyperlink. By default, the title is 'Show Actions'
+		 */
+		title?: string;
+		/**
+		 * commands for the menu. Use an array for a group and menu separators will be added.
+		 */
+		commands: (string | string[])[];
+		/**
+		 * context that will be passed to the commands.
+		 */
+		context?: { [key: string]: string | boolean | number } | string | boolean | number | undefined
+	}
+
 	export enum ColumnType {
 		icon = 3,
-		hyperlink = 4
+		hyperlink = 4,
+		contextMenu = 5
 	}
 
 	export interface TableColumn {
@@ -613,6 +629,9 @@ declare module 'azdata' {
 
 	export interface CheckboxColumn extends TableColumn {
 		action: ActionOnCellCheckboxCheck;
+	}
+
+	export interface ContextMenuColumn extends TableColumn {
 	}
 
 	export interface QueryExecuteResultSetNotificationParams {
@@ -743,6 +762,11 @@ declare module 'azdata' {
 			 * Extension can store additional information that the provider needs to uniquely identify a table.
 			 */
 			[key: string]: any;
+			/**
+			 * Table icon type that's shown in the editor tab. Default is the basic
+			 * table icon.
+			 */
+			tableIcon?: TableIcon;
 		}
 
 		/**
@@ -760,6 +784,16 @@ declare module 'azdata' {
 		}
 
 		/**
+		 * Table icon that's shown on the editor tab
+		 */
+		export enum TableIcon {
+			Basic = 'Basic',
+			Temporal = 'Temporal',
+			GraphNode = 'GraphNode',
+			GraphEdge = 'GraphEdge'
+		}
+
+		/**
 		 * Name of the common table properties.
 		 * Extensions can use the names to access the designer view model.
 		 */
@@ -773,6 +807,7 @@ declare module 'azdata' {
 			CheckConstraints = 'checkConstraints',
 			Indexes = 'indexes',
 			PrimaryKeyName = 'primaryKeyName',
+			PrimaryKeyDescription = 'primaryKeyDescription',
 			PrimaryKeyColumns = 'primaryKeyColumns'
 		}
 		/**
@@ -784,7 +819,9 @@ declare module 'azdata' {
 			DefaultValue = 'defaultValue',
 			Length = 'length',
 			Name = 'name',
+			Description = 'description',
 			Type = 'type',
+			AdvancedType = 'advancedType',
 			IsPrimaryKey = 'isPrimaryKey',
 			Precision = 'precision',
 			Scale = 'scale'
@@ -796,6 +833,7 @@ declare module 'azdata' {
 		 */
 		export enum TableForeignKeyProperty {
 			Name = 'name',
+			Description = 'description',
 			ForeignTable = 'foreignTable',
 			OnDeleteAction = 'onDeleteAction',
 			OnUpdateAction = 'onUpdateAction',
@@ -816,6 +854,7 @@ declare module 'azdata' {
 		 */
 		export enum TableCheckConstraintProperty {
 			Name = 'name',
+			Description = 'description',
 			Expression = 'expression'
 		}
 
@@ -825,6 +864,7 @@ declare module 'azdata' {
 		 */
 		export enum TableIndexProperty {
 			Name = 'name',
+			Description = 'description',
 			Columns = 'columns'
 		}
 
@@ -890,7 +930,7 @@ declare module 'azdata' {
 			*/
 			primaryKeyColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
 			/**
-			 * Additional primary key properties. Common primary key properties: primaryKeyName.
+			 * Additional primary key properties. Common primary key properties: primaryKeyName, primaryKeyDescription.
 			 */
 			additionalPrimaryKeyProperties?: DesignerDataPropertyInfo[];
 		}
@@ -1111,6 +1151,10 @@ declare module 'azdata' {
 			 * The input validation error.
 			 */
 			inputValidationError?: string;
+			/**
+			 * Metadata related to the table
+			 */
+			metadata?: { [key: string]: string };
 		}
 
 		/**
@@ -1129,6 +1173,10 @@ declare module 'azdata' {
 			 * The new view.
 			 */
 			view: TableDesignerView;
+			/**
+			 * Metadata related to the table to be captured
+			 */
+			metadata?: { [key: string]: string };
 		}
 
 		export interface GeneratePreviewReportResult {
@@ -1144,6 +1192,10 @@ declare module 'azdata' {
 			 * The table schema validation error.
 			 */
 			schemaValidationError?: string;
+			/**
+			 * Metadata related to the table to be captured
+			 */
+			metadata?: { [key: string]: string };
 		}
 	}
 
@@ -1212,6 +1264,27 @@ declare module 'azdata' {
 			 * Edges corresponding to the children.
 			 */
 			edges: ExecutionPlanEdge[];
+			/**
+			 * Warning/parallelism badges applicable to the current node
+			 */
+			badges: ExecutionPlanBadge[];
+		}
+
+		export interface ExecutionPlanBadge {
+			/**
+			 * Type of the node overlay. This determines the icon that is displayed for it
+			 */
+			type: BadgeType;
+			/**
+			 * Text to display for the overlay tooltip
+			 */
+			tooltip: string;
+		}
+
+		export enum BadgeType {
+			Warning = 0,
+			CriticalWarning = 1,
+			Parallelism = 2
 		}
 
 		export interface ExecutionPlanEdge {

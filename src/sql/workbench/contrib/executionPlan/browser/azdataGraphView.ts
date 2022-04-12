@@ -5,9 +5,10 @@
 
 import * as azdataGraphModule from 'azdataGraph';
 import type * as azdata from 'azdata';
+import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { isString } from 'vs/base/common/types';
-import { executionPlanNodeIconPaths } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { badgeIconPaths, executionPlanNodeIconPaths } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
@@ -35,7 +36,7 @@ export class AzdataGraphView {
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
 	) {
 		this._diagramModel = this.populate(this._executionPlan.root);
-		this._diagram = new azdataGraph.azdataQueryPlan(this._parentContainer, this._diagramModel, executionPlanNodeIconPaths);
+		this._diagram = new azdataGraph.azdataQueryPlan(this._parentContainer, this._diagramModel, executionPlanNodeIconPaths, badgeIconPaths);
 		this.setGraphProperties();
 		this.initializeGraphEvents();
 	}
@@ -294,6 +295,13 @@ export class AzdataGraphView {
 			diagramNode.metrics = this.populateProperties(node.properties);
 		}
 
+		if (node.badges) {
+			diagramNode.badges = [];
+			for (let i = 0; i < node.badges.length; i++) {
+				diagramNode.badges.push(this.getBadgeTypeString(node.badges[i].type));
+			}
+		}
+
 		if (node.edges) {
 			diagramNode.edges = this.populateEdges(node.edges);
 		}
@@ -309,6 +317,34 @@ export class AzdataGraphView {
 			diagramNode.description = node.description;
 		}
 		return diagramNode;
+	}
+
+	private getBadgeTypeString(badgeType: sqlExtHostType.executionPlan.BadgeType): {
+		type: string,
+		tooltip: string
+	} | undefined {
+		/**
+		 * TODO: Need to figure out if tooltip have to be removed. For now, they are empty
+		 */
+		switch (badgeType) {
+			case sqlExtHostType.executionPlan.BadgeType.Warning:
+				return {
+					type: 'warning',
+					tooltip: ''
+				};
+			case sqlExtHostType.executionPlan.BadgeType.CriticalWarning:
+				return {
+					type: 'criticalWarning',
+					tooltip: ''
+				};
+			case sqlExtHostType.executionPlan.BadgeType.Parallelism:
+				return {
+					type: 'parallelism',
+					tooltip: ''
+				};
+			default:
+				return undefined;
+		}
 	}
 
 	private populateProperties(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[]): AzDataGraphCellMetric[] {
@@ -413,6 +449,12 @@ export interface AzDataGraphCell {
 	 * Description to be displayed in the cell tooltip
 	 */
 	description: string;
+	badges: AzDataGraphNodeBadge[];
+}
+
+export interface AzDataGraphNodeBadge {
+	type: string;
+	tooltip: string;
 }
 
 export interface AzDataGraphCellMetric {
