@@ -12,7 +12,7 @@ import type * as azdata from 'azdata';
 export class ExecutionPlanState {
 
 	private _graphs: azdata.executionPlan.ExecutionPlanGraph[] = [];
-	public _executionPlanFileViewUUID: string;
+	public executionPlanFileViewUUID: string;
 
 	public get graphs(): azdata.executionPlan.ExecutionPlanGraph[] {
 		return this._graphs;

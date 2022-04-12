@@ -92,7 +92,7 @@ export class AzdataGraphView {
 		}
 		this._diagram.graph.getSelectionModel().setCell(cell);
 		if (bringToCenter) {
-			this.bringElementToCenter(element);
+			this.centerElement(element);
 		}
 	}
 
@@ -227,7 +227,7 @@ export class AzdataGraphView {
 	 * Brings a graph element to the center of the parent view.
 	 * @param node Node to be brought into the center
 	 */
-	public bringElementToCenter(node: InternalExecutionPlanElement): void {
+	public centerElement(node: InternalExecutionPlanElement): void {
 		/**
 		 * The selected graph node might be hidden/partially visible if the graph is overflowing the parent container.
 		 * Apart from the obvious problems in aesthetics, user do not get a proper feedback of the search result.

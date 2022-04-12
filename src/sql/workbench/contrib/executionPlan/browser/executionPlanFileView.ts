@@ -18,7 +18,7 @@ export class ExecutionPlanFileView {
 	private _parent: HTMLElement;
 	private _loadingSpinner: LoadingSpinner;
 	private _loadingErrorInfoBox: InfoBox;
-	private _eps?: ExecutionPlanView[] = [];
+	private _executionPlanViews: ExecutionPlanView[] = [];
 	private _graphs?: azdata.executionPlan.ExecutionPlanGraph[] = [];
 	private _container = DOM.$('.eps-container');
 
@@ -56,9 +56,9 @@ export class ExecutionPlanFileView {
 	public addGraphs(newGraphs: azdata.executionPlan.ExecutionPlanGraph[] | undefined) {
 		if (newGraphs) {
 			newGraphs.forEach(g => {
-				const ep = this.instantiationService.createInstance(ExecutionPlanView, this._container, this._eps.length + 1);
+				const ep = this.instantiationService.createInstance(ExecutionPlanView, this._container, this._executionPlanViews.length + 1);
 				ep.model = g;
-				this._eps.push(ep);
+				this._executionPlanViews.push(ep);
 				this._graphs.push(g);
 				this.updateRelativeCosts();
 			});
@@ -109,7 +109,7 @@ export class ExecutionPlanFileView {
 		}, 0);
 
 		if (sum > 0) {
-			this._eps.forEach(ep => {
+			this._executionPlanViews.forEach(ep => {
 				ep.planHeader.relativeCost = ((ep.model.root.subTreeCost + ep.model.root.cost) / sum) * 100;
 			});
 		}

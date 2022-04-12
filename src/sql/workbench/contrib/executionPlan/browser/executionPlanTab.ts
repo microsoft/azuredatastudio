@@ -47,24 +47,24 @@ export class ExecutionPlanTabView implements IPanelView {
 		const oldInput = this._input;
 
 		// clearing old input view
-		if (oldInput?._executionPlanFileViewUUID) {
-			const oldView = this._viewCache.executionPlanFileViewMap.get(oldInput._executionPlanFileViewUUID);
+		if (oldInput?.executionPlanFileViewUUID) {
+			const oldView = this._viewCache.executionPlanFileViewMap.get(oldInput.executionPlanFileViewUUID);
 			oldView.onHide(this._container);
 		}
 
 		// if new input already has a view we are just making it visible here.
-		let newView = this._viewCache.executionPlanFileViewMap.get(newInput._executionPlanFileViewUUID);
+		let newView = this._viewCache.executionPlanFileViewMap.get(newInput.executionPlanFileViewUUID);
 		if (newView) {
 			newView.onShow(this._container);
 		} else {
 			// creating a new view for the new input
-			newInput._executionPlanFileViewUUID = generateUuid();
+			newInput.executionPlanFileViewUUID = generateUuid();
 			newView = this._instantiationService.createInstance(ExecutionPlanFileView);
 			newView.onShow(this._container);
 			newView.addGraphs(
 				newInput.graphs
 			);
-			this._viewCache.executionPlanFileViewMap.set(newInput._executionPlanFileViewUUID, newView);
+			this._viewCache.executionPlanFileViewMap.set(newInput.executionPlanFileViewUUID, newView);
 		}
 		this._input = newInput;
 	}
@@ -79,7 +79,7 @@ export class ExecutionPlanTabView implements IPanelView {
 	}
 
 	public clearPlans(): void {
-		let currentView = this._viewCache.executionPlanFileViewMap.get(this._input._executionPlanFileViewUUID);
+		let currentView = this._viewCache.executionPlanFileViewMap.get(this._input.executionPlanFileViewUUID);
 		if (currentView) {
 			currentView.onHide(this._container);
 			this._input.graphs = [];

@@ -152,7 +152,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 			this.searchNodes();
 		}
 
-		this.executionPlanDiagram.bringElementToCenter(this._searchResults[this._currentSearchResultIndex]);
+		this.executionPlanDiagram.centerElement(this._searchResults[this._currentSearchResultIndex]);
 		this.executionPlanDiagram.selectElement(this._searchResults[this._currentSearchResultIndex]);
 		this._currentSearchResultIndex = this._currentSearchResultIndex === this._searchResults.length - 1 ?
 			this._currentSearchResultIndex = 0 :
@@ -164,7 +164,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 			this.searchNodes();
 		}
 
-		this.executionPlanDiagram.bringElementToCenter(this._searchResults[this._currentSearchResultIndex]);
+		this.executionPlanDiagram.centerElement(this._searchResults[this._currentSearchResultIndex]);
 		this.executionPlanDiagram.selectElement(this._searchResults[this._currentSearchResultIndex]);
 		this._currentSearchResultIndex = this._currentSearchResultIndex === 0 ?
 			this._currentSearchResultIndex = this._searchResults.length - 1 :
