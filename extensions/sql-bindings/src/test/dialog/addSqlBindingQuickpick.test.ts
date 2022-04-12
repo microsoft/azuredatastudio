@@ -117,8 +117,8 @@ describe('Add SQL Binding quick pick', () => {
 		await launchAddSqlBindingQuickpick(vscode.Uri.file('testUri'));
 
 		// should go back to the select connection string methods
-		should(quickpickStub.callCount === 5);
-		should(quickpickStub.getCall(4).args).deepEqual([
+		should(quickpickStub.callCount === 4);
+		should(quickpickStub.getCall(3).args).deepEqual([
 			[constants.connectionProfile, constants.userConnectionString],
 			{
 				canPickMany: false,

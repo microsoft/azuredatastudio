@@ -323,8 +323,10 @@ export async function promptForObjectName(bindingType: BindingType): Promise<str
 /**
  * Prompts the user to enter connection setting and updates it from AF project
  * @param projectUri Azure Function project uri
+ * @param connectionInfo connection info from the user to update the connection string
+ * @returns connection string setting name to be used for the createFunction API
  */
-export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined): Promise<string | undefined> {
+export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined, connectionInfo?: IConnectionInfo): Promise<string | undefined> {
 	let connectionStringSettingName: string | undefined;
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 
@@ -390,6 +392,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 			'WEBSITE_VNET_ROUTE_ALL'
 		];
 
+		// setup connetion string setting quickpick
 		let connectionStringSettings: (vscode.QuickPickItem)[] = [];
 		if (settings?.Values) {
 			connectionStringSettings = Object.keys(settings.Values).filter(setting => !knownSettings.includes(setting)).map(setting => { return { label: setting }; });
@@ -426,104 +429,61 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 
 				// show the connection string methods (user input and connection profile options)
 				const listOfConnectionStringMethods = [constants.connectionProfile, constants.userConnectionString];
+				let selectedConnectionStringMethod: string | undefined;
+				let connectionString: string = '';
 				while (true) {
-					const selectedConnectionStringMethod = await vscode.window.showQuickPick(listOfConnectionStringMethods, {
-						canPickMany: false,
-						title: constants.selectConnectionString,
-						ignoreFocusOut: true
-					});
-					if (!selectedConnectionStringMethod) {
-						// User cancelled
-						return;
-					}
+					try {
+						const projectFolder: string = path.dirname(projectUri.fsPath);
+						const localSettingsPath: string = path.join(projectFolder, constants.azureFunctionLocalSettingsFileName);
 
-					let connectionString: string = '';
-					let includePassword: string | undefined;
-					let connectionInfo: IConnectionInfo | undefined;
-					let connectionDetails: ConnectionDetails;
-					if (selectedConnectionStringMethod === constants.userConnectionString) {
-						// User chooses to enter connection string manually
-						connectionString = await vscode.window.showInputBox(
-							{
-								title: constants.enterConnectionString,
-								ignoreFocusOut: true,
-								value: 'Server=localhost;Initial Catalog={db_name};User ID=sa;Password={your_password};Persist Security Info=False',
-								validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
+						if (!connectionInfo) {
+							// show the connection string methods (user input and connection profile options)
+							selectedConnectionStringMethod = await vscode.window.showQuickPick(listOfConnectionStringMethods, {
+								canPickMany: false,
+								title: constants.selectConnectionString,
+								ignoreFocusOut: true
+							});
+							if (!selectedConnectionStringMethod) {
+								// User cancelled
+								return;
 							}
-						) ?? '';
-					} else {
-						// Let user choose from existing connections to create connection string from
-						connectionInfo = await vscodeMssqlApi.promptForConnection(true);
+							if (selectedConnectionStringMethod === constants.userConnectionString) {
+								// User chooses to enter connection string manually
+								connectionString = await vscode.window.showInputBox(
+									{
+										title: constants.enterConnectionString,
+										ignoreFocusOut: true,
+										value: 'Server=localhost;Initial Catalog={db_name};User ID=sa;Password={your_password};Persist Security Info=False',
+										validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
+									}
+								) ?? '';
+							} else {
+								// Let user choose from existing connections to create connection string from
+								connectionInfo = await vscodeMssqlApi.promptForConnection(true);
+							}
+						}
 						if (!connectionInfo) {
 							// User cancelled return to selectedConnectionStringMethod prompt
 							continue;
 						}
-						connectionDetails = { options: connectionInfo };
-						try {
-							// Prompt to include password in connection string if authentication type is SqlLogin and connection has password saved
-							if (connectionInfo.authenticationType === 'SqlLogin' && connectionInfo.password) {
-								includePassword = await vscode.window.showQuickPick([constants.yesString, constants.noString], {
-									title: constants.includePassword,
-									canPickMany: false,
-									ignoreFocusOut: true
-								});
-								if (includePassword === constants.yesString) {
-									// set connection string to include password
-									connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, true, false);
-								}
-							}
-							// set connection string to not include the password if connection info does not include password, or user chooses to not include password, or authentication type is not sql login
-							if (includePassword !== constants.yesString) {
-								connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
-							}
-						} catch (e) {
-							// failed to get connection string for selected connection and will go back to prompt for connection string methods
-							console.warn(e);
-							void vscode.window.showErrorMessage(constants.failedToGetConnectionString);
-							continue;
+						if (selectedConnectionStringMethod !== constants.userConnectionString) {
+							// get the connection string including prompts for password if needed
+							connectionString = await promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo, localSettingsPath) as string;
 						}
-					}
-					if (connectionString) {
-						try {
-							const projectFolder: string = path.dirname(projectUri.fsPath);
-							const localSettingsPath: string = path.join(projectFolder, constants.azureFunctionLocalSettingsFileName);
-							let userPassword: string | undefined;
-							// Ask user to enter password if auth type is sql login and password is not saved
-							if (connectionInfo?.authenticationType === 'SqlLogin' && !connectionInfo?.password) {
-								userPassword = await vscode.window.showInputBox({
-									prompt: constants.enterPasswordPrompt,
-									placeHolder: constants.enterPasswordManually,
-									ignoreFocusOut: true,
-									password: true,
-									validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
-								});
-								if (userPassword) {
-									// if user enters password replace password placeholder with user entered password
-									connectionString = connectionString.replace(constants.passwordPlaceholder, userPassword);
-								}
-							}
-							if (includePassword !== constants.yesString && !userPassword && connectionInfo?.authenticationType === 'SqlLogin') {
-								// if user does not want to include password or user does not enter password, show warning message that they will have to enter it manually later in local.settings.json
-								void vscode.window.showWarningMessage(constants.userPasswordLater, constants.openFile, constants.closeButton).then(async (result) => {
-									if (result === constants.openFile) {
-										// open local.settings.json file
-										void vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(localSettingsPath));
-									}
-								});
-							}
-							const success = await setLocalAppSetting(projectFolder, newConnectionStringSettingName, connectionString);
-							if (success) {
-								// exit both loops and insert binding
-								connectionStringSettingName = newConnectionStringSettingName;
-								break;
-							} else {
-								void vscode.window.showErrorMessage(constants.selectConnectionError());
-							}
-						} catch (e) {
-							// display error message and show select setting quickpick again
-							void vscode.window.showErrorMessage(constants.selectConnectionError(e));
-							continue;
+
+						const success = await setLocalAppSetting(projectFolder, newConnectionStringSettingName, connectionString);
+						if (success) {
+							// exit both loops and insert binding
+							connectionStringSettingName = newConnectionStringSettingName;
+							break;
+						} else {
+							void vscode.window.showErrorMessage(constants.selectConnectionError());
 						}
+
+					} catch (e) {
+						// display error message and show select setting quickpick again
+						void vscode.window.showErrorMessage(constants.selectConnectionError(e));
+						continue;
 					}
 				}
 			} else {
@@ -544,4 +504,71 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 		});
 	}
 	return connectionStringSettingName;
+}
+
+/**
+ * Prompts the user to include password in the connection string and updates the connection string based on user input
+ * @param connectionInfo
+ * @param localSettingsPath
+ * @returns
+ */
+export async function promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo: IConnectionInfo, localSettingsPath: string): Promise<string | undefined> {
+	let includePassword: string | undefined;
+	let connectionString: string = '';
+	let connectionDetails: ConnectionDetails;
+	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+	connectionDetails = { options: connectionInfo };
+
+	try {
+		// Prompt to include password in connection string if authentication type is SqlLogin and connection has password saved
+		if (connectionInfo.authenticationType === 'SqlLogin' && connectionInfo.password) {
+			includePassword = await vscode.window.showQuickPick([constants.yesString, constants.noString], {
+				title: constants.includePassword,
+				canPickMany: false,
+				ignoreFocusOut: true
+			});
+			if (includePassword === constants.yesString) {
+				// set connection string to include password
+				connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, true, false);
+			}
+		}
+		// set connection string to not include the password if connection info does not include password, or user chooses to not include password, or authentication type is not sql login
+		let userPassword: string | undefined;
+		if (includePassword !== constants.yesString) {
+			connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
+
+			// Ask user to enter password if auth type is sql login and password is not saved
+			if (connectionInfo.authenticationType === 'SqlLogin' && connectionInfo.password) {
+				userPassword = await vscode.window.showInputBox({
+					prompt: constants.enterPasswordPrompt,
+					placeHolder: constants.enterPasswordManually,
+					ignoreFocusOut: true,
+					password: true,
+					validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
+				});
+				if (userPassword) {
+					// if user enters password replace password placeholder with user entered password
+					connectionString = connectionString.replace(constants.passwordPlaceholder, userPassword);
+				}
+			}
+		}
+
+		if (includePassword !== constants.yesString && !userPassword && connectionInfo?.authenticationType === 'SqlLogin') {
+			// if user does not want to include password or user does not enter password, show warning message that they will have to enter it manually later in local.settings.json
+			void vscode.window.showWarningMessage(constants.userPasswordLater, constants.openFile, constants.closeButton).then(async (result) => {
+				if (result === constants.openFile) {
+					// open local.settings.json file
+					void vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(localSettingsPath));
+				}
+			});
+		}
+
+		return connectionString;
+
+	} catch (e) {
+		// failed to get connection string for selected connection and will go back to prompt for connection string methods
+		console.warn(e);
+		void vscode.window.showErrorMessage(constants.failedToGetConnectionString);
+		return;
+	}
 }
