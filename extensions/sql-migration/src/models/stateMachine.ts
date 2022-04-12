@@ -8,9 +8,8 @@ import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
-import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs, sortResourceArrayByName, getFullResourceGroupFromId, getResourceGroupFromId, getResourceGroups } from '../api/azure';
+import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs, sortResourceArrayByName, getFullResourceGroupFromId, getResourceGroupFromId, getResourceGroups, getSqlMigrationServicesByResourceGroup } from '../api/azure';
 import * as constants from '../constants/strings';
-import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
@@ -56,6 +55,12 @@ export enum NetworkContainerType {
 	FILE_SHARE,
 	BLOB_CONTAINER,
 	NETWORK_SHARE
+}
+
+export enum FileStorageType {
+	FileShare = 'FileShare',
+	AzureBlob = 'AzureBlob',
+	None = 'None',
 }
 
 export enum Page {
@@ -826,8 +831,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 			accountValues = this._azureAccounts.map((account): azdata.CategoryValue => {
 				return {
-					displayName: account.displayInfo.displayName,
-					name: account.displayInfo.userId
+					name: account.displayInfo.userId,
+					displayName: account.isStale
+						? constants.ACCOUNT_CREDENTIALS_REFRESH(account.displayInfo.displayName)
+						: account.displayInfo.displayName
 				};
 			});
 		} catch (e) {
@@ -871,7 +878,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async getSubscriptionsDropdownValues(): Promise<azdata.CategoryValue[]> {
 		let subscriptionsValues: azdata.CategoryValue[] = [];
 		try {
-			if (this._azureAccount) {
+			if (this._azureAccount?.isStale === false) {
 				this._subscriptions = await getSubscriptions(this._azureAccount);
 			} else {
 				this._subscriptions = [];
@@ -1471,7 +1478,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		let sqlMigrationServiceValues: azdata.CategoryValue[] = [];
 		try {
 			if (this._azureAccount && subscription && resourceGroupName && this._targetServerInstance) {
-				this._sqlMigrationServices = (await getSqlMigrationServices(this._azureAccount, subscription)).filter(sms => sms.location.toLowerCase() === this._targetServerInstance.location.toLowerCase() && sms.properties.resourceGroup.toLowerCase() === resourceGroupName.toLowerCase());
+				const services = await getSqlMigrationServicesByResourceGroup(
+					this._azureAccount,
+					subscription,
+					resourceGroupName?.toLowerCase());
+				const targetLoc = this._targetServerInstance.location.toLowerCase();
+				this._sqlMigrationServices = services.filter(sms => sms.location.toLowerCase() === targetLoc);
 			} else {
 				this._sqlMigrationServices = [];
 			}
@@ -1545,6 +1557,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						requestBody.properties.backupConfiguration = {
 							targetLocation: undefined!,
 							sourceLocation: {
+								fileStorageType: 'AzureBlob',
 								azureBlob: {
 									storageAccountResourceId: this._databaseBackup.blobs[i].storageAccount.id,
 									accountKey: this._databaseBackup.blobs[i].storageKey,
@@ -1567,6 +1580,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 								accountKey: this._databaseBackup.networkShares[i].storageKey,
 							},
 							sourceLocation: {
+								fileStorageType: 'FileShare',
 								fileShare: {
 									path: this._databaseBackup.networkShares[i].networkShareLocation,
 									username: this._databaseBackup.networkShares[i].windowsUser,
@@ -1584,8 +1598,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					this._targetServerInstance,
 					this._targetDatabaseNames[i],
 					requestBody,
-					this._sessionId
-				);
+					this._sessionId);
+
 				response.databaseMigration.properties.sourceDatabaseName = this._databasesForMigration[i];
 				response.databaseMigration.properties.backupConfiguration = requestBody.properties.backupConfiguration!;
 				response.databaseMigration.properties.offlineConfiguration = requestBody.properties.offlineConfiguration!;
@@ -1621,22 +1635,18 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						}
 					);
 
-					await MigrationLocalStorage.saveMigration(
-						currentConnection!,
-						response.databaseMigration,
-						this._targetServerInstance,
-						this._azureAccount,
-						this._targetSubscription,
-						this._sqlMigrationService!,
-						response.asyncUrl,
-						this._sessionId
-					);
-					void vscode.window.showInformationMessage(localize("sql.migration.starting.migration.message", 'Starting migration for database {0} to {1} - {2}', this._databasesForMigration[i], this._targetServerInstance.name, this._targetDatabaseNames[i]));
+					void vscode.window.showInformationMessage(
+						localize(
+							"sql.migration.starting.migration.message",
+							'Starting migration for database {0} to {1} - {2}',
+							this._databasesForMigration[i],
+							this._targetServerInstance.name,
+							this._targetDatabaseNames[i]));
 				}
 			} catch (e) {
 				void vscode.window.showErrorMessage(
 					localize('sql.migration.starting.migration.error', "An error occurred while starting the migration: '{0}'", e.message));
-				console.log(e);
+				logError(TelemetryViews.MigrationLocalStorage, 'StartMigrationFailed', e);
 			}
 			finally {
 				// kill existing data collection if user start migration
@@ -1718,7 +1728,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		}
 	}
 
-	public loadSavedInfo(): Boolean {
+	public async loadSavedInfo(): Promise<Boolean> {
 		try {
 			this._targetType = this.savedInfo.migrationTargetType || undefined!;
 

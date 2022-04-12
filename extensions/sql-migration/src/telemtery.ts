@@ -28,7 +28,8 @@ export enum TelemetryViews {
 	SqlMigrationWizard = 'SqlMigrationWizard',
 	MigrationLocalStorage = 'MigrationLocalStorage',
 	SkuRecommendationWizard = 'SkuRecommendationWizard',
-	DataCollectionWizard = 'GetAzureRecommendationDialog'
+	DataCollectionWizard = 'GetAzureRecommendationDialog',
+	SelectMigrationServiceDialog = 'SelectMigrationServiceDialog',
 }
 
 export enum TelemetryAction {
