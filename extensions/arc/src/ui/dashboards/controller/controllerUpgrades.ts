@@ -19,51 +19,13 @@ export class ControllerUpgradesPage extends DashboardPage {
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel) {
 		super(modelView, dashboard);
 		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
-		// this.disposables.push(
-		// 	this._controllerModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated())),
-		// );
 	}
 	private _upgradesContainer!: azdata.DivContainer;
 	private _configureRetentionPolicyButton!: azdata.ButtonComponent;
-	// private _connectToServerLoading!: azdata.LoadingComponent;
-	// private _connectToServerButton!: azdata.ButtonComponent;
 	private _upgradesTableLoading!: azdata.LoadingComponent;
 	private _upgradesTable!: azdata.DeclarativeTableComponent;
 	private _upgradesMessage!: azdata.TextComponent;
 	private readonly _azApi: azExt.IExtension;
-
-	// private _saveArgs: RPModel = {
-	// 	recoveryPointObjective: '',
-	// 	retentionDays: ''
-	// };
-
-	// Upgrade Args Notes
-	// --desired-version -v  : The desired version tag to which the data controller will be upgraded,
-	//                         or empty to use the latest.
-	// --dry-run -d          : Indicates which instance would be upgraded but does not actually upgrade
-	//                         the instances.
-	// --k8s-namespace -k    : The Kubernetes namespace in which the data controller exists.
-	// --name -n             : The name for the data controller.
-	// --no-wait             : If given, the command will start the upgrade, but will not wait for the
-	//                         entire upgrade to complete. Upgrade will continue in the background.
-	// --resource-group -g   : The Azure resource group in which the data controller resource should be
-	//                         added.
-	// --target [Deprecated] : The desired version tag to which the data controller will be
-	//                         upgraded, or empty to use the latest.
-	//     Option '--target' has been deprecated and will be removed in a future release. Use '--
-	//     desired-version' instead.
-	// --use-k8s             : Upgrade data controller using local Kubernetes APIs.
-
-
-	private _upgradeArgs = {
-		desiredVersion: '',
-		dryRun: false,
-		k8snamespace: '',
-		name: '',
-		noWait: true,
-		resourceGroup: '',
-		usek8s: ''
-	};
 
 	public get title(): string {
 		return loc.upgradeManagement;
@@ -130,26 +92,6 @@ export class ControllerUpgradesPage extends DashboardPage {
 		content.addItem(infoOnlyNextImmediateVersion, { CSSStyles: { 'min-height': '30px' } });
 
 		// Create loaded components
-
-		// const connectToServerText = this.modelView.modelBuilder.text().withProps({
-		// 	value: loc.miaaConnectionRequired
-		// }).component();
-
-		// this._connectToServerButton = this.modelView.modelBuilder.button().withProps({
-		// 	label: loc.connectToServer,
-		// 	enabled: false,
-		// 	CSSStyles: { 'max-width': '125px', 'margin-left': '40%' }
-		// }).component();
-
-		// const connectToServerContainer = this.modelView.modelBuilder.divContainer().component();
-
-		// connectToServerContainer.addItem(connectToServerText, { CSSStyles: { 'text-align': 'center', 'margin-top': '20px' } });
-		// connectToServerContainer.addItem(this._connectToServerButton);
-
-		// this._connectToServerLoading = this.modelView.modelBuilder.loadingComponent().withItem(connectToServerContainer).component();
-
-		// this._upgradesContainer.addItem(this._connectToServerLoading, { CSSStyles: { 'margin-top': '20px' } });
-
 		this._upgradesTableLoading = this.modelView.modelBuilder.loadingComponent().component();
 		this._upgradesTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
@@ -171,14 +113,6 @@ export class ControllerUpgradesPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				},
 				{
-					displayName: loc.releaseNotes,
-					valueType: azdata.DeclarativeDataType.component,
-					isReadOnly: true,
-					width: '30%',
-					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: cssStyles.tableRow
-				},
-				{
 					displayName: loc.upgrade,
 					valueType: azdata.DeclarativeDataType.component,
 					isReadOnly: true,
@@ -190,37 +124,13 @@ export class ControllerUpgradesPage extends DashboardPage {
 			dataValues: []
 		}).component();
 
-		// For links in tables
-		// displayName: loc.endpoint,
-		// valueType: azdata.DeclarativeDataType.component,
-		// isReadOnly: true,
-		// width: '50%',
-		// headerCssStyles: cssStyles.tableHeader,
-		// rowCssStyles: {
-		// 	...cssStyles.tableRow,
-		// 	'overflow': 'hidden',
-		// 	'text-overflow': 'ellipsis',
-		// 	'white-space': 'nowrap',
-		// 	'max-width': '0'
-		// }
-
 		this._upgradesMessage = this.modelView.modelBuilder.text()
 			.withProps({ CSSStyles: { 'text-align': 'center' } })
 			.component();
 
 		this.handleDatabasesUpdated();
 		this._upgradesTableLoading.component = this._upgradesTable;
-		// this.disposables.push(
-		// 	this._connectToServerButton!.onDidClick(async () => {
-		// 		this._connectToServerButton!.enabled = false;
-		// 		this._databasesTableLoading!.loading = true;
-		// 		try {
-		// 			await this._miaaModel.callGetDatabases();
-		// 		} catch {
-		// 			this._connectToServerButton!.enabled = true;
-		// 		}
-		// 	})
-		// );
+
 		root.addItem(this._upgradesContainer);
 		root.addItem(this._upgradesMessage);
 
@@ -252,56 +162,6 @@ export class ControllerUpgradesPage extends DashboardPage {
 			enabled: true,
 			iconPath: IconPathHelper.edit,
 		}).component();
-		// this.disposables.push(
-		// this._configureRetentionPolicyButton.onDidClick(async () => {
-		// const retentionPolicySqlDialog = new ConfigureRPOSqlDialog(this._controllerModel);
-		// this.refreshRD();
-		// retentionPolicySqlDialog.showDialog(loc.configureRP, this._saveArgs.retentionDays);
-
-		// let rpArg = await retentionPolicySqlDialog.waitForClose();
-		// if (rpArg) {
-		// 	try {
-		// 		this._configureRetentionPolicyButton.enabled = false;
-		// 		this._saveArgs.retentionDays = rpArg.retentionDays;
-		// 		await vscode.window.withProgress(
-		// 			{
-		// 				location: vscode.ProgressLocation.Notification,
-		// 				title: loc.updatingInstance(this._controllerModel.info.name),
-		// 				cancellable: false
-		// 			},
-		// 			async (_progress, _token): Promise<void> => {
-		// 				if (this._controllerModel.info.connectionMode === ConnectionMode.direct) {
-		// 					await this._azApi.az.sql.miarc.update(
-		// 						this._controllerModel.info.name,
-		// 						this._saveArgs,
-		// 						this._controllerModel.info.resourceGroup,
-		// 						undefined, // Indirect mode argument - namespace
-		// 						undefined, // Indirect mode argument - usek8s
-		// 						this._controllerModel.azAdditionalEnvVars);
-		// 				} else {
-		// 					await this._azApi.az.sql.miarc.update(
-		// 						this._controllerModel.info.name,
-		// 						this._saveArgs,
-		// 						undefined, // Direct mode argument - resourceGroup
-		// 						this._controllerModel.info.namespace,
-		// 						true,
-		// 						this._controllerModel.azAdditionalEnvVars);
-		// 				}
-		// 				try {
-		// 					await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
-		// 				} catch (error) {
-		// 					vscode.window.showErrorMessage(loc.refreshFailed(error));
-		// 				}
-		// 			}
-		// 		);
-
-		// 	} catch (error) {
-		// 		vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));
-		// 	} finally {
-		// 		this._configureRetentionPolicyButton.enabled = true;
-		// 	}
-		// }
-		// }));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
@@ -320,11 +180,9 @@ export class ControllerUpgradesPage extends DashboardPage {
 		const nextVersion = this.getNextUpgrade(result.stdout.versions, result.stdout.currentVersion);
 		for (let i = 0; i < versions.length; i++) {
 			if (versions[i] === currentVersion) {
-				formattedValues.push([versions[i], dates[i], '', this.createUpgradeButton('Current version', false, '')]);
+				formattedValues.push([versions[i], dates[i], this.createUpgradeButton('Current version', false, '')]);
 			} else if (versions[i] === nextVersion) {
-				formattedValues.push([versions[i], dates[i], '', this.createUpgradeButton('Upgrade', true, nextVersion)]);
-			} else {
-				formattedValues.push([versions[i], dates[i], '', '']);
+				formattedValues.push([versions[i], dates[i], this.createUpgradeButton('Upgrade', true, nextVersion)]);
 			}
 		}
 		return formattedValues;
@@ -343,24 +201,8 @@ export class ControllerUpgradesPage extends DashboardPage {
 
 		this._upgradesTableLoading.loading = false;
 
-		// 	if (this._miaaModel.databasesLastUpdated) {
-		// 		// We successfully connected so now can remove the button and replace it with the actual databases table
-		// 		this._databasesContainer.removeItem(this._connectToServerLoading);
 		this._upgradesContainer.addItem(this._upgradesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
-
-		// 	} else {
-		// 		// If we don't have an endpoint then there's no point in showing the connect button - but the logic
-		// 		// to display text informing the user of this is already handled by the handleMiaaConfigUpdated
-		// 		if (this._miaaModel?.config?.status.primaryEndpoint) {
-		// 			this._connectToServerLoading.loading = false;
-		// 			this._connectToServerButton.enabled = true;
-		// 		}
-		// 	}
 	}
-
-	// private refreshRD(): void {
-	// 	this._saveArgs.retentionDays = this._miaaModel.config?.spec?.backup?.retentionPeriodInDays.toString() ?? '';
-	// }
 
 	// Given the list of available versions and the current version, if the current version is not the latest,
 	// then return the next version available. (Can only upgrade to next version due to limitations by Azure CLI arcdata extension.)
@@ -377,30 +219,19 @@ export class ControllerUpgradesPage extends DashboardPage {
 
 	//Create restore button for every database entry in the database table
 	private createUpgradeButton(label: string, enabled: boolean, nextVersion: string): azdata.ButtonComponent | string {
-		const upgradeButton = this.modelView.modelBuilder.button().withProps({
-			enabled: enabled,
+		let upgradeButton = this.modelView.modelBuilder.button().withProps({
 			label: label,
+			enabled: enabled
 		}).component();
 
 		this.disposables.push(
 			upgradeButton.onDidClick(async () => {
 				const upgradeDialog = new UpgradeController(this._controllerModel);
 				upgradeDialog.showDialog(loc.upgradeDataController);
-				let args = await upgradeDialog.waitForClose();
-				if (args) {
+				let dialogClosed = await upgradeDialog.waitForClose();
+				if (dialogClosed) {
 					try {
-						//
-						// private _upgradeArgs = {
-						// 	desiredVersion: '',
-						// 	dryRun: false,
-						// 	k8snamespace: '',
-						// 	name: '',
-						// 	noWait: true,
-						// 	resourceGroup: '',
-						// 	usek8s: ''
-						// };
 						upgradeButton.enabled = false;
-						this._upgradeArgs.name = args.instanceName; // False data, just setting the args here but should be determined by what version button was pressed
 						await vscode.window.withProgress(
 							{
 								location: vscode.ProgressLocation.Notification,
@@ -447,6 +278,5 @@ export class ControllerUpgradesPage extends DashboardPage {
 
 		return upgradeButton;
 	}
-
 }
 
