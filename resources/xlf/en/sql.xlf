@@ -1681,6 +1681,9 @@
     <trans-unit id="azdata.extension.contributes.dashboard.tab.group">
       <source xml:lang="en">The unique identifier of the group this tab belongs to, value for home group: home.</source>
     </trans-unit>
+    <trans-unit id="azdata.extension.contributes.dashboard.tab.hideRefreshTask">
+      <source xml:lang="en">Flag used to show/hide refresh button in toolbar. By default, the value is false</source>
+    </trans-unit>
     <trans-unit id="azdata.extension.contributes.dashboard.tab.icon.dark">
       <source xml:lang="en">Icon path when a dark theme is used</source>
     </trans-unit>
