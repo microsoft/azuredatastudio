@@ -154,7 +154,9 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				// because of an AF extension API issue, we have to get the newly created file by adding a watcher
 				// issue: https://github.com/microsoft/vscode-azurefunctions/issues/3052
 				newHostProjectFile = await azureFunctionsUtils.waitForNewHostFile();
-				await azureFunctionApi.createFunction({ language: 'C#', targetFramework: 'netcoreapp3.1' });
+				await azureFunctionApi.createFunction({
+					language: 'C#', targetFramework: 'netcoreapp3.1', suppressCreateProjectPrompt: true,
+				});
 				const timeoutForHostFile = utils.timeoutPromise(constants.timeoutProjectError);
 				hostFile = await Promise.race([newHostProjectFile.filePromise, timeoutForHostFile]);
 				if (hostFile) {
