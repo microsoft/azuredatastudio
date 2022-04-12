@@ -258,7 +258,7 @@ export class QueryResultsView extends Disposable {
 				const executionPlanFileViewCache = ExecutionPlanFileViewCache.getInstance();
 				if (executionPlanFileViewCache) {
 					const view = executionPlanFileViewCache.executionPlanFileViewMap.get(
-						this.input.state.executionPlanState._executionPlanFileViewUUID
+						this.input.state.executionPlanState.executionPlanFileViewUUID
 					);
 					if (view) {
 						view.addGraphs(e.planGraphs);
