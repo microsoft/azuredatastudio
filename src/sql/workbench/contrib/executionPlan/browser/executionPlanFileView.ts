@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type * as azdata from 'azdata';
-import { InfoBox } from 'sql/base/browser/ui/infoBox/infoBox';
+import { InfoBox } from 'sql/workbench/browser/ui/infoBox/infoBox';
 import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 import { ExecutionPlanView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanView';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
@@ -91,7 +91,7 @@ export class ExecutionPlanFileView {
 			}
 			this._loadingSpinner.loadingCompletedMessage = localize('executionPlanFileLoadingComplete', "Execution plans are generated");
 		} catch (e) {
-			this._loadingErrorInfoBox = new InfoBox(this._container, {
+			this._loadingErrorInfoBox = this.instantiationService.createInstance(InfoBox, this._container, {
 				text: e.toString(),
 				style: 'error',
 				isClickable: false
