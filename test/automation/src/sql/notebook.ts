@@ -64,8 +64,23 @@ export class Notebook {
 
 	// Cell Actions
 
-	async waitForTypeInEditor(text: string) {
-		const editor = '.notebook-cell.active .monaco-editor';
+	async getActiveCell(): Promise<IElement> {
+		const activeCellSelector = '.notebook-cell.active';
+		return this.code.waitForElement(activeCellSelector);
+	}
+
+	async waitForActiveCell(id: string): Promise<void> {
+		const activeCellSelector = '.notebook-cell.active';
+		const activeCell = await this.code.waitForElement(activeCellSelector);
+		if (activeCell.attributes['aria-label'].includes('Code Cell')) {
+			await this.code.waitForElement(`.notebook-cell.active[id="${id}"] .monaco-editor`);
+		} else {
+			await this.code.waitForElement(`.notebook-cell.active[id="${id}"] ${Notebook.textCellPreviewSelector}`);
+		}
+	}
+
+	async waitForTypeInEditor(text: string, cellId?: string) {
+		const editor = cellId ? `.notebook-cell.active[id="${cellId}"] .monaco-editor` : '.notebook-cell.active .monaco-editor';
 		await this.code.waitAndClick(editor);
 
 		const textarea = `${editor} textarea`;
@@ -137,17 +152,6 @@ export class Notebook {
 		await this.code.waitForElement(expectedResultSelector);
 	}
 
-	async isCodeCellInEditMode(): Promise<boolean> {
-		// verify that cell is in editmode
-		const element = await this.code.waitForElement(`.notebook-cell.active .monaco-editor`);
-		return element.className.includes('focused');
-	}
-
-	async isCodeCellActive(): Promise<void> {
-		// code cell is the active cell
-		await this.code.waitForElement(`.notebook-cell.active .monaco-editor`);
-	}
-
 	// Text Cell Actions
 
 	private static readonly textCellPreviewSelector = 'div.notebook-preview';
@@ -170,16 +174,6 @@ export class Notebook {
 		await this.code.waitForElement(textSelector, result => !!result?.textContent?.includes(text)); // Use includes to handle whitespace/quote edge cases
 	}
 
-	async isTextCellInEditMode(): Promise<boolean> {
-		// verify that cell is in editmode
-		const element = await this.code.waitForElement(`.notebook-cell.active ${Notebook.textCellPreviewSelector}`);
-		return element.attributes['contenteditable'] === 'true';
-	}
-
-	async isTextCellActive(): Promise<void> {
-		// text cell is the active cell
-		await this.code.waitForElement(`.notebook-cell.active ${Notebook.textCellPreviewSelector}`);
-	}
 	async waitForTextCellPreviewContentGone(selector: string): Promise<void> {
 		let textSelector = `${Notebook.textCellPreviewSelector} ${selector}`;
 		await this.code.waitForElementGone(textSelector);
