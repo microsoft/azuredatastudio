@@ -44,7 +44,6 @@ export async function getLocalSettingsJson(localSettingsPath: string): Promise<I
 			throw new Error(utils.formatString(constants.failedToParse(error.message), constants.azureFunctionLocalSettingsFileName, error.message));
 		}
 	}
-
 	return {
 		IsEncrypted: false // Include this by default otherwise the func cli assumes settings are encrypted and fails to run
 	};
@@ -462,11 +461,11 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 								connectionInfo = await vscodeMssqlApi.promptForConnection(true);
 							}
 						}
-						if (!connectionInfo) {
-							// User cancelled return to selectedConnectionStringMethod prompt
-							continue;
-						}
 						if (selectedConnectionStringMethod !== constants.userConnectionString) {
+							if (!connectionInfo) {
+								// User cancelled return to selectedConnectionStringMethod prompt
+								continue;
+							}
 							// get the connection string including prompts for password if needed
 							connectionString = await promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo, localSettingsPath) as string;
 						}
