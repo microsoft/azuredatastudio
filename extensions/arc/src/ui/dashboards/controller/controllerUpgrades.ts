@@ -105,11 +105,11 @@ export class ControllerUpgradesPage extends DashboardPage {
 			.withLayout({ flexWrap: 'wrap' })
 			.withItems([
 				infoAvailableUpgrades
-			], { CSSStyles: { 'margin-right': '5px' } }).component();
+			]).component();
 
-		const upgradesLearnMoreLink = this.modelView.modelBuilder.hyperlink().withProps({
-			label: loc.learnMore,
-			url: 'https://docs.microsoft.com/azure/azure-arc/data/upgrade-data-controller-direct-cli?WT.mc_id=Portal-Microsoft_Azure_HybridData_Platform',
+		const upgradesVersionLogLink = this.modelView.modelBuilder.hyperlink().withProps({
+			label: loc.versionLog,
+			url: 'https://docs.microsoft.com/en-us/azure/azure-arc/data/version-log',
 			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
@@ -117,7 +117,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 			.withLayout({ flexWrap: 'wrap' })
 			.withItems([
 				upgradesInfoDescription,
-				upgradesLearnMoreLink
+				upgradesVersionLogLink
 			], { CSSStyles: { 'margin-right': '5px' } }).component();
 
 		content.addItem(upgradesInfoAndLink, { CSSStyles: { 'min-height': '30px' } });

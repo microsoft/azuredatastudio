@@ -178,6 +178,7 @@ export const enum ConnectionMode {
 
 export namespace cssStyles {
 	export const text = { 'user-select': 'text', 'cursor': 'text' };
+	export const code = { 'user-select': 'text', 'cursor': 'text', 'font-style': 'italic' };
 	export const title = { ...text, 'font-weight': 'bold', 'font-size': '14px' };
 	export const tableHeader = { ...text, 'text-align': 'left', 'border': 'none' };
 	export const tableRow = { ...text, 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none' };

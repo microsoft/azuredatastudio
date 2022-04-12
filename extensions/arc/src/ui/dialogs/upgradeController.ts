@@ -70,13 +70,27 @@ export class UpgradeController extends InitializingComponent {
 					ariaLabel: loc.instance,
 					value: this.pitrSettings.instanceName
 				}).component();
-			const info = this.modelBuilder.text().withProps({
+			const areYouSureInfo = this.modelBuilder.text().withProps({
 				value: loc.upgradeDialog,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'max-width': 'auto' }
 			}).component();
 			const upgradeDialog = this.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
 
-			upgradeDialog.addItem(info, { CSSStyles: { 'margin-right': '5px' } });
+			upgradeDialog.addItem(areYouSureInfo, { CSSStyles: { 'margin-right': '5px' } });
+
+			const monitorUpgradeInfo = this.modelBuilder.text().withProps({
+				value: loc.monitorUpgrade,
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'max-width': 'auto' }
+			}).component();
+
+			upgradeDialog.addItem(monitorUpgradeInfo, { CSSStyles: { 'margin-right': '5px' } });
+
+			const monitorUpgradeCommandInfo = this.modelBuilder.text().withProps({
+				value: loc.monitorUpgradeCommand,
+				CSSStyles: { ...cssStyles.code, 'margin-block-start': '0px', 'max-width': 'auto' }
+			}).component();
+
+			upgradeDialog.addItem(monitorUpgradeCommandInfo, { CSSStyles: { 'margin-right': '5px' } });
 
 			let formModel = this.modelBuilder.formContainer()
 				.withFormItems([{
