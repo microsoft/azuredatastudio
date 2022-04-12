@@ -139,7 +139,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 		return Promise.resolve(this.spec);
 	}
 
-	private cleanUpActiveExecution(cellUri: string) {
+	private cleanUpActiveExecution(cellUri: URI) {
 		this._activeRequest = undefined;
 		this._controller.removeCellExecution(cellUri);
 	}
@@ -148,7 +148,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 		let executePromise: Promise<void>;
 		if (this._controller.executeHandler) {
 			this._activeRequest = content;
-			let cell = convertToVSCodeNotebookCell(CellTypes.Code, content.cellIndex, URI.parse(content.cellUri), URI.parse(content.notebookUri), content.language ?? this._kernelSpec.language, content.code);
+			let cell = convertToVSCodeNotebookCell(CellTypes.Code, content.cellIndex, content.cellUri, content.notebookUri, content.language ?? this._kernelSpec.language, content.code);
 			executePromise = Promise.resolve(this._controller.executeHandler([cell], cell.notebook, this._controller)).then(() => this.cleanUpActiveExecution(content.cellUri));
 		} else {
 			executePromise = Promise.resolve();

@@ -82,11 +82,11 @@ declare module 'azdata' {
 			/**
 			 * URI of the notebook document that is sending this execute request.
 			 */
-			notebookUri: string;
+			notebookUri: vscode.Uri;
 			/**
 			 * URI of the notebook cell that is sending this execute request.
 			 */
-			cellUri: string;
+			cellUri: vscode.Uri;
 			/**
 			 * The language of the notebook document that is executing this request.
 			 */
