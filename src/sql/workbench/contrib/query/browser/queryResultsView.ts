@@ -24,7 +24,8 @@ import { URI } from 'vs/base/common/uri';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ExecutionPlanTab } from 'sql/workbench/contrib/executionPlan/browser/executionPlan';
+import { ExecutionPlanTab } from 'sql/workbench/contrib/executionPlan/browser/executionPlanTab';
+import { ExecutionPlanFileViewCache } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileViewCache';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
@@ -223,7 +224,9 @@ export class QueryResultsView extends Disposable {
 			this.hideResults();
 			this.hideChart();
 			this.hideTopOperations();
-			this.hidePlan2();
+			this.hidePlan();
+			// clearing execution plans whenever a new query starts executing
+			this.executionPlanTab.view.clearPlans();
 			this.hideDynamicViewModelTabs();
 			this.input?.state.visibleTabs.clear();
 			if (this.input) {
@@ -248,12 +251,19 @@ export class QueryResultsView extends Disposable {
 
 		this.runnerDisposables.add(runner.onExecutionPlanAvailable(e => {
 			if (this.executionPlanTab) {
-				if (!this.input.state.visibleTabs.has(this.executionPlanTab.identifier)) {
-					this.showPlan2();
+				/**
+				 * Adding execution plan graphs to execution plan file view
+				 * when they become available
+				 */
+				const executionPlanFileViewCache = ExecutionPlanFileViewCache.getInstance();
+				if (executionPlanFileViewCache) {
+					const view = executionPlanFileViewCache.executionPlanFileViewMap.get(
+						this.input.state.executionPlanState.executionPlanFileViewUUID
+					);
+					if (view) {
+						view.addGraphs(e.planGraphs);
+					}
 				}
-				// Adding graph to state and tab as they become available
-				this.input.state.executionPlanState.graphs.push(...e.planGraphs);
-				this.executionPlanTab.view.addGraphs(e.planGraphs);
 			}
 		}));
 
@@ -301,6 +311,7 @@ export class QueryResultsView extends Disposable {
 		this.runnerDisposables.add(runner.onQueryEnd(() => {
 			if (runner.isQueryPlan) {
 				runner.planXml.then(e => {
+					this.showPlan();
 					this.showTopOperations(e);
 				});
 			}
@@ -326,9 +337,9 @@ export class QueryResultsView extends Disposable {
 
 			if (input) {
 				this.resultsTab.view.state = input.state.gridPanelState;
-				this.executionPlanTab.view.addGraphs(input.state.executionPlanState.graphs);
 				this.topOperationsTab.view.setState(input.state.topOperationsState);
 				this.chartTab.view.state = input.state.chartState;
+				this.executionPlanTab.view.state = input.state.executionPlanState;
 				this.dynamicModelViewTabs.forEach((dynamicTab: QueryModelViewTab) => {
 					dynamicTab.captureState(input.state.dynamicModelViewTabsState);
 				});
@@ -368,6 +379,7 @@ export class QueryResultsView extends Disposable {
 		this.messagesTab.clear();
 		this.topOperationsTab.clear();
 		this.chartTab.clear();
+		this.executionPlanTab.clear();
 		this.dynamicModelViewTabs.forEach(t => t.clear());
 	}
 
@@ -416,7 +428,7 @@ export class QueryResultsView extends Disposable {
 		this.topOperationsTab.view.showPlan(xml);
 	}
 
-	public showPlan2() {
+	public showPlan() {
 		if (!this._panelView.contains(this.executionPlanTab.identifier)) {
 			this.input?.state.visibleTabs.add(this.executionPlanTab.identifier);
 			if (!this._panelView.contains(this.executionPlanTab.identifier)) {
@@ -432,11 +444,10 @@ export class QueryResultsView extends Disposable {
 		}
 	}
 
-	public hidePlan2() {
+	public hidePlan() {
 		if (this._panelView.contains(this.executionPlanTab.identifier)) {
-			this.executionPlanTab.clear();
-			this.input.state.executionPlanState.clearExecutionPlanState();
 			this._panelView.removeTab(this.executionPlanTab.identifier);
+			this.executionPlanTab.clear();
 		}
 	}
 
