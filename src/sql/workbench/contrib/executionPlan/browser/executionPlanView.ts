@@ -33,6 +33,8 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import { CustomZoomWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget';
 import { NodeSearchWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget';
 import { AzdataGraphView } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 export class ExecutionPlanView implements ISashLayoutProvider {
 
@@ -159,7 +161,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			new ZoomOutAction(),
 			new ZoomToFitAction(),
 			new CustomZoomAction(),
-			new PropertiesAction(),
+			this._instantiationService.createInstance(PropertiesAction, false),
 			this.actionBarToggleTopTip
 		];
 		this._actionBar.pushAction(actionBarActions, { icon: true, label: false });
@@ -175,7 +177,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			new ZoomOutAction(),
 			new ZoomToFitAction(),
 			new CustomZoomAction(),
-			new PropertiesAction(),
+			this._instantiationService.createInstance(PropertiesAction, true),
 			this.contextMenuToggleTooltipAction
 		];
 		const self = this;
@@ -286,11 +288,16 @@ export class PropertiesAction extends Action {
 	public static ID = 'ep.propertiesAction';
 	public static LABEL = localize('executionPlanPropertiesActionLabel', "Properties");
 
-	constructor() {
+	constructor(private triggeredFromContextMenu: boolean,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
 		super(PropertiesAction.ID, PropertiesAction.LABEL, openPropertiesIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.OpenExecutionPlanProperties)
+			.withAdditionalProperties({ openedPropertiesFromContextMenu: this.triggeredFromContextMenu, openedPropertiesFromActionBar: !this.triggeredFromContextMenu })
+			.send();
+
 		context.propertiesView.toggleVisibility();
 	}
 }
