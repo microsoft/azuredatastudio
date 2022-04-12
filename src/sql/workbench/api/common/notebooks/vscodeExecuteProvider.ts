@@ -145,10 +145,13 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	}
 
 	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
+		if (this._activeRequest) {
+			throw new Error(nls.localize('notebookMultipleRequestsError', "Cannot execute code cell. Another cell is currently being executed."));
+		}
 		let executePromise: Promise<void>;
 		if (this._controller.executeHandler) {
-			this._activeRequest = content;
 			let cell = convertToVSCodeNotebookCell(CellTypes.Code, content.cellIndex, content.cellUri, content.notebookUri, content.language ?? this._kernelSpec.language, content.code);
+			this._activeRequest = content;
 			executePromise = Promise.resolve(this._controller.executeHandler([cell], cell.notebook, this._controller)).then(() => this.cleanUpActiveExecution(content.cellUri));
 		} else {
 			executePromise = Promise.resolve();
