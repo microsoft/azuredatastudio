@@ -25,6 +25,9 @@ export class ManagePackagesDialog extends Dialog {
 
 		const loadingSpinner = `${ManagePackagesDialog.dialogPage} div.modelview-loadingComponent-spinner`;
 
+		// Wait for "Search Pip packages" placeholder in the input box to know that the tab has finished initializing
+		const searchPipPackagesInput = `${ManagePackagesDialog.dialogPage} input[placeholder="Search Pip packages"]`;
+		await this.code.waitForElement(searchPipPackagesInput);
 		const searchInputBox = `${ManagePackagesDialog.dialogPage} .monaco-inputbox`;
 		await this.code.waitAndClick(searchInputBox);
 
