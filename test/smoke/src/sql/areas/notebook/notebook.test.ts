@@ -62,30 +62,30 @@ export function setup(opts: minimist.ParsedArgs) {
 		it('can enter and exit edit mode and navigate using keyboard nav', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
-			await app.workbench.sqlNotebook.addCellFromPlaceholder('Code');
+			await app.workbench.sqlNotebook.addCellFromPlaceholder('Code'); // add new code cell
 			await app.workbench.sqlNotebook.waitForPlaceholderGone();
 			const activeCodeCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
-			await app.workbench.sqlNotebook.waitForTypeInEditor('code cell', activeCodeCellId); // Code cell should be in edit mode
+			await app.workbench.sqlNotebook.waitForTypeInEditor('code cell', activeCodeCellId); // the new cell should be in edit mode
 
-			await app.workbench.sqlNotebook.addCell('markdown');
+			await app.workbench.sqlNotebook.addCell('markdown'); // add markdown cell and wait for it to activate
 			await new Promise(c => setTimeout(c, 2000));
 			const activeTextCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
 			await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
 			await app.workbench.sqlNotebook.waitForTypeInEditor('text cell', activeTextCellId); // Text cell should be in edit mode
 
 			await app.code.dispatchKeybinding('escape'); // exit edit mode and stay in browse mode
-			await app.code.dispatchKeybinding('up');
-			await app.workbench.sqlNotebook.waitForActiveCell(activeCodeCellId);
+			await app.code.dispatchKeybinding('up'); // select code cell
+			await app.workbench.sqlNotebook.waitForActiveCell(activeCodeCellId); // check that the code cell is now active
 			await app.code.dispatchKeybinding('enter');
 			await app.workbench.sqlNotebook.waitForTypeInEditor('test', activeCodeCellId); // code cell should be in edit mode after hitting enter
-			await app.code.dispatchKeybinding('escape');
-			await app.code.dispatchKeybinding('down');
+			await app.code.dispatchKeybinding('escape'); // exit edit mode and stay in browse mode
+			await app.code.dispatchKeybinding('down'); // select text cell
 			await app.code.dispatchKeybinding('enter');
 			await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
 			await app.workbench.sqlNotebook.waitForTypeInEditor('test', activeTextCellId); // text cell should be in edit mode after hitting enter
-			// hitting escape twice deselects all cells
+
 			await app.code.dispatchKeybinding('escape');
-			await app.code.dispatchKeybinding('escape');
+			await app.code.dispatchKeybinding('escape'); // hitting escape twice deselects all cells
 			await app.workbench.sqlNotebook.waitForActiveCellGone();
 		});
 
