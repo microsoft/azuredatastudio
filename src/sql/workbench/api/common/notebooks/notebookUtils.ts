@@ -5,7 +5,7 @@
 
 import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
-import { URI, UriComponents } from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { asArray } from 'vs/base/common/arrays';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { CellTypes, MimeTypes, OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
@@ -17,17 +17,17 @@ export const DotnetInteractiveLanguagePrefix = 'dotnet-interactive.';
 export const DotnetInteractiveJupyterLabelPrefix = '.NET (';
 export const DotnetInteractiveLabel = '.NET Interactive';
 
-export function convertToVSCodeNotebookCell(cellKind: azdata.nb.CellType, cellIndex: number, cellUri: UriComponents, docUri: UriComponents, cellLanguage: string, cellSource?: string | string[]): vscode.NotebookCell {
+export function convertToVSCodeNotebookCell(cellKind: azdata.nb.CellType, cellIndex: number, cellUri: URI, docUri: URI, cellLanguage: string, cellSource?: string | string[]): vscode.NotebookCell {
 	return <vscode.NotebookCell>{
 		kind: cellKind === CellTypes.Code ? NotebookCellKind.Code : NotebookCellKind.Markup,
 		index: cellIndex,
 		document: <vscode.TextDocument>{
-			uri: URI.revive(cellUri),
+			uri: cellUri,
 			languageId: cellLanguage,
 			getText: () => Array.isArray(cellSource) ? cellSource.join('') : (cellSource ?? ''),
 		},
 		notebook: <vscode.NotebookDocument>{
-			uri: URI.revive(docUri)
+			uri: docUri
 		},
 		outputs: [],
 		metadata: {},
