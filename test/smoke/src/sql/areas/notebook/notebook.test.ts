@@ -71,9 +71,9 @@ export function setup(opts: minimist.ParsedArgs) {
 			await new Promise(c => setTimeout(c, 2000));
 			const activeTextCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
 			await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
-			await app.workbench.sqlNotebook.waitForTypeInEditor('text cell', activeTextCellId);
+			await app.workbench.sqlNotebook.waitForTypeInEditor('text cell', activeTextCellId); // Text cell should be in edit mode
 
-			await app.code.dispatchKeybinding('escape');
+			await app.code.dispatchKeybinding('escape'); // exit edit mode and stay in browse mode
 			await app.code.dispatchKeybinding('up');
 			await app.workbench.sqlNotebook.waitForActiveCell(activeCodeCellId);
 			await app.code.dispatchKeybinding('enter');
