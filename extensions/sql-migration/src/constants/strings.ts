@@ -771,7 +771,7 @@ export const DATABASE_BACKUP_PAGE_LOAD_ERROR = localize('sql.migration.database.
 // Migration Service Section Dialog
 export const MIGRATION_SERVICE_SELECT_TITLE = localize('sql.migration.select.service.title', 'Select Database Migration Service');
 export const MIGRATION_SERVICE_SELECT_APPLY_LABEL = localize('sql.migration.select.service.apply.label', 'Apply');
-export const MIGRATION_SERVICE_DELETE = localize('sql.migration.select.service.delete.label', 'Delete');
+export const MIGRATION_SERVICE_CLEAR = localize('sql.migration.select.service.delete.label', 'Clear');
 export const MIGRATION_SERVICE_SELECT_HEADING = localize('sql.migration.select.service.heading', 'Filter the migration list by Database Migration Service');
 export const MIGRATION_SERVICE_SELECT_SERVICE_LABEL = localize('sql.migration.select.service.service.label', 'Azure Database Migration Service');
 export const MIGRATION_SERVICE_SELECT_SERVICE_PROMPT = localize('sql.migration.select.service.prompt', 'Select a Database Migration Service');

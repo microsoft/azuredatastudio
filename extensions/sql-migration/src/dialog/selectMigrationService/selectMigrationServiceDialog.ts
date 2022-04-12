@@ -82,7 +82,7 @@ export class SelectMigrationServiceDialog {
 		this._dialog.cancelButton.position = 'right';
 
 		this._deleteButton = azdata.window.createButton(
-			constants.MIGRATION_SERVICE_DELETE,
+			constants.MIGRATION_SERVICE_CLEAR,
 			'right');
 		this._disposables.push(
 			this._deleteButton.onClick(async (value) => {
