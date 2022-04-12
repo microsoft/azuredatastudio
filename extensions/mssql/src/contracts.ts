@@ -36,12 +36,14 @@ export interface RequestSecurityTokenParams {
 	authority: string;
 	provider: string;
 	resource: string;
+	accountId: string;
 	scope: string;
 }
 
 export interface RequestSecurityTokenResponse {
 	accountKey: string;
 	token: string;
+	expiresOn: Number;
 }
 
 export namespace SecurityTokenRequest {

@@ -43,9 +43,15 @@ export class AccountFeature implements StaticFeature {
 		let timeToLiveInSeconds = 10;
 		this.tokenCache = new DataItemCache(this.getToken, timeToLiveInSeconds);
 		this._client.onRequest(contracts.SecurityTokenRequest.type, async (request): Promise<contracts.RequestSecurityTokenResponse | undefined> => {
-			return this.tokenCache.getData(request);
+			return new Promise(resolve => {
+				resolve(this.tokenCache.getData(request));
+			});
 		});
 	}
+
+	// protected async refreshToken(request: contracts.RequestSecurityTokenParams): Promise<contracts.RequestSecurityTokenResponse | undefined> {
+
+	// }
 
 	protected async getToken(request: contracts.RequestSecurityTokenParams): Promise<contracts.RequestSecurityTokenResponse | undefined> {
 		const accountList = await azdata.accounts.getAllAccounts();
@@ -86,7 +92,8 @@ export class AccountFeature implements StaticFeature {
 
 		let params: contracts.RequestSecurityTokenResponse = {
 			accountKey: JSON.stringify(account.key),
-			token: securityToken.token
+			token: securityToken.token,
+			expiresOn: securityToken.expiresOn
 		};
 
 		return params;
