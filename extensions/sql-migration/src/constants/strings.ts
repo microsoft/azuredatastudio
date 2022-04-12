@@ -298,12 +298,7 @@ export function MI_NOT_READY_ERROR(miName: string, state: string): string {
 	return localize('sql.migration.mi.not.ready', "The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.", miName, state);
 }
 
-export const SIGN_IN_TO_AZURE = localize('sql.migration.select.service.sign.in', "Sign in to Azure...");
-export const SELECT_AZURE_ACCOUNT_FOR_SUBSCRIPTIONS = localize('sql.migration.select.service.select.account', "Select an account with one or more subscriptions.");
-export const SELECT_SUBSCRIPTION_FOR_LOCATIONS = localize('sql.migration.select.service.select.subscription', "Select a subscription with one or more locations.");
-export const SELECT_LOCATION_FOR_RESOURCEGROUPS = localize('sql.migration.select.service.select.resourcegroup', "Select a location with one or more resource groups.");
-export const SELECT_RESOURCE_GROUP_FOR_SERVICES = localize('sql.migration.select.service.select.service', "Select a resource group with one or more Database Migration Services.");
-export const SELECT_AN_ACCOUNT = localize('sql.migration.select.service.select.a.', "Select an account");
+export const SELECT_AN_ACCOUNT = localize('sql.migration.select.service.select.a.', "Sign into Azure and select an account");
 export const SELECT_A_TENANT = localize('sql.migration.select.service.select.a.tenant', "Select a tenant");
 export const SELECT_A_SUBSCRIPTION = localize('sql.migration.select.service.select.a.subscription', "Select a subscription");
 export const SELECT_A_LOCATION = localize('sql.migration.select.service.select.a.location', "Select a location");

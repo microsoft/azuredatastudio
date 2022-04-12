@@ -136,7 +136,7 @@ export class SelectMigrationServiceDialog {
 				editable: true,
 				required: true,
 				fireOnTextChange: true,
-				placeholder: constants.SIGN_IN_TO_AZURE,
+				placeholder: constants.SELECT_AN_ACCOUNT,
 				CSSStyles: { ...DROPDOWN_CSS },
 			}).component();
 		this._disposables.push(
@@ -182,7 +182,7 @@ export class SelectMigrationServiceDialog {
 				width: INPUT_COMPONENT_WIDTH,
 				editable: true,
 				fireOnTextChange: true,
-				placeholder: constants.SIGN_IN_TO_AZURE,
+				placeholder: constants.SELECT_A_TENANT,
 			}).component();
 		this._disposables.push(
 			this._accountTenantDropdown.onValueChanged(async value => {
@@ -219,7 +219,7 @@ export class SelectMigrationServiceDialog {
 				editable: true,
 				required: true,
 				fireOnTextChange: true,
-				placeholder: constants.SELECT_AZURE_ACCOUNT_FOR_SUBSCRIPTIONS,
+				placeholder: constants.SELECT_A_SUBSCRIPTION,
 				CSSStyles: { ...DROPDOWN_CSS },
 			}).component();
 		this._disposables.push(
@@ -245,7 +245,7 @@ export class SelectMigrationServiceDialog {
 				editable: true,
 				required: true,
 				fireOnTextChange: true,
-				placeholder: constants.SELECT_LOCATION_FOR_RESOURCEGROUPS,
+				placeholder: constants.SELECT_A_LOCATION,
 				CSSStyles: { ...DROPDOWN_CSS },
 			}).component();
 		this._disposables.push(
@@ -271,7 +271,7 @@ export class SelectMigrationServiceDialog {
 				editable: true,
 				required: true,
 				fireOnTextChange: true,
-				placeholder: constants.SELECT_LOCATION_FOR_RESOURCEGROUPS,
+				placeholder: constants.SELECT_A_RESOURCE_GROUP,
 				CSSStyles: { ...DROPDOWN_CSS },
 			}).component();
 		this._disposables.push(
@@ -297,7 +297,7 @@ export class SelectMigrationServiceDialog {
 				editable: true,
 				required: true,
 				fireOnTextChange: true,
-				placeholder: constants.SELECT_RESOURCE_GROUP_FOR_SERVICES,
+				placeholder: constants.SELECT_A_SERVICE,
 				CSSStyles: { ...DROPDOWN_CSS },
 			}).component();
 		this._disposables.push(
@@ -337,14 +337,11 @@ export class SelectMigrationServiceDialog {
 		try {
 			this._azureAccountsDropdown.loading = true;
 			this._azureAccountsDropdown.values = await this._getAccountDropdownValues();
-			if (this._azureAccountsDropdown.values.length === 0) {
-				this._azureAccountsDropdown.placeholder = constants.SIGN_IN_TO_AZURE;
-			} else {
+			if (this._azureAccountsDropdown.values.length > 0) {
 				selectDefaultDropdownValue(
 					this._azureAccountsDropdown,
 					this._serviceContext.azureAccount?.displayInfo?.userId,
 					false);
-				this._azureAccountsDropdown.placeholder = constants.SELECT_AN_ACCOUNT;
 				this._azureAccountsDropdown.loading = false;
 			}
 		} catch (error) {
@@ -366,15 +363,11 @@ export class SelectMigrationServiceDialog {
 				this._accountTenants.length > 1
 					? STYLE_ShOW
 					: STYLE_HIDE);
-			if (this._accountTenantDropdown.values.length === 0) {
-				this._accountTenantDropdown.placeholder = constants.SIGN_IN_TO_AZURE;
-				return;
-			} else {
+			if (this._accountTenantDropdown.values.length > 0) {
 				selectDefaultDropdownValue(
 					this._accountTenantDropdown,
 					this._serviceContext.tenant?.id,
 					false);
-				this._accountTenantDropdown.placeholder = constants.SELECT_A_TENANT;
 				this._accountTenantDropdown.loading = false;
 			}
 		} catch (error) {
@@ -392,14 +385,11 @@ export class SelectMigrationServiceDialog {
 			this._azureSubscriptionDropdown.loading = true;
 			this._azureSubscriptionDropdown.values = await this._getSubscriptionDropdownValues(
 				this._serviceContext.azureAccount);
-			if (this._azureSubscriptionDropdown.values.length === 0) {
-				this._azureSubscriptionDropdown.placeholder = constants.SELECT_AZURE_ACCOUNT_FOR_SUBSCRIPTIONS;
-			} else {
+			if (this._azureSubscriptionDropdown.values.length > 0) {
 				selectDefaultDropdownValue(
 					this._azureSubscriptionDropdown,
 					this._serviceContext.subscription?.id,
 					false);
-				this._azureSubscriptionDropdown.placeholder = constants.SELECT_A_SUBSCRIPTION;
 				this._azureSubscriptionDropdown.loading = false;
 			}
 		} catch (error) {
@@ -418,14 +408,11 @@ export class SelectMigrationServiceDialog {
 			this._azureLocationDropdown.values = await this._getAzureLocationDropdownValues(
 				this._serviceContext.azureAccount,
 				this._serviceContext.subscription);
-			if (this._azureLocationDropdown.values.length === 0) {
-				this._azureLocationDropdown.placeholder = constants.SELECT_SUBSCRIPTION_FOR_LOCATIONS;
-			} else {
+			if (this._azureLocationDropdown.values.length > 0) {
 				selectDefaultDropdownValue(
 					this._azureLocationDropdown,
 					this._serviceContext.location?.displayName,
 					true);
-				this._azureLocationDropdown.placeholder = constants.SELECT_A_LOCATION;
 				this._azureLocationDropdown.loading = false;
 			}
 		} catch (error) {
@@ -443,14 +430,11 @@ export class SelectMigrationServiceDialog {
 			this._azureResourceGroupDropdown.loading = true;
 			this._azureResourceGroupDropdown.values = await this._getAzureResourceGroupDropdownValues(
 				this._serviceContext.location);
-			if (this._azureResourceGroupDropdown.values.length === 0) {
-				this._azureResourceGroupDropdown.placeholder = constants.SELECT_LOCATION_FOR_RESOURCEGROUPS;
-			} else {
+			if (this._azureResourceGroupDropdown.values.length > 0) {
 				selectDefaultDropdownValue(
 					this._azureResourceGroupDropdown,
 					this._serviceContext.resourceGroup?.id,
 					false);
-				this._azureResourceGroupDropdown.placeholder = constants.SELECT_A_RESOURCE_GROUP;
 				this._azureResourceGroupDropdown.loading = false;
 			}
 		} catch (error) {
@@ -477,14 +461,11 @@ export class SelectMigrationServiceDialog {
 			} else {
 			}
 			this._azureServiceDropdown.values = services;
-			if (this._azureServiceDropdown.values.length === 0) {
-				this._azureServiceDropdown.placeholder = constants.SELECT_RESOURCE_GROUP_FOR_SERVICES;
-			} else {
+			if (this._azureServiceDropdown.values.length > 0) {
 				selectDefaultDropdownValue(
 					this._azureServiceDropdown,
 					this._serviceContext?.migrationService?.id,
 					false);
-				this._azureServiceDropdown.placeholder = constants.SELECT_A_SERVICE;
 			}
 		} catch (error) {
 			logError(TelemetryViews.SelectMigrationServiceDialog, '_populateMigrationServiceDropdown', error);
