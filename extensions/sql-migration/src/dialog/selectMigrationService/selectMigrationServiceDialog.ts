@@ -346,7 +346,6 @@ export class SelectMigrationServiceDialog {
 					false);
 				this._azureAccountsDropdown.placeholder = constants.SELECT_AN_ACCOUNT;
 				this._azureAccountsDropdown.loading = false;
-				await this._populateTentantsDropdown();
 			}
 		} catch (error) {
 			logError(TelemetryViews.SelectMigrationServiceDialog, '_populateAzureAccountsDropdown', error);
@@ -377,7 +376,6 @@ export class SelectMigrationServiceDialog {
 					false);
 				this._accountTenantDropdown.placeholder = constants.SELECT_A_TENANT;
 				this._accountTenantDropdown.loading = false;
-				await this._populateSubscriptionDropdown();
 			}
 		} catch (error) {
 			logError(TelemetryViews.SelectMigrationServiceDialog, '_populateTentantsDropdown', error);
@@ -403,7 +401,6 @@ export class SelectMigrationServiceDialog {
 					false);
 				this._azureSubscriptionDropdown.placeholder = constants.SELECT_A_SUBSCRIPTION;
 				this._azureSubscriptionDropdown.loading = false;
-				await this._populateLocationDropdown();
 			}
 		} catch (error) {
 			logError(TelemetryViews.SelectMigrationServiceDialog, '_populateSubscriptionDropdown', error);
@@ -430,7 +427,6 @@ export class SelectMigrationServiceDialog {
 					true);
 				this._azureLocationDropdown.placeholder = constants.SELECT_A_LOCATION;
 				this._azureLocationDropdown.loading = false;
-				await this._populateResourceGroupDropdown();
 			}
 		} catch (error) {
 			logError(TelemetryViews.SelectMigrationServiceDialog, '_populateLocationDropdown', error);
@@ -456,7 +452,6 @@ export class SelectMigrationServiceDialog {
 					false);
 				this._azureResourceGroupDropdown.placeholder = constants.SELECT_A_RESOURCE_GROUP;
 				this._azureResourceGroupDropdown.loading = false;
-				await this._populateMigrationServiceDropdown();
 			}
 		} catch (error) {
 			logError(TelemetryViews.SelectMigrationServiceDialog, '_populateResourceGroupDropdown', error);
