@@ -310,6 +310,12 @@ export const SELECT_SUBSCRIPTION_ERROR = localize('sql.migration.select.service.
 export const SELECT_LOCATION_ERROR = localize('sql.migration.select.service.select.location.error', "An error occurred while loading locations. Please check your Azure connection and try again.");
 export const SELECT_RESOURCE_GROUP_ERROR = localize('sql.migration.select.service.select.resource.group.error', "An error occurred while loading available resource groups. Please check your Azure connection and try again.");
 export const SELECT_SERVICE_ERROR = localize('sql.migration.select.service.select.service.error', "An error occurred while loading available database migration services. Please check your Azure connection and try again.");
+export function ACCOUNT_CREDENTIALS_REFRESH(accountName: string): string {
+	return localize(
+		'sql.migration.account.credentials.refresh.required',
+		"{0} (requires credentials refresh)",
+		accountName);
+}
 
 // database backup page
 export const DATABASE_BACKUP_PAGE_TITLE = localize('sql.migration.database.page.title', "Database backup");

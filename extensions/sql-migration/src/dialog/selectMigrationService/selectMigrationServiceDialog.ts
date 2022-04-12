@@ -450,17 +450,12 @@ export class SelectMigrationServiceDialog {
 	private async _populateMigrationServiceDropdown(): Promise<void> {
 		try {
 			this._azureServiceDropdown.loading = true;
-			const services = await this._getMigrationServiceDropdownValues(
+			this._azureServiceDropdown.values = await this._getMigrationServiceDropdownValues(
 				this._serviceContext.azureAccount,
 				this._serviceContext.subscription,
 				this._serviceContext.location,
 				this._serviceContext.resourceGroup);
 
-			if (!services || services.length < 1) {
-				this._azureServiceDropdown.value = undefined;
-			} else {
-			}
-			this._azureServiceDropdown.values = services;
 			if (this._azureServiceDropdown.values.length > 0) {
 				selectDefaultDropdownValue(
 					this._azureServiceDropdown,
@@ -482,14 +477,16 @@ export class SelectMigrationServiceDialog {
 		return this._azureAccounts.map(account => {
 			return {
 				name: account.displayInfo.userId,
-				displayName: account.displayInfo.displayName,
+				displayName: account.isStale
+					? constants.ACCOUNT_CREDENTIALS_REFRESH(account.displayInfo.displayName)
+					: account.displayInfo.displayName,
 			};
 		});
 	}
 
 	private async _getSubscriptionDropdownValues(account?: azdata.Account): Promise<azdata.CategoryValue[]> {
 		this._subscriptions = [];
-		if (account !== undefined) {
+		if (account?.isStale === false) {
 			try {
 				this._subscriptions = await getSubscriptions(account);
 				this._subscriptions.sort((a, b) => a.name.localeCompare(b.name));
@@ -510,7 +507,10 @@ export class SelectMigrationServiceDialog {
 	}
 
 	private _getTenantDropdownValues(account?: azdata.Account): azdata.CategoryValue[] {
-		this._accountTenants = account?.properties?.tenants || [];
+		this._accountTenants = account?.isStale === false
+			? account?.properties?.tenants ?? []
+			: [];
+
 		return this._accountTenants.map(tenant => {
 			return {
 				name: tenant.id,

@@ -831,8 +831,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 			accountValues = this._azureAccounts.map((account): azdata.CategoryValue => {
 				return {
-					displayName: account.displayInfo.displayName,
-					name: account.displayInfo.userId
+					name: account.displayInfo.userId,
+					displayName: account.isStale
+						? constants.ACCOUNT_CREDENTIALS_REFRESH(account.displayInfo.displayName)
+						: account.displayInfo.displayName
 				};
 			});
 		} catch (e) {
@@ -876,7 +878,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async getSubscriptionsDropdownValues(): Promise<azdata.CategoryValue[]> {
 		let subscriptionsValues: azdata.CategoryValue[] = [];
 		try {
-			if (this._azureAccount) {
+			if (this._azureAccount?.isStale === false) {
 				this._subscriptions = await getSubscriptions(this._azureAccount);
 			} else {
 				this._subscriptions = [];
