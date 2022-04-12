@@ -74,8 +74,7 @@ export async function setLocalAppSetting(projectFolder: string, key: string, val
 	}
 
 	settings.Values[key] = value;
-	void fs.promises.writeFile(localSettingsPath, JSON.stringify(settings, undefined, 2));
-
+	fs.writeFileSync(localSettingsPath, JSON.stringify(settings, undefined, 2));
 	return true;
 }
 
@@ -468,6 +467,10 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 							}
 							// get the connection string including prompts for password if needed
 							connectionString = await promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo, localSettingsPath) as string;
+							if (!connectionString) {
+								// user cancelled the prompts
+								continue;
+							}
 						}
 
 						const success = await setLocalAppSetting(projectFolder, newConnectionStringSettingName, connectionString);
@@ -507,9 +510,9 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 
 /**
  * Prompts the user to include password in the connection string and updates the connection string based on user input
- * @param connectionInfo
- * @param localSettingsPath
- * @returns
+ * @param connectionInfo connection info from the connection profile user selected
+ * @param localSettingsPath path to the local.settings.json file
+ * @returns the updated connection string based on password prompts
  */
 export async function promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo: IConnectionInfo, localSettingsPath: string): Promise<string | undefined> {
 	let includePassword: string | undefined;
@@ -568,6 +571,6 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 		// failed to get connection string for selected connection and will go back to prompt for connection string methods
 		console.warn(e);
 		void vscode.window.showErrorMessage(constants.failedToGetConnectionString);
-		return;
+		return undefined;
 	}
 }
