@@ -271,7 +271,6 @@ export class ControllerUpgradesPage extends DashboardPage {
 
 								try {
 									await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
-									this.handleTableUpdated();
 								} catch (error) {
 									vscode.window.showErrorMessage(loc.refreshFailed(error));
 								}
