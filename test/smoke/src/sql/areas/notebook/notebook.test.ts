@@ -59,35 +59,6 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.waitForColorization('6', 'mtk1'); // employees
 		});
 
-		it('can enter and exit edit mode and navigate using keyboard nav', async function () {
-			const app = this.app as Application;
-			await app.workbench.sqlNotebook.newUntitledNotebook();
-			await app.workbench.sqlNotebook.addCellFromPlaceholder('Code'); // add new code cell
-			await app.workbench.sqlNotebook.waitForPlaceholderGone();
-			const activeCodeCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
-			await app.workbench.sqlNotebook.waitForTypeInEditor('code cell', activeCodeCellId); // the new cell should be in edit mode
-
-			await app.workbench.sqlNotebook.addCell('markdown'); // add markdown cell and wait for it to activate
-			await new Promise(c => setTimeout(c, 2000));
-			const activeTextCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
-			await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
-			await app.workbench.sqlNotebook.waitForTypeInEditor('text cell', activeTextCellId); // Text cell should be in edit mode
-
-			await app.code.dispatchKeybinding('escape'); // exit edit mode and stay in browse mode
-			await app.code.dispatchKeybinding('up'); // select code cell
-			await app.workbench.sqlNotebook.waitForActiveCell(activeCodeCellId); // check that the code cell is now active
-			await app.code.dispatchKeybinding('enter');
-			await app.workbench.sqlNotebook.waitForTypeInEditor('test', activeCodeCellId); // code cell should be in edit mode after hitting enter
-			await app.code.dispatchKeybinding('escape'); // exit edit mode and stay in browse mode
-			await app.code.dispatchKeybinding('down'); // select text cell
-			await app.code.dispatchKeybinding('enter');
-			await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
-			await app.workbench.sqlNotebook.waitForTypeInEditor('test', activeTextCellId); // text cell should be in edit mode after hitting enter
-
-			await app.code.dispatchKeybinding('escape');
-			await app.code.dispatchKeybinding('escape'); // hitting escape twice deselects all cells
-			await app.workbench.sqlNotebook.waitForActiveCellGone();
-		});
 
 		// Python Notebooks
 
@@ -138,6 +109,64 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			// Close any open wizards
 			await app.code.dispatchKeybinding('escape');
+		});
+
+		describe('Notebook keyboard navigation', async () => {
+			it('can enter and exit edit mode and navigate using keyboard nav', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.addCellFromPlaceholder('Code'); // add new code cell
+				await app.workbench.sqlNotebook.waitForPlaceholderGone();
+				const activeCodeCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
+				await app.workbench.sqlNotebook.waitForTypeInEditor('code cell', activeCodeCellId); // the new cell should be in edit mode
+
+				await app.workbench.sqlNotebook.addCell('markdown'); // add markdown cell and wait for it to activate
+				await new Promise(c => setTimeout(c, 2000));
+				const activeTextCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
+				await app.workbench.sqlNotebook.waitForTypeInEditor('text cell', activeTextCellId); // Text cell should be in edit mode
+
+				await app.code.dispatchKeybinding('escape'); // exit edit mode and stay in browse mode
+				await app.code.dispatchKeybinding('up'); // select code cell
+				await app.workbench.sqlNotebook.waitForActiveCell(activeCodeCellId); // check that the code cell is now active
+				await app.code.dispatchKeybinding('enter');
+				await app.workbench.sqlNotebook.waitForTypeInEditor('test', activeCodeCellId); // code cell should be in edit mode after hitting enter
+				await app.code.dispatchKeybinding('escape'); // exit edit mode and stay in browse mode
+				await app.code.dispatchKeybinding('down'); // select text cell
+				await app.code.dispatchKeybinding('enter');
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
+				await app.workbench.sqlNotebook.waitForTypeInEditor('test', activeTextCellId); // text cell should be in edit mode after hitting enter
+
+				await app.code.dispatchKeybinding('escape');
+				await app.code.dispatchKeybinding('escape'); // hitting escape twice deselects all cells
+				await app.workbench.sqlNotebook.waitForActiveCellGone();
+			});
+
+			it('looping from top to bottom using keyboard', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
+				const cellIds = await app.workbench.sqlNotebook.getCellIds();
+				await app.workbench.sqlNotebook.doubleClickTextCell();
+				await app.code.dispatchKeybinding('escape');
+				for (let id of cellIds) {
+					await app.workbench.sqlNotebook.waitForActiveCell(id);
+					await app.code.dispatchKeybinding('down');
+				}
+				await app.workbench.sqlNotebook.waitForActiveCell(cellIds[0]);
+			});
+
+			it('cannot move through cells when find widget is invoked', async function () {
+				const app = this.app as Application;
+				const findWidgetCmd = process.platform === 'darwin' ? 'cmd+f' : 'ctrl+f';
+				await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
+				const cellIds = await app.workbench.sqlNotebook.getCellIds();
+				await app.workbench.sqlNotebook.doubleClickTextCell();
+				await app.code.dispatchKeybinding('escape');
+				await app.code.dispatchKeybinding(findWidgetCmd);
+				await app.code.dispatchKeybinding('down');
+				await app.code.dispatchKeybinding('down');
+				await app.workbench.sqlNotebook.waitForActiveCell(cellIds[0]); // first cell should be active
+			});
 		});
 
 		describe('Notebook Toolbar Actions', async () => {
