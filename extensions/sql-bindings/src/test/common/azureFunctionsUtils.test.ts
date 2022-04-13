@@ -53,7 +53,7 @@ describe('Tests to verify Azure Functions Utils functions', function (): void {
 		// originally should have 3 settings
 		should(Object.keys(settings.Values!).length).equals(3);
 
-		let writeFileStub = sinon.stub(fs, 'writeFileSync');
+		let writeFileStub = sinon.stub(fs.promises, 'writeFile');
 		await azureFunctionsUtils.setLocalAppSetting(path.dirname(localSettingsPath), 'test4', 'test4');
 		should(writeFileStub.calledWithExactly(localSettingsPath, '{\n  "IsEncrypted": false,\n  "Values": {\n    "test1": "test1",\n    "test2": "test2",\n    "test3": "test3",\n    "test4": "test4"\n  }\n}')).equals(true);
 	});
@@ -92,7 +92,7 @@ describe('Tests to verify Azure Functions Utils functions', function (): void {
 		let settings = await azureFunctionsUtils.getLocalSettingsJson(localSettingsPath);
 		should(Object.keys(settings.Values!).length).equals(3);
 
-		let writeFileStub = sinon.stub(fs, 'writeFileSync');
+		let writeFileStub = sinon.stub(fs.promises, 'writeFile');
 		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFilePath);
 		should(writeFileStub.calledWithExactly(localSettingsPath, '{\n  "IsEncrypted": false,\n  "Values": {\n    "test1": "test1",\n    "test2": "test2",\n    "test3": "test3",\n    "SqlConnectionString": "testConnectionString"\n  }\n}')).equals(true);
 	});
