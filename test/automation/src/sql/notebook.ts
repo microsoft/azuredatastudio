@@ -162,6 +162,11 @@ export class Notebook {
 
 	// Cell Output Actions
 
+	async waitForJupyterErrorOutput(): Promise<void> {
+		const jupyterErrorOutput = `.notebook-cell.active .notebook-output mime-output[data-mime-type="application/vnd.jupyter.stderr"]`;
+		await this.code.waitForElement(jupyterErrorOutput);
+	}
+
 	async waitForActiveCellResults(): Promise<void> {
 		const outputComponent = '.notebook-cell.active .notebook-output';
 		await this.code.waitForElement(outputComponent);
@@ -281,6 +286,7 @@ export class NotebookToolbar {
 	private static readonly collapseCellsButtonSelector = `${NotebookToolbar.toolbarButtonSelector}.icon-collapse-cells`;
 	private static readonly expandCellsButtonSelector = `${NotebookToolbar.toolbarButtonSelector}.icon-expand-cells`;
 	private static readonly clearResultsButtonSelector = `${NotebookToolbar.toolbarButtonSelector}.icon-clear-results`;
+	private static readonly managePackagesButtonSelector = `${NotebookToolbar.toolbarButtonSelector}[title="Manage Packages"]`;
 
 	constructor(private code: Code) { }
 
@@ -343,6 +349,10 @@ export class NotebookToolbar {
 
 	async clearResults(): Promise<void> {
 		await this.code.waitAndClick(NotebookToolbar.clearResultsButtonSelector);
+	}
+
+	async managePackages(): Promise<void> {
+		await this.code.waitAndClick(NotebookToolbar.managePackagesButtonSelector);
 	}
 }
 

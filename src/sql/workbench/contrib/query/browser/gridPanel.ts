@@ -666,18 +666,23 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.scrolled = false;
 	}
 
+	private async getRowData(start: number, length: number): Promise<ICellValue[][]> {
+		let subset;
+		if (this.dataProvider.isDataInMemory) {
+			// handle the scenario when the data is sorted/filtered,
+			// we need to use the data that is being displayed
+			const data = await this.dataProvider.getRangeAsync(start, length);
+			subset = data.map(item => Object.keys(item).map(key => item[key]));
+		} else {
+			subset = (await this.gridDataProvider.getRowData(start, length)).rows;
+		}
+		return subset;
+	}
+
 	private async notifyTableSelectionChanged() {
 		const selectedCells = [];
 		for (const range of this.state.selection) {
-			let subset;
-			if (this.dataProvider.isDataInMemory) {
-				// handle the scenario when the data is sorted/filtered,
-				// we need to use the data that is being displayed
-				const data = await this.dataProvider.getRangeAsync(range.fromRow, range.toRow - range.fromRow + 1);
-				subset = data.map(item => Object.keys(item).map(key => item[key]));
-			} else {
-				subset = (await this.gridDataProvider.getRowData(range.fromRow, range.toRow - range.fromRow + 1)).rows;
-			}
+			const subset = await this.getRowData(range.fromRow, range.toRow - range.fromRow + 1);
 			subset.forEach(row => {
 				// start with range.fromCell -1 because we have row number column which is not available in the actual data
 				for (let i = range.fromCell - 1; i < range.toCell; i++) {
@@ -688,22 +693,19 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.queryModelService.notifyCellSelectionChanged(selectedCells);
 	}
 
-	private onTableClick(event: ITableMouseEvent) {
+	private async onTableClick(event: ITableMouseEvent) {
 		// account for not having the number column
 		let column = this.resultSet.columnInfo[event.cell.cell - 1];
 		// handle if a showplan link was clicked
 		if (column && (column.isXml || column.isJson)) {
-			this.gridDataProvider.getRowData(event.cell.row, 1).then(async d => {
-				let value = d.rows[0][event.cell.cell - 1];
-				let content = value.displayValue;
-
-				const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
-				await input.resolve();
-				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
-				input.setDirty(false);
-
-				return this.editorService.openEditor(input);
-			});
+			const subset = await this.getRowData(event.cell.row, 1);
+			let value = subset[0][event.cell.cell - 1];
+			let content = value.displayValue;
+			const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
+			await input.resolve();
+			await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
+			input.setDirty(false);
+			await this.editorService.openEditor(input);
 		}
 	}
 

@@ -20,8 +20,8 @@ export class TableDesignerMetadata {
 	 * @returns filtered telemetry info with only allowed metadata points
 	 */
 	public static getTelemetryInfo(providerId: string, metadata: { [key: string]: string }): { [key: string]: string } {
-		if (!TableDesignerMetadata.providerMetadataMap.has(providerId)) {
-			return undefined;
+		if (!TableDesignerMetadata.providerMetadataMap.has(providerId) || !metadata) {
+			return {};
 		}
 		const allowedSet = TableDesignerMetadata.providerMetadataMap.get(providerId);
 		for (const key of Object.keys(metadata)) {
@@ -31,5 +31,4 @@ export class TableDesignerMetadata {
 		}
 		return metadata;
 	}
-
 }

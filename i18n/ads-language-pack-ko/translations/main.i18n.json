@@ -12366,7 +12366,7 @@
 			"selectExecutionPlanProvider": "실행 계획을 열 공급자 선택"
 		},
 		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
-			"table.showActions": "Show Actions"
+			"table.showActions": "작업 표시"
 		}
 	}
 }

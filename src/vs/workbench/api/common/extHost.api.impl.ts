@@ -1158,7 +1158,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 		const notebooks: typeof vscode.notebooks = {
 			createNotebookController(id: string, notebookType: string, label: string, handler?, rendererScripts?: vscode.NotebookRendererScript[]) {
 				// {{SQL CARBON EDIT}} Use our own notebooks
-				return extHostNotebook.createNotebookController(extension, id, notebookType, label, handler, extension.enableProposedApi ? rendererScripts : undefined);
+				let getDocHandler = (notebookUri: URI) => extHostNotebookDocumentsAndEditors.getDocument(notebookUri.toString())?.document;
+				return extHostNotebook.createNotebookController(extension, id, notebookType, label, getDocHandler, handler, extension.enableProposedApi ? rendererScripts : undefined);
 			},
 			registerNotebookCellStatusBarItemProvider: (notebookType: string, provider: vscode.NotebookCellStatusBarItemProvider) => {
 				// {{SQL CARBON EDIT}} Disable VS Code notebooks
