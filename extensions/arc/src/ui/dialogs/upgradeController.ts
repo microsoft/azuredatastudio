@@ -10,7 +10,6 @@ import * as vscode from 'vscode';
 import { cssStyles } from '../../constants';
 import { InitializingComponent } from '../components/initializingComponent';
 import { PITRModel } from '../../models/miaaModel';
-import * as azurecore from 'azurecore';
 import { ControllerModel } from '../../models/controllerModel';
 
 export class UpgradeController extends InitializingComponent {
@@ -28,12 +27,9 @@ export class UpgradeController extends InitializingComponent {
 	};
 
 	protected _completionPromise = new Deferred<PITRModel | undefined>();
-	private _azurecoreApi: azurecore.IExtension;
 	protected disposables: vscode.Disposable[] = [];
 	constructor(protected _controllerModel: ControllerModel) {
 		super();
-		this._azurecoreApi = vscode.extensions.getExtension(azurecore.extension.name)?.exports;
-		this.refreshPitrSettings();
 	}
 
 	public showDialog(dialogTitle: string): azdata.window.Dialog {
@@ -41,7 +37,6 @@ export class UpgradeController extends InitializingComponent {
 		dialog.cancelButton.onClick(() => this.handleCancel());
 		dialog.registerContent(async view => {
 			this.modelBuilder = view.modelBuilder;
-			this.refreshPitrSettings();
 			const areYouSure = this.modelBuilder.text().withProps({
 				value: loc.areYouSure,
 				CSSStyles: { ...cssStyles.title, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' },
@@ -104,14 +99,5 @@ export class UpgradeController extends InitializingComponent {
 
 	public waitForClose(): Promise<PITRModel | undefined> {
 		return this._completionPromise.promise;
-	}
-
-	public refreshPitrSettings(): void {
-		this.pitrSettings.resourceGroupName = this._controllerModel?.controllerConfig?.spec.settings.azure.resourceGroup || this.pitrSettings.resourceGroupName;
-		this.pitrSettings.location = this._azurecoreApi.getRegionDisplayName(this._controllerModel?.controllerConfig?.spec.settings.azure.location) || this.pitrSettings.location;
-		this.pitrSettings.subscriptionId = this._controllerModel?.controllerConfig?.spec.settings.azure.subscription || this.pitrSettings.subscriptionId;
-		this.pitrSettings.dbName = 'this._database.name';
-		this.pitrSettings.restorePoint = 'this._database.lastBackup';
-		this.pitrSettings.earliestPitr = '';
 	}
 }
