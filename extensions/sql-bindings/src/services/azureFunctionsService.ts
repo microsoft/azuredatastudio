@@ -114,8 +114,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 		objectName = utils.generateQuotedFullName(node.metadata.schema, node.metadata.name);
 	}
-	const connectionDetails = vscodeMssqlApi.createConnectionDetails(connectionInfo);
-	const connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
 
 	TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding)
 		.withConnectionInfo(connectionInfo).send();
@@ -222,13 +220,18 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			// issue https://github.com/microsoft/azuredatastudio/issues/18780
 			await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectFile), constants.azureWebJobsStorageSetting, constants.azureWebJobsStoragePlaceholder);
 
+			// prompt for connection string setting name and set connection string in local.settings.json
+			quickPickStep = 'getConnectionStringSettingName';
+			let connectionStringSettingName = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(vscode.Uri.parse(projectFile), connectionInfo);
+
 			// create C# Azure Function with SQL Binding
 			await azureFunctionApi.createFunction({
 				language: 'C#',
 				templateId: templateId,
 				functionName: functionName,
+				targetFramework: 'netcoreapp3.1',
 				functionSettings: {
-					connectionStringSetting: constants.sqlConnectionStringSetting,
+					connectionStringSetting: connectionStringSettingName,
 					...(selectedBindingType === BindingType.input && { object: objectName }),
 					...(selectedBindingType === BindingType.output && { table: objectName })
 				},
@@ -267,7 +270,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				.withAdditionalProperties(propertyBag).send();
 			newFunctionFileObject.watcherDisposable.dispose();
 		}
-		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFile);
 	} else {
 		TelemetryReporter.sendErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.finishCreateAzureFunctionWithSqlBinding);
 	}
