@@ -155,7 +155,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 		const actionBarActions = [
 			new SavePlanFile(),
 			new OpenPlanFile(),
-			new OpenQueryAction(),
+			this._instantiationService.createInstance(OpenQueryAction, false),
 			new SearchNodeAction(),
 			new ZoomInAction(),
 			new ZoomOutAction(),
@@ -171,7 +171,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 		const contextMenuAction = [
 			new SavePlanFile(),
 			new OpenPlanFile(),
-			new OpenQueryAction(),
+			this._instantiationService.createInstance(OpenQueryAction, true),
 			new SearchNodeAction(),
 			new ZoomInAction(),
 			new ZoomOutAction(),
@@ -275,11 +275,18 @@ export class OpenQueryAction extends Action {
 	public static ID = 'ep.OpenQueryAction';
 	public static LABEL = localize('openQueryAction', "Open Query");
 
-	constructor() {
+	constructor(private triggeredFromContextMenu: boolean,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
+	) {
 		super(OpenQueryAction.ID, OpenQueryAction.LABEL, openQueryIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.OpenQuery)
+			.withAdditionalProperties({ openedFromContextMenu: this.triggeredFromContextMenu, openedFromActionBar: !this.triggeredFromContextMenu })
+			.send();
+
 		context.openQuery();
 	}
 }
@@ -294,8 +301,9 @@ export class PropertiesAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
-		this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.OpenExecutionPlanProperties)
-			.withAdditionalProperties({ openedPropertiesFromContextMenu: this.triggeredFromContextMenu, openedPropertiesFromActionBar: !this.triggeredFromContextMenu })
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.OpenExecutionPlanProperties)
+			.withAdditionalProperties({ openedFromContextMenu: this.triggeredFromContextMenu, openedFromActionBar: !this.triggeredFromContextMenu })
 			.send();
 
 		context.propertiesView.toggleVisibility();

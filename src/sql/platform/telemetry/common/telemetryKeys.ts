@@ -83,6 +83,7 @@ export const enum TelemetryAction {
 	NewQuery = 'NewQuery',
 	ObjectExplorerExpand = 'ObjectExplorerExpand',
 	Open = 'Open',
+	OpenQuery = 'OpenQuery',
 	OpenExecutionPlanProperties = 'OpenExecutionPlanProperties',
 	PublishChanges = 'PublishChanges',
 	RestoreRequested = 'RestoreRequested',
