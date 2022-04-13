@@ -92,6 +92,7 @@ export const enum TelemetryAction {
 	RunQueryString = 'RunQueryString',
 	ShowChart = 'ShowChart',
 	StopAgentJob = 'StopAgentJob',
+	ViewTopOperations = 'ViewTopOperations',
 	WizardPagesNavigation = 'WizardPagesNavigation',
 	SearchStarted = 'SearchStarted',
 	SearchCompleted = 'SearchCompleted'
