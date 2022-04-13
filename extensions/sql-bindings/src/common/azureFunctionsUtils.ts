@@ -428,7 +428,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 				// show the connection string methods (user input and connection profile options)
 				const listOfConnectionStringMethods = [constants.connectionProfile, constants.userConnectionString];
 				let selectedConnectionStringMethod: string | undefined;
-				let connectionString: string = '';
+				let connectionString: string | undefined = '';
 				while (true) {
 					try {
 						const projectFolder: string = path.dirname(projectUri.fsPath);
@@ -466,11 +466,11 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 								continue;
 							}
 							// get the connection string including prompts for password if needed
-							connectionString = await promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo, localSettingsPath) as string;
-							if (!connectionString) {
-								// user cancelled the prompts
-								return;
-							}
+							connectionString = await promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo, localSettingsPath);
+						}
+						if (!connectionString) {
+							// user cancelled the prompts
+							return;
 						}
 
 						const success = await setLocalAppSetting(projectFolder, newConnectionStringSettingName, connectionString);

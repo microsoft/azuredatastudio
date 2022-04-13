@@ -51,8 +51,8 @@ describe('Tests to verify Azure Functions Utils functions', function (): void {
 		const spy = sinon.stub(vscode.window, 'showWarningMessage').resolves({ title: constants.settingAlreadyExists('test1') });
 
 		await azureFunctionsUtils.setLocalAppSetting(path.dirname(localSettingsPath), 'test1', 'newValue');
-		should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
-		should(spy.calledWith(warningMsg)).be.true(`showErrorMessage not called with expected message '${warningMsg}' Actual '${spy.getCall(0).args[0]}'`);
+		should(spy.calledOnce).be.true('showWarningMessage should have been called exactly once');
+		should(spy.calledWith(warningMsg)).be.true(`showWarningMessage not called with expected message '${warningMsg}' Actual '${spy.getCall(0).args[0]}'`);
 	});
 
 	it('Should get settings file given project file', async () => {
@@ -70,7 +70,7 @@ describe('Tests to verify Azure Functions Utils functions', function (): void {
 
 		let writeFileStub = sinon.stub(fs.promises, 'writeFile');
 		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFilePath);
-		should(writeFileStub.calledWithExactly(localSettingsPath, '{\n  "IsEncrypted": false,\n  "Values": {\n    "test1": "test1",\n    "test2": "test2",\n    "test3": "test3",\n    "SqlConnectionString": "testConnectionString"\n  }\n}')).equals(true);
+		should(writeFileStub.calledWithExactly(localSettingsPath, `{${EOL}  "IsEncrypted": false,${EOL}  "Values": {${EOL}    "test1": "test1",${EOL}    "test2": "test2",${EOL}    "test3": "test3",${EOL}    "SqlConnectionString": "testConnectionString"${EOL}  }${EOL}}`)).equals(true);
 	});
 
 	afterEach(async function (): Promise<void> {
