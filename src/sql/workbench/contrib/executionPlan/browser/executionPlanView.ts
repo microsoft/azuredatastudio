@@ -156,7 +156,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			new SavePlanFile(),
 			new OpenPlanFile(),
 			this._instantiationService.createInstance(OpenQueryAction, false),
-			new SearchNodeAction(),
+			this._instantiationService.createInstance(SearchNodeAction, false),
 			this._instantiationService.createInstance(ZoomInAction, false),
 			this._instantiationService.createInstance(ZoomOutAction, false),
 			this._instantiationService.createInstance(ZoomToFitAction, false),
@@ -172,7 +172,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			new SavePlanFile(),
 			new OpenPlanFile(),
 			this._instantiationService.createInstance(OpenQueryAction, true),
-			new SearchNodeAction(),
+			this._instantiationService.createInstance(SearchNodeAction, true),
 			this._instantiationService.createInstance(ZoomInAction, true),
 			this._instantiationService.createInstance(ZoomOutAction, true),
 			this._instantiationService.createInstance(ZoomToFitAction, true),
@@ -424,11 +424,17 @@ export class SearchNodeAction extends Action {
 	public static ID = 'ep.searchNode';
 	public static LABEL = localize('executionPlanSearchNodeAction', "Find Node");
 
-	constructor() {
+	constructor(private triggeredFromContextMenu: boolean,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
 		super(SearchNodeAction.ID, SearchNodeAction.LABEL, searchIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.FindNode)
+			.withAdditionalProperties({ openedFromContextMenu: this.triggeredFromContextMenu, openedFromActionBar: !this.triggeredFromContextMenu })
+			.send();
+
 		context.widgetController.toggleWidget(context._instantiationService.createInstance(NodeSearchWidget, context.widgetController, context.executionPlanDiagram));
 	}
 }

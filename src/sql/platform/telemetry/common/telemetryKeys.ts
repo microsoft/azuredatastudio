@@ -71,6 +71,7 @@ export const enum TelemetryAction {
 	CancelQuery = 'CancelQuery',
 	ChartCreated = 'ChartCreated',
 	Click = 'Click',
+	FindNode = 'FindNode',
 	FirewallRuleRequested = 'FirewallRuleCreated',
 	GenerateScript = 'GenerateScript',
 	GeneratePreviewReport = 'GeneratePreviewReport',
