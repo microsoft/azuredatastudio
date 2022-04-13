@@ -114,7 +114,7 @@ export class UrlBrowserDialog extends Modal {
 		this._accountSelectorBox.setAriaLabel(azureAccountLabel);
 		let accountSelector = DialogHelper.appendRow(tableContainer, azureAccountLabel, 'url-input-label', 'url-input-box');
 		DialogHelper.appendInputSelectBox(accountSelector, this._accountSelectorBox);
-		this._accountManagementService.getAccounts().then((accounts) => this.setAccountSelectorBoxOptions(accounts)).catch((reason) => this.setAccountSelectorBoxError());
+		this._accountManagementService.getAccounts().then((accounts) => this.setAccountSelectorBoxOptions(accounts)).catch((reason) => this.setAccountSelectorBoxError(reason));
 
 		let linkAccountText = localize('urlBrowserDialog.linkAccount', "Link account");
 		let linkAccountButton = DialogHelper.appendRow(tableContainer, '', 'file-input-label', 'file-input-box');
@@ -192,8 +192,8 @@ export class UrlBrowserDialog extends Modal {
 		this._accountSelectorBox.select(0);
 	}
 
-	private setAccountSelectorBoxError() {
-		this._accountSelectorBox.setOptions([localize('urlBrowserDialog.noLinkedAzureAccount', "Please link Azure account")]);
+	private setAccountSelectorBoxError(reason: any) {
+		this._accountSelectorBox.setOptions([reason]);
 		this._accountSelectorBox.select(0);
 		this._accountSelectorBox.disable();
 	}
@@ -342,9 +342,9 @@ export class UrlBrowserDialog extends Modal {
 	private ok() {
 		let returnValue = '';
 		if (this._restoreDialog) {
-			returnValue = `https://${this._storageAccountSelectorBox.value}.blob.core.windows.net/${this._blobContainerSelectorBox.value}/${this._backupFileSelectorBox.value}`;
+			returnValue = `https://${this._storageAccountSelectorBox.value}.blob${this._selectedAccount.properties.providerSettings.settings.azureStorageResource.endpointSuffix}/${this._blobContainerSelectorBox.value}/${this._backupFileSelectorBox.value}`;
 		} else {
-			returnValue = `https://${this._storageAccountSelectorBox.value}.blob.core.windows.net/${this._blobContainerSelectorBox.value}/${this._backupFileInputBox.value}`;
+			returnValue = `https://${this._storageAccountSelectorBox.value}.blob${this._selectedAccount.properties.providerSettings.settings.azureStorageResource.endpointSuffix}/${this._blobContainerSelectorBox.value}/${this._backupFileInputBox.value}`;
 		}
 		this._onOk.fire(returnValue);
 		this.close('ok');
@@ -358,7 +358,7 @@ export class UrlBrowserDialog extends Modal {
 
 	private generateSharedAccessSignature() {
 		this.spinner = true;
-		const blobContainerUri = `https://${this._storageAccountSelectorBox.value}.blob.core.windows.net/${this._blobContainerSelectorBox.value}`;
+		const blobContainerUri = `https://${this._storageAccountSelectorBox.value}.blob${this._selectedAccount.properties.providerSettings.settings.azureStorageResource.endpointSuffix}/${this._blobContainerSelectorBox.value}`;
 		this._azureAccountService.getStorageAccountAccessKey(this._selectedAccount, this._selectedSubscription, this._selectedStorageAccount)
 			.then(getStorageAccountAccessKeyResult => {
 				const key1 = getStorageAccountAccessKeyResult.keyName1;
