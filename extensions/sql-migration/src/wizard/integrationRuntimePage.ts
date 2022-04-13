@@ -431,9 +431,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					this.migrationStateModel._sqlMigrationService.location,
 					this.migrationStateModel._sqlMigrationService!.name);
 
-				this.migrationStateModel._nodeNames = migrationServiceMonitoringStatus.nodes.map(
-					node => node.nodeName);
-
 				const state = migrationService.properties.integrationRuntimeState;
 				if (state === 'Online') {
 					await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{

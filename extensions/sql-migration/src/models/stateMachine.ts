@@ -1628,7 +1628,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							'targetDatabaseName': this._targetDatabaseNames[i],
 							'serverName': this._targetServerInstance.name,
 							'sqlMigrationServiceId': Buffer.from(this._sqlMigrationService?.id!).toString('base64'),
-							'irRegistered': (this._nodeNames.length > 0).toString(),
+							'irRegistered': (this._nodeNames?.length > 0).toString(),
 							'wizardEntryPoint': wizardEntryPoint,
 						},
 						{
