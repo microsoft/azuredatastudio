@@ -1264,6 +1264,27 @@ declare module 'azdata' {
 			 * Edges corresponding to the children.
 			 */
 			edges: ExecutionPlanEdge[];
+			/**
+			 * Warning/parallelism badges applicable to the current node
+			 */
+			badges: ExecutionPlanBadge[];
+		}
+
+		export interface ExecutionPlanBadge {
+			/**
+			 * Type of the node overlay. This determines the icon that is displayed for it
+			 */
+			type: BadgeType;
+			/**
+			 * Text to display for the overlay tooltip
+			 */
+			tooltip: string;
+		}
+
+		export enum BadgeType {
+			Warning = 0,
+			CriticalWarning = 1,
+			Parallelism = 2
 		}
 
 		export interface ExecutionPlanEdge {
