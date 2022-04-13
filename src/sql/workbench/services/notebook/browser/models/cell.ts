@@ -287,7 +287,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set hover(value: boolean) {
 		this._hover = value;
-		this.fireExecutionStateChanged();
+		// Skip changing the execution state while running to prevent focus changes from breaking things like user input
+		if (!this.isRunning) {
+			this.fireExecutionStateChanged();
+		}
 	}
 
 	public get executionCount(): number | undefined {
@@ -589,9 +592,12 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 	}
 
+	private get isRunning(): boolean {
+		return !!(this._future && this._future.inProgress);
+	}
+
 	public get executionState(): CellExecutionState {
-		let isRunning = !!(this._future && this._future.inProgress);
-		if (isRunning) {
+		if (this.isRunning) {
 			return CellExecutionState.Running;
 		} else if (this.active || this.hover) {
 			return CellExecutionState.Stopped;
