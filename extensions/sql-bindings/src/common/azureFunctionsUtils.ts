@@ -469,7 +469,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 							connectionString = await promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo, localSettingsPath) as string;
 							if (!connectionString) {
 								// user cancelled the prompts
-								continue;
+								return;
 							}
 						}
 

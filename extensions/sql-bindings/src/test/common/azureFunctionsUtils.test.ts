@@ -9,53 +9,35 @@ import * as should from 'should';
 import * as sinon from 'sinon';
 import * as constants from '../../common/constants';
 import * as azureFunctionsUtils from '../../common/azureFunctionsUtils';
+import { EOL } from 'os';
 
 let rootFolderPath = 'test';
-let localSettingsPath: string = 'test/local.settings.json';
-let projectFilePath: string = 'test/projectFilePath.csproj';
+let localSettingsPath: string = `${rootFolderPath}/local.settings.json`;
+let projectFilePath: string = `${rootFolderPath}//projectFilePath.csproj`;
 
 describe('Tests to verify Azure Functions Utils functions', function (): void {
 
-	it('Should get local.settings.json', async () => {
+	it('Should correctly parse local.settings.json', async () => {
 		sinon.stub(fs, 'existsSync').withArgs(localSettingsPath).returns(true);
 		sinon.stub(fs, 'readFileSync').withArgs(localSettingsPath).returns(
 			`{"IsEncrypted": false,
 			"Values": {"test1": "test1", "test2": "test2", "test3":"test3"}}`
-		).toString();
+		);
 		let settings = await azureFunctionsUtils.getLocalSettingsJson(localSettingsPath);
 		should(settings.IsEncrypted).equals(false);
 		should(Object.keys(settings.Values!).length).equals(3);
 	});
 
-	it('Should show error message if local.settings.json throws', async () => {
-		let errorMsg = 'Error parsing local.settings.json';
+	it('setLocalAppSetting can update settings.json with new setting value', async () => {
 		sinon.stub(fs, 'existsSync').withArgs(localSettingsPath).returns(true);
 		sinon.stub(fs, 'readFileSync').withArgs(localSettingsPath).returns(
 			`{"IsEncrypted": false,
 			"Values": {"test1": "test1", "test2": "test2", "test3":"test3"}}`
-		).toString();
-		const getLocalSettingsSpy = sinon.spy(azureFunctionsUtils, 'getLocalSettingsJson');
-		sinon.stub(JSON, 'parse').withArgs(sinon.match.any).throws(new Error(errorMsg));
-		try {
-			await getLocalSettingsSpy(localSettingsPath);
-		} catch {
-			should(getLocalSettingsSpy.threw());
-		}
-	});
-
-	it('Should set local.settings.json with new value', async () => {
-		sinon.stub(fs, 'existsSync').withArgs(localSettingsPath).returns(true);
-		sinon.stub(fs, 'readFileSync').withArgs(localSettingsPath).returns(
-			`{"IsEncrypted": false,
-			"Values": {"test1": "test1", "test2": "test2", "test3":"test3"}}`
-		).toString();
-		let settings = await azureFunctionsUtils.getLocalSettingsJson(localSettingsPath);
-		// originally should have 3 settings
-		should(Object.keys(settings.Values!).length).equals(3);
+		);
 
 		let writeFileStub = sinon.stub(fs.promises, 'writeFile');
 		await azureFunctionsUtils.setLocalAppSetting(path.dirname(localSettingsPath), 'test4', 'test4');
-		should(writeFileStub.calledWithExactly(localSettingsPath, '{\n  "IsEncrypted": false,\n  "Values": {\n    "test1": "test1",\n    "test2": "test2",\n    "test3": "test3",\n    "test4": "test4"\n  }\n}')).equals(true);
+		should(writeFileStub.calledWithExactly(localSettingsPath, `{${EOL}  "IsEncrypted": false,${EOL}  "Values": {${EOL}    "test1": "test1",${EOL}    "test2": "test2",${EOL}    "test3": "test3",${EOL}    "test4": "test4"${EOL}  }${EOL}}`)).equals(true);
 	});
 
 	it('Should not overwrite setting if value already exists in local.settings.json', async () => {
@@ -63,34 +45,28 @@ describe('Tests to verify Azure Functions Utils functions', function (): void {
 		sinon.stub(fs, 'readFileSync').withArgs(localSettingsPath).returns(
 			`{"IsEncrypted": false,
 			"Values": {"test1": "test1", "test2": "test2", "test3":"test3"}}`
-		).toString();
+		);
 
 		let warningMsg = constants.settingAlreadyExists('test1');
-		let settings = await azureFunctionsUtils.getLocalSettingsJson(localSettingsPath);
-		// originally should have 3 settings
-		should(Object.keys(settings.Values!).length).equals(3);
-
-		const spy = sinon.stub(vscode.window, 'showWarningMessage').resolves(await Promise.resolve({ title: constants.settingAlreadyExists('test1') }));
+		const spy = sinon.stub(vscode.window, 'showWarningMessage').resolves({ title: constants.settingAlreadyExists('test1') });
 
 		await azureFunctionsUtils.setLocalAppSetting(path.dirname(localSettingsPath), 'test1', 'newValue');
 		should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
 		should(spy.calledWith(warningMsg)).be.true(`showErrorMessage not called with expected message '${warningMsg}' Actual '${spy.getCall(0).args[0]}'`);
 	});
 
-	it('Should get settings file give project file', async () => {
+	it('Should get settings file given project file', async () => {
 		const settingsFile = await azureFunctionsUtils.getSettingsFile(projectFilePath);
-		should(settingsFile).equals(path.join(rootFolderPath, 'local.settings.json'));
+		should(settingsFile).equals(localSettingsPath);
 	});
 
-	it('Should add connection string to local.settings.file', async () => {
+	it('Should add connection string to local.settings.json', async () => {
 		sinon.stub(fs, 'existsSync').withArgs(localSettingsPath).returns(true);
 		sinon.stub(fs, 'readFileSync').withArgs(localSettingsPath).returns(
 			`{"IsEncrypted": false,
 			"Values": {"test1": "test1", "test2": "test2", "test3":"test3"}}`
-		).toString();
+		);
 		const connectionString = 'testConnectionString';
-		let settings = await azureFunctionsUtils.getLocalSettingsJson(localSettingsPath);
-		should(Object.keys(settings.Values!).length).equals(3);
 
 		let writeFileStub = sinon.stub(fs.promises, 'writeFile');
 		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFilePath);
