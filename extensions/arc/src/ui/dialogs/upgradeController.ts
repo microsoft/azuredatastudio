@@ -9,24 +9,14 @@ import * as loc from '../../localizedConstants';
 import * as vscode from 'vscode';
 import { cssStyles } from '../../constants';
 import { InitializingComponent } from '../components/initializingComponent';
-import { PITRModel } from '../../models/miaaModel';
+import { UpgradeModel } from '../../models/miaaModel';
 import { ControllerModel } from '../../models/controllerModel';
 
 export class UpgradeController extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
-	private pitrSettings: PITRModel = {
-		instanceName: '-',
-		resourceGroupName: '-',
-		location: '-',
-		subscriptionId: '-',
-		dbName: '-',
-		restorePoint: '-',
-		earliestPitr: '-',
-		latestPitr: '-',
-		destDbName: '-',
-	};
+	private pitrSettings: UpgradeModel = [];
 
-	protected _completionPromise = new Deferred<PITRModel | undefined>();
+	protected _completionPromise = new Deferred<UpgradeModel | undefined>();
 	protected disposables: vscode.Disposable[] = [];
 	constructor(protected _controllerModel: ControllerModel) {
 		super();
@@ -97,7 +87,7 @@ export class UpgradeController extends InitializingComponent {
 		this._completionPromise.resolve(undefined);
 	}
 
-	public waitForClose(): Promise<PITRModel | undefined> {
+	public waitForClose(): Promise<UpgradeModel | undefined> {
 		return this._completionPromise.promise;
 	}
 }
