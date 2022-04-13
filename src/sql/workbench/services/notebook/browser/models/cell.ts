@@ -287,8 +287,8 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set hover(value: boolean) {
 		this._hover = value;
-		// Skip changing the execution state while running to prevent focus changes from breaking things like user input
-		if (!this.isRunning) {
+		// The Run button is always visible while the cell is active, so we only need to emit this event for inactive cells
+		if (!this.active) {
 			this.fireExecutionStateChanged();
 		}
 	}
@@ -592,12 +592,9 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 	}
 
-	private get isRunning(): boolean {
-		return !!(this._future && this._future.inProgress);
-	}
-
 	public get executionState(): CellExecutionState {
-		if (this.isRunning) {
+		let isRunning = !!(this._future && this._future.inProgress);
+		if (isRunning) {
 			return CellExecutionState.Running;
 		} else if (this.active || this.hover) {
 			return CellExecutionState.Stopped;
