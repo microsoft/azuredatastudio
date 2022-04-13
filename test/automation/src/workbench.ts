@@ -29,6 +29,7 @@ import { QueryEditors } from './sql/queryEditors';
 import { QueryEditor } from './sql/queryEditor';
 import { Notebook as SqlNotebook } from './sql/notebook';
 import { ConfigurePythonDialog } from './sql/configurePythonDialog';
+import { ManagePackagesDialog } from './sql/managePackagesDialog';
 import { CreateBookDialog } from './sql/createBookDialog';
 import { NotificationToast } from './sql/notificationToast';
 import { AddRemoteBookDialog } from './sql/addRemoteBookDialog';
@@ -66,6 +67,7 @@ export class Workbench {
 	readonly sqlNotebook: SqlNotebook;
 	readonly createBookDialog: CreateBookDialog;
 	readonly configurePythonDialog: ConfigurePythonDialog;
+	readonly managePackagesDialog: ManagePackagesDialog;
 	readonly notificationToast: NotificationToast;
 	readonly addRemoteBookDialog: AddRemoteBookDialog;
 	// {{END}}
@@ -95,6 +97,7 @@ export class Workbench {
 		this.sqlNotebook = new SqlNotebook(code, this.quickaccess, this.quickinput, this.editors);
 		this.createBookDialog = new CreateBookDialog(code);
 		this.configurePythonDialog = new ConfigurePythonDialog(code);
+		this.managePackagesDialog = new ManagePackagesDialog(code);
 		this.addRemoteBookDialog = new AddRemoteBookDialog(code);
 		// {{END}}
 		this.notebook = new Notebook(this.quickaccess, code);
