@@ -157,10 +157,10 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			new OpenPlanFile(),
 			this._instantiationService.createInstance(OpenQueryAction, false),
 			new SearchNodeAction(),
-			new ZoomInAction(),
-			new ZoomOutAction(),
-			new ZoomToFitAction(),
-			new CustomZoomAction(),
+			this._instantiationService.createInstance(ZoomInAction, false),
+			this._instantiationService.createInstance(ZoomOutAction, false),
+			this._instantiationService.createInstance(ZoomToFitAction, false),
+			this._instantiationService.createInstance(CustomZoomAction, false),
 			this._instantiationService.createInstance(PropertiesAction, false),
 			this.actionBarToggleTopTip
 		];
@@ -173,10 +173,10 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			new OpenPlanFile(),
 			this._instantiationService.createInstance(OpenQueryAction, true),
 			new SearchNodeAction(),
-			new ZoomInAction(),
-			new ZoomOutAction(),
-			new ZoomToFitAction(),
-			new CustomZoomAction(),
+			this._instantiationService.createInstance(ZoomInAction, true),
+			this._instantiationService.createInstance(ZoomOutAction, true),
+			this._instantiationService.createInstance(ZoomToFitAction, true),
+			this._instantiationService.createInstance(CustomZoomAction, true),
 			this._instantiationService.createInstance(PropertiesAction, true),
 			this.contextMenuToggleTooltipAction
 		];
@@ -314,11 +314,17 @@ export class ZoomInAction extends Action {
 	public static ID = 'ep.ZoomInAction';
 	public static LABEL = localize('executionPlanZoomInActionLabel', "Zoom In");
 
-	constructor() {
+	constructor(private triggeredFromContextMenu: boolean,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
 		super(ZoomInAction.ID, ZoomInAction.LABEL, zoomInIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ZoomIn)
+			.withAdditionalProperties({ openedFromContextMenu: this.triggeredFromContextMenu, openedFromActionBar: !this.triggeredFromContextMenu })
+			.send();
+
 		context.executionPlanDiagram.zoomIn();
 	}
 }
@@ -327,11 +333,17 @@ export class ZoomOutAction extends Action {
 	public static ID = 'ep.ZoomOutAction';
 	public static LABEL = localize('executionPlanZoomOutActionLabel', "Zoom Out");
 
-	constructor() {
+	constructor(private triggeredFromContextMenu: boolean,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
 		super(ZoomOutAction.ID, ZoomOutAction.LABEL, zoomOutIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ZoomOut)
+			.withAdditionalProperties({ openedFromContextMenu: this.triggeredFromContextMenu, openedFromActionBar: !this.triggeredFromContextMenu })
+			.send();
+
 		context.executionPlanDiagram.zoomOut();
 	}
 }
@@ -340,11 +352,17 @@ export class ZoomToFitAction extends Action {
 	public static ID = 'ep.FitGraph';
 	public static LABEL = localize('executionPlanFitGraphLabel', "Zoom to fit");
 
-	constructor() {
+	constructor(private triggeredFromContextMenu: boolean,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
 		super(ZoomToFitAction.ID, ZoomToFitAction.LABEL, zoomToFitIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ZoomToFit)
+			.withAdditionalProperties({ openedFromContextMenu: this.triggeredFromContextMenu, openedFromActionBar: !this.triggeredFromContextMenu })
+			.send();
+
 		context.executionPlanDiagram.zoomToFit();
 	}
 }
@@ -386,11 +404,18 @@ export class CustomZoomAction extends Action {
 	public static ID = 'ep.customZoom';
 	public static LABEL = localize('executionPlanCustomZoom', "Custom Zoom");
 
-	constructor() {
+	constructor(private triggeredFromContextMenu: boolean,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
+	) {
 		super(CustomZoomAction.ID, CustomZoomAction.LABEL, customZoomIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.CustomZoom)
+			.withAdditionalProperties({ openedFromContextMenu: this.triggeredFromContextMenu, openedFromActionBar: !this.triggeredFromContextMenu })
+			.send();
+
 		context.widgetController.toggleWidget(context._instantiationService.createInstance(CustomZoomWidget, context.widgetController, context.executionPlanDiagram));
 	}
 }

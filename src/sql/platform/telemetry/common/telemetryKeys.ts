@@ -56,6 +56,7 @@ export const enum TelemetryAction {
 	AddServerGroup = 'AddServerGroup',
 	adsCommandExecuted = 'adsCommandExecuted',
 	ConnectToServer = 'ConnectToServer',
+	CustomZoom = 'CustomZoom',
 	BackupCreated = 'BackupCreated',
 	DashboardNavigated = 'DashboardNavigated',
 	DatabaseConnected = 'DatabaseConnected',
@@ -96,7 +97,10 @@ export const enum TelemetryAction {
 	ViewTopOperations = 'ViewTopOperations',
 	WizardPagesNavigation = 'WizardPagesNavigation',
 	SearchStarted = 'SearchStarted',
-	SearchCompleted = 'SearchCompleted'
+	SearchCompleted = 'SearchCompleted',
+	ZoomIn = 'ZoomIn',
+	ZoomOut = 'ZoomOut',
+	ZoomToFit = 'ZoomToFIt'
 }
 
 export const enum NbTelemetryAction {
