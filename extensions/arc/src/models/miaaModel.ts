@@ -29,6 +29,7 @@ export type PITRModel = {
 	latestPitr: string,
 	destDbName: string
 };
+export type UpgradeModel = {};
 
 export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
 export class MiaaModel extends ResourceModel {
