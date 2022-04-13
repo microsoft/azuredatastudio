@@ -65,7 +65,6 @@ export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_DETAIL = localize('sql.migratio
 export const REFRESH_ASSESSMENT_BUTTON_LABEL = localize('sql.migration.refresh.assessment.button.label', "Refresh assessment");
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose your Azure SQL target");
 
-
 export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance");
 export const SKU_RECOMMENDATION_DB_CARD_TEXT = localize('sql.migration.sku.db.card.title', "Azure SQL Database");
 export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "SQL Server on Azure Virtual Machine");
@@ -299,6 +298,25 @@ export function MI_NOT_READY_ERROR(miName: string, state: string): string {
 	return localize('sql.migration.mi.not.ready', "The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.", miName, state);
 }
 
+export const SELECT_AN_ACCOUNT = localize('sql.migration.select.service.select.a.', "Sign into Azure and select an account");
+export const SELECT_A_TENANT = localize('sql.migration.select.service.select.a.tenant', "Select a tenant");
+export const SELECT_A_SUBSCRIPTION = localize('sql.migration.select.service.select.a.subscription', "Select a subscription");
+export const SELECT_A_LOCATION = localize('sql.migration.select.service.select.a.location', "Select a location");
+export const SELECT_A_RESOURCE_GROUP = localize('sql.migration.select.service.select.a.resource.group', "Select a resource group");
+export const SELECT_A_SERVICE = localize('sql.migration.select.service.select.a.service', "Select a Database Migration Service");
+export const SELECT_ACCOUNT_ERROR = localize('sql.migration.select.service.select.account.error', "An error occurred while loading available Azure accounts.");
+export const SELECT_TENANT_ERROR = localize('sql.migration.select.service.select.tenant.error', "An error occurred while loading available Azure account tenants.");
+export const SELECT_SUBSCRIPTION_ERROR = localize('sql.migration.select.service.select.subscription.error', "An error occurred while loading account subscriptions. Please check your Azure connection and try again.");
+export const SELECT_LOCATION_ERROR = localize('sql.migration.select.service.select.location.error', "An error occurred while loading locations. Please check your Azure connection and try again.");
+export const SELECT_RESOURCE_GROUP_ERROR = localize('sql.migration.select.service.select.resource.group.error', "An error occurred while loading available resource groups. Please check your Azure connection and try again.");
+export const SELECT_SERVICE_ERROR = localize('sql.migration.select.service.select.service.error', "An error occurred while loading available database migration services. Please check your Azure connection and try again.");
+export function ACCOUNT_CREDENTIALS_REFRESH(accountName: string): string {
+	return localize(
+		'sql.migration.account.credentials.refresh.required',
+		"{0} (requires credentials refresh)",
+		accountName);
+}
+
 // database backup page
 export const DATABASE_BACKUP_PAGE_TITLE = localize('sql.migration.database.page.title', "Database backup");
 export const DATABASE_BACKUP_PAGE_DESCRIPTION = localize('sql.migration.database.page.description', "Select the location of the database backups to use during migration.");
@@ -453,7 +471,7 @@ export const CREATE = localize('sql.migration.create', "Create");
 export const CANCEL = localize('sql.migration.cancel', "Cancel");
 export const TYPE = localize('sql.migration.type', "Type");
 export const USER_ACCOUNT = localize('sql.migration.path.user.account', "User account");
-export const VIEW_ALL = localize('sql.migration.view.all', "View all");
+export const VIEW_ALL = localize('sql.migration.view.all', "All database migrations");
 export const TARGET = localize('sql.migration.target', "Target");
 export const AZURE_SQL = localize('sql.migration.azure.sql', "Azure SQL");
 export const CLOSE = localize('sql.migration.close', "Close");
@@ -494,6 +512,9 @@ export const NOTEBOOK_SQL_MIGRATION_ASSESSMENT_TITLE = localize('sql.migration.s
 export const NOTEBOOK_OPEN_ERROR = localize('sql.migration.notebook.open.error', "Failed to open the migration notebook.");
 
 // Dashboard
+export function DASHBOARD_REFRESH_MIGRATIONS(error: string): string {
+	return localize('sql.migration.refresh.migrations.error', "An error occurred while refreshing the migrations list: '{0}'.  Please check your linked Azure connection and click refresh to try again.", error);
+}
 export const DASHBOARD_TITLE = localize('sql.migration.dashboard.title', "Azure SQL Migration");
 export const DASHBOARD_DESCRIPTION = localize('sql.migration.dashboard.description', "Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance or SQL Server on Azure Virtual Machines.");
 export const DASHBOARD_MIGRATE_TASK_BUTTON_TITLE = localize('sql.migration.dashboard.migrate.task.button', "Migrate to Azure SQL");
@@ -505,10 +526,9 @@ export const PRE_REQ_1 = localize('sql.migration.pre.req.1', "Azure account deta
 export const PRE_REQ_2 = localize('sql.migration.pre.req.2', "Azure SQL Managed Instance or SQL Server on Azure Virtual Machine");
 export const PRE_REQ_3 = localize('sql.migration.pre.req.3', "Backup location details");
 export const MIGRATION_IN_PROGRESS = localize('sql.migration.migration.in.progress', "Database migrations in progress");
-export const MIGRATION_FAILED = localize('sql.migration.failed', "Migrations failed");
-export const MIGRATION_COMPLETED = localize('sql.migration.migration.completed', "Migrations completed");
-export const MIGRATION_CUTOVER_CARD = localize('sql.migration.cutover.card', "Completing cutover");
-export const MIGRATION_NOT_STARTED = localize('sql.migration.migration.not.started', "Migrations not started");
+export const MIGRATION_FAILED = localize('sql.migration.failed', "Database migrations failed");
+export const MIGRATION_COMPLETED = localize('sql.migration.migration.completed', "Database migrations completed");
+export const MIGRATION_CUTOVER_CARD = localize('sql.migration.cutover.card', "Database migrations completing cutover");
 export const SHOW_STATUS = localize('sql.migration.show.status', "Show status");
 export function MIGRATION_INPROGRESS_WARNING(count: number) {
 	switch (count) {
@@ -593,6 +613,7 @@ export const NO_PENDING_BACKUPS = localize('sql.migration.no.pending.backups', "
 //Migration status dialog
 export const ADD_ACCOUNT = localize('sql.migration.status.add.account', "Add account");
 export const ADD_ACCOUNT_MESSAGE = localize('sql.migration.status.add.account.MESSAGE', "Add your Azure account to view existing migrations and their status.");
+export const SELECT_SERVICE_MESSAGE = localize('sql.migration.status.select.service.MESSAGE', "Select a Database Migration Service to monitor migrations.");
 export const STATUS_ALL = localize('sql.migration.status.dropdown.all', "Status: All");
 export const STATUS_ONGOING = localize('sql.migration.status.dropdown.ongoing', "Status: Ongoing");
 export const STATUS_COMPLETING = localize('sql.migration.status.dropdown.completing', "Status: Completing");
@@ -602,11 +623,13 @@ export const SEARCH_FOR_MIGRATIONS = localize('sql.migration.search.for.migratio
 export const ONLINE = localize('sql.migration.online', "Online");
 export const OFFLINE = localize('sql.migration.offline', "Offline");
 export const DATABASE = localize('sql.migration.database', "Database");
+export const STATUS_COLUMN = localize('sql.migration.database.status.column', "Status");
 export const DATABASE_MIGRATION_SERVICE = localize('sql.migration.database.migration.service', "Database Migration Service");
 export const DURATION = localize('sql.migration.duration', "Duration");
 export const AZURE_SQL_TARGET = localize('sql.migration.azure.sql.target', "Target type");
 export const SQL_MANAGED_INSTANCE = localize('sql.migration.sql.managed.instance', "SQL Managed Instance");
 export const SQL_VIRTUAL_MACHINE = localize('sql.migration.sql.virtual.machine', "SQL Virtual Machine");
+export const SQL_DATABASE = localize('sql.migration.sql.database', "SQL Database");
 export const TARGET_AZURE_SQL_INSTANCE_NAME = localize('sql.migration.target.azure.sql.instance.name', "Target name");
 export const MIGRATION_MODE = localize('sql.migration.cutover.type', "Migration mode");
 export const START_TIME = localize('sql.migration.start.time', "Start time");
@@ -745,3 +768,15 @@ export const MIGRATION_RETRY_ERROR = localize('sql.migration.retry.migration.err
 
 export const INVALID_OWNER_URI = localize('sql.migration.invalid.owner.uri.error', 'Cannot connect to the database due to invalid OwnerUri (Parameter \'OwnerUri\')');
 export const DATABASE_BACKUP_PAGE_LOAD_ERROR = localize('sql.migration.database.backup.load.error', 'An error occurred while accessing database details.');
+
+// Migration Service Section Dialog
+export const MIGRATION_SERVICE_SELECT_TITLE = localize('sql.migration.select.service.title', 'Select Database Migration Service');
+export const MIGRATION_SERVICE_SELECT_APPLY_LABEL = localize('sql.migration.select.service.apply.label', 'Apply');
+export const MIGRATION_SERVICE_CLEAR = localize('sql.migration.select.service.delete.label', 'Clear');
+export const MIGRATION_SERVICE_SELECT_HEADING = localize('sql.migration.select.service.heading', 'Filter the migration list by Database Migration Service');
+export const MIGRATION_SERVICE_SELECT_SERVICE_LABEL = localize('sql.migration.select.service.service.label', 'Azure Database Migration Service');
+export const MIGRATION_SERVICE_SELECT_SERVICE_PROMPT = localize('sql.migration.select.service.prompt', 'Select a Database Migration Service');
+export function MIGRATION_SERVICE_SERVICE_PROMPT(serviceName: string): string {
+	return localize('sql.migration.service.prompt', '{0} (change)', serviceName);
+}
+export const MIGRATION_SERVICE_DESCRIPTION = localize('sql.migration.select.service.description', 'Azure Database Migration Service');

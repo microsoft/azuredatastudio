@@ -173,6 +173,10 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	$requestExecute(kernelId: number, content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails> {
+		// Revive request's URIs to restore functions
+		content.notebookUri = URI.revive(content.notebookUri);
+		content.cellUri = URI.revive(content.cellUri);
+
 		let kernel = this._getAdapter<azdata.nb.IKernel>(kernelId);
 		let future = kernel.requestExecute(content, disposeOnDone);
 		let futureId = this._addNewAdapter(future);
@@ -259,9 +263,17 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return this.registerSerializationProvider(serializationProvider);
 	}
 
-	createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController {
+	createNotebookController(
+		extension: IExtensionDescription,
+		id: string,
+		viewType: string,
+		label: string,
+		getDocHandler: (notebookUri: URI) => azdata.nb.NotebookDocument,
+		execHandler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>,
+		rendererScripts?: vscode.NotebookRendererScript[]
+	): vscode.NotebookController {
 		let languagesHandler = (languages: string[]) => this._proxy.$updateKernelLanguages(viewType, viewType, languages);
-		let controller = new ADSNotebookController(extension, id, viewType, label, this._extHostNotebookDocumentsAndEditors, languagesHandler, handler, extension.enableProposedApi ? rendererScripts : undefined);
+		let controller = new ADSNotebookController(extension, id, viewType, label, this._extHostNotebookDocumentsAndEditors, languagesHandler, getDocHandler, execHandler, extension.enableProposedApi ? rendererScripts : undefined);
 		let newKernel: azdata.nb.IStandardKernel = {
 			name: viewType,
 			displayName: controller.label,

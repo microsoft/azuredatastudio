@@ -186,7 +186,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				const selectedAzureAccount = this.migrationStateModel.getAccount(selectedIndex);
 				// Making a clone of the account object to preserve the original tenants
 				this.migrationStateModel._azureAccount = deepClone(selectedAzureAccount);
-				if (this.migrationStateModel._azureAccount.properties.tenants.length > 1) {
+				if (selectedAzureAccount.isStale === false &&
+					this.migrationStateModel._azureAccount.properties.tenants.length > 1) {
 					this.migrationStateModel._accountTenants = selectedAzureAccount.properties.tenants;
 					this._accountTenantDropdown.values = await this.migrationStateModel.getTenantValues();
 					selectDropDownIndex(this._accountTenantDropdown, 0);

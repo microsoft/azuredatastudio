@@ -807,6 +807,7 @@ declare module 'azdata' {
 			CheckConstraints = 'checkConstraints',
 			Indexes = 'indexes',
 			PrimaryKeyName = 'primaryKeyName',
+			PrimaryKeyDescription = 'primaryKeyDescription',
 			PrimaryKeyColumns = 'primaryKeyColumns'
 		}
 		/**
@@ -818,7 +819,9 @@ declare module 'azdata' {
 			DefaultValue = 'defaultValue',
 			Length = 'length',
 			Name = 'name',
+			Description = 'description',
 			Type = 'type',
+			AdvancedType = 'advancedType',
 			IsPrimaryKey = 'isPrimaryKey',
 			Precision = 'precision',
 			Scale = 'scale'
@@ -830,6 +833,7 @@ declare module 'azdata' {
 		 */
 		export enum TableForeignKeyProperty {
 			Name = 'name',
+			Description = 'description',
 			ForeignTable = 'foreignTable',
 			OnDeleteAction = 'onDeleteAction',
 			OnUpdateAction = 'onUpdateAction',
@@ -850,6 +854,7 @@ declare module 'azdata' {
 		 */
 		export enum TableCheckConstraintProperty {
 			Name = 'name',
+			Description = 'description',
 			Expression = 'expression'
 		}
 
@@ -859,6 +864,7 @@ declare module 'azdata' {
 		 */
 		export enum TableIndexProperty {
 			Name = 'name',
+			Description = 'description',
 			Columns = 'columns'
 		}
 
@@ -924,7 +930,7 @@ declare module 'azdata' {
 			*/
 			primaryKeyColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
 			/**
-			 * Additional primary key properties. Common primary key properties: primaryKeyName.
+			 * Additional primary key properties. Common primary key properties: primaryKeyName, primaryKeyDescription.
 			 */
 			additionalPrimaryKeyProperties?: DesignerDataPropertyInfo[];
 		}
@@ -1258,6 +1264,27 @@ declare module 'azdata' {
 			 * Edges corresponding to the children.
 			 */
 			edges: ExecutionPlanEdge[];
+			/**
+			 * Warning/parallelism badges applicable to the current node
+			 */
+			badges: ExecutionPlanBadge[];
+		}
+
+		export interface ExecutionPlanBadge {
+			/**
+			 * Type of the node overlay. This determines the icon that is displayed for it
+			 */
+			type: BadgeType;
+			/**
+			 * Text to display for the overlay tooltip
+			 */
+			tooltip: string;
+		}
+
+		export enum BadgeType {
+			Warning = 0,
+			CriticalWarning = 1,
+			Parallelism = 2
 		}
 
 		export interface ExecutionPlanEdge {
@@ -1386,9 +1413,13 @@ declare module 'azdata' {
 	 */
 	export interface InfoBoxComponent extends Component, InfoBoxComponentProperties {
 		/**
-		 * An event called when the InfoBox is clicked
+		 * An event fired when the InfoBox is clicked
 		 */
 		onDidClick: vscode.Event<void>;
+		/**
+		 * An event fired when the Infobox link is clicked
+		 */
+		onLinkClick: vscode.Event<InfoBoxLinkClickEventArgs>;
 	}
 
 	export interface InfoBoxComponentProperties {
@@ -1402,5 +1433,27 @@ declare module 'azdata' {
 		 * Sets the ariaLabel for the right arrow button that shows up in clickable infoboxes
 		 */
 		clickableButtonAriaLabel?: string;
+
+		/**
+		 * List of links to embed within the text. If links are specified there must be placeholder
+		 * values in the value indicating where the links should be placed, in the format {i}
+		 *
+		 * e.g. "Click {0} for more information!""
+		 */
+		links?: LinkArea[];
+	}
+
+	/**
+	 * Event argument for infobox link click event.
+	 */
+	export interface InfoBoxLinkClickEventArgs {
+		/**
+		 * Index of the link selected
+		 */
+		index: number;
+		/**
+		 * Link that is clicked
+		 */
+		link: LinkArea;
 	}
 }
