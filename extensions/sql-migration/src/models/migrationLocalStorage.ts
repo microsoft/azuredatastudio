@@ -5,7 +5,6 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as azurecore from 'azurecore';
-import { azureResource } from 'azureResource';
 import { DatabaseMigration, SqlMigrationService, getSubscriptions, getServiceMigrations } from '../api/azure';
 import { deepClone } from '../api/utils';
 import * as loc from '../constants/strings';
@@ -83,9 +82,9 @@ export async function getCurrentMigrations(): Promise<DatabaseMigration[]> {
 export interface MigrationServiceContext {
 	azureAccount?: azdata.Account,
 	tenant?: azurecore.Tenant,
-	subscription?: azureResource.AzureResourceSubscription,
-	location?: azureResource.AzureLocation,
-	resourceGroup?: azureResource.AzureResourceResourceGroup,
+	subscription?: azurecore.azureResource.AzureResourceSubscription,
+	location?: azurecore.azureResource.AzureLocation,
+	resourceGroup?: azurecore.azureResource.AzureResourceResourceGroup,
 	migrationService?: SqlMigrationService,
 }
 

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import * as fs from 'fs';
 import { EOL } from 'os';
 import * as path from 'path';

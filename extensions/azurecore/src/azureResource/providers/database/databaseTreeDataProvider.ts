@@ -8,12 +8,11 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { azureResource } from 'azureResource';
 import { AzureResourceItemType } from '../../../azureResource/constants';
 import { generateGuid } from '../../utils';
 import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
-import { AzureAccount } from 'azurecore';
+import { AzureAccount, azureResource } from 'azurecore';
 
 export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabase> {
 

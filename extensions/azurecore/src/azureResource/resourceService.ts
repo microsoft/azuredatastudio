@@ -5,9 +5,8 @@
 
 import { extensions, TreeItem } from 'vscode';
 
-import { azureResource } from 'azureResource';
 import { IAzureResourceNodeWithProviderId } from './interfaces';
-import { AzureAccount } from 'azurecore';
+import { AzureAccount, azureResource } from 'azurecore';
 
 export class AzureResourceService {
 	private _areResourceProvidersLoaded: boolean = false;

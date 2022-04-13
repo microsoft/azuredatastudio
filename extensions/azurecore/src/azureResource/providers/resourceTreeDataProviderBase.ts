@@ -6,11 +6,10 @@
 import * as azdata from 'azdata';
 import * as msRest from '@azure/ms-rest-js';
 
-import { azureResource } from 'azureResource';
 import { IAzureResourceService } from '../interfaces';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
-import { AzureAccount } from 'azurecore';
+import { AzureAccount, azureResource } from 'azurecore';
 
 export abstract class ResourceTreeDataProviderBase<T extends azureResource.AzureResource> implements azureResource.IAzureResourceTreeDataProvider {
 	public browseConnectionMode: boolean = false;

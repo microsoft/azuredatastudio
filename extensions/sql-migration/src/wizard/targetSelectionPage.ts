@@ -12,7 +12,7 @@ import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { deepClone, findDropDownItemIndex, selectDropDownIndex, selectDefaultDropdownValue } from '../api/utils';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 
 export class TargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
