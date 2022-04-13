@@ -46,7 +46,7 @@ import { fileFiltersSet, DeviceType } from 'sql/workbench/services/restore/commo
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
-import { IUrlBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/urlBrowserDialogController';
+import { IUrlBrowserDialogService } from 'sql/workbench/services/fileBrowser/common/urlBrowserDialogService';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -154,7 +154,7 @@ export class RestoreDialog extends Modal {
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IFileBrowserDialogController private fileBrowserDialogService: IFileBrowserDialogController,
-		@IUrlBrowserDialogController private urlBrowserDialogService: IUrlBrowserDialogController,
+		@IUrlBrowserDialogService private urlBrowserDialogService: IUrlBrowserDialogService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService

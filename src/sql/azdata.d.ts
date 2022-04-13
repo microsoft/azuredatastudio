@@ -1965,10 +1965,6 @@ declare module 'azdata' {
 		taskId: number;
 	}
 
-	export interface CreateSasResponse {
-		sharedAccessSignature: string;
-	}
-
 	export interface BackupProvider extends DataProvider {
 		backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: TaskExecutionMode): Thenable<BackupResponse>;
 		getBackupConfigInfo(connectionUri: string): Thenable<BackupConfigInfo>;

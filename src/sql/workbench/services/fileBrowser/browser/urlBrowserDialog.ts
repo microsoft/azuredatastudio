@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/fileBrowserDialog';
+import 'vs/css!./media/urlBrowserDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { InputBox, /*OnLoseFocusParams*/ } from 'sql/base/browser/ui/inputBox/inputBox';
+import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
@@ -14,7 +14,6 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-//import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { attachButtonStyler, attachInputBoxStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import * as DOM from 'vs/base/browser/dom';
@@ -33,7 +32,7 @@ import { Blob, BlobContainer, AzureGraphResource, AzureResourceSubscription, Get
 import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
 
 
-const ERROR_GETTING_BLOB_CONTAINERS = localize('urlbrowserdialog.getblobcontainerserror', "Error getting blob containers");
+const ERROR_GETTING_BLOB_CONTAINERS = localize('urlBrowserDialog.getBlobContainersError', "Error getting blob containers");
 
 export class UrlBrowserDialog extends Modal {
 
@@ -51,7 +50,6 @@ export class UrlBrowserDialog extends Modal {
 
 	private _ownerUri: string;
 	private _restoreDialog: boolean;
-	//private _viewModel: FileBrowserViewModel;
 	private _body: HTMLElement;
 	private _accountSelectorBox: SelectBox;
 	private _tenantSelectorBox: SelectBox;
@@ -73,7 +71,6 @@ export class UrlBrowserDialog extends Modal {
 		defaultBackupName: string,
 		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
-		//@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
@@ -85,9 +82,6 @@ export class UrlBrowserDialog extends Modal {
 		@IAzureBlobService private _blobService: IAzureBlobService
 	) {
 		super(title, TelemetryKeys.ModalDialogName.FileBrowser, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'flyout', hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
-		//this._viewModel = this._instantiationService.createInstance(FileBrowserViewModel);
-		//this._viewModel.onAddFileTree(args => this.handleOnAddFileTree(args.rootNode, args.selectedNode, args.expandedNodes).catch(err => onUnexpectedError(err)));
-		//this._viewModel.onPathValidate(args => this.handleOnValidate(args.succeeded, args.message));
 		this._defaultBackupName = defaultBackupName;
 		this._restoreDialog = restoreDialog;
 	}
@@ -96,7 +90,7 @@ export class UrlBrowserDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		this._body = DOM.append(container, DOM.$('.file-browser-dialog'));
+		this._body = DOM.append(container, DOM.$('.url-browser-dialog'));
 	}
 
 	public override render() {
@@ -105,27 +99,28 @@ export class UrlBrowserDialog extends Modal {
 
 		if (this.backButton) {
 
-			this.backButton.onDidClick(() => {
+			this._register(this.backButton.onDidClick(() => {
 				this.close();
-			});
+			}));
 
 			this._register(attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));
 		}
 
-		let tableContainer: HTMLElement = DOM.append(DOM.append(this._body, DOM.$('.option-section')), DOM.$('table.file-table-content'));
+		let tableContainer: HTMLElement = DOM.append(DOM.append(this._body, DOM.$('.option-section')), DOM.$('table.url-table-content'));
 		tableContainer.setAttribute('role', 'presentation');
 
 		let azureAccountLabel = localize('azurebrowser.account', "Azure Account");
 		this._accountSelectorBox = new SelectBox(['*'], '*', this._contextViewService);
 		this._accountSelectorBox.setAriaLabel(azureAccountLabel);
-		let accountSelector = DialogHelper.appendRow(tableContainer, azureAccountLabel, 'file-input-label', 'file-input-box');
+		let accountSelector = DialogHelper.appendRow(tableContainer, azureAccountLabel, 'url-input-label', 'url-input-box');
 		DialogHelper.appendInputSelectBox(accountSelector, this._accountSelectorBox);
 		this._accountManagementService.getAccounts().then((accounts) => this.setAccountSelectorBoxOptions(accounts)).catch((reason) => this.setAccountSelectorBoxError());
 
+		let linkAccountText = localize('urlBrowserDialog.linkAccount', "Link account");
 		let linkAccountButton = DialogHelper.appendRow(tableContainer, '', 'file-input-label', 'file-input-box');
 		let anchorNode: HTMLAnchorElement = DOM.append(linkAccountButton, DOM.$('a.anchor'));
-		anchorNode.title = 'Link account';
-		anchorNode.text = 'Link account';
+		anchorNode.title = linkAccountText;
+		anchorNode.text = linkAccountText;
 		anchorNode.href = '';
 		anchorNode.onclick = async (event) => {
 			await this._accountManagementService.openAccountListDialog();
@@ -134,51 +129,51 @@ export class UrlBrowserDialog extends Modal {
 		let tenantLabel = localize('azurebrowser.tenant', "Azure AD Tenant");
 		this._tenantSelectorBox = new SelectBox(['*'], '*', this._contextViewService);
 		this._tenantSelectorBox.setAriaLabel(tenantLabel);
-		let tenantSelector = DialogHelper.appendRow(tableContainer, tenantLabel, 'file-input-label', 'file-input-box');
+		let tenantSelector = DialogHelper.appendRow(tableContainer, tenantLabel, 'url-input-label', 'url-input-box');
 		DialogHelper.appendInputSelectBox(tenantSelector, this._tenantSelectorBox);
 
 		let subscriptionLabel = localize('azurebrowser.subscription', "Azure subscription");
 		this._subscriptionSelectorBox = new SelectBox(['*'], '*', this._contextViewService);
 		this._subscriptionSelectorBox.setAriaLabel(subscriptionLabel);
-		let subscriptionSelector = DialogHelper.appendRow(tableContainer, subscriptionLabel, 'file-input-label', 'file-input-box');
+		let subscriptionSelector = DialogHelper.appendRow(tableContainer, subscriptionLabel, 'url-input-label', 'url-input-box');
 		DialogHelper.appendInputSelectBox(subscriptionSelector, this._subscriptionSelectorBox);
 
 		let storageAccountLabel = localize('azurebrowser.storageAccount', "Storage account");
 		this._storageAccountSelectorBox = new SelectBox(['*'], '*', this._contextViewService);
 		this._storageAccountSelectorBox.setAriaLabel(storageAccountLabel);
-		let storageAccountSelector = DialogHelper.appendRow(tableContainer, storageAccountLabel, 'file-input-label', 'file-input-box');
+		let storageAccountSelector = DialogHelper.appendRow(tableContainer, storageAccountLabel, 'url-input-label', 'url-input-box');
 		DialogHelper.appendInputSelectBox(storageAccountSelector, this._storageAccountSelectorBox);
 
 		let blobContainerLabel = localize('azurebrowser.blobContainer', "Blob container");
 		this._blobContainerSelectorBox = new SelectBox(['*'], '*', this._contextViewService);
 		this._blobContainerSelectorBox.setAriaLabel(blobContainerLabel);
-		let blobContainerSelector = DialogHelper.appendRow(tableContainer, blobContainerLabel, 'file-input-label', 'file-input-box');
+		let blobContainerSelector = DialogHelper.appendRow(tableContainer, blobContainerLabel, 'url-input-label', 'url-input-box');
 		DialogHelper.appendInputSelectBox(blobContainerSelector, this._blobContainerSelectorBox);
 
 
 		let sharedAccessSignatureLabel = localize('azurebrowser.sharedAccessSignature', "Shared access signature generated");
-		let sasInput = DialogHelper.appendRow(tableContainer, sharedAccessSignatureLabel, 'file-input-label', 'file-input-box');
+		let sasInput = DialogHelper.appendRow(tableContainer, sharedAccessSignatureLabel, 'url-input-label', 'url-input-box');
 		this._sasInputBox = new InputBox(sasInput, this._contextViewService, { flexibleHeight: true });
 		this._sasInputBox.disable();
-		this._sasInputBox.onDidChange(() => this.enableOkButton());
+		this._register(this._sasInputBox.onDidChange(() => this.enableOkButton()));
 
-		let sasButtonLabel = DialogHelper.appendRow(tableContainer, '', 'file-input-label', 'file-input-box');
+		let sasButtonLabel = DialogHelper.appendRow(tableContainer, '', 'url-input-label', 'url-input-box');
 		this._sasButton = new Button(sasButtonLabel, { title: 'Create Credentials' });
 		this._sasButton.label = 'Create Credentials';
 		this._sasButton.title = 'Create Credentials';
-		this._sasButton.onDidClick(e => this.generateSharedAccessSignature());
+		this._register(this._sasButton.onDidClick(e => this.generateSharedAccessSignature()));
 
 		let backupFileLabel = localize('azurebrowser.backupFile', "Backup file");
 		this._backupFileSelectorBox = new SelectBox(['*'], '*', this._contextViewService);
 		this._backupFileSelectorBox.setAriaLabel(backupFileLabel);
 
 		if (this._restoreDialog) {
-			let backupFileSelector = DialogHelper.appendRow(tableContainer, backupFileLabel, 'file-input-label', 'file-input-box');
+			let backupFileSelector = DialogHelper.appendRow(tableContainer, backupFileLabel, 'url-input-label', 'url-input-box');
 			DialogHelper.appendInputSelectBox(backupFileSelector, this._backupFileSelectorBox);
 			this._backupFileSelectorBox.setOptions(['backup-file.bak', 'backup-file2.bak']);
 			this._backupFileSelectorBox.select(0);
 		} else {
-			let fileInput = DialogHelper.appendRow(tableContainer, backupFileLabel, 'file-input-label', 'file-input-box');
+			let fileInput = DialogHelper.appendRow(tableContainer, backupFileLabel, 'url-input-label', 'url-input-box');
 			this._backupFileInputBox = new InputBox(fileInput, this._contextViewService, { flexibleHeight: true });
 			this.setBackupFileDefaultValue();
 		}
@@ -198,7 +193,7 @@ export class UrlBrowserDialog extends Modal {
 	}
 
 	private setAccountSelectorBoxError() {
-		this._accountSelectorBox.setOptions(['Please link Azure account']);
+		this._accountSelectorBox.setOptions([localize('urlBrowserDialog.noLinkedAzureAccount', "Please link Azure account")]);
 		this._accountSelectorBox.select(0);
 		this._accountSelectorBox.disable();
 	}
@@ -229,7 +224,7 @@ export class UrlBrowserDialog extends Modal {
 	}
 
 	private setSubscriptionSelectorBoxError(getSubscriptionsError: any) {
-		this._subscriptionSelectorBox.setOptions(['Error getting Azure subscriptions']);
+		this._subscriptionSelectorBox.setOptions([localize('urlBrowserDialog.getAzureSubscriptionError', "Error getting Azure subscriptions")]);
 		this._subscriptionSelectorBox.disable();
 	}
 
@@ -251,7 +246,7 @@ export class UrlBrowserDialog extends Modal {
 	}
 
 	private setStorageAccountSelectorBoxError(errors: any) {
-		this._storageAccountSelectorBox.setOptions(['Error getting storage accounts']);
+		this._storageAccountSelectorBox.setOptions([localize('urlBrowserDialog.getStorageAccountsError', "Error getting storage accounts")]);
 		this._storageAccountSelectorBox.disable();
 	}
 
@@ -298,7 +293,7 @@ export class UrlBrowserDialog extends Modal {
 	}
 
 	setBackupFilesSelectorError(getBlobsResult: GetBlobsResult) {
-		this._backupFileSelectorBox.setOptions(['Error getting backup files']);
+		this._backupFileSelectorBox.setOptions([localize('urlBrowserDialog.getBackupFilesError', "Error getting backup files")]);
 		this._backupFileSelectorBox.disable();
 	}
 

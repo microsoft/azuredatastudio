@@ -37,7 +37,7 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IUrlBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/urlBrowserDialogController';
+import { IUrlBrowserDialogService } from 'sql/workbench/services/fileBrowser/common/urlBrowserDialogService';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -221,7 +221,7 @@ export class BackupComponent extends AngularDisposable {
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IFileBrowserDialogController) private fileBrowserDialogService: IFileBrowserDialogController,
-		@Inject(IUrlBrowserDialogController) private urlBrowserDialogService: IUrlBrowserDialogController,
+		@Inject(IUrlBrowserDialogService) private urlBrowserDialogService: IUrlBrowserDialogService,
 		@Inject(IBackupUiService) private _backupUiService: IBackupUiService,
 		@Inject(IBackupService) private _backupService: IBackupService,
 		@Inject(IClipboardService) private clipboardService: IClipboardService,
@@ -245,7 +245,7 @@ export class BackupComponent extends AngularDisposable {
 		// Set copy-only check box
 		this.copyOnlyCheckBox = new Checkbox(this.copyOnlyElement!.nativeElement, {
 			label: LocalizedStrings.COPY_ONLY,
-			checked: true,
+			checked: false,
 			onChange: (viaKeyboard) => { },
 			ariaLabel: LocalizedStrings.COPY_ONLY
 		});
@@ -325,7 +325,7 @@ export class BackupComponent extends AngularDisposable {
 
 		// Set backup path add/remove buttons
 		this.addUrlPathButton = this._register(new Button(this.addUrlPathElement!.nativeElement, { secondary: true }));
-		this.addUrlPathButton.label = 'Browse';
+		this.addUrlPathButton.label = localize('backupBrowseButton', "Browse");
 		this.addUrlPathButton.title = localize('addUrl', "Add URL");
 		this.addFilePathButton = this._register(new Button(this.addFilePathElement!.nativeElement, { secondary: true }));
 		this.addFilePathButton.label = '+';
@@ -515,12 +515,14 @@ export class BackupComponent extends AngularDisposable {
 			this.mediaDescriptionBox!.disable();
 			if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance) {
 				this.toUrlCheckBox.checked = true;
+				this.copyOnlyCheckBox.checked = true;
 				this.backupTypeSelectBox!.disable();
 				this.copyOnlyCheckBox!.disable();
 				this.backupRetainDaysBox!.disable();
 				this.toUrlCheckBox!.disable();
 				this.disableMedia = true;
 			} else {
+				this.copyOnlyCheckBox.checked = false;
 				this.disableMedia = false;
 				this.toUrlCheckBox!.enable();
 				this.backupRetainDaysBox!.enable();
@@ -685,26 +687,20 @@ export class BackupComponent extends AngularDisposable {
 
 	private onChangeToUrl(): void {
 		//change "Backup files" to "Backup URL"
-		const filePathHTMLElem: HTMLElement = this.filePathElement.nativeElement;
-		const filePathLabelHTMLElem: HTMLElement = this.filePathLabelElement.nativeElement;
-		const urlPathContainerHTMLElem: HTMLElement = this.urlPathLabelElement.nativeElement;
-		const urlPathHTMLElem: HTMLElement = this.urlPathElement.nativeElement;
-		const filePathButtonsHTMLElem: HTMLElement = this.filePathButtonsElement.nativeElement;
-		const urlPathButtonsHTMLElem: HTMLElement = this.urlPathButtonsElement.nativeElement;
 		if (this.toUrlCheckBox!.checked) {
-			filePathHTMLElem.hidden = true;
-			filePathButtonsHTMLElem.hidden = true;
-			filePathLabelHTMLElem.hidden = true;
-			urlPathContainerHTMLElem.hidden = false;
-			urlPathHTMLElem.hidden = false;
-			urlPathButtonsHTMLElem.hidden = false;
+			this.filePathElement.nativeElement.hidden = true;
+			this.filePathButtonsElement.nativeElement.hidden = true;
+			this.filePathLabelElement.nativeElement.hidden = true;
+			this.urlPathLabelElement.nativeElement.hidden = false;
+			this.urlPathElement.nativeElement.hidden = false;
+			this.urlPathButtonsElement.nativeElement.hidden = false;
 		} else {
-			filePathHTMLElem.hidden = false;
-			filePathButtonsHTMLElem.hidden = false;
-			filePathLabelHTMLElem.hidden = false;
-			urlPathContainerHTMLElem.hidden = true;
-			urlPathHTMLElem.hidden = true;
-			urlPathButtonsHTMLElem.hidden = true;
+			this.filePathElement.nativeElement.hidden = false;
+			this.filePathButtonsElement.nativeElement.hidden = false;
+			this.filePathLabelElement.nativeElement.hidden = false;
+			this.urlPathLabelElement.nativeElement.hidden = true;
+			this.urlPathElement.nativeElement.hidden = true;
+			this.urlPathButtonsElement.nativeElement.hidden = true;
 		}
 		this.setBackupPathList();
 	}

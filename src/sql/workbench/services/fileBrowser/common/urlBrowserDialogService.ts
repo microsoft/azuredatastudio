@@ -5,11 +5,11 @@
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
-export const IUrlBrowserDialogController = createDecorator<IUrlBrowserDialogController>('urlBrowserDialogService');
-export interface IUrlBrowserDialogController {
+export const IUrlBrowserDialogService = createDecorator<IUrlBrowserDialogService>('urlBrowserDialogService');
+export interface IUrlBrowserDialogService {
 	_serviceBrand: undefined;
 	/**
-	 * Show file browser dialog
+	 * Show url browser dialog
 	 */
 	showDialog(ownerUri: string,
 		expandPath: string,

@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { UrlBrowserDialog } from 'sql/workbench/services/fileBrowser/browser/urlBrowserDialog';
-import { IUrlBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/urlBrowserDialogController';
+import { IUrlBrowserDialogService } from 'sql/workbench/services/fileBrowser/common/urlBrowserDialogService';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 /**
- * File browser dialog service
+ * Url browser dialog service
  */
-export class UrlBrowserDialogController implements IUrlBrowserDialogController {
+export class UrlBrowserDialogService implements IUrlBrowserDialogService {
 	_serviceBrand: undefined;
 	private _urlBrowserDialog: UrlBrowserDialog;
 
