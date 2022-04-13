@@ -133,6 +133,49 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 		return undefined;
 	}
 
+	// 5. SDK-style project or not
+	let sdkStyle;
+	const sdkLearnMoreButton: vscode.QuickInputButton = {
+		iconPath: new vscode.ThemeIcon('link-external'),
+		tooltip: constants.learnMore
+	};
+	const quickPick = vscode.window.createQuickPick();
+	quickPick.items = [{ label: constants.YesRecommended }, { label: constants.noString }];
+	quickPick.title = constants.sdkStyleProject;
+	quickPick.ignoreFocusOut = true;
+	const disposables: vscode.Disposable[] = [];
+
+	try {
+		// add button to open sdkLearnMoreUrl if it was provided
+		quickPick.buttons = [sdkLearnMoreButton];
+		quickPick.placeholder = constants.SdkLearnMorePlaceholder;
+
+		let sdkStylePromise = new Promise<boolean | undefined>((resolve) => {
+			disposables.push(
+				quickPick.onDidHide(() => {
+					resolve(undefined);
+				}),
+				quickPick.onDidChangeSelection((item) => {
+					resolve(item[0].label === constants.YesRecommended);
+				}));
+
+			disposables.push(quickPick.onDidTriggerButton(async () => {
+				await vscode.env.openExternal(vscode.Uri.parse(constants.sdkLearnMoreUrl!));
+			}));
+		});
+
+		quickPick.show();
+		sdkStyle = await sdkStylePromise;
+		quickPick.hide();
+	} finally {
+		disposables.forEach(d => d.dispose());
+	}
+
+	if (sdkStyle === undefined) {
+		// User cancelled
+		return;
+	}
+
 	return {
 		connectionUri: connectionUri,
 		database: selectedDatabase,
@@ -140,6 +183,6 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 		filePath: projectLocation,
 		version: '1.0.0.0',
 		extractTarget: mapExtractTargetEnum(folderStructure),
-		sdkStyle: false // todo: add sdkstyle option to quickpick
+		sdkStyle: sdkStyle
 	};
 }
