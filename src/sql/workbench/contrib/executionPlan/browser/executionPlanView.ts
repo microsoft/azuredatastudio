@@ -271,7 +271,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 	}
 }
 
-export type ExecutionPlanActionSource = 'ContextMenu' | 'ActionBar';
+type ExecutionPlanActionSource = 'ContextMenu' | 'ActionBar';
 
 export class OpenQueryAction extends Action {
 	public static ID = 'ep.OpenQueryAction';
