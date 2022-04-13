@@ -76,9 +76,8 @@ export class TopOperationsView extends Disposable implements IPanelView {
 
 	public render(container: HTMLElement): void {
 		container.appendChild(this.container);
-		this.telemetryService
-			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ViewTopOperations)
-			.send();
+
+		this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ViewTopOperations);
 	}
 
 	public layout(dimension: Dimension): void {
