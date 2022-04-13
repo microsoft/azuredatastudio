@@ -282,9 +282,11 @@ export class OpenQueryAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		let source = this.triggeredFromContextMenu ? 'Context menu' : 'Action bar';
+
 		this.telemetryService
 			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.OpenQuery)
-			.withAdditionalProperties({ openedFromContextMenu: this.triggeredFromContextMenu, openedFromActionBar: !this.triggeredFromContextMenu })
+			.withAdditionalProperties({ source: source })
 			.send();
 
 		context.openQuery();
@@ -301,9 +303,11 @@ export class PropertiesAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		let source = this.triggeredFromContextMenu ? 'Context menu' : 'Action bar';
+
 		this.telemetryService
 			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.OpenExecutionPlanProperties)
-			.withAdditionalProperties({ openedFromContextMenu: this.triggeredFromContextMenu, openedFromActionBar: !this.triggeredFromContextMenu })
+			.withAdditionalProperties({ source: source })
 			.send();
 
 		context.propertiesView.toggleVisibility();
@@ -320,9 +324,11 @@ export class ZoomInAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		let source = this.triggeredFromContextMenu ? 'Context menu' : 'Action bar';
+
 		this.telemetryService
 			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ZoomIn)
-			.withAdditionalProperties({ openedFromContextMenu: this.triggeredFromContextMenu, openedFromActionBar: !this.triggeredFromContextMenu })
+			.withAdditionalProperties({ source: source })
 			.send();
 
 		context.executionPlanDiagram.zoomIn();
@@ -339,9 +345,11 @@ export class ZoomOutAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		let source = this.triggeredFromContextMenu ? 'Context menu' : 'Action bar';
+
 		this.telemetryService
 			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ZoomOut)
-			.withAdditionalProperties({ openedFromContextMenu: this.triggeredFromContextMenu, openedFromActionBar: !this.triggeredFromContextMenu })
+			.withAdditionalProperties({ source: source })
 			.send();
 
 		context.executionPlanDiagram.zoomOut();
@@ -358,9 +366,11 @@ export class ZoomToFitAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		let source = this.triggeredFromContextMenu ? 'Context menu' : 'Action bar';
+
 		this.telemetryService
 			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ZoomToFit)
-			.withAdditionalProperties({ openedFromContextMenu: this.triggeredFromContextMenu, openedFromActionBar: !this.triggeredFromContextMenu })
+			.withAdditionalProperties({ source: source })
 			.send();
 
 		context.executionPlanDiagram.zoomToFit();
@@ -411,9 +421,11 @@ export class CustomZoomAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		let source = this.triggeredFromContextMenu ? 'Context menu' : 'Action bar';
+
 		this.telemetryService
 			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.CustomZoom)
-			.withAdditionalProperties({ openedFromContextMenu: this.triggeredFromContextMenu, openedFromActionBar: !this.triggeredFromContextMenu })
+			.withAdditionalProperties({ source: source })
 			.send();
 
 		context.widgetController.toggleWidget(context._instantiationService.createInstance(CustomZoomWidget, context.widgetController, context.executionPlanDiagram));
@@ -430,9 +442,11 @@ export class SearchNodeAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		let source = this.triggeredFromContextMenu ? 'Context menu' : 'Action bar';
+
 		this.telemetryService
 			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.FindNode)
-			.withAdditionalProperties({ openedFromContextMenu: this.triggeredFromContextMenu, openedFromActionBar: !this.triggeredFromContextMenu })
+			.withAdditionalProperties({ source: source })
 			.send();
 
 		context.widgetController.toggleWidget(context._instantiationService.createInstance(NodeSearchWidget, context.widgetController, context.executionPlanDiagram));
