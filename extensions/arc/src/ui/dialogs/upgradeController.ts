@@ -27,14 +27,6 @@ export class UpgradeController extends InitializingComponent {
 		destDbName: '-',
 	};
 
-	private earliestRestorePointInputBox!: azdata.InputBoxComponent;
-	private latestRestorePointInputBox!: azdata.InputBoxComponent;
-	private subscriptionInputBox!: azdata.InputBoxComponent;
-	private resourceGroupInputBox!: azdata.InputBoxComponent;
-	private sourceDbInputBox!: azdata.InputBoxComponent;
-	private restorePointInputBox!: azdata.InputBoxComponent;
-	private databaseNameInputBox!: azdata.InputBoxComponent;
-	private instanceInputBox!: azdata.InputBoxComponent;
 	protected _completionPromise = new Deferred<PITRModel | undefined>();
 	private _azurecoreApi: azurecore.IExtension;
 	protected disposables: vscode.Disposable[] = [];
@@ -54,22 +46,6 @@ export class UpgradeController extends InitializingComponent {
 				value: loc.areYouSure,
 				CSSStyles: { ...cssStyles.title, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' },
 			}).component();
-			this.databaseNameInputBox = this.modelBuilder.inputBox()
-				.withProps({
-					readOnly: false,
-					ariaLabel: loc.databaseName,
-					value: ''
-				}).component();
-			this.disposables.push(
-				this.databaseNameInputBox.onTextChanged(() => {
-					this.pitrSettings.destDbName = this.databaseNameInputBox.value ?? '';
-				}));
-			this.instanceInputBox = this.modelBuilder.inputBox()
-				.withProps({
-					enabled: false,
-					ariaLabel: loc.instance,
-					value: this.pitrSettings.instanceName
-				}).component();
 			const areYouSureInfo = this.modelBuilder.text().withProps({
 				value: loc.upgradeDialog,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'max-width': 'auto' }
@@ -105,14 +81,6 @@ export class UpgradeController extends InitializingComponent {
 					title: ''
 				}]).withLayout({ width: '100%' }).component();
 			await view.initializeModel(formModel);
-			this.subscriptionInputBox.focus();
-			this.resourceGroupInputBox.focus();
-			this.sourceDbInputBox.focus();
-			this.earliestRestorePointInputBox.focus();
-			this.latestRestorePointInputBox.focus();
-			this.restorePointInputBox.focus();
-			this.databaseNameInputBox.focus();
-			this.instanceInputBox.focus();
 			this.initialized = true;
 		});
 
@@ -146,9 +114,4 @@ export class UpgradeController extends InitializingComponent {
 		this.pitrSettings.restorePoint = 'this._database.lastBackup';
 		this.pitrSettings.earliestPitr = '';
 	}
-	public updatePitrTimeWindow(earliestPitr: string, latestPitr: string): void {
-		this.earliestRestorePointInputBox.value = earliestPitr;
-		this.latestRestorePointInputBox.value = latestPitr;
-	}
-
 }
