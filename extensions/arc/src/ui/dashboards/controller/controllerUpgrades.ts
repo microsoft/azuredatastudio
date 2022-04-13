@@ -40,6 +40,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 	}
 	protected async refresh(): Promise<void> {
 		await Promise.all([this._controllerModel.refresh(false, this._controllerModel.info.namespace)]);
+		this.handleTableUpdated();
 	}
 
 	public get container(): azdata.Component {
@@ -128,7 +129,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 			.withProps({ CSSStyles: { 'text-align': 'center' } })
 			.component();
 
-		this.handleDatabasesUpdated();
+		this.handleTableUpdated();
 		this._upgradesTableLoading.component = this._upgradesTable;
 
 		root.addItem(this._upgradesContainer);
@@ -178,29 +179,35 @@ export class ControllerUpgradesPage extends DashboardPage {
 		const dates = result.stdout.dates;
 		const currentVersion = result.stdout.currentVersion;
 		const nextVersion = this.getNextUpgrade(result.stdout.versions, result.stdout.currentVersion);
+		let currentVersionHit = false;
 		for (let i = 0; i < versions.length; i++) {
-			if (versions[i] === currentVersion) {
-				formattedValues.push([versions[i], dates[i], this.createUpgradeButton('Current version', false, '')]);
-			} else if (versions[i] === nextVersion) {
-				formattedValues.push([versions[i], dates[i], this.createUpgradeButton('Upgrade', true, nextVersion)]);
+			if (currentVersionHit) {
+				continue;
+			} else {
+				if (versions[i] === currentVersion) {
+					formattedValues.push([versions[i], dates[i], this.createUpgradeButton('Current version', false, '')]);
+					currentVersionHit = true;
+				} else if (versions[i] === nextVersion) {
+					formattedValues.push([versions[i], dates[i], this.createUpgradeButton('Upgrade', true, nextVersion)]);
+				} else {
+					formattedValues.push([versions[i], dates[i], this.createUpgradeButton('Upgrade', false, '')]);
+				}
 			}
 		}
 		return formattedValues;
 	}
 
-	private async handleDatabasesUpdated(): Promise<void> {
+	private async handleTableUpdated(): Promise<void> {
 		const result = await this._azApi.az.arcdata.dc.listUpgrades(this._controllerModel.info.namespace);
-		let databaseDisplay = this.formatTableData(result);
-		let databasesValues = databaseDisplay.map(d => {
+		let tableDisplay = this.formatTableData(result);
+		let tableValues = tableDisplay.map(d => {
 			return d.map((value: any): azdata.DeclarativeTableCellValue => {
 				return { value: value };
 			});
 		});
 
-		this._upgradesTable.setDataValues(databasesValues);
-
+		this._upgradesTable.setDataValues(tableValues);
 		this._upgradesTableLoading.loading = false;
-
 		this._upgradesContainer.addItem(this._upgradesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
 	}
 
@@ -232,6 +239,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 				if (dialogClosed) {
 					try {
 						upgradeButton.enabled = false;
+						vscode.window.showInformationMessage(loc.upgrading);
 						await vscode.window.withProgress(
 							{
 								location: vscode.ProgressLocation.Notification,
@@ -263,6 +271,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 
 								try {
 									await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
+									this.handleTableUpdated();
 								} catch (error) {
 									vscode.window.showErrorMessage(loc.refreshFailed(error));
 								}

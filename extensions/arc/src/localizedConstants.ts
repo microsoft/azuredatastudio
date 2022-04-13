@@ -353,3 +353,4 @@ export const monitorUpgrade = localize('arc.monitorUpgrade', "You can check the 
 export const monitorUpgradeCommand = localize('arc.monitorUpgradeCommand', "kubectl get datacontrollers -A");
 export function errorListingLogAnalyticsWorkspaces(error: any): string { return localize('arc.errorListingLogAnalyticsWorkspaces', "Error listing Log Analytics workspaces {0}", getErrorMessage(error, true)); }
 export const noUpgrades = localize('arc.noUpgrades', 'The current version is the latest version. No upgrades available.');
+export const upgrading = localize('arc.upgrading', "Data controller is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get datacontrollers -A'");
