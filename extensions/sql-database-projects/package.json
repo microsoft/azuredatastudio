@@ -2,7 +2,7 @@
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "Enables users to develop and publish database schemas for MSSQL Databases",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -397,11 +397,6 @@
           "command": "sqlDatabaseProjects.delete",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem == databaseProject.itemType.reference",
           "group": "9_dbProjectsLast@2"
-        },
-        {
-          "command": "sqlDatabaseProjects.convertToSdkStyleProject",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.legacyProject",
-          "group": "9_dbProjectsLast@5"
         },
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
