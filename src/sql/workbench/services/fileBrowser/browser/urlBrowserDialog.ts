@@ -30,6 +30,8 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
 import { Blob, BlobContainer, AzureGraphResource, AzureResourceSubscription, GetBlobsResult } from 'azurecore';
 import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
+import { Link } from 'vs/platform/opener/browser/link';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 
 const ERROR_GETTING_BLOB_CONTAINERS = localize('urlBrowserDialog.getBlobContainersError', "Error getting blob containers");
@@ -79,7 +81,8 @@ export class UrlBrowserDialog extends Modal {
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@IAzureAccountService private _azureAccountService: IAzureAccountService,
-		@IAzureBlobService private _blobService: IAzureBlobService
+		@IAzureBlobService private _blobService: IAzureBlobService,
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(title, TelemetryKeys.ModalDialogName.FileBrowser, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'flyout', hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
 		this._defaultBackupName = defaultBackupName;
@@ -117,14 +120,18 @@ export class UrlBrowserDialog extends Modal {
 		this._accountManagementService.getAccounts().then((accounts) => this.setAccountSelectorBoxOptions(accounts)).catch((reason) => this.setAccountSelectorBoxError(reason));
 
 		let linkAccountText = localize('urlBrowserDialog.linkAccount', "Link account");
-		let linkAccountButton = DialogHelper.appendRow(tableContainer, '', 'file-input-label', 'file-input-box');
-		let anchorNode: HTMLAnchorElement = DOM.append(linkAccountButton, DOM.$('a.anchor'));
-		anchorNode.title = linkAccountText;
-		anchorNode.text = linkAccountText;
-		anchorNode.href = '';
-		anchorNode.onclick = async (event) => {
-			await this._accountManagementService.openAccountListDialog();
-		};
+		let linkAccountButton = DialogHelper.appendRow(tableContainer, '', 'url-input-label', 'url-input-box');
+		const linkAccount: Link = this._instantiationService.createInstance(Link,
+			{
+				label: linkAccountText,
+				title: linkAccountText,
+				href: ''
+			},
+			{
+				opener: (href: string) => { this._accountManagementService.openAccountListDialog(); }
+			}
+		);
+		linkAccountButton.appendChild(linkAccount.el);
 
 		let tenantLabel = localize('azurebrowser.tenant', "Azure AD Tenant");
 		this._tenantSelectorBox = new SelectBox(['*'], '*', this._contextViewService);
