@@ -41,7 +41,7 @@ export class ExecutionPlanFileView {
 	}
 
 	public onHide(parentContainer: HTMLElement): void {
-		if (parentContainer === this._parent) {
+		if (parentContainer === this._parent && parentContainer.contains(this._container)) {
 			this._parent.removeChild(this._container);
 		}
 	}

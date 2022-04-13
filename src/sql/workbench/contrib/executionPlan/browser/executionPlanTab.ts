@@ -84,6 +84,7 @@ export class ExecutionPlanTabView implements IPanelView {
 			currentView.onHide(this._container);
 			this._input.graphs = [];
 			currentView = this._instantiationService.createInstance(ExecutionPlanFileView);
+			this._viewCache.executionPlanFileViewMap.set(this._input.executionPlanFileViewUUID, currentView);
 			currentView.render(this._container);
 		}
 	}
