@@ -206,16 +206,15 @@ export class UrlBrowserDialog extends Modal {
 	}
 
 	private onAccountSelectorBoxChanged(checkedAccount: number) {
-		const account = this._accounts[checkedAccount];
-		const tenants = account.properties.tenants;
+		this._selectedAccount = this._accounts[checkedAccount];
+		const tenants = this._selectedAccount.properties.tenants;
 		const tenantsDisplayNames = tenants.map(tenant => tenant.displayName);
 		this._tenantSelectorBox.setOptions(tenantsDisplayNames);
 		this._tenantSelectorBox.select(0);
 	}
 
-	private onTenantSelectorBoxChanged(checkedAccount: number) {
+	private onTenantSelectorBoxChanged(checkedTenant: number) {
 		if (this._accounts) {
-			this._selectedAccount = this._accounts[checkedAccount];
 			this._azureAccountService.getSubscriptions(this._selectedAccount)
 				.then(getSubscriptionResult => this.setSubscriptionsSelectorBoxOptions(getSubscriptionResult.subscriptions))
 				.catch(getSubscriptionResult => this.setSubscriptionSelectorBoxError(getSubscriptionResult.error));
@@ -299,7 +298,7 @@ export class UrlBrowserDialog extends Modal {
 		this._backupFileSelectorBox.enable();
 	}
 
-	setBackupFilesSelectorError(getBlobsResult: GetBlobsResult) {
+	private setBackupFilesSelectorError(errors: any) {
 		this._backupFileSelectorBox.setOptions([localize('urlBrowserDialog.getBackupFilesError', "Error getting backup files")]);
 		this._backupFileSelectorBox.disable();
 	}
