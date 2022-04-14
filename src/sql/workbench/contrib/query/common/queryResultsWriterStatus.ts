@@ -35,12 +35,4 @@ export class QueryResultsWriterStatus extends Disposable {
 	public get mode() {
 		return this.writerMode;
 	}
-
-	public isWritingToGrid(): boolean {
-		return this.writerMode === QueryResultsWriterMode.ToGrid;
-	}
-
-	public isWritingToFile(): boolean {
-		return this.writerMode === QueryResultsWriterMode.ToFile;
-	}
 }

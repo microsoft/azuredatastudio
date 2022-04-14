@@ -6,6 +6,7 @@
 import { parseNumAsTimeString } from 'sql/platform/connection/common/utils';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
+import { QueryResultsWriterMode } from 'sql/workbench/contrib/query/common/queryResultsWriterStatus';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ICellValue } from 'sql/workbench/services/query/common/query';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
@@ -347,7 +348,7 @@ export class QueryResultsEditorOutputModeStatusBarContribution extends Disposabl
 		this.hide();
 
 		let editor = this.editorService.activeEditorPane as QueryEditor;
-		if (editor?.queryResultsWriterStatus.isWritingToFile()) {
+		if (editor?.queryResultsWriterStatus.mode === QueryResultsWriterMode.ToFile) {
 			this.show();
 		}
 		else {

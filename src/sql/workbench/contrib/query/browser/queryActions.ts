@@ -862,7 +862,7 @@ export class ResultsToFileAction extends QueryTaskbarAction {
 	}
 
 	public override async run(): Promise<void> {
-		if (this.editor.queryResultsWriterStatus.isWritingToFile()) {
+		if (this.editor.queryResultsWriterStatus.mode === QueryResultsWriterMode.ToFile) {
 			this.editor.queryResultsWriterMode = QueryResultsWriterMode.ToGrid;
 			this.label = 'Results to File';
 		}

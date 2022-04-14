@@ -27,6 +27,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { ExecutionPlanTab } from 'sql/workbench/contrib/executionPlan/browser/executionPlan';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
+import { QueryResultsWriterMode } from 'sql/workbench/contrib/query/common/queryResultsWriterStatus';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
@@ -212,7 +213,7 @@ export class QueryResultsView extends Disposable {
 	private setQueryRunner(runner: QueryRunner) {
 		const activeTab = this._input?.state.activeTab;
 		let editor = this.editorService.activeEditorPane as QueryEditor;
-		let writingResultsToGrid = editor.queryResultsWriterStatus.isWritingToGrid();
+		let writingResultsToGrid = editor.queryResultsWriterStatus.mode === QueryResultsWriterMode.ToGrid;
 		if (this.hasResults(runner) && writingResultsToGrid) {
 			this.showResults();
 		} else {

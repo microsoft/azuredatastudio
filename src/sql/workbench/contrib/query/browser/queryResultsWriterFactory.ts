@@ -7,6 +7,7 @@ import { FileQueryResultsWriter } from 'sql/workbench/contrib/query/browser/file
 import { Model, IResultMessageIntern } from 'sql/workbench/contrib/query/browser/messagePanel';
 import { MessagesPanelQueryResultsWriter } from 'sql/workbench/contrib/query/browser/messagesPanelQueryResultsWriter';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
+import { QueryResultsWriterMode } from 'sql/workbench/contrib/query/common/queryResultsWriterStatus';
 import { IQueryResultsWriter } from 'sql/workbench/services/query/common/query';
 import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
 import { FuzzyScore } from 'vs/base/common/filters';
@@ -26,7 +27,7 @@ export class QueryResultsWriterFactory {
 
 	getQueryResultsWriter(): IQueryResultsWriter {
 		let editor = this.editorService.activeEditorPane as QueryEditor;
-		if (editor.queryResultsWriterStatus.isWritingToGrid()) {
+		if (editor.queryResultsWriterStatus.mode === QueryResultsWriterMode.ToGrid) {
 			return this.instantiationService.createInstance(MessagesPanelQueryResultsWriter, this.model, this.tree, this.treeStates);
 		}
 		else {

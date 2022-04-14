@@ -52,6 +52,7 @@ import { FilterButtonWidth, HeaderFilter } from 'sql/base/browser/ui/table/plugi
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
+import { QueryResultsWriterMode } from 'sql/workbench/contrib/query/common/queryResultsWriterStatus';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -104,7 +105,7 @@ export class GridPanel extends Disposable {
 
 		this._register(this.editorService.onDidActiveEditorOutputModeChange(() => {
 			let editor = this.editorService.activeEditorPane as QueryEditor;
-			this.isWritingResultsToGrid = editor.queryResultsWriterStatus.isWritingToGrid();
+			this.isWritingResultsToGrid = editor.queryResultsWriterStatus.mode === QueryResultsWriterMode.ToGrid;
 
 			this.queryRunnerDisposables.clear();
 			if (!this.isWritingResultsToGrid) {
