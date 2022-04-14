@@ -4678,63 +4678,6 @@
 					],
 					"statistics": [],
 					"flags": ""
-				},
-				{
-					"extensionId": "91",
-					"extensionName": "sql-bindings",
-					"displayName": "SQL Bindings",
-					"shortDescription": "The SQL Bindings extension for Azure Data Studio enables users to develop and publish Azure Functions with Azure SQL bindings",
-					"publisher": {
-						"displayName": "Microsoft",
-						"publisherId": "Microsoft",
-						"publisherName": "Microsoft"
-					},
-					"versions": [
-						{
-							"version": "0.0.1",
-							"lastUpdated": "04/14/2022",
-							"assetUri": "",
-							"fallbackAssetUri": "fallbackAssetUri",
-							"files": [
-								{
-									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-bindings/sql-bindings-0.0.1.vsix"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-bindings/media/defaultExtensionIcon.png"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-bindings/README.md"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-bindings/package.json"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
-								}
-							],
-							"properties": [
-								{
-									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": "^1.30.1"
-								},
-								{
-									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.36.0"
-								},
-								{
-									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Microsoft/azuredatastudio"
-								}
-							]
-						}
-					],
-					"statistics": [],
-					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
