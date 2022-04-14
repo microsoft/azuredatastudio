@@ -10,7 +10,7 @@ import { MigrationStateModel, NetworkContainerType } from '../../models/stateMac
 import { logError, TelemetryViews } from '../../telemtery';
 import * as constants from '../../constants/strings';
 import * as os from 'os';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
 import { createAuthenticationKeyTable } from '../../wizard/integrationRuntimePage';

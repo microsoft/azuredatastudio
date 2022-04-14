@@ -6,7 +6,6 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
-import { azureResource } from 'azureResource';
 import * as constants from '../constants/strings';
 import { getSessionIdHeader } from './utils';
 import { ProvisioningState } from '../models/migrationLocalStorage';
@@ -19,7 +18,7 @@ async function getAzureCoreAPI(): Promise<azurecore.IExtension> {
 	return api;
 }
 
-export type Subscription = azureResource.AzureResourceSubscription;
+export type Subscription = azurecore.azureResource.AzureResourceSubscription;
 export async function getSubscriptions(account: azdata.Account): Promise<Subscription[]> {
 	const api = await getAzureCoreAPI();
 	const subscriptions = await api.getSubscriptions(account, false);
@@ -28,7 +27,7 @@ export async function getSubscriptions(account: azdata.Account): Promise<Subscri
 	return subscriptions.subscriptions;
 }
 
-export async function getLocations(account: azdata.Account, subscription: Subscription): Promise<azureResource.AzureLocation[]> {
+export async function getLocations(account: azdata.Account, subscription: Subscription): Promise<azurecore.azureResource.AzureLocation[]> {
 	const api = await getAzureCoreAPI();
 	const response = await api.getLocations(account, subscription, true);
 	const dataMigrationResourceProvider = (await api.makeAzureRestRequest(account, subscription, `/subscriptions/${subscription.id}/providers/Microsoft.DataMigration?api-version=2021-04-01`, azurecore.HttpRequestMethod.GET)).response.data;
@@ -47,22 +46,22 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 	return filteredLocations;
 }
 
-export type AzureProduct = azureResource.AzureGraphResource;
+export type AzureProduct = azurecore.azureResource.AzureGraphResource;
 
-export async function getResourceGroups(account: azdata.Account, subscription: Subscription): Promise<azureResource.AzureResourceResourceGroup[]> {
+export async function getResourceGroups(account: azdata.Account, subscription: Subscription): Promise<azurecore.azureResource.AzureResourceResourceGroup[]> {
 	const api = await getAzureCoreAPI();
 	const result = await api.getResourceGroups(account, subscription, true);
 	sortResourceArrayByName(result.resourceGroups);
 	return result.resourceGroups;
 }
 
-export async function createResourceGroup(account: azdata.Account, subscription: Subscription, resourceGroupName: string, location: string): Promise<azureResource.AzureResourceResourceGroup> {
+export async function createResourceGroup(account: azdata.Account, subscription: Subscription, resourceGroupName: string, location: string): Promise<azurecore.azureResource.AzureResourceResourceGroup> {
 	const api = await getAzureCoreAPI();
 	const result = await api.createResourceGroup(account, subscription, resourceGroupName, location, false);
 	return result.resourceGroup;
 }
 
-export type SqlManagedInstance = azureResource.AzureSqlManagedInstance;
+export type SqlManagedInstance = azurecore.azureResource.AzureSqlManagedInstance;
 export async function getAvailableManagedInstanceProducts(account: azdata.Account, subscription: Subscription): Promise<SqlManagedInstance[]> {
 	const api = await getAzureCoreAPI();
 	const result = await api.getSqlManagedInstances(account, [subscription], false);
@@ -70,7 +69,7 @@ export async function getAvailableManagedInstanceProducts(account: azdata.Accoun
 	return result.resources;
 }
 
-export async function getSqlManagedInstanceDatabases(account: azdata.Account, subscription: Subscription, managedInstance: SqlManagedInstance): Promise<azureResource.ManagedDatabase[]> {
+export async function getSqlManagedInstanceDatabases(account: azdata.Account, subscription: Subscription, managedInstance: SqlManagedInstance): Promise<azurecore.azureResource.ManagedDatabase[]> {
 	const api = await getAzureCoreAPI();
 	const result = await api.getManagedDatabases(account, subscription, managedInstance, false);
 	sortResourceArrayByName(result.databases);
@@ -118,7 +117,7 @@ export async function getAvailableStorageAccounts(account: azdata.Account, subsc
 	return result.resources;
 }
 
-export async function getFileShares(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount): Promise<azureResource.FileShare[]> {
+export async function getFileShares(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount): Promise<azurecore.azureResource.FileShare[]> {
 	const api = await getAzureCoreAPI();
 	let result = await api.getFileShares(account, subscription, storageAccount, true);
 	let fileShares = result.fileShares;
@@ -126,7 +125,7 @@ export async function getFileShares(account: azdata.Account, subscription: Subsc
 	return fileShares!;
 }
 
-export async function getBlobContainers(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount): Promise<azureResource.BlobContainer[]> {
+export async function getBlobContainers(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount): Promise<azurecore.azureResource.BlobContainer[]> {
 	const api = await getAzureCoreAPI();
 	let result = await api.getBlobContainers(account, subscription, storageAccount, true);
 	let blobContainers = result.blobContainers;
@@ -134,7 +133,7 @@ export async function getBlobContainers(account: azdata.Account, subscription: S
 	return blobContainers!;
 }
 
-export async function getBlobs(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount, containerName: string): Promise<azureResource.Blob[]> {
+export async function getBlobs(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount, containerName: string): Promise<azurecore.azureResource.Blob[]> {
 	const api = await getAzureCoreAPI();
 	let result = await api.getBlobs(account, subscription, storageAccount, containerName, true);
 	let blobNames = result.blobs;
@@ -361,7 +360,7 @@ export async function getLocationDisplayName(location: string): Promise<string> 
 	return await api.getRegionDisplayName(location);
 }
 
-type SortableAzureResources = AzureProduct | azureResource.FileShare | azureResource.BlobContainer | azureResource.Blob | azureResource.AzureResourceSubscription | SqlMigrationService;
+type SortableAzureResources = AzureProduct | azurecore.azureResource.FileShare | azurecore.azureResource.BlobContainer | azurecore.azureResource.Blob | azurecore.azureResource.AzureResourceSubscription | SqlMigrationService;
 export function sortResourceArrayByName(resourceArray: SortableAzureResources[]): void {
 	if (!resourceArray) {
 		return;
