@@ -431,8 +431,8 @@ export class ActionBarToggleTooltip extends Action {
 
 export class ContextMenuTooltipToggle extends Action {
 	public static ID = 'ep.tooltipToggleContextMenu';
-	public static WHEN_TOOLTIPS_DISABLED_LABEL = localize('executionPlanContextMenuEnableTooltip', "Enable Tooltips");
 	public static WHEN_TOOLTIPS_ENABLED_LABEL = localize('executionPlanContextMenuDisableTooltip', "Disable Tooltips");
+	public static WHEN_TOOLTIPS_DISABLED_LABEL = localize('executionPlanContextMenuEnableTooltip', "Enable Tooltips");
 
 	constructor() {
 		super(ContextMenuTooltipToggle.ID, ContextMenuTooltipToggle.WHEN_TOOLTIPS_ENABLED_LABEL, enableTooltipIconClassName);
