@@ -15,6 +15,8 @@ import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { TopOperationsState } from 'sql/workbench/common/editor/query/topOperationsState';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 const topOperationColumns: Array<Slick.Column<any>> = [
 	{ name: localize('topOperations.operation', "Operation"), field: 'operation', sortable: true, width: 300 },
@@ -55,7 +57,10 @@ export class TopOperationsView extends Disposable implements IPanelView {
 	private container = document.createElement('div');
 	private dataView = new TableDataView();
 
-	constructor(@IThemeService private themeService: IThemeService) {
+	constructor(
+		@IThemeService private themeService: IThemeService,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
+	) {
 		super();
 		this.table = new Table(this.container, {
 			columns: topOperationColumns,
@@ -71,6 +76,8 @@ export class TopOperationsView extends Disposable implements IPanelView {
 
 	public render(container: HTMLElement): void {
 		container.appendChild(this.container);
+
+		this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ViewTopOperations);
 	}
 
 	public layout(dimension: Dimension): void {
