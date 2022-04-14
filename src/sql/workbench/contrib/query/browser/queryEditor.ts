@@ -673,7 +673,7 @@ export class QueryEditor extends EditorPane {
 	public get queryResultsWriterStatus() {
 		let writerStatus = this.resultsWriterStatus[this.input.uri];
 		if (writerStatus === undefined) {
-			writerStatus = new QueryResultsWriterStatus();
+			writerStatus = this.instantiationService.createInstance(QueryResultsWriterStatus, undefined);
 			this.resultsWriterStatus[this.input.uri] = writerStatus;
 		}
 
@@ -683,7 +683,7 @@ export class QueryEditor extends EditorPane {
 	public set queryResultsWriterMode(mode: QueryResultsWriterMode) {
 		let writerStatus = this.resultsWriterStatus[this.input.uri];
 		if (writerStatus === undefined) {
-			writerStatus = new QueryResultsWriterStatus(mode);
+			writerStatus = this.instantiationService.createInstance(QueryResultsWriterStatus, mode);
 			this.resultsWriterStatus[this.input.uri] = writerStatus;
 		}
 		else {

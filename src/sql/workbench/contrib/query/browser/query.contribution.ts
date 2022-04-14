@@ -458,6 +458,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'type': 'boolean',
 			'default': false,
 			'description': localize('queryEditor.promptToSaveGeneratedFiles', "Prompt to save generated SQL files")
+		},
+		'queryEditor.writeQueryResultsToFile': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('queryEditor.writeQueryResultsToFile', 'Send query results to a file')
 		}
 	}
 };

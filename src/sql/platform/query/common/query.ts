@@ -33,4 +33,5 @@ export interface IQueryEditorConfiguration {
 	readonly tabColorMode: 'off' | 'border' | 'fill',
 	readonly showConnectionInfoInTitle: boolean;
 	readonly promptToSaveGeneratedFiles: boolean;
+	readonly writeQueryResultsToFile: boolean;
 }
