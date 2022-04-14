@@ -408,46 +408,46 @@ export class OpenPlanFile extends Action {
 
 export class ActionBarToggleTooltip extends Action {
 	public static ID = 'ep.tooltipToggleActionBar';
-	public static ENABLE_LABEL = localize('executionPlanEnableTooltip', "Tooltips enabled");
-	public static DISABLE_LABEL = localize('executionPlanDisableTooltip', "Tooltips disabled");
+	public static WHEN_TOOLTIPS_ENABLED_LABEL = localize('executionPlanEnableTooltip', "Tooltips enabled");
+	public static WHEN_TOOLTIPS_DISABLED_LABEL = localize('executionPlanDisableTooltip', "Tooltips disabled");
 
 	constructor() {
-		super(ActionBarToggleTooltip.ID, ActionBarToggleTooltip.ENABLE_LABEL, enableTooltipIconClassName);
+		super(ActionBarToggleTooltip.ID, ActionBarToggleTooltip.WHEN_TOOLTIPS_ENABLED_LABEL, enableTooltipIconClassName);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
 		const state = context.executionPlanDiagram.toggleTooltip();
 		if (!state) {
 			this.class = disableTooltipIconClassName;
-			this.label = ActionBarToggleTooltip.DISABLE_LABEL;
-			context.actionBarToggleTopTip.label = ContextMenuTooltipToggle.DISABLE_LABEL;
+			this.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_DISABLED_LABEL;
+			context.contextMenuToggleTooltipAction.label = ContextMenuTooltipToggle.WHEN_TOOLTIPS_DISABLED_LABEL;
 		} else {
 			this.class = enableTooltipIconClassName;
-			this.label = ActionBarToggleTooltip.ENABLE_LABEL;
-			context.actionBarToggleTopTip.label = ContextMenuTooltipToggle.ENABLE_LABEL;
+			this.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_ENABLED_LABEL;
+			context.contextMenuToggleTooltipAction.label = ContextMenuTooltipToggle.WHEN_TOOLTIPS_ENABLED_LABEL;
 		}
 	}
 }
 
 export class ContextMenuTooltipToggle extends Action {
 	public static ID = 'ep.tooltipToggleContextMenu';
-	public static ENABLE_LABEL = localize('executionPlanContextMenuEnableTooltip', "Enable Tooltips");
-	public static DISABLE_LABEL = localize('executionPlanContextMenuDisableTooltip', "Disable Tooltips");
+	public static WHEN_TOOLTIPS_DISABLED_LABEL = localize('executionPlanContextMenuEnableTooltip', "Enable Tooltips");
+	public static WHEN_TOOLTIPS_ENABLED_LABEL = localize('executionPlanContextMenuDisableTooltip', "Disable Tooltips");
 
 	constructor() {
-		super(ContextMenuTooltipToggle.ID, ContextMenuTooltipToggle.ENABLE_LABEL, enableTooltipIconClassName);
+		super(ContextMenuTooltipToggle.ID, ContextMenuTooltipToggle.WHEN_TOOLTIPS_ENABLED_LABEL, enableTooltipIconClassName);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
 		const state = context.executionPlanDiagram.toggleTooltip();
 		if (!state) {
-			this.label = ContextMenuTooltipToggle.ENABLE_LABEL;
+			this.label = ContextMenuTooltipToggle.WHEN_TOOLTIPS_DISABLED_LABEL;
 			context.actionBarToggleTopTip.class = disableTooltipIconClassName;
-			context.actionBarToggleTopTip.label = ActionBarToggleTooltip.DISABLE_LABEL;
+			context.actionBarToggleTopTip.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_DISABLED_LABEL;
 		} else {
-			this.label = ContextMenuTooltipToggle.DISABLE_LABEL;
+			this.label = ContextMenuTooltipToggle.WHEN_TOOLTIPS_ENABLED_LABEL;
 			context.actionBarToggleTopTip.class = enableTooltipIconClassName;
-			context.actionBarToggleTopTip.label = ActionBarToggleTooltip.ENABLE_LABEL;
+			context.actionBarToggleTopTip.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_ENABLED_LABEL;
 		}
 	}
 }
