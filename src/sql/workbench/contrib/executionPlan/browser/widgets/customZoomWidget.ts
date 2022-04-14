@@ -7,7 +7,6 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { ExecutionPlanWidgetBase } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetBase';
-import { ExecutionPlan } from 'sql/workbench/contrib/executionPlan/browser/executionPlan';
 import * as DOM from 'vs/base/browser/dom';
 import { Action } from 'vs/base/common/actions';
 import { Codicon } from 'vs/base/common/codicons';
@@ -17,13 +16,16 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { zoomIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { Button } from 'sql/base/browser/ui/button/button';
+import { AzdataGraphView } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
+import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
 
 export class CustomZoomWidget extends ExecutionPlanWidgetBase {
 	private _actionBar: ActionBar;
 	public customZoomInputBox: InputBox;
 
 	constructor(
-		public readonly executionPlanView: ExecutionPlan,
+		public readonly widgetController: ExecutionPlanWidgetController,
+		public readonly executionPlanDiagram: AzdataGraphView,
 		@IContextViewService public readonly contextViewService: IContextViewService,
 		@IThemeService public readonly themeService: IThemeService,
 		@INotificationService public readonly notificationService: INotificationService
@@ -39,7 +41,7 @@ export class CustomZoomWidget extends ExecutionPlanWidgetBase {
 		});
 		attachInputBoxStyler(this.customZoomInputBox, this.themeService);
 
-		const currentZoom = executionPlanView.azdataGraphDiagram.graph.view.getScale() * 100;
+		const currentZoom = this.executionPlanDiagram.getZoomLevel();
 
 		// Setting initial value to graph's current zoom
 		this.customZoomInputBox.value = Math.round(currentZoom).toString();
@@ -50,7 +52,7 @@ export class CustomZoomWidget extends ExecutionPlanWidgetBase {
 			if (ev.key === 'Enter') {
 				await new CustomZoomAction().run(self);
 			} else if (ev.key === 'Escape') {
-				executionPlanView.planActionView.removeWidget(self);
+				this.widgetController.removeWidget(self);
 			}
 		};
 
@@ -87,8 +89,8 @@ export class CustomZoomAction extends Action {
 	public override async run(context: CustomZoomWidget): Promise<void> {
 		const newValue = parseInt(context.customZoomInputBox.value);
 		if (newValue <= 200 && newValue >= 1) { // Getting max and min zoom values from SSMS
-			context.executionPlanView.azdataGraphDiagram.graph.view.setScale(newValue / 100);
-			context.executionPlanView.planActionView.removeWidget(context);
+			context.executionPlanDiagram.setZoomLevel(newValue);
+			context.widgetController.removeWidget(context);
 		} else {
 			context.notificationService.error(
 				localize('invalidCustomZoomError', "Select a zoom value between 1 to 200")
@@ -106,7 +108,7 @@ export class CancelZoom extends Action {
 	}
 
 	public override async run(context: CustomZoomWidget): Promise<void> {
-		context.executionPlanView.planActionView.removeWidget(context);
+		context.widgetController.removeWidget(context);
 	}
 }
 

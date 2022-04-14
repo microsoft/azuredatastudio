@@ -257,17 +257,19 @@ export const badgeIconPaths = {
 	criticalWarning: imageBasePath + 'badge_critical_warning.svg'
 };
 
-const parentContainer = 'qps-container';
-export const savePlanIconClassNames = [parentContainer, 'save-plan-icon'].join(' ');
-export const openPropertiesIconClassNames = [parentContainer, 'open-properties-icon'].join(' ');
-export const openQueryIconClassNames = [parentContainer, 'open-query-icon'].join(' ');
-export const openPlanFileIconClassNames = [parentContainer, 'open-plan-file-icon'].join(' ');
-export const saveIconClassNames = [parentContainer, 'save-icon'].join(' ');
-export const searchIconClassNames = [parentContainer, 'search-icon'].join(' ');
-export const sortAlphabeticallyIconClassNames = [parentContainer, 'sort-alphabetically-icon'].join(' ');
-export const sortByDisplayOrderIconClassNames = [parentContainer, 'sort-display-order-icon'].join(' ');
-export const zoomInIconClassNames = [parentContainer, 'zoom-in-icon'].join(' ');
-export const zoomOutIconClassNames = [parentContainer, 'zoom-out-icon'].join(' ');
-export const customZoomIconClassNames = [parentContainer, 'custom-zoom-icon'].join(' ');
-export const zoomToFitIconClassNames = [parentContainer, 'zoom-to-fit-icon'].join(' ');
-export const zoomIconClassNames = [parentContainer, 'zoom-icon'].join(' ');
+export const savePlanIconClassNames = 'ep-save-plan-icon';
+export const openPropertiesIconClassNames = 'ep-open-properties-icon';
+export const openQueryIconClassNames = 'ep-open-query-icon';
+export const openPlanFileIconClassNames = 'ep-open-plan-file-icon';
+export const saveIconClassNames = 'ep-save-icon';
+export const searchIconClassNames = 'ep-search-icon';
+export const sortAlphabeticallyIconClassNames = 'ep-sort-alphabetically-icon';
+export const sortReverseAlphabeticallyIconClassNames = 'ep-sort-reverse-alphabetically-icon';
+export const sortByDisplayOrderIconClassNames = 'ep-sort-display-order-icon';
+export const zoomInIconClassNames = 'ep-zoom-in-icon';
+export const zoomOutIconClassNames = 'ep-zoom-out-icon';
+export const customZoomIconClassNames = 'ep-custom-zoom-icon';
+export const zoomToFitIconClassNames = 'ep-zoom-to-fit-icon';
+export const zoomIconClassNames = 'ep-zoom-icon';
+export const enableTooltipIconClassName = 'ep-enable-tooltip-icon';
+export const disableTooltipIconClassName = 'ep-disable-tooltip-icon';
