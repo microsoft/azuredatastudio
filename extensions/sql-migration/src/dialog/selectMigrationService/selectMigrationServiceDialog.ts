@@ -7,7 +7,6 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as azurecore from 'azurecore';
 import { MigrationLocalStorage, MigrationServiceContext } from '../../models/migrationLocalStorage';
-import { azureResource } from 'azureResource';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import { findDropDownItemIndex, selectDefaultDropdownValue, deepClone } from '../../api/utils';
@@ -42,9 +41,9 @@ export class SelectMigrationServiceDialog {
 	private _serviceContext!: MigrationServiceContext;
 	private _azureAccounts!: azdata.Account[];
 	private _accountTenants!: azurecore.Tenant[];
-	private _subscriptions!: azureResource.AzureResourceSubscription[];
-	private _locations!: azureResource.AzureLocation[];
-	private _resourceGroups!: azureResource.AzureResourceResourceGroup[];
+	private _subscriptions!: azurecore.azureResource.AzureResourceSubscription[];
+	private _locations!: azurecore.azureResource.AzureLocation[];
+	private _resourceGroups!: azurecore.azureResource.AzureResourceResourceGroup[];
 	private _sqlMigrationServices!: SqlMigrationService[];
 	private _azureAccountsDropdown!: azdata.DropDownComponent;
 	private _accountTenantDropdown!: azdata.DropDownComponent;
@@ -521,8 +520,8 @@ export class SelectMigrationServiceDialog {
 
 	private async _getAzureLocationDropdownValues(
 		account?: azdata.Account,
-		subscription?: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
-		let locations: azureResource.AzureLocation[] = [];
+		subscription?: azurecore.azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+		let locations: azurecore.azureResource.AzureLocation[] = [];
 		if (account && subscription) {
 			// get all available locations
 			locations = await getLocations(account, subscription);
@@ -546,7 +545,7 @@ export class SelectMigrationServiceDialog {
 		});
 	}
 
-	private async _getAzureResourceGroupDropdownValues(location?: azureResource.AzureLocation): Promise<azdata.CategoryValue[]> {
+	private async _getAzureResourceGroupDropdownValues(location?: azurecore.azureResource.AzureLocation): Promise<azdata.CategoryValue[]> {
 		this._resourceGroups = location
 			? this._getMigrationServicesResourceGroups(location)
 			: [];
@@ -559,7 +558,7 @@ export class SelectMigrationServiceDialog {
 		});
 	}
 
-	private _getMigrationServicesResourceGroups(location?: azureResource.AzureLocation): azureResource.AzureResourceResourceGroup[] {
+	private _getMigrationServicesResourceGroups(location?: azurecore.azureResource.AzureLocation): azurecore.azureResource.AzureResourceResourceGroup[] {
 		const resourceGroups = this._sqlMigrationServices
 			.filter(service => service.location === location?.name)
 			.map(service => service.properties.resourceGroup);
@@ -567,7 +566,7 @@ export class SelectMigrationServiceDialog {
 		return resourceGroups
 			.filter((rg, i, arr) => arr.indexOf(rg) === i)
 			.map(rg => {
-				return <azureResource.AzureResourceResourceGroup>{
+				return <azurecore.azureResource.AzureResourceResourceGroup>{
 					id: getFullResourceGroupFromId(rg),
 					name: rg,
 				};
@@ -576,9 +575,9 @@ export class SelectMigrationServiceDialog {
 
 	private async _getMigrationServiceDropdownValues(
 		account?: azdata.Account,
-		subscription?: azureResource.AzureResourceSubscription,
-		location?: azureResource.AzureLocation,
-		resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
+		subscription?: azurecore.azureResource.AzureResourceSubscription,
+		location?: azurecore.azureResource.AzureLocation,
+		resourceGroup?: azurecore.azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
 
 		const locationName = location?.name?.toLowerCase();
 		const resourceGroupName = resourceGroup?.name?.toLowerCase();

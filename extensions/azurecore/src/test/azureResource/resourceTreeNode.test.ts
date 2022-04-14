@@ -8,13 +8,12 @@ import * as TypeMoq from 'typemoq';
 import * as vscode from 'vscode';
 import 'mocha';
 
-import { azureResource } from 'azureResource';
 import { AzureResourceService } from '../../azureResource/resourceService';
 import { AzureResourceResourceTreeNode } from '../../azureResource/resourceTreeNode';
 import { AppContext } from '../../appContext';
 import { AzureResourceServiceNames } from '../../azureResource/constants';
 import settings from '../../account-provider/providerSettings';
-import { AzureAccount } from 'azurecore';
+import { AzureAccount, azureResource } from 'azurecore';
 
 // Mock test data
 const mockAccount: AzureAccount = {

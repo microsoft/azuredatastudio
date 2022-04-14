@@ -18,7 +18,7 @@ import { DatabaseSelectorPage } from './databaseSelectorPage';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
 import * as styles from '../constants/styles';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {

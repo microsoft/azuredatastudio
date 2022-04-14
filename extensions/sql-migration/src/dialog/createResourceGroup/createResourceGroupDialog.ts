@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import { EventEmitter } from 'events';
 import { createResourceGroup } from '../../api/azure';
 import * as constants from '../../constants/strings';
