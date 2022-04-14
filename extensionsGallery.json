@@ -4563,6 +4563,124 @@
 				},
 				{
 					"extensionId": "89",
+					"extensionName": "dotnet-interactive-vscode",
+					"displayName": ".NET Interactive Notebooks",
+					"shortDescription": ".NET Interactive Notebooks for Azure Data Studio.",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "ms-dotnettools",
+						"publisherName": "ms-dotnettools"
+					},
+					"versions": [
+						{
+							"version": "1.0.3175020",
+							"lastUpdated": "4/13/2022",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/dotnet-interactive-vscode/dotnet-interactive-vscode-1.0.3175020.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/dotnet/interactive/main/src/dotnet-interactive-vscode-ads/images/icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/dotnet/interactive/main/src/dotnet-interactive-vscode-ads/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/dotnet/interactive/main/src/dotnet-interactive-vscode-ads/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/dotnet/interactive/main/src/dotnet-interactive-vscode-ads/License.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": "Microsoft.jupyter"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.36.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/dotnet/interactive"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
+				},
+				{
+					"extensionId": "90",
+					"extensionName": "jupyter",
+					"displayName": "Jupyter",
+					"shortDescription": "Jupyter notebook support, interactive programming and computing that supports Intellisense, debugging and more.",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "ms-toolsai",
+						"publisherName": "ms-toolsai"
+					},
+					"versions": [
+						{
+							"version": "2021.8.1046824664",
+							"lastUpdated": "4/13/2022",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/jupyter/ms-toolsai.jupyter-2021.8.1046824664.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/microsoft/vscode-jupyter/main/icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/vscode-jupyter/main/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/vscode-jupyter/main/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/microsoft/vscode-jupyter/main/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.36.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/vscode-jupyter"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
+				},
+				{
+					"extensionId": "91",
 					"extensionName": "sql-bindings",
 					"displayName": "SQL Bindings",
 					"shortDescription": "The SQL Bindings extension for Azure Data Studio enables users to develop and publish Azure Functions with Azure SQL bindings",
@@ -4625,7 +4743,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 75
+							"count": 78
 						}
 					]
 				}
