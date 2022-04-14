@@ -146,11 +146,10 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 	const disposables: vscode.Disposable[] = [];
 
 	try {
-		// add button to open sdkLearnMoreUrl if it was provided
 		quickPick.buttons = [sdkLearnMoreButton];
 		quickPick.placeholder = constants.SdkLearnMorePlaceholder;
 
-		let sdkStylePromise = new Promise<boolean | undefined>((resolve) => {
+		const sdkStylePromise = new Promise<boolean | undefined>((resolve) => {
 			disposables.push(
 				quickPick.onDidHide(() => {
 					resolve(undefined);
