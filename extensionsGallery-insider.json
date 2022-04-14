@@ -4689,7 +4689,7 @@
 				},
 				{
 					"extensionId": "91",
-					"extensionName": "sql-binding",
+					"extensionName": "sql-bindings",
 					"displayName": "SQL Bindings",
 					"shortDescription": "The SQL Bindings extension for Azure Data Studio enables users to develop and publish Azure Functions with Azure SQL bindings",
 					"publisher": {
@@ -4751,7 +4751,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 77
+							"count": 78
 						}
 					]
 				}
