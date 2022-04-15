@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import type * as azdataType from 'azdata';
+import * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as newProjectTool from '../tools/newProjectTool';
@@ -54,6 +54,19 @@ export class CreateProjectFromDatabaseDialog {
 		await this.initDialogComplete.promise;
 
 		if (this.profile) {
+			const connections = await azdataType.connection.getConnections(true);
+			let connection = connections.find(c => c.connectionId === this.profile!.id);
+
+			if (!connection) {
+				// if the connection clicked on isn't currently connected, try to connect
+				const result = await azdataType.connection.connect(this.profile);
+
+				if (!result.connected) {
+					// if can't connect, open connection dialog
+					connection = <azdataType.connection.ConnectionProfile><any>await azdataType.connection.openConnectionDialog(undefined, this.profile);
+				}
+			}
+
 			await this.updateConnectionComponents(getConnectionName(this.profile), this.profile.id, this.profile.databaseName!);
 		}
 
