@@ -10,8 +10,8 @@ import { MigrationLocalStorage, MigrationServiceContext } from '../../models/mig
 import { azureResource } from 'azureResource';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
-import { findDropDownItemIndex, selectDefaultDropdownValue, deepClone } from '../../api/utils';
-import { getFullResourceGroupFromId, getLocations, getSqlMigrationServices, getSubscriptions, SqlMigrationService } from '../../api/azure';
+import { findDropDownItemIndex, selectDefaultDropdownValue, deepClone, getAzureLocationDropdownValues, getAzureResourceGroupDropdownValues } from '../../api/utils';
+import { getSubscriptions, SqlMigrationService } from '../../api/azure';
 import { logError, TelemetryViews } from '../../telemtery';
 
 const CONTROL_MARGIN = '20px';
@@ -405,7 +405,8 @@ export class SelectMigrationServiceDialog {
 	private async _populateLocationDropdown(): Promise<void> {
 		try {
 			this._azureLocationDropdown.loading = true;
-			this._azureLocationDropdown.values = await this._getAzureLocationDropdownValues(
+			this._azureLocationDropdown.values =  await getAzureLocationDropdownValues(
+				'dms',
 				this._serviceContext.azureAccount,
 				this._serviceContext.subscription);
 			if (this._azureLocationDropdown.values.length > 0) {
@@ -428,8 +429,11 @@ export class SelectMigrationServiceDialog {
 	private async _populateResourceGroupDropdown(): Promise<void> {
 		try {
 			this._azureResourceGroupDropdown.loading = true;
-			this._azureResourceGroupDropdown.values = await this._getAzureResourceGroupDropdownValues(
-				this._serviceContext.location);
+			this._azureResourceGroupDropdown.values = await getAzureResourceGroupDropdownValues(
+				'dms',
+				this._serviceContext.location!.name,
+				this._serviceContext.azureAccount,
+				this._serviceContext.subscription);
 			if (this._azureResourceGroupDropdown.values.length > 0) {
 				selectDefaultDropdownValue(
 					this._azureResourceGroupDropdown,
@@ -519,60 +523,60 @@ export class SelectMigrationServiceDialog {
 		});
 	}
 
-	private async _getAzureLocationDropdownValues(
-		account?: azdata.Account,
-		subscription?: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
-		let locations: azureResource.AzureLocation[] = [];
-		if (account && subscription) {
-			// get all available locations
-			locations = await getLocations(account, subscription);
-			this._sqlMigrationServices = await getSqlMigrationServices(
-				account,
-				subscription) || [];
-			this._sqlMigrationServices.sort((a, b) => a.name.localeCompare(b.name));
-		} else {
-			this._sqlMigrationServices = [];
-		}
+	// private async _getAzureLocationDropdownValues(
+	// 	account?: azdata.Account,
+	// 	subscription?: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+	// 	let locations: azureResource.AzureLocation[] = [];
+	// 	if (account && subscription) {
+	// 		// get all available locations
+	// 		locations = await getLocations(account, subscription);
+	// 		this._sqlMigrationServices = await getSqlMigrationServices(
+	// 			account,
+	// 			subscription) || [];
+	// 		this._sqlMigrationServices.sort((a, b) => a.name.localeCompare(b.name));
+	// 	} else {
+	// 		this._sqlMigrationServices = [];
+	// 	}
 
-		// keep locaitons with services only
-		this._locations = locations.filter(
-			(loc, i) => this._sqlMigrationServices.some(service => service.location === loc.name));
-		this._locations.sort((a, b) => a.name.localeCompare(b.name));
-		return this._locations.map(loc => {
-			return {
-				name: loc.name,
-				displayName: loc.displayName,
-			};
-		});
-	}
+	// 	// keep locaitons with services only
+	// 	this._locations = locations.filter(
+	// 		(loc, i) => this._sqlMigrationServices.some(service => service.location === loc.name));
+	// 	this._locations.sort((a, b) => a.name.localeCompare(b.name));
+	// 	return this._locations.map(loc => {
+	// 		return {
+	// 			name: loc.name,
+	// 			displayName: loc.displayName,
+	// 		};
+	// 	});
+	// }
 
-	private async _getAzureResourceGroupDropdownValues(location?: azureResource.AzureLocation): Promise<azdata.CategoryValue[]> {
-		this._resourceGroups = location
-			? this._getMigrationServicesResourceGroups(location)
-			: [];
-		this._resourceGroups.sort((a, b) => a.name.localeCompare(b.name));
-		return this._resourceGroups.map(rg => {
-			return {
-				name: rg.id,
-				displayName: rg.name,
-			};
-		});
-	}
+	// private async _getAzureResourceGroupDropdownValues(location?: azureResource.AzureLocation): Promise<azdata.CategoryValue[]> {
+	// 	this._resourceGroups = location
+	// 		? this._getMigrationServicesResourceGroups(location)
+	// 		: [];
+	// 	this._resourceGroups.sort((a, b) => a.name.localeCompare(b.name));
+	// 	return this._resourceGroups.map(rg => {
+	// 		return {
+	// 			name: rg.id,
+	// 			displayName: rg.name,
+	// 		};
+	// 	});
+	// }
 
-	private _getMigrationServicesResourceGroups(location?: azureResource.AzureLocation): azureResource.AzureResourceResourceGroup[] {
-		const resourceGroups = this._sqlMigrationServices
-			.filter(service => service.location === location?.name)
-			.map(service => service.properties.resourceGroup);
+	// private _getMigrationServicesResourceGroups(location?: azureResource.AzureLocation): azureResource.AzureResourceResourceGroup[] {
+	// 	const resourceGroups = this._sqlMigrationServices
+	// 		.filter(service => service.location === location?.name)
+	// 		.map(service => service.properties.resourceGroup);
 
-		return resourceGroups
-			.filter((rg, i, arr) => arr.indexOf(rg) === i)
-			.map(rg => {
-				return <azureResource.AzureResourceResourceGroup>{
-					id: getFullResourceGroupFromId(rg),
-					name: rg,
-				};
-			});
-	}
+	// 	return resourceGroups
+	// 		.filter((rg, i, arr) => arr.indexOf(rg) === i)
+	// 		.map(rg => {
+	// 			return <azureResource.AzureResourceResourceGroup>{
+	// 				id: getFullResourceGroupFromId(rg),
+	// 				name: rg,
+	// 			};
+	// 		});
+	// }
 
 	private async _getMigrationServiceDropdownValues(
 		account?: azdata.Account,

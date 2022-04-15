@@ -13,7 +13,7 @@ import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { getFullResourceGroupFromId, getLocationDisplayName, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { logError, TelemetryViews } from '../telemtery';
-import { findDropDownItemIndex, selectDefaultDropdownValue } from '../api/utils';
+import { findDropDownItemIndex, getAzureResourceGroupDropdownValues, selectDefaultDropdownValue } from '../api/utils';
 import * as styles from '../constants/styles';
 
 export class IntergrationRuntimePage extends MigrationWizardPage {
@@ -373,7 +373,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		this._resourceGroupDropdown.loading = true;
 		this._dmsDropdown.loading = true;
 		try {
-			this._resourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupForSqlMigrationServicesDropdownValues(this.migrationStateModel._targetSubscription);
+			this._resourceGroupDropdown.values = await getAzureResourceGroupDropdownValues('dms', this.migrationStateModel._targetServerInstance.location, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription);
 			const resourceGroup = (this.migrationStateModel._sqlMigrationService)
 				? getFullResourceGroupFromId(this.migrationStateModel._sqlMigrationService?.id)
 				: undefined;

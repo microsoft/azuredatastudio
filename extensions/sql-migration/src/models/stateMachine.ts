@@ -8,7 +8,7 @@ import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
-import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs, sortResourceArrayByName, getFullResourceGroupFromId, getResourceGroupFromId, getResourceGroups, getSqlMigrationServicesByResourceGroup } from '../api/azure';
+import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs, getResourceGroupFromId, getSqlMigrationServicesByResourceGroup } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
@@ -875,328 +875,355 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		})!;
 	}
 
-	public async getSubscriptionsDropdownValues(): Promise<azdata.CategoryValue[]> {
-		let subscriptionsValues: azdata.CategoryValue[] = [];
-		try {
-			if (this._azureAccount?.isStale === false) {
-				this._subscriptions = await getSubscriptions(this._azureAccount);
-			} else {
-				this._subscriptions = [];
-			}
+	// public async getSubscriptionsDropdownValues(): Promise<azdata.CategoryValue[]> {
+	// 	let subscriptionsValues: azdata.CategoryValue[] = [];
+	// 	try {
+	// 		if (this._azureAccount?.isStale === false) {
+	// 			this._subscriptions = await getSubscriptions(this._azureAccount);
+	// 		} else {
+	// 			this._subscriptions = [];
+	// 		}
 
-			this._subscriptions.forEach((subscription) => {
-				subscriptionsValues.push({
-					name: subscription.id,
-					displayName: `${subscription.name} - ${subscription.id}`
-				});
-			});
+	// 		this._subscriptions.forEach((subscription) => {
+	// 			subscriptionsValues.push({
+	// 				name: subscription.id,
+	// 				displayName: `${subscription.name} - ${subscription.id}`
+	// 			});
+	// 		});
 
-			if (subscriptionsValues.length === 0) {
-				subscriptionsValues = [
-					{
-						displayName: constants.NO_SUBSCRIPTIONS_FOUND,
-						name: ''
-					}
-				];
-			}
-		} catch (e) {
-			console.log(e);
-			subscriptionsValues = [
-				{
-					displayName: constants.NO_SUBSCRIPTIONS_FOUND,
-					name: ''
-				}
-			];
-		}
+	// 		if (subscriptionsValues.length === 0) {
+	// 			subscriptionsValues = [
+	// 				{
+	// 					displayName: constants.NO_SUBSCRIPTIONS_FOUND,
+	// 					name: ''
+	// 				}
+	// 			];
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 		subscriptionsValues = [
+	// 			{
+	// 				displayName: constants.NO_SUBSCRIPTIONS_FOUND,
+	// 				name: ''
+	// 			}
+	// 		];
+	// 	}
 
-		return subscriptionsValues;
-	}
+	// 	return subscriptionsValues;
+	// }
 
-	public getSubscription(index: number): azureResource.AzureResourceSubscription {
-		return this._subscriptions[index];
-	}
+	// public getSubscription(index: number): azureResource.AzureResourceSubscription {
+	// 	return this._subscriptions[index];
+	// }
 
-	public async getAzureLocationDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
-		let locationValues: azdata.CategoryValue[] = [];
-		try {
-			if (this._azureAccount && subscription) {
-				this._locations = await getLocations(this._azureAccount, subscription);
-			} else {
-				this._locations = [];
-			}
+	// public async getAzureLocationDropdownValues(subscription: azureResource.AzureResourceSubscription, resourceType: string): Promise<azdata.CategoryValue[]> {
+	// 	let locationValues: azdata.CategoryValue[] = [];
+	// 	try {
+	// 		if (this._azureAccount && subscription) {
+	// 			this._locations = await getLocations(this._azureAccount, subscription);
+	// 		} else {
+	// 			this._locations = [];
+	// 		}
 
-			this._locations.forEach((loc) => {
-				locationValues.push({
-					name: loc.name,
-					displayName: loc.displayName
-				});
-			});
+	// 		// only show locations that contain resources of the desired type
+	// 		switch (resourceType) {
+	// 			case 'mi':
+	// 				let managedInstances = await getAvailableManagedInstanceProducts(this._azureAccount, subscription) || [];
+	// 				this._locations = this._locations.filter(
+	// 					(loc, i) => managedInstances.some(mi => mi.location === loc.name));
+	// 				break;
+	// 			case 'vm':
+	// 				let virtualMachines = await getAvailableSqlVMs(this._azureAccount, subscription) || [];
+	// 				this._locations = this._locations.filter(
+	// 					(loc, i) => virtualMachines.some(vm => vm.location === loc.name));
+	// 				break;
+	// 			case 'storage':
+	// 				let storageAccounts = await getAvailableStorageAccounts(this._azureAccount, subscription) || [];
+	// 				this._locations = this._locations.filter(
+	// 					(loc, i) => storageAccounts.some(sa => sa.location === loc.name));
+	// 				break;
+	// 			case 'dms':
+	// 				let sqlMigrationServices = await getSqlMigrationServices(this._azureAccount, subscription) || [];
+	// 				this._locations = this._locations.filter(
+	// 					(loc, i) => sqlMigrationServices.some(dms => dms.location === loc.name));
+	// 				break;
+	// 			default:
+	// 				break;
+	// 		}
 
-			if (locationValues.length === 0) {
-				locationValues = [
-					{
-						displayName: constants.NO_LOCATION_FOUND,
-						name: ''
-					}
-				];
-			}
-		} catch (e) {
-			console.log(e);
-			locationValues = [
-				{
-					displayName: constants.NO_LOCATION_FOUND,
-					name: ''
-				}
-			];
-		}
+	// 		this._locations.forEach((loc) => {
+	// 			locationValues.push({
+	// 				name: loc.name,
+	// 				displayName: loc.displayName
+	// 			});
+	// 		});
 
-		return locationValues;
-	}
+	// 		if (locationValues.length === 0) {
+	// 			locationValues = [
+	// 				{
+	// 					displayName: constants.NO_LOCATION_FOUND,
+	// 					name: ''
+	// 				}
+	// 			];
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 		locationValues = [
+	// 			{
+	// 				displayName: constants.NO_LOCATION_FOUND,
+	// 				name: ''
+	// 			}
+	// 		];
+	// 	}
 
-	public getLocation(index: number): azureResource.AzureLocation {
-		return this._locations[index];
-	}
+	// 	locationValues.sort((a, b) => a.name.localeCompare(b.name));
+	// 	return locationValues;
+	// }
+
+	// public getLocation(index: number): azureResource.AzureLocation {
+	// 	return this._locations[index];
+	// }
 
 	public getLocationDisplayName(location: string): Promise<string> {
 		return getLocationDisplayName(location);
 	}
 
-	public async getAzureResourceGroupDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
-		let resourceGroupValues: azdata.CategoryValue[] = [];
-		try {
-			if (this._azureAccount && subscription) {
-				this._resourceGroups = await getResourceGroups(this._azureAccount, subscription);
-			} else {
-				this._resourceGroups = [];
-			}
-			this._resourceGroups.forEach((rg) => {
-				resourceGroupValues.push({
-					name: rg.id,
-					displayName: rg.name
-				});
-			});
-			if (resourceGroupValues.length === 0) {
-				resourceGroupValues = [
-					{
-						displayName: constants.RESOURCE_GROUP_NOT_FOUND,
-						name: ''
-					}
-				];
-			}
-		} catch (e) {
-			console.log(e);
-			resourceGroupValues = [
-				{
-					displayName: constants.RESOURCE_GROUP_NOT_FOUND,
-					name: ''
-				}
-			];
-		}
-		return resourceGroupValues;
-	}
+	// public async getAzureResourceGroupDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+	// 	let resourceGroupValues: azdata.CategoryValue[] = [];
+	// 	try {
+	// 		if (this._azureAccount && subscription) {
+	// 			this._resourceGroups = await getResourceGroups(this._azureAccount, subscription);
+	// 		} else {
+	// 			this._resourceGroups = [];
+	// 		}
+	// 		this._resourceGroups.forEach((rg) => {
+	// 			resourceGroupValues.push({
+	// 				name: rg.id,
+	// 				displayName: rg.name
+	// 			});
+	// 		});
+	// 		if (resourceGroupValues.length === 0) {
+	// 			resourceGroupValues = [
+	// 				{
+	// 					displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+	// 					name: ''
+	// 				}
+	// 			];
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 		resourceGroupValues = [
+	// 			{
+	// 				displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+	// 				name: ''
+	// 			}
+	// 		];
+	// 	}
+	// 	return resourceGroupValues;
+	// }
 
-	public async getAzureResourceGroupForManagedInstancesDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
-		let resourceGroupValues: azdata.CategoryValue[] = [];
-		try {
-			if (this._azureAccount && subscription) {
-				let managedInstances = await getAvailableManagedInstanceProducts(this._azureAccount, subscription);
-				this._resourceGroups = managedInstances.map((mi) => {
-					return <azureResource.AzureResourceResourceGroup>{
-						id: getFullResourceGroupFromId(mi.id),
-						name: getResourceGroupFromId(mi.id),
-						subscription: {
-							id: mi.subscriptionId
-						},
-						tenant: mi.tenantId,
-					};
-				});
+	// public async getAzureResourceGroupForManagedInstancesDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+	// 	let resourceGroupValues: azdata.CategoryValue[] = [];
+	// 	try {
+	// 		if (this._azureAccount && subscription) {
+	// 			let managedInstances = await getAvailableManagedInstanceProducts(this._azureAccount, subscription);
+	// 			this._resourceGroups = managedInstances.map((mi) => {
+	// 				return <azureResource.AzureResourceResourceGroup>{
+	// 					id: getFullResourceGroupFromId(mi.id),
+	// 					name: getResourceGroupFromId(mi.id),
+	// 					subscription: {
+	// 						id: mi.subscriptionId
+	// 					},
+	// 					tenant: mi.tenantId,
+	// 				};
+	// 			});
 
-				// remove duplicates
-				this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
-				sortResourceArrayByName(this._resourceGroups);
-			} else {
-				this._resourceGroups = [];
-			}
+	// 			// remove duplicates
+	// 			this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
+	// 			sortResourceArrayByName(this._resourceGroups);
+	// 		} else {
+	// 			this._resourceGroups = [];
+	// 		}
 
-			this._resourceGroups.forEach((rg) => {
-				resourceGroupValues.push({
-					name: rg.id,
-					displayName: rg.name
-				});
-			});
+	// 		this._resourceGroups.forEach((rg) => {
+	// 			resourceGroupValues.push({
+	// 				name: rg.id,
+	// 				displayName: rg.name
+	// 			});
+	// 		});
 
-			if (resourceGroupValues.length === 0) {
-				resourceGroupValues = [
-					{
-						displayName: constants.RESOURCE_GROUP_NOT_FOUND,
-						name: ''
-					}
-				];
-			}
-		} catch (e) {
-			console.log(e);
-			resourceGroupValues = [
-				{
-					displayName: constants.RESOURCE_GROUP_NOT_FOUND,
-					name: ''
-				}
-			];
-		}
-		return resourceGroupValues;
-	}
+	// 		if (resourceGroupValues.length === 0) {
+	// 			resourceGroupValues = [
+	// 				{
+	// 					displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+	// 					name: ''
+	// 				}
+	// 			];
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 		resourceGroupValues = [
+	// 			{
+	// 				displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+	// 				name: ''
+	// 			}
+	// 		];
+	// 	}
+	// 	return resourceGroupValues;
+	// }
 
-	public async getAzureResourceGroupForVirtualMachinesDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
-		let resourceGroupValues: azdata.CategoryValue[] = [];
-		try {
-			if (this._azureAccount && subscription) {
-				let virtualMachines = await getAvailableSqlVMs(this._azureAccount, subscription);
-				this._resourceGroups = virtualMachines.map((vm) => {
-					return <azureResource.AzureResourceResourceGroup>{
-						id: getFullResourceGroupFromId(vm.id),
-						name: getResourceGroupFromId(vm.id),
-						subscription: {
-							id: vm.subscriptionId
-						},
-						tenant: vm.tenantId,
-					};
-				});
+	// public async getAzureResourceGroupForVirtualMachinesDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+	// 	let resourceGroupValues: azdata.CategoryValue[] = [];
+	// 	try {
+	// 		if (this._azureAccount && subscription) {
+	// 			let virtualMachines = await getAvailableSqlVMs(this._azureAccount, subscription);
+	// 			this._resourceGroups = virtualMachines.map((vm) => {
+	// 				return <azureResource.AzureResourceResourceGroup>{
+	// 					id: getFullResourceGroupFromId(vm.id),
+	// 					name: getResourceGroupFromId(vm.id),
+	// 					subscription: {
+	// 						id: vm.subscriptionId
+	// 					},
+	// 					tenant: vm.tenantId,
+	// 				};
+	// 			});
 
-				// remove duplicates
-				this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
-				sortResourceArrayByName(this._resourceGroups);
-			} else {
-				this._resourceGroups = [];
-			}
+	// 			// remove duplicates
+	// 			this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
+	// 			sortResourceArrayByName(this._resourceGroups);
+	// 		} else {
+	// 			this._resourceGroups = [];
+	// 		}
 
-			this._resourceGroups.forEach((rg) => {
-				resourceGroupValues.push({
-					name: rg.id,
-					displayName: rg.name
-				});
-			});
+	// 		this._resourceGroups.forEach((rg) => {
+	// 			resourceGroupValues.push({
+	// 				name: rg.id,
+	// 				displayName: rg.name
+	// 			});
+	// 		});
 
-			if (resourceGroupValues.length === 0) {
-				resourceGroupValues = [
-					{
-						displayName: constants.RESOURCE_GROUP_NOT_FOUND,
-						name: ''
-					}
-				];
-			}
-		} catch (e) {
-			console.log(e);
-			resourceGroupValues = [
-				{
-					displayName: constants.RESOURCE_GROUP_NOT_FOUND,
-					name: ''
-				}
-			];
-		}
-		return resourceGroupValues;
-	}
+	// 		if (resourceGroupValues.length === 0) {
+	// 			resourceGroupValues = [
+	// 				{
+	// 					displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+	// 					name: ''
+	// 				}
+	// 			];
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 		resourceGroupValues = [
+	// 			{
+	// 				displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+	// 				name: ''
+	// 			}
+	// 		];
+	// 	}
+	// 	return resourceGroupValues;
+	// }
 
-	public async getAzureResourceGroupForStorageAccountsDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
-		let resourceGroupValues: azdata.CategoryValue[] = [];
-		try {
-			if (this._azureAccount && subscription) {
-				let storageAccounts = await getAvailableStorageAccounts(this._azureAccount, subscription);
-				this._resourceGroups = storageAccounts.map((sa) => {
-					return <azureResource.AzureResourceResourceGroup>{
-						id: getFullResourceGroupFromId(sa.id),
-						name: getResourceGroupFromId(sa.id),
-						subscription: {
-							id: sa.subscriptionId
-						},
-						tenant: sa.tenantId,
-					};
-				});
+	// public async getAzureResourceGroupForStorageAccountsDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+	// 	let resourceGroupValues: azdata.CategoryValue[] = [];
+	// 	try {
+	// 		if (this._azureAccount && subscription) {
+	// 			let storageAccounts = await getAvailableStorageAccounts(this._azureAccount, subscription);
+	// 			this._resourceGroups = storageAccounts.map((sa) => {
+	// 				return <azureResource.AzureResourceResourceGroup>{
+	// 					id: getFullResourceGroupFromId(sa.id),
+	// 					name: getResourceGroupFromId(sa.id),
+	// 					subscription: {
+	// 						id: sa.subscriptionId
+	// 					},
+	// 					tenant: sa.tenantId,
+	// 				};
+	// 			});
 
-				// remove duplicates
-				this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
-				sortResourceArrayByName(this._resourceGroups);
-			} else {
-				this._resourceGroups = [];
-			}
+	// 			// remove duplicates
+	// 			this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
+	// 			sortResourceArrayByName(this._resourceGroups);
+	// 		} else {
+	// 			this._resourceGroups = [];
+	// 		}
 
-			this._resourceGroups.forEach((rg) => {
-				resourceGroupValues.push({
-					name: rg.id,
-					displayName: rg.name
-				});
-			});
+	// 		this._resourceGroups.forEach((rg) => {
+	// 			resourceGroupValues.push({
+	// 				name: rg.id,
+	// 				displayName: rg.name
+	// 			});
+	// 		});
 
-			if (resourceGroupValues.length === 0) {
-				resourceGroupValues = [
-					{
-						displayName: constants.RESOURCE_GROUP_NOT_FOUND,
-						name: ''
-					}
-				];
-			}
-		} catch (e) {
-			console.log(e);
-			resourceGroupValues = [
-				{
-					displayName: constants.RESOURCE_GROUP_NOT_FOUND,
-					name: ''
-				}
-			];
-		}
-		return resourceGroupValues;
-	}
+	// 		if (resourceGroupValues.length === 0) {
+	// 			resourceGroupValues = [
+	// 				{
+	// 					displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+	// 					name: ''
+	// 				}
+	// 			];
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 		resourceGroupValues = [
+	// 			{
+	// 				displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+	// 				name: ''
+	// 			}
+	// 		];
+	// 	}
+	// 	return resourceGroupValues;
+	// }
 
-	public async getAzureResourceGroupForSqlMigrationServicesDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
-		let resourceGroupValues: azdata.CategoryValue[] = [];
-		try {
-			if (this._azureAccount && subscription) {
-				let dmsInstances = await getSqlMigrationServices(this._azureAccount, subscription);
-				this._resourceGroups = dmsInstances.map((dms) => {
-					return <azureResource.AzureResourceResourceGroup>{
-						id: getFullResourceGroupFromId(dms.id),
-						name: getResourceGroupFromId(dms.id),
-						subscription: {
-							id: dms.properties.subscriptionId
-						}
-					};
-				});
+	// public async getAzureResourceGroupForSqlMigrationServicesDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+	// 	let resourceGroupValues: azdata.CategoryValue[] = [];
+	// 	try {
+	// 		if (this._azureAccount && subscription) {
+	// 			let dmsInstances = await getSqlMigrationServices(this._azureAccount, subscription);
+	// 			this._resourceGroups = dmsInstances.map((dms) => {
+	// 				return <azureResource.AzureResourceResourceGroup>{
+	// 					id: getFullResourceGroupFromId(dms.id),
+	// 					name: getResourceGroupFromId(dms.id),
+	// 					subscription: {
+	// 						id: dms.properties.subscriptionId
+	// 					}
+	// 				};
+	// 			});
 
-				// remove duplicates
-				this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
-				sortResourceArrayByName(this._resourceGroups);
-			} else {
-				this._resourceGroups = [];
-			}
+	// 			// remove duplicates
+	// 			this._resourceGroups = this._resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
+	// 			sortResourceArrayByName(this._resourceGroups);
+	// 		} else {
+	// 			this._resourceGroups = [];
+	// 		}
 
-			this._resourceGroups.forEach((rg) => {
-				resourceGroupValues.push({
-					name: rg.id,
-					displayName: rg.name
-				});
-			});
+	// 		this._resourceGroups.forEach((rg) => {
+	// 			resourceGroupValues.push({
+	// 				name: rg.id,
+	// 				displayName: rg.name
+	// 			});
+	// 		});
 
-			if (resourceGroupValues.length === 0) {
-				resourceGroupValues = [
-					{
-						displayName: constants.RESOURCE_GROUP_NOT_FOUND,
-						name: ''
-					}
-				];
-			}
-		} catch (e) {
-			console.log(e);
-			resourceGroupValues = [
-				{
-					displayName: constants.RESOURCE_GROUP_NOT_FOUND,
-					name: ''
-				}
-			];
-		}
-		return resourceGroupValues;
-	}
+	// 		if (resourceGroupValues.length === 0) {
+	// 			resourceGroupValues = [
+	// 				{
+	// 					displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+	// 					name: ''
+	// 				}
+	// 			];
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 		resourceGroupValues = [
+	// 			{
+	// 				displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+	// 				name: ''
+	// 			}
+	// 		];
+	// 	}
+	// 	return resourceGroupValues;
+	// }
 
-	public getAzureResourceGroup(index: number): azureResource.AzureResourceResourceGroup {
-		return this._resourceGroups[index];
-	}
+	// public getAzureResourceGroup(index: number): azureResource.AzureResourceResourceGroup {
+	// 	return this._resourceGroups[index];
+	// }
 
 	public async getManagedInstanceValues(subscription: azureResource.AzureResourceSubscription, location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
 		let managedInstanceValues: azdata.CategoryValue[] = [];

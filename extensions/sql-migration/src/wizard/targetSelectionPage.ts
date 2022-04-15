@@ -11,7 +11,7 @@ import { MigrationStateModel, MigrationTargetType, StateChangeEvent } from '../m
 import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { deepClone, findDropDownItemIndex, selectDropDownIndex, selectDefaultDropdownValue } from '../api/utils';
+import { deepClone, findDropDownItemIndex, selectDropDownIndex, selectDefaultDropdownValue, getSubscriptionsDropdownValues, getAzureLocationDropdownValues, getAzureResourceGroupDropdownValues } from '../api/utils';
 import { azureResource } from 'azureResource';
 
 export class TargetSelectionPage extends MigrationWizardPage {
@@ -186,8 +186,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				const selectedAzureAccount = this.migrationStateModel.getAccount(selectedIndex);
 				// Making a clone of the account object to preserve the original tenants
 				this.migrationStateModel._azureAccount = deepClone(selectedAzureAccount);
-				if (selectedAzureAccount.isStale === false &&
-					this.migrationStateModel._azureAccount.properties.tenants.length > 1) {
+				if (this.migrationStateModel._azureAccount.properties.tenants.length > 1) {
 					this.migrationStateModel._accountTenants = selectedAzureAccount.properties.tenants;
 					this._accountTenantDropdown.values = await this.migrationStateModel.getTenantValues();
 					selectDropDownIndex(this._accountTenantDropdown, 0);
@@ -458,7 +457,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private async populateSubscriptionDropdown(): Promise<void> {
 		try {
 			this.updateDropdownLoadingStatus(TargetDropDowns.Subscription, true);
-			this._azureSubscriptionDropdown.values = await this.migrationStateModel.getSubscriptionsDropdownValues();
+			this._azureSubscriptionDropdown.values = await getSubscriptionsDropdownValues(this.migrationStateModel._azureAccount);
 			selectDefaultDropdownValue(this._azureSubscriptionDropdown, this.migrationStateModel._targetSubscription?.id, false);
 		} catch (e) {
 			console.log(e);
@@ -470,7 +469,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	public async populateLocationDropdown(): Promise<void> {
 		try {
 			this.updateDropdownLoadingStatus(TargetDropDowns.Location, true);
-			this._azureLocationDropdown.values = await this.migrationStateModel.getAzureLocationDropdownValues(this.migrationStateModel._targetSubscription);
+			this._azureLocationDropdown.values = await getAzureLocationDropdownValues('mi', this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription);	//
 			selectDefaultDropdownValue(this._azureLocationDropdown, this.migrationStateModel._location?.displayName, true);
 		} catch (e) {
 			console.log(e);
@@ -484,10 +483,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			this.updateDropdownLoadingStatus(TargetDropDowns.ResourceGroup, true);
 			switch (this.migrationStateModel._targetType) {
 				case MigrationTargetType.SQLMI:
-					this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupForManagedInstancesDropdownValues(this.migrationStateModel._targetSubscription);
+					this._azureResourceGroupDropdown.values = await getAzureResourceGroupDropdownValues('mi', this.migrationStateModel._location.name, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription);
 					break;
 				case MigrationTargetType.SQLVM:
-					this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupForVirtualMachinesDropdownValues(this.migrationStateModel._targetSubscription);
+					this._azureResourceGroupDropdown.values = await getAzureResourceGroupDropdownValues('vm', this.migrationStateModel._location.name, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription);
 					break;
 			}
 			selectDefaultDropdownValue(this._azureResourceGroupDropdown, this.migrationStateModel._resourceGroup?.id, false);
