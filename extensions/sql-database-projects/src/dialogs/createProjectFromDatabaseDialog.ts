@@ -59,7 +59,7 @@ export class CreateProjectFromDatabaseDialog {
 
 			if (!connection) {
 				// if the connection clicked on isn't currently connected, try to connect
-				const result = await azdataType.connection.connect(this.profile);
+				const result = await azdataType.connection.connect(this.profile, true, false);
 
 				if (!result.connected) {
 					// if can't connect, open connection dialog
