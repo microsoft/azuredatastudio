@@ -34,6 +34,7 @@ export const azureFunctionsExtensionNotInstalled = localize('azureFunctionsExten
 export const azureFunctionsProjectMustBeOpened = localize('azureFunctionsProjectMustBeOpened', 'A C# Azure Functions project must be present in order to create a new Azure Function for this table.');
 export const needConnection = localize('needConnection', 'A connection is required to use Azure Function with SQL Binding');
 export const selectDatabase = localize('selectDatabase', 'Select Database');
+export const browseEllipsisWithIcon = `$(folder) ${localize('browseEllipsis', "Browse...")}`;
 
 // Insert SQL binding
 export const hostFileName = 'host.json';
