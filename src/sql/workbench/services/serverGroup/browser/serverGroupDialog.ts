@@ -193,7 +193,7 @@ export class ServerGroupDialog extends Modal {
 			const colorColorBox = new Colorbox(container, {
 				name: 'server-group-color',
 				class: ['server-group-color'],
-				label: `Colobox Color: ${color}`,
+				label: localize('serverGroup.colorValue', "Color: {0}", color),
 			});
 
 			this._register(colorColorBox.onSelect((viaKeyboard) => {

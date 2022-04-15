@@ -41,6 +41,7 @@ export class Colorbox extends Widget {
 		}
 		if (opts.label) {
 			this.domNode.setAttribute('aria-label', opts.label);
+			this.domNode.title = opts.label;
 		}
 
 		container.appendChild(this.domNode);
