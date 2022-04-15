@@ -152,7 +152,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				// issue: https://github.com/microsoft/vscode-azurefunctions/issues/3052
 				newHostProjectFile = await azureFunctionsUtils.waitForNewHostFile();
 				await azureFunctionApi.createFunction({
-					language: 'C#', targetFramework: 'netcoreapp3.1', suppressCreateProjectPrompt: true,
+					language: 'C#', version: '~3', targetFramework: 'netcoreapp3.1', suppressCreateProjectPrompt: true
 				});
 				const timeoutForHostFile = utils.timeoutPromise(constants.timeoutProjectError);
 				hostFile = await Promise.race([newHostProjectFile.filePromise, timeoutForHostFile]);
@@ -226,6 +226,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			// create C# Azure Function with SQL Binding
 			await azureFunctionApi.createFunction({
 				language: 'C#',
+				version: '~3',
 				templateId: templateId,
 				functionName: functionName,
 				targetFramework: 'netcoreapp3.1',
