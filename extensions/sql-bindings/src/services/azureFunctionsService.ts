@@ -166,15 +166,20 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 					// User cancelled
 					return;
 				}
+				const templateId: string = selectedBindingType === BindingType.input ? constants.inputTemplateID : constants.outputTemplateID;
 				// because of an AF extension API issue, we have to get the newly created file by adding a watcher
 				// issue: https://github.com/microsoft/vscode-azurefunctions/issues/3052
 				newHostProjectFile = azureFunctionsUtils.waitForNewHostFile();
 				await azureFunctionApi.createFunction({
 					language: 'C#',
 					targetFramework: 'netcoreapp3.1',
-					templateId: 'HttpTrigger',
+					templateId: templateId,
 					suppressCreateProjectPrompt: true,
-					folderPath: projectFolders[0].fsPath
+					folderPath: projectFolders[0].fsPath,
+					functionSettings: {
+						...(selectedBindingType === BindingType.input && { object: objectName }),
+						...(selectedBindingType === BindingType.output && { table: objectName })
+					},
 				});
 				const timeoutForHostFile = utils.timeoutPromise(constants.timeoutProjectError);
 				hostFile = await Promise.race([newHostProjectFile.filePromise, timeoutForHostFile]);
