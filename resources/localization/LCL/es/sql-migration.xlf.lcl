@@ -2623,6 +2623,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.refresh.migrations.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while refreshing the migrations list: '{0}'.  Please check your linked Azure connection and click refresh to try again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Error al actualizar la lista de migraciones: \"{0}\".  Compruebe la conexión de Azure vinculada y haga clic en Actualizar para volver a intentarlo.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
