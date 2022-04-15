@@ -160,7 +160,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				const projectFolders = (await vscode.window.showOpenDialog({
 					canSelectFiles: false,
 					canSelectFolders: true,
-					canSelectMany: false
+					canSelectMany: false,
+					openLabel: constants.selectButton
 				}));
 				if (!projectFolders) {
 					// User cancelled
