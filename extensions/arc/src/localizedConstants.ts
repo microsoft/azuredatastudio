@@ -337,7 +337,6 @@ export const loadingClusterContextsError = (error: any): string => localize('arc
 
 // Upgrade
 export const upgradeManagement = localize('arc.upgradeManagement', "Upgrade Management");
-export const currentControllerVersion = localize('arc.currentControllerVersion', "Current controller version: ");
 export const availableUpgrades = localize('arc.availableUpgrades', "Available Upgrades");
 export const availableUpgradesDescription = localize('arc.availableUpgradesDescription', "Available upgrades for this resource are listed below. You can apply upgrades by selecting the upgrade button. Learn more about each of these releases at the");
 export const versionLog = localize('arc.versionLog', "version log.");
@@ -350,7 +349,8 @@ export const upgradeDataController = localize('arc.upgradeDataController', "Upgr
 export const areYouSure = localize('arc.areYouSure', "Are you sure you want to apply the selected upgrade?");
 export const upgradeDialog = localize('arc.upgradeDialog', "During a data controller upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the data controller will not cause downtime for the data services (SQL Managed Instance or PostgreSQL server).");
 export const monitorUpgrade = localize('arc.monitorUpgrade', "You can check the status of the upgrade by running the following command:");
-export const monitorUpgradeCommand = localize('arc.monitorUpgradeCommand', "kubectl get datacontrollers -A");
 export function errorListingLogAnalyticsWorkspaces(error: any): string { return localize('arc.errorListingLogAnalyticsWorkspaces', "Error listing Log Analytics workspaces {0}", getErrorMessage(error, true)); }
 export const noUpgrades = localize('arc.noUpgrades', 'The current version is the latest version. No upgrades available.');
-export const upgrading = localize('arc.upgrading', "Data controller is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get datacontrollers -A'");
+export const upgrading = localize('arc.upgrading', "Data controller is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get datacontrollers -A'"); // 'kubectl get datacontrollers -A' should not be localized.
+export const currentVersion = localize('arc.currentVersion', "Current version");
+export const releaseDateNotParsed = localize('arc.releaseDateNotParsed', "Release date could not be parsed.");

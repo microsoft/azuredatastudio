@@ -8,11 +8,8 @@ import * as azdata from 'azdata';
 import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles, ConnectionMode } from '../../../constants';
-// import { IconPathHelper, cssStyles, ConnectionMode } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
-// import { RPModel, DatabaseModel, systemDbs } from '../../../models/miaaModel';
 import { ControllerModel } from '../../../models/controllerModel';
-// import { ConfigureRPOSqlDialog } from '../../dialogs/configureRPOSqlDialog';
 import { UpgradeController } from '../../dialogs/upgradeController';
 
 export class ControllerUpgradesPage extends DashboardPage {
@@ -39,7 +36,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 		return IconPathHelper.pitr;
 	}
 	protected async refresh(): Promise<void> {
-		await Promise.all([this._controllerModel.refresh(false, this._controllerModel.info.namespace)]);
+		await Promise.resolve(this._controllerModel.refresh(false, this._controllerModel.info.namespace));
 		this.handleTableUpdated();
 	}
 
@@ -185,12 +182,12 @@ export class ControllerUpgradesPage extends DashboardPage {
 				continue;
 			} else {
 				if (versions[i] === currentVersion) {
-					formattedValues.push([versions[i], dates[i], this.createUpgradeButton('Current version', false, '')]);
+					formattedValues.push([versions[i], dates[i], this.createUpgradeButton(loc.currentVersion, false, '')]);
 					currentVersionHit = true;
 				} else if (versions[i] === nextVersion) {
-					formattedValues.push([versions[i], dates[i], this.createUpgradeButton('Upgrade', true, nextVersion)]);
+					formattedValues.push([versions[i], dates[i], this.createUpgradeButton(loc.upgrade, true, nextVersion)]);
 				} else {
-					formattedValues.push([versions[i], dates[i], this.createUpgradeButton('Upgrade', false, '')]);
+					formattedValues.push([versions[i], dates[i], this.createUpgradeButton(loc.upgrade, false, '')]);
 				}
 			}
 		}

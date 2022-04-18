@@ -92,12 +92,6 @@ export class AzTool implements azExt.IAzApi {
 				}
 			},
 			listUpgrades: async (namespace: string, usek8s?: boolean, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.DcListUpgradesResult>> => {
-				// const output = await executeAzCommand(`"${this._path}"`, ['--version']);
-				// this._semVersionAz = new SemVer(<string>parseVersion(output.stdout));
-				// return {
-				// 	stdout: output.stdout,
-				// 	stderr: output.stderr.split(os.EOL)
-				// };
 				const argsArray = ['arcdata', 'dc', 'list-upgrades'];
 				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
 				if (usek8s) { argsArray.push('--use-k8s'); }
@@ -608,14 +602,16 @@ function parseDcListUpgrades(raw: string): string[] | undefined {
 	// v1.2.0_2021-12-15 << current version
 	// v1.1.0_2021-11-02
 	// v1.0.0_2021-07-30
-	let versions = [];
+	let versions: string[] = [];
 	const lines = raw.split('\n');
 	const exp = /^(v\d*.\d*.\d*.\d*.\d*.\d*.\d)/;
 	for (let i = 1; i < lines.length; i++) {
 		let result = exp.exec(lines[i])?.pop();
-		versions.push(result);
+		if (result) {
+			versions.push(result);
+		}
 	}
-	return <string[]>versions;
+	return versions;
 }
 
 /**
@@ -629,6 +625,8 @@ function parseReleaseDateFromUpgrade(raw: string): string {
 	let rawDate = exp.exec(raw);
 	if (rawDate) {
 		formattedDate += rawDate[2] + '/' + rawDate[3] + '/' + rawDate[1];
+	} else {
+		console.error(loc.releaseDateNotParsed);
 	}
 	return formattedDate;
 }

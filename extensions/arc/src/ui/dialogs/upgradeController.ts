@@ -47,7 +47,7 @@ export class UpgradeController extends InitializingComponent {
 			upgradeDialog.addItem(monitorUpgradeInfo, { CSSStyles: { 'margin-right': '5px' } });
 
 			const monitorUpgradeCommandInfo = this.modelBuilder.text().withProps({
-				value: loc.monitorUpgradeCommand,
+				value: 'kubectl get datacontrollers -A',
 				CSSStyles: { ...cssStyles.code, 'margin-block-start': '0px', 'max-width': 'auto' }
 			}).component();
 
