@@ -15,8 +15,6 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { Schemas } from 'sql/base/common/schemas';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { ILifecycleService } from 'vs/workbench/services/lifecycle/common/lifecycle';
-import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 
 const NewTable: string = localize('tableDesigner.newTable', "New Table");
 
@@ -46,14 +44,9 @@ export class TableDesignerInput extends EditorInput {
 		telemetryInfo: { [key: string]: string },
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IEditorService private readonly _editorService: IEditorService,
-		@INotificationService private readonly _notificationService: INotificationService,
-		@ILifecycleService private readonly _lifecycleService: ILifecycleService,
-		@IDialogService private readonly _dialogService: IDialogService) {
+		@INotificationService private readonly _notificationService: INotificationService) {
 		super();
 		this._designerComponentInput = this._instantiationService.createInstance(TableDesignerComponentInput, this._provider, tableInfo, telemetryInfo);
-		this._lifecycleService.onBeforeShutdown(async (event) => {
-			event.veto(this.confirmBeforeExit(), 'veto.tableDesigner');
-		});
 		this._register(this._designerComponentInput.onStateChange((e) => {
 			if (e.previousState.pendingAction === 'publish') {
 				this.setEditorLabel();
@@ -138,17 +131,5 @@ export class TableDesignerInput extends EditorInput {
 			this._name = `${tableInfo.schema}.${tableInfo.name}`;
 		}
 		this._title = `${tableInfo.server}.${tableInfo.database} - ${this._name}`;
-	}
-
-	private async confirmBeforeExit(): Promise<boolean> {
-		if (this.isDirty) {
-			let result = await this._dialogService.confirm({
-				message: localize('TableDesigner.saveBeforeExit', 'There are unsaved changes in Table Designer that will be lost if you exit. Do you want to exit?'),
-				primaryButton: localize({ key: 'TableDesigner.closeApplication', comment: ['&& denotes a mnemonic'] }, "&&Close Application"),
-				type: 'question'
-			});
-			return !result.confirmed;
-		}
-		return false;
 	}
 }

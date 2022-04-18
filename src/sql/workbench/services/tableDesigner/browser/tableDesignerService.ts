@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { localize } from 'vs/nls';
 import { TableDesignerProvider, ITableDesignerService } from 'sql/workbench/services/tableDesigner/common/interface';
 import { invalidProvider } from 'sql/base/common/errors';
 import * as azdata from 'azdata';
@@ -11,15 +12,37 @@ import { TableDesignerInput } from 'sql/workbench/browser/editor/tableDesigner/t
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { TelemetryAction, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { ILifecycleService } from 'vs/workbench/services/lifecycle/common/lifecycle';
 
 export class TableDesignerService implements ITableDesignerService {
 
 	constructor(@IEditorService private _editorService: IEditorService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IAdsTelemetryService private _adsTelemetryService: IAdsTelemetryService) { }
+		@IAdsTelemetryService private _adsTelemetryService: IAdsTelemetryService,
+		@ILifecycleService private _lifecycleService: ILifecycleService,
+		@IDialogService private _dialogService: IDialogService) {
+		this._lifecycleService.onBeforeShutdown(async (event) => {
+			event.veto(this.confirmBeforeExit(), 'veto.tableDesigner');
+		});
+	}
 
 	public _serviceBrand: undefined;
 	private _providers = new Map<string, TableDesignerProvider>();
+
+	private async confirmBeforeExit(): Promise<boolean> {
+		let openTableDesignerEditors = this._editorService.editors.filter(e => e instanceof TableDesignerInput);
+		let dirtyEditors = openTableDesignerEditors.find(e => e.isDirty());
+		if (dirtyEditors) {
+			let result = await this._dialogService.confirm({
+				message: localize('TableDesigner.saveBeforeExit', 'There are unsaved changes in Table Designer that will be lost if you close the application. Do you want to close the application?'),
+				primaryButton: localize({ key: 'TableDesigner.closeApplication', comment: ['&& denotes a mnemonic'] }, "&&Close Application"),
+				type: 'question'
+			});
+			return !result.confirmed;
+		}
+		return false;
+	}
 
 	/**
 	 * Register a data grid provider
