@@ -1,11 +1,14 @@
 # Change Log
 
-## Version 1.35.1
-* Release date: March 17, 2022
+## Version 1.36.0
+* Release date: April 20, 2022
 * Release status: General Availability
-## Hotfix release
-- Fix for [Excel number format #18615](https://github.com/microsoft/azuredatastudio/issues/18615)
-- Fix for [Geometry Data Type Returned as Unknown Charset in Results Grid #18630](https://github.com/microsoft/azuredatastudio/issues/18630)
+## What's new in this version
+- General Availability of the Azure SQL Migration Extension for ADS
+- Support for .NET Interactive Notebooks Extension
+- New Table Designer Features including support for System Versioned, Graph and Memory Optomized Tables
+- Query Plan Viewer Updates includign warning and parallelism icons, the option to disable tooltips and support for opening .sqlplan files
+- Improvements in SQL Projects and Schema Compare 
 
 | Platform																|
 | ---------------------------------------	|
@@ -17,13 +20,20 @@
 | [Linux RPM][linux-rpm]									|
 | [Linux DEB][linux-deb]									|
 
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2187459
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2187520
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2187460
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2187461
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2187462
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2187521
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2187522
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2193235
+[win-system]: https://go.microsoft.com/fwlink/?linkid=2193326
+[win-zip]: https://go.microsoft.com/fwlink/?linkid=2193236
+[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2192971
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2193237
+[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2193238
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2193327
+
+## Version 1.35.1
+* Release date: March 17, 2022
+* Release status: General Availability
+## Hotfix release
+- Fix for [Excel number format #18615](https://github.com/microsoft/azuredatastudio/issues/18615)
+- Fix for [Geometry Data Type Returned as Unknown Charset in Results Grid #18630](https://github.com/microsoft/azuredatastudio/issues/18630)
 
  ## Version 1.35.0
 * Release date: February 24, 2022
