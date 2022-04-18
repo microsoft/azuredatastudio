@@ -8,12 +8,13 @@ import {
 } from '@angular/core';
 
 import * as azdata from 'azdata';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { InfoBox, InfoBoxStyle } from 'sql/base/browser/ui/infoBox/infoBox';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { attachInfoBoxStyler } from 'sql/platform/theme/common/styler';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { InfoBox, InfoBoxStyle } from 'sql/workbench/browser/ui/infoBox/infoBox';
 
 @Component({
 	selector: 'modelview-infobox',
@@ -31,7 +32,8 @@ export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxCompon
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IWorkbenchThemeService) private _themeService: IWorkbenchThemeService,
+		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(ILogService) logService: ILogService) {
 		super(changeRef, el, logService);
 	}
@@ -39,8 +41,20 @@ export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxCompon
 	ngAfterViewInit(): void {
 		this.baseInit();
 		if (this._container) {
-			this._infoBox = new InfoBox(this._container.nativeElement);
-			this._register(attachInfoBoxStyler(this._infoBox, this.themeService));
+			this._infoBox = this._instantiationService.createInstance(InfoBox, this._container.nativeElement, undefined);
+			this._register(attachInfoBoxStyler(this._infoBox, this._themeService));
+			this._infoBox.onDidClick(e => {
+				this.fireEvent({
+					eventType: ComponentEventType.onDidClick,
+					args: e
+				});
+			});
+			this._infoBox.onLinkClick(e => {
+				this.fireEvent({
+					eventType: ComponentEventType.onChildClick,
+					args: e
+				});
+			});
 			this.updateInfoBox();
 		}
 	}
@@ -64,7 +78,10 @@ export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxCompon
 			this._container.nativeElement.style.height = this.getHeight();
 			this._infoBox.announceText = this.announceText;
 			this._infoBox.infoBoxStyle = this.style;
+			this._infoBox.links = this.links;
 			this._infoBox.text = this.text;
+			this._infoBox.isClickable = this.isClickable;
+			this._infoBox.clickableButtonAriaLabel = this.clickableButtonAriaLabel;
 		}
 	}
 
@@ -78,5 +95,17 @@ export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxCompon
 
 	public get announceText(): boolean {
 		return this.getPropertyOrDefault<boolean>((props) => props.announceText, false);
+	}
+
+	public get isClickable(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.isClickable, false);
+	}
+
+	public get clickableButtonAriaLabel(): string {
+		return this.getPropertyOrDefault<string>((props) => props.clickableButtonAriaLabel, '');
+	}
+
+	public get links(): azdata.LinkArea[] {
+		return this.getPropertyOrDefault<azdata.LinkArea[]>((props) => props.links, []);
 	}
 }

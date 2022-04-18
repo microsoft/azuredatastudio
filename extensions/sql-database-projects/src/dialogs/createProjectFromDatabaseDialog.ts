@@ -7,7 +7,7 @@ import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as newProjectTool from '../tools/newProjectTool';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as path from 'path';
 
 import { IconPathHelper } from '../common/iconHelper';
@@ -381,7 +381,7 @@ export class CreateProjectFromDatabaseDialog {
 			filePath: this.projectLocationTextBox!.value!,
 			version: '1.0.0.0',
 			extractTarget: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
-			sdkStyle: this.sdkStyleCheckbox?.checked
+			sdkStyle: this.sdkStyleCheckbox?.checked!
 		};
 
 		azdataApi!.window.closeDialog(this.dialog);

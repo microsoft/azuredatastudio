@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as constants from '../../common/constants';
-import * as mssql from '../../../../mssql';
+import * as mssql from 'mssql';
 import { LanguageViewBase } from './languageViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 

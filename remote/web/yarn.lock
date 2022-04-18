@@ -150,9 +150,9 @@ array-uniq@^1.0.2:
   resolved "https://registry.yarnpkg.com/array-uniq/-/array-uniq-1.0.3.tgz#af6ac877a25cc7f74e058894753858dfdb24fdb6"
   integrity sha1-r2rId6Jcx/dOBYiUdThY39sk/bY=
 
-"azdataGraph@github:Microsoft/azdataGraph#0.0.16":
-  version "0.0.16"
-  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/0b6cc39bef9550860c46511b0ccf3c7ac277b73c"
+"azdataGraph@github:Microsoft/azdataGraph#0.0.20":
+  version "0.0.20"
+  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/d685f37f72f0b22c42d15fbb725b3a5a5b3d71ae"
 
 chalk@^2.3.0, chalk@^2.4.1:
   version "2.4.2"
@@ -339,9 +339,9 @@ mark.js@^8.11.1:
   integrity sha1-GA8fnr74sOY45BZq1S24eb6y/8U=
 
 moment@^2.10.2:
-  version "2.24.0"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
-  integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
+  version "2.29.2"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.2.tgz#00910c60b20843bcba52d37d58c628b47b1f20e4"
+  integrity sha512-UgzG4rvxYpN15jgCmVJwac49h9ly9NurikMWGPdVxm8GZD6XjkKPxDTjQQ43gtGgnV3X0cAyWDdP2Wexoquifg==
 
 ng2-charts@^1.6.0:
   version "1.6.0"
@@ -416,9 +416,9 @@ semver-umd@^5.5.7:
   resolved "https://registry.yarnpkg.com/semver-umd/-/semver-umd-5.5.7.tgz#966beb5e96c7da6fbf09c3da14c2872d6836c528"
   integrity sha512-XgjPNlD0J6aIc8xoTN6GQGwWc2Xg0kq8NzrqMVuKG/4Arl6ab1F8+Am5Y/XKKCR+FceFr2yN/Uv5ZJBhRyRqKg==
 
-"slickgrid@github:Microsoft/SlickGrid.ADS#2.3.35":
-  version "2.3.35"
-  resolved "https://codeload.github.com/Microsoft/SlickGrid.ADS/tar.gz/f49b033a01a8ce6325ea39972284c004a4f9a86b"
+"slickgrid@github:Microsoft/SlickGrid.ADS#2.3.36":
+  version "2.3.36"
+  resolved "https://codeload.github.com/Microsoft/SlickGrid.ADS/tar.gz/08f1ca3f6eb2cd1ea7f56e2af4b69600d48e1932"
 
 source-map@^0.6.1:
   version "0.6.1"

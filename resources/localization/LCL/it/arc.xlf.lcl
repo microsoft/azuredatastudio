@@ -850,6 +850,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.errorListingLogAnalyticsWorkspaces" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error listing Log Analytics workspaces {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Errore durante l'elenco delle aree di lavoro Log Analytics {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.errorVerifyingPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error encountered while verifying password. {0}]]></Val>
@@ -3154,6 +3163,33 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/arc/package.arc.data.controller.log.analytics.primary.key" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log Analytics primary key]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Chiave primaria di Log Analytics]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.data.controller.log.analytics.workspace.id" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log Analytics workspace ID]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ID area di lavoro Log Analytics]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.data.controller.log.analytics.workspace.names" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log Analytics workspace]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Area di lavoro Log Analytics]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/arc/package.arc.data.controller.metrics.and.logs.dashboard.credentials.confirm.password" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Confirm password]]></Val>
@@ -4785,10 +4821,13 @@
       </Item>
       <Item ItemId=";extensions/arc/package.resource.type.azure.arc.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Creates an Azure Arc data controller]]></Val>
+          <Val><![CDATA[Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Creare un controller dei dati Azure Arc]]></Val>
+            <Val><![CDATA[Crea un controller dei dati Azure Arc. Assicurati di aver eseguito l'accesso az prima di avviare la procedura guidata.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Creates an Azure Arc data controller]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

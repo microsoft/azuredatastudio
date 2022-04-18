@@ -389,6 +389,15 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
+        <Item ItemId=";(...) .tab.hideRefreshTask" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Flag used to show/hide refresh button in toolbar. By default, the value is false]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Flag zum Ein-/Ausblenden der Aktualisierungsschaltfläche in der Symbolleiste. Standardmäßig ist der Wert FALSE.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
         <Item ItemId=";(...) .tab.icon.dark" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Icon path when a dark theme is used]]></Val>
@@ -924,9 +933,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView.executionPlanPropertyViewSortAlphabet" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase.executionPlanPropertyViewSortAlph" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ically" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) abetically" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Alphabetical]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -936,13 +945,25 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView.executionPlanPropertyViewSortByDispla" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase.executionPlanPropertyViewSortByDi" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) yOrder" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) splayOrder" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Categorized]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Nach Kategorien]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase.executionPlanPropertyViewSortReve" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) rseAlphabetically" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Reverse Alphabetical]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Umgekehrt alphabetisch]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1142,6 +1163,15 @@
       </Item>
       <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.designer.checkConstraint.description" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) .description" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[The description of the check constraint.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Die Beschreibung der Check-Einschränkung.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
         <Item ItemId=";(...) .expression" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[The expression defining the check constraint.]]></Val>
@@ -1156,6 +1186,18 @@
             <Val><![CDATA[The name of the check constraint.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Der Name der Check-Einschränkung.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.designer.column.description.advanced" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) Type" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Displays the unified data type (including length, scale and precision) for the column]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Zeigt den einheitlichen Datentyp (einschließlich Länge, Skalierung und Genauigkeit) für die Spalte an.]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1185,6 +1227,18 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.designer.column.description.descript" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ion" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Displays the description of the column]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Gibt die Beschreibung der Spalte an.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.designer.column.description.primaryK" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ey" ItemType="0" PsrId="308" Leaf="true">
@@ -1204,6 +1258,18 @@
             <Val><![CDATA[The mapping between foreign key columns and primary key columns.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Die Zuordnung zwischen Fremdschlüsselspalten und Primärschlüsselspalten.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.designer.foreignkey.description.desc" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ription" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[The description of the foreign key.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Die Beschreibung des Fremdschlüssels.]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1257,6 +1323,18 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.designer.index.description.descripti" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) on" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[The description of the index.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Die Beschreibung des Indexers.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.designer.table.description.descripti" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) on" ItemType="0" PsrId="308" Leaf="true">
@@ -1264,6 +1342,78 @@
             <Val><![CDATA[Description for the table.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Die Beschreibung der Tabelle.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.designer.table.primaryKeyColumns.des" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) cription" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Columns in the primary key.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Spalten im Primärschlüssel.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.designer.table.primaryKeyDescription" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) .description" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[The description of the primary key.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Die Beschreibung des Primärschlüssels.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.designer.table.primaryKeyName.descri" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ption" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Name of the primary key.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Name des Primärschlüssels.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.TableSchemaValidationE" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) rror" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Table schema validation failed with error: {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Fehler bei der Tabellenschemaüberprüfung, Fehler: {0}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.addNewColumnToPrimaryK" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ey" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Add Column]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Spalte hinzufügen]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.checkConstraintDescrip" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) tionTitle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Description]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Beschreibung]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1309,10 +1459,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) Designer" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[An error occured while initializing the table designer: {0}]]></Val>
+            <Val><![CDATA[An error occurred while initializing the table designer: {0}]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Fehler beim Initialisieren des Tabellen-Designers: {0}]]></Val>
+              <Val><![CDATA[Beim Initialisieren des Tabellendesigners ist ein Fehler aufgetreten:{0}]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[An error occured while initializing the table designer: {0}]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1324,6 +1477,18 @@
             <Val><![CDATA[Foreign Column]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Fremdspalte]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.foreignKeyDescriptionT" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) itle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Description]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Beschreibung]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1357,10 +1522,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) rror" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[An error occured while generating preview report: {0}]]></Val>
+            <Val><![CDATA[An error occurred while generating preview report: {0}]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Fehler beim Generieren des Vorschauberichts: {0}]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[An error occured while generating preview report: {0}]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1376,6 +1544,36 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.primaryKeyDescriptionT" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) itle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Description]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Beschreibung]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";src/sql/base/browser/ui/editableDropdown/browser/dropdown.editableDropdown.errorValidate" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Must be an option from the list]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Muss eine Option aus der Liste sein]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/browser/ui/editableDropdown/browser/dropdown.selectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select Box]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Auswahlfeld]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/browser/ui/loadingSpinner/loadingSpinner.component.loadingCompletedMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
@@ -1503,6 +1701,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/base/browser/ui/table/plugins/contextMenuColumn.plugin.table.showActions" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Show Actions]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aktionen anzeigen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/base/browser/ui/table/plugins/headerFilter.plugin.headerFilter.cancel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cancel]]></Val>
@@ -1580,6 +1787,24 @@
           <Val><![CDATA[Sort Descending]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Absteigend sortieren]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/browser/ui/table/plugins/headerFilter.plugin.tableFilter.blankStringDisplayText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[(Blanks)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(Leerzeichen)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/browser/ui/table/plugins/headerFilter.plugin.tableFilter.nullDisplayText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[(NULL)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(NULL)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2036,24 +2261,6 @@
           <Val><![CDATA[Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Steuert, ob das leere Fenster in Azure Data Studio standardmäßig als vertrauenswürdig eingestuft wird. Bei Verwendung mit „#{0}#“ können Sie die vollständige Funktionalität von Azure Data Studio aktivieren, ohne in einem leeren Fenster dazu aufgefordert zu werden.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/base/parts/editableDropdown/browser/dropdown.editableDropdown.errorValidate" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Must be an option from the list]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Muss eine Option aus der Liste sein]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/base/parts/editableDropdown/browser/dropdown.selectBox" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select Box]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Auswahlfeld]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3021,6 +3228,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/api/common/notebooks/vscodeExecuteProvider.notebookMultipleRequestsError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Cannot execute code cell. Another cell is currently being executed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Codezelle kann nicht ausgeführt werden. Eine andere Zelle wird zurzeit ausgeführt.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/browser/actions.clearSavedAccounts" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Clear all saved accounts]]></Val>
@@ -3111,20 +3327,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.errorCountAlert" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} validation errors found.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} Validierungsfehler gefunden.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.generalGroupName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[General]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Allgemein]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.issueCountAlert" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0} validation issues found.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} Überprüfungsprobleme wurden gefunden.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.issuesTabTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Issues ({0})]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Probleme ({0})]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3143,15 +3368,6 @@
           <Val><![CDATA[Designer is loaded]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Designer ist geladen]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.messagesTabTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Errors ({0})]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fehler ({0})]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3255,11 +3471,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/browser/designer/designerMessagesTabPanelView.designer.MessageListAriaLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/browser/designer/designerIssuesTabPanelView.designer.IssueListAriaLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Errors]]></Val>
+          <Val><![CDATA[Issues]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fehler]]></Val>
+            <Val><![CDATA[Probleme]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6717,110 +6933,47 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlan.executionPlan.SaveFileDescription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/azdataGraphView.invalidExecutionPlanZoomError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Execution Plan Files]]></Val>
+          <Val><![CDATA[Zoom level cannot be 0 or negative]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ausführungsplandateien]]></Val>
+            <Val><![CDATA[Der Zoomfaktor darf nicht 0 oder negativ sein.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlan.executionPlanCustomZoom" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor.executionPlanEditor" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Custom Zoom]]></Val>
+          <Val><![CDATA[Query Execution Plan Editor]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Vergrößern/Verkleinern]]></Val>
+            <Val><![CDATA[Abfrageausführungsplan-Editor]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlan.executionPlanFitGraphLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanFileView.executionPlanFileLoadingComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Zoom to fit]]></Val>
+          <Val><![CDATA[Execution plans are generated]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Mit Zoom anpassen]]></Val>
+            <Val><![CDATA[Ausführungspläne werden generiert]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlan.executionPlanOpenGraphFile" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanFileView.executionPlanFileLoadingFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Show Query Plan XML]]></Val>
+          <Val><![CDATA[Failed to load execution plan]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Abfrageplan-XML anzeigen]]></Val>
+            <Val><![CDATA[Fehler beim Laden des Ausführungsplans]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlan.executionPlanPropertiesActionLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanFileView.loadingExecutionPlanFile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Properties]]></Val>
+          <Val><![CDATA[Generating execution plans]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Eigenschaften]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlan.executionPlanSavePlanXML" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Save Plan File]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Plandatei speichern]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlan.executionPlanSearchNodeAction" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Find Node]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Knoten suchen]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlan.executionPlanTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Query Plan (Preview)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Abfrageplan (Vorschau)]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlan.executionPlanZoomInActionLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Zoom In]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Vergrößern]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlan.executionPlanZoomOutActionLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Zoom Out]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Verkleinern]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlan.openQueryAction" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Open Query]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Abfrage öffnen]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView.executionPlanPropertyViewClose" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Close]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Schließen]]></Val>
+            <Val><![CDATA[Ausführungspläne werden generiert]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6843,7 +6996,16 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView.nodePropertyViewTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase.executionPlanPropertyViewClose" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Close]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Schließen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase.nodePropertyViewTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Properties]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -6852,7 +7014,142 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/planHeader.planHeaderIndexAndCost" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanTab.executionPlanTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Query Plan (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Abfrageplan (Vorschau)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlan.SaveFileDescription" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Execution Plan Files]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ausführungsplandateien]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanContextMenuDisableTooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Disable Tooltips]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Tooltips deaktivieren]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanContextMenuEnableTooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enable Tooltips]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[QuickInfos aktivieren]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanCustomZoom" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Custom Zoom]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vergrößern/Verkleinern]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanDisableTooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Tooltips disabled]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[QuickInfos deaktiviert]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanEnableTooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Tooltips enabled]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[QuickInfos aktiviert]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanFitGraphLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Zoom to fit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Mit Zoom anpassen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanOpenGraphFile" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Show Query Plan XML]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Abfrageplan-XML anzeigen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanPropertiesActionLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Properties]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Eigenschaften]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanSavePlanXML" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Save Plan File]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Plandatei speichern]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanSearchNodeAction" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Find Node]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Knoten suchen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanZoomInActionLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Zoom In]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vergrößern]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanZoomOutActionLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Zoom Out]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Verkleinern]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.openQueryAction" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open Query]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Abfrage öffnen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader.planHeaderIndexAndCost" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Query {0}: Query cost (relative to the script): {1}%]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -9231,6 +9528,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.restartNotebookKernel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Restart Notebook Kernel]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Notebook-Kernel neu starten]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.search.actionsPosition" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls the positioning of the actionbar on rows in the search view.]]></Val>
@@ -9773,6 +10079,24 @@
           <Val><![CDATA[Unable to find view: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Ansicht nicht gefunden: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookEditor.component.loadingNotebookCompletedMessage" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Loading notebook {0} completed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das Laden des Notizbuchs {0} ist abgeschlossen.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookEditor.component.loadingNotebookMessage" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Loading notebook {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Notizbuch {0} wird geladen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13410,6 +13734,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/accountManagement/browser/accountDialog.accountDialog.loadingProviderLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Loading accounts...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Konten werden geladen...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/accountManagement/browser/accountDialog.accountDialog.noAccountLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[There is no linked account. Please add an account.]]></Val>
@@ -14307,6 +14640,33 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/executionPlan/common/executionPlanService.noHandlerRegistered" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[No valid execution plan handler is registered]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Es ist kein gültiger Handler für den Ausführungsplan registriert]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/executionPlan/common/executionPlanService.providerIdNotValidError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Valid provider is required in order to interact with ExecutionPlanService]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Für die Interaktion mit ExecutionPlanService ist ein gültiger Anbieter erforderlich]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/executionPlan/common/executionPlanService.selectExecutionPlanProvider" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select a provider to open execution plan]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Anbieter auswählen, um den Ausführungsplan zu öffnen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/fileBrowser/browser/fileBrowserDialog.fileBrowser.discard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Discard]]></Val>
@@ -14685,6 +15045,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/models/cell.codeCellLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Code Cell {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Codezelle{0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/notebook/browser/models/cell.commandSuccessful" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Command executed successfully]]></Val>
@@ -14699,6 +15068,15 @@
           <Val><![CDATA[Query execution was canceled]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Die Abfrageausführung wurde abgebrochen.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/models/cell.mdCellLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Markdown Cell {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Markdown-Zelle{0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14813,9 +15191,30 @@
       </Item>
       <Item ItemId=";src/sql/workbench/services/notebook/browser/models/clientSession.kernelRequiresConnection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Kernel {0} was not found. The default kernel will be used instead.]]></Val>
+          <Val><![CDATA[Kernel '{0}' was not found. The default kernel will be used instead.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Der Kernel "{0}" wurde nicht gefunden. Es wird stattdessen der Standardkernel verwendet.]]></Val>
+            <Val><![CDATA[Der Kernel „{0}“ wurde nicht gefunden. Es wird stattdessen der Standardkernel verwendet.]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Kernel {0} was not found. The default kernel will be used instead.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/models/clientSession.kernelRestartFailed" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Kernel restart failed: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Kernelneustart: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/models/clientSession.kernelRestartedSuccessfully" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Kernel restarted successfully]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Kernel erfolgreich neu gestartet]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14987,6 +15386,15 @@
           <Val><![CDATA[Untitled View]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Ansicht ohne Titel]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/sql/sqlSessionManager.SqlKernelRestartNotSupported" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[SQL kernel restart not supported]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Neustart des SQL-Kernels wird nicht unterstützt]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -16386,11 +16794,83 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.PrimaryKeyTabTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Primary Key]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Primärschlüssel]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.addForeignKey" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New Foreign Key]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Neuer Fremdschlüssel]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.addNewCheckConstraint" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New Check Constraint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Neue Check-Einschränkung]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.addNewColumn" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New Column]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Neue Spalte]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.addNewColumnMapping" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New Column Mapping]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Neue Spaltenzuordnung]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.addNewColumnToIndex" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Add Column]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Spalte hinzufügen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.addNewIndex" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New Index]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Neuer Index]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.checkConstraintTypeName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Check Constraint]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Check-Einschränkung]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.columnAdvancedTypeTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Typ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -16409,6 +16889,15 @@
           <Val><![CDATA[Default Value]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Standardwert]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.columnDescriptionTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Description]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Beschreibung]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -16596,6 +17085,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.indexDescription" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Description]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Beschreibung]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.indexName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name]]></Val>
@@ -16614,11 +17112,38 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.inputValidationError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The input validation failed with error: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler bei der Eingabeüberprüfung, Fehler: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.nameTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Table name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Tabellenname]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.primaryKeyColumnsTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Primary Key Columns]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Primärschlüsselspalten]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.primaryKeyNameTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Name]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

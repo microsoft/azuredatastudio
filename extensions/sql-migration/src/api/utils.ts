@@ -7,8 +7,9 @@ import { window, CategoryValue, DropDownComponent, IconPath } from 'azdata';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { DAYS, HRS, MINUTE, SEC } from '../constants/strings';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
-import { MigrationStatus, MigrationContext, ProvisioningState } from '../models/migrationLocalStorage';
+import { MigrationStatus, ProvisioningState } from '../models/migrationLocalStorage';
 import * as crypto from 'crypto';
+import { DatabaseMigration } from './azure';
 
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
@@ -89,40 +90,34 @@ export function convertTimeDifferenceToDuration(startTime: Date, endTime: Date):
 	}
 }
 
-export function filterMigrations(databaseMigrations: MigrationContext[], statusFilter: string, databaseNameFilter?: string): MigrationContext[] {
-	let filteredMigration: MigrationContext[] = [];
+export function filterMigrations(databaseMigrations: DatabaseMigration[], statusFilter: string, databaseNameFilter?: string): DatabaseMigration[] {
+	let filteredMigration: DatabaseMigration[] = [];
 	if (statusFilter === AdsMigrationStatus.ALL) {
 		filteredMigration = databaseMigrations;
 	} else if (statusFilter === AdsMigrationStatus.ONGOING) {
-		filteredMigration = databaseMigrations.filter((value) => {
-			const status = value.migrationContext.properties?.migrationStatus;
-			const provisioning = value.migrationContext.properties?.provisioningState;
-			return status === MigrationStatus.InProgress
-				|| status === MigrationStatus.Creating
-				|| provisioning === MigrationStatus.Creating;
-		});
+		filteredMigration = databaseMigrations.filter(
+			value => {
+				const status = value.properties?.migrationStatus;
+				return status === MigrationStatus.InProgress
+					|| status === MigrationStatus.Creating
+					|| value.properties?.provisioningState === MigrationStatus.Creating;
+			});
 	} else if (statusFilter === AdsMigrationStatus.SUCCEEDED) {
-		filteredMigration = databaseMigrations.filter((value) => {
-			const status = value.migrationContext.properties?.migrationStatus;
-			return status === MigrationStatus.Succeeded;
-		});
+		filteredMigration = databaseMigrations.filter(
+			value => value.properties?.migrationStatus === MigrationStatus.Succeeded);
 	} else if (statusFilter === AdsMigrationStatus.FAILED) {
-		filteredMigration = databaseMigrations.filter((value) => {
-			const status = value.migrationContext.properties?.migrationStatus;
-			const provisioning = value.migrationContext.properties?.provisioningState;
-			return status === MigrationStatus.Failed
-				|| provisioning === ProvisioningState.Failed;
-		});
+		filteredMigration = databaseMigrations.filter(
+			value =>
+				value.properties?.migrationStatus === MigrationStatus.Failed ||
+				value.properties?.provisioningState === ProvisioningState.Failed);
 	} else if (statusFilter === AdsMigrationStatus.COMPLETING) {
-		filteredMigration = databaseMigrations.filter((value) => {
-			const status = value.migrationContext.properties?.migrationStatus;
-			return status === MigrationStatus.Completing;
-		});
+		filteredMigration = databaseMigrations.filter(
+			value => value.properties?.migrationStatus === MigrationStatus.Completing);
 	}
 	if (databaseNameFilter) {
-		filteredMigration = filteredMigration.filter((value) => {
-			return value.migrationContext.name.toLowerCase().includes(databaseNameFilter.toLowerCase());
-		});
+		const filter = databaseNameFilter.toLowerCase();
+		filteredMigration = filteredMigration.filter(
+			migration => migration.name?.toLowerCase().includes(filter));
 	}
 	return filteredMigration;
 }
@@ -144,21 +139,36 @@ export function convertIsoTimeToLocalTime(isoTime: string): Date {
 	return new Date(isoDate.getTime() + (isoDate.getTimezoneOffset() * 60000));
 }
 
-export type SupportedAutoRefreshIntervals = -1 | 15000 | 30000 | 60000 | 180000 | 300000;
-
-export function selectDropDownIndex(dropDown: DropDownComponent, index: number): void {
-	if (index >= 0 && dropDown.values && index <= dropDown.values.length - 1) {
-		const value = dropDown.values[index];
-		dropDown.value = value as CategoryValue;
+export function selectDefaultDropdownValue(dropDown: DropDownComponent, value?: string, useDisplayName: boolean = true): void {
+	if (dropDown.values && dropDown.values.length > 0) {
+		const selectedIndex = value ? findDropDownItemIndex(dropDown, value, useDisplayName) : -1;
+		if (selectedIndex > -1) {
+			selectDropDownIndex(dropDown, selectedIndex);
+		} else {
+			selectDropDownIndex(dropDown, 0);
+		}
 	}
 }
 
-export function findDropDownItemIndex(dropDown: DropDownComponent, value: string): number {
-	if (dropDown.values) {
-		return dropDown.values.findIndex((v: any) =>
-			(v as CategoryValue)?.displayName?.toLowerCase() === value?.toLowerCase());
+export function selectDropDownIndex(dropDown: DropDownComponent, index: number): void {
+	if (dropDown.values && dropDown.values.length > 0) {
+		if (index >= 0 && index <= dropDown.values.length - 1) {
+			dropDown.value = dropDown.values[index] as CategoryValue;
+			return;
+		}
 	}
+	dropDown.value = undefined;
+}
 
+export function findDropDownItemIndex(dropDown: DropDownComponent, value: string, useDisplayName: boolean = true): number {
+	if (value && dropDown.values && dropDown.values.length > 0) {
+		const searachValue = value?.toLowerCase();
+		return useDisplayName
+			? dropDown.values.findIndex((v: any) =>
+				(v as CategoryValue)?.displayName?.toLowerCase() === searachValue)
+			: dropDown.values.findIndex((v: any) =>
+				(v as CategoryValue)?.name?.toLowerCase() === searachValue);
+	}
 	return -1;
 }
 

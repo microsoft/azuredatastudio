@@ -78,7 +78,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	@Input() _views: NotebookViewsExtension;
 
 	protected _actionBar: Taskbar;
-	protected isLoading: boolean;
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 	private _trustedAction: TrustedAction;
 	private _runAllCellsAction: RunAllCellsAction;
@@ -112,7 +111,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
-		this.isLoading = true;
 		this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
@@ -147,12 +145,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			//  on the current active editor.
 			const activeCellElement = this.container.nativeElement.querySelector(`.editor-group-container.active .notebook-cell.active`);
 			let handled = false;
-			if (DOM.isAncestor(this.container.nativeElement, document.activeElement) && this.isActive() && this.model.activeCell) {
+			if ((DOM.isAncestor(this.container.nativeElement, document.activeElement) || document.activeElement === activeCellElement) && this.isActive() && this.model.activeCell) {
 				const event = new StandardKeyboardEvent(e);
 				if (!this.model.activeCell?.isEditMode) {
 					if (event.keyCode === KeyCode.DownArrow) {
 						let next = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
-
 						this.navigateToCell(this.cells[next]);
 						handled = true;
 					} else if (event.keyCode === KeyCode.UpArrow) {
@@ -299,12 +296,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public selectCell(cell: ICellModel) {
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
 			this.model.updateActiveCell(cell);
-			this.detectChanges();
 		}
 	}
 
 	private scrollToActiveCell(): void {
 		const activeCellElement = document.querySelector(`.editor-group-container.active .notebook-cell.active`);
+		(activeCellElement as HTMLElement).focus();
 		activeCellElement.scrollIntoView({ behavior: 'auto', block: 'nearest' });
 	}
 
@@ -342,7 +339,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	public unselectActiveCell() {
 		this.model.updateActiveCell(undefined);
-		this.detectChanges();
+	}
+
+	public updateActiveCell(cell: ICellModel) {
+		this._model.updateActiveCell(cell);
 	}
 
 	// Handles double click to edit icon change
@@ -436,7 +436,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					}
 				} else {
 					this.setViewInErrorState(localize('displayFailed', "Could not display contents: {0}", getErrorMessage(error)));
-					this.setLoading(false);
 					this._modelReadyDeferred.reject(error);
 					this.notebookService.addNotebookEditor(this);
 				}
@@ -444,21 +443,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
-	private setLoading(isLoading: boolean): void {
-		this.isLoading = isLoading;
-		this.detectChanges();
-	}
-
 	private async registerModel(): Promise<void> {
 		this._register(this._model.onError((errInfo: INotification) => this.handleModelError(errInfo)));
 		this._register(this._model.contentChanged((change) => this.handleContentChanged(change)));
 		this._register(this._model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider)));
 		this._register(this._model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs)));
+		this._register(this._model.onActiveCellChanged(() => this.detectChanges()));
 		this._register(this._model.onCellTypeChanged(() => this.detectChanges()));
 		this._register(this._model.layoutChanged(() => this.detectChanges()));
 		this._register(this.model.onScroll.event(() => this._onScroll.fire()));
 
-		this.setLoading(false);
 		// Check if URI fragment is present; if it is, navigate to section by default
 		this.navigateToSectionIfURIFragmentExists();
 		this.updateToolbarComponents();

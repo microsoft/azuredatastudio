@@ -7,7 +7,7 @@ import { NotificationType, RequestType } from 'vscode-languageclient';
 import { ITelemetryEventProperties, ITelemetryEventMeasures } from './telemetry';
 import * as azdata from 'azdata';
 import { ConnectParams } from 'dataprotocol-client/lib/protocol';
-import * as mssql from './mssql';
+import * as mssql from 'mssql';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -679,10 +679,6 @@ export namespace SchemaCompareGenerateScriptRequest {
 	export const type = new RequestType<SchemaCompareGenerateScriptParams, azdata.ResultStatus, void, void>('schemaCompare/generateScript');
 }
 
-export namespace SchemaComparePublishChangesRequest {
-	export const type = new RequestType<SchemaComparePublishDatabaseChangesParams, azdata.ResultStatus, void, void>('schemaCompare/publish');
-}
-
 export namespace SchemaComparePublishDatabaseChangesRequest {
 	export const type = new RequestType<SchemaComparePublishDatabaseChangesParams, azdata.ResultStatus, void, void>('schemaCompare/publishDatabase');
 }
@@ -1096,7 +1092,7 @@ export namespace InitializeTableDesignerRequest {
 }
 
 export namespace ProcessTableDesignerEditRequest {
-	export const type = new RequestType<TableDesignerEditRequestParams, azdata.designers.DesignerEditResult, void, void>('tabledesigner/processedit');
+	export const type = new RequestType<TableDesignerEditRequestParams, azdata.designers.DesignerEditResult<azdata.designers.TableDesignerView>, void, void>('tabledesigner/processedit');
 }
 
 export namespace PublishTableDesignerChangesRequest {
@@ -1108,9 +1104,31 @@ export namespace TableDesignerGenerateScriptRequest {
 }
 
 export namespace TableDesignerGenerateChangePreviewReportRequest {
-	export const type = new RequestType<azdata.designers.TableInfo, string, void, void>('tabledesigner/generatepreviewreport');
+	export const type = new RequestType<azdata.designers.TableInfo, azdata.designers.GeneratePreviewReportResult, void, void>('tabledesigner/generatepreviewreport');
 }
 export namespace DisposeTableDesignerRequest {
 	export const type = new RequestType<azdata.designers.TableInfo, void, void, void>('tabledesigner/dispose');
 }
 // ------------------------------- < Table Designer > ------------------------------------
+
+
+// ------------------------------- < Execution Plan > ------------------------------------
+
+export interface GetExecutionPlanParams {
+	graphInfo: azdata.executionPlan.ExecutionPlanGraphInfo,
+}
+
+export namespace GetExecutionPlanRequest {
+	export const type = new RequestType<GetExecutionPlanParams, azdata.executionPlan.GetExecutionPlanResult, void, void>('queryExecutionPlan/getExecutionPlan');
+}
+
+export interface ExecutionPlanComparisonParams {
+	firstExecutionPlanGraphInfo: azdata.executionPlan.ExecutionPlanGraphInfo;
+	secondExecutionPlanGraphInfo: azdata.executionPlan.ExecutionPlanGraphInfo;
+}
+
+export namespace ExecutionPlanComparisonRequest {
+	export const type = new RequestType<ExecutionPlanComparisonParams, azdata.executionPlan.ExecutionPlanComparisonResult, void, void>('queryExecutionPlan/compareExecutionPlanGraph');
+}
+
+// ------------------------------- < Execution Plan > ------------------------------------

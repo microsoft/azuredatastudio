@@ -39,6 +39,7 @@ import { AddCellEdit, CellOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveC
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
 import { DotnetInteractiveLabel } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { IPYKERNEL_DISPLAY_NAME } from 'sql/workbench/common/constants';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -543,15 +544,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._cells.findIndex(cell => cell.equals(cellModel));
 	}
 
-	public addCell(cellType: CellType, index?: number): ICellModel | undefined {
+	public addCell(cellType: CellType, index?: number, language?: string): ICellModel | undefined {
 		if (this.inErrorState) {
 			return undefined;
 		}
-		let cell = this.createCell(cellType);
+		let cell = this.createCell(cellType, language);
 		return this.insertCell(cell, index, true);
 	}
 
-	public splitCell(cellType: CellType, notebookService: INotebookService, index?: number, addToUndoStack: boolean = true): ICellModel | undefined {
+	public splitCell(cellType: CellType, notebookService: INotebookService, index?: number, language?: string, addToUndoStack: boolean = true): ICellModel | undefined {
 		if (this.inErrorState) {
 			return undefined;
 		}
@@ -626,7 +627,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					}
 					//If the selection is not from the start of the cell, create a new cell.
 					if (headContent.length) {
-						newCell = this.createCell(cellType);
+						newCell = this.createCell(cellType, language);
 						newCell.source = newSource;
 						newCellIndex++;
 						this.insertCell(newCell, newCellIndex, false);
@@ -639,7 +640,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 				if (tailCellContent.length) {
 					//tail cell will be of original cell type.
-					tailCell = this.createCell(this._cells[index].cellType);
+					tailCell = this.createCell(this._cells[index].cellType, language);
 					let tailSource = source.slice(tailRange.startLineNumber - 1) as string[];
 					if (selection.endColumn > 1) {
 						partialSource = source.slice(tailRange.startLineNumber - 1, tailRange.startLineNumber)[0].slice(tailRange.startColumn - 1);
@@ -801,16 +802,18 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public updateActiveCell(cell?: ICellModel, isEditMode: boolean = false): void {
-		if (this._activeCell) {
-			this._activeCell.active = false;
-			this._activeCell.isEditMode = false;
+		if (this._activeCell !== cell) {
+			if (this._activeCell) {
+				this._activeCell.active = false;
+				this._activeCell.isEditMode = false;
+			}
+			this._activeCell = cell;
+			if (this._activeCell) {
+				this._activeCell.active = true;
+				this._activeCell.isEditMode = isEditMode;
+			}
+			this._onActiveCellChanged.fire(cell);
 		}
-		this._activeCell = cell;
-		if (this._activeCell) {
-			this._activeCell.active = true;
-			this._activeCell.isEditMode = isEditMode;
-		}
-		this._onActiveCellChanged.fire(cell);
 	}
 
 	public convertCellType(cell: ICellModel, addToUndoStack: boolean = true): void {
@@ -833,13 +836,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	private createCell(cellType: CellType): ICellModel {
+	private createCell(cellType: CellType, language?: string): ICellModel {
 		let singleCell: nb.ICellContents = {
 			cell_type: cellType,
 			source: '',
 			metadata: {},
 			execution_count: undefined
 		};
+		if (language) {
+			singleCell.metadata.language = language;
+		}
 		return this._notebookOptions.factory.createCell(singleCell, { notebook: this, isTrusted: true });
 	}
 
@@ -1342,19 +1348,20 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private sanitizeSavedKernelInfo(): void {
 		if (this._savedKernelInfo) {
 			let displayName = this._savedKernelInfo.display_name;
-
-			if (this._savedKernelInfo.display_name !== displayName) {
-				this._savedKernelInfo.display_name = displayName;
-			}
 			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName || displayName.startsWith(kernel.displayName));
-			if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
-				// Special case .NET Interactive kernel name to handle inconsistencies between notebook providers and jupyter kernel specs
-				if (this._savedKernelInfo.display_name === DotnetInteractiveLabel) {
-					this._savedKernelInfo.oldName = this._savedKernelInfo.name;
-				}
+			if (standardKernel) {
+				if (this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
+					// Special case .NET Interactive kernel name to handle inconsistencies between notebook providers and jupyter kernel specs
+					if (this._savedKernelInfo.display_name === DotnetInteractiveLabel) {
+						this._savedKernelInfo.oldName = this._savedKernelInfo.name;
+					}
 
-				this._savedKernelInfo.name = standardKernel.name;
-				this._savedKernelInfo.display_name = standardKernel.displayName;
+					this._savedKernelInfo.name = standardKernel.name;
+					this._savedKernelInfo.display_name = standardKernel.displayName;
+				} else if (displayName === IPYKERNEL_DISPLAY_NAME && this._savedKernelInfo.name === standardKernel.name) {
+					// Handle Jupyter alias for Python 3 kernel
+					this._savedKernelInfo.display_name = standardKernel.displayName;
+				}
 			}
 		}
 	}

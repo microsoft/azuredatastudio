@@ -19,6 +19,7 @@ export enum TelemetryViews {
 	MigrationCutoverDialog = 'MigrationCutoverDialog',
 	MigrationStatusDialog = 'MigrationStatusDialog',
 	MigrationWizardAccountSelectionPage = 'MigrationWizardAccountSelectionPage',
+	MigrationWizardTaSkuRecommendationPage = 'MigrationWizardTaSkuRecommendationPage',
 	MigrationWizardTargetSelectionPage = 'MigrationWizardTargetSelectionPage',
 	MigrationWizardIntegrationRuntimePage = 'MigrationWizardIntegrationRuntimePage',
 	MigrationWizardSummaryPage = 'MigrationWizardSummaryPage',
@@ -27,7 +28,8 @@ export enum TelemetryViews {
 	SqlMigrationWizard = 'SqlMigrationWizard',
 	MigrationLocalStorage = 'MigrationLocalStorage',
 	SkuRecommendationWizard = 'SkuRecommendationWizard',
-	DataCollectionWizard = 'GetAzureRecommendationDialog'
+	DataCollectionWizard = 'GetAzureRecommendationDialog',
+	SelectMigrationServiceDialog = 'SelectMigrationServiceDialog',
 }
 
 export enum TelemetryAction {

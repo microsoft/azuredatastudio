@@ -850,6 +850,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.errorListingLogAnalyticsWorkspaces" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error listing Log Analytics workspaces {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[列出 Log Analytics 工作區 {0} 時發生錯誤]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.errorVerifyingPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error encountered while verifying password. {0}]]></Val>
@@ -3154,6 +3163,33 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/arc/package.arc.data.controller.log.analytics.primary.key" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log Analytics primary key]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[記錄分析主要金鑰]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.data.controller.log.analytics.workspace.id" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log Analytics workspace ID]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Log Analytics 工作區識別碼]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.data.controller.log.analytics.workspace.names" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log Analytics workspace]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Log Analytics 工作區]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/arc/package.arc.data.controller.metrics.and.logs.dashboard.credentials.confirm.password" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Confirm password]]></Val>
@@ -4785,10 +4821,13 @@
       </Item>
       <Item ItemId=";extensions/arc/package.resource.type.azure.arc.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Creates an Azure Arc data controller]]></Val>
+          <Val><![CDATA[Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[建立 Azure Arc 資料控制器]]></Val>
+            <Val><![CDATA[建立 Azure Arc 資料控制器。啟動此精靈之前，請先確認您已執行 AZ 登入。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Creates an Azure Arc data controller]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

@@ -385,6 +385,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				return extHostDataProvider.$registerTableDesignerProvider(provider);
 			};
 
+			let registerExecutionPlanProvider = (provider: azdata.executionPlan.ExecutionPlanProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerExecutionPlanProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof azdata.dataprotocol = {
 				registerBackupProvider,
@@ -406,6 +410,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				registerSqlAssessmentServicesProvider,
 				registerDataGridProvider,
 				registerTableDesignerProvider,
+				registerExecutionPlanProvider: registerExecutionPlanProvider,
 				onDidChangeLanguageFlavor(listener: (e: azdata.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -582,9 +587,14 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TableIndexProperty: sqlExtHostTypes.designers.TableIndexProperty,
 				TableIndexColumnSpecificationProperty: sqlExtHostTypes.designers.TableIndexColumnSpecificationProperty,
 				DesignerEditType: sqlExtHostTypes.designers.DesignerEditType,
+				TableIcon: sqlExtHostTypes.designers.TableIcon,
 				openTableDesigner(providerId, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): Promise<void> {
 					return extHostDataProvider.$openTableDesigner(providerId, tableInfo, telemetryInfo);
 				}
+			};
+
+			const executionPlan: typeof azdata.executionPlan = {
+				BadgeType: sqlExtHostTypes.executionPlan.BadgeType
 			};
 
 			return {
@@ -638,7 +648,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TabOrientation: sqlExtHostTypes.TabOrientation,
 				sqlAssessment,
 				TextType: sqlExtHostTypes.TextType,
-				designers: designers
+				designers: designers,
+				executionPlan: executionPlan
 			};
 		},
 		extHostNotebook: extHostNotebook,

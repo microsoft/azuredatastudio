@@ -9,9 +9,7 @@ import { Project } from '../project';
 import * as constants from '../../common/constants';
 import * as utils from '../../common/utils';
 import * as fse from 'fs-extra';
-import * as path from 'path';
 import * as vscode from 'vscode';
-import * as os from 'os';
 import { ConnectionResult } from 'azdata';
 import * as templates from '../../templates/templates';
 import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
@@ -139,13 +137,6 @@ export class DeployService {
 
 			const imageSpec = this.getDockerImageSpec(project.projectFileName, profile.localDbSetting.dockerBaseImage);
 
-			const root = project.projectFolderPath;
-			const mssqlFolderPath = path.join(root, constants.mssqlFolderName);
-			const commandsFolderPath = path.join(mssqlFolderPath, constants.commandsFolderName);
-			const dockerFilePath = path.join(mssqlFolderPath, constants.dockerFileName);
-			const startFilePath = path.join(commandsFolderPath, constants.startCommandName);
-
-
 			// If profile name is not set use the docker name to have a unique name
 			if (!profile.localDbSetting.profileName) {
 				profile.localDbSetting.profileName = imageSpec.containerName;
@@ -166,12 +157,10 @@ export class DeployService {
 			// Create commands
 			//
 
-			await this.createCommands(mssqlFolderPath, commandsFolderPath, dockerFilePath, startFilePath, imageSpec.label, profile.localDbSetting.dockerBaseImage);
-
 			this.logToOutput(constants.runningDockerMessage);
 			// Building the image and running the docker
 			//
-			const createdDockerId: string | undefined = await this.buildAndRunDockerContainer(dockerFilePath, imageSpec, root, profile.localDbSetting);
+			const createdDockerId: string | undefined = await this.runDockerContainer(imageSpec, profile.localDbSetting);
 			this.logToOutput(`Docker container created. Id: ${createdDockerId}`);
 
 
@@ -202,19 +191,15 @@ export class DeployService {
 		});
 	}
 
-	private async buildAndRunDockerContainer(dockerFilePath: string, dockerImageSpec: DockerImageSpec, root: string, profile: ILocalDbSetting): Promise<string | undefined> {
+	private async runDockerContainer(dockerImageSpec: DockerImageSpec, profile: ILocalDbSetting): Promise<string | undefined> {
 
 		// Sensitive data to remove from output console
 		const sensitiveData = [profile.password];
 
 		// Running commands to build the docker image
-		this.logToOutput('Building docker image ...');
 		await this.executeCommand(`docker pull ${profile.dockerBaseImage}`);
-		await this.executeCommand(`docker build -f ${dockerFilePath} -t ${dockerImageSpec.tag} ${root}`);
-		await this.executeCommand(`docker images --filter label=${dockerImageSpec.label}`);
 
-		this.logToOutput('Running docker container ...');
-		await this.executeCommand(`docker run -p ${profile.port}:1433 -e "MSSQL_SA_PASSWORD=${profile.password}" -d --name ${dockerImageSpec.containerName} ${dockerImageSpec.tag}`, sensitiveData);
+		await this.executeCommand(`docker run -p ${profile.port}:1433 -e "MSSQL_SA_PASSWORD=${profile.password}" -e "ACCEPT_EULA=Y" -e "MSSQL_PID=Developer" --label ${dockerImageSpec.label} -d --name ${dockerImageSpec.containerName} ${profile.dockerBaseImage} `, sensitiveData);
 		return await this.executeCommand(`docker ps -q -a --filter label=${dockerImageSpec.label} -q`);
 	}
 
@@ -286,7 +271,8 @@ export class DeployService {
 				typeSystemVersion: undefined,
 				workstationId: undefined,
 				profileName: profile.profileName,
-				expiresOn: undefined
+				expiresOn: undefined,
+				tenantId: undefined
 			};
 			let connectionUrl = await vscodeMssqlApi.connect(connectionProfile, saveConnectionAndPassword);
 			return connectionUrl;
@@ -324,7 +310,7 @@ export class DeployService {
 	public async getConnection(profile: ILocalDbSetting, saveConnectionAndPassword: boolean, database: string): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		let connection = await utils.retry(
-			constants.connectingToSqlServerOnDockerMessage,
+			constants.connectingToSqlServerMessage,
 			async () => {
 				return await this.connectToDatabase(profile, saveConnectionAndPassword, database);
 			},
@@ -375,39 +361,6 @@ export class DeployService {
 
 	private logToOutput(message: string): void {
 		this._outputChannel.appendLine(message);
-	}
-
-	// Creates command file and docker file needed for deploy operation
-	private async createCommands(mssqlFolderPath: string, commandsFolderPath: string, dockerFilePath: string, startFilePath: string, imageLabel: string, baseImage: string): Promise<void> {
-		// Create mssql folders if doesn't exist
-		//
-		await utils.createFolderIfNotExist(mssqlFolderPath);
-		await utils.createFolderIfNotExist(commandsFolderPath);
-
-		// Start command
-		//
-		await this.createFile(startFilePath, 'echo starting the container!');
-		if (os.platform() !== 'win32') {
-			await this.executeCommand(`chmod +x '${startFilePath}'`);
-		}
-
-		// Create the Dockerfile
-		//
-		await this.createFile(dockerFilePath,
-			`
-FROM ${baseImage}
-ENV ACCEPT_EULA=Y
-ENV MSSQL_PID=Developer
-LABEL ${imageLabel}
-RUN mkdir -p /opt/sqlproject
-COPY ${constants.mssqlFolderName}/${constants.commandsFolderName}/ /opt/commands
-RUN ["/bin/bash", "/opt/commands/start.sh"]
-`);
-	}
-
-	private async createFile(filePath: string, content: string): Promise<void> {
-		this.logToOutput(`Creating file ${filePath}, content:${content}`);
-		await fse.writeFile(filePath, content);
 	}
 
 	public async executeCommand(cmd: string, sensitiveData: string[] = [], timeout: number = 5 * 60 * 1000): Promise<string> {

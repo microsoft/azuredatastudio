@@ -541,7 +541,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Process the table edit.
 	 */
-	$processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> { throw ni(); }
+	$processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult<azdata.designers.TableDesignerView>> { throw ni(); }
 
 	/**
 	 * Publish the table designer changes.
@@ -556,7 +556,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Generate preview report.
 	 */
-	$generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> { throw ni(); }
+	$generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.GeneratePreviewReportResult> { throw ni(); }
 
 	/**
 	 * Dispose the table designer.
@@ -567,6 +567,15 @@ export abstract class ExtHostDataProtocolShape {
 	 * Open a new instance of table designer.
 	 */
 	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): void { throw ni(); }
+
+	/**
+	 * Gets the generic execution plan graph for a plan file.
+	 */
+	$getExecutionPlan(handle: number, planFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.GetExecutionPlanResult> { throw ni(); }
+	/**
+	 * Compares two execution plans and identifies matching sections in both.
+	 */
+	$compareExecutionPlanGraph(handle: number, firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.ExecutionPlanComparisonResult> { throw ni(); }
 }
 
 /**
@@ -637,6 +646,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerSqlAssessmentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerDataGridProvider(providerId: string, title: string, handle: number): void;
 	$registerTableDesignerProvider(providerId: string, handle: number): Promise<any>;
+	$registerExecutionPlanProvider(providerId: string, handle: number): void;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
@@ -661,7 +671,6 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void;
 	$onJobDataUpdated(handle: Number): void;
 	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): void;
-
 	/**
 	 * Callback when a session has completed initialization
 	 */
@@ -714,7 +723,7 @@ export const SqlMainContext = {
 	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook'),
 	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors'),
 	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement'),
-	MainThreadWorkspace: createMainId<MainThreadWorkspaceShape>('MainThreadWorkspace')
+	MainThreadWorkspace: createMainId<MainThreadWorkspaceShape>('MainThreadWorkspace'),
 };
 
 export const SqlExtHostContext = {
@@ -737,7 +746,7 @@ export const SqlExtHostContext = {
 	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook'),
 	ExtHostNotebookDocumentsAndEditors: createExtId<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors'),
 	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement'),
-	ExtHostWorkspace: createExtId<ExtHostWorkspaceShape>('ExtHostWorkspace')
+	ExtHostWorkspace: createExtId<ExtHostWorkspaceShape>('ExtHostWorkspace'),
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
@@ -943,6 +952,7 @@ export interface ExtHostNotebookShape {
 	$requestComplete(kernelId: number, content: azdata.nb.ICompleteRequest): Thenable<azdata.nb.ICompleteReplyMsg>;
 	$requestExecute(kernelId: number, content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails>;
 	$interruptKernel(kernelId: number): Thenable<void>;
+	$restartKernel(kernelId: number): Thenable<void>;
 
 	// Future APIs
 	$sendInputReply(futureId: number, content: azdata.nb.IInputReply): void;
@@ -999,7 +1009,7 @@ export interface INotebookShowOptions {
 	providerId?: string;
 	connectionProfile?: azdata.IConnectionProfile;
 	defaultKernel?: azdata.nb.IKernelSpec;
-	initialContent?: string;
+	initialContent?: string | azdata.nb.INotebookContents;
 	initialDirtyState?: boolean;
 }
 
@@ -1012,7 +1022,7 @@ export interface ExtHostNotebookDocumentsAndEditorsShape {
 export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable {
 	$trySetTrusted(_uri: UriComponents, isTrusted: boolean): Thenable<boolean>;
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
-	$tryCreateNotebookDocument(options: INotebookShowOptions): Promise<UriComponents>;
+	$tryCreateNotebookDocument(providerId: string, contents?: azdata.nb.INotebookContents): Promise<UriComponents>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string>;
 	$tryApplyEdits(id: string, modelVersionId: number, edits: INotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
 	$runCell(id: string, cellUri: UriComponents): Promise<boolean>;

@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="missOrInvalid">
         <source xml:lang="en">Missing or invalid credentials.</source>
-        <target state="new">Missing or invalid credentials.</target>
+        <target state="translated">凭据丢失或无效。</target>
       </trans-unit>
     </body>
   </file>
@@ -12,19 +12,19 @@
     <body>
       <trans-unit id="no">
         <source xml:lang="en">No</source>
-        <target state="new">No</target>
+        <target state="translated">否</target>
       </trans-unit>
       <trans-unit id="not now">
         <source xml:lang="en">Ask Me Later</source>
-        <target state="new">Ask Me Later</target>
+        <target state="translated">稍后询问</target>
       </trans-unit>
       <trans-unit id="suggest auto fetch">
         <source xml:lang="en">Would you like Azure Data Studio to [periodically run 'git fetch']({0})?</source>
-        <target state="new">Would you like Azure Data Studio to [periodically run 'git fetch']({0})?</target>
+        <target state="translated">是否希望 Azure Data Studio [定期运行 “git fetch”]({0})?</target>
       </trans-unit>
       <trans-unit id="yes">
         <source xml:lang="en">Yes</source>
-        <target state="new">Yes</target>
+        <target state="translated">是</target>
       </trans-unit>
     </body>
   </file>
@@ -32,683 +32,683 @@
     <body>
       <trans-unit id="HEAD not available">
         <source xml:lang="en">HEAD version of '{0}' is not available.</source>
-        <target state="new">HEAD version of '{0}' is not available.</target>
+        <target state="translated">“{0}”的 HEAD 版本不可用。</target>
       </trans-unit>
       <trans-unit id="add">
         <source xml:lang="en">Add to Workspace</source>
-        <target state="new">Add to Workspace</target>
+        <target state="translated">添加到工作区</target>
       </trans-unit>
       <trans-unit id="add remote">
         <source xml:lang="en">Add a new remote...</source>
-        <target state="new">Add a new remote...</target>
+        <target state="translated">添加一个新远程...</target>
       </trans-unit>
       <trans-unit id="addFrom">
         <source xml:lang="en">Add remote from URL</source>
-        <target state="new">Add remote from URL</target>
+        <target state="translated">从 URL 添加远程存储库</target>
       </trans-unit>
       <trans-unit id="addfrom">
         <source xml:lang="en">Add remote from {0}</source>
-        <target state="new">Add remote from {0}</target>
+        <target state="translated">从 {0} 添加远程存储库</target>
       </trans-unit>
       <trans-unit id="addremote">
         <source xml:lang="en">Add Remote</source>
-        <target state="new">Add Remote</target>
+        <target state="translated">添加远程存储库</target>
       </trans-unit>
       <trans-unit id="always">
         <source xml:lang="en">Always</source>
-        <target state="new">Always</target>
+        <target state="translated">总是</target>
       </trans-unit>
       <trans-unit id="are you sure">
         <source xml:lang="en">This will create a Git repository in '{0}'. Are you sure you want to continue?</source>
-        <target state="new">This will create a Git repository in '{0}'. Are you sure you want to continue?</target>
+        <target state="translated">将在“{0}”中创建 Git 存储库。确定要继续吗？</target>
       </trans-unit>
       <trans-unit id="auth failed">
         <source xml:lang="en">Failed to authenticate to git remote.</source>
-        <target state="new">Failed to authenticate to git remote.</target>
+        <target state="translated">未能对 git remote 进行身份验证。</target>
       </trans-unit>
       <trans-unit id="auth failed specific">
         <source xml:lang="en">Failed to authenticate to git remote:
 
 {0}</source>
-        <target state="new">Failed to authenticate to git remote:
+        <target state="translated">未能对 git remote 进行身份验证:
 
 {0}</target>
       </trans-unit>
       <trans-unit id="branch already exists">
         <source xml:lang="en">A branch named '{0}' already exists</source>
-        <target state="new">A branch named '{0}' already exists</target>
+        <target state="translated">已存在名为“{0}”的分支</target>
       </trans-unit>
       <trans-unit id="branch name">
         <source xml:lang="en">Branch name</source>
-        <target state="new">Branch name</target>
+        <target state="translated">分支名称</target>
       </trans-unit>
       <trans-unit id="branch name format invalid">
         <source xml:lang="en">Branch name needs to match regex: {0}</source>
-        <target state="new">Branch name needs to match regex: {0}</target>
+        <target state="translated">分支名称必须匹配正则表达式: {0}</target>
       </trans-unit>
       <trans-unit id="cant push">
         <source xml:lang="en">Can't push refs to remote. Try running 'Pull' first to integrate your changes.</source>
-        <target state="new">Can't push refs to remote. Try running 'Pull' first to integrate your changes.</target>
+        <target state="translated">无法推送 refs 到远端。您可以试着运行“拉取”功能，整合您的更改。</target>
       </trans-unit>
       <trans-unit id="changed">
         <source xml:lang="en">Log level changed to: {0}</source>
-        <target state="new">Log level changed to: {0}</target>
+        <target state="translated">日志级别更改为: {0}</target>
       </trans-unit>
       <trans-unit id="checkout detached">
         <source xml:lang="en">Checkout detached...</source>
-        <target state="new">Checkout detached...</target>
+        <target state="translated">签出已分离…</target>
       </trans-unit>
       <trans-unit id="choose">
         <source xml:lang="en">Choose Folder...</source>
-        <target state="new">Choose Folder...</target>
+        <target state="translated">选择文件夹...</target>
       </trans-unit>
       <trans-unit id="clean repo">
         <source xml:lang="en">Please clean your repository working tree before checkout.</source>
-        <target state="new">Please clean your repository working tree before checkout.</target>
+        <target state="translated">在签出前，请清理存储库工作树。</target>
       </trans-unit>
       <trans-unit id="clonefrom">
         <source xml:lang="en">Clone from {0}</source>
-        <target state="new">Clone from {0}</target>
+        <target state="translated">从 {0} 克隆</target>
       </trans-unit>
       <trans-unit id="cloning">
         <source xml:lang="en">Cloning git repository '{0}'...</source>
-        <target state="new">Cloning git repository '{0}'...</target>
+        <target state="translated">正在克隆 Git 存储库“{0}”...</target>
       </trans-unit>
       <trans-unit id="commit">
         <source xml:lang="en">Commit Staged Changes</source>
-        <target state="new">Commit Staged Changes</target>
+        <target state="translated">提交暂存更改</target>
       </trans-unit>
       <trans-unit id="commit anyway">
         <source xml:lang="en">Create Empty Commit</source>
-        <target state="new">Create Empty Commit</target>
+        <target state="translated">创建空提交</target>
       </trans-unit>
       <trans-unit id="commit hash">
         <source xml:lang="en">Commit Hash</source>
-        <target state="new">Commit Hash</target>
+        <target state="translated">提交哈希</target>
       </trans-unit>
       <trans-unit id="commit message">
         <source xml:lang="en">Commit message</source>
-        <target state="new">Commit message</target>
+        <target state="translated">提交消息</target>
       </trans-unit>
       <trans-unit id="commitMessageWithHeadLabel2">
         <source xml:lang="en">Message (commit on '{0}')</source>
-        <target state="new">Message (commit on '{0}')</target>
+        <target state="translated">消息(在“{0}”上提交)</target>
       </trans-unit>
       <trans-unit id="confirm delete">
         <source xml:lang="en">Are you sure you want to DELETE {0}?
 This is IRREVERSIBLE!
 This file will be FOREVER LOST if you proceed.</source>
-        <target state="new">Are you sure you want to DELETE {0}?
-This is IRREVERSIBLE!
-This file will be FOREVER LOST if you proceed.</target>
+        <target state="translated">确定要删除 {0} 吗?
+此操作不可撤消!
+如果继续操作，此文件将永久丢失。</target>
       </trans-unit>
       <trans-unit id="confirm delete multiple">
         <source xml:lang="en">Are you sure you want to DELETE {0} files?
 This is IRREVERSIBLE!
 These files will be FOREVER LOST if you proceed.</source>
-        <target state="new">Are you sure you want to DELETE {0} files?
-This is IRREVERSIBLE!
-These files will be FOREVER LOST if you proceed.</target>
+        <target state="translated">确定要删除 {0} 个文件吗?
+此操作不可撤消!
+如果继续操作，这些文件将永久丢失。</target>
       </trans-unit>
       <trans-unit id="confirm discard">
         <source xml:lang="en">Are you sure you want to discard changes in {0}?</source>
-        <target state="new">Are you sure you want to discard changes in {0}?</target>
+        <target state="translated">确定要放弃 {0} 中更改吗?</target>
       </trans-unit>
       <trans-unit id="confirm discard all">
         <source xml:lang="en">Are you sure you want to discard ALL changes in {0} files?
 This is IRREVERSIBLE!
 Your current working set will be FOREVER LOST if you proceed.</source>
-        <target state="new">Are you sure you want to discard ALL changes in {0} files?
-This is IRREVERSIBLE!
-Your current working set will be FOREVER LOST if you proceed.</target>
+        <target state="translated">确定要放弃在 {0} 个文件中所作的全部更改吗?
+此操作不可撤消!
+如果继续操作，你当前的工作集将永久丢失。</target>
       </trans-unit>
       <trans-unit id="confirm discard all 2">
         <source xml:lang="en">{0}
 
 This is IRREVERSIBLE, your current working set will be FOREVER LOST.</source>
-        <target state="new">{0}
+        <target state="translated">{0}
 
-This is IRREVERSIBLE, your current working set will be FOREVER LOST.</target>
+此操作不可撤消，你当前的工作集将永久丢失。</target>
       </trans-unit>
       <trans-unit id="confirm discard all single">
         <source xml:lang="en">Are you sure you want to discard changes in {0}?</source>
-        <target state="new">Are you sure you want to discard changes in {0}?</target>
+        <target state="translated">确定要放弃 {0} 中更改吗?</target>
       </trans-unit>
       <trans-unit id="confirm discard multiple">
         <source xml:lang="en">Are you sure you want to discard changes in {0} files?</source>
-        <target state="new">Are you sure you want to discard changes in {0} files?</target>
+        <target state="translated">是否确实要放弃 {0} 文件中的更改?</target>
       </trans-unit>
       <trans-unit id="confirm emtpy commit">
         <source xml:lang="en">Are you sure you want to create an empty commit?</source>
-        <target state="new">Are you sure you want to create an empty commit?</target>
+        <target state="translated">是否确定要创建空提交?</target>
       </trans-unit>
       <trans-unit id="confirm force delete branch">
         <source xml:lang="en">The branch '{0}' is not fully merged. Delete anyway?</source>
-        <target state="new">The branch '{0}' is not fully merged. Delete anyway?</target>
+        <target state="translated">“{0}”分支未被完全合并。是否仍要删除？</target>
       </trans-unit>
       <trans-unit id="confirm force push">
         <source xml:lang="en">You are about to force push your changes, this can be destructive and could inadvertently overwrite changes made by others.
 
 Are you sure to continue?</source>
-        <target state="new">You are about to force push your changes, this can be destructive and could inadvertently overwrite changes made by others.
+        <target state="translated">即将强制推送更改，此操作可能具有破坏性并可能在无意中覆盖其他人的更改。
 
-Are you sure to continue?</target>
+确定要继续吗?</target>
       </trans-unit>
       <trans-unit id="confirm no verify commit">
         <source xml:lang="en">You are about to commit your changes without verification, this skips pre-commit hooks and can be undesirable.
 
 Are you sure to continue?</source>
-        <target state="new">You are about to commit your changes without verification, this skips pre-commit hooks and can be undesirable.
+        <target state="translated">你即将在未验证的情况下提交更改，这会跳过 pre-commit 挂钩，可能导致不理想的结果。
 
-Are you sure to continue?</target>
+确定要继续吗?</target>
       </trans-unit>
       <trans-unit id="confirm publish branch">
         <source xml:lang="en">The branch '{0}' has no upstream branch. Would you like to publish this branch?</source>
-        <target state="new">The branch '{0}' has no upstream branch. Would you like to publish this branch?</target>
+        <target state="translated">分支“{0}”没有上游分支。您要发布此分支吗?</target>
       </trans-unit>
       <trans-unit id="confirm restore">
         <source xml:lang="en">Are you sure you want to restore {0}?</source>
-        <target state="new">Are you sure you want to restore {0}?</target>
+        <target state="translated">是否确实要还原 {0}?</target>
       </trans-unit>
       <trans-unit id="confirm restore multiple">
         <source xml:lang="en">Are you sure you want to restore {0} files?</source>
-        <target state="new">Are you sure you want to restore {0} files?</target>
+        <target state="translated">是否确定要还原 {0} 个文件?</target>
       </trans-unit>
       <trans-unit id="confirm stage file with merge conflicts">
         <source xml:lang="en">Are you sure you want to stage {0} with merge conflicts?</source>
-        <target state="new">Are you sure you want to stage {0} with merge conflicts?</target>
+        <target state="translated">确定要暂存含有合并冲突的 {0} 吗?</target>
       </trans-unit>
       <trans-unit id="confirm stage files with merge conflicts">
         <source xml:lang="en">Are you sure you want to stage {0} files with merge conflicts?</source>
-        <target state="new">Are you sure you want to stage {0} files with merge conflicts?</target>
+        <target state="translated">确定要暂存含有合并冲突的 {0} 个文件吗?</target>
       </trans-unit>
       <trans-unit id="create branch">
         <source xml:lang="en">Create new branch...</source>
-        <target state="new">Create new branch...</target>
+        <target state="translated">正在创建新分支...</target>
       </trans-unit>
       <trans-unit id="create branch from">
         <source xml:lang="en">Create new branch from...</source>
-        <target state="new">Create new branch from...</target>
+        <target state="translated">从...创建分支</target>
       </trans-unit>
       <trans-unit id="create repo">
         <source xml:lang="en">Initialize Repository</source>
-        <target state="new">Initialize Repository</target>
+        <target state="translated">初始化存储库</target>
       </trans-unit>
       <trans-unit id="current">
         <source xml:lang="en">Current</source>
-        <target state="new">Current</target>
+        <target state="translated">当前</target>
       </trans-unit>
       <trans-unit id="delete">
         <source xml:lang="en">Delete File</source>
-        <target state="new">Delete File</target>
+        <target state="translated">删除文件</target>
       </trans-unit>
       <trans-unit id="delete branch">
         <source xml:lang="en">Delete Branch</source>
-        <target state="new">Delete Branch</target>
+        <target state="translated">删除分支</target>
       </trans-unit>
       <trans-unit id="delete file">
         <source xml:lang="en">Delete file</source>
-        <target state="new">Delete file</target>
+        <target state="translated">删除文件</target>
       </trans-unit>
       <trans-unit id="delete files">
         <source xml:lang="en">Delete Files</source>
-        <target state="new">Delete Files</target>
+        <target state="translated">删除文件</target>
       </trans-unit>
       <trans-unit id="deleted by them">
         <source xml:lang="en">File '{0}' was deleted by them and modified by us.
 
 What would you like to do?</source>
-        <target state="new">File '{0}' was deleted by them and modified by us.
+        <target state="translated">文件“{0}”已被他们删除且已经过我们修改。
 
-What would you like to do?</target>
+你想要执行什么操作?</target>
       </trans-unit>
       <trans-unit id="deleted by us">
         <source xml:lang="en">File '{0}' was deleted by us and modified by them.
 
 What would you like to do?</source>
-        <target state="new">File '{0}' was deleted by us and modified by them.
+        <target state="translated">文件“{0}”已被我们删除且已经过他们修改。
 
-What would you like to do?</target>
+你想要执行什么操作?</target>
       </trans-unit>
       <trans-unit id="discard">
         <source xml:lang="en">Discard Changes</source>
-        <target state="new">Discard Changes</target>
+        <target state="translated">放弃更改</target>
       </trans-unit>
       <trans-unit id="discardAll">
         <source xml:lang="en">Discard All {0} Files</source>
-        <target state="new">Discard All {0} Files</target>
+        <target state="translated">放弃所有 {0} 个文件</target>
       </trans-unit>
       <trans-unit id="discardAll multiple">
         <source xml:lang="en">Discard 1 File</source>
-        <target state="new">Discard 1 File</target>
+        <target state="translated">放弃 1 个文件</target>
       </trans-unit>
       <trans-unit id="force">
         <source xml:lang="en">Force Checkout</source>
-        <target state="new">Force Checkout</target>
+        <target state="translated">强制签出</target>
       </trans-unit>
       <trans-unit id="force push not allowed">
         <source xml:lang="en">Force push is not allowed, please enable it with the 'git.allowForcePush' setting.</source>
-        <target state="new">Force push is not allowed, please enable it with the 'git.allowForcePush' setting.</target>
+        <target state="translated">不允许强制推送，请启用 “git. allowForcePush” 设置。</target>
       </trans-unit>
       <trans-unit id="git error">
         <source xml:lang="en">Git error</source>
-        <target state="new">Git error</target>
+        <target state="translated">Git 错误</target>
       </trans-unit>
       <trans-unit id="git error details">
         <source xml:lang="en">Git: {0}</source>
-        <target state="new">Git: {0}</target>
+        <target state="translated">Git: {0}</target>
       </trans-unit>
       <trans-unit id="git.title.diff">
         <source xml:lang="en">{0} ⟷ {1}</source>
-        <target state="new">{0} ⟷ {1}</target>
+        <target state="translated">{0} ⟷ {1}</target>
       </trans-unit>
       <trans-unit id="git.title.diffRefs">
         <source xml:lang="en">{0} ({1}) ⟷ {0} ({2})</source>
-        <target state="new">{0} ({1}) ⟷ {0} ({2})</target>
+        <target state="translated">{0} ({1}) ⟷ {0} ({2})</target>
       </trans-unit>
       <trans-unit id="git.title.index">
         <source xml:lang="en">{0} (Index)</source>
-        <target state="new">{0} (Index)</target>
+        <target state="translated">{0} (索引)</target>
       </trans-unit>
       <trans-unit id="git.title.ref">
         <source xml:lang="en">{0} ({1})</source>
-        <target state="new">{0} ({1})</target>
+        <target state="translated">{0} ({1})</target>
       </trans-unit>
       <trans-unit id="git.title.workingTree">
         <source xml:lang="en">{0} (Working Tree)</source>
-        <target state="new">{0} (Working Tree)</target>
+        <target state="translated">{0} (工作树)</target>
       </trans-unit>
       <trans-unit id="init">
         <source xml:lang="en">Pick workspace folder to initialize git repo in</source>
-        <target state="new">Pick workspace folder to initialize git repo in</target>
+        <target state="translated">选择用于初始化 Git 储存库的工作区文件夹</target>
       </trans-unit>
       <trans-unit id="init repo">
         <source xml:lang="en">Initialize Repository</source>
-        <target state="new">Initialize Repository</target>
+        <target state="translated">初始化存储库</target>
       </trans-unit>
       <trans-unit id="invalid branch name">
         <source xml:lang="en">Invalid branch name</source>
-        <target state="new">Invalid branch name</target>
+        <target state="translated">分支名称无效</target>
       </trans-unit>
       <trans-unit id="keep ours">
         <source xml:lang="en">Keep Our Version</source>
-        <target state="new">Keep Our Version</target>
+        <target state="translated">保留“我们”的版本</target>
       </trans-unit>
       <trans-unit id="keep theirs">
         <source xml:lang="en">Keep Their Version</source>
-        <target state="new">Keep Their Version</target>
+        <target state="translated">保留“他们”的版本</target>
       </trans-unit>
       <trans-unit id="learn more">
         <source xml:lang="en">Learn More</source>
-        <target state="new">Learn More</target>
+        <target state="translated">了解详细信息</target>
       </trans-unit>
       <trans-unit id="local changes">
         <source xml:lang="en">Your local changes would be overwritten by checkout.</source>
-        <target state="new">Your local changes would be overwritten by checkout.</target>
+        <target state="translated">签出会覆盖本地更改。</target>
       </trans-unit>
       <trans-unit id="merge commit">
         <source xml:lang="en">The last commit was a merge commit. Are you sure you want to undo it?</source>
-        <target state="new">The last commit was a merge commit. Are you sure you want to undo it?</target>
+        <target state="translated">最后一个提交是合并提交。是否确实要撤消它？</target>
       </trans-unit>
       <trans-unit id="merge conflicts">
         <source xml:lang="en">There are merge conflicts. Resolve them before committing.</source>
-        <target state="new">There are merge conflicts. Resolve them before committing.</target>
+        <target state="translated">存在合并冲突。请在提交之前解决这些冲突。</target>
       </trans-unit>
       <trans-unit id="missing user info">
         <source xml:lang="en">Make sure you configure your 'user.name' and 'user.email' in git.</source>
-        <target state="new">Make sure you configure your 'user.name' and 'user.email' in git.</target>
+        <target state="translated">请确保已在 Git 中配置 “user.name” 和 “user.email”。</target>
       </trans-unit>
       <trans-unit id="never">
         <source xml:lang="en">Never</source>
-        <target state="new">Never</target>
+        <target state="translated">从不</target>
       </trans-unit>
       <trans-unit id="never again">
         <source xml:lang="en">OK, Don't Show Again</source>
-        <target state="new">OK, Don't Show Again</target>
+        <target state="translated">确定，且不再显示</target>
       </trans-unit>
       <trans-unit id="never ask again">
         <source xml:lang="en">OK, Don't Ask Again</source>
-        <target state="new">OK, Don't Ask Again</target>
+        <target state="translated">确定，且不再询问</target>
       </trans-unit>
       <trans-unit id="no changes">
         <source xml:lang="en">There are no changes to commit.</source>
-        <target state="new">There are no changes to commit.</target>
+        <target state="translated">没有要提交的更改。</target>
       </trans-unit>
       <trans-unit id="no changes stash">
         <source xml:lang="en">There are no changes to stash.</source>
-        <target state="new">There are no changes to stash.</target>
+        <target state="translated">没有要储藏的更改。</target>
       </trans-unit>
       <trans-unit id="no more">
         <source xml:lang="en">Can't undo because HEAD doesn't point to any commit.</source>
-        <target state="new">Can't undo because HEAD doesn't point to any commit.</target>
+        <target state="translated">无法撤消，因为 HEAD 不指向任何提交。</target>
       </trans-unit>
       <trans-unit id="no rebase">
         <source xml:lang="en">No rebase in progress.</source>
-        <target state="new">No rebase in progress.</target>
+        <target state="translated">没有正在进行的变基。</target>
       </trans-unit>
       <trans-unit id="no remotes added">
         <source xml:lang="en">Your repository has no remotes.</source>
-        <target state="new">Your repository has no remotes.</target>
+        <target state="translated">您的存储库中没有远程存储库。</target>
       </trans-unit>
       <trans-unit id="no remotes to fetch">
         <source xml:lang="en">This repository has no remotes configured to fetch from.</source>
-        <target state="new">This repository has no remotes configured to fetch from.</target>
+        <target state="translated">此存储库未配置可以从中抓取的远程存储库。</target>
       </trans-unit>
       <trans-unit id="no remotes to publish">
         <source xml:lang="en">Your repository has no remotes configured to publish to.</source>
-        <target state="new">Your repository has no remotes configured to publish to.</target>
+        <target state="translated">存储库未配置任何要发布到的远程存储库。</target>
       </trans-unit>
       <trans-unit id="no remotes to pull">
         <source xml:lang="en">Your repository has no remotes configured to pull from.</source>
-        <target state="new">Your repository has no remotes configured to pull from.</target>
+        <target state="translated">存储库未配置任何从其中进行拉取的远程存储库。</target>
       </trans-unit>
       <trans-unit id="no remotes to push">
         <source xml:lang="en">Your repository has no remotes configured to push to.</source>
-        <target state="new">Your repository has no remotes configured to push to.</target>
+        <target state="translated">存储库未配置任何要推送到的远程存储库。</target>
       </trans-unit>
       <trans-unit id="no staged changes">
         <source xml:lang="en">There are no staged changes to commit.
 
 Would you like to stage all your changes and commit them directly?</source>
-        <target state="new">There are no staged changes to commit.
+        <target state="translated">没有可提交的暂存更改。
 
-Would you like to stage all your changes and commit them directly?</target>
+是否要暂存所有更改并直接提交?</target>
       </trans-unit>
       <trans-unit id="no stashes">
         <source xml:lang="en">There are no stashes in the repository.</source>
-        <target state="new">There are no stashes in the repository.</target>
+        <target state="translated">此存储库中没有储藏。</target>
       </trans-unit>
       <trans-unit id="no tags">
         <source xml:lang="en">This repository has no tags.</source>
-        <target state="new">This repository has no tags.</target>
+        <target state="translated">此存储库没有标记。</target>
       </trans-unit>
       <trans-unit id="no verify commit not allowed">
         <source xml:lang="en">Commits without verification are not allowed, please enable them with the 'git.allowNoVerifyCommit' setting.</source>
-        <target state="new">Commits without verification are not allowed, please enable them with the 'git.allowNoVerifyCommit' setting.</target>
+        <target state="translated">不允许在未验证的情况下提交，请使用 “git.allowNoVerifyCommit” 设置启用这些提交。</target>
       </trans-unit>
       <trans-unit id="nobranch">
         <source xml:lang="en">Please check out a branch to push to a remote.</source>
-        <target state="new">Please check out a branch to push to a remote.</target>
+        <target state="translated">请签出一个分支以推送到远程。</target>
       </trans-unit>
       <trans-unit id="ok">
         <source xml:lang="en">OK</source>
-        <target state="new">OK</target>
+        <target state="translated">确定</target>
       </trans-unit>
       <trans-unit id="open git log">
         <source xml:lang="en">Open Git Log</source>
-        <target state="new">Open Git Log</target>
+        <target state="translated">打开 GIT 日志</target>
       </trans-unit>
       <trans-unit id="open repo">
         <source xml:lang="en">Open Repository</source>
-        <target state="new">Open Repository</target>
+        <target state="translated">打开存储库</target>
       </trans-unit>
       <trans-unit id="openrepo">
         <source xml:lang="en">Open</source>
-        <target state="new">Open</target>
+        <target state="translated">打开</target>
       </trans-unit>
       <trans-unit id="openreponew">
         <source xml:lang="en">Open in New Window</source>
-        <target state="new">Open in New Window</target>
+        <target state="translated">在新窗口中打开</target>
       </trans-unit>
       <trans-unit id="pick branch pull">
         <source xml:lang="en">Pick a branch to pull from</source>
-        <target state="new">Pick a branch to pull from</target>
+        <target state="translated">选择拉取的来源分支</target>
       </trans-unit>
       <trans-unit id="pick provider">
         <source xml:lang="en">Pick a provider to publish the branch '{0}' to:</source>
-        <target state="new">Pick a provider to publish the branch '{0}' to:</target>
+        <target state="translated">选择一个提供程序以将分支“{0}”发布到:</target>
       </trans-unit>
       <trans-unit id="pick remote">
         <source xml:lang="en">Pick a remote to publish the branch '{0}' to:</source>
-        <target state="new">Pick a remote to publish the branch '{0}' to:</target>
+        <target state="translated">选取要将分支“{0}”发布到的远程:</target>
       </trans-unit>
       <trans-unit id="pick remote pull repo">
         <source xml:lang="en">Pick a remote to pull the branch from</source>
-        <target state="new">Pick a remote to pull the branch from</target>
+        <target state="translated">选择要从其拉取分支的远程位置</target>
       </trans-unit>
       <trans-unit id="pick stash to apply">
         <source xml:lang="en">Pick a stash to apply</source>
-        <target state="new">Pick a stash to apply</target>
+        <target state="translated">选择要应用的储藏</target>
       </trans-unit>
       <trans-unit id="pick stash to drop">
         <source xml:lang="en">Pick a stash to drop</source>
-        <target state="new">Pick a stash to drop</target>
+        <target state="translated">选择要删除的储藏</target>
       </trans-unit>
       <trans-unit id="pick stash to pop">
         <source xml:lang="en">Pick a stash to pop</source>
-        <target state="new">Pick a stash to pop</target>
+        <target state="translated">选择要弹出的储藏</target>
       </trans-unit>
       <trans-unit id="proposeopen">
         <source xml:lang="en">Would you like to open the cloned repository?</source>
-        <target state="new">Would you like to open the cloned repository?</target>
+        <target state="translated">是否要打开已克隆存储库?</target>
       </trans-unit>
       <trans-unit id="proposeopen init">
         <source xml:lang="en">Would you like to open the initialized repository?</source>
-        <target state="new">Would you like to open the initialized repository?</target>
+        <target state="translated">是否打开初始化的存储库?</target>
       </trans-unit>
       <trans-unit id="proposeopen2">
         <source xml:lang="en">Would you like to open the cloned repository, or add it to the current workspace?</source>
-        <target state="new">Would you like to open the cloned repository, or add it to the current workspace?</target>
+        <target state="translated">您是希望打开克隆的存储库，还是将其添加到当前工作区?</target>
       </trans-unit>
       <trans-unit id="proposeopen2 init">
         <source xml:lang="en">Would you like to open the initialized repository, or add it to the current workspace?</source>
-        <target state="new">Would you like to open the initialized repository, or add it to the current workspace?</target>
+        <target state="translated">您是希望打开初始化的存储库，还是将其添加到当前工作区?</target>
       </trans-unit>
       <trans-unit id="provide branch name">
         <source xml:lang="en">Please provide a new branch name</source>
-        <target state="new">Please provide a new branch name</target>
+        <target state="translated">请提供新的分支名称</target>
       </trans-unit>
       <trans-unit id="provide commit hash">
         <source xml:lang="en">Please provide the commit hash</source>
-        <target state="new">Please provide the commit hash</target>
+        <target state="translated">请提供提交哈希</target>
       </trans-unit>
       <trans-unit id="provide commit message">
         <source xml:lang="en">Please provide a commit message</source>
-        <target state="new">Please provide a commit message</target>
+        <target state="translated">请提供提交消息</target>
       </trans-unit>
       <trans-unit id="provide remote name">
         <source xml:lang="en">Please provide a remote name</source>
-        <target state="new">Please provide a remote name</target>
+        <target state="translated">请提供远程存储库名称</target>
       </trans-unit>
       <trans-unit id="provide stash message">
         <source xml:lang="en">Optionally provide a stash message</source>
-        <target state="new">Optionally provide a stash message</target>
+        <target state="translated">提供储藏消息(可选)</target>
       </trans-unit>
       <trans-unit id="provide tag message">
         <source xml:lang="en">Please provide a message to annotate the tag</source>
-        <target state="new">Please provide a message to annotate the tag</target>
+        <target state="translated">请提供消息以对标记进行注释</target>
       </trans-unit>
       <trans-unit id="provide tag name">
         <source xml:lang="en">Please provide a tag name</source>
-        <target state="new">Please provide a tag name</target>
+        <target state="translated">已成功带标记进行推送。</target>
       </trans-unit>
       <trans-unit id="publish to">
         <source xml:lang="en">Publish to {0}</source>
-        <target state="new">Publish to {0}</target>
+        <target state="translated">发布到 {0}</target>
       </trans-unit>
       <trans-unit id="remote already exists">
         <source xml:lang="en">Remote '{0}' already exists.</source>
-        <target state="new">Remote '{0}' already exists.</target>
+        <target state="translated">远程存储库“{0}”已存在。</target>
       </trans-unit>
       <trans-unit id="remote branch at">
         <source xml:lang="en">Remote branch at {0}</source>
-        <target state="new">Remote branch at {0}</target>
+        <target state="translated">{0} 处的远程分支</target>
       </trans-unit>
       <trans-unit id="remote name">
         <source xml:lang="en">Remote name</source>
-        <target state="new">Remote name</target>
+        <target state="translated">远程存储库名称</target>
       </trans-unit>
       <trans-unit id="remote name format invalid">
         <source xml:lang="en">Remote name format invalid</source>
-        <target state="new">Remote name format invalid</target>
+        <target state="translated">远程仓库名称格式无效</target>
       </trans-unit>
       <trans-unit id="remove remote">
         <source xml:lang="en">Pick a remote to remove</source>
-        <target state="new">Pick a remote to remove</target>
+        <target state="translated">选择要删除的远程库</target>
       </trans-unit>
       <trans-unit id="repourl">
         <source xml:lang="en">Clone from URL</source>
-        <target state="new">Clone from URL</target>
+        <target state="translated">存储库 URL</target>
       </trans-unit>
       <trans-unit id="restore file">
         <source xml:lang="en">Restore file</source>
-        <target state="new">Restore file</target>
+        <target state="translated">恢复文件</target>
       </trans-unit>
       <trans-unit id="restore files">
         <source xml:lang="en">Restore files</source>
-        <target state="new">Restore files</target>
+        <target state="translated">恢复文件</target>
       </trans-unit>
       <trans-unit id="save and commit">
         <source xml:lang="en">Save All &amp; Commit</source>
-        <target state="new">Save All &amp; Commit</target>
+        <target state="translated">全部保存并提交</target>
       </trans-unit>
       <trans-unit id="save and stash">
         <source xml:lang="en">Save All &amp; Stash</source>
-        <target state="new">Save All &amp; Stash</target>
+        <target state="translated">全部保存并储藏</target>
       </trans-unit>
       <trans-unit id="select a branch to merge from">
         <source xml:lang="en">Select a branch to merge from</source>
-        <target state="new">Select a branch to merge from</target>
+        <target state="translated">选择要从其合并的分支</target>
       </trans-unit>
       <trans-unit id="select a branch to rebase onto">
         <source xml:lang="en">Select a branch to rebase onto</source>
-        <target state="new">Select a branch to rebase onto</target>
+        <target state="translated">选择要变基到的分支</target>
       </trans-unit>
       <trans-unit id="select a ref to checkout">
         <source xml:lang="en">Select a ref to checkout</source>
-        <target state="new">Select a ref to checkout</target>
+        <target state="translated">选择要签出的 ref</target>
       </trans-unit>
       <trans-unit id="select a ref to checkout detached">
         <source xml:lang="en">Select a ref to checkout in detached mode</source>
-        <target state="new">Select a ref to checkout in detached mode</target>
+        <target state="translated">选择要在分离模式下签出的引用</target>
       </trans-unit>
       <trans-unit id="select a ref to create a new branch from">
         <source xml:lang="en">Select a ref to create the '{0}' branch from</source>
-        <target state="new">Select a ref to create the '{0}' branch from</target>
+        <target state="translated">选择一个 ref 以从中创建“{0}”分支</target>
       </trans-unit>
       <trans-unit id="select a tag to delete">
         <source xml:lang="en">Select a tag to delete</source>
-        <target state="new">Select a tag to delete</target>
+        <target state="translated">选择要删除的标记</target>
       </trans-unit>
       <trans-unit id="select branch to delete">
         <source xml:lang="en">Select a branch to delete</source>
-        <target state="new">Select a branch to delete</target>
+        <target state="translated">选择要删除的分支</target>
       </trans-unit>
       <trans-unit id="select log level">
         <source xml:lang="en">Select log level</source>
-        <target state="new">Select log level</target>
+        <target state="translated">选择日志级别</target>
       </trans-unit>
       <trans-unit id="selectFolder">
         <source xml:lang="en">Select Repository Location</source>
-        <target state="new">Select Repository Location</target>
+        <target state="translated">选择存储库位置</target>
       </trans-unit>
       <trans-unit id="show command output">
         <source xml:lang="en">Show Command Output</source>
-        <target state="new">Show Command Output</target>
+        <target state="translated">显示命令输出</target>
       </trans-unit>
       <trans-unit id="stash">
         <source xml:lang="en">Stash Anyway</source>
-        <target state="new">Stash Anyway</target>
+        <target state="translated">仍要储藏</target>
       </trans-unit>
       <trans-unit id="stash merge conflicts">
         <source xml:lang="en">There were merge conflicts while applying the stash.</source>
-        <target state="new">There were merge conflicts while applying the stash.</target>
+        <target state="translated">在应用储藏时存在合并冲突。</target>
       </trans-unit>
       <trans-unit id="stash message">
         <source xml:lang="en">Stash message</source>
-        <target state="new">Stash message</target>
+        <target state="translated">储藏消息</target>
       </trans-unit>
       <trans-unit id="stashcheckout">
         <source xml:lang="en">Stash &amp; Checkout</source>
-        <target state="new">Stash &amp; Checkout</target>
+        <target state="translated">储藏并签出</target>
       </trans-unit>
       <trans-unit id="sure drop">
         <source xml:lang="en">Are you sure you want to drop the stash: {0}?</source>
-        <target state="new">Are you sure you want to drop the stash: {0}?</target>
+        <target state="translated">确定要删除储藏 {0} 吗?</target>
       </trans-unit>
       <trans-unit id="sync is unpredictable">
         <source xml:lang="en">This action will push and pull commits to and from '{0}/{1}'.</source>
-        <target state="new">This action will push and pull commits to and from '{0}/{1}'.</target>
+        <target state="translated">此操作会将提交项推送到“{0}/{1}”并从中拉取提交项。</target>
       </trans-unit>
       <trans-unit id="tag at">
         <source xml:lang="en">Tag at {0}</source>
-        <target state="new">Tag at {0}</target>
+        <target state="translated">{0} 处的标记</target>
       </trans-unit>
       <trans-unit id="tag message">
         <source xml:lang="en">Message</source>
-        <target state="new">Message</target>
+        <target state="translated">消息</target>
       </trans-unit>
       <trans-unit id="tag name">
         <source xml:lang="en">Tag name</source>
-        <target state="new">Tag name</target>
+        <target state="translated">标记名称</target>
       </trans-unit>
       <trans-unit id="there are untracked files">
         <source xml:lang="en">There are {0} untracked files which will be DELETED FROM DISK if discarded.</source>
-        <target state="new">There are {0} untracked files which will be DELETED FROM DISK if discarded.</target>
+        <target state="translated">若放弃 {0} 个未跟踪的文件，其将被从硬盘上删除。</target>
       </trans-unit>
       <trans-unit id="there are untracked files single">
         <source xml:lang="en">The following untracked file will be DELETED FROM DISK if discarded: {0}.</source>
-        <target state="new">The following untracked file will be DELETED FROM DISK if discarded: {0}.</target>
+        <target state="translated">若放弃下面未跟踪的文件，其将被从硬盘上删除: {0}。</target>
       </trans-unit>
       <trans-unit id="undo commit">
         <source xml:lang="en">Undo merge commit</source>
-        <target state="new">Undo merge commit</target>
+        <target state="translated">撤消合并提交</target>
       </trans-unit>
       <trans-unit id="unsaved files">
         <source xml:lang="en">There are {0} unsaved files.
 
 Would you like to save them before committing?</source>
-        <target state="new">There are {0} unsaved files.
+        <target state="translated">有 {0} 个文件尚未保存。
 
-Would you like to save them before committing?</target>
+要在提交之前保存吗?</target>
       </trans-unit>
       <trans-unit id="unsaved files single">
         <source xml:lang="en">The following file has unsaved changes which won't be included in the commit if you proceed: {0}.
 
 Would you like to save it before committing?</source>
-        <target state="new">The following file has unsaved changes which won't be included in the commit if you proceed: {0}.
+        <target state="translated">以下文件具有未保存的更改；如果继续，则提交时不会包含这些更改: {0}。
 
-Would you like to save it before committing?</target>
+要在提交之前保存吗?</target>
       </trans-unit>
       <trans-unit id="unsaved stash files">
         <source xml:lang="en">There are {0} unsaved files.
 
 Would you like to save them before stashing?</source>
-        <target state="new">There are {0} unsaved files.
+        <target state="translated">有 {0} 个文件尚未保存。
 
-Would you like to save them before stashing?</target>
+要在储藏之前保存吗?</target>
       </trans-unit>
       <trans-unit id="unsaved stash files single">
         <source xml:lang="en">The following file has unsaved changes which won't be included in the stash if you proceed: {0}.
 
 Would you like to save it before stashing?</source>
-        <target state="new">The following file has unsaved changes which won't be included in the stash if you proceed: {0}.
+        <target state="translated">以下文件具有未保存的更改；如果继续，则储藏时不会包含这些更改: {0}。
 
-Would you like to save it before stashing?</target>
+要在储藏之前保存吗?</target>
       </trans-unit>
       <trans-unit id="warn untracked">
         <source xml:lang="en">This will DELETE {0} untracked files!
 This is IRREVERSIBLE!
 These files will be FOREVER LOST.</source>
-        <target state="new">This will DELETE {0} untracked files!
-This is IRREVERSIBLE!
-These files will be FOREVER LOST.</target>
+        <target state="translated">这将删除 {0} 个未跟踪的文件!
+此操作不可撤消!
+这些文件将永久丢失。</target>
       </trans-unit>
       <trans-unit id="yes">
         <source xml:lang="en">Yes</source>
-        <target state="new">Yes</target>
+        <target state="translated">是</target>
       </trans-unit>
       <trans-unit id="yes discard tracked">
         <source xml:lang="en">Discard 1 Tracked File</source>
-        <target state="new">Discard 1 Tracked File</target>
+        <target state="translated">放弃 1 个已跟踪的文件</target>
       </trans-unit>
       <trans-unit id="yes discard tracked multiple">
         <source xml:lang="en">Discard {0} Tracked Files</source>
-        <target state="new">Discard {0} Tracked Files</target>
+        <target state="translated">放弃 {0} 个已跟踪的文件</target>
       </trans-unit>
       <trans-unit id="yes never again">
         <source xml:lang="en">Yes, Don't Show Again</source>
-        <target state="new">Yes, Don't Show Again</target>
+        <target state="translated">确定，且不再显示</target>
       </trans-unit>
     </body>
   </file>
@@ -716,15 +716,15 @@ These files will be FOREVER LOST.</target>
     <body>
       <trans-unit id="skipped">
         <source xml:lang="en">Skipped found git in: {0}</source>
-        <target state="new">Skipped found git in: {0}</target>
+        <target state="translated">已跳过在以下位置中找到的 git: {0}</target>
       </trans-unit>
       <trans-unit id="using git">
         <source xml:lang="en">Using git {0} from {1}</source>
-        <target state="new">Using git {0} from {1}</target>
+        <target state="translated">将使用位于 {1} 的 Git {0}</target>
       </trans-unit>
       <trans-unit id="validating">
         <source xml:lang="en">Validating found git in: {0}</source>
-        <target state="new">Validating found git in: {0}</target>
+        <target state="translated">正在验证在以下位置中找到的 git: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -732,19 +732,19 @@ These files will be FOREVER LOST.</target>
     <body>
       <trans-unit id="no repositories">
         <source xml:lang="en">There are no available repositories</source>
-        <target state="new">There are no available repositories</target>
+        <target state="translated">没有可用存储库</target>
       </trans-unit>
       <trans-unit id="not supported">
         <source xml:lang="en">Absolute paths not supported in 'git.scanRepositories' setting.</source>
-        <target state="new">Absolute paths not supported in 'git.scanRepositories' setting.</target>
+        <target state="translated">“git.scanRepositories” 设置不支持绝对路径。</target>
       </trans-unit>
       <trans-unit id="pick repo">
         <source xml:lang="en">Choose a repository</source>
-        <target state="new">Choose a repository</target>
+        <target state="translated">选择存储库</target>
       </trans-unit>
       <trans-unit id="too many submodules">
         <source xml:lang="en">The '{0}' repository has {1} submodules which won't be opened automatically. You can still open each one individually by opening a file within.</source>
-        <target state="new">The '{0}' repository has {1} submodules which won't be opened automatically. You can still open each one individually by opening a file within.</target>
+        <target state="translated">“{0}”存储库中的 {1} 个子模块将不会自动打开。您仍可以通过打开其中的文件来单独打开每个子模块。</target>
       </trans-unit>
     </body>
   </file>
@@ -752,39 +752,39 @@ These files will be FOREVER LOST.</target>
     <body>
       <trans-unit id="branch name">
         <source xml:lang="en">Branch name</source>
-        <target state="new">Branch name</target>
+        <target state="translated">分支名称</target>
       </trans-unit>
       <trans-unit id="error">
         <source xml:lang="en">$(error) Error: {0}</source>
-        <target state="new">$(error) Error: {0}</target>
+        <target state="translated">$(error) 错误: {0}</target>
       </trans-unit>
       <trans-unit id="none found">
         <source xml:lang="en">No remote repositories found.</source>
-        <target state="new">No remote repositories found.</target>
+        <target state="translated">未找到远程存储库。</target>
       </trans-unit>
       <trans-unit id="pick url">
         <source xml:lang="en">Choose a URL to clone from.</source>
-        <target state="new">Choose a URL to clone from.</target>
+        <target state="translated">选择要从中进行克隆的 URL。</target>
       </trans-unit>
       <trans-unit id="provide url">
         <source xml:lang="en">Provide repository URL</source>
-        <target state="new">Provide repository URL</target>
+        <target state="translated">提供存储库 URL</target>
       </trans-unit>
       <trans-unit id="provide url or pick">
         <source xml:lang="en">Provide repository URL or pick a repository source.</source>
-        <target state="new">Provide repository URL or pick a repository source.</target>
+        <target state="translated">提供存储库 URL 或选择存储库源。</target>
       </trans-unit>
       <trans-unit id="type to filter">
         <source xml:lang="en">Repository name</source>
-        <target state="new">Repository name</target>
+        <target state="translated">存储库名称</target>
       </trans-unit>
       <trans-unit id="type to search">
         <source xml:lang="en">Repository name (type to search)</source>
-        <target state="new">Repository name (type to search)</target>
+        <target state="translated">存储库名称(键入内容进行搜索)</target>
       </trans-unit>
       <trans-unit id="url">
         <source xml:lang="en">URL</source>
-        <target state="new">URL</target>
+        <target state="translated">URL</target>
       </trans-unit>
     </body>
   </file>
@@ -792,203 +792,203 @@ These files will be FOREVER LOST.</target>
     <body>
       <trans-unit id="add known">
         <source xml:lang="en">Would you like to add '{0}' to .gitignore?</source>
-        <target state="new">Would you like to add '{0}' to .gitignore?</target>
+        <target state="translated">是否要将“{0}”添加到 .gitignore?</target>
       </trans-unit>
       <trans-unit id="added by them">
         <source xml:lang="en">Conflict: Added By Them</source>
-        <target state="new">Conflict: Added By Them</target>
+        <target state="translated">冲突: 已由他们添加</target>
       </trans-unit>
       <trans-unit id="added by us">
         <source xml:lang="en">Conflict: Added By Us</source>
-        <target state="new">Conflict: Added By Us</target>
+        <target state="translated">冲突: 已由我们添加</target>
       </trans-unit>
       <trans-unit id="always pull">
         <source xml:lang="en">Always Pull</source>
-        <target state="new">Always Pull</target>
+        <target state="translated">始终拉取</target>
       </trans-unit>
       <trans-unit id="both added">
         <source xml:lang="en">Conflict: Both Added</source>
-        <target state="new">Conflict: Both Added</target>
+        <target state="translated">冲突: 两个都已添加</target>
       </trans-unit>
       <trans-unit id="both deleted">
         <source xml:lang="en">Conflict: Both Deleted</source>
-        <target state="new">Conflict: Both Deleted</target>
+        <target state="translated">冲突: 两个都已删除</target>
       </trans-unit>
       <trans-unit id="both modified">
         <source xml:lang="en">Conflict: Both Modified</source>
-        <target state="new">Conflict: Both Modified</target>
+        <target state="translated">冲突: 两个都已修改</target>
       </trans-unit>
       <trans-unit id="changes">
         <source xml:lang="en">Changes</source>
-        <target state="new">Changes</target>
+        <target state="translated">更改</target>
       </trans-unit>
       <trans-unit id="commit">
         <source xml:lang="en">Commit</source>
-        <target state="new">Commit</target>
+        <target state="translated">提交</target>
       </trans-unit>
       <trans-unit id="commit in rebase">
         <source xml:lang="en">It's not possible to change the commit message in the middle of a rebase. Please complete the rebase operation and use interactive rebase instead.</source>
-        <target state="new">It's not possible to change the commit message in the middle of a rebase. Please complete the rebase operation and use interactive rebase instead.</target>
+        <target state="translated">无法在变基过程中修改提交消息。请完成变基操作，并改用交互式变基。</target>
       </trans-unit>
       <trans-unit id="commitMessage">
         <source xml:lang="en">Message ({0} to commit)</source>
-        <target state="new">Message ({0} to commit)</target>
+        <target state="translated">消息({0} 待提交)</target>
       </trans-unit>
       <trans-unit id="commitMessageCountdown">
         <source xml:lang="en">{0} characters left in current line</source>
-        <target state="new">{0} characters left in current line</target>
+        <target state="translated">当前行剩余 {0} 个字符</target>
       </trans-unit>
       <trans-unit id="commitMessageWarning">
         <source xml:lang="en">{0} characters over {1} in current line</source>
-        <target state="new">{0} characters over {1} in current line</target>
+        <target state="translated">当前行比 {1} 超出 {0} 个字符</target>
       </trans-unit>
       <trans-unit id="commitMessageWhitespacesOnlyWarning">
         <source xml:lang="en">Current commit message only contains whitespace characters</source>
-        <target state="new">Current commit message only contains whitespace characters</target>
+        <target state="translated">当前提交消息仅包含空白字符</target>
       </trans-unit>
       <trans-unit id="commitMessageWithHeadLabel">
         <source xml:lang="en">Message ({0} to commit on '{1}')</source>
-        <target state="new">Message ({0} to commit on '{1}')</target>
+        <target state="translated">消息({0} 在“{1}”提交)</target>
       </trans-unit>
       <trans-unit id="deleted">
         <source xml:lang="en">Deleted</source>
-        <target state="new">Deleted</target>
+        <target state="translated">已删除</target>
       </trans-unit>
       <trans-unit id="deleted by them">
         <source xml:lang="en">Conflict: Deleted By Them</source>
-        <target state="new">Conflict: Deleted By Them</target>
+        <target state="translated">冲突: 已由他们删除</target>
       </trans-unit>
       <trans-unit id="deleted by us">
         <source xml:lang="en">Conflict: Deleted By Us</source>
-        <target state="new">Conflict: Deleted By Us</target>
+        <target state="translated">冲突: 已由我们删除</target>
       </trans-unit>
       <trans-unit id="dont pull">
         <source xml:lang="en">Don't Pull</source>
-        <target state="new">Don't Pull</target>
+        <target state="translated">不拉取</target>
       </trans-unit>
       <trans-unit id="git.title.deleted">
         <source xml:lang="en">{0} (Deleted)</source>
-        <target state="new">{0} (Deleted)</target>
+        <target state="translated">{0} (已删除)</target>
       </trans-unit>
       <trans-unit id="git.title.index">
         <source xml:lang="en">{0} (Index)</source>
-        <target state="new">{0} (Index)</target>
+        <target state="translated">{0} (索引)</target>
       </trans-unit>
       <trans-unit id="git.title.ours">
         <source xml:lang="en">{0} (Ours)</source>
-        <target state="new">{0} (Ours)</target>
+        <target state="translated">{0} (我们的)</target>
       </trans-unit>
       <trans-unit id="git.title.theirs">
         <source xml:lang="en">{0} (Theirs)</source>
-        <target state="new">{0} (Theirs)</target>
+        <target state="translated">{0} (他们的)</target>
       </trans-unit>
       <trans-unit id="git.title.untracked">
         <source xml:lang="en">{0} (Untracked)</source>
-        <target state="new">{0} (Untracked)</target>
+        <target state="translated">{0} (未跟踪)</target>
       </trans-unit>
       <trans-unit id="git.title.workingTree">
         <source xml:lang="en">{0} (Working Tree)</source>
-        <target state="new">{0} (Working Tree)</target>
+        <target state="translated">{0} (工作树)</target>
       </trans-unit>
       <trans-unit id="huge">
         <source xml:lang="en">The git repository at '{0}' has too many active changes, only a subset of Git features will be enabled.</source>
-        <target state="new">The git repository at '{0}' has too many active changes, only a subset of Git features will be enabled.</target>
+        <target state="translated">Git 存储库“{0}”中存在大量活动更改，将仅启用部分 Git 功能。</target>
       </trans-unit>
       <trans-unit id="ignored">
         <source xml:lang="en">Ignored</source>
-        <target state="new">Ignored</target>
+        <target state="translated">已忽略</target>
       </trans-unit>
       <trans-unit id="index added">
         <source xml:lang="en">Index Added</source>
-        <target state="new">Index Added</target>
+        <target state="translated">已添加索引</target>
       </trans-unit>
       <trans-unit id="index copied">
         <source xml:lang="en">Index Copied</source>
-        <target state="new">Index Copied</target>
+        <target state="translated">已复制索引</target>
       </trans-unit>
       <trans-unit id="index deleted">
         <source xml:lang="en">Index Deleted</source>
-        <target state="new">Index Deleted</target>
+        <target state="translated">已删除索引</target>
       </trans-unit>
       <trans-unit id="index modified">
         <source xml:lang="en">Index Modified</source>
-        <target state="new">Index Modified</target>
+        <target state="translated">已修改索引</target>
       </trans-unit>
       <trans-unit id="index renamed">
         <source xml:lang="en">Index Renamed</source>
-        <target state="new">Index Renamed</target>
+        <target state="translated">已重命名索引</target>
       </trans-unit>
       <trans-unit id="intent to add">
         <source xml:lang="en">Intent to Add</source>
-        <target state="new">Intent to Add</target>
+        <target state="translated">打算添加</target>
       </trans-unit>
       <trans-unit id="merge changes">
         <source xml:lang="en">Merge Changes</source>
-        <target state="new">Merge Changes</target>
+        <target state="translated">合并更改</target>
       </trans-unit>
       <trans-unit id="modified">
         <source xml:lang="en">Modified</source>
-        <target state="new">Modified</target>
+        <target state="translated">已修改</target>
       </trans-unit>
       <trans-unit id="neveragain">
         <source xml:lang="en">Don't Show Again</source>
-        <target state="new">Don't Show Again</target>
+        <target state="translated">不再显示</target>
       </trans-unit>
       <trans-unit id="open">
         <source xml:lang="en">Open</source>
-        <target state="new">Open</target>
+        <target state="translated">打开</target>
       </trans-unit>
       <trans-unit id="pull">
         <source xml:lang="en">Pull</source>
-        <target state="new">Pull</target>
+        <target state="translated">拉取</target>
       </trans-unit>
       <trans-unit id="pull branch maybe rebased">
         <source xml:lang="en">It looks like the current branch '{0}' might have been rebased. Are you sure you still want to pull into it?</source>
-        <target state="new">It looks like the current branch '{0}' might have been rebased. Are you sure you still want to pull into it?</target>
+        <target state="translated">当前分支“{0}”似乎已变基。确定仍要拉取到其中吗?</target>
       </trans-unit>
       <trans-unit id="pull maybe rebased">
         <source xml:lang="en">It looks like the current branch might have been rebased. Are you sure you still want to pull into it?</source>
-        <target state="new">It looks like the current branch might have been rebased. Are you sure you still want to pull into it?</target>
+        <target state="translated">当前分支似乎已变基。确定仍要拉取到其中吗?</target>
       </trans-unit>
       <trans-unit id="pull n">
         <source xml:lang="en">Pull {0} commits from {1}/{2}</source>
-        <target state="new">Pull {0} commits from {1}/{2}</target>
+        <target state="translated">从 {1}/{2} 拉取 {0} 个提交</target>
       </trans-unit>
       <trans-unit id="pull push n">
         <source xml:lang="en">Pull {0} and push {1} commits between {2}/{3}</source>
-        <target state="new">Pull {0} and push {1} commits between {2}/{3}</target>
+        <target state="translated">在 {2}/{3} 之间拉取 {0} 个提交并推送 {1} 个提交</target>
       </trans-unit>
       <trans-unit id="push n">
         <source xml:lang="en">Push {0} commits to {1}/{2}</source>
-        <target state="new">Push {0} commits to {1}/{2}</target>
+        <target state="translated">将 {0} 个提交推送到 {1}/{2}</target>
       </trans-unit>
       <trans-unit id="push success">
         <source xml:lang="en">Successfully pushed.</source>
-        <target state="new">Successfully pushed.</target>
+        <target state="translated">已成功推送。</target>
       </trans-unit>
       <trans-unit id="staged changes">
         <source xml:lang="en">Staged Changes</source>
-        <target state="new">Staged Changes</target>
+        <target state="translated">暂存的更改</target>
       </trans-unit>
       <trans-unit id="sync changes">
         <source xml:lang="en">Synchronize Changes</source>
-        <target state="new">Synchronize Changes</target>
+        <target state="translated">同步更改</target>
       </trans-unit>
       <trans-unit id="sync is unpredictable">
         <source xml:lang="en">Syncing. Cancelling may cause serious damages to the repository</source>
-        <target state="new">Syncing. Cancelling may cause serious damages to the repository</target>
+        <target state="translated">正在同步。取消可能会导致存储库出现严重损坏</target>
       </trans-unit>
       <trans-unit id="untracked">
         <source xml:lang="en">Untracked</source>
-        <target state="new">Untracked</target>
+        <target state="translated">未跟踪的</target>
       </trans-unit>
       <trans-unit id="untracked changes">
         <source xml:lang="en">Untracked Changes</source>
-        <target state="new">Untracked Changes</target>
+        <target state="translated">未跟踪的更改</target>
       </trans-unit>
       <trans-unit id="yes">
         <source xml:lang="en">Yes</source>
-        <target state="new">Yes</target>
+        <target state="translated">是</target>
       </trans-unit>
     </body>
   </file>
@@ -996,27 +996,27 @@ These files will be FOREVER LOST.</target>
     <body>
       <trans-unit id="checkout">
         <source xml:lang="en">Checkout branch/tag...</source>
-        <target state="new">Checkout branch/tag...</target>
+        <target state="translated">签出分支/标记...</target>
       </trans-unit>
       <trans-unit id="publish changes">
         <source xml:lang="en">Publish Changes</source>
-        <target state="new">Publish Changes</target>
+        <target state="translated">发布更改</target>
       </trans-unit>
       <trans-unit id="publish to">
         <source xml:lang="en">Publish to {0}</source>
-        <target state="new">Publish to {0}</target>
+        <target state="translated">发布到 {0}</target>
       </trans-unit>
       <trans-unit id="publish to...">
         <source xml:lang="en">Publish to...</source>
-        <target state="new">Publish to...</target>
+        <target state="translated">发布到...</target>
       </trans-unit>
       <trans-unit id="rebasing">
         <source xml:lang="en">Rebasing</source>
-        <target state="new">Rebasing</target>
+        <target state="translated">正在变基</target>
       </trans-unit>
       <trans-unit id="syncing changes">
         <source xml:lang="en">Synchronizing Changes...</source>
-        <target state="new">Synchronizing Changes...</target>
+        <target state="translated">正在同步更改...</target>
       </trans-unit>
     </body>
   </file>
@@ -1024,37 +1024,37 @@ These files will be FOREVER LOST.</target>
     <body>
       <trans-unit id="git.index">
         <source xml:lang="en">Index</source>
-        <target state="new">Index</target>
+        <target state="translated">索引</target>
       </trans-unit>
       <trans-unit id="git.timeline.detail">
         <source xml:lang="en">{0}  — {1}
 {2}
 
 {3}</source>
-        <target state="new">{0}  — {1}
+        <target state="translated">{0}  — {1}
 {2}
 
 {3}</target>
       </trans-unit>
       <trans-unit id="git.timeline.source">
         <source xml:lang="en">Git History</source>
-        <target state="new">Git History</target>
+        <target state="translated">Git 历史记录</target>
       </trans-unit>
       <trans-unit id="git.timeline.stagedChanges">
         <source xml:lang="en">Staged Changes</source>
-        <target state="new">Staged Changes</target>
+        <target state="translated">暂存的更改</target>
       </trans-unit>
       <trans-unit id="git.timeline.uncommitedChanges">
         <source xml:lang="en">Uncommitted Changes</source>
-        <target state="new">Uncommitted Changes</target>
+        <target state="translated">未提交的更改</target>
       </trans-unit>
       <trans-unit id="git.timeline.you">
         <source xml:lang="en">You</source>
-        <target state="new">You</target>
+        <target state="translated">你</target>
       </trans-unit>
       <trans-unit id="git.workingTree">
         <source xml:lang="en">Working Tree</source>
-        <target state="new">Working Tree</target>
+        <target state="translated">工作树</target>
       </trans-unit>
     </body>
   </file>
@@ -1062,885 +1062,885 @@ These files will be FOREVER LOST.</target>
     <body>
       <trans-unit id="colors.added">
         <source xml:lang="en">Color for added resources.</source>
-        <target state="new">Color for added resources.</target>
+        <target state="translated">已添加资源的颜色。</target>
       </trans-unit>
       <trans-unit id="colors.conflict">
         <source xml:lang="en">Color for resources with conflicts.</source>
-        <target state="new">Color for resources with conflicts.</target>
+        <target state="translated">存在冲突的资源的颜色。</target>
       </trans-unit>
       <trans-unit id="colors.deleted">
         <source xml:lang="en">Color for deleted resources.</source>
-        <target state="new">Color for deleted resources.</target>
+        <target state="translated">已删除资源的颜色。</target>
       </trans-unit>
       <trans-unit id="colors.ignored">
         <source xml:lang="en">Color for ignored resources.</source>
-        <target state="new">Color for ignored resources.</target>
+        <target state="translated">已忽略资源的颜色。</target>
       </trans-unit>
       <trans-unit id="colors.modified">
         <source xml:lang="en">Color for modified resources.</source>
-        <target state="new">Color for modified resources.</target>
+        <target state="translated">已修改资源的颜色。</target>
       </trans-unit>
       <trans-unit id="colors.renamed">
         <source xml:lang="en">Color for renamed or copied resources.</source>
-        <target state="new">Color for renamed or copied resources.</target>
+        <target state="translated">重命名或复制的资源的颜色。</target>
       </trans-unit>
       <trans-unit id="colors.stageDeleted">
         <source xml:lang="en">Color for deleted resources which have been staged.</source>
-        <target state="new">Color for deleted resources which have been staged.</target>
+        <target state="translated">已暂存的已删除资源的颜色。</target>
       </trans-unit>
       <trans-unit id="colors.stageModified">
         <source xml:lang="en">Color for modified resources which have been staged.</source>
-        <target state="new">Color for modified resources which have been staged.</target>
+        <target state="translated">已暂存的已修改资源的颜色。</target>
       </trans-unit>
       <trans-unit id="colors.submodule">
         <source xml:lang="en">Color for submodule resources.</source>
-        <target state="new">Color for submodule resources.</target>
+        <target state="translated">子模块资源的颜色。</target>
       </trans-unit>
       <trans-unit id="colors.untracked">
         <source xml:lang="en">Color for untracked resources.</source>
-        <target state="new">Color for untracked resources.</target>
+        <target state="translated">未跟踪资源的颜色。</target>
       </trans-unit>
       <trans-unit id="command.addRemote">
         <source xml:lang="en">Add Remote...</source>
-        <target state="new">Add Remote...</target>
+        <target state="translated">添加远程存储库…</target>
       </trans-unit>
       <trans-unit id="command.branch">
         <source xml:lang="en">Create Branch...</source>
-        <target state="new">Create Branch...</target>
+        <target state="translated">创建分支...</target>
       </trans-unit>
       <trans-unit id="command.branchFrom">
         <source xml:lang="en">Create Branch From...</source>
-        <target state="new">Create Branch From...</target>
+        <target state="translated">从现有来源创建新的分支...</target>
       </trans-unit>
       <trans-unit id="command.checkout">
         <source xml:lang="en">Checkout to...</source>
-        <target state="new">Checkout to...</target>
+        <target state="translated">签出到...</target>
       </trans-unit>
       <trans-unit id="command.checkoutDetached">
         <source xml:lang="en">Checkout to (Detached)...</source>
-        <target state="new">Checkout to (Detached)...</target>
+        <target state="translated">签出到(已分离)…</target>
       </trans-unit>
       <trans-unit id="command.cherryPick">
         <source xml:lang="en">Cherry Pick...</source>
-        <target state="new">Cherry Pick...</target>
+        <target state="translated">挑拣…</target>
       </trans-unit>
       <trans-unit id="command.clean">
         <source xml:lang="en">Discard Changes</source>
-        <target state="new">Discard Changes</target>
+        <target state="translated">放弃更改</target>
       </trans-unit>
       <trans-unit id="command.cleanAll">
         <source xml:lang="en">Discard All Changes</source>
-        <target state="new">Discard All Changes</target>
+        <target state="translated">放弃所有更改</target>
       </trans-unit>
       <trans-unit id="command.cleanAllTracked">
         <source xml:lang="en">Discard All Tracked Changes</source>
-        <target state="new">Discard All Tracked Changes</target>
+        <target state="translated">放弃所有跟踪的更改</target>
       </trans-unit>
       <trans-unit id="command.cleanAllUntracked">
         <source xml:lang="en">Discard All Untracked Changes</source>
-        <target state="new">Discard All Untracked Changes</target>
+        <target state="translated">放弃所有未跟踪的更改</target>
       </trans-unit>
       <trans-unit id="command.clone">
         <source xml:lang="en">Clone</source>
-        <target state="new">Clone</target>
+        <target state="translated">克隆</target>
       </trans-unit>
       <trans-unit id="command.cloneRecursive">
         <source xml:lang="en">Clone (Recursive)</source>
-        <target state="new">Clone (Recursive)</target>
+        <target state="translated">克隆(递归)</target>
       </trans-unit>
       <trans-unit id="command.close">
         <source xml:lang="en">Close Repository</source>
-        <target state="new">Close Repository</target>
+        <target state="translated">关闭存储库</target>
       </trans-unit>
       <trans-unit id="command.commit">
         <source xml:lang="en">Commit</source>
-        <target state="new">Commit</target>
+        <target state="translated">提交</target>
       </trans-unit>
       <trans-unit id="command.commitAll">
         <source xml:lang="en">Commit All</source>
-        <target state="new">Commit All</target>
+        <target state="translated">全部提交</target>
       </trans-unit>
       <trans-unit id="command.commitAllAmend">
         <source xml:lang="en">Commit All (Amend)</source>
-        <target state="new">Commit All (Amend)</target>
+        <target state="translated">全部提交(修改)</target>
       </trans-unit>
       <trans-unit id="command.commitAllAmendNoVerify">
         <source xml:lang="en">Commit All (Amend, No Verify)</source>
-        <target state="new">Commit All (Amend, No Verify)</target>
+        <target state="translated">全部提交(修正，不验证)</target>
       </trans-unit>
       <trans-unit id="command.commitAllNoVerify">
         <source xml:lang="en">Commit All (No Verify)</source>
-        <target state="new">Commit All (No Verify)</target>
+        <target state="translated">全部提交(不验证)</target>
       </trans-unit>
       <trans-unit id="command.commitAllSigned">
         <source xml:lang="en">Commit All (Signed Off)</source>
-        <target state="new">Commit All (Signed Off)</target>
+        <target state="translated">全部提交(已署名)</target>
       </trans-unit>
       <trans-unit id="command.commitAllSignedNoVerify">
         <source xml:lang="en">Commit All (Signed Off, No Verify)</source>
-        <target state="new">Commit All (Signed Off, No Verify)</target>
+        <target state="translated">全部提交(已签收，不验证)</target>
       </trans-unit>
       <trans-unit id="command.commitEmpty">
         <source xml:lang="en">Commit Empty</source>
-        <target state="new">Commit Empty</target>
+        <target state="translated">创建空提交</target>
       </trans-unit>
       <trans-unit id="command.commitEmptyNoVerify">
         <source xml:lang="en">Commit Empty (No Verify)</source>
-        <target state="new">Commit Empty (No Verify)</target>
+        <target state="translated">空提交(不验证)</target>
       </trans-unit>
       <trans-unit id="command.commitNoVerify">
         <source xml:lang="en">Commit (No Verify)</source>
-        <target state="new">Commit (No Verify)</target>
+        <target state="translated">提交(不验证)</target>
       </trans-unit>
       <trans-unit id="command.commitStaged">
         <source xml:lang="en">Commit Staged</source>
-        <target state="new">Commit Staged</target>
+        <target state="translated">提交已暂存文件</target>
       </trans-unit>
       <trans-unit id="command.commitStagedAmend">
         <source xml:lang="en">Commit Staged (Amend)</source>
-        <target state="new">Commit Staged (Amend)</target>
+        <target state="translated">提交已暂存文件(修改)</target>
       </trans-unit>
       <trans-unit id="command.commitStagedAmendNoVerify">
         <source xml:lang="en">Commit Staged (Amend, No Verify)</source>
-        <target state="new">Commit Staged (Amend, No Verify)</target>
+        <target state="translated">提交已暂存内容(修正，不验证)</target>
       </trans-unit>
       <trans-unit id="command.commitStagedNoVerify">
         <source xml:lang="en">Commit Staged (No Verify)</source>
-        <target state="new">Commit Staged (No Verify)</target>
+        <target state="translated">提交已暂存内容(不验证)</target>
       </trans-unit>
       <trans-unit id="command.commitStagedSigned">
         <source xml:lang="en">Commit Staged (Signed Off)</source>
-        <target state="new">Commit Staged (Signed Off)</target>
+        <target state="translated">提交已暂存文件(已署名)</target>
       </trans-unit>
       <trans-unit id="command.commitStagedSignedNoVerify">
         <source xml:lang="en">Commit Staged (Signed Off, No Verify)</source>
-        <target state="new">Commit Staged (Signed Off, No Verify)</target>
+        <target state="translated">提交已暂存内容(已签收，不验证)</target>
       </trans-unit>
       <trans-unit id="command.createTag">
         <source xml:lang="en">Create Tag</source>
-        <target state="new">Create Tag</target>
+        <target state="translated">创建标记</target>
       </trans-unit>
       <trans-unit id="command.deleteBranch">
         <source xml:lang="en">Delete Branch...</source>
-        <target state="new">Delete Branch...</target>
+        <target state="translated">删除分支...</target>
       </trans-unit>
       <trans-unit id="command.deleteTag">
         <source xml:lang="en">Delete Tag</source>
-        <target state="new">Delete Tag</target>
+        <target state="translated">删除标签</target>
       </trans-unit>
       <trans-unit id="command.fetch">
         <source xml:lang="en">Fetch</source>
-        <target state="new">Fetch</target>
+        <target state="translated">抓取</target>
       </trans-unit>
       <trans-unit id="command.fetchAll">
         <source xml:lang="en">Fetch From All Remotes</source>
-        <target state="new">Fetch From All Remotes</target>
+        <target state="translated">从所有远程存储库中拉取</target>
       </trans-unit>
       <trans-unit id="command.fetchPrune">
         <source xml:lang="en">Fetch (Prune)</source>
-        <target state="new">Fetch (Prune)</target>
+        <target state="translated">获取 (删除)</target>
       </trans-unit>
       <trans-unit id="command.ignore">
         <source xml:lang="en">Add to .gitignore</source>
-        <target state="new">Add to .gitignore</target>
+        <target state="translated">添加到 .gitignore</target>
       </trans-unit>
       <trans-unit id="command.init">
         <source xml:lang="en">Initialize Repository</source>
-        <target state="new">Initialize Repository</target>
+        <target state="translated">初始化存储库</target>
       </trans-unit>
       <trans-unit id="command.merge">
         <source xml:lang="en">Merge Branch...</source>
-        <target state="new">Merge Branch...</target>
+        <target state="translated">合并分支...</target>
       </trans-unit>
       <trans-unit id="command.openAllChanges">
         <source xml:lang="en">Open All Changes</source>
-        <target state="new">Open All Changes</target>
+        <target state="translated">打开所有更改</target>
       </trans-unit>
       <trans-unit id="command.openChange">
         <source xml:lang="en">Open Changes</source>
-        <target state="new">Open Changes</target>
+        <target state="translated">打开更改</target>
       </trans-unit>
       <trans-unit id="command.openFile">
         <source xml:lang="en">Open File</source>
-        <target state="new">Open File</target>
+        <target state="translated">打开文件</target>
       </trans-unit>
       <trans-unit id="command.openHEADFile">
         <source xml:lang="en">Open File (HEAD)</source>
-        <target state="new">Open File (HEAD)</target>
+        <target state="translated">打开文件 (HEAD)</target>
       </trans-unit>
       <trans-unit id="command.openRepository">
         <source xml:lang="en">Open Repository</source>
-        <target state="new">Open Repository</target>
+        <target state="translated">打开存储库</target>
       </trans-unit>
       <trans-unit id="command.publish">
         <source xml:lang="en">Publish Branch...</source>
-        <target state="new">Publish Branch...</target>
+        <target state="translated">发布分支...</target>
       </trans-unit>
       <trans-unit id="command.pull">
         <source xml:lang="en">Pull</source>
-        <target state="new">Pull</target>
+        <target state="translated">拉取</target>
       </trans-unit>
       <trans-unit id="command.pullFrom">
         <source xml:lang="en">Pull from...</source>
-        <target state="new">Pull from...</target>
+        <target state="translated">拉取自...</target>
       </trans-unit>
       <trans-unit id="command.pullRebase">
         <source xml:lang="en">Pull (Rebase)</source>
-        <target state="new">Pull (Rebase)</target>
+        <target state="translated">拉取(变基)</target>
       </trans-unit>
       <trans-unit id="command.push">
         <source xml:lang="en">Push</source>
-        <target state="new">Push</target>
+        <target state="translated">推送</target>
       </trans-unit>
       <trans-unit id="command.pushFollowTags">
         <source xml:lang="en">Push (Follow Tags)</source>
-        <target state="new">Push (Follow Tags)</target>
+        <target state="translated">推送(“关注”标记)</target>
       </trans-unit>
       <trans-unit id="command.pushFollowTagsForce">
         <source xml:lang="en">Push (Follow Tags, Force)</source>
-        <target state="new">Push (Follow Tags, Force)</target>
+        <target state="translated">推送(“关注”标记，强制)</target>
       </trans-unit>
       <trans-unit id="command.pushForce">
         <source xml:lang="en">Push (Force)</source>
-        <target state="new">Push (Force)</target>
+        <target state="translated">推送(强制)</target>
       </trans-unit>
       <trans-unit id="command.pushTags">
         <source xml:lang="en">Push Tags</source>
-        <target state="new">Push Tags</target>
+        <target state="translated">推送标记</target>
       </trans-unit>
       <trans-unit id="command.pushTo">
         <source xml:lang="en">Push to...</source>
-        <target state="new">Push to...</target>
+        <target state="translated">推送到...</target>
       </trans-unit>
       <trans-unit id="command.pushToForce">
         <source xml:lang="en">Push to... (Force)</source>
-        <target state="new">Push to... (Force)</target>
+        <target state="translated">推送到...(强制)</target>
       </trans-unit>
       <trans-unit id="command.rebase">
         <source xml:lang="en">Rebase Branch...</source>
-        <target state="new">Rebase Branch...</target>
+        <target state="translated">变基分支…</target>
       </trans-unit>
       <trans-unit id="command.rebaseAbort">
         <source xml:lang="en">Abort Rebase</source>
-        <target state="new">Abort Rebase</target>
+        <target state="translated">中止变基</target>
       </trans-unit>
       <trans-unit id="command.refresh">
         <source xml:lang="en">Refresh</source>
-        <target state="new">Refresh</target>
+        <target state="translated">刷新</target>
       </trans-unit>
       <trans-unit id="command.removeRemote">
         <source xml:lang="en">Remove Remote</source>
-        <target state="new">Remove Remote</target>
+        <target state="translated">删除远程存储库</target>
       </trans-unit>
       <trans-unit id="command.rename">
         <source xml:lang="en">Rename</source>
-        <target state="new">Rename</target>
+        <target state="translated">重命名</target>
       </trans-unit>
       <trans-unit id="command.renameBranch">
         <source xml:lang="en">Rename Branch...</source>
-        <target state="new">Rename Branch...</target>
+        <target state="translated">重命名分支...</target>
       </trans-unit>
       <trans-unit id="command.restoreCommitTemplate">
         <source xml:lang="en">Restore Commit Template</source>
-        <target state="new">Restore Commit Template</target>
+        <target state="translated">还原提交模板</target>
       </trans-unit>
       <trans-unit id="command.revealInExplorer">
         <source xml:lang="en">Reveal in Side Bar</source>
-        <target state="new">Reveal in Side Bar</target>
+        <target state="translated">在侧边栏中显示</target>
       </trans-unit>
       <trans-unit id="command.revertChange">
         <source xml:lang="en">Revert Change</source>
-        <target state="new">Revert Change</target>
+        <target state="translated">还原更改</target>
       </trans-unit>
       <trans-unit id="command.revertSelectedRanges">
         <source xml:lang="en">Revert Selected Ranges</source>
-        <target state="new">Revert Selected Ranges</target>
+        <target state="translated">还原所选更改</target>
       </trans-unit>
       <trans-unit id="command.setLogLevel">
         <source xml:lang="en">Set Log Level...</source>
-        <target state="new">Set Log Level...</target>
+        <target state="translated">设置日志级别...</target>
       </trans-unit>
       <trans-unit id="command.showOutput">
         <source xml:lang="en">Show Git Output</source>
-        <target state="new">Show Git Output</target>
+        <target state="translated">显示 GIT 输出</target>
       </trans-unit>
       <trans-unit id="command.stage">
         <source xml:lang="en">Stage Changes</source>
-        <target state="new">Stage Changes</target>
+        <target state="translated">暂存更改</target>
       </trans-unit>
       <trans-unit id="command.stageAll">
         <source xml:lang="en">Stage All Changes</source>
-        <target state="new">Stage All Changes</target>
+        <target state="translated">暂存所有更改</target>
       </trans-unit>
       <trans-unit id="command.stageAllMerge">
         <source xml:lang="en">Stage All Merge Changes</source>
-        <target state="new">Stage All Merge Changes</target>
+        <target state="translated">暂存所有合并更改</target>
       </trans-unit>
       <trans-unit id="command.stageAllTracked">
         <source xml:lang="en">Stage All Tracked Changes</source>
-        <target state="new">Stage All Tracked Changes</target>
+        <target state="translated">暂存所有跟踪的更改</target>
       </trans-unit>
       <trans-unit id="command.stageAllUntracked">
         <source xml:lang="en">Stage All Untracked Changes</source>
-        <target state="new">Stage All Untracked Changes</target>
+        <target state="translated">暂存所有未跟踪的更改</target>
       </trans-unit>
       <trans-unit id="command.stageChange">
         <source xml:lang="en">Stage Change</source>
-        <target state="new">Stage Change</target>
+        <target state="translated">暂存更改</target>
       </trans-unit>
       <trans-unit id="command.stageSelectedRanges">
         <source xml:lang="en">Stage Selected Ranges</source>
-        <target state="new">Stage Selected Ranges</target>
+        <target state="translated">暂存所选范围</target>
       </trans-unit>
       <trans-unit id="command.stash">
         <source xml:lang="en">Stash</source>
-        <target state="new">Stash</target>
+        <target state="translated">储藏</target>
       </trans-unit>
       <trans-unit id="command.stashApply">
         <source xml:lang="en">Apply Stash...</source>
-        <target state="new">Apply Stash...</target>
+        <target state="translated">应用储藏...</target>
       </trans-unit>
       <trans-unit id="command.stashApplyLatest">
         <source xml:lang="en">Apply Latest Stash</source>
-        <target state="new">Apply Latest Stash</target>
+        <target state="translated">应用最新储藏</target>
       </trans-unit>
       <trans-unit id="command.stashDrop">
         <source xml:lang="en">Drop Stash...</source>
-        <target state="new">Drop Stash...</target>
+        <target state="translated">删除储藏...</target>
       </trans-unit>
       <trans-unit id="command.stashIncludeUntracked">
         <source xml:lang="en">Stash (Include Untracked)</source>
-        <target state="new">Stash (Include Untracked)</target>
+        <target state="translated">储藏(包含未跟踪)</target>
       </trans-unit>
       <trans-unit id="command.stashPop">
         <source xml:lang="en">Pop Stash...</source>
-        <target state="new">Pop Stash...</target>
+        <target state="translated">弹出储藏...</target>
       </trans-unit>
       <trans-unit id="command.stashPopLatest">
         <source xml:lang="en">Pop Latest Stash</source>
-        <target state="new">Pop Latest Stash</target>
+        <target state="translated">弹出最新储藏</target>
       </trans-unit>
       <trans-unit id="command.sync">
         <source xml:lang="en">Sync</source>
-        <target state="new">Sync</target>
+        <target state="translated">同步</target>
       </trans-unit>
       <trans-unit id="command.syncRebase">
         <source xml:lang="en">Sync (Rebase)</source>
-        <target state="new">Sync (Rebase)</target>
+        <target state="translated">同步(变基)</target>
       </trans-unit>
       <trans-unit id="command.timelineCompareWithSelected">
         <source xml:lang="en">Compare with Selected</source>
-        <target state="new">Compare with Selected</target>
+        <target state="translated">与已选项目进行比较</target>
       </trans-unit>
       <trans-unit id="command.timelineCopyCommitId">
         <source xml:lang="en">Copy Commit ID</source>
-        <target state="new">Copy Commit ID</target>
+        <target state="translated">复制提交 ID</target>
       </trans-unit>
       <trans-unit id="command.timelineCopyCommitMessage">
         <source xml:lang="en">Copy Commit Message</source>
-        <target state="new">Copy Commit Message</target>
+        <target state="translated">复制提交消息</target>
       </trans-unit>
       <trans-unit id="command.timelineOpenDiff">
         <source xml:lang="en">Open Changes</source>
-        <target state="new">Open Changes</target>
+        <target state="translated">打开更改</target>
       </trans-unit>
       <trans-unit id="command.timelineSelectForCompare">
         <source xml:lang="en">Select for Compare</source>
-        <target state="new">Select for Compare</target>
+        <target state="translated">选择以进行比较</target>
       </trans-unit>
       <trans-unit id="command.undoCommit">
         <source xml:lang="en">Undo Last Commit</source>
-        <target state="new">Undo Last Commit</target>
+        <target state="translated">撤消上次提交</target>
       </trans-unit>
       <trans-unit id="command.unstage">
         <source xml:lang="en">Unstage Changes</source>
-        <target state="new">Unstage Changes</target>
+        <target state="translated">取消暂存更改</target>
       </trans-unit>
       <trans-unit id="command.unstageAll">
         <source xml:lang="en">Unstage All Changes</source>
-        <target state="new">Unstage All Changes</target>
+        <target state="translated">取消暂存所有更改</target>
       </trans-unit>
       <trans-unit id="command.unstageSelectedRanges">
         <source xml:lang="en">Unstage Selected Ranges</source>
-        <target state="new">Unstage Selected Ranges</target>
+        <target state="translated">取消暂存所选范围</target>
       </trans-unit>
       <trans-unit id="config.allowForcePush">
         <source xml:lang="en">Controls whether force push (with or without lease) is enabled.</source>
-        <target state="new">Controls whether force push (with or without lease) is enabled.</target>
+        <target state="translated">控制是否启用强制推送 (不论 force 还是 force-with-lease)。</target>
       </trans-unit>
       <trans-unit id="config.allowNoVerifyCommit">
         <source xml:lang="en">Controls whether commits without running pre-commit and commit-msg hooks are allowed.</source>
-        <target state="new">Controls whether commits without running pre-commit and commit-msg hooks are allowed.</target>
+        <target state="translated">控制是否允许没有运行 pre-commit 和 commit-msg 挂钩的提交。</target>
       </trans-unit>
       <trans-unit id="config.alwaysShowStagedChangesResourceGroup">
         <source xml:lang="en">Always show the Staged Changes resource group.</source>
-        <target state="new">Always show the Staged Changes resource group.</target>
+        <target state="translated">始终显示“暂存的更改”资源组。</target>
       </trans-unit>
       <trans-unit id="config.alwaysSignOff">
         <source xml:lang="en">Controls the signoff flag for all commits.</source>
-        <target state="new">Controls the signoff flag for all commits.</target>
+        <target state="translated">控制所有提交的 signoff 标志。</target>
       </trans-unit>
       <trans-unit id="config.autoRepositoryDetection">
         <source xml:lang="en">Configures when repositories should be automatically detected.</source>
-        <target state="new">Configures when repositories should be automatically detected.</target>
+        <target state="translated">配置何时自动检测存储库。</target>
       </trans-unit>
       <trans-unit id="config.autoRepositoryDetection.false">
         <source xml:lang="en">Disable automatic repository scanning.</source>
-        <target state="new">Disable automatic repository scanning.</target>
+        <target state="translated">禁止自动扫描存储库。</target>
       </trans-unit>
       <trans-unit id="config.autoRepositoryDetection.openEditors">
         <source xml:lang="en">Scan for parent folders of open files.</source>
-        <target state="new">Scan for parent folders of open files.</target>
+        <target state="translated">扫描当前打开文件的父文件夹。</target>
       </trans-unit>
       <trans-unit id="config.autoRepositoryDetection.subFolders">
         <source xml:lang="en">Scan for subfolders of the currently opened folder.</source>
-        <target state="new">Scan for subfolders of the currently opened folder.</target>
+        <target state="translated">扫描当前打开文件夹的子文件夹。</target>
       </trans-unit>
       <trans-unit id="config.autoRepositoryDetection.true">
         <source xml:lang="en">Scan for both subfolders of the current opened folder and parent folders of open files.</source>
-        <target state="new">Scan for both subfolders of the current opened folder and parent folders of open files.</target>
+        <target state="translated">扫描当前打开文件夹与当前打开文件所在文件夹的子文件夹。</target>
       </trans-unit>
       <trans-unit id="config.autoStash">
         <source xml:lang="en">Stash any changes before pulling and restore them after successful pull.</source>
-        <target state="new">Stash any changes before pulling and restore them after successful pull.</target>
+        <target state="translated">在拉取前暂存所有更改，在成功拉取后还原这些更改。</target>
       </trans-unit>
       <trans-unit id="config.autofetch">
         <source xml:lang="en">When set to true, commits will automatically be fetched from the default remote of the current Git repository. Setting to `all` will fetch from all remotes.</source>
-        <target state="new">When set to true, commits will automatically be fetched from the default remote of the current Git repository. Setting to `all` will fetch from all remotes.</target>
+        <target state="translated">若设置为 true，则自动从当前 Git 存储库的默认远程库提取提交。若设置为“全部”，则从所有远程库进行提取。</target>
       </trans-unit>
       <trans-unit id="config.autofetchPeriod">
         <source xml:lang="en">Duration in seconds between each automatic git fetch, when `#git.autofetch#` is enabled.</source>
-        <target state="new">Duration in seconds between each automatic git fetch, when `#git.autofetch#` is enabled.</target>
+        <target state="translated">在启用“#git.autofetch#”情况下每次自动 git fetch 之间的间隔时间(以秒为单位)。</target>
       </trans-unit>
       <trans-unit id="config.autorefresh">
         <source xml:lang="en">Whether auto refreshing is enabled.</source>
-        <target state="new">Whether auto refreshing is enabled.</target>
+        <target state="translated">是否启用自动刷新。</target>
       </trans-unit>
       <trans-unit id="config.branchSortOrder">
         <source xml:lang="en">Controls the sort order for branches.</source>
-        <target state="new">Controls the sort order for branches.</target>
+        <target state="translated">控制分支的排列顺序。</target>
       </trans-unit>
       <trans-unit id="config.branchValidationRegex">
         <source xml:lang="en">A regular expression to validate new branch names.</source>
-        <target state="new">A regular expression to validate new branch names.</target>
+        <target state="translated">用于验证新分支名称的正则表达式。</target>
       </trans-unit>
       <trans-unit id="config.branchWhitespaceChar">
         <source xml:lang="en">The character to replace whitespace in new branch names.</source>
-        <target state="new">The character to replace whitespace in new branch names.</target>
+        <target state="translated">在新分支名称中替换空白字符的字符。</target>
       </trans-unit>
       <trans-unit id="config.checkoutType">
         <source xml:lang="en">Controls what type of git refs are listed when running `Checkout to...`.</source>
-        <target state="new">Controls what type of git refs are listed when running `Checkout to...`.</target>
+        <target state="translated">控制在运行“签出到…”时列出的 git 参考类型。</target>
       </trans-unit>
       <trans-unit id="config.checkoutType.local">
         <source xml:lang="en">Local branches</source>
-        <target state="new">Local branches</target>
+        <target state="translated">本地分支</target>
       </trans-unit>
       <trans-unit id="config.checkoutType.remote">
         <source xml:lang="en">Remote branches</source>
-        <target state="new">Remote branches</target>
+        <target state="translated">远程分支</target>
       </trans-unit>
       <trans-unit id="config.checkoutType.tags">
         <source xml:lang="en">Tags</source>
-        <target state="new">Tags</target>
+        <target state="translated">标记</target>
       </trans-unit>
       <trans-unit id="config.confirmEmptyCommits">
         <source xml:lang="en">Always confirm the creation of empty commits for the 'Git: Commit Empty' command.</source>
-        <target state="new">Always confirm the creation of empty commits for the 'Git: Commit Empty' command.</target>
+        <target state="translated">始终为 “Git: Commit Empty” 命令确认创建空提交。</target>
       </trans-unit>
       <trans-unit id="config.confirmForcePush">
         <source xml:lang="en">Controls whether to ask for confirmation before force-pushing.</source>
-        <target state="new">Controls whether to ask for confirmation before force-pushing.</target>
+        <target state="translated">控制在强制推送前是否进行确认。</target>
       </trans-unit>
       <trans-unit id="config.confirmNoVerifyCommit">
         <source xml:lang="en">Controls whether to ask for confirmation before committing without verification.</source>
-        <target state="new">Controls whether to ask for confirmation before committing without verification.</target>
+        <target state="translated">控制是否在提交前要求确认而不进行验证。</target>
       </trans-unit>
       <trans-unit id="config.confirmSync">
         <source xml:lang="en">Confirm before synchronizing git repositories.</source>
-        <target state="new">Confirm before synchronizing git repositories.</target>
+        <target state="translated">同步 Git 存储库前请先进行确认。</target>
       </trans-unit>
       <trans-unit id="config.countBadge">
         <source xml:lang="en">Controls the Git count badge.</source>
-        <target state="new">Controls the Git count badge.</target>
+        <target state="translated">控制 Git 计数徽章。</target>
       </trans-unit>
       <trans-unit id="config.countBadge.all">
         <source xml:lang="en">Count all changes.</source>
-        <target state="new">Count all changes.</target>
+        <target state="translated">对所有更改计数。</target>
       </trans-unit>
       <trans-unit id="config.countBadge.off">
         <source xml:lang="en">Turn off counter.</source>
-        <target state="new">Turn off counter.</target>
+        <target state="translated">关闭计数器。</target>
       </trans-unit>
       <trans-unit id="config.countBadge.tracked">
         <source xml:lang="en">Count only tracked changes.</source>
-        <target state="new">Count only tracked changes.</target>
+        <target state="translated">仅对跟踪的更改计数。</target>
       </trans-unit>
       <trans-unit id="config.decorations.enabled">
         <source xml:lang="en">Controls whether Git contributes colors and badges to the Explorer and the Open Editors view.</source>
-        <target state="new">Controls whether Git contributes colors and badges to the Explorer and the Open Editors view.</target>
+        <target state="translated">控制 Git 是否在资源管理器和“打开编辑器”视图中添加颜色和小标。</target>
       </trans-unit>
       <trans-unit id="config.defaultCloneDirectory">
         <source xml:lang="en">The default location to clone a git repository.</source>
-        <target state="new">The default location to clone a git repository.</target>
+        <target state="translated">克隆 Git 存储库的默认位置。</target>
       </trans-unit>
       <trans-unit id="config.detectSubmodules">
         <source xml:lang="en">Controls whether to automatically detect git submodules.</source>
-        <target state="new">Controls whether to automatically detect git submodules.</target>
+        <target state="translated">控制是否自动检测 Git 子模块。</target>
       </trans-unit>
       <trans-unit id="config.detectSubmodulesLimit">
         <source xml:lang="en">Controls the limit of git submodules detected.</source>
-        <target state="new">Controls the limit of git submodules detected.</target>
+        <target state="translated">控制可检测到的 Git 子模块的限制。</target>
       </trans-unit>
       <trans-unit id="config.discardAllScope">
         <source xml:lang="en">Controls what changes are discarded by the `Discard all changes` command. `all` discards all changes. `tracked` discards only tracked files. `prompt` shows a prompt dialog every time the action is run.</source>
-        <target state="new">Controls what changes are discarded by the `Discard all changes` command. `all` discards all changes. `tracked` discards only tracked files. `prompt` shows a prompt dialog every time the action is run.</target>
+        <target state="translated">控制 `Discard all changes` 命命令将放弃哪些更改。`all` 放弃所有更改。`tracked` 仅放弃跟踪的文件。`prompt` 则在每次运行此操作时显示提示对话框。</target>
       </trans-unit>
       <trans-unit id="config.enableCommitSigning">
         <source xml:lang="en">Enables commit signing with GPG or X.509.</source>
-        <target state="new">Enables commit signing with GPG or X.509.</target>
+        <target state="translated">使用 GPG 或 x.509 启用提交签名。</target>
       </trans-unit>
       <trans-unit id="config.enableSmartCommit">
         <source xml:lang="en">Commit all changes when there are no staged changes.</source>
-        <target state="new">Commit all changes when there are no staged changes.</target>
+        <target state="translated">在没有暂存的更改时提交所有更改。</target>
       </trans-unit>
       <trans-unit id="config.enableStatusBarSync">
         <source xml:lang="en">Controls whether the Git Sync command appears in the status bar.</source>
-        <target state="new">Controls whether the Git Sync command appears in the status bar.</target>
+        <target state="translated">控制Git Sync命令是否出现在状态栏中。</target>
       </trans-unit>
       <trans-unit id="config.enabled">
         <source xml:lang="en">Whether git is enabled.</source>
-        <target state="new">Whether git is enabled.</target>
+        <target state="translated">是否启用 Git。</target>
       </trans-unit>
       <trans-unit id="config.fetchOnPull">
         <source xml:lang="en">When enabled, fetch all branches when pulling. Otherwise, fetch just the current one.</source>
-        <target state="new">When enabled, fetch all branches when pulling. Otherwise, fetch just the current one.</target>
+        <target state="translated">启用后，在拉取时获取所有分支。否则，仅获取当前。</target>
       </trans-unit>
       <trans-unit id="config.followTagsWhenSync">
         <source xml:lang="en">Follow push all tags when running the sync command.</source>
-        <target state="new">Follow push all tags when running the sync command.</target>
+        <target state="translated">遵循“运行同步命令时推送所有标记”。</target>
       </trans-unit>
       <trans-unit id="config.ignoreLegacyWarning">
         <source xml:lang="en">Ignores the legacy Git warning.</source>
-        <target state="new">Ignores the legacy Git warning.</target>
+        <target state="translated">忽略“旧版 Git”警告。</target>
       </trans-unit>
       <trans-unit id="config.ignoreLimitWarning">
         <source xml:lang="en">Ignores the warning when there are too many changes in a repository.</source>
-        <target state="new">Ignores the warning when there are too many changes in a repository.</target>
+        <target state="translated">忽略“存储库中存在大量更改”的警告。</target>
       </trans-unit>
       <trans-unit id="config.ignoreMissingGitWarning">
         <source xml:lang="en">Ignores the warning when Git is missing.</source>
-        <target state="new">Ignores the warning when Git is missing.</target>
+        <target state="translated">忽略“缺失 Git”的警告。</target>
       </trans-unit>
       <trans-unit id="config.ignoreRebaseWarning">
         <source xml:lang="en">Ignores the warning when it looks like the branch might have been rebased when pulling.</source>
-        <target state="new">Ignores the warning when it looks like the branch might have been rebased when pulling.</target>
+        <target state="translated">忽略拉取时发出的分支似乎已变基的警告。</target>
       </trans-unit>
       <trans-unit id="config.ignoreSubmodules">
         <source xml:lang="en">Ignore modifications to submodules in the file tree.</source>
-        <target state="new">Ignore modifications to submodules in the file tree.</target>
+        <target state="translated">忽略对文件树中子模块的修改。</target>
       </trans-unit>
       <trans-unit id="config.ignoreWindowsGit27Warning">
         <source xml:lang="en">Ignores the warning when Git 2.25 - 2.26 is installed on Windows.</source>
-        <target state="new">Ignores the warning when Git 2.25 - 2.26 is installed on Windows.</target>
+        <target state="translated">如果 Windows 上安装了 Git 2.25 - 2.26，则忽略警告。</target>
       </trans-unit>
       <trans-unit id="config.ignoredRepositories">
         <source xml:lang="en">List of git repositories to ignore.</source>
-        <target state="new">List of git repositories to ignore.</target>
+        <target state="translated">要忽略的 Git 存储库列表。</target>
       </trans-unit>
       <trans-unit id="config.inputValidation">
         <source xml:lang="en">Controls when to show commit message input validation.</source>
-        <target state="new">Controls when to show commit message input validation.</target>
+        <target state="translated">控制何时显示提交消息输入验证。</target>
       </trans-unit>
       <trans-unit id="config.inputValidationLength">
         <source xml:lang="en">Controls the commit message length threshold for showing a warning.</source>
-        <target state="new">Controls the commit message length threshold for showing a warning.</target>
+        <target state="translated">控制显示提交消息长度警告的长度阈值。</target>
       </trans-unit>
       <trans-unit id="config.inputValidationSubjectLength">
         <source xml:lang="en">Controls the commit message subject length threshold for showing a warning. Unset it to inherit the value of `config.inputValidationLength`.</source>
-        <target state="new">Controls the commit message subject length threshold for showing a warning. Unset it to inherit the value of `config.inputValidationLength`.</target>
+        <target state="translated">控制用于显示警告的提交消息主题长度阈值。请取消设置它以继承 “config.inputValidationLength” 的值。</target>
       </trans-unit>
       <trans-unit id="config.openAfterClone">
         <source xml:lang="en">Controls whether to open a repository automatically after cloning.</source>
-        <target state="new">Controls whether to open a repository automatically after cloning.</target>
+        <target state="translated">控制是否在克隆后自动打开存储库。</target>
       </trans-unit>
       <trans-unit id="config.openAfterClone.always">
         <source xml:lang="en">Always open in current window.</source>
-        <target state="new">Always open in current window.</target>
+        <target state="translated">始终在当前窗口中打开。</target>
       </trans-unit>
       <trans-unit id="config.openAfterClone.alwaysNewWindow">
         <source xml:lang="en">Always open in a new window.</source>
-        <target state="new">Always open in a new window.</target>
+        <target state="translated">始终在新窗口中打开。</target>
       </trans-unit>
       <trans-unit id="config.openAfterClone.prompt">
         <source xml:lang="en">Always prompt for action.</source>
-        <target state="new">Always prompt for action.</target>
+        <target state="translated">始终提示操作。</target>
       </trans-unit>
       <trans-unit id="config.openAfterClone.whenNoFolderOpen">
         <source xml:lang="en">Only open in current window when no folder is opened.</source>
-        <target state="new">Only open in current window when no folder is opened.</target>
+        <target state="translated">只有在没有打开任何文件夹时，才在当前窗口中打开。</target>
       </trans-unit>
       <trans-unit id="config.openDiffOnClick">
         <source xml:lang="en">Controls whether the diff editor should be opened when clicking a change. Otherwise the regular editor will be opened.</source>
-        <target state="new">Controls whether the diff editor should be opened when clicking a change. Otherwise the regular editor will be opened.</target>
+        <target state="translated">控制单击更改时是否应打开差异编辑器。否则将打开常规编辑器。</target>
       </trans-unit>
       <trans-unit id="config.path">
         <source xml:lang="en">Path and filename of the git executable, e.g. `C:\Program Files\Git\bin\git.exe` (Windows). This can also be an array of string values containing multiple paths to look up.</source>
-        <target state="new">Path and filename of the git executable, e.g. `C:\Program Files\Git\bin\git.exe` (Windows). This can also be an array of string values containing multiple paths to look up.</target>
+        <target state="translated">Git 可执行文件的路径和文件名，例如 `C:\Program Files\Git\bin\git.exe` (Windows)。这也可以是一个包含多个要查找的路径的字符串值数组。</target>
       </trans-unit>
       <trans-unit id="config.postCommitCommand">
         <source xml:lang="en">Runs a git command after a successful commit.</source>
-        <target state="new">Runs a git command after a successful commit.</target>
+        <target state="translated">成功提交后运行 git 命令。</target>
       </trans-unit>
       <trans-unit id="config.postCommitCommand.none">
         <source xml:lang="en">Don't run any command after a commit.</source>
-        <target state="new">Don't run any command after a commit.</target>
+        <target state="translated">提交后不要运行任何命令。</target>
       </trans-unit>
       <trans-unit id="config.postCommitCommand.push">
         <source xml:lang="en">Run 'Git Push' after a successful commit.</source>
-        <target state="new">Run 'Git Push' after a successful commit.</target>
+        <target state="translated">成功提交后运行'Git Push'。</target>
       </trans-unit>
       <trans-unit id="config.postCommitCommand.sync">
         <source xml:lang="en">Run 'Git Sync' after a successful commit.</source>
-        <target state="new">Run 'Git Sync' after a successful commit.</target>
+        <target state="translated">成功提交后运行'Git Sync'。</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeCommit">
         <source xml:lang="en">Controls whether Git should check for unsaved files before committing.</source>
-        <target state="new">Controls whether Git should check for unsaved files before committing.</target>
+        <target state="translated">控制 Git 是否在提交之前检查未保存的文件。</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeCommit.always">
         <source xml:lang="en">Check for any unsaved files.</source>
-        <target state="new">Check for any unsaved files.</target>
+        <target state="translated">检查是否有任何未保存的文件。</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeCommit.never">
         <source xml:lang="en">Disable this check.</source>
-        <target state="new">Disable this check.</target>
+        <target state="translated">禁用此检查。</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeCommit.staged">
         <source xml:lang="en">Check only for unsaved staged files.</source>
-        <target state="new">Check only for unsaved staged files.</target>
+        <target state="translated">只检查未保存的已暂存文件。</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeStash">
         <source xml:lang="en">Controls whether Git should check for unsaved files before stashing changes.</source>
-        <target state="new">Controls whether Git should check for unsaved files before stashing changes.</target>
+        <target state="translated">控制 Git 是否在储藏更改之前检查未保存的文件。</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeStash.always">
         <source xml:lang="en">Check for any unsaved files.</source>
-        <target state="new">Check for any unsaved files.</target>
+        <target state="translated">检查是否有任何未保存的文件。</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeStash.never">
         <source xml:lang="en">Disable this check.</source>
-        <target state="new">Disable this check.</target>
+        <target state="translated">禁用此检查。</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeStash.staged">
         <source xml:lang="en">Check only for unsaved staged files.</source>
-        <target state="new">Check only for unsaved staged files.</target>
+        <target state="translated">只检查未保存的已暂存文件。</target>
       </trans-unit>
       <trans-unit id="config.pruneOnFetch">
         <source xml:lang="en">Prune when fetching.</source>
-        <target state="new">Prune when fetching.</target>
+        <target state="translated">提取时修剪。</target>
       </trans-unit>
       <trans-unit id="config.pullTags">
         <source xml:lang="en">Fetch all tags when pulling.</source>
-        <target state="new">Fetch all tags when pulling.</target>
+        <target state="translated">拉取时提取所有标签。</target>
       </trans-unit>
       <trans-unit id="config.rebaseWhenSync">
         <source xml:lang="en">Force git to use rebase when running the sync command.</source>
-        <target state="new">Force git to use rebase when running the sync command.</target>
+        <target state="translated">在运行“同步”命令时，强制 Git 使用“变基”。</target>
       </trans-unit>
       <trans-unit id="config.requireGitUserConfig">
         <source xml:lang="en">Controls whether to require explicit Git user configuration or allow Git to guess if missing.</source>
-        <target state="new">Controls whether to require explicit Git user configuration or allow Git to guess if missing.</target>
+        <target state="translated">控制在是要求进行显式 Git 用户配置，还是允许 Git 在缺少配置时进行猜测。</target>
       </trans-unit>
       <trans-unit id="config.scanRepositories">
         <source xml:lang="en">List of paths to search for git repositories in.</source>
-        <target state="new">List of paths to search for git repositories in.</target>
+        <target state="translated">在其中搜索 Git 存储库的路径的列表。</target>
       </trans-unit>
       <trans-unit id="config.showCommitInput">
         <source xml:lang="en">Controls whether to show the commit input in the Git source control panel.</source>
-        <target state="new">Controls whether to show the commit input in the Git source control panel.</target>
+        <target state="translated">控制是否在 Git 源控制面板中显示提交输入。</target>
       </trans-unit>
       <trans-unit id="config.showInlineOpenFileAction">
         <source xml:lang="en">Controls whether to show an inline Open File action in the Git changes view.</source>
-        <target state="new">Controls whether to show an inline Open File action in the Git changes view.</target>
+        <target state="translated">控制是否在 Git 更改视图中显示内联“打开文件”操作。</target>
       </trans-unit>
       <trans-unit id="config.showProgress">
         <source xml:lang="en">Controls whether git actions should show progress.</source>
-        <target state="new">Controls whether git actions should show progress.</target>
+        <target state="translated">控制 Git 操作是否显示进度提示。</target>
       </trans-unit>
       <trans-unit id="config.showPushSuccessNotification">
         <source xml:lang="en">Controls whether to show a notification when a push is successful.</source>
-        <target state="new">Controls whether to show a notification when a push is successful.</target>
+        <target state="translated">控制在推送成功时是否显示通知。</target>
       </trans-unit>
       <trans-unit id="config.smartCommitChanges">
         <source xml:lang="en">Control which changes are automatically staged by Smart Commit.</source>
-        <target state="new">Control which changes are automatically staged by Smart Commit.</target>
+        <target state="translated">控制哪些更改由Smart Commit自动暂存。</target>
       </trans-unit>
       <trans-unit id="config.smartCommitChanges.all">
         <source xml:lang="en">Automatically stage all changes.</source>
-        <target state="new">Automatically stage all changes.</target>
+        <target state="translated">自动暂存所有更改。</target>
       </trans-unit>
       <trans-unit id="config.smartCommitChanges.tracked">
         <source xml:lang="en">Automatically stage tracked changes only.</source>
-        <target state="new">Automatically stage tracked changes only.</target>
+        <target state="translated">仅自动暂存跟踪的更改。</target>
       </trans-unit>
       <trans-unit id="config.suggestSmartCommit">
         <source xml:lang="en">Suggests to enable smart commit (commit all changes when there are no staged changes).</source>
-        <target state="new">Suggests to enable smart commit (commit all changes when there are no staged changes).</target>
+        <target state="translated">建议启用智能提交(在无暂存更改时提交所有更改)。</target>
       </trans-unit>
       <trans-unit id="config.supportCancellation">
         <source xml:lang="en">Controls whether a notification comes up when running the Sync action, which allows the user to cancel the operation.</source>
-        <target state="new">Controls whether a notification comes up when running the Sync action, which allows the user to cancel the operation.</target>
+        <target state="translated">控制在运行同步操作时是否出现通知，允许用户取消操作。</target>
       </trans-unit>
       <trans-unit id="config.terminalAuthentication">
         <source xml:lang="en">Controls whether to enable Azure Data Studio to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</source>
-        <target state="new">Controls whether to enable Azure Data Studio to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</target>
+        <target state="translated">控制是否使 Azure Data Studio 成为集成终端中产生的 git 进程的身份验证处理程序。请注意: 需要重启终端才能选择此设置中的更改。</target>
       </trans-unit>
       <trans-unit id="config.timeline.date">
         <source xml:lang="en">Controls which date to use for items in the Timeline view.</source>
-        <target state="new">Controls which date to use for items in the Timeline view.</target>
+        <target state="translated">控制在日程表视图中项目使用的日期。</target>
       </trans-unit>
       <trans-unit id="config.timeline.date.authored">
         <source xml:lang="en">Use the authored date</source>
-        <target state="new">Use the authored date</target>
+        <target state="translated">使用创作日期</target>
       </trans-unit>
       <trans-unit id="config.timeline.date.committed">
         <source xml:lang="en">Use the committed date</source>
-        <target state="new">Use the committed date</target>
+        <target state="translated">使用提交日期</target>
       </trans-unit>
       <trans-unit id="config.timeline.showAuthor">
         <source xml:lang="en">Controls whether to show the commit author in the Timeline view.</source>
-        <target state="new">Controls whether to show the commit author in the Timeline view.</target>
+        <target state="translated">控制是否在日程表视图中显示提交作者。</target>
       </trans-unit>
       <trans-unit id="config.untrackedChanges">
         <source xml:lang="en">Controls how untracked changes behave.</source>
-        <target state="new">Controls how untracked changes behave.</target>
+        <target state="translated">控制未跟踪的更改的行为。</target>
       </trans-unit>
       <trans-unit id="config.untrackedChanges.hidden">
         <source xml:lang="en">Untracked changes are hidden and excluded from several actions.</source>
-        <target state="new">Untracked changes are hidden and excluded from several actions.</target>
+        <target state="translated">未跟踪的更改被隐藏，并从多个操作中排除。</target>
       </trans-unit>
       <trans-unit id="config.untrackedChanges.mixed">
         <source xml:lang="en">All changes, tracked and untracked, appear together and behave equally.</source>
-        <target state="new">All changes, tracked and untracked, appear together and behave equally.</target>
+        <target state="translated">所有更改，无论是跟踪的还是未跟踪的，都会一起出现并表现出相同的行为。</target>
       </trans-unit>
       <trans-unit id="config.untrackedChanges.separate">
         <source xml:lang="en">Untracked changes appear separately in the Source Control view. They are also excluded from several actions.</source>
-        <target state="new">Untracked changes appear separately in the Source Control view. They are also excluded from several actions.</target>
+        <target state="translated">未跟踪的更改单独显示在“源代码管理”视图中。它们也被排除在几个操作之外。</target>
       </trans-unit>
       <trans-unit id="config.useCommitInputAsStashMessage">
         <source xml:lang="en">Controls whether to use the message from the commit input box as the default stash message.</source>
-        <target state="new">Controls whether to use the message from the commit input box as the default stash message.</target>
+        <target state="translated">控制是否将提交输入框中的消息用作默认储藏消息。</target>
       </trans-unit>
       <trans-unit id="config.useForcePushWithLease">
         <source xml:lang="en">Controls whether force pushing uses the safer force-with-lease variant.</source>
-        <target state="new">Controls whether force pushing uses the safer force-with-lease variant.</target>
+        <target state="translated">控制是否使用更安全的 force-with-lease 进行强制推送。</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">Git SCM Integration</source>
-        <target state="new">Git SCM Integration</target>
+        <target state="translated">Git 源代码管理集成</target>
       </trans-unit>
       <trans-unit id="displayName">
         <source xml:lang="en">Git</source>
-        <target state="new">Git</target>
+        <target state="translated">Git</target>
       </trans-unit>
       <trans-unit id="submenu.branch">
         <source xml:lang="en">Branch</source>
-        <target state="new">Branch</target>
+        <target state="translated">分支</target>
       </trans-unit>
       <trans-unit id="submenu.changes">
         <source xml:lang="en">Changes</source>
-        <target state="new">Changes</target>
+        <target state="translated">更改</target>
       </trans-unit>
       <trans-unit id="submenu.commit">
         <source xml:lang="en">Commit</source>
-        <target state="new">Commit</target>
+        <target state="translated">提交</target>
       </trans-unit>
       <trans-unit id="submenu.commit.amend">
         <source xml:lang="en">Amend</source>
-        <target state="new">Amend</target>
+        <target state="translated">修改</target>
       </trans-unit>
       <trans-unit id="submenu.commit.signoff">
         <source xml:lang="en">Sign Off</source>
-        <target state="new">Sign Off</target>
+        <target state="translated">注销</target>
       </trans-unit>
       <trans-unit id="submenu.explorer">
         <source xml:lang="en">Git</source>
-        <target state="new">Git</target>
+        <target state="translated">Git</target>
       </trans-unit>
       <trans-unit id="submenu.pullpush">
         <source xml:lang="en">Pull, Push</source>
-        <target state="new">Pull, Push</target>
+        <target state="translated">拉取，推送</target>
       </trans-unit>
       <trans-unit id="submenu.remotes">
         <source xml:lang="en">Remote</source>
-        <target state="new">Remote</target>
+        <target state="translated">远程</target>
       </trans-unit>
       <trans-unit id="submenu.stash">
         <source xml:lang="en">Stash</source>
-        <target state="new">Stash</target>
+        <target state="translated">存储</target>
       </trans-unit>
       <trans-unit id="submenu.tags">
         <source xml:lang="en">Tags</source>
-        <target state="new">Tags</target>
+        <target state="translated">标记</target>
       </trans-unit>
       <trans-unit id="view.workbench.cloneRepository">
         <source xml:lang="en">You can clone a repository locally.
 [Clone Repository](command:git.clone 'Clone a repository once the git extension has activated')</source>
-        <target state="new">You can clone a repository locally.
-[Clone Repository](command:git.clone 'Clone a repository once the git extension has activated')</target>
+        <target state="translated">可以在本地克隆存储库。
+[可控存储库](command:git.clone“启用 git 扩展后立即克隆存储库”)</target>
       </trans-unit>
       <trans-unit id="view.workbench.learnMore">
         <source xml:lang="en">To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
-        <target state="new">To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</target>
+        <target state="translated">要详细了解如何在 Azure Data Studio 中使用 Git 和源代码管理，请 [阅读我们的文档](https://aka.ms/vscode-scm)。</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.disabled">
         <source xml:lang="en">If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
-        <target state="new">If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
-To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</target>
+        <target state="translated">如果希望使用 git 功能，请在 [设置](command:workbench.action.openSettings?%5B%22git.enabled%22%5D)中启用 git。
+要详细了解如何在 Azure Data Studio 中使用 git 和源代码管理，请 [阅读我们的文档](https://aka.ms/vscode-scm)。</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.empty">
         <source xml:lang="en">In order to use git features, you can open a folder containing a git repository or clone from a URL.
 [Open Folder](command:vscode.openFolder)
 [Clone Repository](command:git.clone)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
-        <target state="new">In order to use git features, you can open a folder containing a git repository or clone from a URL.
-[Open Folder](command:vscode.openFolder)
-[Clone Repository](command:git.clone)
-To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</target>
+        <target state="translated">如果要使用 git 功能，可以打开包含 git 存储库的文件夹或从 URL 克隆。
+[打开文件夹](command:vscode.openFolder)
+[克隆存储库](command:git.clone)
+要详细了解如何在 Azure Data Studio 中使用 git 和源代码管理，请 [阅读我们的文档](https://aka.ms/vscode-scm)。</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.emptyWorkspace">
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories.
 [Add Folder to Workspace](command:workbench.action.addRootFolder)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
-        <target state="new">The workspace currently open doesn't have any folders containing git repositories.
-[Add Folder to Workspace](command:workbench.action.addRootFolder)
-To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</target>
+        <target state="translated">当前打开的工作区没有任何包含 git 存储库的文件夹。
+[将文件夹添加到工作区](command:workbench.action.addRootFolder)
+要详细了解如何在 Azure Data Studio 中使用 Git 和源代码管理，请 [阅读我们的文档](https://aka.ms/vscode-scm)。</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.folder">
         <source xml:lang="en">The folder currently open doesn't have a git repository. You can initialize a repository which will enable source control features powered by git.
 [Initialize Repository](command:git.init?%5Btrue%5D)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
-        <target state="new">The folder currently open doesn't have a git repository. You can initialize a repository which will enable source control features powered by git.
-[Initialize Repository](command:git.init?%5Btrue%5D)
-To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</target>
+        <target state="translated">当前打开的文件夹中没有 Git 存储库。可初始化一个存储库，它将弃用 Git 提供支持的源代码管理功能。
+[初始化存储库](command:git.init?%5Btrue%5D)
+要详细了解如何在 Azure Data Studio 中使用 Git 和源代码管理，请 [阅读我们的文档](https://aka.ms/vscode-scm)。</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.missing">
         <source xml:lang="en">A valid git installation was not detected, more details can be found in the [git output](command:git.showOutput).
 Please [install git](https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs](https://aka.ms/vscode-scm).
 If you're using a different version control system, you can [search the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.</source>
-        <target state="new">A valid git installation was not detected, more details can be found in the [git output](command:git.showOutput).
-Please [install git](https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs](https://aka.ms/vscode-scm).
-If you're using a different version control system, you can [search the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.</target>
+        <target state="translated">未检测到有效的 git 安装。要了解详细信息，请访问 [git 输出](command:git.showOutput)。
+请 [安装 git](https://git-scm.com/)，或在 [我们的文档](https://aka.ms/vscode-scm)中详细了解如何在 Azure Data Studio 中使用 Git 和源代码管理。
+如果使用的是其他版本的控制系统，则可以 [搜索市场](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)以获取其他扩展。</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.workspace">
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.
 [Initialize Repository](command:git.init)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
-        <target state="new">The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.
-[Initialize Repository](command:git.init)
-To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</target>
+        <target state="translated">当前打开的工作区没有任何包含 git 存储库的文件夹。可以初始化文件夹上将启用由 git 支持的源代码管理功能的存储库。
+[初始化存储库](command: git.init)
+要详细了解如何在 Azure Data Studio 中使用 git 和源代码管理，请 [阅读我们的文档](https://aka.ms/vscode-scm)。</target>
       </trans-unit>
     </body>
   </file>

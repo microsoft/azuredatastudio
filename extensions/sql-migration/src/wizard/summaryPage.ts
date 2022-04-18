@@ -6,14 +6,12 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationMode, MigrationStateModel, MigrationTargetType, NetworkContainerType, Page, StateChangeEvent } from '../models/stateMachine';
+import { MigrationMode, MigrationStateModel, MigrationTargetType, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { createHeadingTextComponent, createInformationRow, createLabelTextComponent } from './wizardController';
-import { getResourceGroupFromId, Subscription } from '../api/azure';
+import { getResourceGroupFromId } from '../api/azure';
 import { TargetDatabaseSummaryDialog } from '../dialog/targetDatabaseSummary/targetDatabaseSummaryDialog';
 import * as styles from '../constants/styles';
-import { azureResource } from 'azureResource';
-import { Tenant } from 'azurecore';
 
 export class SummaryPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -47,30 +45,10 @@ export class SummaryPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.Summary) {
-			this.migrationStateModel._databaseBackup.networkContainerType = <NetworkContainerType>this.migrationStateModel.savedInfo.networkContainerType;
-			this.migrationStateModel._databaseBackup.networkShares = this.migrationStateModel.savedInfo.networkShares;
-			this.migrationStateModel._databaseBackup.subscription = <Subscription>this.migrationStateModel.savedInfo.targetSubscription;
-			this.migrationStateModel._databaseBackup.blobs = this.migrationStateModel.savedInfo.blobs;
-			this.migrationStateModel._targetDatabaseNames = this.migrationStateModel.savedInfo.targetDatabaseNames;
-
-			this.migrationStateModel._targetType = <MigrationTargetType>this.migrationStateModel.savedInfo.migrationTargetType;
-			this.migrationStateModel._databaseAssessment = <string[]>this.migrationStateModel.savedInfo.databaseAssessment;
-			this.migrationStateModel._migrationDbs = this.migrationStateModel.savedInfo.databaseList;
-			this.migrationStateModel._targetSubscription = <azureResource.AzureResourceSubscription>this.migrationStateModel.savedInfo.subscription;
-			this.migrationStateModel._location = <azureResource.AzureLocation>this.migrationStateModel.savedInfo.location;
-			this.migrationStateModel._resourceGroup = <azureResource.AzureResourceResourceGroup>this.migrationStateModel.savedInfo.resourceGroup;
-			this.migrationStateModel._targetServerInstance = <azureResource.AzureSqlManagedInstance>this.migrationStateModel.savedInfo.targetServerInstance;
-
-			this.migrationStateModel.databaseSelectorTableValues = this.migrationStateModel.savedInfo.selectedDatabases;
-
-			this.migrationStateModel._azureAccount = <azdata.Account>this.migrationStateModel.savedInfo.azureAccount;
-			this.migrationStateModel._azureTenant = <Tenant>this.migrationStateModel.savedInfo.azureTenant;
-		}
 		const targetDatabaseSummary = new TargetDatabaseSummaryDialog(this.migrationStateModel);
 		const targetDatabaseHyperlink = this._view.modelBuilder.hyperlink().withProps({
 			url: '',
-			label: this.migrationStateModel._migrationDbs.length.toString(),
+			label: this.migrationStateModel._databasesForMigration?.length.toString(),
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin': '0px',
@@ -128,7 +106,7 @@ export class SummaryPage extends MigrationWizardPage {
 
 				await createHeadingTextComponent(this._view, constants.IR_PAGE_TITLE),
 				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
-				createInformationRow(this._view, constants.LOCATION, this.migrationStateModel._sqlMigrationService?.location!),
+				createInformationRow(this._view, constants.LOCATION, await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._sqlMigrationService?.location!)),
 				createInformationRow(this._view, constants.RESOURCE_GROUP, this.migrationStateModel._sqlMigrationService?.properties?.resourceGroup!),
 				createInformationRow(this._view, constants.IR_PAGE_TITLE, this.migrationStateModel._sqlMigrationService?.name!)
 			]

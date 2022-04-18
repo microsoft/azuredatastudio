@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { AzureModelRegistryService } from '../../modelManagement/azureModelRegistryService';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';

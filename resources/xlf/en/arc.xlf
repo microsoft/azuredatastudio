@@ -280,6 +280,9 @@
     <trans-unit id="arc.errorConnectingToController">
       <source xml:lang="en">Error connecting to controller. {0}</source>
     </trans-unit>
+    <trans-unit id="arc.errorListingLogAnalyticsWorkspaces">
+      <source xml:lang="en">Error listing Log Analytics workspaces {0}</source>
+    </trans-unit>
     <trans-unit id="arc.errorVerifyingPassword">
       <source xml:lang="en">Error encountered while verifying password. {0}</source>
     </trans-unit>
@@ -1043,6 +1046,15 @@
     <trans-unit id="arc.data.controller.location">
       <source xml:lang="en">Location</source>
     </trans-unit>
+    <trans-unit id="arc.data.controller.log.analytics.primary.key">
+      <source xml:lang="en">Log Analytics primary key</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.log.analytics.workspace.id">
+      <source xml:lang="en">Log Analytics workspace ID</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.log.analytics.workspace.names">
+      <source xml:lang="en">Log Analytics workspace</source>
+    </trans-unit>
     <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.confirm.password">
       <source xml:lang="en">Confirm password</source>
     </trans-unit>
@@ -1573,7 +1585,7 @@
       <source xml:lang="en">Azure SQL managed instance - Azure Arc</source>
     </trans-unit>
     <trans-unit id="resource.type.azure.arc.description">
-      <source xml:lang="en">Creates an Azure Arc data controller</source>
+      <source xml:lang="en">Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.</source>
     </trans-unit>
     <trans-unit id="resource.type.azure.arc.display.name">
       <source xml:lang="en">Azure Arc data controller</source>

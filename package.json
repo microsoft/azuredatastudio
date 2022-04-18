@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.36.0",
-  "distro": "c56461d705cbb7fab980277848260cf579fff140",
+  "distro": "8f4d839fbcb98eaa7aa3fd8bf9f84ab9bae899d9",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -75,7 +75,7 @@
     "angular2-grid": "2.0.6",
     "ansi_up": "^5.1.0",
     "applicationinsights": "1.0.8",
-    "azdataGraph": "github:Microsoft/azdataGraph#0.0.16",
+    "azdataGraph": "github:Microsoft/azdataGraph#0.0.20",
     "chart.js": "^2.9.4",
     "chokidar": "3.5.2",
     "graceful-fs": "4.2.6",
@@ -101,7 +101,7 @@
     "rxjs": "5.4.0",
     "sanitize-html": "1.19.1",
     "semver-umd": "^5.5.7",
-    "slickgrid": "github:Microsoft/SlickGrid.ADS#2.3.35",
+    "slickgrid": "github:Microsoft/SlickGrid.ADS#2.3.36",
     "spdlog": "^0.13.0",
     "sudo-prompt": "9.2.1",
     "tas-client-umd": "0.1.4",
@@ -165,7 +165,7 @@
     "cssnano": "^4.1.11",
     "debounce": "^1.0.0",
     "deemon": "^1.4.0",
-    "electron": "13.5.0",
+    "electron": "13.6.6",
     "eslint": "6.8.0",
     "eslint-plugin-header": "3.1.1",
     "eslint-plugin-jsdoc": "^19.1.0",

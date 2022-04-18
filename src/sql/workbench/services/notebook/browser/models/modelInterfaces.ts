@@ -179,15 +179,14 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * Restart the session.
 	 *
-	 * @returns A promise that resolves with whether the kernel has restarted.
+	 * @returns A promise that resolves when the kernel has restarted.
 	 *
 	 * #### Notes
-	 * If there is a running kernel, present a dialog.
-	 * If there is no kernel, we start a kernel with the last run
-	 * kernel name and resolves with `true`. If no kernel has been started,
-	 * this is a no-op, and resolves with `false`.
+	 * If there is an existing kernel, restart it and resolve.
+	 * If no kernel has been started, this is a no-op, and resolves.
+	 * Reject on error.
 	 */
-	restart(): Promise<boolean>;
+	restart(): Promise<void>;
 
 	/**
 	 * Change the session path.
@@ -389,7 +388,7 @@ export interface INotebookModel {
 	/**
 	 * Adds a cell to the index of the model
 	 */
-	addCell(cellType: CellType, index?: number): void;
+	addCell(cellType: CellType, index?: number, language?: string): void;
 
 	/**
 	 * Moves a cell up/down
@@ -500,6 +499,7 @@ export interface ITableUpdatedEvent {
 export interface ICellModel {
 	cellUri: URI;
 	id: string;
+	cellLabel: string;
 	readonly language: string;
 	readonly displayLanguage: string;
 	readonly cellGuid: string;

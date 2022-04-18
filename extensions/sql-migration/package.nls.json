@@ -8,6 +8,7 @@
 	"start-migration-command": "Migrate to Azure SQL",
 	"send-feedback-command": "Feedback",
 	"new-support-request-command": "New support request",
+	"refresh-migrations-command": "Refresh",
 	"migration-context-menu-category": "Migration Context Menu",
 	"complete-cutover-menu": "Complete cutover",
 	"database-details-menu": "Database details",

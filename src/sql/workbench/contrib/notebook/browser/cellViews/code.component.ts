@@ -452,8 +452,9 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 
 	private onCellModeChanged(isEditMode: boolean): void {
 		if (this.cellModel.id === this._activeCellId || this._activeCellId === '') {
-			this._editor.getControl().focus();
-			if (!isEditMode) {
+			if (isEditMode) {
+				this._editor.getControl().focus();
+			} else {
 				(document.activeElement as HTMLElement).blur();
 			}
 		}
@@ -468,6 +469,10 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 				}
 			})
 			.catch(err => onUnexpectedError(err));
+	}
+
+	public onCellLanguageFocus(): void {
+		this._model.updateActiveCell(this._cellModel);
 	}
 
 	private pickCellLanguage(languages: string[]): Promise<ILanguagePickInput | undefined> {

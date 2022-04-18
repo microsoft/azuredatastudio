@@ -35,7 +35,7 @@ export class TargetDatabaseSummaryDialog {
 			this._view = view;
 
 			const databaseCount = this._view.modelBuilder.text().withProps({
-				value: constants.COUNT_DATABASES(this._model._migrationDbs.length),
+				value: constants.COUNT_DATABASES(this._model._databasesForMigration.length),
 				CSSStyles: {
 					...styles.BODY_CSS,
 					'margin-bottom': '20px'
@@ -132,7 +132,7 @@ export class TargetDatabaseSummaryDialog {
 
 			const tableRows: azdata.DeclarativeTableCellValue[][] = [];
 
-			this._model._migrationDbs.forEach((db, index) => {
+			this._model._databasesForMigration.forEach((db, index) => {
 				const tableRow: azdata.DeclarativeTableCellValue[] = [];
 				tableRow.push({
 					value: db
