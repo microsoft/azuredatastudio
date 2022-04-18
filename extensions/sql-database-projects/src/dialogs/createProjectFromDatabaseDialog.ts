@@ -50,24 +50,37 @@ export class CreateProjectFromDatabaseDialog {
 
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 
-		getAzdataApi()!.window.openDialog(this.dialog);
-		await this.initDialogComplete.promise;
-
+		let connected = false;
 		if (this.profile) {
 			const connections = await azdataType.connection.getConnections(true);
-			let connection = connections.find(c => c.connectionId === this.profile!.id);
+			connected = !!connections.find(c => c.connectionId === this.profile!.id);
 
-			if (!connection) {
+			if (!connected) {
 				// if the connection clicked on isn't currently connected, try to connect
 				const result = await azdataType.connection.connect(this.profile, true, false);
+				connected = result.connected;
 
 				if (!result.connected) {
 					// if can't connect automatically, open connection dialog with the info from the profile
-					await azdataType.connection.openConnectionDialog(undefined, this.profile);
+					const connection = await azdataType.connection.openConnectionDialog(undefined, this.profile);
+					connected = !!connection;
+
+					// update these fields if connection was successful, to ensure they match the connection made
+					if (connected) {
+						this.profile.id = connection.connectionId;
+						this.profile.databaseName = connection.options['databaseName'];
+						this.profile.serverName = connection.options['server'];
+						this.profile.userName = connection.options['user'];
+					}
 				}
 			}
+		}
 
-			await this.updateConnectionComponents(getConnectionName(this.profile), this.profile.id, this.profile.databaseName!);
+		getAzdataApi()!.window.openDialog(this.dialog);
+		await this.initDialogComplete.promise;
+
+		if (connected) {
+			await this.updateConnectionComponents(getConnectionName(this.profile), this.profile!.id, this.profile!.databaseName);
 		}
 
 		this.tryEnableCreateButton();
