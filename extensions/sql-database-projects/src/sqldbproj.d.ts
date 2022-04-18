@@ -107,6 +107,22 @@ declare module 'sqldbproj' {
 		addSqlCmdVariable(name: string, defaultValue: string): Promise<void>;
 
 		/**
+		 * Appends given database source to the DatabaseSource property element.
+		 * If property element does not exist, then new one will be created.
+		 *
+		 * @param databaseSource Source of the database to add
+		 */
+		 addDatabaseSource(databaseSource: string): Promise<void>;
+
+		 /**
+		  * Removes database source from the DatabaseSource property element.
+		  * If no sources remain, then property element will be removed from the project file.
+		  *
+		  * @param databaseSource Source of the database to remove
+		  */
+		 removeDatabaseSource(databaseSource: string): Promise<void>;
+
+		/**
 		 * Excludes entry from project by removing it from the project file
 		 * @param entry
 		 */
