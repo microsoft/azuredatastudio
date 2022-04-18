@@ -4602,7 +4602,7 @@
 							"properties": [
 								{
 									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
-									"value": "Microsoft.jupyter"
+									"value": "ms-toolsai.jupyter"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
