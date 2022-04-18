@@ -33,7 +33,7 @@
 The actual sash element constructed by code. Important is used here because the width of the sash is fixed.
 However we always want it to be the width of the container it is resizing.
 */
-.eps-container .execution-plan-sash > div {
+.eps-container .execution-plan-sash>div {
 	width: 100% !important;
 }
 
@@ -70,12 +70,12 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* input bar styling in search node action view */
-.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container{
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container {
 	margin-left: 5px;
 }
 
 /* styling for select element in search node action view */
-.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container > select{
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container>select {
 	height: 100%;
 }
 
@@ -95,7 +95,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* each link in execution plan recommendations */
-.eps-container .execution-plan .plan .header .recommendations > a {
+.eps-container .execution-plan .plan .header .recommendations>a {
 	width: fit-content;
 	align-items: left;
 	text-align: left;
@@ -110,18 +110,18 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* Properties view in execution plan */
-.eps-container .execution-plan .properties {
+.properties {
 	flex: 0 0 500px;
 	overflow: hidden;
 	width: 500px;
-	height: calc( 100% - 2px );
+	height: calc(100% - 2px);
 	display: flex;
 	flex-direction: column;
 	border-left: 1px solid;
 }
 
 /* Title container of the properties view */
-.eps-container .execution-plan .properties .title {
+.properties .title {
 	line-height: 30px;
 	height: 22px;
 	font-size: 11px;
@@ -137,7 +137,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* text in title container of properties view */
-.eps-container .execution-plan .properties .title .text {
+.properties .title .text {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -148,7 +148,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* action bar in the title container for the properties view. This contains the close icon */
-.eps-container .execution-plan .properties .title .action-bar {
+.properties .title .action-bar {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -160,7 +160,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* Operation name styling in the properties view. */
-.eps-container .execution-plan .properties .operation-name {
+.properties .operation-name {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -174,7 +174,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* Properties table container in properties view */
-.eps-container .execution-plan .properties .table-container {
+.properties .table-container {
 	overflow-y: scroll;
 	flex: 1;
 	flex-grow: 1;
@@ -186,7 +186,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* styling for the column headers in the properties table */
-.eps-container .properties .table-container .prop-table-header {
+.properties .table-container .prop-table-header {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -198,22 +198,22 @@ However we always want it to be the width of the container it is resizing.
 	text-transform: uppercase;
 }
 
-.eps-container .properties-header {
+.properties-header {
 	font-weight: bold;
 	padding: 5px;
 }
 
-.eps-container .properties-toggle {
+.properties-toggle {
 	height: 9px;
 	width: 9px;
 	display: inline-block;
 }
 
-.eps-container .properties-toggle .expand {
+.properties-toggle .expand {
 	background: url(../images/expand.gif) no-repeat center center;
 }
 
-.eps-container .properties-toggle .collapse {
+.properties-toggle .collapse {
 	background: url(../images/collapse.gif) no-repeat center center;
 }
 
@@ -330,4 +330,109 @@ However we always want it to be the width of the container it is resizing.
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
+}
+
+.ep-add-icon {
+	background-image: url(../images/actionIcons/add.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-settings-icon {
+	background-image: url(../images/actionIcons/settings.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.compare-execution-plan-editor {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.compare-execution-plan-editor .editor-toolbar {
+	width: 100%;
+	flex: 0 0 25px;
+}
+
+.compare-execution-plan-editor .actual-editor {
+	flex: 1;
+	width: 100%;
+	display: flex;
+	overflow: hidden;
+}
+
+.compare-execution-plan-editor .actual-editor .plan-container {
+	flex: 1;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}
+
+.compare-execution-plan-editor .actual-editor .properties {
+	flex: 0 0 500px;
+	overflow: hidden;
+	width: 500px;
+	height: calc(100% - 2px);
+	display: flex;
+	flex-direction: column;
+	border-left: 1px solid;
+}
+
+.compare-execution-plan-editor .actual-editor .placeholder {
+	flex: 1;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	justify-content: center;
+	align-items: center;
+}
+
+.compare-execution-plan-editor .actual-editor .placeholder .infobox-container {
+	width: fit-content;
+	height: fit-content;
+}
+
+.compare-execution-plan-editor .actual-editor .plan {
+	flex: 1 1 0;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}
+
+.compare-execution-plan-editor .actual-editor .plan .plan-dropdown-container {
+	flex: 0;
+}
+
+.compare-execution-plan-editor .actual-editor .plan .plan-diagram {
+	flex: 1 1 0;
+	overflow: scroll;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}
+
+.compare-operation-name {
+	display: flex;
+	flex-direction: row;
+}
+
+.compare-operation-name-text {
+	flex: 1;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 13px;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	margin-top: 3px;
+	margin-bottom: 5px;
+	margin-left: 5px;
 }

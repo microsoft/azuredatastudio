@@ -273,3 +273,5 @@ export const zoomToFitIconClassNames = 'ep-zoom-to-fit-icon';
 export const zoomIconClassNames = 'ep-zoom-icon';
 export const enableTooltipIconClassName = 'ep-enable-tooltip-icon';
 export const disableTooltipIconClassName = 'ep-disable-tooltip-icon';
+export const addIconClassName = 'ep-add-icon';
+export const settingsIconClassName = 'ep-settings-icon';

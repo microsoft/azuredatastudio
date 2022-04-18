@@ -11,11 +11,17 @@ import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle
 import { IEditorResolverService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorResolverService';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/common/executionPlanInput';
 import { ExecutionPlanEditor } from 'sql/workbench/contrib/executionPlan/browser/executionPlanEditor';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ExecutionPlanComparisonEditor } from 'sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor';
+import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { ExecutionPlanComparisonInput } from 'sql/workbench/contrib/executionPlan/common/compareExecutionPlanInput';
+import { localize } from 'vs/nls';
 
 // Execution Plan editor registration
 
@@ -76,3 +82,35 @@ export class ExecutionPlanEditorOverrideContribution extends Disposable implemen
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 	.registerWorkbenchContribution(ExecutionPlanEditorOverrideContribution, LifecyclePhase.Restored);
+
+Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
+	.registerWorkbenchContribution(ExecutionPlanEditorOverrideContribution, LifecyclePhase.Restored);
+
+const comparisonExecutionPlanEditor = EditorPaneDescriptor.create(
+	ExecutionPlanComparisonEditor,
+	ExecutionPlanComparisonEditor.ID,
+	ExecutionPlanComparisonEditor.LABEL
+);
+
+const COMPARE_EXECUTION_PLAN_COMMAND_ID = 'compareExecutionPlan';
+
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
+	.registerEditorPane(comparisonExecutionPlanEditor, [new SyncDescriptor(ExecutionPlanComparisonInput)]);
+
+MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
+	command: {
+		id: COMPARE_EXECUTION_PLAN_COMMAND_ID,
+		title: {
+			value: localize('executionPlanCompareCommandValue', "Compare execution plans"),
+			original: localize('executionPlanCompareCommandOriginalValue', "Compare execution plans")
+		},
+		category: 'Execution Plan'
+	}
+});
+
+CommandsRegistry.registerCommand(COMPARE_EXECUTION_PLAN_COMMAND_ID, (accessors: ServicesAccessor) => {
+	const editorService = accessors.get(IEditorService);
+	editorService.openEditor(new ExecutionPlanComparisonInput(), {
+		pinned: true
+	});
+});

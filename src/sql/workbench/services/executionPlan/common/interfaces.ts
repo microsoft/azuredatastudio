@@ -33,4 +33,9 @@ export interface IExecutionPlanService {
 	 * Get execution plan file extensions supported by the provider.
 	 */
 	getSupportedExecutionPlanExtensionsForProvider(providerId: string): string[];
+
+	/**
+	 * Get all supported execution plan file extensions across different registered providers.
+	 */
+	getAllSupportedExecutionPlanExtensions(): string[];
 }

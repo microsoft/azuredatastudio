@@ -3,12 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { CompareExecutionPlanEditorView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor';
 import { ExecutionPlanFileView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileView';
 
 export class ExecutionPlanFileViewCache {
 	private static instance: ExecutionPlanFileViewCache;
 
 	public executionPlanFileViewMap: Map<string, ExecutionPlanFileView> = new Map();
+
+	public executionPlanComparisonViewMap: Map<string,
+		CompareExecutionPlanEditorView> = new Map();
 
 	private constructor() { }
 
