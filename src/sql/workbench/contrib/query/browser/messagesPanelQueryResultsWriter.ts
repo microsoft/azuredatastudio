@@ -38,19 +38,22 @@ export class MessagesPanelQueryResultsWriter extends Disposable implements IQuer
 		this.onMessage(this.runner.messages, true);
 	}
 
-	public unsubscribeFromQueryRunner(): void {
-		this.queryRunnerDisposables.clear();
+	public override dispose() {
+		this.clear();
+		this.queryRunnerDisposables.dispose();
+
+		super.dispose();
+	}
+
+	public set queryRunner(runner: QueryRunner) {
+		this.runner = runner;
+		this.currentUri = runner.uri;
 	}
 
 	public clear(): void {
 		this.model.messages = [];
 		this.model.totalExecuteMessage = undefined;
 		this.tree.updateChildren();
-	}
-
-	public set queryRunner(runner: QueryRunner) {
-		this.runner = runner;
-		this.currentUri = runner.uri;
 	}
 
 	private onMessage(resultMessage: IQueryMessage | IQueryMessage[], setInput: boolean = false): void {

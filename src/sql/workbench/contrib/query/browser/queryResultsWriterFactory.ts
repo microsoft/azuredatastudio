@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { FileQueryResultsWriter } from 'sql/workbench/contrib/query/browser/fileQueryResultsWriter';
 import { Model, IResultMessageIntern } from 'sql/workbench/contrib/query/browser/messagePanel';
 import { MessagesPanelQueryResultsWriter } from 'sql/workbench/contrib/query/browser/messagesPanelQueryResultsWriter';
@@ -11,6 +12,7 @@ import { QueryResultsWriterMode } from 'sql/workbench/contrib/query/common/query
 import { IQueryResultsWriter } from 'sql/workbench/services/query/common/query';
 import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
 import { FuzzyScore } from 'vs/base/common/filters';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { WorkbenchDataTree } from 'vs/platform/list/browser/listService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -22,16 +24,22 @@ export class QueryResultsWriterFactory {
 		private readonly treeStates: Map<string, IDataTreeViewState>,
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-
+		@IConfigurationService private configurationService: IConfigurationService
 	) { }
 
 	getQueryResultsWriter(): IQueryResultsWriter {
+		let isWritingToFile = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').writeQueryResultsToFile;
+
 		let editor = this.editorService.activeEditorPane as QueryEditor;
-		if (editor.queryResultsWriterStatus.mode === QueryResultsWriterMode.ToGrid) {
-			return this.instantiationService.createInstance(MessagesPanelQueryResultsWriter, this.model, this.tree, this.treeStates);
+		if (editor !== undefined) {
+			isWritingToFile = editor.queryResultsWriterStatus.mode === QueryResultsWriterMode.ToFile;
+		}
+
+		if (isWritingToFile) {
+			return this.instantiationService.createInstance(FileQueryResultsWriter);
 		}
 		else {
-			return this.instantiationService.createInstance(FileQueryResultsWriter);
+			return this.instantiationService.createInstance(MessagesPanelQueryResultsWriter, this.model, this.tree, this.treeStates);
 		}
 	}
 }

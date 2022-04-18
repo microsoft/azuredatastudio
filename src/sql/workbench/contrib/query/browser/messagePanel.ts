@@ -33,7 +33,6 @@ import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
 import { IRange } from 'vs/editor/common/core/range';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
-import { MessagesPanelQueryResultsWriter } from 'sql/workbench/contrib/query/browser/messagesPanelQueryResultsWriter';
 import { QueryResultsWriterFactory } from 'sql/workbench/contrib/query/browser/queryResultsWriterFactory';
 
 export interface IResultMessageIntern {
@@ -140,11 +139,11 @@ export class MessagePanel extends Disposable {
 		this._register(this.themeService.onDidColorThemeChange(this.applyStyles, this));
 		this.applyStyles(this.themeService.getColorTheme());
 		this.queryResultsWriterFactory = this.instantiationService.createInstance(QueryResultsWriterFactory, this.model, this.tree, this._treeStates);
-		this.queryResultsWriter = new MessagesPanelQueryResultsWriter(this.model, this.tree, this._treeStates);
+		this.queryResultsWriter = this.queryResultsWriterFactory.getQueryResultsWriter();
 
 		this._register(this.editorService.onDidActiveEditorOutputModeChange(() => {
-			this.queryResultsWriter.clear();
-			this.queryResultsWriter.unsubscribeFromQueryRunner();
+			this.queryResultsWriter.dispose();
+
 			this.queryResultsWriter = this.queryResultsWriterFactory.getQueryResultsWriter();
 			this.queryResultsWriter.queryRunner = this.runner;
 			this.queryResultsWriter.subscribeToQueryRunner();
@@ -202,7 +201,7 @@ export class MessagePanel extends Disposable {
 	}
 
 	public set queryRunner(runner: QueryRunner) {
-		this.queryResultsWriter.unsubscribeFromQueryRunner();
+		this.queryResultsWriter?.dispose();
 		if (this.currentUri) {
 			this._treeStates.set(this.currentUri, this.tree.getViewState());
 		}
@@ -210,7 +209,6 @@ export class MessagePanel extends Disposable {
 		this.currentUri = runner.uri;
 		this.runner = runner;
 
-		this.reset();
 		this.queryResultsWriter = this.queryResultsWriterFactory.getQueryResultsWriter();
 		this.queryResultsWriter.queryRunner = runner;
 		this.queryResultsWriter.subscribeToQueryRunner();
@@ -229,12 +227,8 @@ export class MessagePanel extends Disposable {
 		}
 	}
 
-	private reset() {
-		this.queryResultsWriter.clear();
-	}
-
 	public clear() {
-		this.reset();
+		this.queryResultsWriter.clear();
 	}
 
 	public override dispose() {

@@ -6,17 +6,21 @@
 import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { GetLocalizedXMLShowPlanColumnName } from 'sql/workbench/contrib/query/browser/gridPanel';
+import { IResultMessageIntern, Model } from 'sql/workbench/contrib/query/browser/messagePanel';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
 import { IQueryMessage, ResultSetSummary, MessageType, IQueryResultsWriter } from 'sql/workbench/services/query/common/query';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
+import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
 import { asArray } from 'vs/base/common/arrays';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { FuzzyScore } from 'vs/base/common/filters';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { isArray } from 'vs/base/common/types';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { WorkbenchDataTree } from 'vs/platform/list/browser/listService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { Progress } from 'vs/platform/progress/common/progress';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -64,8 +68,15 @@ export class FileQueryResultsWriter extends Disposable implements IQueryResultsW
 		}));
 	}
 
-	public unsubscribeFromQueryRunner(): void {
-		this.queryRunnerDisposables.clear();
+	public override dispose() {
+		this.clear();
+		this.queryRunnerDisposables.dispose();
+
+		super.dispose();
+	}
+
+	public set queryRunner(runner: QueryRunner) {
+		this.runner = runner;
 	}
 
 	public clear() {
@@ -76,10 +87,6 @@ export class FileQueryResultsWriter extends Disposable implements IQueryResultsW
 		this.queryContainsError = false;
 		this.closingMessageIncluded = false;
 		this.hasCreatedResultsFile = false;
-	}
-
-	public set queryRunner(runner: QueryRunner) {
-		this.runner = runner;
 	}
 
 	private onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
@@ -211,7 +218,8 @@ class Table extends Disposable {
 		public resultSet: ResultSetSummary,
 		private readonly textResourcePropertiesService: ITextResourcePropertiesService,
 		private fileQueryResultsWriter: FileQueryResultsWriter,
-		@IInstantiationService private readonly instantiationService: IInstantiationService
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super();
 
@@ -358,6 +366,10 @@ class Table extends Disposable {
 				columnWidth = Math.max(column.width, nameLength);
 		}
 
+		if (column.dataTypeName.toUpperCase().includes('GEOGRAPHY')) {
+			columnWidth = Math.max(257, nameLength);
+		}
+
 		return columnWidth;
 	}
 
@@ -370,7 +382,13 @@ class Table extends Disposable {
 
 			// Padding every column name before the last one to fill it's width and including extra space to separate each column.
 			if (curCol < this.columns.length - 1) {
-				columnNames += ' '.repeat((columnWidths[curCol] - this.columns[curCol].name.length) + 1);
+				try {
+					columnNames += ' '.repeat((columnWidths[curCol] - this.columns[curCol].name.length) + 1);
+				}
+				catch (err) {
+					this.logService.error(`Invalid string length error encountered while formatting type: ${this.columns[curCol].dataTypeName} with width of: ${columnWidths[curCol]}`, err);
+					throw err;
+				}
 			}
 		}
 		tableHeader.push(columnNames);

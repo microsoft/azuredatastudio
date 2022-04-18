@@ -94,9 +94,9 @@ export interface IQueryResultsWriter {
 	 */
 	subscribeToQueryRunner(): void;
 	/**
-	 * unsubscribes the writer from query runner callbacks like onMessage, onResultSet, etc.
+	 * Disposes the query results writer.
 	 */
-	unsubscribeFromQueryRunner(): void;
+	dispose(): void;
 	/**
 	 * Clears out any previous query results.
 	 */
