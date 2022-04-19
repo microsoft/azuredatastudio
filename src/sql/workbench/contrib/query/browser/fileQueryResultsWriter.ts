@@ -6,7 +6,7 @@
 import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { GetLocalizedXMLShowPlanColumnName } from 'sql/workbench/contrib/query/browser/gridPanel';
-import { IResultMessageIntern, Model } from 'sql/workbench/contrib/query/browser/messagePanel';
+import { IMessagePanelMessage, IResultMessageIntern, Model } from 'sql/workbench/contrib/query/browser/messagePanel';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
 import { IQueryMessage, ResultSetSummary, MessageType, IQueryResultsWriter } from 'sql/workbench/services/query/common/query';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
@@ -18,6 +18,7 @@ import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { isArray } from 'vs/base/common/types';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
+import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { WorkbenchDataTree } from 'vs/platform/list/browser/listService';
@@ -29,6 +30,7 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 export class FileQueryResultsWriter extends Disposable implements IQueryResultsWriter {
 	protected queryRunnerDisposables = this._register(new DisposableStore());
 	private runner: QueryRunner;
+	private currentUri: string;
 	private messages: Array<IQueryMessage> = [];
 	private formattedQueryResults: Array<string> = [];
 	private tables: Array<Table> = [];
@@ -37,9 +39,16 @@ export class FileQueryResultsWriter extends Disposable implements IQueryResultsW
 	private closingMessageIncluded: boolean = false;
 	private hasCreatedResultsFile: boolean = false;
 
+	private queryExecutionStartedMessage = localize('startQueryExecution', 'Query execution started...');
+	private queryExecutionFinishedMessage = localize('endQueryExecution', 'Query execution finished.');
+
 	private readonly newLineEscapeSequence: string = this.textResourcePropertiesService.getEOL(undefined);
 
 	constructor(
+		private readonly model: Model,
+		private readonly tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>,
+		private readonly treeStates: Map<string, IDataTreeViewState>,
+		private readonly notificationMessages: Map<string, Array<IMessagePanelMessage>>,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IUntitledTextEditorService private readonly untitledEditorService: IUntitledTextEditorService,
 		@IEditorService private readonly editorService: IEditorService,
@@ -53,6 +62,17 @@ export class FileQueryResultsWriter extends Disposable implements IQueryResultsW
 	public subscribeToQueryRunner(): void {
 		this.queryRunnerDisposables.add(this.runner.onQueryStart(() => {
 			this.clear();
+			this.notificationMessages.set(this.currentUri, []);
+		}));
+
+		this.queryRunnerDisposables.add(this.runner.onBatchStart(() => {
+			let notificationMessages = this.notificationMessages.get(this.currentUri);
+
+			if (notificationMessages.length === 0) {
+				let message = { message: this.queryExecutionStartedMessage, isError: false } as IMessagePanelMessage;
+				this.write(message);
+				this.notificationMessages.get(this.currentUri).push(message);
+			}
 		}));
 
 		this.queryRunnerDisposables.add(this.runner.onMessage(async (message) => {
@@ -66,6 +86,15 @@ export class FileQueryResultsWriter extends Disposable implements IQueryResultsW
 		this.queryRunnerDisposables.add(this.runner.onResultSetUpdate(async (resultSet) => {
 			await this.updateResultSet(resultSet);
 		}));
+
+		this.queryRunnerDisposables.add(this.runner.onQueryEnd(() => {
+			let message = { message: this.queryExecutionFinishedMessage, isError: false } as IMessagePanelMessage;
+			this.write(message);
+			this.notificationMessages.get(this.currentUri).push(message);
+		}));
+
+		let messages = this.notificationMessages.get(this.currentUri);
+		this.write(messages, true);
 	}
 
 	public override dispose() {
@@ -77,9 +106,17 @@ export class FileQueryResultsWriter extends Disposable implements IQueryResultsW
 
 	public set queryRunner(runner: QueryRunner) {
 		this.runner = runner;
+		this.currentUri = runner.uri;
+
+		if (this.notificationMessages.get(this.currentUri) === undefined) {
+			this.notificationMessages.set(this.currentUri, []);
+		}
 	}
 
 	public clear() {
+		this.model.messages = [];
+		this.model.totalExecuteMessage = undefined;
+		this.tree.updateChildren();
 		this.messages = [];
 		this.formattedQueryResults = [];
 		this.tables = [];
@@ -87,6 +124,18 @@ export class FileQueryResultsWriter extends Disposable implements IQueryResultsW
 		this.queryContainsError = false;
 		this.closingMessageIncluded = false;
 		this.hasCreatedResultsFile = false;
+	}
+
+	private write(incomingMessage: IMessagePanelMessage | IMessagePanelMessage[], setInput: boolean = false): void {
+		let messages = asArray(incomingMessage);
+		this.model.messages.push(...messages);
+
+		if (setInput) {
+			this.tree.setInput(this.model, this.treeStates.get(this.currentUri));
+		}
+		else {
+			this.tree.updateChildren();
+		}
 	}
 
 	private onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {

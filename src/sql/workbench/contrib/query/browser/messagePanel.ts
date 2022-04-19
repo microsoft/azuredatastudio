@@ -94,6 +94,7 @@ export class MessagePanel extends Disposable {
 
 	private _treeStates = new Map<string, IDataTreeViewState>();
 	private currentUri: string;
+	private notificationMessages = new Map<string, Array<IMessagePanelMessage>>();
 
 	private tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>;
 	private runner: QueryRunner;
@@ -138,7 +139,7 @@ export class MessagePanel extends Disposable {
 		this._register(attachListStyler(this.tree, this.themeService));
 		this._register(this.themeService.onDidColorThemeChange(this.applyStyles, this));
 		this.applyStyles(this.themeService.getColorTheme());
-		this.queryResultsWriterFactory = this.instantiationService.createInstance(QueryResultsWriterFactory, this.model, this.tree, this._treeStates);
+		this.queryResultsWriterFactory = this.instantiationService.createInstance(QueryResultsWriterFactory, this.model, this.tree, this._treeStates, this.notificationMessages);
 		this.queryResultsWriter = this.queryResultsWriterFactory.getQueryResultsWriter();
 
 		this._register(this.editorService.onDidActiveEditorOutputModeChange(() => {
@@ -201,14 +202,12 @@ export class MessagePanel extends Disposable {
 	}
 
 	public set queryRunner(runner: QueryRunner) {
-		this.queryResultsWriter?.dispose();
 		if (this.currentUri) {
 			this._treeStates.set(this.currentUri, this.tree.getViewState());
 		}
-
 		this.currentUri = runner.uri;
 		this.runner = runner;
-
+		this.queryResultsWriter.dispose();
 		this.queryResultsWriter = this.queryResultsWriterFactory.getQueryResultsWriter();
 		this.queryResultsWriter.queryRunner = runner;
 		this.queryResultsWriter.subscribeToQueryRunner();

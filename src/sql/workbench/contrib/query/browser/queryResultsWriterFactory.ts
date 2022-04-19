@@ -5,7 +5,7 @@
 
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { FileQueryResultsWriter } from 'sql/workbench/contrib/query/browser/fileQueryResultsWriter';
-import { Model, IResultMessageIntern } from 'sql/workbench/contrib/query/browser/messagePanel';
+import { Model, IResultMessageIntern, IMessagePanelMessage } from 'sql/workbench/contrib/query/browser/messagePanel';
 import { MessagesPanelQueryResultsWriter } from 'sql/workbench/contrib/query/browser/messagesPanelQueryResultsWriter';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { QueryResultsWriterMode } from 'sql/workbench/contrib/query/common/queryResultsWriterStatus';
@@ -22,6 +22,7 @@ export class QueryResultsWriterFactory {
 		private readonly model: Model,
 		private readonly tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>,
 		private readonly treeStates: Map<string, IDataTreeViewState>,
+		private readonly notificationMessages: Map<string, Array<IMessagePanelMessage>>,
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IConfigurationService private configurationService: IConfigurationService
@@ -36,7 +37,7 @@ export class QueryResultsWriterFactory {
 		}
 
 		if (isWritingToFile) {
-			return this.instantiationService.createInstance(FileQueryResultsWriter);
+			return this.instantiationService.createInstance(FileQueryResultsWriter, this.model, this.tree, this.treeStates, this.notificationMessages);
 		}
 		else {
 			return this.instantiationService.createInstance(MessagesPanelQueryResultsWriter, this.model, this.tree, this.treeStates);
