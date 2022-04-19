@@ -44,7 +44,6 @@ export async function getLocalSettingsJson(localSettingsPath: string): Promise<I
 			throw new Error(utils.formatString(constants.failedToParse(error.message), constants.azureFunctionLocalSettingsFileName, error.message));
 		}
 	}
-
 	return {
 		IsEncrypted: false // Include this by default otherwise the func cli assumes settings are encrypted and fails to run
 	};
@@ -75,8 +74,7 @@ export async function setLocalAppSetting(projectFolder: string, key: string, val
 	}
 
 	settings.Values[key] = value;
-	void fs.promises.writeFile(localSettingsPath, JSON.stringify(settings, undefined, 2));
-
+	await fs.promises.writeFile(localSettingsPath, JSON.stringify(settings, undefined, 2));
 	return true;
 }
 
@@ -323,10 +321,11 @@ export async function promptForObjectName(bindingType: BindingType): Promise<str
 /**
  * Prompts the user to enter connection setting and updates it from AF project
  * @param projectUri Azure Function project uri
+ * @param connectionInfo connection info from the user to update the connection string
+ * @returns connection string setting name to be used for the createFunction API
  */
-export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined, existingConnectionString?: string, connectionInfo?: IConnectionInfo): Promise<string | undefined> {
+export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined, connectionInfo?: IConnectionInfo): Promise<string | undefined> {
 	let connectionStringSettingName: string | undefined;
-	let connectionString: string = existingConnectionString ?? '';
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 
 	// show the settings from project's local.settings.json if there's an AF functions project
@@ -391,7 +390,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 			'WEBSITE_VNET_ROUTE_ALL'
 		];
 
-		// setup connection string setting quickpick
+		// setup connetion string setting quickpick
 		let connectionStringSettings: (vscode.QuickPickItem)[] = [];
 		if (settings?.Values) {
 			connectionStringSettings = Object.keys(settings.Values).filter(setting => !knownSettings.includes(setting)).map(setting => { return { label: setting }; });
@@ -428,12 +427,13 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 
 				const listOfConnectionStringMethods = [constants.connectionProfile, constants.userConnectionString];
 				let selectedConnectionStringMethod: string | undefined;
+				let connectionString: string | undefined = '';
 				while (true) {
 					try {
 						const projectFolder: string = path.dirname(projectUri.fsPath);
 						const localSettingsPath: string = path.join(projectFolder, constants.azureFunctionLocalSettingsFileName);
 
-						if (!existingConnectionString) {
+						if (!connectionInfo) {
 							// show the connection string methods (user input and connection profile options)
 							selectedConnectionStringMethod = await vscode.window.showQuickPick(listOfConnectionStringMethods, {
 								canPickMany: false,
@@ -459,13 +459,17 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 								connectionInfo = await vscodeMssqlApi.promptForConnection(true);
 							}
 						}
-						if (!connectionInfo) {
-							// User cancelled return to selectedConnectionStringMethod prompt
-							continue;
-						}
 						if (selectedConnectionStringMethod !== constants.userConnectionString) {
+							if (!connectionInfo) {
+								// User cancelled return to selectedConnectionStringMethod prompt
+								continue;
+							}
 							// get the connection string including prompts for password if needed
-							connectionString = await promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo, localSettingsPath) as string;
+							connectionString = await promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo, localSettingsPath);
+						}
+						if (!connectionString) {
+							// user cancelled the prompts
+							return;
 						}
 
 						const success = await setLocalAppSetting(projectFolder, newConnectionStringSettingName, connectionString);
@@ -503,6 +507,12 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 	return connectionStringSettingName;
 }
 
+/**
+ * Prompts the user to include password in the connection string and updates the connection string based on user input
+ * @param connectionInfo connection info from the connection profile user selected
+ * @param localSettingsPath path to the local.settings.json file
+ * @returns the updated connection string based on password prompts
+ */
 export async function promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo: IConnectionInfo, localSettingsPath: string): Promise<string | undefined> {
 	let includePassword: string | undefined;
 	let connectionString: string = '';
@@ -560,6 +570,6 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 		// failed to get connection string for selected connection and will go back to prompt for connection string methods
 		console.warn(e);
 		void vscode.window.showErrorMessage(constants.failedToGetConnectionString);
-		return;
+		return undefined;
 	}
 }

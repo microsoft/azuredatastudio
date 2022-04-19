@@ -155,8 +155,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			objectName = utils.generateQuotedFullName(node.metadata.schema, node.metadata.name);
 		}
 		telemetryStep = 'getConnectionString';
-		const connectionDetails = vscodeMssqlApi.createConnectionDetails(connectionInfo);
-		const connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
 
 		// get function name from user
 		telemetryStep = 'getAzureFunctionName';
@@ -191,7 +189,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		let connectionStringSettingName: string | undefined = constants.sqlConnectionStringSetting;
 		if (!isCreateNewProject) {
 			telemetryStep = 'getConnectionStringSettingName';
-			connectionStringSettingName = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(vscode.Uri.parse(projectFile), connectionString, connectionInfo);
+			connectionStringSettingName = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(vscode.Uri.parse(projectFile), connectionInfo);
 		}
 
 		// create C# Azure Function with SQL Binding

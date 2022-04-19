@@ -623,6 +623,9 @@
     <trans-unit id="errorStartBeforeReady">
       <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
     </trans-unit>
+    <trans-unit id="notebookMultipleRequestsError">
+      <source xml:lang="en">Cannot execute code cell. Another cell is currently being executed.</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/actions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="clearSavedAccounts">
@@ -1681,6 +1684,9 @@
     <trans-unit id="azdata.extension.contributes.dashboard.tab.group">
       <source xml:lang="en">The unique identifier of the group this tab belongs to, value for home group: home.</source>
     </trans-unit>
+    <trans-unit id="azdata.extension.contributes.dashboard.tab.hideRefreshTask">
+      <source xml:lang="en">Flag used to show/hide refresh button in toolbar. By default, the value is false</source>
+    </trans-unit>
     <trans-unit id="azdata.extension.contributes.dashboard.tab.icon.dark">
       <source xml:lang="en">Icon path when a dark theme is used</source>
     </trans-unit>
@@ -2284,18 +2290,78 @@
       <source xml:lang="en">Select All</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlan" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="executionPlan.SaveFileDescription">
-      <source xml:lang="en">Execution Plan Files</source>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/azdataGraphView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="invalidExecutionPlanZoomError">
+      <source xml:lang="en">Zoom level cannot be 0 or negative</source>
     </trans-unit>
-    <trans-unit id="executionPlanCustomZoom">
-      <source xml:lang="en">Custom Zoom</source>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanEditor">
+      <source xml:lang="en">Query Execution Plan Editor</source>
     </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanFileView" source-language="en" datatype="plaintext"><body>
     <trans-unit id="executionPlanFileLoadingComplete">
       <source xml:lang="en">Execution plans are generated</source>
     </trans-unit>
     <trans-unit id="executionPlanFileLoadingFailed">
       <source xml:lang="en">Failed to load execution plan</source>
+    </trans-unit>
+    <trans-unit id="loadingExecutionPlanFile">
+      <source xml:lang="en">Generating execution plans</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanPropertiesEdgeOperationName">
+      <source xml:lang="en">Edge</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameNameColumnHeader">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameValueColumnHeader">
+      <source xml:lang="en">Value</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanPropertyViewClose">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="executionPlanPropertyViewSortAlphabetically">
+      <source xml:lang="en">Alphabetical</source>
+    </trans-unit>
+    <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
+      <source xml:lang="en">Categorized</source>
+    </trans-unit>
+    <trans-unit id="executionPlanPropertyViewSortReverseAlphabetically">
+      <source xml:lang="en">Reverse Alphabetical</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewTitle">
+      <source xml:lang="en">Properties</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanTab" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanTitle">
+      <source xml:lang="en">Query Plan (Preview)</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlan.SaveFileDescription">
+      <source xml:lang="en">Execution Plan Files</source>
+    </trans-unit>
+    <trans-unit id="executionPlanContextMenuDisableTooltip">
+      <source xml:lang="en">Disable Tooltips</source>
+    </trans-unit>
+    <trans-unit id="executionPlanContextMenuEnableTooltip">
+      <source xml:lang="en">Enable Tooltips</source>
+    </trans-unit>
+    <trans-unit id="executionPlanCustomZoom">
+      <source xml:lang="en">Custom Zoom</source>
+    </trans-unit>
+    <trans-unit id="executionPlanDisableTooltip">
+      <source xml:lang="en">Tooltips disabled</source>
+    </trans-unit>
+    <trans-unit id="executionPlanEnableTooltip">
+      <source xml:lang="en">Tooltips enabled</source>
     </trans-unit>
     <trans-unit id="executionPlanFitGraphLabel">
       <source xml:lang="en">Zoom to fit</source>
@@ -2312,51 +2378,17 @@
     <trans-unit id="executionPlanSearchNodeAction">
       <source xml:lang="en">Find Node</source>
     </trans-unit>
-    <trans-unit id="executionPlanTitle">
-      <source xml:lang="en">Query Plan (Preview)</source>
-    </trans-unit>
     <trans-unit id="executionPlanZoomInActionLabel">
       <source xml:lang="en">Zoom In</source>
     </trans-unit>
     <trans-unit id="executionPlanZoomOutActionLabel">
       <source xml:lang="en">Zoom Out</source>
     </trans-unit>
-    <trans-unit id="loadingExecutionPlanFile">
-      <source xml:lang="en">Generating execution plans</source>
-    </trans-unit>
     <trans-unit id="openQueryAction">
       <source xml:lang="en">Open Query</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="executionPlanEditor">
-      <source xml:lang="en">Query Execution Plan Editor</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="executionPlanPropertiesEdgeOperationName">
-      <source xml:lang="en">Edge</source>
-    </trans-unit>
-    <trans-unit id="executionPlanPropertyViewClose">
-      <source xml:lang="en">Close</source>
-    </trans-unit>
-    <trans-unit id="executionPlanPropertyViewSortAlphabetically">
-      <source xml:lang="en">Alphabetical</source>
-    </trans-unit>
-    <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
-      <source xml:lang="en">Categorized</source>
-    </trans-unit>
-    <trans-unit id="nodePropertyViewNameNameColumnHeader">
-      <source xml:lang="en">Name</source>
-    </trans-unit>
-    <trans-unit id="nodePropertyViewNameValueColumnHeader">
-      <source xml:lang="en">Value</source>
-    </trans-unit>
-    <trans-unit id="nodePropertyViewTitle">
-      <source xml:lang="en">Properties</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/executionPlan/browser/planHeader" source-language="en" datatype="plaintext"><body>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader" source-language="en" datatype="plaintext"><body>
     <trans-unit id="planHeaderIndexAndCost">
       <source xml:lang="en">Query {0}: Query cost (relative to the script): {1}%</source>
       <note>{0} is the index of the graph in the execution plan tab
@@ -5306,11 +5338,17 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/notebook/browser/models/cell" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="codeCellLabel">
+      <source xml:lang="en">Code Cell {0}</source>
+    </trans-unit>
     <trans-unit id="commandSuccessful">
       <source xml:lang="en">Command executed successfully</source>
     </trans-unit>
     <trans-unit id="executionCanceled">
       <source xml:lang="en">Query execution was canceled</source>
+    </trans-unit>
+    <trans-unit id="mdCellLabel">
+      <source xml:lang="en">Markdown Cell {0}</source>
     </trans-unit>
     <trans-unit id="noDefaultKernel">
       <source xml:lang="en">No kernel is available for this notebook</source>
@@ -5894,6 +5932,9 @@ Error: {1}</source>
     <trans-unit id="serverGroup.cancel">
       <source xml:lang="en">Cancel</source>
     </trans-unit>
+    <trans-unit id="serverGroup.colorValue">
+      <source xml:lang="en">Color: {0}</source>
+    </trans-unit>
     <trans-unit id="serverGroup.ok">
       <source xml:lang="en">OK</source>
     </trans-unit>
@@ -5907,11 +5948,17 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.checkConstraint.description.description">
+      <source xml:lang="en">The description of the check constraint.</source>
+    </trans-unit>
     <trans-unit id="designer.checkConstraint.description.expression">
       <source xml:lang="en">The expression defining the check constraint.</source>
     </trans-unit>
     <trans-unit id="designer.checkConstraint.description.name">
       <source xml:lang="en">The name of the check constraint.</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.advancedType">
+      <source xml:lang="en">Displays the unified data type (including length, scale and precision) for the column</source>
     </trans-unit>
     <trans-unit id="designer.column.description.allowNulls">
       <source xml:lang="en">Specifies whether the column may have a NULL value.</source>
@@ -5921,6 +5968,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="designer.column.description.defaultValueBinding">
       <source xml:lang="en">A predefined global default value for the column or binding.</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.description">
+      <source xml:lang="en">Displays the description of the column</source>
     </trans-unit>
     <trans-unit id="designer.column.description.length">
       <source xml:lang="en">The maximum length (in characters) that can be stored in this database object.</source>
@@ -5940,6 +5990,9 @@ Error: {1}</source>
     <trans-unit id="designer.foreignkey.description.columnMapping">
       <source xml:lang="en">The mapping between foreign key columns and primary key columns.</source>
     </trans-unit>
+    <trans-unit id="designer.foreignkey.description.description">
+      <source xml:lang="en">The description of the foreign key.</source>
+    </trans-unit>
     <trans-unit id="designer.foreignkey.description.name">
       <source xml:lang="en">The name of the foreign key.</source>
     </trans-unit>
@@ -5958,6 +6011,9 @@ Error: {1}</source>
     <trans-unit id="designer.index.description.columns">
       <source xml:lang="en">The columns of the index.</source>
     </trans-unit>
+    <trans-unit id="designer.index.description.description">
+      <source xml:lang="en">The description of the index.</source>
+    </trans-unit>
     <trans-unit id="designer.index.description.name">
       <source xml:lang="en">The name of the index.</source>
     </trans-unit>
@@ -5972,6 +6028,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="designer.table.primaryKeyColumns.description">
       <source xml:lang="en">Columns in the primary key.</source>
+    </trans-unit>
+    <trans-unit id="designer.table.primaryKeyDescription.description">
+      <source xml:lang="en">The description of the primary key.</source>
     </trans-unit>
     <trans-unit id="designer.table.primaryKeyName.description">
       <source xml:lang="en">Name of the primary key.</source>
@@ -6015,6 +6074,9 @@ Error: {1}</source>
     <trans-unit id="tableDesigner.addNewIndex">
       <source xml:lang="en">New Index</source>
     </trans-unit>
+    <trans-unit id="tableDesigner.checkConstraintDescriptionTitle">
+      <source xml:lang="en">Description</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.checkConstraintExpressionTitle">
       <source xml:lang="en">Expression</source>
     </trans-unit>
@@ -6027,11 +6089,17 @@ Error: {1}</source>
     <trans-unit id="tableDesigner.checkConstraintsTabTitle">
       <source xml:lang="en">Check Constraints</source>
     </trans-unit>
+    <trans-unit id="tableDesigner.columnAdvancedTypeTitle">
+      <source xml:lang="en">Type</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.columnAllowNullTitle">
       <source xml:lang="en">Allow Nulls</source>
     </trans-unit>
     <trans-unit id="tableDesigner.columnDefaultValueTitle">
       <source xml:lang="en">Default Value</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.columnDescriptionTitle">
+      <source xml:lang="en">Description</source>
     </trans-unit>
     <trans-unit id="tableDesigner.columnIsPrimaryKeyTitle">
       <source xml:lang="en">Primary Key</source>
@@ -6061,7 +6129,7 @@ Error: {1}</source>
       <source xml:lang="en">Description</source>
     </trans-unit>
     <trans-unit id="tableDesigner.errorInitializingTableDesigner">
-      <source xml:lang="en">An error occured while initializing the table designer: {0}</source>
+      <source xml:lang="en">An error occurred while initializing the table designer: {0}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.errorProcessingEdit">
       <source xml:lang="en">An error occured while processing the change: {0}</source>
@@ -6074,6 +6142,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.foreignKeyColumns">
       <source xml:lang="en">Columns</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.foreignKeyDescriptionTitle">
+      <source xml:lang="en">Description</source>
     </trans-unit>
     <trans-unit id="tableDesigner.foreignKeyNameTitle">
       <source xml:lang="en">Name</source>
@@ -6091,7 +6162,7 @@ Error: {1}</source>
       <source xml:lang="en">General</source>
     </trans-unit>
     <trans-unit id="tableDesigner.generatePreviewReportError">
-      <source xml:lang="en">An error occured while generating preview report: {0}</source>
+      <source xml:lang="en">An error occurred while generating preview report: {0}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.generateScriptError">
       <source xml:lang="en">An error occured while generating the script: {0}</source>
@@ -6111,6 +6182,9 @@ Error: {1}</source>
     <trans-unit id="tableDesigner.indexColumns">
       <source xml:lang="en">Columns</source>
     </trans-unit>
+    <trans-unit id="tableDesigner.indexDescription">
+      <source xml:lang="en">Description</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.indexName">
       <source xml:lang="en">Name</source>
     </trans-unit>
@@ -6125,6 +6199,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.primaryKeyColumnsTitle">
       <source xml:lang="en">Primary Key Columns</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.primaryKeyDescriptionTitle">
+      <source xml:lang="en">Description</source>
     </trans-unit>
     <trans-unit id="tableDesigner.primaryKeyNameTitle">
       <source xml:lang="en">Name</source>

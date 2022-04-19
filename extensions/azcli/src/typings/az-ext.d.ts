@@ -116,6 +116,12 @@ declare module 'az-ext' {
 		}
 	}
 
+	export interface DcListUpgradesResult {
+		versions: string[], // ["v1.4.1_2022-03-08", "v1.4.0_2022-02-25"]
+		currentVersion: string, // "v1.4.1_2022-03-08"
+		dates: string[] // ["03/08/2022", "02/25/2022"]
+	}
+
 	export interface StorageVolume {
 		className?: string, // "local-storage"
 		size: string // "5Gi"
@@ -332,7 +338,9 @@ declare module 'az-ext' {
 				config: {
 					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcConfigListResult[]>>,
 					show(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcConfigShowResult>>
-				}
+				},
+				listUpgrades(namespace: string, usek8s?: boolean, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcListUpgradesResult>>,
+				upgrade(desiredVersion: string, name: string, resourceGroup?: string, namespace?: string, usek8s?: boolean, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
 			}
 		},
 		postgres: {

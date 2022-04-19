@@ -81,6 +81,28 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.waitForActiveCellResults();
 		});
 
+		// Temporarily skipping this test while investigating failure in builds
+		it.skip('can add a new package from the Manage Packages wizard', async function () {
+			const app = this.app as Application;
+			await app.workbench.sqlNotebook.newUntitledNotebook();
+			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
+			await app.workbench.sqlNotebook.notebookToolbar.changeKernel('Python 3');
+			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
+
+			await app.workbench.sqlNotebook.addCell('code');
+			await app.workbench.sqlNotebook.waitForTypeInEditor('import pyarrow');
+			await app.workbench.sqlNotebook.runActiveCell();
+			await app.workbench.sqlNotebook.waitForJupyterErrorOutput();
+
+			await app.workbench.sqlNotebook.notebookToolbar.managePackages();
+			await app.workbench.managePackagesDialog.waitForManagePackagesDialog();
+			await app.workbench.managePackagesDialog.addNewPackage('pyarrow');
+
+			// There should be no error output when running the cell after pyarrow has been installed
+			await app.workbench.sqlNotebook.runActiveCell();
+			await app.workbench.sqlNotebook.waitForActiveCellResultsGone();
+		});
+
 		it('can open ipynb file, run all, and save notebook with outputs', async function () {
 			const app = this.app as Application;
 			await openAndRunNotebook(app, 'hello.ipynb');

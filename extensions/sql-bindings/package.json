@@ -51,7 +51,7 @@
         },
         {
           "command": "sqlBindings.createAzureFunction",
-          "when": "view == objectExplorer && viewItem == Table && !azdataAvailable",
+          "when": "!azdataAvailable",
           "group": "zAzure_Function@1"
         }
       ],
