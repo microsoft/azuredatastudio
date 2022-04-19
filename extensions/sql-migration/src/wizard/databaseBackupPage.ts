@@ -12,7 +12,7 @@ import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateM
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { findDropDownItemIndex, selectDropDownIndex, selectDefaultDropdownValue, getAzureResourceGroupDropdownValues } from '../api/utils';
+import { findDropDownItemIndex, selectDropDownIndex, selectDefaultDropdownValue, getAzureResourceGroups, getAzureResourceGroupsDropdownValues, getStorageAccounts, getStorageAccountsDropdownValues } from '../api/utils';
 import { logError, TelemetryViews } from '../telemtery';
 import * as styles from '../constants/styles';
 
@@ -690,7 +690,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			const selectedIndex = findDropDownItemIndex(this._networkShareStorageAccountResourceGroupDropdown, value);
 			if (selectedIndex > -1) {
 				for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
-					this.migrationStateModel._databaseBackup.networkShares[i].resourceGroup = this.migrationStateModel.getAzureResourceGroup(selectedIndex);
+					this.migrationStateModel._databaseBackup.networkShares[i].resourceGroup = this.migrationStateModel._resourceGroups[selectedIndex];
 				}
 				await this.loadNetworkShareStorageDropdown();
 			}
@@ -717,7 +717,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			const selectedIndex = findDropDownItemIndex(this._networkShareContainerStorageAccountDropdown, value);
 			if (selectedIndex > -1) {
 				for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
-					this.migrationStateModel._databaseBackup.networkShares[i].storageAccount = this.migrationStateModel.getStorageAccount(selectedIndex);
+					this.migrationStateModel._databaseBackup.networkShares[i].storageAccount = this.migrationStateModel._storageAccounts[selectedIndex];
 				}
 			}
 		}));
@@ -964,7 +964,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this._disposables.push(blobContainerResourceDropdown.onValueChanged(async (value) => {
 						const selectedIndex = findDropDownItemIndex(blobContainerResourceDropdown, value);
 						if (selectedIndex > -1 && !blobResourceGroupErrorStrings.includes(value)) {
-							this.migrationStateModel._databaseBackup.blobs[index].resourceGroup = this.migrationStateModel.getAzureResourceGroup(selectedIndex);
+							this.migrationStateModel._databaseBackup.blobs[index].resourceGroup = this.migrationStateModel._resourceGroups[selectedIndex];
 							await this.loadBlobStorageDropdown(index);
 							await blobContainerStorageAccountDropdown.updateProperties({ enabled: true });
 						} else {
@@ -976,7 +976,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this._disposables.push(blobContainerStorageAccountDropdown.onValueChanged(async (value) => {
 						const selectedIndex = findDropDownItemIndex(blobContainerStorageAccountDropdown, value);
 						if (selectedIndex > -1 && !blobStorageAccountErrorStrings.includes(value)) {
-							this.migrationStateModel._databaseBackup.blobs[index].storageAccount = this.migrationStateModel.getStorageAccount(selectedIndex);
+							this.migrationStateModel._databaseBackup.blobs[index].storageAccount = this.migrationStateModel._storageAccounts[selectedIndex];
 							await this.loadBlobContainerDropdown(index);
 							await blobContainerDropdown.updateProperties({ enabled: true });
 						} else {
@@ -1276,7 +1276,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadNetworkStorageResourceGroup(): Promise<void> {
 		this._networkShareStorageAccountResourceGroupDropdown.loading = true;
 		try {
-			this._networkShareStorageAccountResourceGroupDropdown.values = await getAzureResourceGroupDropdownValues('sa', this.migrationStateModel._targetServerInstance.location, this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription);
+			this.migrationStateModel._resourceGroups = await getAzureResourceGroups('sa', this.migrationStateModel._targetServerInstance.location, this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription);
+			this._networkShareStorageAccountResourceGroupDropdown.values = await getAzureResourceGroupsDropdownValues(this.migrationStateModel._resourceGroups);
 			selectDefaultDropdownValue(this._networkShareStorageAccountResourceGroupDropdown, this.migrationStateModel._databaseBackup?.networkShares[0]?.resourceGroup?.id, false);
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingNetworkStorageResourceGroup', error);
@@ -1290,7 +1291,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._networkShareContainerStorageAccountDropdown.loading = true;
 		this._networkShareStorageAccountResourceGroupDropdown.loading = true;
 		try {
-			this._networkShareContainerStorageAccountDropdown.values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.networkShares[0]?.resourceGroup);
+			this.migrationStateModel._storageAccounts = await getStorageAccounts(this.migrationStateModel._targetServerInstance.location, this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.networkShares[0]?.resourceGroup);
+			this._networkShareContainerStorageAccountDropdown.values = await getStorageAccountsDropdownValues(this.migrationStateModel._storageAccounts);
 			selectDefaultDropdownValue(this._networkShareContainerStorageAccountDropdown, this.migrationStateModel?._databaseBackup?.networkShares[0]?.storageAccount?.id, false);
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingNetworkShareStorageDropdown', error);
@@ -1303,7 +1305,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobResourceGroup(): Promise<void> {
 		this._blobContainerResourceGroupDropdowns.forEach(v => v.loading = true);
 		try {
-			const resourceGroupValues = await getAzureResourceGroupDropdownValues('sa', this.migrationStateModel._targetServerInstance.location, this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription);
+			this.migrationStateModel._resourceGroups = await getAzureResourceGroups('sa', this.migrationStateModel._targetServerInstance.location, this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription);
+			const resourceGroupValues = await getAzureResourceGroupsDropdownValues(this.migrationStateModel._resourceGroups);
 			this._blobContainerResourceGroupDropdowns.forEach((dropDown, index) => {
 				dropDown.values = resourceGroupValues;
 				selectDefaultDropdownValue(dropDown, this.migrationStateModel._databaseBackup?.blobs[index]?.resourceGroup?.id, false);
@@ -1318,7 +1321,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobStorageDropdown(index: number): Promise<void> {
 		this._blobContainerStorageAccountDropdowns[index].loading = true;
 		try {
-			this._blobContainerStorageAccountDropdowns[index].values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.resourceGroup);
+			this.migrationStateModel._storageAccounts = await getStorageAccounts(this.migrationStateModel._targetServerInstance.location, this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.resourceGroup);
+			this._blobContainerStorageAccountDropdowns[index].values = await getStorageAccountsDropdownValues(this.migrationStateModel._storageAccounts);
 			selectDefaultDropdownValue(this._blobContainerStorageAccountDropdowns[index], this.migrationStateModel._databaseBackup?.blobs[index]?.storageAccount?.id, false);
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobStorageDropdown', error);

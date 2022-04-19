@@ -8,7 +8,7 @@ import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
-import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs, getResourceGroupFromId, getSqlMigrationServicesByResourceGroup } from '../api/azure';
+import { getBlobContainers, getFileShares, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
@@ -819,50 +819,50 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this.extensionContext.extensionPath;
 	}
 
-	public async getAccountValues(): Promise<azdata.CategoryValue[]> {
-		let accountValues: azdata.CategoryValue[] = [];
-		try {
-			this._azureAccounts = await azdata.accounts.getAllAccounts();
-			if (this._azureAccounts.length === 0) {
-				accountValues = [{
-					displayName: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR,
-					name: ''
-				}];
-			}
-			accountValues = this._azureAccounts.map((account): azdata.CategoryValue => {
-				return {
-					name: account.displayInfo.userId,
-					displayName: account.isStale
-						? constants.ACCOUNT_CREDENTIALS_REFRESH(account.displayInfo.displayName)
-						: account.displayInfo.displayName
-				};
-			});
-		} catch (e) {
-			console.log(e);
-			accountValues = [{
-				displayName: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR,
-				name: ''
-			}];
-		}
-		return accountValues;
-	}
+	// public async getAccountValues(): Promise<azdata.CategoryValue[]> {
+	// 	let accountValues: azdata.CategoryValue[] = [];
+	// 	try {
+	// 		this._azureAccounts = await azdata.accounts.getAllAccounts();
+	// 		if (this._azureAccounts.length === 0) {
+	// 			accountValues = [{
+	// 				displayName: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR,
+	// 				name: ''
+	// 			}];
+	// 		}
+	// 		accountValues = this._azureAccounts.map((account): azdata.CategoryValue => {
+	// 			return {
+	// 				name: account.displayInfo.userId,
+	// 				displayName: account.isStale
+	// 					? constants.ACCOUNT_CREDENTIALS_REFRESH(account.displayInfo.displayName)
+	// 					: account.displayInfo.displayName
+	// 			};
+	// 		});
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 		accountValues = [{
+	// 			displayName: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR,
+	// 			name: ''
+	// 		}];
+	// 	}
+	// 	return accountValues;
+	// }
 
-	public getAccount(index: number): azdata.Account {
-		return this._azureAccounts[index];
-	}
+	// public getAccount(index: number): azdata.Account {
+	// 	return this._azureAccounts[index];
+	// }
 
-	public getTenantValues(): azdata.CategoryValue[] {
-		return this._accountTenants.map(tenant => {
-			return {
-				displayName: tenant.displayName,
-				name: tenant.id
-			};
-		});
-	}
+	// public getTenantValues(): azdata.CategoryValue[] {
+	// 	return this._accountTenants.map(tenant => {
+	// 		return {
+	// 			displayName: tenant.displayName,
+	// 			name: tenant.id
+	// 		};
+	// 	});
+	// }
 
-	public getTenant(index: number): azurecore.Tenant {
-		return this._accountTenants[index];
-	}
+	// public getTenant(index: number): azurecore.Tenant {
+	// 	return this._accountTenants[index];
+	// }
 
 	public async getSourceConnectionProfile(): Promise<azdata.connection.ConnectionProfile> {
 		const sqlConnections = await azdata.connection.getConnections();
@@ -1225,61 +1225,61 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	// 	return this._resourceGroups[index];
 	// }
 
-	public async getManagedInstanceValues(subscription: azureResource.AzureResourceSubscription, location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
-		let managedInstanceValues: azdata.CategoryValue[] = [];
-		try {
-			if (this._azureAccount && subscription && location && resourceGroup) {
-				this._targetManagedInstances = (await getAvailableManagedInstanceProducts(this._azureAccount, subscription)).filter((mi) => {
-					if (mi.location.toLowerCase() === location?.name.toLowerCase() && mi.resourceGroup?.toLowerCase() === resourceGroup?.name.toLowerCase()) {
-						return true;
-					}
-					return false;
-				});
-			} else {
-				this._targetManagedInstances = [];
-			}
+	// public async getManagedInstanceValues(subscription: azureResource.AzureResourceSubscription, location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
+	// 	let managedInstanceValues: azdata.CategoryValue[] = [];
+	// 	try {
+	// 		if (this._azureAccount && subscription && location && resourceGroup) {
+	// 			this._targetManagedInstances = (await getAvailableManagedInstanceProducts(this._azureAccount, subscription)).filter((mi) => {
+	// 				if (mi.location.toLowerCase() === location?.name.toLowerCase() && mi.resourceGroup?.toLowerCase() === resourceGroup?.name.toLowerCase()) {
+	// 					return true;
+	// 				}
+	// 				return false;
+	// 			});
+	// 		} else {
+	// 			this._targetManagedInstances = [];
+	// 		}
 
-			this._targetManagedInstances.forEach((managedInstance) => {
-				let managedInstanceValue: azdata.CategoryValue;
+	// 		this._targetManagedInstances.forEach((managedInstance) => {
+	// 			let managedInstanceValue: azdata.CategoryValue;
 
-				if (managedInstance.properties.state === 'Ready') {
-					managedInstanceValue = {
-						name: managedInstance.id,
-						displayName: `${managedInstance.name}`
-					};
-				} else {
-					managedInstanceValue = {
-						name: managedInstance.id,
-						displayName: constants.UNAVAILABLE_MANAGED_INSTANCE_PREFIX(managedInstance.name)
-					};
-				}
+	// 			if (managedInstance.properties.state === 'Ready') {
+	// 				managedInstanceValue = {
+	// 					name: managedInstance.id,
+	// 					displayName: `${managedInstance.name}`
+	// 				};
+	// 			} else {
+	// 				managedInstanceValue = {
+	// 					name: managedInstance.id,
+	// 					displayName: constants.UNAVAILABLE_MANAGED_INSTANCE_PREFIX(managedInstance.name)
+	// 				};
+	// 			}
 
-				managedInstanceValues.push(managedInstanceValue);
-			});
+	// 			managedInstanceValues.push(managedInstanceValue);
+	// 		});
 
-			if (managedInstanceValues.length === 0) {
-				managedInstanceValues = [
-					{
-						displayName: constants.NO_MANAGED_INSTANCE_FOUND,
-						name: ''
-					}
-				];
-			}
-		} catch (e) {
-			console.log(e);
-			managedInstanceValues = [
-				{
-					displayName: constants.NO_MANAGED_INSTANCE_FOUND,
-					name: ''
-				}
-			];
-		}
-		return managedInstanceValues;
-	}
+	// 		if (managedInstanceValues.length === 0) {
+	// 			managedInstanceValues = [
+	// 				{
+	// 					displayName: constants.NO_MANAGED_INSTANCE_FOUND,
+	// 					name: ''
+	// 				}
+	// 			];
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 		managedInstanceValues = [
+	// 			{
+	// 				displayName: constants.NO_MANAGED_INSTANCE_FOUND,
+	// 				name: ''
+	// 			}
+	// 		];
+	// 	}
+	// 	return managedInstanceValues;
+	// }
 
-	public getManagedInstance(index: number): SqlManagedInstance {
-		return this._targetManagedInstances[index];
-	}
+	// public getManagedInstance(index: number): SqlManagedInstance {
+	// 	return this._targetManagedInstances[index];
+	// }
 
 	public async getManagedDatabases(): Promise<string[]> {
 		return (await getSqlManagedInstanceDatabases(this._azureAccount,
@@ -1287,99 +1287,99 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			<SqlManagedInstance>this._targetServerInstance)).map(t => t.name);
 	}
 
-	public async getSqlVirtualMachineValues(subscription: azureResource.AzureResourceSubscription, location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
-		let virtualMachineValues: azdata.CategoryValue[] = [];
-		try {
-			if (this._azureAccount && subscription && location && resourceGroup) {
-				this._targetSqlVirtualMachines = (await getAvailableSqlVMs(this._azureAccount, subscription)).filter((virtualMachine) => {
-					if (virtualMachine?.location?.toLowerCase() === location?.name?.toLowerCase() && getResourceGroupFromId(virtualMachine.id).toLowerCase() === resourceGroup?.name.toLowerCase()) {
-						if (virtualMachine.properties.sqlImageOffer) {
-							return virtualMachine.properties.sqlImageOffer.toLowerCase().includes('-ws'); //filtering out all non windows sql vms.
-						}
-						return true; // Returning all VMs that don't have this property as we don't want to accidentally skip valid vms.
-					}
-					return false;
-				});
+	// public async getSqlVirtualMachineValues(subscription: azureResource.AzureResourceSubscription, location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
+	// 	let virtualMachineValues: azdata.CategoryValue[] = [];
+	// 	try {
+	// 		if (this._azureAccount && subscription && location && resourceGroup) {
+	// 			this._targetSqlVirtualMachines = (await getAvailableSqlVMs(this._azureAccount, subscription)).filter((virtualMachine) => {
+	// 				if (virtualMachine?.location?.toLowerCase() === location?.name?.toLowerCase() && getResourceGroupFromId(virtualMachine.id).toLowerCase() === resourceGroup?.name.toLowerCase()) {
+	// 					if (virtualMachine.properties.sqlImageOffer) {
+	// 						return virtualMachine.properties.sqlImageOffer.toLowerCase().includes('-ws'); //filtering out all non windows sql vms.
+	// 					}
+	// 					return true; // Returning all VMs that don't have this property as we don't want to accidentally skip valid vms.
+	// 				}
+	// 				return false;
+	// 			});
 
-				virtualMachineValues = this._targetSqlVirtualMachines.map((virtualMachine) => {
-					return {
-						name: virtualMachine.id,
-						displayName: `${virtualMachine.name}`
-					};
-				});
-			} else {
-				this._targetSqlVirtualMachines = [];
-			}
+	// 			virtualMachineValues = this._targetSqlVirtualMachines.map((virtualMachine) => {
+	// 				return {
+	// 					name: virtualMachine.id,
+	// 					displayName: `${virtualMachine.name}`
+	// 				};
+	// 			});
+	// 		} else {
+	// 			this._targetSqlVirtualMachines = [];
+	// 		}
 
-			if (virtualMachineValues.length === 0) {
-				virtualMachineValues = [
-					{
-						displayName: constants.NO_VIRTUAL_MACHINE_FOUND,
-						name: ''
-					}
-				];
-			}
-		} catch (e) {
-			console.log(e);
-			virtualMachineValues = [
-				{
-					displayName: constants.NO_VIRTUAL_MACHINE_FOUND,
-					name: ''
-				}
-			];
-		}
-		return virtualMachineValues;
-	}
+	// 		if (virtualMachineValues.length === 0) {
+	// 			virtualMachineValues = [
+	// 				{
+	// 					displayName: constants.NO_VIRTUAL_MACHINE_FOUND,
+	// 					name: ''
+	// 				}
+	// 			];
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 		virtualMachineValues = [
+	// 			{
+	// 				displayName: constants.NO_VIRTUAL_MACHINE_FOUND,
+	// 				name: ''
+	// 			}
+	// 		];
+	// 	}
+	// 	return virtualMachineValues;
+	// }
 
-	public getVirtualMachine(index: number): SqlVMServer {
-		return this._targetSqlVirtualMachines[index];
-	}
+	// public getVirtualMachine(index: number): SqlVMServer {
+	// 	return this._targetSqlVirtualMachines[index];
+	// }
 
-	public async getStorageAccountValues(subscription: azureResource.AzureResourceSubscription, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
-		let storageAccountValues: azdata.CategoryValue[] = [];
-		if (!resourceGroup) {
-			return storageAccountValues;
-		}
-		try {
-			if (this._azureAccount && subscription && resourceGroup) {
-				const storageAccount = (await getAvailableStorageAccounts(this._azureAccount, subscription));
-				this._storageAccounts = storageAccount.filter(sa => {
-					return sa.location.toLowerCase() === this._targetServerInstance.location.toLowerCase() && sa.resourceGroup?.toLowerCase() === resourceGroup.name.toLowerCase();
-				});
-			} else {
-				this._storageAccounts = [];
-			}
+	// public async getStorageAccountValues(subscription: azureResource.AzureResourceSubscription, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
+	// 	let storageAccountValues: azdata.CategoryValue[] = [];
+	// 	if (!resourceGroup) {
+	// 		return storageAccountValues;
+	// 	}
+	// 	try {
+	// 		if (this._azureAccount && subscription && resourceGroup) {
+	// 			const storageAccount = (await getAvailableStorageAccounts(this._azureAccount, subscription));
+	// 			this._storageAccounts = storageAccount.filter(sa => {
+	// 				return sa.location.toLowerCase() === this._targetServerInstance.location.toLowerCase() && sa.resourceGroup?.toLowerCase() === resourceGroup.name.toLowerCase();
+	// 			});
+	// 		} else {
+	// 			this._storageAccounts = [];
+	// 		}
 
-			this._storageAccounts.forEach((storageAccount) => {
-				storageAccountValues.push({
-					name: storageAccount.id,
-					displayName: `${storageAccount.name}`
-				});
-			});
+	// 		this._storageAccounts.forEach((storageAccount) => {
+	// 			storageAccountValues.push({
+	// 				name: storageAccount.id,
+	// 				displayName: `${storageAccount.name}`
+	// 			});
+	// 		});
 
-			if (storageAccountValues.length === 0) {
-				storageAccountValues = [
-					{
-						displayName: constants.NO_STORAGE_ACCOUNT_FOUND,
-						name: ''
-					}
-				];
-			}
-		} catch (e) {
-			console.log(e);
-			storageAccountValues = [
-				{
-					displayName: constants.NO_STORAGE_ACCOUNT_FOUND,
-					name: ''
-				}
-			];
-		}
-		return storageAccountValues;
-	}
+	// 		if (storageAccountValues.length === 0) {
+	// 			storageAccountValues = [
+	// 				{
+	// 					displayName: constants.NO_STORAGE_ACCOUNT_FOUND,
+	// 					name: ''
+	// 				}
+	// 			];
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 		storageAccountValues = [
+	// 			{
+	// 				displayName: constants.NO_STORAGE_ACCOUNT_FOUND,
+	// 				name: ''
+	// 			}
+	// 		];
+	// 	}
+	// 	return storageAccountValues;
+	// }
 
-	public getStorageAccount(index: number): StorageAccount {
-		return this._storageAccounts[index];
-	}
+	// public getStorageAccount(index: number): StorageAccount {
+	// 	return this._storageAccounts[index];
+	// }
 
 	public async getFileShareValues(subscription: azureResource.AzureResourceSubscription, storageAccount: StorageAccount): Promise<azdata.CategoryValue[]> {
 		let fileShareValues: azdata.CategoryValue[] = [];
@@ -1501,50 +1501,50 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._lastFileNames[index]?.name;
 	}
 
-	public async getSqlMigrationServiceValues(subscription: azureResource.AzureResourceSubscription, resourceGroupName: string): Promise<azdata.CategoryValue[]> {
-		let sqlMigrationServiceValues: azdata.CategoryValue[] = [];
-		try {
-			if (this._azureAccount && subscription && resourceGroupName && this._targetServerInstance) {
-				const services = await getSqlMigrationServicesByResourceGroup(
-					this._azureAccount,
-					subscription,
-					resourceGroupName?.toLowerCase());
-				const targetLoc = this._targetServerInstance.location.toLowerCase();
-				this._sqlMigrationServices = services.filter(sms => sms.location.toLowerCase() === targetLoc);
-			} else {
-				this._sqlMigrationServices = [];
-			}
+	// public async getSqlMigrationServiceValues(subscription: azureResource.AzureResourceSubscription, resourceGroupName: string): Promise<azdata.CategoryValue[]> {
+	// 	let sqlMigrationServiceValues: azdata.CategoryValue[] = [];
+	// 	try {
+	// 		if (this._azureAccount && subscription && resourceGroupName && this._targetServerInstance) {
+	// 			const services = await getSqlMigrationServicesByResourceGroup(
+	// 				this._azureAccount,
+	// 				subscription,
+	// 				resourceGroupName?.toLowerCase());
+	// 			const targetLoc = this._targetServerInstance.location.toLowerCase();
+	// 			this._sqlMigrationServices = services.filter(sms => sms.location.toLowerCase() === targetLoc);
+	// 		} else {
+	// 			this._sqlMigrationServices = [];
+	// 		}
 
-			this._sqlMigrationServices.forEach((sqlMigrationService) => {
-				sqlMigrationServiceValues.push({
-					name: sqlMigrationService.id,
-					displayName: `${sqlMigrationService.name}`
-				});
-			});
+	// 		this._sqlMigrationServices.forEach((sqlMigrationService) => {
+	// 			sqlMigrationServiceValues.push({
+	// 				name: sqlMigrationService.id,
+	// 				displayName: `${sqlMigrationService.name}`
+	// 			});
+	// 		});
 
-			if (sqlMigrationServiceValues.length === 0) {
-				sqlMigrationServiceValues = [
-					{
-						displayName: constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR,
-						name: ''
-					}
-				];
-			}
-		} catch (e) {
-			console.log(e);
-			sqlMigrationServiceValues = [
-				{
-					displayName: constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR,
-					name: ''
-				}
-			];
-		}
-		return sqlMigrationServiceValues;
-	}
+	// 		if (sqlMigrationServiceValues.length === 0) {
+	// 			sqlMigrationServiceValues = [
+	// 				{
+	// 					displayName: constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR,
+	// 					name: ''
+	// 				}
+	// 			];
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 		sqlMigrationServiceValues = [
+	// 			{
+	// 				displayName: constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR,
+	// 				name: ''
+	// 			}
+	// 		];
+	// 	}
+	// 	return sqlMigrationServiceValues;
+	// }
 
-	public getMigrationService(index: number): SqlMigrationService {
-		return this._sqlMigrationServices[index];
-	}
+	// public getMigrationService(index: number): SqlMigrationService {
+	// 	return this._sqlMigrationServices[index];
+	// }
 
 	public async startMigration() {
 		const sqlConnections = await azdata.connection.getConnections();

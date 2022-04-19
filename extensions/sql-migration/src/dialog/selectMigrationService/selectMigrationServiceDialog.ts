@@ -10,8 +10,8 @@ import { MigrationLocalStorage, MigrationServiceContext } from '../../models/mig
 import { azureResource } from 'azureResource';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
-import { findDropDownItemIndex, selectDefaultDropdownValue, deepClone, getAzureLocationDropdownValues, getAzureResourceGroupDropdownValues } from '../../api/utils';
-import { getSubscriptions, SqlMigrationService } from '../../api/azure';
+import { findDropDownItemIndex, selectDefaultDropdownValue, deepClone, getAzureLocations, getAzureLocationsDropdownValues, getAzureResourceGroups, getAzureResourceGroupsDropdownValues, getAzureAccounts, getAzureAccountsDropdownValues, getAzureTenants, getAzureTenantsDropdownValues, getAzureSubscriptions, getAzureSubscriptionsDropdownValues, getAzureSqlMigrationServices, getAzureSqlMigrationServicesDropdownValues } from '../../api/utils';
+import { SqlMigrationService } from '../../api/azure';
 import { logError, TelemetryViews } from '../../telemtery';
 
 const CONTROL_MARGIN = '20px';
@@ -336,7 +336,8 @@ export class SelectMigrationServiceDialog {
 	private async _populateAzureAccountsDropdown(): Promise<void> {
 		try {
 			this._azureAccountsDropdown.loading = true;
-			this._azureAccountsDropdown.values = await this._getAccountDropdownValues();
+			this._azureAccounts = await getAzureAccounts();
+			this._azureAccountsDropdown.values = await getAzureAccountsDropdownValues(this._azureAccounts);
 			if (this._azureAccountsDropdown.values.length > 0) {
 				selectDefaultDropdownValue(
 					this._azureAccountsDropdown,
@@ -357,8 +358,8 @@ export class SelectMigrationServiceDialog {
 	private async _populateTentantsDropdown(): Promise<void> {
 		try {
 			this._accountTenantDropdown.loading = true;
-			this._accountTenantDropdown.values = this._getTenantDropdownValues(
-				this._serviceContext.azureAccount);
+			this._accountTenants = await getAzureTenants(this._serviceContext.azureAccount);
+			this._accountTenantDropdown.values = await getAzureTenantsDropdownValues(this._accountTenants);
 			await this._accountTenantFlexContainer.updateCssStyles(
 				this._accountTenants.length > 1
 					? STYLE_ShOW
@@ -383,8 +384,8 @@ export class SelectMigrationServiceDialog {
 	private async _populateSubscriptionDropdown(): Promise<void> {
 		try {
 			this._azureSubscriptionDropdown.loading = true;
-			this._azureSubscriptionDropdown.values = await this._getSubscriptionDropdownValues(
-				this._serviceContext.azureAccount);
+			this._subscriptions = await getAzureSubscriptions(this._serviceContext.azureAccount);
+			this._azureSubscriptionDropdown.values = await getAzureSubscriptionsDropdownValues(this._subscriptions);
 			if (this._azureSubscriptionDropdown.values.length > 0) {
 				selectDefaultDropdownValue(
 					this._azureSubscriptionDropdown,
@@ -405,10 +406,8 @@ export class SelectMigrationServiceDialog {
 	private async _populateLocationDropdown(): Promise<void> {
 		try {
 			this._azureLocationDropdown.loading = true;
-			this._azureLocationDropdown.values =  await getAzureLocationDropdownValues(
-				'dms',
-				this._serviceContext.azureAccount,
-				this._serviceContext.subscription);
+			this._locations = await getAzureLocations('dms', this._serviceContext.azureAccount, this._serviceContext.subscription);
+			this._azureLocationDropdown.values =  await getAzureLocationsDropdownValues(this._locations);
 			if (this._azureLocationDropdown.values.length > 0) {
 				selectDefaultDropdownValue(
 					this._azureLocationDropdown,
@@ -429,11 +428,8 @@ export class SelectMigrationServiceDialog {
 	private async _populateResourceGroupDropdown(): Promise<void> {
 		try {
 			this._azureResourceGroupDropdown.loading = true;
-			this._azureResourceGroupDropdown.values = await getAzureResourceGroupDropdownValues(
-				'dms',
-				this._serviceContext.location!.name,
-				this._serviceContext.azureAccount,
-				this._serviceContext.subscription);
+			this._resourceGroups = await getAzureResourceGroups('dms', this._serviceContext.location!.name, this._serviceContext.azureAccount, this._serviceContext.subscription);
+			this._azureResourceGroupDropdown.values = await getAzureResourceGroupsDropdownValues(this._resourceGroups);
 			if (this._azureResourceGroupDropdown.values.length > 0) {
 				selectDefaultDropdownValue(
 					this._azureResourceGroupDropdown,
@@ -454,12 +450,8 @@ export class SelectMigrationServiceDialog {
 	private async _populateMigrationServiceDropdown(): Promise<void> {
 		try {
 			this._azureServiceDropdown.loading = true;
-			this._azureServiceDropdown.values = await this._getMigrationServiceDropdownValues(
-				this._serviceContext.azureAccount,
-				this._serviceContext.subscription,
-				this._serviceContext.location,
-				this._serviceContext.resourceGroup);
-
+			this._sqlMigrationServices = await getAzureSqlMigrationServices(this._serviceContext.location!.name, this._serviceContext.resourceGroup!.name, this._serviceContext.azureAccount, this._serviceContext.subscription);
+			this._azureServiceDropdown.values = await getAzureSqlMigrationServicesDropdownValues(this._sqlMigrationServices);
 			if (this._azureServiceDropdown.values.length > 0) {
 				selectDefaultDropdownValue(
 					this._azureServiceDropdown,
@@ -476,52 +468,52 @@ export class SelectMigrationServiceDialog {
 		}
 	}
 
-	private async _getAccountDropdownValues(): Promise<azdata.CategoryValue[]> {
-		this._azureAccounts = await azdata.accounts.getAllAccounts() || [];
-		return this._azureAccounts.map(account => {
-			return {
-				name: account.displayInfo.userId,
-				displayName: account.isStale
-					? constants.ACCOUNT_CREDENTIALS_REFRESH(account.displayInfo.displayName)
-					: account.displayInfo.displayName,
-			};
-		});
-	}
+	// private async _getAccountDropdownValues(): Promise<azdata.CategoryValue[]> {
+	// 	this._azureAccounts = await azdata.accounts.getAllAccounts() || [];
+	// 	return this._azureAccounts.map(account => {
+	// 		return {
+	// 			name: account.displayInfo.userId,
+	// 			displayName: account.isStale
+	// 				? constants.ACCOUNT_CREDENTIALS_REFRESH(account.displayInfo.displayName)
+	// 				: account.displayInfo.displayName,
+	// 		};
+	// 	});
+	// }
 
-	private async _getSubscriptionDropdownValues(account?: azdata.Account): Promise<azdata.CategoryValue[]> {
-		this._subscriptions = [];
-		if (account?.isStale === false) {
-			try {
-				this._subscriptions = await getSubscriptions(account);
-				this._subscriptions.sort((a, b) => a.name.localeCompare(b.name));
-			} catch (error) {
-				logError(TelemetryViews.SelectMigrationServiceDialog, '_getSubscriptionDropdownValues', error);
-				void vscode.window.showErrorMessage(
-					constants.SELECT_SUBSCRIPTION_ERROR,
-					error.message);
-			}
-		}
+	// private async _getSubscriptionDropdownValues(account?: azdata.Account): Promise<azdata.CategoryValue[]> {
+	// 	this._subscriptions = [];
+	// 	if (account?.isStale === false) {
+	// 		try {
+	// 			this._subscriptions = await getSubscriptions(account);
+	// 			this._subscriptions.sort((a, b) => a.name.localeCompare(b.name));
+	// 		} catch (error) {
+	// 			logError(TelemetryViews.SelectMigrationServiceDialog, '_getSubscriptionDropdownValues', error);
+	// 			void vscode.window.showErrorMessage(
+	// 				constants.SELECT_SUBSCRIPTION_ERROR,
+	// 				error.message);
+	// 		}
+	// 	}
 
-		return this._subscriptions.map(subscription => {
-			return {
-				name: subscription.id,
-				displayName: `${subscription.name} - ${subscription.id}`,
-			};
-		});
-	}
+	// 	return this._subscriptions.map(subscription => {
+	// 		return {
+	// 			name: subscription.id,
+	// 			displayName: `${subscription.name} - ${subscription.id}`,
+	// 		};
+	// 	});
+	// }
 
-	private _getTenantDropdownValues(account?: azdata.Account): azdata.CategoryValue[] {
-		this._accountTenants = account?.isStale === false
-			? account?.properties?.tenants ?? []
-			: [];
+	// private _getTenantDropdownValues(account?: azdata.Account): azdata.CategoryValue[] {
+	// 	this._accountTenants = account?.isStale === false
+	// 		? account?.properties?.tenants ?? []
+	// 		: [];
 
-		return this._accountTenants.map(tenant => {
-			return {
-				name: tenant.id,
-				displayName: tenant.displayName,
-			};
-		});
-	}
+	// 	return this._accountTenants.map(tenant => {
+	// 		return {
+	// 			name: tenant.id,
+	// 			displayName: tenant.displayName,
+	// 		};
+	// 	});
+	// }
 
 	// private async _getAzureLocationDropdownValues(
 	// 	account?: azdata.Account,
@@ -578,24 +570,24 @@ export class SelectMigrationServiceDialog {
 	// 		});
 	// }
 
-	private async _getMigrationServiceDropdownValues(
-		account?: azdata.Account,
-		subscription?: azureResource.AzureResourceSubscription,
-		location?: azureResource.AzureLocation,
-		resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
+	// private async _getMigrationServiceDropdownValues(
+	// 	account?: azdata.Account,
+	// 	subscription?: azureResource.AzureResourceSubscription,
+	// 	location?: azureResource.AzureLocation,
+	// 	resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
 
-		const locationName = location?.name?.toLowerCase();
-		const resourceGroupName = resourceGroup?.name?.toLowerCase();
+	// 	const locationName = location?.name?.toLowerCase();
+	// 	const resourceGroupName = resourceGroup?.name?.toLowerCase();
 
-		return this._sqlMigrationServices
-			.filter(service =>
-				service.location?.toLowerCase() === locationName &&
-				service.properties?.resourceGroup?.toLowerCase() === resourceGroupName)
-			.map(service => {
-				return ({
-					name: service.id,
-					displayName: `${service.name}`,
-				});
-			});
-	}
+	// 	return this._sqlMigrationServices
+	// 		.filter(service =>
+	// 			service.location?.toLowerCase() === locationName &&
+	// 			service.properties?.resourceGroup?.toLowerCase() === resourceGroupName)
+	// 		.map(service => {
+	// 			return ({
+	// 				name: service.id,
+	// 				displayName: `${service.name}`,
+	// 			});
+	// 		});
+	// }
 }

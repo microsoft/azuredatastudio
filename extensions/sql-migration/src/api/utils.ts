@@ -5,12 +5,13 @@
 
 import * as azdata from 'azdata';
 import { window, CategoryValue, DropDownComponent, IconPath } from 'azdata';
+import * as azurecore from 'azurecore';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { DAYS, HRS, MINUTE, SEC } from '../constants/strings';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
 import { MigrationStatus, ProvisioningState } from '../models/migrationLocalStorage';
 import * as crypto from 'crypto';
-import { DatabaseMigration, getAvailableManagedInstanceProducts, getAvailableSqlVMs, getAvailableStorageAccounts, getFullResourceGroupFromId, getLocations, getResourceGroupFromId, getResourceGroups, getSqlMigrationServices, getSubscriptions } from './azure';
+import { DatabaseMigration, getAvailableManagedInstanceProducts, getAvailableSqlVMs, getAvailableStorageAccounts, getFullResourceGroupFromId, getLocations, getResourceGroupFromId, getResourceGroups, getSqlMigrationServices, getSqlMigrationServicesByResourceGroup, getSubscriptions, SqlMigrationService, SqlVMServer, StorageAccount } from './azure';
 import { azureResource } from 'azureResource';
 import * as constants from '../constants/strings';
 
@@ -271,47 +272,160 @@ export function getUserHome(): string | undefined {
 
 
 
-//
-export async function getSubscriptionsDropdownValues(account?: azdata.Account): Promise<azdata.CategoryValue[]> {
-	let subscriptionsValues: azdata.CategoryValue[] = [];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export async function getAzureAccounts(): Promise<azdata.Account[]> {
+	let accounts: azdata.Account[] = [];
 	try {
-		let subscriptions: azureResource.AzureResourceSubscription[] = [];
-		if (account) {
-			subscriptions = !account.isStale ? await getSubscriptions(account) : [];
-		}
-
-		subscriptions.forEach((subscription) => {
-			subscriptionsValues.push({
-				name: subscription.id,
-				displayName: `${subscription.name} - ${subscription.id}`
-			});
-		});
-
-		if (subscriptionsValues.length === 0) {
-			subscriptionsValues = [
-				{
-					displayName: constants.NO_SUBSCRIPTIONS_FOUND,	//
-					name: ''
-				}
-			];
-		}
+		accounts = await azdata.accounts.getAllAccounts();
 	} catch (e) {
 		console.log(e);
-		subscriptionsValues = [
+		accounts = [];
+	}
+	return accounts;
+}
+
+export async function getAzureAccountsDropdownValues(accounts: azdata.Account[]): Promise<azdata.CategoryValue[]> {
+	let accountsValues: azdata.CategoryValue[] = [];
+	accounts.forEach((account) => {
+		accountsValues.push({
+			name: account.displayInfo.userId,
+			displayName: account.isStale
+				? constants.ACCOUNT_CREDENTIALS_REFRESH(account.displayInfo.displayName)
+				: account.displayInfo.displayName
+		});
+	});
+	if (accountsValues.length === 0) {
+		accountsValues = [
 			{
-				displayName: constants.NO_SUBSCRIPTIONS_FOUND,
+				displayName: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR,	//
 				name: ''
 			}
 		];
 	}
+	return accountsValues;
+}
 
-	subscriptionsValues.sort((a, b) => a.displayName.localeCompare(b.displayName));
+export async function getAzureTenants(account?: azdata.Account): Promise<azurecore.Tenant[]> {
+	let tenants: azurecore.Tenant[] = [];
+	try {
+		if (account) {
+			tenants = account.properties.tenants;
+		}
+	} catch (e) {
+		console.log(e);
+		tenants = [];
+	}
+	return tenants;
+}
+
+export async function getAzureTenantsDropdownValues(tenants: azurecore.Tenant[]): Promise<azdata.CategoryValue[]> {
+	let tenantsValues: azdata.CategoryValue[] = [];
+	tenants.forEach((tenant) => {
+		tenantsValues.push({
+			name: tenant.id,
+			displayName: tenant.displayName
+		});
+	});
+	if (tenantsValues.length === 0) {
+		tenantsValues = [
+			{
+				displayName: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR,	//
+				name: ''
+			}
+		];
+	}
+	return tenantsValues;
+}
+
+
+
+export async function getAzureSubscriptions(account?: azdata.Account): Promise<azureResource.AzureResourceSubscription[]> {
+	let subscriptions: azureResource.AzureResourceSubscription[] = [];
+	try {
+		if (account) {
+			subscriptions = !account.isStale ? await getSubscriptions(account) : [];
+		}
+	} catch (e) {
+		console.log(e);
+		subscriptions = [];
+	}
+	subscriptions.sort((a, b) => a.name.localeCompare(b.name));
+	return subscriptions;
+}
+
+export async function getAzureSubscriptionsDropdownValues(subscriptions: azureResource.AzureResourceSubscription[]): Promise<azdata.CategoryValue[]> {
+	let subscriptionsValues: azdata.CategoryValue[] = [];
+	subscriptions.forEach((subscription) => {
+		subscriptionsValues.push({
+			name: subscription.id,
+			displayName: `${subscription.name} - ${subscription.id}`
+		});
+	});
+	if (subscriptionsValues.length === 0) {
+		subscriptionsValues = [
+			{
+				displayName: constants.NO_SUBSCRIPTIONS_FOUND,	//
+				name: ''
+			}
+		];
+	}
 	return subscriptionsValues;
 }
-export async function getAzureLocationDropdownValues(resourceType: string, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
-	let locationValues: azdata.CategoryValue[] = [];
+
+export async function getAzureLocations(resourceType: string, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<azureResource.AzureLocation[]> {
+	let locations: azureResource.AzureLocation[] = [];
 	try {
-		let locations: azureResource.AzureLocation[] = [];
 		if (account && subscription) {
 			locations = await getLocations(account, subscription);
 
@@ -341,41 +455,36 @@ export async function getAzureLocationDropdownValues(resourceType: string, accou
 					break;
 			}
 		}
-
-		locations.forEach((loc) => {
-			locationValues.push({
-				name: loc.name,
-				displayName: loc.displayName
-			});
-		});
-
-		if (locationValues.length === 0) {
-			locationValues = [
-				{
-					displayName: constants.NO_LOCATION_FOUND,	//
-					name: ''
-				}
-			];
-		}
 	} catch (e) {
 		console.log(e);
+		locations = [];
+	}
+	locations.sort((a, b) => a.displayName.localeCompare(b.displayName));
+	return locations;
+}
+
+export async function getAzureLocationsDropdownValues(locations: azureResource.AzureLocation[]): Promise<azdata.CategoryValue[]> {
+	let locationValues: azdata.CategoryValue[] = [];
+	locations.forEach((loc) => {
+		locationValues.push({
+			name: loc.name,
+			displayName: loc.displayName
+		});
+	});
+	if (locationValues.length === 0) {
 		locationValues = [
 			{
-				displayName: constants.NO_LOCATION_FOUND,
+				displayName: constants.NO_LOCATION_FOUND,	//
 				name: ''
 			}
 		];
 	}
-
-	locationValues.sort((a, b) => a.name.localeCompare(b.name));
 	return locationValues;
 }
 
-//
-export async function getAzureResourceGroupDropdownValues(resourceType: string, location: string, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
-	let resourceGroupValues: azdata.CategoryValue[] = [];
+export async function getAzureResourceGroups(resourceType: string, location: string, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<azureResource.AzureResourceResourceGroup[]> {
+	let resourceGroups: azureResource.AzureResourceResourceGroup[] = [];
 	try {
-		let resourceGroups: azureResource.AzureResourceResourceGroup[] = [];
 		if (account && subscription) {
 			resourceGroups = await getResourceGroups(account, subscription);
 
@@ -444,35 +553,225 @@ export async function getAzureResourceGroupDropdownValues(resourceType: string, 
 				default:
 					break;
 			}
-
-			// remove duplicates
-			resourceGroups = resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
-		}
-
-		resourceGroups.forEach((rg) => {
-			resourceGroupValues.push({
-				name: rg.id,
-				displayName: rg.name
-			});
-		});
-		if (resourceGroupValues.length === 0) {
-			resourceGroupValues = [
-				{
-					displayName: constants.RESOURCE_GROUP_NOT_FOUND,	//
-					name: ''
-				}
-			];
 		}
 	} catch (e) {
 		console.log(e);
+		resourceGroups = [];
+	}
+
+	// remove duplicates
+	resourceGroups = resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
+
+	resourceGroups.sort((a, b) => a.name.localeCompare(b.name));
+	return resourceGroups;
+}
+
+
+export async function getAzureResourceGroupsDropdownValues(resourceGroups: azureResource.AzureResourceResourceGroup[]): Promise<azdata.CategoryValue[]> {
+	let resourceGroupValues: azdata.CategoryValue[] = [];
+	resourceGroups.forEach((rg) => {
+		resourceGroupValues.push({
+			name: rg.id,
+			displayName: rg.name
+		});
+	});
+	if (resourceGroupValues.length === 0) {
 		resourceGroupValues = [
 			{
-				displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+				displayName: constants.RESOURCE_GROUP_NOT_FOUND,	//
 				name: ''
 			}
 		];
 	}
-
-	resourceGroupValues.sort((a, b) => a.name.localeCompare(b.name));
 	return resourceGroupValues;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export async function getManagedInstances(location: string, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<azureResource.AzureSqlManagedInstance[]> {
+	let managedInstances: azureResource.AzureSqlManagedInstance[] = [];
+	try {
+		if (account && subscription && location && resourceGroup) {
+			managedInstances = (await getAvailableManagedInstanceProducts(account, subscription)).filter((mi) => {
+				if (mi.location.toLowerCase() === location.toLowerCase() && mi.resourceGroup?.toLowerCase() === resourceGroup?.name.toLowerCase()) {
+					return true;
+				}
+				return false;
+			});
+		}
+	} catch (e) {
+		console.log(e);
+		managedInstances = [];
+	}
+	managedInstances.sort((a, b) => a.name.localeCompare(b.name));
+	return managedInstances;
+}
+
+export async function getManagedInstancesDropdownValues(managedInstances: azureResource.AzureSqlManagedInstance[]): Promise<azdata.CategoryValue[]> {
+	let managedInstancesValues: azdata.CategoryValue[] = [];
+	managedInstances.forEach((managedInstance) => {
+		let managedInstanceValue: azdata.CategoryValue;
+
+		if (managedInstance.properties.state === 'Ready') {
+			managedInstanceValue = {
+				name: managedInstance.id,
+				displayName: `${managedInstance.name}`
+			};
+		} else {
+			managedInstanceValue = {
+				name: managedInstance.id,
+				displayName: constants.UNAVAILABLE_MANAGED_INSTANCE_PREFIX(managedInstance.name)
+			};
+		}
+
+		managedInstancesValues.push(managedInstanceValue);
+	});
+
+	if (managedInstancesValues.length === 0) {
+		managedInstancesValues = [
+			{
+				displayName: constants.NO_MANAGED_INSTANCE_FOUND,
+				name: ''
+			}
+		];
+	}
+	return managedInstancesValues;
+}
+
+export async function getVirtualMachines(location: string, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<SqlVMServer[]> {
+	let virtualMachines: SqlVMServer[] = [];
+	try {
+		if (account && subscription && location && resourceGroup) {
+			virtualMachines = (await getAvailableSqlVMs(account, subscription)).filter((virtualMachine) => {
+				if (virtualMachine?.location?.toLowerCase() === location.toLowerCase() && getResourceGroupFromId(virtualMachine.id).toLowerCase() === resourceGroup?.name.toLowerCase()) {
+					if (virtualMachine.properties.sqlImageOffer) {
+						return virtualMachine.properties.sqlImageOffer.toLowerCase().includes('-ws'); //filtering out all non windows sql vms.
+					}
+					return true; // Returning all VMs that don't have this property as we don't want to accidentally skip valid vms.
+				}
+				return false;
+			});
+		}
+	} catch (e) {
+		console.log(e);
+		virtualMachines = [];
+	}
+	virtualMachines.sort((a, b) => a.name.localeCompare(b.name));
+	return virtualMachines;
+}
+
+export async function getVirtualMachinesDropdownValues(virtualMachines: SqlVMServer[]): Promise<azdata.CategoryValue[]> {
+	let virtualMachineValues: azdata.CategoryValue[] = [];
+	virtualMachines.forEach((virtualMachine) => {
+		let virtualMachineValue: azdata.CategoryValue;
+
+		if (true /* virtualMachine.properties.state === 'Ready' */) {
+			virtualMachineValue = {
+				name: virtualMachine.id,
+				displayName: virtualMachine.name
+			};
+		} else {
+			virtualMachineValue = {
+				name: virtualMachine.id,
+				displayName: constants.UNAVAILABLE_MANAGED_INSTANCE_PREFIX(virtualMachine.name)
+			};
+		}
+
+		virtualMachineValues.push(virtualMachineValue);
+	});
+
+	if (virtualMachineValues.length === 0) {
+		virtualMachineValues = [
+			{
+				displayName: constants.NO_VIRTUAL_MACHINE_FOUND,
+				name: ''
+			}
+		];
+	}
+	return virtualMachineValues;
+}
+
+export async function getStorageAccounts(location: string, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<StorageAccount[]> {
+	let storageAccounts: StorageAccount[] = [];
+	try {
+		if (account && subscription && location && resourceGroup) {
+			storageAccounts = (await getAvailableStorageAccounts(account, subscription)).filter(sa => {
+				return sa.location.toLowerCase() === location.toLowerCase() && sa.resourceGroup?.toLowerCase() === resourceGroup.name.toLowerCase();
+			});
+		}
+	} catch (e) {
+		console.log(e);
+		storageAccounts = [];
+	}
+	storageAccounts.sort((a, b) => a.name.localeCompare(b.name));
+	return storageAccounts;
+}
+
+export async function getStorageAccountsDropdownValues(storageAccounts: StorageAccount[]): Promise<azdata.CategoryValue[]> {
+	let storageAccountValues: azdata.CategoryValue[] = [];
+	storageAccounts.forEach((storageAccount) => {
+		storageAccountValues.push({
+			name: storageAccount.id,
+			displayName: storageAccount.name
+		});
+	});
+
+	if (storageAccountValues.length === 0) {
+		storageAccountValues = [
+			{
+				displayName: constants.NO_STORAGE_ACCOUNT_FOUND,
+				name: ''
+			}
+		];
+	}
+	return storageAccountValues;
+}
+
+export async function getAzureSqlMigrationServices(location: string, resourceGroup: string, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<SqlMigrationService[]> {
+	let sqlMigrationServices: SqlMigrationService[] = [];
+	try {
+		if (account && subscription && location && resourceGroup) {
+			sqlMigrationServices = (await getSqlMigrationServicesByResourceGroup(account, subscription, resourceGroup)).filter(sa => {
+				return sa.location.toLowerCase() === location.toLowerCase() && sa.properties.resourceGroup.toLowerCase() === resourceGroup.toLowerCase();
+			});
+		}
+	} catch (e) {
+		console.log(e);
+		sqlMigrationServices = [];
+	}
+	sqlMigrationServices.sort((a, b) => a.name.localeCompare(b.name));
+	return sqlMigrationServices;
+}
+
+export async function getAzureSqlMigrationServicesDropdownValues(sqlMigrationServices: SqlMigrationService[]): Promise<azdata.CategoryValue[]> {
+	let SqlMigrationServicesValues: azdata.CategoryValue[] = [];
+	sqlMigrationServices.forEach((sqlMigrationService) => {
+		SqlMigrationServicesValues.push({
+			name: sqlMigrationService.id,
+			displayName: sqlMigrationService.name
+		});
+	});
+
+	if (SqlMigrationServicesValues.length === 0) {
+		SqlMigrationServicesValues = [
+			{
+				displayName: constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR,
+				name: ''
+			}
+		];
+	}
+	return SqlMigrationServicesValues;
 }
