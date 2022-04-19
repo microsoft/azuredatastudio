@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CompareExecutionPlanEditorView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor';
+import { ExecutionPlanComparisonEditorView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView';
 import { ExecutionPlanFileView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileView';
 
 export class ExecutionPlanFileViewCache {
@@ -12,7 +12,7 @@ export class ExecutionPlanFileViewCache {
 	public executionPlanFileViewMap: Map<string, ExecutionPlanFileView> = new Map();
 
 	public executionPlanComparisonViewMap: Map<string,
-		CompareExecutionPlanEditorView> = new Map();
+		ExecutionPlanComparisonEditorView> = new Map();
 
 	private constructor() { }
 
