@@ -59,7 +59,6 @@ export class Notebook {
 	}
 
 	// Cell Actions
-
 	async waitForTypeInEditor(text: string) {
 		const editor = '.notebook-cell.active .monaco-editor';
 		await this.code.waitAndClick(editor);
@@ -68,10 +67,10 @@ export class Notebook {
 		await this.code.waitForActiveElement(textarea);
 
 		await this.code.waitForTypeInEditor(textarea, text);
-		await this._waitForActiveCellEditorContents(c => c.indexOf(text) > -1);
+		await this.waitForActiveCellEditorContents(c => c.indexOf(text) > -1);
 	}
 
-	private async _waitForActiveCellEditorContents(accept: (contents: string) => boolean): Promise<any> {
+	async waitForActiveCellEditorContents(accept: (contents: string) => boolean): Promise<any> {
 		const selector = '.notebook-cell.active .monaco-editor .view-lines';
 		return this.code.waitForTextContent(selector, undefined, c => accept(c.replace(/\u00a0/g, ' ')));
 	}
@@ -79,6 +78,12 @@ export class Notebook {
 	async waitForColorization(spanNumber: string, color: string): Promise<void> {
 		const span = `span:nth-child(${spanNumber})[class="${color}"]`;
 		await this.code.waitForElement(span);
+	}
+
+	public async selectAllTextInRichTextEditor(): Promise<void> {
+		const editor = '.notebook-cell.active .notebook-preview[contenteditable="true"]';
+		await this.code.waitAndClick(editor);
+		await this.code.dispatchKeybinding(ctrlOrCmd + '+a');
 	}
 
 	public async selectAllTextInEditor(): Promise<void> {
