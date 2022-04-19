@@ -1081,7 +1081,11 @@ declare module 'azdata' {
 			/**
 			 * Update a property.
 			 */
-			Update = 2
+			Update = 2,
+			/**
+			 * Move a column to re-order
+			 */
+			Move = 3
 		}
 
 		/**

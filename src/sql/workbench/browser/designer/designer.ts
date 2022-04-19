@@ -16,7 +16,7 @@ import { Orientation, Sizing, SplitView } from 'vs/base/browser/ui/splitview/spl
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import 'vs/css!./media/designer';
-import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
+import { ITableMouseEvent, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { IThemable } from 'vs/base/common/styler';
 import { Checkbox, ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
 import { Table } from 'sql/base/browser/ui/table/table';
@@ -33,7 +33,7 @@ import { Codicon } from 'vs/base/common/codicons';
 import { Color } from 'vs/base/common/color';
 import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { DesignerIssuesTabPanelView } from 'sql/workbench/browser/designer/designerIssuesTabPanelView';
@@ -45,6 +45,8 @@ import { alert } from 'vs/base/browser/ui/aria/aria';
 import { layoutDesignerTable, TableHeaderRowHeight, TableRowHeight } from 'sql/workbench/browser/designer/designerTableUtil';
 import { Dropdown, IDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
+import { IAction } from 'vs/base/common/actions';
+import { AddAfterSelectedColumn, AddBeforeSelectedColumn } from 'sql/workbench/browser/designer/designerActions';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -103,7 +105,8 @@ export class Designer extends Disposable implements IThemable {
 		@IContextViewService private readonly _contextViewProvider: IContextViewService,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@IDialogService private readonly _dialogService: IDialogService,
-		@IThemeService private readonly _themeService: IThemeService) {
+		@IThemeService private readonly _themeService: IThemeService,
+		@IContextMenuService private readonly _contextMenuService: IContextMenuService,) {
 		super();
 		this._tableCellEditorFactory = new TableCellEditorFactory(
 			{
@@ -574,7 +577,7 @@ export class Designer extends Disposable implements IThemable {
 		}
 	}
 
-	private handleEdit(edit: DesignerEdit): void {
+	public handleEdit(edit: DesignerEdit): void {
 		if (this._supressEditProcessing) {
 			return;
 		}
@@ -836,6 +839,14 @@ export class Designer extends Disposable implements IThemable {
 					headerRowHeight: TableHeaderRowHeight,
 					editorLock: new Slick.EditorLock()
 				});
+				this._register(table.onContextMenu((e) => {
+					let edit: DesignerEdit = {
+						type: DesignerEditType.Add,
+						path: propertyPath,
+						source: view,
+					};
+					this.openContextMenu(table, e, edit);
+				}));
 				table.ariaLabel = tableProperties.ariaLabel;
 				const columns = tableProperties.columns.map(propName => {
 					const propertyDefinition = tableProperties.itemProperties.find(item => item.propertyName === propName);
@@ -939,6 +950,29 @@ export class Designer extends Disposable implements IThemable {
 
 		this.styleComponent(component);
 		return component;
+	}
+
+	private openContextMenu(table: Table<Slick.SlickData>, event: ITableMouseEvent, edit: DesignerEdit): void {
+		const rowIndex = event.cell.row;
+		let data = table.grid.getData() as Slick.DataProvider<Slick.SlickData>;
+		if (!data || rowIndex >= data.getLength()) {
+			return undefined;
+		}
+		edit.value = { 'fromIndex': rowIndex };
+		let actions = this.getTableDesignerActions();
+		this._contextMenuService.showContextMenu({
+			getAnchor: () => event.anchor,
+			getActions: () => actions,
+			getActionsContext: () => (edit)
+		});
+	}
+
+	private getTableDesignerActions(): IAction[] {
+		let actions: IAction[];
+		let addColumnBefore = this._instantiationService.createInstance(AddBeforeSelectedColumn, this);
+		let addColumnAfter = this._instantiationService.createInstance(AddAfterSelectedColumn, this);
+		actions = [addColumnBefore, addColumnAfter];
+		return actions;
 	}
 
 	private startLoading(message: string, timeout: number): void {

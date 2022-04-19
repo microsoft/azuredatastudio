@@ -214,7 +214,8 @@ export interface DesignerTableComponentRowData {
 export enum DesignerEditType {
 	Add = 0,
 	Remove = 1,
-	Update = 2
+	Update = 2,
+	Move = 3
 }
 
 export interface DesignerEdit {
