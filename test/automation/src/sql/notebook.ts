@@ -82,13 +82,16 @@ export class Notebook {
 
 	public async selectAllTextInRichTextEditor(): Promise<void> {
 		const editor = '.notebook-cell.active .notebook-preview[contenteditable="true"]';
-		await this.code.waitAndClick(editor);
-		await this.code.dispatchKeybinding(ctrlOrCmd + '+a');
+		await this.selectAllText(editor);
 	}
 
 	public async selectAllTextInEditor(): Promise<void> {
 		const editor = '.notebook-cell.active .monaco-editor';
-		await this.code.waitAndClick(editor);
+		await this.selectAllText(editor);
+	}
+
+	private async selectAllText(selector: string): Promise<void> {
+		await this.code.waitAndClick(selector);
 		await this.code.dispatchKeybinding(ctrlOrCmd + '+a');
 	}
 
