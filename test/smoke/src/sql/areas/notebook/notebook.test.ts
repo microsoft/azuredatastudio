@@ -350,7 +350,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.textCellToolbar.highlightSelectedText();
 				await app.workbench.sqlNotebook.textCellToolbar.insertList();
 				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Markdown View');
-				await app.workbench.sqlNotebook.waitForActiveCellEditorContents(s => s.includes('- **_<u><mark>Markdown Test<\\mark><\\u>_**'));
+				await app.workbench.sqlNotebook.waitForActiveCellEditorContents(s => s.includes('- **_<u><mark>Markdown Test</mark></u>_**'));
 			});
 		});
 
