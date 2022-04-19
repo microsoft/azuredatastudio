@@ -398,6 +398,7 @@ async function verifyElementRendered(app: Application, markdownString: string, e
 }
 
 async function openAndRunNotebook(app: Application, filename: string): Promise<void> {
+	await app.workbench.sqlNotebook.openFile(filename);
 	await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
 
 	await app.workbench.sqlNotebook.notebookToolbar.clearResults();
