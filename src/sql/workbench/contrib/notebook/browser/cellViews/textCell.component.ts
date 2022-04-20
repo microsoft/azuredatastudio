@@ -213,7 +213,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				}
 			}
 			const selection = window.getSelection();
-			const range = selection.rangeCount > 0 ? window.getSelection().getRangeAt(0) : undefined;
+			const range = selection?.rangeCount > 0 ? selection.getRangeAt(0) : undefined;
 			// On preview mode change, get the cursor position (get the position only when the selection node is a text node)
 			if (selection.focusNode?.nodeName === '#text' && range) {
 				// Check to see if the last cursor position is still the same and skip
