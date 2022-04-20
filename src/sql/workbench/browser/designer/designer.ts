@@ -801,26 +801,7 @@ export class Designer extends Disposable implements IThemable {
 				}
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
 				if (tableProperties.canAddRows) {
-					const buttonContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
-					const addNewText = tableProperties.labelForAddNewButton ?? localize('designer.newRowText', "Add New");
-					const addRowButton = new Button(buttonContainer, {
-						title: addNewText,
-						secondary: true
-					});
-					addRowButton.onDidClick(() => {
-						this.handleEdit({
-							type: DesignerEditType.Add,
-							path: propertyPath,
-							source: view
-						});
-					});
-					this.styleComponent(addRowButton);
-					addRowButton.label = addNewText;
-					addRowButton.icon = {
-						id: `add-row-button new codicon`
-					};
-					addRowButton.ariaLabel = localize('designer.newRowButtonAriaLabel', "Add new row to '{0}' table", tableProperties.ariaLabel);
-					this._buttons.push(addRowButton);
+					this.addTableDesignerTableButtons(container, tableProperties, propertyPath, view);
 				}
 				const tableContainer = container.appendChild(DOM.$('.full-row'));
 				const table = new Table(tableContainer, {
@@ -839,6 +820,7 @@ export class Designer extends Disposable implements IThemable {
 					headerRowHeight: TableHeaderRowHeight,
 					editorLock: new Slick.EditorLock()
 				});
+
 				this._register(table.onContextMenu((e) => {
 					let edit: DesignerEdit = {
 						type: DesignerEditType.Add,
@@ -919,7 +901,7 @@ export class Designer extends Disposable implements IThemable {
 				table.grid.onBeforeEditCell.subscribe((e, data): boolean => {
 					return data.item[data.column.field].enabled !== false;
 				});
-
+				let disabledButtons = this._buttons.filter(b => b.enabled === false);
 				table.grid.onActiveCellChanged.subscribe((e, data) => {
 					if (view === 'TabsView' || view === 'TopContentView') {
 						if (data.row !== undefined) {
@@ -936,8 +918,11 @@ export class Designer extends Disposable implements IThemable {
 							this._propertiesPane.updateDescription(componentDefinition);
 						}
 					}
+					disabledButtons.forEach(b => b.enabled = true);
 				});
-
+				table.onBlur((e) => {
+					disabledButtons.forEach(b => b.enabled = false);
+				});
 				component = table;
 				break;
 			default:
@@ -950,6 +935,80 @@ export class Designer extends Disposable implements IThemable {
 
 		this.styleComponent(component);
 		return component;
+	}
+
+	private addTableDesignerTableButtons(container: HTMLElement, tableProperties: DesignerTableProperties,
+		path: DesignerPropertyPath, view: DesignerUIArea): void {
+		// Add new button
+		const buttonContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
+		const addNewText = tableProperties.labelForAddNewButton ?? localize('designer.newRowText', "Add New");
+		const addRowButton = new Button(buttonContainer, {
+			title: addNewText,
+			secondary: true
+		});
+		addRowButton.onDidClick(() => {
+			this.handleEdit({
+				type: DesignerEditType.Add,
+				path: path,
+				source: view
+			});
+		});
+		this.styleComponent(addRowButton);
+		addRowButton.label = addNewText;
+		addRowButton.icon = {
+			id: `add-row-button new codicon`
+		};
+		addRowButton.ariaLabel = localize('designer.newRowButtonAriaLabel', "Add new row to '{0}' table", tableProperties.ariaLabel);
+		this._buttons.push(addRowButton);
+
+		// Move up button
+		const moveUpText = localize('designer.moveUpText', "Move Up");
+		const moveUpButton = new Button(buttonContainer, {
+			title: moveUpText,
+			secondary: true
+		});
+		moveUpButton.enabled = false;
+		moveUpButton.onDidClick(() => {
+			// get selected row
+			this.handleEdit({
+				type: DesignerEditType.Add,
+				path: path,
+				source: view
+			});
+		});
+		this.styleComponent(moveUpButton);
+		moveUpButton.label = moveUpText;
+		moveUpButton.icon = {
+			id: `add-row-button arrow-up codicon`
+		};
+		addRowButton.ariaLabel = localize('designer.moveUpButtonAriaLabel', "Move selected row up");
+		this._buttons.push(moveUpButton);
+
+		// Move down button
+		// todo: add row number in message and get selected row
+		// disable until theres a selection
+		const moveDownText = localize('designer.moveDownText', "Move Down");
+		const moveDownButton = new Button(buttonContainer, {
+			title: moveDownText,
+			secondary: true
+		});
+		moveDownButton.enabled = false;
+		moveDownButton.onDidClick(() => {
+			// todo: get selected row
+			this.handleEdit({
+				type: DesignerEditType.Add,
+				path: path,
+				source: view
+			});
+		});
+		this.styleComponent(moveDownButton);
+		moveDownButton.label = moveDownText;
+		moveDownButton.icon = {
+			id: `add-row-button arrow-down codicon`
+		};
+		moveDownButton.ariaLabel = localize('designer.moveDownButtonAriaLabel', "Move selected row down");
+
+		this._buttons.push(moveDownButton);
 	}
 
 	private openContextMenu(table: Table<Slick.SlickData>, event: ITableMouseEvent, edit: DesignerEdit): void {

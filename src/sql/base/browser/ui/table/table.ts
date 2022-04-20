@@ -59,6 +59,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private _onColumnResize = new Emitter<void>();
 	public readonly onColumnResize = this._onColumnResize.event;
 
+	private _onBlur = new Emitter<void>();
+	public readonly onBlur = this._onBlur.event;
+
 	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
 		super();
 		if (!configuration || !configuration.dataProvider || isArray(configuration.dataProvider)) {
@@ -90,6 +93,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 			clearTimeout(this._classChangeTimeout);
 			this._classChangeTimeout = setTimeout(() => {
 				this._container.classList.remove('focused');
+				this._onBlur.fire();
 			}, 100);
 		}, true));
 
