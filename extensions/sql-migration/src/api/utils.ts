@@ -4,10 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { window, CategoryValue, DropDownComponent, IconPath } from 'azdata';
 import * as azurecore from 'azurecore';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { DAYS, HRS, MINUTE, SEC } from '../constants/strings';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
 import { MigrationStatus, ProvisioningState } from '../models/migrationLocalStorage';
 import * as crypto from 'crypto';
@@ -82,16 +80,16 @@ export function convertTimeDifferenceToDuration(startTime: Date, endTime: Date):
 	let hours = (time / (1000 * 60 * 60)).toFixed(1);
 	let days = (time / (1000 * 60 * 60 * 24)).toFixed(1);
 	if (time / 1000 < 60) {
-		return SEC(parseFloat(seconds));
+		return constants.SEC(parseFloat(seconds));
 	}
 	else if (time / (1000 * 60) < 60) {
-		return MINUTE(parseFloat(minutes));
+		return constants.MINUTE(parseFloat(minutes));
 	}
 	else if (time / (1000 * 60 * 60) < 24) {
-		return HRS(parseFloat(hours));
+		return constants.HRS(parseFloat(hours));
 	}
 	else {
-		return DAYS(parseFloat(days));
+		return constants.DAYS(parseFloat(days));
 	}
 }
 
@@ -144,7 +142,7 @@ export function convertIsoTimeToLocalTime(isoTime: string): Date {
 	return new Date(isoDate.getTime() + (isoDate.getTimezoneOffset() * 60000));
 }
 
-export function selectDefaultDropdownValue(dropDown: DropDownComponent, value?: string, useDisplayName: boolean = true): void {
+export function selectDefaultDropdownValue(dropDown: azdata.DropDownComponent, value?: string, useDisplayName: boolean = true): void {
 	if (dropDown.values && dropDown.values.length > 0) {
 		const selectedIndex = value ? findDropDownItemIndex(dropDown, value, useDisplayName) : -1;
 		if (selectedIndex > -1) {
@@ -155,24 +153,24 @@ export function selectDefaultDropdownValue(dropDown: DropDownComponent, value?: 
 	}
 }
 
-export function selectDropDownIndex(dropDown: DropDownComponent, index: number): void {
+export function selectDropDownIndex(dropDown: azdata.DropDownComponent, index: number): void {
 	if (dropDown.values && dropDown.values.length > 0) {
 		if (index >= 0 && index <= dropDown.values.length - 1) {
-			dropDown.value = dropDown.values[index] as CategoryValue;
+			dropDown.value = dropDown.values[index] as azdata.CategoryValue;
 			return;
 		}
 	}
 	dropDown.value = undefined;
 }
 
-export function findDropDownItemIndex(dropDown: DropDownComponent, value: string, useDisplayName: boolean = true): number {
+export function findDropDownItemIndex(dropDown: azdata.DropDownComponent, value: string, useDisplayName: boolean = true): number {
 	if (value && dropDown.values && dropDown.values.length > 0) {
 		const searachValue = value?.toLowerCase();
 		return useDisplayName
 			? dropDown.values.findIndex((v: any) =>
-				(v as CategoryValue)?.displayName?.toLowerCase() === searachValue)
+				(v as azdata.CategoryValue)?.displayName?.toLowerCase() === searachValue)
 			: dropDown.values.findIndex((v: any) =>
-				(v as CategoryValue)?.name?.toLowerCase() === searachValue);
+				(v as azdata.CategoryValue)?.name?.toLowerCase() === searachValue);
 	}
 	return -1;
 }
@@ -223,7 +221,7 @@ export function getSessionIdHeader(sessionId: string): { [key: string]: string }
 	};
 }
 
-export function getMigrationStatusImage(status: string): IconPath {
+export function getMigrationStatusImage(status: string): azdata.IconPath {
 	switch (status) {
 		case MigrationStatus.InProgress:
 			return IconPathHelper.inProgressMigration;
@@ -249,15 +247,15 @@ export function get12HourTime(date: Date | undefined): string {
 	return (date ? date : new Date()).toLocaleTimeString([], localeTimeStringOptions);
 }
 
-export function displayDialogErrorMessage(dialog: window.Dialog, text: string, error: Error): void {
+export function displayDialogErrorMessage(dialog: azdata.window.Dialog, text: string, error: Error): void {
 	dialog.message = {
-		level: window.MessageLevel.Error,
+		level: azdata.window.MessageLevel.Error,
 		text: text,
 		description: error.message,
 	};
 }
 
-export function clearDialogMessage(dialog: window.Dialog): void {
+export function clearDialogMessage(dialog: azdata.window.Dialog): void {
 	dialog.message = {
 		text: ''
 	};
@@ -266,63 +264,6 @@ export function clearDialogMessage(dialog: window.Dialog): void {
 export function getUserHome(): string | undefined {
 	return process.env.HOME || process.env.USERPROFILE;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export async function getAzureAccounts(): Promise<azdata.Account[]> {
 	let accounts: azdata.Account[] = [];
@@ -388,8 +329,6 @@ export async function getAzureTenantsDropdownValues(tenants: azurecore.Tenant[])
 	return tenantsValues;
 }
 
-
-
 export async function getAzureSubscriptions(account?: azdata.Account): Promise<azureResource.AzureResourceSubscription[]> {
 	let subscriptions: azureResource.AzureResourceSubscription[] = [];
 	try {
@@ -434,10 +373,13 @@ export async function getAzureLocations(account?: azdata.Account, subscription?:
 	let locations: azureResource.AzureLocation[] = [];
 	try {
 		if (account && subscription) {
+			locations = await getLocations(account, subscription);
+
 			// only show locations that contain resources of the desired type
 			switch (resourceType) {
 				case SelectableResourceType.ManagedInstance:
 					let managedInstances = await getAvailableManagedInstanceProducts(account, subscription) || [];
+
 					locations = locations.filter(
 						(loc, i) => managedInstances.some(mi => mi.location === loc.name));
 					break;
@@ -458,7 +400,6 @@ export async function getAzureLocations(account?: azdata.Account, subscription?:
 					break;
 				default:
 					// show all locations
-					locations = await getLocations(account, subscription);
 					break;
 			}
 		}
@@ -489,10 +430,10 @@ export async function getAzureLocationsDropdownValues(locations: azureResource.A
 	return locationValues;
 }
 
-export async function getAzureResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, location?: string, resourceType?: SelectableResourceType): Promise<azureResource.AzureResourceResourceGroup[]> {
+export async function getAzureResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, location?: azureResource.AzureLocation, resourceType?: SelectableResourceType): Promise<azureResource.AzureResourceResourceGroup[]> {
 	let resourceGroups: azureResource.AzureResourceResourceGroup[] = [];
 	try {
-		if (account && subscription) {
+		if (account && subscription && resourceGroups && location) {
 			resourceGroups = await getResourceGroups(account, subscription);
 
 			// only show resource groups that contain resources of the desired type in the desired location
@@ -500,7 +441,7 @@ export async function getAzureResourceGroups(account?: azdata.Account, subscript
 				case SelectableResourceType.ManagedInstance:
 					let managedInstances = await getAvailableManagedInstanceProducts(account, subscription);
 					resourceGroups = managedInstances
-						.filter((mi) => mi.location === location)
+						.filter((mi) => mi.location.toLowerCase() === location.name.toLowerCase())
 						.map((mi) => {
 							return <azureResource.AzureResourceResourceGroup>{
 								id: getFullResourceGroupFromId(mi.id),
@@ -515,7 +456,7 @@ export async function getAzureResourceGroups(account?: azdata.Account, subscript
 				case SelectableResourceType.VirtualMachine:
 					let virtualMachines = await getAvailableSqlVMs(account, subscription);
 					resourceGroups = virtualMachines
-						.filter((vm) => vm.location === location)
+						.filter((vm) => vm.location.toLowerCase() === location.name.toLowerCase())
 						.map((vm) => {
 							return <azureResource.AzureResourceResourceGroup>{
 								id: getFullResourceGroupFromId(vm.id),
@@ -530,7 +471,7 @@ export async function getAzureResourceGroups(account?: azdata.Account, subscript
 				case SelectableResourceType.StorageAccount:
 					let storageAccounts = await getAvailableStorageAccounts(account, subscription);
 					resourceGroups = storageAccounts
-						.filter((sa) => sa.location === location)
+						.filter((sa) => sa.location.toLowerCase() === location.name.toLowerCase())
 						.map((sa) => {
 							return <azureResource.AzureResourceResourceGroup>{
 								id: getFullResourceGroupFromId(sa.id),
@@ -545,7 +486,7 @@ export async function getAzureResourceGroups(account?: azdata.Account, subscript
 				case SelectableResourceType.SqlMigrationService:
 					let dmsInstances = await getSqlMigrationServices(account, subscription);
 					resourceGroups = dmsInstances
-						.filter((dms) => dms.properties.provisioningState === 'Succeeded' && dms.location === location)
+						.filter((dms) => dms.properties.provisioningState === 'Succeeded' && dms.location.toLowerCase() === location.name.toLowerCase())
 						.map((dms) => {
 							return <azureResource.AzureResourceResourceGroup>{
 								id: getFullResourceGroupFromId(dms.id),
@@ -593,27 +534,12 @@ export async function getAzureResourceGroupsDropdownValues(resourceGroups: azure
 	return resourceGroupValues;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-export async function getManagedInstances(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, location?: string, resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<azureResource.AzureSqlManagedInstance[]> {
+export async function getManagedInstances(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, location?: azureResource.AzureLocation, resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<azureResource.AzureSqlManagedInstance[]> {
 	let managedInstances: azureResource.AzureSqlManagedInstance[] = [];
 	try {
 		if (account && subscription && location && resourceGroup) {
 			managedInstances = (await getAvailableManagedInstanceProducts(account, subscription)).filter((mi) => {
-				if (mi.location.toLowerCase() === location.toLowerCase() && mi.resourceGroup?.toLowerCase() === resourceGroup?.name.toLowerCase()) {
+				if (mi.location.toLowerCase() === location.name.toLowerCase() && mi.resourceGroup?.toLowerCase() === resourceGroup?.name.toLowerCase()) {
 					return true;
 				}
 				return false;
@@ -657,12 +583,12 @@ export async function getManagedInstancesDropdownValues(managedInstances: azureR
 	return managedInstancesValues;
 }
 
-export async function getVirtualMachines(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, location?: string, resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<SqlVMServer[]> {
+export async function getVirtualMachines(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, location?: azureResource.AzureLocation, resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<SqlVMServer[]> {
 	let virtualMachines: SqlVMServer[] = [];
 	try {
 		if (account && subscription && location && resourceGroup) {
 			virtualMachines = (await getAvailableSqlVMs(account, subscription)).filter((virtualMachine) => {
-				if (virtualMachine?.location?.toLowerCase() === location.toLowerCase() && getResourceGroupFromId(virtualMachine.id).toLowerCase() === resourceGroup?.name.toLowerCase()) {
+				if (virtualMachine?.location?.toLowerCase() === location.name.toLowerCase() && getResourceGroupFromId(virtualMachine.id).toLowerCase() === resourceGroup?.name.toLowerCase()) {
 					if (virtualMachine.properties.sqlImageOffer) {
 						return virtualMachine.properties.sqlImageOffer.toLowerCase().includes('-ws'); //filtering out all non windows sql vms.
 					}
@@ -709,12 +635,12 @@ export async function getVirtualMachinesDropdownValues(virtualMachines: SqlVMSer
 	return virtualMachineValues;
 }
 
-export async function getStorageAccounts(location: string, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<StorageAccount[]> {
+export async function getStorageAccounts(location: azureResource.AzureLocation, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<StorageAccount[]> {
 	let storageAccounts: StorageAccount[] = [];
 	try {
 		if (account && subscription && location && resourceGroup) {
 			storageAccounts = (await getAvailableStorageAccounts(account, subscription)).filter(sa => {
-				return sa.location.toLowerCase() === location.toLowerCase() && sa.resourceGroup?.toLowerCase() === resourceGroup.name.toLowerCase();
+				return sa.location.toLowerCase() === location.name.toLowerCase() && sa.resourceGroup?.toLowerCase() === resourceGroup.name.toLowerCase();
 			});
 		}
 	} catch (e) {
@@ -745,12 +671,12 @@ export async function getStorageAccountsDropdownValues(storageAccounts: StorageA
 	return storageAccountValues;
 }
 
-export async function getAzureSqlMigrationServices(location: string, resourceGroup: string, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<SqlMigrationService[]> {
+export async function getAzureSqlMigrationServices(location?: azureResource.AzureLocation, resourceGroup?: azureResource.AzureResourceResourceGroup, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<SqlMigrationService[]> {
 	let sqlMigrationServices: SqlMigrationService[] = [];
 	try {
 		if (account && subscription && location && resourceGroup) {
-			sqlMigrationServices = (await getSqlMigrationServicesByResourceGroup(account, subscription, resourceGroup)).filter(dms => {
-				return dms.location.toLowerCase() === location.toLowerCase() && dms.properties.provisioningState === 'Succeeded';
+			sqlMigrationServices = (await getSqlMigrationServicesByResourceGroup(account, subscription, resourceGroup.name)).filter(dms => {
+				return dms.location.toLowerCase() === location.name.toLowerCase() && dms.properties.provisioningState === 'Succeeded';
 			});
 		}
 	} catch (e) {

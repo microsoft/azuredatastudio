@@ -15,7 +15,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
 import { createAuthenticationKeyTable } from '../../wizard/integrationRuntimePage';
 import * as EventEmitter from 'events';
-import { clearDialogMessage, getAzureResourceGroups, getAzureResourceGroupsDropdownValues } from '../../api/utils';
+import { clearDialogMessage, findDropDownItemIndex, getAzureResourceGroups, getAzureResourceGroupsDropdownValues } from '../../api/utils';
 import * as styles from '../../constants/styles';
 
 export class CreateSqlMigrationServiceDialog {
@@ -44,7 +44,8 @@ export class CreateSqlMigrationServiceDialog {
 	private _view!: azdata.ModelView;
 
 	private _createdMigrationService!: SqlMigrationService;
-	private _selectedResourceGroup!: string;
+	private _resourceGroups!: azureResource.AzureResourceResourceGroup[];
+	private _selectedResourceGroup!: azureResource.AzureResourceResourceGroup;
 	private _testConnectionButton!: azdata.window.Button;
 
 	private _doneButtonEvent: EventEmitter = new EventEmitter();
@@ -79,11 +80,11 @@ export class CreateSqlMigrationServiceDialog {
 
 
 				const subscription = this._model._targetSubscription;
-				const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue)?.name;
+				const resourceGroup = this._selectedResourceGroup;
 				const location = this._model._targetServerInstance.location;
 				const serviceName = this.migrationServiceNameText.value;
 
-				const formValidationErrors = this.validateCreateServiceForm(subscription, resourceGroup, location, serviceName);
+				const formValidationErrors = this.validateCreateServiceForm(subscription, resourceGroup.name, location, serviceName);
 
 				if (formValidationErrors.length > 0) {
 					this.setDialogMessage(formValidationErrors);
@@ -98,7 +99,7 @@ export class CreateSqlMigrationServiceDialog {
 					this._createdMigrationService = await createSqlMigrationService(
 						this._model._azureAccount,
 						subscription,
-						resourceGroup,
+						resourceGroup.name,
 						location,
 						serviceName!,
 						this._model._sessionId);
@@ -203,7 +204,7 @@ export class CreateSqlMigrationServiceDialog {
 		this._isBlobContainerUsed = this._model._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER;
 
 		return new Promise((resolve) => {
-			this._doneButtonEvent.once('done', (createdDms: SqlMigrationService, selectedResourceGroup: string) => {
+			this._doneButtonEvent.once('done', (createdDms: SqlMigrationService, selectedResourceGroup: azureResource.AzureResourceResourceGroup) => {
 				azdata.window.closeDialog(this._dialogObject);
 				resolve(
 					{
@@ -255,6 +256,17 @@ export class CreateSqlMigrationServiceDialog {
 				'margin-top': '-1em'
 			}
 		}).component();
+
+
+		this._disposables.push(
+			this.migrationServiceResourceGroupDropdown.onValueChanged(async (value) => {
+				const selectedIndex = findDropDownItemIndex(this.migrationServiceResourceGroupDropdown, value);
+				this._selectedResourceGroup = (selectedIndex > -1)
+					? this._resourceGroups[selectedIndex]
+					: undefined!;
+			}));
+
+
 
 		const migrationServiceNameLabel = this._view.modelBuilder.text().withProps({
 			value: constants.NAME,
@@ -376,8 +388,8 @@ export class CreateSqlMigrationServiceDialog {
 	private async populateResourceGroups(): Promise<void> {
 		this.migrationServiceResourceGroupDropdown.loading = true;
 		try {
-			let resourceGroups = await getAzureResourceGroups(this._model._azureAccount, this._model._targetSubscription);
-			this.migrationServiceResourceGroupDropdown.values = await getAzureResourceGroupsDropdownValues(resourceGroups);
+			this._resourceGroups = await getAzureResourceGroups(this._model._azureAccount, this._model._targetSubscription);
+			this.migrationServiceResourceGroupDropdown.values = await getAzureResourceGroupsDropdownValues(this._resourceGroups);
 
 			const selectedResourceGroupValue = this.migrationServiceResourceGroupDropdown.values.find(v => v.name.toLowerCase() === this._resourceGroupPreset.toLowerCase());
 			this.migrationServiceResourceGroupDropdown.value = (selectedResourceGroupValue) ? selectedResourceGroupValue : this.migrationServiceResourceGroupDropdown.values[0];
@@ -646,5 +658,5 @@ export class CreateSqlMigrationServiceDialog {
 
 export interface CreateSqlMigrationServiceDialogResult {
 	service: SqlMigrationService,
-	resourceGroup: string
+	resourceGroup: azureResource.AzureResourceResourceGroup
 }

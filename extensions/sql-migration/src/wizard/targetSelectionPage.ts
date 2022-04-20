@@ -13,6 +13,7 @@ import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { deepClone, findDropDownItemIndex, selectDropDownIndex, selectDefaultDropdownValue, getAzureResourceGroups, getAzureResourceGroupsDropdownValues, getAzureSubscriptions, getAzureSubscriptionsDropdownValues, getAzureLocations, getAzureLocationsDropdownValues, getAzureTenants, getAzureTenantsDropdownValues, getAzureAccounts, getAzureAccountsDropdownValues, getManagedInstances, getVirtualMachines, getManagedInstancesDropdownValues, getVirtualMachinesDropdownValues, SelectableResourceType } from '../api/utils';
 import { azureResource } from 'azureResource';
+import { SqlVMServer } from '../api/azure';
 
 export class TargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -133,9 +134,14 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					break;
 				}
 				case MigrationTargetType.SQLVM: {
-					if (!this.migrationStateModel._targetServerInstance ||
-						resourceDropdownValue === constants.NO_VIRTUAL_MACHINE_FOUND) {
+					let targetVm = this.migrationStateModel._targetServerInstance as SqlVMServer;
+					if (!targetVm || resourceDropdownValue === constants.NO_VIRTUAL_MACHINE_FOUND) {
 						errors.push(constants.INVALID_VIRTUAL_MACHINE_ERROR);
+						break;
+					}
+					if (targetVm.properties.provisioningState !== 'Succeeded') {
+						errors.push(constants.VM_NOT_READY_ERROR(targetVm.name, targetVm.properties.provisioningState));
+						break;
 					}
 					break;
 				}
@@ -313,8 +319,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}
 			this.migrationStateModel.refreshDatabaseBackupPage = true;
 			await this.populateLocationDropdown();
-			// await this.populateResourceGroupDropdown();
-			// await this.populateResourceInstanceDropdown();
+			await this.populateResourceGroupDropdown();
+			await this.populateResourceInstanceDropdown();
 		}));
 
 		const azureLocationLabel = this._view.modelBuilder.text().withProps({
@@ -345,8 +351,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				this.migrationStateModel._location = undefined!;
 			}
 			this.migrationStateModel.refreshDatabaseBackupPage = true;
-			// await this.populateResourceInstanceDropdown();
 			await this.populateResourceGroupDropdown();
+			await this.populateResourceInstanceDropdown();
 		}));
 
 		const azureResourceGroupLabel = this._view.modelBuilder.text().withProps({
@@ -408,6 +414,17 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				switch (this.migrationStateModel._targetType) {
 					case MigrationTargetType.SQLVM:
 						this.migrationStateModel._targetServerInstance = this.migrationStateModel._targetSqlVirtualMachines[selectedIndex];
+						if (this.migrationStateModel._targetServerInstance.properties.provisioningState !== 'Succeeded') {
+							this.wizard.message = {
+								text: constants.VM_NOT_READY_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.provisioningState),
+								level: azdata.window.MessageLevel.Error
+							};
+						} else {
+							this.wizard.message = {
+								text: '',
+								level: azdata.window.MessageLevel.Error
+							};
+						}
 						break;
 
 					case MigrationTargetType.SQLMI:
@@ -500,10 +517,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			this.updateDropdownLoadingStatus(TargetDropDowns.ResourceGroup, true);
 			switch (this.migrationStateModel._targetType) {
 				case MigrationTargetType.SQLMI:
-					this.migrationStateModel._resourceGroups = await getAzureResourceGroups(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription, this.migrationStateModel._location.name, SelectableResourceType.ManagedInstance);
+					this.migrationStateModel._resourceGroups = await getAzureResourceGroups(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription, this.migrationStateModel._location, SelectableResourceType.ManagedInstance);
 					break;
 				case MigrationTargetType.SQLVM:
-					this.migrationStateModel._resourceGroups = await getAzureResourceGroups(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription, this.migrationStateModel._location.name, SelectableResourceType.VirtualMachine);
+					this.migrationStateModel._resourceGroups = await getAzureResourceGroups(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription, this.migrationStateModel._location, SelectableResourceType.VirtualMachine);
 					break;
 			}
 			this._azureResourceGroupDropdown.values = await getAzureResourceGroupsDropdownValues(this.migrationStateModel._resourceGroups);
@@ -520,12 +537,12 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			this.updateDropdownLoadingStatus(TargetDropDowns.ResourceInstance, true);
 			switch (this.migrationStateModel._targetType) {
 				case MigrationTargetType.SQLMI: {
-					this.migrationStateModel._targetManagedInstances = await getManagedInstances(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription, this.migrationStateModel._location.name, this.migrationStateModel._resourceGroup);
+					this.migrationStateModel._targetManagedInstances = await getManagedInstances(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription, this.migrationStateModel._location, this.migrationStateModel._resourceGroup);
 					this._azureResourceDropdown.values = await getManagedInstancesDropdownValues(this.migrationStateModel._targetManagedInstances);
 					break;
 				}
 				case MigrationTargetType.SQLVM: {
-					this.migrationStateModel._targetSqlVirtualMachines = await getVirtualMachines(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription, this.migrationStateModel._location.name, this.migrationStateModel._resourceGroup);
+					this.migrationStateModel._targetSqlVirtualMachines = await getVirtualMachines(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription, this.migrationStateModel._location, this.migrationStateModel._resourceGroup);
 					this._azureResourceDropdown.values = await getVirtualMachinesDropdownValues(this.migrationStateModel._targetSqlVirtualMachines);
 					break;
 				}
