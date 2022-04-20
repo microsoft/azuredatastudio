@@ -66,7 +66,7 @@ suite('Notebook Input', function (): void {
 	test('File Notebook Input', async function (): Promise<void> {
 		let fileUri = URI.from({ scheme: Schemas.file, path: 'TestPath' });
 		let fileNotebookInput = new FileNotebookInput(
-			testTitle, fileUri, undefined,
+			testTitle, fileUri, undefined, true,
 			undefined, instantiationService, mockNotebookService.object, mockExtensionService.object);
 
 		let inputId = fileNotebookInput.typeId;

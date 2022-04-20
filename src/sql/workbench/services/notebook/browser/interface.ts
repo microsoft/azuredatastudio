@@ -21,6 +21,7 @@ export interface INotebookInput extends IEditorInput {
 	readonly contentLoader: IContentLoader;
 	readonly standardKernels: IStandardKernelWithProvider[];
 	readonly providersLoaded: Promise<void>;
+	readonly showActions: boolean;
 }
 
 export function isINotebookInput(value: any): value is INotebookInput {
