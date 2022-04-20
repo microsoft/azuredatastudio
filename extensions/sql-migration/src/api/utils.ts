@@ -433,7 +433,7 @@ export async function getAzureLocationsDropdownValues(locations: azureResource.A
 export async function getAzureResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, location?: azureResource.AzureLocation, resourceType?: SelectableResourceType): Promise<azureResource.AzureResourceResourceGroup[]> {
 	let resourceGroups: azureResource.AzureResourceResourceGroup[] = [];
 	try {
-		if (account && subscription && resourceGroups && location) {
+		if (account && subscription) {
 			resourceGroups = await getResourceGroups(account, subscription);
 
 			// only show resource groups that contain resources of the desired type in the desired location
@@ -441,7 +441,7 @@ export async function getAzureResourceGroups(account?: azdata.Account, subscript
 				case SelectableResourceType.ManagedInstance:
 					let managedInstances = await getAvailableManagedInstanceProducts(account, subscription);
 					resourceGroups = managedInstances
-						.filter((mi) => mi.location.toLowerCase() === location.name.toLowerCase())
+						.filter((mi) => mi.location.toLowerCase() === location?.name.toLowerCase())
 						.map((mi) => {
 							return <azureResource.AzureResourceResourceGroup>{
 								id: getFullResourceGroupFromId(mi.id),
@@ -456,7 +456,7 @@ export async function getAzureResourceGroups(account?: azdata.Account, subscript
 				case SelectableResourceType.VirtualMachine:
 					let virtualMachines = await getAvailableSqlVMs(account, subscription);
 					resourceGroups = virtualMachines
-						.filter((vm) => vm.location.toLowerCase() === location.name.toLowerCase())
+						.filter((vm) => vm.location.toLowerCase() === location?.name.toLowerCase())
 						.map((vm) => {
 							return <azureResource.AzureResourceResourceGroup>{
 								id: getFullResourceGroupFromId(vm.id),
@@ -471,7 +471,7 @@ export async function getAzureResourceGroups(account?: azdata.Account, subscript
 				case SelectableResourceType.StorageAccount:
 					let storageAccounts = await getAvailableStorageAccounts(account, subscription);
 					resourceGroups = storageAccounts
-						.filter((sa) => sa.location.toLowerCase() === location.name.toLowerCase())
+						.filter((sa) => sa.location.toLowerCase() === location?.name.toLowerCase())
 						.map((sa) => {
 							return <azureResource.AzureResourceResourceGroup>{
 								id: getFullResourceGroupFromId(sa.id),
@@ -486,7 +486,7 @@ export async function getAzureResourceGroups(account?: azdata.Account, subscript
 				case SelectableResourceType.SqlMigrationService:
 					let dmsInstances = await getSqlMigrationServices(account, subscription);
 					resourceGroups = dmsInstances
-						.filter((dms) => dms.properties.provisioningState === 'Succeeded' && dms.location.toLowerCase() === location.name.toLowerCase())
+						.filter((dms) => dms.properties.provisioningState === 'Succeeded' && dms.location.toLowerCase() === location?.name.toLowerCase())
 						.map((dms) => {
 							return <azureResource.AzureResourceResourceGroup>{
 								id: getFullResourceGroupFromId(dms.id),

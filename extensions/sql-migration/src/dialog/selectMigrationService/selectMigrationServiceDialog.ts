@@ -78,12 +78,12 @@ export class SelectMigrationServiceDialog {
 		});
 
 		this._dialog.okButton.label = constants.MIGRATION_SERVICE_SELECT_APPLY_LABEL;
-		this._dialog.okButton.position = 'left';
+		this._dialog.okButton.position = 'right';
 		this._dialog.cancelButton.position = 'right';
 
 		this._deleteButton = azdata.window.createButton(
 			constants.MIGRATION_SERVICE_CLEAR,
-			'right');
+			'left');
 		this._disposables.push(
 			this._deleteButton.onClick(async (value) => {
 				await MigrationLocalStorage.saveMigrationServiceContext({});
