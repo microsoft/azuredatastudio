@@ -10,6 +10,7 @@ import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { debounce } from '../api/utils';
+import * as styles from '../constants/styles';
 
 const styleLeft: azdata.CssStyles = {
 	'border': 'none',
@@ -124,7 +125,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		const searchContainer = this._view.modelBuilder.divContainer().withItems([resourceSearchBox]).withProps({
 			CSSStyles: {
 				'width': '200px',
-				'margin': '10px 8px 0px 0px'
+				'margin-top': '8px'
 			}
 		}).component();
 
@@ -204,27 +205,23 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		const title = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_FOR_MIGRATION,
 			CSSStyles: {
-				'font-size': '28px',
-				'line-size': '19px',
-				'margin': '16px 0px 20px 0px'
+				...styles.PAGE_TITLE_CSS,
+				'margin-bottom': '8px'
 			}
 		}).component();
 
 		const text = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_MIGRATE_TEXT,
 			CSSStyles: {
-				'font-size': '13px',
-				'line-size': '19px',
-				'margin': '10px 0px 0px 0px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
 		this._dbCount = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASES_SELECTED(this.selectedDbs.length, this._databaseTableValues.length),
 			CSSStyles: {
-				'font-size': '13px',
-				'line-size': '19px',
-				'margin': '10px 0px 0px 0px'
+				...styles.BODY_CSS,
+				'margin-top': '8px'
 			}
 		}).component();
 
@@ -295,7 +292,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			height: '100%',
 		}).withProps({
 			CSSStyles: {
-				'margin': '0px  28px 0px 28px'
+				'margin': '0px 28px 0px 28px'
 			}
 		}).component();
 		flex.addItem(title, { flex: '0 0 auto' });

@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import { MigrationMode, MigrationStateModel, NetworkContainerType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
+import * as styles from '../../constants/styles';
 
 export class TargetDatabaseSummaryDialog {
 	private _dialogObject!: azdata.window.Dialog;
@@ -36,7 +37,7 @@ export class TargetDatabaseSummaryDialog {
 			const databaseCount = this._view.modelBuilder.text().withProps({
 				value: constants.COUNT_DATABASES(this._model._migrationDbs.length),
 				CSSStyles: {
-					'font-size': '13px',
+					...styles.BODY_CSS,
 					'margin-bottom': '20px'
 				}
 			}).component();
