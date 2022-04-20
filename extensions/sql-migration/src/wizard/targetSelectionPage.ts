@@ -88,7 +88,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				break;
 		}
 
-		// await this.populateResourceInstanceDropdown();
+		await this.populateResourceInstanceDropdown();
 		await this.populateAzureAccountsDropdown();
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
@@ -318,9 +318,9 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				this.migrationStateModel._targetSubscription = undefined!;
 			}
 			this.migrationStateModel.refreshDatabaseBackupPage = true;
-			await this.populateLocationDropdown();
-			await this.populateResourceGroupDropdown();
 			await this.populateResourceInstanceDropdown();
+			await this.populateResourceGroupDropdown();
+			await this.populateLocationDropdown();
 		}));
 
 		const azureLocationLabel = this._view.modelBuilder.text().withProps({

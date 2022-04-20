@@ -257,7 +257,6 @@ export class CreateSqlMigrationServiceDialog {
 			}
 		}).component();
 
-
 		this._disposables.push(
 			this.migrationServiceResourceGroupDropdown.onValueChanged(async (value) => {
 				const selectedIndex = findDropDownItemIndex(this.migrationServiceResourceGroupDropdown, value);
@@ -265,8 +264,6 @@ export class CreateSqlMigrationServiceDialog {
 					? this._resourceGroups[selectedIndex]
 					: undefined!;
 			}));
-
-
 
 		const migrationServiceNameLabel = this._view.modelBuilder.text().withProps({
 			value: constants.NAME,
