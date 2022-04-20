@@ -78,7 +78,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			}
 
 		} catch (e) {
-			void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 			propertyBag.quickPickStep = quickPickStep;
 			exitReason = 'error';
 			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, utils.getErrorType(e))
@@ -149,11 +148,39 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 			// start the create azure function project flow
 			try {
+				// First prompt user for project location. We need to do this ourselves due to an issue
+				// in the AF extension : https://github.com/microsoft/vscode-azurefunctions/issues/3115
+				const browseProjectLocation = await vscode.window.showQuickPick(
+					[constants.browseEllipsisWithIcon],
+					{ title: constants.selectAzureFunctionProjFolder, ignoreFocusOut: true });
+				if (!browseProjectLocation) {
+					// User cancelled
+					return undefined;
+				}
+				const projectFolders = (await vscode.window.showOpenDialog({
+					canSelectFiles: false,
+					canSelectFolders: true,
+					canSelectMany: false,
+					openLabel: constants.selectButton
+				}));
+				if (!projectFolders) {
+					// User cancelled
+					return;
+				}
+				const templateId: string = selectedBindingType === BindingType.input ? constants.inputTemplateID : constants.outputTemplateID;
 				// because of an AF extension API issue, we have to get the newly created file by adding a watcher
 				// issue: https://github.com/microsoft/vscode-azurefunctions/issues/3052
-				newHostProjectFile = await azureFunctionsUtils.waitForNewHostFile();
+				newHostProjectFile = azureFunctionsUtils.waitForNewHostFile();
 				await azureFunctionApi.createFunction({
-					language: 'C#', targetFramework: 'netcoreapp3.1', suppressCreateProjectPrompt: true,
+					language: 'C#',
+					targetFramework: 'netcoreapp3.1',
+					templateId: templateId,
+					suppressCreateProjectPrompt: true,
+					folderPath: projectFolders[0].fsPath,
+					functionSettings: {
+						...(selectedBindingType === BindingType.input && { object: objectName }),
+						...(selectedBindingType === BindingType.output && { table: objectName })
+					},
 				});
 				const timeoutForHostFile = utils.timeoutPromise(constants.timeoutProjectError);
 				hostFile = await Promise.race([newHostProjectFile.filePromise, timeoutForHostFile]);

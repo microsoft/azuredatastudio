@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureAccount } from 'azurecore';
-import { azureResource } from 'azureResource';
+import { AzureAccount, azureResource } from 'azurecore';
 import { IAzureResourceSubscriptionFilterService, IAzureResourceCacheService } from '../interfaces';
 
 interface AzureResourceSelectedSubscriptionsCache {

@@ -20,9 +20,10 @@ declare module 'sqldbproj' {
 		 * @param location the parent directory
 		 * @param projectTypeId the ID of the project/template
 		 * @param targetPlatform the target platform for the project. Default is SQL Server 2019
+		 * @param sdkStyle whether the project is sdk-style. Default is false
 		 * @returns Uri of the newly created project file
 		 */
-		createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform: SqlTargetPlatform): Promise<vscode.Uri>;
+		createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform: SqlTargetPlatform, sdkStyle?: boolean): Promise<vscode.Uri>;
 
 		/**
 		 * Opens and loads a .sqlproj file
@@ -105,6 +106,22 @@ declare module 'sqldbproj' {
 		 * @param defaultValue
 		 */
 		addSqlCmdVariable(name: string, defaultValue: string): Promise<void>;
+
+		/**
+		 * Appends given database source to the DatabaseSource property element.
+		 * If property element does not exist, then new one will be created.
+		 *
+		 * @param databaseSource Source of the database to add
+		 */
+		 addDatabaseSource(databaseSource: string): Promise<void>;
+
+		 /**
+		  * Removes database source from the DatabaseSource property element.
+		  * If no sources remain, then property element will be removed from the project file.
+		  *
+		  * @param databaseSource Source of the database to remove
+		  */
+		 removeDatabaseSource(databaseSource: string): Promise<void>;
 
 		/**
 		 * Excludes entry from project by removing it from the project file

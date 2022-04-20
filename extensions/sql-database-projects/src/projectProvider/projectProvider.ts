@@ -74,9 +74,11 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * @param name name of the project
 	 * @param location the parent directory
 	 * @param projectTypeId the ID of the project/template
+	 * @param targetPlatform the target platform of the project
+	 * @param sdkStyle whether project is sdk-style. Default is false
 	 * @returns Uri of the newly created project file
 	 */
-	async createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform?: sqldbproj.SqlTargetPlatform, sdkStyle: boolean = true): Promise<vscode.Uri> {
+	async createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform?: sqldbproj.SqlTargetPlatform, sdkStyle: boolean = false): Promise<vscode.Uri> {
 
 		if (!targetPlatform) {
 			const projectType = this.supportedProjectTypes.find(x => x.id === projectTypeId);

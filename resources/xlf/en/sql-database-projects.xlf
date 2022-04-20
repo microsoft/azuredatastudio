@@ -450,8 +450,11 @@
     <trans-unit id="invalidProjectReload">
       <source xml:lang="en">Cannot access provided database project. Only valid, open database projects can be reloaded.</source>
     </trans-unit>
-    <trans-unit id="invalidPropertyValue">
+    <trans-unit id="invalidPropertyValueInSqlProj">
       <source xml:lang="en">Invalid value specified for the property '{0}' in .sqlproj file</source>
+    </trans-unit>
+    <trans-unit id="invalidPropertyValueProvided">
+      <source xml:lang="en">Project property value '{0} is invalid</source>
     </trans-unit>
     <trans-unit id="invalidSQLPassword">
       <source xml:lang="en">{0} password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
@@ -702,6 +705,9 @@
     <trans-unit id="scriptFriendlyName">
       <source xml:lang="en">Script</source>
     </trans-unit>
+    <trans-unit id="sdkLearnMorePlaceholder">
+      <source xml:lang="en">Click "Learn More" button for more information about SDK-style projects</source>
+    </trans-unit>
     <trans-unit id="sdkStyleProject">
       <source xml:lang="en">SDK-style project (Preview)</source>
     </trans-unit>
@@ -884,6 +890,9 @@
     </trans-unit>
     <trans-unit id="viewFriendlyName">
       <source xml:lang="en">View</source>
+    </trans-unit>
+    <trans-unit id="yesRecommended">
+      <source xml:lang="en">Yes (Recommended)</source>
     </trans-unit>
     <trans-unit id="yesString">
       <source xml:lang="en">Yes</source>

@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
@@ -88,7 +87,7 @@ export interface DatabaseBackupModel {
 	migrationMode: MigrationMode;
 	networkContainerType: NetworkContainerType;
 	networkShares: NetworkShare[];
-	subscription: azureResource.AzureResourceSubscription;
+	subscription: azurecore.azureResource.AzureResourceSubscription;
 	blobs: Blob[];
 }
 
@@ -96,15 +95,15 @@ export interface NetworkShare {
 	networkShareLocation: string;
 	windowsUser: string;
 	password: string;
-	resourceGroup: azureResource.AzureResourceResourceGroup;
+	resourceGroup: azurecore.azureResource.AzureResourceResourceGroup;
 	storageAccount: StorageAccount;
 	storageKey: string;
 }
 
 export interface Blob {
-	resourceGroup: azureResource.AzureResourceResourceGroup;
+	resourceGroup: azurecore.azureResource.AzureResourceResourceGroup;
 	storageAccount: StorageAccount;
-	blobContainer: azureResource.BlobContainer;
+	blobContainer: azurecore.azureResource.BlobContainer;
 	storageKey: string;
 	lastBackupFile?: string; // _todo: does it make sense to store the last backup file here?
 }
@@ -129,10 +128,10 @@ export interface SavedInfo {
 	migrationTargetType: MigrationTargetType | null;
 	azureAccount: azdata.Account | null;
 	azureTenant: azurecore.Tenant | null;
-	subscription: azureResource.AzureResourceSubscription | null;
-	location: azureResource.AzureLocation | null;
-	resourceGroup: azureResource.AzureResourceResourceGroup | null;
-	targetServerInstance: azureResource.AzureSqlManagedInstance | SqlVMServer | null;
+	subscription: azurecore.azureResource.AzureResourceSubscription | null;
+	location: azurecore.azureResource.AzureLocation | null;
+	resourceGroup: azurecore.azureResource.AzureResourceResourceGroup | null;
+	targetServerInstance: azurecore.azureResource.AzureSqlManagedInstance | SqlVMServer | null;
 	migrationMode: MigrationMode | null;
 	networkContainerType: NetworkContainerType | null;
 	networkShares: NetworkShare[];
@@ -164,24 +163,24 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _sqlServerUsername!: string;
 	public _sqlServerPassword!: string;
 
-	public _subscriptions!: azureResource.AzureResourceSubscription[];
-	public _targetSubscription!: azureResource.AzureResourceSubscription;
-	public _locations!: azureResource.AzureLocation[];
-	public _location!: azureResource.AzureLocation;
-	public _resourceGroups!: azureResource.AzureResourceResourceGroup[];
-	public _resourceGroup!: azureResource.AzureResourceResourceGroup;
+	public _subscriptions!: azurecore.azureResource.AzureResourceSubscription[];
+	public _targetSubscription!: azurecore.azureResource.AzureResourceSubscription;
+	public _locations!: azurecore.azureResource.AzureLocation[];
+	public _location!: azurecore.azureResource.AzureLocation;
+	public _resourceGroups!: azurecore.azureResource.AzureResourceResourceGroup[];
+	public _resourceGroup!: azurecore.azureResource.AzureResourceResourceGroup;
 	public _targetManagedInstances!: SqlManagedInstance[];
 	public _targetSqlVirtualMachines!: SqlVMServer[];
 	public _targetServerInstance!: SqlManagedInstance | SqlVMServer;
 	public _databaseBackup!: DatabaseBackupModel;
 	public _storageAccounts!: StorageAccount[];
-	public _fileShares!: azureResource.FileShare[];
-	public _blobContainers!: azureResource.BlobContainer[];
-	public _lastFileNames!: azureResource.Blob[];
+	public _fileShares!: azurecore.azureResource.FileShare[];
+	public _blobContainers!: azurecore.azureResource.BlobContainer[];
+	public _lastFileNames!: azurecore.azureResource.Blob[];
 	public _sourceDatabaseNames!: string[];
 	public _targetDatabaseNames!: string[];
 
-	public _sqlMigrationServiceResourceGroup!: azureResource.AzureResourceResourceGroup;
+	public _sqlMigrationServiceResourceGroup!: azurecore.azureResource.AzureResourceResourceGroup;
 	public _sqlMigrationService!: SqlMigrationService | undefined;
 	public _sqlMigrationServices!: SqlMigrationService[];
 	public _nodeNames!: string[];
@@ -840,7 +839,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			<SqlManagedInstance>this._targetServerInstance)).map(t => t.name);
 	}
 
-	public async getFileShareValues(subscription: azureResource.AzureResourceSubscription, storageAccount: StorageAccount): Promise<azdata.CategoryValue[]> {
+	public async getFileShareValues(subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: StorageAccount): Promise<azdata.CategoryValue[]> {
 		let fileShareValues: azdata.CategoryValue[] = [];
 		try {
 			if (this._azureAccount && subscription && storageAccount) {
@@ -876,11 +875,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return fileShareValues;
 	}
 
-	public getFileShare(index: number): azureResource.FileShare {
+	public getFileShare(index: number): azurecore.azureResource.FileShare {
 		return this._fileShares[index];
 	}
 
-	public async getBlobContainerValues(subscription: azureResource.AzureResourceSubscription, storageAccount: StorageAccount): Promise<azdata.CategoryValue[]> {
+	public async getBlobContainerValues(subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: StorageAccount): Promise<azdata.CategoryValue[]> {
 		let blobContainerValues: azdata.CategoryValue[] = [];
 		try {
 			if (this._azureAccount && subscription && storageAccount) {
@@ -916,11 +915,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return blobContainerValues;
 	}
 
-	public getBlobContainer(index: number): azureResource.BlobContainer {
+	public getBlobContainer(index: number): azurecore.azureResource.BlobContainer {
 		return this._blobContainers[index];
 	}
 
-	public async getBlobLastBackupFileNameValues(subscription: azureResource.AzureResourceSubscription, storageAccount: StorageAccount, blobContainer: azureResource.BlobContainer): Promise<azdata.CategoryValue[]> {
+	public async getBlobLastBackupFileNameValues(subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: StorageAccount, blobContainer: azurecore.azureResource.BlobContainer): Promise<azdata.CategoryValue[]> {
 		let blobLastBackupFileValues: azdata.CategoryValue[] = [];
 		try {
 			if (this._azureAccount && subscription && storageAccount && blobContainer) {

@@ -4,13 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as azurecore from 'azurecore';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
 import { MigrationStatus, ProvisioningState } from '../models/migrationLocalStorage';
 import * as crypto from 'crypto';
 import { DatabaseMigration, getAvailableManagedInstanceProducts, getAvailableSqlVMs, getAvailableStorageAccounts, getFullResourceGroupFromId, getLocations, getResourceGroupFromId, getResourceGroups, getSqlMigrationServices, getSqlMigrationServicesByResourceGroup, getSubscriptions, SqlMigrationService, SqlVMServer, StorageAccount } from './azure';
-import { azureResource } from 'azureResource';
+import { azureResource, Tenant } from 'azurecore';
 import * as constants from '../constants/strings';
 
 
@@ -297,8 +296,8 @@ export async function getAzureAccountsDropdownValues(accounts: azdata.Account[])
 	return accountsValues;
 }
 
-export async function getAzureTenants(account?: azdata.Account): Promise<azurecore.Tenant[]> {
-	let tenants: azurecore.Tenant[] = [];
+export async function getAzureTenants(account?: azdata.Account): Promise<Tenant[]> {
+	let tenants: Tenant[] = [];
 	try {
 		if (account) {
 			tenants = account.properties.tenants;
@@ -310,7 +309,7 @@ export async function getAzureTenants(account?: azdata.Account): Promise<azureco
 	return tenants;
 }
 
-export async function getAzureTenantsDropdownValues(tenants: azurecore.Tenant[]): Promise<azdata.CategoryValue[]> {
+export async function getAzureTenantsDropdownValues(tenants: Tenant[]): Promise<azdata.CategoryValue[]> {
 	let tenantsValues: azdata.CategoryValue[] = [];
 	tenants.forEach((tenant) => {
 		tenantsValues.push({

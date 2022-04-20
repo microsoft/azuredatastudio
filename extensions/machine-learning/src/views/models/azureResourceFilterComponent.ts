@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import * as constants from '../../common/constants';
 import { AzureWorkspaceResource, IDataComponent } from '../interfaces';

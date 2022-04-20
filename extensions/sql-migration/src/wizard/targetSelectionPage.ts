@@ -12,7 +12,7 @@ import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { deepClone, findDropDownItemIndex, selectDropDownIndex, selectDefaultDropdownValue, getAzureResourceGroups, getAzureResourceGroupsDropdownValues, getAzureSubscriptions, getAzureSubscriptionsDropdownValues, getAzureLocations, getAzureLocationsDropdownValues, getAzureTenants, getAzureTenantsDropdownValues, getAzureAccounts, getAzureAccountsDropdownValues, getManagedInstances, getVirtualMachines, getManagedInstancesDropdownValues, getVirtualMachinesDropdownValues, SelectableResourceType } from '../api/utils';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import { SqlVMServer } from '../api/azure';
 
 export class TargetSelectionPage extends MigrationWizardPage {
@@ -88,8 +88,11 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				break;
 		}
 
-		await this.populateResourceInstanceDropdown();
 		await this.populateAzureAccountsDropdown();
+		// await this.populateTenant()
+		await this.populateLocationDropdown();
+		await this.populateResourceGroupDropdown();
+		await this.populateResourceInstanceDropdown();
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			const errors: string[] = [];
@@ -318,9 +321,9 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				this.migrationStateModel._targetSubscription = undefined!;
 			}
 			this.migrationStateModel.refreshDatabaseBackupPage = true;
-			await this.populateResourceInstanceDropdown();
-			await this.populateResourceGroupDropdown();
 			await this.populateLocationDropdown();
+			await this.populateResourceGroupDropdown();
+			await this.populateResourceInstanceDropdown();
 		}));
 
 		const azureLocationLabel = this._view.modelBuilder.text().withProps({

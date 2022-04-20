@@ -10,7 +10,6 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { AppContext } from '../../appContext';
-import { azureResource } from 'azureResource';
 import { TreeNode } from '../treeNode';
 import { AzureSubscriptionError } from '../errors';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
@@ -20,7 +19,7 @@ import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService } from '../../azureResource/interfaces';
-import { AzureAccount } from 'azurecore';
+import { AzureAccount, azureResource } from 'azurecore';
 
 export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
