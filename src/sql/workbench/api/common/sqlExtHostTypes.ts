@@ -921,7 +921,8 @@ export namespace designers {
 		Type = 'type',
 		AllowNulls = 'allowNulls',
 		DefaultValue = 'defaultValue',
-		Length = 'length'
+		Length = 'length',
+		IsPrimaryKey = 'isPrimaryKey'
 	}
 
 	export enum DesignerEditType {

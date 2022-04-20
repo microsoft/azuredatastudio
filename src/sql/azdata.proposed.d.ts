@@ -1015,12 +1015,19 @@ declare module 'azdata' {
 			 */
 			getTableDesignerInfo(table: TableInfo): Thenable<TableDesignerInfo>;
 			/**
-			 *
+			 * Process the table change.
 			 * @param table the table information
 			 * @param data the object contains the state of the table designer
 			 * @param tableChangeInfo the information about the change user made through the UI.
 			 */
 			processTableEdit(table: TableInfo, data: DesignerData, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
+
+			/**
+			 * Save the table
+			 * @param table the table information
+			 * @param data the object contains the state of the table designer
+			 */
+			saveTable(table: TableInfo, data: DesignerData): Thenable<void>;
 		}
 
 		/**
@@ -1047,6 +1054,10 @@ declare module 'azdata' {
 			 * A boolean value indicates whether a new table is being designed.
 			 */
 			isNewTable: boolean;
+			/**
+			 * If this is not a new table, the id will be set to uniquely identify a table.
+			 */
+			id?: string;
 			/**
 			 * Extension can store additional information that the provider needs to uniquely identify a table.
 			 */
@@ -1095,7 +1106,8 @@ declare module 'azdata' {
 			DefaultValue = 'defaultValue',
 			Length = 'length',
 			Name = 'name',
-			Type = 'type'
+			Type = 'type',
+			IsPrimaryKey = 'isPrimaryKey'
 		}
 
 		/**
@@ -1229,7 +1241,7 @@ declare module 'azdata' {
 			/**
 			 * the new value
 			 */
-			value: any;
+			value?: any;
 		}
 
 		/**
