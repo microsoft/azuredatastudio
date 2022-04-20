@@ -132,6 +132,20 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 					validateAz(azToolService.localAz);
 					return azToolService.localAz!.sql.miarc.edit(name, args, namespace, additionalEnvVars);
 				}
+			},
+			midbarc: {
+				restore: async (name: string,
+					args: {
+						destName?: string,
+						managedInstance?: string,
+						time?: string,
+						noWait?: boolean,
+					},
+					namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					await localAzDiscovered;
+					validateAz(azToolService.localAz);
+					return azToolService.localAz!.sql.midbarc.restore(name, args, namespace, additionalEnvVars);
+				}
 			}
 		},
 		getPath: async () => {

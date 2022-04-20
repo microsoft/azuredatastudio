@@ -141,6 +141,9 @@ declare module 'az-ext' {
 			uid: string // "cea737aa-3f82-4f6a-9bed-2b51c2c33dff"
 		},
 		spec: {
+			backup?: {
+				retentionPeriodInDays: number, // 1
+			}
 			scheduling?: {
 				default?: {
 					resources?: {
@@ -314,11 +317,25 @@ declare module 'az-ext' {
 				edit(
 					name: string,
 					args: {
-						coresLimit?: string,
-						coresRequest?: string,
-						memoryLimit?: string,
-						memoryRequest?: string,
-						noWait?: boolean,
+						coresLimit?: string, //2
+						coresRequest?: string, //1
+						memoryLimit?: string, // 2Gi
+						memoryRequest?: string, //1Gi
+						noWait?: boolean, //true
+						retentionDays?: string, //5
+					},
+					namespace?: string,
+					additionalEnvVars?: AdditionalEnvVars
+				): Promise<AzOutput<void>>
+			},
+			midbarc: {
+				restore(
+					name: string,
+					args: {
+						destName?: string, //testDb
+						managedInstance?: string, //sqlmi1
+						time?: string, //2021-10-12T11:16:30.000Z
+						noWait?: boolean, //true
 					},
 					namespace?: string,
 					additionalEnvVars?: AdditionalEnvVars

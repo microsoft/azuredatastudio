@@ -162,6 +162,7 @@ export class AzTool implements azExt.IAzApi {
 					memoryLimit?: string,
 					memoryRequest?: string,
 					noWait?: boolean,
+					retentionDays?: string
 				},
 				namespace: string,
 				additionalEnvVars?: azExt.AdditionalEnvVars
@@ -172,10 +173,32 @@ export class AzTool implements azExt.IAzApi {
 				if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
 				if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
 				if (args.noWait) { argsArray.push('--no-wait'); }
+				if (args.retentionDays) { argsArray.push('--retention-days', args.retentionDays); }
+				return this.executeCommand<void>(argsArray, additionalEnvVars);
+			}
+		},
+		midbarc: {
+			restore: (
+				name: string,
+				args: {
+					destName?: string,
+					managedInstance?: string,
+					time?: string,
+					noWait?: boolean,
+				},
+				namespace: string,
+				additionalEnvVars?: azExt.AdditionalEnvVars
+			): Promise<azExt.AzOutput<void>> => {
+				const argsArray = ['sql', 'midb-arc', 'restore', '--name', name, '--k8s-namespace', namespace, '--use-k8s'];
+				if (args.destName) { argsArray.push('--dest-name', args.destName); }
+				if (args.managedInstance) { argsArray.push('--managed-instance', args.managedInstance); }
+				if (args.time) { argsArray.push('--time', args.time); }
+				if (args.noWait) { argsArray.push('--no-wait'); }
 				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
 		}
 	};
+
 
 	/**
 	 * Gets the output of running '--version' command on the az tool.
