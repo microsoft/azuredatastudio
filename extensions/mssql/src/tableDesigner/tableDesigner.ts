@@ -10,10 +10,12 @@ import { sqlProviderName } from '../constants';
 
 export function registerTableDesignerCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newTable', async (context: azdata.ObjectExplorerContext) => {
+		const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: context.connectionProfile.serverName,
 			database: context.connectionProfile.databaseName,
-			isNewTable: true
+			isNewTable: true,
+			connectionUri: connectionUri
 		});
 	}));
 
@@ -22,13 +24,15 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		const database = context.connectionProfile.databaseName;
 		const schema = context.nodeInfo.metadata.schema;
 		const name = context.nodeInfo.metadata.name;
+		const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: server,
 			database: database,
 			isNewTable: false,
 			name: name,
 			schema: schema,
-			id: `${server}|${database}|${schema}|${name}`
+			id: `${server}|${database}|${schema}|${name}`,
+			connectionUri: connectionUri
 		});
 	}));
 
