@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, MigrationTargetType, ServerAssessment, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType, Page, ServerAssessment, StateChangeEvent } from '../models/stateMachine';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
 import * as constants from '../constants/strings';
 import { EOL } from 'os';
@@ -454,6 +454,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private async changeTargetType(newTargetType: string) {
+		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
+			this.migrationStateModel._databaseAssessment = <string[]>this.migrationStateModel.savedInfo.databaseAssessment;
+		}
 		// remove assessed databases that have been removed from the source selection list
 		const miDbs = this.migrationStateModel._miDbs.filter(
 			db => this.migrationStateModel._databaseAssessment.findIndex(
@@ -465,19 +468,31 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		if (newTargetType === MigrationTargetType.SQLMI) {
 			this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI;
-			this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(miDbs.length, this.migrationStateModel._databaseAssessment.length);
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
+				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel.savedInfo.databaseList.length, this.migrationStateModel._databaseAssessment.length);
+			} else {
+				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(miDbs.length, this.migrationStateModel._databaseAssessment.length);
+			}
 			this.migrationStateModel._targetType = MigrationTargetType.SQLMI;
 			this._azureSubscriptionText.value = constants.SELECT_AZURE_MI;
 			this.migrationStateModel._migrationDbs = miDbs;
 		} else {
 			this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM;
-			this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(vmDbs.length, this.migrationStateModel._databaseAssessment.length);
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
+				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel.savedInfo.databaseList.length, this.migrationStateModel._databaseAssessment.length);
+			} else {
+				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(vmDbs.length, this.migrationStateModel._databaseAssessment.length);
+			}
 			this.migrationStateModel._targetType = MigrationTargetType.SQLVM;
 			this._azureSubscriptionText.value = constants.SELECT_AZURE_VM;
 			this.migrationStateModel._migrationDbs = vmDbs;
 		}
 		this.migrationStateModel.refreshDatabaseBackupPage = true;
-		this._targetContainer.display = (this.migrationStateModel._migrationDbs.length === 0) ? 'none' : 'inline';
+		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
+			this._targetContainer.display = 'inline';
+		} else {
+			this._targetContainer.display = (this.migrationStateModel._migrationDbs.length === 0) ? 'none' : 'inline';
+		}
 		await this.populateResourceInstanceDropdown();
 	}
 
@@ -529,6 +544,13 @@ errorId: ${e.errorId}
 			console.log(e);
 		}
 
+		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
+			if (this.migrationStateModel.savedInfo.migrationTargetType) {
+				this._rbg.selectedCardId = this.migrationStateModel.savedInfo.migrationTargetType;
+				await this.refreshCardText();
+			}
+		}
+
 		await this.refreshCardText();
 		this._assessmentLoader.loading = false;
 		await this._assessmentComponent.updateCssStyles({ display: 'none' });
@@ -536,7 +558,7 @@ errorId: ${e.errorId}
 	}
 
 	private async populateSubscriptionDropdown(): Promise<void> {
-		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 0) {
+		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
 			this.migrationStateModel._azureAccount = <azdata.Account>this.migrationStateModel.savedInfo.azureAccount;
 		}
 		if (!this.migrationStateModel._targetSubscription) {
@@ -630,6 +652,9 @@ errorId: ${e.errorId}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
+				this.migrationStateModel._migrationDbs = this.migrationStateModel.savedInfo.databaseList;
+			}
 			const errors: string[] = [];
 			this.wizard.message = {
 				text: '',
