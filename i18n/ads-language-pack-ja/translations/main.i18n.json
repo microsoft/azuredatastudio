@@ -10271,6 +10271,7 @@
 			"schema.connectionOptions": "接続のオプション",
 			"schema.displayName": "プロバイダーの表示名",
 			"schema.iconPath": "サーバーの種類のアイコン パス",
+			"schema.isQueryProvider": "プロバイダーがクエリ プロバイダーであるかどうか。既定値は true です。",
 			"schema.notebookKernelAlias": "プロバイダーの Notebook カーネル別名",
 			"schema.providerId": "プロバイダーの共通 ID"
 		},
@@ -10787,6 +10788,7 @@
 			"codePreview": "コード セル",
 			"optionCodeCell": "コード セル",
 			"optionTextCell": "テキスト セル",
+			"splitCell": "セルを分割する",
 			"textPreview": "テキスト セル"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
@@ -11225,7 +11227,7 @@
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"messagesTabTitle": "メッセージ",
-			"queryResults.queryEditorCrashError": "The query editor ran into an issue and has stopped working. Please save and reopen it.",
+			"queryResults.queryEditorCrashError": "クエリ エディターで問題が発生し、動作を停止しました。保存してからもう一度開いてください。",
 			"resultsTabTitle": "結果"
 		},
 		"sql/workbench/contrib/query/browser/statusBarItems": {
@@ -11981,6 +11983,39 @@
 		"sql/workbench/services/query/common/queryManagement": {
 			"queryManagement.noQueryRunnerForUri": "URI のクエリ ランナーが見つかりませんでした:{0}",
 			"queryManagement.uriAlreadyHasQueryRunner": "URI: {0}には予期しないクエリ ランナーが既に存在します。"
+		},
+		"sql/base/browser/ui/designer/designer": {
+			"designer.newRowText": "新規追加",
+			"designer.removeRowText": "削除",
+			"tableDesigner.unknownComponentType": "コンポーネントの種類: {0} はサポートされていません"
+		},
+		"sql/base/browser/ui/designer/designerPropertiesPane": {
+			"tableDesigner.propertiesPaneTitle": "プロパティ",
+			"tableDesigner.propertiesPaneTitleWithContext": "プロパティ - {0} {1}"
+		},
+		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
+			"tableDesigner.newTable": "新しいテーブル"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/actions": {
+			"tableDesigner.saveTableChanges": "変更内容を保存"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
+			"tableDesigner.advancedTab": "詳細設定",
+			"tableDesigner.columnAllowNullTitle": "Null を許容",
+			"tableDesigner.columnDefaultValueTitle": "既定値",
+			"tableDesigner.columnIsPrimaryKeyTitle": "主キー",
+			"tableDesigner.columnLengthTitle": "長さ",
+			"tableDesigner.columnNameTitle": "名前",
+			"tableDesigner.columnTypeName": "列",
+			"tableDesigner.columnTypeTitle": "種類",
+			"tableDesigner.columnsTabTitle": "列",
+			"tableDesigner.descriptionTitle": "説明",
+			"tableDesigner.nameTitle": "テーブル名",
+			"tableDesigner.saveChangeError": "変更の保存中にエラーが発生しました: {0}",
+			"tableDesigner.savedChangeSuccess": "変更が正常に保存されました。",
+			"tableDesigner.savingChanges": "テーブル デザイナーの変更を保存しています...",
+			"tableDesigner.schemaTitle": "スキーマ",
+			"tableDesigner.tableObjectType": "テーブル"
 		}
 	}
 }

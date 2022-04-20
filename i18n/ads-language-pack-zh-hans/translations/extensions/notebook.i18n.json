@@ -111,7 +111,7 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "浏览",
-			"configurePython.descriptionWithKernel": "The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.",
+			"configurePython.descriptionWithKernel": "\"{0}\" 内核要求配置 Python 运行时并安装依赖项。",
 			"configurePython.descriptionWithoutKernel": "笔记本内核要求配置 Python 运行时并安装依赖项。",
 			"configurePython.existingInstall": "使用现有 Python 安装",
 			"configurePython.installationType": "安装类型",
@@ -140,7 +140,7 @@
 			"configurePython.pkgNameColumn": "名称",
 			"configurePython.requiredDependencies": "安装所需的内核依赖项",
 			"configurePython.requiredVersionColumn": "所需版本",
-			"msgNoRequirementsForKernel": "No packages are required by default for the kernel '{0}'"
+			"msgNoRequirementsForKernel": "默认情况下，内核 \"{0}\" 不需要包"
 		},
 		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.addNewTabTitle": "新增",

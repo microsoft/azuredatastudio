@@ -111,7 +111,7 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "찾아보기",
-			"configurePython.descriptionWithKernel": "The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.",
+			"configurePython.descriptionWithKernel": "‘{0}’ 커널을 사용하려면 Python 런타임을 구성하고 종속성을 설치해야 합니다.",
 			"configurePython.descriptionWithoutKernel": "Notebook 커널에서는 Python 런타임을 구성하고 종속성을 설치해야 합니다.",
 			"configurePython.existingInstall": "기존 Python 설치 사용",
 			"configurePython.installationType": "설치 유형",
@@ -140,7 +140,7 @@
 			"configurePython.pkgNameColumn": "이름",
 			"configurePython.requiredDependencies": "필요한 커널 종속성 설치",
 			"configurePython.requiredVersionColumn": "필요한 버전",
-			"msgNoRequirementsForKernel": "No packages are required by default for the kernel '{0}'"
+			"msgNoRequirementsForKernel": "'{0}' 커널에는 기본적으로 패키지가 필요하지 않습니다."
 		},
 		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.addNewTabTitle": "새로 추가",
