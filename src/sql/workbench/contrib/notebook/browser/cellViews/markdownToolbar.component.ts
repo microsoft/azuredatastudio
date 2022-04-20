@@ -5,7 +5,7 @@
 import 'vs/css!./markdownToolbar';
 import * as DOM from 'vs/base/browser/dom';
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
-import { Component, Input, Inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Inject, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { localize } from 'vs/nls';
 import { CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
@@ -35,6 +35,34 @@ const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
 })
 export class MarkdownToolbarComponent extends AngularDisposable {
 	@ViewChild('mdtoolbar', { read: ElementRef }) private mdtoolbar: ElementRef;
+
+	@HostListener('document:keydown', ['$event'])
+	async onkeydown(e: KeyboardEvent) {
+		if (this.cellModel?.currentMode === CellEditModes.SPLIT || this.cellModel?.currentMode === CellEditModes.MARKDOWN) {
+			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
+			if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+				// Bold Text
+				DOM.EventHelper.stop(e, true);
+				await markdownTextTransformer.transformText(MarkdownButtonType.BOLD);
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+				// Italicize text
+				DOM.EventHelper.stop(e, true);
+				await markdownTextTransformer.transformText(MarkdownButtonType.ITALIC);
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+				// Underline text
+				DOM.EventHelper.stop(e, true);
+				await markdownTextTransformer.transformText(MarkdownButtonType.UNDERLINE);
+			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'k') {
+				// Code Block
+				DOM.EventHelper.stop(e, true);
+				await markdownTextTransformer.transformText(MarkdownButtonType.CODE);
+			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'h') {
+				// Highlight Text
+				DOM.EventHelper.stop(e, true);
+				await markdownTextTransformer.transformText(MarkdownButtonType.HIGHLIGHT);
+			}
+		}
+	}
 
 	public previewFeaturesEnabled: boolean = false;
 

@@ -30,6 +30,7 @@ import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/
 import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { highlightSelectedText } from 'sql/workbench/contrib/notebook/browser/utils';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -73,30 +74,34 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			// Select all text
 			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
 				preventDefaultAndExecCommand(e, 'selectAll');
-				// Redo text
 			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y') && !this.markdownMode) {
+				// Redo text
 				this.redoRichTextChange();
-				// Undo text
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+				// Undo text
 				this.undoRichTextChange();
-				// Outdent text
 			} else if (e.shiftKey && e.key === 'Tab') {
+				// Outdent text
 				preventDefaultAndExecCommand(e, 'outdent');
-				// Indent text
 			} else if (e.key === 'Tab') {
+				// Indent text
 				preventDefaultAndExecCommand(e, 'indent');
-				// Bold text
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+				// Bold text
 				preventDefaultAndExecCommand(e, 'bold');
-				// Italicize text
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+				// Italicize text
 				preventDefaultAndExecCommand(e, 'italic');
-				// Underline text
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+				// Underline text
 				preventDefaultAndExecCommand(e, 'underline');
-				// Code Block
 			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'k') {
+				// Code Block
 				preventDefaultAndExecCommand(e, 'formatBlock', false, 'pre');
+			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'h') {
+				// Highlight Text
+				DOM.EventHelper.stop(e, true);
+				highlightSelectedText();
 			}
 		}
 	}
