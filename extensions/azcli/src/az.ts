@@ -117,7 +117,6 @@ export class AzTool implements azExt.IAzApi {
 				// Direct mode argument
 				if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
 				// Indirect mode arguments
-
 				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
 				if (usek8s) { argsArray.push('--use-k8s'); }
 				return this.executeCommand<void>(argsArray, additionalEnvVars);
