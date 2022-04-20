@@ -29,10 +29,8 @@ export class UrlBrowserDialogService implements IUrlBrowserDialogService {
 		defaultBackupName: string,
 		handleOnOk: (path: string) => void
 	): void {
-		//if (!this._fileBrowserDialog) {
 		this._urlBrowserDialog = this._instantiationService.createInstance(UrlBrowserDialog, localize('filebrowser.selectBlob', "Select a blob"), isRestoreDialog, defaultBackupName);
 		this._urlBrowserDialog.render();
-		//}
 
 		this._urlBrowserDialog.setWide(isWide);
 		this._urlBrowserDialog.onOk((filepath) => handleOnOk(filepath));

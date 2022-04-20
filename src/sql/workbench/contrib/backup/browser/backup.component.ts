@@ -472,8 +472,11 @@ export class BackupComponent extends AngularDisposable {
 		this.backupTypeOptions = [];
 
 		if (isMetadataPopulated) {
-			this.backupEnabled = true;
-
+			if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance) {
+				this.backupEnabled = false;
+			} else {
+				this.backupEnabled = true;
+			}
 			// Set recovery model
 			this.setControlsForRecoveryModel();
 
@@ -519,15 +522,14 @@ export class BackupComponent extends AngularDisposable {
 				this.backupTypeSelectBox!.disable();
 				this.copyOnlyCheckBox!.disable();
 				this.backupRetainDaysBox!.disable();
-				this.toUrlCheckBox!.disable();
 				this.disableMedia = true;
 			} else {
+				this.toUrlCheckBox.checked = false;
 				this.copyOnlyCheckBox.checked = false;
-				this.disableMedia = false;
-				this.toUrlCheckBox!.enable();
 				this.backupRetainDaysBox!.enable();
 				this.copyOnlyCheckBox!.enable();
 				this.backupTypeSelectBox!.enable();
+				this.disableMedia = false;
 			}
 			this.onChangeToUrl();
 
@@ -547,7 +549,6 @@ export class BackupComponent extends AngularDisposable {
 	}
 
 	private setBackupPathList() {
-		this.backupPathTypePairs = {};
 		let pathlist: ISelectOptionItem[] = [];
 		if (!this.toUrlCheckBox.checked) {
 			for (let i in this.backupPathTypePairs) {
@@ -876,7 +877,7 @@ export class BackupComponent extends AngularDisposable {
 			if (this.defaultNewBackupFolder[0] === '/') {
 				serverPathSeparator = '/';
 			}
-			let defaultNewBackupLocation = this.defaultNewBackupFolder + serverPathSeparator + this.databaseName + this.getDefaultBackupFileName() + '.bak';
+			let defaultNewBackupLocation = this.defaultNewBackupFolder + serverPathSeparator + this.getDefaultBackupFileName();
 
 			// Add a default new backup locationthis.backupPathTypePairs![filepath] = BackupConstants.deviceTypeFile;
 			if (this.toUrlCheckBox!.checked) {
@@ -960,7 +961,8 @@ export class BackupComponent extends AngularDisposable {
 
 	private enableBackupButton(): void {
 		if (!this.backupButton!.enabled) {
-			if (this.urlInputBox.value.length > 0 && (!this.isFormatChecked || this.mediaNameBox!.value) && this.backupRetainDaysBox!.validate() === undefined) {
+			if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance && this.urlInputBox.value.length > 0 ||
+				((!this.isFormatChecked || this.mediaNameBox!.value) && this.backupRetainDaysBox!.validate() === undefined)) {
 				this.backupEnabled = true;
 			}
 		}

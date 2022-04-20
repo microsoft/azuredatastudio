@@ -226,7 +226,11 @@ export class UrlBrowserDialog extends Modal {
 		const subscriptionDisplayNames: string[] = subscriptions.map(subscription => subscription.name);
 		this._subscriptionSelectorBox.setOptions(subscriptionDisplayNames);
 		this._subscriptionSelectorBox.select(0);
-		this._subscriptionSelectorBox.enable();
+		if (this._subscriptions.length === 0) {
+			this._subscriptionSelectorBox.disable();
+		} else {
+			this._subscriptionSelectorBox.enable();
+		}
 	}
 
 	private setSubscriptionSelectorBoxError(getSubscriptionsError: any) {
@@ -276,7 +280,11 @@ export class UrlBrowserDialog extends Modal {
 		const blobContainersDisplayNames: string[] = this._blobContainers.map(blobContainer => blobContainer.name);
 		this._blobContainerSelectorBox.setOptions(blobContainersDisplayNames);
 		this._blobContainerSelectorBox.select(0);
-		this._blobContainerSelectorBox.enable();
+		if (this._blobContainers.length === 0) {
+			this._blobContainerSelectorBox.disable();
+		} else {
+			this._blobContainerSelectorBox.enable();
+		}
 	}
 
 	private setBlobContainersSelectorBoxErrors(errors: any) {
@@ -301,7 +309,11 @@ export class UrlBrowserDialog extends Modal {
 		const backupFilesDisplayNames: string[] = this._backupFiles.map(backupFile => backupFile.name);
 		this._backupFileSelectorBox.setOptions(backupFilesDisplayNames);
 		this._backupFileSelectorBox.select(0);
-		this._backupFileSelectorBox.enable();
+		if (this._backupFiles.length === 0) {
+			this._backupFileSelectorBox.disable();
+		} else {
+			this._backupFileSelectorBox.enable();
+		}
 	}
 
 	private setBackupFilesSelectorError(errors: any) {

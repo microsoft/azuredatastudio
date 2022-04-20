@@ -85,7 +85,7 @@ export class RestoreDialog extends Modal {
 	private _destinationRestoreToInputBox?: InputBox;
 	private _restoreFromSelectBox?: SelectBox;
 	private _sourceDatabaseSelectBox?: SelectBox;
-	private _targetDatabaseInputBox: InputBox;
+	public _targetDatabaseInputBox: InputBox;
 
 	private _panel?: TabbedPanel;
 	private _generalTab?: IPanelTab;
@@ -93,7 +93,6 @@ export class RestoreDialog extends Modal {
 	private _optionsTab?: IPanelTab;
 
 	private _isManagedInstance?: boolean;
-	private _selectedRestoreOptionIndex?: number;
 
 	// File option
 	private readonly _relocateDatabaseFilesOption = 'relocateDbFiles';
@@ -285,9 +284,11 @@ export class RestoreDialog extends Modal {
 
 		this._targetDatabaseInputBox = new InputBox(inputTargetDatabaseContainer, this._contextViewService, {
 			ariaLabel: LocalizedStrings.TARGETDATABASE,
-			placeholder: localize('targetDatabaseTooltip', "No backup set selected")
+			placeholder: localize('targetDatabaseTooltip', ""),
+			validationOptions: {
+				validation: (value: string) => this.viewModel.databases.includes(value) ? ({ type: MessageType.ERROR, content: localize('restoreDialog.targetDatabaseAlreadyExists', "Target database already exists") }) : null
+			},
 		});
-		this._targetDatabaseInputBox.disable();
 
 		const restoreToLabel = localize('restoreTo', "Restore to");
 		const destinationRestoreToAriaOptions = {
@@ -484,6 +485,7 @@ export class RestoreDialog extends Modal {
 
 	public set databaseListOptions(vals: string[]) {
 		this._databaseDropdown!.values = vals;
+		this.viewModel.databases = vals;
 	}
 
 	private createLabelElement(container: HTMLElement, content: string, isHeader?: boolean) {
@@ -605,8 +607,14 @@ export class RestoreDialog extends Modal {
 
 	public enableRestoreButton(enabled: boolean) {
 		this.spinner = false;
-		this._restoreButton!.enabled = enabled;
-		this._scriptButton!.enabled = enabled;
+		if (this._isManagedInstance && this.viewModel.databases.includes(this._targetDatabaseInputBox.value)) {
+			this._restoreButton!.enabled = false;
+			this._scriptButton!.enabled = false;
+		}
+		else {
+			this._restoreButton!.enabled = enabled;
+			this._scriptButton!.enabled = enabled;
+		}
 	}
 
 	public showError(errorMessage: string): void {
@@ -622,7 +630,9 @@ export class RestoreDialog extends Modal {
 		});
 
 		if (selectedDatabases.length !== 0) {
-			this._targetDatabaseInputBox.value = selectedDatabases[0];
+			if (this._targetDatabaseInputBox.value === '') {
+				this._targetDatabaseInputBox.value = selectedDatabases[0];
+			}
 		} else {
 			this._targetDatabaseInputBox.value = '';
 		}
@@ -653,6 +663,20 @@ export class RestoreDialog extends Modal {
 		this._register(attachButtonStyler(this._closeButton!, this._themeService));
 		this._register(attachTableStyler(this._fileListTable!, this._themeService));
 		this._register(attachTableStyler(this._restorePlanTable!, this._themeService));
+
+		this._targetDatabaseInputBox.onDidChange(dbName => {
+			if (!this.viewModel.databases.includes(dbName)) {
+				if (this.viewModel.targetDatabaseName !== dbName) {
+					this.viewModel.targetDatabaseName = dbName;
+					this.validateRestore();
+				}
+			} else {
+				if (this.viewModel.targetDatabaseName !== dbName) {
+					this.viewModel.targetDatabaseName = dbName;
+					this.enableRestoreButton(false);
+				}
+			}
+		});
 
 		this._register(this._filePathInputBox!.onLoseFocus(params => {
 			this.onFilePathLoseFocus(params);
@@ -857,20 +881,26 @@ export class RestoreDialog extends Modal {
 		this.resetRestoreContent();
 	}
 
-	public open(serverName: string, ownerUri: string, isManagedInstance) {
+	public open(serverName: string, ownerUri: string, isManagedInstance: boolean) {
 		this._isManagedInstance = isManagedInstance;
 		this.title = this._restoreTitle + ' - ' + serverName;
 		this._ownerUri = ownerUri;
+		this._urlInputBox.value = '';
+		let title;
 		if (this._isManagedInstance) {
-			const restoreFromUrlIndex = 2;
-			this._selectedRestoreOptionIndex = restoreFromUrlIndex;
-			this._restoreFromSelectBox.select(this._selectedRestoreOptionIndex);
-			this.onRestoreFromChanged(this._urlTitle);
+			this._restoreFromSelectBox.setOptions([this._urlTitle]);
+			title = this._urlTitle;
+			// to fetch databases
+			this._onDatabaseListFocused.fire();
 			this._restoreFromSelectBox.disable();
 		} else {
+			this._restoreFromSelectBox.setOptions([this._databaseTitle, this._backupFileTitle]);
+			title = this._databaseTitle;
 			this._restoreFromSelectBox.enable();
 		}
 
+		this._restoreFromSelectBox.select(0);
+		this.onRestoreFromChanged(title);
 		this.show();
 		this._restoreFromSelectBox!.focus();
 	}
