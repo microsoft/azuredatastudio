@@ -297,10 +297,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.checkoutOutputMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Check output pane for more details.]]></Val>
+          <Val><![CDATA[Check output pane for more details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[자세한 내용은 출력 창을 확인하세요.]]></Val>
+            <Val><![CDATA[자세한 내용은 출력 창을 확인하세요]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Check output pane for more details.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -396,10 +399,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.containerAlreadyExistForProject" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Other servers on container already exist for the project. Do you want to delete them?']]></Val>
+          <Val><![CDATA[Other servers on container already exist for the project. Do you want to delete them?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[컨테이너의 다른 서버가 프로젝트에 이미 있습니다. 삭제하시겠습니까?']]></Val>
+            <Val><![CDATA[컨테이너의 다른 서버가 프로젝트에 이미 있습니다. 서버를 삭제하시겠습니까?]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Other servers on container already exist for the project. Do you want to delete them?']]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
