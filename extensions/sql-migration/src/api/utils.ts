@@ -423,35 +423,42 @@ export async function getAzureSubscriptionsDropdownValues(subscriptions: azureRe
 	return subscriptionsValues;
 }
 
-export async function getAzureLocations(resourceType: string, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<azureResource.AzureLocation[]> {
+export enum SelectableResourceType {
+	ManagedInstance,
+	VirtualMachine,
+	StorageAccount,
+	SqlMigrationService,
+}
+
+export async function getAzureLocations(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, resourceType?: SelectableResourceType): Promise<azureResource.AzureLocation[]> {
 	let locations: azureResource.AzureLocation[] = [];
 	try {
 		if (account && subscription) {
-			locations = await getLocations(account, subscription);
-
 			// only show locations that contain resources of the desired type
 			switch (resourceType) {
-				case 'mi':
+				case SelectableResourceType.ManagedInstance:
 					let managedInstances = await getAvailableManagedInstanceProducts(account, subscription) || [];
 					locations = locations.filter(
 						(loc, i) => managedInstances.some(mi => mi.location === loc.name));
 					break;
-				case 'vm':
+				case SelectableResourceType.VirtualMachine:
 					let virtualMachines = await getAvailableSqlVMs(account, subscription) || [];
 					locations = locations.filter(
 						(loc, i) => virtualMachines.some(vm => vm.location === loc.name));
 					break;
-				case 'storage':
+				case SelectableResourceType.StorageAccount:
 					let storageAccounts = await getAvailableStorageAccounts(account, subscription) || [];
 					locations = locations.filter(
 						(loc, i) => storageAccounts.some(sa => sa.location === loc.name));
 					break;
-				case 'dms':
+				case SelectableResourceType.SqlMigrationService:
 					let sqlMigrationServices = await getSqlMigrationServices(account, subscription) || [];
 					locations = locations.filter(
 						(loc, i) => sqlMigrationServices.some(dms => dms.location === loc.name));
 					break;
 				default:
+					// show all locations
+					locations = await getLocations(account, subscription);
 					break;
 			}
 		}
@@ -482,7 +489,7 @@ export async function getAzureLocationsDropdownValues(locations: azureResource.A
 	return locationValues;
 }
 
-export async function getAzureResourceGroups(resourceType: string, location: string, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<azureResource.AzureResourceResourceGroup[]> {
+export async function getAzureResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, location?: string, resourceType?: SelectableResourceType): Promise<azureResource.AzureResourceResourceGroup[]> {
 	let resourceGroups: azureResource.AzureResourceResourceGroup[] = [];
 	try {
 		if (account && subscription) {
@@ -490,7 +497,7 @@ export async function getAzureResourceGroups(resourceType: string, location: str
 
 			// only show resource groups that contain resources of the desired type in the desired location
 			switch (resourceType) {
-				case 'mi':
+				case SelectableResourceType.ManagedInstance:
 					let managedInstances = await getAvailableManagedInstanceProducts(account, subscription);
 					resourceGroups = managedInstances
 						.filter((mi) => mi.location === location)
@@ -505,7 +512,7 @@ export async function getAzureResourceGroups(resourceType: string, location: str
 							};
 						});
 					break;
-				case 'vm':
+				case SelectableResourceType.VirtualMachine:
 					let virtualMachines = await getAvailableSqlVMs(account, subscription);
 					resourceGroups = virtualMachines
 						.filter((vm) => vm.location === location)
@@ -520,7 +527,7 @@ export async function getAzureResourceGroups(resourceType: string, location: str
 							};
 						});
 					break;
-				case 'storage':
+				case SelectableResourceType.StorageAccount:
 					let storageAccounts = await getAvailableStorageAccounts(account, subscription);
 					resourceGroups = storageAccounts
 						.filter((sa) => sa.location === location)
@@ -535,10 +542,10 @@ export async function getAzureResourceGroups(resourceType: string, location: str
 							};
 						});
 					break;
-				case 'dms':
+				case SelectableResourceType.SqlMigrationService:
 					let dmsInstances = await getSqlMigrationServices(account, subscription);
 					resourceGroups = dmsInstances
-						.filter((dms) => dms.location === location)
+						.filter((dms) => dms.properties.provisioningState === 'Succeeded' && dms.location === location)
 						.map((dms) => {
 							return <azureResource.AzureResourceResourceGroup>{
 								id: getFullResourceGroupFromId(dms.id),
@@ -601,7 +608,7 @@ export async function getAzureResourceGroupsDropdownValues(resourceGroups: azure
 
 
 
-export async function getManagedInstances(location: string, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<azureResource.AzureSqlManagedInstance[]> {
+export async function getManagedInstances(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, location?: string, resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<azureResource.AzureSqlManagedInstance[]> {
 	let managedInstances: azureResource.AzureSqlManagedInstance[] = [];
 	try {
 		if (account && subscription && location && resourceGroup) {
@@ -624,7 +631,6 @@ export async function getManagedInstancesDropdownValues(managedInstances: azureR
 	let managedInstancesValues: azdata.CategoryValue[] = [];
 	managedInstances.forEach((managedInstance) => {
 		let managedInstanceValue: azdata.CategoryValue;
-
 		if (managedInstance.properties.state === 'Ready') {
 			managedInstanceValue = {
 				name: managedInstance.id,
@@ -633,7 +639,7 @@ export async function getManagedInstancesDropdownValues(managedInstances: azureR
 		} else {
 			managedInstanceValue = {
 				name: managedInstance.id,
-				displayName: constants.UNAVAILABLE_MANAGED_INSTANCE_PREFIX(managedInstance.name)
+				displayName: constants.UNAVAILABLE_TARGET_PREFIX(managedInstance.name)
 			};
 		}
 
@@ -651,7 +657,7 @@ export async function getManagedInstancesDropdownValues(managedInstances: azureR
 	return managedInstancesValues;
 }
 
-export async function getVirtualMachines(location: string, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<SqlVMServer[]> {
+export async function getVirtualMachines(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, location?: string, resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<SqlVMServer[]> {
 	let virtualMachines: SqlVMServer[] = [];
 	try {
 		if (account && subscription && location && resourceGroup) {
@@ -677,8 +683,7 @@ export async function getVirtualMachinesDropdownValues(virtualMachines: SqlVMSer
 	let virtualMachineValues: azdata.CategoryValue[] = [];
 	virtualMachines.forEach((virtualMachine) => {
 		let virtualMachineValue: azdata.CategoryValue;
-
-		if (true /* virtualMachine.properties.state === 'Ready' */) {
+		if (virtualMachine.properties.provisioningState === 'Succeeded') {
 			virtualMachineValue = {
 				name: virtualMachine.id,
 				displayName: virtualMachine.name
@@ -686,7 +691,7 @@ export async function getVirtualMachinesDropdownValues(virtualMachines: SqlVMSer
 		} else {
 			virtualMachineValue = {
 				name: virtualMachine.id,
-				displayName: constants.UNAVAILABLE_MANAGED_INSTANCE_PREFIX(virtualMachine.name)
+				displayName: constants.UNAVAILABLE_TARGET_PREFIX(virtualMachine.name)
 			};
 		}
 
@@ -744,8 +749,8 @@ export async function getAzureSqlMigrationServices(location: string, resourceGro
 	let sqlMigrationServices: SqlMigrationService[] = [];
 	try {
 		if (account && subscription && location && resourceGroup) {
-			sqlMigrationServices = (await getSqlMigrationServicesByResourceGroup(account, subscription, resourceGroup)).filter(sa => {
-				return sa.location.toLowerCase() === location.toLowerCase() && sa.properties.resourceGroup.toLowerCase() === resourceGroup.toLowerCase();
+			sqlMigrationServices = (await getSqlMigrationServicesByResourceGroup(account, subscription, resourceGroup)).filter(dms => {
+				return dms.location.toLowerCase() === location.toLowerCase() && dms.properties.provisioningState === 'Succeeded';
 			});
 		}
 	} catch (e) {

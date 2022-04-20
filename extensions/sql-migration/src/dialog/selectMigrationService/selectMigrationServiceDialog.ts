@@ -10,7 +10,7 @@ import { MigrationLocalStorage, MigrationServiceContext } from '../../models/mig
 import { azureResource } from 'azureResource';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
-import { findDropDownItemIndex, selectDefaultDropdownValue, deepClone, getAzureLocations, getAzureLocationsDropdownValues, getAzureResourceGroups, getAzureResourceGroupsDropdownValues, getAzureAccounts, getAzureAccountsDropdownValues, getAzureTenants, getAzureTenantsDropdownValues, getAzureSubscriptions, getAzureSubscriptionsDropdownValues, getAzureSqlMigrationServices, getAzureSqlMigrationServicesDropdownValues } from '../../api/utils';
+import { findDropDownItemIndex, selectDefaultDropdownValue, deepClone, getAzureLocations, getAzureLocationsDropdownValues, getAzureResourceGroups, getAzureResourceGroupsDropdownValues, getAzureAccounts, getAzureAccountsDropdownValues, getAzureTenants, getAzureTenantsDropdownValues, getAzureSubscriptions, getAzureSubscriptionsDropdownValues, getAzureSqlMigrationServices, getAzureSqlMigrationServicesDropdownValues, SelectableResourceType } from '../../api/utils';
 import { SqlMigrationService } from '../../api/azure';
 import { logError, TelemetryViews } from '../../telemtery';
 
@@ -208,7 +208,7 @@ export class SelectMigrationServiceDialog {
 		const subscriptionDropdownLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.SUBSCRIPTION,
-				description: constants.TARGET_SUBSCRIPTION_INFO,
+				description: constants.DMS_SUBSCRIPTION_INFO,
 				requiredIndicator: true,
 				CSSStyles: { ...LABEL_CSS }
 			}).component();
@@ -234,7 +234,7 @@ export class SelectMigrationServiceDialog {
 		const azureLocationLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.LOCATION,
-				description: constants.TARGET_LOCATION_INFO,
+				description: constants.DMS_LOCATION_INFO,
 				requiredIndicator: true,
 				CSSStyles: { ...LABEL_CSS }
 			}).component();
@@ -260,7 +260,7 @@ export class SelectMigrationServiceDialog {
 		const azureResourceGroupLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.RESOURCE_GROUP,
-				description: constants.TARGET_RESOURCE_GROUP_INFO,
+				description: constants.DMS_RESOURCE_GROUP_INFO,
 				requiredIndicator: true,
 				CSSStyles: { ...LABEL_CSS }
 			}).component();
@@ -406,7 +406,7 @@ export class SelectMigrationServiceDialog {
 	private async _populateLocationDropdown(): Promise<void> {
 		try {
 			this._azureLocationDropdown.loading = true;
-			this._locations = await getAzureLocations('dms', this._serviceContext.azureAccount, this._serviceContext.subscription);
+			this._locations = await getAzureLocations(this._serviceContext.azureAccount, this._serviceContext.subscription, SelectableResourceType.SqlMigrationService);
 			this._azureLocationDropdown.values =  await getAzureLocationsDropdownValues(this._locations);
 			if (this._azureLocationDropdown.values.length > 0) {
 				selectDefaultDropdownValue(
@@ -428,7 +428,7 @@ export class SelectMigrationServiceDialog {
 	private async _populateResourceGroupDropdown(): Promise<void> {
 		try {
 			this._azureResourceGroupDropdown.loading = true;
-			this._resourceGroups = await getAzureResourceGroups('dms', this._serviceContext.location!.name, this._serviceContext.azureAccount, this._serviceContext.subscription);
+			this._resourceGroups = await getAzureResourceGroups(this._serviceContext.azureAccount, this._serviceContext.subscription, this._serviceContext.location!.name, SelectableResourceType.SqlMigrationService);
 			this._azureResourceGroupDropdown.values = await getAzureResourceGroupsDropdownValues(this._resourceGroups);
 			if (this._azureResourceGroupDropdown.values.length > 0) {
 				selectDefaultDropdownValue(

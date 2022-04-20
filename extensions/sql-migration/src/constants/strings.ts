@@ -248,8 +248,8 @@ export function AZURE_SQL_TARGET_PAGE_DESCRIPTION(targetInstance: string = 'inst
 export const AZURE_SQL_DATABASE_MANAGED_INSTANCE = localize('sql.migration.azure.sql.database.managed.instance', "Azure SQL Managed Instance");
 export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instance found.");
 export const INVALID_MANAGED_INSTANCE_ERROR = localize('sql.migration.invalid.managedInstance.error', "To continue, select a valid managed instance.");
-export function UNAVAILABLE_MANAGED_INSTANCE_PREFIX(miName: string): string {
-	return localize('sql.migration.unavailable.managedInstance', "(Unavailable) {0}", miName);
+export function UNAVAILABLE_TARGET_PREFIX(miName: string): string {
+	return localize('sql.migration.unavailable.target', "(Unavailable) {0}", miName);
 }
 
 
@@ -264,9 +264,15 @@ export const AZURE_SQL_DATABASE = localize('sql.migration.azure.sql.database', "
 
 // Target info tooltip
 export const TARGET_SUBSCRIPTION_INFO = localize('sql.migration.sku.subscription', "Subscription name for your Azure SQL target");
-export const TARGET_LOCATION_INFO = localize('sql.migration.sku.location', "Azure region for your Azure SQL target");
-export const TARGET_RESOURCE_GROUP_INFO = localize('sql.migration.sku.resource_group', "Resource group for your Azure SQL target");
+export const TARGET_LOCATION_INFO = localize('sql.migration.sku.location', "Azure region for your Azure SQL target. Only regions that contain a target eligible for migration will be shown.");
+export const TARGET_RESOURCE_GROUP_INFO = localize('sql.migration.sku.resource_group', "Resource group for your Azure SQL target. Only resource groups that contain a target eligible for migration will be shown.");
 export const TARGET_RESOURCE_INFO = localize('sql.migration.sku.resource', "Your Azure SQL target resource name");
+
+// DMS tooltip
+export const DMS_SUBSCRIPTION_INFO = localize('sql.migration.dms.subscription', "Subscription name for your Azure Database Migration Service");
+export const DMS_LOCATION_INFO = localize('sql.migration.dms.location', "Azure region for your Azure Database Migration Service. Only regions that contain a service will be shown.");
+export const DMS_RESOURCE_GROUP_INFO = localize('sql.migration.dms.resource_group', "Resource group for your Azure SQL target. Only resource groups that contain a service will be shown.");
+export const DMS_RESOURCE_INFO = localize('sql.migration.dms.resource', "Your Azure Database Migration Service resource name");
 
 // Accounts page
 export const ACCOUNTS_SELECTION_PAGE_TITLE = localize('sql.migration.wizard.account.title', "Azure account");
