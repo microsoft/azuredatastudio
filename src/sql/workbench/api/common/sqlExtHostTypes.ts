@@ -246,7 +246,8 @@ export enum ComponentEventType {
 	onCellAction,
 	onEnterKeyPressed,
 	onInput,
-	onComponentLoaded
+	onComponentLoaded,
+	onChildClick
 }
 
 export interface IComponentEventArgs {
@@ -1029,5 +1030,13 @@ export namespace designers {
 		Temporal = 'Temporal',
 		GraphEdge = 'GraphEdge',
 		GraphNode = 'GraphNode'
+	}
+}
+
+export namespace executionPlan {
+	export enum BadgeType {
+		Warning = 0,
+		CriticalWarning = 1,
+		Parallelism = 2
 	}
 }

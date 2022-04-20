@@ -623,6 +623,9 @@
     <trans-unit id="errorStartBeforeReady">
       <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
     </trans-unit>
+    <trans-unit id="notebookMultipleRequestsError">
+      <source xml:lang="en">Cannot execute code cell. Another cell is currently being executed.</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/actions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="clearSavedAccounts">
@@ -2287,18 +2290,78 @@
       <source xml:lang="en">Select All</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlan" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="executionPlan.SaveFileDescription">
-      <source xml:lang="en">Execution Plan Files</source>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/azdataGraphView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="invalidExecutionPlanZoomError">
+      <source xml:lang="en">Zoom level cannot be 0 or negative</source>
     </trans-unit>
-    <trans-unit id="executionPlanCustomZoom">
-      <source xml:lang="en">Custom Zoom</source>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanEditor">
+      <source xml:lang="en">Query Execution Plan Editor</source>
     </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanFileView" source-language="en" datatype="plaintext"><body>
     <trans-unit id="executionPlanFileLoadingComplete">
       <source xml:lang="en">Execution plans are generated</source>
     </trans-unit>
     <trans-unit id="executionPlanFileLoadingFailed">
       <source xml:lang="en">Failed to load execution plan</source>
+    </trans-unit>
+    <trans-unit id="loadingExecutionPlanFile">
+      <source xml:lang="en">Generating execution plans</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanPropertiesEdgeOperationName">
+      <source xml:lang="en">Edge</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameNameColumnHeader">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameValueColumnHeader">
+      <source xml:lang="en">Value</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanPropertyViewClose">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="executionPlanPropertyViewSortAlphabetically">
+      <source xml:lang="en">Alphabetical</source>
+    </trans-unit>
+    <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
+      <source xml:lang="en">Categorized</source>
+    </trans-unit>
+    <trans-unit id="executionPlanPropertyViewSortReverseAlphabetically">
+      <source xml:lang="en">Reverse Alphabetical</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewTitle">
+      <source xml:lang="en">Properties</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanTab" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanTitle">
+      <source xml:lang="en">Query Plan (Preview)</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlan.SaveFileDescription">
+      <source xml:lang="en">Execution Plan Files</source>
+    </trans-unit>
+    <trans-unit id="executionPlanContextMenuDisableTooltip">
+      <source xml:lang="en">Disable Tooltips</source>
+    </trans-unit>
+    <trans-unit id="executionPlanContextMenuEnableTooltip">
+      <source xml:lang="en">Enable Tooltips</source>
+    </trans-unit>
+    <trans-unit id="executionPlanCustomZoom">
+      <source xml:lang="en">Custom Zoom</source>
+    </trans-unit>
+    <trans-unit id="executionPlanDisableTooltip">
+      <source xml:lang="en">Tooltips disabled</source>
+    </trans-unit>
+    <trans-unit id="executionPlanEnableTooltip">
+      <source xml:lang="en">Tooltips enabled</source>
     </trans-unit>
     <trans-unit id="executionPlanFitGraphLabel">
       <source xml:lang="en">Zoom to fit</source>
@@ -2315,51 +2378,17 @@
     <trans-unit id="executionPlanSearchNodeAction">
       <source xml:lang="en">Find Node</source>
     </trans-unit>
-    <trans-unit id="executionPlanTitle">
-      <source xml:lang="en">Query Plan (Preview)</source>
-    </trans-unit>
     <trans-unit id="executionPlanZoomInActionLabel">
       <source xml:lang="en">Zoom In</source>
     </trans-unit>
     <trans-unit id="executionPlanZoomOutActionLabel">
       <source xml:lang="en">Zoom Out</source>
     </trans-unit>
-    <trans-unit id="loadingExecutionPlanFile">
-      <source xml:lang="en">Generating execution plans</source>
-    </trans-unit>
     <trans-unit id="openQueryAction">
       <source xml:lang="en">Open Query</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="executionPlanEditor">
-      <source xml:lang="en">Query Execution Plan Editor</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="executionPlanPropertiesEdgeOperationName">
-      <source xml:lang="en">Edge</source>
-    </trans-unit>
-    <trans-unit id="executionPlanPropertyViewClose">
-      <source xml:lang="en">Close</source>
-    </trans-unit>
-    <trans-unit id="executionPlanPropertyViewSortAlphabetically">
-      <source xml:lang="en">Alphabetical</source>
-    </trans-unit>
-    <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
-      <source xml:lang="en">Categorized</source>
-    </trans-unit>
-    <trans-unit id="nodePropertyViewNameNameColumnHeader">
-      <source xml:lang="en">Name</source>
-    </trans-unit>
-    <trans-unit id="nodePropertyViewNameValueColumnHeader">
-      <source xml:lang="en">Value</source>
-    </trans-unit>
-    <trans-unit id="nodePropertyViewTitle">
-      <source xml:lang="en">Properties</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/executionPlan/browser/planHeader" source-language="en" datatype="plaintext"><body>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader" source-language="en" datatype="plaintext"><body>
     <trans-unit id="planHeaderIndexAndCost">
       <source xml:lang="en">Query {0}: Query cost (relative to the script): {1}%</source>
       <note>{0} is the index of the graph in the execution plan tab
@@ -5902,6 +5931,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="serverGroup.cancel">
       <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="serverGroup.colorValue">
+      <source xml:lang="en">Color: {0}</source>
     </trans-unit>
     <trans-unit id="serverGroup.ok">
       <source xml:lang="en">OK</source>

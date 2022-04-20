@@ -78,7 +78,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			}
 
 		} catch (e) {
-			void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 			propertyBag.quickPickStep = quickPickStep;
 			exitReason = 'error';
 			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, utils.getErrorType(e))
@@ -114,8 +113,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 		objectName = utils.generateQuotedFullName(node.metadata.schema, node.metadata.name);
 	}
-	const connectionDetails = vscodeMssqlApi.createConnectionDetails(connectionInfo);
-	const connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
 
 	TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding)
 		.withConnectionInfo(connectionInfo).send();
@@ -151,10 +148,40 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 			// start the create azure function project flow
 			try {
+				// First prompt user for project location. We need to do this ourselves due to an issue
+				// in the AF extension : https://github.com/microsoft/vscode-azurefunctions/issues/3115
+				const browseProjectLocation = await vscode.window.showQuickPick(
+					[constants.browseEllipsisWithIcon],
+					{ title: constants.selectAzureFunctionProjFolder, ignoreFocusOut: true });
+				if (!browseProjectLocation) {
+					// User cancelled
+					return undefined;
+				}
+				const projectFolders = (await vscode.window.showOpenDialog({
+					canSelectFiles: false,
+					canSelectFolders: true,
+					canSelectMany: false,
+					openLabel: constants.selectButton
+				}));
+				if (!projectFolders) {
+					// User cancelled
+					return;
+				}
+				const templateId: string = selectedBindingType === BindingType.input ? constants.inputTemplateID : constants.outputTemplateID;
 				// because of an AF extension API issue, we have to get the newly created file by adding a watcher
 				// issue: https://github.com/microsoft/vscode-azurefunctions/issues/3052
-				newHostProjectFile = await azureFunctionsUtils.waitForNewHostFile();
-				await azureFunctionApi.createFunction({ language: 'C#', targetFramework: 'netcoreapp3.1' });
+				newHostProjectFile = azureFunctionsUtils.waitForNewHostFile();
+				await azureFunctionApi.createFunction({
+					language: 'C#',
+					targetFramework: 'netcoreapp3.1',
+					templateId: templateId,
+					suppressCreateProjectPrompt: true,
+					folderPath: projectFolders[0].fsPath,
+					functionSettings: {
+						...(selectedBindingType === BindingType.input && { object: objectName }),
+						...(selectedBindingType === BindingType.output && { table: objectName })
+					},
+				});
 				const timeoutForHostFile = utils.timeoutPromise(constants.timeoutProjectError);
 				hostFile = await Promise.race([newHostProjectFile.filePromise, timeoutForHostFile]);
 				if (hostFile) {
@@ -220,13 +247,18 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			// issue https://github.com/microsoft/azuredatastudio/issues/18780
 			await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectFile), constants.azureWebJobsStorageSetting, constants.azureWebJobsStoragePlaceholder);
 
+			// prompt for connection string setting name and set connection string in local.settings.json
+			quickPickStep = 'getConnectionStringSettingName';
+			let connectionStringSettingName = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(vscode.Uri.parse(projectFile), connectionInfo);
+
 			// create C# Azure Function with SQL Binding
 			await azureFunctionApi.createFunction({
 				language: 'C#',
 				templateId: templateId,
 				functionName: functionName,
+				targetFramework: 'netcoreapp3.1',
 				functionSettings: {
-					connectionStringSetting: constants.sqlConnectionStringSetting,
+					connectionStringSetting: connectionStringSettingName,
 					...(selectedBindingType === BindingType.input && { object: objectName }),
 					...(selectedBindingType === BindingType.output && { table: objectName })
 				},
@@ -265,7 +297,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				.withAdditionalProperties(propertyBag).send();
 			newFunctionFileObject.watcherDisposable.dispose();
 		}
-		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFile);
 	} else {
 		TelemetryReporter.sendErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.finishCreateAzureFunctionWithSqlBinding);
 	}

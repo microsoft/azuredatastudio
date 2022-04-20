@@ -44,27 +44,21 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
 		this._view = view;
 
-		this._statusLoadingComponent = view.modelBuilder.loadingComponent().withItem(this.createDMSDetailsContainer()).component();
+		this._statusLoadingComponent = view.modelBuilder.loadingComponent()
+			.withItem(this.createDMSDetailsContainer())
+			.component();
 
-		this._dmsInfoContainer = this._view.modelBuilder.flexContainer().withItems([
-			this._statusLoadingComponent
-		]).component();
+		this._dmsInfoContainer = this._view.modelBuilder.flexContainer()
+			.withItems([this._statusLoadingComponent])
+			.component();
 
 		const form = view.modelBuilder.formContainer()
-			.withFormItems(
-				[
-					{
-						component: this.migrationServiceDropdownContainer()
-					},
-					{
-						component: this._dmsInfoContainer
-					}
-				]
-			).withProps({
-				CSSStyles: {
-					'padding-top': '0'
-				}
-			}).component();
+			.withFormItems([
+				{ component: this.migrationServiceDropdownContainer() },
+				{ component: this._dmsInfoContainer }
+			])
+			.withProps({ CSSStyles: { 'padding-top': '0' } })
+			.component();
 
 		this._disposables.push(this._view.onClosed(e => {
 			this._disposables.forEach(
@@ -419,29 +413,23 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					this.migrationStateModel._targetSubscription,
 					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
 					this.migrationStateModel._sqlMigrationService.location,
-					this.migrationStateModel._sqlMigrationService.name,
-					this.migrationStateModel._sessionId);
+					this.migrationStateModel._sqlMigrationService.name);
 				this.migrationStateModel._sqlMigrationService = migrationService;
 				const migrationServiceMonitoringStatus = await getSqlMigrationServiceMonitoringData(
 					this.migrationStateModel._azureAccount,
 					this.migrationStateModel._targetSubscription,
 					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
 					this.migrationStateModel._sqlMigrationService.location,
-					this.migrationStateModel._sqlMigrationService!.name,
-					this.migrationStateModel._sessionId);
-				this.migrationStateModel._nodeNames = migrationServiceMonitoringStatus.nodes.map(node => node.nodeName);
+					this.migrationStateModel._sqlMigrationService!.name);
+				this.migrationStateModel._nodeNames = migrationServiceMonitoringStatus.nodes.map(
+					node => node.nodeName);
+
 				const migrationServiceAuthKeys = await getSqlMigrationServiceAuthKeys(
 					this.migrationStateModel._azureAccount,
 					this.migrationStateModel._targetSubscription,
 					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
 					this.migrationStateModel._sqlMigrationService.location,
-					this.migrationStateModel._sqlMigrationService!.name,
-					this.migrationStateModel._sessionId
-				);
-
-				this.migrationStateModel._nodeNames = migrationServiceMonitoringStatus.nodes.map((node) => {
-					return node.nodeName;
-				});
+					this.migrationStateModel._sqlMigrationService!.name);
 
 				const state = migrationService.properties.integrationRuntimeState;
 				if (state === 'Online') {
@@ -458,25 +446,21 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 				const data = [
 					[
+						{ value: constants.SERVICE_KEY1_LABEL },
+						{ value: migrationServiceAuthKeys.authKey1 },
 						{
-							value: constants.SERVICE_KEY1_LABEL
-						},
-						{
-							value: migrationServiceAuthKeys.authKey1
-						},
-						{
-							value: this._view.modelBuilder.flexContainer().withItems([this._copy1, this._refresh1]).component()
+							value: this._view.modelBuilder.flexContainer()
+								.withItems([this._copy1, this._refresh1])
+								.component()
 						}
 					],
 					[
+						{ value: constants.SERVICE_KEY2_LABEL },
+						{ value: migrationServiceAuthKeys.authKey2 },
 						{
-							value: constants.SERVICE_KEY2_LABEL
-						},
-						{
-							value: migrationServiceAuthKeys.authKey2
-						},
-						{
-							value: this._view.modelBuilder.flexContainer().withItems([this._copy2, this._refresh2]).component()
+							value: this._view.modelBuilder.flexContainer()
+								.withItems([this._copy2, this._refresh2])
+								.component()
 						}
 					]
 				];

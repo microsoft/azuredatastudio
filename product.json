@@ -61,6 +61,7 @@
 		"Microsoft.sql-database-projects",
 		"Microsoft.sql-migration",
 		"Microsoft.machine-learning",
+		"ms-dotnettools.dotnet-interactive-vscode",
 		"Redgate.sql-prompt",
 		"Redgate.sql-search",
 		"SentryOne.plan-explorer"
@@ -76,7 +77,9 @@
 		"ms-vscode.remotehub",
 		"ms-vscode.remotehub-insiders",
 		"GitHub.remotehub",
-		"GitHub.remotehub-insiders"
+		"GitHub.remotehub-insiders",
+		"ms-dotnettools.dotnet-interactive-vscode",
+		"ms-toolsai.jupyter"
 	],
 	"extensionsGallery": {
 		"version": "0.0.76",

@@ -87,10 +87,10 @@ export class Notebook {
 		await this.code.waitForActiveElement(textarea);
 
 		await this.code.waitForTypeInEditor(textarea, text);
-		await this._waitForActiveCellEditorContents(c => c.indexOf(text) > -1);
+		await this.waitForActiveCellEditorContents(c => c.indexOf(text) > -1);
 	}
 
-	private async _waitForActiveCellEditorContents(accept: (contents: string) => boolean): Promise<any> {
+	async waitForActiveCellEditorContents(accept: (contents: string) => boolean): Promise<any> {
 		const selector = '.notebook-cell.active .monaco-editor .view-lines';
 		return this.code.waitForTextContent(selector, undefined, c => accept(c.replace(/\u00a0/g, ' ')));
 	}
@@ -100,9 +100,18 @@ export class Notebook {
 		await this.code.waitForElement(span);
 	}
 
+	public async selectAllTextInRichTextEditor(): Promise<void> {
+		const editor = '.notebook-cell.active .notebook-preview[contenteditable="true"]';
+		await this.selectAllText(editor);
+	}
+
 	public async selectAllTextInEditor(): Promise<void> {
 		const editor = '.notebook-cell.active .monaco-editor';
-		await this.code.waitAndClick(editor);
+		await this.selectAllText(editor);
+	}
+
+	private async selectAllText(selector: string): Promise<void> {
+		await this.code.waitAndClick(selector);
 		await this.code.dispatchKeybinding(ctrlOrCmd + '+a');
 	}
 
@@ -180,6 +189,11 @@ export class Notebook {
 	}
 
 	// Cell Output Actions
+
+	async waitForJupyterErrorOutput(): Promise<void> {
+		const jupyterErrorOutput = `.notebook-cell.active .notebook-output mime-output[data-mime-type="application/vnd.jupyter.stderr"]`;
+		await this.code.waitForElement(jupyterErrorOutput);
+	}
 
 	async waitForActiveCellResults(): Promise<void> {
 		const outputComponent = '.notebook-cell.active .notebook-output';
@@ -300,6 +314,7 @@ export class NotebookToolbar {
 	private static readonly collapseCellsButtonSelector = `${NotebookToolbar.toolbarButtonSelector}.icon-collapse-cells`;
 	private static readonly expandCellsButtonSelector = `${NotebookToolbar.toolbarButtonSelector}.icon-expand-cells`;
 	private static readonly clearResultsButtonSelector = `${NotebookToolbar.toolbarButtonSelector}.icon-clear-results`;
+	private static readonly managePackagesButtonSelector = `${NotebookToolbar.toolbarButtonSelector}[title="Manage Packages"]`;
 
 	constructor(private code: Code) { }
 
@@ -362,6 +377,10 @@ export class NotebookToolbar {
 
 	async clearResults(): Promise<void> {
 		await this.code.waitAndClick(NotebookToolbar.clearResultsButtonSelector);
+	}
+
+	async managePackages(): Promise<void> {
+		await this.code.waitAndClick(NotebookToolbar.managePackagesButtonSelector);
 	}
 }
 
