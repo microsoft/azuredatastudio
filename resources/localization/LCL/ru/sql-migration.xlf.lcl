@@ -142,7 +142,7 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.in.progress.content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[We are assessing the databases in your SQL Server instance {0} to identify the right Azure SQL target.]D;]A;]D;]A;This may take some time.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Идет оценка баз данных в экземпляре SQL Server {0} для идентификации правильного целевого объекта Azure SQL.]D;]A;]D;]A;Это может занять некоторое время.]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -2518,7 +2518,7 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.azure.mi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select your target Azure subscription and your target Azure SQL Managed Instance.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Выберите целевую подписку Azure и целевой управляемый экземпляр SQL Azure.]]></Val>
           </Tgt>
           <Prev Cat="Text">
