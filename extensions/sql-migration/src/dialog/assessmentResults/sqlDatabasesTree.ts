@@ -10,6 +10,7 @@ import * as constants from '../../constants/strings';
 import { debounce } from '../../api/utils';
 import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
 import * as styles from '../../constants/styles';
+import { EOL } from 'os';
 
 const styleLeft: azdata.CssStyles = {
 	'border': 'none',
@@ -45,6 +46,7 @@ const headerRight: azdata.CssStyles = {
 
 export class SqlDatabaseTree {
 	private _view!: azdata.ModelView;
+	private _dialog!: azdata.window.Dialog;
 	private _instanceTable!: azdata.DeclarativeTableComponent;
 	private _databaseTable!: azdata.DeclarativeTableComponent;
 	private _assessmentResultsTable!: azdata.DeclarativeTableComponent;
@@ -84,6 +86,7 @@ export class SqlDatabaseTree {
 
 	async createRootContainer(dialog: azdata.window.Dialog, view: azdata.ModelView): Promise<azdata.Component> {
 		this._view = view;
+		this._dialog = dialog;
 
 		const selectDbMessage = this.createSelectDbMessage();
 		this._resultComponent = await this.createComponentResult(view);
@@ -388,16 +391,21 @@ export class SqlDatabaseTree {
 
 	private createNoIssuesText(): azdata.FlexContainer {
 		let message: azdata.TextComponent;
+		const failedAssessment = this.handleFailedAssessment();
 		if (this._targetType === MigrationTargetType.SQLVM) {
 			message = this._view.modelBuilder.text().withProps({
-				value: constants.NO_ISSUES_FOUND_VM,
+				value: failedAssessment
+					? constants.NO_RESULTS_AVAILABLE
+					: constants.NO_ISSUES_FOUND_VM,
 				CSSStyles: {
 					...styles.BODY_CSS
 				}
 			}).component();
 		} else {
 			message = this._view.modelBuilder.text().withProps({
-				value: constants.NO_ISSUES_FOUND_MI,
+				value: failedAssessment
+					? constants.NO_RESULTS_AVAILABLE
+					: constants.NO_ISSUES_FOUND_MI,
 				CSSStyles: {
 					...styles.BODY_CSS
 				}
@@ -413,6 +421,34 @@ export class SqlDatabaseTree {
 		}).component();
 
 		return this._noIssuesContainer;
+	}
+
+	private handleFailedAssessment(): boolean {
+		const failedAssessment: boolean = this._model._assessmentResults.assessmentError !== undefined
+			|| (this._model._assessmentResults?.errors?.length || 0) > 0;
+		if (failedAssessment) {
+			this._dialog.message = {
+				level: azdata.window.MessageLevel.Warning,
+				text: constants.ASSESSMENT_MIGRATION_WARNING,
+				description: this.getAssessmentError(),
+			};
+		}
+
+		return failedAssessment;
+	}
+
+	private getAssessmentError(): string {
+		const errors: string[] = [];
+		const assessmentError = this._model._assessmentResults.assessmentError;
+		if (assessmentError) {
+			errors.push(`message: ${assessmentError.message}${EOL}stack: ${assessmentError.stack}`);
+		}
+		if (this._model?._assessmentResults?.errors?.length! > 0) {
+			errors.push(...this._model._assessmentResults.errors?.map(
+				e => `message: ${e.message}${EOL}errorSummary: ${e.errorSummary}${EOL}possibleCauses: ${e.possibleCauses}${EOL}guidance: ${e.guidance}${EOL}errorId: ${e.errorId}`)!);
+		}
+
+		return errors.join(EOL);
 	}
 
 	private createSelectDbMessage(): azdata.FlexContainer {
