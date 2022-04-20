@@ -62,7 +62,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 
 		const upgradesVersionLogLink = this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.versionLog,
-			url: 'https://docs.microsoft.com/en-us/azure/azure-arc/data/version-log'
+			url: 'https://docs.microsoft.com/azure/azure-arc/data/version-log'
 		}).component();
 
 		const upgradesInfoAndLink = this.modelView.modelBuilder.flexContainer()
