@@ -68,7 +68,7 @@
       </trans-unit>
       <trans-unit id="addPackageReferenceMessage">
         <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
-        <target state="new">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</target>
+        <target state="translated">SQL 바인딩을 사용하려면 Azure Functions 프로젝트에 {0} 대한 참조가 있어야 합니다.</target>
       </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
@@ -114,6 +114,10 @@
         <source xml:lang="en">Change Target Platform</source>
         <target state="translated">대상 플랫폼 변경</target>
       </trans-unit>
+      <trans-unit id="checkoutOutputMessage">
+        <source xml:lang="en">Check output pane for more details</source>
+        <target state="translated">자세한 내용은 출력 창을 확인하세요</target>
+      </trans-unit>
       <trans-unit id="chooseAction">
         <source xml:lang="en">Choose action</source>
         <target state="translated">작업 선택</target>
@@ -153,6 +157,10 @@
       <trans-unit id="connectionStringSettingPlaceholder">
         <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
         <target state="translated">"local.settings.json"에 지정된 연결 문자열 설정</target>
+      </trans-unit>
+      <trans-unit id="containerAlreadyExistForProject">
+        <source xml:lang="en">Other servers on container already exist for the project. Do you want to delete them?</source>
+        <target state="translated">컨테이너의 다른 서버가 프로젝트에 이미 있습니다. 서버를 삭제하시겠습니까?</target>
       </trans-unit>
       <trans-unit id="createNew">
         <source xml:lang="en">Create New</source>
@@ -309,10 +317,6 @@
       <trans-unit id="deployProjectFailedMessage">
         <source xml:lang="en">Failed to open a connection to the deployed database'</source>
         <target state="translated">배포된 데이터베이스’에 대한 연결을 열지 못함</target>
-      </trans-unit>
-      <trans-unit id="deployProjectSucceed">
-        <source xml:lang="en">Database project deployed successfully</source>
-        <target state="translated">데이터베이스 프로젝트를 배포함</target>
       </trans-unit>
       <trans-unit id="deployScriptExists">
         <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
@@ -564,7 +568,7 @@
       </trans-unit>
       <trans-unit id="moreInformation">
         <source xml:lang="en">More Information</source>
-        <target state="new">More Information</target>
+        <target state="translated">자세한 정보</target>
       </trans-unit>
       <trans-unit id="msec">
         <source xml:lang="en">msec</source>
@@ -722,13 +726,17 @@
         <source xml:lang="en">Publish project</source>
         <target state="translated">프로젝트 게시</target>
       </trans-unit>
+      <trans-unit id="publishProjectSucceed">
+        <source xml:lang="en">Database project published successfully</source>
+        <target state="translated">데이터베이스 프로젝트를 게시했습니다.</target>
+      </trans-unit>
       <trans-unit id="publishSettingsFiles">
         <source xml:lang="en">Publish Settings File</source>
         <target state="translated">설정 파일 게시</target>
       </trans-unit>
       <trans-unit id="publishToContainerFailed">
-        <source xml:lang="en">Failed to publish to container. Check output pane for more details. {0}</source>
-        <target state="translated">컨테이너에 게시하지 못했습니다. 자세한 내용은 출력 창을 확인하세요. {0}</target>
+        <source xml:lang="en">Failed to publish to container. {0}</source>
+        <target state="translated">컨테이너에 게시하지 못했습니다. {0}</target>
       </trans-unit>
       <trans-unit id="publishToDockerContainer">
         <source xml:lang="en">Publish to new server in a container</source>
@@ -737,6 +745,10 @@
       <trans-unit id="publishToExistingServer">
         <source xml:lang="en">Publish to existing server</source>
         <target state="translated">기존 서버에 게시</target>
+      </trans-unit>
+      <trans-unit id="publishingProjectMessage">
+        <source xml:lang="en">Publishing project in a container...</source>
+        <target state="translated">컨테이너에 프로젝트를 게시하는 중...</target>
       </trans-unit>
       <trans-unit id="referenceRadioButtonsGroupTitle">
         <source xml:lang="en">Type</source>

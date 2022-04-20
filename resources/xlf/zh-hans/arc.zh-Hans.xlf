@@ -6,6 +6,10 @@
         <source xml:lang="en">adding worker nodes</source>
         <target state="translated">正在添加工作器节点</target>
       </trans-unit>
+      <trans-unit id="arc.apply">
+        <source xml:lang="en">Apply</source>
+        <target state="new">Apply</target>
+      </trans-unit>
       <trans-unit id="arc.arcDeploymentDeprecation">
         <source xml:lang="en">The Arc Deployment extension has been replaced by the Arc extension and has been uninstalled.</source>
         <target state="translated">Arc 部署扩展已由 Arc 扩展取代，并已卸载。</target>
@@ -21,6 +25,10 @@
       <trans-unit id="arc.backup">
         <source xml:lang="en">Backup</source>
         <target state="translated">备份</target>
+      </trans-unit>
+      <trans-unit id="arc.backups">
+        <source xml:lang="en">Backups</source>
+        <target state="new">Backups</target>
       </trans-unit>
       <trans-unit id="arc.backupsStorage">
         <source xml:lang="en">{0} backups</source>
@@ -73,6 +81,14 @@
       <trans-unit id="arc.configurationPerNode">
         <source xml:lang="en">Configuration (per node)</source>
         <target state="translated">配置(每个节点)</target>
+      </trans-unit>
+      <trans-unit id="arc.configureRP">
+        <source xml:lang="en">Configure retention policy</source>
+        <target state="new">Configure retention policy</target>
+      </trans-unit>
+      <trans-unit id="arc.configureRetentionPolicyButton">
+        <source xml:lang="en">Configure Retention Policy</source>
+        <target state="new">Configure Retention Policy</target>
       </trans-unit>
       <trans-unit id="arc.confirmNewPassword">
         <source xml:lang="en">Confirm the new password</source>
@@ -257,6 +273,10 @@
         <source xml:lang="en">{0} data</source>
         <target state="translated">{0} 数据</target>
       </trans-unit>
+      <trans-unit id="arc.database">
+        <source xml:lang="en">Database</source>
+        <target state="new">Database</target>
+      </trans-unit>
       <trans-unit id="arc.databaseCreated">
         <source xml:lang="en">Database {0} created</source>
         <target state="translated">已创建数据库 {0}</target>
@@ -264,6 +284,14 @@
       <trans-unit id="arc.databaseCreationFailed">
         <source xml:lang="en">Failed to create database {0}. {1}</source>
         <target state="translated">未能创建数据库 {0}。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.databaseDetails">
+        <source xml:lang="en">Database Details</source>
+        <target state="new">Database Details</target>
+      </trans-unit>
+      <trans-unit id="arc.databaseDetailsText">
+        <source xml:lang="en">Enter the required settings for this database, including a name and a target managed instance. By default, the source instance is selected.</source>
+        <target state="new">Enter the required settings for this database, including a name and a target managed instance. By default, the source instance is selected.</target>
       </trans-unit>
       <trans-unit id="arc.databaseName">
         <source xml:lang="en">Database name</source>
@@ -312,6 +340,10 @@
       <trans-unit id="arc.dropMultipleExtensions">
         <source xml:lang="en">Currently dropping another extension, try again once that is completed.</source>
         <target state="translated">当前正在删除另一个扩展，请在完成后重试。</target>
+      </trans-unit>
+      <trans-unit id="arc.earliestPitrRestorePoint">
+        <source xml:lang="en">Earliest PITR restore point</source>
+        <target state="new">Earliest PITR restore point</target>
       </trans-unit>
       <trans-unit id="arc.emergency">
         <source xml:lang="en">Emergency</source>
@@ -449,6 +481,10 @@
         <source xml:lang="en">Installing extension '{0}'...</source>
         <target state="translated">正在安装扩展“{0}”...</target>
       </trans-unit>
+      <trans-unit id="arc.instance">
+        <source xml:lang="en">Instance</source>
+        <target state="new">Instance</target>
+      </trans-unit>
       <trans-unit id="arc.instanceDeleted">
         <source xml:lang="en">Instance '{0}' deleted</source>
         <target state="translated">已删除实例“{0}”</target>
@@ -492,6 +528,10 @@
       <trans-unit id="arc.lastTransition">
         <source xml:lang="en">Last transition</source>
         <target state="translated">上次转换时间</target>
+      </trans-unit>
+      <trans-unit id="arc.latestpitrRestorePoint">
+        <source xml:lang="en">Latest PITR restore point</source>
+        <target state="new">Latest PITR restore point</target>
       </trans-unit>
       <trans-unit id="arc.learnAboutNodeParameters">
         <source xml:lang="en">Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale</source>
@@ -540,6 +580,10 @@
       <trans-unit id="arc.miaaAdmin">
         <source xml:lang="en">Managed instance admin</source>
         <target state="translated">托管实例管理员</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaBackupsDatabasesDescription">
+        <source xml:lang="en">Databases with available backups are displayed below. Restore databases to this instance or any other instance within the same custom location.</source>
+        <target state="new">Databases with available backups are displayed below. Restore databases to this instance or any other instance within the same custom location.</target>
       </trans-unit>
       <trans-unit id="arc.miaaComputeAndStorageDescriptionPartOne">
         <source xml:lang="en">You can scale your Azure SQL managed instance - Azure Arc by</source>
@@ -721,6 +765,14 @@
         <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc</source>
         <target state="translated">PostgreSQL 超大规模 - Azure Arc</target>
       </trans-unit>
+      <trans-unit id="arc.pitr">
+        <source xml:lang="en">Point-in-time restore (PITR)</source>
+        <target state="new">Point-in-time restore (PITR)</target>
+      </trans-unit>
+      <trans-unit id="arc.pitrInfo">
+        <source xml:lang="en">Specify how long you want to keep your point-in-time backups. Customize this for backup availability.</source>
+        <target state="new">Specify how long you want to keep your point-in-time backups. Customize this for backup availability.</target>
+      </trans-unit>
       <trans-unit id="arc.podConditionsTable">
         <source xml:lang="en">Pod conditions table</source>
         <target state="translated">Pod 条件表</target>
@@ -792,6 +844,14 @@
       <trans-unit id="arc.preloaded Extensions">
         <source xml:lang="en">Preloaded Extensions</source>
         <target state="translated">预加载的扩展</target>
+      </trans-unit>
+      <trans-unit id="arc.projectDetails">
+        <source xml:lang="en">Project Details</source>
+        <target state="new">Project Details</target>
+      </trans-unit>
+      <trans-unit id="arc.projectDetailsText">
+        <source xml:lang="en">Select the subscription to manage deployed resources. Use resource groups like folders to organize and manage all your resources.</source>
+        <target state="new">Select the subscription to manage deployed resources. Use resource groups like folders to organize and manage all your resources.</target>
       </trans-unit>
       <trans-unit id="arc.properties">
         <source xml:lang="en">Properties</source>
@@ -865,9 +925,29 @@
         <source xml:lang="en">Resource health can tell you if your resource is running as expected.</source>
         <target state="translated">资源运行状况可以让你了解资源是否按预期运行。</target>
       </trans-unit>
+      <trans-unit id="arc.restore">
+        <source xml:lang="en">Restore</source>
+        <target state="new">Restore</target>
+      </trans-unit>
+      <trans-unit id="arc.restoreDatabase">
+        <source xml:lang="en">Restore Database</source>
+        <target state="new">Restore Database</target>
+      </trans-unit>
+      <trans-unit id="arc.restoreInfo">
+        <source xml:lang="en">Restore a database to an Azure Arc enabled SQL Managed Instance of your choice.</source>
+        <target state="new">Restore a database to an Azure Arc enabled SQL Managed Instance of your choice.</target>
+      </trans-unit>
+      <trans-unit id="arc.restorePoint">
+        <source xml:lang="en">Restore point (UTC)</source>
+        <target state="new">Restore point (UTC)</target>
+      </trans-unit>
       <trans-unit id="arc.restoring">
         <source xml:lang="en">Restoring</source>
         <target state="translated">正在还原</target>
+      </trans-unit>
+      <trans-unit id="arc.retentionDays">
+        <source xml:lang="en">Point-In-Time Recovery retention (days)</source>
+        <target state="new">Point-In-Time Recovery retention (days)</target>
       </trans-unit>
       <trans-unit id="arc.running">
         <source xml:lang="en">Running</source>
@@ -917,6 +997,18 @@
         <source xml:lang="en">Settings</source>
         <target state="translated">设置</target>
       </trans-unit>
+      <trans-unit id="arc.sourceDatabase">
+        <source xml:lang="en">Source database</source>
+        <target state="new">Source database</target>
+      </trans-unit>
+      <trans-unit id="arc.sourceDetails">
+        <source xml:lang="en">Source Details</source>
+        <target state="new">Source Details</target>
+      </trans-unit>
+      <trans-unit id="arc.sourceDetailsText">
+        <source xml:lang="en">Select a backup source and provide details. Additional settings will be defaulted where possible based on the selected backup.</source>
+        <target state="new">Select a backup source and provide details. Additional settings will be defaulted where possible based on the selected backup.</target>
+      </trans-unit>
       <trans-unit id="arc.state">
         <source xml:lang="en">State</source>
         <target state="translated">状态</target>
@@ -928,6 +1020,10 @@
       <trans-unit id="arc.storagePerNode">
         <source xml:lang="en">storage per node</source>
         <target state="translated">每个节点的存储</target>
+      </trans-unit>
+      <trans-unit id="arc.subscription">
+        <source xml:lang="en">Subscription</source>
+        <target state="new">Subscription</target>
       </trans-unit>
       <trans-unit id="arc.subscriptionId">
         <source xml:lang="en">Subscription ID</source>
@@ -1585,6 +1681,10 @@
         <source xml:lang="en">Instance name</source>
         <target state="translated">实例名称</target>
       </trans-unit>
+      <trans-unit id="arc.sql.instance.retention.policy.title">
+        <source xml:lang="en">SQL Instance Backup Retention Policy</source>
+        <target state="translated">SQL 实例备份保留策略</target>
+      </trans-unit>
       <trans-unit id="arc.sql.instance.settings.section.title">
         <source xml:lang="en">SQL Instance settings</source>
         <target state="translated">SQL 实例设置</target>
@@ -1608,6 +1708,22 @@
       <trans-unit id="arc.sql.one.replica">
         <source xml:lang="en">1 replica</source>
         <target state="translated">1 个副本</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.pitr.description">
+        <source xml:lang="en">Point in time restore</source>
+        <target state="translated">时点还原</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.pitr.retention.description">
+        <source xml:lang="en">Configure retention for point-in-time backups. {0}</source>
+        <target state="translated">配置时间点备份的保留期。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.retention.days.description">
+        <source xml:lang="en">Specify how long you want to keep your point-in-time backups.</source>
+        <target state="translated">指定要将时间点备份保留多长时间。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.retention.days.label">
+        <source xml:lang="en">PITR retention (days)</source>
+        <target state="translated">PITR 保留期(天)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.business.critical">
         <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
