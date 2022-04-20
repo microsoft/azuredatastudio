@@ -18,7 +18,6 @@ export class ControllerUpgradesPage extends DashboardPage {
 		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 	}
 	private _upgradesContainer!: azdata.DivContainer;
-	private _configureRetentionPolicyButton!: azdata.ButtonComponent;
 	private _upgradesTableLoading!: azdata.LoadingComponent;
 	private _upgradesTable!: azdata.DeclarativeTableComponent;
 	private _upgradesMessage!: azdata.TextComponent;
@@ -58,25 +57,18 @@ export class ControllerUpgradesPage extends DashboardPage {
 
 		const infoAvailableUpgrades = this.modelView.modelBuilder.text().withProps({
 			value: loc.availableUpgradesDescription,
-			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
-
-		const upgradesInfoDescription = this.modelView.modelBuilder.flexContainer()
-			.withLayout({ flexWrap: 'wrap' })
-			.withItems([
-				infoAvailableUpgrades
-			]).component();
 
 		const upgradesVersionLogLink = this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.versionLog,
-			url: 'https://docs.microsoft.com/en-us/azure/azure-arc/data/version-log',
-			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
+			url: 'https://docs.microsoft.com/en-us/azure/azure-arc/data/version-log'
 		}).component();
 
 		const upgradesInfoAndLink = this.modelView.modelBuilder.flexContainer()
 			.withLayout({ flexWrap: 'wrap' })
 			.withItems([
-				upgradesInfoDescription,
+				infoAvailableUpgrades,
 				upgradesVersionLogLink
 			], { CSSStyles: { 'margin-right': '5px' } }).component();
 
@@ -155,16 +147,10 @@ export class ControllerUpgradesPage extends DashboardPage {
 					refreshButton.enabled = true;
 				}
 			}));
-		this._configureRetentionPolicyButton = this.modelView.modelBuilder.button().withProps({
-			label: loc.configureRetentionPolicyButton,
-			enabled: true,
-			iconPath: IconPathHelper.edit,
-		}).component();
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
 				{ component: refreshButton, toolbarSeparatorAfter: true },
-				{ component: this._configureRetentionPolicyButton, toolbarSeparatorAfter: false },
 
 			]
 		).component();
@@ -274,9 +260,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 							}
 						);
 					} catch (error) {
-						vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));
-					} finally {
-						this._configureRetentionPolicyButton.enabled = true;
+						console.log(error);
 					}
 				}
 			}));
