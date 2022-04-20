@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="src/sql/base/browser/ui/designer/designer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.newRowText">
+      <source xml:lang="en">Add New</source>
+    </trans-unit>
+    <trans-unit id="designer.removeRowText">
+      <source xml:lang="en">Remove</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.unknownComponentType">
       <source xml:lang="en">The component type: {0} is not supported</source>
     </trans-unit>
@@ -4136,6 +4142,11 @@ Error: {1}</source>
       <source xml:lang="en">An error occurred refreshing node '{0}': {1}</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableDesigner.saveTableChanges">
+      <source xml:lang="en">Save Changes</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/tasks/browser/tasks.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="inProgressTasksChangesBadge">
       <source xml:lang="en">{0} in progress tasks</source>
@@ -5694,6 +5705,9 @@ Error: {1}</source>
     <trans-unit id="tableDesigner.columnDefaultValueTitle">
       <source xml:lang="en">Default Value</source>
     </trans-unit>
+    <trans-unit id="tableDesigner.columnIsPrimaryKeyTitle">
+      <source xml:lang="en">Primary Key</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.columnLengthTitle">
       <source xml:lang="en">Length</source>
     </trans-unit>
@@ -5714,6 +5728,15 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.nameTitle">
       <source xml:lang="en">Table name</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.saveChangeError">
+      <source xml:lang="en">An error occured while saving changes: {0}</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.savedChangeSuccess">
+      <source xml:lang="en">The changes have been successfully saved.</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.savingChanges">
+      <source xml:lang="en">Saving table designer changes...</source>
     </trans-unit>
     <trans-unit id="tableDesigner.schemaTitle">
       <source xml:lang="en">Schema</source>
