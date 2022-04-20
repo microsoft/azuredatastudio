@@ -51,6 +51,31 @@ export namespace SecurityTokenRequest {
 }
 // ------------------------------- </ Security Token Request > ------------------------------------------
 
+// ------------------------------- < Refresh Token Request > ---------------------------------
+
+export interface RefreshTokenNotificationParams {
+	authority: string;
+	provider: string;
+	resource: string;
+	accountId: string;
+}
+
+export namespace RefreshTokenNotification {
+	export const type = new NotificationType<RefreshTokenNotificationParams, void>('account/refreshTokenNotification');
+}
+
+export interface RefreshTokenParams {
+	accountKey: string;
+	token: string;
+	expiresOn: Number;
+}
+
+export namespace RefreshToken {
+	export const type = new NotificationType<RefreshTokenParams, void>('account/refreshToken');
+}
+
+// ------------------------------- </ Refresh Token Request > -------------------------------
+
 // ------------------------------- < Agent Management > ------------------------------------
 // Job management parameters
 export interface AgentJobsParams {

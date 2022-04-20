@@ -45,6 +45,11 @@ export class AccountFeature implements StaticFeature {
 		this._client.onRequest(contracts.SecurityTokenRequest.type, async (request): Promise<contracts.RequestSecurityTokenResponse | undefined> => {
 			return await this.tokenCache.getData(request);
 		});
+		this._client.onNotification(contracts.RefreshTokenNotification.type, async (request) => {
+			// send refresh token to sts to get updated
+			let result = await this.refreshToken(request);
+			this._client.sendNotification(contracts.RefreshToken.type, result);
+		});
 	}
 
 	protected async getToken(request: contracts.RequestSecurityTokenParams): Promise<contracts.RequestSecurityTokenResponse | undefined> {
@@ -83,6 +88,37 @@ export class AccountFeature implements StaticFeature {
 			void window.showErrorMessage(unauthorizedMessage);
 			return undefined;
 		}
+
+		let params: contracts.RequestSecurityTokenResponse = {
+			accountKey: JSON.stringify(account.key),
+			token: securityToken.token,
+			expiresOn: securityToken.expiresOn
+		};
+
+		return params;
+	}
+
+	protected async refreshToken(request: contracts.RefreshTokenNotificationParams) {
+
+		// find account
+		const accountList = await azdata.accounts.getAllAccounts();
+		let account: azdata.Account;
+		accountList.forEach(element => {
+			if (element.key.accountId === request.accountId) {
+				account = element;
+			}
+		});
+
+		// find tenant
+		const tenant = account.properties.tenants.find(tenant => request.authority.includes(tenant.id));
+		const unauthorizedMessage = localize('mssql.insufficientlyPrivelagedAzureAccount', "The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.", account.key.accountId);
+		if (!tenant) {
+			void window.showErrorMessage(unauthorizedMessage);
+			return undefined;
+		}
+
+		// get token
+		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.AzureKeyVault);
 
 		let params: contracts.RequestSecurityTokenResponse = {
 			accountKey: JSON.stringify(account.key),
