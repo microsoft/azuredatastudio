@@ -11,7 +11,7 @@ import { MigrationStateModel, MigrationTargetType, StateChangeEvent } from '../m
 import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { deepClone, findDropDownItemIndex, selectDropDownIndex, selectDefaultDropdownValue, getAzureResourceGroups, getAzureResourceGroupsDropdownValues, getAzureSubscriptions, getAzureSubscriptionsDropdownValues, getAzureLocations, getAzureLocationsDropdownValues, getAzureTenants, getAzureTenantsDropdownValues, getAzureAccounts, getAzureAccountsDropdownValues, getManagedInstances, getVirtualMachines, getManagedInstancesDropdownValues, getVirtualMachinesDropdownValues, SelectableResourceType } from '../api/utils';
+import { deepClone, findDropDownItemIndex, selectDefaultDropdownValue, getAzureResourceGroups, getAzureResourceGroupsDropdownValues, getAzureSubscriptions, getAzureSubscriptionsDropdownValues, getAzureLocations, getAzureLocationsDropdownValues, getAzureTenants, getAzureTenantsDropdownValues, getAzureAccounts, getAzureAccountsDropdownValues, getManagedInstances, getVirtualMachines, getManagedInstancesDropdownValues, getVirtualMachinesDropdownValues, SelectableResourceType } from '../api/utils';
 import { azureResource } from 'azurecore';
 import { SqlVMServer } from '../api/azure';
 
@@ -90,9 +90,9 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 		await this.populateAzureAccountsDropdown();
 		// await this.populateTenant()
-		await this.populateLocationDropdown();
-		await this.populateResourceGroupDropdown();
-		await this.populateResourceInstanceDropdown();
+		// await this.populateLocationDropdown();
+		// await this.populateResourceGroupDropdown();
+		// await this.populateResourceInstanceDropdown();
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			const errors: string[] = [];
@@ -185,33 +185,18 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			required: true,
+			fireOnTextChange: true,
+			placeholder: constants.SELECT_AN_ACCOUNT,
 			CSSStyles: {
 				'margin-top': '-1em'
 			},
 		}).component();
 		this._disposables.push(this._azureAccountsDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._azureAccountsDropdown, value);
-			if (selectedIndex > -1) {	//
-				const selectedAzureAccount = this.migrationStateModel._azureAccounts[selectedIndex];
-				// Making a clone of the account object to preserve the original tenants
-				this.migrationStateModel._azureAccount = deepClone(selectedAzureAccount);
-				if (selectedAzureAccount.isStale === false && this.migrationStateModel._azureAccount.properties.tenants.length > 1) {
-					this.migrationStateModel._accountTenants = await getAzureTenants();
-					this._accountTenantDropdown.values = await getAzureTenantsDropdownValues(this.migrationStateModel._accountTenants);
-					selectDropDownIndex(this._accountTenantDropdown, 0);
-					await this._accountTenantFlexContainer.updateCssStyles({
-						'display': 'inline'
-					});
-				} else {
-					await this._accountTenantFlexContainer.updateCssStyles({
-						'display': 'none'
-					});
-				}
-				await this._azureAccountsDropdown.validate();
-			} else {
-				this.migrationStateModel._azureAccount = undefined!;
-			}
-			await this.populateSubscriptionDropdown();
+			this.migrationStateModel._azureAccount = (selectedIndex > -1)
+				? deepClone(this.migrationStateModel._azureAccounts[selectedIndex])
+				: undefined!;
+			await this.populateTenantsDropdown();
 		}));
 
 		const linkAccountButton = this._view.modelBuilder.hyperlink()
@@ -259,6 +244,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			fireOnTextChange: true,
+			placeholder: constants.SELECT_A_TENANT
 		}).component();
 
 		this._disposables.push(this._accountTenantDropdown.onValueChanged(async (value) => {
@@ -308,6 +294,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			editable: true,
 			required: true,
 			fireOnTextChange: true,
+			placeholder: constants.SELECT_A_SUBSCRIPTION,
 			CSSStyles: {
 				'margin-top': '-1em'
 			},
@@ -341,6 +328,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			editable: true,
 			required: true,
 			fireOnTextChange: true,
+			placeholder: constants.SELECT_A_LOCATION,
 			CSSStyles: {
 				'margin-top': '-1em'
 			},
@@ -373,6 +361,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			editable: true,
 			required: true,
 			fireOnTextChange: true,
+			placeholder: constants.SELECT_A_RESOURCE_GROUP,
 			CSSStyles: {
 				'margin-top': '-1em'
 			},
@@ -403,6 +392,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			editable: true,
 			required: true,
 			fireOnTextChange: true,
+			placeholder: constants.SELECT_A_SERVICE,
 			CSSStyles: {
 				'margin-top': '-1em'
 			},
@@ -477,9 +467,27 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		}
 	}
 
-	// private async populateTenantsDropdown(): Promise<void> {
-
-	// }
+	private async populateTenantsDropdown(): Promise<void> {
+		try {
+			this.updateDropdownLoadingStatus(TargetDropDowns.Tenant, true);
+			if (this.migrationStateModel._azureAccount.isStale === false && this.migrationStateModel._azureAccount.properties.tenants.length > 1) {
+				this.migrationStateModel._accountTenants = await getAzureTenants(this.migrationStateModel._azureAccount);
+				this._accountTenantDropdown.values = await getAzureTenantsDropdownValues(this.migrationStateModel._accountTenants);
+				selectDefaultDropdownValue(this._accountTenantDropdown, this.migrationStateModel._azureTenant?.id, true);
+				await this._accountTenantFlexContainer.updateCssStyles({
+					'display': 'inline'
+				});
+			} else {
+				await this._accountTenantFlexContainer.updateCssStyles({
+					'display': 'none'
+				});
+				await this.populateSubscriptionDropdown();
+			}
+			await this._azureAccountsDropdown.validate();
+		} finally {
+			this.updateDropdownLoadingStatus(TargetDropDowns.Tenant, false);
+		}
+	}
 
 
 	private async populateSubscriptionDropdown(): Promise<void> {
@@ -576,6 +584,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 export enum TargetDropDowns {
 	AzureAccount,
+	Tenant,
 	Subscription,
 	Location,
 	ResourceGroup,

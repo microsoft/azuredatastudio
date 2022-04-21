@@ -186,9 +186,12 @@ export class SelectMigrationServiceDialog {
 		this._disposables.push(
 			this._accountTenantDropdown.onValueChanged(async value => {
 				const selectedIndex = findDropDownItemIndex(this._accountTenantDropdown, value);
-				this._serviceContext.tenant = (selectedIndex > -1)
-					? deepClone(this._accountTenants[selectedIndex])
-					: undefined!;
+				if (selectedIndex > -1) {
+					this._serviceContext.tenant = deepClone(this._accountTenants[selectedIndex]);
+					this._serviceContext.azureAccount!.properties.tenants = [this._accountTenants[selectedIndex]];
+				} else {
+					this._serviceContext.tenant = undefined!;
+				}
 				await this._populateSubscriptionDropdown();
 			}));
 

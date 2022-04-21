@@ -353,7 +353,7 @@ export async function getAzureSubscriptionsDropdownValues(subscriptions: azureRe
 	if (subscriptionsValues.length === 0) {
 		subscriptionsValues = [
 			{
-				displayName: constants.NO_SUBSCRIPTIONS_FOUND,	//
+				displayName: constants.NO_SUBSCRIPTIONS_FOUND,
 				name: ''
 			}
 		];
@@ -421,7 +421,7 @@ export async function getAzureLocationsDropdownValues(locations: azureResource.A
 	if (locationValues.length === 0) {
 		locationValues = [
 			{
-				displayName: constants.NO_LOCATION_FOUND,	//
+				displayName: constants.NO_LOCATION_FOUND,
 				name: ''
 			}
 		];
@@ -493,7 +493,6 @@ export async function getAzureResourceGroups(account?: azdata.Account, subscript
 								subscription: {
 									id: dms.properties.subscriptionId
 								},
-								// tenant: ?
 							};
 						});
 					break;
@@ -508,11 +507,9 @@ export async function getAzureResourceGroups(account?: azdata.Account, subscript
 
 	// remove duplicates
 	resourceGroups = resourceGroups.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
-
 	resourceGroups.sort((a, b) => a.name.localeCompare(b.name));
 	return resourceGroups;
 }
-
 
 export async function getAzureResourceGroupsDropdownValues(resourceGroups: azureResource.AzureResourceResourceGroup[]): Promise<azdata.CategoryValue[]> {
 	let resourceGroupValues: azdata.CategoryValue[] = [];
@@ -525,7 +522,7 @@ export async function getAzureResourceGroupsDropdownValues(resourceGroups: azure
 	if (resourceGroupValues.length === 0) {
 		resourceGroupValues = [
 			{
-				displayName: constants.RESOURCE_GROUP_NOT_FOUND,	//
+				displayName: constants.RESOURCE_GROUP_NOT_FOUND,
 				name: ''
 			}
 		];
