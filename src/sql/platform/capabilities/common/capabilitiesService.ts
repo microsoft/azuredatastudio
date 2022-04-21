@@ -29,6 +29,7 @@ export interface ConnectionProviderProperties {
 	connectionOptions: azdata.ConnectionOption[];
 	isQueryProvider?: boolean;
 	supportedExecutionPlanFileExtensions?: string[];
+	connectionStringOptions?: any;
 }
 
 export interface ProviderFeatures {

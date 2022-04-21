@@ -34,6 +34,20 @@ const ConnectionProviderContrib: IJSONSchema = {
 			type: 'boolean',
 			description: localize('schema.isQueryProvider', "Whether the provider is also a query provider. The default value is true.")
 		},
+		connectionStringOptions: {
+			type: 'object',
+			properties: {
+				isEnabled: {
+					type: 'boolean',
+					description: localize('schema.enableConnectionStringOption', "Whether the provider supports connection string. The default value is false.")
+				},
+				isDefaultOption: {
+					type: 'boolean',
+					description: localize('schema.useConnectionStringAsDefaultOption', "Whether connection string should be the default option for the provider. The default value is false.")
+				}
+			},
+
+		},
 		iconPath: {
 			description: localize('schema.iconPath', "Icon path for the server type"),
 			oneOf: [
