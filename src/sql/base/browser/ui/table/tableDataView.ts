@@ -69,7 +69,7 @@ function defaultFilter<T extends Slick.SlickData>(data: T[], columns: Filterable
 		filteredData = filteredData.filter((item) => {
 			let parent = data[item.parent];
 			while (parent) {
-				if (!parent._collapsed) {
+				if (!parent._expanded) {
 					return false;
 				}
 				parent = data[parent.parent];

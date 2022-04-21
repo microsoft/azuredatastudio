@@ -125,10 +125,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._grid.onClick.subscribe((e, data) => {
 			const row = data.grid.getDataItem(data.row);
 			if (row['isParent']) {
-				if (!row._collapsed) {
-					(<any>row)._collapsed = true;
+				if (!row._expanded) {
+					(<any>row)._expanded = true;
 				} else {
-					(<any>row)._collapsed = false;
+					(<any>row)._expanded = false;
 				}
 				data.grid.updateRow(data.row);
 				this._data.filter(data.grid.getColumns());
@@ -140,10 +140,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 			if ((<any>e).keyCode === 13) {
 				const row = data.grid.getDataItem(data.row);
 				if (row['isParent']) {
-					if (!row._collapsed) {
-						(<any>row)._collapsed = true;
+					if (!row._expanded) {
+						(<any>row)._expanded = true;
 					} else {
-						(<any>row)._collapsed = false;
+						(<any>row)._expanded = false;
 					}
 					data.grid.updateRow(data.row);
 					this._data.filter(data.grid.getColumns());

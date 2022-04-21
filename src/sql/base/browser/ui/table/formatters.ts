@@ -167,7 +167,7 @@ export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: an
 }
 
 export function expandableColumnFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
-	const spacer = `<span style='display:inline-block;height:1px;width:" + (15 * dataContext["indent"]) + "px'></span>`;
+	const spacer = `<span style='display:inline-block;height:1px;width:${(15 * dataContext['indent'])}px'></span>`;
 	let cellClasses = 'grid-cell-value-container';
 	let valueToDisplay = '';
 	let titleValue = '';
@@ -192,13 +192,13 @@ export function expandableColumnFormatter(row: number | undefined, cell: any | u
 	}
 
 	if (dataContext['isParent']) {
-		if (dataContext._collapsed) {
-			return spacer + `<span class='codicon codicon-chevron-down toggle'></span>&nbsp; <span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
+		if (dataContext._expanded) {
+			return `<div aria-expanded="true">${spacer}<span class='codicon codicon-chevron-down toggle' style='font-weight:bold;'></span>&nbsp; <span title='${titleValue}' class='${cellClasses}'>${valueToDisplay}</span></div>`;
 		} else {
-			return spacer + `<span class='codicon codicon-chevron-right toggle'></span>&nbsp; <span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
+			return `<div aria-expanded="false">${spacer}<span class='codicon codicon-chevron-right toggle' style='font-weight:bold;'></span>&nbsp; <span title='${titleValue}' class='${cellClasses}'>${valueToDisplay}</span></div>`;
 		}
 	} else {
-		return spacer + `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
+		return `${spacer}<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
 	}
 }
 
