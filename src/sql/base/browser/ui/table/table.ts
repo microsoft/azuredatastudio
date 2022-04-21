@@ -121,6 +121,38 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.mapMouseEvent(this._grid.onHeaderClick, this._onHeaderClick);
 		this.mapMouseEvent(this._grid.onDblClick, this._onDoubleClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
+
+		this._grid.onClick.subscribe((e, data) => {
+			const row = data.grid.getDataItem(data.row);
+			if (row['isParent']) {
+				if (!row._collapsed) {
+					(<any>row)._collapsed = true;
+				} else {
+					(<any>row)._collapsed = false;
+				}
+				data.grid.updateRow(data.row);
+				this._data.filter(data.grid.getColumns());
+				this.rerenderGrid();
+			}
+		});
+
+		this._grid.onKeyDown.subscribe((e, data) => {
+			if ((<any>e).keyCode === 13) {
+				const row = data.grid.getDataItem(data.row);
+				if (row['isParent']) {
+					if (!row._collapsed) {
+						(<any>row)._collapsed = true;
+					} else {
+						(<any>row)._collapsed = false;
+					}
+					data.grid.updateRow(data.row);
+					this._data.filter(data.grid.getColumns());
+					this.rerenderGrid();
+					this.focus();
+				}
+			}
+
+		});
 	}
 
 	public rerenderGrid() {
@@ -175,6 +207,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 			this._data = new TableDataView<T>(data);
 		}
 		this._grid.setData(this._data, true);
+		this._data.filter(this._grid.getColumns());
 	}
 
 	getData(): IDisposableDataProvider<T> {

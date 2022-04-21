@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { removeLineBreaks } from 'sql/base/common/strings';
 import { isString } from 'vs/base/common/types';
-import { textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { expandableColumnFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { ExecutionPlanPropertiesViewBase, PropertiesSortType } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
 
 export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase {
@@ -93,7 +93,7 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 				width: 250,
 				editor: Slick.Editors.Text,
 				headerCssClass: 'prop-table-header',
-				formatter: textFormatter
+				formatter: expandableColumnFormatter
 			},
 			{
 				id: 'value',
@@ -129,10 +129,12 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		props.forEach((p, i) => {
 			let row = {};
 			rows.push(row);
-			row['name'] = '  '.repeat(indent) + p.name;
+			row['name'] = p.name;
 			row['parent'] = parentIndex;
+			row['indent'] = indent;
 			if (!isString(p.value)) {
 				row['value'] = removeLineBreaks(p.displayValue, ' ');
+				row['isParent'] = true;
 				this.convertModelToTableRows(p.value, rows.length - 1, indent + 2, rows);
 			} else {
 				row['value'] = removeLineBreaks(p.value, ' ');

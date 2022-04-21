@@ -9,6 +9,7 @@ import { compare as stringCompare } from 'vs/base/common/strings';
 
 import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
+import { expandableColumnFormatter } from 'sql/base/browser/ui/table/formatters';
 
 export interface IFindPosition {
 	col: number;
@@ -63,6 +64,19 @@ function defaultFilter<T extends Slick.SlickData>(data: T[], columns: Filterable
 			});
 		}
 	});
+	const collapsibleTable = columns.find(c => c.formatter === expandableColumnFormatter);
+	if (collapsibleTable) {
+		filteredData = filteredData.filter((item) => {
+			let parent = data[item.parent];
+			while (parent) {
+				if (!parent._collapsed) {
+					return false;
+				}
+				parent = data[parent.parent];
+			}
+			return true;
+		});
+	}
 	return filteredData;
 }
 

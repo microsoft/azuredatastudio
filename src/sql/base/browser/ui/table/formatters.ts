@@ -166,6 +166,42 @@ export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: an
 	};
 }
 
+export function expandableColumnFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
+	const spacer = `<span style='display:inline-block;height:1px;width:" + (15 * dataContext["indent"]) + "px'></span>`;
+	let cellClasses = 'grid-cell-value-container';
+	let valueToDisplay = '';
+	let titleValue = '';
+
+	if (DBCellValue.isDBCellValue(value)) {
+		valueToDisplay = 'NULL';
+		if (!value.isNull) {
+			valueToDisplay = value.displayValue.replace(/(\r\n|\n|\r)/g, ' ');
+			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+			titleValue = valueToDisplay;
+		} else {
+			cellClasses += ' missing-value';
+		}
+	} else if (typeof value === 'string' || (value && value.text)) {
+		if (value.text) {
+			valueToDisplay = value.text;
+		} else {
+			valueToDisplay = value;
+		}
+		valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+		titleValue = valueToDisplay;
+	}
+
+	if (dataContext['isParent']) {
+		if (dataContext._collapsed) {
+			return spacer + `<span class='codicon codicon-chevron-down toggle'></span>&nbsp; <span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
+		} else {
+			return spacer + `<span class='codicon codicon-chevron-right toggle'></span>&nbsp; <span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
+		}
+	} else {
+		return spacer + `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
+	}
+}
+
 /** The following code is a rewrite over the both formatter function using dom builder
  * rather than string manipulation, which is a safer and easier method of achieving the same goal.
  * However, when electron is in "Run as node" mode, dom creation acts differently than normal and therefore

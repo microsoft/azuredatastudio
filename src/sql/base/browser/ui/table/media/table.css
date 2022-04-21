@@ -234,3 +234,8 @@
 	display: flex;
 	align-items: center;
 }
+
+.toggle {
+	font-size: 12px !important;
+	margin-right: -5px;
+}
