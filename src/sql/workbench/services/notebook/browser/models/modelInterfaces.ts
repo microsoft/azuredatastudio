@@ -534,18 +534,18 @@ export interface ICellModel {
 	readonly onLanguageChanged: Event<string>;
 	readonly onCollapseStateChanged: Event<boolean>;
 	readonly onParameterStateChanged: Event<boolean>;
-	readonly onCellModeChanged: Event<boolean>;
+	readonly onCellEditModeChanged: Event<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
-	showPreview: boolean;
-	showMarkdown: boolean;
-	defaultTextEditMode: string;
+	defaultTextEditMode: CellEditModes;
 	sendChangeToNotebook(change: NotebookChangeType): void;
 	cellSourceChanged: boolean;
 	readonly savedConnectionName: string | undefined;
 	attachments: nb.ICellAttachments | undefined;
-	readonly onCurrentEditModeChanged: Event<CellEditModes>;
-	readonly currentMode: CellEditModes;
+	readonly onBeforeMarkdownEditModeChanged: Event<void>;
+	readonly onMarkdownEditModeChanged: Event<CellEditModes>;
+	readonly currentCellEditMode: CellEditModes;
+	setMarkdownEditMode(state: CellEditModes): void;
 	/**
 	 * Adds image as an attachment to cell metadata
 	 * @param mimeType a string defining mimeType of the image. Examples: image/png, image/jpeg
@@ -561,6 +561,7 @@ export interface ICellModel {
 	 * @param edits List of edits to apply to the cell
 	 */
 	processEdits(edits: ICellEdit[]): void;
+	readonly isSourceEmpty: boolean;
 }
 
 export const enum CellEditType {

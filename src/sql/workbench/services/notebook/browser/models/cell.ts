@@ -60,7 +60,8 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isEditMode: boolean;
 	private _onOutputsChanged = new Emitter<IOutputChangedEvent>();
 	private _onTableUpdated = new Emitter<ITableUpdatedEvent>();
-	private _onCellModeChanged = new Emitter<boolean>();
+	private _onCellEditModeChanged = new Emitter<boolean>();
+	private _onBeforeMarkdownEditModeChanged = new Emitter<void>();
 	private _onExecutionStateChanged = new Emitter<CellExecutionState>();
 	private _onCurrentEditModeChanged = new Emitter<CellEditModes>();
 	private _isTrusted: boolean;
@@ -79,10 +80,8 @@ export class CellModel extends Disposable implements ICellModel {
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
 	private _isCommandExecutionSettingEnabled: boolean = false;
-	private _showPreview: boolean = true;
-	private _showMarkdown: boolean = false;
 	private _cellSourceChanged: boolean = false;
-	private _defaultTextEditMode: string;
+	private _defaultTextEditMode: CellEditModes;
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
 	private _isInjectedParameter: boolean;
@@ -90,7 +89,8 @@ export class CellModel extends Disposable implements ICellModel {
 	private _outputCounter = 0; // When re-executing the same cell, ensure that we apply chart options in the same order
 	private _attachments: nb.ICellAttachments | undefined;
 	private _preventNextChartCache: boolean = false;
-	private _lastEditMode: string | undefined;
+	private _lastEditMode: CellEditModes;
+	private _cellEditMode: CellEditModes;
 	public richTextCursorPosition: ICaretPosition | undefined;
 	public markdownCursorPosition: IPosition | undefined;
 
@@ -150,8 +150,8 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._onTableUpdated.event;
 	}
 
-	public get onCellModeChanged(): Event<boolean> {
-		return this._onCellModeChanged.event;
+	public get onCellEditModeChanged(): Event<boolean> {
+		return this._onCellEditModeChanged.event;
 	}
 
 	public set metadata(data: any) {
@@ -242,19 +242,30 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public set isEditMode(isEditMode: boolean) {
-		this._isEditMode = isEditMode;
-		if (this._isEditMode) {
-			const newEditMode = this._lastEditMode ?? this._defaultTextEditMode;
-			this.showPreview = newEditMode !== TextCellEditModes.Markdown;
-			this.showMarkdown = newEditMode !== TextCellEditModes.RichText;
-		} else {
-			// when not in edit mode, default the values since they are only valid when editing.
-			// And to return the correct currentMode value.
-			this._showMarkdown = false;
-			this._showPreview = true;
+		if (this._isEditMode !== isEditMode) {
+			this._isEditMode = isEditMode;
+			if (this._isEditMode) {
+				const newEditMode = this._lastEditMode ?? this._defaultTextEditMode;
+				this.setMarkdownEditMode(newEditMode);
+			} else {
+				// when not in edit mode, default the values since they are only valid when editing.
+				// And to return the correct currentCellEditMode value.
+				this.setMarkdownEditMode(CellEditModes.WYSIWYG);
+			}
+			this._onCellEditModeChanged.fire(this._isEditMode);
+			// Note: this does not require a notebook update as it does not change overall state
 		}
-		this._onCellModeChanged.fire(this._isEditMode);
-		// Note: this does not require a notebook update as it does not change overall state
+	}
+
+	public setMarkdownEditMode(mode: CellEditModes) {
+		if (this._cellEditMode !== mode) {
+			// let lastEditMode = this._cellEditMode;
+			// Ensure callers are aware that markdown edit mode will change and perform certain actions accordingly
+			// such as saving cursor state
+			this._onBeforeMarkdownEditModeChanged.fire();
+			this._cellEditMode = mode;
+			this.doMarkdownEditModeUpdates();
+		}
 	}
 
 	public get trustedMode(): boolean {
@@ -329,6 +340,13 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get source(): string | string[] {
 		return this._source;
+	}
+
+	public get isSourceEmpty(): boolean {
+		if (Array.isArray(this.source)) {
+			return this.source.length === 1 && this.source[0] === '';
+		}
+		return this.source === '';
 	}
 
 	public set source(newSource: string | string[]) {
@@ -440,8 +458,12 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._onExecutionStateChanged.event;
 	}
 
-	public get onCurrentEditModeChanged(): Event<CellEditModes> {
+	public get onMarkdownEditModeChanged(): Event<CellEditModes> {
 		return this._onCurrentEditModeChanged.event;
+	}
+
+	public get onBeforeMarkdownEditModeChanged(): Event<void> {
+		return this._onBeforeMarkdownEditModeChanged.event;
 	}
 
 	private fireExecutionStateChanged(): void {
@@ -471,32 +493,14 @@ export class CellModel extends Disposable implements ICellModel {
 		this._stdInVisible = val;
 	}
 
-	public get showPreview(): boolean {
-		return this._showPreview;
-	}
-
-	public set showPreview(val: boolean) {
-		this._showPreview = val;
-		this.doModeUpdates();
-	}
-
-	public get showMarkdown(): boolean {
-		return this._showMarkdown;
-	}
-
-	public set showMarkdown(val: boolean) {
-		this._showMarkdown = val;
-		this.doModeUpdates();
-	}
-
-	private doModeUpdates() {
+	private doMarkdownEditModeUpdates() {
 		if (this._isEditMode) {
-			this._lastEditMode = this._showPreview && this._showMarkdown ? TextCellEditModes.SplitView : (this._showMarkdown ? TextCellEditModes.Markdown : TextCellEditModes.RichText);
+			this._lastEditMode = this._cellEditMode;
 		}
-		this._onCurrentEditModeChanged.fire(this.currentMode);
+		this._onCurrentEditModeChanged.fire(this._cellEditMode);
 	}
 
-	public get defaultTextEditMode(): string {
+	public get defaultTextEditMode(): CellEditModes {
 		return this._defaultTextEditMode;
 	}
 
@@ -1046,17 +1050,11 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 	}
 
-	public get currentMode(): CellEditModes {
+	public get currentCellEditMode(): CellEditModes {
 		if (this._cellType === CellTypes.Code) {
 			return CellEditModes.CODE;
 		}
-		if (this._showMarkdown && this._showPreview) {
-			return CellEditModes.SPLIT;
-		} else if (this._showMarkdown && !this._showPreview) {
-			return CellEditModes.MARKDOWN;
-		}
-		// defaulting to WYSIWYG
-		return CellEditModes.WYSIWYG;
+		return this._cellEditMode || CellEditModes.WYSIWYG;
 	}
 
 	public processEdits(edits: ICellEdit[]): void {
@@ -1205,7 +1203,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private populatePropertiesFromSettings() {
 		if (this._configurationService) {
 			const defaultTextModeKey = 'notebook.defaultTextEditMode';
-			this._defaultTextEditMode = this._configurationService.getValue(defaultTextModeKey);
+			this._defaultTextEditMode = this.convertTextCellEditModesToCellEditModes(this._configurationService.getValue(defaultTextModeKey));
 
 			const allowADSCommandsKey = 'notebook.allowAzureDataStudioCommands';
 			this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
@@ -1213,9 +1211,25 @@ export class CellModel extends Disposable implements ICellModel {
 				if (e.affectsConfiguration(allowADSCommandsKey)) {
 					this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
 				} else if (e.affectsConfiguration(defaultTextModeKey)) {
-					this._defaultTextEditMode = this._configurationService.getValue(defaultTextModeKey);
+					this._defaultTextEditMode = this.convertTextCellEditModesToCellEditModes(this._configurationService.getValue(defaultTextModeKey));
 				}
 			}));
+		}
+	}
+
+	/**
+	 * Convert TextCellEditModes values into CellEditModes values
+	 * @param textCellMode
+	 * @returns
+	 */
+	private convertTextCellEditModesToCellEditModes(textCellMode: TextCellEditModes): CellEditModes {
+		switch (textCellMode) {
+			case TextCellEditModes.Markdown:
+				return CellEditModes.MARKDOWN;
+			case TextCellEditModes.SplitView:
+				return CellEditModes.SPLIT;
+			default:
+				return CellEditModes.WYSIWYG;
 		}
 	}
 

@@ -526,7 +526,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 	private searchFn(cell: ICellModel, exp: string, matchCase: boolean = false, wholeWord: boolean = false, maxMatches?: number): NotebookRange[] {
 		let findResults: NotebookRange[] = [];
-		if (cell.cellType === 'markdown' && (cell.showMarkdown || cell.currentMode === CellEditModes.SPLIT) && typeof cell.source !== 'string') {
+		if (cell.cellType === 'markdown' && (cell.currentCellEditMode === CellEditModes.MARKDOWN || cell.currentCellEditMode === CellEditModes.SPLIT) && typeof cell.source !== 'string') {
 			let cellSource = cell.source;
 			for (let j = 0; j < cellSource.length; j++) {
 				let findStartResults = this.search(cellSource[j], exp, matchCase, wholeWord, maxMatches - findResults.length);
@@ -538,7 +538,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 			}
 		}
 		// if it's markdown cell in Markdown only mode, don't search on renderedOutput.
-		let cellVal = cell.cellType === 'markdown' ? (cell.currentMode === CellEditModes.SPLIT || !cell.showMarkdown ? cell.renderedOutputTextContent : undefined) : cell.source;
+		let cellVal = cell.cellType === 'markdown' ? (cell.currentCellEditMode === CellEditModes.SPLIT || cell.currentCellEditMode === CellEditModes.WYSIWYG ? cell.renderedOutputTextContent : undefined) : cell.source;
 		if (cellVal) {
 			if (typeof cellVal === 'string') {
 				let findStartResults = this.search(cellVal, exp, matchCase, wholeWord, maxMatches);

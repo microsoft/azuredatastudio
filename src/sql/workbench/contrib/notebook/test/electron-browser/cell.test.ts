@@ -1009,7 +1009,7 @@ suite('Cell Model', function (): void {
 		let createCellModePromise = () => {
 			return new Promise((resolve, reject) => {
 				setTimeout((error) => reject(error), 2000);
-				model.onCellModeChanged(isEditMode => {
+				model.onCellEditModeChanged(isEditMode => {
 					resolve(isEditMode);
 				});
 			});
@@ -1325,7 +1325,7 @@ suite('Cell Model', function (): void {
 		assert.deepStrictEqual(model.attachments, attachments, 'we should still have one attachment after removing the other');
 	});
 
-	test('cell should fire onCurrentEditModeChanged on edit', async function () {
+	test('cell should fire onCellEditModeChanged on edit', async function () {
 
 		let notebookModel = new NotebookModelStub({
 			name: '',
@@ -1343,7 +1343,7 @@ suite('Cell Model', function (): void {
 		let editModeChangePromise = () => {
 			return new Promise((resolve, reject) => {
 				setTimeout(() => reject(), 2000);
-				cellModel.onCurrentEditModeChanged(editMode => {
+				cellModel.onCellEditModeChanged(editMode => {
 					resolve(editMode);
 				});
 			});
@@ -1356,7 +1356,7 @@ suite('Cell Model', function (): void {
 
 		let editMode = await editModePromise;
 		assert(editMode);
-		assert.strictEqual(editMode, CellEditModes.WYSIWYG, 'Default edit mode should be WYSIWYG.');
+		assert.strictEqual(cellModel.currentCellEditMode, CellEditModes.WYSIWYG, 'Default edit mode should be WYSIWYG.');
 	});
 
 	test('cell should have lastEditMode set to whatever the user edited out of last', async function () {
@@ -1373,48 +1373,55 @@ suite('Cell Model', function (): void {
 		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 
 		// Non-Editing Preview mode -> showPreview should be true and showMarkdown should be false.
-		assert(cellModel.showPreview, 'showPreview should default to true when not in editMode');
-		assert(!cellModel.showMarkdown, 'showMarkdown should be false when not in editMode');
+		assert(cellModel.currentCellEditMode === CellEditModes.WYSIWYG, 'Markdown edit mode should be WYSIWYG not in editMode');
 
 		let getCurrentCellEditModePromise = () => {
 			return new Promise((resolve, reject) => {
-				cellModel.onCurrentEditModeChanged(cellEditMode => {
+				cellModel.onMarkdownEditModeChanged(cellEditMode => {
 					resolve(cellEditMode);
 				});
 			});
 		};
 
-		let cellModePromise = getCurrentCellEditModePromise();
+		let getCellEditModePromise = () => {
+			return new Promise((resolve, reject) => {
+				cellModel.onCellEditModeChanged(cellEditMode => {
+					resolve(cellEditMode);
+				});
+			});
+		};
+
+		let cellModePromise = getCellEditModePromise();
 		// Initially mode is defaulted be WYSIWYG -> showPreview is true and showMarkdown is false
-		assert.strictEqual(cellModel.currentMode, CellEditModes.WYSIWYG, 'Current mode should be WYSIWYG when not in edit mode');
+		assert.strictEqual(cellModel.currentCellEditMode, CellEditModes.WYSIWYG, 'Current mode should be WYSIWYG when not in edit mode');
 		assert.strictEqual(cellModel.isEditMode, false, 'cell should not default to edit mode');
 
 		cellModel.isEditMode = true;
 		let lastEditMode = await cellModePromise;
-		assert.strictEqual(lastEditMode, CellEditModes.WYSIWYG, 'Default edit mode should be WYSIWYG');
+		assert.strictEqual(cellModel.currentCellEditMode, CellEditModes.WYSIWYG, 'Default edit mode should be WYSIWYG');
 		// update mode to SPLITVIEW -> showMarkdown and showPreview both are true
 		cellModePromise = getCurrentCellEditModePromise();
-		cellModel.showMarkdown = true;
+		cellModel.setMarkdownEditMode(CellEditModes.SPLIT);
 		lastEditMode = await cellModePromise;
 		assert.strictEqual(lastEditMode, CellEditModes.SPLIT, 'LastEditMode should be set to split view');
 
 		// come out of edit mode and enter edit mode again to check edit mode.
 		cellModel.isEditMode = false;
-		assert.strictEqual(cellModel.currentMode, CellEditModes.WYSIWYG, 'Should default to WYSIWYG when not editing');
+		assert.strictEqual(cellModel.currentCellEditMode, CellEditModes.WYSIWYG, 'Should default to WYSIWYG when not editing');
 		cellModel.isEditMode = true;
-		assert.strictEqual(cellModel.currentMode, CellEditModes.SPLIT, 'Should persist lastEditMode and be in Split View');
+		assert.strictEqual(cellModel.currentCellEditMode, CellEditModes.SPLIT, 'Should persist lastEditMode and be in Split View');
 
 		// update mode to markdown mode only -> showPreview is false and showMarkdown is true
 		cellModePromise = getCurrentCellEditModePromise();
-		cellModel.showPreview = false;
+		cellModel.setMarkdownEditMode(CellEditModes.MARKDOWN);
 		lastEditMode = await cellModePromise;
 		assert.strictEqual(lastEditMode, CellEditModes.MARKDOWN, 'LastEditMode should be set to markdown');
 
 		// come out of edit mode and enter edit mode again to check edit mode.
 		cellModel.isEditMode = false;
-		assert.strictEqual(cellModel.currentMode, CellEditModes.WYSIWYG, 'Should default to WYSIWYG when not editing');
+		assert.strictEqual(cellModel.currentCellEditMode, CellEditModes.WYSIWYG, 'Should default to WYSIWYG when not editing');
 		cellModel.isEditMode = true;
-		assert.strictEqual(cellModel.currentMode, CellEditModes.MARKDOWN, 'Should persist lastEditMode and be in markdown only');
+		assert.strictEqual(cellModel.currentCellEditMode, CellEditModes.MARKDOWN, 'Should persist lastEditMode and be in markdown only');
 
 	});
 

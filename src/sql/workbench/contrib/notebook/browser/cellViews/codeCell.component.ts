@@ -53,7 +53,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 			this._register(this.cellModel.onOutputsChanged(() => {
 				this._changeRef.detectChanges();
 			}));
-			this._register(this.cellModel.onCellModeChanged(mode => {
+			this._register(this.cellModel.onCellEditModeChanged(mode => {
 				if (mode !== this.cellModel.isEditMode) {
 					this._changeRef.detectChanges();
 				}

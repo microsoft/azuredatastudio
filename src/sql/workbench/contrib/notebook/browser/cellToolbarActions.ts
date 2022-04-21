@@ -79,11 +79,11 @@ export class SplitCellAction extends CellActionBase {
 		return Promise.resolve();
 	}
 	public setListener(context: CellContext) {
-		this._register(context.cell.onCurrentEditModeChanged(currentMode => {
+		this._register(context.cell.onMarkdownEditModeChanged(currentMode => {
 			this.enabled = currentMode === CellEditModes.WYSIWYG ? false : true;
 		}));
 		this._register(context.cell.notebookModel.onCellTypeChanged(_ => {
-			this.enabled = context.cell.currentMode === CellEditModes.WYSIWYG ? false : true;
+			this.enabled = context.cell.currentCellEditMode === CellEditModes.WYSIWYG ? false : true;
 		}));
 	}
 }

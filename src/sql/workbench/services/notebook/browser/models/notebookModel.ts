@@ -570,14 +570,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let range = model.getFullModelRange();
 				let selection = editorControl.getSelection();
 				let source = this.cells[index].source;
-				let newCell = undefined, tailCell = undefined, partialSource = undefined;
+				let newCell: ICellModel;
+				let tailCell: ICellModel;
+				let partialSource: string;
 				let newCellIndex = index;
 				let tailCellIndex = index;
 				let splitCells: SplitCell[] = [];
 
 				// Save UI state
-				let showMarkdown = this.cells[index].showMarkdown;
-				let showPreview = this.cells[index].showPreview;
+				let markdownState = this.cells[index].currentCellEditMode;
 
 				//Get selection value from current cell
 				let newCellContent = model.getValueInRange(selection);
@@ -670,8 +671,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					cells: [activeCell],
 					cellIndex: activeCellIndex
 				});
-				activeCell.showMarkdown = showMarkdown;
-				activeCell.showPreview = showPreview;
+				activeCell.setMarkdownEditMode(markdownState);
 
 				//return inserted cell
 				return activeCell;

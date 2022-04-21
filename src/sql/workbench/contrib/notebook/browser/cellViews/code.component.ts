@@ -287,7 +287,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.cellModel.onCollapseStateChanged(isCollapsed => {
 			this.onCellCollapse(isCollapsed);
 		}));
-		this._register(this.cellModel.onCurrentEditModeChanged((e) => {
+		this._register(this.cellModel.onMarkdownEditModeChanged((e) => {
 			let preview = e !== CellEditModes.MARKDOWN;
 			if (!preview && this._cellModel.cellSourceChanged) {
 				this.updateModel();
@@ -295,7 +295,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			}
 			this._layoutEmitter.fire();
 		}));
-		this._register(this.cellModel.onCellModeChanged((isEditMode) => {
+		this._register(this.cellModel.onCellEditModeChanged((isEditMode) => {
 			this.onCellModeChanged(isEditMode);
 		}));
 

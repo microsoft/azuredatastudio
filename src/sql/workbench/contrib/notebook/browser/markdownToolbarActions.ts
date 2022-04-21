@@ -9,7 +9,7 @@ import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { IRange, Range } from 'vs/editor/common/core/range';
 import { IIdentifiedSingleEditOperation } from 'vs/editor/common/model';
 import { TextModel } from 'vs/editor/common/model/textModel';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { Selection } from 'vs/editor/common/core/selection';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
@@ -564,18 +564,16 @@ export class ToggleViewAction extends Action {
 		label: string,
 		cssClass: string,
 		tooltip: string,
-		private showPreview: boolean,
-		private showMarkdown: boolean
+		private markdownEditMode: CellEditModes
 	) {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
 	}
 
 	public override async run(context: MarkdownToolbarComponent): Promise<void> {
-		context.cellModel.showPreview = this.showPreview;
-		context.cellModel.showMarkdown = this.showMarkdown;
+		context.cellModel.setMarkdownEditMode(this.markdownEditMode);
 		// Hide image button in WYSIWYG mode
-		if (this.showPreview && !this.showMarkdown) {
+		if (this.markdownEditMode === CellEditModes.WYSIWYG) {
 			context.hideImageButton();
 		} else {
 			context.showLinkAndImageButtons();

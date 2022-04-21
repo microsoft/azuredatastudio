@@ -9,7 +9,7 @@ import * as assert from 'assert';
 import { URI } from 'vs/base/common/uri';
 import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
-import { IClientSession, INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellEditModes, IClientSession, INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { NotebookFindModel } from 'sql/workbench/contrib/notebook/browser/find/notebookFindModel';
@@ -400,6 +400,7 @@ suite('Notebook Find Model', function (): void {
 
 		// fire the edit mode on cell
 		model.cells[0].isEditMode = true;
+		model.cells[0].setMarkdownEditMode(CellEditModes.SPLIT);
 		notebookFindModel = new NotebookFindModel(model);
 		await notebookFindModel.find('SOP', false, false, max_find_count);
 

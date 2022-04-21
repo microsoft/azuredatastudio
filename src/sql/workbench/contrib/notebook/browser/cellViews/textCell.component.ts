@@ -60,12 +60,12 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	@HostListener('document:keydown', ['$event'])
 	onkeydown(e: KeyboardEvent) {
-		if (DOM.getActiveElement() === this.output?.nativeElement && this.isActive() && this.cellModel?.currentMode === CellEditModes.WYSIWYG) {
+		if (DOM.getActiveElement() === this.output?.nativeElement && this.isActive() && this.cellModel?.currentCellEditMode === CellEditModes.WYSIWYG) {
 			const keyEvent = new StandardKeyboardEvent(e);
 			// Select all text
 			if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_A) {
 				preventDefaultAndExecCommand(e, 'selectAll');
-			} else if ((keyEvent.metaKey && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_Z) || (keyEvent.ctrlKey && keyEvent.keyCode === KeyCode.KEY_Y) && !this.markdownMode) {
+			} else if ((keyEvent.metaKey && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_Z) || (keyEvent.ctrlKey && keyEvent.keyCode === KeyCode.KEY_Y) && !this.showMarkdown) {
 				// Redo text
 				this.redoRichTextChange();
 			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_Z) {
@@ -99,9 +99,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private _content: string | string[];
 	private _lastTrustedMode: boolean;
-	private isEditMode: boolean;
-	private _previewMode: boolean = true;
-	private _markdownMode: boolean;
 	private _sanitizer: ISanitizer;
 	private _activeCellId: string;
 	private readonly _onDidClickLink = this._register(new Emitter<URI>());
@@ -161,6 +158,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		return editors;
 	}
 
+	public get isEditMode(): boolean {
+		return this.cellModel?.isEditMode;
+	}
+
 	//Gets sanitizer from ISanitizer interface
 	private get sanitizer(): ISanitizer {
 		if (this._sanitizer) {
@@ -191,27 +192,38 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
+		this.updatePreview();
 		this.setFocusAndScroll();
-		this.cellModel.isEditMode = false;
 		this._htmlMarkdownConverter = this._instantiationService.createInstance(HTMLMarkdownConverter, this.notebookUri);
-		this._register(this.cellModel.onOutputsChanged(e => {
+		this._register(this.cellModel.onOutputsChanged(_e => {
 			this.updatePreview();
 		}));
-		this._register(this.cellModel.onCellModeChanged(mode => {
-			if (mode !== this.isEditMode) {
-				this.toggleEditMode(mode);
+		this._register(this.cellModel.onCellEditModeChanged(_editMode => {
+			// When changing cell edit mode, only need to re-render preview when there is no cell source and content is placeholder
+			if (this.cellModel.isSourceEmpty) {
+				this.updatePreview();
 			}
+			// Always call detectChanges() since this.isEditMode now has new value
 			this._changeRef.detectChanges();
 		}));
-		this._register(this.cellModel.onCurrentEditModeChanged(editMode => {
-			let markdown: boolean = editMode !== CellEditModes.WYSIWYG;
-			if (!markdown) {
+		this._register(this.cellModel.onMarkdownEditModeChanged(editMode => {
+			if (editMode === CellEditModes.WYSIWYG) {
 				let editorControl = this.cellEditors.length > 0 ? this.cellEditors[0].getEditor().getControl() : undefined;
 				if (editorControl) {
 					let selection = editorControl.getSelection();
 					this.cellModel.markdownCursorPosition = selection?.getPosition();
 				}
 			}
+			// Only update preview if preview is visible on screen
+			if (editMode !== CellEditModes.MARKDOWN) {
+				this.updatePreview();
+			}
+			// this.cellModel.currentCellEditMode has new value, so re-evaluate
+			this._changeRef.detectChanges();
+			this.focusIfPreviewMode();
+		}));
+
+		this._register(this.cellModel.onBeforeMarkdownEditModeChanged(() => {
 			// On preview mode change, get the cursor position (get the position only when the selection node is a text node)
 			if (window.getSelection() && window.getSelection().focusNode?.nodeName === '#text' && window.getSelection().getRangeAt(0)) {
 				let selection = window.getSelection().getRangeAt(0);
@@ -243,9 +255,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					this.cellModel.richTextCursorPosition = cursorPosition;
 				}
 			}
-			this.previewMode = editMode !== CellEditModes.MARKDOWN;
-			this.markdownMode = markdown;
-			this.focusIfPreviewMode();
 		}));
 	}
 
@@ -295,12 +304,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	 */
 	private updatePreview(): void {
 		let trustedChanged = this.cellModel && this._lastTrustedMode !== this.cellModel.trustedMode;
-		let cellModelSourceJoined = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
-		let contentJoined = Array.isArray(this._content) ? this._content.join('') : this._content;
-		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0 || this._previewMode === true;
+		const cellSourceEmpty = this.cellModel.isSourceEmpty;
+		let contentChanged = cellSourceEmpty || this.showPreview;
 		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
-			if ((!cellModelSourceJoined) && !this.isEditMode) {
+			if (cellSourceEmpty && !this.isEditMode) {
 				if (this.doubleClickEditEnabled) {
 					this._content = localize('doubleClickEdit', "<i>Double-click to edit</i>");
 				} else {
@@ -317,11 +325,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			});
 			this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
 			this.setLoading(false);
-			if (this._previewMode) {
+			if (this.showPreview) {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
 				this.addUndoElement(outputElement.innerHTML);
-				if (this.markdownMode) {
+				if (this.showMarkdown) {
 					this.setSplitViewHeight();
 				}
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
@@ -426,37 +434,24 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	public toggleEditMode(editMode?: boolean): void {
-		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
-		this.cellModel.isEditMode = this.isEditMode;
-		if (!this.isEditMode) {
-			this.cellModel.showPreview = true;
-			this.cellModel.showMarkdown = false;
-		} else {
-			this.markdownMode = this.cellModel.showMarkdown;
+		if (this.isEditMode !== editMode) {
+			this.cellModel.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
+			if (!this.isEditMode) {
+				this.cellModel.setMarkdownEditMode(CellEditModes.WYSIWYG);
+			}
+			if (this.showPreview) {
+				this.updatePreview();
+			}
 		}
-		this.updatePreview();
 		this._changeRef.detectChanges();
 	}
 
-	public get previewMode(): boolean {
-		return this._previewMode;
-	}
-	public set previewMode(value: boolean) {
-		if (this._previewMode !== value) {
-			this._previewMode = value;
-			this.updatePreview();
-			this._changeRef.detectChanges();
-		}
+	public get showPreview(): boolean {
+		return this.cellModel?.currentCellEditMode === CellEditModes.WYSIWYG || this.cellModel?.currentCellEditMode === CellEditModes.SPLIT;
 	}
 
-	public get markdownMode(): boolean {
-		return this._markdownMode;
-	}
-	public set markdownMode(value: boolean) {
-		if (this._markdownMode !== value) {
-			this._markdownMode = value;
-			this._changeRef.detectChanges();
-		}
+	public get showMarkdown(): boolean {
+		return this.cellModel?.currentCellEditMode === CellEditModes.SPLIT || this.cellModel?.currentCellEditMode === CellEditModes.MARKDOWN;
 	}
 
 	private toggleUserSelect(userSelect: boolean): void {
@@ -480,8 +475,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private focusIfPreviewMode(): void {
-		if (this.previewMode) {
-			if (!this.markdownMode) {
+		if (this.showPreview) {
+			if (!this.showMarkdown) {
 				let outputElement = this.output?.nativeElement as HTMLElement;
 				if (outputElement) {
 					outputElement.style.maxHeight = 'unset';
@@ -495,7 +490,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			// If the elements exist, we set the selection, else the cursor defaults to beginning.
 			// Only do this if the cell is active so we don't steal the window selection from another cell
 			// since this function is called whenever any cell in the Notebook changes, not just ourself
-			if (this.isActive() && !this.markdownMode && this.cellModel.richTextCursorPosition) {
+			if (this.isActive() && !this.showMarkdown && this.cellModel.richTextCursorPosition) {
 				let selection = window.getSelection();
 				let htmlNodes = this.cellModel.richTextCursorPosition.startElementNodes;
 				let depthToNode = htmlNodes.length;
