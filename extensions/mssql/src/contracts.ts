@@ -1111,6 +1111,20 @@ export namespace DisposeTableDesignerRequest {
 }
 // ------------------------------- < Table Designer > ------------------------------------
 
+// ------------------------------- < Azure Blob > ------------------------------------
+export interface CreateSasParams {
+	ownerUri: string;
+	blobContainerUri: string;
+	blobContainerKey: string;
+	storageAccountName: string;
+	expirationDate: string;
+}
+
+export namespace CreateSasRequest {
+	export const type = new RequestType<CreateSasParams, mssql.CreateSasResponse, void, void>('blob/createSas');
+}
+
+// ------------------------------- < Azure Blob > ------------------------------------
 
 // ------------------------------- < Execution Plan > ------------------------------------
 

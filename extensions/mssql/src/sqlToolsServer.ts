@@ -26,6 +26,7 @@ import { SqlAssessmentService } from './sqlAssessment/sqlAssessmentService';
 import { NotebookConvertService } from './notebookConvert/notebookConvertService';
 import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
 import { SqlCredentialService } from './credentialstore/sqlCredentialService';
+import { AzureBlobService } from './azureBlob/azureBlobService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -91,6 +92,7 @@ export class SqlToolsServer {
 		const resourceProvider = new AzureResourceProvider(context.extensionContext.logPath, this.config);
 		this.disposables.push(credsStore);
 		this.disposables.push(resourceProvider);
+		context.registerService(Constants.AzureBlobService, new AzureBlobService(this.client));
 		return Promise.all([credsStore.start(), resourceProvider.start()]).then();
 	}
 
