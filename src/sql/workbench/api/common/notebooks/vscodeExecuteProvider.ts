@@ -86,7 +86,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 			this._kernelSpec.supportedLanguages = this._controller.supportedLanguages;
 		}
 
-		// Store external kernel names for .NET Interactive kernels for when notebook gets saved, so that notebook
+		// Store external kernel names for .NET Interactive kernels for when notebook gets saved, so that notebook is usable outside of ADS
 		if (this._kernelSpec.name === 'jupyter-notebook' && this._kernelSpec.display_name === DotnetInteractiveLabel) {
 			let language = this._kernelSpec.language?.replace(DotnetInteractiveLanguagePrefix, '');
 			let displayLanguage: string;
