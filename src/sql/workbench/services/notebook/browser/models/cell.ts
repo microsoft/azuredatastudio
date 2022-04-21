@@ -259,7 +259,6 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public setMarkdownEditMode(mode: CellEditModes) {
 		if (this._cellEditMode !== mode) {
-			// let lastEditMode = this._cellEditMode;
 			// Ensure callers are aware that markdown edit mode will change and perform certain actions accordingly
 			// such as saving cursor state
 			this._onBeforeMarkdownEditModeChanged.fire();
