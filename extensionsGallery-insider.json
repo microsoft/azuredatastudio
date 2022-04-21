@@ -3602,63 +3602,6 @@
 					"flags": ""
 				},
 				{
-					"extensionId": "73",
-					"extensionName": "azdata",
-					"displayName": "Azure Data CLI",
-					"shortDescription": "Provides Azure Data CLI capabilities for use in Azure Data Studio",
-					"publisher": {
-						"displayName": "Microsoft",
-						"publisherId": "Microsoft",
-						"publisherName": "Microsoft"
-					},
-					"versions": [
-						{
-							"version": "0.6.4",
-							"lastUpdated": "6/3/2021",
-							"assetUri": "",
-							"fallbackAssetUri": "fallbackAssetUri",
-							"files": [
-								{
-									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azdata/azdata-0.6.4.vsix"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/1.31.0/extensions/azdata/images/extension.png"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/1.31.0/extensions/azdata/README.md"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/1.31.0/extensions/azdata/package.json"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/1.31.0/LICENSE.txt"
-								}
-							],
-							"properties": [
-								{
-									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": "*"
-								},
-								{
-									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.26.0"
-								},
-								{
-									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Microsoft/azuredatastudio"
-								}
-							]
-						}
-					],
-					"statistics": [],
-					"flags": "preview"
-				},
-				{
 					"extensionId": "74",
 					"extensionName": "kusto",
 					"displayName": "Kusto (KQL)",
@@ -4694,7 +4637,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 77
+							"count": 76
 						}
 					]
 				}
