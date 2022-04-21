@@ -16,7 +16,7 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
 import { platform } from 'vs/base/common/process';
 
-const PROBABILITY = 0.15;
+const PROBABILITY = 1; // {{SQL CARBON EDIT}} For now, we'd like all ADS users to receive the NPS survey.
 const SESSION_COUNT_KEY = 'nps/sessionCount';
 const LAST_SESSION_DATE_KEY = 'nps/lastSessionDate';
 const SKIP_VERSION_KEY = 'nps/skipVersion';
