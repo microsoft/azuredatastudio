@@ -54,15 +54,6 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		);
 	}
 
-	public schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-		const params: contracts.SchemaComparePublishDatabaseChangesParams = { operationId: operationId, targetServerName: targetServerName, targetDatabaseName: targetDatabaseName, taskExecutionMode: taskExecutionMode };
-		return this.client.sendRequest(contracts.SchemaComparePublishChangesRequest.type, params).then(undefined,
-			e => {
-				this.client.logFailedRequest(contracts.SchemaComparePublishChangesRequest.type, e); return Promise.resolve(undefined);
-			}
-		);
-	}
-
 	public schemaComparePublishDatabaseChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
 		const params: contracts.SchemaComparePublishDatabaseChangesParams = { operationId: operationId, targetServerName: targetServerName, targetDatabaseName: targetDatabaseName, taskExecutionMode: taskExecutionMode };
 		return this.client.sendRequest(contracts.SchemaComparePublishDatabaseChangesRequest.type, params).then(

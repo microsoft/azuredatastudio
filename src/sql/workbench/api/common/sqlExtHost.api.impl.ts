@@ -589,9 +589,14 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TableIndexProperty: sqlExtHostTypes.designers.TableIndexProperty,
 				TableIndexColumnSpecificationProperty: sqlExtHostTypes.designers.TableIndexColumnSpecificationProperty,
 				DesignerEditType: sqlExtHostTypes.designers.DesignerEditType,
+				TableIcon: sqlExtHostTypes.designers.TableIcon,
 				openTableDesigner(providerId, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): Promise<void> {
 					return extHostDataProvider.$openTableDesigner(providerId, tableInfo, telemetryInfo);
 				}
+			};
+
+			const executionPlan: typeof azdata.executionPlan = {
+				BadgeType: sqlExtHostTypes.executionPlan.BadgeType
 			};
 
 			return {
@@ -645,7 +650,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TabOrientation: sqlExtHostTypes.TabOrientation,
 				sqlAssessment,
 				TextType: sqlExtHostTypes.TextType,
-				designers: designers
+				designers: designers,
+				executionPlan: executionPlan
 			};
 		},
 		extHostNotebook: extHostNotebook,

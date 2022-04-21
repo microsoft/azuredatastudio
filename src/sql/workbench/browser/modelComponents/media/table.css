@@ -21,3 +21,11 @@
 .display-none {
 	display: none;
 }
+
+modelview-table .context-menu-button {
+	border-width: 0px;
+	height: 16px;
+	width: 26px;
+	vertical-align: middle;
+	cursor: pointer;
+}

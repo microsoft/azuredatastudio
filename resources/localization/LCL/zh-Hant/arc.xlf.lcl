@@ -4821,10 +4821,13 @@
       </Item>
       <Item ItemId=";extensions/arc/package.resource.type.azure.arc.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Creates an Azure Arc data controller]]></Val>
+          <Val><![CDATA[Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[建立 Azure Arc 資料控制器]]></Val>
+            <Val><![CDATA[建立 Azure Arc 資料控制器。啟動此精靈之前，請先確認您已執行 AZ 登入。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Creates an Azure Arc data controller]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

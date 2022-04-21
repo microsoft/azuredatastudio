@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { DatabaseMigration } from '../../api/azure';
 import * as loc from '../../constants/strings';
-import { MigrationContext } from '../../models/migrationLocalStorage';
 
 export class MigrationStatusDialogModel {
 	public statusDropdownValues: azdata.CategoryValue[] = [
@@ -27,7 +27,7 @@ export class MigrationStatusDialogModel {
 		}
 	];
 
-	constructor(public _migrations: MigrationContext[]) {
+	constructor(public _migrations: DatabaseMigration[]) {
 	}
 
 }

@@ -12,8 +12,7 @@ import { AzureResourceItemType } from '../../constants';
 import { generateGuid } from '../../utils';
 import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
-import { azureResource } from 'azureResource';
-import { AzureAccount } from 'azurecore';
+import { AzureAccount, azureResource } from 'azurecore';
 
 export class SqlInstanceArcTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.sqlInstanceArcContainer';
