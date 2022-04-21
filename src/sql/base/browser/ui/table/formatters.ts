@@ -86,30 +86,7 @@ export function hyperLinkFormatter(row: number | undefined, cell: any | undefine
  * Format all text to replace all new lines with spaces and performs HTML entity encoding
  */
 export function textFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
-	let cellClasses = 'grid-cell-value-container';
-	let valueToDisplay = '';
-	let titleValue = '';
-
-	if (DBCellValue.isDBCellValue(value)) {
-		valueToDisplay = 'NULL';
-		if (!value.isNull) {
-			valueToDisplay = value.displayValue.replace(/(\r\n|\n|\r)/g, ' ');
-			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
-			titleValue = valueToDisplay;
-		} else {
-			cellClasses += ' missing-value';
-		}
-	} else if (typeof value === 'string' || (value && value.text)) {
-		if (value.text) {
-			valueToDisplay = value.text;
-		} else {
-			valueToDisplay = value;
-		}
-		valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
-		titleValue = valueToDisplay;
-	}
-
-	return `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
+	return createTextCell(value);
 }
 
 
@@ -168,6 +145,22 @@ export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: an
 
 export function expandableColumnFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
 	const spacer = `<span style='display:inline-block;height:1px;width:${(15 * dataContext['indent'])}px'></span>`;
+
+	const textDisplayElement = createTextCell(value);
+
+	if (dataContext['isParent']) {
+		if (dataContext._expanded) {
+			return `<div aria-expanded="true">${spacer}<span class='codicon codicon-chevron-down toggle' style='font-weight:bold;'></span>&nbsp; ${textDisplayElement}</div>`;
+		} else {
+			return `<div aria-expanded="false">${spacer}<span class='codicon codicon-chevron-right toggle' style='font-weight:bold;'></span>&nbsp; ${textDisplayElement}</div>`;
+		}
+	} else {
+		return `${spacer}${textDisplayElement}`;
+	}
+}
+
+
+function createTextCell(value: any): string {
 	let cellClasses = 'grid-cell-value-container';
 	let valueToDisplay = '';
 	let titleValue = '';
@@ -191,15 +184,7 @@ export function expandableColumnFormatter(row: number | undefined, cell: any | u
 		titleValue = valueToDisplay;
 	}
 
-	if (dataContext['isParent']) {
-		if (dataContext._expanded) {
-			return `<div aria-expanded="true">${spacer}<span class='codicon codicon-chevron-down toggle' style='font-weight:bold;'></span>&nbsp; <span title='${titleValue}' class='${cellClasses}'>${valueToDisplay}</span></div>`;
-		} else {
-			return `<div aria-expanded="false">${spacer}<span class='codicon codicon-chevron-right toggle' style='font-weight:bold;'></span>&nbsp; <span title='${titleValue}' class='${cellClasses}'>${valueToDisplay}</span></div>`;
-		}
-	} else {
-		return `${spacer}<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
-	}
+	return `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
 
 /** The following code is a rewrite over the both formatter function using dom builder
