@@ -444,6 +444,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				{
 					'sessionId': this._sessionId,
 					'performanceDataSource': this._skuRecommendationPerformanceDataSource,
+					'scalingFactor': this._skuScalingFactor?.toString(),
+					'skuTargetPercentile': this._skuTargetPercentile?.toString(),
+					'skuEnablePreview': this._skuEnablePreview?.toString(),
 					'databaseLevelRequirements': JSON.stringify(this._skuRecommendationResults?.recommendations?.instanceRequirements?.databaseLevelRequirements?.map(i => {
 						return {
 							cpuRequirementInCores: i.cpuRequirementInCores,
