@@ -7,7 +7,7 @@ import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
 import { ADSNotebookController } from 'sql/workbench/api/common/notebooks/adsNotebookController';
 import * as nls from 'vs/nls';
-import { convertToVSCodeNotebookCell, DotnetInteractiveDisplayName, DotnetInteractiveLanguagePrefix } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { convertToVSCodeNotebookCell, DotnetInteractiveDisplayName, DotnetInteractiveJupyterKernelPrefix, DotnetInteractiveLanguagePrefix } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { URI } from 'vs/base/common/uri';
@@ -104,7 +104,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 					displayLanguage = language;
 			}
 			if (!this._kernelSpec.oldName) {
-				this._kernelSpec.oldName = `.net-${language}`;
+				this._kernelSpec.oldName = `${DotnetInteractiveJupyterKernelPrefix}${language}`;
 			}
 			if (!this._kernelSpec.oldDisplayName) {
 				this._kernelSpec.oldDisplayName = `.NET (${displayLanguage})`;
