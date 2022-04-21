@@ -12,10 +12,9 @@ import { CellTypes, MimeTypes, OutputTypes } from 'sql/workbench/services/notebo
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 
-export const DotnetInteractiveJupyterLanguagePrefix = '.net-';
+export const DotnetInteractiveJupyterKernelPrefix = '.net-';
 export const DotnetInteractiveLanguagePrefix = 'dotnet-interactive.';
-export const DotnetInteractiveJupyterLabelPrefix = '.NET (';
-export const DotnetInteractiveLabel = '.NET Interactive';
+export const DotnetInteractiveDisplayName = '.NET Interactive';
 
 export function convertToVSCodeNotebookCell(cellKind: azdata.nb.CellType, cellIndex: number, cellUri: URI, docUri: URI, cellLanguage: string, cellSource?: string | string[]): vscode.NotebookCell {
 	return <vscode.NotebookCell>{
