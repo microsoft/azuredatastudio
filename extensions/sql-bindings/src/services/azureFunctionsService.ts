@@ -25,7 +25,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 	TelemetryReporter.sendActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding);
 	let connectionInfo: IConnectionInfo | undefined;
 	let isCreateNewProject: boolean = false;
-	let newFunctionFileObject: azureFunctionsUtils.IFileFunctionObject;
+	let newFunctionFileObject: azureFunctionsUtils.IFileFunctionObject = { filePromise: undefined, watcherDisposable: undefined };
 
 	try {
 		const azureFunctionApi = await azureFunctionsUtils.getAzureFunctionsExtensionApi();
@@ -83,6 +83,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 							return;
 						}
 						projectFolder = projectFolders[0].fsPath;
+						break;
 					} else {
 						projectFolder = workspaceFolder;
 						break;
@@ -271,7 +272,9 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		propertyBag.exitReason = exitReason;
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
 			.withAdditionalProperties(propertyBag).send();
-		newFunctionFileObject!.watcherDisposable.dispose();
+		if (newFunctionFileObject.watcherDisposable) {
+			newFunctionFileObject.watcherDisposable.dispose();
+		}
 	}
 }
 

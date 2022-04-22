@@ -24,8 +24,8 @@ export interface ILocalSettingsJson {
 }
 
 export interface IFileFunctionObject {
-	filePromise: Promise<string>;
-	watcherDisposable: vscode.Disposable;
+	filePromise: Promise<string> | undefined;
+	watcherDisposable: vscode.Disposable | undefined;
 }
 
 /**
