@@ -214,6 +214,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		await azureFunctionApi.createFunction({
 			language: 'C#',
 			targetFramework: 'netcoreapp3.1',
+			version: '~3',
 			templateId: templateId,
 			functionName: functionName,
 			functionSettings: {
