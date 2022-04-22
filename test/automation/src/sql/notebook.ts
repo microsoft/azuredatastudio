@@ -9,8 +9,8 @@ import { QuickInput } from '../quickinput';
 import { Editors } from '../editors';
 import { IElement } from '..';
 
-const winOrCtrl = process.platform === 'win32' ? 'win' : 'ctrl';
-const ctrlOrCmd = process.platform === 'win32' ? 'ctrl' : 'cmd';
+const winOrCtrl = process.platform === 'darwin' ? 'ctrl' : 'win';
+const ctrlOrCmd = process.platform === 'darwin' ? 'cmd' : 'ctrl';
 
 export class Notebook {
 
@@ -68,10 +68,10 @@ export class Notebook {
 		await this.code.waitForActiveElement(textarea);
 
 		await this.code.waitForTypeInEditor(textarea, text);
-		await this._waitForActiveCellEditorContents(c => c.indexOf(text) > -1);
+		await this.waitForActiveCellEditorContents(c => c.indexOf(text) > -1);
 	}
 
-	private async _waitForActiveCellEditorContents(accept: (contents: string) => boolean): Promise<any> {
+	async waitForActiveCellEditorContents(accept: (contents: string) => boolean): Promise<any> {
 		const selector = '.notebook-cell.active .monaco-editor .view-lines';
 		return this.code.waitForTextContent(selector, undefined, c => accept(c.replace(/\u00a0/g, ' ')));
 	}
@@ -81,9 +81,18 @@ export class Notebook {
 		await this.code.waitForElement(span);
 	}
 
+	public async selectAllTextInRichTextEditor(): Promise<void> {
+		const editor = '.notebook-cell.active .notebook-preview[contenteditable="true"]';
+		await this.selectAllText(editor);
+	}
+
 	public async selectAllTextInEditor(): Promise<void> {
 		const editor = '.notebook-cell.active .monaco-editor';
-		await this.code.waitAndClick(editor);
+		await this.selectAllText(editor);
+	}
+
+	private async selectAllText(selector: string): Promise<void> {
+		await this.code.waitAndClick(selector);
 		await this.code.dispatchKeybinding(ctrlOrCmd + '+a');
 	}
 
@@ -155,7 +164,17 @@ export class Notebook {
 		await this.code.waitForElement(textSelector, result => !!result?.textContent?.includes(text)); // Use includes to handle whitespace/quote edge cases
 	}
 
+	async waitForTextCellPreviewContentGone(selector: string): Promise<void> {
+		let textSelector = `${Notebook.textCellPreviewSelector} ${selector}`;
+		await this.code.waitForElementGone(textSelector);
+	}
+
 	// Cell Output Actions
+
+	async waitForJupyterErrorOutput(): Promise<void> {
+		const jupyterErrorOutput = `.notebook-cell.active .notebook-output mime-output[data-mime-type="application/vnd.jupyter.stderr"]`;
+		await this.code.waitForElement(jupyterErrorOutput);
+	}
 
 	async waitForActiveCellResults(): Promise<void> {
 		const outputComponent = '.notebook-cell.active .notebook-output';
@@ -233,8 +252,16 @@ export class TextCellToolbar {
 		await this.clickToolbarButton('Insert code');
 	}
 
-	public async insertLink(): Promise<void> {
-		throw new Error('Method not implemented.');
+	public async insertLink(linkLabel: string, linkAddress: string): Promise<void> {
+		await this.clickToolbarButton('Insert link');
+		const linkDialogSelector = 'div.modal.callout-dialog[aria-label="Insert link"]';
+		const displayTextSelector = `${linkDialogSelector} input[aria-label="Text to display"]`;
+		await this.code.waitForSetValue(displayTextSelector, linkLabel);
+
+		const addressTextSelector = `${linkDialogSelector} input[aria-label="Address"]`;
+		await this.code.waitForSetValue(addressTextSelector, linkAddress);
+
+		await this.code.dispatchKeybinding('enter');
 	}
 
 	public async insertList(): Promise<void> {
@@ -245,9 +272,13 @@ export class TextCellToolbar {
 		await this.clickToolbarButton('Insert ordered list');
 	}
 
-	public async changeSelectedTextSize(): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
+	// Disabled since the text size dropdown is not clickable on Unix from smoke tests
+	// public async changeSelectedTextSize(textSize: 'Heading 1' | 'Heading 2' | 'Heading 3' | 'Paragraph'): Promise<void> {
+	// 	const actionSelector = `${TextCellToolbar.textCellToolbar} .monaco-dropdown a.heading-dropdown`;
+	// 	await this.code.waitAndClick(actionSelector);
+	// 	const menuItemSelector = `.context-view.monaco-menu-container .monaco-menu .action-menu-item[title="${textSize}"]`;
+	// 	await this.code.waitAndClick(menuItemSelector);
+	// }
 
 	private async clickToolbarButton(buttonTitle: string) {
 		const actionSelector = `${TextCellToolbar.textCellToolbar} a[title="${buttonTitle}"]`;
@@ -264,6 +295,7 @@ export class NotebookToolbar {
 	private static readonly collapseCellsButtonSelector = `${NotebookToolbar.toolbarButtonSelector}.icon-collapse-cells`;
 	private static readonly expandCellsButtonSelector = `${NotebookToolbar.toolbarButtonSelector}.icon-expand-cells`;
 	private static readonly clearResultsButtonSelector = `${NotebookToolbar.toolbarButtonSelector}.icon-clear-results`;
+	private static readonly managePackagesButtonSelector = `${NotebookToolbar.toolbarButtonSelector}[title="Manage Packages"]`;
 
 	constructor(private code: Code) { }
 
@@ -326,6 +358,10 @@ export class NotebookToolbar {
 
 	async clearResults(): Promise<void> {
 		await this.code.waitAndClick(NotebookToolbar.clearResultsButtonSelector);
+	}
+
+	async managePackages(): Promise<void> {
+		await this.code.waitAndClick(NotebookToolbar.managePackagesButtonSelector);
 	}
 }
 

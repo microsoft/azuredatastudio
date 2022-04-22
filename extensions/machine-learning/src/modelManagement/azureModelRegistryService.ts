@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import * as azurecore from 'azurecore';
 import { ApiWrapper } from '../common/apiWrapper';
 import * as constants from '../common/constants';
-import { azureResource } from 'azureResource';
 import { AzureMachineLearningWorkspaces } from '@azure/arm-machinelearningservices';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import { WorkspaceModels } from './workspacesModels';
@@ -52,7 +51,7 @@ export class AzureModelRegistryService {
 	 * Returns list of azure subscriptions
 	 * @param account azure account
 	 */
-	public async getSubscriptions(account: azdata.Account | undefined): Promise<azureResource.AzureResourceSubscription[] | undefined> {
+	public async getSubscriptions(account: azdata.Account | undefined): Promise<azurecore.azureResource.AzureResourceSubscription[] | undefined> {
 		const data: azurecore.GetSubscriptionsResult = await (await this._apiWrapper.getAzurecoreApi()).getSubscriptions(account, true);
 		return data?.subscriptions;
 	}
@@ -64,7 +63,7 @@ export class AzureModelRegistryService {
 	 */
 	public async getGroups(
 		account: azdata.Account | undefined,
-		subscription: azureResource.AzureResourceSubscription | undefined): Promise<azureResource.AzureResource[] | undefined> {
+		subscription: azurecore.azureResource.AzureResourceSubscription | undefined): Promise<azurecore.azureResource.AzureResource[] | undefined> {
 		const data: azurecore.GetResourceGroupsResult = await (await this._apiWrapper.getAzurecoreApi()).getResourceGroups(account, subscription, true);
 		return data?.resourceGroups;
 	}
@@ -77,8 +76,8 @@ export class AzureModelRegistryService {
 	 */
 	public async getWorkspaces(
 		account: azdata.Account,
-		subscription: azureResource.AzureResourceSubscription,
-		resourceGroup: azureResource.AzureResource | undefined): Promise<Workspace[]> {
+		subscription: azurecore.azureResource.AzureResourceSubscription,
+		resourceGroup: azurecore.azureResource.AzureResource | undefined): Promise<Workspace[]> {
 		return await this.fetchWorkspaces(account, subscription, resourceGroup);
 	}
 
@@ -91,8 +90,8 @@ export class AzureModelRegistryService {
 	 */
 	public async getModels(
 		account: azdata.Account,
-		subscription: azureResource.AzureResourceSubscription,
-		resourceGroup: azureResource.AzureResource,
+		subscription: azurecore.azureResource.AzureResourceSubscription,
+		resourceGroup: azurecore.azureResource.AzureResource,
 		workspace: Workspace): Promise<WorkspaceModel[] | undefined> {
 		return await this.fetchModels(account, subscription, resourceGroup, workspace);
 	}
@@ -107,8 +106,8 @@ export class AzureModelRegistryService {
 	 */
 	public async downloadModel(
 		account: azdata.Account,
-		subscription: azureResource.AzureResourceSubscription,
-		resourceGroup: azureResource.AzureResource,
+		subscription: azurecore.azureResource.AzureResourceSubscription,
+		resourceGroup: azurecore.azureResource.AzureResource,
 		workspace: Workspace,
 		model: WorkspaceModel): Promise<string> {
 		let downloadedFilePath: string = '';
@@ -153,7 +152,7 @@ export class AzureModelRegistryService {
 		return tempFilePath;
 	}
 
-	private async fetchWorkspaces(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroup: azureResource.AzureResource | undefined): Promise<Workspace[]> {
+	private async fetchWorkspaces(account: azdata.Account, subscription: azurecore.azureResource.AzureResourceSubscription, resourceGroup: azurecore.azureResource.AzureResource | undefined): Promise<Workspace[]> {
 		let resources: Workspace[] = [];
 
 		try {
@@ -172,8 +171,8 @@ export class AzureModelRegistryService {
 
 	private async fetchModels(
 		account: azdata.Account,
-		subscription: azureResource.AzureResourceSubscription,
-		resourceGroup: azureResource.AzureResource,
+		subscription: azurecore.azureResource.AzureResourceSubscription,
+		resourceGroup: azurecore.azureResource.AzureResource,
 		workspace: Workspace): Promise<WorkspaceModel[]> {
 		let resources: WorkspaceModel[] = [];
 
@@ -195,8 +194,8 @@ export class AzureModelRegistryService {
 	}
 
 	private async fetchModelAsset(
-		subscription: azureResource.AzureResourceSubscription,
-		resourceGroup: azureResource.AzureResource,
+		subscription: azurecore.azureResource.AzureResourceSubscription,
+		resourceGroup: azurecore.azureResource.AzureResource,
 		workspace: Workspace,
 		model: WorkspaceModel,
 		client: AzureMachineLearningWorkspaces): Promise<Asset> {
@@ -212,8 +211,8 @@ export class AzureModelRegistryService {
 
 	private async getAssetArtifactsDownloadLinks(
 		account: azdata.Account,
-		subscription: azureResource.AzureResourceSubscription,
-		resourceGroup: azureResource.AzureResource,
+		subscription: azurecore.azureResource.AzureResourceSubscription,
+		resourceGroup: azurecore.azureResource.AzureResource,
 		workspace: Workspace,
 		model: WorkspaceModel,
 		tenant: any): Promise<string[]> {
@@ -297,7 +296,7 @@ export class AzureModelRegistryService {
 
 	private async getAmlClient(
 		account: azdata.Account,
-		subscription: azureResource.AzureResourceSubscription,
+		subscription: azurecore.azureResource.AzureResourceSubscription,
 		tenant: any,
 		options: AzureMachineLearningWorkspacesOptions | undefined = undefined,
 		apiVersion: string | undefined = undefined): Promise<AzureMachineLearningWorkspaces> {

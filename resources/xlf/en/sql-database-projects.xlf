@@ -122,7 +122,7 @@
       <source xml:lang="en">Confirm {0} admin password</source>
     </trans-unit>
     <trans-unit id="connectingToSqlServerOnDockerMessage">
-      <source xml:lang="en">Connecting to SQL Server on Docker</source>
+      <source xml:lang="en">Connecting to SQL Server</source>
     </trans-unit>
     <trans-unit id="connectionFailedError">
       <source xml:lang="en">Connection failed error: '{0}'</source>
@@ -132,6 +132,9 @@
     </trans-unit>
     <trans-unit id="containerAlreadyExistForProject">
       <source xml:lang="en">Containers already exist for this project. Do you want to delete them before deploying a new one?</source>
+    </trans-unit>
+    <trans-unit id="convertToSdkStyleConfirmation">
+      <source xml:lang="en">The project '{0}' will not be fully compatible with SSDT after conversion. A backup copy of the project file will be created in the project folder prior to conversion. More information is available at https://aka.ms/sqlprojsdk. Continue with converting to SDK-style project?</source>
     </trans-unit>
     <trans-unit id="createNew">
       <source xml:lang="en">Create New</source>
@@ -290,16 +293,22 @@
       <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
     </trans-unit>
     <trans-unit id="edgeProjectTypeDescription">
-      <source xml:lang="en">Start with the core pieces to develop and publish schemas for SQL Edge</source>
+      <source xml:lang="en">Start with the core pieces to develop and publish schemas for Azure SQL Edge Database</source>
     </trans-unit>
     <trans-unit id="edgeProjectTypeDisplayName">
-      <source xml:lang="en">SQL Edge</source>
+      <source xml:lang="en">Azure SQL Edge Database</source>
+    </trans-unit>
+    <trans-unit id="emptyAzureDbProjectTypeDescription">
+      <source xml:lang="en">Develop and publish schemas for Azure SQL Database starting from an empty project</source>
+    </trans-unit>
+    <trans-unit id="emptyAzureDbProjectTypeDisplayName">
+      <source xml:lang="en">Azure SQL Database</source>
     </trans-unit>
     <trans-unit id="emptyProjectTypeDescription">
-      <source xml:lang="en">Develop and publish schemas for SQL databases starting from an empty project</source>
+      <source xml:lang="en">Develop and publish schemas for SQL Server databases starting from an empty project</source>
     </trans-unit>
     <trans-unit id="emptyProjectTypeDisplayName">
-      <source xml:lang="en">SQL Database</source>
+      <source xml:lang="en">SQL Server Database</source>
     </trans-unit>
     <trans-unit id="emptySdkProjectTypeDescription">
       <source xml:lang="en">Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.</source>
@@ -441,8 +450,11 @@
     <trans-unit id="invalidProjectReload">
       <source xml:lang="en">Cannot access provided database project. Only valid, open database projects can be reloaded.</source>
     </trans-unit>
-    <trans-unit id="invalidPropertyValue">
+    <trans-unit id="invalidPropertyValueInSqlProj">
       <source xml:lang="en">Invalid value specified for the property '{0}' in .sqlproj file</source>
+    </trans-unit>
+    <trans-unit id="invalidPropertyValueProvided">
+      <source xml:lang="en">Project property value '{0} is invalid</source>
     </trans-unit>
     <trans-unit id="invalidSQLPassword">
       <source xml:lang="en">{0} password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
@@ -693,6 +705,9 @@
     <trans-unit id="scriptFriendlyName">
       <source xml:lang="en">Script</source>
     </trans-unit>
+    <trans-unit id="sdkLearnMorePlaceholder">
+      <source xml:lang="en">Click "Learn More" button for more information about SDK-style projects</source>
+    </trans-unit>
     <trans-unit id="sdkStyleProject">
       <source xml:lang="en">SDK-style project (Preview)</source>
     </trans-unit>
@@ -855,6 +870,9 @@
     <trans-unit id="updateText">
       <source xml:lang="en">Update</source>
     </trans-unit>
+    <trans-unit id="updatedToSdkStyleError">
+      <source xml:lang="en">Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.</source>
+    </trans-unit>
     <trans-unit id="updatingProjectFromDatabase">
       <source xml:lang="en">Updating {0} from {1}...</source>
     </trans-unit>
@@ -872,6 +890,9 @@
     </trans-unit>
     <trans-unit id="viewFriendlyName">
       <source xml:lang="en">View</source>
+    </trans-unit>
+    <trans-unit id="yesRecommended">
+      <source xml:lang="en">Yes (Recommended)</source>
     </trans-unit>
     <trans-unit id="yesString">
       <source xml:lang="en">Yes</source>
@@ -917,6 +938,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.close">
       <source xml:lang="en">Close Database Project</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.convertToSdkStyleProject">
+      <source xml:lang="en">Convert to SDK-style project</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.createProjectFromDatabase">
       <source xml:lang="en">Create Project From Database</source>

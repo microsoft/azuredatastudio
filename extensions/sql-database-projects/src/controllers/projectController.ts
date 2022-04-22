@@ -263,6 +263,7 @@ export class ProjectsController {
 
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.build)
 				.withAdditionalMeasurements({ duration: timeToBuild })
+				.withAdditionalProperties({ databaseSource: utils.getWellKnownDatabaseSources(project.getDatabaseSourceValues()).join(';') })
 				.send();
 
 			return project.dacpacOutputPath;
@@ -275,6 +276,7 @@ export class ProjectsController {
 
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.build)
 				.withAdditionalMeasurements({ duration: timeToFailureBuild })
+				.withAdditionalProperties({ databaseSource: utils.getWellKnownDatabaseSources(project.getDatabaseSourceValues()).join(';') })
 				.send();
 
 			const message = utils.getErrorMessage(err);
@@ -444,6 +446,7 @@ export class ProjectsController {
 		const buildEndTime = new Date().getTime();
 		telemetryMeasures.buildDuration = buildEndTime - buildStartTime;
 		telemetryProps.buildSucceeded = (dacpacPath !== '').toString();
+		telemetryProps.databaseSource = utils.getWellKnownDatabaseSources(project.getDatabaseSourceValues()).join(';');
 
 		if (!dacpacPath) {
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
@@ -606,7 +609,7 @@ export class ProjectsController {
 
 		const result: mssql.SchemaComparePublishProjectResult = await service.schemaComparePublishProjectChanges(operationId, projectPath, fs, utils.getAzdataApi()!.TaskExecutionMode.execute);
 
-		if (result.errorMessage === '') {
+		if (!result.errorMessage) {
 			const project = await Project.openProject(projectFilePath);
 
 			let toAdd: vscode.Uri[] = [];
@@ -931,15 +934,26 @@ export class ProjectsController {
 	public async convertToSdkStyleProject(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
 
-		await project.convertProjectToSdkStyle();
-		void this.reloadProject(context);
+		// confirm that user wants to update the project and knows the SSDT doesn't have support for displaying glob files yet
+		await vscode.window.showWarningMessage(constants.convertToSdkStyleConfirmation(project.projectFileName), { modal: true }, constants.yesString).then(async (result) => {
+			if (result === constants.yesString) {
+				const updateResult = await project.convertProjectToSdkStyle();
+				void this.reloadProject(context);
 
-		// show message that project file can be simplified
-		const result = await vscode.window.showInformationMessage(constants.projectUpdatedToSdkStyle(project.projectFileName), constants.learnMore);
+				if (!updateResult) {
+					void vscode.window.showErrorMessage(constants.updatedToSdkStyleError(project.projectFileName));
+				} else {
+					void this.reloadProject(context);
 
-		if (result === constants.learnMore) {
-			void vscode.env.openExternal(vscode.Uri.parse(constants.sdkLearnMoreUrl!));
-		}
+					// show message that project file can be simplified
+					const result = await vscode.window.showInformationMessage(constants.projectUpdatedToSdkStyle(project.projectFileName), constants.learnMore);
+
+					if (result === constants.learnMore) {
+						void vscode.env.openExternal(vscode.Uri.parse(constants.sdkLearnMoreUrl!));
+					}
+				}
+			}
+		});
 	}
 
 	/**

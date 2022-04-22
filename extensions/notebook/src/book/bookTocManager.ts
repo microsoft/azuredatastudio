@@ -460,7 +460,6 @@ export class BookTocManager implements IBookTocManager {
 
 	public async addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void> {
 		let findSection: JupyterBookSection | undefined = undefined;
-		await fs.writeFile(pathDetails.filePath, '');
 		if (bookItem.contextValue === BookTreeItemType.section) {
 			findSection = { file: bookItem.book.page.file, title: bookItem.book.page.title };
 		}
@@ -470,8 +469,10 @@ export class BookTocManager implements IBookTocManager {
 		};
 
 		if (isSection) {
+			await fs.mkdir(path.dirname(pathDetails.filePath));
 			fileEntryInToc.sections = [];
 		}
+		await fs.writeFile(pathDetails.filePath, '');
 
 		if (bookItem.book.version === BookVersion.v1) {
 			fileEntryInToc = convertTo(BookVersion.v1, fileEntryInToc);

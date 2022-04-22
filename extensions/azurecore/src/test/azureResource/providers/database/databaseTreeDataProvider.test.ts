@@ -10,11 +10,10 @@ import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import 'mocha';
 
-import { azureResource } from 'azureResource';
 import { AzureResourceDatabaseTreeDataProvider } from '../../../../azureResource/providers/database/databaseTreeDataProvider';
 import { AzureResourceItemType } from '../../../../azureResource/constants';
 import { IAzureResourceService } from '../../../../azureResource/interfaces';
-import { AzureAccount } from 'azurecore';
+import { AzureAccount, azureResource } from 'azurecore';
 import settings from '../../../../account-provider/providerSettings';
 
 // Mock services

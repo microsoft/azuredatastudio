@@ -10,7 +10,7 @@
     "azdata": ">=1.35.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
-  "icon": "",
+  "icon": "media/defaultExtensionIcon.png",
   "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
   "activationEvents": [
     "onCommand:sqlBindings.addSqlBinding",
@@ -40,8 +40,7 @@
       {
         "command": "sqlBindings.createAzureFunction",
         "title": "%sqlBindings.createAzureFunction%",
-        "category": "MS SQL",
-        "when": "view == objectExplorer && viewItem == Table"
+        "category": "MS SQL"
       }
     ],
     "menus": {
@@ -49,12 +48,17 @@
         {
           "command": "sqlBindings.addSqlBinding",
           "when": "editorLangId == csharp && !azdataAvailable && resourceScheme != untitled"
+        },
+        {
+          "command": "sqlBindings.createAzureFunction",
+          "when": "!azdataAvailable",
+          "group": "zAzure_Function@1"
         }
       ],
       "view/item/context": [
         {
           "command": "sqlBindings.createAzureFunction",
-          "when": "view == objectExplorer && viewItem == Table",
+          "when": "view == objectExplorer && viewItem == Table && !azdataAvailable",
           "group": "zAzure_Function@1"
         }
       ]
@@ -69,6 +73,7 @@
   },
   "devDependencies": {
     "@types/node": "^14.14.16",
+    "@types/uuid": "^3.4.5",
     "should": "^13.2.1",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",

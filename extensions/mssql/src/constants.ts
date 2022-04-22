@@ -43,6 +43,7 @@ export const objectExplorerPrefix: string = 'objectexplorer://';
 export const SqlAssessmentService = 'sqlAssessmentService';
 export const SqlMigrationService = 'sqlMigrationService';
 export const NotebookConvertService = 'notebookConvertService';
+export const AzureBlobService = 'azureBlobService';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext'
@@ -63,10 +64,6 @@ export enum MssqlClusterItemsSubType {
 	Mount = ':mount:',
 	MountChild = ':mountChild:',
 	Spark = ':spark:'
-}
-
-export enum TableType {
-	Basic = 'basic'
 }
 
 // SPARK JOB SUBMISSION //////////////////////////////////////////////////////////

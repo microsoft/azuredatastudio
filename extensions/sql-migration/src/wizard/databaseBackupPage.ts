@@ -786,15 +786,27 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				await this.switchNetworkContainerFields(this.migrationStateModel._databaseBackup.networkContainerType);
 
 				const connectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
-				const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>((await this.migrationStateModel.getSourceConnectionProfile()).providerId, azdata.DataProviderType.QueryProvider);
+				const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+					(await this.migrationStateModel.getSourceConnectionProfile()).providerId,
+					azdata.DataProviderType.QueryProvider);
+
 				const query = 'select SUSER_NAME()';
-				const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId)), query);
+				const results = await queryProvider.runQueryAndReturn(
+					await (azdata.connection.getUriForConnection(
+						this.migrationStateModel.sourceConnectionId)), query);
+
 				const username = results.rows[0][0].displayValue;
-				this.migrationStateModel._authenticationType = connectionProfile.authenticationType === 'SqlLogin' ? MigrationSourceAuthenticationType.Sql : connectionProfile.authenticationType === 'Integrated' ? MigrationSourceAuthenticationType.Integrated : undefined!;
+				this.migrationStateModel._authenticationType = connectionProfile.authenticationType === 'SqlLogin'
+					? MigrationSourceAuthenticationType.Sql
+					: connectionProfile.authenticationType === 'Integrated'
+						? MigrationSourceAuthenticationType.Integrated
+						: undefined!;
 				this._sourceHelpText.value = constants.SQL_SOURCE_DETAILS(this.migrationStateModel._authenticationType, connectionProfile.serverName);
 				this._sqlSourceUsernameInput.value = username;
 				this._sqlSourcePassword.value = (await azdata.connection.getCredentials(this.migrationStateModel.sourceConnectionId)).password;
-				this._windowsUserAccountText.value = this.migrationStateModel.savedInfo?.networkShares[0]?.windowsUser;
+				this._windowsUserAccountText.value = this.migrationStateModel.savedInfo?.networkShares
+					? this.migrationStateModel.savedInfo?.networkShares[0]?.windowsUser
+					: '';
 
 				this._networkShareTargetDatabaseNames = [];
 				this._networkShareLocations = [];
@@ -809,7 +821,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 
 				let originalTargetDatabaseNames = this.migrationStateModel._targetDatabaseNames;
-				let originalNetworkShares = this.migrationStateModel._databaseBackup.networkShares;
+				let originalNetworkShares = this.migrationStateModel._databaseBackup.networkShares || [];
 				let originalBlobs = this.migrationStateModel._databaseBackup.blobs;
 				if (this.migrationStateModel._didUpdateDatabasesForMigration) {
 					this.migrationStateModel._targetDatabaseNames = [];
@@ -830,7 +842,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							blob = originalBlobs[dbIndex] ?? blob;
 						} else {
 							// network share values are uniform for all dbs in the same migration, except for networkShareLocation
-							const previouslySelectedNetworkShare = originalNetworkShares[0];
+							const previouslySelectedNetworkShare = originalNetworkShares.length > 0
+								? originalNetworkShares[0]
+								: '';
+
 							if (previouslySelectedNetworkShare) {
 								networkShare = {
 									...previouslySelectedNetworkShare,
@@ -1261,7 +1276,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadNetworkStorageResourceGroup(): Promise<void> {
 		this._networkShareStorageAccountResourceGroupDropdown.loading = true;
 		try {
-			this._networkShareStorageAccountResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._databaseBackup.subscription);
+			this._networkShareStorageAccountResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupForStorageAccountsDropdownValues(this.migrationStateModel._databaseBackup.subscription);
 			selectDefaultDropdownValue(this._networkShareStorageAccountResourceGroupDropdown, this.migrationStateModel._databaseBackup?.networkShares[0]?.resourceGroup?.id, false);
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingNetworkStorageResourceGroup', error);
@@ -1288,7 +1303,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobResourceGroup(): Promise<void> {
 		this._blobContainerResourceGroupDropdowns.forEach(v => v.loading = true);
 		try {
-			const resourceGroupValues = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._databaseBackup.subscription);
+			const resourceGroupValues = await this.migrationStateModel.getAzureResourceGroupForStorageAccountsDropdownValues(this.migrationStateModel._databaseBackup.subscription);
 			this._blobContainerResourceGroupDropdowns.forEach((dropDown, index) => {
 				dropDown.values = resourceGroupValues;
 				selectDefaultDropdownValue(dropDown, this.migrationStateModel._databaseBackup?.blobs[index]?.resourceGroup?.id, false);

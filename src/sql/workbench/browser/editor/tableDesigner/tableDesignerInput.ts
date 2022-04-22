@@ -18,11 +18,25 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 
 const NewTable: string = localize('tableDesigner.newTable', "New Table");
 
+enum TableIcon {
+	Basic = 'Basic',
+	Temporal = 'Temporal',
+	GraphEdge = 'GraphEdge',
+	GraphNode = 'GraphNode'
+}
 export class TableDesignerInput extends EditorInput {
 	public static ID: string = 'workbench.editorinputs.tableDesignerInput';
 	private _designerComponentInput: TableDesignerComponentInput;
 	private _title: string;
 	private _name: string;
+	private _tableIcon: azdata.designers.TableIcon;
+	private _tableIconMap: Map<TableIcon, string> = new Map<TableIcon, string>([
+		[TableIcon.Basic, 'table-basic'],
+		[TableIcon.Temporal, 'table-temporal'],
+		[TableIcon.GraphEdge, 'table-graphedge'],
+		[TableIcon.GraphNode, 'table-graphnode']
+	]);
+
 
 	constructor(
 		private _provider: TableDesignerProvider,
@@ -42,6 +56,9 @@ export class TableDesignerInput extends EditorInput {
 				this._onDidChangeDirty.fire();
 			}
 		}));
+
+		// default to basic if icon is null (new table) or no sub type
+		this._tableIcon = tableInfo.tableIcon ? tableInfo.tableIcon as TableIcon : TableIcon.Basic;
 		this.setEditorLabel();
 	}
 
@@ -52,7 +69,7 @@ export class TableDesignerInput extends EditorInput {
 	public get resource(): URI {
 		return URI.from({
 			scheme: Schemas.tableDesigner,
-			path: 'table-designer'
+			path: this._tableIconMap.get(this._tableIcon)
 		});
 	}
 

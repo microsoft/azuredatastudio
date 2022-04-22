@@ -98,7 +98,7 @@ export const defaultProjectNameStarter = localize('defaultProjectNameStarter', "
 export const location = localize('location', "Location");
 export const reloadProject = localize('reloadProject', "Would you like to reload your database project?");
 export const learnMore = localize('learnMore', "Learn More");
-export const sdkLearnMoreUrl = 'https://github.com/microsoft/DacFx/tree/main/src/Microsoft.Build.Sql';
+export const sdkLearnMoreUrl = 'https://aka.ms/sqlprojsdk';
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
@@ -106,6 +106,8 @@ export function deleteReferenceConfirmation(toDelete: string) { return localize(
 export function selectTargetPlatform(currentTargetPlatform: string) { return localize('selectTargetPlatform', "Current target platform: {0}. Select new target platform", currentTargetPlatform); }
 export function currentTargetPlatform(projectName: string, currentTargetPlatform: string) { return localize('currentTargetPlatform', "Target platform of the project {0} is now {1}", projectName, currentTargetPlatform); }
 export function projectUpdatedToSdkStyle(projectName: string) { return localize('projectUpdatedToSdkStyle', "The project {0} has been updated to be an SDK-style project. Click 'Learn More' for details on the Microsoft.Build.Sql SDK and ways to simplify the project file.", projectName); }
+export function convertToSdkStyleConfirmation(projectName: string) { return localize('convertToSdkStyleConfirmation', "The project '{0}' will not be fully compatible with SSDT after conversion. A backup copy of the project file will be created in the project folder prior to conversion. More information is available at https://aka.ms/sqlprojsdk. Continue with converting to SDK-style project?", projectName); }
+export function updatedToSdkStyleError(projectName: string) { return localize('updatedToSdkStyleError', "Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.", projectName); }
 
 // Publish dialog strings
 
@@ -279,6 +281,8 @@ export const WorkspaceFileExtension = '.code-workspace';
 export const browseEllipsisWithIcon = `$(folder) ${localize('browseEllipsis', "Browse...")}`;
 export const selectProjectLocation = localize('selectProjectLocation', "Select project location");
 export const sdkStyleProject = localize('sdkStyleProject', 'SDK-style project (Preview)');
+export const YesRecommended = localize('yesRecommended', "Yes (Recommended)");
+export const SdkLearnMorePlaceholder = localize('sdkLearnMorePlaceholder', "Click \"Learn More\" button for more information about SDK-style projects");
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
 
@@ -340,7 +344,8 @@ export function fileAlreadyExists(filename: string) { return localize('fileAlrea
 export function folderAlreadyExists(filename: string) { return localize('folderAlreadyExists', "A folder with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
 export function folderAlreadyExistsChooseNewLocation(filename: string) { return localize('folderAlreadyExistsChooseNewLocation', "A folder with the name '{0}' already exists on disk at this location. Please choose another location.", filename); }
 export function invalidInput(input: string) { return localize('invalidInput', "Invalid input: {0}", input); }
-export function invalidProjectPropertyValue(propertyName: string) { return localize('invalidPropertyValue', "Invalid value specified for the property '{0}' in .sqlproj file", propertyName); }
+export function invalidProjectPropertyValueInSqlProj(propertyName: string) { return localize('invalidPropertyValueInSqlProj', "Invalid value specified for the property '{0}' in .sqlproj file", propertyName); }
+export function invalidProjectPropertyValueProvided(propertyName: string) { return localize('invalidPropertyValueProvided', "Project property value '{0} is invalid", propertyName); }
 export function unableToCreatePublishConnection(input: string) { return localize('unableToCreatePublishConnection', "Unable to construct connection: {0}", input); }
 export function circularProjectReference(project1: string, project2: string) { return localize('cicularProjectReference', "Circular reference from project {0} to project {1}", project1, project2); }
 export function errorFindingBuildFilesLocation(err: any) { return localize('errorFindingBuildFilesLocation', "Error finding build files location: {0}", utils.getErrorMessage(err)); }
@@ -431,6 +436,7 @@ export const PropertyGroup = 'PropertyGroup';
 export const Type = 'Type';
 export const ExternalStreamingJob: string = 'ExternalStreamingJob';
 export const Sdk: string = 'Sdk';
+export const DatabaseSource = 'DatabaseSource';
 
 export const BuildElements = localize('buildElements', "Build Elements");
 export const FolderElements = localize('folderElements', "Folder Elements");
@@ -447,6 +453,14 @@ export const DefaultCollationProperty = 'DefaultCollation';
 
 /** Default database collation to use when none is specified in the project */
 export const DefaultCollation = 'SQL_Latin1_General_CP1_CI_AS';
+
+/**
+ * Well-known database source values that are allowed to be sent in telemetry.
+ *
+ * 'dsct-oracle-to-ms-sql' is the name of an extension which allows users to migrate from Oracle to Microsoft SQL platform.
+ * When looking at telemetry, we would like to know if a built or deployed database originated from the DSCT extension.
+ */
+export const WellKnownDatabaseSources = ['dsct-oracle-to-ms-sql'];
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
@@ -495,6 +509,7 @@ export const azureAddAccount = 'Add an Account...';
 // Tree item types
 export enum DatabaseProjectItemType {
 	project = 'databaseProject.itemType.project',
+	legacyProject = 'databaseProject.itemType.legacyProject',
 	folder = 'databaseProject.itemType.folder',
 	file = 'databaseProject.itemType.file',
 	externalStreamingJob = 'databaseProject.itemType.file.externalStreamingJob',

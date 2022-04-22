@@ -45,6 +45,7 @@ export interface TabConfig extends IDashboardTab {
 	canClose: boolean;
 	actions?: Array<Action>;
 	type?: TabType;
+	hideRefreshTask?: boolean;
 }
 
 

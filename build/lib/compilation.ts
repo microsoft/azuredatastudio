@@ -44,10 +44,9 @@ function createCompile(src: string, build: boolean, emitError?: boolean) {
 
 	const projectPath = path.join(__dirname, '../../', src, 'tsconfig.json');
 	const overrideOptions = { ...getTypeScriptCompilerOptions(src), inlineSources: Boolean(build) };
-	// {{SQL CARBON EDIT}} Never inline source maps so that generating local coverage works
-	// if (!build) {
-	// 	// overrideOptions.inlineSourceMap = true;
-	// }
+	if (!build && !process.env['SQL_NO_INLINE_SOURCEMAP']) {
+		overrideOptions.inlineSourceMap = true;
+	}
 
 	const compilation = tsb.create(projectPath, overrideOptions, false, err => reporter(err));
 
@@ -88,7 +87,6 @@ function createCompile(src: string, build: boolean, emitError?: boolean) {
 export function compileTask(src: string, out: string, build: boolean): () => NodeJS.ReadWriteStream {
 
 	return function () {
-
 		if (os.totalmem() < 4_000_000_000) {
 			throw new Error('compilation requires 4GB of RAM');
 		}

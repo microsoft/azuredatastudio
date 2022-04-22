@@ -898,7 +898,7 @@ export class SchemaCompareMainWindow {
 						throw new Error(`Unsupported SchemaCompareEndpointType: ${getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)}`);
 				}
 
-				if (!result || !result.success || result.errorMessage !== '') {
+				if (!result || !result.success || result.errorMessage) {
 					TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, getTelemetryErrorType(result?.errorMessage))
 						.withAdditionalProperties({
 							'operationId': this.comparisonResult.operationId,
@@ -914,6 +914,7 @@ export class SchemaCompareMainWindow {
 				} else if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
 					const workspaceApi = getDataWorkspaceExtensionApi();
 					workspaceApi.showProjectsView();
+					workspaceApi.refreshProjectsTree();
 
 					void vscode.window.showInformationMessage(loc.applySuccess);
 				}
