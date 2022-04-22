@@ -12,7 +12,7 @@ import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateM
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { findDropDownItemIndex, selectDropDownIndex, selectDefaultDropdownValue, getAzureResourceGroups, getAzureResourceGroupsDropdownValues, getStorageAccounts, getStorageAccountsDropdownValues, SelectableResourceType } from '../api/utils';
+import { findDropDownItemIndex, selectDropDownIndex, selectDefaultDropdownValue, getAzureResourceGroupsDropdownValues, getStorageAccounts, getStorageAccountsDropdownValues, SelectableResourceType, getAzureResourceGroupsByResources } from '../api/utils';
 import { logError, TelemetryViews } from '../telemtery';
 import * as styles from '../constants/styles';
 
@@ -1276,7 +1276,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadNetworkStorageResourceGroup(): Promise<void> {
 		this._networkShareStorageAccountResourceGroupDropdown.loading = true;
 		try {
-			this.migrationStateModel._resourceGroups = await getAzureResourceGroups(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._location, SelectableResourceType.StorageAccount);
+			this.migrationStateModel._storageAccounts = await getStorageAccounts(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription);
+			this.migrationStateModel._resourceGroups = await getAzureResourceGroupsByResources(SelectableResourceType.StorageAccount, this.migrationStateModel._storageAccounts, this.migrationStateModel._location);
 			this._networkShareStorageAccountResourceGroupDropdown.values = await getAzureResourceGroupsDropdownValues(this.migrationStateModel._resourceGroups);
 			selectDefaultDropdownValue(this._networkShareStorageAccountResourceGroupDropdown, this.migrationStateModel._databaseBackup?.networkShares[0]?.resourceGroup?.id, false);
 		} catch (error) {
@@ -1291,8 +1292,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._networkShareContainerStorageAccountDropdown.loading = true;
 		this._networkShareStorageAccountResourceGroupDropdown.loading = true;
 		try {
-			this.migrationStateModel._storageAccounts = await getStorageAccounts(this.migrationStateModel._location, this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.networkShares[0]?.resourceGroup);
-			this._networkShareContainerStorageAccountDropdown.values = await getStorageAccountsDropdownValues(this.migrationStateModel._storageAccounts);
+			this._networkShareContainerStorageAccountDropdown.values = await getStorageAccountsDropdownValues(this.migrationStateModel._storageAccounts, this.migrationStateModel._location, this.migrationStateModel._databaseBackup.networkShares[0]?.resourceGroup);
 			selectDefaultDropdownValue(this._networkShareContainerStorageAccountDropdown, this.migrationStateModel?._databaseBackup?.networkShares[0]?.storageAccount?.id, false);
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingNetworkShareStorageDropdown', error);
@@ -1305,7 +1305,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobResourceGroup(): Promise<void> {
 		this._blobContainerResourceGroupDropdowns.forEach(v => v.loading = true);
 		try {
-			this.migrationStateModel._resourceGroups = await getAzureResourceGroups(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._location, SelectableResourceType.StorageAccount);
+			this.migrationStateModel._storageAccounts = await getStorageAccounts(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription);
+			this.migrationStateModel._resourceGroups = await getAzureResourceGroupsByResources(SelectableResourceType.StorageAccount, this.migrationStateModel._storageAccounts, this.migrationStateModel._location);
 			const resourceGroupValues = await getAzureResourceGroupsDropdownValues(this.migrationStateModel._resourceGroups);
 			this._blobContainerResourceGroupDropdowns.forEach((dropDown, index) => {
 				dropDown.values = resourceGroupValues;
@@ -1321,8 +1322,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobStorageDropdown(index: number): Promise<void> {
 		this._blobContainerStorageAccountDropdowns[index].loading = true;
 		try {
-			this.migrationStateModel._storageAccounts = await getStorageAccounts(this.migrationStateModel._location, this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.resourceGroup);
-			this._blobContainerStorageAccountDropdowns[index].values = await getStorageAccountsDropdownValues(this.migrationStateModel._storageAccounts);
+			this._blobContainerStorageAccountDropdowns[index].values = await getStorageAccountsDropdownValues(this.migrationStateModel._storageAccounts, this.migrationStateModel._location, this.migrationStateModel._databaseBackup.networkShares[0]?.resourceGroup);
 			selectDefaultDropdownValue(this._blobContainerStorageAccountDropdowns[index], this.migrationStateModel._databaseBackup?.blobs[index]?.storageAccount?.id, false);
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobStorageDropdown', error);
