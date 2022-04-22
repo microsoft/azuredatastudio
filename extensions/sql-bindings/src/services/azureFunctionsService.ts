@@ -65,7 +65,24 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 					let workspaceFolder = vscode.workspace.rootPath;
 					if (!workspaceFolder) {
 						// user does not have a workspace open and therefore will have to pick a folder to create the project in
-						void vscode.window.showErrorMessage(constants.workspaceMustBeUsed);
+						const browseProjectLocation = await vscode.window.showQuickPick(
+							[constants.browseEllipsisWithIcon],
+							{ title: constants.selectAzureFunctionProjFolder, ignoreFocusOut: true });
+						if (!browseProjectLocation) {
+							// User cancelled
+							return undefined;
+						}
+						const projectFolders = (await vscode.window.showOpenDialog({
+							canSelectFiles: false,
+							canSelectFolders: true,
+							canSelectMany: false,
+							openLabel: constants.selectButton
+						}));
+						if (!projectFolders) {
+							// User cancelled
+							return;
+						}
+						projectFolder = projectFolders[0].fsPath;
 					} else {
 						projectFolder = workspaceFolder;
 						break;
@@ -79,7 +96,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		}
 		// create a system file watcher for the project folder
 		newFunctionFileObject = azureFunctionsUtils.waitForNewFunctionFile(projectFolder);
-
 
 		// Prompt user for binding type
 		telemetryStep = 'getBindingType';
@@ -208,6 +224,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			suppressCreateProjectPrompt: true
 		});
 
+		// prompt user for include password for connection string
 		if (isCreateNewProject) {
 			// for a new azure function project we need to get the newly create Azure Function project path so that we can set the connection string in local.settings.json that was created after the createFunction API call
 			projectFile = await azureFunctionsUtils.getAzureFunctionProject();
@@ -224,6 +241,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			}
 			void azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFile, connectionStringSettingName);
 		}
+
 		// check for the new function file to be created and dispose of the file system watcher
 		const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
 		await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);

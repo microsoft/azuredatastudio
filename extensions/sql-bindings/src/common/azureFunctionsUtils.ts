@@ -510,10 +510,10 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 /**
  * Prompts the user to include password in the connection string and updates the connection string based on user input
  * @param connectionInfo connection info from the connection profile user selected
- * @param localSettingsPath path to the local.settings.json file
+ * @param localSettingsPath path to the local.settings.json file (undefined when creating a new azure function project)
  * @returns the updated connection string based on password prompts
  */
-export async function promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo: IConnectionInfo, localSettingsPath: string): Promise<string | undefined> {
+export async function promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo: IConnectionInfo, localSettingsPath?: string): Promise<string | undefined> {
 	let includePassword: string | undefined;
 	let connectionString: string = '';
 	let connectionDetails: ConnectionDetails;
@@ -557,8 +557,8 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 		if (includePassword !== constants.yesString && !userPassword && connectionInfo?.authenticationType === 'SqlLogin') {
 			// if user does not want to include password or user does not enter password, show warning message that they will have to enter it manually later in local.settings.json
 			void vscode.window.showWarningMessage(constants.userPasswordLater, constants.openFile, constants.closeButton).then(async (result) => {
-				if (result === constants.openFile) {
-					// open local.settings.json file
+				if (result === constants.openFile && localSettingsPath) {
+					// open local.settings.json file (if it exists)
 					void vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(localSettingsPath));
 				}
 			});
