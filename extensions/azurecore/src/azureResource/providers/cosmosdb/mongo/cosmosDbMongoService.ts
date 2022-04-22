@@ -5,7 +5,7 @@
 
 
 import { ResourceServiceBase, GraphData } from '../../resourceTreeDataProviderBase';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 
 
 interface DbServerGraphData extends GraphData {

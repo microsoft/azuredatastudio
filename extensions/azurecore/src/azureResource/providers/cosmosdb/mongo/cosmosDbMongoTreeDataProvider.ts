@@ -11,7 +11,7 @@ import { AzureResourceItemType } from '../../../constants';
 import { generateGuid } from '../../../utils';
 import { IAzureResourceService } from '../../../interfaces';
 import { ResourceTreeDataProviderBase } from '../../resourceTreeDataProviderBase';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import * as azdata from 'azdata';
 
 export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
