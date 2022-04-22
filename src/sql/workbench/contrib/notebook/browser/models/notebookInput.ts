@@ -40,7 +40,7 @@ import { LocalContentManager } from 'sql/workbench/services/notebook/common/loca
 import { Registry } from 'vs/platform/registry/common/platform';
 import { Extensions as LanguageAssociationExtensions, ILanguageAssociationRegistry } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NotebookLanguage } from 'sql/workbench/common/constants';
-import { DotnetInteractiveDisplayName, DotnetInteractiveJupyterKernelPrefix, DotnetInteractiveLanguagePrefix } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { addInternalInteractiveKernelMetadata } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
@@ -561,23 +561,8 @@ export class NotebookEditorContentLoader implements IContentLoader {
 		}
 
 		// Special case .NET Interactive kernel spec to handle inconsistencies between notebook providers and jupyter kernel specs
-		if (notebookContents.metadata?.kernelspec?.name?.startsWith(DotnetInteractiveJupyterKernelPrefix)) {
-			notebookContents.metadata.kernelspec.oldDisplayName = notebookContents.metadata.kernelspec.display_name;
-			notebookContents.metadata.kernelspec.display_name = DotnetInteractiveDisplayName;
+		addInternalInteractiveKernelMetadata(notebookContents.metadata);
 
-			let kernelName = notebookContents.metadata.kernelspec.name;
-			let baseLanguageName = kernelName.replace(DotnetInteractiveJupyterKernelPrefix, '');
-			if (baseLanguageName === 'powershell') {
-				baseLanguageName = 'pwsh';
-			}
-			let languageName = `${DotnetInteractiveLanguagePrefix}${baseLanguageName}`;
-
-			notebookContents.metadata.kernelspec.oldLanguage = notebookContents.metadata.kernelspec.language;
-			notebookContents.metadata.kernelspec.language = languageName;
-
-			notebookContents.metadata.language_info.oldName = notebookContents.metadata.language_info.name;
-			notebookContents.metadata.language_info.name = languageName;
-		}
 		return notebookContents;
 	}
 }

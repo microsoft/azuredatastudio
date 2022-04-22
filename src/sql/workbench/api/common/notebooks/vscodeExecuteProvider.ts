@@ -7,7 +7,7 @@ import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
 import { ADSNotebookController } from 'sql/workbench/api/common/notebooks/adsNotebookController';
 import * as nls from 'vs/nls';
-import { convertToVSCodeNotebookCell, DotnetInteractiveDisplayName, DotnetInteractiveJupyterKernelPrefix, DotnetInteractiveLanguagePrefix } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { addExternalInteractiveKernelMetadata, convertToVSCodeNotebookCell } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { URI } from 'vs/base/common/uri';
@@ -87,32 +87,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 		}
 
 		// Store external kernel names for .NET Interactive kernels for when notebook gets saved, so that notebook is usable outside of ADS
-		if (this._kernelSpec.name === 'jupyter-notebook' && this._kernelSpec.display_name === DotnetInteractiveDisplayName) {
-			let language = this._kernelSpec.language?.replace(DotnetInteractiveLanguagePrefix, '');
-			let displayLanguage: string;
-			switch (language) {
-				case 'csharp':
-					displayLanguage = 'C#';
-					break;
-				case 'fsharp':
-					displayLanguage = 'F#';
-					break;
-				case 'pwsh':
-					displayLanguage = 'PowerShell';
-					break;
-				default:
-					displayLanguage = language;
-			}
-			if (!this._kernelSpec.oldName) {
-				this._kernelSpec.oldName = `${DotnetInteractiveJupyterKernelPrefix}${language}`;
-			}
-			if (!this._kernelSpec.oldDisplayName) {
-				this._kernelSpec.oldDisplayName = `.NET (${displayLanguage})`;
-			}
-			if (!this._kernelSpec.oldLanguage) {
-				this._kernelSpec.oldLanguage = displayLanguage;
-			}
-		}
+		addExternalInteractiveKernelMetadata(this._kernelSpec);
 
 		this._name = this._kernelSpec.name;
 		this._info = {

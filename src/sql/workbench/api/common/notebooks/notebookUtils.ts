@@ -12,8 +12,8 @@ import { CellTypes, MimeTypes, OutputTypes } from 'sql/workbench/services/notebo
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 
-export const DotnetInteractiveJupyterKernelPrefix = '.net-';
-export const DotnetInteractiveLanguagePrefix = 'dotnet-interactive.';
+const DotnetInteractiveJupyterKernelPrefix = '.net-';
+const DotnetInteractiveLanguagePrefix = 'dotnet-interactive.';
 export const DotnetInteractiveDisplayName = '.NET Interactive';
 
 export function convertToVSCodeNotebookCell(cellKind: azdata.nb.CellType, cellIndex: number, cellUri: URI, docUri: URI, cellLanguage: string, cellSource?: string | string[]): vscode.NotebookCell {
@@ -138,3 +138,87 @@ export function convertToVSCodeNotebookData(notebook: azdata.nb.INotebookContent
 	};
 	return result;
 }
+
+// #region .NET Interactive Kernel Metadata Conversion
+
+/*
+Since ADS relies on notebook kernelSpecs for provider metadata in a lot of places, we have to convert
+a .NET Interactive notebook's Jupyter kernelSpec to an internal representation so that it matches up with
+the contributed .NET Interactive notebook provider from the Jupyter extension. When saving a notebook, we
+then need to restore the original kernelSpec state so that it will work with other notebook apps like
+VS Code. VS Code does something similar by shifting a Jupyter notebook's original metadata over to a new
+"custom" field, which is then shifted back when saving the notebook.
+
+This is an example of an internal kernel representation we use to get compatibility working (C#, in this case):
+kernelSpec: {
+	name: 'jupyter-notebook', // Matches the name of the notebook provider from the Jupyter extension
+	language: 'dotnet-interactive.csharp', // Matches the contributed languages from the .NET Interactive extension
+	display_name: '.NET Interactive' // The kernel name we need to show in our dropdown to match VS Code's kernel dropdown
+}
+
+This is how that C# kernel spec would need to be saved to work in VS Code:
+kernelSpec: {
+	name: '.net-csharp',
+	language: 'C#',
+	display_name: '.NET (C#)'
+}
+*/
+
+/**
+ * Stores equivalent external kernel metadata in a newly created .NET Interactive notebook, which is used as the default metadata when saving the notebook. This is so that ADS notebooks are still usable in other apps.
+ * @param kernelSpec The notebook kernel metadata to be modified.
+ */
+export function addExternalInteractiveKernelMetadata(kernelSpec: azdata.nb.IKernelSpec): void {
+	if (kernelSpec.name === 'jupyter-notebook' && kernelSpec.display_name === DotnetInteractiveDisplayName) {
+		let language = kernelSpec.language?.replace(DotnetInteractiveLanguagePrefix, '');
+		let displayLanguage: string;
+		switch (language) {
+			case 'csharp':
+				displayLanguage = 'C#';
+				break;
+			case 'fsharp':
+				displayLanguage = 'F#';
+				break;
+			case 'pwsh':
+				displayLanguage = 'PowerShell';
+				break;
+			default:
+				displayLanguage = language;
+		}
+		if (!kernelSpec.oldName) {
+			kernelSpec.oldName = `${DotnetInteractiveJupyterKernelPrefix}${language}`;
+		}
+		if (!kernelSpec.oldDisplayName) {
+			kernelSpec.oldDisplayName = `.NET (${displayLanguage})`;
+		}
+		if (!kernelSpec.oldLanguage) {
+			kernelSpec.oldLanguage = displayLanguage;
+		}
+	}
+}
+
+/**
+ * Converts a .NET Interactive notebook's metadata to an internal representation needed for VS Code notebook compatibility. This metadata is then restored when saving the notebook.
+ * @param metadata The notebook metadata to be modified.
+ */
+export function addInternalInteractiveKernelMetadata(metadata: azdata.nb.INotebookMetadata | undefined): void {
+	if (metadata?.kernelspec?.name?.startsWith(DotnetInteractiveJupyterKernelPrefix)) {
+		metadata.kernelspec.oldDisplayName = metadata.kernelspec.display_name;
+		metadata.kernelspec.display_name = DotnetInteractiveDisplayName;
+
+		let kernelName = metadata.kernelspec.name;
+		let baseLanguageName = kernelName.replace(DotnetInteractiveJupyterKernelPrefix, '');
+		if (baseLanguageName === 'powershell') {
+			baseLanguageName = 'pwsh';
+		}
+		let languageName = `${DotnetInteractiveLanguagePrefix}${baseLanguageName}`;
+
+		metadata.kernelspec.oldLanguage = metadata.kernelspec.language;
+		metadata.kernelspec.language = languageName;
+
+		metadata.language_info.oldName = metadata.language_info.name;
+		metadata.language_info.name = languageName;
+	}
+}
+
+// #endregion
