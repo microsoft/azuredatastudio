@@ -223,7 +223,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 		// Let's try to convert the access token type, worst case we'll have to prompt the user to do an interactive authentication.
 		const result = await this.refreshToken(tenant, resource, baseTokens.refreshToken);
-		if (result.accessToken) {
+		if (result?.accessToken) {
 			return {
 				...result.accessToken,
 				expiresOn: Number(result.expiresOn),
