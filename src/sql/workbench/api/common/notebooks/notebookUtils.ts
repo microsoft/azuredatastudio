@@ -169,8 +169,8 @@ kernelSpec: {
  * @param kernelSpec The notebook kernel metadata to be modified.
  */
 export function addExternalInteractiveKernelMetadata(kernelSpec: azdata.nb.IKernelSpec): void {
-	if (kernelSpec.name === 'jupyter-notebook' && kernelSpec.display_name === DotnetInteractiveDisplayName) {
-		let language = kernelSpec.language?.replace(DotnetInteractiveLanguagePrefix, '');
+	if (kernelSpec.name === 'jupyter-notebook' && kernelSpec.display_name === DotnetInteractiveDisplayName && kernelSpec.language) {
+		let language = kernelSpec.language.replace(DotnetInteractiveLanguagePrefix, '');
 		let displayLanguage: string;
 		switch (language) {
 			case 'csharp':
