@@ -504,7 +504,7 @@ export const integratedAuth = 'Integrated';
 export const azureMfaAuth = 'AzureMFA';
 export const sqlAuth = 'SqlAuth';
 
-export const azureAddAccount = 'Add an Account...';
+export const azureAddAccount = localize('azureAddAccount', "Add an Account...");
 
 // Tree item types
 export enum DatabaseProjectItemType {

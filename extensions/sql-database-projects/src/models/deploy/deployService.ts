@@ -149,7 +149,7 @@ export class DeployService {
 			this.logToOutput(constants.azureSqlServerCreated(profile?.sqlDbSetting?.serverName));
 
 			// Connect to the server
-			return await this.getConnection(profile.sqlDbSetting, false, 'master');
+			return await this.getConnection(profile.sqlDbSetting, false, constants.master);
 		}
 		return undefined;
 	}

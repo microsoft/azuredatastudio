@@ -295,7 +295,7 @@ export class ProjectsController {
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project or the Project itself
 	 * @param deployProfile deploy profile
 	 */
-	public async publishToAzure(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: ISqlDbDeployProfile): Promise<void> {
+	public async publishToNewAzureServer(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: ISqlDbDeployProfile): Promise<void> {
 		try {
 			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishToNewAzureServer);
 			const project: Project = this.getProjectFromContext(context);
@@ -412,7 +412,7 @@ export class ProjectsController {
 			const settings = await launchCreateAzureServerQuickPick(project, this.azureSqlClient);
 
 			if (settings?.deploySettings && settings?.sqlDbSetting) {
-				await this.publishToAzure(project, settings);
+				await this.publishToNewAzureServer(project, settings);
 			}
 
 		} else {
