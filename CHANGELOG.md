@@ -34,24 +34,6 @@
 - Query Plan Viewer Updates includign warning and parallelism icons, the option to disable tooltips and support for opening .sqlplan files
 - Improvements in SQL Projects and Schema Compare
 
-| Platform																|
-| ---------------------------------------	|
-| [Windows User Installer][win-user]			|
-| [Windows System Installer][win-system]	|
-| [Windows ZIP][win-zip]									|
-| [macOS ZIP][osx-zip]										|
-| [Linux TAR.GZ][linux-zip]								|
-| [Linux RPM][linux-rpm]									|
-| [Linux DEB][linux-deb]									|
-
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2193235
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2193326
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2193236
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2192971
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2193237
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2193238
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2193327
-
 ## Version 1.35.1
 * Release date: March 17, 2022
 * Release status: General Availability
