@@ -40,7 +40,7 @@ import { LocalContentManager } from 'sql/workbench/services/notebook/common/loca
 import { Registry } from 'vs/platform/registry/common/platform';
 import { Extensions as LanguageAssociationExtensions, ILanguageAssociationRegistry } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NotebookLanguage } from 'sql/workbench/common/constants';
-import { addInternalInteractiveKernelMetadata } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { convertToInternalInteractiveKernelMetadata } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
@@ -561,7 +561,7 @@ export class NotebookEditorContentLoader implements IContentLoader {
 		}
 
 		// Special case .NET Interactive kernel spec to handle inconsistencies between notebook providers and jupyter kernel specs
-		addInternalInteractiveKernelMetadata(notebookContents.metadata);
+		convertToInternalInteractiveKernelMetadata(notebookContents.metadata);
 
 		return notebookContents;
 	}

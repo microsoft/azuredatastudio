@@ -201,7 +201,7 @@ export function addExternalInteractiveKernelMetadata(kernelSpec: azdata.nb.IKern
  * Converts a .NET Interactive notebook's metadata to an internal representation needed for VS Code notebook compatibility. This metadata is then restored when saving the notebook.
  * @param metadata The notebook metadata to be modified.
  */
-export function addInternalInteractiveKernelMetadata(metadata: azdata.nb.INotebookMetadata | undefined): void {
+export function convertToInternalInteractiveKernelMetadata(metadata: azdata.nb.INotebookMetadata | undefined): void {
 	if (metadata?.kernelspec?.name?.startsWith(DotnetInteractiveJupyterKernelPrefix)) {
 		metadata.kernelspec.oldDisplayName = metadata.kernelspec.display_name;
 		metadata.kernelspec.display_name = DotnetInteractiveDisplayName;
