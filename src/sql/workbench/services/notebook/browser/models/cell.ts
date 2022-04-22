@@ -287,7 +287,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set hover(value: boolean) {
 		this._hover = value;
-		this.fireExecutionStateChanged();
+		// The Run button is always visible while the cell is active, so we only need to emit this event for inactive cells
+		if (!this.active) {
+			this.fireExecutionStateChanged();
+		}
 	}
 
 	public get executionCount(): number | undefined {

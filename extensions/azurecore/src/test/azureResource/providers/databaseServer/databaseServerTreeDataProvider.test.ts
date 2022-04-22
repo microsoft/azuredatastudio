@@ -10,7 +10,6 @@ import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import 'mocha';
 
-import { azureResource } from 'azureResource';
 import { AzureResourceDatabaseServerTreeDataProvider } from '../../../../azureResource/providers/databaseServer/databaseServerTreeDataProvider';
 import { AzureResourceItemType } from '../../../../azureResource/constants';
 import { IAzureResourceService } from '../../../../azureResource/interfaces';
@@ -19,7 +18,7 @@ import { IAzureResourceService } from '../../../../azureResource/interfaces';
 let mockDatabaseServerService: TypeMoq.IMock<IAzureResourceService<azureResource.AzureResourceDatabaseServer>>;
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 import settings from '../../../../account-provider/providerSettings';
-import { AzureAccount } from 'azurecore';
+import { AzureAccount, azureResource } from 'azurecore';
 
 // Mock test data
 const mockAccount: AzureAccount = {

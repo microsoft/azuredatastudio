@@ -8,9 +8,8 @@ import * as TypeMoq from 'typemoq';
 import 'mocha';
 import { fail } from 'assert';
 
-import { azureResource } from 'azureResource';
 import { AzureResourceService } from '../../azureResource/resourceService';
-import { AzureAccount } from 'azurecore';
+import { AzureAccount, azureResource } from 'azurecore';
 import settings from '../../account-provider/providerSettings';
 
 // Mock test data

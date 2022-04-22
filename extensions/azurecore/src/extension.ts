@@ -39,7 +39,6 @@ import { PostgresServerArcProvider } from './azureResource/providers/postgresArc
 import { PostgresServerArcService } from './azureResource/providers/postgresArcServer/postgresServerService';
 import { CosmosDbMongoProvider } from './azureResource/providers/cosmosdb/mongo/cosmosDbMongoProvider';
 import { CosmosDbMongoService } from './azureResource/providers/cosmosdb/mongo/cosmosDbMongoService';
-import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as azureResourceUtils from './azureResource/utils';
 import * as utils from './utils';
@@ -122,15 +121,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 				? azureResourceUtils.getSelectedSubscriptions(appContext, account, ignoreErrors)
 				: azureResourceUtils.getSubscriptions(appContext, account, ignoreErrors);
 		},
-		getResourceGroups(account?: azurecore.AzureAccount, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<azurecore.GetResourceGroupsResult> { return azureResourceUtils.getResourceGroups(appContext, account, subscription, ignoreErrors); },
+		getResourceGroups(account?: azurecore.AzureAccount, subscription?: azurecore.azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<azurecore.GetResourceGroupsResult> { return azureResourceUtils.getResourceGroups(appContext, account, subscription, ignoreErrors); },
 		getLocations(account?: azurecore.AzureAccount,
-			subscription?: azureResource.AzureResourceSubscription,
+			subscription?: azurecore.azureResource.AzureResourceSubscription,
 			ignoreErrors?: boolean): Promise<azurecore.GetLocationsResult> {
 			return azureResourceUtils.getLocations(appContext, account, subscription, ignoreErrors);
 		},
-		provideResources(): azureResource.IAzureResourceProvider[] {
+		provideResources(): azurecore.azureResource.IAzureResourceProvider[] {
 			const arcFeaturedEnabled = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('enableArcFeatures');
-			const providers: azureResource.IAzureResourceProvider[] = [
+			const providers: azurecore.azureResource.IAzureResourceProvider[] = [
 				new KustoProvider(new KustoResourceService(), extensionContext),
 				new AzureMonitorProvider(new AzureMonitorResourceService(), extensionContext),
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), extensionContext),
@@ -148,65 +147,65 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			return providers;
 		},
 		getSqlManagedInstances(account: azurecore.AzureAccount,
-			subscriptions: azureResource.AzureResourceSubscription[],
+			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
 			ignoreErrors: boolean): Promise<azurecore.GetSqlManagedInstancesResult> {
-			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azureResource.AzureResourceType.sqlManagedInstance}"`);
+			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azurecore.azureResource.AzureResourceType.sqlManagedInstance}"`);
 		},
 		getManagedDatabases(account: azurecore.AzureAccount,
-			subscription: azureResource.AzureResourceSubscription,
-			managedInstance: azureResource.AzureSqlManagedInstance,
+			subscription: azurecore.azureResource.AzureResourceSubscription,
+			managedInstance: azurecore.azureResource.AzureSqlManagedInstance,
 			ignoreErrors: boolean): Promise<azurecore.GetManagedDatabasesResult> {
 			return azureResourceUtils.getManagedDatabases(account, subscription, managedInstance, ignoreErrors);
 		},
 		getSqlServers(account: azurecore.AzureAccount,
-			subscriptions: azureResource.AzureResourceSubscription[],
+			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
 			ignoreErrors: boolean): Promise<azurecore.GetSqlServersResult> {
-			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azureResource.AzureResourceType.sqlServer}"`);
+			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azurecore.azureResource.AzureResourceType.sqlServer}"`);
 		},
 		getSqlVMServers(account: azurecore.AzureAccount,
-			subscriptions: azureResource.AzureResourceSubscription[],
+			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
 			ignoreErrors: boolean): Promise<azurecore.GetSqlVMServersResult> {
-			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azureResource.AzureResourceType.virtualMachines}" and properties.storageProfile.imageReference.publisher == "microsoftsqlserver"`);
+			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azurecore.azureResource.AzureResourceType.virtualMachines}" and properties.storageProfile.imageReference.publisher == "microsoftsqlserver"`);
 		},
 		getStorageAccounts(account: azurecore.AzureAccount,
-			subscriptions: azureResource.AzureResourceSubscription[],
+			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
 			ignoreErrors: boolean): Promise<azurecore.GetStorageAccountResult> {
-			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azureResource.AzureResourceType.storageAccount}"`);
+			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azurecore.azureResource.AzureResourceType.storageAccount}"`);
 		},
 		getBlobContainers(account: azurecore.AzureAccount,
-			subscription: azureResource.AzureResourceSubscription,
-			storageAccount: azureResource.AzureGraphResource,
+			subscription: azurecore.azureResource.AzureResourceSubscription,
+			storageAccount: azurecore.azureResource.AzureGraphResource,
 			ignoreErrors: boolean): Promise<azurecore.GetBlobContainersResult> {
 			return azureResourceUtils.getBlobContainers(account, subscription, storageAccount, ignoreErrors);
 		},
 		getFileShares(account: azurecore.AzureAccount,
-			subscription: azureResource.AzureResourceSubscription,
-			storageAccount: azureResource.AzureGraphResource,
+			subscription: azurecore.azureResource.AzureResourceSubscription,
+			storageAccount: azurecore.azureResource.AzureGraphResource,
 			ignoreErrors: boolean): Promise<azurecore.GetFileSharesResult> {
 			return azureResourceUtils.getFileShares(account, subscription, storageAccount, ignoreErrors);
 		},
 		getStorageAccountAccessKey(account: azurecore.AzureAccount,
-			subscription: azureResource.AzureResourceSubscription,
-			storageAccount: azureResource.AzureGraphResource,
+			subscription: azurecore.azureResource.AzureResourceSubscription,
+			storageAccount: azurecore.azureResource.AzureGraphResource,
 			ignoreErrors: boolean): Promise<azurecore.GetStorageAccountAccessKeyResult> {
 			return azureResourceUtils.getStorageAccountAccessKey(account, subscription, storageAccount, ignoreErrors);
 		},
 		getBlobs(account: azurecore.AzureAccount,
-			subscription: azureResource.AzureResourceSubscription,
-			storageAccount: azureResource.AzureGraphResource,
+			subscription: azurecore.azureResource.AzureResourceSubscription,
+			storageAccount: azurecore.azureResource.AzureGraphResource,
 			containerName: string,
 			ignoreErrors: boolean): Promise<azurecore.GetBlobsResult> {
 			return azureResourceUtils.getBlobs(account, subscription, storageAccount, containerName, ignoreErrors);
 		},
 		createResourceGroup(account: azurecore.AzureAccount,
-			subscription: azureResource.AzureResourceSubscription,
+			subscription: azurecore.azureResource.AzureResourceSubscription,
 			resourceGroupName: string,
 			location: string,
 			ignoreErrors: boolean): Promise<azurecore.CreateResourceGroupResult> {
 			return azureResourceUtils.createResourceGroup(account, subscription, resourceGroupName, location, ignoreErrors);
 		},
 		makeAzureRestRequest(account: azurecore.AzureAccount,
-			subscription: azureResource.AzureResourceSubscription,
+			subscription: azurecore.azureResource.AzureResourceSubscription,
 			path: string,
 			requestType: azurecore.HttpRequestMethod,
 			requestBody: any,
@@ -216,8 +215,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			return azureResourceUtils.makeHttpRequest(account, subscription, path, requestType, requestBody, ignoreErrors, host, requestHeaders);
 		},
 		getRegionDisplayName: utils.getRegionDisplayName,
-		runGraphQuery<T extends azureResource.AzureGraphResource>(account: azurecore.AzureAccount,
-			subscriptions: azureResource.AzureResourceSubscription[],
+		runGraphQuery<T extends azurecore.azureResource.AzureGraphResource>(account: azurecore.AzureAccount,
+			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
 			ignoreErrors: boolean,
 			query: string): Promise<azurecore.ResourceQueryResult<T>> {
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, query);

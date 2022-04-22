@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as constants from '../constants';
 import { apiService } from '../../../services/apiService';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import * as vscode from 'vscode';
 import { BasePage } from './basePage';
 import * as nls from 'vscode-nls';

@@ -33,6 +33,8 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import { CustomZoomWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget';
 import { NodeSearchWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget';
 import { AzdataGraphView } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 export class ExecutionPlanView implements ISashLayoutProvider {
 
@@ -153,13 +155,13 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 		const actionBarActions = [
 			new SavePlanFile(),
 			new OpenPlanFile(),
-			new OpenQueryAction(),
-			new SearchNodeAction(),
-			new ZoomInAction(),
-			new ZoomOutAction(),
-			new ZoomToFitAction(),
-			new CustomZoomAction(),
-			new PropertiesAction(),
+			this._instantiationService.createInstance(OpenQueryAction, 'ActionBar'),
+			this._instantiationService.createInstance(SearchNodeAction, 'ActionBar'),
+			this._instantiationService.createInstance(ZoomInAction, 'ActionBar'),
+			this._instantiationService.createInstance(ZoomOutAction, 'ActionBar'),
+			this._instantiationService.createInstance(ZoomToFitAction, 'ActionBar'),
+			this._instantiationService.createInstance(CustomZoomAction, 'ActionBar'),
+			this._instantiationService.createInstance(PropertiesAction, 'ActionBar'),
 			this.actionBarToggleTopTip
 		];
 		this._actionBar.pushAction(actionBarActions, { icon: true, label: false });
@@ -169,13 +171,13 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 		const contextMenuAction = [
 			new SavePlanFile(),
 			new OpenPlanFile(),
-			new OpenQueryAction(),
-			new SearchNodeAction(),
-			new ZoomInAction(),
-			new ZoomOutAction(),
-			new ZoomToFitAction(),
-			new CustomZoomAction(),
-			new PropertiesAction(),
+			this._instantiationService.createInstance(OpenQueryAction, 'ContextMenu'),
+			this._instantiationService.createInstance(SearchNodeAction, 'ContextMenu'),
+			this._instantiationService.createInstance(ZoomInAction, 'ContextMenu'),
+			this._instantiationService.createInstance(ZoomOutAction, 'ContextMenu'),
+			this._instantiationService.createInstance(ZoomToFitAction, 'ContextMenu'),
+			this._instantiationService.createInstance(CustomZoomAction, 'ContextMenu'),
+			this._instantiationService.createInstance(PropertiesAction, 'ContextMenu'),
 			this.contextMenuToggleTooltipAction
 		];
 		const self = this;
@@ -269,15 +271,24 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 	}
 }
 
+type ExecutionPlanActionSource = 'ContextMenu' | 'ActionBar';
+
 export class OpenQueryAction extends Action {
 	public static ID = 'ep.OpenQueryAction';
 	public static LABEL = localize('openQueryAction', "Open Query");
 
-	constructor() {
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
+	) {
 		super(OpenQueryAction.ID, OpenQueryAction.LABEL, openQueryIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.OpenQuery)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
 		context.openQuery();
 	}
 }
@@ -286,11 +297,18 @@ export class PropertiesAction extends Action {
 	public static ID = 'ep.propertiesAction';
 	public static LABEL = localize('executionPlanPropertiesActionLabel', "Properties");
 
-	constructor() {
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
+	) {
 		super(PropertiesAction.ID, PropertiesAction.LABEL, openPropertiesIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.OpenExecutionPlanProperties)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
 		context.propertiesView.toggleVisibility();
 	}
 }
@@ -299,11 +317,18 @@ export class ZoomInAction extends Action {
 	public static ID = 'ep.ZoomInAction';
 	public static LABEL = localize('executionPlanZoomInActionLabel', "Zoom In");
 
-	constructor() {
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
+	) {
 		super(ZoomInAction.ID, ZoomInAction.LABEL, zoomInIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ZoomIn)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
 		context.executionPlanDiagram.zoomIn();
 	}
 }
@@ -312,11 +337,18 @@ export class ZoomOutAction extends Action {
 	public static ID = 'ep.ZoomOutAction';
 	public static LABEL = localize('executionPlanZoomOutActionLabel', "Zoom Out");
 
-	constructor() {
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
+	) {
 		super(ZoomOutAction.ID, ZoomOutAction.LABEL, zoomOutIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ZoomOut)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
 		context.executionPlanDiagram.zoomOut();
 	}
 }
@@ -325,11 +357,18 @@ export class ZoomToFitAction extends Action {
 	public static ID = 'ep.FitGraph';
 	public static LABEL = localize('executionPlanFitGraphLabel', "Zoom to fit");
 
-	constructor() {
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
+	) {
 		super(ZoomToFitAction.ID, ZoomToFitAction.LABEL, zoomToFitIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ZoomToFit)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
 		context.executionPlanDiagram.zoomToFit();
 	}
 }
@@ -371,11 +410,18 @@ export class CustomZoomAction extends Action {
 	public static ID = 'ep.customZoom';
 	public static LABEL = localize('executionPlanCustomZoom', "Custom Zoom");
 
-	constructor() {
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
+	) {
 		super(CustomZoomAction.ID, CustomZoomAction.LABEL, customZoomIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.CustomZoom)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
 		context.widgetController.toggleWidget(context._instantiationService.createInstance(CustomZoomWidget, context.widgetController, context.executionPlanDiagram));
 	}
 }
@@ -384,11 +430,18 @@ export class SearchNodeAction extends Action {
 	public static ID = 'ep.searchNode';
 	public static LABEL = localize('executionPlanSearchNodeAction', "Find Node");
 
-	constructor() {
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
+	) {
 		super(SearchNodeAction.ID, SearchNodeAction.LABEL, searchIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.FindNode)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
 		context.widgetController.toggleWidget(context._instantiationService.createInstance(NodeSearchWidget, context.widgetController, context.executionPlanDiagram));
 	}
 }
@@ -408,46 +461,46 @@ export class OpenPlanFile extends Action {
 
 export class ActionBarToggleTooltip extends Action {
 	public static ID = 'ep.tooltipToggleActionBar';
-	public static ENABLE_LABEL = localize('executionPlanEnableTooltip', "Tooltips enabled");
-	public static DISABLE_LABEL = localize('executionPlanDisableTooltip', "Tooltips disabled");
+	public static WHEN_TOOLTIPS_ENABLED_LABEL = localize('executionPlanEnableTooltip', "Tooltips enabled");
+	public static WHEN_TOOLTIPS_DISABLED_LABEL = localize('executionPlanDisableTooltip', "Tooltips disabled");
 
 	constructor() {
-		super(ActionBarToggleTooltip.ID, ActionBarToggleTooltip.ENABLE_LABEL, enableTooltipIconClassName);
+		super(ActionBarToggleTooltip.ID, ActionBarToggleTooltip.WHEN_TOOLTIPS_ENABLED_LABEL, enableTooltipIconClassName);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
 		const state = context.executionPlanDiagram.toggleTooltip();
 		if (!state) {
 			this.class = disableTooltipIconClassName;
-			this.label = ActionBarToggleTooltip.DISABLE_LABEL;
-			context.actionBarToggleTopTip.label = ContextMenuTooltipToggle.DISABLE_LABEL;
+			this.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_DISABLED_LABEL;
+			context.contextMenuToggleTooltipAction.label = ContextMenuTooltipToggle.WHEN_TOOLTIPS_DISABLED_LABEL;
 		} else {
 			this.class = enableTooltipIconClassName;
-			this.label = ActionBarToggleTooltip.ENABLE_LABEL;
-			context.actionBarToggleTopTip.label = ContextMenuTooltipToggle.ENABLE_LABEL;
+			this.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_ENABLED_LABEL;
+			context.contextMenuToggleTooltipAction.label = ContextMenuTooltipToggle.WHEN_TOOLTIPS_ENABLED_LABEL;
 		}
 	}
 }
 
 export class ContextMenuTooltipToggle extends Action {
 	public static ID = 'ep.tooltipToggleContextMenu';
-	public static ENABLE_LABEL = localize('executionPlanContextMenuEnableTooltip', "Enable Tooltips");
-	public static DISABLE_LABEL = localize('executionPlanContextMenuDisableTooltip', "Disable Tooltips");
+	public static WHEN_TOOLTIPS_ENABLED_LABEL = localize('executionPlanContextMenuDisableTooltip', "Disable Tooltips");
+	public static WHEN_TOOLTIPS_DISABLED_LABEL = localize('executionPlanContextMenuEnableTooltip', "Enable Tooltips");
 
 	constructor() {
-		super(ContextMenuTooltipToggle.ID, ContextMenuTooltipToggle.ENABLE_LABEL, enableTooltipIconClassName);
+		super(ContextMenuTooltipToggle.ID, ContextMenuTooltipToggle.WHEN_TOOLTIPS_ENABLED_LABEL, enableTooltipIconClassName);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
 		const state = context.executionPlanDiagram.toggleTooltip();
 		if (!state) {
-			this.label = ContextMenuTooltipToggle.ENABLE_LABEL;
+			this.label = ContextMenuTooltipToggle.WHEN_TOOLTIPS_DISABLED_LABEL;
 			context.actionBarToggleTopTip.class = disableTooltipIconClassName;
-			context.actionBarToggleTopTip.label = ActionBarToggleTooltip.DISABLE_LABEL;
+			context.actionBarToggleTopTip.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_DISABLED_LABEL;
 		} else {
-			this.label = ContextMenuTooltipToggle.DISABLE_LABEL;
+			this.label = ContextMenuTooltipToggle.WHEN_TOOLTIPS_ENABLED_LABEL;
 			context.actionBarToggleTopTip.class = enableTooltipIconClassName;
-			context.actionBarToggleTopTip.label = ActionBarToggleTooltip.ENABLE_LABEL;
+			context.actionBarToggleTopTip.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_ENABLED_LABEL;
 		}
 	}
 }
