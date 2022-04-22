@@ -1,56 +1,164 @@
 // Adopted and converted to typescript from https://github.com/mleibman/SlickGrid/blob/gh-pages/plugins/slick.rowmovemanager.js
 // heavily modified
+
+// eslint-disable-next-line header/header
+import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
+import { BaseClickableColumn, ClickableColumnOptions, IconColumnOptions } from 'sql/base/browser/ui/table/plugins/tableColumn';
 import { mixin } from 'vs/base/common/objects';
 
 const defaultOptions: IRowMoveManagerOptions = {
 	cancelEditOnDrag: false
 };
 
-export interface IRowMoveManagerOptions extends Slick.PluginOptions {
+export interface IRowMoveManagerOptions extends IconColumnOptions, ClickableColumnOptions, Slick.Column<Slick.SlickData> {
 	cancelEditOnDrag?: boolean;
 }
 
-export class RowMoveManager<T extends Slick.SlickData> implements Slick.Plugin<T> {
+export interface RowMoveOnDragEventArgs {
+	selectionProxy?: JQuery<HTMLElement>;
+	guide?: JQuery<HTMLElement>;
+	selectedRows?: number[];
+	insertBefore?: number;
+	canMove?: boolean;
+}
 
-	private _options: IRowMoveManagerOptions;
-	private _grid: Slick.Grid<T>;
+// Wrapper interfaces for drag arguments to support selection
+export interface OnRowMoveDragInitEventArgs<T extends Slick.SlickData> extends Slick.OnDragInitEventArgs<T>, RowMoveOnDragEventArgs { }
+export interface OnRowMoveDragStartEventArgs<T extends Slick.SlickData> extends Slick.OnDragStartEventArgs<T>, RowMoveOnDragEventArgs { }
+export interface OnRowMoveDragEventArgs<T extends Slick.SlickData> extends Slick.OnDragEventArgs<T>, RowMoveOnDragEventArgs { }
+export interface OnRowMoveDragEndEventArgs<T extends Slick.SlickData> extends Slick.OnDragEndEventArgs<T>, RowMoveOnDragEventArgs { }
+
+export class RowMoveManager<T extends Slick.SlickData> extends BaseClickableColumn<T> {
+
 	private _canvas: HTMLCanvasElement;
 	private _dragging: boolean;
-	private _handler = new Slick.EventHandler();
 
-	constructor(options?: Slick.PluginOptions) {
-		this._options = mixin(options, defaultOptions, false);
+	public onBeforeMoveRows: Slick.Event<any> = new Slick.Event();
+	public onMoveRows: Slick.Event<any> = new Slick.Event();
+
+	constructor(private options: IRowMoveManagerOptions) {
+		super(options);
+		this.options = mixin(options, defaultOptions, false);
+	}
+
+	public get definition(): Slick.Column<T> {
+		return {
+			id: this.options.id || this.options.title || this.options.field,
+			width: this.options.width ?? 26,
+			name: this.options.name,
+			resizable: this.options.resizable,
+			selectable: false,
+			behavior: this.options.behavior,
+			cssClass: this.options.iconCssClass
+		};
 	}
 
 
-	public init(grid: Slick.Grid<T>) {
+	public override init(grid: Slick.Grid<T>) {
 		this._grid = grid;
+		this._grid.setSelectionModel(new RowSelectionModel());
 		this._canvas = this._grid.getCanvasNode();
 		this._handler
-			.subscribe(this._grid.onDragInit, (e: Event, data: Slick.OnDragInitEventArgs<T>) => this.onDragInit(e, data))
-			.subscribe(this._grid.onDragStart, (e: DOMEvent, data: Slick.OnDragStartEventArgs<T>) => this.onDragStart(e, data))
-			.subscribe(this._grid.onDrag, (e: DOMEvent, data: Slick.OnDragEventArgs<T>) => this.onDrag(e, data))
-			.subscribe(this._grid.onDragEnd, (e: DOMEvent, data: Slick.OnDragEndEventArgs<T>) => this.onDragEnd(e, data));
+			.subscribe(this._grid.onDragInit, (e: DOMEvent, data: OnRowMoveDragInitEventArgs<T>) => this.onDragInit(e as MouseEvent, data))
+			.subscribe(this._grid.onDragStart, (e: DOMEvent, data: OnRowMoveDragStartEventArgs<T>) => this.onDragStart(e as MouseEvent, data))
+			.subscribe(this._grid.onDrag, (e: DOMEvent, data: OnRowMoveDragEventArgs<T>) => this.onDrag(e as MouseEvent, data))
+			.subscribe(this._grid.onDragEnd, (e: DOMEvent, data: OnRowMoveDragEndEventArgs<T>) => this.onDragEnd(e as MouseEvent, data));
 	}
 
-	public destroy(): void {
-		this._handler.unsubscribeAll();
-	}
-
-	private onDragInit(e: Event, data: Slick.OnDragInitEventArgs<T>) {
+	private onDragInit(e: MouseEvent, data: OnRowMoveDragInitEventArgs<T>) {
 		e.stopImmediatePropagation();
 	}
 
-	private onDragStart(e: Event, data: Slick.OnDragStartEventArgs<T>) {
+	private onDragStart(e: MouseEvent, data: OnRowMoveDragStartEventArgs<T>) {
+		let cell = this._grid.getCellFromEvent(e);
+
+		if (this.options.cancelEditOnDrag && this._grid.getEditorLock().isActive()) {
+			this._grid.getEditorLock().cancelCurrentEdit();
+		}
+
+		if (this._grid.getEditorLock().isActive() || !/move|selectAndMove/.test(this._grid.getColumns()[cell.cell].behavior)) {
+			return;
+		}
+
+		this._dragging = true;
+		e.stopImmediatePropagation();
+
+		let selectedRows = this._grid.getSelectedRows();
+
+		if (selectedRows.length === 0 || jQuery.inArray(cell.row, selectedRows) === -1) {
+			selectedRows = [cell.row];
+			this._grid.setSelectedRows(selectedRows);
+		}
+
+		let rowHeight = this._grid.getOptions().rowHeight;
+
+		data.selectedRows = selectedRows;
+
+		data.selectionProxy = jQuery('<div class="slick-reorder-proxy"/>')
+			.css('position', 'absolute')
+			.css('zIndex', '99999')
+			.css('width', jQuery(this._canvas).innerWidth())
+			.css('height', rowHeight * selectedRows.length)
+			.appendTo(this._canvas);
+
+		data.guide = jQuery('<div class="slick-reorder-guide"/>')
+			.css('position', 'absolute')
+			.css('zIndex', '99998')
+			.css('width', jQuery(this._canvas).innerWidth())
+			.css('top', -1000)
+			.appendTo(this._canvas);
+
+		data.insertBefore = -1;
+	}
+
+	private onDrag(e: MouseEvent, data: OnRowMoveDragEventArgs<T>) {
+		if (!this._dragging) {
+			return;
+		}
+
+		e.stopImmediatePropagation();
+
+		let top = e.pageY - jQuery(this._canvas).offset().top;
+		data.selectionProxy.css('top', top - 5);
+
+		let insertBefore = Math.max(0, Math.min(Math.round(top / this._grid.getOptions().rowHeight), this._grid.getDataLength()));
+		if (insertBefore !== data.insertBefore) {
+			let eventData = {
+				'rows': data.selectedRows,
+				'insertBefore': insertBefore
+			};
+
+			if (this.onBeforeMoveRows.notify(eventData) === false) {
+				data.guide.css('top', -1000);
+				data.canMove = false;
+			} else {
+				data.guide.css('top', insertBefore * this._grid.getOptions().rowHeight);
+				data.canMove = true;
+			}
+
+			data.insertBefore = insertBefore;
+		}
 
 	}
 
-	private onDrag(e: Event, data: Slick.OnDragEventArgs<T>) {
+	private onDragEnd(e: MouseEvent, data: OnRowMoveDragEndEventArgs<T>) {
+		if (!this._dragging) {
+			return;
+		}
+		this._dragging = false;
+		e.stopImmediatePropagation();
 
-	}
+		data.guide.remove();
+		data.selectionProxy.remove();
 
-	private onDragEnd(e: Event, data: Slick.OnDragEndEventArgs<T>) {
-
+		if (data.canMove) {
+			let eventData = {
+				'rows': data.selectedRows,
+				'insertBefore': data.insertBefore
+			};
+			// TODO:  _grid.remapCellCssClasses ?
+			this.onMoveRows.notify(eventData);
+		}
 	}
 
 }

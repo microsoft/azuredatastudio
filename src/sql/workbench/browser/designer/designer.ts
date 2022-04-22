@@ -47,6 +47,7 @@ import { Dropdown, IDropdownStyles } from 'sql/base/browser/ui/editableDropdown/
 import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
 import { IAction } from 'vs/base/common/actions';
 import { AddAfterSelectedColumn, AddBeforeSelectedColumn } from 'sql/workbench/browser/designer/designerActions';
+import { RowMoveManager } from 'sql/base/browser/ui/table/plugins/rowMoveManager.plugin';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -821,6 +822,44 @@ export class Designer extends Disposable implements IThemable {
 					editorLock: new Slick.EditorLock()
 				});
 
+				let moveRowsPlugin = new RowMoveManager({
+					cancelEditOnDrag: true,
+					id: 'moveRow',
+					iconCssClass: Codicon.grabber.classNames,
+					title: localize('designer.moveRowText', 'Move Row'),
+					width: 20,
+					resizable: false,
+					isFontIcon: true,
+					behavior: 'selectAndMove'
+				});
+				moveRowsPlugin.onBeforeMoveRows.subscribe((e, data) => {
+					let test = data;
+				});
+				moveRowsPlugin.onMoveRows.subscribe((e, args) => {
+					let test = args;
+				});
+
+				table.grid.registerPlugin(moveRowsPlugin);
+
+
+
+				table.grid.onDragStart.subscribe((e, dd) => {
+					let test = dd;
+				});
+
+				table.grid.onDrag.subscribe(function (e, dd) {
+					let test = dd;
+				});
+
+				table.grid.onAddNewRow.subscribe((e, args) => {
+					let item = { name: 'New task', complete: false };
+					jQuery.extend(item, args.item);
+					// data.push(item); // data is probably the grid data already there
+					// table.grid.invalidateRows([data.length - 1]);
+					table.grid.updateRowCount();
+					table.grid.render();
+				});
+
 				this._register(table.onContextMenu((e) => {
 					let edit: DesignerEdit = {
 						type: DesignerEditType.Add,
@@ -897,6 +936,10 @@ export class Designer extends Disposable implements IThemable {
 					table.registerPlugin(deleteRowColumn);
 					columns.push(deleteRowColumn.definition);
 				}
+
+				table.registerPlugin(moveRowsPlugin);
+				columns.unshift(moveRowsPlugin.definition);
+
 				table.columns = columns;
 				table.grid.onBeforeEditCell.subscribe((e, data): boolean => {
 					return data.item[data.column.field].enabled !== false;

@@ -152,3 +152,7 @@
 	padding-top: 10px;
 	padding-left: 25px;
 }
+
+.designer-component .codicon-grabber {
+	cursor: move;
+}
