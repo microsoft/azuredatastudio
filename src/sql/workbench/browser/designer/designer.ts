@@ -98,7 +98,7 @@ export class Designer extends Disposable implements IThemable {
 					});
 				},
 				optionsGetter: (item, column): string[] => {
-					return item[column.field].options;
+					return item[column.field].values;
 				},
 				editorStyler: (component) => {
 					this.styleComponent(component);
@@ -503,6 +503,8 @@ export class Designer extends Disposable implements IThemable {
 		const groupNames = [];
 		const componentsToCreate = !isMainView ? components.filter(component => component.showInPropertiesView !== false) : components;
 		componentsToCreate.forEach(component => {
+			// Set the default group name if not set (undefined or null).
+			component.group = component.group || localize('designer.generalGroupName', "General");
 			if (groupNames.indexOf(component.group) === -1) {
 				groupNames.push(component.group);
 			}
@@ -518,7 +520,7 @@ export class Designer extends Disposable implements IThemable {
 				const groupHeader = container.appendChild(DOM.$('div.full-row.group-header'));
 				groupHeaders.push(groupHeader);
 				this.styleGroupHeader(groupHeader);
-				groupHeader.innerText = group ?? localize('designer.generalGroupName', "General");
+				groupHeader.innerText = group;
 				componentsToCreate.forEach(component => {
 					if (component.group === group) {
 						uiComponents.push(this.createComponent(container, component, parentPath, componentMap, setWidth, isMainView));
@@ -565,7 +567,7 @@ export class Designer extends Disposable implements IThemable {
 				container.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				const dropdownContainer = container.appendChild(DOM.$(''));
 				const dropdownProperties = componentDefinition.componentProperties as DropDownProperties;
-				const dropdown = new SelectBox(dropdownProperties.values as string[], undefined, this._contextViewProvider, undefined);
+				const dropdown = new SelectBox(dropdownProperties.values as string[] || [], undefined, this._contextViewProvider, undefined);
 				dropdown.render(dropdownContainer);
 				dropdown.selectElem.style.height = '25px';
 				dropdown.onDidSelect((e) => {
@@ -579,12 +581,10 @@ export class Designer extends Disposable implements IThemable {
 				component = dropdown;
 				break;
 			case 'checkbox':
-				container.appendChild(DOM.$('')); // label container place holder
+				container.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				const checkboxContainer = container.appendChild(DOM.$(''));
 				const checkboxProperties = componentDefinition.componentProperties as CheckBoxProperties;
-				const checkbox = new Checkbox(checkboxContainer, {
-					label: checkboxProperties.title
-				});
+				const checkbox = new Checkbox(checkboxContainer, { label: '', ariaLabel: checkboxProperties.title });
 				checkbox.onChange((newValue) => {
 					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: newValue });
 				});
@@ -600,7 +600,7 @@ export class Designer extends Disposable implements IThemable {
 					container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				}
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
-				if (tableProperties.canAddRows !== false) {
+				if (tableProperties.canAddRows) {
 					const buttonContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
 					const addNewText = localize('designer.newRowText', "Add New");
 					const addRowButton = new Button(buttonContainer, {
@@ -673,7 +673,7 @@ export class Designer extends Disposable implements IThemable {
 							};
 					}
 				});
-				if (tableProperties.canRemoveRows !== false) {
+				if (tableProperties.canRemoveRows) {
 					const deleteRowColumn = new ButtonColumn({
 						id: 'deleteRow',
 						iconCssClass: Codicon.trash.classNames,
