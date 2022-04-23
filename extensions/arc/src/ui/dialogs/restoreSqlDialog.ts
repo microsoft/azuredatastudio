@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import { Deferred } from '../../common/promise';
+import { getTimeStamp, checkISOTimeString } from '../../common/utils';
 import * as loc from '../../localizedConstants';
 import * as vscode from 'vscode';
 import { cssStyles } from '../../constants';
@@ -24,6 +25,7 @@ export class RestoreSqlDialog extends InitializingComponent {
 		restorePoint: '-',
 		earliestPitr: '-',
 		latestPitr: '-',
+		destDbName: '-',
 	};
 
 	private earliestRestorePointInputBox!: azdata.InputBoxComponent;
@@ -36,10 +38,11 @@ export class RestoreSqlDialog extends InitializingComponent {
 	private instanceInputBox!: azdata.InputBoxComponent;
 	protected _completionPromise = new Deferred<PITRModel | undefined>();
 	private _azurecoreApi: azurecore.IExtension;
+	protected disposables: vscode.Disposable[] = [];
 	constructor(protected _miaaModel: MiaaModel, protected _controllerModel: ControllerModel, protected _database: DatabaseModel) {
 		super();
 		this._azurecoreApi = vscode.extensions.getExtension(azurecore.extension.name)?.exports;
-
+		this.refreshPitrSettings();
 	}
 
 	public showDialog(dialogTitle: string): azdata.window.Dialog {
@@ -50,14 +53,15 @@ export class RestoreSqlDialog extends InitializingComponent {
 			this.refreshPitrSettings();
 			const pitrTitle = this.modelBuilder.text().withProps({
 				value: loc.pitr,
-				CSSStyles: { ...cssStyles.title }
+				CSSStyles: { ...cssStyles.title, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' },
 			}).component();
 			const projectDetailsTitle = this.modelBuilder.text().withProps({
 				value: loc.projectDetails,
-				CSSStyles: { ...cssStyles.title }
+				CSSStyles: { ...cssStyles.title, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
 			const projectDetailsTextLabel = this.modelBuilder.text().withProps({
 				value: loc.projectDetailsText,
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
 			this.subscriptionInputBox = this.modelBuilder.inputBox()
 				.withProps({
@@ -74,10 +78,11 @@ export class RestoreSqlDialog extends InitializingComponent {
 
 			const sourceDetailsTitle = this.modelBuilder.text().withProps({
 				value: loc.sourceDetails,
-				CSSStyles: { ...cssStyles.title }
+				CSSStyles: { ...cssStyles.title, 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
 			const sourceDetailsTextLabel = this.modelBuilder.text().withProps({
 				value: loc.sourceDetailsText,
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
 			this.sourceDbInputBox = this.modelBuilder.inputBox()
 				.withProps({
@@ -85,12 +90,15 @@ export class RestoreSqlDialog extends InitializingComponent {
 					ariaLabel: loc.sourceDatabase,
 					value: this._database.name
 				}).component();
-
+			const restoreDetailsTextLabel = this.modelBuilder.text().withProps({
+				value: loc.restorePointText,
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
+			}).component();
 			this.earliestRestorePointInputBox = this.modelBuilder.inputBox()
 				.withProps({
 					enabled: false,
 					ariaLabel: loc.earliestPitrRestorePoint,
-					value: ''
+					value: this._database.earliestBackup
 				}).component();
 
 			this.latestRestorePointInputBox = this.modelBuilder.inputBox()
@@ -104,14 +112,39 @@ export class RestoreSqlDialog extends InitializingComponent {
 				.withProps({
 					readOnly: false,
 					ariaLabel: loc.restorePoint,
-					value: ''
+					value: '',
+					validationErrorMessage: loc.restorePointErrorMessage(this.earliestRestorePointInputBox.value ?? loc.earliestPitrRestorePoint, this.latestRestorePointInputBox.value ?? loc.latestpitrRestorePoint),
+				}).withValidation(async () => {
+					try {
+						if (!checkISOTimeString(this.restorePointInputBox.value ?? '')) { return false; }
+						if (this.earliestRestorePointInputBox.value) {
+							if ((getTimeStamp(this.restorePointInputBox.value) >= getTimeStamp(this.earliestRestorePointInputBox.value)
+								&& getTimeStamp(this.restorePointInputBox.value) <= getTimeStamp(this.latestRestorePointInputBox.value))) {
+								this.pitrSettings.restorePoint = this.restorePointInputBox.value ?? '';
+								return true;
+							}
+							else {
+								return false;
+							}
+						}
+					}
+					catch (err) {
+						throw err;
+						return false;
+					}
+					return true;
 				}).component();
-			const databaseDetailsTitle = this.modelBuilder.text().withProps({
+			const pitrDetailsTitle = this.modelBuilder.text().withProps({
+				value: loc.restorePointDetails,
+				CSSStyles: { ...cssStyles.title, 'margin-block-end': '0px', 'max-width': 'auto' }
+			}).component();
+			const destinationDetailsTitle = this.modelBuilder.text().withProps({
 				value: loc.databaseDetails,
-				CSSStyles: { ...cssStyles.title }
+				CSSStyles: { ...cssStyles.title, 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
 			const databaseDetailsTextLabel = this.modelBuilder.text().withProps({
 				value: loc.databaseDetailsText,
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
 			this.databaseNameInputBox = this.modelBuilder.inputBox()
 				.withProps({
@@ -119,7 +152,10 @@ export class RestoreSqlDialog extends InitializingComponent {
 					ariaLabel: loc.databaseName,
 					value: ''
 				}).component();
-
+			this.disposables.push(
+				this.databaseNameInputBox.onTextChanged(() => {
+					this.pitrSettings.destDbName = this.databaseNameInputBox.value ?? '';
+				}));
 			this.instanceInputBox = this.modelBuilder.inputBox()
 				.withProps({
 					enabled: false,
@@ -128,7 +164,7 @@ export class RestoreSqlDialog extends InitializingComponent {
 				}).component();
 			const info = this.modelBuilder.text().withProps({
 				value: loc.restoreInfo,
-				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'max-width': 'auto' }
 			}).component();
 
 			const link = this.modelBuilder.hyperlink().withProps({
@@ -178,22 +214,7 @@ export class RestoreSqlDialog extends InitializingComponent {
 
 						},
 						{
-							component: this.earliestRestorePointInputBox,
-							title: loc.earliestPitrRestorePoint,
-
-						},
-						{
-							component: this.latestRestorePointInputBox,
-							title: loc.latestpitrRestorePoint,
-
-						},
-						{
-							component: this.restorePointInputBox,
-							title: loc.restorePoint,
-							required: true
-						},
-						{
-							component: databaseDetailsTitle,
+							component: destinationDetailsTitle,
 						},
 						{
 							component: databaseDetailsTextLabel,
@@ -207,6 +228,27 @@ export class RestoreSqlDialog extends InitializingComponent {
 							component: this.instanceInputBox,
 							title: loc.instance,
 
+						},
+						{
+							component: pitrDetailsTitle
+						},
+						{
+							component: restoreDetailsTextLabel,
+						},
+						{
+							component: this.earliestRestorePointInputBox,
+							title: loc.earliestPitrRestorePoint,
+
+						},
+						{
+							component: this.latestRestorePointInputBox,
+							title: loc.latestpitrRestorePoint,
+
+						},
+						{
+							component: this.restorePointInputBox,
+							title: loc.restorePoint,
+							required: true
 						},
 					],
 					title: ''
@@ -269,4 +311,9 @@ export class RestoreSqlDialog extends InitializingComponent {
 		this.pitrSettings.restorePoint = this._database.lastBackup;
 		this.pitrSettings.earliestPitr = '';
 	}
+	public updatePitrTimeWindow(earliestPitr: string, latestPitr: string): void {
+		this.earliestRestorePointInputBox.value = earliestPitr;
+		this.latestRestorePointInputBox.value = latestPitr;
+	}
+
 }

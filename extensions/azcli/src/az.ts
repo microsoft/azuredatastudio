@@ -185,16 +185,18 @@ export class AzTool implements azExt.IAzApi {
 					managedInstance?: string,
 					time?: string,
 					noWait?: boolean,
+					dryRun?: boolean
 				},
 				namespace: string,
 				additionalEnvVars?: azExt.AdditionalEnvVars
-			): Promise<azExt.AzOutput<void>> => {
+			): Promise<azExt.AzOutput<azExt.SqlMiDbRestoreResult>> => {
 				const argsArray = ['sql', 'midb-arc', 'restore', '--name', name, '--k8s-namespace', namespace, '--use-k8s'];
 				if (args.destName) { argsArray.push('--dest-name', args.destName); }
 				if (args.managedInstance) { argsArray.push('--managed-instance', args.managedInstance); }
 				if (args.time) { argsArray.push('--time', args.time); }
 				if (args.noWait) { argsArray.push('--no-wait'); }
-				return this.executeCommand<void>(argsArray, additionalEnvVars);
+				if (args.dryRun) { argsArray.push('--dry-run'); }
+				return this.executeCommand<azExt.SqlMiDbRestoreResult>(argsArray, additionalEnvVars);
 			}
 		}
 	};
