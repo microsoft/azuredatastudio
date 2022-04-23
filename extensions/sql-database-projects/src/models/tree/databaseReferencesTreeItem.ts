@@ -10,7 +10,7 @@ import * as constants from '../../common/constants';
 import { BaseProjectTreeItem } from './baseTreeItem';
 import { ProjectRootTreeItem } from './projectTreeItem';
 import { IconPathHelper } from '../../common/iconHelper';
-import { IDatabaseReferenceProjectEntry } from '../../models/project';
+import { IDatabaseReferenceProjectEntry } from '../projectEntry';
 
 /**
  * Folder for containing references nodes in the tree
