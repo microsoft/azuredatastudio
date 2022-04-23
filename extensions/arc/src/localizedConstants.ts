@@ -275,11 +275,11 @@ export function copyConnectionStringToClipboard(type: string): string { return l
 export function copyValueToClipboard(valueName: string): string { return localize({ key: 'arc.copyValueToClipboard', comment: ['{0} is the name of the type of value being copied (e.g. Coordinator endpoint)'] }, "Copy {0} to clipboard", valueName); }
 
 // Pricing Constants
-export const replicaOne = localize('arc.replicaOne', "1 replica");
-export const replicaTwo = localize('arc.replicaTwo', "2 replicas");
-export const replicaThree = localize('arc.replicaThree', "3 replicas");
-export const generalPurposeLabel = localize('arc.generalPurposeLabel', "General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)");
-export const businessCriticalLabel = localize('arc.businessCriticalLabel', "[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)");
+export const replicaOne = localize('arc.replicaOne', "1");
+export const replicaTwo = localize('arc.replicaTwo', "2");
+export const replicaThree = localize('arc.replicaThree', "3");
+export const generalPurposeLabel = localize('arc.generalPurposeLabel', "GeneralPurpose");
+export const businessCriticalLabel = localize('arc.businessCriticalLabel', "BusinessCritical");
 export const USD = localize('arc.USD', "USD");
 
 // Errors
