@@ -3,34 +3,50 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import { Event } from 'vs/base/common/event';
 
 export interface DesignerComponentInput {
 	/**
 	 * The event that is triggerd when the designer state changes.
 	 */
-	readonly onStateChange: Event<DesignerState>;
+	readonly onStateChange: Event<DesignerStateChangedEventArgs>;
+
+	/**
+	 * The event that is triggerd when the designer information is loaded.
+	 */
+	readonly onInitialized: Event<void>;
+
+	/**
+	 * The event that is triggerd when an edit is processed.
+	 */
+	readonly onEditProcessed: Event<DesignerEditProcessedEventArgs>;
 
 	/**
 	 * Gets the object type display name.
 	 */
-
 	readonly objectTypeDisplayName: string;
+
 	/**
 	 * Gets the designer view specification.
 	 */
-	getView(): Promise<DesignerView>;
+	readonly view: DesignerView;
 
 	/**
 	 * Gets the view model.
 	 */
-	getViewModel(): Promise<DesignerViewModel>;
+	readonly viewModel: DesignerViewModel;
 
 	/**
-	 * Process the edit made in the designer.
+	 * Start initilizing the designer input object.
+	 */
+	initialize(): void;
+
+	/**
+	 * Start processing the edit made in the designer, the OnEditProcessed event will be fired when the processing is done.
 	 * @param edit the information about the edit.
 	 */
-	processEdit(edit: DesignerEdit): Promise<DesignerEditResult>;
+	processEdit(edit: DesignerEdit): void;
 
 	/**
 	 * A boolean value indicating whether the current state is valid.
@@ -43,16 +59,35 @@ export interface DesignerComponentInput {
 	readonly dirty: boolean;
 
 	/**
-	 * A boolean value indicating whether the changes are being saved.
+	 * Current in progress action.
 	 */
-	readonly saving: boolean;
+	readonly pendingAction?: DesignerAction;
+
+	/**
+	 * The UI state of the designer, used to restore the state.
+	 */
+	designerUIState?: DesignerUIState;
 }
 
+export interface DesignerUIState {
+	activeTabId: PanelTabIdentifier;
+}
+
+export type DesignerAction = 'save' | 'initialize' | 'processEdit';
+
+export interface DesignerEditProcessedEventArgs {
+	result: DesignerEditResult;
+	edit: DesignerEdit
+}
+
+export interface DesignerStateChangedEventArgs {
+	currentState: DesignerState,
+	previousState: DesignerState
+}
 export interface DesignerState {
 	valid: boolean;
 	dirty: boolean;
-	saving: boolean;
-	processing: boolean;
+	pendingAction?: DesignerAction
 }
 
 export const NameProperty = 'name';
