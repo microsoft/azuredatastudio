@@ -346,6 +346,9 @@
     <trans-unit id="calloutDialogShadowColor">
       <source xml:lang="en">Callout dialog box shadow color.</source>
     </trans-unit>
+    <trans-unit id="designer.paneSeparator">
+      <source xml:lang="en">The pane separator color.</source>
+    </trans-unit>
     <trans-unit id="extensionPackGradientColorOne">
       <source xml:lang="en">The top color for the extension pack gradient</source>
     </trans-unit>
