@@ -1017,17 +1017,17 @@ declare module 'azdata' {
 			/**
 			 * Process the table change.
 			 * @param table the table information
-			 * @param data the object contains the state of the table designer
+			 * @param viewModel the object contains the state of the table designer
 			 * @param tableChangeInfo the information about the change user made through the UI.
 			 */
-			processTableEdit(table: TableInfo, data: DesignerData, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
+			processTableEdit(table: TableInfo, viewModel: DesignerViewModel, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
 
 			/**
 			 * Save the table
 			 * @param table the table information
-			 * @param data the object contains the state of the table designer
+			 * @param viewModel the object contains the state of the table designer
 			 */
-			saveTable(table: TableInfo, data: DesignerData): Thenable<void>;
+			saveTable(table: TableInfo, viewModel: DesignerViewModel): Thenable<void>;
 		}
 
 		/**
@@ -1073,9 +1073,9 @@ declare module 'azdata' {
 			 */
 			view: TableDesignerView;
 			/**
-			 * The data model.
+			 * The initial state of the designer.
 			 */
-			data: DesignerData;
+			viewModel: DesignerViewModel;
 			/**
 			 * The supported column types
 			 */
@@ -1121,17 +1121,17 @@ declare module 'azdata' {
 			/**
 			 * Additional table column properties.Common table properties are handled by Azure Data Studio. see {@link TableColumnProperty}
 			 */
-			addtionalTableColumnProperties?: DesignerDataPropertyInfo[];
+			additionalTableColumnProperties?: DesignerDataPropertyInfo[];
 			/**
 			 * Additional tabs.
 			 */
-			addtionalTabs?: DesignerTab[];
+			additionalTabs?: DesignerTab[];
 		}
 
 		/**
-		 * The data model object of the designer.
+		 * The view model of the designer.
 		 */
-		export interface DesignerData {
+		export interface DesignerViewModel {
 			[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
 		}
 
@@ -1254,9 +1254,9 @@ declare module 'azdata' {
 		 */
 		export interface DesignerEditResult {
 			/**
-			 * The data model object.
+			 * The view model object.
 			 */
-			data: DesignerData;
+			viewModel: DesignerViewModel;
 			/**
 			 * Whether the current state is valid.
 			 */

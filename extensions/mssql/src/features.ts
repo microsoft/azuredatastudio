@@ -1117,10 +1117,10 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 				return Promise.reject(e);
 			}
 		};
-		const processTableEdit = (tableInfo: azdata.designers.TableInfo, data: azdata.designers.DesignerData, tableChangeInfo: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> => {
+		const processTableEdit = (tableInfo: azdata.designers.TableInfo, viewModel: azdata.designers.DesignerViewModel, tableChangeInfo: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> => {
 			let params: contracts.TableDesignerEditRequestParams = {
 				tableInfo: tableInfo,
-				data: data,
+				viewModel: viewModel,
 				tableChangeInfo: tableChangeInfo
 			};
 			try {
@@ -1132,10 +1132,10 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 			}
 		};
 
-		const saveTable = (tableInfo: azdata.designers.TableInfo, data: azdata.designers.DesignerData): Thenable<void> => {
+		const saveTable = (tableInfo: azdata.designers.TableInfo, viewModel: azdata.designers.DesignerViewModel): Thenable<void> => {
 			let params: contracts.SaveTableDesignerChangesRequestParams = {
 				tableInfo: tableInfo,
-				data: data
+				viewModel: viewModel
 			};
 			try {
 				return client.sendRequest(contracts.SaveTableDesignerChangesRequest.type, params);
