@@ -508,6 +508,7 @@ export const noAzureFunctionsProjectsInWorkspace = localize('noAzureFunctionsPro
 export const addPackage = localize('addPackage', "Add Package");
 export const createNewLocalAppSetting = localize('createNewLocalAppSetting', 'Create new local app setting');
 export const createNewLocalAppSettingWithIcon = `$(add) ${createNewLocalAppSetting}`;
+export const sqlConnectionStringSetting = 'SqlConnectionString';
 export const valueMustNotBeEmpty = localize('valueMustNotBeEmpty', "Value must not be empty");
 export const enterConnectionStringSettingName = localize('enterConnectionStringSettingName', "Enter connection string setting name");
 export const enterConnectionString = localize('enterConnectionString', "Enter connection string");
