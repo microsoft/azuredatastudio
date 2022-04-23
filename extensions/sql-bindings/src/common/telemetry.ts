@@ -31,3 +31,30 @@ export enum TelemetryActions {
 	finishAddSqlBinding = 'finishAddSqlBinding',
 	exitSqlBindingsQuickpick = 'exitSqlBindingsQuickpick',
 }
+
+export enum CreateAzureFunctionStep {
+	getAzureFunctionProject = 'getAzureFunctionProject',
+	learnMore = 'learnMore',
+	helpCreateAzureFunctionProject = 'helpCreateAzureFunctionProject',
+	getWorkspaceFolder = 'getWorkspaceFolder',
+	getSelectedFolder = 'getSelectedFolder',
+	getBindingType = 'getBindingType',
+	launchFromCommandPalette = 'launchFromCommandPalette',
+	launchFromTable = 'launchFromTable',
+	getConnectionProfile = 'getConnectionProfile',
+	getDatabase = 'getDatabase',
+	getObjectName = 'getObjectName',
+	getConnectionString = 'getConnectionString',
+	getAzureFunctionName = 'getAzureFunctionName',
+	getTemplateId = 'getTemplateId',
+	setAzureWebJobsStorage = 'setAzureWebJobsStorage',
+	getConnectionStringSettingName = 'getConnectionStringSettingName',
+	promptForIncludePassword = 'promptForIncludePassword',
+}
+
+export enum ExitReason {
+	cancelled = 'cancelled',
+	finishCreate = 'finishCreate',
+	timeout = 'timeout',
+	error = 'error'
+}
