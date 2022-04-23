@@ -151,10 +151,10 @@
       <source xml:lang="en">Close Workspace</source>
     </trans-unit>
     <trans-unit id="data-workspace-view-container-name">
-      <source xml:lang="en">Projects</source>
+      <source xml:lang="en">Database Projects</source>
     </trans-unit>
     <trans-unit id="main-view-name">
-      <source xml:lang="en">Projects</source>
+      <source xml:lang="en">Database Projects</source>
     </trans-unit>
     <trans-unit id="manage-project-command">
       <source xml:lang="en">Manage</source>
