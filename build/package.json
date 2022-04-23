@@ -75,5 +75,8 @@
     "watch": "tsc -p tsconfig.build.json --watch",
     "npmCheckJs": "tsc --noEmit"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "resolutions": {
+    "json-schema": "0.4.0"
+  }
 }

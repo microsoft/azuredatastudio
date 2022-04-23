@@ -22,12 +22,12 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
-	"capabilities": {
+  "capabilities": {
     "virtualWorkspaces": false,
     "untrustedWorkspaces": {
       "supported": true
     }
-	},
+  },
   "main": "./out/extension",
   "contributes": {
     "configuration": {
@@ -624,7 +624,8 @@
           "when": "viewItem == cms.resource.itemType.databaseServerContainer",
           "group": "navigation@10"
         }
-      ],"commandPalette": [
+      ],
+      "commandPalette": [
         {
           "command": "cms.resource.addRegisteredServer",
           "when": "false"
@@ -653,7 +654,6 @@
     }
   },
   "dependencies": {
-    "request": "2.88.0",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {

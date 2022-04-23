@@ -1315,5 +1315,8 @@
     "should": "^13.2.3",
     "typemoq": "^2.1.0",
     "vscodetestcover": "^1.1.0"
+  },
+  "resolutions": {
+    "json-schema": "0.4.0"
   }
 }

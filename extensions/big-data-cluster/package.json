@@ -27,12 +27,12 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
-	"capabilities": {
+  "capabilities": {
     "virtualWorkspaces": false,
     "untrustedWorkspaces": {
       "supported": true
     }
-	},
+  },
   "main": "./out/extension",
   "contributes": {
     "dataExplorer": {
@@ -362,5 +362,8 @@
   },
   "devDependencies": {
     "@types/request": "^2.48.3"
+  },
+  "resolutions": {
+    "json-schema": "0.4.0"
   }
 }
