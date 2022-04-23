@@ -33,6 +33,7 @@ export class Project implements ISqlProject {
 	private _preDeployScripts: FileProjectEntry[] = [];
 	private _postDeployScripts: FileProjectEntry[] = [];
 	private _noneDeployScripts: FileProjectEntry[] = [];
+	private _isMsbuildSdkStyleProject: boolean = false;
 
 	public get dacpacOutputPath(): string {
 		return path.join(this.projectFolderPath, 'bin', 'Debug', `${this._projectFileName}.dacpac`);
@@ -86,6 +87,10 @@ export class Project implements ISqlProject {
 		return this._noneDeployScripts;
 	}
 
+	public get isMsbuildSdkStyleProject(): boolean {
+		return this._isMsbuildSdkStyleProject;
+	}
+
 	private projFileXmlDoc: any = undefined;
 
 	constructor(projectFilePath: string) {
@@ -113,6 +118,8 @@ export class Project implements ISqlProject {
 		const projFileText = await fs.readFile(this._projectFilePath);
 		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
 
+		// check if this is a new msbuild sdk style project
+		this._isMsbuildSdkStyleProject = this.CheckForMsbuildSdkStyleProject();
 		// get projectGUID
 		this._projectGuid = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ProjectGuid)[0].childNodes[0].nodeValue;
 
@@ -236,8 +243,38 @@ export class Project implements ISqlProject {
 		this.projFileXmlDoc = undefined;
 	}
 
+	/**
+	 *  Checks for the 3 possible ways a project can reference the sql msbuild sdk
+	 *  https://docs.microsoft.com/en-us/visualstudio/msbuild/how-to-use-project-sdk?view=vs-2019
+	 *  @returns true if the project is an msbuild sdk style project, false if it isn't
+	 */
+	public CheckForMsbuildSdkStyleProject(): boolean {
+		// type 1: Sdk node like <Sdk Name="Microsoft.Build.Sql" Version="1.0.0" />
+		const sdkNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Sdk);
+		if (sdkNodes.length > 0) {
+			return sdkNodes[0].getAttribute(constants.Name) === constants.sqlMsbuildSdk;
+		}
+
+		// type 2: Project node has Sdk attribute like <Project Sdk="Microsoft.Build.Sql/1.0.0">
+		const sdkAttribute: string = this.projFileXmlDoc.documentElement.getAttribute(constants.Sdk);
+		if (sdkAttribute) {
+			return sdkAttribute.includes(constants.sqlMsbuildSdk);
+		}
+
+		// type 3: Import node with Sdk attribute like <Import Project="Sdk.targets" Sdk="Microsoft.Build.Sql" Version="1.0.0" />
+		const importNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import);
+		for (let i = 0; i < importNodes.length; i++) {
+			if (importNodes[i].getAttribute(constants.Sdk) === constants.sqlMsbuildSdk) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public async updateProjectForRoundTrip(): Promise<void> {
-		if (this._importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences()) {
+		if (this._importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences() // old style project check
+			|| this.isMsbuildSdkStyleProject) { // new style project check
 			return;
 		}
 

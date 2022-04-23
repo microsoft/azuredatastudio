@@ -21,6 +21,7 @@ export const msdb = 'msdb';
 export const msdbDacpac = 'msdb.dacpac';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
+export const sqlMsbuildSdk = 'Microsoft.Build.Sql';
 
 // Project Provider
 export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
@@ -360,6 +361,7 @@ export const Private = 'Private';
 export const ProjectGuid = 'ProjectGuid';
 export const Type = 'Type';
 export const ExternalStreamingJob: string = 'ExternalStreamingJob';
+export const Sdk: string = 'Sdk';
 
 /** Name of the property item in the project file that defines default database collation. */
 export const DefaultCollationProperty = 'DefaultCollation';
