@@ -76,6 +76,19 @@ suite('NotebookViews', function (): void {
 		notebookViews = await initializeExtension();
 	});
 
+	test('should not modify the notebook document until a view is created', async () => {
+		//Create some content
+		notebookViews.notebook.addCell(CellTypes.Code, 0);
+		const cell = notebookViews.notebook.cells[0];
+
+		assert.strictEqual(notebookViews.getExtensionMetadata(), undefined);
+		assert.strictEqual(notebookViews.getExtensionCellMetadata(cell), undefined);
+
+		//Check that the view is created
+		notebookViews.createNewView(defaultViewName);
+		assert.notStrictEqual(notebookViews.getExtensionMetadata(), undefined);
+	});
+
 	test('create new view', async function (): Promise<void> {
 		assert.strictEqual(notebookViews.getViews().length, 0, 'notebook should not initially generate any views');
 
