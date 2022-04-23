@@ -5673,10 +5673,6 @@ html-escaper@^2.0.0:
   resolved "https://registry.yarnpkg.com/html-escaper/-/html-escaper-2.0.0.tgz#71e87f931de3fe09e56661ab9a29aadec707b491"
   integrity sha512-a4u9BeERWGu/S8JiWEAQcdrg9v4QArtP9keViQjGMdff20fBdd8waotXaNmODqBe6uZ3Nafi7K/ho4gCQHV3Ig==
 
-"html-query-plan@git://github.com/kburtram/html-query-plan.git#2.6":
-  version "2.5.0"
-  resolved "git://github.com/kburtram/html-query-plan.git#c524feb824e4960897ad875a37af068376a2b4a3"
-
 html-to-image@^1.6.2:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/html-to-image/-/html-to-image-1.7.0.tgz#4ca93bb90c0b9392edaafbfd5d94e8f0d666e18b"
@@ -6773,6 +6769,11 @@ just-extend@^4.0.2:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/just-extend/-/just-extend-4.2.1.tgz#ef5e589afb61e5d66b24eca749409a8939a8c744"
   integrity sha512-g3UB796vUFIY90VIv/WX3L2c8CS2MdWUww3CNrYmqza1Fg0DURc2K/O4YrnklBdQarSJ/y8JnJYDGc+1iumQjg==
+
+kburtram-query-plan@2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/kburtram-query-plan/-/kburtram-query-plan-2.6.1.tgz#6b86128ec30c53694b53c4ee0e32d64350eb0c2c"
+  integrity sha512-7Brjwp0YOCGug1cmfvcG8s1kN4MOwiLgOmKWS0+QSq5qCH9Bcv78vKAI7Pq1Ro6rTbpiTIRITsFKYrF4XTVlQw==
 
 keytar@7.2.0:
   version "7.2.0"
