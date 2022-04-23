@@ -23,6 +23,12 @@
   "extensionDependencies": [
     "Microsoft.mssql"
   ],
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "contributes": {
     "commands": [
       {

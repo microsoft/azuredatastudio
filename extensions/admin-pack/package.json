@@ -9,6 +9,12 @@
 		"vscode": "*",
 		"azdata": "*"
 	},
+	"capabilities": {
+		"virtualWorkspaces": false,
+		"untrustedWorkspaces": {
+			"supported": true
+		}
+	},
 	"extensionPack": [
 		"Microsoft.agent",
 		"Microsoft.profiler",
