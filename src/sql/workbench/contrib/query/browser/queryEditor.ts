@@ -215,6 +215,11 @@ export class QueryEditor extends EditorPane {
 		this._register(this.connectionManagementService.onLanguageFlavorChanged(() => {
 			this.setTaskbarContent();
 		}));
+		this._register(this.capabilitiesService.onCapabilitiesRegistered(c => {
+			if (c.id === this.currentProvider) {
+				this.setTaskbarContent();
+			}
+		}));
 	}
 
 	/**
@@ -276,13 +281,17 @@ export class QueryEditor extends EditorPane {
 		return this._listDatabasesActionItem;
 	}
 
-	private setTaskbarContent(): void {
-		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
+	private get currentProvider(): string | undefined {
 		const connectionProfile = this.connectionManagementService.getConnectionProfile(this.input?.uri);
-		const fileExtension = path.extname(this.input?.uri || '');
-		const providerId = connectionProfile?.providerName ||
+		return connectionProfile?.providerName ||
 			this.connectionManagementService.getProviderIdFromUri(this.input?.uri) ||
 			this.connectionManagementService.getDefaultProviderId();
+	}
+
+	private setTaskbarContent(): void {
+		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
+		const fileExtension = path.extname(this.input?.uri || '');
+		const providerId = this.currentProvider;
 		const content: ITaskbarContent[] = [
 			{ action: this._runQueryAction },
 			{ action: this._cancelQueryAction },
@@ -302,7 +311,8 @@ export class QueryEditor extends EditorPane {
 		}
 
 		// Only show the databases dropdown if the connection provider supports it.
-		if (this.capabilitiesService.getCapabilities(providerId).connection?.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
+		// If the provider we're using isn't registered yet then default to not showing it - we'll update once the provider is registered
+		if (this.capabilitiesService.getCapabilities(providerId)?.connection?.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
 			content.push({ action: this._listDatabasesAction });
 		}
 
