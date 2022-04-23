@@ -96,6 +96,8 @@ export namespace Schemas {
 }
 
 class RemoteAuthoritiesImpl {
+	private readonly _defaultWebPort = 80; // {{SQL CARBON EDIT}}
+
 	private readonly _hosts: { [authority: string]: string | undefined; } = Object.create(null);
 	private readonly _ports: { [authority: string]: number | undefined; } = Object.create(null);
 	private readonly _connectionTokens: { [authority: string]: string | undefined; } = Object.create(null);
@@ -136,7 +138,7 @@ class RemoteAuthoritiesImpl {
 		}
 		return URI.from({
 			scheme: platform.isWeb ? this._preferredWebSchema : Schemas.vscodeRemoteResource,
-			authority: `${host}:${port}`,
+			authority: platform.isWeb && port === this._defaultWebPort ? `${host}` : `${host}:${port}`, // {{SQL CARBON EDIT}} addresses same-origin-policy violation in web mode when port number is in authority, but not in URI.
 			path: `/vscode-remote-resource`,
 			query
 		});
