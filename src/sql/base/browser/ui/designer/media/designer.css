@@ -97,3 +97,8 @@
 .designer-component .content-container .tabbedPanel {
 	border-width: 0px;
 }
+
+.designer-component .components-grid .full-row.group-header {
+	font-weight: bold;
+	line-height: 25px;
+}

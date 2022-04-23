@@ -531,7 +531,7 @@ export class Designer extends Disposable implements IThemable {
 			});
 		} else {
 			groupNames.forEach(group => {
-				const groupHeader = container.appendChild(DOM.$('div.full-row'));
+				const groupHeader = container.appendChild(DOM.$('div.full-row.group-header'));
 				groupHeaders.push(groupHeader);
 				this.styleGroupHeader(groupHeader);
 				groupHeader.innerText = group ?? localize('designer.generalGroupName', "General");
