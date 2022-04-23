@@ -175,7 +175,7 @@ export class Project implements ISqlProject {
 		}
 
 		// find all SQLCMD variables to include
-		this._sqlCmdVariables = utils.readSqlCmdVariables(this.projFileXmlDoc);
+		this._sqlCmdVariables = utils.readSqlCmdVariables(this.projFileXmlDoc, false);
 
 		// find all database references to include
 		const references = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference);
