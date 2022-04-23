@@ -147,6 +147,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.cannot.cutover">
       <source xml:lang="en">Migration is not in progress and cannot be cutover.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.cannot.retry">
+      <source xml:lang="en">Migration cannot be retried.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.cannot.start.cutover.error">
       <source xml:lang="en">The cutover process cannot start until all the migrations are done. To return the latest file status, refresh your browser window.</source>
     </trans-unit>
@@ -269,6 +272,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.already.exists">
       <source xml:lang="en">Database '{0}' already exists on the target managed instance '{1}'.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.backup.load.error">
+      <source xml:lang="en">An error occurred while accessing database details.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.migration">
       <source xml:lang="en">Databases for migration</source>
@@ -428,6 +434,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.invalid.network.share.location">
       <source xml:lang="en">Invalid network share location format. Example: {0}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.invalid.owner.uri.error">
+      <source xml:lang="en">Cannot connect to the database due to invalid OwnerUri (Parameter 'OwnerUri')</source>
     </trans-unit>
     <trans-unit id="sql.migration.invalid.resourceGroup.error">
       <source xml:lang="en"> To continue, select a valid resource group.</source>
@@ -716,6 +725,12 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.resume.title">
       <source xml:lang="en">Run migration workflow again</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.retry.migration">
+      <source xml:lang="en">Retry migration</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.retry.migration.error">
+      <source xml:lang="en">An error occurred while retrying the migration.</source>
     </trans-unit>
     <trans-unit id="sql.migration.rg.created">
       <source xml:lang="en">Resource group created</source>
@@ -1143,6 +1158,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="new-support-request-command">
       <source xml:lang="en">New support request</source>
+    </trans-unit>
+    <trans-unit id="retry-migration-menu">
+      <source xml:lang="en">Retry migration</source>
     </trans-unit>
     <trans-unit id="send-feedback-command">
       <source xml:lang="en">Feedback</source>
