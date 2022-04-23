@@ -58,6 +58,9 @@
     <trans-unit id="at">
       <source xml:lang="en">at</source>
     </trans-unit>
+    <trans-unit id="autorestProjectName">
+      <source xml:lang="en">New SQL project name</source>
+    </trans-unit>
     <trans-unit id="browseButtonText">
       <source xml:lang="en">Browse folder</source>
     </trans-unit>
@@ -375,6 +378,9 @@
     </trans-unit>
     <trans-unit id="generatingProjectFailed">
       <source xml:lang="en">Generating project via AutoRest failed.  Check output pane for more details. Error: {0}</source>
+    </trans-unit>
+    <trans-unit id="generatingProjectFromAutorest">
+      <source xml:lang="en">Generating new SQL project from {0}...  Check output window for details.</source>
     </trans-unit>
     <trans-unit id="hr">
       <source xml:lang="en">hr</source>
