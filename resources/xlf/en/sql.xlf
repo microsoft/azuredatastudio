@@ -5,7 +5,7 @@
       <source xml:lang="en">Loading designer...</source>
     </trans-unit>
     <trans-unit id="designer.loadingDesignerCompleted">
-      <source xml:lang="en">Loading designer completed</source>
+      <source xml:lang="en">Designer is loaded</source>
     </trans-unit>
     <trans-unit id="designer.newRowText">
       <source xml:lang="en">Add New</source>
@@ -14,10 +14,16 @@
       <source xml:lang="en">Processing changes...</source>
     </trans-unit>
     <trans-unit id="designer.processingChangesCompleted">
-      <source xml:lang="en">Processing changes completed</source>
+      <source xml:lang="en">Changes have been processed</source>
     </trans-unit>
     <trans-unit id="designer.removeRowText">
       <source xml:lang="en">Remove</source>
+    </trans-unit>
+    <trans-unit id="designer.savingChanges">
+      <source xml:lang="en">Saving changes...</source>
+    </trans-unit>
+    <trans-unit id="designer.savingChangesCompleted">
+      <source xml:lang="en">Changes have been saved</source>
     </trans-unit>
     <trans-unit id="tableDesigner.unknownComponentType">
       <source xml:lang="en">The component type: {0} is not supported</source>
@@ -5751,6 +5757,12 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.descriptionTitle">
       <source xml:lang="en">Description</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.errorInitializingTableDesigner">
+      <source xml:lang="en">An error occured while initializing the table designer: {0}</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.errorProcessingEdit">
+      <source xml:lang="en">An error occured while processing the change: {0}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.nameTitle">
       <source xml:lang="en">Table name</source>
