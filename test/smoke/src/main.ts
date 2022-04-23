@@ -342,7 +342,19 @@ after(async function () {
 	if (opts.log) {
 		const logsDir = path.join(userDataDir, 'logs');
 		const destLogsDir = path.join(path.dirname(opts.log), 'logs');
-		await new Promise((c, e) => ncp(logsDir, destLogsDir, err => err ? e(err) : c(undefined)));
+
+		// {{ SQL CARBON EDIT }}
+		/**
+		 * The logs directory is not present during the ADS web build, but is during the Darwin build.
+		 * In situations where the directory is missing and a copy attempt is made, bash exits with code 255 and raises an error
+		 * explaining that there's no such file or directory. This prevents that error from occurring.
+		 */
+		try {
+			await new Promise((c, e) => ncp(logsDir, destLogsDir, err => err ? e(err) : c(undefined)));
+		}
+		catch (ex) {
+			console.warn(`Caught exception from ncp: ${ex}`);
+		}
 	}
 
 	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c(undefined)));
