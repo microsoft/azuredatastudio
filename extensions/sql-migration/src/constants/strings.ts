@@ -92,10 +92,19 @@ export function accountLinkedMessage(count: number): string {
 }
 export const AZURE_TENANT = localize('sql.migration.azure.tenant', "Azure AD tenant");
 export function ACCOUNT_STALE_ERROR(account: AzureAccount) {
-	return localize('azure.accounts.accountStaleError', "The access token for selected account '{0}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.", `${account.displayInfo.displayName} (${account.displayInfo.userId})`);
+	return localize(
+		'azure.accounts.accountStaleError',
+		"The access token for selected account '{0}' and tenant '{1}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.",
+		`${account?.displayInfo?.displayName} (${account?.displayInfo?.userId})`,
+		`${account?.properties?.tenants[0]?.displayName} (${account?.properties?.tenants[0]?.userId})`);
 }
 export function ACCOUNT_ACCESS_ERROR(account: AzureAccount, error: Error) {
-	return localize('azure.accounts.accountAccessError', "An error occurred while accessing the selected account '{0}'. Select 'Link account' and refresh the account, or select a different account. Error '{1}'", `${account.displayInfo.displayName} (${account.displayInfo.userId})`, error.message);
+	return localize(
+		'azure.accounts.accountAccessError',
+		"An error occurred while accessing the selected account '{0}' and tenant '{1}'. Select 'Link account' and refresh the account, or select a different account. Error '{2}'",
+		`${account?.displayInfo?.displayName} (${account?.displayInfo?.userId})`,
+		`${account?.properties?.tenants[0]?.displayName} (${account?.properties?.tenants[0]?.userId})`,
+		error.message);
 }
 
 // database backup page
