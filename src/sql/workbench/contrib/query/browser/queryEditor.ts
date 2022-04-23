@@ -43,6 +43,8 @@ import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEd
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -108,7 +110,8 @@ export class QueryEditor extends EditorPane {
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IModeService private readonly modeService: IModeService,
-		@ITextResourceConfigurationService textResourceConfigurationService: ITextResourceConfigurationService
+		@ITextResourceConfigurationService textResourceConfigurationService: ITextResourceConfigurationService,
+		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
 	) {
 		super(QueryEditor.ID, telemetryService, themeService, storageService);
 
@@ -274,73 +277,43 @@ export class QueryEditor extends EditorPane {
 	}
 
 	private setTaskbarContent(): void {
-		// Create HTML Elements for the taskbar
-		const separator = Taskbar.createTaskbarSeparator();
-		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
-		let connectionProfile = this.connectionManagementService.getConnectionProfile(this.input?.uri);
-		let fileExtension = path.extname(this.input?.uri || '');
+		const connectionProfile = this.connectionManagementService.getConnectionProfile(this.input?.uri);
+		const fileExtension = path.extname(this.input?.uri || '');
 		const providerId = connectionProfile?.providerName ||
 			this.connectionManagementService.getProviderIdFromUri(this.input?.uri) ||
 			this.connectionManagementService.getDefaultProviderId();
-		// TODO: Make it more generic, some way for extensions to register the commands it supports
-		if ((providerId === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
-			if (this.input instanceof UntitledQueryEditorInput) {		// Sets proper language mode for untitled query editor based on the connection selected by user.
+		const content: ITaskbarContent[] = [
+			{ action: this._runQueryAction },
+			{ action: this._cancelQueryAction },
+			{ element: Taskbar.createTaskbarSeparator() },
+			{ action: this._toggleConnectDatabaseAction },
+			{ action: this._changeConnectionAction }
+		];
+
+		// TODO: Allow query provider to provide the language mode.
+		if (this.input instanceof UntitledQueryEditorInput) {
+			if ((providerId === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
 				this.input.setMode('kusto');
 			}
-
-			content = [
-				{ action: this._runQueryAction },
-				{ action: this._cancelQueryAction },
-				{ element: separator },
-				{ action: this._toggleConnectDatabaseAction },
-				{ action: this._changeConnectionAction },
-				{ action: this._listDatabasesAction }
-			];
-		}
-		else if (providerId === 'LOGANALYTICS' || this.modeService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
-			if (this.input instanceof UntitledQueryEditorInput) {
+			else if (providerId === 'LOGANALYTICS' || this.modeService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
 				this.input.setMode('loganalytics');
 			}
-
-			content = [
-				{ action: this._runQueryAction },
-				{ action: this._cancelQueryAction },
-				{ element: separator },
-				{ action: this._toggleConnectDatabaseAction },
-				{ action: this._changeConnectionAction },
-				{ action: this._listDatabasesAction }
-			];
 		}
-		else {
-			if (previewFeaturesEnabled) {
-				content = [
-					{ action: this._runQueryAction },
-					{ action: this._cancelQueryAction },
-					{ element: separator },
-					{ action: this._toggleConnectDatabaseAction },
-					{ action: this._changeConnectionAction },
-					{ action: this._listDatabasesAction },
-				];
 
-				if (providerId === 'MSSQL') {
-					content.push({ element: separator },
-						{ action: this._estimatedQueryPlanAction },
-						{ action: this._toggleSqlcmdMode }
-					);
+		// Only show the databases dropdown if the connection provider supports it.
+		if (this.capabilitiesService.getCapabilities(providerId).connection?.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
+			content.push({ action: this._listDatabasesAction });
+		}
 
-					content.push({ action: this._exportAsNotebookAction });
-				}
-			} else {
-				content = [
-					{ action: this._runQueryAction },
-					{ action: this._cancelQueryAction },
-					{ element: separator },
-					{ action: this._toggleConnectDatabaseAction },
-					{ action: this._changeConnectionAction },
-					{ action: this._listDatabasesAction }
-				];
-			}
+		// TODO: Allow extensions to contribute toolbar actions.
+		if (previewFeaturesEnabled && providerId === 'MSSQL') {
+			content.push(
+				{ element: Taskbar.createTaskbarSeparator() },
+				{ action: this._estimatedQueryPlanAction },
+				{ action: this._toggleSqlcmdMode },
+				{ action: this._exportAsNotebookAction }
+			);
 		}
 
 		this.taskbar.setContent(content);
