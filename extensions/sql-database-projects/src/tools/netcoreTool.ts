@@ -216,7 +216,7 @@ export class NetCoreTool extends ShellExecutionHelper {
 		const command = dotnetPath + ' ' + options.argument;
 
 		try {
-			return await this.runStreamedCommand(command, this._outputChannel, options);
+			return await this.runStreamedCommand(command, options);
 		} catch (error) {
 			this._outputChannel.append(localize('sqlDatabaseProject.RunCommand.ErroredOut', "\t>>> {0}   … errored out: {1}", command, utils.getErrorMessage(error))); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
 			throw error;

@@ -51,7 +51,7 @@ export class AutorestHelper extends ShellExecutionHelper {
 
 			if (response === constants.installGlobally) {
 				this._outputChannel.appendLine(constants.userSelectionInstallGlobally);
-				await this.runStreamedCommand('npm install autorest -g', this._outputChannel);
+				await this.runStreamedCommand('npm install autorest -g');
 				return autorestCommand;
 			} else if (response === constants.runViaNpx) {
 				this._outputChannel.appendLine(constants.userSelectionRunNpx);
@@ -99,7 +99,7 @@ export class AutorestHelper extends ShellExecutionHelper {
 		}
 
 		const command = this.constructAutorestCommand(commandExecutable, specPath, outputFolder);
-		const output = await this.runStreamedCommand(command, this._outputChannel);
+		const output = await this.runStreamedCommand(command);
 
 		return output;
 	}
