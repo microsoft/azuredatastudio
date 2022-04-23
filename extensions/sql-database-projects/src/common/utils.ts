@@ -529,3 +529,52 @@ export async function showInfoMessageWithOutputChannel(message: string, outputCh
 	}
 }
 
+/**
+ * Returns the results of the glob pattern
+ * @param pattern Glob pattern to search for
+ */
+export async function globWithPattern(pattern: string): Promise<string[]> {
+	const forwardSlashPattern = pattern.replace(/\\/g, '/');
+	return await glob(forwardSlashPattern);
+}
+
+/**
+ * Recursively gets all the sql files at any depth in a folder
+ * @param folderPath
+ * @param ignoreBinObj ignore sql files in bin and obj folders
+ */
+export async function getSqlFilesInFolder(folderPath: string, ignoreBinObj?: boolean): Promise<string[]> {
+	// path needs to use forward slashes for glob to work
+	folderPath = folderPath.replace(/\\/g, '/');
+	const sqlFilter = path.posix.join(folderPath, '**', '*.sql');
+
+	if (ignoreBinObj) {
+		// don't add files in bin and obj folders
+		const binIgnore = path.posix.join(folderPath, 'bin', '**', '*.sql');
+		const objIgnore = path.posix.join(folderPath, 'obj', '**', '*.sql');
+
+		return await glob(sqlFilter, { ignore: [binIgnore, objIgnore] });
+	} else {
+		return await glob(sqlFilter);
+	}
+}
+
+/**
+ * Recursively gets all the folders at any depth in the given folder
+ * @param folderPath
+ * @param ignoreBinObj ignore bin and obj folders
+ */
+export async function getFoldersInFolder(folderPath: string, ignoreBinObj?: boolean): Promise<string[]> {
+	// path needs to use forward slashes for glob to work
+	const escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
+	const folderFilter = path.posix.join(escapedPath, '/**');
+
+	if (ignoreBinObj) {
+		// don't add bin and obj folders
+		const binIgnore = path.posix.join(escapedPath, 'bin');
+		const objIgnore = path.posix.join(escapedPath, 'obj');
+		return await glob(folderFilter, { onlyDirectories: true, ignore: [binIgnore, objIgnore] });
+	} else {
+		return await glob(folderFilter, { onlyDirectories: true });
+	}
+}
