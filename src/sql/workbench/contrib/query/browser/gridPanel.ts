@@ -388,7 +388,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		super();
 
 		this.options = { ...defaultGridTableOptions, ...options };
-
 		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
 		this.rowHeight = config && config.rowHeight ? config.rowHeight : ROW_HEIGHT;
 		this.state = state;
@@ -479,7 +478,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.rowNumberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
 		let copyHandler = new CopyKeybind<T>();
 		copyHandler.onCopy(e => {
-			new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run(this.generateContext());
+			new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, this.configurationService, false).run(this.generateContext());
 		});
 		this.columns.unshift(this.rowNumberColumn.getColumnDefinition());
 		let tableOptions: Slick.GridOptions<T> = {
@@ -815,8 +814,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					actions.push(new Separator());
 				}
 				actions.push(
-					new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false),
-					new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true)
+					new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, this.configurationService, false),
+					new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, this.configurationService, true)
 				);
 
 				if (this.state.canBeMaximized) {
@@ -840,16 +839,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	private renderGridDataRowsRange(startIndex: number, count: number): void {
-		// let editor = this.table.getCellEditor();
-		// let oldValue = editor ? editor.getValue() : undefined;
-		// let wasValueChanged = editor ? editor.isValueChanged() : false;
 		this.invalidateRange(startIndex, startIndex + count);
-		// let activeCell = this._grid.getActiveCell();
-		// if (editor && activeCell.row >= startIndex && activeCell.row < startIndex + count) {
-		//     if (oldValue && wasValueChanged) {
-		//         editor.setValue(oldValue);
-		//     }
-		// }
 	}
 
 	private invalidateRange(start: number, end: number): void {

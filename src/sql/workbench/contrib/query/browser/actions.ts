@@ -105,6 +105,7 @@ export class CopyResultAction extends Action {
 	constructor(
 		id: string,
 		label: string,
+		private configurationService: IConfigurationService,
 		private copyHeader: boolean,
 		private accountForNumberColumn = true
 	) {
@@ -113,7 +114,8 @@ export class CopyResultAction extends Action {
 
 	public override async run(context: IGridActionContext): Promise<void> {
 		const selection = this.accountForNumberColumn ? mapForNumberColumn(context.selection) : context.selection;
-		await context.gridDataProvider.copyResults(selection, this.copyHeader, context.table.getData());
+		const includeHeader = this.configurationService.getValue<boolean>('queryEditor.results.copyIncludeHeaders') || this.copyHeader;
+		await context.gridDataProvider.copyResults(selection, includeHeader, context.table.getData());
 	}
 }
 
