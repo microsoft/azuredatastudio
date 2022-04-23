@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DesignerComponentInput, DesignerEditType, DesignerTab, DesignerEdit, DesignerEditIdentifier, DesignerViewModel, DesignerDataPropertyInfo, DesignerTableComponentRowData, DesignerTableProperties, InputBoxProperties, DropDownProperties, CheckBoxProperties, DesignerComponentTypeName, DesignerEditProcessedEventArgs, DesignerStateChangedEventArgs, DesignerAction, DesignerUIState } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerComponentInput, DesignerEditType, DesignerTab, DesignerEdit, DesignerEditIdentifier, DesignerViewModel, DesignerDataPropertyInfo, DesignerTableComponentRowData, DesignerTableProperties, InputBoxProperties, DropDownProperties, CheckBoxProperties, DesignerComponentTypeName, DesignerEditProcessedEventArgs, DesignerStateChangedEventArgs, DesignerAction, DesignerUIState, DesignerTextEditor, ScriptProperty } from 'sql/base/browser/ui/designer/interfaces';
 import { IPanelTab, ITabbedPanelStyles, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import * as DOM from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
@@ -67,8 +67,10 @@ export class Designer extends Disposable implements IThemable {
 	private _inputDisposable: DisposableStore;
 	private _loadingTimeoutHandle: any;
 	private _groupHeaders: HTMLElement[] = [];
+	private _textEditor: DesignerTextEditor;
 
 	constructor(private readonly _container: HTMLElement,
+		textEditorCreator: (container: HTMLElement) => DesignerTextEditor,
 		private readonly _contextViewProvider: IContextViewProvider) {
 		super();
 		this._tableCellEditorFactory = new TableCellEditorFactory(
@@ -150,9 +152,7 @@ export class Designer extends Disposable implements IThemable {
 		}, (definition, component, viewModel) => {
 			this.setComponentValue(definition, component, viewModel);
 		});
-		const editor = DOM.$('div');
-		editor.innerText = 'script pane placeholder';
-		this._editorContainer.appendChild(editor);
+		this._textEditor = textEditorCreator(this._editorContainer);
 	}
 
 	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Button): void {
@@ -369,7 +369,9 @@ export class Designer extends Disposable implements IThemable {
 
 	private updateComponentValues(): void {
 		const viewModel = this._input.viewModel;
-		// data[ScriptPropertyName] -- todo- set the script editor
+		const scriptProperty = viewModel[ScriptProperty] as InputBoxProperties;
+		this._textEditor.content = scriptProperty.value;
+		this._textEditor.readonly = scriptProperty.enabled === false;
 		this._componentMap.forEach((value) => {
 			this.setComponentValue(value.defintion, value.component, viewModel);
 		});
