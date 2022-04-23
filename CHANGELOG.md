@@ -1,6 +1,34 @@
 # Change Log
 
- ## Version 1.33.0
+## Version 1.33.1
+* Release date: Nov 4, 2021
+* Release status: General Availability
+
+## Hotfix release
+- Fix for [#16535 Unable to See Saved Connections in Restricted Mode](https://github.com/microsoft/azuredatastudio/issues/17535)
+- Fix for [#17579 Can't type in Notebook code cell after editing text cell](https://github.com/microsoft/azuredatastudio/issues/17579)
+
+    
+
+| Platform																|
+| ---------------------------------------	|
+| [Windows User Installer][win-user]			|
+| [Windows System Installer][win-system]	|
+| [Windows ZIP][win-zip]									|
+| [macOS ZIP][osx-zip]										|
+| [Linux TAR.GZ][linux-zip]								|
+| [Linux RPM][linux-rpm]									|
+| [Linux DEB][linux-deb]									|
+
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2176805
+[win-system]: https://go.microsoft.com/fwlink/?linkid=2175910
+[win-zip]: https://go.microsoft.com/fwlink/?linkid=2176806
+[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2176807
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2176505
+[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2176005
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2176006
+
+## Version 1.33.0
 * Release date: October 27, 2021
 * Release status: General Availability
 ## What's new in this version
