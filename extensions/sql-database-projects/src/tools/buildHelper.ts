@@ -80,10 +80,14 @@ export class BuildHelper {
 		return this.extensionBuildDir;
 	}
 
-	public constructBuildArguments(projectPath: string, buildDirPath: string): string {
+	public constructBuildArguments(projectPath: string, buildDirPath: string, isNetCoreSdkStyleProject: boolean): string {
 		projectPath = utils.getQuotedPath(projectPath);
 		buildDirPath = utils.getQuotedPath(buildDirPath);
-		return ` build ${projectPath} /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath}`;
+		if (isNetCoreSdkStyleProject) {
+			return ` build ${projectPath} /p:NetCoreBuild=true`;
+		} else {
+			return ` build ${projectPath} /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath}`;
+		}
 	}
 }
 
