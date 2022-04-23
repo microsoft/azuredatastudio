@@ -1,7 +1,7 @@
 {
   "name": "data-workspace",
-  "displayName": "%extension-displayName%",
-  "description": "%extension-description%",
+  "displayName": "Data Workspace",
+  "description": "Additional common functionality for database projects",
   "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
