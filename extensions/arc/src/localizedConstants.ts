@@ -274,6 +274,14 @@ export function connectionString(type: string): string { return localize({ key: 
 export function copyConnectionStringToClipboard(type: string): string { return localize({ key: 'arc.copyConnectionStringToClipboard', comment: ['{0} is the name of the type of connection string (e.g. Java)'] }, "Copy {0} Connection String to clipboard", type); }
 export function copyValueToClipboard(valueName: string): string { return localize({ key: 'arc.copyValueToClipboard', comment: ['{0} is the name of the type of value being copied (e.g. Coordinator endpoint)'] }, "Copy {0} to clipboard", valueName); }
 
+// Pricing Constants
+export const replicaOne = localize('arc.replicaOne', "1 replica");
+export const replicaTwo = localize('arc.replicaTwo', "2 replicas");
+export const replicaThree = localize('arc.replicaThree', "3 replicas");
+export const generalPurposeLabel = localize('arc.generalPurposeLabel', "General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)");
+export const businessCriticalLabel = localize('arc.businessCriticalLabel', "[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)");
+export const USD = localize('arc.USD', "USD");
+
 // Errors
 export const pgConnectionRequired = localize('arc.pgConnectionRequired', "A connection is required to show and set database engine settings.");
 export const miaaConnectionRequired = localize('arc.miaaConnectionRequired', "A connection is required to list the databases on this instance.");
