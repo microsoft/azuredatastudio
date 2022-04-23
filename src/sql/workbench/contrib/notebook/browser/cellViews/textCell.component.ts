@@ -509,7 +509,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			// Move cursor to the richTextCursorPosition
 			// We iterate through the output element childnodes to get to the element of cursor location
 			// If the elements exist, we set the selection, else the cursor defaults to beginning.
-			if (!this.markdownMode && this.cellModel.richTextCursorPosition) {
+			// Only do this if the cell is active so we don't steal the window selection from another cell
+			// since this function is called whenever any cell in the Notebook changes, not just ourself
+			if (this.isActive() && !this.markdownMode && this.cellModel.richTextCursorPosition) {
 				let selection = window.getSelection();
 				let htmlNodes = this.cellModel.richTextCursorPosition.startElementNodes;
 				let depthToNode = htmlNodes.length;
