@@ -227,8 +227,7 @@ export const browseButtonText = localize('browseButtonText', "Browse folder");
 export const selectFolderStructure = localize('selectFolderStructure', "Select folder structure");
 export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
 export const WorkspaceFileExtension = '.code-workspace';
-export const browseEllipsis = localize('browseEllipsis', "Browse...");
-export const browseEllipsisWithIcon = `$(folder) ${browseEllipsis}`;
+export const browseEllipsisWithIcon = `$(folder) ${localize('browseEllipsis', "Browse...")}`;
 export const selectProjectLocation = localize('selectProjectLocation', "Select project location");
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
@@ -423,9 +422,12 @@ export enum DatabaseProjectItemType {
 
 // AutoRest
 export const autorestPostDeploymentScriptName = 'PostDeploymentScript.sql';
-export const nodeButNotAutorestFound = localize('nodeButNotAutorestFound', "Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.");
+export const nodeButNotAutorestFound = localize('nodeButNotAutorestFound', "Autorest tool not found in system path, but found Node.js.  Prompting user for how to proceed.  Execute 'npm install autorest -g' to install permanently and avoid this message.");
 export const nodeNotFound = localize('nodeNotFound', "Neither Autorest nor Node.js (npx) found in system path.  Please install Node.js for Autorest generation to work.");
 export const nodeButNotAutorestFoundPrompt = localize('nodeButNotAutorestFoundPrompt', "Autorest is not installed. To proceed, choose whether to run Autorest from a temporary location via 'npx' or install Autorest globally then run.");
+export const userSelectionInstallGlobally = localize('userSelectionInstallGlobally', "User selected to install autorest gloablly.  Installing now...");
+export const userSelectionRunNpx = localize('userSelectionRunNpx', "User selected to run via npx.");
+export const userSelectionCancelled = localize('userSelectionCancelled', "User has cancelled selection for how to run autorest.");
 export const installGlobally = localize('installGlobally', "Install globally");
 export const runViaNpx = localize('runViaNpx', "Run via npx");
 
