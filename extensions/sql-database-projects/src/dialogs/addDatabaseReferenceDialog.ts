@@ -46,8 +46,7 @@ export class AddDatabaseReferenceDialog {
 	public currentReferenceType: ReferenceType | undefined;
 
 	private toDispose: vscode.Disposable[] = [];
-	private initDialogComplete: Deferred<void> | undefined;
-	private initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
+	private initDialogComplete: Deferred = new Deferred();
 
 	public addReference: ((proj: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings) => any) | undefined;
 
@@ -86,7 +85,7 @@ export class AddDatabaseReferenceDialog {
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 
 		utils.getAzdataApi()!.window.openDialog(this.dialog);
-		await this.initDialogPromise;
+		await this.initDialogComplete.promise;
 	}
 
 	private dispose(): void {
@@ -144,7 +143,7 @@ export class AddDatabaseReferenceDialog {
 				await this.systemDatabaseRadioButton?.focus();
 			}
 
-			this.initDialogComplete?.resolve();
+			this.initDialogComplete.resolve();
 		});
 	}
 
