@@ -269,6 +269,31 @@
 			"presentation": {
 				"group": "4_web"
 			}
+		},
+		{
+			"name": "Run Sample Resource Deployment Extension",
+			"type": "sqlopsExtensionHost",
+			"request": "launch",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
+			},
+			"osx": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"args": [
+				"--extensionDevelopmentPath=${workspaceRoot}/samples/sample-resource-deployment"
+			],
+			"outFiles": [
+				"${workspaceRoot}/samples/sample-resource-deployment/out/**/*.js"
+			],
+			"preLaunchTask": "Watch sample-resource-deployment",
+			"presentation": {
+				"group": "5_samples"
+			},
+			"timeout": 30000
 		}
 	],
 	"compounds": [
