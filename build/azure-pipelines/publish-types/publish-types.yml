@@ -52,6 +52,7 @@ steps:
 
       # Sync up to latest from the DT repo
       git remote add upstream https://github.com/DefinitelyTyped/DefinitelyTyped.git
+      git fetch upstream
       git merge upstream/master
       git push origin
 
