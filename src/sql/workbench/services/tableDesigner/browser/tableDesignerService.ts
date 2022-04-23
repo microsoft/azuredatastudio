@@ -9,11 +9,14 @@ import * as azdata from 'azdata';
 import { ACTIVE_GROUP, IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { TableDesignerInput } from 'sql/workbench/browser/editor/tableDesigner/tableDesignerInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { TelemetryAction, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 export class TableDesignerService implements ITableDesignerService {
 
 	constructor(@IEditorService private _editorService: IEditorService,
-		@IInstantiationService private _instantiationService: IInstantiationService) { }
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IAdsTelemetryService private _adsTelemetryService: IAdsTelemetryService) { }
 
 	public _serviceBrand: undefined;
 	private _providers = new Map<string, TableDesignerProvider>();
@@ -41,6 +44,10 @@ export class TableDesignerService implements ITableDesignerService {
 	}
 
 	public async openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo): Promise<void> {
+		this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.Open).withAdditionalProperties({
+			provider: providerId,
+			newTable: tableInfo.isNewTable
+		}).send();
 		const provider = this.getProvider(providerId);
 		const tableDesignerInput = this._instantiationService.createInstance(TableDesignerInput, provider, tableInfo);
 		await this._editorService.openEditor(tableDesignerInput, { pinned: true }, ACTIVE_GROUP);

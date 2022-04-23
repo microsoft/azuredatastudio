@@ -143,7 +143,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		this._viewModel = designerInfo.viewModel;
 		this.setDefaultData();
 
-		const advancedTabComponents: DesignerDataPropertyInfo[] = [
+		const generalTabComponents: DesignerDataPropertyInfo[] = [
 			{
 				componentType: 'dropdown',
 				propertyName: designers.TableProperty.Schema,
@@ -161,12 +161,12 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		];
 
 		if (designerInfo.view.additionalTableProperties) {
-			advancedTabComponents.push(...designerInfo.view.additionalTableProperties);
+			generalTabComponents.push(...designerInfo.view.additionalTableProperties);
 		}
 
-		const advancedTab = <DesignerTab>{
+		const generalTab = <DesignerTab>{
 			title: localize('tableDesigner.generalTab', "General"),
-			components: advancedTabComponents
+			components: generalTabComponents
 		};
 
 		const columnProperties: DesignerDataPropertyInfo[] = [
@@ -261,7 +261,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			]
 		};
 
-		const tabs = [columnsTab, advancedTab];
+		const tabs = [columnsTab, generalTab];
 		if (designerInfo.view.additionalTabs) {
 			tabs.push(...tabs);
 		}
