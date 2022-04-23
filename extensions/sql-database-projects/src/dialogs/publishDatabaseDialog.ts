@@ -55,6 +55,7 @@ export class PublishDatabaseDialog {
 
 	constructor(private project: Project) {
 		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.publishDialogName, 'sqlProjectPublishDialog');
+		this.toDispose.push(this.dialog.onClosed(_ => this.completionPromise.resolve()));
 		this.publishTab = utils.getAzdataApi()!.window.createTab(constants.publishDialogName);
 	}
 
@@ -74,9 +75,6 @@ export class PublishDatabaseDialog {
 		this.dialog.customButtons.push(generateScriptButton);
 
 		utils.getAzdataApi()!.window.openDialog(this.dialog);
-		// Complete the promise when we're done - we use a disposable here instead of a CloseValidator because we have custom buttons (generate script)
-		// which don't go through that logic. 
-		this.toDispose.push({ dispose: () => { this.completionPromise.resolve(); } });
 	}
 
 	public waitForClose(): Promise<void> {

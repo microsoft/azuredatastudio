@@ -98,7 +98,11 @@ export class MainThreadModelViewDialog extends Disposable implements MainThreadM
 		options.renderHeader = dialog.renderHeader;
 		options.renderFooter = dialog.renderFooter;
 		options.dialogProperties = dialog.dialogProperties;
-		this._dialogService.showDialog(dialog, dialogName, options);
+		const modal = this._dialogService.showDialog(dialog, dialogName, options);
+		const onClosed = modal.onClosed(reason => {
+			this._proxy.$onClosed(handle, reason);
+			onClosed.dispose();
+		});
 		return Promise.resolve();
 	}
 
