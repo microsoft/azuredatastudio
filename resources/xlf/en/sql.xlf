@@ -1,46 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="src/sql/base/browser/ui/designer/designer" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="designer.generalGroupName">
-      <source xml:lang="en">General</source>
-    </trans-unit>
-    <trans-unit id="designer.loadingDesigner">
-      <source xml:lang="en">Loading designer...</source>
-    </trans-unit>
-    <trans-unit id="designer.loadingDesignerCompleted">
-      <source xml:lang="en">Designer is loaded</source>
-    </trans-unit>
-    <trans-unit id="designer.newRowText">
-      <source xml:lang="en">Add New</source>
-    </trans-unit>
-    <trans-unit id="designer.processingChanges">
-      <source xml:lang="en">Processing changes...</source>
-    </trans-unit>
-    <trans-unit id="designer.processingChangesCompleted">
-      <source xml:lang="en">Changes have been processed</source>
-    </trans-unit>
-    <trans-unit id="designer.removeRowText">
-      <source xml:lang="en">Remove</source>
-    </trans-unit>
-    <trans-unit id="designer.savingChanges">
-      <source xml:lang="en">Saving changes...</source>
-    </trans-unit>
-    <trans-unit id="designer.savingChangesCompleted">
-      <source xml:lang="en">Changes have been saved</source>
-    </trans-unit>
-    <trans-unit id="tableDesigner.unknownComponentType">
-      <source xml:lang="en">The component type: {0} is not supported</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/base/browser/ui/designer/designerPropertiesPane" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="tableDesigner.propertiesPaneTitle">
-      <source xml:lang="en">Properties</source>
-    </trans-unit>
-    <trans-unit id="tableDesigner.propertiesPaneTitleWithContext">
-      <source xml:lang="en">{0} Properties</source>
-      <note>{0} is the place holder for object type</note>
-    </trans-unit>
-</body></file>
   <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner" source-language="en" datatype="plaintext"><body>
     <trans-unit id="loadingCompletedMessage">
       <source xml:lang="en">Loading completed</source>
@@ -660,6 +619,52 @@
     </trans-unit>
     <trans-unit id="showConnectDialogOnStartup">
       <source xml:lang="en">Show connect dialog on startup</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/browser/designer/designer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.generalGroupName">
+      <source xml:lang="en">General</source>
+    </trans-unit>
+    <trans-unit id="designer.loadingDesigner">
+      <source xml:lang="en">Loading designer...</source>
+    </trans-unit>
+    <trans-unit id="designer.loadingDesignerCompleted">
+      <source xml:lang="en">Designer is loaded</source>
+    </trans-unit>
+    <trans-unit id="designer.newRowText">
+      <source xml:lang="en">Add New</source>
+    </trans-unit>
+    <trans-unit id="designer.processingChanges">
+      <source xml:lang="en">Processing changes...</source>
+    </trans-unit>
+    <trans-unit id="designer.processingChangesCompleted">
+      <source xml:lang="en">Changes have been processed</source>
+    </trans-unit>
+    <trans-unit id="designer.removeRowText">
+      <source xml:lang="en">Remove</source>
+    </trans-unit>
+    <trans-unit id="designer.savingChanges">
+      <source xml:lang="en">Saving changes...</source>
+    </trans-unit>
+    <trans-unit id="designer.savingChangesCompleted">
+      <source xml:lang="en">Changes have been saved</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.unknownComponentType">
+      <source xml:lang="en">The component type: {0} is not supported</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/browser/designer/designerPropertiesPane" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableDesigner.propertiesPaneTitle">
+      <source xml:lang="en">Properties</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.propertiesPaneTitleWithContext">
+      <source xml:lang="en">{0} Properties</source>
+      <note>{0} is the place holder for object type</note>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/browser/designer/designerScriptEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.textEditorAriaLabel">
+      <source xml:lang="en">Designer text editor.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/editData/editDataInput" source-language="en" datatype="plaintext"><body>
@@ -4199,11 +4204,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.featureEnabledDescription">
       <source xml:lang="en">Controls whether the table designer feature is enabled. Default value is false.</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesignerTextEditor" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="designer.textEditorAriaLabel">
-      <source xml:lang="en">Designer text editor.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/tasks/browser/tasks.contribution" source-language="en" datatype="plaintext"><body>
