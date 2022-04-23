@@ -252,7 +252,8 @@ export class ProjectsController {
 
 			const message = utils.getErrorMessage(err);
 			if (err instanceof DotNetError) {
-				void vscode.window.showErrorMessage(message);
+				// DotNetErrors already get shown by the netCoreTool so just show this one in the console
+				console.error(message);
 			} else {
 				void vscode.window.showErrorMessage(constants.projBuildFailed(message));
 			}

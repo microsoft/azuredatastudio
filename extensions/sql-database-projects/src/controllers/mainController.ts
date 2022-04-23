@@ -82,9 +82,6 @@ export default class MainController implements vscode.Disposable {
 		IconPathHelper.setExtensionContext(this.extensionContext);
 
 		await templates.loadTemplates(path.join(this.context.extensionPath, 'resources', 'templates'));
-
-		// ensure .net core is installed
-		await this.netcoreTool.findOrInstallNetCore();
 	}
 
 	public dispose(): void {
