@@ -456,37 +456,25 @@
       </Item>
       <Item ItemId=";extensions/data-workspace/package.data-workspace-view-container-name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Projects]]></Val>
+          <Val><![CDATA[Database Projects]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Projekte]]></Val>
+            <Val><![CDATA[Datenbankprojekte]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/data-workspace/package.extension-description" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Data workspace]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Datenarbeitsbereich]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/data-workspace/package.extension-displayName" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Data workspace]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Datenarbeitsbereich]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Projects]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/package.main-view-name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Projects]]></Val>
+          <Val><![CDATA[Database Projects]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Projekte]]></Val>
+            <Val><![CDATA[Datenbankprojekte]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Projects]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

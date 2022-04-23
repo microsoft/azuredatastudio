@@ -12,24 +12,24 @@
       <Disp Icon="Str" Disp="true" LocTbl="false" />
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.azure.accounts.accountAccessError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Select 'Link account' and refresh the account, or select a different account. Error '{1}']]></Val>
+          <Val><![CDATA[An error occurred while accessing the selected account '{0}' and tenant '{1}'. Select 'Link account' and refresh the account, or select a different account. Error '{2}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Erro ao acessar a conta selecionada '{0}'. Selecione 'Vincular Conta' e atualize a conta ou selecione uma conta diferente. Erro '{1}']]></Val>
+            <Val><![CDATA[Ocorreu um erro ao acessar a conta selecionada '{0}' e o locatário '{1}'. Selecione “Vincular conta” e atualize a conta, ou selecione uma conta diferente. Erro '{2}']]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Select 'Link Account' and refresh the account, or select a different account. Error '{1}']]></Val>
+            <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Select 'Link account' and refresh the account, or select a different account. Error '{1}']]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.azure.accounts.accountStaleError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.]]></Val>
+          <Val><![CDATA[The access token for selected account '{0}' and tenant '{1}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[O token de acesso para a conta selecionada '{0}' não é mais válido. Selecione 'Vincular Conta' e atualize a conta ou selecione uma conta diferente.]]></Val>
+            <Val><![CDATA[O token de acesso para a conta selecionada '{0}' e o locatário '{1}' não são mais válidos. Selecione “Vincular conta” e atualize a conta, ou selecione uma conta diferente.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Select 'Link Account' and refresh the account, or select a different account.]]></Val>
+            <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
