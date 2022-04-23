@@ -9,7 +9,7 @@ import * as azurecore from 'azurecore';
 import { MigrationLocalStorage, MigrationServiceContext } from '../../models/migrationLocalStorage';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
-import { findDropDownItemIndex, selectDefaultDropdownValue, deepClone, getAzureLocationsDropdownValues, getAzureResourceGroupsDropdownValues, getAzureAccounts, getAzureAccountsDropdownValues, getAzureTenants, getAzureTenantsDropdownValues, getAzureSubscriptions, getAzureSubscriptionsDropdownValues, getAzureSqlMigrationServices, getAzureSqlMigrationServicesDropdownValues, SelectableResourceType, getAzureResourceGroupsByResources, getAzureLocations } from '../../api/utils';
+import { selectDefaultDropdownValue, deepClone, getAzureLocationsDropdownValues, getAzureResourceGroupsDropdownValues, getAzureAccounts, getAzureAccountsDropdownValues, getAzureTenants, getAzureTenantsDropdownValues, getAzureSubscriptions, getAzureSubscriptionsDropdownValues, getAzureSqlMigrationServices, getAzureSqlMigrationServicesDropdownValues, SelectableResourceType, getAzureResourceGroupsByResources, getAzureLocations } from '../../api/utils';
 import { SqlMigrationService } from '../../api/azure';
 import { logError, TelemetryViews } from '../../telemtery';
 
@@ -140,9 +140,9 @@ export class SelectMigrationServiceDialog {
 			}).component();
 		this._disposables.push(
 			this._azureAccountsDropdown.onValueChanged(async (value) => {
-				const selectedIndex = findDropDownItemIndex(this._azureAccountsDropdown, value);
-				this._serviceContext.azureAccount = (selectedIndex > -1)
-					? deepClone(this._azureAccounts[selectedIndex])
+				const selectedAccount = this._azureAccounts.find(account => account.displayInfo.displayName === value);
+				this._serviceContext.azureAccount = (selectedAccount)
+					? deepClone(selectedAccount)
 					: undefined!;
 				await this._populateTentantsDropdown();
 			}));
@@ -185,10 +185,10 @@ export class SelectMigrationServiceDialog {
 			}).component();
 		this._disposables.push(
 			this._accountTenantDropdown.onValueChanged(async value => {
-				const selectedIndex = findDropDownItemIndex(this._accountTenantDropdown, value);
-				if (selectedIndex > -1) {
-					this._serviceContext.tenant = deepClone(this._accountTenants[selectedIndex]);
-					this._serviceContext.azureAccount!.properties.tenants = [this._accountTenants[selectedIndex]];
+				const selectedTenant = this._accountTenants.find(tenant => tenant.displayName === value);
+				if (selectedTenant) {
+					this._serviceContext.tenant = deepClone(selectedTenant);
+					this._serviceContext.azureAccount!.properties.tenants = [selectedTenant];
 				} else {
 					this._serviceContext.tenant = undefined!;
 				}
@@ -226,9 +226,9 @@ export class SelectMigrationServiceDialog {
 			}).component();
 		this._disposables.push(
 			this._azureSubscriptionDropdown.onValueChanged(async (value) => {
-				const selectedIndex = findDropDownItemIndex(this._azureSubscriptionDropdown, value);
-				this._serviceContext.subscription = (selectedIndex > -1)
-					? deepClone(this._subscriptions[selectedIndex])
+				const selectedSubscription = this._subscriptions.find(subscription => `${subscription.name} - ${subscription.id}` === value);
+				this._serviceContext.subscription = (selectedSubscription)
+					? deepClone(selectedSubscription)
 					: undefined!;
 				await this._populateLocationDropdown();
 			}));
@@ -252,9 +252,9 @@ export class SelectMigrationServiceDialog {
 			}).component();
 		this._disposables.push(
 			this._azureLocationDropdown.onValueChanged(async (value) => {
-				const selectedIndex = findDropDownItemIndex(this._azureLocationDropdown, value);
-				this._serviceContext.location = (selectedIndex > -1)
-					? deepClone(this._locations[selectedIndex])
+				const selectedLocation = this._locations.find(location => location.displayName === value);
+				this._serviceContext.location = (selectedLocation)
+					? deepClone(selectedLocation)
 					: undefined!;
 				await this._populateResourceGroupDropdown();
 			}));
@@ -278,9 +278,9 @@ export class SelectMigrationServiceDialog {
 			}).component();
 		this._disposables.push(
 			this._azureResourceGroupDropdown.onValueChanged(async (value) => {
-				const selectedIndex = findDropDownItemIndex(this._azureResourceGroupDropdown, value);
-				this._serviceContext.resourceGroup = (selectedIndex > -1)
-					? deepClone(this._resourceGroups[selectedIndex])
+				const selectedResourceGroup = this._resourceGroups.find(rg => rg.name === value);
+				this._serviceContext.resourceGroup = (selectedResourceGroup)
+					? deepClone(selectedResourceGroup)
 					: undefined!;
 				await this._populateMigrationServiceDropdown();
 			}));
@@ -304,9 +304,9 @@ export class SelectMigrationServiceDialog {
 			}).component();
 		this._disposables.push(
 			this._azureServiceDropdown.onValueChanged(async (value) => {
-				const selectedIndex = findDropDownItemIndex(this._azureServiceDropdown, value, true);
-				this._serviceContext.migrationService = (selectedIndex > -1)
-					? deepClone(this._sqlMigrationServices.find(service => service.name === value))
+				const selectedDms = this._sqlMigrationServices.find(dms => dms.name === value);
+				this._serviceContext.migrationService = (selectedDms)
+					? deepClone(selectedDms)
 					: undefined!;
 				await this._updateButtonState();
 			}));

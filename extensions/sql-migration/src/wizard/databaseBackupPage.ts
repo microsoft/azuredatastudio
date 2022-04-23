@@ -12,7 +12,7 @@ import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateM
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { findDropDownItemIndex, selectDropDownIndex, selectDefaultDropdownValue, getAzureResourceGroupsDropdownValues, getStorageAccounts, getStorageAccountsDropdownValues, SelectableResourceType, getAzureResourceGroupsByResources } from '../api/utils';
+import { selectDefaultDropdownValue, getAzureResourceGroupsDropdownValues, getStorageAccounts, getStorageAccountsDropdownValues, SelectableResourceType, getAzureResourceGroupsByResources, getBlobContainer, getBlobContainersValues, getBlobLastBackupFileNames, getBlobLastBackupFileNamesValues, selectDropDownIndex } from '../api/utils';
 import { logError, TelemetryViews } from '../telemtery';
 import * as styles from '../constants/styles';
 
@@ -687,10 +687,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				},
 			}).component();
 		this._disposables.push(this._networkShareStorageAccountResourceGroupDropdown.onValueChanged(async (value) => {
-			const selectedIndex = findDropDownItemIndex(this._networkShareStorageAccountResourceGroupDropdown, value);
-			if (selectedIndex > -1) {
+			const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === value);
+			if (selectedResourceGroup) {
 				for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
-					this.migrationStateModel._databaseBackup.networkShares[i].resourceGroup = this.migrationStateModel._resourceGroups[selectedIndex];
+					this.migrationStateModel._databaseBackup.networkShares[i].resourceGroup = selectedResourceGroup;
 				}
 				await this.loadNetworkShareStorageDropdown();
 			}
@@ -714,10 +714,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				fireOnTextChange: true,
 			}).component();
 		this._disposables.push(this._networkShareContainerStorageAccountDropdown.onValueChanged((value) => {
-			const selectedIndex = findDropDownItemIndex(this._networkShareContainerStorageAccountDropdown, value);
-			if (selectedIndex > -1) {
+			const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === value);
+			if (selectedStorageAccount) {
 				for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
-					this.migrationStateModel._databaseBackup.networkShares[i].storageAccount = this.migrationStateModel._storageAccounts[selectedIndex];
+					this.migrationStateModel._databaseBackup.networkShares[i].storageAccount = selectedStorageAccount;
 				}
 			}
 		}));
@@ -962,9 +962,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					}).component();
 
 					this._disposables.push(blobContainerResourceDropdown.onValueChanged(async (value) => {
-						const selectedIndex = findDropDownItemIndex(blobContainerResourceDropdown, value);
-						if (selectedIndex > -1 && !blobResourceGroupErrorStrings.includes(value)) {
-							this.migrationStateModel._databaseBackup.blobs[index].resourceGroup = this.migrationStateModel._resourceGroups[selectedIndex];
+						const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === value);
+						if (selectedResourceGroup && !blobResourceGroupErrorStrings.includes(value)) {
+							this.migrationStateModel._databaseBackup.blobs[index].resourceGroup = selectedResourceGroup;
 							await this.loadBlobStorageDropdown(index);
 							await blobContainerStorageAccountDropdown.updateProperties({ enabled: true });
 						} else {
@@ -974,9 +974,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this._blobContainerResourceGroupDropdowns.push(blobContainerResourceDropdown);
 
 					this._disposables.push(blobContainerStorageAccountDropdown.onValueChanged(async (value) => {
-						const selectedIndex = findDropDownItemIndex(blobContainerStorageAccountDropdown, value);
-						if (selectedIndex > -1 && !blobStorageAccountErrorStrings.includes(value)) {
-							this.migrationStateModel._databaseBackup.blobs[index].storageAccount = this.migrationStateModel._storageAccounts[selectedIndex];
+						const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === value);
+						if (selectedStorageAccount && !blobStorageAccountErrorStrings.includes(value)) {
+							this.migrationStateModel._databaseBackup.blobs[index].storageAccount = selectedStorageAccount;
 							await this.loadBlobContainerDropdown(index);
 							await blobContainerDropdown.updateProperties({ enabled: true });
 						} else {
@@ -986,9 +986,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this._blobContainerStorageAccountDropdowns.push(blobContainerStorageAccountDropdown);
 
 					this._disposables.push(blobContainerDropdown.onValueChanged(async (value) => {
-						const selectedIndex = findDropDownItemIndex(blobContainerDropdown, value);
-						if (selectedIndex > -1 && !blobContainerErrorStrings.includes(value)) {
-							this.migrationStateModel._databaseBackup.blobs[index].blobContainer = this.migrationStateModel.getBlobContainer(selectedIndex);
+						const selectedBlobContainer = this.migrationStateModel._blobContainers.find(blob => blob.name === value);		// ?
+						if (selectedBlobContainer && !blobContainerErrorStrings.includes(value)) {
+							this.migrationStateModel._databaseBackup.blobs[index].blobContainer = selectedBlobContainer;
 							if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 								await this.loadBlobLastBackupFileDropdown(index);
 								await blobContainerLastBackupFileDropdown.updateProperties({ enabled: true });
@@ -1001,9 +1001,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 					if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 						this._disposables.push(blobContainerLastBackupFileDropdown.onValueChanged(value => {
-							const selectedIndex = findDropDownItemIndex(blobContainerLastBackupFileDropdown, value);
-							if (selectedIndex > -1 && !blobFileErrorStrings.includes(value)) {
-								this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = this.migrationStateModel.getBlobLastBackupFileName(selectedIndex);
+							const selectedLastBackupFile = this.migrationStateModel._lastFileNames.find(fileName => fileName.name === value); 	// ?
+							if (selectedLastBackupFile && !blobFileErrorStrings.includes(value)) {
+								this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = selectedLastBackupFile.name;
 							}
 						}));
 						this._blobContainerLastBackupFileDropdowns.push(blobContainerLastBackupFileDropdown);
@@ -1322,7 +1322,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobStorageDropdown(index: number): Promise<void> {
 		this._blobContainerStorageAccountDropdowns[index].loading = true;
 		try {
-			this._blobContainerStorageAccountDropdowns[index].values = await getStorageAccountsDropdownValues(this.migrationStateModel._storageAccounts, this.migrationStateModel._location, this.migrationStateModel._databaseBackup.networkShares[0]?.resourceGroup);
+			this._blobContainerStorageAccountDropdowns[index].values = await getStorageAccountsDropdownValues(this.migrationStateModel._storageAccounts, this.migrationStateModel._location, this.migrationStateModel._databaseBackup.blobs[index]?.resourceGroup);
 			selectDefaultDropdownValue(this._blobContainerStorageAccountDropdowns[index], this.migrationStateModel._databaseBackup?.blobs[index]?.storageAccount?.id, false);
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobStorageDropdown', error);
@@ -1334,8 +1334,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobContainerDropdown(index: number): Promise<void> {
 		this._blobContainerDropdowns[index].loading = true;
 		try {
-			const blobContainerValues = await this.migrationStateModel.getBlobContainerValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount);
-			this._blobContainerDropdowns[index].values = blobContainerValues;
+			this.migrationStateModel._blobContainers = await getBlobContainer(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount);
+			this._blobContainerDropdowns[index].values = await getBlobContainersValues(this.migrationStateModel._blobContainers);
 			selectDefaultDropdownValue(this._blobContainerDropdowns[index], this.migrationStateModel._databaseBackup?.blobs[index]?.blobContainer?.id, false);
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobContainers', error);
@@ -1347,8 +1347,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobLastBackupFileDropdown(index: number): Promise<void> {
 		this._blobContainerLastBackupFileDropdowns[index].loading = true;
 		try {
-			const blobLastBackupFileValues = await this.migrationStateModel.getBlobLastBackupFileNameValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount, this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
-			this._blobContainerLastBackupFileDropdowns[index].values = blobLastBackupFileValues;
+			this.migrationStateModel._lastFileNames = await getBlobLastBackupFileNames(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount, this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
+			this._blobContainerLastBackupFileDropdowns[index].values = await getBlobLastBackupFileNamesValues(this.migrationStateModel._lastFileNames);
 			selectDefaultDropdownValue(this._blobContainerLastBackupFileDropdowns[index], this.migrationStateModel._databaseBackup?.blobs[index]?.lastBackupFile, false);
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobLastBackupFiles', error);

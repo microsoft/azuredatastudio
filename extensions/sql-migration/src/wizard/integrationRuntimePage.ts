@@ -13,7 +13,7 @@ import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { getFullResourceGroupFromId, getLocationDisplayName, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { logError, TelemetryViews } from '../telemtery';
-import { findDropDownItemIndex, getAzureResourceGroupsByResources, getAzureResourceGroupsDropdownValues, getAzureSqlMigrationServices, getAzureSqlMigrationServicesDropdownValues, SelectableResourceType, selectDefaultDropdownValue } from '../api/utils';
+import { getAzureResourceGroupsByResources, getAzureResourceGroupsDropdownValues, getAzureSqlMigrationServices, getAzureSqlMigrationServicesDropdownValues, SelectableResourceType, selectDefaultDropdownValue } from '../api/utils';
 import * as styles from '../constants/styles';
 
 export class IntergrationRuntimePage extends MigrationWizardPage {
@@ -170,10 +170,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}
 		}).component();
 		this._disposables.push(this._resourceGroupDropdown.onValueChanged(async (value) => {
-			const selectedIndex = findDropDownItemIndex(this._resourceGroupDropdown, value);
-			if (selectedIndex > -1 &&
-				value !== constants.RESOURCE_GROUP_NOT_FOUND) {
-				this.migrationStateModel._sqlMigrationServiceResourceGroup = this.migrationStateModel._resourceGroups[selectedIndex];
+			const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === value);
+			if (selectedResourceGroup && value !== constants.RESOURCE_GROUP_NOT_FOUND) {
+				this.migrationStateModel._sqlMigrationServiceResourceGroup = selectedResourceGroup;
 			} else {
 				this.migrationStateModel._sqlMigrationServiceResourceGroup = undefined!;
 			}
@@ -206,9 +205,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				this.wizard.message = {
 					text: ''
 				};
-				const selectedIndex = findDropDownItemIndex(this._dmsDropdown, value);
-				if (selectedIndex > -1) {
-					this.migrationStateModel._sqlMigrationService = this.migrationStateModel._sqlMigrationServices[selectedIndex];
+				const selectedDms = this.migrationStateModel._sqlMigrationServices.find(dms => dms.name === value);
+				if (selectedDms) {
+					this.migrationStateModel._sqlMigrationService = selectedDms;
 					await this.loadMigrationServiceStatus();
 				}
 			} else {

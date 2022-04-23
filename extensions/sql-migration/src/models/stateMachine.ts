@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
-import { getBlobContainers, getFileShares, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs } from '../api/azure';
+import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
@@ -839,125 +839,125 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			<SqlManagedInstance>this._targetServerInstance)).map(t => t.name);
 	}
 
-	public async getFileShareValues(subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: StorageAccount): Promise<azdata.CategoryValue[]> {
-		let fileShareValues: azdata.CategoryValue[] = [];
-		try {
-			if (this._azureAccount && subscription && storageAccount) {
-				this._fileShares = await getFileShares(this._azureAccount, subscription, storageAccount);
-			} else {
-				this._fileShares = [];
-			}
+	// public async getFileShareValues(subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: StorageAccount): Promise<azdata.CategoryValue[]> {
+	// 	let fileShareValues: azdata.CategoryValue[] = [];
+	// 	try {
+	// 		if (this._azureAccount && subscription && storageAccount) {
+	// 			this._fileShares = await getFileShares(this._azureAccount, subscription, storageAccount);
+	// 		} else {
+	// 			this._fileShares = [];
+	// 		}
 
-			this._fileShares.forEach((fileShare) => {
-				fileShareValues.push({
-					name: fileShare.id,
-					displayName: `${fileShare.name}`
-				});
-			});
+	// 		this._fileShares.forEach((fileShare) => {
+	// 			fileShareValues.push({
+	// 				name: fileShare.id,
+	// 				displayName: `${fileShare.name}`
+	// 			});
+	// 		});
 
-			if (fileShareValues.length === 0) {
-				fileShareValues = [
-					{
-						displayName: constants.NO_FILESHARES_FOUND,
-						name: ''
-					}
-				];
-			}
-		} catch (e) {
-			console.log(e);
-			fileShareValues = [
-				{
-					displayName: constants.NO_FILESHARES_FOUND,
-					name: ''
-				}
-			];
-		}
-		return fileShareValues;
-	}
+	// 		if (fileShareValues.length === 0) {
+	// 			fileShareValues = [
+	// 				{
+	// 					displayName: constants.NO_FILESHARES_FOUND,
+	// 					name: ''
+	// 				}
+	// 			];
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 		fileShareValues = [
+	// 			{
+	// 				displayName: constants.NO_FILESHARES_FOUND,
+	// 				name: ''
+	// 			}
+	// 		];
+	// 	}
+	// 	return fileShareValues;
+	// }
 
-	public getFileShare(index: number): azurecore.azureResource.FileShare {
-		return this._fileShares[index];
-	}
+	// public getFileShare(index: number): azurecore.azureResource.FileShare {
+	// 	return this._fileShares[index];
+	// }
 
-	public async getBlobContainerValues(subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: StorageAccount): Promise<azdata.CategoryValue[]> {
-		let blobContainerValues: azdata.CategoryValue[] = [];
-		try {
-			if (this._azureAccount && subscription && storageAccount) {
-				this._blobContainers = await getBlobContainers(this._azureAccount, subscription, storageAccount);
-			} else {
-				this._blobContainers = [];
-			}
+	// public async getBlobContainerValues(subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: StorageAccount): Promise<azdata.CategoryValue[]> {
+	// 	let blobContainerValues: azdata.CategoryValue[] = [];
+	// 	try {
+	// 		if (this._azureAccount && subscription && storageAccount) {
+	// 			this._blobContainers = await getBlobContainers(this._azureAccount, subscription, storageAccount);
+	// 		} else {
+	// 			this._blobContainers = [];
+	// 		}
 
-			this._blobContainers.forEach((blobContainer) => {
-				blobContainerValues.push({
-					name: blobContainer.id,
-					displayName: `${blobContainer.name}`
-				});
-			});
+	// 		this._blobContainers.forEach((blobContainer) => {
+	// 			blobContainerValues.push({
+	// 				name: blobContainer.id,
+	// 				displayName: `${blobContainer.name}`
+	// 			});
+	// 		});
 
-			if (blobContainerValues.length === 0) {
-				blobContainerValues = [
-					{
-						displayName: constants.NO_BLOBCONTAINERS_FOUND,
-						name: ''
-					}
-				];
-			}
-		} catch (e) {
-			console.log(e);
-			blobContainerValues = [
-				{
-					displayName: constants.NO_BLOBCONTAINERS_FOUND,
-					name: ''
-				}
-			];
-		}
-		return blobContainerValues;
-	}
+	// 		if (blobContainerValues.length === 0) {
+	// 			blobContainerValues = [
+	// 				{
+	// 					displayName: constants.NO_BLOBCONTAINERS_FOUND,
+	// 					name: ''
+	// 				}
+	// 			];
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 		blobContainerValues = [
+	// 			{
+	// 				displayName: constants.NO_BLOBCONTAINERS_FOUND,
+	// 				name: ''
+	// 			}
+	// 		];
+	// 	}
+	// 	return blobContainerValues;
+	// }
 
-	public getBlobContainer(index: number): azurecore.azureResource.BlobContainer {
-		return this._blobContainers[index];
-	}
+	// public getBlobContainer(index: number): azurecore.azureResource.BlobContainer {
+	// 	return this._blobContainers[index];
+	// }
 
-	public async getBlobLastBackupFileNameValues(subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: StorageAccount, blobContainer: azurecore.azureResource.BlobContainer): Promise<azdata.CategoryValue[]> {
-		let blobLastBackupFileValues: azdata.CategoryValue[] = [];
-		try {
-			if (this._azureAccount && subscription && storageAccount && blobContainer) {
-				this._lastFileNames = await getBlobs(this._azureAccount, subscription, storageAccount, blobContainer.name);
-			} else {
-				this._lastFileNames = [];
-			}
+	// public async getBlobLastBackupFileNameValues(subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: StorageAccount, blobContainer: azurecore.azureResource.BlobContainer): Promise<azdata.CategoryValue[]> {
+	// 	let blobLastBackupFileValues: azdata.CategoryValue[] = [];
+	// 	try {
+	// 		if (this._azureAccount && subscription && storageAccount && blobContainer) {
+	// 			this._lastFileNames = await getBlobs(this._azureAccount, subscription, storageAccount, blobContainer.name);
+	// 		} else {
+	// 			this._lastFileNames = [];
+	// 		}
 
-			this._lastFileNames.forEach((blob) => {
-				blobLastBackupFileValues.push({
-					name: blob.name,
-					displayName: `${blob.name}`,
-				});
-			});
+	// 		this._lastFileNames.forEach((blob) => {
+	// 			blobLastBackupFileValues.push({
+	// 				name: blob.name,
+	// 				displayName: `${blob.name}`,
+	// 			});
+	// 		});
 
-			if (blobLastBackupFileValues.length === 0) {
-				blobLastBackupFileValues = [
-					{
-						displayName: constants.NO_BLOBFILES_FOUND,
-						name: ''
-					}
-				];
-			}
-		} catch (e) {
-			console.log(e);
-			blobLastBackupFileValues = [
-				{
-					displayName: constants.NO_BLOBFILES_FOUND,
-					name: ''
-				}
-			];
-		}
-		return blobLastBackupFileValues;
-	}
+	// 		if (blobLastBackupFileValues.length === 0) {
+	// 			blobLastBackupFileValues = [
+	// 				{
+	// 					displayName: constants.NO_BLOBFILES_FOUND,
+	// 					name: ''
+	// 				}
+	// 			];
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e);
+	// 		blobLastBackupFileValues = [
+	// 			{
+	// 				displayName: constants.NO_BLOBFILES_FOUND,
+	// 				name: ''
+	// 			}
+	// 		];
+	// 	}
+	// 	return blobLastBackupFileValues;
+	// }
 
-	public getBlobLastBackupFileName(index: number): string {
-		return this._lastFileNames[index]?.name;
-	}
+	// public getBlobLastBackupFileName(index: number): string {
+	// 	return this._lastFileNames[index]?.name;
+	// }
 
 	public async startMigration() {
 		const sqlConnections = await azdata.connection.getConnections();

@@ -15,7 +15,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
 import { createAuthenticationKeyTable } from '../../wizard/integrationRuntimePage';
 import * as EventEmitter from 'events';
-import { clearDialogMessage, findDropDownItemIndex, getAzureResourceGroups, getAzureResourceGroupsDropdownValues } from '../../api/utils';
+import { clearDialogMessage, getAzureResourceGroups, getAzureResourceGroupsDropdownValues } from '../../api/utils';
 import * as styles from '../../constants/styles';
 
 export class CreateSqlMigrationServiceDialog {
@@ -259,9 +259,9 @@ export class CreateSqlMigrationServiceDialog {
 
 		this._disposables.push(
 			this.migrationServiceResourceGroupDropdown.onValueChanged(async (value) => {
-				const selectedIndex = findDropDownItemIndex(this.migrationServiceResourceGroupDropdown, value);
-				this._selectedResourceGroup = (selectedIndex > -1)
-					? this._resourceGroups[selectedIndex]
+				const selectedResourceGroup = this._resourceGroups.find(rg => rg.name === value);
+				this._selectedResourceGroup = (selectedResourceGroup)
+					? selectedResourceGroup
 					: undefined!;
 			}));
 
