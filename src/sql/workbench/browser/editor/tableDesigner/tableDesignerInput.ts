@@ -19,6 +19,7 @@ const NewTable: string = localize('tableDesigner.newTable', "New Table");
 export class TableDesignerInput extends EditorInput {
 	public static ID: string = 'workbench.editorinputs.tableDesignerInput';
 	private _designerComponentInput: TableDesignerComponentInput;
+	private _title: string;
 	private _name: string;
 
 	constructor(
@@ -33,18 +34,18 @@ export class TableDesignerInput extends EditorInput {
 				this._onDidChangeDirty.fire();
 			}
 		}));
-		const existingNames = editorService.editors.map(editor => editor.getName());
-
 		if (this._tableInfo.isNewTable) {
+			const existingNames = editorService.editors.map(editor => editor.getName());
 			// Find the next available unique name for the new table designer
 			let idx = 1;
 			do {
-				this._name = `${this._tableInfo.server}.${this._tableInfo.database} - ${NewTable} ${idx}`;
+				this._name = `${NewTable} ${idx}`;
 				idx++;
 			} while (existingNames.indexOf(this._name) !== -1);
 		} else {
-			this._name = `${this._tableInfo.server}.${this._tableInfo.database} - ${this._tableInfo.schema}.${this._tableInfo.name}`;
+			this._name = `${this._tableInfo.schema}.${this._tableInfo.name}`;
 		}
+		this._title = `${this._tableInfo.server}.${this._tableInfo.database} - ${this._name}`;
 	}
 
 	get typeId(): string {
@@ -61,6 +62,10 @@ export class TableDesignerInput extends EditorInput {
 
 	override getName(): string {
 		return this._name;
+	}
+
+	override getTitle(): string {
+		return this._title;
 	}
 
 	override isDirty(): boolean {
