@@ -40,6 +40,10 @@ export class DesignerPropertiesPane {
 		return this._groupHeaders;
 	}
 
+	public get descriptionElement(): HTMLElement {
+		return this._descriptionContainer;
+	}
+
 	public get componentMap(): Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }> {
 		return this._componentMap;
 	}
@@ -50,7 +54,7 @@ export class DesignerPropertiesPane {
 
 	public updateDescription(definition: DesignerDataPropertyInfo) {
 		this._descriptionContainer.style.display = 'block';
-		const title: string = definition.componentProperties.title ?? '';
+		const title: string = definition.componentProperties.title || definition.componentProperties.ariaLabel || '';
 		const description: string = definition.description ?? '';
 		this._descriptionTitleContainer.innerText = title;
 		this._descriptionTextContainer.innerText = description;

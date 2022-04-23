@@ -103,9 +103,10 @@
 }
 
 .designer-component .description-component {
-	margin: 15px;
-	height: 90px;
-	overflow-y: auto;
+	padding: 10px;
+	flex: 0 0 auto;
+	border-width: 1px 0 0 0;
+	border-style: solid;
 }
 
 .designer-component .description-component-label.codicon.info {
@@ -113,8 +114,7 @@
 	background-position: 2px center;
 	padding-left: 25px;
 	background-size: 16px;
-	font-size: 15px;
-	font-weight: 600;
+	font-weight: bold;
 	margin-block-start: 0px;
 	scroll-margin-block-end: 0px;
 }
