@@ -362,6 +362,15 @@ export function getFullResourceGroupFromId(id: string): string {
 	return id.replace(RegExp('/providers/.*'), '').toLowerCase();
 }
 
+export function getResourceName(id: string): string {
+	const splitResourceId = id.split('/');
+	return splitResourceId[splitResourceId.length - 1];
+}
+
+export function getBlobContainerId(resourceGroupId: string, storageAccountName: string, blobContainerName: string): string {
+	return `${resourceGroupId}/providers/Microsoft.Storage/storageAccounts/${storageAccountName}/blobServices/default/containers/${blobContainerName}`;
+}
+
 export interface SqlMigrationServiceProperties {
 	name: string;
 	subscriptionId: string;

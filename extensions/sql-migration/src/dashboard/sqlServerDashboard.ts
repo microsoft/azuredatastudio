@@ -33,6 +33,7 @@ interface StatusCard {
 }
 
 export class DashboardWidget {
+	private _context: vscode.ExtensionContext;
 
 	private _migrationStatusCardsContainer!: azdata.FlexContainer;
 	private _migrationStatusCardLoadingContainer!: azdata.LoadingComponent;
@@ -52,7 +53,8 @@ export class DashboardWidget {
 
 	private isRefreshing: boolean = false;
 
-	constructor() {
+	constructor(context: vscode.ExtensionContext) {
+		this._context = context;
 	}
 
 	private async getCurrentMigrations(): Promise<MigrationContext[]> {
@@ -470,7 +472,7 @@ export class DashboardWidget {
 
 		this._disposables.push(this._viewAllMigrationsButton.onDidClick(async (e) => {
 			const migrationStatus = await this.getCurrentMigrations();
-			new MigrationStatusDialog(migrationStatus ? migrationStatus : await this.getMigrations(), AdsMigrationStatus.ALL).initialize();
+			new MigrationStatusDialog(this._context, migrationStatus ? migrationStatus : await this.getMigrations(), AdsMigrationStatus.ALL).initialize();
 		}));
 
 		const refreshButton = view.modelBuilder.hyperlink().withProps({
@@ -596,7 +598,7 @@ export class DashboardWidget {
 			loc.MIGRATION_IN_PROGRESS
 		);
 		this._disposables.push(this._inProgressMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.ONGOING);
+			const dialog = new MigrationStatusDialog(this._context, await this.getCurrentMigrations(), AdsMigrationStatus.ONGOING);
 			dialog.initialize();
 		}));
 
@@ -610,7 +612,7 @@ export class DashboardWidget {
 			true
 		);
 		this._disposables.push(this._inProgressWarningMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.ONGOING);
+			const dialog = new MigrationStatusDialog(this._context, await this.getCurrentMigrations(), AdsMigrationStatus.ONGOING);
 			dialog.initialize();
 		}));
 
@@ -623,7 +625,7 @@ export class DashboardWidget {
 			loc.MIGRATION_COMPLETED
 		);
 		this._disposables.push(this._successfulMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.SUCCEEDED);
+			const dialog = new MigrationStatusDialog(this._context, await this.getCurrentMigrations(), AdsMigrationStatus.SUCCEEDED);
 			dialog.initialize();
 		}));
 		this._migrationStatusCardsContainer.addItem(
@@ -636,7 +638,7 @@ export class DashboardWidget {
 			loc.MIGRATION_CUTOVER_CARD
 		);
 		this._disposables.push(this._completingMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.COMPLETING);
+			const dialog = new MigrationStatusDialog(this._context, await this.getCurrentMigrations(), AdsMigrationStatus.COMPLETING);
 			dialog.initialize();
 		}));
 		this._migrationStatusCardsContainer.addItem(
@@ -648,7 +650,7 @@ export class DashboardWidget {
 			loc.MIGRATION_FAILED
 		);
 		this._disposables.push(this._failedMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.FAILED);
+			const dialog = new MigrationStatusDialog(this._context, await this.getCurrentMigrations(), AdsMigrationStatus.FAILED);
 			dialog.initialize();
 		}));
 		this._migrationStatusCardsContainer.addItem(

@@ -14,7 +14,8 @@ import { clearDialogMessage, convertTimeDifferenceToDuration, displayDialogError
 import { SqlMigrationServiceDetailsDialog } from '../sqlMigrationService/sqlMigrationServiceDetailsDialog';
 import { ConfirmCutoverDialog } from '../migrationCutover/confirmCutoverDialog';
 import { MigrationCutoverDialogModel } from '../migrationCutover/migrationCutoverDialogModel';
-import { getMigrationTargetType, getMigrationMode } from '../../constants/helper';
+import { getMigrationTargetType, getMigrationMode, canRetryMigration } from '../../constants/helper';
+import { RetryMigrationDialog } from '../retryMigration/retryMigrationDialog';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
 
@@ -29,9 +30,11 @@ const MenuCommands = {
 	ViewService: 'sqlmigration.view.service',
 	CopyMigration: 'sqlmigration.copy.migration',
 	CancelMigration: 'sqlmigration.cancel.migration',
+	RetryMigration: 'sqlmigration.retry.migration',
 };
 
 export class MigrationStatusDialog {
+	private _context: vscode.ExtensionContext;
 	private _model: MigrationStatusDialogModel;
 	private _dialogObject!: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
@@ -45,7 +48,8 @@ export class MigrationStatusDialog {
 
 	private isRefreshing = false;
 
-	constructor(migrations: MigrationContext[], private _filter: AdsMigrationStatus) {
+	constructor(context: vscode.ExtensionContext, migrations: MigrationContext[], private _filter: AdsMigrationStatus) {
+		this._context = context;
 		this._model = new MigrationStatusDialogModel(migrations);
 		this._dialogObject = azdata.window.createModelViewDialog(loc.MIGRATION_STATUS, 'MigrationControllerDialog', 'wide');
 	}
@@ -221,7 +225,7 @@ export class MigrationStatusDialog {
 			async (migrationId: string) => {
 				try {
 					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
-					const dialog = new MigrationCutoverDialog(migration!);
+					const dialog = new MigrationCutoverDialog(this._context, migration!);
 					await dialog.initialize();
 				} catch (e) {
 					console.log(e);
@@ -302,6 +306,25 @@ export class MigrationStatusDialog {
 					console.log(e);
 				}
 			}));
+
+		this._disposables.push(vscode.commands.registerCommand(
+			MenuCommands.RetryMigration,
+			async (migrationId: string) => {
+				try {
+					clearDialogMessage(this._dialogObject);
+					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
+					if (canRetryMigration(migration?.migrationContext.properties.migrationStatus)) {
+						let retryMigrationDialog = new RetryMigrationDialog(this._context, migration!);
+						await retryMigrationDialog.openDialog();
+					}
+					else {
+						await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_RETRY);
+					}
+				} catch (e) {
+					displayDialogErrorMessage(this._dialogObject, loc.MIGRATION_RETRY_ERROR, e);
+					console.log(e);
+				}
+			}));
 	}
 
 	private async populateMigrationTable(): Promise<void> {
@@ -366,7 +389,7 @@ export class MigrationStatusDialog {
 			}).component();
 
 		this._disposables.push(databaseHyperLink.onDidClick(
-			async (e) => await (new MigrationCutoverDialog(migration)).initialize()));
+			async (e) => await (new MigrationCutoverDialog(this._context, migration)).initialize()));
 
 		return this._view.modelBuilder
 			.flexContainer()
@@ -414,6 +437,10 @@ export class MigrationStatusDialog {
 
 		if (this.canCancelMigration(migrationStatus)) {
 			menuCommands.push(MenuCommands.CancelMigration);
+		}
+
+		if (canRetryMigration(migrationStatus)) {
+			menuCommands.push(MenuCommands.RetryMigration);
 		}
 
 		return menuCommands;

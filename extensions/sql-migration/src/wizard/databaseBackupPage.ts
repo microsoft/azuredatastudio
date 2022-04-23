@@ -283,7 +283,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 			return true;
 		}).component();
-		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode) {
+		if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode)) {
 			this._networkSharePath.value = this.migrationStateModel.savedInfo.networkShare?.networkShareLocation;
 		}
 		this._disposables.push(this._networkSharePath.onTextChanged(async (value) => {
@@ -331,7 +331,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 				return true;
 			}).component();
-		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup) {
+		if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup)) {
 			this._windowsUserAccountText.value = this.migrationStateModel.savedInfo.networkShare?.windowsUser;
 		}
 		this._disposables.push(this._windowsUserAccountText.onTextChanged((value) => {
@@ -457,7 +457,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		return flexContainer;
 	}
-
 
 	private createTargetDatabaseContainer(): azdata.FlexContainer {
 		const headerCssStyles: azdata.CssStyles = {
@@ -755,253 +754,265 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		return container;
 	}
 
-
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		if (this.migrationStateModel.refreshDatabaseBackupPage) {
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup) {
-				this.migrationStateModel._migrationDbs = this.migrationStateModel.savedInfo.databaseList;
-			}
-			const isOfflineMigration = this.migrationStateModel._databaseBackup?.migrationMode === MigrationMode.OFFLINE;
-			const lastBackupFileColumnIndex = this._blobContainerTargetDatabaseNamesTable.columns.length - 1;
-			this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden = !isOfflineMigration;
-			this._blobContainerTargetDatabaseNamesTable.columns.forEach(column => {
-				column.width = isOfflineMigration ? WIZARD_TABLE_COLUMN_WIDTH_SMALL : WIZARD_TABLE_COLUMN_WIDTH;
-			});
+			try {
+				if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup)) {
+					this.migrationStateModel._migrationDbs = this.migrationStateModel.savedInfo.databaseList;
+				}
+				const isOfflineMigration = this.migrationStateModel._databaseBackup?.migrationMode === MigrationMode.OFFLINE;
+				const lastBackupFileColumnIndex = this._blobContainerTargetDatabaseNamesTable.columns.length - 1;
+				this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden = !isOfflineMigration;
+				this._blobContainerTargetDatabaseNamesTable.columns.forEach(column => {
+					column.width = isOfflineMigration ? WIZARD_TABLE_COLUMN_WIDTH_SMALL : WIZARD_TABLE_COLUMN_WIDTH;
+				});
 
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode) {
-				if (this.migrationStateModel.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
-					this._networkShareButton.checked = true;
+				if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode)) {
+					if (this.migrationStateModel.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
+						this._networkShareButton.checked = true;
+					} else {
+						this._networkShareButton.checked = false;
+						this._networkTableContainer.display = 'none';
+						await this._networkShareContainer.updateCssStyles({ 'display': 'none' });
+					}
 				} else {
 					this._networkShareButton.checked = false;
 					this._networkTableContainer.display = 'none';
 					await this._networkShareContainer.updateCssStyles({ 'display': 'none' });
 				}
-			} else {
-				this._networkShareButton.checked = false;
-				this._networkTableContainer.display = 'none';
-				await this._networkShareContainer.updateCssStyles({ 'display': 'none' });
-			}
 
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode) {
-				if (this.migrationStateModel.savedInfo.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
-					this._blobContainerButton.checked = true;
+				if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode)) {
+					if (this.migrationStateModel.savedInfo.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
+						this._blobContainerButton.checked = true;
+					} else {
+						this._blobContainerButton.checked = false;
+						this._blobTableContainer.display = 'none';
+						await this._blobContainer.updateCssStyles({ 'display': 'none' });
+					}
 				} else {
 					this._blobContainerButton.checked = false;
 					this._blobTableContainer.display = 'none';
 					await this._blobContainer.updateCssStyles({ 'display': 'none' });
 				}
-			} else {
-				this._blobContainerButton.checked = false;
-				this._blobTableContainer.display = 'none';
-				await this._blobContainer.updateCssStyles({ 'display': 'none' });
-			}
 
-			await this._targetDatabaseContainer.updateCssStyles({ 'display': 'none' });
-			await this._networkShareStorageAccountDetails.updateCssStyles({ 'display': 'none' });
-			const connectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
-			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>((await this.migrationStateModel.getSourceConnectionProfile()).providerId, azdata.DataProviderType.QueryProvider);
-			const query = 'select SUSER_NAME()';
-			const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId)), query);
-			const username = results.rows[0][0].displayValue;
-			this.migrationStateModel._authenticationType = connectionProfile.authenticationType === 'SqlLogin' ? MigrationSourceAuthenticationType.Sql : connectionProfile.authenticationType === 'Integrated' ? MigrationSourceAuthenticationType.Integrated : undefined!;
-			this._sourceHelpText.value = constants.SQL_SOURCE_DETAILS(this.migrationStateModel._authenticationType, connectionProfile.serverName);
-			this._sqlSourceUsernameInput.value = username;
-			this._sqlSourcePassword.value = (await azdata.connection.getCredentials(this.migrationStateModel.sourceConnectionId)).password;
+				await this._targetDatabaseContainer.updateCssStyles({ 'display': 'none' });
+				await this._networkShareStorageAccountDetails.updateCssStyles({ 'display': 'none' });
+				const connectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
+				const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>((await this.migrationStateModel.getSourceConnectionProfile()).providerId, azdata.DataProviderType.QueryProvider);
+				const query = 'select SUSER_NAME()';
+				const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId)), query);
+				const username = results.rows[0][0].displayValue;
+				this.migrationStateModel._authenticationType = connectionProfile.authenticationType === 'SqlLogin' ? MigrationSourceAuthenticationType.Sql : connectionProfile.authenticationType === 'Integrated' ? MigrationSourceAuthenticationType.Integrated : undefined!;
+				this._sourceHelpText.value = constants.SQL_SOURCE_DETAILS(this.migrationStateModel._authenticationType, connectionProfile.serverName);
+				this._sqlSourceUsernameInput.value = username;
+				this._sqlSourcePassword.value = (await azdata.connection.getCredentials(this.migrationStateModel.sourceConnectionId)).password;
 
-			this._networkShareTargetDatabaseNames = [];
-			this._blobContainerTargetDatabaseNames = [];
-			this._blobContainerResourceGroupDropdowns = [];
-			this._blobContainerStorageAccountDropdowns = [];
-			this._blobContainerDropdowns = [];
-			this._blobContainerLastBackupFileDropdowns = [];
+				this._networkShareTargetDatabaseNames = [];
+				this._blobContainerTargetDatabaseNames = [];
+				this._blobContainerResourceGroupDropdowns = [];
+				this._blobContainerStorageAccountDropdowns = [];
+				this._blobContainerDropdowns = [];
+				this._blobContainerLastBackupFileDropdowns = [];
 
-			if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI) {
-				this._existingDatabases = await this.migrationStateModel.getManagedDatabases();
-			}
-			this.migrationStateModel._targetDatabaseNames = [];
-			this.migrationStateModel._databaseBackup.blobs = [];
-			this.migrationStateModel._migrationDbs.forEach((db, index) => {
-				this.migrationStateModel._targetDatabaseNames.push('');
-				this.migrationStateModel._databaseBackup.blobs.push(<Blob>{});
-				const targetDatabaseInput = this._view.modelBuilder.inputBox().withProps({
-					required: true,
-					value: db,
-					width: WIZARD_TABLE_COLUMN_WIDTH
-				}).withValidation(c => {
-					if (this._networkShareTargetDatabaseNames.filter(t => t.value === c.value).length > 1) { //Making sure no databases have duplicate values.
-						c.validationErrorMessage = constants.DUPLICATE_NAME_ERROR;
-						return false;
-					}
-					if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI && this._existingDatabases.includes(c.value!)) { // Making sure if database with same name is not present on the target Azure SQL
-						c.validationErrorMessage = constants.DATABASE_ALREADY_EXISTS_MI(c.value!, this.migrationStateModel._targetServerInstance.name);
-						return false;
-					}
-					if (c.value!.length < 1 || c.value!.length > 128 || !/[^<>*%&:\\\/?]/.test(c.value!)) {
-						c.validationErrorMessage = constants.INVALID_TARGET_NAME_ERROR;
-						return false;
-					}
-					return true;
-				}).component();
-				this._disposables.push(targetDatabaseInput.onTextChanged(async (value) => {
-					this.migrationStateModel._targetDatabaseNames[index] = value.trim();
-					await this.validateFields();
-				}));
-				if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup) {
-					targetDatabaseInput.value = this.migrationStateModel.savedInfo.targetDatabaseNames[index];
-				} else {
-					targetDatabaseInput.value = this.migrationStateModel._targetDatabaseNames[index];
+				if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI) {
+					this._existingDatabases = await this.migrationStateModel.getManagedDatabases();
 				}
-				this._networkShareTargetDatabaseNames.push(targetDatabaseInput);
-
-				const blobTargetDatabaseInput = this._view.modelBuilder.inputBox().withProps({
-					required: true,
-					value: db,
-				}).withValidation(c => {
-					if (this._blobContainerTargetDatabaseNames.filter(t => t.value === c.value).length > 1) { //Making sure no databases have duplicate values.
-						c.validationErrorMessage = constants.DUPLICATE_NAME_ERROR;
-						return false;
-					}
-					if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI && this._existingDatabases.includes(c.value!)) { // Making sure if database with same name is not present on the target Azure SQL
-						c.validationErrorMessage = constants.DATABASE_ALREADY_EXISTS_MI(c.value!, this.migrationStateModel._targetServerInstance.name);
-						return false;
-					}
-					if (c.value!.length < 1 || c.value!.length > 128 || !/[^<>*%&:\\\/?]/.test(c.value!)) {
-						c.validationErrorMessage = constants.INVALID_TARGET_NAME_ERROR;
-						return false;
-					}
-					return true;
-				}).component();
-				this._disposables.push(blobTargetDatabaseInput.onTextChanged((value) => {
-					this.migrationStateModel._targetDatabaseNames[index] = value.trim();
-				}));
-				if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup) {
-					blobTargetDatabaseInput.value = this.migrationStateModel.savedInfo.targetDatabaseNames[index];
-				} else {
-					targetDatabaseInput.value = this.migrationStateModel._targetDatabaseNames[index];
-				}
-				this._blobContainerTargetDatabaseNames.push(blobTargetDatabaseInput);
-
-				const blobContainerResourceDropdown = this._view.modelBuilder.dropDown().withProps({
-					ariaLabel: constants.BLOB_CONTAINER_RESOURCE_GROUP,
-					editable: true,
-					fireOnTextChange: true,
-					required: true,
-				}).component();
-
-				const blobContainerStorageAccountDropdown = this._view.modelBuilder.dropDown().withProps({
-					ariaLabel: constants.BLOB_CONTAINER_STORAGE_ACCOUNT,
-					editable: true,
-					fireOnTextChange: true,
-					required: true,
-					enabled: false,
-				}).component();
-
-				const blobContainerDropdown = this._view.modelBuilder.dropDown().withProps({
-					ariaLabel: constants.BLOB_CONTAINER,
-					editable: true,
-					fireOnTextChange: true,
-					required: true,
-					enabled: false,
-				}).component();
-
-				const blobContainerLastBackupFileDropdown = this._view.modelBuilder.dropDown().withProps({
-					ariaLabel: constants.BLOB_CONTAINER_LAST_BACKUP_FILE,
-					editable: true,
-					fireOnTextChange: true,
-					required: true,
-					enabled: false,
-				}).component();
-
-				this._disposables.push(blobContainerResourceDropdown.onValueChanged(async (value) => {
-					const selectedIndex = findDropDownItemIndex(blobContainerResourceDropdown, value);
-					if (selectedIndex > -1 && !blobResourceGroupErrorStrings.includes(value)) {
-						this.migrationStateModel._databaseBackup.blobs[index].resourceGroup = this.migrationStateModel.getAzureResourceGroup(selectedIndex);
-						await this.loadBlobStorageDropdown(index);
-						await blobContainerStorageAccountDropdown.updateProperties({ enabled: true });
-					} else {
-						await this.disableBlobTableDropdowns(index, constants.RESOURCE_GROUP);
-					}
-				}));
-				this._blobContainerResourceGroupDropdowns.push(blobContainerResourceDropdown);
-
-				this._disposables.push(blobContainerStorageAccountDropdown.onValueChanged(async (value) => {
-					const selectedIndex = findDropDownItemIndex(blobContainerStorageAccountDropdown, value);
-					if (selectedIndex > -1 && !blobStorageAccountErrorStrings.includes(value)) {
-						this.migrationStateModel._databaseBackup.blobs[index].storageAccount = this.migrationStateModel.getStorageAccount(selectedIndex);
-						await this.loadBlobContainerDropdown(index);
-						await blobContainerDropdown.updateProperties({ enabled: true });
-					} else {
-						await this.disableBlobTableDropdowns(index, constants.STORAGE_ACCOUNT);
-					}
-				}));
-				this._blobContainerStorageAccountDropdowns.push(blobContainerStorageAccountDropdown);
-
-				this._disposables.push(blobContainerDropdown.onValueChanged(async (value) => {
-					const selectedIndex = findDropDownItemIndex(blobContainerDropdown, value);
-					if (selectedIndex > -1 && !blobContainerErrorStrings.includes(value)) {
-						this.migrationStateModel._databaseBackup.blobs[index].blobContainer = this.migrationStateModel.getBlobContainer(selectedIndex);
-						if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
-							await this.loadBlobLastBackupFileDropdown(index);
-							await blobContainerLastBackupFileDropdown.updateProperties({ enabled: true });
+				this.migrationStateModel._targetDatabaseNames = [];
+				this.migrationStateModel._databaseBackup.blobs = [];
+				this.migrationStateModel._migrationDbs.forEach((db, index) => {
+					this.migrationStateModel._targetDatabaseNames.push('');
+					this.migrationStateModel._databaseBackup.blobs.push(<Blob>{});
+					const targetDatabaseInput = this._view.modelBuilder.inputBox().withProps({
+						required: true,
+						value: db,
+						width: WIZARD_TABLE_COLUMN_WIDTH
+					}).withValidation(c => {
+						if (this._networkShareTargetDatabaseNames.filter(t => t.value === c.value).length > 1) { //Making sure no databases have duplicate values.
+							c.validationErrorMessage = constants.DUPLICATE_NAME_ERROR;
+							return false;
 						}
+						if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI && this._existingDatabases.includes(c.value!)) { // Making sure if database with same name is not present on the target Azure SQL
+							c.validationErrorMessage = constants.DATABASE_ALREADY_EXISTS_MI(c.value!, this.migrationStateModel._targetServerInstance.name);
+							return false;
+						}
+						if (c.value!.length < 1 || c.value!.length > 128 || !/[^<>*%&:\\\/?]/.test(c.value!)) {
+							c.validationErrorMessage = constants.INVALID_TARGET_NAME_ERROR;
+							return false;
+						}
+						return true;
+					}).component();
+					this._disposables.push(targetDatabaseInput.onTextChanged(async (value) => {
+						this.migrationStateModel._targetDatabaseNames[index] = value.trim();
+						await this.validateFields();
+					}));
+					if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup)) {
+						targetDatabaseInput.value = this.migrationStateModel.savedInfo.targetDatabaseNames[index];
 					} else {
-						await this.disableBlobTableDropdowns(index, constants.BLOB_CONTAINER);
+						targetDatabaseInput.value = this.migrationStateModel._targetDatabaseNames[index];
 					}
-				}));
-				this._blobContainerDropdowns.push(blobContainerDropdown);
+					this._networkShareTargetDatabaseNames.push(targetDatabaseInput);
 
-				if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
-					this._disposables.push(blobContainerLastBackupFileDropdown.onValueChanged(value => {
-						const selectedIndex = findDropDownItemIndex(blobContainerLastBackupFileDropdown, value);
-						if (selectedIndex > -1 && !blobFileErrorStrings.includes(value)) {
-							this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = this.migrationStateModel.getBlobLastBackupFileName(selectedIndex);
+					const blobTargetDatabaseInput = this._view.modelBuilder.inputBox().withProps({
+						required: true,
+						value: db,
+					}).withValidation(c => {
+						if (this._blobContainerTargetDatabaseNames.filter(t => t.value === c.value).length > 1) { //Making sure no databases have duplicate values.
+							c.validationErrorMessage = constants.DUPLICATE_NAME_ERROR;
+							return false;
+						}
+						if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI && this._existingDatabases.includes(c.value!)) { // Making sure if database with same name is not present on the target Azure SQL
+							c.validationErrorMessage = constants.DATABASE_ALREADY_EXISTS_MI(c.value!, this.migrationStateModel._targetServerInstance.name);
+							return false;
+						}
+						if (c.value!.length < 1 || c.value!.length > 128 || !/[^<>*%&:\\\/?]/.test(c.value!)) {
+							c.validationErrorMessage = constants.INVALID_TARGET_NAME_ERROR;
+							return false;
+						}
+						return true;
+					}).component();
+					this._disposables.push(blobTargetDatabaseInput.onTextChanged((value) => {
+						this.migrationStateModel._targetDatabaseNames[index] = value.trim();
+					}));
+					if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup)) {
+						blobTargetDatabaseInput.value = this.migrationStateModel.savedInfo.targetDatabaseNames[index];
+					} else {
+						targetDatabaseInput.value = this.migrationStateModel._targetDatabaseNames[index];
+					}
+					this._blobContainerTargetDatabaseNames.push(blobTargetDatabaseInput);
+
+					const blobContainerResourceDropdown = this._view.modelBuilder.dropDown().withProps({
+						ariaLabel: constants.BLOB_CONTAINER_RESOURCE_GROUP,
+						editable: true,
+						fireOnTextChange: true,
+						required: true,
+					}).component();
+
+					const blobContainerStorageAccountDropdown = this._view.modelBuilder.dropDown().withProps({
+						ariaLabel: constants.BLOB_CONTAINER_STORAGE_ACCOUNT,
+						editable: true,
+						fireOnTextChange: true,
+						required: true,
+						enabled: false,
+					}).component();
+
+					const blobContainerDropdown = this._view.modelBuilder.dropDown().withProps({
+						ariaLabel: constants.BLOB_CONTAINER,
+						editable: true,
+						fireOnTextChange: true,
+						required: true,
+						enabled: false,
+					}).component();
+
+					const blobContainerLastBackupFileDropdown = this._view.modelBuilder.dropDown().withProps({
+						ariaLabel: constants.BLOB_CONTAINER_LAST_BACKUP_FILE,
+						editable: true,
+						fireOnTextChange: true,
+						required: true,
+						enabled: false,
+					}).component();
+
+					this._disposables.push(blobContainerResourceDropdown.onValueChanged(async (value) => {
+						const selectedIndex = findDropDownItemIndex(blobContainerResourceDropdown, value);
+						if (selectedIndex > -1 && !blobResourceGroupErrorStrings.includes(value)) {
+							this.migrationStateModel._databaseBackup.blobs[index].resourceGroup = this.migrationStateModel.getAzureResourceGroup(selectedIndex);
+							await this.loadBlobStorageDropdown(index);
+							await blobContainerStorageAccountDropdown.updateProperties({ enabled: true });
+						} else {
+							await this.disableBlobTableDropdowns(index, constants.RESOURCE_GROUP);
 						}
 					}));
-					this._blobContainerLastBackupFileDropdowns.push(blobContainerLastBackupFileDropdown);
+					this._blobContainerResourceGroupDropdowns.push(blobContainerResourceDropdown);
+
+					this._disposables.push(blobContainerStorageAccountDropdown.onValueChanged(async (value) => {
+						const selectedIndex = findDropDownItemIndex(blobContainerStorageAccountDropdown, value);
+						if (selectedIndex > -1 && !blobStorageAccountErrorStrings.includes(value)) {
+							this.migrationStateModel._databaseBackup.blobs[index].storageAccount = this.migrationStateModel.getStorageAccount(selectedIndex);
+							await this.loadBlobContainerDropdown(index);
+							await blobContainerDropdown.updateProperties({ enabled: true });
+						} else {
+							await this.disableBlobTableDropdowns(index, constants.STORAGE_ACCOUNT);
+						}
+					}));
+					this._blobContainerStorageAccountDropdowns.push(blobContainerStorageAccountDropdown);
+
+					this._disposables.push(blobContainerDropdown.onValueChanged(async (value) => {
+						const selectedIndex = findDropDownItemIndex(blobContainerDropdown, value);
+						if (selectedIndex > -1 && !blobContainerErrorStrings.includes(value)) {
+							this.migrationStateModel._databaseBackup.blobs[index].blobContainer = this.migrationStateModel.getBlobContainer(selectedIndex);
+							if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
+								await this.loadBlobLastBackupFileDropdown(index);
+								await blobContainerLastBackupFileDropdown.updateProperties({ enabled: true });
+							}
+						} else {
+							await this.disableBlobTableDropdowns(index, constants.BLOB_CONTAINER);
+						}
+					}));
+					this._blobContainerDropdowns.push(blobContainerDropdown);
+
+					if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
+						this._disposables.push(blobContainerLastBackupFileDropdown.onValueChanged(value => {
+							const selectedIndex = findDropDownItemIndex(blobContainerLastBackupFileDropdown, value);
+							if (selectedIndex > -1 && !blobFileErrorStrings.includes(value)) {
+								this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = this.migrationStateModel.getBlobLastBackupFileName(selectedIndex);
+							}
+						}));
+						this._blobContainerLastBackupFileDropdowns.push(blobContainerLastBackupFileDropdown);
+					}
+				});
+
+
+				let data: azdata.DeclarativeTableCellValue[][] = [];
+				this.migrationStateModel._migrationDbs.forEach((db, index) => {
+					const targetRow: azdata.DeclarativeTableCellValue[] = [];
+					targetRow.push({
+						value: db
+					});
+					targetRow.push({
+						value: this._networkShareTargetDatabaseNames[index]
+					});
+					data.push(targetRow);
+				});
+				this._networkShareTargetDatabaseNamesTable.dataValues = data;
+
+				data = [];
+				this.migrationStateModel._migrationDbs.forEach((db, index) => {
+					const targetRow: azdata.DeclarativeTableCellValue[] = [];
+					targetRow.push({
+						value: db
+					});
+					targetRow.push({
+						value: this._blobContainerTargetDatabaseNames[index]
+					});
+					targetRow.push({
+						value: this._blobContainerResourceGroupDropdowns[index]
+					});
+					targetRow.push({
+						value: this._blobContainerStorageAccountDropdowns[index]
+					});
+					targetRow.push({
+						value: this._blobContainerDropdowns[index]
+					});
+					targetRow.push({
+						value: this._blobContainerLastBackupFileDropdowns[index]
+					});
+					data.push(targetRow);
+				});
+				await this._blobContainerTargetDatabaseNamesTable.setDataValues(data);
+
+				await this.getSubscriptionValues();
+				this.migrationStateModel.refreshDatabaseBackupPage = false;
+			} catch (error) {
+				console.log(error);
+				let errorText = error?.message;
+				if (errorText === constants.INVALID_OWNER_URI) {
+					errorText = constants.DATABASE_BACKUP_PAGE_LOAD_ERROR;
 				}
-			});
-
-
-			let data: azdata.DeclarativeTableCellValue[][] = [];
-			this.migrationStateModel._migrationDbs.forEach((db, index) => {
-				const targetRow: azdata.DeclarativeTableCellValue[] = [];
-				targetRow.push({
-					value: db
-				});
-				targetRow.push({
-					value: this._networkShareTargetDatabaseNames[index]
-				});
-				data.push(targetRow);
-			});
-			this._networkShareTargetDatabaseNamesTable.dataValues = data;
-
-			data = [];
-			this.migrationStateModel._migrationDbs.forEach((db, index) => {
-				const targetRow: azdata.DeclarativeTableCellValue[] = [];
-				targetRow.push({
-					value: db
-				});
-				targetRow.push({
-					value: this._blobContainerTargetDatabaseNames[index]
-				});
-				targetRow.push({
-					value: this._blobContainerResourceGroupDropdowns[index]
-				});
-				targetRow.push({
-					value: this._blobContainerStorageAccountDropdowns[index]
-				});
-				targetRow.push({
-					value: this._blobContainerDropdowns[index]
-				});
-				targetRow.push({
-					value: this._blobContainerLastBackupFileDropdowns[index]
-				});
-				data.push(targetRow);
-			});
-			await this._blobContainerTargetDatabaseNamesTable.setDataValues(data);
-
-			await this.getSubscriptionValues();
-			this.migrationStateModel.refreshDatabaseBackupPage = false;
+				this.wizard.message = {
+					text: errorText,
+					description: error?.stack,
+					level: azdata.window.MessageLevel.Error
+				};
+			}
 		}
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
@@ -1131,7 +1142,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._blobTableContainer.display = (containerType === NetworkContainerType.BLOB_CONTAINER) ? 'inline' : 'none';
 
 		//Preserving the database Names between the 2 tables.
-		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup) {
+		if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup)) {
 			this.migrationStateModel._targetDatabaseNames = this.migrationStateModel.savedInfo.targetDatabaseNames;
 		}
 
@@ -1149,7 +1160,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		});
 		await this.validateFields();
 	}
-
 
 	private async validateFields(): Promise<void> {
 		await this._sqlSourceUsernameInput.validate();
@@ -1175,7 +1185,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	private async getSubscriptionValues(): Promise<void> {
-		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup) {
+		if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup)) {
 			this.migrationStateModel._targetSubscription = <azureResource.AzureResourceSubscription>this.migrationStateModel.savedInfo.targetSubscription;
 			this.migrationStateModel._targetServerInstance = <SqlManagedInstance | SqlVMServer>this.migrationStateModel.savedInfo.targetServerInstance;
 		}
@@ -1196,7 +1206,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._networkShareStorageAccountResourceGroupDropdown.loading = true;
 		try {
 			this._networkShareStorageAccountResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._databaseBackup.subscription);
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup && this._networkShareStorageAccountResourceGroupDropdown.values) {
+			if (this.hasSavedInfo(NetworkContainerType.NETWORK_SHARE, this._networkShareStorageAccountResourceGroupDropdown.values)) {
 				this._networkShareStorageAccountResourceGroupDropdown.values.forEach((resource, index) => {
 					if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.networkShare?.resourceGroup?.id?.toLowerCase()) {
 						selectDropDownIndex(this._networkShareStorageAccountResourceGroupDropdown, index);
@@ -1231,7 +1241,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			const resourceGroupValues = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._databaseBackup.subscription);
 			this._blobContainerResourceGroupDropdowns.forEach((dropDown, index) => {
 				dropDown.values = resourceGroupValues;
-				if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup && dropDown.values) {
+				if (this.hasSavedInfo(NetworkContainerType.BLOB_CONTAINER, dropDown.values)) {
 					dropDown.values.forEach((resource, resourceIndex) => {
 						if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.blobs[index]?.resourceGroup?.id?.toLowerCase()) {
 							selectDropDownIndex(dropDown, resourceIndex);
@@ -1251,8 +1261,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobStorageDropdown(index: number): Promise<void> {
 		this._blobContainerStorageAccountDropdowns[index].loading = true;
 		try {
-			this._blobContainerStorageAccountDropdowns[index].values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index].resourceGroup);
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup && this._blobContainerStorageAccountDropdowns[index].values && this.migrationStateModel.savedInfo.blobs[index].storageAccount) {
+			this._blobContainerStorageAccountDropdowns[index].values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.resourceGroup);
+			if (this.hasSavedInfo(NetworkContainerType.BLOB_CONTAINER, this._blobContainerStorageAccountDropdowns[index].values && this.migrationStateModel.savedInfo.blobs[index]?.storageAccount)) {
 				this._blobContainerStorageAccountDropdowns[index].values!.forEach((resource, resourceIndex) => {
 					if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.blobs[index]?.storageAccount?.id?.toLowerCase()) {
 						selectDropDownIndex(this._blobContainerStorageAccountDropdowns[index], resourceIndex);
@@ -1271,9 +1281,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobContainerDropdown(index: number): Promise<void> {
 		this._blobContainerDropdowns[index].loading = true;
 		try {
-			const blobContainerValues = await this.migrationStateModel.getBlobContainerValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index].storageAccount);
+			const blobContainerValues = await this.migrationStateModel.getBlobContainerValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount);
 			this._blobContainerDropdowns[index].values = blobContainerValues;
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup && this._blobContainerDropdowns[index].values && this.migrationStateModel.savedInfo.blobs[index].blobContainer) {
+			if (this.hasSavedInfo(NetworkContainerType.BLOB_CONTAINER, this._blobContainerDropdowns[index].values && this.migrationStateModel.savedInfo.blobs[index]?.blobContainer)) {
 				this._blobContainerDropdowns[index].values!.forEach((resource, resourceIndex) => {
 					if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.blobs[index]?.blobContainer?.id?.toLowerCase()) {
 						selectDropDownIndex(this._blobContainerDropdowns[index], resourceIndex);
@@ -1292,9 +1302,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobLastBackupFileDropdown(index: number): Promise<void> {
 		this._blobContainerLastBackupFileDropdowns[index].loading = true;
 		try {
-			const blobLastBackupFileValues = await this.migrationStateModel.getBlobLastBackupFileNameValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index].storageAccount, this.migrationStateModel._databaseBackup.blobs[index].blobContainer);
+			const blobLastBackupFileValues = await this.migrationStateModel.getBlobLastBackupFileNameValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount, this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
 			this._blobContainerLastBackupFileDropdowns[index].values = blobLastBackupFileValues;
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup && this._blobContainerLastBackupFileDropdowns[index].values && this.migrationStateModel.savedInfo.blobs[index].lastBackupFile) {
+			if (this.hasSavedInfo(NetworkContainerType.BLOB_CONTAINER, this._blobContainerLastBackupFileDropdowns[index].values && this.migrationStateModel.savedInfo.blobs[index]?.lastBackupFile)) {
 				this._blobContainerLastBackupFileDropdowns[index].values!.forEach((resource, resourceIndex) => {
 					if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.blobs[index]?.lastBackupFile!.toLowerCase()) {
 						selectDropDownIndex(this._blobContainerLastBackupFileDropdowns[index], resourceIndex);
@@ -1333,5 +1343,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._blobContainerStorageAccountDropdowns[rowIndex].values = createDropdownValuesWithPrereq(constants.SELECT_RESOURCE_GROUP_PROMPT);
 		selectDropDownIndex(this._blobContainerStorageAccountDropdowns[rowIndex], 0);
 		await this._blobContainerStorageAccountDropdowns[rowIndex].updateProperties(dropdownProps);
+	}
+
+	private hasSavedInfo(networkContainerType: NetworkContainerType, values: any): boolean {
+		if (this.migrationStateModel._databaseBackup.networkContainerType === networkContainerType &&
+			(this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup) && values)) {
+			return true;
+		}
+		return false;
 	}
 }

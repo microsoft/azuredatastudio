@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType, Page } from '../../models/stateMachine';
 import { SqlDatabaseTree } from './sqlDatabasesTree';
 import { SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
 import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
@@ -32,7 +32,7 @@ export class AssessmentResultsDialog {
 
 	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string, private _skuRecommendationPage: SKURecommendationPage, private _targetType: MigrationTargetType) {
 		this._model = model;
-		if (this._model.resumeAssessment && this._model.savedInfo.closedPage >= 2) {
+		if (this._model.resumeAssessment && this._model.savedInfo.closedPage >= Page.DatabaseBackup) {
 			this._model._databaseAssessment = <string[]>this._model.savedInfo.databaseAssessment;
 		}
 		this._tree = new SqlDatabaseTree(this._model, this._targetType);

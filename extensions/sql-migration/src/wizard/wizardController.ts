@@ -64,7 +64,7 @@ export class WizardController {
 		const wizardSetupPromises: Thenable<void>[] = [];
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(this._wizardObject.open());
-		if (this._model.resumeAssessment) {
+		if (this._model.retryMigration || this._model.resumeAssessment) {
 			if (this._model.savedInfo.closedPage >= Page.MigrationMode) {
 				this._model.refreshDatabaseBackupPage = true;
 			}

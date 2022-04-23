@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, Page, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { debounce } from '../api/utils';
@@ -275,17 +275,26 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}
 		).component();
 
-		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 1) {
+		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseSelector) {
 			await this._databaseSelectorTable.setDataValues(this.migrationStateModel.savedInfo.selectedDatabases);
 		} else {
+			if (this.migrationStateModel.retryMigration) {
+				const sourceDatabaseName = this.migrationStateModel.savedInfo.databaseList[0];
+				this._databaseTableValues.forEach((row, index) => {
+					const dbName = row[1].value as string;
+					if (dbName?.toLowerCase() === sourceDatabaseName?.toLowerCase()) {
+						row[0].value = true;
+					} else {
+						row[0].enabled = false;
+					}
+				});
+			}
 			await this._databaseSelectorTable.setDataValues(this._databaseTableValues);
+			await this.updateValuesOnSelection();
 		}
+
 		this._disposables.push(this._databaseSelectorTable.onDataChanged(async () => {
-			await this._dbCount.updateProperties({
-				'value': constants.DATABASES_SELECTED(this.selectedDbs().length, this._databaseTableValues.length)
-			});
-			this.migrationStateModel._databaseAssessment = this.selectedDbs();
-			this.migrationStateModel.databaseSelectorTableValues = <azdata.DeclarativeTableCellValue[][]>this._databaseSelectorTable.dataValues;
+			await this.updateValuesOnSelection();
 		}));
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
@@ -312,6 +321,14 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}
 		});
 		return result;
+	}
+
+	private async updateValuesOnSelection() {
+		await this._dbCount.updateProperties({
+			'value': constants.DATABASES_SELECTED(this.selectedDbs().length, this._databaseTableValues.length)
+		});
+		this.migrationStateModel._databaseAssessment = this.selectedDbs();
+		this.migrationStateModel.databaseSelectorTableValues = <azdata.DeclarativeTableCellValue[][]>this._databaseSelectorTable.dataValues;
 	}
 
 	// undo when bug #16445 is fixed
