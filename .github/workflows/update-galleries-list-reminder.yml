@@ -2,7 +2,7 @@ name: Update Extension Gallery Reminder
 on:
   pull_request:
     paths:
-      - 'extensionGallery.json'
+      - 'extensionsGallery.json'
     branches:
       - release/extensions
 
