@@ -73,6 +73,9 @@
     <trans-unit id="buildAction">
       <source xml:lang="en">Build</source>
     </trans-unit>
+    <trans-unit id="buildElements">
+      <source xml:lang="en">Build Elements</source>
+    </trans-unit>
     <trans-unit id="buildFailedCannotStartSchemaCompare">
       <source xml:lang="en">Schema compare could not start because build failed</source>
     </trans-unit>
@@ -153,6 +156,9 @@
     </trans-unit>
     <trans-unit id="dacpacNotOnSameDrive">
       <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
+    </trans-unit>
+    <trans-unit id="dacpacReferenceElement">
+      <source xml:lang="en">Dacpac reference</source>
     </trans-unit>
     <trans-unit id="dacpacText">
       <source xml:lang="en">Data-tier application (.dacpac)</source>
@@ -319,6 +325,9 @@
     <trans-unit id="errorFindingBuildFilesLocation">
       <source xml:lang="en">Error finding build files location: {0}</source>
     </trans-unit>
+    <trans-unit id="errorReadingProjectGuid">
+      <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
+    </trans-unit>
     <trans-unit id="exampleUsage">
       <source xml:lang="en">Example Usage</source>
     </trans-unit>
@@ -364,6 +373,9 @@
     <trans-unit id="folderAlreadyExistsChooseNewLocation">
       <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</source>
     </trans-unit>
+    <trans-unit id="folderElements">
+      <source xml:lang="en">Folder Elements</source>
+    </trans-unit>
     <trans-unit id="folderFriendlyName">
       <source xml:lang="en">Folder</source>
     </trans-unit>
@@ -384,6 +396,9 @@
     </trans-unit>
     <trans-unit id="hr">
       <source xml:lang="en">hr</source>
+    </trans-unit>
+    <trans-unit id="importElements">
+      <source xml:lang="en">Import Elements</source>
     </trans-unit>
     <trans-unit id="input">
       <source xml:lang="en">Input</source>
@@ -490,6 +505,9 @@
     <trans-unit id="nodeNotFound">
       <source xml:lang="en">Neither Autorest nor Node.js (npx) found in system path.  Please install Node.js for Autorest generation to work.</source>
     </trans-unit>
+    <trans-unit id="noneElements">
+      <source xml:lang="en">None Elements</source>
+    </trans-unit>
     <trans-unit id="notValidVariableName">
       <source xml:lang="en">The variable name '{0}' is not valid.</source>
     </trans-unit>
@@ -514,8 +532,14 @@
     <trans-unit id="portMustNotBeNumber">
       <source xml:lang="en">Port must a be number</source>
     </trans-unit>
+    <trans-unit id="postDeployElements">
+      <source xml:lang="en">PostDeploy Elements</source>
+    </trans-unit>
     <trans-unit id="postDeployScriptFriendlyName">
       <source xml:lang="en">Script.PostDeployment</source>
+    </trans-unit>
+    <trans-unit id="preDeployElements">
+      <source xml:lang="en">PreDeploy Elements</source>
     </trans-unit>
     <trans-unit id="preDeployScriptFriendlyName">
       <source xml:lang="en">Script.PreDeployment</source>
@@ -549,6 +573,12 @@
     </trans-unit>
     <trans-unit id="projectNamePlaceholderText">
       <source xml:lang="en">Enter project name</source>
+    </trans-unit>
+    <trans-unit id="projectReferenceElement">
+      <source xml:lang="en">Project reference</source>
+    </trans-unit>
+    <trans-unit id="projectReferenceNameElement">
+      <source xml:lang="en">Project reference name element</source>
     </trans-unit>
     <trans-unit id="publish">
       <source xml:lang="en">Publish</source>
