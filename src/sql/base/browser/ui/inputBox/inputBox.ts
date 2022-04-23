@@ -176,4 +176,13 @@ export class InputBox extends vsInputBox {
 		super.width = width;
 		this.element.style.width = 'fit-content';
 	}
+
+	public override get value() {
+		return super.value;
+	}
+
+	public override set value(newValue: string) {
+		this._lastLoseFocusValue = newValue;
+		super.value = newValue;
+	}
 }

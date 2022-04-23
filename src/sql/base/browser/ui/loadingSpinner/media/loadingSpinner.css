@@ -1,0 +1,21 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.loading-spinner-component-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+
+.loading-spinner-component-container .loading-spinner {
+	height: 20px;
+	padding: 5px;
+}
+
+.loading-spinner-component-container.full-size {
+	width: 100%;
+	height: 100%;
+}
