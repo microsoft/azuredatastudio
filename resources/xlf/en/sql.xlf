@@ -264,6 +264,12 @@
     <trans-unit id="watermark.newSqlFile">
       <source xml:lang="en">New SQL File</source>
     </trans-unit>
+    <trans-unit id="workspace.trust.description">
+      <source xml:lang="en">Controls whether or not workspace trust is enabled within Azure Data Studio.</source>
+    </trans-unit>
+    <trans-unit id="workspace.trust.emptyWindow.description">
+      <source xml:lang="en">Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/base/parts/editableDropdown/browser/dropdown" source-language="en" datatype="plaintext"><body>
     <trans-unit id="editableDropdown.errorValidate">
