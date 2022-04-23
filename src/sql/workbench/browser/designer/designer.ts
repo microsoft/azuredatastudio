@@ -8,14 +8,13 @@ import {
 	DesignerTableComponentRowData, DesignerTableProperties, InputBoxProperties, DropDownProperties, CheckBoxProperties, DesignerComponentTypeName,
 	DesignerEditProcessedEventArgs, DesignerStateChangedEventArgs, DesignerAction, DesignerUIState, DesignerTextEditor, ScriptProperty
 }
-	from 'sql/base/browser/ui/designer/interfaces';
+	from 'sql/workbench/browser/designer/interfaces';
 import { IPanelTab, ITabbedPanelStyles, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import * as DOM from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
 import { Orientation, Sizing, SplitView } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import 'vs/css!./media/designer';
 import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { IThemable } from 'vs/base/common/styler';
@@ -26,13 +25,16 @@ import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { localize } from 'vs/nls';
 import { TableCellEditorFactory } from 'sql/base/browser/ui/table/tableCellEditorFactory';
 import { CheckBoxColumn } from 'sql/base/browser/ui/table/plugins/checkboxColumn.plugin';
-import { DesignerTabPanelView } from 'sql/base/browser/ui/designer/designerTabPanelView';
-import { DesignerPropertiesPane, PropertiesPaneObjectContext } from 'sql/base/browser/ui/designer/designerPropertiesPane';
+import { DesignerTabPanelView } from 'sql/workbench/browser/designer/designerTabPanelView';
+import { DesignerPropertiesPane, PropertiesPaneObjectContext } from 'sql/workbench/browser/designer/designerPropertiesPane';
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { Codicon } from 'vs/base/common/codicons';
 import { Color } from 'vs/base/common/color';
 import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { DesignerScriptEditor } from 'sql/workbench/browser/designer/designerScriptEditor';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -75,8 +77,8 @@ export class Designer extends Disposable implements IThemable {
 	private _textEditor: DesignerTextEditor;
 
 	constructor(private readonly _container: HTMLElement,
-		textEditorCreator: (container: HTMLElement) => DesignerTextEditor,
-		private readonly _contextViewProvider: IContextViewProvider) {
+		@IInstantiationService private readonly _instantiationService: IInstantiationService,
+		@IContextViewService private readonly _contextViewProvider: IContextViewService) {
 		super();
 		this._tableCellEditorFactory = new TableCellEditorFactory(
 			{
@@ -125,7 +127,7 @@ export class Designer extends Disposable implements IThemable {
 			maximumSize: Number.POSITIVE_INFINITY,
 			onDidChange: Event.None
 		}, Sizing.Distribute);
-		this._textEditor = textEditorCreator(this._editorContainer);
+		this._textEditor = this._instantiationService.createInstance(DesignerScriptEditor, this._editorContainer);
 		this._verticalSplitView.addView({
 			element: this._editorContainer,
 			layout: size => {
@@ -376,7 +378,9 @@ export class Designer extends Disposable implements IThemable {
 	private updateComponentValues(): void {
 		const viewModel = this._input.viewModel;
 		const scriptProperty = viewModel[ScriptProperty] as InputBoxProperties;
-		this._textEditor.content = scriptProperty.value;
+		if (scriptProperty) {
+			this._textEditor.content = scriptProperty.value || '';
+		}
 		this._componentMap.forEach((value) => {
 			this.setComponentValue(value.defintion, value.component, viewModel);
 		});

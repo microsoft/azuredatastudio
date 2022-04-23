@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CreateComponentsFunc, DesignerUIComponent, SetComponentValueFunc } from 'sql/base/browser/ui/designer/designer';
-import { DesignerViewModel, DesignerDataPropertyInfo } from 'sql/base/browser/ui/designer/interfaces';
+import { CreateComponentsFunc, DesignerUIComponent, SetComponentValueFunc } from 'sql/workbench/browser/designer/designer';
+import { DesignerViewModel, DesignerDataPropertyInfo } from 'sql/workbench/browser/designer/interfaces';
 import * as DOM from 'vs/base/browser/dom';
 import { equals } from 'vs/base/common/objects';
 import { localize } from 'vs/nls';
