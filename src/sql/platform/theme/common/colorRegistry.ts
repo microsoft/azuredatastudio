@@ -7,6 +7,9 @@ import { contrastBorder, registerColor } from 'vs/platform/theme/common/colorReg
 import { Color, RGBA } from 'vs/base/common/color';
 import * as nls from 'vs/nls';
 
+// Common
+export const GroupHeaderBackground = registerColor('groupHeaderBackground', { dark: '#252526', light: '#F3F3F3', hc: '#000000' }, nls.localize('groupHeaderBackground', "Background color of the group header."));
+
 // -- Welcome Page Colors
 export const tileBoxShadowColor = new Color(new RGBA(0, 1, 4, 0.13));
 export const textShadow = new Color(new RGBA(0, 0, 0, 0.25));
