@@ -13,7 +13,7 @@ import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { NotebookModelStub, ClientSessionStub, KernelStub, FutureStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { EmptyFuture } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
-import { ICellModel, ICellModelOptions, IClientSession, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellEditModes, ICellModel, ICellModelOptions, IClientSession, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -1232,5 +1232,39 @@ suite('Cell Model', function (): void {
 		assert.deepStrictEqual(cellModel.attachments, attachments);
 		cellModel.addAttachment('image/png', imageFilebase64Value, 'test.png');
 		assert.deepStrictEqual(cellModel.attachments, attachments, 'addAttachment should not add duplicate images');
+	});
+
+	test('cell should fire onCurrentEditModeChanged on edit', async function () {
+
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '',
+			metadata: {}
+		};
+
+		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+
+		let editModeChangePromise = () => {
+			return new Promise((resolve, reject) => {
+				setTimeout(() => reject(), 2000);
+				cellModel.onCurrentEditModeChanged(editMode => {
+					resolve(editMode);
+				});
+			});
+		};
+
+		assert(!cellModel.isEditMode);
+
+		let editModePromise = editModeChangePromise();
+		cellModel.isEditMode = true;
+
+		let editMode = await editModePromise;
+		assert(editMode);
+		assert.strictEqual(editMode, CellEditModes.WYSIWYG, 'Default edit mode should be WYSIWYG.');
 	});
 });

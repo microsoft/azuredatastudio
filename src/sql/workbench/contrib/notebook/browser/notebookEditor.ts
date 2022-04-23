@@ -27,7 +27,7 @@ import { NotebookFindNextAction, NotebookFindPreviousAction } from 'sql/workbenc
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellEditModes, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { IDisposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IModelDecorationsChangeAccessor, IModelDeltaDecoration } from 'vs/editor/common/model';
@@ -380,8 +380,8 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 					this._onFindStateChange(changeEvent).catch(onUnexpectedError);
 				}
 			}));
-			this._register(cell.onCellMarkdownModeChanged(e => {
-				if (e) {
+			this._register(cell.onCurrentEditModeChanged(editMode => {
+				if (editMode !== CellEditModes.WYSIWYG) {
 					this._onFindStateChange(changeEvent).catch(onUnexpectedError);
 				}
 			}));

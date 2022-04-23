@@ -534,8 +534,6 @@ export interface ICellModel {
 	showPreview: boolean;
 	showMarkdown: boolean;
 	defaultTextEditMode: string;
-	readonly onCellPreviewModeChanged: Event<boolean>;
-	readonly onCellMarkdownModeChanged: Event<boolean>;
 	sendChangeToNotebook(change: NotebookChangeType): void;
 	cellSourceChanged: boolean;
 	readonly savedConnectionName: string | undefined;
