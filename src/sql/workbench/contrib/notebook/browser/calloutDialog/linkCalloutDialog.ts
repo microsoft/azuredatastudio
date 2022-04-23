@@ -158,7 +158,8 @@ export class LinkCalloutDialog extends Modal {
 	public insert(): void {
 		this.hide('ok');
 		let escapedLabel = escapeLabel(this._linkTextInputBox.value);
-		let escapedUrl = escapeUrl(unquoteText(this._linkUrlInputBox.value));
+		let unquotedUrl = unquoteText(this._linkUrlInputBox.value);
+		let escapedUrl = escapeUrl(unquotedUrl);
 
 		if (this._previouslySelectedRange) {
 			// Reset selection to previous state before callout was open
@@ -169,7 +170,7 @@ export class LinkCalloutDialog extends Modal {
 			this._selectionComplete.resolve({
 				insertEscapedMarkdown: `[${escapedLabel}](${escapedUrl})`,
 				insertUnescapedLinkLabel: this._linkTextInputBox.value,
-				insertUnescapedLinkUrl: this._linkUrlInputBox.value
+				insertUnescapedLinkUrl: unquotedUrl
 			});
 		}
 	}

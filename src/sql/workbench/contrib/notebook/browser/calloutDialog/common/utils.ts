@@ -45,7 +45,7 @@ export function unquoteText(quotedText: string): string {
 	let doubleQuotesRegex = /^[\"\'](.*)[\"\']$/;
 	let matches = doubleQuotesRegex.exec(quotedText);
 	if (matches && matches[1]) {
-		quotedText = matches[1];
+		return matches[1];
 	}
 	return quotedText;
 }
