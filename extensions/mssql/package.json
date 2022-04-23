@@ -762,6 +762,9 @@
       "supportedExecutionPlanFileExtensions": [
         "sqlplan"
       ],
+      "connectionStringOptions": {
+        "isEnabled": true
+      },
       "iconPath": [
         {
           "id": "mssql:cloud",

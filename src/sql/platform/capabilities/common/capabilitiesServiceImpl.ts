@@ -40,6 +40,10 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		}
 		// By default isQueryProvider is true.
 		provider.connection.isQueryProvider = provider.connection.isQueryProvider !== false;
+		provider.connection.connectionStringOptions = {
+			isEnabled: !!(provider.connection.connectionStringOptions?.isEnabled),
+			isDefaultOption: !!(provider.connection.connectionStringOptions?.isDefaultOption)
+		};
 		this._onCapabilitiesRegistered.fire({ id, features: provider });
 	}
 

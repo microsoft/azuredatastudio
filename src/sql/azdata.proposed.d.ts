@@ -421,6 +421,20 @@ declare module 'azdata' {
 		defaultValueOsOverrides?: DefaultValueOsOverride[];
 	}
 
+	/**
+	 * The connection string options for connection provider.
+	 */
+	export interface ConnectionStringOptions {
+		/**
+		 * Whether the connection provider supports connection string. The default value is false.
+		 */
+		isEnabled?: boolean;
+		/**
+		 * Whether the connection provider uses connection string as the default option to connect. The default value is false.
+		 */
+		isDefaultOption?: boolean;
+	}
+
 	export interface TaskInfo {
 		targetLocation?: string;
 	}

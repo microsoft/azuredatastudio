@@ -47,6 +47,7 @@ export enum AuthenticationType {
 export class ConnectionWidget extends lifecycle.Disposable {
 	private _previousGroupOption: string;
 	private _serverGroupOptions: IConnectionProfileGroup[];
+	private _connectionStringInputBox: InputBox;
 	private _serverNameInputBox: InputBox;
 	private _userNameInputBox: InputBox;
 	private _passwordInputBox: InputBox;
@@ -66,6 +67,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private _loadingDatabaseName: string = localize('loadingDatabaseOption', "Loading...");
 	private _serverGroupDisplayString: string = localize('serverGroup', "Server group");
 	private _token: string;
+	private _connectionStringOptions: azdata.ConnectionStringOptions;
 	protected _container: HTMLElement;
 	protected _serverGroupSelectBox: SelectBox;
 	protected _authTypeSelectBox: SelectBox;
@@ -75,6 +77,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _connectionNameInputBox: InputBox;
 	protected _databaseNameInputBox: Dropdown;
 	protected _advancedButton: Button;
+	protected _useConnectionStringCheckBox: Checkbox;
 	private static readonly _authTypes: AuthenticationType[] =
 		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.dSTSAuth, AuthenticationType.None];
 	private static readonly _osByName = {
@@ -131,6 +134,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeDefaultDisplay, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
 		}
 		this._providerName = providerName;
+		this._connectionStringOptions = this._connectionManagementService.getProviderProperties(this._providerName).connectionStringOptions;
 	}
 
 	protected getAuthTypeDefault(option: azdata.ConnectionOption, os: OperatingSystem): string {
@@ -190,6 +194,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	protected fillInConnectionForm(authTypeChanged: boolean = false): void {
+		this.addConnectionStringInput();
 		// Server Name
 		this.addServerNameOption();
 
@@ -212,9 +217,22 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this.addAdvancedOptions();
 	}
 
+	private addConnectionStringInput(): void {
+		const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
+		if (this._connectionStringOptions.isEnabled) {
+			let connectionStringContainer = DialogHelper.appendRow(this._tableContainer, ConnectionStringText, 'connection-label', 'connection-input', 'connection-string-row', true);
+			this._connectionStringInputBox = new InputBox(connectionStringContainer, this._contextViewService, {
+				ariaLabel: ConnectionStringText,
+				flexibleHeight: true,
+				flexibleMaxHeight: 100,
+				required: true
+			});
+		}
+	}
+
 	protected addAuthenticationTypeOption(authTypeChanged: boolean = false): void {
 		if (this._optionsMaps[ConnectionOptionSpecialType.authType]) {
-			let authType = DialogHelper.appendRow(this._tableContainer, this._optionsMaps[ConnectionOptionSpecialType.authType].displayName, 'connection-label', 'connection-input');
+			let authType = DialogHelper.appendRow(this._tableContainer, this._optionsMaps[ConnectionOptionSpecialType.authType].displayName, 'connection-label', 'connection-input', 'auth-type-row');
 			DialogHelper.appendInputSelectBox(authType, this._authTypeSelectBox);
 		}
 	}
@@ -222,7 +240,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected addServerNameOption(): void {
 		// Server name
 		let serverNameOption = this._optionsMaps[ConnectionOptionSpecialType.serverName];
-		let serverName = DialogHelper.appendRow(this._tableContainer, serverNameOption.displayName, 'connection-label', 'connection-input', undefined, true);
+		let serverName = DialogHelper.appendRow(this._tableContainer, serverNameOption.displayName, 'connection-label', 'connection-input', 'server-name-row', true);
 		this._serverNameInputBox = new InputBox(serverName, this._contextViewService, {
 			validationOptions: {
 				validation: (value: string) => {
@@ -281,7 +299,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		// Database
 		let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
 		if (databaseOption) {
-			let databaseName = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
+			let databaseName = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input', 'database-row');
 			this._databaseNameInputBox = new Dropdown(databaseName, this._contextViewService, {
 				values: [this._defaultDatabaseName, this._loadingDatabaseName],
 				strictSelection: false,
@@ -309,8 +327,36 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	protected addAdvancedOptions(): void {
-		let AdvancedLabel = localize('advanced', "Advanced...");
-		this._advancedButton = this.createAdvancedButton(this._tableContainer, AdvancedLabel);
+		const useConnectionStringLabel = localize('connectionWidget.useConnectionString', "Use connection string");
+		const rowContainer = DOM.append(this._tableContainer, DOM.$('tr.advanced-options-row'));
+		const connectionStringOptionContainer = DOM.append(rowContainer, DOM.$('td'));
+		connectionStringOptionContainer.setAttribute('align', 'left');
+		if (this._connectionStringOptions.isEnabled) {
+			this._useConnectionStringCheckBox = new Checkbox(connectionStringOptionContainer, { label: useConnectionStringLabel, checked: this._connectionStringOptions.isDefaultOption, ariaLabel: useConnectionStringLabel });
+			this.handleConnectionStringOptionChange();
+			this._useConnectionStringCheckBox.onChange(() => {
+				this.handleConnectionStringOptionChange();
+			});
+		}
+		const buttonContainer = DOM.append(rowContainer, DOM.$('td'));
+		buttonContainer.setAttribute('align', 'right');
+		const divContainer = DOM.append(buttonContainer, DOM.$('div.advanced-button'));
+		this._advancedButton = new Button(divContainer, { secondary: true });
+		this._advancedButton.label = localize('advanced', "Advanced...");
+		this._advancedButton.onDidClick(() => {
+			//open advanced page
+			this._callbacks.onAdvancedProperties();
+		});
+	}
+
+	private handleConnectionStringOptionChange(): void {
+		const connectionStringClass = 'use-connection-string';
+		if (this._useConnectionStringCheckBox.checked) {
+			this._tableContainer.classList.add(connectionStringClass);
+			this._connectionStringInputBox.layout();
+		} else {
+			this._tableContainer.classList.remove(connectionStringClass);
+		}
 	}
 
 	private validateUsername(value: string, isOptionRequired: boolean): boolean {
@@ -321,21 +367,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			}
 		}
 		return false;
-	}
-
-	protected createAdvancedButton(container: HTMLElement, title: string): Button {
-		let rowContainer = DOM.append(container, DOM.$('tr'));
-		DOM.append(rowContainer, DOM.$('td'));
-		let cellContainer = DOM.append(rowContainer, DOM.$('td'));
-		cellContainer.setAttribute('align', 'right');
-		let divContainer = DOM.append(cellContainer, DOM.$('div.advanced-button'));
-		let button = new Button(divContainer, { secondary: true });
-		button.label = title;
-		button.onDidClick(() => {
-			//open advanced page
-			this._callbacks.onAdvancedProperties();
-		});
-		return button;
 	}
 
 	private appendCheckbox(container: HTMLElement, label: string, cellContainerClass: string, rowContainerClass: string, isChecked: boolean): Checkbox {
@@ -387,6 +418,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					this._databaseNameInputBox.value = s;
 				}
 			}));
+			if (this._connectionStringInputBox) {
+				this._register(styler.attachInputBoxStyler(this._connectionStringInputBox, this._themeService));
+			}
+			if (this._useConnectionStringCheckBox) {
+				this._register(styler.attachCheckboxStyler(this._useConnectionStringCheckBox, this._themeService));
+			}
 		}
 
 		if (this._authTypeSelectBox) {

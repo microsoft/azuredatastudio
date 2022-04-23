@@ -43,10 +43,9 @@ const ConnectionProviderContrib: IJSONSchema = {
 				},
 				isDefaultOption: {
 					type: 'boolean',
-					description: localize('schema.useConnectionStringAsDefaultOption', "Whether connection string should be the default option for the provider. The default value is false.")
+					description: localize('schema.useConnectionStringAsDefaultOption', "Whether connection string should be the default option to connect. The default value is false.")
 				}
 			},
-
 		},
 		iconPath: {
 			description: localize('schema.iconPath', "Icon path for the server type"),
