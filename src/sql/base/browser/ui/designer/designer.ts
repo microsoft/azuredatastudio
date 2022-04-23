@@ -3,7 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DesignerComponentInput, DesignerEditType, DesignerTab, DesignerEdit, DesignerEditIdentifier, DesignerViewModel, DesignerDataPropertyInfo, DesignerTableComponentRowData, DesignerTableProperties, InputBoxProperties, DropDownProperties, CheckBoxProperties, DesignerComponentTypeName, DesignerEditProcessedEventArgs, DesignerStateChangedEventArgs, DesignerAction, DesignerUIState, DesignerTextEditor, ScriptProperty } from 'sql/base/browser/ui/designer/interfaces';
+import {
+	DesignerComponentInput, DesignerEditType, DesignerTab, DesignerEdit, DesignerEditIdentifier, DesignerViewModel, DesignerDataPropertyInfo,
+	DesignerTableComponentRowData, DesignerTableProperties, InputBoxProperties, DropDownProperties, CheckBoxProperties, DesignerComponentTypeName,
+	DesignerEditProcessedEventArgs, DesignerStateChangedEventArgs, DesignerAction, DesignerUIState, DesignerTextEditor, ScriptProperty
+}
+	from 'sql/base/browser/ui/designer/interfaces';
 import { IPanelTab, ITabbedPanelStyles, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import * as DOM from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
@@ -120,10 +125,12 @@ export class Designer extends Disposable implements IThemable {
 			maximumSize: Number.POSITIVE_INFINITY,
 			onDidChange: Event.None
 		}, Sizing.Distribute);
-
+		this._textEditor = textEditorCreator(this._editorContainer);
 		this._verticalSplitView.addView({
 			element: this._editorContainer,
-			layout: size => { },
+			layout: size => {
+				this._textEditor.layout(new DOM.Dimension(this._editorContainer.clientWidth, size));
+			},
 			minimumSize: 100,
 			maximumSize: Number.POSITIVE_INFINITY,
 			onDidChange: Event.None
@@ -152,7 +159,6 @@ export class Designer extends Disposable implements IThemable {
 		}, (definition, component, viewModel) => {
 			this.setComponentValue(definition, component, viewModel);
 		});
-		this._textEditor = textEditorCreator(this._editorContainer);
 	}
 
 	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Button): void {
@@ -371,7 +377,6 @@ export class Designer extends Disposable implements IThemable {
 		const viewModel = this._input.viewModel;
 		const scriptProperty = viewModel[ScriptProperty] as InputBoxProperties;
 		this._textEditor.content = scriptProperty.value;
-		this._textEditor.readonly = scriptProperty.enabled === false;
 		this._componentMap.forEach((value) => {
 			this.setComponentValue(value.defintion, value.component, viewModel);
 		});
