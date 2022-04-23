@@ -35,6 +35,7 @@
 	"sqlDatabaseProjects.Settings": "Database Projects",
 	"sqlDatabaseProjects.netCoreInstallLocation": "Full path to .NET Core SDK on the machine.",
 	"sqlDatabaseProjects.netCoreDoNotAsk": "Whether to prompt the user to install .NET Core when not detected.",
+	"sqlDatabaseProjects.netCoreDowngradeDoNotShow": "Whether to prompt the user to set .NET SDK version when a newer unsupported version is detected.",
 	"sqlDatabaseProjects.nodejsDoNotAsk": "Whether to prompt the user to install Node.js when not detected.",
 	"sqlDatabaseProjects.autorestSqlVersion": "Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.",
 	"sqlDatabaseProjects.welcome": "No database projects currently open.\n[New Project](command:sqlDatabaseProjects.new)\n[Open Project](command:sqlDatabaseProjects.open)\n[Create Project From Database](command:sqlDatabaseProjects.importDatabase)",
