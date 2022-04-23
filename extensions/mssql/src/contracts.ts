@@ -1050,4 +1050,7 @@ export namespace SaveTableDesignerChangesRequest {
 	export const type = new RequestType<SaveTableDesignerChangesRequestParams, void, void, void>('tabledesigner/savechanges');
 }
 
+export namespace DisposeTableDesignerRequest {
+	export const type = new RequestType<azdata.designers.TableInfo, void, void, void>('tabledesigner/dispose');
+}
 // ------------------------------- < Table Designer > ------------------------------------

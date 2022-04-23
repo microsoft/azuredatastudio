@@ -1146,11 +1146,22 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 			}
 		};
 
+		const disposeTableDesigner = (tableInfo: azdata.designers.TableInfo): Thenable<void> => {
+			try {
+				return client.sendRequest(contracts.DisposeTableDesignerRequest.type, tableInfo);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.DisposeTableDesignerRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+
 		return azdata.dataprotocol.registerTableDesignerProvider({
 			providerId: client.providerId,
 			getTableDesignerInfo,
 			processTableEdit,
-			saveTable
+			saveTable,
+			disposeTableDesigner
 		});
 	}
 }

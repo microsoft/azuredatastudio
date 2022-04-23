@@ -521,6 +521,9 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			},
 			saveTable(tableInfo: azdata.designers.TableInfo, data: azdata.designers.DesignerViewModel): Thenable<void> {
 				return self._proxy.$saveTable(handle, tableInfo, data);
+			},
+			disposeTableDesigner(tableInfo: azdata.designers.TableInfo): Thenable<void> {
+				return self._proxy.$disposeTableDesigner(handle, tableInfo);
 			}
 		});
 

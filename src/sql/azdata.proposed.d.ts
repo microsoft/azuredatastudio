@@ -1028,6 +1028,12 @@ declare module 'azdata' {
 			 * @param viewModel the object contains the state of the table designer
 			 */
 			saveTable(table: TableInfo, viewModel: DesignerViewModel): Thenable<void>;
+
+			/**
+			 * Notify the provider that the table designer has been closed.
+			 * @param table the table information
+			 */
+			disposeTableDesigner(table: TableInfo): Thenable<void>;
 		}
 
 		/**
@@ -1055,9 +1061,9 @@ declare module 'azdata' {
 			 */
 			isNewTable: boolean;
 			/**
-			 * If this is not a new table, the id will be set to uniquely identify a table.
+			 * Unique identifier of the table. Will be used to decide whether a designer is already opened for the table.
 			 */
-			id?: string;
+			id: string;
 			/**
 			 * Extension can store additional information that the provider needs to uniquely identify a table.
 			 */
