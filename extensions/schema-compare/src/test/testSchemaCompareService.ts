@@ -24,6 +24,14 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 		throw new Error('Method not implemented.');
 	}
 
+	schemaComparePublishDatabaseChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+		throw new Error('Method not implemented.');
+	}
+
+	schemaComparePublishProjectChanges(operationId: string, targetProjectPath: string, targetFolderStructure: mssql.ExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaComparePublishProjectResult> {
+		throw new Error('Method not implemented.');
+	}
+
 	schemaCompareGetDefaultOptions(): Thenable<mssql.SchemaCompareOptionsResult> {
 		let result: mssql.SchemaCompareOptionsResult = {
 			defaultDeploymentOptions: undefined,
@@ -41,7 +49,6 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 	schemaCompareOpenScmp(filePath: string): Thenable<mssql.SchemaCompareOpenScmpResult> {
 		throw new Error('Method not implemented.');
 	}
-
 
 	schemaCompareSaveScmp(sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: mssql.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: mssql.SchemaCompareObjectId[], excludedTargetObjects: mssql.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
 		throw new Error('Method not implemented.');

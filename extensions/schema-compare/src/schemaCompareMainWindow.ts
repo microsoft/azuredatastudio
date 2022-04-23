@@ -104,7 +104,11 @@ export class SchemaCompareMainWindow {
 				ownerUri: ownerUri,
 				packageFilePath: '',
 				connectionDetails: undefined,
-				connectionName: profile.connectionName
+				connectionName: profile.connectionName,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: ''
 			};
 		} else if (sourceDacpac) {
 			this.sourceEndpointInfo = {
@@ -114,7 +118,11 @@ export class SchemaCompareMainWindow {
 				databaseName: '',
 				ownerUri: '',
 				packageFilePath: sourceDacpac,
-				connectionDetails: undefined
+				connectionDetails: undefined,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: ''
 			};
 		}
 
@@ -776,7 +784,7 @@ export class SchemaCompareMainWindow {
 				// disable apply and generate script buttons because the results are no longer valid after applying the changes
 				this.setButtonsForRecompare();
 
-				const service = await this.getService();
+				const service: mssql.ISchemaCompareService = await this.getService();
 				const result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
 				if (!result || !result.success) {
 					TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, getTelemetryErrorType(result.errorMessage))
