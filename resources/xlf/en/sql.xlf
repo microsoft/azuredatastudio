@@ -393,6 +393,9 @@
     <trans-unit id="gradientTwo">
       <source xml:lang="en">The bottom color for the banner image gradient</source>
     </trans-unit>
+    <trans-unit id="groupHeaderBackground">
+      <source xml:lang="en">Background color of the group header.</source>
+    </trans-unit>
     <trans-unit id="infoBox.errorBackground">
       <source xml:lang="en">InfoBox: The background color when the notification type is error.</source>
     </trans-unit>
