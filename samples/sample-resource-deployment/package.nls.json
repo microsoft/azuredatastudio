@@ -16,12 +16,23 @@
 	"agreement": "I accept {0} and {1}.",
 	"agreement-1-name": "Agreement 1",
 	"agreement-2-name": "Agreement 2",
+	"option-sample-type": "Sample Type",
+	"option-wizard": "Wizard",
+	"option-value-provider": "Value Provider",
 
-	"resource.type.wizard.display.name": "Test controller",
-	"resource.type.wizard.description": "Creates a Test controller",
+	"resource.type.sample.display.name": "Sample Deployment Types",
+	"resource.type.sample.description": "Provides samples of various deployment types and their options",
 
 	"validation.wizard.display.name": "Validation Wizard",
 	"validation.wizard.description": "A wizard to test out validations",
+
+	"sample.value-provider.title": "Value Provider Sample",
+	"sample.value-provider.single.title": "Single Trigger Value Provider Sample",
+	"sample.value-provider.single.field.label": "Field using single trigger field",
+	"sample.value-provider.trigger-name.label": "Trigger field (name)",
+	"sample.value-provider.trigger-place.label": "Trigger field (place)",
+	"sample.value-provider.multiple.title": "Multiple Trigger Value Provider Sample",
+	"sample.value-provider.multiple.field.label": "Field using multiple trigger fields",
 
 	"wizard.new.wizard.title": "Create Test controller",
 	"wizard.cluster.environment.title": "What is your target existing Kubernetes cluster environment?",

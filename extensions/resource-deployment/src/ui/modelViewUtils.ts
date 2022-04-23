@@ -477,7 +477,7 @@ async function hookUpValueProviders(context: WizardPageContext): Promise<void> {
 				field.valueProvider.triggerFields.forEach((triggerField) => {
 					const targetComponent = context.inputComponents[triggerField];
 					if (!targetComponent) {
-						console.error(`Could not find target component ${triggerField} when hooking up value providers for ${field.label}`);
+						console.error(`Could not find target component '${triggerField}' when hooking up value providers for '${field.label}'`);
 						return;
 					}
 					targetComponentLabelToComponent[triggerField] = targetComponent;
