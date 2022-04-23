@@ -19,8 +19,8 @@ export const Extensions = {
 
 export interface ProviderDescriptionRegistration {
 	provider: string;
-	fileExtensions: string | string[];
-	standardKernels: azdata.nb.IStandardKernel | azdata.nb.IStandardKernel[];
+	fileExtensions: string[];
+	standardKernels: azdata.nb.IStandardKernel[];
 }
 
 let providerDescriptionType: IJSONSchema = {
@@ -33,70 +33,39 @@ let providerDescriptionType: IJSONSchema = {
 		},
 		fileExtensions: {
 			description: localize('carbon.extension.contributes.notebook.fileExtensions', "What file extensions should be registered to this notebook provider"),
-			oneOf: [
-				{ type: 'string' },
-				{
-					type: 'array',
-					items: {
-						type: 'string'
-					}
-				}
-			]
+			type: 'array',
+			items: {
+				type: 'string'
+			}
 		},
 		standardKernels: {
 			description: localize('carbon.extension.contributes.notebook.standardKernels', "What kernels should be standard with this notebook provider"),
-			oneOf: [
-				{
-					type: 'object',
-					properties: {
-						name: {
-							type: 'string',
-						},
-						displayName: {
-							type: 'string',
-						},
-						connectionProviderIds: {
-							type: 'array',
-							items: {
-								type: 'string'
-							}
-						}
-					}
-				},
-				{
-					type: 'array',
-					items: {
-						type: 'object',
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					name: {
+						type: 'string'
+					},
+					displayName: {
+						type: 'string'
+					},
+					connectionProviderIds: {
+						type: 'array',
 						items: {
-							type: 'object',
-							properties: {
-								name: {
-									type: 'string',
-								},
-								connectionProviderIds: {
-									type: 'array',
-									items: {
-										type: 'string'
-									}
-								}
-							}
+							type: 'string'
 						}
 					}
 				}
-			]
+			}
 		}
 	}
 };
 
 let providerDescriptionContrib: IJSONSchema = {
 	description: localize('vscode.extension.contributes.notebook.providersDescriptions', "Contributes notebook provider descriptions."),
-	oneOf: [
-		providerDescriptionType,
-		{
-			type: 'array',
-			items: providerDescriptionType
-		}
-	]
+	type: 'array',
+	items: providerDescriptionType
 };
 let notebookLanguageMagicType: IJSONSchema = {
 	type: 'object',
@@ -116,28 +85,18 @@ let notebookLanguageMagicType: IJSONSchema = {
 		},
 		kernels: {
 			description: localize('carbon.extension.contributes.notebook.kernels', "Optional set of kernels this is valid for, e.g. python3, pyspark, sql"),
-			oneOf: [
-				{ type: 'string' },
-				{
-					type: 'array',
-					items: {
-						type: 'string'
-					}
-				}
-			]
+			type: 'array',
+			items: {
+				type: 'string'
+			}
 		}
 	}
 };
 
 let languageMagicContrib: IJSONSchema = {
 	description: localize('vscode.extension.contributes.notebook.languagemagics', "Contributes notebook language."),
-	oneOf: [
-		notebookLanguageMagicType,
-		{
-			type: 'array',
-			items: notebookLanguageMagicType
-		}
-	]
+	type: 'array',
+	items: notebookLanguageMagicType
 };
 
 export interface NotebookLanguageMagicRegistration {
@@ -189,28 +148,20 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 const notebookProviderRegistry = new NotebookProviderRegistry();
 platform.Registry.add(NotebookProviderRegistryId, notebookProviderRegistry);
 
-ExtensionsRegistry.registerExtensionPoint<ProviderDescriptionRegistration | ProviderDescriptionRegistration[]>({ extensionPoint: Extensions.NotebookProviderDescriptionContribution, jsonSchema: providerDescriptionContrib }).setHandler(extensions => {
+ExtensionsRegistry.registerExtensionPoint<ProviderDescriptionRegistration[]>({ extensionPoint: Extensions.NotebookProviderDescriptionContribution, jsonSchema: providerDescriptionContrib }).setHandler(extensions => {
 	for (let extension of extensions) {
 		const { value } = extension;
-		if (Array.isArray(value)) {
-			for (let command of value) {
-				notebookProviderRegistry.registerProviderDescription(command);
-			}
-		} else {
-			notebookProviderRegistry.registerProviderDescription(value);
+		for (let command of value) {
+			notebookProviderRegistry.registerProviderDescription(command);
 		}
 	}
 });
 
-ExtensionsRegistry.registerExtensionPoint<NotebookLanguageMagicRegistration | NotebookLanguageMagicRegistration[]>({ extensionPoint: Extensions.NotebookLanguageMagicContribution, jsonSchema: languageMagicContrib }).setHandler(extensions => {
+ExtensionsRegistry.registerExtensionPoint<NotebookLanguageMagicRegistration[]>({ extensionPoint: Extensions.NotebookLanguageMagicContribution, jsonSchema: languageMagicContrib }).setHandler(extensions => {
 	for (let extension of extensions) {
 		const { value } = extension;
-		if (Array.isArray(value)) {
-			for (let command of value) {
-				notebookProviderRegistry.registerNotebookLanguageMagic(command);
-			}
-		} else {
-			notebookProviderRegistry.registerNotebookLanguageMagic(value);
+		for (let command of value) {
+			notebookProviderRegistry.registerNotebookLanguageMagic(command);
 		}
 	}
 });

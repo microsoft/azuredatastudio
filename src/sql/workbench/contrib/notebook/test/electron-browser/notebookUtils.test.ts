@@ -8,10 +8,11 @@ import * as TypeMoq from 'typemoq';
 
 import { nb, ServerInfo } from 'azdata';
 import { getHostAndPortFromEndpoint, isStream, getProvidersForFileName, asyncForEach, clusterEndpointsProperty, getClusterEndpoints, RawEndpoint, IEndpoint, getStandardKernelsForProvider, IStandardKernelWithProvider, rewriteUrlUsingRegex } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
-import { INotebookService, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookService, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 import { RichTextEditStack } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
+import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 
 suite('notebookUtils', function (): void {
 	const mockNotebookService = TypeMoq.Mock.ofType<INotebookService>(NotebookServiceStub);
@@ -21,6 +22,11 @@ suite('notebookUtils', function (): void {
 		name: 'testName',
 		displayName: 'testDisplayName',
 		connectionProviderIds: ['testId1', 'testId2']
+	};
+	const sqlStandardKernel: nb.IStandardKernel = {
+		name: notebookConstants.SQL,
+		displayName: notebookConstants.SQL,
+		connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER]
 	};
 
 	function setupMockNotebookService() {
@@ -34,10 +40,17 @@ suite('notebookUtils', function (): void {
 			});
 
 		// getStandardKernelsForProvider
-		mockNotebookService.setup(n => n.getStandardKernelsForProvider(TypeMoq.It.isAnyString()))
-			.returns((provider) => {
+		let returnHandler = (provider) => {
+			if (provider === testProvider) {
 				return [testKernel];
-			});
+			} else if (provider === SQL_NOTEBOOK_PROVIDER) {
+				return [sqlStandardKernel];
+			} else {
+				return undefined;
+			}
+		};
+		mockNotebookService.setup(n => n.getStandardKernelsForProvider(TypeMoq.It.isAnyString())).returns(returnHandler);
+		mockNotebookService.setup(n => n.getStandardKernelsForProvider(TypeMoq.It.isAnyString())).returns(returnHandler);
 	}
 
 	test('isStream Test', async function (): Promise<void> {
@@ -86,6 +99,9 @@ suite('notebookUtils', function (): void {
 
 		result = getStandardKernelsForProvider('testProvider', undefined);
 		assert.deepStrictEqual(result, []);
+
+		result = getStandardKernelsForProvider('NotARealProvider', mockNotebookService.object);
+		assert.deepStrictEqual(result, [Object.assign({ notebookProvider: 'NotARealProvider' }, sqlStandardKernel)]);
 
 		result = getStandardKernelsForProvider('testProvider', mockNotebookService.object);
 		assert.deepStrictEqual(result, [<IStandardKernelWithProvider>{

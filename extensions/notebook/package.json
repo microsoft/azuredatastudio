@@ -686,7 +686,7 @@
         ]
       }
     ],
-    "notebook.providers": {
+    "notebook.providers": [{
       "provider": "jupyter",
       "fileExtensions": [
         "IPYNB"
@@ -727,7 +727,7 @@
           "connectionProviderIds": []
         }
       ]
-    }
+    }]
   },
   "dependencies": {
     "@jupyterlab/services": "^3.2.1",
