@@ -251,6 +251,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				{
 					componentType: 'table',
 					propertyName: designers.TableProperty.Columns,
+					showInPropertiesView: false,
 					componentProperties: <DesignerTableProperties>{
 						ariaLabel: localize('tableDesigner.columnsTabTitle', "Columns"),
 						columns: columnsTableProperties,
