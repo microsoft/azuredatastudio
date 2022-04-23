@@ -1098,7 +1098,9 @@ declare module 'azdata' {
 			Length = 'length',
 			Name = 'name',
 			Type = 'type',
-			IsPrimaryKey = 'isPrimaryKey'
+			IsPrimaryKey = 'isPrimaryKey',
+			Precision = 'precision',
+			Scale = 'scale'
 		}
 
 		/**
@@ -1117,6 +1119,10 @@ declare module 'azdata' {
 			 * Additional tabs.
 			 */
 			additionalTabs?: DesignerTab[];
+			/**
+			 * The properties to be displayed in the columns table. Default values are: Name, Type, Length, Precision, Scale, IsPrimaryKey, AllowNulls, DefaultValue.
+			 */
+			columnsTableProperties?: string[];
 		}
 
 		/**
@@ -1148,6 +1154,11 @@ declare module 'azdata' {
 			 * The property name
 			 */
 			propertyName: string;
+
+			/**
+			 * The description of the property
+			 */
+			description?: string;
 			/**
 			 * The component type
 			 */
