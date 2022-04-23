@@ -37,9 +37,8 @@
       <source xml:lang="en">Properties</source>
     </trans-unit>
     <trans-unit id="tableDesigner.propertiesPaneTitleWithContext">
-      <source xml:lang="en">Properties - {0} {1}</source>
-      <note>{0} is the place holder for object type
-{1} is the place holder for object name</note>
+      <source xml:lang="en">{0} Properties</source>
+      <note>{0} is the place holder for object type</note>
     </trans-unit>
 </body></file>
   <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner" source-language="en" datatype="plaintext"><body>
@@ -3479,6 +3478,9 @@ Error: {1}</source>
     <trans-unit id="queryEditor">
       <source xml:lang="en">Query Editor</source>
     </trans-unit>
+    <trans-unit id="tableDesigner">
+      <source xml:lang="en">Table Designer</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/profiler/browser/profiler.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="profiler.settings.Filters">
@@ -4189,6 +4191,14 @@ Error: {1}</source>
   <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="tableDesigner.saveTableChanges">
       <source xml:lang="en">Save Changes</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableDesigner.configTitle">
+      <source xml:lang="en">Table Designer</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.featureEnabledDescription">
+      <source xml:lang="en">Controls whether the table designer feature is enabled. Default value is false.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesignerTextEditor" source-language="en" datatype="plaintext"><body>
