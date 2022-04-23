@@ -34,7 +34,7 @@ export class Project implements ISqlProject {
 	private _preDeployScripts: FileProjectEntry[] = [];
 	private _postDeployScripts: FileProjectEntry[] = [];
 	private _noneDeployScripts: FileProjectEntry[] = [];
-	private _isMsbuildSdkStyleProject: boolean = false;
+	private _isSdkStyleProject: boolean = false; // https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview
 
 	public get dacpacOutputPath(): string {
 		return path.join(this.projectFolderPath, 'bin', 'Debug', `${this._projectFileName}.dacpac`);
@@ -88,8 +88,8 @@ export class Project implements ISqlProject {
 		return this._noneDeployScripts;
 	}
 
-	public get isMsbuildSdkStyleProject(): boolean {
-		return this._isMsbuildSdkStyleProject;
+	public get isSdkStyleProject(): boolean {
+		return this._isSdkStyleProject;
 	}
 
 	private projFileXmlDoc: Document | undefined = undefined;
@@ -119,8 +119,8 @@ export class Project implements ISqlProject {
 		const projFileText = await fs.readFile(this._projectFilePath);
 		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
 
-		// check if this is a new msbuild sdk style project
-		this._isMsbuildSdkStyleProject = this.CheckForMsbuildSdkStyleProject();
+		// check if this is an sdk style project https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview
+		this._isSdkStyleProject = this.CheckForSdkStyleProject();
 
 		// get files and folders
 		this._files = await this.readFilesInProject();
@@ -151,14 +151,14 @@ export class Project implements ISqlProject {
 
 	/**
 	 * Gets all the files specified by <Build Inlude="..."> and removes all the files specified by <Build Remove="...">
-	 * and all files included by the default glob of the folder of the sqlproj if it's an msbuild sdk style project
+	 * and all files included by the default glob of the folder of the sqlproj if it's an sdk style project
 	 */
 	private async readFilesInProject(): Promise<FileProjectEntry[]> {
 		const filesSet: Set<string> = new Set();
 		const entriesWithType: { relativePath: string, typeAttribute: string }[] = [];
 
-		// default glob include pattern for msbuild sdk style projects
-		if (this._isMsbuildSdkStyleProject) {
+		// default glob include pattern for sdk style projects
+		if (this._isSdkStyleProject) {
 			try {
 				const globFiles = await utils.getSqlFilesInFolder(this.projectFolderPath, true);
 				globFiles.forEach(f => {
@@ -183,8 +183,8 @@ export class Project implements ISqlProject {
 					if (relativePath) {
 						const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(relativePath));
 
-						// msbuild sdk style projects can handle other globbing patterns like <Build Include="folder1\*.sql" /> and <Build Include="Production*.sql" />
-						if (this._isMsbuildSdkStyleProject && !(await utils.exists(fullPath))) {
+						// sdk style projects can handle other globbing patterns like <Build Include="folder1\*.sql" /> and <Build Include="Production*.sql" />
+						if (this._isSdkStyleProject && !(await utils.exists(fullPath))) {
 							// add files from the glob pattern
 							const globFiles = await utils.globWithPattern(fullPath);
 							globFiles.forEach(gf => {
@@ -205,7 +205,7 @@ export class Project implements ISqlProject {
 
 				// <Build Remove....>
 				// after all the files have been included, remove the ones specified in the sqlproj to remove
-				if (this._isMsbuildSdkStyleProject) {
+				if (this._isSdkStyleProject) {
 					for (let b = 0; b < buildElements.length; b++) {
 						const relativePath = buildElements[b].getAttribute(constants.Remove)!;
 
@@ -238,8 +238,8 @@ export class Project implements ISqlProject {
 
 	private async readFolders(): Promise<FileProjectEntry[]> {
 		const folderEntries: FileProjectEntry[] = [];
-		// glob style getting folders for new msbuild sdk style projects
-		if (this._isMsbuildSdkStyleProject) {
+		// glob style getting folders for sdk style projects
+		if (this._isSdkStyleProject) {
 			const folders = await utils.getFoldersInFolder(this.projectFolderPath, true);
 			folders.forEach(f => {
 				folderEntries.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)), EntryType.Folder));
@@ -448,27 +448,27 @@ export class Project implements ISqlProject {
 	}
 
 	/**
-	 *  Checks for the 3 possible ways a project can reference the sql msbuild sdk
+	 *  Checks for the 3 possible ways a project can reference the sql project sdk
 	 *  https://docs.microsoft.com/en-us/visualstudio/msbuild/how-to-use-project-sdk?view=vs-2019
-	 *  @returns true if the project is an msbuild sdk style project, false if it isn't
+	 *  @returns true if the project is an sdk style project, false if it isn't
 	 */
-	public CheckForMsbuildSdkStyleProject(): boolean {
+	public CheckForSdkStyleProject(): boolean {
 		// type 1: Sdk node like <Sdk Name="Microsoft.Build.Sql" Version="1.0.0" />
 		const sdkNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Sdk);
 		if (sdkNodes.length > 0) {
-			return sdkNodes[0].getAttribute(constants.Name) === constants.sqlMsbuildSdk;
+			return sdkNodes[0].getAttribute(constants.Name) === constants.sqlProjectSdk;
 		}
 
 		// type 2: Project node has Sdk attribute like <Project Sdk="Microsoft.Build.Sql/1.0.0">
 		const sdkAttribute: string = this.projFileXmlDoc!.documentElement.getAttribute(constants.Sdk)!;
 		if (sdkAttribute) {
-			return sdkAttribute.includes(constants.sqlMsbuildSdk);
+			return sdkAttribute.includes(constants.sqlProjectSdk);
 		}
 
 		// type 3: Import node with Sdk attribute like <Import Project="Sdk.targets" Sdk="Microsoft.Build.Sql" Version="1.0.0" />
 		const importNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import);
 		for (let i = 0; i < importNodes.length; i++) {
-			if (importNodes[i].getAttribute(constants.Sdk) === constants.sqlMsbuildSdk) {
+			if (importNodes[i].getAttribute(constants.Sdk) === constants.sqlProjectSdk) {
 				return true;
 			}
 		}
@@ -478,7 +478,7 @@ export class Project implements ISqlProject {
 
 	public async updateProjectForRoundTrip(): Promise<void> {
 		if (this._importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences() // old style project check
-			|| this.isMsbuildSdkStyleProject) { // new style project check
+			|| this.isSdkStyleProject) { // new style project check
 			return;
 		}
 
@@ -1359,8 +1359,8 @@ export class Project implements ISqlProject {
 		// If folder doesn't exist, create it
 		await fs.mkdir(absoluteFolderPath, { recursive: true });
 
-		// don't need to add the folder to the sqlproj if this is an msbuild sdk style project because globbing will get the folders
-		if (this.isMsbuildSdkStyleProject) {
+		// don't need to add the folder to the sqlproj if this is an sdk style project because globbing will get the folders
+		if (this.isSdkStyleProject) {
 			return this.createFileProjectEntry(relativeFolderPath, EntryType.Folder);
 		}
 
