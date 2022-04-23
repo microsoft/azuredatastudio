@@ -27,7 +27,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { tar --force-local -xzf $(Pipeline.Workspace)/compilation.tar.gz }
+      exec { tar -xf $(Pipeline.Workspace)/compilation.tar.gz }
     displayName: Extract compilation output
 
   - powershell: |
