@@ -148,27 +148,50 @@ export class Project implements ISqlProject {
 			// find all folders and files to include that are specified in the project file
 			try {
 				const buildElements = itemGroup.getElementsByTagName(constants.Build);
+
+				// <Build Include....>
 				for (let b = 0; b < buildElements.length; b++) {
 					const relativePath = buildElements[b].getAttribute(constants.Include)!;
-					const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(relativePath));
 
-					// msbuild sdk style projects can handle other globbing patterns like <Build Include="folder1\*.sql" /> and <Build Include="Production*.sql" />
-					if (this._isMsbuildSdkStyleProject && !(await utils.exists(fullPath))) {
-						// add files from the glob pattern
-						const globFiles = await utils.globWithPattern(fullPath);
-						globFiles.forEach(gf => {
-							const newFileRelativePath = utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(gf)));
-							if (!this._files.find(f => f.relativePath === newFileRelativePath)) {
-								this._files.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(gf)), EntryType.File));
+					if (relativePath) {
+						const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(relativePath));
+
+						// msbuild sdk style projects can handle other globbing patterns like <Build Include="folder1\*.sql" /> and <Build Include="Production*.sql" />
+						if (this._isMsbuildSdkStyleProject && !(await utils.exists(fullPath))) {
+							// add files from the glob pattern
+							const globFiles = await utils.globWithPattern(fullPath);
+							globFiles.forEach(gf => {
+								const newFileRelativePath = utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(gf)));
+								if (!this._files.find(f => f.relativePath === newFileRelativePath)) {
+									this._files.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(gf)), EntryType.File));
+								}
+							});
+						} else {
+							// only add file if it wasn't already added
+							if (!this._files.find(f => f.relativePath === relativePath)) {
+								this._files.push(this.createFileProjectEntry(relativePath, EntryType.File, buildElements[b].getAttribute(constants.Type)!));
 							}
-						});
+						}
+					}
+				}
 
-						// TODO: add support for <Build Remove="file.sql">
+				// <Build Remove....>
+				// after all the files have been included, remove the ones specified in the sqlproj to remove
+				if (this._isMsbuildSdkStyleProject) {
+					for (let b = 0; b < buildElements.length; b++) {
+						const relativePath = buildElements[b].getAttribute(constants.Remove)!;
 
-					} else {
-						// only add file if it wasn't already added
-						if (!this._files.find(f => f.relativePath === relativePath)) {
-							this._files.push(this.createFileProjectEntry(relativePath, EntryType.File, buildElements[b].getAttribute(constants.Type)!));
+						if (relativePath) {
+							const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(relativePath));
+
+							const globRemoveFiles = await utils.globWithPattern(fullPath);
+							globRemoveFiles.forEach(gf => {
+								const removeFileRelativePath = utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(gf)));
+
+								if (this._files.find(f => f.relativePath === removeFileRelativePath)) {
+									this._files = this._files.filter(f => f.relativePath !== removeFileRelativePath);
+								}
+							});
 						}
 					}
 				}

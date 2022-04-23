@@ -914,6 +914,38 @@ describe('Project: Msbuild sdk style project content operations', function (): v
 		// make sure no duplicates from folder1\*.sql
 		should(project.files.filter(f => f.relativePath === 'folder1\\file1.sql').length).equal(1);
 	});
+
+	it('Should handle Build Remove in sqlproj', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		const mainProjectPath =  path.join(testFolderPath, 'project');
+		const otherFolderPath = path.join(testFolderPath, 'other');
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openNewStyleSqlProjectWithBuildRemoveBaseline, mainProjectPath);
+		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+
+		// create files outside of project folder that are included in the project file
+		await fs.mkdir(otherFolderPath);
+		await testUtils.createOtherDummyFiles(otherFolderPath);
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(6);
+
+		// make sure all the correct files from the globbing patterns were included and excluded
+		// <Build Include="..\other\folder1\file*.sql" />
+		// <Build Remove="..\other\folder1\file1.sql" />
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\file1.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\file2.sql').length).equal(1);
+
+		// <Build Remove="folder1\*.sql" />
+		should(project.files.filter(f => f.relativePath === 'folder1\\file1.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === 'folder1\\file2.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === 'folder1\\file3.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === 'folder1\\file4.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === 'folder1\\file5.sql').length).equal(0);
+
+		// <Build Remove="file1.sql" />
+		should(project.files.filter(f => f.relativePath === 'file1.sql').length).equal(0);
+	});
 });
 
 describe('Project: add SQLCMD Variables', function (): void {
