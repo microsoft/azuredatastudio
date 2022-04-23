@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
+import { URI } from 'vs/base/common/uri';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
-import { URI } from 'vs/workbench/workbench.web.api';
 import { TableDesignerComponentInput } from 'sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import * as azdata from 'azdata';
@@ -13,6 +13,7 @@ import { GroupIdentifier, IEditorInput, IRevertOptions, ISaveOptions } from 'vs/
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { Schemas } from 'sql/base/common/schemas';
 
 const NewTable: string = localize('tableDesigner.newTable', "New Table");
 
@@ -52,8 +53,11 @@ export class TableDesignerInput extends EditorInput {
 		return TableDesignerInput.ID;
 	}
 
-	get resource(): URI {
-		return undefined;
+	public get resource(): URI {
+		return URI.from({
+			scheme: Schemas.tableDesigner,
+			path: 'table-designer'
+		});
 	}
 
 	public getComponentInput(): TableDesignerComponentInput {
