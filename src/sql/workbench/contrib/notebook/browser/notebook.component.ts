@@ -165,35 +165,31 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
 		if (oldDecorationsRange) {
 			if (Array.isArray(oldDecorationsRange)) {
-				let decoratedCells: string[] = [];
-				oldDecorationsRange.forEach(oldDecorationRange => {
-					if (oldDecorationRange.cell.cellType === 'markdown' && decoratedCells.indexOf(oldDecorationRange.cell.cellGuid) === -1) {
-						let cell = this.cellEditors.filter(c => c.cellGuid() === oldDecorationRange.cell.cellGuid);
-						cell[cell.length - 1].deltaDecorations(undefined, [oldDecorationRange]);
-						decoratedCells.push(...oldDecorationRange.cell.cellGuid);
-					}
+				let cells = [...new Set(oldDecorationsRange.map(item => item.cell))].filter(c => c.cellType === 'markdown');
+				cells.forEach(cell => {
+					let cellOldDecorations = oldDecorationsRange.filter(r => r.cell === cell);
+					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid);
+					cellEditor.deltaDecorations(undefined, cellOldDecorations);
 				});
 			} else {
 				if (oldDecorationsRange.cell.cellType === 'markdown') {
-					let cell = this.cellEditors.filter(c => c.cellGuid() === oldDecorationsRange.cell.cellGuid);
-					cell[cell.length - 1].deltaDecorations(undefined, oldDecorationsRange);
+					let cell = this.cellEditors.find(c => c.cellGuid() === oldDecorationsRange.cell.cellGuid);
+					cell.deltaDecorations(undefined, oldDecorationsRange);
 				}
 			}
 		}
 		if (newDecorationsRange) {
 			if (Array.isArray(newDecorationsRange)) {
-				let decoratedCells: string[] = [];
-				newDecorationsRange.forEach(newDecorationRange => {
-					if (newDecorationRange.cell.cellType === 'markdown' && decoratedCells.indexOf(newDecorationRange.cell.cellGuid) === -1) {
-						let cell = this.cellEditors.filter(c => c.cellGuid() === newDecorationRange.cell.cellGuid);
-						cell[cell.length - 1].deltaDecorations([newDecorationRange], undefined);
-						decoratedCells.push(...newDecorationRange.cell.cellGuid);
-					}
+				let cells = [...new Set(newDecorationsRange.map(item => item.cell))].filter(c => c.cellType === 'markdown');
+				cells.forEach(cell => {
+					let cellNewDecorations = newDecorationsRange.filter(r => r.cell === cell);
+					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid);
+					cellEditor.deltaDecorations(cellNewDecorations, undefined);
 				});
 			} else {
 				if (newDecorationsRange.cell.cellType === 'markdown') {
-					let cell = this.cellEditors.filter(c => c.cellGuid() === newDecorationsRange.cell.cellGuid);
-					cell[cell.length - 1].deltaDecorations(newDecorationsRange, undefined);
+					let cell = this.cellEditors.find(c => c.cellGuid() === newDecorationsRange.cell.cellGuid);
+					cell.deltaDecorations(newDecorationsRange, undefined);
 				}
 			}
 		}
