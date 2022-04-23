@@ -8,8 +8,6 @@
 	"option-value-name-2": "Standard",
 	"dialog-title-1": "Start Evaluation of X Data Service",
 	"dialog-title-2": "Deploy X Data Service",
-	"deployment-notebook-1": "./notebooks/deploy-x-data-service-1.ipynb",
-	"deployment-notebook-2": "./notebooks/deploy-x-data-service-2.ipynb",
 	"text-field": "text field",
 	"password-field": "password field",
 	"kube.cluster.context": "Kube cluster context",
