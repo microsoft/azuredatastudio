@@ -493,31 +493,6 @@ declare module 'azdata' {
 	}
 
 	/**
-	 * Represents the tab of TabbedPanelComponent
-	 */
-	export interface Tab {
-		/**
-		 * Title of the tab
-		 */
-		title: string;
-
-		/**
-		 * Content component of the tab
-		 */
-		content: Component;
-
-		/**
-		 * Id of the tab
-		 */
-		id: string;
-
-		/**
-		 * Icon of the tab
-		 */
-		icon?: IconPath;
-	}
-
-	/**
 	 * Represents the tab group of TabbedPanelComponent
 	 */
 	export interface TabGroup {
