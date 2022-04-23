@@ -49,6 +49,8 @@ import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/
 import { WORKSPACE_TRUST_SETTING_TAG } from 'vs/workbench/contrib/preferences/common/preferences';
 import { IPreferencesService } from 'vs/workbench/services/preferences/common/preferences';
 import { ILabelService } from 'vs/platform/label/common/label';
+import * as loc from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}} For strings we need to change
+
 
 const BANNER_RESTRICTED_MODE = 'workbench.banner.restrictedMode';
 const STARTUP_PROMPT_SHOWN_KEY = 'workspace.trust.startupPrompt.shown';
@@ -693,7 +695,7 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 				type: 'boolean',
 				default: true,
 				included: !isWeb,
-				description: localize('workspace.trust.description', "Controls whether or not workspace trust is enabled within VS Code."),
+				description: loc.workspaceTrustDescription, // {{SQL CARBON EDIT}} VS Code -> ADS
 				tags: [WORKSPACE_TRUST_SETTING_TAG],
 				scope: ConfigurationScope.APPLICATION,
 			},
@@ -743,7 +745,7 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 				type: 'boolean',
 				default: true,
 				included: !isWeb,
-				markdownDescription: localize('workspace.trust.emptyWindow.description', "Controls whether or not the empty window is trusted by default within VS Code. When used with `#{0}#`, you can enable the full functionality of VS Code without prompting in an empty window.", WORKSPACE_TRUST_UNTRUSTED_FILES),
+				markdownDescription: loc.workspaceTrustEmptyWindowDescription(WORKSPACE_TRUST_UNTRUSTED_FILES), // {{SQL CARBON EDIT}} VS Code -> ADS
 				tags: [WORKSPACE_TRUST_SETTING_TAG],
 				scope: ConfigurationScope.APPLICATION
 			}
