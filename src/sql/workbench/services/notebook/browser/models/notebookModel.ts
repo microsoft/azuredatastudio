@@ -573,6 +573,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 				//Get selection value from current cell
 				let newCellContent = model.getValueInRange(selection);
+				let startPosition = selection.getStartPosition();
+				//If the cursor is at the beginning of the cell with no selection, return
+				if (newCellContent.length === 0 && startPosition.lineNumber === 1 && startPosition.column === 1) {
+					return undefined;
+				}
 
 				//Get content after selection
 				let tailRange = range.setStartPosition(selection.endLineNumber, selection.endColumn);
