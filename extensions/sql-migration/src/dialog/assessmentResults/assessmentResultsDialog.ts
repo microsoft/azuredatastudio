@@ -66,7 +66,7 @@ export class AssessmentResultsDialog {
 	public async openDialog(dialogName?: string) {
 		if (!this._isOpen) {
 			this._isOpen = true;
-			this.dialog = azdata.window.createModelViewDialog(this.title, this.title, 'wide');
+			this.dialog = azdata.window.createModelViewDialog(this.title, 'AssessmentResults', 'wide');
 
 			this.dialog.okButton.label = AssessmentResultsDialog.SelectButtonText;
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
