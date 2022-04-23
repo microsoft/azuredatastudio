@@ -1123,6 +1123,14 @@ declare module 'azdata' {
 			 * The properties to be displayed in the columns table. Default values are: Name, Type, Length, Precision, Scale, IsPrimaryKey, AllowNulls, DefaultValue.
 			 */
 			columnsTableProperties?: string[];
+			/**
+			 * Whether user can add columns. The default value is true.
+			 */
+			canAddColumns?: boolean;
+			/**
+			 * Whether user can remove columns. The default value is true.
+			 */
+			canRemoveColumns?: boolean;
 		}
 
 		/**
@@ -1201,6 +1209,16 @@ declare module 'azdata' {
 			 * The data to be displayed.
 			 */
 			data?: DesignerTableComponentDataItem[];
+
+			/**
+			 * Whether user can add new rows to the table. The default value is true.
+			 */
+			canAddRows?: boolean;
+
+			/**
+			 * Whether user can remove rows from the table. The default value is true.
+			 */
+			canRemoveRows?: boolean;
 		}
 
 		/**
