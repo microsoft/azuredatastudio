@@ -116,7 +116,7 @@ export const DATABASE_BACKUP_NETWORK_SHARE_HEADER_TEXT = localize('sql.migration
 export const DATABASE_BACKUP_NETWORK_SHARE_LOCATION_INFO = localize('sql.migration.network.share.location.info', "Network share path for your database backups. The migration process will automatically retrieve valid backup files from this network share.");
 export const DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_INFO = localize('sql.migration.network.share.windows.user.info', "Windows user account with read access to the network share location.");
 export const DATABASE_BACKUP_NC_NETWORK_SHARE_HELP_TEXT = localize('sql.migration.network.share.help.text', "Provide the network share location where the backups are stored, and the user credentials used to access the share.");
-export const DATABASE_BACKUP_NETWORK_SHARE_TABLE_HELP_TEXT = localize('sql.migration.network.share.storage.table.help', "Enter target database name for the selected source databases.");
+export const DATABASE_BACKUP_NETWORK_SHARE_TABLE_HELP_TEXT = localize('sql.migration.network.share.storage.table.help', "Enter target database name and network share path information for the selected source databases.");
 export const DATABASE_BACKUP_NETWORK_SHARE_LOCATION_LABEL = localize('sql.migration.network.share.location.label', "Network share location where the backups are stored");
 export const DATABASE_SERVICE_ACCOUNT_INFO_TEXT = localize('sql.migration.service.account.info.text', "Ensure that the service account running the source SQL Server instance has read privileges on the network share.");
 export const DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_LABEL = localize('sql.migration.network.share.windows.user.label', "Windows user account with read access to the network share location");
@@ -138,7 +138,7 @@ export const DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL = localize('sql.migrati
 export const DATABASE_BACKUP_MIGRATION_MODE_ONLINE_DESCRIPTION = localize('sql.migration.database.migration.mode.online.description', "Application downtime is limited to cutover at the end of migration.");
 export const DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL = localize('sql.migration.database.migration.mode.offline.label', "Offline migration");
 export const DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_DESCRIPTION = localize('sql.migration.database.migration.mode.offline.description', "Application downtime will start when the migration starts.");
-export const NETWORK_SHARE_PATH = localize('sql.migration.network.share.path', "\\\\Servername.domainname.com\\Backupfolder");
+export const NETWORK_SHARE_PATH_FORMAT = localize('sql.migration.network.share.path.format', "\\\\Servername.domainname.com\\Backupfolder");
 export const WINDOWS_USER_ACCOUNT = localize('sql.migration.windows.user.account', "Domain\\username");
 export const NO_SUBSCRIPTIONS_FOUND = localize('sql.migration.no.subscription.found', "No subscription found.");
 export const NO_LOCATION_FOUND = localize('sql.migration.no.location.found', "No location found.");
@@ -161,7 +161,7 @@ export function INVALID_BLOB_CONTAINER_ERROR(sourceDb: string): string {
 export function INVALID_BLOB_LAST_BACKUP_FILE_ERROR(sourceDb: string): string {
 	return localize('sql.migration.invalid.blob.lastBackupFile.error', "To continue, select a valid last backup file for source database '{0}'.", sourceDb);
 }
-export const INVALID_NETWORK_SHARE_LOCATION = localize('sql.migration.invalid.network.share.location', "Invalid network share location format. Example: {0}", NETWORK_SHARE_PATH);
+export const INVALID_NETWORK_SHARE_LOCATION = localize('sql.migration.invalid.network.share.location', "Invalid network share location format. Example: {0}", NETWORK_SHARE_PATH_FORMAT);
 export const INVALID_USER_ACCOUNT = localize('sql.migration.invalid.user.account', "Invalid user account format. Example: {0}", WINDOWS_USER_ACCOUNT);
 export const INVALID_TARGET_NAME_ERROR = localize('sql.migration.invalid.target.name.error', "Enter a valid name for the target database.");
 export const PROVIDE_UNIQUE_CONTAINERS = localize('sql.migration.provide.unique.containers', "Provide a unique container for each target database. Databases affected: ");
@@ -282,6 +282,7 @@ export const SUMMARY_DATABASE_COUNT_LABEL = localize('sql.migration.summary.data
 export const SUMMARY_AZURE_STORAGE_SUBSCRIPTION = localize('sql.migration.summary.azure.storage.subscription', "Azure storage subscription");
 export const SUMMARY_AZURE_STORAGE = localize('sql.migration.summary.azure.storage', "Azure storage");
 export const NETWORK_SHARE = localize('sql.migration.network.share', "Network share");
+export const NETWORK_SHARE_PATH = localize('sql.migration.network.share.path', "Network share path");
 export const BLOB_CONTAINER = localize('sql.migration.blob.container.title', "Blob container");
 export const BLOB_CONTAINER_LAST_BACKUP_FILE = localize('sql.migration.blob.container.last.backup.file.label', "Last backup file");
 export const BLOB_CONTAINER_RESOURCE_GROUP = localize('sql.migration.blob.container.label', "Blob container resource group");

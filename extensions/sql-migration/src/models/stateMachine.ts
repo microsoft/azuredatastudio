@@ -77,7 +77,7 @@ export enum WizardEntryPoint {
 export interface DatabaseBackupModel {
 	migrationMode: MigrationMode;
 	networkContainerType: NetworkContainerType;
-	networkShare: NetworkShare;
+	networkShares: NetworkShare[];
 	subscription: azureResource.AzureResourceSubscription;
 	blobs: Blob[];
 }
@@ -129,7 +129,7 @@ export interface SavedInfo {
 	migrationMode: MigrationMode | null;
 	databaseAssessment: string[] | null;
 	networkContainerType: NetworkContainerType | null;
-	networkShare: NetworkShare | null;
+	networkShares: NetworkShare[];
 	targetSubscription: azureResource.AzureResourceSubscription | null;
 	blobs: Blob[];
 	targetDatabaseNames: string[];
@@ -165,7 +165,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _fileShares!: azureResource.FileShare[];
 	public _blobContainers!: azureResource.BlobContainer[];
 	public _lastFileNames!: azureResource.Blob[];
-	public _refreshNetworkShareLocation!: azureResource.BlobContainer[];
 	public _targetDatabaseNames!: string[];
 
 	public _sqlMigrationServiceResourceGroup!: string;
@@ -211,7 +210,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	) {
 		this._currentState = State.INIT;
 		this._databaseBackup = {} as DatabaseBackupModel;
-		this._databaseBackup.networkShare = {} as NetworkShare;
+		this._databaseBackup.networkShares = [];
 		this._databaseBackup.blobs = [];
 		this.mementoString = 'sqlMigration.assessmentResults';
 	}
@@ -968,14 +967,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					case NetworkContainerType.NETWORK_SHARE:
 						requestBody.properties.backupConfiguration = {
 							targetLocation: {
-								storageAccountResourceId: this._databaseBackup.networkShare.storageAccount.id,
-								accountKey: this._databaseBackup.networkShare.storageKey,
+								storageAccountResourceId: this._databaseBackup.networkShares[i].storageAccount.id,
+								accountKey: this._databaseBackup.networkShares[i].storageKey,
 							},
 							sourceLocation: {
 								fileShare: {
-									path: this._databaseBackup.networkShare.networkShareLocation,
-									username: this._databaseBackup.networkShare.windowsUser,
-									password: this._databaseBackup.networkShare.password,
+									path: this._databaseBackup.networkShares[i].networkShareLocation,
+									username: this._databaseBackup.networkShares[i].windowsUser,
+									password: this._databaseBackup.networkShares[i].password,
 								}
 							}
 						};
@@ -1043,8 +1042,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					localize('sql.migration.starting.migration.error', "An error occurred while starting the migration: '{0}'", e.message));
 				console.log(e);
 			}
-
-			await vscode.commands.executeCommand('sqlmigration.refreshMigrationTiles');
 		}
 	}
 
@@ -1066,7 +1063,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			migrationMode: null,
 			databaseAssessment: null,
 			networkContainerType: null,
-			networkShare: null,
+			networkShares: [],
 			targetSubscription: null,
 			blobs: [],
 			targetDatabaseNames: [],
@@ -1080,7 +1077,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			case Page.DatabaseBackup:
 				saveInfo.networkContainerType = this._databaseBackup.networkContainerType;
-				saveInfo.networkShare = this._databaseBackup.networkShare;
+				saveInfo.networkShares = this._databaseBackup.networkShares;
 				saveInfo.targetSubscription = this._databaseBackup.subscription;
 				saveInfo.blobs = this._databaseBackup.blobs;
 				saveInfo.targetDatabaseNames = this._targetDatabaseNames;

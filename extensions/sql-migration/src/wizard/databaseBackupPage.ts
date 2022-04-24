@@ -33,7 +33,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _networkShareContainer!: azdata.FlexContainer;
 	private _windowsUserAccountText!: azdata.InputBoxComponent;
 	private _passwordText!: azdata.InputBoxComponent;
-	private _networkSharePath!: azdata.InputBoxComponent;
 	private _sourceHelpText!: azdata.TextComponent;
 	private _sqlSourceUsernameInput!: azdata.InputBoxComponent;
 	private _sqlSourcePassword!: azdata.InputBoxComponent;
@@ -60,6 +59,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _blobTableContainer!: azdata.FlexContainer;
 	private _networkShareTargetDatabaseNames: azdata.InputBoxComponent[] = [];
 	private _blobContainerTargetDatabaseNames: azdata.InputBoxComponent[] = [];
+	private _networkShareLocations: azdata.InputBoxComponent[] = [];
 
 	private _existingDatabases: string[] = [];
 	private _disposables: vscode.Disposable[] = [];
@@ -257,40 +257,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		const networkLocationInputBoxLabel = this._view.modelBuilder.text().withProps({
-			value: constants.DATABASE_BACKUP_NETWORK_SHARE_LOCATION_LABEL,
-			description: constants.DATABASE_BACKUP_NETWORK_SHARE_LOCATION_INFO,
-			width: WIZARD_INPUT_COMPONENT_WIDTH,
-			requiredIndicator: true,
-			CSSStyles: {
-				...styles.LABEL_CSS
-			}
-		}).component();
-		this._networkSharePath = this._view.modelBuilder.inputBox().withProps({
-			placeHolder: constants.NETWORK_SHARE_PATH,
-			validationErrorMessage: constants.INVALID_NETWORK_SHARE_LOCATION,
-			width: WIZARD_INPUT_COMPONENT_WIDTH,
-			CSSStyles: {
-				'margin-top': '-1em'
-			}
-		}).withValidation((component) => {
-			if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
-				if (component.value) {
-					if (!/^[\\\/]{2,}[^\\\/]+[\\\/]+[^\\\/]+/.test(component.value)) {
-						return false;
-					}
-				}
-			}
-			return true;
-		}).component();
-		if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup)) {
-			this._networkSharePath.value = this.migrationStateModel.savedInfo.networkShare?.networkShareLocation;
-		}
-		this._disposables.push(this._networkSharePath.onTextChanged(async (value) => {
-			await this.validateFields();
-			this.migrationStateModel._databaseBackup.networkShare.networkShareLocation = value;
-		}));
-
 		const networkShareInfoBox = this._view.modelBuilder.infoBox().withProps({
 			text: constants.DATABASE_SERVICE_ACCOUNT_INFO_TEXT,
 			style: 'information',
@@ -332,10 +298,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				return true;
 			}).component();
 		if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup)) {
-			this._windowsUserAccountText.value = this.migrationStateModel.savedInfo.networkShare?.windowsUser;
+			this._windowsUserAccountText.value = this.migrationStateModel.savedInfo.networkShares[0].windowsUser;
 		}
 		this._disposables.push(this._windowsUserAccountText.onTextChanged((value) => {
-			this.migrationStateModel._databaseBackup.networkShare.windowsUser = value;
+			for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
+				this.migrationStateModel._databaseBackup.networkShares[i].windowsUser = value;
+			}
 		}));
 
 		const passwordLabel = this._view.modelBuilder.text()
@@ -359,7 +327,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 			}).component();
 		this._disposables.push(this._passwordText.onTextChanged((value) => {
-			this.migrationStateModel._databaseBackup.networkShare.password = value;
+			for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
+				this.migrationStateModel._databaseBackup.networkShares[i].password = value;
+			}
 		}));
 
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems(
@@ -372,8 +342,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this._sqlSourcePassword,
 				networkShareHeading,
 				networkShareHelpText,
-				networkLocationInputBoxLabel,
-				this._networkSharePath,
 				networkShareInfoBox,
 				windowsUserAccountLabel,
 				this._windowsUserAccountText,
@@ -502,6 +470,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				},
 				{
 					displayName: constants.TARGET_DATABASE_NAME,
+					valueType: azdata.DeclarativeDataType.component,
+					rowCssStyles: rowCssStyle,
+					headerCssStyles: headerCssStyles,
+					isReadOnly: true,
+					width: WIZARD_TABLE_COLUMN_WIDTH
+				},
+				{
+					displayName: constants.NETWORK_SHARE_PATH,
 					valueType: azdata.DeclarativeDataType.component,
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles,
@@ -675,7 +651,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._disposables.push(this._networkShareStorageAccountResourceGroupDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._networkShareStorageAccountResourceGroupDropdown, value);
 			if (selectedIndex > -1) {
-				this.migrationStateModel._databaseBackup.networkShare.resourceGroup = this.migrationStateModel.getAzureResourceGroup(selectedIndex);
+				for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
+					this.migrationStateModel._databaseBackup.networkShares[i].resourceGroup = this.migrationStateModel.getAzureResourceGroup(selectedIndex);
+				}
 				await this.loadNetworkShareStorageDropdown();
 			}
 		}));
@@ -700,7 +678,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._disposables.push(this._networkShareContainerStorageAccountDropdown.onValueChanged((value) => {
 			const selectedIndex = findDropDownItemIndex(this._networkShareContainerStorageAccountDropdown, value);
 			if (selectedIndex > -1) {
-				this.migrationStateModel._databaseBackup.networkShare.storageAccount = this.migrationStateModel.getStorageAccount(selectedIndex);
+				for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
+					this.migrationStateModel._databaseBackup.networkShares[i].storageAccount = this.migrationStateModel.getStorageAccount(selectedIndex);
+				}
 			}
 		}));
 
@@ -757,7 +737,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup) {
 			this.migrationStateModel._databaseBackup.networkContainerType = <NetworkContainerType>this.migrationStateModel.savedInfo.networkContainerType;
-			this.migrationStateModel._databaseBackup.networkShare = <NetworkShare>this.migrationStateModel.savedInfo.networkShare;
+			this.migrationStateModel._databaseBackup.networkShares = this.migrationStateModel.savedInfo.networkShares;
 			this.migrationStateModel._databaseBackup.subscription = <Subscription>this.migrationStateModel.savedInfo.targetSubscription;
 			this.migrationStateModel._databaseBackup.blobs = this.migrationStateModel.savedInfo.blobs;
 			this.migrationStateModel._targetDatabaseNames = this.migrationStateModel.savedInfo.targetDatabaseNames;
@@ -809,6 +789,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this._sqlSourcePassword.value = (await azdata.connection.getCredentials(this.migrationStateModel.sourceConnectionId)).password;
 
 				this._networkShareTargetDatabaseNames = [];
+				this._networkShareLocations = [];
 				this._blobContainerTargetDatabaseNames = [];
 				this._blobContainerResourceGroupDropdowns = [];
 				this._blobContainerStorageAccountDropdowns = [];
@@ -820,9 +801,11 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 				this.migrationStateModel._targetDatabaseNames = [];
 				this.migrationStateModel._databaseBackup.blobs = [];
+				this.migrationStateModel._databaseBackup.networkShares = [];
 				this.migrationStateModel._migrationDbs.forEach((db, index) => {
 					this.migrationStateModel._targetDatabaseNames.push(db);
 					this.migrationStateModel._databaseBackup.blobs.push(<Blob>{});
+					this.migrationStateModel._databaseBackup.networkShares.push(<NetworkShare>{});
 					const targetDatabaseInput = this._view.modelBuilder.inputBox().withProps({
 						required: true,
 						value: db,
@@ -852,6 +835,32 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						targetDatabaseInput.value = this.migrationStateModel._targetDatabaseNames[index];
 					}
 					this._networkShareTargetDatabaseNames.push(targetDatabaseInput);
+
+					const networkShareLocationInput = this._view.modelBuilder.inputBox().withProps({
+						required: true,
+						placeHolder: constants.NETWORK_SHARE_PATH_FORMAT,
+						validationErrorMessage: constants.INVALID_NETWORK_SHARE_LOCATION,
+						width: '300px'
+					}).withValidation(c => {
+						if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
+							if (c.value) {
+								if (!/^[\\\/]{2,}[^\\\/]+[\\\/]+[^\\\/]+/.test(c.value)) {
+									return false;
+								}
+							}
+						}
+						return true;
+					}).component();
+					this._disposables.push(networkShareLocationInput.onTextChanged(async (value) => {
+						this.migrationStateModel._databaseBackup.networkShares[index].networkShareLocation = value.trim();
+						await this.validateFields();
+					}));
+					if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup)) {
+						networkShareLocationInput.value = this.migrationStateModel.savedInfo.networkShares[index].networkShareLocation;
+					} else {
+						networkShareLocationInput.value = this.migrationStateModel._databaseBackup.networkShares[index]?.networkShareLocation;
+					}
+					this._networkShareLocations.push(networkShareLocationInput);
 
 					const blobTargetDatabaseInput = this._view.modelBuilder.inputBox().withProps({
 						required: true,
@@ -970,6 +979,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					});
 					targetRow.push({
 						value: this._networkShareTargetDatabaseNames[index]
+					});
+					targetRow.push({
+						value: this._networkShareLocations[index]
 					});
 					data.push(targetRow);
 				});
@@ -1109,11 +1121,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						}
 						break;
 					case NetworkContainerType.NETWORK_SHARE:
-						const storageAccount = this.migrationStateModel._databaseBackup.networkShare.storageAccount;
-						this.migrationStateModel._databaseBackup.networkShare.storageKey = (await getStorageAccountAccessKeys(
+						// All network share migrations use the same storage account
+						const storageAccount = this.migrationStateModel._databaseBackup.networkShares[0].storageAccount;
+						const storageKey = (await getStorageAccountAccessKeys(
 							this.migrationStateModel._azureAccount,
 							this.migrationStateModel._databaseBackup.subscription,
 							storageAccount)).keyName1;
+						for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
+							this.migrationStateModel._databaseBackup.networkShares[i].storageKey = storageKey;
+						}
 						break;
 				}
 			}
@@ -1165,7 +1181,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async validateFields(): Promise<void> {
 		await this._sqlSourceUsernameInput.validate();
 		await this._sqlSourcePassword.validate();
-		await this._networkSharePath.validate();
 		await this._windowsUserAccountText.validate();
 		await this._passwordText.validate();
 		await this._networkShareContainerSubscription.validate();
@@ -1174,6 +1189,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		await this._blobContainerSubscription.validate();
 		for (let i = 0; i < this._networkShareTargetDatabaseNames.length; i++) {
 			await this._networkShareTargetDatabaseNames[i].validate();
+			await this._networkShareLocations[i].validate();
 			await this._blobContainerTargetDatabaseNames[i].validate();
 			await this._blobContainerResourceGroupDropdowns[i].validate();
 			await this._blobContainerStorageAccountDropdowns[i].validate();
@@ -1209,7 +1225,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._networkShareStorageAccountResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._databaseBackup.subscription);
 			if (this.hasSavedInfo(NetworkContainerType.NETWORK_SHARE, this._networkShareStorageAccountResourceGroupDropdown.values)) {
 				this._networkShareStorageAccountResourceGroupDropdown.values.forEach((resource, index) => {
-					if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.networkShare?.resourceGroup?.id?.toLowerCase()) {
+					if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.networkShares[0].resourceGroup?.id?.toLowerCase()) {
 						selectDropDownIndex(this._networkShareStorageAccountResourceGroupDropdown, index);
 					}
 				});
@@ -1227,7 +1243,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadNetworkShareStorageDropdown(): Promise<void> {
 		this._networkShareContainerStorageAccountDropdown.loading = true;
 		try {
-			this._networkShareContainerStorageAccountDropdown.values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.networkShare.resourceGroup);
+			this._networkShareContainerStorageAccountDropdown.values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.networkShares[0].resourceGroup);
 			selectDropDownIndex(this._networkShareContainerStorageAccountDropdown, 0);
 		} catch (error) {
 			console.log(error);

@@ -60,7 +60,7 @@ export class RetryMigrationDialog {
 			targetSubscription: migration.subscription,
 			targetDatabaseNames: [migration.migrationContext.name],
 			networkContainerType: null,
-			networkShare: null,
+			networkShares: [],
 			blobs: [],
 
 			// Integration Runtime
@@ -90,14 +90,16 @@ export class RetryMigrationDialog {
 		if (sourceLocation?.fileShare) {
 			savedInfo.networkContainerType = NetworkContainerType.NETWORK_SHARE;
 			const storageAccountResourceId = migration.migrationContext.properties.backupConfiguration.targetLocation?.storageAccountResourceId!;
-			savedInfo.networkShare = {
-				password: '',
-				networkShareLocation: sourceLocation?.fileShare?.path!,
-				windowsUser: sourceLocation?.fileShare?.username!,
-				storageAccount: getStorageAccount(storageAccountResourceId!),
-				resourceGroup: getStorageAccountResourceGroup(storageAccountResourceId!),
-				storageKey: ''
-			};
+			savedInfo.networkShares = [
+				{
+					password: '',
+					networkShareLocation: sourceLocation?.fileShare?.path!,
+					windowsUser: sourceLocation?.fileShare?.username!,
+					storageAccount: getStorageAccount(storageAccountResourceId!),
+					resourceGroup: getStorageAccountResourceGroup(storageAccountResourceId!),
+					storageKey: ''
+				}
+			];
 		} else if (sourceLocation?.azureBlob) {
 			savedInfo.networkContainerType = NetworkContainerType.BLOB_CONTAINER;
 			const storageAccountResourceId = sourceLocation?.azureBlob?.storageAccountResourceId!;
