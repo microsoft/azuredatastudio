@@ -1038,6 +1038,50 @@ export namespace GetSqlMigrationAssessmentItemsRequest {
 	export const type = new RequestType<SqlMigrationAssessmentParams, mssql.AssessmentResult, void, void>('migration/getassessments');
 }
 
+export interface SqlMigrationSkuRecommendationsParams {
+	dataFolder: string;
+	perfQueryIntervalInSec: number;
+	targetPlatforms: string[];
+	targetSqlInstance: string;
+	targetPercentile: number;
+	scalingFactor: number;
+	startTime: string;
+	endTime: string;
+	includePreviewSkus: boolean;
+	databaseAllowList: string[];
+}
+
+export namespace GetSqlMigrationSkuRecommendationsRequest {
+	export const type = new RequestType<SqlMigrationSkuRecommendationsParams, mssql.SkuRecommendationResult, void, void>('migration/getskurecommendations');
+}
+
+export interface SqlMigrationStartPerfDataCollectionParams {
+	ownerUri: string,
+	dataFolder: string,
+	perfQueryIntervalInSec: number,
+	staticQueryIntervalInSec: number,
+	numberOfIterations: number
+}
+
+export namespace SqlMigrationStartPerfDataCollectionRequest {
+	export const type = new RequestType<SqlMigrationStartPerfDataCollectionParams, mssql.StartPerfDataCollectionResult, void, void>('migration/startperfdatacollection');
+}
+
+export interface SqlMigrationStopPerfDataCollectionParams {
+}
+
+export namespace SqlMigrationStopPerfDataCollectionRequest {
+	export const type = new RequestType<SqlMigrationStopPerfDataCollectionParams, mssql.StopPerfDataCollectionResult, void, void>('migration/stopperfdatacollection');
+}
+
+export interface SqlMigrationRefreshPerfDataCollectionParams {
+	lastRefreshTime: Date
+}
+
+export namespace SqlMigrationRefreshPerfDataCollectionRequest {
+	export const type = new RequestType<SqlMigrationRefreshPerfDataCollectionParams, mssql.RefreshPerfDataCollectionResult, void, void>('migration/refreshperfdatacollection');
+}
+
 // ------------------------------- <Sql Migration> -----------------------------
 
 // ------------------------------- < Table Designer > ------------------------------------
