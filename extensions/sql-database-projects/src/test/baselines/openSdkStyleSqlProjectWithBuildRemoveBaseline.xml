@@ -16,7 +16,12 @@
   <ItemGroup>
     <Build Include="..\other\folder1\file*.sql" />
     <Build Remove="..\other\folder1\file1.sql" />
+    <Build Include="..\other\folder2\file2.sql" />
+    <Build Remove="..\other\folder2\**" />
     <Build Remove="folder1\*.sql" />
+    <Build Include="folder1\file2.sql" />
+    <Build Remove="folder2\file3.sql" />
+    <Build Include="folder2\*.sql" />
     <Build Remove="file1.sql" />
   </ItemGroup>
   <ItemGroup>
