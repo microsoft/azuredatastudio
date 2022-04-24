@@ -11,6 +11,9 @@ import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { Emitter, Event } from 'vs/base/common/event';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { deepClone, equals } from 'vs/base/common/objects';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { TableDesignerPublishDialogResult, TableDesignerPublishDialog } from 'sql/workbench/services/tableDesigner/browser/tableDesignerPublishDialog';
 
 export class TableDesignerComponentInput implements DesignerComponentInput {
 
@@ -30,7 +33,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	constructor(private readonly _provider: TableDesignerProvider,
 		private _tableInfo: azdata.designers.TableInfo,
-		@INotificationService private readonly _notificationService: INotificationService) {
+		@INotificationService private readonly _notificationService: INotificationService,
+		@IQueryEditorService private readonly _queryEditorService: IQueryEditorService,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService) {
 	}
 
 	get valid(): boolean {
@@ -59,7 +64,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	processEdit(edit: DesignerEdit): void {
 		this.updateState(this.valid, this.dirty, 'processEdit');
-		this._provider.processTableEdit(this._tableInfo, this._viewModel!, edit).then(
+		this._provider.processTableEdit(this._tableInfo, edit).then(
 			result => {
 				this._viewModel = result.viewModel;
 				this.updateState(result.isValid, !equals(this._viewModel, this._originalViewModel), undefined);
@@ -79,21 +84,69 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		);
 	}
 
-	async save(): Promise<void> {
+	async generateScript(): Promise<void> {
 		const notificationHandle = this._notificationService.notify({
 			severity: Severity.Info,
-			message: localize('tableDesigner.savingChanges', "Saving table designer changes...")
+			message: localize('tableDesigner.generatingScript', "Generating script..."),
+			sticky: true
+		});
+		try {
+			this.updateState(this.valid, this.dirty, 'generateScript');
+			const script = await this._provider.generateScript(this._tableInfo);
+			this._queryEditorService.newSqlEditor({ initalContent: script });
+			this.updateState(this.valid, this.dirty);
+			notificationHandle.updateMessage(localize('tableDesigner.generatingScriptCompleted', "Script generated."));
+		} catch (error) {
+			notificationHandle.updateSeverity(Severity.Error);
+			notificationHandle.updateMessage(localize('tableDesigner.generateScriptError', "An error occured while generating the script: {0}", error?.message ?? error));
+			this.updateState(this.valid, this.dirty);
+		}
+	}
+
+	async publishChanges(): Promise<void> {
+		const saveNotificationHandle = this._notificationService.notify({
+			severity: Severity.Info,
+			message: localize('tableDesigner.savingChanges', "Saving table designer changes..."),
+			sticky: true
 		});
 		try {
 			this.updateState(this.valid, this.dirty, 'save');
-			await this._provider.saveTable(this._tableInfo, this._viewModel);
+			await this._provider.publishChanges(this._tableInfo);
 			this._originalViewModel = this._viewModel;
 			this.updateState(true, false);
-			notificationHandle.updateMessage(localize('tableDesigner.savedChangeSuccess', "The changes have been successfully saved."));
+			saveNotificationHandle.updateMessage(localize('tableDesigner.publishChangeSuccess', "The changes have been successfully published."));
 		} catch (error) {
-			notificationHandle.updateSeverity(Severity.Error);
-			notificationHandle.updateMessage(localize('tableDesigner.saveChangeError', "An error occured while saving changes: {0}", error?.message ?? error));
+			saveNotificationHandle.updateSeverity(Severity.Error);
+			saveNotificationHandle.updateMessage(localize('tableDesigner.publishChangeError', "An error occured while publishing changes: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
+		}
+	}
+
+	async openPublishDialog(): Promise<void> {
+		const reportNotificationHandle = this._notificationService.notify({
+			severity: Severity.Info,
+			message: localize('tableDesigner.generatingPreviewReport', "Generating preview report..."),
+			sticky: true
+		});
+
+		let report;
+		try {
+			this.updateState(this.valid, this.dirty, 'generateReport');
+			report = await this._provider.generatePreviewReport(this._tableInfo);
+			reportNotificationHandle.close();
+			this.updateState(this.valid, this.dirty);
+		} catch (error) {
+			reportNotificationHandle.updateSeverity(Severity.Error);
+			reportNotificationHandle.updateMessage(localize('tableDesigner.generatePreviewReportError', "An error occured while generating preview report: {0}", error?.message ?? error));
+			this.updateState(this.valid, this.dirty);
+			return;
+		}
+		const dialog = this._instantiationService.createInstance(TableDesignerPublishDialog);
+		const result = await dialog.open(report);
+		if (result === TableDesignerPublishDialogResult.GenerateScript) {
+			await this.generateScript();
+		} else if (result === TableDesignerPublishDialogResult.UpdateDatabase) {
+			await this.publishChanges();
 		}
 	}
 
@@ -131,7 +184,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		}
 
 		this.updateState(this.valid, this.dirty, 'initialize');
-		this._provider.getTableDesignerInfo(this._tableInfo).then(result => {
+		this._provider.initializeTableDesigner(this._tableInfo).then(result => {
 			this.doInitialization(result);
 			this._onInitialized.fire();
 		}, error => {

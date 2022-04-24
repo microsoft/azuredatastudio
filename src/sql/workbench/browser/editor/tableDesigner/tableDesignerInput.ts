@@ -81,7 +81,7 @@ export class TableDesignerInput extends EditorInput {
 	}
 
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		await this._designerComponentInput.save();
+		await this._designerComponentInput.openPublishDialog();
 		return this;
 	}
 
