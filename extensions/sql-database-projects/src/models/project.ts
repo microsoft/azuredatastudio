@@ -1052,9 +1052,8 @@ export class Project implements ISqlProject {
 		// again when they convert to an SDK-style project
 		if (this.isSdkStyleProject) {
 			// update sqlproj if a node was deleted and load files and folders again
-			if (deleted) {
-				await this.writeToSqlProjAndUpdateFilesFolders();
-			}
+			await this.writeToSqlProjAndUpdateFilesFolders();
+
 			// get latest folders to see if it still exists
 			const currentFolders = await this.readFolders();
 
