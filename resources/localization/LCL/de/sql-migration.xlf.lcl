@@ -332,7 +332,7 @@
         <Str Cat="Text">
           <Val><![CDATA[A SQL Managed Instance migration cutover to the Business Critical service tier can take significantly longer than General Purpose because three secondary replicas have to be seeded for Always On High Availability group. The duration of the operation depends on the size of the data. Seeding speed in 90% of cases is 220 GB/hour or higher.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Eine SQL Managed Instance Übernahme der Migration zur Dienstebene "Unternehmenskritisch" kann erheblich länger dauern als "Universell", da für drei sekundäre Replikate für "Always-On-Hochverfügbarkeitsgruppe" ein Seeding ausgeführt werden muss. Die Dauer des Vorgangs hängt von der Größe der Daten ab. Die Seedinggeschwindigkeit in 90 % der Fälle beträgt 220 GB/Stunde oder höher.]]></Val>
+            <Val><![CDATA[Ein Cutover der Migration einer verwalteten SQL-Instanz kann auf der Dienstebene "Unternehmenskritisch" erheblich länger dauern als auf "Universell", da für drei sekundäre Replikate eine Always On-Hochverfügbarkeitsgruppe angelegt werden muss. Die Dauer des Vorgangs hängt von der Größe der Daten ab. Die Seedinggeschwindigkeit ist in 90 % der Fälle 220 GB/Stunde oder höher.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Managed Instance migration cutover for Business Critical service tier can take significantly longer than General Purpose as three secondary replicas have to be seeded for Always On High Availability group. This operation duration depends on the size of data. Seeding speed in 90% of cases is 220 GB/hour or higher.]]></Val>
@@ -512,7 +512,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Migration is not in progress and cannot be cutover.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Die Migration ist nicht in Bearbeitung und kann nicht überlappen.]]></Val>
+            <Val><![CDATA[Die Migration ist nicht in Bearbeitung, Cutover nicht möglich.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -530,7 +530,7 @@
         <Str Cat="Text">
           <Val><![CDATA[The cutover process cannot start until all the migrations are done. To return the latest file status, refresh your browser window.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Der Übernahmevorgang kann erst gestartet werden, wenn alle Migrationen abgeschlossen sind. Aktualisieren Sie das Browserfenster, um den aktuellen Dateistatus zurückzugeben.]]></Val>
+            <Val><![CDATA[Der Cutover kann erst gestartet werden, wenn alle Migrationen abgeschlossen sind. Aktualisieren Sie das Browserfenster, um den aktuellen Dateistatus anzuzeigen.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Cannot start the cutover process until all the migrations are done. Click refresh to fetch the latest file status]]></Val>
@@ -551,7 +551,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Complete cutover]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Übernahme abschließen]]></Val>
+            <Val><![CDATA[Cutover abschließen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -560,7 +560,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Completing cutover without restoring all the backups may result in a data loss.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Das Abschließen der Übernahme ohne Wiederherstellung aller Sicherungen kann zu einem Datenverlust führen.]]></Val>
+            <Val><![CDATA[Ein Cutover ohne Wiederherstellung aller Sicherungen kann zu Datenverlusten führen.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Completing cutover without restoring all the backup(s) may result in a data loss.]]></Val>
@@ -572,7 +572,7 @@
         <Str Cat="Text">
           <Val><![CDATA[I confirm there are no additional log backups to provide and want to complete cutover.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ich bestätige, dass keine zusätzlichen Protokollsicherungen zur Verfügung stehen und die Übernahme abgeschlossen werden soll.]]></Val>
+            <Val><![CDATA[Ich bestätige, dass keine zusätzlichen Protokollsicherungen zur Verfügung stehen und der Cutover abgeschlossen werden soll.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[I confirm there are no additional log backup(s) to provide and want to complete cutover.]]></Val>
@@ -701,7 +701,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Migration cutover]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Übernahme der Migration]]></Val>
+            <Val><![CDATA[Cutover der Migration]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -710,7 +710,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Completing cutover]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Übernahme wird abgeschlossen]]></Val>
+            <Val><![CDATA[Cutover wird abgeschlossen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -719,7 +719,7 @@
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while initiating cutover.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fehler beim Initiieren der Übernahme.]]></Val>
+            <Val><![CDATA[Fehler beim Initiieren des Cutovers.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -728,7 +728,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Perform the following steps before you complete cutover.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Führen Sie die folgenden Schritte aus, bevor Sie die Übernahme abschließen.]]></Val>
+            <Val><![CDATA[Führen Sie die folgenden Schritte aus, bevor Sie den Cutover abschließen.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[When you are ready to do the migration cutover, perform the following steps to complete the database migration. Please note that the database is ready for cutover only after a full backup has been restored on the target Azure SQL Database Managed Instance.]]></Val>
@@ -740,7 +740,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Cutover in progress for database '{0}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Übernahme für die Datenbank "{0}" in Bearbeitung]]></Val>
+            <Val><![CDATA[Cutover für Datenbank '{0}' in Bearbeitung]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1019,7 +1019,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Application downtime is limited to cutover at the end of migration.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Die Anwendungsausfallzeit ist auf die Übernahme am Ende der Migration beschränkt.]]></Val>
+            <Val><![CDATA[Die Ausfallzeit der Anwendung ist auf den Cutover am Ende der Migration beschränkt.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Application downtime is limited to cut over at the end of migration.]]></Val>
@@ -3827,7 +3827,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Complete cutover]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Übernahme abschließen]]></Val>
+            <Val><![CDATA[Cutover abschließen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
