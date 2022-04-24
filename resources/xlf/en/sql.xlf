@@ -4292,12 +4292,9 @@ Error: {1}</source>
       <source xml:lang="en">Publish Changes...</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="tableDesigner.configTitle">
-      <source xml:lang="en">Table Designer</source>
-    </trans-unit>
-    <trans-unit id="tableDesigner.featureEnabledDescription">
-      <source xml:lang="en">Controls whether the table designer feature is enabled. Default value is false.</source>
+  <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableDesigner.PreviewFeature">
+      <source xml:lang="en">Preview feature</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/tasks/browser/tasks.contribution" source-language="en" datatype="plaintext"><body>
