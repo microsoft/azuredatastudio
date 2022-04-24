@@ -284,6 +284,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 
 	private populate(node: InternalExecutionPlanNode, diagramNode: any): any {
 		diagramNode.label = node.subtext.join(this.textResourcePropertiesService.getEOL(undefined));
+		diagramNode.tooltipTitle = node.name;
 		const nodeId = this.createGraphElementId();
 		diagramNode.id = nodeId;
 		node.id = nodeId;
