@@ -198,13 +198,13 @@
         },
         {
           "command": "sqlDatabaseProjects.updateProjectFromDatabase",
-          "when": "view == dataworkspace.views.main",
+          "when": "view == dataworkspace.views.main && azdataAvailable",
           "group": "1_currentWorkspace@2"
         },
         {
           "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
           "when": "view == dataworkspace.views.main",
-          "group": "1_currentWorkspace@2"
+          "group": "1_currentWorkspace@3"
         }
       ],
       "commandPalette": [
