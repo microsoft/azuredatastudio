@@ -492,12 +492,12 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.containerAlreadyExistForProject" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Other servers on container already exist for the project. Do you want to delete them?]]></Val>
+          <Val><![CDATA[Containers already exist for this project. Do you want to delete them before deploying a new one?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[コンテナー上にはプロジェクトのためのサーバーが既に存在しています。それらを削除しますか?']]></Val>
+            <Val><![CDATA[このプロジェクト用のコンテナーは既に存在します。新しい展開を行う前に削除しますか?]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Other servers on container already exist for the project. Do you want to delete them?']]></Val>
+            <Val><![CDATA[Other servers on container already exist for the project. Do you want to delete them?]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1021,12 +1021,18 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.emptySdkProjectTypeDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[空の SDK スタイルのプロジェクトから、Microsoft.Build.Sql (プレビュー) を使用して SQL データベースのスキーマを開発して発行します。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.emptySdkProjectTypeDisplayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Database (SDK)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Database (SDK)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

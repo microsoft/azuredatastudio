@@ -332,7 +332,7 @@
         <Str Cat="Text">
           <Val><![CDATA[A SQL Managed Instance migration cutover to the Business Critical service tier can take significantly longer than General Purpose because three secondary replicas have to be seeded for Always On High Availability group. The duration of the operation depends on the size of the data. Seeding speed in 90% of cases is 220 GB/hour or higher.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[중요 업무용 서비스 계층으로의 SQL Managed Instance 마이그레이션 전환은 Always On 고가용성 그룹에 대해 3개의 보조 복제본을 시드해야 하기 때문에 범용보다 훨씬 오래 걸릴 수 있습니다. 작업 기간은 데이터 크기에 따라 다릅니다. 90%의 경우 시딩 속도는 220GB/시간 이상입니다.]]></Val>
+            <Val><![CDATA[중요 업무용 서비스 계층으로의 SQL Managed Instance 마이그레이션 컷오버는 Always On 고가용성 그룹에 대해 3개의 보조 복제본을 시드해야 하기 때문에 범용보다 훨씬 오래 걸릴 수 있습니다. 작업 기간은 데이터 크기에 따라 다릅니다. 90%의 경우 시딩 속도는 220GB/시간 이상입니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Managed Instance migration cutover for Business Critical service tier can take significantly longer than General Purpose as three secondary replicas have to be seeded for Always On High Availability group. This operation duration depends on the size of data. Seeding speed in 90% of cases is 220 GB/hour or higher.]]></Val>
@@ -512,7 +512,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Migration is not in progress and cannot be cutover.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[마이그레이션이 진행 중이 아니므로 중단할 수 없습니다.]]></Val>
+            <Val><![CDATA[마이그레이션이 진행 중이 아니므로 컷오버할 수 없습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -560,7 +560,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Completing cutover without restoring all the backups may result in a data loss.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[모든 백업을 복원하지 않고 중단을 완료하면 데이터가 손실될 수 있습니다.]]></Val>
+            <Val><![CDATA[모든 백업을 복원하지 않고 컷오버를 완료하면 데이터가 손실될 수 있습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Completing cutover without restoring all the backup(s) may result in a data loss.]]></Val>
@@ -728,7 +728,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Perform the following steps before you complete cutover.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[중단을 완료하기 전에 다음 단계를 수행합니다.]]></Val>
+            <Val><![CDATA[컷오버를 완료하기 전에 다음 단계를 수행합니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[When you are ready to do the migration cutover, perform the following steps to complete the database migration. Please note that the database is ready for cutover only after a full backup has been restored on the target Azure SQL Database Managed Instance.]]></Val>
@@ -3827,7 +3827,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Complete cutover]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[중단 완료]]></Val>
+            <Val><![CDATA[컷오버 완료]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

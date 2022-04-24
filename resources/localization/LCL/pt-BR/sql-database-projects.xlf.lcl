@@ -492,12 +492,12 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.containerAlreadyExistForProject" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Other servers on container already exist for the project. Do you want to delete them?]]></Val>
+          <Val><![CDATA[Containers already exist for this project. Do you want to delete them before deploying a new one?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Outros servidores em contêineres já existem para o projeto. Você deseja excluí-los?]]></Val>
+            <Val><![CDATA[Já existem contêineres para este projeto. Deseja excluí-los antes de implantar um novo?]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Other servers on container already exist for the project. Do you want to delete them?']]></Val>
+            <Val><![CDATA[Other servers on container already exist for the project. Do you want to delete them?]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
