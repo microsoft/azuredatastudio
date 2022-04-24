@@ -101,7 +101,8 @@ export const enum NbTelemetryAction {
 	KernelChanged = 'KernelChanged',
 	NewNotebookFromConnections = 'NewNotebookWithConnectionProfile',
 	UndoCell = 'UndoCell',
-	RedoCell = 'RedoCell'
+	RedoCell = 'RedoCell',
+	MIMETypeRendererNotFound = 'MIMETypeRendererNotFound'
 }
 
 export const enum TelemetryPropertyName {
