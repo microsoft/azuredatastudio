@@ -503,6 +503,11 @@
           "command": "mssql.designTable",
           "when": "connectionProvider == MSSQL && nodeType == Table && config.tableDesigner.enableFeature",
           "group": "0_query@3"
+        },
+        {
+          "command": "mssql.newTable",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && nodeLabel == Tables && config.tableDesigner.enableFeature",
+          "group": "0_query@1"
         }
       ],
       "notebook/toolbar": [
