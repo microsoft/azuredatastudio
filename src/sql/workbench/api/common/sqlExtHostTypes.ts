@@ -953,6 +953,7 @@ export namespace designers {
 		Script = 'script',
 		ForeignKeys = 'foreignKeys',
 		CheckConstraints = 'checkConstraints',
+		Indexes = 'indexes'
 	}
 
 	export enum TableColumnProperty {
@@ -982,6 +983,15 @@ export namespace designers {
 	export enum TableCheckConstraintProperty {
 		Name = 'name',
 		Expression = 'expression'
+	}
+
+	export enum TableIndexProperty {
+		Name = 'name',
+		Columns = 'columns'
+	}
+
+	export enum TableIndexColumnSpecificationProperty {
+		Column = 'column'
 	}
 
 	export enum DesignerEditType {
