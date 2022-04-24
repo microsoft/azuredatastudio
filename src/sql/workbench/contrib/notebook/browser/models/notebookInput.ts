@@ -417,6 +417,10 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		}
 	}
 
+	get modelResolved(): Promise<void> {
+		return this._modelResolved.promise;
+	}
+
 	private hookDirtyListener(dirtyEvent: Event<void>, listener: (e: any) => void): void {
 		let disposable = dirtyEvent(listener);
 		if (this._dirtyListener) {
