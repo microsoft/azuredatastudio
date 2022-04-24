@@ -147,16 +147,16 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 		const tabs = [];
 
-		if (designerInfo.view.showColumnsTab) {
-			tabs.push(this.getColumnsTab(designerInfo));
+		if (designerInfo.view.columnTableOptions?.showTable) {
+			tabs.push(this.getColumnsTab(designerInfo.view.columnTableOptions, designerInfo.columnTypes));
 		}
 
-		if (designerInfo.view.showForeignKeysTab) {
-			tabs.push(this.getForeignKeysTab(designerInfo));
+		if (designerInfo.view.foreignKeyTableOptions?.showTable) {
+			tabs.push(this.getForeignKeysTab(designerInfo.view.foreignKeyTableOptions));
 		}
 
-		if (designerInfo.view.showCheckConstraintsTab) {
-			tabs.push(this.getCheckConstraintsTab(designerInfo));
+		if (designerInfo.view.checkConstraintTableOptions?.showTable) {
+			tabs.push(this.getCheckConstraintsTab(designerInfo.view.checkConstraintTableOptions));
 		}
 
 		if (designerInfo.view.additionalTabs) {
@@ -209,7 +209,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		};
 	}
 
-	private getColumnsTab(designerInfo: azdata.designers.TableDesignerInfo): DesignerTab {
+	private getColumnsTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions, columnTypes: string[]): DesignerTab {
 
 		const columnProperties: DesignerDataPropertyInfo[] = [
 			{
@@ -227,7 +227,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				componentProperties: {
 					title: localize('tableDesigner.columnTypeTitle', "Type"),
 					width: 100,
-					values: designerInfo.columnTypes
+					values: columnTypes
 				}
 			}, {
 				componentType: 'input',
@@ -278,11 +278,11 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}
 		];
 
-		if (designerInfo.view.additionalTableColumnProperties) {
-			columnProperties.push(...designerInfo.view.additionalTableColumnProperties);
+		if (options.additionalProperties) {
+			columnProperties.push(...options.additionalProperties);
 		}
 
-		const columnsTableProperties = designerInfo.view.columnsTableProperties?.length > 0 ? designerInfo.view.columnsTableProperties : [
+		const displayProperties = options.propertiesToDisplay?.length > 0 ? options.propertiesToDisplay : [
 			designers.TableColumnProperty.Name,
 			designers.TableColumnProperty.Type,
 			designers.TableColumnProperty.Length,
@@ -302,18 +302,18 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					showInPropertiesView: false,
 					componentProperties: <DesignerTableProperties>{
 						ariaLabel: localize('tableDesigner.columnsTabTitle', "Columns"),
-						columns: columnsTableProperties,
+						columns: displayProperties,
 						itemProperties: columnProperties,
 						objectTypeDisplayName: localize('tableDesigner.columnTypeName', "Column"),
-						canAddRows: designerInfo.view.canAddColumns,
-						canRemoveRows: designerInfo.view.canRemoveColumns
+						canAddRows: options.canAddRows,
+						canRemoveRows: options.canRemoveRows
 					}
 				}
 			]
 		};
 	}
 
-	private getForeignKeysTab(designerInfo: azdata.designers.TableDesignerInfo): DesignerTab {
+	private getForeignKeysTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions): DesignerTab {
 
 		const foreignKeyColumnMappingProperties: DesignerDataPropertyInfo[] = [
 			{
@@ -381,19 +381,19 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					columns: [designers.ForeignKeyColumnMappingProperty.ForeignKeyColumn, designers.ForeignKeyColumnMappingProperty.PrimaryKeyColumn],
 					itemProperties: foreignKeyColumnMappingProperties,
 					objectTypeDisplayName: '',
-					canAddRows: designerInfo.view.canAddForeignKeys,
-					canRemoveRows: designerInfo.view.canRemoveColumns,
+					canAddRows: options.canAddRows,
+					canRemoveRows: options.canRemoveRows
 				}
 			},
 		];
 
-		if (designerInfo.view.additionalForeignKeyProperties) {
-			foreignKeyProperties.push(...designerInfo.view.additionalForeignKeyProperties);
+		if (options.additionalProperties) {
+			foreignKeyProperties.push(...options.additionalProperties);
 		}
 
-		const foreignKeysTableProperties = designerInfo.view.foreignKeysTableProperties?.length > 0 ? designerInfo.view.foreignKeysTableProperties : [
+		const displayProperties = options.propertiesToDisplay?.length > 0 ? options.propertiesToDisplay : [
 			designers.TableForeignKeyProperty.Name,
-			designers.TableForeignKeyProperty.PrimaryKeyTable,
+			designers.TableForeignKeyProperty.PrimaryKeyTable
 		];
 
 		return <DesignerTab>{
@@ -405,18 +405,18 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					showInPropertiesView: false,
 					componentProperties: <DesignerTableProperties>{
 						ariaLabel: localize('tableDesigner.foreignKeysTabTitle', "Foreign Keys"),
-						columns: foreignKeysTableProperties,
+						columns: displayProperties,
 						itemProperties: foreignKeyProperties,
 						objectTypeDisplayName: localize('tableDesigner.ForeignKeyTypeName', "Foreign Key"),
-						canAddRows: designerInfo.view.canAddForeignKeys,
-						canRemoveRows: designerInfo.view.canRemoveForeignKeys
+						canAddRows: options.canAddRows,
+						canRemoveRows: options.canRemoveRows
 					}
 				}
 			]
 		};
 	}
 
-	private getCheckConstraintsTab(designerInfo: azdata.designers.TableDesignerInfo): DesignerTab {
+	private getCheckConstraintsTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions): DesignerTab {
 		const checkConstraintProperties: DesignerDataPropertyInfo[] = [
 			{
 				componentType: 'input',
@@ -437,9 +437,11 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}
 		];
 
-		if (designerInfo.view.additionalCheckConstraintProperties) {
-			checkConstraintProperties.push(...designerInfo.view.additionalCheckConstraintProperties);
+		if (options.additionalProperties) {
+			checkConstraintProperties.push(...options.additionalProperties);
 		}
+
+		const displayProperties = options.propertiesToDisplay?.length > 0 ? options.propertiesToDisplay : [designers.TableCheckConstraintProperty.Name, designers.TableCheckConstraintProperty.Expression];
 
 		return <DesignerTab>{
 			title: localize('tableDesigner.checkConstraintsTabTitle', "Check Constraints"),
@@ -450,11 +452,11 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					showInPropertiesView: false,
 					componentProperties: <DesignerTableProperties>{
 						ariaLabel: localize('tableDesigner.checkConstraintsTabTitle', "Check Constraints"),
-						columns: [designers.TableCheckConstraintProperty.Name, designers.TableCheckConstraintProperty.Expression],
+						columns: displayProperties,
 						itemProperties: checkConstraintProperties,
 						objectTypeDisplayName: localize('tableDesigner.checkConstraintTypeName', "Check Constraint"),
-						canAddRows: designerInfo.view.canAddCheckConstraints,
-						canRemoveRows: designerInfo.view.canRemoveCheckConstraints
+						canAddRows: options.canAddRows,
+						canRemoveRows: options.canRemoveRows
 					}
 				}
 			]
