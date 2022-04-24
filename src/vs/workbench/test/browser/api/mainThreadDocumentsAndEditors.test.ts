@@ -103,7 +103,7 @@ suite('MainThreadDocumentsAndEditors', () => {
 			},
 			new TestPathService(),
 			<INotebookService>{ // {{SQL CARBON EDIT}}
-				getSupportedFileExtensions: () => ['ipynb']
+				getSupportedFileExtensions: () => ['.ipynb']
 			}
 		);
 	});

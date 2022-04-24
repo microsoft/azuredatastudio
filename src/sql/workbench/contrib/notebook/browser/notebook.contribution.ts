@@ -53,7 +53,7 @@ import { ImageMimeTypes, TextCellEditModes } from 'sql/workbench/services/notebo
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { IExecuteManager } from 'sql/workbench/services/notebook/browser/notebookService';
+import { DEFAULT_NOTEBOOK_FILETYPE, IExecuteManager, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookExplorerViewletViewsContribution } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IEditorResolverService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorResolverService';
@@ -64,7 +64,8 @@ import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/common/notebookCommon';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { DiffNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/diffNotebookInput';
-import { JUPYTER_PROVIDER_ID } from 'sql/workbench/common/constants';
+import { JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
+import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
 
 Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory)
 	.registerEditorSerializer(FileNotebookInput.ID, FileNoteBookEditorSerializer);
@@ -689,10 +690,12 @@ configurationRegistry.registerConfiguration({
 });
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
+const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 
 export class NotebookEditorOverrideContribution extends Disposable implements IWorkbenchContribution {
 
 	private _registeredOverrides = new DisposableStore();
+	private _newFileExtensions: string[] = [];
 
 	constructor(
 		@ILogService private _logService: ILogService,
@@ -709,53 +712,59 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 		this._modeService.onLanguagesMaybeChanged(() => {
 			this.registerEditorOverrides();
 		});
+		notebookRegistry.onNewDescriptionRegistration(({ id, registration }) => {
+			if (id !== JUPYTER_PROVIDER_ID && id !== SQL_NOTEBOOK_PROVIDER && registration?.fileExtensions?.length > 0) {
+				let extensions = registration.fileExtensions
+					.filter(ext => ext?.length > 0 && ext.toLowerCase() !== DEFAULT_NOTEBOOK_FILETYPE);
+				this._newFileExtensions = this._newFileExtensions.concat(extensions);
+				this.registerEditorOverrides();
+			}
+		});
 	}
 
 	private registerEditorOverrides(): void {
 		this._registeredOverrides.clear();
-		// List of language IDs to associate the query editor for. These are case sensitive.
-		NotebookEditorLanguageAssociation.languages.map(lang => {
+		let allExtensions: string[] = [];
+
+		// List of built-in language IDs to associate the query editor for. These are case sensitive.
+		NotebookEditorInputAssociation.languages.forEach(lang => {
 			const langExtensions = this._modeService.getExtensions(lang);
-			if (langExtensions.length === 0) {
-				return;
-			}
-			// Create the selector from the list of all the language extensions we want to associate with the
-			// notebook editor (filtering out any languages which didn't have any extensions registered yet)
-			const selector = `*{${langExtensions.join(',')}}`;
-			this._registeredOverrides.add(this._editorResolverService.registerEditor(
-				selector,
-				{
-					id: NotebookEditor.ID,
-					label: NotebookEditor.LABEL,
-					priority: RegisteredEditorPriority.builtin
-				},
-				{},
-				(editorInput, group) => {
-					const fileInput = this._editorService.createEditorInput(editorInput) as FileEditorInput;
-					// Try to convert the input, falling back to just a plain file input if we're unable to
-					const newInput = this.tryConvertInput(fileInput, lang) ?? fileInput;
-					return { editor: newInput, options: editorInput.options, group: group };
-				},
-				undefined,
-				(diffEditorInput, group) => {
-					// todo@chgagnon, consolidate this logic and make sure it works as intended
-					let newInput: IEditorInput | undefined = undefined;
-					if (diffEditorInput instanceof DiffEditorInput) {
-						if (this._configurationService.getValue('notebook.showRenderedNotebookInDiffEditor') === true) {
-							newInput = this._instantiationService.createInstance(DiffNotebookInput, diffEditorInput.getName(), diffEditorInput);
-						}
-					}
-					if (!newInput) {
-						newInput = this._editorService.createEditorInput(diffEditorInput);
-					}
-					return { editor: newInput, options: diffEditorInput.options, group: group };
-				}
-			));
+			allExtensions = allExtensions.concat(langExtensions);
 		});
+
+		// Add newly registered file extensions
+		allExtensions = allExtensions.concat(this._newFileExtensions);
+
+		// Create the selector from the list of all the language extensions we want to associate with the
+		// notebook editor
+		const selector = `*{${allExtensions.join(',')}}`;
+		this._registeredOverrides.add(this._editorOverrideService.registerEditor(
+			selector,
+			{
+				id: NotebookEditor.ID,
+				label: NotebookEditor.LABEL,
+				describes: (currentEditor) => currentEditor instanceof FileNotebookInput,
+				priority: ContributedEditorPriority.builtin
+			},
+			{},
+			(resource, options, group) => {
+				const fileInput = this._editorService.createEditorInput({
+					resource: resource
+				}) as FileEditorInput;
+				// Try to convert the input, falling back to just a plain file input if we're unable to
+				const newInput = this.tryConvertInput(fileInput) ?? fileInput;
+				return { editor: newInput, options: options, group: group };
+			},
+			(diffEditorInput, options, group) => {
+				// Try to convert the input, falling back to the original input if we're unable to
+				const newInput = this.tryConvertInput(diffEditorInput) ?? diffEditorInput;
+				return { editor: newInput, options: options, group: group };
+			}
+		));
 	}
 
-	private tryConvertInput(input: IEditorInput, lang: string): IEditorInput | undefined {
-		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
+	private tryConvertInput(input: IEditorInput): IEditorInput | undefined {
+		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
 		const notebookEditorInput = langAssociation?.syncConvertInput?.(input);
 		if (!notebookEditorInput) {
 			this._logService.warn('Unable to create input for resolving editor ', input instanceof DiffEditorInput ? `${input.primary.resource.toString()} <-> ${input.secondary.resource.toString()}` : input.resource.toString());
