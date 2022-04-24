@@ -990,7 +990,11 @@
                             "variableNames": {
                               "namespace": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE",
                               "kubeConfig": "AZDATA_NB_VAR_CONTROLLER_KUBECONFIG",
-                              "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT"
+                              "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT",
+                              "resourceGroup": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_RESOURCE_GROUP",
+                              "connectionMode": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTION_MODE",
+                              "location": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_LOCATION",
+                              "customLocation": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CUSTOM_LOCATION"
                             }
                           },
                           "optionsType": "dropdown"

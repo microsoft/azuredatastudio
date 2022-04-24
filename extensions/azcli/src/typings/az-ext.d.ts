@@ -48,6 +48,9 @@ declare module 'az-ext' {
 		apiVersion: string, // "arcdata.microsoft.com/v1alpha1"
 		kind: string, // "DataController"
 		metadata: {
+			annotations: {
+				'management.azure.com/customLocation': string // "/subscriptions/a5082b19-8a6e-4bc5-8fdd-8ef39dfebc39/resourceGroups/canye-rg/providers/Microsoft.ExtendedLocation/customLocations/oakland"
+			},
 			creationTimestamp: string, // "2020-08-19T17:05:39Z"
 			generation: number, // /1
 			name: string, // "arc"
