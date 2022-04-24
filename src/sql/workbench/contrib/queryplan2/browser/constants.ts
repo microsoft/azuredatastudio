@@ -248,3 +248,17 @@ export let queryPlanNodeIconPaths =
 
 	unionAll: imageBasePath + 'union_all.png'
 };
+
+const parentContainer = 'qps-container';
+export const savePlanIconClassNames = [parentContainer, 'save-plan-icon'].join(' ');
+export const openPropertiesIconClassNames = [parentContainer, 'open-properties-icon'].join(' ');
+export const openQueryIconClassNames = [parentContainer, 'open-query-icon'].join(' ');
+export const openPlanFileIconClassNames = [parentContainer, 'open-plan-file-icon'].join(' ');
+export const saveIconClassNames = [parentContainer, 'save-icon'].join(' ');
+export const searchIconClassNames = [parentContainer, 'search-icon'].join(' ');
+export const sortAlphabeticallyIconClassNames = [parentContainer, 'sort-alphabetically-icon'].join(' ');
+export const sortByDisplayOrderIconClassNames = [parentContainer, 'sort-display-order-icon'].join(' ');
+export const zoomInIconClassNames = [parentContainer, 'zoom-in-icon'].join(' ');
+export const zoomOutIconClassNames = [parentContainer, 'zoom-out-icon'].join(' ');
+export const customZoomIconClassNames = [parentContainer, 'custom-zoom-icon'].join(' ');
+export const zoomToFitIconClassNames = [parentContainer, 'zoom-to-fit-icon'].join(' ');

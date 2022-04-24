@@ -17,6 +17,7 @@ import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { removeLineBreaks } from 'sql/base/common/strings';
 import { isString } from 'vs/base/common/types';
+import { sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames } from 'sql/workbench/contrib/queryplan2/browser/constants';
 
 
 export class QueryPlanPropertiesView {
@@ -239,7 +240,7 @@ export class SortPropertiesAlphabeticallyAction extends Action {
 	public static LABEL = localize('queryPlanPropertyViewSortAlphabetically', "Alphabetical");
 
 	constructor() {
-		super(SortPropertiesAlphabeticallyAction.ID, SortPropertiesAlphabeticallyAction.LABEL, Codicon.sortPrecedence.classNames);
+		super(SortPropertiesAlphabeticallyAction.ID, SortPropertiesAlphabeticallyAction.LABEL, sortAlphabeticallyIconClassNames);
 	}
 
 	public override async run(context: QueryPlanPropertiesView): Promise<void> {
@@ -252,7 +253,7 @@ export class SortPropertiesByDisplayOrderAction extends Action {
 	public static LABEL = localize('queryPlanPropertyViewSortByDisplayOrde', "Categorized");
 
 	constructor() {
-		super(SortPropertiesByDisplayOrderAction.ID, SortPropertiesByDisplayOrderAction.LABEL, Codicon.listOrdered.classNames);
+		super(SortPropertiesByDisplayOrderAction.ID, SortPropertiesByDisplayOrderAction.LABEL, sortByDisplayOrderIconClassNames);
 	}
 
 	public override async run(context: QueryPlanPropertiesView): Promise<void> {
