@@ -38,6 +38,7 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { URI } from 'vs/base/common/uri';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 
 let azdataGraph = azdataGraphModule();
 
@@ -165,7 +166,8 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IFileDialogService public fileDialogService: IFileDialogService,
 		@IFileService public fileService: IFileService,
-		@IWorkspaceContextService public workspaceContextService: IWorkspaceContextService
+		@IWorkspaceContextService public workspaceContextService: IWorkspaceContextService,
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
 	) {
 		// parent container for query plan.
 		this._container = DOM.$('.query-plan');
@@ -281,7 +283,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 	}
 
 	private populate(node: InternalExecutionPlanNode, diagramNode: any): any {
-		diagramNode.label = node.name;
+		diagramNode.label = node.subtext.join(this.textResourcePropertiesService.getEOL(undefined));
 		const nodeId = this.createGraphElementId();
 		diagramNode.id = nodeId;
 		node.id = nodeId;
