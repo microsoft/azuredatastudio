@@ -4,7 +4,7 @@ parameters:
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: "12.13.0"
+      versionSpec: "14.x"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -119,7 +119,7 @@ steps:
 
   - script: |
       set -e
-      DISPLAY=:10 ./scripts/test.sh --build --coverage --reporter mocha-junit-reporter --tfs "Unit Tests"
+      DISPLAY=:10 ./scripts/test.sh --build --tfs "Unit Tests" # Disable code coverage since it's currently broken --coverage
     displayName: Run unit tests (Electron)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 

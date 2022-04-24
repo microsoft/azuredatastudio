@@ -136,7 +136,7 @@ jobs:
 
       - name: Run Unit Tests (Electron)
         id: electron-unit-tests
-        run: DISPLAY=:10 ./scripts/test.sh --coverage --runGlob "**/sql/**/*.test.js" # {{SQL CARBON EDIT}} Run only our tests with coverage
+        run: DISPLAY=:10 ./scripts/test.sh --runGlob "**/sql/**/*.test.js" # {{SQL CARBON EDIT}} Run only our tests with coverage. Disable for now since it's currently broken --coverage
 
       - name: Run Extension Unit Tests (Electron)
         id: electron-extension-unit-tests
@@ -272,9 +272,6 @@ jobs:
 
       - name: Run Valid Layers Checks
         run: yarn valid-layers-check
-
-      - name: Run Strict Compile Options # {{SQL CARBON EDIT}} add step
-        run: yarn strict-vscode
 
       # - name: Run Monaco Editor Checks {{SQL CARBON EDIT}} Remove Monaco checks
       #   run: yarn monaco-compile-check

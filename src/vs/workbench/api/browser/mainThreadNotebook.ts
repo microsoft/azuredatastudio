@@ -14,7 +14,7 @@ import { INotebookCellStatusBarService } from 'vs/workbench/contrib/notebook/com
 import { INotebookCellStatusBarItemProvider, INotebookContributionData, NotebookData as NotebookData, TransientCellMetadata, TransientDocumentMetadata, TransientOptions } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { INotebookContentProvider, INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
 import { SerializableObjectWithBuffers } from 'vs/workbench/services/extensions/common/proxyIdentifier';
-import { ExtHostContext, ExtHostNotebookShape, IExtHostContext, MainThreadNotebookShape, NotebookExtensionDescription } from '../common/extHost.protocol'; // {{SQL CARBON EDIT}} Remove MainContext
+import { ExtHostContext, ExtHostNotebookShape, IExtHostContext, MainThreadNotebookShape, NotebookExtensionDescription } from '../common/extHost.protocol'; // {{SQL CARBON EDIT}} Disable VS Code notebooks
 
 // @extHostNamedCustomer(MainContext.MainThreadNotebook) {{SQL CARBON EDIT}} Disable VS Code notebooks
 export class MainThreadNotebooks implements MainThreadNotebookShape {

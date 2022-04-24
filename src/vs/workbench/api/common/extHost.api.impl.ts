@@ -90,6 +90,7 @@ import { Schemas } from 'vs/base/common/network';
 import { matchesScheme } from 'vs/platform/opener/common/opener';
 // import { ExtHostNotebookEditors } from 'vs/workbench/api/common/extHostNotebookEditors'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 // import { ExtHostNotebookDocuments } from 'vs/workbench/api/common/extHostNotebookDocuments'; {{SQL CARBON EDIT}} Disable VS Code notebooks
+// import { ExtHostInteractive } from 'vs/workbench/api/common/extHostInteractive'; {{SQL CARBON EDIT}} Remove until we need it
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
 import { ExtHostInteractive } from 'vs/workbench/api/common/extHostInteractive';
 import { functionalityNotSupportedError } from 'sql/base/common/locConstants';
@@ -178,7 +179,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 	const extHostWebviewViews = rpcProtocol.set(ExtHostContext.ExtHostWebviewViews, new ExtHostWebviewViews(rpcProtocol, extHostWebviews));
 	const extHostTesting = rpcProtocol.set(ExtHostContext.ExtHostTesting, new ExtHostTesting(rpcProtocol, extHostCommands));
 	const extHostUriOpeners = rpcProtocol.set(ExtHostContext.ExtHostUriOpeners, new ExtHostUriOpeners(rpcProtocol));
-	rpcProtocol.set(ExtHostContext.ExtHostInteractive, new ExtHostInteractive(rpcProtocol, extHostNotebook, extHostDocumentsAndEditors, extHostCommands));
+	// rpcProtocol.set(ExtHostContext.ExtHostInteractive, new ExtHostInteractive(rpcProtocol, extHostNotebook, extHostDocumentsAndEditors, extHostCommands)); {{SQL CARBON EDIT}} Disable interactive stuff until we need it
 
 	// Check that no named customers are missing
 	// {{SQL CARBON EDIT}} filter out the services we don't expose
@@ -188,7 +189,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 		ExtHostContext.ExtHostNotebookDocuments,
 		ExtHostContext.ExtHostNotebookEditors,
 		ExtHostContext.ExtHostNotebookKernels,
-		ExtHostContext.ExtHostNotebookRenderers
+		ExtHostContext.ExtHostNotebookRenderers,
+		ExtHostContext.ExtHostInteractive
 	]);
 	const expected: ProxyIdentifier<any>[] = values(ExtHostContext).filter(v => !filteredProxies.has(v));
 
@@ -1174,7 +1176,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				// {{SQL CARBON EDIT}} Disable VS Code notebooks
 				throw new Error(functionalityNotSupportedError);
 				// checkProposedApiEnabled(extension);
-				// return extHostNotebookRenderers.createRendererMessaging(rendererId);
+				// return extHostNotebookRenderers.createRendererMessaging(extension, rendererId);
 			},
 			onDidChangeNotebookDocumentMetadata(listener, thisArgs?, disposables?) {
 				// {{SQL CARBON EDIT}} Disable VS Code notebooks

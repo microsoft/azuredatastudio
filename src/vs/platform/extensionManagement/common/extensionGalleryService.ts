@@ -387,7 +387,7 @@ function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGaller
 		categories: galleryExtension.categories || [],
 		tags: galleryExtension.tags || [],
 		releaseDate: Date.parse(galleryExtension.releaseDate),
-		lastUpdated: Date.parse(galleryExtension.lastUpdated),
+		lastUpdated: Date.parse(version.lastUpdated), // {{SQL CARBON EDIT}} We don't have the lastUpdated at the top level currently
 		webExtension: !!galleryExtension.tags?.includes(WEB_EXTENSION_TAG),
 		assets,
 		properties: {
@@ -886,7 +886,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	}
 
 	private async getAsset(asset: IGalleryExtensionAsset, options: IRequestOptions = {}, token: CancellationToken = CancellationToken.None): Promise<IRequestContext> {
-		const commonHeaders = await this.commonHeadersPromise;
+		const commonHeaders = {}; // await this.commonHeadersPromise; {{SQL CARBON EDIT}} Because we query other sources such as github don't insert the custom VS headers - otherwise Electron will make a CORS preflight request which not all endpoints support.
 		const baseOptions = { type: 'GET' };
 		const headers = { ...commonHeaders, ...(options.headers || {}) };
 		options = { ...options, ...baseOptions, headers };

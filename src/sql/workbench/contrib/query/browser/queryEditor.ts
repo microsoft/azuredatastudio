@@ -272,6 +272,7 @@ export class QueryEditor extends EditorPane {
 				this._listDatabasesActionItem = this.instantiationService.createInstance(actions.ListDatabasesActionItem, this, action);
 				this._register(this._listDatabasesActionItem.attachStyler(this.themeService));
 			}
+			return this._listDatabasesActionItem;
 		}
 
 		return null;
@@ -332,7 +333,7 @@ export class QueryEditor extends EditorPane {
 	public override async setInput(newInput: QueryEditorInput, options: IEditorOptions, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		const oldInput = this.input;
 
-		if (newInput.matches(oldInput)) {
+		if (oldInput && newInput.matches(oldInput)) {
 			return Promise.resolve();
 		}
 

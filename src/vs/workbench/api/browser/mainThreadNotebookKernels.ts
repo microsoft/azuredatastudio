@@ -17,7 +17,7 @@ import { INotebookEditorService } from 'vs/workbench/contrib/notebook/browser/no
 import { INotebookCellExecution, INotebookExecutionService } from 'vs/workbench/contrib/notebook/common/notebookExecutionService';
 import { INotebookKernel, INotebookKernelChangeEvent, INotebookKernelService } from 'vs/workbench/contrib/notebook/common/notebookKernelService';
 import { SerializableObjectWithBuffers } from 'vs/workbench/services/extensions/common/proxyIdentifier';
-import { ExtHostContext, ExtHostNotebookKernelsShape, IExtHostContext, INotebookKernelDto2, MainContext, MainThreadNotebookKernelsShape } from '../common/extHost.protocol';
+import { ExtHostContext, ExtHostNotebookKernelsShape, ICellExecuteUpdateDto, IExtHostContext, INotebookKernelDto2, MainThreadNotebookKernelsShape } from '../common/extHost.protocol'; // {{SQL CARBON EDIT}} Disable VS Code notebooks
 
 abstract class MainThreadKernel implements INotebookKernel {
 

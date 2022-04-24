@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.35.0",
-  "distro": "c6e9b0f1f7a597de5db1c7c4f46991e09e9714b3",
+  "distro": "8a2c23c492956322639d994a215dd196d00cf016",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -39,8 +39,6 @@
     "download-builtin-extensions": "node build/lib/builtInExtensions.js",
     "download-builtin-extensions-cg": "node build/lib/builtInExtensionsCG.js",
     "monaco-compile-check": "tsc -p src/tsconfig.monaco.json --noEmit",
-    "strict-vscode": "node --max_old_space_size=4095 node_modules/typescript/bin/tsc -p src/tsconfig.vscode.json",
-    "strict-vscode-watch": "node --max_old_space_size=4095 node_modules/typescript/bin/tsc -p src/tsconfig.vscode.json --watch",
     "strict-initialization-watch": "tsc --watch -p src/tsconfig.json --noEmit --strictPropertyInitialization",
     "tsec-compile-check": "node node_modules/tsec/bin/tsec -p src/tsconfig.tsec.json",
     "vscode-dts-compile-check": "node node_modules/tsec/bin/tsec -p src/tsconfig.vscode-dts.json && node node_modules/tsec/bin/tsec -p src/tsconfig.vscode-proposed-dts.json",

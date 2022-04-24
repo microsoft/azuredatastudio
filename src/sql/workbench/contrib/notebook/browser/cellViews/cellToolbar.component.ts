@@ -106,6 +106,7 @@ export class CellToolbarComponent {
 			);
 		}
 		taskbarContent.push(
+			{ action: splitCellButton },
 			{ element: addCellDropdownContainer },
 			{ action: moveCellDownButton },
 			{ action: moveCellUpButton },

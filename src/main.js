@@ -401,6 +401,7 @@ function configureCrashReporter() {
 	}
 
 	// Start crash reporter for all processes
+	/* {{SQL CARBON EDIT}} Disable crash reporting until we're actually set up to use it
 	const productName = (product.crashReporter ? product.crashReporter.productName : undefined) || product.nameShort;
 	const companyName = (product.crashReporter ? product.crashReporter.companyName : undefined) || 'Microsoft';
 	if (process.env['VSCODE_DEV']) {
@@ -420,6 +421,7 @@ function configureCrashReporter() {
 			compress: true
 		});
 	}
+	*/
 }
 
 /**

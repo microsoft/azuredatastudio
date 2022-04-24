@@ -838,13 +838,14 @@ export class ExtensionEditor extends EditorPane {
 		const moreInfo = append(moreInfoContainer, $('.more-info'));
 		if (gallery) {
 			append(moreInfo,
+				/* {{SQL CARBON EDIT}} We don't keep track of when an extension was released
 				$('.more-info-entry', undefined,
 					$('div', undefined, localize('release date', "Released on")),
 					$('div', undefined, new Date(gallery.releaseDate).toLocaleString(undefined, { hour12: false }))
-				),
+				),*/
 				$('.more-info-entry', undefined,
 					$('div', undefined, localize('last updated', "Last updated")),
-					$('div', undefined, new Date(gallery.lastUpdated).toLocaleString(undefined, { hour12: false }))
+					$('div', undefined, new Date(gallery.lastUpdated).toLocaleDateString(undefined, { hour12: false })) // {{SQL CARBON EDIT}} Just display date - we don't require time being accurate
 				)
 			);
 		}
@@ -1514,8 +1515,8 @@ export class ExtensionEditor extends EditorPane {
 					$('td', undefined, l.id),
 					$('td', undefined, l.name),
 					$('td', undefined, ...join(l.extensions.map(ext => $('code', undefined, ext)), ' ')),
-					$('td', undefined, document.createTextNode(l.hasGrammar ? '✔︎' : '—')),
-					$('td', undefined, document.createTextNode(l.hasSnippets ? '✔︎' : '—'))
+					$('td', undefined, document.createTextNode(l.hasGrammar ? 'âœ”ï¸Ž' : 'â€”')),
+					$('td', undefined, document.createTextNode(l.hasSnippets ? 'âœ”ï¸Ž' : 'â€”'))
 				))
 			)
 		);

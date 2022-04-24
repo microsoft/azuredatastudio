@@ -730,7 +730,7 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 		let allExtensions: string[] = [];
 
 		// List of built-in language IDs to associate the query editor for. These are case sensitive.
-		NotebookEditorInputAssociation.languages.forEach(lang => {
+		NotebookEditorLanguageAssociation.languages.forEach(lang => {
 			const langExtensions = this._modeService.getExtensions(lang);
 			allExtensions = allExtensions.concat(langExtensions);
 		});
@@ -741,37 +741,37 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 		// Create the selector from the list of all the language extensions we want to associate with the
 		// notebook editor
 		const selector = `*{${allExtensions.join(',')}}`;
-		this._registeredOverrides.add(this._editorOverrideService.registerEditor(
+		this._registeredOverrides.add(this._editorResolverService.registerEditor(
 			selector,
 			{
 				id: NotebookEditor.ID,
 				label: NotebookEditor.LABEL,
-				describes: (currentEditor) => currentEditor instanceof FileNotebookInput,
-				priority: ContributedEditorPriority.builtin
+				priority: RegisteredEditorPriority.builtin
 			},
 			{},
-			(resource, options, group) => {
-				const fileInput = this._editorService.createEditorInput({
-					resource: resource
-				}) as FileEditorInput;
+			(editorInput, group) => {
+				const fileInput = this._editorService.createEditorInput(editorInput) as FileEditorInput;
 				// Try to convert the input, falling back to just a plain file input if we're unable to
-				const newInput = this.tryConvertInput(fileInput) ?? fileInput;
-				return { editor: newInput, options: options, group: group };
+				const newInput = this.convertInput(fileInput);
+				return { editor: newInput, options: editorInput.options, group: group };
 			},
-			(diffEditorInput, options, group) => {
+			undefined,
+			(diffEditorInput, group) => {
+				const diffEditorInputImpl = this._editorService.createEditorInput(diffEditorInput) as DiffEditorInput;
 				// Try to convert the input, falling back to the original input if we're unable to
-				const newInput = this.tryConvertInput(diffEditorInput) ?? diffEditorInput;
-				return { editor: newInput, options: options, group: group };
+				const newInput = this.convertInput(diffEditorInputImpl);
+				return { editor: newInput, options: diffEditorInput.options, group: group };
 			}
 		));
 	}
 
-	private tryConvertInput(input: IEditorInput): IEditorInput | undefined {
+	private convertInput(input: IEditorInput): IEditorInput {
 		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
 		const notebookEditorInput = langAssociation?.syncConvertInput?.(input);
 		if (!notebookEditorInput) {
+			// Fall back to original input if we failed to convert
 			this._logService.warn('Unable to create input for resolving editor ', input instanceof DiffEditorInput ? `${input.primary.resource.toString()} <-> ${input.secondary.resource.toString()}` : input.resource.toString());
-			return undefined;
+			return input;
 		}
 		return notebookEditorInput;
 	}
