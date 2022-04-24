@@ -96,7 +96,9 @@ export const enum NbTelemetryAction {
 	RunAll = 'RunNotebook',
 	AddCell = 'AddCell',
 	KernelChanged = 'KernelChanged',
-	NewNotebookFromConnections = 'NewNotebookWithConnectionProfile'
+	NewNotebookFromConnections = 'NewNotebookWithConnectionProfile',
+	UndoCell = 'UndoCell',
+	RedoCell = 'RedoCell'
 }
 
 export const enum TelemetryPropertyName {

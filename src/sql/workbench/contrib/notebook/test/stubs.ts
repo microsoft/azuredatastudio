@@ -21,6 +21,8 @@ import { IEditorPane } from 'vs/workbench/common/editor';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { INotebookView, INotebookViewCell, INotebookViewMetadata, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo, private _cells?: ICellModel[], private _testContents?: nb.INotebookContents) {
@@ -157,6 +159,8 @@ export class NotebookModelStub implements INotebookModel {
 	}
 	requestConnection(): Promise<boolean> {
 		throw new Error('Method not implemented.');
+	}
+	sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties?: ITelemetryEventProperties): void {
 	}
 }
 

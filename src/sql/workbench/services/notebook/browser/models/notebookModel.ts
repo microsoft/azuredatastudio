@@ -25,7 +25,7 @@ import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { Deferred } from 'sql/base/common/promise';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -37,6 +37,8 @@ import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryText
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { AddCellEdit, DeleteCellEdit, MoveCellEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
+import { deepClone } from 'vs/base/common/objects';
+
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
 * warning, or informational message. Default is error.
@@ -476,6 +478,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
+	public sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties: ITelemetryEventProperties = {}): void {
+		let properties: ITelemetryEventProperties = deepClone(additionalProperties);
+		properties['azdata_notebook_guid'] = this.getMetaValue('azdata_notebook_guid');
+		this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, action)
+			.withAdditionalProperties(properties)
+			.send();
+	}
+
 	private loadContentMetadata(metadata: INotebookMetadataInternal): void {
 		this._savedKernelInfo = metadata.kernelspec;
 		this._defaultLanguageInfo = metadata.language_info;
@@ -491,9 +501,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (metadata.azdata_notebook_guid && metadata.azdata_notebook_guid.length === 36) {
 			//Verify if it is actual GUID and then send it to the telemetry
 			if (isUUID(metadata.azdata_notebook_guid)) {
-				this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.Open)
-					.withAdditionalProperties({ azdata_notebook_guid: metadata.azdata_notebook_guid })
-					.send();
+				this.sendNotebookTelemetryActionEvent(TelemetryKeys.TelemetryAction.Open);
 			}
 		}
 		Object.keys(metadata).forEach(key => {
@@ -1162,12 +1170,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		} else if (kernel.info) {
 			this.updateLanguageInfo(kernel.info.language_info);
 		}
-		this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.KernelChanged)
-			.withAdditionalProperties({
-				name: kernel.name,
-				alias: kernelAlias || ''
-			})
-			.send();
+		this.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.KernelChanged, {
+			name: kernel.name,
+			alias: kernelAlias || ''
+		});
 		this._kernelChangedEmitter.fire({
 			newValue: kernel,
 			oldValue: undefined,

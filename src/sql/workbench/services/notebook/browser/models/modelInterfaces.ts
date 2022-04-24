@@ -24,6 +24,9 @@ import type { FutureInternal } from 'sql/workbench/services/notebook/browser/int
 import { ICellValue, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
 import { IPosition } from 'vs/editor/common/core/position';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+
 
 export enum ViewMode {
 	Notebook,
@@ -439,6 +442,12 @@ export interface INotebookModel {
 
 	requestConnection(): Promise<boolean>;
 
+	/**
+	 * Create and send a Notebook Telemetry Event
+	 * @param action Telemetry action
+	 * @param additionalProperties Additional properties to send.
+	*/
+	sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties?: ITelemetryEventProperties): void;
 }
 
 export interface NotebookContentChange {

@@ -29,7 +29,6 @@ import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbenc
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { IPosition } from 'vs/editor/common/core/position';
 
@@ -94,7 +93,6 @@ export class CellModel extends Disposable implements ICellModel {
 		@optional(INotebookService) private _notebookService?: INotebookService,
 		@optional(ICommandService) private _commandService?: ICommandService,
 		@optional(IConfigurationService) private _configurationService?: IConfigurationService,
-		@optional(IAdsTelemetryService) private _telemetryService?: IAdsTelemetryService,
 	) {
 		super();
 		this.id = `${modelId++}`;
@@ -568,10 +566,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this._outputCounter = 0;
 			// Hide IntelliSense suggestions list when running cell to match SSMS behavior
 			this._commandService.executeCommand('hideSuggestWidget');
-			const azdata_notebook_guid: string = this.notebookModel.getMetaValue('azdata_notebook_guid');
-			this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunCell)
-				.withAdditionalProperties({ cell_language: kernel.name, azdata_cell_guid: this._cellGuid, azdata_notebook_guid })
-				.send();
+			this.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RunCell, { cell_language: kernel.name, azdata_cell_guid: this._cellGuid });
 			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
 			// This matches the same behavior as JupyterLab
 			if (this.future && this.future.inProgress) {
