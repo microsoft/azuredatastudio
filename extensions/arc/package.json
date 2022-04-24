@@ -177,6 +177,20 @@
                           "inputWidth": "350px",
                           "variableName": "AZDATA_NB_VAR_ARC_CLUSTER_CONTEXT",
                           "configFileVariableName": "AZDATA_NB_VAR_ARC_CONFIG_FILE"
+                        },
+                        {
+                          "type": "options",
+                          "label": "%arc.data.controller.connectivity.mode%",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                          "options": {
+                            "values": [
+                              "Indirect",
+                              "Direct"
+                            ],
+                            "defaultValue": "Indirect",
+                            "optionsType": "radio"
+                          }
                         }
                       ]
                     }
@@ -259,20 +273,6 @@
                           "type": "readonly_text",
                           "label": "%arc.data.controller.details.description%",
                           "labelWidth": "600px"
-                        },
-                        {
-                          "type": "options",
-                          "label": "%arc.data.controller.connectivity.mode%",
-                          "required": true,
-                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                          "options": {
-                            "values": [
-                              "Indirect",
-                              "Direct"
-                            ],
-                            "defaultValue": "Indirect",
-                            "optionsType": "radio"
-                          }
                         },
                         {
                           "type": "text",
