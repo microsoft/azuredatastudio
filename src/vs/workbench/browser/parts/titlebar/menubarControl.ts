@@ -38,50 +38,54 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { IsMacNativeContext, IsWebContext } from 'vs/platform/contextkey/common/contextkeys';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import product from 'vs/platform/product/common/product';
+import { TSGOPS_WEB_QUALITY } from 'sql/workbench/common/constants';
 
 export type IOpenRecentAction = IAction & { uri: URI, remoteAuthority?: string };
 
-MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
-	submenu: MenuId.MenubarFileMenu,
-	title: {
-		value: 'File',
-		original: 'File',
-		mnemonicTitle: localize({ key: 'mFile', comment: ['&& denotes a mnemonic'] }, "&&File"),
-	},
-	order: 1
-});
+if (product.quality !== TSGOPS_WEB_QUALITY) {	// {{SQL CARBON EDIT}}
+	MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
+		submenu: MenuId.MenubarFileMenu,
+		title: {
+			value: 'File',
+			original: 'File',
+			mnemonicTitle: localize({ key: 'mFile', comment: ['&& denotes a mnemonic'] }, "&&File"),
+		},
+		order: 1
+	});
 
-MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
-	submenu: MenuId.MenubarEditMenu,
-	title: {
-		value: 'Edit',
-		original: 'Edit',
-		mnemonicTitle: localize({ key: 'mEdit', comment: ['&& denotes a mnemonic'] }, "&&Edit")
-	},
-	order: 2
-});
+	MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
+		submenu: MenuId.MenubarEditMenu,
+		title: {
+			value: 'Edit',
+			original: 'Edit',
+			mnemonicTitle: localize({ key: 'mEdit', comment: ['&& denotes a mnemonic'] }, "&&Edit")
+		},
+		order: 2
+	});
 
-/* {{SQL CARBON EDIT}} - Disable unused menus
-MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
-	submenu: MenuId.MenubarSelectionMenu,
-	title: {
-		value: 'Selection',
-		original: 'Selection',
-		mnemonicTitle: localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection")
-	},
-	order: 3
-});
-*/
+	/* {{SQL CARBON EDIT}} - Disable unused menus
+	MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
+		submenu: MenuId.MenubarSelectionMenu,
+		title: {
+			value: 'Selection',
+			original: 'Selection',
+			mnemonicTitle: localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection")
+		},
+		order: 3
+	});
+	*/
 
-MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
-	submenu: MenuId.MenubarViewMenu,
-	title: {
-		value: 'View',
-		original: 'View',
-		mnemonicTitle: localize({ key: 'mView', comment: ['&& denotes a mnemonic'] }, "&&View")
-	},
-	order: 4
-});
+	MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
+		submenu: MenuId.MenubarViewMenu,
+		title: {
+			value: 'View',
+			original: 'View',
+			mnemonicTitle: localize({ key: 'mView', comment: ['&& denotes a mnemonic'] }, "&&View")
+		},
+		order: 4
+	});
+}
 
 /* {{SQL CARBON EDIT}} - Disable unused menus
 MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
