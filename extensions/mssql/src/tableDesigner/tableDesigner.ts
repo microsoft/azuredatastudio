@@ -40,7 +40,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			isNewTable: false,
 			name: name,
 			schema: schema,
-			id: `${connectionString}|${database}|${schema}|${name}`,
+			id: `${sqlProviderName}|${server}|${database}|${schema}|${name}`,
 			connectionString: connectionString
 		}, telemetryInfo);
 	}));

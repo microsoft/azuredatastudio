@@ -27,11 +27,13 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	private _onStateChange = new Emitter<DesignerStateChangedEventArgs>();
 	private _onInitialized = new Emitter<void>();
 	private _onEditProcessed = new Emitter<DesignerEditProcessedEventArgs>();
+	private _onRefreshRequested = new Emitter<void>();
 	private _originalViewModel: DesignerViewModel;
 
 	public readonly onInitialized: Event<void> = this._onInitialized.event;
 	public readonly onEditProcessed: Event<DesignerEditProcessedEventArgs> = this._onEditProcessed.event;
 	public readonly onStateChange: Event<DesignerStateChangedEventArgs> = this._onStateChange.event;
+	public readonly onRefreshRequested: Event<void> = this._onRefreshRequested.event;
 
 	private readonly designerEditTypeDisplayValue: { [key: number]: string } = {
 		0: 'Add', 1: 'Remove', 2: 'Update'
@@ -140,10 +142,12 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		try {
 			this.updateState(this.valid, this.dirty, 'publish');
 			const result = await this._provider.publishChanges(this.tableInfo);
-			this._originalViewModel = this._viewModel;
+			this._viewModel = result.viewModel;
+			this._originalViewModel = result.viewModel;
 			saveNotificationHandle.updateMessage(localize('tableDesigner.publishChangeSuccess', "The changes have been successfully published."));
 			this.tableInfo = result.newTableInfo;
 			this.updateState(true, false);
+			this._onRefreshRequested.fire();
 			publishEvent.withAdditionalMeasurements({
 				'elapsedTimeMs': new Date().getTime() - startTime
 			}).send();
