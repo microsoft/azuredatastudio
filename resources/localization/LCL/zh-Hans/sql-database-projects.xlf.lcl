@@ -15,8 +15,8 @@
         <Item ItemId=";(...) firmation" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.]]></Val>
-            <Tgt Cat="Text" Stat="Update" Orig="New">
-              <Val><![CDATA[当前安装的 .NET Core SDK 版本为 {0}，这是不受支持的。项目生成将不起作用。请安装 .NET Core SDK 版本 3.1，或在设置中更新 .NET Core SDK 支持的版本位置(如果已安装)。]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[当前安装的 .NET Core SDK 版本为 {0}，这是不受支持的。项目生成将不起作用。请安装 .NET Core SDK 版本 3.1 或更高版本，或在设置中更新 .NET SDK 支持的版本位置(如果已安装)。]]></Val>
             </Tgt>
             <Prev Cat="Text">
               <Val><![CDATA[Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.]]></Val>
@@ -2425,6 +2425,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.sqlDatabaseProjects.DotnetInstallationConfirmation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[找不到 .NET SDK。项目生成将不起作用。请安装 .NET Core SDK 版本 3.1 或更高版本，或在设置中更新 .Net SDK 位置(如果已安装)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2761,8 +2764,8 @@
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.addSqlBinding" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add SQL Binding (preview)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[添加 SQL 绑定]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[添加 SQL 绑定(预览)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Add SQL Binding]]></Val>
@@ -2845,6 +2848,9 @@
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.dotnetInstallLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Full path to .NET SDK on the machine.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[计算机上到 .NET SDK 的完整路径。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
