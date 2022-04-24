@@ -19,7 +19,8 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			database: context.connectionProfile.databaseName,
 			isNewTable: true,
 			id: generateUuid(),
-			connectionString: connectionString
+			connectionString: connectionString,
+			accessToken: context.connectionProfile.options.azureAccountToken
 		}, telemetryInfo);
 	}));
 
@@ -37,7 +38,8 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			name: name,
 			schema: schema,
 			id: `${sqlProviderName}|${server}|${database}|${schema}|${name}`,
-			connectionString: connectionString
+			connectionString: connectionString,
+			accessToken: context.connectionProfile.options.azureAccountToken
 		}, telemetryInfo);
 	}));
 }
