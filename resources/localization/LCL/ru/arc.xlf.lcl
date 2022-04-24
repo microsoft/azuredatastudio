@@ -4078,8 +4078,8 @@
       <Item ItemId=";extensions/arc/package.arc.sql.cost.summary.service.tier.learn.more.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Выберите один из последних уровней служб vCore, доступных для Управляемого экземпляра SQL Managed Instance — Azure Arc, включая уровни "Общего назначения" и "Критически важный для бизнеса". {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите один из последних уровней обслуживания для виртуальных ядер, которые доступны для Управляемых экземпляров SQL — Azure Arc, включая уровни обслуживания \"Общего назначения\" и \"Критически важный для бизнеса\".]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}]]></Val>
@@ -4336,8 +4336,8 @@
       <Item ItemId=";extensions/arc/package.arc.sql.service.tier.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Выберите один из последних уровней служб vCore, доступных для Управляемого экземпляра SQL Managed Instance — Azure Arc, включая уровни "Общего назначения" и "Критически важный для бизнеса". {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите один из последних уровней обслуживания для виртуальных ядер, которые доступны для Управляемых экземпляров SQL — Azure Arc, включая уровни обслуживания \"Общего назначения\" и \"Критически важный для бизнеса\".]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}]]></Val>
