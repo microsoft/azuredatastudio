@@ -25,6 +25,8 @@ import { escape } from 'vs/base/common/strings';
 import { IImageCalloutDialogOptions, ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
 import { TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookLinkHandler } from 'sql/workbench/contrib/notebook/browser/notebookLinkHandler';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
@@ -39,24 +41,25 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	@HostListener('document:keydown', ['$event'])
 	async onkeydown(e: KeyboardEvent) {
 		if (this.cellModel?.currentMode === CellEditModes.SPLIT || this.cellModel?.currentMode === CellEditModes.MARKDOWN) {
+			const keyEvent = new StandardKeyboardEvent(e);
 			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
-			if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+			if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_B) {
 				// Bold Text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.BOLD);
-			} else if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_I) {
 				// Italicize text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.ITALIC);
-			} else if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_U) {
 				// Underline text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.UNDERLINE);
-			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'k') {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_K) {
 				// Code Block
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.CODE);
-			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'h') {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_H) {
 				// Highlight Text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.HIGHLIGHT);
