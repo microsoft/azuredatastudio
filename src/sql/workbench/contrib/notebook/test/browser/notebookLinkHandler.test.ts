@@ -61,6 +61,9 @@ suite('Noteboook Link Handler', function (): void {
 
 		result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: '/tmp/inner/stuff.png' }), configurationService);
 		assert.strictEqual(result.getLinkUrl(), `.${path.sep}inner${path.sep}stuff.png`, 'Basic link test below folder failed');
+
+		result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: '/other/stuff.png' }), configurationService);
+		assert.strictEqual(result.getLinkUrl(), `..${path.sep}other${path.sep}stuff.png`, 'Basic link test in different above folder failed');
 	});
 
 	test('Should return anchor links', () => {

@@ -129,9 +129,31 @@ suite('Link Callout Dialog', function (): void {
 		assert.strictEqual(unquoteText(undefined), undefined);
 	});
 
-	test('Should return file link properly', async function (): Promise<void> {
+	test('Should return absolute file link properly', async function (): Promise<void> {
 		const defaultLabel = 'defaultLabel';
 		const sampleUrl = 'C:/Test/Test.ipynb';
+		let linkCalloutDialog = new LinkCalloutDialog('Title', 'below', defaultDialogProperties, defaultLabel, sampleUrl,
+			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
+		linkCalloutDialog.render();
+
+		let deferred = new Deferred<ILinkCalloutDialogOptions>();
+		// When I first open the callout dialog
+		linkCalloutDialog.open().then(value => {
+			deferred.resolve(value);
+		});
+		linkCalloutDialog.url = sampleUrl;
+
+		// And insert the dialog
+		linkCalloutDialog.insert();
+		let result = await deferred.promise;
+		assert.strictEqual(result.insertUnescapedLinkLabel, defaultLabel, 'Label not returned correctly');
+		assert.strictEqual(result.insertUnescapedLinkUrl, sampleUrl, 'URL not returned correctly');
+		assert.strictEqual(result.insertEscapedMarkdown, `[${defaultLabel}](${sampleUrl})`, 'Markdown not returned correctly');
+	});
+
+	test('Should return relative file link properly', async function (): Promise<void> {
+		const defaultLabel = 'defaultLabel';
+		const sampleUrl = '../../Test.ipynb';
 		let linkCalloutDialog = new LinkCalloutDialog('Title', 'below', defaultDialogProperties, defaultLabel, sampleUrl,
 			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
 		linkCalloutDialog.render();
