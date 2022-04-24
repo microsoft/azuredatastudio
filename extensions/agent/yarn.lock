@@ -182,6 +182,21 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
+"@microsoft/vscodetestcover@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/vscodetestcover/-/vscodetestcover-1.2.0.tgz#f1b5c590a9fa4303435e3066224c4dc87239c35e"
+  integrity sha512-7h6/JV3HR0z+MyPyt0guO/2iUWQ/NxdhRDttD2t7GFnWEDCLyZSVsUEAPpOaPB3HT7OkXtHMD/0Cv/dl5G+Tkw==
+  dependencies:
+    decache "^4.4.0"
+    glob "^7.1.2"
+    istanbul-lib-coverage "^3.0.0"
+    istanbul-lib-hook "^3.0.0"
+    istanbul-lib-instrument "^4.0.0"
+    istanbul-lib-report "^3.0.0"
+    istanbul-lib-source-maps "^3.0.6"
+    istanbul-reports "^3.0.0"
+    mocha "^5.2.0"
+
 "@types/mocha@^5.2.5":
   version "5.2.6"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-5.2.6.tgz#b8622d50557dd155e9f2f634b7d68fd38de5e94b"
@@ -768,21 +783,6 @@ vscode-nls@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/vscode-nls/-/vscode-nls-4.1.2.tgz#ca8bf8bb82a0987b32801f9fddfdd2fb9fd3c167"
   integrity sha512-7bOHxPsfyuCqmP+hZXscLhiHwe7CSuFE4hyhbs22xPIhQ4jv99FcR4eBzfYYVLP356HNFpdvz63FFb/xw6T4Iw==
-
-vscodetestcover@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/vscodetestcover/-/vscodetestcover-1.1.0.tgz#ea2bc2fb0c54ca4084057883e7e1614a20533e14"
-  integrity sha512-b/5mYqWC4yPxPUM1G8MD8ZnRt7eYd1IxAg/vdTE6JiNZlpGtxkDv91eXbF4TbQVlOPoqTzfhpY5GxbZbHVv+DQ==
-  dependencies:
-    decache "^4.4.0"
-    glob "^7.1.2"
-    istanbul-lib-coverage "^3.0.0"
-    istanbul-lib-hook "^3.0.0"
-    istanbul-lib-instrument "^4.0.0"
-    istanbul-lib-report "^3.0.0"
-    istanbul-lib-source-maps "^3.0.6"
-    istanbul-reports "^3.0.0"
-    mocha "^5.2.0"
 
 wrappy@1:
   version "1.0.2"
