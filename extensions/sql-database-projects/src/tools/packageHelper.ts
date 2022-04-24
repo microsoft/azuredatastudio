@@ -38,7 +38,7 @@ export class PackageHelper {
 	/**
 	 * Runs dotnet add package to add a package reference to the specified project. If the project already has a package reference
 	 * for this package version, the project file won't get updated
-	 * @param projectPath uri of project to add package to
+	 * @param projectUri uri of project to add package to
 	 * @param packageName name of package
 	 * @param packageVersion optional version of package. If none, latest will be pulled in
 	 */
@@ -53,7 +53,7 @@ export class PackageHelper {
 
 	/**
 	 * Adds specified package to Azure Functions project the specified file is a part of
-	 * @param filePath uri of file to find the containing AF project of to add package reference to
+	 * @param fileUri uri of file to find the containing AF project of to add package reference to
 	 * @param packageName package to add reference to
 	 * @param packageVersion optional version of package. If none, latest will be pulled in
 	 */

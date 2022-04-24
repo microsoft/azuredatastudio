@@ -92,6 +92,12 @@ export class TreeSelectionHandler {
 
 	/**
 	 *
+	 * @param connectionManagementService
+	 * @param objectExplorerService
+	 * @param isDoubleClick
+	 * @param isKeyboard
+	 * @param selection
+	 * @param tree
 	 * @param connectionCompleteCallback A function that gets called after a connection is established due to the selection, if needed
 	 */
 	private handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: AsyncServerTree | ITree, connectionCompleteCallback: () => void): void {

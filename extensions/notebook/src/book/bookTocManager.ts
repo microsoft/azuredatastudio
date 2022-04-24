@@ -325,7 +325,7 @@ export class BookTocManager implements IBookTocManager {
 	 * Moves a section to a book top level or another book's section. If there's a target section we add the the targetSection directory if it has one and append it to the
 	 * notebook's path. The overwrite option is set to false to prevent any issues with duplicated file names.
 	 * @param section The section that's been moved.
-	 * @param book The target book.
+	 * @param bookItem The target book.
 	*/
 	async moveSectionFiles(section: BookTreeItem, bookItem: BookTreeItem): Promise<void> {
 		const uri = path.posix.join(path.posix.sep, path.relative(section.rootContentPath, section.book.contentPath));
@@ -369,8 +369,8 @@ export class BookTocManager implements IBookTocManager {
 	/**
 	 * Moves a file to a book top level or a book's section. If there's a target section we add the the targetSection directory if it has one and append it to the
 	 * files's path. The overwrite option is set to false to prevent any issues with duplicated file names.
-	 * @param element Notebook, Markdown File, or book's notebook that will be added to the book.
-	 * @param targetBook Book that will be modified.
+	 * @param file Notebook, Markdown File, or book's notebook that will be added to the book.
+	 * @param book Book that will be modified.
 	*/
 	async moveFile(file: BookTreeItem, book: BookTreeItem): Promise<void> {
 		const rootPath = book.rootContentPath;

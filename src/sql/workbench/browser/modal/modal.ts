@@ -172,6 +172,13 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Constructor for modal
 	 * @param _title Title of the modal, if undefined, the title section is not rendered
 	 * @param _name Name of the modal, used for telemetry
+	 * @param _telemetryService
+	 * @param layoutService
+	 * @param _clipboardService
+	 * @param _themeService
+	 * @param logService
+	 * @param textResourcePropertiesService
+	 * @param _contextKeyService
 	 * @param options Modal options
 	 */
 	constructor(
@@ -530,7 +537,6 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Returns a footer button matching the provided label
 	 * @param label Label to show on the button
-	 * @param onSelect The callback to call when the button is selected
 	 */
 	protected findFooterButton(label: string): Button | undefined {
 		return this._footerButtons.find(e => {

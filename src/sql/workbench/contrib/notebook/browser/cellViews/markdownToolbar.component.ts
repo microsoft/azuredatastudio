@@ -349,7 +349,6 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 
 	/**
 	 * Instantiate modal for use as callout when inserting Link or Image into markdown.
-	 * @param calloutStyle Style of callout passed in to determine which callout is rendered.
 	 * Returns markup created after user enters values and submits the callout.
 	 */
 	private async createCallout(type: MarkdownButtonType, triggerElement: HTMLElement): Promise<ILinkCalloutDialogOptions> {

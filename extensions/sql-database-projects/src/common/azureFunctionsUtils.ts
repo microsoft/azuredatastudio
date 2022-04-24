@@ -73,7 +73,7 @@ export async function setLocalAppSetting(projectFolder: string, key: string, val
 
 /**
  * Gets the Azure Functions project that contains the given file if the project is open in one of the workspace folders
- * @param filePath file that the containing project needs to be found for
+ * @param fileUri file that the containing project needs to be found for
  * @returns uri of project or undefined if project couldn't be found
  */
 export async function getAFProjectContainingFile(fileUri: vscode.Uri): Promise<vscode.Uri | undefined> {

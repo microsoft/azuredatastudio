@@ -176,7 +176,7 @@ export abstract class ModelViewBase extends ViewBase {
 
 	/**
 	 * registers local model
-	 * @param localFilePath local file path
+	 * @param models
 	 */
 	public async importLocalModel(models: ModelViewData[]): Promise<void> {
 		return await this.sendDataRequest(RegisterLocalModelEventName, models);
@@ -192,7 +192,7 @@ export abstract class ModelViewBase extends ViewBase {
 
 	/**
 	 * download azure model
-	 * @param args azure resource
+	 * @param resource azure resource
 	 */
 	public async downloadAzureModel(resource: AzureModelResource | undefined): Promise<string> {
 		return await this.sendDataRequest(DownloadAzureModelEventName, resource);
@@ -207,7 +207,7 @@ export abstract class ModelViewBase extends ViewBase {
 
 	/**
 	 * registers azure model
-	 * @param args azure resource
+	 * @param models
 	 */
 	public async importAzureModel(models: ModelViewData[]): Promise<void> {
 		return await this.sendDataRequest(RegisterAzureModelEventName, models);
@@ -229,7 +229,9 @@ export abstract class ModelViewBase extends ViewBase {
 
 	/**
 	 * registers azure model
-	 * @param args azure resource
+	 * @param model
+	 * @param filePath
+	 * @param params
 	 */
 	public async generatePredictScript(model: ImportedModel | undefined, filePath: string | undefined, params: PredictParameters | undefined): Promise<void> {
 		const args: PredictModelEventArgs = Object.assign({}, params, {

@@ -182,7 +182,6 @@ export class ConnectionStatusManager {
 	 * Only if the db name in the original uri is different when connection is complete, we need to use the original uri
 	 * Returns the generated ownerUri for the connection profile if not existing connection found
 	 * @param ownerUri connection owner uri to find an existing connection
-	 * @param purpose purpose for the connection
 	 */
 	public getOriginalOwnerUri(ownerUri: string): string {
 		let ownerUriToReturn: string = ownerUri;
