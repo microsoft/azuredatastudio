@@ -54,8 +54,6 @@ import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/
 import { MaskedLabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Emitter } from 'vs/base/common/event';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode } from 'vs/base/common/keyCodes';
 import { RedoCommand, UndoCommand } from 'vs/editor/browser/editorExtensions';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -119,27 +117,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		}));
-		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-			// Prevent the undo/redo from happening in other notebooks and to prevent the execution of undo/redo in the cell.
-			if (this.isActive() && this.activeCellId === '') {
-				let event = new StandardKeyboardEvent(e);
-				if ((event.metaKey && event.shiftKey && event.keyCode === KeyCode.KEY_Z) || event.ctrlKey && event.keyCode === KeyCode.KEY_Y) {
-					DOM.EventHelper.stop(event, true);
-					this._model.redo();
-				} else if ((event.ctrlKey || event.metaKey) && event.keyCode === KeyCode.KEY_Z) {
-					DOM.EventHelper.stop(event, true);
-					this._model.undo();
-				}
-			}
-		}));
 		this._register(RedoCommand.addImplementation(PRIORITY, 'notebook-cells-undo-redo', () => {
-			if (this._model) {
+			// Prevent the undo/redo from happening in other notebooks and to prevent the execution of undo/redo in the cell.
+			if (this.isActive() && this.activeCellId === '' && this._model) {
 				this._model.redo();
 			}
 			return false;
 		}));
 		this._register(UndoCommand.addImplementation(PRIORITY, 'notebook-cells-undo-redo', () => {
-			if (this._model) {
+			// Prevent the undo/redo from happening in other notebooks and to prevent the execution of undo/redo in the cell.
+			if (this.isActive() && this.activeCellId === '' && this._model) {
 				this._model.undo();
 			}
 			return false;
