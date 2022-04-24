@@ -6,7 +6,6 @@
 		"**/bat/**",
 		"**/configuration-editing/**",
 		"**/docker/**",
-		"**/extension-editing/**",
 		"**/git/**",
 		"**/github/**",
 		"**/github-authentication/**",

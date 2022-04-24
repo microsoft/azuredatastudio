@@ -177,7 +177,6 @@ const VSCODEExtensions = [
 	"bat",
 	"configuration-editing",
 	"docker",
-	"extension-editing",
 	"git-ui",
 	"git",
 	"github-authentication",
