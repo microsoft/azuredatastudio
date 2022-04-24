@@ -497,72 +497,74 @@ export class UpdateProjectFromDatabaseDialog {
 	}
 
 	public async handleUpdateButtonClick(): Promise<void> {
-		const serverDropdownValue = this.serverDropdown!.value! as azdata.CategoryValue as ConnectionDropdownValue;
-		const ownerUri = await getAzdataApi()!.connection.getUriForConnection(serverDropdownValue.connection.connectionId);
+		await vscode.window.showWarningMessage(constants.applyConfirmation, { modal: true }, constants.yesString).then(async (result) => {
+			if (result === constants.yesString) {
+				const serverDropdownValue = this.serverDropdown!.value! as azdata.CategoryValue as ConnectionDropdownValue;
+				const ownerUri = await getAzdataApi()!.connection.getUriForConnection(serverDropdownValue.connection.connectionId);
 
-		let connection = (await getAzdataApi()!.connection.getConnections(true)).filter(con => con.connectionId === serverDropdownValue.connection.connectionId)[0];
-		connection.databaseName = this.databaseDropdown!.value! as string;
+				let connection = (await getAzdataApi()!.connection.getConnections(true)).filter(con => con.connectionId === serverDropdownValue.connection.connectionId)[0];
+				connection.databaseName = this.databaseDropdown!.value! as string;
 
-		const credentials = await getAzdataApi()!.connection.getCredentials(connection.connectionId);
-		if (credentials.hasOwnProperty('password')) {
-			connection.password = connection.options.password = credentials.password;
-		}
+				const credentials = await getAzdataApi()!.connection.getCredentials(connection.connectionId);
+				if (credentials.hasOwnProperty('password')) {
+					connection.password = connection.options.password = credentials.password;
+				}
 
-		const connectionDetails: azdata.IConnectionProfile = {
-			id: connection.connectionId,
-			userName: connection.userName,
-			password: connection.password,
-			serverName: connection.serverName,
-			databaseName: connection.databaseName,
-			connectionName: connection.connectionName,
-			providerName: connection.providerId,
-			groupId: connection.groupId,
-			groupFullName: connection.groupFullName,
-			authenticationType: connection.authenticationType,
-			savePassword: connection.savePassword,
-			saveProfile: connection.saveProfile,
-			options: connection.options,
-		};
+				const connectionDetails: azdata.IConnectionProfile = {
+					id: connection.connectionId,
+					userName: connection.userName,
+					password: connection.password,
+					serverName: connection.serverName,
+					databaseName: connection.databaseName,
+					connectionName: connection.connectionName,
+					providerName: connection.providerId,
+					groupId: connection.groupId,
+					groupFullName: connection.groupFullName,
+					authenticationType: connection.authenticationType,
+					savePassword: connection.savePassword,
+					saveProfile: connection.saveProfile,
+					options: connection.options,
+				};
 
-		const sourceEndpointInfo: mssql.SchemaCompareEndpointInfo = {
-			endpointType: mssql.SchemaCompareEndpointType.Database,
-			databaseName: this.databaseDropdown!.value! as string,
-			serverDisplayName: serverDropdownValue.displayName,
-			serverName: serverDropdownValue.name!,
-			connectionDetails: connectionDetails,
-			ownerUri: ownerUri,
-			projectFilePath: '',
-			folderStructure: '',
-			targetScripts: [],
-			dataSchemaProvider: '',
-			packageFilePath: '',
-			connectionName: serverDropdownValue.connection.options.connectionName
-		};
+				const sourceEndpointInfo: mssql.SchemaCompareEndpointInfo = {
+					endpointType: mssql.SchemaCompareEndpointType.Database,
+					databaseName: this.databaseDropdown!.value! as string,
+					serverDisplayName: serverDropdownValue.displayName,
+					serverName: serverDropdownValue.name!,
+					connectionDetails: connectionDetails,
+					ownerUri: ownerUri,
+					projectFilePath: '',
+					folderStructure: '',
+					targetScripts: [],
+					dataSchemaProvider: '',
+					packageFilePath: '',
+					connectionName: serverDropdownValue.connection.options.connectionName
+				};
 
-		const targetEndpointInfo: mssql.SchemaCompareEndpointInfo = {
-			endpointType: mssql.SchemaCompareEndpointType.Project,
-			projectFilePath: this.projectFileTextBox!.value!,
-			folderStructure: this.folderStructureDropDown!.value as string,
-			targetScripts: [],
-			dataSchemaProvider: '',
-			connectionDetails: connectionDetails,
-			databaseName: '',
-			serverDisplayName: '',
-			serverName: '',
-			ownerUri: '',
-			packageFilePath: '',
-		};
+				const targetEndpointInfo: mssql.SchemaCompareEndpointInfo = {
+					endpointType: mssql.SchemaCompareEndpointType.Project,
+					projectFilePath: this.projectFileTextBox!.value!,
+					folderStructure: this.folderStructureDropDown!.value as string,
+					targetScripts: [],
+					dataSchemaProvider: '',
+					connectionDetails: connectionDetails,
+					databaseName: '',
+					serverDisplayName: '',
+					serverName: '',
+					ownerUri: '',
+					packageFilePath: '',
+				};
 
-		const model: UpdateProjectDataModel = {
-			sourceEndpointInfo: sourceEndpointInfo,
-			targetEndpointInfo: targetEndpointInfo,
-			action: this.action!
-		};
+				const model: UpdateProjectDataModel = {
+					sourceEndpointInfo: sourceEndpointInfo,
+					targetEndpointInfo: targetEndpointInfo,
+					action: this.action!
+				};
+				void this.updateProjectFromDatabaseCallback!(model);
+			}
 
-		getAzdataApi()!.window.closeDialog(this.dialog);
-		await this.updateProjectFromDatabaseCallback!(model);
-
-		this.dispose();
+			this.dispose();
+		});
 	}
 
 	async validate(): Promise<boolean> {

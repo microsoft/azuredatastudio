@@ -270,6 +270,7 @@ export const updateAction = localize('updateAction', "Update action");
 export const compareActionRadioButtonLabel = localize('compareActionRadiButtonLabel', "View changes in Schema Compare");
 export const updateActionRadioButtonLabel = localize('updateActionRadiButtonLabel', "Apply all changes");
 export const actionLabel = localize('actionLabel', "Action");
+export const applyConfirmation: string = localize('applyConfirmation', "Are you sure you want to update the target project?");
 
 // Update project from database
 
