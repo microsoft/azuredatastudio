@@ -8,7 +8,7 @@ import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } fr
 import { Registry } from 'vs/platform/registry/common/platform';
 import { WelcomePageContribution, WelcomePageAction, WelcomeInputSerializer } from 'sql/workbench/contrib/welcome/page/browser/welcomePage'; // {{SQL CARBON EDIT}} use our welcome page
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions, CATEGORIES } from 'vs/workbench/common/actions'; // {{SQL CARBON EDIT}}
-import { SyncActionDescriptor } from 'vs/platform/actions/common/actions'; // {{SQL CARBON EDIT}}
+import { MenuId, MenuRegistry, SyncActionDescriptor } from 'vs/platform/actions/common/actions'; // {{SQL CARBON EDIT}}
 import { WelcomePageContribution as WelcomePageContributionVs } from 'vs/workbench/contrib/welcome/page/browser/welcomePage'; // {{SQL CARBON EDIT}} use our welcome page
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
@@ -65,3 +65,13 @@ class WelcomeContributions {
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 	.registerWorkbenchContribution(WelcomeContributions, LifecyclePhase.Starting);
 // {{SQL CARBON EDIT}} - end preview startup customization
+
+// {{SQL CARBON EDIT}} We still use legacy welcome page - not walkthrough
+MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
+	group: '1_welcome',
+	command: {
+		id: 'workbench.action.showWelcomePage',
+		title: localize({ key: 'miWelcome', comment: ['&& denotes a mnemonic'] }, "&&Welcome")
+	},
+	order: 1
+});
