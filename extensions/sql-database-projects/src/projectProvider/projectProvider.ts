@@ -36,17 +36,6 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 */
 	get supportedProjectTypes(): dataworkspace.IProjectType[] {
 		return [{
-			id: constants.emptySqlDatabaseSdkProjectTypeId,
-			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
-			displayName: constants.emptySdkProjectTypeDisplayName,
-			description: constants.emptySdkProjectTypeDescription,
-			icon: IconPathHelper.colorfulSqlProject,
-			targetPlatforms: Array.from(constants.targetPlatformToVersion.keys()),
-			defaultTargetPlatform: constants.defaultTargetPlatform,
-			linkDisplayValue: constants.learnMore,
-			linkLocation: 'https://github.com/microsoft/DacFx/tree/main/src/Microsoft.Build.Sql'
-		},
-		{
 			id: constants.emptySqlDatabaseProjectTypeId,
 			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
 			displayName: constants.emptyProjectTypeDisplayName,
