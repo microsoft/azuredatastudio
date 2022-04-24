@@ -586,11 +586,11 @@ export class Project implements ISqlProject {
 		await this.createCleanFileNode(beforeBuildNode);
 	}
 
-	private async createCleanFileNode(parentNode: any): Promise<void> {
+	private async createCleanFileNode(parentNode: Element): Promise<void> {
 		const deleteFileNode = this.projFileXmlDoc!.createElement(constants.Delete);
 		deleteFileNode.setAttribute(constants.Files, constants.ProjJsonToClean);
 		parentNode.appendChild(deleteFileNode);
-		await this.serializeToProjFile(this.projFileXmlDoc);
+		await this.serializeToProjFile(this.projFileXmlDoc!);
 	}
 
 	/**
@@ -740,7 +740,7 @@ export class Project implements ISqlProject {
 				}
 			}
 
-			await this.serializeToProjFile(this.projFileXmlDoc);
+			await this.serializeToProjFile(this.projFileXmlDoc!);
 		}
 	}
 
@@ -881,7 +881,7 @@ export class Project implements ISqlProject {
 			sqlObjectType);
 	}
 
-	private findOrCreateItemGroup(containedTag?: string, prePostScriptExist?: { scriptExist: boolean; }): any {
+	private findOrCreateItemGroup(containedTag?: string, prePostScriptExist?: { scriptExist: boolean; }): Element {
 		let outputItemGroup = undefined;
 
 		// search for a particular item goup if a child type is provided
@@ -990,7 +990,7 @@ export class Project implements ISqlProject {
 		if (this.isSdkStyleProject) {
 			// write any changes from removing an include node and get the current files included in the project
 			if (deleted) {
-				await this.serializeToProjFile(this.projFileXmlDoc);
+				await this.serializeToProjFile(this.projFileXmlDoc!);
 			}
 			const currentFiles = await this.readFilesInProject();
 
@@ -1007,22 +1007,24 @@ export class Project implements ISqlProject {
 		throw new Error(constants.unableToFindObject(path, constants.fileObject));
 	}
 
-	private removeNode(includeString: string, nodes: any): boolean {
+	private removeNode(includeString: string, nodes: HTMLCollectionOf<Element>): boolean {
 		for (let i = 0; i < nodes.length; i++) {
 			const parent = nodes[i].parentNode;
 
-			if (nodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(includeString)) {
-				parent.removeChild(nodes[i]);
+			if (parent) {
+				if (nodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(includeString)) {
+					parent.removeChild(nodes[i]);
 
-				// delete ItemGroup if this was the only entry
-				// only want element nodes, not text nodes
-				const otherChildren = Array.from(parent.childNodes).filter((c: any) => c.childNodes);
+					// delete ItemGroup if this was the only entry
+					// only want element nodes, not text nodes
+					const otherChildren = Array.from(parent.childNodes).filter((c: ChildNode) => c.childNodes);
 
-				if (otherChildren.length === 0) {
-					parent.parentNode.removeChild(parent);
+					if (otherChildren.length === 0) {
+						parent.parentNode?.removeChild(parent);
+					}
+
+					return true;
 				}
-
-				return true;
 			}
 		}
 
@@ -1095,7 +1097,7 @@ export class Project implements ISqlProject {
 	}
 
 	private async writeToSqlProjAndUpdateFilesFolders(): Promise<void> {
-		await this.serializeToProjFile(this.projFileXmlDoc);
+		await this.serializeToProjFile(this.projFileXmlDoc!);
 		const projFileText = await fs.readFile(this._projectFilePath);
 		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
 		this._files = await this.readFilesInProject();
@@ -1170,7 +1172,7 @@ export class Project implements ISqlProject {
 		return found;
 	}
 
-	private async addDatabaseReferenceChildren(referenceNode: any, entry: IDatabaseReferenceProjectEntry): Promise<void> {
+	private async addDatabaseReferenceChildren(referenceNode: Element, entry: IDatabaseReferenceProjectEntry): Promise<void> {
 		const suppressMissingDependenciesErrorNode = this.projFileXmlDoc!.createElement(constants.SuppressMissingDependenciesErrors);
 		const suppressMissingDependenciesErrorTextNode = this.projFileXmlDoc!.createTextNode(entry.suppressMissingDependenciesErrors ? constants.True : constants.False);
 		suppressMissingDependenciesErrorNode.appendChild(suppressMissingDependenciesErrorTextNode);
@@ -1202,7 +1204,7 @@ export class Project implements ISqlProject {
 		}
 	}
 
-	private addProjectReferenceChildren(referenceNode: any, entry: SqlProjectReferenceProjectEntry): void {
+	private addProjectReferenceChildren(referenceNode: Element, entry: SqlProjectReferenceProjectEntry): void {
 		// project name
 		const nameElement = this.projFileXmlDoc!.createElement(constants.Name);
 		const nameTextNode = this.projFileXmlDoc!.createTextNode(entry.projectName);
@@ -1237,7 +1239,7 @@ export class Project implements ISqlProject {
 		this._sqlCmdVariables[entry.variableName] = <string>entry.defaultValue;
 	}
 
-	private addSqlCmdVariableChildren(sqlCmdVariableNode: any, entry: SqlCmdVariableProjectEntry): void {
+	private addSqlCmdVariableChildren(sqlCmdVariableNode: Element, entry: SqlCmdVariableProjectEntry): void {
 		// add default value
 		const defaultValueNode = this.projFileXmlDoc!.createElement(constants.DefaultValue);
 		const defaultValueText = this.projFileXmlDoc!.createTextNode(entry.defaultValue);
@@ -1272,7 +1274,7 @@ export class Project implements ISqlProject {
 		return highestNumber + 1;
 	}
 
-	private async updateImportedTargetsToProjFile(condition: string, projectAttributeVal: string, oldImportNode?: any): Promise<any> {
+	private async updateImportedTargetsToProjFile(condition: string, projectAttributeVal: string, oldImportNode?: Element): Promise<Element> {
 		const importNode = this.projFileXmlDoc!.createElement(constants.Import);
 		importNode.setAttribute(constants.Condition, condition);
 		importNode.setAttribute(constants.Project, projectAttributeVal);
@@ -1285,7 +1287,7 @@ export class Project implements ISqlProject {
 			this._importedTargets.push(projectAttributeVal);	// Add new import target to the list
 		}
 
-		await this.serializeToProjFile(this.projFileXmlDoc);
+		await this.serializeToProjFile(this.projFileXmlDoc!);
 		return importNode;
 	}
 
@@ -1298,7 +1300,7 @@ export class Project implements ISqlProject {
 
 		this.findOrCreateItemGroup(constants.PackageReference).appendChild(packageRefNode);
 
-		await this.serializeToProjFile(this.projFileXmlDoc);
+		await this.serializeToProjFile(this.projFileXmlDoc!);
 	}
 
 	public containsSSDTOnlySystemDatabaseReferences(): boolean {
@@ -1368,7 +1370,7 @@ export class Project implements ISqlProject {
 				break; // not required but adding so that we dont miss when we add new items
 		}
 
-		await this.serializeToProjFile(this.projFileXmlDoc);
+		await this.serializeToProjFile(this.projFileXmlDoc!);
 	}
 
 	private async removeFromProjFile(entries: ProjectEntry | ProjectEntry[]): Promise<void> {
@@ -1399,17 +1401,17 @@ export class Project implements ISqlProject {
 			}
 		}
 
-		await this.serializeToProjFile(this.projFileXmlDoc);
+		await this.serializeToProjFile(this.projFileXmlDoc!);
 	}
 
-	private async serializeToProjFile(projFileContents: any): Promise<void> {
+	private async serializeToProjFile(projFileContents: Document): Promise<void> {
 		let xml = new xmldom.XMLSerializer().serializeToString(projFileContents);
-		xml = xmlFormat(xml, <any>{
+		xml = xmlFormat(xml, <xmlFormat.Options>{
 			collapseContent: true,
 			indentation: '  ',
 			lineSeparator: os.EOL,
 			whiteSpaceAtEndOfSelfclosingTag: true
-		}); // TODO: replace <any>
+		});
 
 		await fs.writeFile(this._projectFilePath, xml);
 
