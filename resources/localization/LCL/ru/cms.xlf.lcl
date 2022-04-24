@@ -334,7 +334,7 @@
         <Str Cat="Text">
           <Val><![CDATA[SQL Login]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Имя входе SQL]]></Val>
+            <Val><![CDATA[Имя входа SQL]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
