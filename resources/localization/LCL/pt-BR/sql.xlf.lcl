@@ -1842,6 +1842,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.sql.watcherExclude" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Configure glob patterns of file paths to exclude from file watching. Patterns must match on absolute paths (i.e. prefix with ** or the full path to match properly). Changing this setting requires a restart. When you experience Azure Data Studio consuming lots of CPU time on startup, you can exclude large folders to reduce the initial load.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Configurar padrões glob de caminhos de arquivo a serem excluídos da inspeção de arquivo. Os padrões precisam corresponder a caminhos absolutos (por exemplo, prefixados com ** ou o caminho completo para corresponder corretamente). A alteração dessa configuração exige uma reinicialização. Se o Código consumir muito tempo de CPU na inicialização, será possível excluir pastas grandes para reduzir o carregamento inicial. Quando você tiver o Azure Data Studio consumindo muito tempo de CPU na inicialização, poderá excluir pastas grandes para reduzir a carga inicial.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/base/common/locConstants.uninstallExtensionComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please reload Azure Data Studio to complete the uninstallation of the extension {0}.]]></Val>
