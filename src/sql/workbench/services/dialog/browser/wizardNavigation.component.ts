@@ -26,7 +26,7 @@ export class WizardNavigationParams implements IBootstrapParams {
 			<ng-container *ngFor="let item of _params.wizard.pages; let i = index">
 				<div class="wizardNavigation-pageNumber">
 					<div class="wizardNavigation-connector" [ngClass]="{'invisible': !hasTopConnector(i), 'active': isActive(i)}"></div>
-					<a [tabindex]="isActive(i) ? 0 : -1" [attr.href]="isActive(i) ? '' : null" [title]="item.title" (click)="navigate(i)" (keydown)="onKey($event,i)">
+					<a [tabindex]="isActive(i) ? 0 : -1" [attr.href]="isActive(i) ? '' : null" [title]="item.title" (click)="navigate(i)" (keydown)="onKey($event,i)" [attr.aria-current]="isCurrentPage(i) ? 'step' : null" [attr.aria-disabled]="isActive(i) ? null : 'true'">
 						<span class="wizardNavigation-dot" [ngClass]="{'active': isActive(i), 'currentPage': isCurrentPage(i)}">{{i+1}}</span>
 					</a>
 					<div class="wizardNavigation-connector" [ngClass]="{'invisible': !hasBottomConnector(i), 'active': isActive(i)}"></div>
