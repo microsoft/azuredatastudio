@@ -174,7 +174,7 @@ See [NotebookWizardInfo](https://github.com/microsoft/azuredatastudio/blob/main/
 
 `required`
 
-`options`
+`options` - **REQUIRED** if `type` is `options`. See [Options](#options) for more information.
 
 `placeHolder`
 
@@ -195,6 +195,29 @@ See [NotebookWizardInfo](https://github.com/microsoft/azuredatastudio/blob/main/
 `validations`
 
 `valueProvider` - **OPTIONAL** If defined then the value for this field is retrieved using the specified [Value Provider](#value-provider).
+
+#### Options
+
+This defines the set of options for this field to display. There are a number of different ways to configure the set of options :
+
+* String array (`string[]`) - A static list of values that will be shown as a dropdown. Default value selected is defined as `FieldInfo.defaultValue`.
+
+* CategoryValue array (`azdata.CategoryValue[]`) - A static list of CategoryValue objects that will be shown as a dropdown. Each value will define a display name separate from its value - use this for values you want to display differently to the user (such as names for an Azure region).
+
+* [OptionsInfo](#optionsinfo) - An object allowing more control over the option values.
+
+See [sample-options](https://github.com/microsoft/azuredatastudio/blob/main/samples/sample-resource-deployment/package.json) for example implementations.
+
+##### OptionsInfo
+
+This object defines a set of options for a field, similar to the arrays that can be used for the [options](#options) field but with greater control over of the options. Currently there are two reasons that you would use this object over the arrays - either you want to display the options as something other than a dropdown or you wish to use an [Options Source Provider](#options-source-provider) to populate the options dynamically.
+
+`values` - An array of either `strings` or `azdata.CategoryValue` objects. See [options](#options) for more details on each of those.
+`defaultValue` - The string value of the default option to have selected
+`optionsType` - How to display the options, either `radio` or `dropdown`
+`source` - OPTIONAL If set defines the [Options Source Provider](#options-source-provider) to use for populating the options dynamically.
+
+### Options Source Provider
 
 ### Value Provider
 
