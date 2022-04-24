@@ -120,6 +120,7 @@ const extensionsFilter = filter([
 	'**/big-data-cluster.xlf',
 	'**/cms.xlf',
 	'**/dacpac.xlf',
+	'**/git.xlf',
 	'**/data-workspace.xlf',
 	'**/import.xlf',
 	'**/kusto.xlf',

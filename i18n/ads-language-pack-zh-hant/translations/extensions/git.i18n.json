@@ -455,7 +455,7 @@
 			"config.smartCommitChanges.tracked": "僅自動暫存追蹤的變更。",
 			"config.suggestSmartCommit": "建議啟用智慧認可 (在沒有暫存變更時認可所有變更)。",
 			"config.supportCancellation": "控制是否要在執行同步動作時顯示允許使用者取消作業的通知。",
-			"config.terminalAuthentication": "控制是否要讓 VS Code 成為在整合式終端中繁衍之 git 處理序的驗證處理常式。請注意: 您必須重新啟動終端，才能在此設定中挑選變更。",
+			"config.terminalAuthentication": "控制是否要讓 Azure Data Studio 成為在整合式終端中繁衍之 git 處理序的驗證處理常式。請注意: 您必須重新啟動終端，才能在此設定中挑選變更。",
 			"config.timeline.date": "控制 [時間軸] 檢視中的項目要使用哪個日期。",
 			"config.timeline.date.authored": "使用撰寫日期",
 			"config.timeline.date.committed": "使用認可日期",
@@ -479,13 +479,13 @@
 			"submenu.stash": "隱藏",
 			"submenu.tags": "標籤",
 			"view.workbench.cloneRepository": "您可以在本機複製存放庫。\r\n[複製存放庫](command:git.clone '在 GIT 延伸模組啟用後複製存放庫')",
-			"view.workbench.learnMore": "若要深入了解如何在 VS Code 中使用 GIT 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。",
-			"view.workbench.scm.disabled": "如果您想要使用 Git 功能，請在[設定](command:workbench.action.openSettings?%5B%22git.enabled%22%5D)中啟用 Git。\r\n若要深入了解如何在 VS Code 中使用 Git 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。",
-			"view.workbench.scm.empty": "如果要使用 Git 功能，您可以開啟包含 Git 存放庫的資料夾或從 URL 複製。\r\n[開啟資料夾](command:vscode.openFolder)\r\n[複製存放庫](command:git.clone)\r\n若要深入了解如何在 VS Code 中使用 Git 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。",
-			"view.workbench.scm.emptyWorkspace": "目前開啟的工作區沒有任何資料夾包含 Git 存放庫。\r\n[新增資料夾至工作區](command:workbench.action.addRootFolder)\r\n如果要深入了解如何在 VS Code 中使用 Git 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。",
-			"view.workbench.scm.folder": "目前開啟的資料夾沒有任何 git 存放庫。您可以將存放庫初始化，以啟用 git 支援的原始檔控制功能。\r\n[將存放庫初始化](command:git.init?%5Btrue%5D)\r\n若要深入了解如何在 VS Code 中使用 git 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。",
-			"view.workbench.scm.missing": "未偵測到有效的 Git 安裝，您可以在 [Git 輸入](command:git.showOutput)中找到更多詳細資料。\r\n請[安裝 Git](https://git-scm.com/)，或參閱or learn more about how to use git and source control in VS Code in [我們的文件](https://aka.ms/vscode-scm) 深入了解如何在 VS Code 中使用 Git 和原始檔控制。\r\n如果您使用的是其他版本的控制系統，可以[搜尋市集](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) 尋找其他擴充。",
-			"view.workbench.scm.workspace": "目前開啟的工作區，沒有任何包含 git 存放庫的資料夾。您可以在資料夾上將存放庫初始化，以啟用 git 支援的原始檔控制功能。\r\n[將存放庫初始化](command:git.init)\r\n若要深入了解如何在 VS Code 中使用 git 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。"
+			"view.workbench.learnMore": "若要深入了解如何在 Azure Data Studio 中使用 GIT 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。",
+			"view.workbench.scm.disabled": "如果您想要使用 Git 功能，請在[設定](command:workbench.action.openSettings?%5B%22git.enabled%22%5D)中啟用 Git。\r\n若要深入了解如何在 Azure Data Studio 中使用 Git 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。",
+			"view.workbench.scm.empty": "如果要使用 Git 功能，您可以開啟包含 Git 存放庫的資料夾或從 URL 複製。\r\n[開啟資料夾](command:vscode.openFolder)\r\n[複製存放庫](command:git.clone)\r\n若要深入了解如何在 Azure Data Studio 中使用 Git 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。",
+			"view.workbench.scm.emptyWorkspace": "目前開啟的工作區沒有任何資料夾包含 Git 存放庫。\r\n[新增資料夾至工作區](command:workbench.action.addRootFolder)\r\n如果要深入了解如何在 Azure Data Studio 中使用 Git 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。",
+			"view.workbench.scm.folder": "目前開啟的資料夾沒有任何 git 存放庫。您可以將存放庫初始化，以啟用 git 支援的原始檔控制功能。\r\n[將存放庫初始化](command:git.init?%5Btrue%5D)\r\n若要深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。",
+			"view.workbench.scm.missing": "未偵測到有效的 Git 安裝，您可以在 [Git 輸入](command:git.showOutput)中找到更多詳細資料。\r\n請[安裝 Git](https://git-scm.com/)，或參閱or learn more about how to use git and source control in Azure Data Studio in [我們的文件](https://aka.ms/vscode-scm) 深入了解如何在 VS Code 中使用 Git 和原始檔控制。\r\n如果您使用的是其他版本的控制系統，可以[搜尋市集](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) 尋找其他擴充。",
+			"view.workbench.scm.workspace": "目前開啟的工作區，沒有任何包含 git 存放庫的資料夾。您可以在資料夾上將存放庫初始化，以啟用 git 支援的原始檔控制功能。\r\n[將存放庫初始化](command:git.init)\r\n若要深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。"
 		}
 	}
 }
