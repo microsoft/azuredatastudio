@@ -84,7 +84,7 @@ suite('Notebook Input', function (): void {
 		// Input title
 		assert.strictEqual(untitledNotebookInput.getTitle(), testTitle);
 
-		let noTitleInput = instantiationService.createInstance(UntitledNotebookInput, undefined, untitledUri, undefined);
+		let noTitleInput = instantiationService.createInstance(UntitledNotebookInput, undefined, untitledUri, untitledTextInput);
 		assert.strictEqual(noTitleInput.getTitle(), basenameOrAuthority(untitledUri));
 
 		// Text Input
