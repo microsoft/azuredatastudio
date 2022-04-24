@@ -24,8 +24,8 @@
 	"sqlDatabaseProjects.newStoredProcedure": "Add Stored Procedure",
 	"sqlDatabaseProjects.newExternalStreamingJob": "Add External Streaming Job",
 	"sqlDatabaseProjects.newItem": "Add Item...",
+	"sqlDatabaseProjects.addExistingItem": "Add Existing Item...",
 	"sqlDatabaseProjects.newFolder": "Add Folder",
-
 
 	"sqlDatabaseProjects.addDatabaseReference": "Add Database Reference",
 	"sqlDatabaseProjects.openContainingFolder": "Open Containing Folder",

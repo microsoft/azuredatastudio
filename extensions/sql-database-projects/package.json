@@ -107,6 +107,11 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
+        "command": "sqlDatabaseProjects.addExistingItem",
+        "title": "%sqlDatabaseProjects.addExistingItem%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
         "command": "sqlDatabaseProjects.newFolder",
         "title": "%sqlDatabaseProjects.newFolder%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -241,6 +246,10 @@
           "when": "false"
         },
         {
+          "command": "sqlDatabaseProjects.addExistingItem",
+          "when": "false"
+        },
+        {
           "command": "sqlDatabaseProjects.newFolder",
           "when": "false"
         },
@@ -327,9 +336,14 @@
           "group": "2_dbProjects_newMain@1"
         },
         {
-          "command": "sqlDatabaseProjects.newFolder",
+          "command": "sqlDatabaseProjects.addExistingItem",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "2_dbProjects_newMain@2"
+        },
+        {
+          "command": "sqlDatabaseProjects.newFolder",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "group": "2_dbProjects_newMain@3"
         },
         {
           "command": "sqlDatabaseProjects.newTable",

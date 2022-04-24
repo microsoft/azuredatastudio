@@ -712,6 +712,36 @@ export class Project implements ISqlProject {
 		return fileEntry;
 	}
 
+	/**
+	 * Adds a file to the project, and saves the project file
+	 *
+	 * @param filePath Absolute path of the file
+	 */
+	public async addExistingItem(filePath: string): Promise<FileProjectEntry> {
+		const exists = await utils.exists(filePath);
+		if (!exists) {
+			throw new Error(constants.noFileExist(filePath));
+		}
+
+		// Check if file already has been added to sqlproj
+		const normalizedRelativeFilePath = utils.convertSlashesForSqlProj(path.relative(this.projectFolderPath, filePath));
+		const existingEntry = this.files.find(f => f.relativePath.toUpperCase() === normalizedRelativeFilePath.toUpperCase());
+		if (existingEntry) {
+			return existingEntry;
+		}
+
+		// Ensure that parent folder item exist in the project for the corresponding file path
+		await this.ensureFolderItems(path.relative(this.projectFolderPath, path.dirname(filePath)));
+
+		// Update sqlproj XML
+		const fileEntry = this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
+		const xmlTag = path.extname(filePath) === constants.sqlFileExtension ? constants.Build : constants.None;
+		await this.addToProjFile(fileEntry, xmlTag);
+		this._files.push(fileEntry);
+
+		return fileEntry;
+	}
+
 	public async exclude(entry: FileProjectEntry): Promise<void> {
 		const toExclude: FileProjectEntry[] = this._files.concat(this._preDeployScripts).concat(this._postDeployScripts).concat(this._noneDeployScripts).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
 		await this.removeFromProjFile(toExclude);
@@ -939,6 +969,10 @@ export class Project implements ISqlProject {
 	}
 
 	private async addFileToProjFile(filePath: string, xmlTag: string, attributes?: Map<string, string>): Promise<void> {
+
+		// delete Remove node if a file has been previously excluded
+		await this.undoExcludeFileFromProjFile(xmlTag, filePath);
+
 		let itemGroup;
 
 		if (xmlTag === constants.PreDeploy || xmlTag === constants.PostDeploy) {
@@ -969,7 +1003,7 @@ export class Project implements ISqlProject {
 
 			// don't need to add an entry if it's already included by a glob pattern
 			// unless it has an attribute that needs to be added, like external streaming job which needs it so it can be determined if validation can run on it
-			if (attributes?.size === 0 && currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(filePath))) {
+			if ((!attributes || attributes.size === 0) && currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(filePath))) {
 				return;
 			}
 
@@ -1040,12 +1074,22 @@ export class Project implements ISqlProject {
 		throw new Error(constants.unableToFindObject(path, constants.fileObject));
 	}
 
-	private removeNode(includeString: string, nodes: HTMLCollectionOf<Element>): boolean {
+	/**
+	 * Deletes a node from the project file similar to <Compile Include="{includeString}" />
+	 * @param includeString Path of the file that matches the Include portion of the node
+	 * @param nodes The collection of XML nodes to search from
+	 * @param undoRemove When true, will remove a node similar to <Compile Remove="{includeString}" />
+	 * @returns True when a node has been removed, false otherwise.
+	 */
+	private removeNode(includeString: string, nodes: HTMLCollectionOf<Element>, undoRemove: boolean = false): boolean {
+		// Default function behavior removes nodes like <Compile Include="..." />
+		// However when undoRemove is true, this function removes <Compile Remove="..." />
+		const xmlAttribute = undoRemove ? constants.Remove : constants.Include;
 		for (let i = 0; i < nodes.length; i++) {
 			const parent = nodes[i].parentNode;
 
 			if (parent) {
-				if (nodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(includeString)) {
+				if (nodes[i].getAttribute(xmlAttribute) === utils.convertSlashesForSqlProj(includeString)) {
 					parent.removeChild(nodes[i]);
 
 					// delete ItemGroup if this was the only entry
@@ -1062,6 +1106,18 @@ export class Project implements ISqlProject {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Delete a Remove node from the sqlproj, ex: <Build Remove="Table1.sql" />
+	 * @param xmlTag The XML tag of the node (Build, None, PreDeploy, PostDeploy)
+	 * @param relativePath The relative path of the previously excluded file
+	 */
+	private async undoExcludeFileFromProjFile(xmlTag: string, relativePath: string): Promise<void> {
+		const nodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(xmlTag);
+		if (await this.removeNode(relativePath, nodes, true)) {
+			await this.serializeToProjFile(this.projFileXmlDoc!);
+		}
 	}
 
 	private async addFolderToProjFile(folderPath: string): Promise<void> {
