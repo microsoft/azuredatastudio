@@ -769,9 +769,9 @@ suite('Cell Model', function (): void {
 		cell.trustedMode = true;
 		assert.strictEqual(cell.trustedMode, true, 'Cell should be trusted after manually setting trustedMode');
 
-		assert.strictEqual(cell.isEditMode, true, 'Code cells should be editable by default');
-		cell.isEditMode = false;
-		assert.strictEqual(cell.isEditMode, false, 'Cell should not be editable after manually setting isEditMode');
+		assert.strictEqual(cell.isEditMode, false, 'Code cells should not be editable by default');
+		cell.isEditMode = true;
+		assert.strictEqual(cell.isEditMode, true, 'Cell should be editable after manually setting isEditMode');
 
 		cell.hover = true;
 		assert.strictEqual(cell.hover, true, 'Cell should be hovered after manually setting hover=true');

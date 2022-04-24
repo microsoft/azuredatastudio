@@ -107,7 +107,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this._source = '';
 		}
 
-		this._isEditMode = this._cellType !== CellTypes.Markdown;
+		this._isEditMode = false;
 		this._stdInVisible = false;
 		if (_options && _options.isTrusted) {
 			this._isTrusted = true;
