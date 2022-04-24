@@ -311,7 +311,9 @@ export class PublishDatabaseDialog {
 		this.targetDatabaseDropDown!.values?.push(<any>value);
 		this.targetDatabaseDropDown!.value = value;
 
-		this.targetDatabaseTextBox!.value = value;
+		if (this.targetDatabaseTextBox) {
+			this.targetDatabaseTextBox!.value = value;
+		}
 	}
 
 	public getBaseDockerImageName(): string {
