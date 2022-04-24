@@ -178,11 +178,12 @@
 			"downloadgit": "下載 git",
 			"git20": "您似乎已有安裝 Git {0}。Code 搭配 Git >= 2 的執行效果最佳",
 			"git2526": "安裝的 Git {0} 有已知問題。必須更新為 Git >= 2.27，Git 功能才能正常運作。",
-			"looking": "尋找 git : {0}",
 			"neverShowAgain": "不要再顯示",
 			"notfound": "找不到 Git。安裝它或使用 \"git. path\" 設置。",
+			"skipped": "已略過在下列位置找到的 git: {0}",
 			"updateGit": "更新 Git",
-			"using git": "正在使用來自 {1} 的 git {0}"
+			"using git": "正在使用來自 {1} 的 git {0}",
+			"validating": "正在驗證在下列位置找到的 git: {0}"
 		},
 		"dist/model": {
 			"no repositories": "沒有儲存庫可供使用 ",

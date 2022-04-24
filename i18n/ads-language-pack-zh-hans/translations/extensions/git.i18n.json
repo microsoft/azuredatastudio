@@ -178,11 +178,12 @@
 			"downloadgit": "下载 Git",
 			"git20": "似乎已安装 GIT {0}。Code 非常适合 GIT >= 2",
 			"git2526": "安装的 Git {0} 存在已知问题。要使 Git 功能正常工作，请至少将 Git 更新到 2.27 版本。",
-			"looking": "正在查找 Git: {0}",
 			"neverShowAgain": "不再显示",
 			"notfound": "未找到 Git。请安装 Git，或在 \"git.path\" 设置中配置。",
+			"skipped": "已跳过在以下位置中找到的 git: {0}",
 			"updateGit": "更新 GIT",
-			"using git": "将使用位于 {1} 的 Git {0}"
+			"using git": "将使用位于 {1} 的 Git {0}",
+			"validating": "正在验证在以下位置中找到的 git: {0}"
 		},
 		"dist/model": {
 			"no repositories": "没有可用存储库",
@@ -394,7 +395,7 @@
 			"config.checkoutType.tags": "标记",
 			"config.confirmEmptyCommits": "始终确认为 \"Git: Commit Empty\" 命令创建空提交。",
 			"config.confirmForcePush": "控制在强制推送前是否进行确认。",
-			"config.confirmNoVerifyCommit": "控制是否要求在未验证的情况下提交之前进行确认。",
+			"config.confirmNoVerifyCommit": "控制是否在提交前要求确认而不进行验证。",
 			"config.confirmSync": "同步 Git 存储库前请先进行确认。",
 			"config.countBadge": "控制 Git 计数徽章。",
 			"config.countBadge.all": "对所有更改计数。",
@@ -477,7 +478,7 @@
 			"submenu.remotes": "远程",
 			"submenu.stash": "存储",
 			"submenu.tags": "标记",
-			"view.workbench.cloneRepository": "可以在本地克隆存储库。\r\n[可控存储库](command:git.clone“启用 git 扩展后立即克隆存储库”)",
+			"view.workbench.cloneRepository": "可以在本地克隆存储库。\r\n[克隆存储库](command:git.clone '启用 git 扩展后立即克隆存储库')",
 			"view.workbench.learnMore": "要详细了解如何在 VS Code 中使用 Git 和源代码管理，[请阅读我们的文档](https://aka.ms/vscode-scm)。",
 			"view.workbench.scm.disabled": "如果要使用 git 功能，请在[设置](command:workbench.action.openSettings?%5B%22git.enabled%22%5D)中启用 git。\r\n要了解有关如何在 VS Code 中使用 Git 和源代码管理的更多信息，[请阅读我们的文档](https://aka.ms/vscode-scm)。",
 			"view.workbench.scm.empty": "为了使用 git 功能，可打开包含 git 存储库的文件夹或从 URL 克隆。\r\n[打开文件夹](command:vscode.openFolder)\r\n[克隆存储库](command:git.clone)\r\n要详细了解如何在 VS Code 中使用 Git 和源代码管理，[请阅读我们的文档](https://aka.ms/vscode-scm)。",

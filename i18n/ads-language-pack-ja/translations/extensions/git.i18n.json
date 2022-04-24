@@ -178,11 +178,12 @@
 			"downloadgit": "Git のダウンロード",
 			"git20": "Git {0} がインストールされているようです。Code は Git 2 以上で最適に動作します",
 			"git2526": "インストールされている Git {0} には既知の問題があります。Git 機能を正常に動作させるために、Git を 2.27 以上に更新してください。",
-			"looking": "次の場所で Git を検索しています: {0}",
 			"neverShowAgain": "今後表示しない",
 			"notfound": "Git が見つかりません。Git をインストールするか 'git.path' 設定でパスを構成してください。",
+			"skipped": "Git のスキップが検出されました: {0}",
 			"updateGit": "Git の更新",
-			"using git": "{1} から Git {0} を使用しています"
+			"using git": "{1} から Git {0} を使用しています",
+			"validating": "Git の検証が検出されました: {0}"
 		},
 		"dist/model": {
 			"no repositories": "利用可能なリポジトリがありません",

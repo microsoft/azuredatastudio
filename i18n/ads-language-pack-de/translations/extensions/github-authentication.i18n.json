@@ -14,8 +14,8 @@
 		},
 		"dist/githubServer": {
 			"signingIn": "$(mark-github) Anmeldung bei github.com...",
-			"signingInEnterprise": "$(mark-github) Anmeldung bei {0}...",
-			"status.git.signIn.name": "GitHub-Anmeldung"
+			"status.git.signIn.name": "GitHub-Anmeldung",
+			"validUri": "Geben Sie einen gültigen URI von der GitHub-Anmeldeseite ein."
 		},
 		"package": {
 			"description": "GitHub-Authentifizierungsanbieter",
