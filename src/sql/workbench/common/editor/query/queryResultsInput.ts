@@ -12,6 +12,7 @@ import { QueryPlanState } from 'sql/workbench/common/editor/query/queryPlanState
 import { GridPanelState } from 'sql/workbench/common/editor/query/gridTableState';
 import { QueryModelViewState } from 'sql/workbench/common/editor/query/modelViewState';
 import { URI } from 'vs/base/common/uri';
+import { QueryPlan2State } from 'sql/workbench/common/editor/query/queryPlan2State';
 
 export class ResultsViewState {
 	public readonly gridPanelState: GridPanelState = new GridPanelState();
@@ -19,6 +20,7 @@ export class ResultsViewState {
 	public readonly queryPlanState: QueryPlanState = new QueryPlanState();
 	public readonly topOperationsState = new TopOperationsState();
 	public readonly dynamicModelViewTabsState: Map<string, QueryModelViewState> = new Map<string, QueryModelViewState>();
+	public readonly queryPlan2State: QueryPlan2State = new QueryPlan2State();
 
 	public activeTab?: string;
 	public readonly visibleTabs: Set<string> = new Set<string>();
@@ -27,6 +29,7 @@ export class ResultsViewState {
 		this.gridPanelState.dispose();
 		this.chartState.dispose();
 		this.queryPlanState.dispose();
+		this.queryPlan2State.clearQueryPlan2State();
 		this.dynamicModelViewTabsState.forEach((state: QueryModelViewState, identifier: string) => {
 			state.dispose();
 		});
