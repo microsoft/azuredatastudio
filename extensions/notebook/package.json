@@ -774,8 +774,7 @@
     "vscodetestcover": "^1.1.0"
   },
   "resolutions": {
-    "url-parse": "^1.5.1",
-    "json-schema": "0.4.0"
+    "url-parse": "^1.5.1"
   },
   "enableProposedApi": true
 }

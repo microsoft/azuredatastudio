@@ -265,7 +265,6 @@
   },
   "resolutions": {
     "elliptic": "^6.5.3",
-    "nwmatcher": "^1.4.4",
-    "json-schema": "0.4.0"
+    "nwmatcher": "^1.4.4"
   }
 }
