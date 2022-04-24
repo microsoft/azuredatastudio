@@ -5212,6 +5212,9 @@ Error: {1}</source>
     <trans-unit id="addCellEdit">
       <source xml:lang="en">Add Cell</source>
     </trans-unit>
+    <trans-unit id="convertCellTypeEdit">
+      <source xml:lang="en">Convert Cell Type</source>
+    </trans-unit>
     <trans-unit id="deleteCellEdit">
       <source xml:lang="en">Delete Cell</source>
     </trans-unit>
