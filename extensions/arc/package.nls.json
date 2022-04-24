@@ -13,7 +13,7 @@
 	"command.estimateCostSqlMiaa.title": "Estimate Cost of SQL Managed Instance - Azure Arc",
 	"arc.openDashboard": "Manage",
 
-	"resource.type.azure.arc.display.name": "Azure Arc data controller (preview)",
+	"resource.type.azure.arc.display.name": "Azure Arc data controller",
 	"resource.type.azure.arc.description": "Creates an Azure Arc data controller",
 	"arc.data.controller.new.wizard.title": "Create Azure Arc data controller",
 	"arc.data.controller.cluster.environment.title": "What is your target existing Kubernetes cluster environment?",

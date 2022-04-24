@@ -328,7 +328,7 @@ declare module 'az-ext' {
 				delete(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
 				list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiListResult[]>>,
 				show(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiShowResult>>,
-				edit(
+				update(
 					name: string,
 					args: {
 						coresLimit?: string, //2
@@ -338,7 +338,12 @@ declare module 'az-ext' {
 						noWait?: boolean, //true
 						retentionDays?: string, //5
 					},
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
 					namespace?: string,
+					usek8s?: boolean,
+					// Additional arguments
 					additionalEnvVars?: AdditionalEnvVars
 				): Promise<AzOutput<void>>
 			},
