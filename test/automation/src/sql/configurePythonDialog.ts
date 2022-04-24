@@ -25,7 +25,12 @@ export class ConfigurePythonDialog extends Dialog {
 	async waitForPageOneLoaded(): Promise<void> {
 		// Wait up to 1 minute for the python install location to be loaded.
 		const pythonInstallLocationDropdownValue = `${ConfigurePythonDialog.dialogPageInView} option[value*="/azuredatastudio-python (Default)"]`;
-		await this.code.waitForElement(pythonInstallLocationDropdownValue, undefined, 600);
+		try {
+			await this.code.waitForElement(pythonInstallLocationDropdownValue, undefined, 600);
+		} finally {
+			// log the select box to help debug when the default python install location fails to load
+			await this.code.waitForElement('select[class="monaco-select-box"][aria-label="Python Install Location"]');
+		}
 
 		const loadingSpinner = `${ConfigurePythonDialog.dialogPageInView} .modelview-loadingComponent-content-loading`;
 		await this.code.waitForElementGone(loadingSpinner);
