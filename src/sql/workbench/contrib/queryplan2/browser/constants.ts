@@ -262,3 +262,4 @@ export const zoomInIconClassNames = [parentContainer, 'zoom-in-icon'].join(' ');
 export const zoomOutIconClassNames = [parentContainer, 'zoom-out-icon'].join(' ');
 export const customZoomIconClassNames = [parentContainer, 'custom-zoom-icon'].join(' ');
 export const zoomToFitIconClassNames = [parentContainer, 'zoom-to-fit-icon'].join(' ');
+export const zoomIconClassNames = [parentContainer, 'zoom-icon'].join(' ');

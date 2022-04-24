@@ -15,6 +15,7 @@ import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { zoomIconClassNames } from 'sql/workbench/contrib/queryplan2/browser/constants';
 
 export class CustomZoomWidget extends QueryPlanWidgetBase {
 	private _actionBar: ActionBar;
@@ -70,7 +71,7 @@ export class CustomZoomAction extends Action {
 	public static LABEL = localize('zoomAction', "Zoom (Enter)");
 
 	constructor() {
-		super(CustomZoomAction.ID, CustomZoomAction.LABEL, Codicon.zoomOut.classNames);
+		super(CustomZoomAction.ID, CustomZoomAction.LABEL, zoomIconClassNames);
 	}
 
 	public override async run(context: CustomZoomWidget): Promise<void> {
