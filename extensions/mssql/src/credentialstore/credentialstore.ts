@@ -3,63 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SqlOpsDataClient, ClientOptions, SqlOpsFeature } from 'dataprotocol-client';
+import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { IConfig } from '@microsoft/ads-service-downloader';
-import { ServerOptions, RPCMessageType, ClientCapabilities, ServerCapabilities, TransportKind } from 'vscode-languageclient';
-import { Disposable } from 'vscode';
-import * as UUID from 'vscode-languageclient/lib/utils/uuid';
-import * as azdata from 'azdata';
-
-import * as Contracts from './contracts';
+import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as Utils from '../utils';
-
-class CredentialsFeature extends SqlOpsFeature<any> {
-
-	private static readonly messagesTypes: RPCMessageType[] = [
-		Contracts.DeleteCredentialRequest.type,
-		Contracts.SaveCredentialRequest.type,
-		Contracts.ReadCredentialRequest.type
-	];
-
-	constructor(client: SqlOpsDataClient) {
-		super(client, CredentialsFeature.messagesTypes);
-	}
-
-	fillClientCapabilities(capabilities: ClientCapabilities): void {
-		Utils.ensure(Utils.ensure(capabilities, 'credentials')!, 'credentials')!.dynamicRegistration = true;
-	}
-
-	initialize(capabilities: ServerCapabilities): void {
-		this.register(this.messages, {
-			id: UUID.generateUuid(),
-			registerOptions: undefined
-		});
-	}
-
-	protected registerProvider(options: any): Disposable {
-		const client = this._client;
-
-		let readCredential = (credentialId: string): Thenable<azdata.Credential> => {
-			return client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId, password: undefined });
-		};
-
-		let saveCredential = (credentialId: string, password: string): Thenable<boolean> => {
-			return client.sendRequest(Contracts.SaveCredentialRequest.type, { credentialId, password });
-		};
-
-		let deleteCredential = (credentialId: string): Thenable<boolean> => {
-			return client.sendRequest(Contracts.DeleteCredentialRequest.type, { credentialId, password: undefined });
-		};
-
-		return azdata.credentials.registerProvider({
-			deleteCredential,
-			readCredential,
-			saveCredential,
-			handle: 0
-		});
-	}
-}
+import { SqlCredentialService } from './sqlCredentialService';
+import { AppContext } from '../appContext';
 
 /**
  * Implements a credential storage for Windows, Mac (darwin), or Linux.
@@ -69,18 +19,24 @@ class CredentialsFeature extends SqlOpsFeature<any> {
 export class CredentialStore {
 	private _client: SqlOpsDataClient;
 	private _config: IConfig;
+	private _logPath: string;
 
-	constructor(private logPath: string, baseConfig: IConfig) {
+	constructor(
+		private context: AppContext,
+		baseConfig: IConfig
+	) {
 		if (baseConfig) {
 			this._config = JSON.parse(JSON.stringify(baseConfig));
 			this._config.executableFiles = ['MicrosoftSqlToolsCredentials.exe', 'MicrosoftSqlToolsCredentials'];
 		}
+		this.context = context;
+		this._logPath = this.context.extensionContext.logPath;
 	}
 
 	public async start(): Promise<void> {
 		let clientOptions: ClientOptions = {
 			providerId: Constants.providerId,
-			features: [CredentialsFeature]
+			features: [SqlCredentialService.asFeature(this.context)]
 		};
 		const serverPath = await Utils.getOrDownloadServer(this._config);
 		const serverOptions = this.generateServerOptions(serverPath);
@@ -95,7 +51,7 @@ export class CredentialStore {
 	}
 
 	private generateServerOptions(executablePath: string): ServerOptions {
-		let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles(this.logPath, 'credentialstore.log', executablePath);
+		let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles(this._logPath, 'credentialstore.log', executablePath);
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}
 }
