@@ -44,18 +44,22 @@ export class NetCoreTool extends ShellExecutionHelper {
 
 	/**
 	 * This method presents the installation dialog for .NET Core, if not already present/supported
+	 * @param skipVersionSupportedCheck If true then skip the check to determine whether the .NET version is supported (for commands that work on all versions)
 	 * @returns True if .NET version was found and is supported
 	 * 			False if .NET version isn't present or present but not supported
 	 */
-	public async findOrInstallNetCore(): Promise<boolean> {
-		if ((!this.isNetCoreInstallationPresent || !await this.isNetCoreVersionSupported())) {
-			if (this.netCoreInstallState === netCoreInstallState.netCoreVersionSupported && vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
-				void this.showInstallDialog();		// Removing await so that Build and extension load process doesn't wait on user input
-			} else if (this.netCoreInstallState === netCoreInstallState.netCoreVersionTooHigh && vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDowngradeDoNotShowAgainKey] !== true) {
-				void this.showDowngradeDialog();
+	public async findOrInstallNetCore(skipVersionSupportedCheck = false): Promise<boolean> {
+		if (!this.isNetCoreInstallationPresent || (this.isNetCoreInstallationPresent && !skipVersionSupportedCheck)) {
+			if (!this.isNetCoreInstallationPresent || !await this.isNetCoreVersionSupported()) {
+				if (this.netCoreInstallState === netCoreInstallState.netCoreVersionSupported && vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
+					void this.showInstallDialog();		// Removing await so that Build and extension load process doesn't wait on user input
+				} else if (this.netCoreInstallState === netCoreInstallState.netCoreVersionTooHigh && vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDowngradeDoNotShowAgainKey] !== true) {
+					void this.showDowngradeDialog();
+				}
+				return false;
 			}
-			return false;
 		}
+
 		this.netCoreInstallState = netCoreInstallState.netCoreVersionSupported;
 		return true;
 	}
@@ -197,12 +201,18 @@ export class NetCoreTool extends ShellExecutionHelper {
 		}
 	}
 
-	public async runDotnetCommand(options: ShellCommandOptions): Promise<string> {
+	/**
+	 * Runs the specified dotnet command
+	 * @param options The options to use when launching the process
+	 * @param skipVersionSupportedCheck If true then skip the check to determine whether the .NET version is supported (for commands that work on all versions)
+	 * @returns
+	 */
+	public async runDotnetCommand(options: ShellCommandOptions, skipVersionSupportedCheck = false): Promise<string> {
 		if (options && options.commandTitle !== undefined && options.commandTitle !== null) {
 			this._outputChannel.appendLine(`\t[ ${options.commandTitle} ]`);
 		}
 
-		if (!(await this.findOrInstallNetCore())) {
+		if (!(await this.findOrInstallNetCore(skipVersionSupportedCheck))) {
 			if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
 				throw new DotNetError(NetCoreInstallationConfirmation);
 			} else if (this.netCoreInstallState === netCoreInstallState.netCoreVersionTooHigh && vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDowngradeDoNotShowAgainKey] === true) {
