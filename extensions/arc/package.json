@@ -262,6 +262,20 @@
                           "labelWidth": "600px"
                         },
                         {
+                          "type": "options",
+                          "label": "%arc.data.controller.connectivity.mode%",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                          "options": {
+                            "values": [
+                              "Indirect",
+                              "Direct"
+                            ],
+                            "defaultValue": "Indirect",
+                            "optionsType": "radio"
+                          }
+                        },
+                        {
                           "type": "text",
                           "label": "%arc.data.controller.namespace%",
                           "validations": [
@@ -273,7 +287,11 @@
                           ],
                           "defaultValue": "arc",
                           "required": true,
-                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE"
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE",
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "Indirect"
+                          }
                         },
                         {
                           "type": "text",
@@ -310,6 +328,39 @@
                             "onpremises",
                             "other"
                           ]
+                        },
+                        {
+                          "type": "text",
+                          "label": "%arc.data.controller.custom.location%",
+                          "description": "%arc.data.controller.custom.location.description%",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CUSTOM_LOCATION",
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "Direct"
+                          }
+                        },
+                        {
+                          "type": "checkbox",
+                          "label": "%arc.data.controller.auto.upload.metrics%",
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_AUTO_UPLOAD_METRICS",
+                          "description": "%arc.data.controller.auto.upload.metrics.description%",
+                          "defaultValue": false,
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "Direct"
+                          }
+                        },
+                        {
+                          "type": "checkbox",
+                          "label": "%arc.data.controller.auto.upload.logs%",
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_AUTO_UPLOAD_LOGS",
+                          "description": "%arc.data.controller.auto.upload.logs.description%",
+                          "defaultValue": false,
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "Direct"
+                          }
                         }
                       ]
                     },
