@@ -38,7 +38,7 @@
     <None Include="folder1\Script.PostDeployment2.sql" />
   </ItemGroup>
   <ItemGroup>
-    <ArtifactReference Condition="'$(NetCoreBuild)' == 'true'" Include="$(NETCoreTargetsPath)\SystemDacpacs\150\master.dacpac">
+    <ArtifactReference Condition="'$(NetCoreBuild)' == 'true'" Include="$(SystemDacpacsLocation)\SystemDacpacs\150\master.dacpac">
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>

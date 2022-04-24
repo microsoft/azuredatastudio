@@ -832,7 +832,8 @@ export class Project implements ISqlProject {
 
 	public getSystemDacpacUri(dacpac: string): Uri {
 		const versionFolder = this.getSystemDacpacFolderName();
-		return Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', versionFolder, dacpac));
+		const systemDacpacLocation = this.isSdkStyleProject ? '$(SystemDacpacsLocation)' : '$(NETCoreTargetsPath)';
+		return Uri.parse(path.join(systemDacpacLocation, 'SystemDacpacs', versionFolder, dacpac));
 	}
 
 	public getSystemDacpacSsdtUri(dacpac: string): Uri {
