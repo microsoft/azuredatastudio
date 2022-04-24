@@ -113,8 +113,8 @@ export class SummaryPage extends MigrationWizardPage {
 				await createHeadingTextComponent(this._view, constants.SOURCE_DATABASES),
 				targetDatabaseRow,
 
-				await createHeadingTextComponent(this._view, constants.SKU_RECOMMENDATION_PAGE_TITLE),
-				createInformationRow(this._view, constants.SKU_RECOMMENDATION_PAGE_TITLE, (this.migrationStateModel._targetType === MigrationTargetType.SQLVM) ? constants.SUMMARY_VM_TYPE : constants.SUMMARY_MI_TYPE),
+				await createHeadingTextComponent(this._view, constants.AZURE_SQL_TARGET_PAGE_TITLE),
+				createInformationRow(this._view, constants.AZURE_SQL_TARGET_PAGE_TITLE, (this.migrationStateModel._targetType === MigrationTargetType.SQLVM) ? constants.SUMMARY_VM_TYPE : constants.SUMMARY_MI_TYPE),
 				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
 				createInformationRow(this._view, constants.LOCATION, await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._targetServerInstance.location)),
 				createInformationRow(this._view, constants.RESOURCE_GROUP, getResourceGroupFromId(this.migrationStateModel._targetServerInstance.id)),

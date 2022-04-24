@@ -10,7 +10,7 @@ import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SKURecommendationPage } from './skuRecommendationPage';
 import { DatabaseBackupPage } from './databaseBackupPage';
-import { AccountsSelectionPage } from './accountsSelectionPage';
+import { TargetSelectionPage } from './targetSelectionPage';
 import { IntergrationRuntimePage } from './integrationRuntimePage';
 import { SummaryPage } from './summaryPage';
 import { MigrationModePage } from './migrationModePage';
@@ -41,18 +41,18 @@ export class WizardController {
 		this._wizardObject.generateScriptButton.hidden = true;
 		const saveAndCloseButton = azdata.window.createButton(loc.SAVE_AND_CLOSE);
 		this._wizardObject.customButtons = [saveAndCloseButton];
-		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
-		const migrationModePage = new MigrationModePage(this._wizardObject, stateModel);
 		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);
-		const azureAccountsPage = new AccountsSelectionPage(this._wizardObject, stateModel);
+		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
+		const targetSelectionPage = new TargetSelectionPage(this._wizardObject, stateModel);
+		const migrationModePage = new MigrationModePage(this._wizardObject, stateModel);
 		const databaseBackupPage = new DatabaseBackupPage(this._wizardObject, stateModel);
 		const integrationRuntimePage = new IntergrationRuntimePage(this._wizardObject, stateModel);
 		const summaryPage = new SummaryPage(this._wizardObject, stateModel);
 
 		const pages: MigrationWizardPage[] = [
-			azureAccountsPage,
 			databaseSelectorPage,
 			skuRecommendationPage,
+			targetSelectionPage,
 			migrationModePage,
 			databaseBackupPage,
 			integrationRuntimePage,
@@ -61,6 +61,13 @@ export class WizardController {
 
 		this._wizardObject.pages = pages.map(p => p.getwizardPage());
 
+		// kill existing data collection if user relaunches the wizard via new migration or retry existing migration
+		await this._model.refreshPerfDataCollection();
+		if ((!this._model.resumeAssessment || this._model.retryMigration) && this._model._perfDataCollectionIsCollecting) {
+			void this._model.stopPerfDataCollection();
+			void vscode.window.showInformationMessage(loc.AZURE_RECOMMENDATION_STOP_POPUP);
+		}
+
 		const wizardSetupPromises: Thenable<void>[] = [];
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(this._wizardObject.open());
@@ -68,6 +75,7 @@ export class WizardController {
 			if (this._model.savedInfo.closedPage >= Page.MigrationMode) {
 				this._model.refreshDatabaseBackupPage = true;
 			}
+
 			// if the user selected network share and selected save & close afterwards, it should always return to the database backup page so that
 			// the user can input their password again
 			if (this._model.savedInfo.closedPage >= Page.DatabaseBackup && this._model.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
@@ -106,6 +114,10 @@ export class WizardController {
 		saveAndCloseButton.onClick(async () => {
 			await stateModel.saveInfo(serverName, this._wizardObject.currentPage);
 			await this._wizardObject.close();
+
+			if (stateModel.performanceCollectionInProgress()) {
+				void vscode.window.showInformationMessage(loc.SAVE_AND_CLOSE_POPUP);
+			}
 		});
 
 		this._wizardObject.cancelButton.onClick(e => {

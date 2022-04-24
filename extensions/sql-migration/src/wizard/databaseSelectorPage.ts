@@ -47,7 +47,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _disposables: vscode.Disposable[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
-		super(wizard, azdata.window.createWizardPage(constants.SOURCE_CONFIGURATION, 'MigrationModePage'), migrationStateModel);
+		super(wizard, azdata.window.createWizardPage(constants.DATABASE_FOR_ASSESSMENT_PAGE_TITLE), migrationStateModel);
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
@@ -87,6 +87,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			return true;
 		});
 	}
+
 	public async onPageLeave(): Promise<void> {
 		const assessedDatabases = this.migrationStateModel._databaseAssessment ?? [];
 		const selectedDatabases = this.selectedDbs();
@@ -202,16 +203,8 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			this._dbNames.push(finalResult[index].options.name);
 		}
 
-		const title = this._view.modelBuilder.text().withProps({
-			value: constants.DATABASE_FOR_MIGRATION,
-			CSSStyles: {
-				...styles.PAGE_TITLE_CSS,
-				'margin-bottom': '8px'
-			}
-		}).component();
-
 		const text = this._view.modelBuilder.text().withProps({
-			value: constants.DATABASE_MIGRATE_TEXT,
+			value: constants.DATABASE_FOR_ASSESSMENT_DESCRIPTION,
 			CSSStyles: {
 				...styles.BODY_CSS
 			}
@@ -284,14 +277,12 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 					const dbName = row[1].value as string;
 					if (dbName?.toLowerCase() === sourceDatabaseName?.toLowerCase()) {
 						row[0].value = true;
-					} else {
-						row[0].enabled = false;
 					}
 				});
 			}
 			await this._databaseSelectorTable.setDataValues(this._databaseTableValues);
-			await this.updateValuesOnSelection();
 		}
+		await this.updateValuesOnSelection();
 
 		this._disposables.push(this._databaseSelectorTable.onDataChanged(async () => {
 			await this.updateValuesOnSelection();
@@ -304,7 +295,6 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				'margin': '0px 28px 0px 28px'
 			}
 		}).component();
-		flex.addItem(title, { flex: '0 0 auto' });
 		flex.addItem(text, { flex: '0 0 auto' });
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._dbCount, { flex: '0 0 auto' });
@@ -315,7 +305,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 
 	public selectedDbs(): string[] {
 		let result: string[] = [];
-		this._databaseSelectorTable.dataValues?.forEach((arr, index) => {
+		this._databaseSelectorTable?.dataValues?.forEach((arr, index) => {
 			if (arr[0].value === true) {
 				result.push(this._dbNames[index]);
 			}

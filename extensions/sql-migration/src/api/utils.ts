@@ -247,3 +247,7 @@ export function clearDialogMessage(dialog: window.Dialog): void {
 		text: ''
 	};
 }
+
+export function getUserHome(): string | undefined {
+	return process.env.HOME || process.env.USERPROFILE;
+}
