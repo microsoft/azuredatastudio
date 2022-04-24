@@ -2,13 +2,13 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.12.0",
+  "version": "1.0.0",
   "publisher": "Microsoft",
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.32.0"
+    "azdata": ">=1.35.0"
   },
   "activationEvents": [
     "onCommand:arc.connectToController",
