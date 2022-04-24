@@ -183,6 +183,9 @@
     <trans-unit id="notebook.cellTitle">
       <source xml:lang="en">The notebook cell title menu</source>
     </trans-unit>
+    <trans-unit id="notebook.cellToolbarLocation.compatibilityDescription">
+      <source xml:lang="en">Where the cell toolbar should be shown, or whether it should be hidden. Note: This setting is only enabled for extension compatibility purposes, and so does not affect anything.</source>
+    </trans-unit>
     <trans-unit id="notebook.title">
       <source xml:lang="en">The notebook title menu</source>
     </trans-unit>
