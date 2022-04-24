@@ -243,6 +243,18 @@
 				"reveal": "never"
 			},
 			"group": "build"
+		},
+		{
+			"type": "npm",
+			"script": "watch",
+			"label": "Watch sample-notebook-provider",
+			"path": "./samples/sample-notebook-provider/package.json",
+			"problemMatcher": "$tsc-watch",
+			"isBackground": true,
+			"presentation": {
+				"reveal": "never"
+			},
+			"group": "build"
 		}
 	]
 }
