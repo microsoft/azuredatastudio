@@ -26,24 +26,12 @@ suite('Noteboook Link Handler', function (): void {
 		assert.strictEqual(result.getLinkUrl(), `http://www.microsoft.com/images/msft.png`, 'HTTP link failed to resolve');
 
 		result = new NotebookLinkHandler(notebookUri, `/tmp/stuff.png`, configurationService);
-		if (process.platform === 'win32') {
-			assert.strictEqual(result.getLinkUrl(), `/tmp/stuff.png`, 'Basic link test failed');
-		} else {
-			assert.strictEqual(result.getLinkUrl(), `${path.sep}tmp${path.sep}stuff.png`, 'Basic link test failed');
-		}
+		assert.strictEqual(result.getLinkUrl(), `/tmp/stuff.png`, 'Basic link test failed');
 
 		result = new NotebookLinkHandler(notebookUri, '/stuff.png', configurationService);
-		if (process.platform === 'win32') {
-			assert.strictEqual(result.getLinkUrl(), `/stuff.png`, 'Basic link test above folder failed');
-		} else {
-			assert.strictEqual(result.getLinkUrl(), `${path.sep}stuff.png`, 'Basic link test above folder failed');
-		}
+		assert.strictEqual(result.getLinkUrl(), `/stuff.png`, 'Basic link test above folder failed');
 		result = new NotebookLinkHandler(notebookUri, '/tmp/inner/stuff.png', configurationService);
-		if (process.platform === 'win32') {
-			assert.strictEqual(result.getLinkUrl(), `/tmp/inner/stuff.png`, 'Basic link test below folder failed');
-		} else {
-			assert.strictEqual(result.getLinkUrl(), `${path.sep}tmp${path.sep}inner${path.sep}stuff.png`, 'Basic link test below folder failed');
-		}
+		assert.strictEqual(result.getLinkUrl(), `/tmp/inner/stuff.png`, 'Basic link test below folder failed');
 	});
 
 	test('Should return relative path and links given anchor element', () => {
@@ -86,25 +74,13 @@ suite('Noteboook Link Handler', function (): void {
 		assert.strictEqual(result.getLinkUrl(), `http://www.microsoft.com/images/msft.png`, 'Basic link test failed');
 
 		result = new NotebookLinkHandler(notebookUri, '/tmp/stuff.png', configurationService);
-		if (process.platform === 'win32') {
-			assert.strictEqual(result.getLinkUrl(), `/tmp/stuff.png`, 'Basic link test failed');
-		} else {
-			assert.strictEqual(result.getLinkUrl(), `${path.sep}tmp${path.sep}stuff.png`, 'Basic link test failed');
-		}
+		assert.strictEqual(result.getLinkUrl(), `/tmp/stuff.png`, 'Basic link test failed');
 
 		result = new NotebookLinkHandler(notebookUri, '/stuff.png', configurationService);
-		if (process.platform === 'win32') {
-			assert.strictEqual(result.getLinkUrl(), `/stuff.png`, 'Basic link test above folder failed');
-		} else {
-			assert.strictEqual(result.getLinkUrl(), `${path.sep}stuff.png`, 'Basic link test above folder failed');
-		}
+		assert.strictEqual(result.getLinkUrl(), `/stuff.png`, 'Basic link test above folder failed');
 
 		result = new NotebookLinkHandler(notebookUri, '/tmp/inner/stuff.png', configurationService);
-		if (process.platform === 'win32') {
-			assert.strictEqual(result.getLinkUrl(), `/tmp/inner/stuff.png`, 'Basic link test below folder failed');
-		} else {
-			assert.strictEqual(result.getLinkUrl(), `${path.sep}tmp${path.sep}inner${path.sep}stuff.png`, 'Basic link test below folder failed');
-		}
+		assert.strictEqual(result.getLinkUrl(), `/tmp/inner/stuff.png`, 'Basic link test below folder failed');
 
 		result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: 'https://www.microsoft.com/images/msft.png' }), configurationService);
 		assert.strictEqual(result.getLinkUrl(), `https://www.microsoft.com/images/msft.png`, 'HTTPS link failed to resolve');
