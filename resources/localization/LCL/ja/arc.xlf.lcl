@@ -3001,24 +3001,36 @@
       <Item ItemId=";extensions/arc/package.arc.data.controller.auto.upload.logs" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Auto-upload Logs]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Auto-upload Logs]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.data.controller.auto.upload.logs.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable the automatic upload of logs. Direct mode only.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ログの自動アップロードを有効にする。ダイレクト モードのみ。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.data.controller.auto.upload.metrics" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Auto-upload Metrics]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Auto-upload Metrics]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.data.controller.auto.upload.metrics.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable the automatic upload of metrics. Direct mode only.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[メトリックの自動アップロードを有効にする。ダイレクト モードのみ。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3107,7 +3119,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Custom Location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[カスタムの場所]]></Val>
+            <Val><![CDATA[Custom Location]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3115,14 +3127,17 @@
       <Item ItemId=";extensions/arc/package.arc.data.controller.custom.location.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name of the custom location. Direct mode only.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[固有の地域名。ダイレクト モードのみ。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.data.controller.details.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[For indirect mode, provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring. For direct mode you do not need to provide a namespace, but please provide the custom location name.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure Arc データ コントローラーの名前空間、名前、およびストレージクラスを指定します。 この名前は、リモート管理および監視用の Arc インスタンスを識別するために使用されます。 ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[間接モードの場合は、Azure Arc データ コントローラーの名前空間、名前、ストレージ クラスを準備します。この名前は、リモート管理と監視のための Azure Arc インスタンスを識別するために使用されます。ダイレクト モードの場合、名前空間を指定する必要はありませんが、固有の地域名を指定してください。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring.]]></Val>
@@ -3196,6 +3211,9 @@
       <Item ItemId=";extensions/arc/package.arc.data.controller.namespace.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Indirect mode only.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[間接モードのみ。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
