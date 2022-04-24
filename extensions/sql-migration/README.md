@@ -33,7 +33,7 @@ The following migration modes are supported for the corresponding Azure SQL targ
 
 
 ## Need assistance or have questions/feedback
-Refer to [Get help from Microsoft support](https://docs.microsoft.com/en-us/sql/azure-data-studio/extensions/azure-sql-migration-extension#get-help-from-microsoft-support).
+Refer to [Get help from Microsoft support](https://docs.microsoft.com/sql/azure-data-studio/extensions/azure-sql-migration-extension#get-help-from-microsoft-support).
 
 
 ## Code of Conduct
