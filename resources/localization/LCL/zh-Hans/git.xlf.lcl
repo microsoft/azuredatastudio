@@ -40,6 +40,9 @@
       <Item ItemId=";extensions/git/dist/autofetch.suggest auto fetch" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Would you like Azure Data Studio to [periodically run 'git fetch']5D;({0})?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[是否希望 Azure Data Studio [定期运行 “git fetch”]5D;({0})?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -271,6 +274,9 @@
       <Item ItemId=";extensions/git/dist/commands.commitMessageWithHeadLabel2" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Message (commit on '{0}')]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[消息(在“{0}”上提交)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -547,6 +553,9 @@
       <Item ItemId=";extensions/git/dist/commands.force push not allowed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Force push is not allowed, please enable it with the 'git.allowForcePush' setting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[不允许强制推送，请启用 “git. allowForcePush” 设置。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -697,6 +706,9 @@
       <Item ItemId=";extensions/git/dist/commands.missing user info" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Make sure you configure your 'user.name' and 'user.email' in git.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[请确保已在 Git 中配置 “user.name” 和 “user.email”。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -838,6 +850,9 @@
       <Item ItemId=";extensions/git/dist/commands.no verify commit not allowed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Commits without verification are not allowed, please enable them with the 'git.allowNoVerifyCommit' setting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[不允许在未验证的情况下提交，请使用 “git.allowNoVerifyCommit” 设置启用这些提交。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1195,6 +1210,9 @@
       <Item ItemId=";extensions/git/dist/commands.select a ref to create a new branch from" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select a ref to create the '{0}' branch from]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[选择一个 ref 以从中创建“{0}”分支]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1471,6 +1489,9 @@
       <Item ItemId=";extensions/git/dist/model.not supported" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Absolute paths not supported in 'git.scanRepositories' setting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[“git.scanRepositories” 设置不支持绝对路径。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3232,6 +3253,9 @@
       <Item ItemId=";extensions/git/package.config.confirmEmptyCommits" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Always confirm the creation of empty commits for the 'Git: Commit Empty' command.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[始终为 “Git: Commit Empty” 命令确认创建空提交。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3337,6 +3361,9 @@
       <Item ItemId=";extensions/git/package.config.discardAllScope" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls what changes are discarded by the `Discard all changes` command. `all` discards all changes. `tracked` discards only tracked files. `prompt` shows a prompt dialog every time the action is run.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[控制 `Discard all changes` 命命令将放弃哪些更改。`all` 放弃所有更改。`tracked` 仅放弃跟踪的文件。`prompt` 则在每次运行此操作时显示提示对话框。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3478,6 +3505,9 @@
       <Item ItemId=";extensions/git/package.config.inputValidationSubjectLength" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls the commit message subject length threshold for showing a warning. Unset it to inherit the value of `config.inputValidationLength`.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[控制用于显示警告的提交消息主题长度阈值。请取消设置它以继承 “config.inputValidationLength” 的值。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3538,6 +3568,9 @@
       <Item ItemId=";extensions/git/package.config.path" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Path and filename of the git executable, e.g. `C:\Program Files\Git\bin\git.exe` (Windows). This can also be an array of string values containing multiple paths to look up.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Git 可执行文件的路径和文件名，例如 `C:\Program Files\Git\bin\git.exe` (Windows)。这也可以是一个包含多个要查找的路径的字符串值数组。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3778,6 +3811,9 @@
       <Item ItemId=";extensions/git/package.config.terminalAuthentication" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls whether to enable Azure Data Studio to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[控制是否使 Azure Data Studio 成为集成终端中产生的 git 进程的身份验证处理程序。请注意: 需要重启终端才能选择此设置中的更改。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3991,42 +4027,63 @@
       <Item ItemId=";extensions/git/package.view.workbench.learnMore" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[要详细了解如何在 Azure Data Studio 中使用 Git 和源代码管理，请 [阅读我们的文档]5D;(https://aka.ms/vscode-scm)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.disabled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[如果希望使用 git 功能，请在 [设置]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D)中启用 git。]D;]A;要详细了解如何在 Azure Data Studio 中使用 git 和源代码管理，请 [阅读我们的文档]5D;(https://aka.ms/vscode-scm)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.empty" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[In order to use git features, you can open a folder containing a git repository or clone from a URL.]D;]A;[Open Folder]5D;(command:vscode.openFolder)]D;]A;[Clone Repository]5D;(command:git.clone)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[如果要使用 git 功能，可以打开包含 git 存储库的文件夹或从 URL 克隆。]D;]A;[打开文件夹]5D;(command:vscode.openFolder)]D;]A;[克隆存储库]5D;(command:git.clone)]D;]A;要详细了解如何在 Azure Data Studio 中使用 git 和源代码管理，请 [阅读我们的文档]5D;(https://aka.ms/vscode-scm)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.emptyWorkspace" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories.]D;]A;[Add Folder to Workspace]5D;(command:workbench.action.addRootFolder)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[当前打开的工作区没有任何包含 git 存储库的文件夹。]D;]A;[将文件夹添加到工作区]5D;(command:workbench.action.addRootFolder)]D;]A;要详细了解如何在 Azure Data Studio 中使用 Git 和源代码管理，请 [阅读我们的文档]5D;(https://aka.ms/vscode-scm)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.folder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The folder currently open doesn't have a git repository. You can initialize a repository which will enable source control features powered by git.]D;]A;[Initialize Repository]5D;(command:git.init?%5Btrue%5D)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[当前打开的文件夹中没有 Git 存储库。可初始化一个存储库，它将弃用 Git 提供支持的源代码管理功能。]D;]A;[初始化存储库]5D;(command:git.init?%5Btrue%5D)]D;]A;要详细了解如何在 Azure Data Studio 中使用 Git 和源代码管理，请 [阅读我们的文档]5D;(https://aka.ms/vscode-scm)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A valid git installation was not detected, more details can be found in the [git output]5D;(command:git.showOutput).]D;]A;Please [install git]5D;(https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs]5D;(https://aka.ms/vscode-scm).]D;]A;If you're using a different version control system, you can [search the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[未检测到有效的 git 安装。要了解详细信息，请访问 [git 输出]5D;(command:git.showOutput)。]D;]A;请 [安装 git]5D;(https://git-scm.com/)，或在 [我们的文档]5D;(https://aka.ms/vscode-scm)中详细了解如何在 Azure Data Studio 中使用 Git 和源代码管理。]D;]A;如果使用的是其他版本的控制系统，则可以 [搜索市场]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)以获取其他扩展。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.workspace" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.]D;]A;[Initialize Repository]5D;(command:git.init)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[当前打开的工作区没有任何包含 git 存储库的文件夹。可以初始化文件夹上将启用由 git 支持的源代码管理功能的存储库。]D;]A;[初始化存储库]5D;(command: git.init)]D;]A;要详细了解如何在 Azure Data Studio 中使用 git 和源代码管理，请 [阅读我们的文档]5D;(https://aka.ms/vscode-scm)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

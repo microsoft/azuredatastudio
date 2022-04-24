@@ -1156,6 +1156,9 @@
       <Item ItemId=";extensions/git/dist/commands.save and commit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save All & Commit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Alle speichern & committen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

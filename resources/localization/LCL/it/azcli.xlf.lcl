@@ -22,12 +22,18 @@
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.arcdataExtensionNotInstalled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This extension requires the Azure CLI extension 'arcdata' to be installed. Install the latest version using instructions from [here]5D;(https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Questa estensione richiede l'installazione dell'estensione 'arcdata' dell'interfaccia della riga di comando di Azure. Installare la versione più recente seguendo le istruzioni riportate [qui]5D;(https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.arcdataInstalled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The Azure CLI arcdata extension was successfully installed. Restarting Azure Studio is required to complete configuration - features will not be activated until this is done.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L'estensione arcdata dell'interfaccia della riga di comando di Azure è stata installata. Il riavvio di Azure Studio è necessario per completare la configurazione. Le funzionalità non verranno attivate fino a quando l’operazione non sarà completata.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -52,60 +58,90 @@
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.azInstalled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure CLI was successfully installed. Restarting Azure Studio is required to complete configuration - features will not be activated until this is done.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L’installazione dell'interfaccia della riga di comando di Azure completata. Il riavvio di Azure Studio è necessario per completare la configurazione. Le funzionalità non verranno attivate fino a quando l’operazione non verrà completata.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.azOutputParseErrorCaught" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while parsing the output of az command: {0}. The output is not JSON.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Si è verificato un errore durante l'analisi dell'output del comando az: {0}. L'output non è JSON.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.azUserSettingReadLog" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure CLI user setting: {0}.{1} read, value: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Configurazione utente dell'interfaccia della riga di comando di Azure: {0}.{1} lettura, valore: {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.azUserSettingUpdatedLog" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure CLI user setting: {0}.{1} updated, newValue: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Configurazione utente dell'interfaccia della riga di comando di Azure: {0}.{1} aggiornata, newValue: {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.checkingLatestAzVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Checking for latest available version of Azure CLI]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Verifica della disponibilità della versione più recente dell'interfaccia della riga di comando di Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.couldNotFindArcdataWithPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find the Azure CLI arcdata extension, install it now? If not then some features will not be able to function.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non è stato possibile trovare l'estensione arcdata dell'interfaccia della riga di comando di Azure. Installarla ora? In caso contrario, alcune funzionalità non saranno in grado di funzionare.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.couldNotFindAz" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find Azure CLI. Error: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non è stato possibile trovare l'interfaccia della riga di comando di Azure. Errore: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.couldNotFindAzArc" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find the Azure CLI arcdata extension. Error: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non è stato possibile trovare l'estensione arcdata dell'interfaccia della riga di comando di Azure. Errore: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.couldNotFindAzWithPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find Azure CLI, install it now? If not then some features will not be able to function.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non è stato possibile trovare l'interfaccia della riga di comando di Azure. Installarla ora? In caso contrario, alcune funzionalità non saranno in grado di funzionare.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.currentlyInstalledVersionIsLatest" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Currently installed version of Azure CLI: {0} is same or newer than any other version available]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La versione attualmente installata dell'interfaccia della riga di comando di Azure: {0} è uguale o successiva a qualsiasi altra versione disponibile]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -193,6 +229,9 @@
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.foundExistingAz" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Found existing Azure CLI installation of version (v{0}) at path:{1} with arcdata version: {2}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[È stata trovata l'installazione dell'interfaccia della riga di comando di Azure esistente della versione (v{0}) nel percorso:{1} con versione arcdata: {2}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -208,30 +247,45 @@
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.installError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error installing Azure CLI and arcdata extension: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Si è verificato un errore durante l'installazione dell'interfaccia della riga di comando di Azure e dell'estensione arcdata: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.installingArcdata" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing the Azure CLI arcdata extension...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Installazione dell'estensione arcdata dell'interfaccia della riga di comando di Azure in corso...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.installingAz" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing Azure CLI...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Installazione dell'interfaccia della riga di comando di Azure in corso...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.latestAzVersionAvailable" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Latest available Azure CLI version: {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ultima versione disponibile dell’interfaccia della riga di comando di Azure: {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.missingRequiredVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure CLI >= {0} is required for this feature. Run the 'Azure CLI: Check for Update' command to install this and then try again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L'interfaccia della riga di comando di Azure >= {0} è necessaria per questa funzionalità. Eseguire il comando 'Interfaccia della riga di comando di Azure: check for Update' per installare questa opzione e riprovare.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -247,24 +301,36 @@
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.noAz" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Azure CLI is available, run the command 'Azure CLI: Install' to enable the features that require it.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non è disponibile alcuna interfaccia della riga di comando di Azure. Eseguire il comando 'Interfaccia della riga di comando di Azure: Install' per abilitare le funzionalità che lo richiedono.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.noAzArc" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Azure CLI arcdata extension is available.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non è disponibile alcuna estensione arcdata dell'interfaccia della riga di comando di Azure.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.noAzWithLink" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Azure CLI is available, [install the Azure CLI]5D;(command:az.install) to enable the features that require it.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non è disponibile alcuna interfaccia della riga di comando di Azure, [installare l'interfaccia della riga di comando di Azure]5D;(comando:az.install) per abilitare le funzionalità che lo richiedono.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.noAzureCLI" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Azure CLI is available. Install the latest version manually from [here]5D;(https://docs.microsoft.com/cli/azure/install-azure-cli) and then restart Azure Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non è disponibile alcuna interfaccia della riga di comando di Azure. Installare manualmente la versione più recente da [qui]5D;(https://docs.microsoft.com/cli/azure/install-azure-cli), poi riavviare Azure Studio.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -289,6 +355,9 @@
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.parseVersionError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while parsing the output of az --version.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Si è verificato un errore durante l'analisi dell'output di az --version.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -304,12 +373,18 @@
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.promptForAzUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A new version of Azure CLI ( {0} ) is available, do you wish to update to it now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[È disponibile una nuova versione dell'interfaccia della riga di comando di Azure ( {0} ). Eseguire l'aggiornamento ora?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.promptForRequiredAzUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This extension requires Azure CLI >= {0} to be installed, do you wish to update to the latest version ({1}) now? If you do not then some functionality may not work.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Questa estensione richiede l'installazione dell'interfaccia della riga di comando di Azure >= {0}. Eseguire l'aggiornamento alla versione più recente ({1}) adesso? In caso contrario, alcune funzionalità potrebbero non funzionare.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -325,18 +400,27 @@
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.requiredVersionNotAvailable" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This extension requires the Azure CLI extension 'arcdata' version >= {0} to be installed, but the current version available is only {1}. Install the correct version using instructions from [here]5D;(https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Questa estensione richiede l'installazione dell'estensione 'arcdata' dell'interfaccia della riga di comando di Azure >= {0}, ma la versione corrente disponibile è solo {1}. Installare la versione corretta seguendo le istruzioni riportate [qui]5D;(https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.searchingForAz" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Searching for existing Azure CLI installation...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ricerca dell'installazione dell'interfaccia della riga di comando di Azure esistente in corso...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.skipInstall" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Skipping installation of Azure CLI and arcdata extension, since the operation was not user requested and config option: {0}.{1} is {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L'installazione dell'interfaccia della riga di comando di Azure e dell'estensione arcdata verrà ignorata perché l'operazione non è stata richiesta dall'utente e l'opzione di configurazione: {0}.{1} è {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -379,48 +463,72 @@
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.unsupportedArcDataVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Your downloaded version {1} of the Azure CLI extension 'arcdata' is not yet supported. The latest version is is {0}. Install the correct version using instructions from [here]5D;(https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La versione scaricata {1} dell'estensione 'arcdata' dell'interfaccia della riga di comando di Azure non è ancora supportata. La versione più recente è {0}. Installare la versione corretta seguendo le istruzioni riportate [qui]5D;(https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.updateCheckSkipped" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No check for new Azure CLI version availability performed as Azure CLI was not found to be installed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non è stato effettuato il controllo sulla disponibilità della nuova versione dell'interfaccia della riga di comando di Azure, in quanto non è presente alcuna installazione.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.updateError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error updating Azure CLI: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Errore durante l'aggiornamento dell'interfaccia della riga di comando di Azure: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.updatingAz" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Updating Azure CLI...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aggiornamento dell'interfaccia della riga di comando di Azure in corso...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.userRequestedInstall" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User requested to install Azure CLI and arcdata extension using 'Azure CLI: Install' command]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L'utente ha richiesto di installare l'interfaccia della riga di comando di Azure e l'estensione arcdata usando il comando 'Interfaccia della riga di comando di Azure: Install']]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.userResponseInstall" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User Response on prompt to install Azure CLI: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Risposta dell’utente alla richiesta di installazione dell'interfaccia della riga di comando di Azure: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.userResponseUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User Response on prompt to update Azure CLI: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Risposta dell’utente alla richiesta di aggiornamento dell'interfaccia della riga di comando di Azure: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.versionForUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Found version: {0} that Azure CLI can be updated to from current version: {1}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Versione trovata: {0} alla quale è possibile aggiornare l'interfaccia della riga di comando di Azure dalla versione corrente: {1}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -436,12 +544,18 @@
       <Item ItemId=";extensions/azcli/package.azcli.arc.azArcdataInstallKey.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Choose whether you will be prompted to download the Azure CLI arcdata extension.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Scegliere se verrà richiesto di scaricare l'estensione arcdata dell'interfaccia della riga di comando di Azure.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/package.azcli.arc.azArcdataUpdateKey.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Choose whether you will be prompted when an update of the Azure CLI arcdata extension is available.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Scegliere se verrà visualizzata una richiesta quando è disponibile un aggiornamento dell'estensione dell’interfaccia della riga di comando di Azure.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -457,18 +571,27 @@
       <Item ItemId=";extensions/azcli/package.azcli.arc.config.debug" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Log debug info to the output channel for all executed az commands]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Registrare le informazioni di debug nel canale di output per tutti i comandi az eseguiti]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/package.azcli.arc.config.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure CLI Configuration]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Configurazione dell'interfaccia della riga di comando di Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/package.azcli.arc.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Support for Azure CLI.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Supporto per l'interfaccia della riga di comando di Azure.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -484,42 +607,63 @@
       <Item ItemId=";extensions/azcli/package.azcli.arc.install.dontPrompt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The user will not be prompted to install the Azure CLI arcdata extension]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[All'utente non verrà richiesto di installare l'estensione arcdata dell'interfaccia della riga di comando di Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/package.azcli.arc.install.prompt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The user will be prompted to install the Azure CLI arcdata extension]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[All'utente verrà richiesto di installare l'estensione arcdata dell'interfaccia della riga di comando di Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/package.azcli.arc.update.dontPrompt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The user will not be prompted for update of the Azure CLI arcdata extension]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[All'utente non verrà richiesto di aggiornare l'estensione arcdata dell'interfaccia della riga di comando di Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/package.azcli.arc.update.prompt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The user will be prompted for update of the Azure CLI arcdata extension]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[All'utente verrà richiesto di aggiornare l'estensione arcdata dell'interfaccia della riga di comando di Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/package.azcli.azCliInstallKey.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Choose whether you will be prompted to install Azure CLI.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Scegliere se verrà richiesto di installare l'interfaccia della riga di comando di Azure.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/package.azcli.install.dontPrompt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The user will not be prompted to install the Azure CLI]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[All'utente non verrà richiesto di installare l'interfaccia della riga di comando di Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azcli/package.azcli.install.prompt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The user will be prompted to install the Azure CLI]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[All'utente verrà richiesto di installare l'interfaccia della riga di comando di Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

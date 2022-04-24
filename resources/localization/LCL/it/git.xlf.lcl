@@ -40,6 +40,9 @@
       <Item ItemId=";extensions/git/dist/autofetch.suggest auto fetch" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Would you like Azure Data Studio to [periodically run 'git fetch']5D;({0})?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Consentire ad Azure Data Studio di [eseguire periodicamente 'git fetch']5D;({0})?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1153,6 +1156,9 @@
       <Item ItemId=";extensions/git/dist/commands.save and commit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save All & Commit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Salva tutto ed esegui il commit]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3805,6 +3811,9 @@
       <Item ItemId=";extensions/git/package.config.terminalAuthentication" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls whether to enable Azure Data Studio to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controlla se abilitare Azure Data Studio come gestore di autenticazione per i processi Git generati nel terminale integrato. Nota: per rendere effettiva una modifica di questa impostazione, è necessario riavviare i terminali.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4018,42 +4027,63 @@
       <Item ItemId=";extensions/git/package.view.workbench.learnMore" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Per altre informazioni su come usare GIT e il controllo del codice sorgente in Azure Data Studio [leggere la documentazione]5D;(https://aka.ms/vscode-scm).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.disabled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Per usare le funzionalità GIT, abilitare GIT in [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;Per altre informazioni su come usare GIT e il controllo del codice sorgente in Azure Data Studio [leggere la documentazione]5D;(https://aka.ms/vscode-scm).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.empty" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[In order to use git features, you can open a folder containing a git repository or clone from a URL.]D;]A;[Open Folder]5D;(command:vscode.openFolder)]D;]A;[Clone Repository]5D;(command:git.clone)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Per usare le funzionalità Git, è possibile aprire una cartella contenente un repository Git o clonarlo da un URL.]D;]A;[Apri cartella]5D;(command:vscode.openFolder)]D;]A;[Clone Repository]5D;(command:git.clone)]D;]A;Per altre informazioni su come usare GIT e il controllo del codice sorgente in Azure Data Studio [leggere la documentazione]5D;(https://aka.ms/vscode-scm).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.emptyWorkspace" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories.]D;]A;[Add Folder to Workspace]5D;(command:workbench.action.addRootFolder)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L'area di lavoro attualmente aperta non contiene cartelle contenenti repository GIT.]D;]A;[Aggiungi cartella all'area di lavoro]5D;(command:workbench.action.addRootFolder)]D;]A;Per altre informazioni su come usare GIT e il controllo del codice sorgente in Azure Data Studio [leggere la documentazione]5D;(https://aka.ms/vscode-scm).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.folder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The folder currently open doesn't have a git repository. You can initialize a repository which will enable source control features powered by git.]D;]A;[Initialize Repository]5D;(command:git.init?%5Btrue%5D)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La cartella attualmente aperta non ha un repository GIT. È possibile inizializzare un repository che abiliterà le funzionalità di controllo del codice sorgente basate su GIT.]D;]A;[Inizializza repository]5D;(command:git.init?%5Btrue%5D)]D;]A;Per altre informazioni su come usare Git e il controllo del codice sorgente in Azure Data Studio [leggere la documentazione]5D;(https://aka.ms/vscode-scm).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A valid git installation was not detected, more details can be found in the [git output]5D;(command:git.showOutput).]D;]A;Please [install git]5D;(https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs]5D;(https://aka.ms/vscode-scm).]D;]A;If you're using a different version control system, you can [search the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non è stata rilevata un'installazione GIT valida. Per altri dettagli vedere [output GIT]5D;(command:git.showOutput).]D;]A;[installare git]5D;(https://git-scm.com/), oppure per altre informazioni su come usare GIT e il controllo del codice sorgente in Azure Data Studio vedere [documentazione]5D;(https://aka.ms/vscode-scm).]D;]A;Se si usa un sistema di controllo delle versioni diverso, è possibile [cercare nel Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) le estensioni aggiuntive.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.workspace" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.]D;]A;[Initialize Repository]5D;(command:git.init)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L'area di lavoro attualmente aperta non contiene cartelle contenenti repository GIT. È possibile inizializzare un repository in una cartella che abiliterà le funzionalità del controllo del codice sorgente basate su GIT.]D;]A;[Inizializza repository]5D;(command:git.init)]D;]A;Per altre informazioni su come usare GIT e il controllo del codice sorgente in Azure Data Studio [leggere la documentazione]5D;(https://aka.ms/vscode-scm).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

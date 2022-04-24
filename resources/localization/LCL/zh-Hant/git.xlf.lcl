@@ -40,6 +40,9 @@
       <Item ItemId=";extensions/git/dist/autofetch.suggest auto fetch" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Would you like Azure Data Studio to [periodically run 'git fetch']5D;({0})?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[您是否要 Azure Data Studio [定期執行 'git fetch']5D;({0})?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -550,6 +553,9 @@
       <Item ItemId=";extensions/git/dist/commands.force push not allowed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Force push is not allowed, please enable it with the 'git.allowForcePush' setting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[不允許強制更新，請啟用 'git.allowForcePush' 設定。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3805,6 +3811,9 @@
       <Item ItemId=";extensions/git/package.config.terminalAuthentication" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls whether to enable Azure Data Studio to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[控制是否要讓 Azure Data Studio 成為在整合式終端中繁衍之 git 處理序的驗證處理常式。請注意: 您必須重新啟動終端，才能在此設定中挑選變更。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4018,42 +4027,63 @@
       <Item ItemId=";extensions/git/package.view.workbench.learnMore" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[若要深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制，[請參閱我們的文件]5D;(https://aka.ms/vscode-scm)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.disabled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[如果您想要使用 git 功能，請在[設定]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D)中啟用 git。]D;]A;若要深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制，[請參閱我們的文件]5D;(https://aka.ms/vscode-scm)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.empty" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[In order to use git features, you can open a folder containing a git repository or clone from a URL.]D;]A;[Open Folder]5D;(command:vscode.openFolder)]D;]A;[Clone Repository]5D;(command:git.clone)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[如果要使用 git 功能，您可以開啟包含 git 存放庫的資料夾或從 URL 複製。]D;]A;[開啟資料夾]5D;(command:vscode.openFolder)]D;]A;[複製存放庫]5D;(command:git.clone)]D;]A;若要深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制，[請參閱我們的文件]5D;(https://aka.ms/vscode-scm)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.emptyWorkspace" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories.]D;]A;[Add Folder to Workspace]5D;(command:workbench.action.addRootFolder)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[目前開啟的工作區沒有任何資料夾包含 git 存放庫。]D;]A;[新增資料夾至工作區]5D;(command:workbench.action.addRootFolder)]D;]A;如果要深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制，[請參閱我們的文件]5D;(https://aka.ms/vscode-scm)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.folder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The folder currently open doesn't have a git repository. You can initialize a repository which will enable source control features powered by git.]D;]A;[Initialize Repository]5D;(command:git.init?%5Btrue%5D)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[目前開啟的資料夾沒有任何 git 存放庫。您可以將存放庫初始化，以啟用 git 支援的原始檔控制功能。]D;]A;[將存放庫初始化]5D;(command:git.init?%5Btrue%5D)]D;]A;若要深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制，[請參閱我們的文件]5D;(https://aka.ms/vscode-scm)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A valid git installation was not detected, more details can be found in the [git output]5D;(command:git.showOutput).]D;]A;Please [install git]5D;(https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs]5D;(https://aka.ms/vscode-scm).]D;]A;If you're using a different version control system, you can [search the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[未偵測到有效的 git 安裝，您可以在 [git 輸出]5D;(command:git.showOutput)中找到更多詳細資料。]D;]A;請[安裝 git]5D;(https://git-scm.com/)，或在 [我們的文件]5D;(https://aka.ms/vscode-scm) 深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制。]D;]A;如果您使用的是其他版本的控制系統，可以[搜尋市集]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) 尋找其他延伸模組。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.workspace" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.]D;]A;[Initialize Repository]5D;(command:git.init)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[目前開啟的工作區沒有任何包含 git 存放庫的資料夾。您可以在資料夾上將存放庫初始化，以啟用 git 支援的原始檔控制功能。]D;]A;[將存放庫初始化]5D;(command:git.init)]D;]A;若要深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制，[請參閱我們的文件]5D;(https://aka.ms/vscode-scm)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
