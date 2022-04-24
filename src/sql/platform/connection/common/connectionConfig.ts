@@ -116,7 +116,7 @@ export class ConnectionConfig {
 
 				return this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, ConfigurationTarget.USER).then(() => {
 					profiles.forEach(p => {
-						if (isDisposable(p)) {
+						if (p && isDisposable(p)) {
 							p.dispose();
 						}
 					});
