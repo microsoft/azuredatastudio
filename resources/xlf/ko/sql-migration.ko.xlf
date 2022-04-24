@@ -128,7 +128,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.bc.info">
         <source xml:lang="en">A SQL Managed Instance migration cutover to the Business Critical service tier can take significantly longer than General Purpose because three secondary replicas have to be seeded for Always On High Availability group. The duration of the operation depends on the size of the data. Seeding speed in 90% of cases is 220 GB/hour or higher.</source>
-        <target state="translated">중요 업무용 서비스 계층으로의 SQL Managed Instance 마이그레이션 전환은 Always On 고가용성 그룹에 대해 3개의 보조 복제본을 시드해야 하기 때문에 범용보다 훨씬 오래 걸릴 수 있습니다. 작업 기간은 데이터 크기에 따라 다릅니다. 90%의 경우 시딩 속도는 220GB/시간 이상입니다.</target>
+        <target state="translated">중요 업무용 서비스 계층으로의 SQL Managed Instance 마이그레이션 컷오버는 Always On 고가용성 그룹에 대해 3개의 보조 복제본을 시드해야 하기 때문에 범용보다 훨씬 오래 걸릴 수 있습니다. 작업 기간은 데이터 크기에 따라 다릅니다. 90%의 경우 시딩 속도는 220GB/시간 이상입니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.container.label">
         <source xml:lang="en">Blob container resource group</source>
@@ -200,7 +200,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.cannot.cutover">
         <source xml:lang="en">Migration is not in progress and cannot be cutover.</source>
-        <target state="translated">마이그레이션이 진행 중이 아니므로 중단할 수 없습니다.</target>
+        <target state="translated">마이그레이션이 진행 중이 아니므로 컷오버할 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cannot.retry">
         <source xml:lang="en">Migration cannot be retried.</source>
@@ -220,7 +220,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.completing.cutover.warning">
         <source xml:lang="en">Completing cutover without restoring all the backups may result in a data loss.</source>
-        <target state="translated">모든 백업을 복원하지 않고 중단을 완료하면 데이터가 손실될 수 있습니다.</target>
+        <target state="translated">모든 백업을 복원하지 않고 컷오버를 완료하면 데이터가 손실될 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.confirm.checkbox.message">
         <source xml:lang="en">I confirm there are no additional log backups to provide and want to complete cutover.</source>
@@ -288,7 +288,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.help.main">
         <source xml:lang="en">Perform the following steps before you complete cutover.</source>
-        <target state="translated">중단을 완료하기 전에 다음 단계를 수행합니다.</target>
+        <target state="translated">컷오버를 완료하기 전에 다음 단계를 수행합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.in.progress">
         <source xml:lang="en">Cutover in progress for database '{0}'</source>
@@ -337,14 +337,6 @@ This may take some time.</source>
       <trans-unit id="sql.migration.dashboard.help.title">
         <source xml:lang="en">Help articles and video links</source>
         <target state="translated">도움말 및 비디오 링크</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.dashboard.link1.description">
-        <source xml:lang="en">Assessment rules used to determine the feasibility of migrating your SQL Server instance to Azure SQL Managed Instance.</source>
-        <target state="translated">SQL Server 인스턴스를 Azure SQL Managed Instance로 마이그레이션할 가능성을 결정하는 데 사용되는 평가 규칙입니다.</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.dashboard.link1.title">
-        <source xml:lang="en">Assessment rules for Azure SQL Managed Instance</source>
-        <target state="translated">Azure SQL Managed Instance에 대한 평가 규칙</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.migrate.task.button">
         <source xml:lang="en">Migrate to Azure SQL</source>
@@ -1500,6 +1492,42 @@ This may take some time.</source>
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/sql-migration/dist/dashboard/sqlServerDashboard" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="sql.migration.dashboard.help.description.dmsGuide">
+        <source xml:lang="en">A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.</source>
+        <target state="new">A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.description.mi">
+        <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Managed Instance with minimal downtime.</source>
+        <target state="new">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Managed Instance with minimal downtime.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.description.migrateUsingADS">
+        <source xml:lang="en">The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.</source>
+        <target state="new">The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.description.vm">
+        <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</source>
+        <target state="new">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.dmsGuide">
+        <source xml:lang="en">Azure Database Migration Guides</source>
+        <target state="new">Azure Database Migration Guides</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.mi">
+        <source xml:lang="en">Tutorial:  Migrate to Azure SQL Managed Instance (online)</source>
+        <target state="new">Tutorial:  Migrate to Azure SQL Managed Instance (online)</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.migrateUsingADS">
+        <source xml:lang="en">Migrate databases using Azure Data Studio</source>
+        <target state="new">Migrate databases using Azure Data Studio</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.vm">
+        <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</source>
+        <target state="new">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/sql-migration/dist/models/stateMachine" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="sql.migration.starting.migration.error">
@@ -1520,7 +1548,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="complete-cutover-menu">
         <source xml:lang="en">Complete cutover</source>
-        <target state="translated">중단 완료</target>
+        <target state="translated">컷오버 완료</target>
       </trans-unit>
       <trans-unit id="copy-migration-menu">
         <source xml:lang="en">Copy migration details</source>

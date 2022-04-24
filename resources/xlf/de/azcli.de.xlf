@@ -1,0 +1,317 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/azcli/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="de">
+    <body>
+      <trans-unit id="az.accept">
+        <source xml:lang="en">Accept</source>
+        <target state="new">Accept</target>
+      </trans-unit>
+      <trans-unit id="az.arcdataExtensionNotInstalled">
+        <source xml:lang="en">This extension requires the Azure CLI extension 'arcdata' to be installed. Install the latest version using instructions from [here](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).</source>
+        <target state="new">This extension requires the Azure CLI extension 'arcdata' to be installed. Install the latest version using instructions from [here](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).</target>
+      </trans-unit>
+      <trans-unit id="az.arcdataInstalled">
+        <source xml:lang="en">The Azure CLI arcdata extension was successfully installed. Restarting Azure Studio is required to complete configuration - features will not be activated until this is done.</source>
+        <target state="new">The Azure CLI arcdata extension was successfully installed. Restarting Azure Studio is required to complete configuration - features will not be activated until this is done.</target>
+      </trans-unit>
+      <trans-unit id="az.askLater">
+        <source xml:lang="en">Ask Later</source>
+        <target state="new">Ask Later</target>
+      </trans-unit>
+      <trans-unit id="az.az">
+        <source xml:lang="en">Azure CLI</source>
+        <target state="new">Azure CLI</target>
+      </trans-unit>
+      <trans-unit id="az.azInstalled">
+        <source xml:lang="en">Azure CLI was successfully installed. Restarting Azure Studio is required to complete configuration - features will not be activated until this is done.</source>
+        <target state="new">Azure CLI was successfully installed. Restarting Azure Studio is required to complete configuration - features will not be activated until this is done.</target>
+      </trans-unit>
+      <trans-unit id="az.azOutputParseErrorCaught">
+        <source xml:lang="en">An error occurred while parsing the output of az command: {0}. The output is not JSON.</source>
+        <target state="new">An error occurred while parsing the output of az command: {0}. The output is not JSON.</target>
+      </trans-unit>
+      <trans-unit id="az.azUserSettingReadLog">
+        <source xml:lang="en">Azure CLI user setting: {0}.{1} read, value: {2}</source>
+        <target state="new">Azure CLI user setting: {0}.{1} read, value: {2}</target>
+      </trans-unit>
+      <trans-unit id="az.azUserSettingUpdatedLog">
+        <source xml:lang="en">Azure CLI user setting: {0}.{1} updated, newValue: {2}</source>
+        <target state="new">Azure CLI user setting: {0}.{1} updated, newValue: {2}</target>
+      </trans-unit>
+      <trans-unit id="az.checkingLatestAzVersion">
+        <source xml:lang="en">Checking for latest available version of Azure CLI</source>
+        <target state="new">Checking for latest available version of Azure CLI</target>
+      </trans-unit>
+      <trans-unit id="az.couldNotFindArcdataWithPrompt">
+        <source xml:lang="en">Could not find the Azure CLI arcdata extension, install it now? If not then some features will not be able to function.</source>
+        <target state="new">Could not find the Azure CLI arcdata extension, install it now? If not then some features will not be able to function.</target>
+      </trans-unit>
+      <trans-unit id="az.couldNotFindAz">
+        <source xml:lang="en">Could not find Azure CLI. Error: {0}</source>
+        <target state="new">Could not find Azure CLI. Error: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.couldNotFindAzArc">
+        <source xml:lang="en">Could not find the Azure CLI arcdata extension. Error: {0}</source>
+        <target state="new">Could not find the Azure CLI arcdata extension. Error: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.couldNotFindAzWithPrompt">
+        <source xml:lang="en">Could not find Azure CLI, install it now? If not then some features will not be able to function.</source>
+        <target state="new">Could not find Azure CLI, install it now? If not then some features will not be able to function.</target>
+      </trans-unit>
+      <trans-unit id="az.currentlyInstalledVersionIsLatest">
+        <source xml:lang="en">Currently installed version of Azure CLI: {0} is same or newer than any other version available</source>
+        <target state="new">Currently installed version of Azure CLI: {0} is same or newer than any other version available</target>
+      </trans-unit>
+      <trans-unit id="az.decline">
+        <source xml:lang="en">Decline</source>
+        <target state="new">Decline</target>
+      </trans-unit>
+      <trans-unit id="az.doNotAskAgain">
+        <source xml:lang="en">Don't Ask Again</source>
+        <target state="new">Don't Ask Again</target>
+      </trans-unit>
+      <trans-unit id="az.downloadError">
+        <source xml:lang="en">Error while downloading</source>
+        <target state="new">Error while downloading</target>
+      </trans-unit>
+      <trans-unit id="az.downloadFinished">
+        <source xml:lang="en">Download finished</source>
+        <target state="new">Download finished</target>
+      </trans-unit>
+      <trans-unit id="az.downloadingProgressMb">
+        <source xml:lang="en">Downloading ({0} / {1} MB)</source>
+        <target state="new">Downloading ({0} / {1} MB)</target>
+      </trans-unit>
+      <trans-unit id="az.downloadingTo">
+        <source xml:lang="en">Downloading {0} from {1} to {2}</source>
+        <target state="new">Downloading {0} from {1} to {2}</target>
+      </trans-unit>
+      <trans-unit id="az.endpointOrNamespaceRequired">
+        <source xml:lang="en">Either an endpoint or a namespace must be specified</source>
+        <target state="new">Either an endpoint or a namespace must be specified</target>
+      </trans-unit>
+      <trans-unit id="az.executingCommand">
+        <source xml:lang="en">Executing command: '{0} {1}'</source>
+        <target state="new">Executing command: '{0} {1}'</target>
+      </trans-unit>
+      <trans-unit id="az.failedToParseReleaseInfo">
+        <source xml:lang="en">Failed to parse the JSON of contents at: {0}.
+File contents:
+{1}
+Error: {2}</source>
+        <target state="new">Failed to parse the JSON of contents at: {0}.
+File contents:
+{1}
+Error: {2}</target>
+      </trans-unit>
+      <trans-unit id="az.foundExistingAz">
+        <source xml:lang="en">Found existing Azure CLI installation of version (v{0}) at path:{1} with arcdata version: {2}.</source>
+        <target state="new">Found existing Azure CLI installation of version (v{0}) at path:{1} with arcdata version: {2}.</target>
+      </trans-unit>
+      <trans-unit id="az.gettingTextContentsOfUrl">
+        <source xml:lang="en">Getting text contents of resource at URL {0}</source>
+        <target state="new">Getting text contents of resource at URL {0}</target>
+      </trans-unit>
+      <trans-unit id="az.installError">
+        <source xml:lang="en">Error installing Azure CLI and arcdata extension: {0}</source>
+        <target state="new">Error installing Azure CLI and arcdata extension: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.installingArcdata">
+        <source xml:lang="en">Installing the Azure CLI arcdata extension...</source>
+        <target state="new">Installing the Azure CLI arcdata extension...</target>
+      </trans-unit>
+      <trans-unit id="az.installingAz">
+        <source xml:lang="en">Installing Azure CLI...</source>
+        <target state="new">Installing Azure CLI...</target>
+      </trans-unit>
+      <trans-unit id="az.latestAzVersionAvailable">
+        <source xml:lang="en">Latest available Azure CLI version: {0}.</source>
+        <target state="new">Latest available Azure CLI version: {0}.</target>
+      </trans-unit>
+      <trans-unit id="az.missingRequiredVersion">
+        <source xml:lang="en">Azure CLI &gt;= {0} is required for this feature. Run the 'Azure CLI: Check for Update' command to install this and then try again.</source>
+        <target state="new">Azure CLI &gt;= {0} is required for this feature. Run the 'Azure CLI: Check for Update' command to install this and then try again.</target>
+      </trans-unit>
+      <trans-unit id="az.no">
+        <source xml:lang="en">No</source>
+        <target state="new">No</target>
+      </trans-unit>
+      <trans-unit id="az.noAz">
+        <source xml:lang="en">No Azure CLI is available, run the command 'Azure CLI: Install' to enable the features that require it.</source>
+        <target state="new">No Azure CLI is available, run the command 'Azure CLI: Install' to enable the features that require it.</target>
+      </trans-unit>
+      <trans-unit id="az.noAzArc">
+        <source xml:lang="en">No Azure CLI arcdata extension is available.</source>
+        <target state="new">No Azure CLI arcdata extension is available.</target>
+      </trans-unit>
+      <trans-unit id="az.noAzWithLink">
+        <source xml:lang="en">No Azure CLI is available, [install the Azure CLI](command:az.install) to enable the features that require it.</source>
+        <target state="new">No Azure CLI is available, [install the Azure CLI](command:az.install) to enable the features that require it.</target>
+      </trans-unit>
+      <trans-unit id="az.noAzureCLI">
+        <source xml:lang="en">No Azure CLI is available. Install the latest version manually from [here](https://docs.microsoft.com/cli/azure/install-azure-cli) and then restart Azure Studio.</source>
+        <target state="new">No Azure CLI is available. Install the latest version manually from [here](https://docs.microsoft.com/cli/azure/install-azure-cli) and then restart Azure Studio.</target>
+      </trans-unit>
+      <trans-unit id="az.noDownloadLink">
+        <source xml:lang="en">No download link available for platform '{0}'
+Release info: ${1}</source>
+        <target state="new">No download link available for platform '{0}'
+Release info: ${1}</target>
+      </trans-unit>
+      <trans-unit id="az.noReleaseVersion">
+        <source xml:lang="en">No release version available for platform '{0}'
+Release info: ${1}</source>
+        <target state="new">No release version available for platform '{0}'
+Release info: ${1}</target>
+      </trans-unit>
+      <trans-unit id="az.parseVersionError">
+        <source xml:lang="en">An error occurred while parsing the output of az --version.</source>
+        <target state="new">An error occurred while parsing the output of az --version.</target>
+      </trans-unit>
+      <trans-unit id="az.platformUnsupported">
+        <source xml:lang="en">Platform '{0}' is currently unsupported</source>
+        <target state="new">Platform '{0}' is currently unsupported</target>
+      </trans-unit>
+      <trans-unit id="az.promptForAzUpdate">
+        <source xml:lang="en">A new version of Azure CLI ( {0} ) is available, do you wish to update to it now?</source>
+        <target state="new">A new version of Azure CLI ( {0} ) is available, do you wish to update to it now?</target>
+      </trans-unit>
+      <trans-unit id="az.promptForRequiredAzUpdate">
+        <source xml:lang="en">This extension requires Azure CLI &gt;= {0} to be installed, do you wish to update to the latest version ({1}) now? If you do not then some functionality may not work.</source>
+        <target state="new">This extension requires Azure CLI &gt;= {0} to be installed, do you wish to update to the latest version ({1}) now? If you do not then some functionality may not work.</target>
+      </trans-unit>
+      <trans-unit id="az.promptLog">
+        <source xml:lang="en">Prompting the user to accept the following: {0}</source>
+        <target state="new">Prompting the user to accept the following: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.requiredVersionNotAvailable">
+        <source xml:lang="en">This extension requires the Azure CLI extension 'arcdata' version &gt;= {0} to be installed, but the current version available is only {1}. Install the correct version using instructions from [here](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).</source>
+        <target state="new">This extension requires the Azure CLI extension 'arcdata' version &gt;= {0} to be installed, but the current version available is only {1}. Install the correct version using instructions from [here](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).</target>
+      </trans-unit>
+      <trans-unit id="az.searchingForAz">
+        <source xml:lang="en">Searching for existing Azure CLI installation...</source>
+        <target state="new">Searching for existing Azure CLI installation...</target>
+      </trans-unit>
+      <trans-unit id="az.skipInstall">
+        <source xml:lang="en">Skipping installation of Azure CLI and arcdata extension, since the operation was not user requested and config option: {0}.{1} is {2}</source>
+        <target state="new">Skipping installation of Azure CLI and arcdata extension, since the operation was not user requested and config option: {0}.{1} is {2}</target>
+      </trans-unit>
+      <trans-unit id="az.stderrOutput">
+        <source xml:lang="en">stderr: {0}</source>
+        <target state="new">stderr: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.stdoutOutput">
+        <source xml:lang="en">stdout: {0}</source>
+        <target state="new">stdout: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.unexpectedCommandError">
+        <source xml:lang="en">Unexpected error executing command: {0}</source>
+        <target state="new">Unexpected error executing command: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.unexpectedExitCode">
+        <source xml:lang="en">Unexpected exit code from command: {1} ({0})</source>
+        <target state="new">Unexpected exit code from command: {1} ({0})</target>
+      </trans-unit>
+      <trans-unit id="az.unsupportedArcDataVersion">
+        <source xml:lang="en">Your downloaded version {1} of the Azure CLI extension 'arcdata' is not yet supported. The latest version is is {0}. Install the correct version using instructions from [here](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).</source>
+        <target state="new">Your downloaded version {1} of the Azure CLI extension 'arcdata' is not yet supported. The latest version is is {0}. Install the correct version using instructions from [here](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).</target>
+      </trans-unit>
+      <trans-unit id="az.updateCheckSkipped">
+        <source xml:lang="en">No check for new Azure CLI version availability performed as Azure CLI was not found to be installed</source>
+        <target state="new">No check for new Azure CLI version availability performed as Azure CLI was not found to be installed</target>
+      </trans-unit>
+      <trans-unit id="az.updateError">
+        <source xml:lang="en">Error updating Azure CLI: {0}</source>
+        <target state="new">Error updating Azure CLI: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.updatingAz">
+        <source xml:lang="en">Updating Azure CLI...</source>
+        <target state="new">Updating Azure CLI...</target>
+      </trans-unit>
+      <trans-unit id="az.userRequestedInstall">
+        <source xml:lang="en">User requested to install Azure CLI and arcdata extension using 'Azure CLI: Install' command</source>
+        <target state="new">User requested to install Azure CLI and arcdata extension using 'Azure CLI: Install' command</target>
+      </trans-unit>
+      <trans-unit id="az.userResponseInstall">
+        <source xml:lang="en">User Response on prompt to install Azure CLI: {0}</source>
+        <target state="new">User Response on prompt to install Azure CLI: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.userResponseUpdate">
+        <source xml:lang="en">User Response on prompt to update Azure CLI: {0}</source>
+        <target state="new">User Response on prompt to update Azure CLI: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.versionForUpdate">
+        <source xml:lang="en">Found version: {0} that Azure CLI can be updated to from current version: {1}.</source>
+        <target state="new">Found version: {0} that Azure CLI can be updated to from current version: {1}.</target>
+      </trans-unit>
+      <trans-unit id="az.yes">
+        <source xml:lang="en">Yes</source>
+        <target state="new">Yes</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azcli/package" source-language="en" datatype="plaintext" target-language="de">
+    <body>
+      <trans-unit id="azcli.arc.azArcdataInstallKey.description">
+        <source xml:lang="en">Choose whether you will be prompted to download the Azure CLI arcdata extension.</source>
+        <target state="new">Choose whether you will be prompted to download the Azure CLI arcdata extension.</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.azArcdataUpdateKey.description">
+        <source xml:lang="en">Choose whether you will be prompted when an update of the Azure CLI arcdata extension is available.</source>
+        <target state="new">Choose whether you will be prompted when an update of the Azure CLI arcdata extension is available.</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.category">
+        <source xml:lang="en">Azure CLI</source>
+        <target state="new">Azure CLI</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.config.debug">
+        <source xml:lang="en">Log debug info to the output channel for all executed az commands</source>
+        <target state="new">Log debug info to the output channel for all executed az commands</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.config.title">
+        <source xml:lang="en">Azure CLI Configuration</source>
+        <target state="new">Azure CLI Configuration</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.description">
+        <source xml:lang="en">Support for Azure CLI.</source>
+        <target state="new">Support for Azure CLI.</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.displayName">
+        <source xml:lang="en">Azure CLI</source>
+        <target state="new">Azure CLI</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.install.dontPrompt.description">
+        <source xml:lang="en">The user will not be prompted to install the Azure CLI arcdata extension</source>
+        <target state="new">The user will not be prompted to install the Azure CLI arcdata extension</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.install.prompt.description">
+        <source xml:lang="en">The user will be prompted to install the Azure CLI arcdata extension</source>
+        <target state="new">The user will be prompted to install the Azure CLI arcdata extension</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.update.dontPrompt.description">
+        <source xml:lang="en">The user will not be prompted for update of the Azure CLI arcdata extension</source>
+        <target state="new">The user will not be prompted for update of the Azure CLI arcdata extension</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.update.prompt.description">
+        <source xml:lang="en">The user will be prompted for update of the Azure CLI arcdata extension</source>
+        <target state="new">The user will be prompted for update of the Azure CLI arcdata extension</target>
+      </trans-unit>
+      <trans-unit id="azcli.azCliInstallKey.description">
+        <source xml:lang="en">Choose whether you will be prompted to install Azure CLI.</source>
+        <target state="new">Choose whether you will be prompted to install Azure CLI.</target>
+      </trans-unit>
+      <trans-unit id="azcli.install.dontPrompt.description">
+        <source xml:lang="en">The user will not be prompted to install the Azure CLI</source>
+        <target state="new">The user will not be prompted to install the Azure CLI</target>
+      </trans-unit>
+      <trans-unit id="azcli.install.prompt.description">
+        <source xml:lang="en">The user will be prompted to install the Azure CLI</source>
+        <target state="new">The user will be prompted to install the Azure CLI</target>
+      </trans-unit>
+      <trans-unit id="command.category">
+        <source xml:lang="en">Azure CLI</source>
+        <target state="new">Azure CLI</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -31,7 +31,7 @@
 			"contentFolder": "Inhaltsordner",
 			"contentFolderOptional": "Inhaltsordner (optional)",
 			"create": "Erstellen",
-			"duplicateFileError": "Die Datei \"{0}\" ist bereits im Zielordner \"{1}\" vorhanden.\r\n Die Datei wurde in \"{2}\" umbenannt, um Datenverlust zu verhindern.",
+			"duplicateFileError": "Die Datei \"{0}\" ist bereits im Zielordner \"{1}\" vorhanden. \r\n Die Datei wurde in \"{2}\" umbenannt, um Datenverlust zu verhindern.",
 			"editBookError": "Fehler beim Bearbeiten von Jupyter Book \"{0}\": {1}",
 			"fileExtension": "Dateierweiterung",
 			"fileName": "Dateiname",

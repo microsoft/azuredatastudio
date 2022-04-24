@@ -681,8 +681,8 @@
       <trans-unit id="bdc.view.welcome.connect">
         <source xml:lang="en">No SQL Big Data Cluster controllers registered. [Learn More](https://docs.microsoft.com/sql/big-data-cluster/big-data-cluster-overview)
 [Connect Controller](command:bigDataClusters.command.connectController)</source>
-        <target state="translated">SQL ビッグ データ クラスター コントローラーが登録されていません。[詳細] (https://docs.microsoft.com/sql/big-data-cluster/big-data-cluster-overview)
-[接続コントローラー] (command:bigDataClusters.command.connectController)</target>
+        <target state="new">No SQL Big Data Cluster controllers registered. [Learn More](https://docs.microsoft.com/sql/big-data-cluster/big-data-cluster-overview)
+[Connect Controller](command:bigDataClusters.command.connectController)</target>
       </trans-unit>
       <trans-unit id="bdc.view.welcome.loading">
         <source xml:lang="en">Loading controllers...</source>

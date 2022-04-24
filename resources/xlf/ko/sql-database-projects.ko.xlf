@@ -50,6 +50,10 @@
         <source xml:lang="en">Time</source>
         <target state="translated">시간</target>
       </trans-unit>
+      <trans-unit id="actionLabel">
+        <source xml:lang="en">Action</source>
+        <target state="translated">작업</target>
+      </trans-unit>
       <trans-unit id="addDatabaseReferenceOkButtonText">
         <source xml:lang="en">Add reference</source>
         <target state="translated">참조 추가</target>
@@ -77,6 +81,18 @@
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
         <target state="translated">Azure Function local.settings.json을 새 연결 문자열로 업데이트하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="applyConfirmation">
+        <source xml:lang="en">Are you sure you want to update the target project?</source>
+        <target state="translated">대상 프로젝트를 업데이트하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="applyError">
+        <source xml:lang="en">There was an error updating the project: {0}</source>
+        <target state="translated">프로젝트 {0}을(를) 업데이트하는 동안 오류가 발생했습니다.</target>
+      </trans-unit>
+      <trans-unit id="applySuccess">
+        <source xml:lang="en">Project was successfully updated.</source>
+        <target state="translated">프로젝트를 업데이트했습니다.</target>
       </trans-unit>
       <trans-unit id="at">
         <source xml:lang="en">at</source>
@@ -150,6 +166,14 @@
         <source xml:lang="en">Cleaning existing deployments...</source>
         <target state="translated">기존 배포를 정리하는 중...</target>
       </trans-unit>
+      <trans-unit id="closeButton">
+        <source xml:lang="en">Close</source>
+        <target state="translated">닫기</target>
+      </trans-unit>
+      <trans-unit id="compareActionRadiButtonLabel">
+        <source xml:lang="en">View changes in Schema Compare</source>
+        <target state="translated">스키마 비교의 변경 내용 보기</target>
+      </trans-unit>
       <trans-unit id="confirmPassword">
         <source xml:lang="en">Confirm SQL server admin password</source>
         <target state="translated">SQL 서버 관리자 암호 확인</target>
@@ -166,6 +190,10 @@
         <source xml:lang="en">Connection failed error: '{0}'</source>
         <target state="translated">연결 실패 오류: '{0}'</target>
       </trans-unit>
+      <trans-unit id="connectionProfile">
+        <source xml:lang="en">Select a connection profile</source>
+        <target state="translated">연결 프로필 선택</target>
+      </trans-unit>
       <trans-unit id="connectionRadioButtonLabel">
         <source xml:lang="en">Connections</source>
         <target state="translated">연결</target>
@@ -179,8 +207,8 @@
         <target state="translated">"local.settings.json"에 지정된 연결 문자열 설정</target>
       </trans-unit>
       <trans-unit id="containerAlreadyExistForProject">
-        <source xml:lang="en">Other servers on container already exist for the project. Do you want to delete them?</source>
-        <target state="translated">컨테이너의 다른 서버가 프로젝트에 이미 있습니다. 서버를 삭제하시겠습니까?</target>
+        <source xml:lang="en">Containers already exist for this project. Do you want to delete them before deploying a new one?</source>
+        <target state="translated">이 프로젝트에 대한 컨테이너가 이미 있습니다. 새 항목을 배포하기 전에 삭제하시겠습니까?</target>
       </trans-unit>
       <trans-unit id="createNew">
         <source xml:lang="en">Create New</source>
@@ -410,6 +438,14 @@
         <source xml:lang="en">SQL Database</source>
         <target state="translated">SQL Database</target>
       </trans-unit>
+      <trans-unit id="emptySdkProjectTypeDescription">
+        <source xml:lang="en">Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.</source>
+        <target state="translated">빈 SDK 스타일 프로젝트에서 시작하여 Microsoft.Build.Sql(미리 보기)을 사용하여 SQL 데이터베이스용 스키마를 개발 및 게시합니다.</target>
+      </trans-unit>
+      <trans-unit id="emptySdkProjectTypeDisplayName">
+        <source xml:lang="en">SQL Database (SDK)</source>
+        <target state="translated">SQL 데이터베이스(SDK)</target>
+      </trans-unit>
       <trans-unit id="enterConnStringTemplateDescription">
         <source xml:lang="en">Enter a template for SQL connection string</source>
         <target state="translated">SQL 연결 문자열에 대한 템플릿 입력</target>
@@ -446,6 +482,14 @@
         <source xml:lang="en">Enter SQL Server admin password</source>
         <target state="translated">SQL Server 관리자 암호 입력</target>
       </trans-unit>
+      <trans-unit id="enterPasswordManually">
+        <source xml:lang="en">Enter password or press escape to cancel</source>
+        <target state="translated">암호를 입력하거나 Esc 키를 눌러 취소하세요.</target>
+      </trans-unit>
+      <trans-unit id="enterPasswordPrompt">
+        <source xml:lang="en">Enter the password to be used for the connection string</source>
+        <target state="translated">연결 문자열에 사용할 암호를 입력합니다.</target>
+      </trans-unit>
       <trans-unit id="enterPortNumber">
         <source xml:lang="en">Enter SQL server port number or press enter to use the default value</source>
         <target state="translated">SQL 서버 포트 번호를 입력하거나 Enter 키를 눌러 기본값을 사용함</target>
@@ -453,6 +497,10 @@
       <trans-unit id="enterSystemDbName">
         <source xml:lang="en">Enter a database name for this system database</source>
         <target state="translated">이 시스템 데이터베이스에 대한 데이터베이스 이름을 입력하십시오.</target>
+      </trans-unit>
+      <trans-unit id="equalComparison">
+        <source xml:lang="en">The project is already up to date with the database.</source>
+        <target state="translated">프로젝트가 데이터베이스를 사용하여 이미 최신 상태입니다.</target>
       </trans-unit>
       <trans-unit id="errorFindingBuildFilesLocation">
         <source xml:lang="en">Error finding build files location: {0}</source>
@@ -499,6 +547,10 @@
       <trans-unit id="extractTargetRequired">
         <source xml:lang="en">Target information for extract is required to create database project.</source>
         <target state="translated">데이터베이스 프로젝트를 만들려면 추출에 대한 대상 정보가 필요합니다.</target>
+      </trans-unit>
+      <trans-unit id="failedToGetConnectionString">
+        <source xml:lang="en">An error occurred generating the connection string for the selected connection</source>
+        <target state="translated">선택한 연결에 대한 연결 문자열을 생성하는 동안 오류가 발생했습니다.</target>
       </trans-unit>
       <trans-unit id="failedToParse">
         <source xml:lang="en">Failed to parse "{0}": {1}.</source>
@@ -572,6 +624,10 @@
         <source xml:lang="en">Import Elements</source>
         <target state="translated">요소 가져오기</target>
       </trans-unit>
+      <trans-unit id="includePassword">
+        <source xml:lang="en">Do you want to include the password from this connection in your local.settings.json file?</source>
+        <target state="translated">이 연결의 암호를 local.settings.json 파일에 포함하시겠어요?</target>
+      </trans-unit>
       <trans-unit id="input">
         <source xml:lang="en">Input</source>
         <target state="translated">입력</target>
@@ -619,6 +675,10 @@
       <trans-unit id="jsonParseError">
         <source xml:lang="en">{0} near line "{1}", column "{2}"</source>
         <target state="translated">{0}("{1}" 줄, "{2}" 열 근처)</target>
+      </trans-unit>
+      <trans-unit id="learnMore">
+        <source xml:lang="en">Learn More</source>
+        <target state="translated">자세한 정보</target>
       </trans-unit>
       <trans-unit id="loadProfilePlaceholderText">
         <source xml:lang="en">Load profile...</source>
@@ -684,9 +744,17 @@
         <source xml:lang="en">File {0} doesn't exist</source>
         <target state="translated">파일 {0}이(가) 존재하지 않습니다.</target>
       </trans-unit>
+      <trans-unit id="noSchemaCompareExtension">
+        <source xml:lang="en">The Schema Compare extension must be installed to a update a project from a database.</source>
+        <target state="translated">데이터베이스에서 프로젝트를 업데이트하려면 스키마 비교 확장을 설치해야 합니다.</target>
+      </trans-unit>
       <trans-unit id="noSqlFilesGenerated">
         <source xml:lang="en">No .sql files were generated by Autorest. Please confirm that your spec contains model definitions, or check the output log for details.</source>
         <target state="translated">Autorest에서 .sql 파일을 생성하지 않았습니다. 사양에 모델 정의가 포함되어 있는지 확인하거나 출력 로그에서 자세한 내용을 확인하세요.</target>
+      </trans-unit>
+      <trans-unit id="noSqlProjFile">
+        <source xml:lang="en">The selected project file does not exist</source>
+        <target state="translated">선택한 프로젝트 파일이 없습니다.</target>
       </trans-unit>
       <trans-unit id="noSqlProjFilesSelected">
         <source xml:lang="en">No .sqlproj file selected; please select one.</source>
@@ -731,6 +799,10 @@
       <trans-unit id="openEulaString">
         <source xml:lang="en">Open License Agreement</source>
         <target state="translated">라이선스 계약 열기</target>
+      </trans-unit>
+      <trans-unit id="openFile">
+        <source xml:lang="en">Open File</source>
+        <target state="translated">파일 열기</target>
       </trans-unit>
       <trans-unit id="output">
         <source xml:lang="en">Output</source>
@@ -796,6 +868,10 @@
         <source xml:lang="en">Project</source>
         <target state="translated">Project</target>
       </trans-unit>
+      <trans-unit id="projectLocationLabel">
+        <source xml:lang="en">Location</source>
+        <target state="translated">위치</target>
+      </trans-unit>
       <trans-unit id="projectLocationPlaceholderText">
         <source xml:lang="en">Select location to create project</source>
         <target state="translated">프로젝트를 만들 위치 선택</target>
@@ -815,6 +891,10 @@
       <trans-unit id="projectReferenceNameElement">
         <source xml:lang="en">Project reference name element</source>
         <target state="translated">프로젝트 참조 이름 요소</target>
+      </trans-unit>
+      <trans-unit id="projectToUpdatePlaceholderText">
+        <source xml:lang="en">Select project file</source>
+        <target state="translated">프로젝트 파일 선택</target>
       </trans-unit>
       <trans-unit id="publish">
         <source xml:lang="en">Publish</source>
@@ -920,6 +1000,10 @@
         <source xml:lang="en">Schema</source>
         <target state="translated">스키마</target>
       </trans-unit>
+      <trans-unit id="schemaCompare.compareErrorMessage">
+        <source xml:lang="en">Schema Compare failed: {0}</source>
+        <target state="translated">스키마 비교 실패: {0}</target>
+      </trans-unit>
       <trans-unit id="schemaCompareAction">
         <source xml:lang="en">Schema Compare</source>
         <target state="translated">스키마 비교</target>
@@ -935,6 +1019,10 @@
       <trans-unit id="scriptFriendlyName">
         <source xml:lang="en">Script</source>
         <target state="translated">스크립트</target>
+      </trans-unit>
+      <trans-unit id="sdkStyleProject">
+        <source xml:lang="en">SDK-style project</source>
+        <target state="new">SDK-style project</target>
       </trans-unit>
       <trans-unit id="sec">
         <source xml:lang="en">sec</source>
@@ -955,6 +1043,14 @@
       <trans-unit id="selectConnection">
         <source xml:lang="en">Select connection</source>
         <target state="translated">연결 선택</target>
+      </trans-unit>
+      <trans-unit id="selectConnectionError">
+        <source xml:lang="en">Failed to set connection string app setting: {0}</source>
+        <target state="translated">연결 문자열 앱 설정을 설정하지 못했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="selectConnectionString">
+        <source xml:lang="en">Select SQL connection string method</source>
+        <target state="translated">SQL 연결 문자열 메서드 선택</target>
       </trans-unit>
       <trans-unit id="selectDacpac">
         <source xml:lang="en">Select .dacpac</source>
@@ -1128,6 +1224,10 @@
         <source xml:lang="en">Unable to locate '{0}' target: '{1}'</source>
         <target state="translated">'{0}' 대상을 찾을 수 없습니다. '{1}'</target>
       </trans-unit>
+      <trans-unit id="unableToSetConnectionString">
+        <source xml:lang="en">Failed to set connection string app setting</source>
+        <target state="translated">연결 문자열 앱 설정을 설정하지 못했습니다.</target>
+      </trans-unit>
       <trans-unit id="unexpectedProjectContext">
         <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
         <target state="translated">프로젝트 컨텍스트를 설정할 수 없습니다.  예기치 않은 위치에서 호출된 명령: {0}</target>
@@ -1140,6 +1240,14 @@
         <source xml:lang="en">Unrecognized version: </source>
         <target state="translated">인식할 수 없는 버전: </target>
       </trans-unit>
+      <trans-unit id="updateAction">
+        <source xml:lang="en">Update action</source>
+        <target state="translated">업데이트 작업</target>
+      </trans-unit>
+      <trans-unit id="updateActionRadiButtonLabel">
+        <source xml:lang="en">Apply all changes</source>
+        <target state="translated">모든 변경 내용 적용</target>
+      </trans-unit>
       <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
         <source xml:lang="en">The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
         <target state="translated">'{0}' 프로젝트를 빌드하려면 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 생성된 경우 두 도구 모두에서 계속 작동합니다. 프로젝트를 업데이트하시겠습니까?</target>
@@ -1147,6 +1255,26 @@
       <trans-unit id="updateProjectForRoundTrip">
         <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
         <target state="translated">'{0}' 프로젝트를 빌드하려면 대상, 참조 및 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 생성된 경우 두 도구 모두에서 계속 작동합니다. 프로젝트를 업데이트하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="updateProjectFromDatabaseDialogName">
+        <source xml:lang="en">Update project from database</source>
+        <target state="translated">데이터베이스의 프로젝트 업데이트</target>
+      </trans-unit>
+      <trans-unit id="updateText">
+        <source xml:lang="en">Update</source>
+        <target state="translated">업데이트</target>
+      </trans-unit>
+      <trans-unit id="updatingProjectFromDatabase">
+        <source xml:lang="en">Updating {0} from {1}...</source>
+        <target state="translated">{1}의 {0}을(를) 업데이트하는 중...</target>
+      </trans-unit>
+      <trans-unit id="userConnectionString">
+        <source xml:lang="en">Enter connection string</source>
+        <target state="translated">연결 문자열 입력</target>
+      </trans-unit>
+      <trans-unit id="userPasswordLater">
+        <source xml:lang="en">In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.</source>
+        <target state="translated">나중에 SQL 연결 문자열을 사용하려면 local.settings.json 파일에 암호를 수동으로 입력해야 합니다.</target>
       </trans-unit>
       <trans-unit id="userSelectionCancelled">
         <source xml:lang="en">User has cancelled selection for how to run autorest.</source>
@@ -1335,6 +1463,10 @@
       <trans-unit id="sqlDatabaseProjects.schemaCompare">
         <source xml:lang="en">Schema Compare</source>
         <target state="translated">스키마 비교</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.updateProjectFromDatabase">
+        <source xml:lang="en">Update Project From Database</source>
+        <target state="translated">데이터베이스에서 프로젝트 만들기</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.validateExternalStreamingJob">
         <source xml:lang="en">Validate External Streaming Job</source>

@@ -263,6 +263,10 @@
 					{
 						"id": "Microsoft.xml-language-features",
 						"path": "./translations/extensions/xml-language-features.i18n.json"
+					},
+					{
+						"id": "Microsoft.azcli",
+						"path": "./translations/extensions/azcli.i18n.json"
 					}
 				]
 			}

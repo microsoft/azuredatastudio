@@ -18,7 +18,7 @@
 			"azure.microsoftCorpAccount": "Microsoft Corp.",
 			"azure.noBaseToken": "驗證失敗，或您的權杖已從系統中刪除。請嘗試再次將帳戶新增至 Azure Data Studio。",
 			"azure.noUniqueIdentifier": "使用者在 AAD 中沒有唯一的識別碼",
-			"azure.responseError": "權杖擷取失敗，發生錯誤。請開啟開發人員工具以檢視錯誤",
+			"azure.responseError": "權杖擷取失敗，發生錯誤。[開啟開發人員工具]({0}) 以了解更多詳細資料。",
 			"azure.tenantNotFound": "找不到識別碼為 '{0}' 的指定租用戶。",
 			"azureAuth.unidentifiedError": "Azure 驗證發生無法辨識的錯誤",
 			"azureWorkAccountDisplayName": "公司或學校帳戶",
@@ -233,8 +233,9 @@
 			"config.enablePublicCloudDescription": "是否應啟用 Azure 公用雲端整合",
 			"config.enableUsGovCloudDescription": "是否應啟用 US Government Azure 雲端 (Fairfax) 整合",
 			"config.enableUsNatCloudDescription": "是否應啟用美國國民 Azure 雲端整合",
+			"config.loggingLevel": "[選用] Azure 帳戶延伸模組的記錄詳細程度。",
 			"config.noSystemKeychain": "停用系統金鑰鏈整合。認證將會儲存於使用者主目錄的一般檔案中。",
-			"config.piiLogging": "是否應在本機主控台檢視中登入個人識別資訊 (PII)"
+			"config.piiLogging": "是否要將個人識別資訊 (PII) 記錄在 Azure 帳戶輸出通道與輸出通道記錄檔中。"
 		}
 	}
 }

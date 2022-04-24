@@ -9992,6 +9992,7 @@
 			"miinstallVsix": "從 VSIX 套件安裝延伸模組",
 			"newQuery": "新增查詢",
 			"notebook.cellTitle": "筆記本儲存格標題功能表",
+			"notebook.cellToolbarLocation.compatibilityDescription": "儲存格工具列應顯示在何處，或是否應隱藏。注意: 此設定僅針對延伸模組相容性目的啟用，因此不會影響任何項目。",
 			"notebook.title": "筆記本標題功能表",
 			"notebook.toolbar": "筆記本工具列功能表",
 			"objectExplorer.context": "物件總管項目操作功能表",
@@ -10002,8 +10003,11 @@
 			"recommendedExtensions": "Marketplace",
 			"scenarioTypeUndefined": "必須提供延伸模組建議的案例類型。",
 			"showReleaseNotes": "在更新後顯示版本資訊。版本資訊會在新的網頁瀏覽器視窗中開啟。",
+			"sql.watcherExclude": "設定檔案路徑的 Glob 模式以從檔案監看排除。模式必須符合絕對路徑，即以 `**/` 或完整路徑為前置詞以正確符合，並以 `/**` 為後置詞以符合路徑中的檔案 (例如 `**/build/output/**` 或 `/Users/name/workspaces/project/build/output/**`)。必須先重新開機才能變更此設定。若是發生 Azure Data Studio 在啟動時耗用大量 CPU 時間的情況，可以排除較大的資料夾以降低起始負載。",
 			"uninstallExtensionComplete": "請重新載入 Azure Data Studio 以完成延伸模組 {0} 的解除安裝。",
 			"updateLocale": "您想要變更 Azure Data Studio 的 UI 語言為 {0} 並重新啟動嗎?",
+			"vscodeFunctionalityNotSupportedError": "Azure Data Studio 不支持此 VS Code 功能。",
+			"vscodeInvalidArgumentsError": "引數無效",
 			"watermark.newNotebook": "新增筆記本",
 			"watermark.newSqlFile": "新增 SQL 檔案",
 			"workspace.trust.description": "控制是否在 Azure Data Studio 內啟用工作區信任。",
@@ -10165,15 +10169,18 @@
 			"showConnectDialogOnStartup": "啟動時顯示連線對話方塊"
 		},
 		"sql/workbench/browser/designer/designer": {
+			"designer.defaultRemoveRowConfirmationMessage": "確定要移除列嗎?",
 			"designer.generalGroupName": "一般",
 			"designer.loadingDesigner": "正在載入設計工具...",
 			"designer.loadingDesignerCompleted": "設計工具已載入",
 			"designer.newRowText": "新增",
+			"designer.processing": "正在處理...",
 			"designer.processingChanges": "正在處理變更...",
 			"designer.processingChangesCompleted": "已處理變更",
+			"designer.processingCompleted": "處理已完成",
+			"designer.publishChangesCompleted": "已發佈變更",
+			"designer.publishingChanges": "正在發佈變更...",
 			"designer.removeRowText": "移除",
-			"designer.savingChanges": "正在儲存變更...",
-			"designer.savingChangesCompleted": "已儲存變更",
 			"tableDesigner.unknownComponentType": "不支援元件類型 {0}"
 		},
 		"sql/workbench/browser/designer/designerPropertiesPane": {
@@ -10198,6 +10205,7 @@
 			"resourceViewerInput.resourceViewer": "資源檢視器"
 		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
+			"tableDesigner.OperationInProgressWarning": "另一個作業正在進行中時，無法執行作業。",
 			"tableDesigner.newTable": "新增資料表"
 		},
 		"sql/workbench/browser/modal/modal": {
@@ -11176,7 +11184,7 @@
 			"clearResults": "清除結果",
 			"collapseAllCells": "摺疊資料格",
 			"expandAllCells": "展開資料格",
-			"kernelNotSupported": "由於不支援核心程序，因此此筆記本無法以參數執行。請使用支援的核心程序和格式。[深入了解] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
+			"kernelNotSupported": "This notebook cannot run with parameters as the kernel is not supported. Please use the supported kernels and format. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"loading": "正在載入核心...",
 			"loadingContexts": "正在載入內容...",
 			"localhost": "localhost",
@@ -11581,11 +11589,8 @@
 			"refreshError": "重新整理節點 '{0}' 時發生錯誤: {1}"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/actions": {
-			"tableDesigner.saveTableChanges": "儲存變更"
-		},
-		"sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution": {
-			"tableDesigner.configTitle": "資料表設計工具",
-			"tableDesigner.featureEnabledDescription": "控制是否啟用資料表設計工具功能。預設值為 False。"
+			"tableDesigner.generateScript": "產生指令碼",
+			"tableDesigner.publishTableChanges": "發佈變更..."
 		},
 		"sql/workbench/contrib/tasks/browser/tasks.contribution": {
 			"inProgressTasksChangesBadge": "{0} 正在執行的工作",
@@ -11647,8 +11652,6 @@
 			"welcomePage.location": "位置",
 			"welcomePage.moreRecent": "顯示更多",
 			"welcomePage.name": "名稱",
-			"welcomePage.preview": "預覽",
-			"welcomePage.previewBody": "這個功能頁面仍在預覽階段。預覽功能會引進新功能，並逐步成為產品中永久的一部分。這些功能雖然穩定，但在使用上仍需要改善。歡迎您在功能開發期間提供早期的意見反應。",
 			"welcomePage.resources": "資源",
 			"welcomePage.runQuery": "執行查詢",
 			"welcomePage.runQueryBody": "透過查詢編輯器與資料互動。",
@@ -11724,41 +11727,6 @@
 			"welcomePage.sqlServerProfiler": "SQL Server Profiler",
 			"welcomePage.startTour": "開始導覽",
 			"welcomePage.willReloadAfterInstallingExtensionPack": "{0} 的其他支援安裝完成後，將會重新載入此視窗。"
-		},
-		"sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page": {
-			"welcomePage.azdata": "Azure Data Studio",
-			"welcomePage.azdataBlog": "探索最新版本中的新功能",
-			"welcomePage.azdataBlogDescription": "展示新功能的新每月部落格文章",
-			"welcomePage.colorTheme": "色彩佈景主題",
-			"welcomePage.colorThemeDescription": "將編輯器和您的程式碼設定成您喜愛的外觀",
-			"welcomePage.customize": "自訂",
-			"welcomePage.deploy": "部署",
-			"welcomePage.extensionDescription": "下載所需延伸模組，包括 SQL Server 系統管理員套件等",
-			"welcomePage.extensions": "延伸模組",
-			"welcomePage.followTwitter": "追蹤我們的 Twitter",
-			"welcomePage.followTwitterDescription": "掌握社群如何使用 Azure Data Studio 的最新消息，並可直接與工程師對話。",
-			"welcomePage.gettingStarted": "使用者入門",
-			"welcomePage.gitHubRepository": "GitHub 存放庫",
-			"welcomePage.help": "說明",
-			"welcomePage.keyboardShortcut": "鍵盤快速鍵",
-			"welcomePage.keyboardShortcutDescription": "尋找您最愛的命令並予加自訂",
-			"welcomePage.learn": "了解",
-			"welcomePage.moreRecent": "更多...",
-			"welcomePage.newConnection": "新增連線",
-			"welcomePage.newDeployment": "新增部署…",
-			"welcomePage.newNotebook": "新增筆記本",
-			"welcomePage.newQuery": "新增查詢",
-			"welcomePage.noRecentFolders": "沒有最近使用的資料夾",
-			"welcomePage.openFileLinuxPC": "開啟檔案",
-			"welcomePage.openFileMac": "開啟檔案",
-			"welcomePage.productDocumentation": "文件",
-			"welcomePage.recent": "最近使用",
-			"welcomePage.releaseNotes": "版本資訊",
-			"welcomePage.reportIssue": "回報問題或功能要求",
-			"welcomePage.showCommands": "尋找及執行所有命令",
-			"welcomePage.showCommandsDescription": "從命令選擇區快速存取及搜尋命令 ({0})",
-			"welcomePage.showOnStartup": "啟動時顯示歡迎頁面",
-			"welcomePage.start": "開始"
 		},
 		"sql/workbench/services/accountManagement/browser/accountDialog": {
 			"accountDialog.addConnection": "新增帳戶",
@@ -11995,6 +11963,7 @@
 			"splitCellEdit": "分割儲存格"
 		},
 		"sql/workbench/services/notebook/browser/models/clientSession": {
+			"NoExecuteManager": "伺服器無法啟動，因為未為此筆記本檔案類型定義提供者。",
 			"ServerNotStarted": "伺服器因為不明原因而未啟動",
 			"clientSession.unknownError": "啟動筆記本工作階段時發生錯誤",
 			"kernelRequiresConnection": "找不到核心 {0}。會改用預設核心。"
@@ -12015,8 +11984,11 @@
 			"startSessionFailed": "無法啟動工作階段: {0}"
 		},
 		"sql/workbench/services/notebook/browser/notebookServiceImpl": {
+			"executeProviderTimeout": "正在等候筆記本提供者 '{0}' 之執行提供者顯示狀態的逾時",
 			"notebookServiceNoProvider": "Notebook 提供者不存在",
-			"notebookUriNotDefined": "建立筆記本管理員時未傳遞任何 URI"
+			"notebookUriNotDefined": "建立筆記本管理員時未傳遞任何 URI",
+			"serializationProviderTimeout": "正在等候筆記本提供者 '{0}' 之序列化提供者顯示狀態的逾時",
+			"standardKernelsTimeout": "正在等候筆記本提供者 '{0}' 之標準核心顯示狀態的逾時"
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewModel": {
 			"notebookView.nameTaken": "此筆記本中已有名稱為 {0} 的檢視。"
@@ -12050,6 +12022,7 @@
 			"carbon.extension.contributes.notebook.magic": "資料格 magic 的名稱，例如 '%%sql'。",
 			"carbon.extension.contributes.notebook.provider": "筆記本提供者的識別碼。",
 			"carbon.extension.contributes.notebook.standardKernels": "應為此筆記本提供者之標準的核心",
+			"providerNotInRegistryError": "指定的提供者 '{0}' 不存在於筆記本登錄中。",
 			"vscode.extension.contributes.notebook.languagemagics": "提供筆記本語言。",
 			"vscode.extension.contributes.notebook.providersDescriptions": "提供筆記本提供者描述。"
 		},
@@ -12119,7 +12092,6 @@
 		"sql/workbench/services/query/common/queryModelService": {
 			"commitEditFailed": "認可資料列失敗: ",
 			"msgCancelQueryFailed": "取消查詢失敗: {0}",
-			"queryModelService.noQueryFoundForUri": "找不到 {0} 的查詢",
 			"queryModelService.uriAlreadyHasQuery": "{0} 已經有一個查詢",
 			"runQueryBatchStartLine": "第 {0} 行",
 			"runQueryBatchStartMessage": "已開始執行以下查詢:",
@@ -12227,11 +12199,16 @@
 			"designer.foreignkey.description.onDeleteAction": "使用者嘗試刪除資料列時的行為，此資料列內含外部索引鍵關聯性中涉及的資料。",
 			"designer.foreignkey.description.onUpdateAction": "使用者嘗試更新資料列時的行為，此資料列內含外部索引鍵關聯性中涉及的資料。",
 			"designer.foreignkey.description.primaryKeyTable": "包含主索引鍵或唯一索引鍵資料行的資料表。",
+			"designer.index.column.description.name": "資料行的名稱。",
+			"designer.index.description.columns": "索引的資料行。",
+			"designer.index.description.name": "索引的名稱。",
 			"designer.table.description.description": "資料表的描述。",
 			"designer.table.description.name": "資料表物件的名稱。",
 			"designer.table.description.schema": "包含資料表的結構描述。",
+			"tableDesigner.ErrorDialogTitle": "Table Designer Error",
 			"tableDesigner.ForeignKeyTypeName": "外部索引鍵",
-			"tableDesigner.PrimaryKeyTableName": "主索引鍵資料表",
+			"tableDesigner.ForeignTableName": "外部資料表",
+			"tableDesigner.IndexTypeName": "索引",
 			"tableDesigner.checkConstraintExpressionTitle": "運算式",
 			"tableDesigner.checkConstraintNameTitle": "名稱",
 			"tableDesigner.checkConstraintTypeName": "檢查條件約束",
@@ -12249,18 +12226,27 @@
 			"tableDesigner.descriptionTitle": "描述",
 			"tableDesigner.errorInitializingTableDesigner": "初始化資料表設計工具時發生錯誤: {0}",
 			"tableDesigner.errorProcessingEdit": "處理變更時發生錯誤: {0}",
-			"tableDesigner.foreignKeyColumn": "外部索引鍵資料行",
-			"tableDesigner.foreignKeyColumns": "資料行對應",
+			"tableDesigner.foreignKey.column": "資料行",
+			"tableDesigner.foreignKey.foreignColumn": "外部資料行",
+			"tableDesigner.foreignKeyColumns": "資料行",
 			"tableDesigner.foreignKeyNameTitle": "名稱",
 			"tableDesigner.foreignKeyOnDeleteAction": "刪除動作時",
 			"tableDesigner.foreignKeyOnUpdateAction": "更新動作時",
 			"tableDesigner.foreignKeysTabTitle": "外部索引鍵",
 			"tableDesigner.generalTab": "一般",
+			"tableDesigner.generatePreviewReportError": "產生預覽報表時發生錯誤: {0}",
+			"tableDesigner.generateScriptError": "產生指令碼時發生錯誤: {0}",
+			"tableDesigner.generatingPreviewReport": "正在產生預覽報表...",
+			"tableDesigner.generatingScript": "正在產生指令碼...",
+			"tableDesigner.generatingScriptCompleted": "已產生指令碼。",
+			"tableDesigner.index.column.name": "資料行",
+			"tableDesigner.indexColumns": "資料行",
+			"tableDesigner.indexName": "名稱",
+			"tableDesigner.indexesTabTitle": "索引",
 			"tableDesigner.nameTitle": "資料表名稱",
-			"tableDesigner.primaryKeyColumn": "主索引鍵資料行",
-			"tableDesigner.saveChangeError": "儲存變更時發生錯誤: {0}",
-			"tableDesigner.savedChangeSuccess": "已成功儲存變更。",
-			"tableDesigner.savingChanges": "正在儲存資料表設計工具變更...",
+			"tableDesigner.publishChangeError": "發佈變更時發生錯誤: {0}",
+			"tableDesigner.publishChangeSuccess": "已成功發佈變更。",
+			"tableDesigner.savingChanges": "正在發佈資料表設計工具變更...",
 			"tableDesigner.schemaTitle": "結構描述",
 			"tableDesigner.tableObjectType": "資料表"
 		},
@@ -12272,6 +12258,60 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "開始使用(&&S)",
 			"showReleaseNotes": "顯示入門指南"
+		},
+		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
+			"errorStartBeforeReady": "無法啟動工作階段，管理員尚未初始化"
+		},
+		"sql/workbench/contrib/queryplan2/browser/planHeader": {
+			"planHeaderIndexAndCost": "查詢 {0}: 查詢成本 (相對於指令碼): {1}%"
+		},
+		"sql/workbench/contrib/queryplan2/browser/queryPlan": {
+			"openQueryAction": "開啟查詢",
+			"queryPlanCustomZoom": "自訂縮放",
+			"queryPlanFitGraphLabel": "縮放至適當比例",
+			"queryPlanOpenGraphFile": "Open Plan File",
+			"queryPlanPropertiesActionLabel": "屬性",
+			"queryPlanSavePlanXML": "Save Plan File",
+			"queryPlanSearchNodeAction": "SearchNode",
+			"queryPlanTitle": "Query Plan (Preview)",
+			"queryPlanZoomInActionLabel": "放大",
+			"queryPlanZoomOutActionLabel": "縮小"
+		},
+		"sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView": {
+			"nodePropertyViewNameNameColumnHeader": "Name",
+			"nodePropertyViewNameValueColumnHeader": "Value",
+			"nodePropertyViewTitle": "Properties",
+			"queryPlanPropertiesEdgeOperationName": "Edge",
+			"queryPlanPropertyViewClose": "Close",
+			"queryPlanPropertyViewSortAlphabetically": "Alphabetical",
+			"queryPlanPropertyViewSortByDisplayOrde": "Categorized"
+		},
+		"sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget": {
+			"cancelCustomZoomAction": "Close (Escape)",
+			"invalidCustomZoomError": "Select a zoom value between 1 to 200",
+			"qpZoomValueLabel": "Zoom (percent)",
+			"zoomAction": "Zoom (Enter)"
+		},
+		"sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget": {
+			"cancelSearchAction": "Close (Escape)",
+			"nextSearchItemAction": "Next Match (Enter)",
+			"previousSearchItemAction": "Previous Match (Shift+Enter)",
+			"queryPlanSearchTypeContains": "Contains",
+			"queryPlanSearchTypeEquals": "Equals"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
+			"tableDesigner.PreviewFeature": "預覽功能"
+		},
+		"sql/workbench/contrib/tsgops/browser/tsgopsActions": {
+			"hideActivityBarViewContainers": "隱藏延伸模組 Viewlet",
+			"hidePanel": "隱藏面板",
+			"hideSettings": "隱藏設定圖示"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerPublishDialog": {
+			"tableDesigner.UpdateDatabase": "更新資料庫",
+			"tableDesigner.cancel": "取消",
+			"tableDesigner.generateScript": "產生指令碼",
+			"tableDesigner.previewDatabaseUpdates": "預覽資料庫更新"
 		}
 	}
 }

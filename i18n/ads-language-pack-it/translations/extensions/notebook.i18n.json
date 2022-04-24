@@ -31,7 +31,7 @@
 			"contentFolder": "Cartella del contenuto",
 			"contentFolderOptional": "Cartella del contenuto (facoltativo)",
 			"create": "Crea",
-			"duplicateFileError": "Il file {0} esiste già nella cartella di destinazione {1}\r\n Il file è stato rinominato in {2} per evitare la perdita di dati.",
+			"duplicateFileError": "Il file {0} esiste già nella cartella di destinazione {1} \r\n Il file è stato rinominato in {2} per evitare la perdita di dati.",
 			"editBookError": "Errore durante la modifica del Book {0}: {1}",
 			"fileExtension": "Estensione file",
 			"fileName": "Nome file",

@@ -31,7 +31,7 @@
 			"contentFolder": "Pasta de conteúdo",
 			"contentFolderOptional": "Pasta de conteúdo (Opcional)",
 			"create": "Criar",
-			"duplicateFileError": "O arquivo {0} já existe na pasta de destino {1}\r\n O arquivo foi renomeado para {2} para impedir a perda de dados.",
+			"duplicateFileError": "O arquivo {0} já existe na pasta de destino {1} \r\n O arquivo foi renomeado para {2} para impedir a perda de dados.",
 			"editBookError": "Erro ao editar o Livro Jupyter {0}: {1}",
 			"fileExtension": "Extensão de Arquivo",
 			"fileName": "Nome do Arquivo",

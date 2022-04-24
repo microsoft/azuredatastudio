@@ -50,6 +50,10 @@
         <source xml:lang="en">Time</source>
         <target state="translated">Hora</target>
       </trans-unit>
+      <trans-unit id="actionLabel">
+        <source xml:lang="en">Action</source>
+        <target state="translated">Ação</target>
+      </trans-unit>
       <trans-unit id="addDatabaseReferenceOkButtonText">
         <source xml:lang="en">Add reference</source>
         <target state="translated">Adicionar referência</target>
@@ -77,6 +81,18 @@
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
         <target state="translated">Deseja atualizar o arquivo local.settings.json da Função do Azure com a nova cadeia de conexão?</target>
+      </trans-unit>
+      <trans-unit id="applyConfirmation">
+        <source xml:lang="en">Are you sure you want to update the target project?</source>
+        <target state="translated">Tem certeza de que deseja atualizar o projeto de destino?</target>
+      </trans-unit>
+      <trans-unit id="applyError">
+        <source xml:lang="en">There was an error updating the project: {0}</source>
+        <target state="translated">Ocorreu um erro ao atualizar o projeto: {0}</target>
+      </trans-unit>
+      <trans-unit id="applySuccess">
+        <source xml:lang="en">Project was successfully updated.</source>
+        <target state="translated">O projeto foi atualizado com êxito.</target>
       </trans-unit>
       <trans-unit id="at">
         <source xml:lang="en">at</source>
@@ -150,6 +166,14 @@
         <source xml:lang="en">Cleaning existing deployments...</source>
         <target state="translated">Limpando implantações existentes...</target>
       </trans-unit>
+      <trans-unit id="closeButton">
+        <source xml:lang="en">Close</source>
+        <target state="translated">Fechar</target>
+      </trans-unit>
+      <trans-unit id="compareActionRadiButtonLabel">
+        <source xml:lang="en">View changes in Schema Compare</source>
+        <target state="translated">Exibir as alterações na Comparação de Esquemas</target>
+      </trans-unit>
       <trans-unit id="confirmPassword">
         <source xml:lang="en">Confirm SQL server admin password</source>
         <target state="translated">Confirmar senha de administrador do SQL Server</target>
@@ -166,6 +190,10 @@
         <source xml:lang="en">Connection failed error: '{0}'</source>
         <target state="translated">Erro de falha na conexão: '{0}'</target>
       </trans-unit>
+      <trans-unit id="connectionProfile">
+        <source xml:lang="en">Select a connection profile</source>
+        <target state="translated">Selecionar um perfil de conexão</target>
+      </trans-unit>
       <trans-unit id="connectionRadioButtonLabel">
         <source xml:lang="en">Connections</source>
         <target state="translated">Conexões</target>
@@ -179,8 +207,8 @@
         <target state="translated">Configuração da cadeia de conexão especificada em "local.settings.json"</target>
       </trans-unit>
       <trans-unit id="containerAlreadyExistForProject">
-        <source xml:lang="en">Other servers on container already exist for the project. Do you want to delete them?</source>
-        <target state="translated">Outros servidores em contêineres já existem para o projeto. Você deseja excluí-los?</target>
+        <source xml:lang="en">Containers already exist for this project. Do you want to delete them before deploying a new one?</source>
+        <target state="translated">Já existem contêineres para este projeto. Deseja excluí-los antes de implantar um novo?</target>
       </trans-unit>
       <trans-unit id="createNew">
         <source xml:lang="en">Create New</source>
@@ -410,6 +438,14 @@
         <source xml:lang="en">SQL Database</source>
         <target state="translated">Banco de dados SQL</target>
       </trans-unit>
+      <trans-unit id="emptySdkProjectTypeDescription">
+        <source xml:lang="en">Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.</source>
+        <target state="translated">Desenvolva e publique esquemas para bancos de dados SQL com Microsoft.Build.Sql (versão prévia), começando com um projeto vazio no estilo SDK.</target>
+      </trans-unit>
+      <trans-unit id="emptySdkProjectTypeDisplayName">
+        <source xml:lang="en">SQL Database (SDK)</source>
+        <target state="translated">Banco de Dados SQL (SDK)</target>
+      </trans-unit>
       <trans-unit id="enterConnStringTemplateDescription">
         <source xml:lang="en">Enter a template for SQL connection string</source>
         <target state="translated">Insira um modelo para a cadeia de conexão do SQL</target>
@@ -446,6 +482,14 @@
         <source xml:lang="en">Enter SQL Server admin password</source>
         <target state="translated">Insira a senha de administrador do SQL Server</target>
       </trans-unit>
+      <trans-unit id="enterPasswordManually">
+        <source xml:lang="en">Enter password or press escape to cancel</source>
+        <target state="translated">Digite a senha ou pressione escapar para cancelar</target>
+      </trans-unit>
+      <trans-unit id="enterPasswordPrompt">
+        <source xml:lang="en">Enter the password to be used for the connection string</source>
+        <target state="translated">Insira a senha a ser usada para a cadeia de conexão</target>
+      </trans-unit>
       <trans-unit id="enterPortNumber">
         <source xml:lang="en">Enter SQL server port number or press enter to use the default value</source>
         <target state="translated">Insira o número da porta do SQL Server ou pressione Enter para usar o valor padrão</target>
@@ -453,6 +497,10 @@
       <trans-unit id="enterSystemDbName">
         <source xml:lang="en">Enter a database name for this system database</source>
         <target state="translated">Insira um nome de banco de dados para esse banco de dados do sistema</target>
+      </trans-unit>
+      <trans-unit id="equalComparison">
+        <source xml:lang="en">The project is already up to date with the database.</source>
+        <target state="translated">O projeto já está atualizado com o banco de dados.</target>
       </trans-unit>
       <trans-unit id="errorFindingBuildFilesLocation">
         <source xml:lang="en">Error finding build files location: {0}</source>
@@ -499,6 +547,10 @@
       <trans-unit id="extractTargetRequired">
         <source xml:lang="en">Target information for extract is required to create database project.</source>
         <target state="translated">Para criar um projeto de banco de dados são necessárias as informações alvo para realizar a coleta.</target>
+      </trans-unit>
+      <trans-unit id="failedToGetConnectionString">
+        <source xml:lang="en">An error occurred generating the connection string for the selected connection</source>
+        <target state="translated">Erro ao gerar a cadeia de conexão para a conexão selecionada</target>
       </trans-unit>
       <trans-unit id="failedToParse">
         <source xml:lang="en">Failed to parse "{0}": {1}.</source>
@@ -572,6 +624,10 @@
         <source xml:lang="en">Import Elements</source>
         <target state="translated">Importar Elementos</target>
       </trans-unit>
+      <trans-unit id="includePassword">
+        <source xml:lang="en">Do you want to include the password from this connection in your local.settings.json file?</source>
+        <target state="translated">Deseja incluir a senha desta conexão em seu arquivo local.settings.json?</target>
+      </trans-unit>
       <trans-unit id="input">
         <source xml:lang="en">Input</source>
         <target state="translated">Entrada</target>
@@ -619,6 +675,10 @@
       <trans-unit id="jsonParseError">
         <source xml:lang="en">{0} near line "{1}", column "{2}"</source>
         <target state="translated">{0} próximo à linha "{1}", coluna "{2}"</target>
+      </trans-unit>
+      <trans-unit id="learnMore">
+        <source xml:lang="en">Learn More</source>
+        <target state="translated">Saiba Mais</target>
       </trans-unit>
       <trans-unit id="loadProfilePlaceholderText">
         <source xml:lang="en">Load profile...</source>
@@ -684,9 +744,17 @@
         <source xml:lang="en">File {0} doesn't exist</source>
         <target state="translated">O arquivo {0} não existe</target>
       </trans-unit>
+      <trans-unit id="noSchemaCompareExtension">
+        <source xml:lang="en">The Schema Compare extension must be installed to a update a project from a database.</source>
+        <target state="translated">A extensão Comparação de Esquemas deve ser instalada para a atualização de um projeto a partir de um banco de dados.</target>
+      </trans-unit>
       <trans-unit id="noSqlFilesGenerated">
         <source xml:lang="en">No .sql files were generated by Autorest. Please confirm that your spec contains model definitions, or check the output log for details.</source>
         <target state="translated">Nenhum arquivo.sql foi gerado pelo Autorest. Confirme se sua especificação contém definições de modelo ou verifique o log de saída para obter detalhes.</target>
+      </trans-unit>
+      <trans-unit id="noSqlProjFile">
+        <source xml:lang="en">The selected project file does not exist</source>
+        <target state="translated">O arquivo de projeto selecionado não existe</target>
       </trans-unit>
       <trans-unit id="noSqlProjFilesSelected">
         <source xml:lang="en">No .sqlproj file selected; please select one.</source>
@@ -731,6 +799,10 @@
       <trans-unit id="openEulaString">
         <source xml:lang="en">Open License Agreement</source>
         <target state="translated">Abrir o Contrato de Licença</target>
+      </trans-unit>
+      <trans-unit id="openFile">
+        <source xml:lang="en">Open File</source>
+        <target state="translated">Abrir Arquivo</target>
       </trans-unit>
       <trans-unit id="output">
         <source xml:lang="en">Output</source>
@@ -796,6 +868,10 @@
         <source xml:lang="en">Project</source>
         <target state="translated">Projeto</target>
       </trans-unit>
+      <trans-unit id="projectLocationLabel">
+        <source xml:lang="en">Location</source>
+        <target state="translated">Localização</target>
+      </trans-unit>
       <trans-unit id="projectLocationPlaceholderText">
         <source xml:lang="en">Select location to create project</source>
         <target state="translated">Selecione o local para criar o projeto</target>
@@ -815,6 +891,10 @@
       <trans-unit id="projectReferenceNameElement">
         <source xml:lang="en">Project reference name element</source>
         <target state="translated">Elemento do nome da referência do projeto</target>
+      </trans-unit>
+      <trans-unit id="projectToUpdatePlaceholderText">
+        <source xml:lang="en">Select project file</source>
+        <target state="translated">Selecionar o arquivo do projeto</target>
       </trans-unit>
       <trans-unit id="publish">
         <source xml:lang="en">Publish</source>
@@ -920,6 +1000,10 @@
         <source xml:lang="en">Schema</source>
         <target state="translated">Esquema</target>
       </trans-unit>
+      <trans-unit id="schemaCompare.compareErrorMessage">
+        <source xml:lang="en">Schema Compare failed: {0}</source>
+        <target state="translated">Falha na Comparação de Esquemas: {0}</target>
+      </trans-unit>
       <trans-unit id="schemaCompareAction">
         <source xml:lang="en">Schema Compare</source>
         <target state="translated">Comparação de Esquemas</target>
@@ -935,6 +1019,10 @@
       <trans-unit id="scriptFriendlyName">
         <source xml:lang="en">Script</source>
         <target state="translated">Script</target>
+      </trans-unit>
+      <trans-unit id="sdkStyleProject">
+        <source xml:lang="en">SDK-style project</source>
+        <target state="new">SDK-style project</target>
       </trans-unit>
       <trans-unit id="sec">
         <source xml:lang="en">sec</source>
@@ -955,6 +1043,14 @@
       <trans-unit id="selectConnection">
         <source xml:lang="en">Select connection</source>
         <target state="translated">Selecionar a conexão</target>
+      </trans-unit>
+      <trans-unit id="selectConnectionError">
+        <source xml:lang="en">Failed to set connection string app setting: {0}</source>
+        <target state="translated">Falha ao definir a configuração do aplicativo da cadeia de conexão: {0}</target>
+      </trans-unit>
+      <trans-unit id="selectConnectionString">
+        <source xml:lang="en">Select SQL connection string method</source>
+        <target state="translated">Selecionar método de cadeia de conexão SQL</target>
       </trans-unit>
       <trans-unit id="selectDacpac">
         <source xml:lang="en">Select .dacpac</source>
@@ -1128,6 +1224,10 @@
         <source xml:lang="en">Unable to locate '{0}' target: '{1}'</source>
         <target state="translated">Não é possível localizar '{0}' destino: '{1}'</target>
       </trans-unit>
+      <trans-unit id="unableToSetConnectionString">
+        <source xml:lang="en">Failed to set connection string app setting</source>
+        <target state="translated">Falha ao definir a configuração do aplicativo da cadeia de conexão</target>
+      </trans-unit>
       <trans-unit id="unexpectedProjectContext">
         <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
         <target state="translated">Não é possível estabelecer o contexto do projeto.  Comando invocado de um local inesperado: {0}</target>
@@ -1140,6 +1240,14 @@
         <source xml:lang="en">Unrecognized version: </source>
         <target state="translated">Versão não reconhecida: </target>
       </trans-unit>
+      <trans-unit id="updateAction">
+        <source xml:lang="en">Update action</source>
+        <target state="translated">Atualizar Ação</target>
+      </trans-unit>
+      <trans-unit id="updateActionRadiButtonLabel">
+        <source xml:lang="en">Apply all changes</source>
+        <target state="translated">Aplicar Todas Alterações</target>
+      </trans-unit>
       <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
         <source xml:lang="en">The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
         <target state="translated">As referências do banco de dados do sistema precisam ser atualizadas para criar o projeto '{0}'. Se o projeto foi criado no SSDT, ele continuará funcionando em ambas as ferramentas. Deseja atualizar o projeto?</target>
@@ -1147,6 +1255,26 @@
       <trans-unit id="updateProjectForRoundTrip">
         <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
         <target state="translated">Os destinos, as referências e as referências do banco de dados do sistema precisam ser atualizadas para construir o projeto '{0}'. Se o projeto foi criado no SSDT, ele continuará funcionando em ambas as ferramentas. Deseja atualizar o projeto?</target>
+      </trans-unit>
+      <trans-unit id="updateProjectFromDatabaseDialogName">
+        <source xml:lang="en">Update project from database</source>
+        <target state="translated">Atualizar o projeto do banco de dados</target>
+      </trans-unit>
+      <trans-unit id="updateText">
+        <source xml:lang="en">Update</source>
+        <target state="translated">Atualizar</target>
+      </trans-unit>
+      <trans-unit id="updatingProjectFromDatabase">
+        <source xml:lang="en">Updating {0} from {1}...</source>
+        <target state="translated">Atualizando {0} de {1}...</target>
+      </trans-unit>
+      <trans-unit id="userConnectionString">
+        <source xml:lang="en">Enter connection string</source>
+        <target state="translated">Inserir cadeia de conexão</target>
+      </trans-unit>
+      <trans-unit id="userPasswordLater">
+        <source xml:lang="en">In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.</source>
+        <target state="translated">Para usar a cadeia de conexão SQL posteriormente, você precisará inserir manualmente a senha em seu arquivo local.settings.json.</target>
       </trans-unit>
       <trans-unit id="userSelectionCancelled">
         <source xml:lang="en">User has cancelled selection for how to run autorest.</source>
@@ -1335,6 +1463,10 @@
       <trans-unit id="sqlDatabaseProjects.schemaCompare">
         <source xml:lang="en">Schema Compare</source>
         <target state="translated">Comparação de Esquemas</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.updateProjectFromDatabase">
+        <source xml:lang="en">Update Project From Database</source>
+        <target state="translated">Atualizar o Projeto do Banco de Dados</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.validateExternalStreamingJob">
         <source xml:lang="en">Validate External Streaming Job</source>
