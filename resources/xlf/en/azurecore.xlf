@@ -29,7 +29,7 @@
       <source xml:lang="en">The user had no unique identifier within AAD</source>
     </trans-unit>
     <trans-unit id="azure.responseError">
-      <source xml:lang="en">Token retrieval failed with an error. Open developer tools to view the error</source>
+      <source xml:lang="en">Token retrieval failed with an error. [Open developer tools]({0}) for more details.</source>
     </trans-unit>
     <trans-unit id="azure.tenantNotFound">
       <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
