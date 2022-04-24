@@ -1,7 +1,7 @@
 resources:
   containers:
   - container: linux-x64
-    image: sqltoolscontainers.azurecr.io/linux-build-agent:3
+    image: sqltoolscontainers.azurecr.io/linux-build-agent:6
     endpoint: SqlToolsContainers
 
 jobs:

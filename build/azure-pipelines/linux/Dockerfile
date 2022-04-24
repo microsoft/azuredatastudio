@@ -1,12 +1,17 @@
 #Download base image ubuntu 18.04
 FROM ubuntu:18.04
 
+#Adding apt repos for g++-4.9
+RUN echo "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main" >> /etc/apt/sources.list
+RUN echo "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe" >> /etc/apt/sources.list
+
 # Update Software repository
 RUN apt-get update && apt-get upgrade -y
 
 RUN apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 \
 	libkrb5-dev git apt-transport-https ca-certificates curl gnupg-agent software-properties-common \
-	libnss3 libasound2 make gcc libx11-dev fakeroot rpm libgconf-2-4 libunwind8 g++-4.9
+	libnss3 libasound2 make gcc libx11-dev fakeroot rpm libgconf-2-4 libunwind8 g++-4.9 python-dev \
+	libgbm-dev
 
 RUN rm /usr/bin/gcc
 RUN rm /usr/bin/g++
