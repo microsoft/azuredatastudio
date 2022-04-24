@@ -39,11 +39,6 @@ dashboard-page .carbon-taskbar .monaco-action-bar .actions-container .action-ite
 	background-position: left;
 }
 
-dashboard-page .actions-container .taskbarSeparator {
-	height: 14px;
-	margin-right: 16px;
-}
-
 dashboard-page .editor-toolbar {
 	flex: 0 0 auto;
 	flex-flow: row;
