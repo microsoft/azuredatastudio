@@ -13,12 +13,13 @@ import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
-import { isString } from 'vs/base/common/types';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { removeLineBreaks } from 'sql/base/common/strings';
+import { isString } from 'vs/base/common/types';
 
 
-export class GraphElementPropertiesView {
+export class QueryPlanPropertiesView {
 
 	// Title bar with close button action
 	private _propertiesTitle!: HTMLElement;
@@ -178,7 +179,7 @@ export class GraphElementPropertiesView {
 	private renderView(): void {
 		if (this._model.graphElement) {
 			const nodeName = (<azdata.ExecutionPlanNode>this._model.graphElement).name;
-			this._operationName.innerText = nodeName ?? localize('queryPlanPropertiesEdgeOperationName', "Edge"); //since edges do not have names like node, we set the operation name to 'Edge'
+			this._operationName.innerText = nodeName ? removeLineBreaks(nodeName) : localize('queryPlanPropertiesEdgeOperationName', "Edge"); //since edges do not have names like node, we set the operation name to 'Edge'
 		}
 		this._tableContainer.scrollTo(0, 0);
 		this._dataView.clear();
@@ -199,13 +200,13 @@ export class GraphElementPropertiesView {
 			let row = {};
 			row['name'] = '\t'.repeat(indent) + p.name;
 			row['parent'] = parentIndex;
-			rows.push(row);
 			if (!isString(p.value)) {
 				row['value'] = '';
 				this.convertPropertiesToTableRows(p.value, rows.length - 1, indent + 2, rows);
 			} else {
 				row['value'] = p.value;
 			}
+			rows.push(row);
 		});
 		return rows;
 	}
@@ -228,7 +229,7 @@ export class ClosePropertyViewAction extends Action {
 		super(ClosePropertyViewAction.ID, ClosePropertyViewAction.LABEL, Codicon.close.classNames);
 	}
 
-	public override async run(context: GraphElementPropertiesView): Promise<void> {
+	public override async run(context: QueryPlanPropertiesView): Promise<void> {
 		context.toggleVisibility();
 	}
 }
@@ -241,7 +242,7 @@ export class SortPropertiesAlphabeticallyAction extends Action {
 		super(SortPropertiesAlphabeticallyAction.ID, SortPropertiesAlphabeticallyAction.LABEL, Codicon.sortPrecedence.classNames);
 	}
 
-	public override async run(context: GraphElementPropertiesView): Promise<void> {
+	public override async run(context: QueryPlanPropertiesView): Promise<void> {
 		context.sortPropertiesAlphabetically();
 	}
 }
@@ -254,7 +255,7 @@ export class SortPropertiesByDisplayOrderAction extends Action {
 		super(SortPropertiesByDisplayOrderAction.ID, SortPropertiesByDisplayOrderAction.LABEL, Codicon.listOrdered.classNames);
 	}
 
-	public override async run(context: GraphElementPropertiesView): Promise<void> {
+	public override async run(context: QueryPlanPropertiesView): Promise<void> {
 		context.sortPropertiesByImportance();
 	}
 }

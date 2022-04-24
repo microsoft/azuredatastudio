@@ -57,7 +57,7 @@ export class PlanHeader {
 		this.renderGraphIndexAndCost();
 	}
 	public set query(query: string) {
-		this._query = removeLineBreaks(query);
+		this._query = removeLineBreaks(query, ' ');
 		this.renderQueryText();
 	}
 

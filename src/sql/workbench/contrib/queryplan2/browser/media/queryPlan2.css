@@ -41,7 +41,7 @@ However we always want it to be the width of the container it is resizing.
 	display: flex;
 	flex-direction: column;
 	position: absolute;
-	right: 0;
+	right: 10px;
 }
 
 /* views created by the action-bar actions */
@@ -51,22 +51,21 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* Search node action view */
-.qps-container .query-plan .plan .plan-action-container .search-node-view {
+.qps-container .query-plan .plan .plan-action-container .search-node-widget {
 	display: flex;
 	flex-direction: row;
-	border: 1px solid;
 	padding: 5px;
 	height: auto;
 	width: 470px;
 }
 
 /* input bar styling in search node action view */
-.qps-container .query-plan .plan .plan-action-container .search-node-view .search-bar-container{
+.qps-container .query-plan .plan .plan-action-container .search-node-widget .select-container{
 	margin-left: 5px;
 }
 
 /* styling for select element in search node action view */
-.qps-container .query-plan .plan .plan-action-container .search-node-view .search-bar-container > select{
+.qps-container .query-plan .plan .plan-action-container .search-node-widget .select-container > select{
 	height: 100%;
 }
 
@@ -74,7 +73,6 @@ However we always want it to be the width of the container it is resizing.
 .qps-container .query-plan .plan .plan-action-container .custom-zoom-view {
 	display: flex;
 	flex-direction: row;
-	border: 1px solid;
 	padding: 5px;
 	height: auto;
 	width: 180px;
@@ -82,11 +80,10 @@ However we always want it to be the width of the container it is resizing.
 
 /* query plan header that contains the relative query cost, query statement and recommendations */
 .qps-container .query-plan .plan .header {
-	font-family: 'Courier New', Courier, monospace;
-	border-bottom: solid 1px;
+	padding: 5px;
+	border-top: 1px solid;
+	border-bottom: 1px solid;
 	font-weight: bolder;
-	padding-left: 5px;
-	font-size: 13px;
 }
 
 /* each link in query plan recommendations */
@@ -108,7 +105,7 @@ However we always want it to be the width of the container it is resizing.
 	flex: 0 0 500px;
 	overflow: hidden;
 	width: 500px;
-	height: 100%;
+	height: calc( 100% - 2px );
 	border: 1px solid;
 	display: flex;
 	flex-direction: column;
@@ -212,4 +209,14 @@ However we always want it to be the width of the container it is resizing.
 
 .qps-container .properties-toggle .collapse {
 	background: url(../images/collapse.gif) no-repeat center center;
+}
+
+/* Stylings necessary for tooltips to show up next to target nodes*/
+.mxTooltip {
+	border-style: solid;
+	border-width: 1px;
+	position: absolute;
+	cursor: default;
+	padding: 4px;
+	z-index: 3;
 }
