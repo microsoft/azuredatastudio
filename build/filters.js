@@ -100,6 +100,8 @@ module.exports.indentationFilter = [
 	'!**/*.gif',
 	'!build/actions/**/*.js',
 	'!**/*.{xlf,lcl,docx,sql,vsix,bacpac,ipynb,jpg}',
+	'!extensions/azuremonitor/sqltoolsservice/**',
+	'!extensions/kusto/sqltoolsservice/**',
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/admin-tool-ext-win/ssmsmin/**',
@@ -119,7 +121,8 @@ module.exports.indentationFilter = [
 	'!extensions/markdown-language-features/media/*.js',
 	'!extensions/simple-browser/media/*.js',
 	'!resources/xlf/LocProject.json',
-	'!build/**/*'
+	'!build/**/*',
+	'!test/coverage/**'
 ];
 
 module.exports.copyrightFilter = [
