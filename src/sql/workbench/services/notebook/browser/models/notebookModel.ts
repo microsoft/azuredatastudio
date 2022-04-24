@@ -58,6 +58,11 @@ interface INotebookMetadataInternal extends nb.INotebookMetadata {
 	azdata_notebook_guid?: string;
 }
 
+export type SplitCell = {
+	cell: ICellModel;
+	prefix: string | undefined;
+};
+
 type NotebookMetadataKeys = Required<nb.INotebookMetadata>;
 const expectedMetadataKeys: NotebookMetadataKeys = {
 	kernelspec: undefined,
@@ -573,7 +578,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let newCell = undefined, tailCell = undefined, partialSource = undefined;
 				let newCellIndex = index;
 				let tailCellIndex = index;
-				let newLinesRemoved: string[] = [];
+				let splitCells: SplitCell[] = [];
 
 				// Save UI state
 				let showMarkdown = this.cells[index].showMarkdown;
@@ -608,6 +613,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						headsource = headsource.concat(partialSource.toString());
 					}
 					this.cells[index].source = headsource;
+					splitCells.push({ cell: this.cells[index], prefix: undefined });
 				}
 
 				if (newCellContent.length) {
@@ -630,6 +636,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						newCell.source = newSource;
 						newCellIndex++;
 						this.insertCell(newCell, newCellIndex, false);
+						splitCells.push({ cell: this.cells[newCellIndex], prefix: undefined });
 					}
 					else { //update the existing cell
 						this.cells[index].source = newSource;
@@ -644,21 +651,22 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						partialSource = source.slice(tailRange.startLineNumber - 1, tailRange.startLineNumber)[0].slice(tailRange.startColumn - 1);
 						tailSource.splice(0, 1, partialSource);
 					}
+					let newlinesBeforeTailCellContent: string;
 					//Remove the trailing empty line after the cursor
 					if (tailSource[0] === '\r\n' || tailSource[0] === '\n') {
-						newLinesRemoved = tailSource.splice(0, 1);
+						newlinesBeforeTailCellContent = tailSource.splice(0, 1)[0];
 					}
 					tailCell.source = tailSource;
 					tailCellIndex = newCellIndex + 1;
 					this.insertCell(tailCell, tailCellIndex, false);
+					splitCells.push({ cell: this.cells[tailCellIndex], prefix: newlinesBeforeTailCellContent });
 				}
 
 				let activeCell = newCell ? newCell : (headContent.length ? tailCell : this.cells[index]);
 				let activeCellIndex = newCell ? newCellIndex : (headContent.length ? tailCellIndex : index);
 
 				if (addToUndoStack) {
-					let headCell = newCell ? newCell : this.cells[index];
-					this.undoService.pushElement(new SplitCellEdit(this, headCell, tailCell, newLinesRemoved));
+					this.undoService.pushElement(new SplitCellEdit(this, splitCells));
 				}
 				//make new cell Active
 				this.updateActiveCell(activeCell);
@@ -679,19 +687,22 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return undefined;
 	}
 
-	public mergeCells(cell: ICellModel, secondCell: ICellModel, newLinesRemoved: string[] | undefined): void {
-		let index = this._cells.findIndex(cell => cell.equals(cell));
-		if (index > -1) {
-			cell.source = newLinesRemoved.length > 0 ? [...cell.source, ...newLinesRemoved, ...secondCell.source] : [...cell.source, ...secondCell.source];
-			cell.isEditMode = true;
-			// Set newly created cell as active cell
-			this.updateActiveCell(cell);
-			this._contentChangedEmitter.fire({
-				changeType: NotebookChangeType.CellsModified,
-				cells: [cell],
-				cellIndex: index
-			});
-			this.deleteCell(secondCell, false);
+	public mergeCells(cells: SplitCell[]): void {
+		let firstCell = cells[0].cell;
+		// Append the other cell sources to the first cell
+		for (let i = 1; i < cells.length; i++) {
+			firstCell.source = cells[i].prefix ? [...firstCell.source, ...cells[i].prefix, ...cells[i].cell.source] : [...firstCell.source, ...cells[i].cell.source];
+		}
+		firstCell.isEditMode = true;
+		// Set newly created cell as active cell
+		this.updateActiveCell(firstCell);
+		this._contentChangedEmitter.fire({
+			changeType: NotebookChangeType.CellsModified,
+			cells: [firstCell],
+			cellIndex: 0
+		});
+		for (let i = 1; i < cells.length; i++) {
+			this.deleteCell(cells[i].cell, false);
 		}
 	}
 
