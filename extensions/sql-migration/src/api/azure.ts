@@ -480,7 +480,7 @@ export interface MigrationStatusDetails {
 	isFullBackupRestored: boolean;
 	restoreBlockingReason: string;
 	fileUploadBlockingErrors: string[];
-	currentRestoringFileName: string;
+	currentRestoringFilename: string;
 	lastRestoredFilename: string;
 	pendingLogBackupsCount: number;
 	invalidFiles: string[];
