@@ -11,6 +11,8 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { TestLifecycleService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
+import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
@@ -30,6 +32,8 @@ import { nb } from 'azdata';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
 
 suite('CellToolbarActions', function (): void {
 	suite('removeDuplicatedAndStartingSeparators', function (): void {
@@ -178,6 +182,17 @@ suite('CellToolbarActions', function (): void {
 			await convertCellAction.doRun({ model: notebookModel, cell: notebookModel.cells[0] });
 			assert.strictEqual(notebookModel.cells[0].cellType, 'markdown', 'Cell was not converted correctly second time');
 		});
+
+		test('Undo/redo convert cell', async function (): Promise<void> {
+			await notebookModel.loadContents();
+			notebookModel.cells[0].cellType = 'markdown';
+			await convertCellAction.doRun({ model: notebookModel, cell: notebookModel.cells[0] });
+			assert.strictEqual(notebookModel.cells[0].cellType, 'code', 'Cell was not converted correctly');
+			notebookModel.undo();
+			assert.strictEqual(notebookModel.cells[0].cellType, 'markdown', 'Undo not converting cell correctly');
+			notebookModel.redo();
+			assert.strictEqual(notebookModel.cells[0].cellType, 'code', 'Redo not converting cell correctly');
+		});
 	});
 });
 
@@ -203,6 +218,10 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 	let serviceCollection = new ServiceCollection();
 	let instantiationService = new InstantiationService(serviceCollection, true);
 	let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
+	let dialogService = TypeMoq.Mock.ofType<IDialogService>(TestDialogService, TypeMoq.MockBehavior.Loose);
+	let notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
+	let undoRedoService = new UndoRedoService(dialogService.object, notificationService.object);
+
 	mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(codeContent ? codeContent : defaultCodeContent));
 	let defaultModelOptions: INotebookModelOptions = {
 		notebookUri: URI.file('/some/path.ipynb'),
@@ -218,5 +237,5 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 		layoutChanged: undefined,
 		capabilitiesService: undefined
 	};
-	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, new NullAdsTelemetryService(), undefined, undefined, undoRedoService);
 }
