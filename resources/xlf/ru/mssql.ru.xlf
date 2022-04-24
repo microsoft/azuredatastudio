@@ -992,7 +992,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
         <source xml:lang="en">SQL Login</source>
-        <target state="translated">Имя входе SQL</target>
+        <target state="translated">Имя входа SQL</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.description">
         <source xml:lang="en">Specifies the method of authenticating with SQL Server</source>
