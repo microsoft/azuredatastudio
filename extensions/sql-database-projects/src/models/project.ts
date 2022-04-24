@@ -10,6 +10,7 @@ import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
 import * as templates from '../templates/templates';
+import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 
 import { Uri, window } from 'vscode';
 import { ISqlProject, SqlTargetPlatform } from 'sqldbproj';
@@ -146,8 +147,13 @@ export class Project implements ISqlProject {
 		try {
 			this._projectGuid = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ProjectGuid)[0].childNodes[0].nodeValue!;
 		} catch (e) {
-			void window.showErrorMessage(constants.errorReadingProject(constants.ProjectGuid, this.projectFilePath));
-			console.error(utils.getErrorMessage(e));
+			// if no project guid, add a new one
+			this._projectGuid = UUID.generateUuid();
+			const newProjectGuidNode = this.projFileXmlDoc!.createElement(constants.ProjectGuid);
+			const newProjectGuidTextNode = this.projFileXmlDoc!.createTextNode(`{${this._projectGuid}}`);
+			newProjectGuidNode.appendChild(newProjectGuidTextNode);
+			this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.PropertyGroup)[0]?.appendChild(newProjectGuidNode);
+			await this.serializeToProjFile(this.projFileXmlDoc);
 		}
 	}
 
