@@ -31,7 +31,7 @@ export interface IQueryPlanInfo {
 	planXml: string;
 }
 
-export interface IQueryPlan2Info {
+export interface IExecutionPlanInfo {
 	providerId: string;
 	fileUri: string;
 	planGraphs: ExecutionPlanGraph[];

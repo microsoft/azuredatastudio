@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/* Styling for the queryplan tab container */
-.qps-container {
+/* Styling for the execution plan tab container */
+.eps-container {
 	width: 100%;
 	height: 100%;
 	overflow: scroll;
@@ -13,8 +13,8 @@
 	flex-wrap: nowrap;
 }
 
-/* Styling for the a queryplan container in the tab */
-.qps-container .query-plan {
+/* Styling for the a execution plan container in the tab */
+.eps-container .execution-plan {
 	width: 100%;
 	min-height: 500px;
 	display: flex;
@@ -22,8 +22,8 @@
 	flex: 1;
 }
 
-/* horizontal height resizing sash container that is below a queryplan */
-.qps-container .query-plan-sash {
+/* horizontal height resizing sash container that is below a execution plan */
+.eps-container .execution-plan-sash {
 	width: 100%;
 	height: 3px;
 	position: relative;
@@ -33,12 +33,12 @@
 The actual sash element constructed by code. Important is used here because the width of the sash is fixed.
 However we always want it to be the width of the container it is resizing.
 */
-.qps-container .query-plan-sash > div {
+.eps-container .execution-plan-sash > div {
 	width: 100% !important;
 }
 
-/* Container that contains showplan header, description and graph diagram */
-.qps-container .query-plan .plan {
+/* Container that contains execution plan header, description and graph diagram */
+.eps-container .execution-plan .plan {
 	flex: 1;
 	overflow: hidden;
 	display: flex;
@@ -47,7 +47,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* Container that contains views made by the action-bar actions */
-.qps-container .query-plan .plan .plan-action-container {
+.eps-container .execution-plan .plan .plan-action-container {
 	display: flex;
 	flex-direction: column;
 	position: absolute;
@@ -55,13 +55,13 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* views created by the action-bar actions */
-.qps-container .query-plan .plan .plan-action-container .child {
+.eps-container .execution-plan .plan .plan-action-container .child {
 	flex: 0 0 25px;
 	margin-left: auto;
 }
 
 /* Search node action view */
-.qps-container .query-plan .plan .plan-action-container .search-node-widget {
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget {
 	display: flex;
 	flex-direction: row;
 	padding: 5px;
@@ -70,17 +70,17 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* input bar styling in search node action view */
-.qps-container .query-plan .plan .plan-action-container .search-node-widget .select-container{
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container{
 	margin-left: 5px;
 }
 
 /* styling for select element in search node action view */
-.qps-container .query-plan .plan .plan-action-container .search-node-widget .select-container > select{
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container > select{
 	height: 100%;
 }
 
 /* Custom zoom action view */
-.qps-container .query-plan .plan .plan-action-container .custom-zoom-view {
+.eps-container .execution-plan .plan .plan-action-container .custom-zoom-view {
 	display: flex;
 	flex-direction: row;
 	padding: 5px;
@@ -88,28 +88,28 @@ However we always want it to be the width of the container it is resizing.
 	width: 240px;
 }
 
-/* query plan header that contains the relative query cost, query statement and recommendations */
-.qps-container .query-plan .plan .header {
+/* execution plan header that contains the relative query cost, query statement and recommendations */
+.eps-container .execution-plan .plan .header {
 	padding: 5px;
 	font-weight: bolder;
 }
 
-/* each link in query plan recommendations */
-.qps-container .query-plan .plan .header .recommendations > a {
+/* each link in execution plan recommendations */
+.eps-container .execution-plan .plan .header .recommendations > a {
 	width: fit-content;
 	align-items: left;
 	text-align: left;
 }
 
-/* graph diagram in query plan */
-.qps-container .query-plan .plan .diagram {
+/* graph diagram in execution plan */
+.eps-container .execution-plan .plan .diagram {
 	width: 100%;
 	height: 100%;
 	overflow: scroll;
 }
 
-/* Properties view in query plan */
-.qps-container .query-plan .properties {
+/* Properties view in execution plan */
+.eps-container .execution-plan .properties {
 	flex: 0 0 500px;
 	overflow: hidden;
 	width: 500px;
@@ -120,7 +120,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* Title container of the properties view */
-.qps-container .query-plan .properties .title {
+.eps-container .execution-plan .properties .title {
 	line-height: 30px;
 	height: 22px;
 	font-size: 11px;
@@ -136,7 +136,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* text in title container of properties view */
-.qps-container .query-plan .properties .title .text {
+.eps-container .execution-plan .properties .title .text {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -147,7 +147,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* action bar in the title container for the properties view. This contains the close icon */
-.qps-container .query-plan .properties .title .action-bar {
+.eps-container .execution-plan .properties .title .action-bar {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -159,7 +159,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* Operation name styling in the properties view. */
-.qps-container .query-plan .properties .operation-name {
+.eps-container .execution-plan .properties .operation-name {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -173,19 +173,19 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* Properties table container in properties view */
-.qps-container .query-plan .properties .table-container {
+.eps-container .execution-plan .properties .table-container {
 	overflow-y: scroll;
 	flex: 1;
 	flex-grow: 1;
 }
 
-/* Action bar for the query plan */
-.qps-container .query-plan .action-bar-container {
+/* Action bar for the execution plan */
+.eps-container .execution-plan .action-bar-container {
 	flex: 0 0 25px;
 }
 
 /* styling for the column headers in the properties table */
-.qps-container .properties .table-container .prop-table-header {
+.eps-container .properties .table-container .prop-table-header {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -197,22 +197,22 @@ However we always want it to be the width of the container it is resizing.
 	text-transform: uppercase;
 }
 
-.qps-container .properties-header {
+.eps-container .properties-header {
 	font-weight: bold;
 	padding: 5px;
 }
 
-.qps-container .properties-toggle {
+.eps-container .properties-toggle {
 	height: 9px;
 	width: 9px;
 	display: inline-block;
 }
 
-.qps-container .properties-toggle .expand {
+.eps-container .properties-toggle .expand {
 	background: url(../images/expand.gif) no-repeat center center;
 }
 
-.qps-container .properties-toggle .collapse {
+.eps-container .properties-toggle .collapse {
 	background: url(../images/collapse.gif) no-repeat center center;
 }
 
@@ -226,84 +226,84 @@ However we always want it to be the width of the container it is resizing.
 	z-index: 3;
 }
 
-.qps-container .save-plan-icon {
+.eps-container .save-plan-icon {
 	background-image: url(../images/actionIcons/save.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.qps-container .open-properties-icon {
+.eps-container .open-properties-icon {
 	background-image: url(../images/actionIcons/openProperties.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.qps-container .open-query-icon {
+.eps-container .open-query-icon {
 	background-image: url(../images/actionIcons/openQuery.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.qps-container .open-plan-file-icon {
+.eps-container .open-plan-file-icon {
 	background-image: url(../images/actionIcons/openPlanFile.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.qps-container .search-icon {
+.eps-container .search-icon {
 	background-image: url(../images/actionIcons/search.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.qps-container .sort-alphabetically-icon {
+.eps-container .sort-alphabetically-icon {
 	background-image: url(../images/actionIcons/sortAlphabetically.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.qps-container .sort-display-order-icon {
+.eps-container .sort-display-order-icon {
 	background-image: url(../images/actionIcons/sortByDisplayOrder.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.qps-container .zoom-in-icon {
+.eps-container .zoom-in-icon {
 	background-image: url(../images/actionIcons/zoomIn.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.qps-container .zoom-out-icon {
+.eps-container .zoom-out-icon {
 	background-image: url(../images/actionIcons/zoomOut.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.qps-container .custom-zoom-icon {
+.eps-container .custom-zoom-icon {
 	background-image: url(../images/actionIcons/customZoom.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.qps-container .zoom-to-fit-icon {
+.eps-container .zoom-to-fit-icon {
 	background-image: url(../images/actionIcons/zoomToFit.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.qps-container .zoom-icon {
+.eps-container .zoom-icon {
 	background-image: url(../images/actionIcons/zoom.svg);
 	background-size: 16px 16px;
 	background-position: center;

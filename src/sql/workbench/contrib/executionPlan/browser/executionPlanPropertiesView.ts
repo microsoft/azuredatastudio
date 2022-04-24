@@ -17,11 +17,11 @@ import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { removeLineBreaks } from 'sql/base/common/strings';
 import { isString } from 'vs/base/common/types';
-import { sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames } from 'sql/workbench/contrib/queryplan2/browser/constants';
+import { sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { textFormatter } from 'sql/base/browser/ui/table/formatters';
 
 
-export class QueryPlanPropertiesView {
+export class ExecutionPlanPropertiesView {
 
 	// Title bar with close button action
 	private _propertiesTitle!: HTMLElement;
@@ -187,7 +187,7 @@ export class QueryPlanPropertiesView {
 	private renderView(): void {
 		if (this._model.graphElement) {
 			const nodeName = (<azdata.ExecutionPlanNode>this._model.graphElement).name;
-			this._operationName.innerText = nodeName ? removeLineBreaks(nodeName) : localize('queryPlanPropertiesEdgeOperationName', "Edge"); //since edges do not have names like node, we set the operation name to 'Edge'
+			this._operationName.innerText = nodeName ? removeLineBreaks(nodeName) : localize('executionPlanPropertiesEdgeOperationName', "Edge"); //since edges do not have names like node, we set the operation name to 'Edge'
 		}
 		this._tableContainer.scrollTo(0, 0);
 		this._dataView.clear();
@@ -232,40 +232,40 @@ export interface GraphElementPropertyViewData {
 }
 
 export class ClosePropertyViewAction extends Action {
-	public static ID = 'qp.propertiesView.close';
-	public static LABEL = localize('queryPlanPropertyViewClose', "Close");
+	public static ID = 'ep.propertiesView.close';
+	public static LABEL = localize('executionPlanPropertyViewClose', "Close");
 
 	constructor() {
 		super(ClosePropertyViewAction.ID, ClosePropertyViewAction.LABEL, Codicon.close.classNames);
 	}
 
-	public override async run(context: QueryPlanPropertiesView): Promise<void> {
+	public override async run(context: ExecutionPlanPropertiesView): Promise<void> {
 		context.toggleVisibility();
 	}
 }
 
 export class SortPropertiesAlphabeticallyAction extends Action {
-	public static ID = 'qp.propertiesView.sortByAlphabet';
-	public static LABEL = localize('queryPlanPropertyViewSortAlphabetically', "Alphabetical");
+	public static ID = 'ep.propertiesView.sortByAlphabet';
+	public static LABEL = localize('executionPlanPropertyViewSortAlphabetically', "Alphabetical");
 
 	constructor() {
 		super(SortPropertiesAlphabeticallyAction.ID, SortPropertiesAlphabeticallyAction.LABEL, sortAlphabeticallyIconClassNames);
 	}
 
-	public override async run(context: QueryPlanPropertiesView): Promise<void> {
+	public override async run(context: ExecutionPlanPropertiesView): Promise<void> {
 		context.sortPropertiesAlphabetically();
 	}
 }
 
 export class SortPropertiesByDisplayOrderAction extends Action {
-	public static ID = 'qp.propertiesView.sortByDisplayOrder';
-	public static LABEL = localize('queryPlanPropertyViewSortByDisplayOrde', "Categorized");
+	public static ID = 'ep.propertiesView.sortByDisplayOrder';
+	public static LABEL = localize('executionPlanPropertyViewSortByDisplayOrder', "Categorized");
 
 	constructor() {
 		super(SortPropertiesByDisplayOrderAction.ID, SortPropertiesByDisplayOrderAction.LABEL, sortByDisplayOrderIconClassNames);
 	}
 
-	public override async run(context: QueryPlanPropertiesView): Promise<void> {
+	public override async run(context: ExecutionPlanPropertiesView): Promise<void> {
 		context.sortPropertiesByImportance();
 	}
 }

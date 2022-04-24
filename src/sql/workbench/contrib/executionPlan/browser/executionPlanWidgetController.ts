@@ -3,18 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { QueryPlanWidgetBase } from 'sql/workbench/contrib/queryplan2/browser/queryPlanWidgetBase';
+import { ExecutionPlanWidgetBase as ExecutionPlanWidgetBase } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetBase';
 
-export class QueryPlanWidgetController {
-	private _queryPlanWidgetMap: Map<string, QueryPlanWidgetBase> = new Map();
+export class ExecutionPlanWidgetController {
+	private _executionPlanWidgetMap: Map<string, ExecutionPlanWidgetBase> = new Map();
 
 	constructor(private _parentContainer: HTMLElement) {
 
 	}
 
-	private addWidget(widget: QueryPlanWidgetBase) {
-		if (widget.identifier && !this._queryPlanWidgetMap.has(widget.identifier)) {
-			this._queryPlanWidgetMap.set(widget.identifier, widget);
+	private addWidget(widget: ExecutionPlanWidgetBase) {
+		if (widget.identifier && !this._executionPlanWidgetMap.has(widget.identifier)) {
+			this._executionPlanWidgetMap.set(widget.identifier, widget);
 			if (widget.container) {
 				widget.container.classList.add('child');
 				this._parentContainer.appendChild(widget.container);
@@ -23,11 +23,11 @@ export class QueryPlanWidgetController {
 		}
 	}
 
-	public removeWidget(widget: QueryPlanWidgetBase) {
+	public removeWidget(widget: ExecutionPlanWidgetBase) {
 		if (widget.identifier) {
-			if (this._queryPlanWidgetMap.has(widget.identifier)) {
-				this._parentContainer.removeChild(this._queryPlanWidgetMap.get(widget.identifier).container);
-				this._queryPlanWidgetMap.delete(widget.identifier);
+			if (this._executionPlanWidgetMap.has(widget.identifier)) {
+				this._parentContainer.removeChild(this._executionPlanWidgetMap.get(widget.identifier).container);
+				this._executionPlanWidgetMap.delete(widget.identifier);
 			} else {
 				throw new Error('The view is not present in the container');
 			}
@@ -38,8 +38,8 @@ export class QueryPlanWidgetController {
 	 * Adds or removes view from the controller.
 	 * @param widget PlanActionView to be added.
 	 */
-	public toggleWidget(widget: QueryPlanWidgetBase) {
-		if (!this._queryPlanWidgetMap.has(widget.identifier)) {
+	public toggleWidget(widget: ExecutionPlanWidgetBase) {
+		if (!this._executionPlanWidgetMap.has(widget.identifier)) {
 			this.addWidget(widget);
 		} else {
 			this.removeWidget(widget);

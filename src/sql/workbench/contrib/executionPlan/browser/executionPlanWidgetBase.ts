@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export abstract class QueryPlanWidgetBase {
+export abstract class ExecutionPlanWidgetBase {
 	/**
 	 *
 	 * @param container HTML Element that contains the UI for the plan action view.

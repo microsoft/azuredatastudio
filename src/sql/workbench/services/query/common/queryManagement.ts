@@ -332,7 +332,7 @@ export class QueryManagementService implements IQueryManagementService {
 		this._notify(resultSetInfo.ownerUri, (runner: QueryRunner) => {
 			runner.handleResultSetUpdated(resultSetInfo.resultSetSummary);
 			if (resultSetInfo.executionPlans && this._configurationService.getValue('workbench.enablePreviewFeatures')) {
-				runner.handleQueryPlan2Available(resultSetInfo.executionPlans);
+				runner.handleExecutionPlanAvailable(resultSetInfo.executionPlans);
 			}
 		});
 	}

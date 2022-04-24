@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 let imageBasePath = require.toUrl('./images/icons/');
-export let queryPlanNodeIconPaths =
+export let executionPlanNodeIconPaths =
 {
 	// generic icons
 	iteratorCatchAll: imageBasePath + 'iterator_catch_all.png',

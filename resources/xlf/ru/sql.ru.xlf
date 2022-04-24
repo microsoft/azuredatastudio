@@ -5798,19 +5798,19 @@ Error: {1}</source>
         <source xml:lang="en">Properties</source>
         <target state="new">Properties</target>
       </trans-unit>
-      <trans-unit id="queryPlanPropertiesEdgeOperationName">
+      <trans-unit id="executionPlanPropertiesEdgeOperationName">
         <source xml:lang="en">Edge</source>
         <target state="new">Edge</target>
       </trans-unit>
-      <trans-unit id="queryPlanPropertyViewClose">
+      <trans-unit id="executionPlanPropertyViewClose">
         <source xml:lang="en">Close</source>
         <target state="new">Close</target>
       </trans-unit>
-      <trans-unit id="queryPlanPropertyViewSortAlphabetically">
+      <trans-unit id="executionPlanPropertyViewSortAlphabetically">
         <source xml:lang="en">Alphabetical</source>
         <target state="new">Alphabetical</target>
       </trans-unit>
-      <trans-unit id="queryPlanPropertyViewSortByDisplayOrde">
+      <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
         <source xml:lang="en">Categorized</source>
         <target state="new">Categorized</target>
       </trans-unit>
@@ -5850,11 +5850,11 @@ Error: {1}</source>
         <source xml:lang="en">Previous Match (Shift+Enter)</source>
         <target state="new">Previous Match (Shift+Enter)</target>
       </trans-unit>
-      <trans-unit id="queryPlanSearchTypeContains">
+      <trans-unit id="executionPlanSearchTypeContains">
         <source xml:lang="en">Contains</source>
         <target state="new">Contains</target>
       </trans-unit>
-      <trans-unit id="queryPlanSearchTypeEquals">
+      <trans-unit id="executionPlanSearchTypeEquals">
         <source xml:lang="en">Equals</source>
         <target state="new">Equals</target>
       </trans-unit>
