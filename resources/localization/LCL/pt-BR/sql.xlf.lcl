@@ -12129,20 +12129,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution.tableDesigner.configTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor.tableDesigner.PreviewFeature" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Table Designer]]></Val>
+          <Val><![CDATA[Preview feature]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Designer de Tabela]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution.tableDesigner.featureEnabledDescription" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Controls whether the table designer feature is enabled. Default value is false.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Controla se o recurso de designer de tabelas está habilitado. O valor padrão é falso.]]></Val>
+            <Val><![CDATA[Recurso de visualização]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -16758,8 +16749,8 @@
       <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.savingChanges" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Publishing table designer changes...]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Alterações no designer da mesa de salvamento...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Publicando alterações no designer de tabela...]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Saving table designer changes...]]></Val>
