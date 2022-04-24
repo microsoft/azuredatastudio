@@ -192,6 +192,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	public cloneWithDatabase(databaseName: string): ConnectionProfile {
 		let instance = this.cloneWithNewId();
 		instance.databaseName = databaseName;
+		instance.originalDatabase = databaseName;
 		return instance;
 	}
 
