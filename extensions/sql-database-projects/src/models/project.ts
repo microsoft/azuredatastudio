@@ -237,11 +237,17 @@ export class Project implements ISqlProject {
 
 	private async readFolders(): Promise<FileProjectEntry[]> {
 		const folderEntries: FileProjectEntry[] = [];
+
 		// glob style getting folders for sdk style projects
+		const foldersSet = new Set<string>();
 		if (this._isSdkStyleProject) {
-			const folders = await utils.getFoldersInFolder(this.projectFolderPath, true);
-			folders.forEach(f => {
-				folderEntries.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)), EntryType.Folder));
+			this.files.forEach(file => {
+				// if file is in the project's folder, add the folders from the project file to this file to the list of folders. This is so that only non-empty folders in the project folder will be added by default.
+				// Empty folders won't be shown unless specified in the sqlproj (same as how it's handled for csproj in VS)
+				if (!file.relativePath.startsWith('..') && path.dirname(file.fsUri.fsPath) !== this.projectFolderPath) {
+					const foldersToFile = utils.getFoldersToFile(this.projectFolderPath, file.fsUri.fsPath);
+					foldersToFile.forEach(f => foldersSet.add(utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)))));
+				}
 			});
 		}
 
@@ -251,10 +257,13 @@ export class Project implements ISqlProject {
 			try {
 				const folderElements = itemGroup.getElementsByTagName(constants.Folder);
 				for (let f = 0; f < folderElements.length; f++) {
-					const relativePath = folderElements[f].getAttribute(constants.Include)!;
+					let relativePath = folderElements[f].getAttribute(constants.Include)!;
+
 					// don't add Properties folder since it isn't supported for now and don't add if the folder was already added
-					if (relativePath !== constants.Properties && !folderEntries.find(f => f.relativePath === utils.trimChars(relativePath, '\\'))) {
-						folderEntries.push(this.createFileProjectEntry(relativePath, EntryType.Folder));
+					if (utils.trimChars(relativePath, '\\') !== constants.Properties) {
+						// make sure folder relative path ends with \\ because sometimes SSDT adds folders without trailing \\
+						relativePath = relativePath.endsWith(constants.SqlProjPathSeparator) ? relativePath : relativePath + constants.SqlProjPathSeparator;
+						foldersSet.add(relativePath);
 					}
 				}
 			} catch (e) {
@@ -262,6 +271,10 @@ export class Project implements ISqlProject {
 				console.error(utils.getErrorMessage(e));
 			}
 		}
+
+		foldersSet.forEach(f => {
+			folderEntries.push(this.createFileProjectEntry(f, EntryType.Folder));
+		});
 
 		return folderEntries;
 	}
@@ -973,13 +986,51 @@ export class Project implements ISqlProject {
 		this.findOrCreateItemGroup(constants.Folder).appendChild(newFolderNode);
 	}
 
-	private removeFolderFromProjFile(path: string): void {
+	private async removeFolderFromProjFile(folderPath: string): Promise<void> {
 		const folderNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Folder);
-		const deleted = this.removeNode(path, folderNodes);
+		let deleted = this.removeNode(folderPath, folderNodes);
+
+		// if it wasn't deleted, try deleting the folder path without trailing backslash
+		// since sometimes SSDT adds folders without a trailing \
+		if (!deleted) {
+			deleted = this.removeNode(utils.trimChars(folderPath, '\\'), folderNodes);
+		}
+
+		// TODO: consider removing this check when working on migration scenario. If a user converts to an SDK-style project and adding this
+		// exclude XML doesn't hurt for non-SDK-style projects, then it might be better to just it anyway so that they don't have to exclude the folder
+		// again when they convert to an SDK-style project
+		if (this.isSdkStyleProject) {
+			// update sqlproj if a node was deleted and load files and folders again
+			if (deleted) {
+				await this.writeToSqlProjAndUpdateFilesFolders();
+			}
+			// get latest folders to see if it still exists
+			const currentFolders = await this.readFolders();
+
+			// add exclude entry if it's still in the current folders
+			if (currentFolders.find(f => f.relativePath === utils.convertSlashesForSqlProj(folderPath))) {
+				const removeFileNode = this.projFileXmlDoc!.createElement(constants.Build);
+				removeFileNode.setAttribute(constants.Remove, utils.convertSlashesForSqlProj(folderPath + '**'));
+				this.findOrCreateItemGroup(constants.Build).appendChild(removeFileNode);
+
+				// write changes and update files so everything is up to date for the next removal
+				await this.writeToSqlProjAndUpdateFilesFolders();
+			}
+
+			deleted = true;
+		}
 
 		if (!deleted) {
-			throw new Error(constants.unableToFindObject(path, constants.folderObject));
+			throw new Error(constants.unableToFindObject(folderPath, constants.folderObject));
 		}
+	}
+
+	private async writeToSqlProjAndUpdateFilesFolders(): Promise<void> {
+		await this.serializeToProjFile(this.projFileXmlDoc);
+		const projFileText = await fs.readFile(this._projectFilePath);
+		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
+		this._files = await this.readFilesInProject();
+		this.files.push(...(await this.readFolders()));
 	}
 
 	private removeSqlCmdVariableFromProjFile(variableName: string): void {
@@ -1256,13 +1307,19 @@ export class Project implements ISqlProject {
 			entries = [entries];
 		}
 
+		// remove any folders first, otherwise unnecessary Build remove entries might get added for sdk style
+		// projects to exclude both the folder and the files in the folder
+		const folderEntries = entries.filter(e => e.type === EntryType.Folder);
+		for (const folder of folderEntries) {
+			await this.removeFolderFromProjFile((<FileProjectEntry>folder).relativePath);
+		}
+
+		entries = entries.filter(e => e.type !== EntryType.Folder);
+
 		for (const entry of entries) {
 			switch (entry.type) {
 				case EntryType.File:
 					await this.removeFileFromProjFile((<FileProjectEntry>entry).relativePath);
-					break;
-				case EntryType.Folder:
-					this.removeFolderFromProjFile((<FileProjectEntry>entry).relativePath);
 					break;
 				case EntryType.DatabaseReference:
 					this.removeDatabaseReferenceFromProjFile(<IDatabaseReferenceProjectEntry>entry);

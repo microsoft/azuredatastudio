@@ -115,7 +115,8 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 		for (const part of relativePathParts) {
 			if (current.fileChildren[part] === undefined) {
-				current.fileChildren[part] = new fileTree.FolderNode(vscode.Uri.file(path.join(path.dirname(this.project.projectFilePath), part)), current);
+				const parentPath = current instanceof ProjectRootTreeItem ? path.dirname(current.fileSystemUri.fsPath) : current.fileSystemUri.fsPath;
+				current.fileChildren[part] = new fileTree.FolderNode(vscode.Uri.file(path.join(parentPath, part)), current);
 			}
 
 			if (current.fileChildren[part] instanceof fileTree.FileNode) {

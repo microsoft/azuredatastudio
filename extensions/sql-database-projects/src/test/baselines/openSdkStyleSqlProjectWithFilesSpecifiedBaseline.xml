@@ -13,6 +13,7 @@
   <ItemGroup>
     <Folder Include="Properties" />
     <Folder Include="folder1" />
+    <Folder Include="folder2\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="folder1\file2.sql" />

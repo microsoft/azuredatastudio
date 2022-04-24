@@ -578,3 +578,28 @@ export async function getFoldersInFolder(folderPath: string, ignoreBinObj?: bool
 		return await glob(folderFilter, { onlyDirectories: true });
 	}
 }
+
+/**
+ * Gets the folders between the startFolder to the file
+ * @param startFolder
+ * @param endFile
+ * @returns array of folders between startFolder and endFile
+ */
+export function getFoldersToFile(startFolder: string, endFile: string): string[] {
+	let folders: string[] = [];
+
+	const endFolderPath = path.dirname(endFile);
+
+	const relativePath = convertSlashesForSqlProj(endFolderPath.substring(startFolder.length));
+	const pathSegments = trimChars(relativePath, ' \\').split(constants.SqlProjPathSeparator);
+	let folderPath = convertSlashesForSqlProj(startFolder) + constants.SqlProjPathSeparator;
+
+	for (let segment of pathSegments) {
+		if (segment) {
+			folderPath += segment + constants.SqlProjPathSeparator;
+			folders.push(getPlatformSafeFileEntryPath(folderPath));
+		}
+	}
+
+	return folders;
+}
