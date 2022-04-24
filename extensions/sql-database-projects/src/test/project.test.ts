@@ -988,6 +988,45 @@ describe('Project: sdk style project content operations', function (): void {
 		should(project.files.filter(f => f.relativePath === 'file1.sql').length).equal(0);
 	});
 
+	it('Should exclude pre/post/none deploy scripts correctly', async function (): Promise<void> {
+		const folderPath = await testUtils.generateTestFolderPath();
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newSdkStyleProjectSdkNodeBaseline, folderPath);
+
+		const project: Project = await Project.openProject(projFilePath);
+		await project.addScriptItem('Script.PreDeployment1.sql', 'fake contents', templates.preDeployScript);
+		await project.addScriptItem('Script.PreDeployment2.sql', 'fake contents', templates.preDeployScript);
+		await project.addScriptItem('Script.PostDeployment1.sql', 'fake contents', templates.postDeployScript);
+
+		// verify they were added to the sqlproj
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<PreDeploy Include="Script.PreDeployment1.sql" />')).equal(true);
+		should(projFileText.includes('<None Include="Script.PreDeployment2.sql" />')).equal(true);
+		should(projFileText.includes('<PostDeploy Include="Script.PostDeployment1.sql" />')).equal(true);
+		should(project.preDeployScripts.length).equal(1, 'Script.PreDeployment1.sql should have been added');
+		should(project.noneDeployScripts.length).equal(1, 'Script.PreDeployment2.sql should have been added');
+		should(project.preDeployScripts.length).equal(1, 'Script.PostDeployment1.sql should have been added');
+		should(project.files.length).equal(0, 'There should not be any files');
+
+		// exclude the pre/post/none deploy script
+		await project.exclude(project.preDeployScripts.find(f => f.relativePath === 'Script.PreDeployment1.sql')!);
+		await project.exclude(project.noneDeployScripts.find(f => f.relativePath === 'Script.PreDeployment2.sql')!);
+		await project.exclude(project.postDeployScripts.find(f => f.relativePath === 'Script.PostDeployment1.sql')!);
+
+		// verify they are excluded in the sqlproj
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<PreDeploy Include="Script.PreDeployment1.sql" />')).equal(false);
+		should(projFileText.includes('<None Include="Script.PreDeployment2.sql" />')).equal(false);
+		should(projFileText.includes('<PostDeploy Include="Script.PostDeployment1.sql" />')).equal(false);
+		should(projFileText.includes('<None Remove="Script.PreDeployment1.sql" />')).equal(true);
+		should(projFileText.includes('<None Remove="Script.PreDeployment2.sql" />')).equal(true);
+		should(projFileText.includes('<None Remove="Script.PostDeployment1.sql" />')).equal(true);
+
+		should(project.preDeployScripts.length).equal(0, 'Script.PreDeployment1.sql should have been removed');
+		should(project.noneDeployScripts.length).equal(0, 'Script.PreDeployment2.sql should have been removed');
+		should(project.postDeployScripts.length).equal(0, 'Script.PostDeployment1.sql should have been removed');
+		should(project.files.length).equal(0, 'There should not be any files after the excludes');
+	});
+
 	it('Should handle excluding files included by glob patterns', async function (): Promise<void> {
 		const testFolderPath = await testUtils.generateTestFolderPath();
 		const mainProjectPath =  path.join(testFolderPath, 'project');

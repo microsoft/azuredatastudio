@@ -238,6 +238,10 @@ export class Project implements ISqlProject {
 			this.preDeployScripts.forEach(f => filesSet.delete(f.relativePath));
 			this.postDeployScripts.forEach(f => filesSet.delete(f.relativePath));
 			this.noneDeployScripts.forEach(f => filesSet.delete(f.relativePath));
+
+			// remove any none remove scripts (these would be pre/post/none deploy scripts that were excluded)
+			const noneRemoveScripts = this.readNoneRemoveScripts();
+			noneRemoveScripts.forEach(f => filesSet.delete(f.relativePath));
 		}
 
 		// create a FileProjectEntry for each file
@@ -379,7 +383,10 @@ export class Project implements ISqlProject {
 			try {
 				const noneItems = itemGroup.getElementsByTagName(constants.None);
 				for (let n = 0; n < noneItems.length; n++) {
-					noneDeployScripts.push(this.createFileProjectEntry(noneItems[n].getAttribute(constants.Include)!, EntryType.File));
+					const includeAttribute = noneItems[n].getAttribute(constants.Include);
+					if (includeAttribute) {
+						noneDeployScripts.push(this.createFileProjectEntry(includeAttribute, EntryType.File));
+					}
 				}
 			} catch (e) {
 				void window.showErrorMessage(constants.errorReadingProject(constants.NoneElements, this.projectFilePath));
@@ -388,6 +395,30 @@ export class Project implements ISqlProject {
 		}
 
 		return noneDeployScripts;
+	}
+
+	/**
+	 * @returns all the files specified as  <None Remove="file.sql" /> in the sqlproj
+	 */
+	private readNoneRemoveScripts(): FileProjectEntry[] {
+		const noneRemoveScripts: FileProjectEntry[] = [];
+
+		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
+			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
+
+			// find all none remove scripts to specified in the sqlproj
+			try {
+				const noneItems = itemGroup.getElementsByTagName(constants.None);
+				for (let n = 0; n < noneItems.length; n++) {
+					noneRemoveScripts.push(this.createFileProjectEntry(noneItems[n].getAttribute(constants.Remove)!, EntryType.File));
+				}
+			} catch (e) {
+				void window.showErrorMessage(constants.errorReadingProject(constants.NoneElements, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
+			}
+		}
+
+		return noneRemoveScripts;
 	}
 
 	private readDatabaseReferences(): IDatabaseReferenceProjectEntry[] {
@@ -969,6 +1000,8 @@ export class Project implements ISqlProject {
 		const noneNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.None);
 		const nodes = [fileNodes, preDeployNodes, postDeployNodes, noneNodes];
 
+		const isBuildElement = this.files.find(f => f.relativePath === path);
+
 		let deleted = false;
 
 		// remove the <Build Include="..."> entry if there is one
@@ -992,13 +1025,17 @@ export class Project implements ISqlProject {
 			if (deleted) {
 				await this.serializeToProjFile(this.projFileXmlDoc!);
 			}
+			this._preDeployScripts = this.readPreDeployScripts();
+			this._postDeployScripts = this.readPostDeployScripts();
+			this._noneDeployScripts = this.readNoneDeployScripts();
 			const currentFiles = await this.readFilesInProject();
 
-			// only add a node to exclude the file if it's still included by a glob
+			// only add a Remove node to exclude the file if it's still included by a glob
 			if (currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(path))) {
-				const removeFileNode = this.projFileXmlDoc!.createElement(constants.Build);
+				const removeFileNode = isBuildElement ? this.projFileXmlDoc!.createElement(constants.Build) : this.projFileXmlDoc!.createElement(constants.None);
 				removeFileNode.setAttribute(constants.Remove, utils.convertSlashesForSqlProj(path));
 				this.findOrCreateItemGroup(constants.Build).appendChild(removeFileNode);
+				return;
 			}
 
 			return;
@@ -1503,6 +1540,10 @@ export class Project implements ISqlProject {
 	 * @returns Project entry for the last folder in the path, if path is under the project folder; otherwise `undefined`.
 	 */
 	private async ensureFolderItems(relativeFolderPath: string): Promise<FileProjectEntry | undefined> {
+		if (!relativeFolderPath) {
+			return;
+		}
+
 		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
 		const normalizedProjectFolderPath = path.normalize(this.projectFolderPath);
 
