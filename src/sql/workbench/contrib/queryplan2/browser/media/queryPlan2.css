@@ -3,12 +3,23 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+/* Styling for the queryplan tab container */
+.qps-container {
+	width: 100%;
+	height: 100%;
+	overflow: scroll;
+	flex-direction: column;
+	display: flex;
+	flex-wrap: nowrap;
+}
+
 /* Styling for the a queryplan container in the tab */
 .qps-container .query-plan {
 	width: 100%;
-	height: 500px;
+	min-height: 500px;
 	display: flex;
 	overflow: hidden;
+	flex: 1;
 }
 
 /* horizontal height resizing sash container that is below a queryplan */
