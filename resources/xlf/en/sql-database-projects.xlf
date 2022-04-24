@@ -274,6 +274,12 @@
     <trans-unit id="dockerContainerNotRunningErrorMessage">
       <source xml:lang="en">Docker container is not running</source>
     </trans-unit>
+    <trans-unit id="dockerImageEulaMessage">
+      <source xml:lang="en">License Agreement:</source>
+    </trans-unit>
+    <trans-unit id="dockerImageMessage">
+      <source xml:lang="en">Docker Image:</source>
+    </trans-unit>
     <trans-unit id="dockerLogMessage">
       <source xml:lang="en">Docker logs: '{0}'</source>
     </trans-unit>
@@ -285,6 +291,9 @@
     </trans-unit>
     <trans-unit id="dontUseProfile">
       <source xml:lang="en">Don't use profile</source>
+    </trans-unit>
+    <trans-unit id="edgeEulaAgreementTitle">
+      <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
     </trans-unit>
     <trans-unit id="edgeProjectTypeDescription">
       <source xml:lang="en">Start with the core pieces to develop and publish schemas for SQL Edge</source>
@@ -336,6 +345,17 @@
     </trans-unit>
     <trans-unit id="errorReadingProjectGuid">
       <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
+    </trans-unit>
+    <trans-unit id="eulaAgreementTemplate">
+      <source xml:lang="en">I accept the {0}.</source>
+      <note>The placeholders are contents of the line and should not be translated.</note>
+    </trans-unit>
+    <trans-unit id="eulaAgreementText">
+      <source xml:lang="en">I accept the {0}.</source>
+      <note>The placeholders are contents of the line and should not be translated.</note>
+    </trans-unit>
+    <trans-unit id="eulaAgreementTitle">
+      <source xml:lang="en">Microsoft SQL Server License Agreement</source>
     </trans-unit>
     <trans-unit id="exampleUsage">
       <source xml:lang="en">Example Usage</source>
@@ -525,6 +545,9 @@
     </trans-unit>
     <trans-unit id="okString">
       <source xml:lang="en">Ok</source>
+    </trans-unit>
+    <trans-unit id="openEulaString">
+      <source xml:lang="en">Open License Agreement</source>
     </trans-unit>
     <trans-unit id="output">
       <source xml:lang="en">Output</source>
