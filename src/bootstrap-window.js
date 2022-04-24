@@ -146,7 +146,8 @@
 			'jschardet': `${baseNodeModulesPath}/jschardet/dist/jschardet.min.js`,
 			'@vscode/vscode-languagedetection': `${baseNodeModulesPath}/@vscode/vscode-languagedetection/dist/lib/index.js`,
 			'tas-client-umd': `${baseNodeModulesPath}/tas-client-umd/lib/tas-client-umd.js`,
-			'ansi_up': `${baseNodeModulesPath}/ansi_up/ansi_up.js`
+			'ansi_up': `${baseNodeModulesPath}/ansi_up/ansi_up.js`,
+			'azdataGraph': `${baseNodeModulesPath}/azdataGraph/dist/build.js`
 		};
 		// For priviledged renderers, allow to load built-in and other node.js
 		// Cached data config (node.js loading only)
@@ -157,7 +158,7 @@
 			// the expected method and so nothing needs to be done - but if it's AMD then the VS Code loader will throw an error
 			// (Can only have one anonymous define call per script file). In order to make packages that do this load correctly
 			// we need to add them to the list below to tell the loader that these should be loaded using AMD as well
-			loaderConfig.amdModulesPattern = /(vs|sql)\/|(^vscode-textmate$)|(^vscode-oniguruma$)|(^xterm$)|(^xterm-addon-search$)|(^xterm-addon-unicode11$)|(^xterm-addon-webgl$)|(^iconv-lite-umd$)|(^jschardet$)|(^@vscode\/vscode-languagedetection$)|(^tas-client-umd$)|(^ansi_up$)/;  // {{SQL CARBON EDIT}} include sql and ansi_up in regex
+			loaderConfig.amdModulesPattern = /(vs|sql)\/|(^vscode-textmate$)|(^vscode-oniguruma$)|(^xterm$)|(^xterm-addon-search$)|(^xterm-addon-unicode11$)|(^xterm-addon-webgl$)|(^iconv-lite-umd$)|(^jschardet$)|(^@vscode\/vscode-languagedetection$)|(^tas-client-umd$)|(^ansi_up$)|(^azdataGraph$)/;  // {{SQL CARBON EDIT}} include sql and ansi_up in regex
 		}
 
 		// Signal before require.config()
