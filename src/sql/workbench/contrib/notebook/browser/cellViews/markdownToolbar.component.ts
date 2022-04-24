@@ -27,6 +27,7 @@ import { TextCellEditModes } from 'sql/workbench/services/notebook/common/contra
 import { NotebookLinkHandler } from 'sql/workbench/contrib/notebook/browser/notebookLinkHandler';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { FileAccess } from 'vs/base/common/network';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
@@ -297,8 +298,12 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				await insertFormattedMarkdown(linkCalloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
 			} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
 				if (imageCalloutResult.embedImage) {
-					let base64String = await this.getFileContentBase64(URI.file(imageCalloutResult.imagePath));
-					let mimeType = await this.getFileMimeType(URI.file(imageCalloutResult.imagePath));
+					// VS Code blocks loading directly from the file protocol - we have to transform it to a vscode-file URI
+					// first. Currently we assume that the path here is always going to be a path since we don't support
+					// embedding images from web links.
+					const uri = FileAccess.asBrowserUri(URI.file(imageCalloutResult.imagePath));
+					let base64String = await this.getFileContentBase64(uri);
+					let mimeType = await this.getFileMimeType(uri);
 					const originalImageName: string = path.basename(imageCalloutResult.imagePath).replace(/\s/g, '');
 					let attachmentName = this.cellModel.addAttachment(mimeType, base64String, originalImageName);
 					if (originalImageName !== attachmentName) {

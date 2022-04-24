@@ -46,6 +46,8 @@ export namespace Schemas {
 
 	export const data = 'data';
 
+	export const attachment = 'attachment'; // {{SQL CARBON EDIT}} "Scheme" used for Notebook cell attachment data (not really a scheme but formatted like one...)
+
 	export const command = 'command';
 
 	export const vscodeRemote = 'vscode-remote';
