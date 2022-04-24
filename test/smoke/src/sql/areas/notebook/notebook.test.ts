@@ -18,7 +18,8 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
 			await app.workbench.sqlNotebook.waitForPlaceholderGone();
 
-			await app.code.dispatchKeybinding('escape');
+			await app.code.dispatchKeybinding('escape'); // first escape sets the cell in edit mode
+			await app.code.dispatchKeybinding('escape'); // second escape unselects cell completely
 			await app.workbench.sqlNotebook.waitForDoubleClickToEdit();
 			await app.workbench.sqlNotebook.doubleClickTextCell();
 			await app.workbench.sqlNotebook.waitForDoubleClickToEditGone();

@@ -140,8 +140,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		// on its elements (we have a "virtual" focus that is updated as users click or navigate through cells). So some of the keyboard
 		// events we care about are fired when the document focus is on something else - typically the root window.
 		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-			// Make sure that the current active element is an ancestor - this is to prevent us from handling events when the focus is
-			// on some other dialog or part of the app. 
+			// For DownArrow, UpArrow and Enter - Make sure that the current active element is an ancestor - this is to prevent us from handling events when the focus is
+			// on some other dialog or part of the app.
+			// For Escape - the focused element is the div.notebook-preview or textarea.inputarea of the cell, so we need to make sure that it is a descendant of the current active cell
+			//  on the current active editor.
+			const activeCellElement = this.container.nativeElement.querySelector(`.editor-group-container.active .notebook-cell.active`);
 			if (DOM.isAncestor(this.container.nativeElement, document.activeElement) && this.isActive() && this.model.activeCell) {
 				const event = new StandardKeyboardEvent(e);
 				if (!this.model.activeCell?.isEditMode) {
@@ -156,22 +159,23 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 						}
 						this.selectCell(this.cells[--index]);
 						this.scrollToActiveCell();
-					} else if (event.keyCode === KeyCode.Escape) {
-						// unselects active cell and removes the focus from code cells
-						this.unselectActiveCell();
-						(document.activeElement as HTMLElement).blur();
 					}
 					else if (event.keyCode === KeyCode.Enter) {
 						// prevents adding a newline to the cell source
 						e.preventDefault();
-						// show edit toolbar
-						this.setActiveCellEditActionMode(true);
 						this.toggleEditMode();
 					}
-				} else if (event.keyCode === KeyCode.Escape) {
+					else if (event.keyCode === KeyCode.Escape) {
+						// unselects active cell and removes the focus from code cells
+						this.unselectActiveCell();
+						(document.activeElement as HTMLElement).blur();
+					}
+				}
+			} else if (DOM.isAncestor(document.activeElement, activeCellElement) && this.isActive() && this.model.activeCell) {
+				const event = new StandardKeyboardEvent(e);
+				if (event.keyCode === KeyCode.Escape) {
 					// first time hitting escape removes the cursor from code cell and changes toolbar in text cells and changes edit mode to false
 					this.toggleEditMode();
-					this.setActiveCellEditActionMode(false);
 				}
 			}
 		}));
@@ -279,10 +283,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		toolbarEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
-	public selectCell(cell: ICellModel, event?: Event) {
-		if (event) {
-			event.stopPropagation();
-		}
+	public selectCell(cell: ICellModel) {
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
 			this.model.updateActiveCell(cell);
 			this.detectChanges();
@@ -304,12 +305,28 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			selectedCell = this.codeCells.find(c => c.cellModel.id === this.activeCellId);
 		}
 		selectedCell.toggleEditMode();
+		this.setActiveCellEditActionMode(selectedCell.cellModel.isEditMode);
 	}
 
 	//Saves scrollTop value on scroll change
 	public scrollHandler(event: Event) {
 		this._scrollTop = (<HTMLElement>event.srcElement).scrollTop;
 		this.model.onScroll.fire();
+	}
+
+	public clickOffCell(event?: MouseEvent) {
+		event?.stopPropagation();
+		this.unselectActiveCell();
+	}
+
+	public clickOnCell(cell: ICellModel, event?: MouseEvent) {
+		event?.stopPropagation();
+		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
+			this.selectCell(cell);
+			if (cell.cellType === CellTypes.Code) {
+				cell.isEditMode = true;
+			}
+		}
 	}
 
 	public unselectActiveCell() {

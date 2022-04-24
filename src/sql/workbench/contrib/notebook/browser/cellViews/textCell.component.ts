@@ -548,7 +548,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (!this.isEditMode && this.doubleClickEditEnabled) {
 			this.toggleEditMode(true);
 		}
-		this._model.updateActiveCell(this.cellModel);
+		this._model.updateActiveCell(this.cellModel, true);
 	}
 }
 
