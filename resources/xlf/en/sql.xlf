@@ -4111,12 +4111,6 @@ Error: {1}</source>
     <trans-unit id="openQueryAction">
       <source xml:lang="en">Open Query</source>
     </trans-unit>
-    <trans-unit id="queryPlan2.configTitle">
-      <source xml:lang="en">Query Plan</source>
-    </trans-unit>
-    <trans-unit id="queryPlan2.featureEnabledDescription">
-      <source xml:lang="en">Controls whether the new query plan feature is enabled. Default value is false.</source>
-    </trans-unit>
     <trans-unit id="queryPlanCustomZoom">
       <source xml:lang="en">Custom Zoom</source>
     </trans-unit>
@@ -4124,7 +4118,7 @@ Error: {1}</source>
       <source xml:lang="en">Zoom to fit</source>
     </trans-unit>
     <trans-unit id="queryPlanOpenGraphFile">
-      <source xml:lang="en">Open Graph File</source>
+      <source xml:lang="en">Open Plan File</source>
     </trans-unit>
     <trans-unit id="queryPlanPropertiesActionLabel">
       <source xml:lang="en">Properties</source>

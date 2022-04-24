@@ -1350,7 +1350,7 @@
       <source xml:lang="en">Service Tier</source>
     </trans-unit>
     <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.description">
-      <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
+      <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>
     </trans-unit>
     <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.text">
       <source xml:lang="en">Learn more</source>
@@ -1379,8 +1379,11 @@
     <trans-unit id="arc.sql.dev.use.label">
       <source xml:lang="en">For development use only</source>
     </trans-unit>
+    <trans-unit id="arc.sql.high.availability">
+      <source xml:lang="en">High availability</source>
+    </trans-unit>
     <trans-unit id="arc.sql.high.availability.description">
-      <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas. Choose from: General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability) or [PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability).</source>
+      <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</source>
     </trans-unit>
     <trans-unit id="arc.sql.instance.name">
       <source xml:lang="en">Instance name</source>
@@ -1410,16 +1413,13 @@
       <source xml:lang="en">The request for the capacity of the managed instance as an integer amount of memory in GBs.</source>
     </trans-unit>
     <trans-unit id="arc.sql.one.replica">
-      <source xml:lang="en">1</source>
+      <source xml:lang="en">1 replica</source>
     </trans-unit>
     <trans-unit id="arc.sql.pitr.description">
       <source xml:lang="en">Point in time restore</source>
     </trans-unit>
     <trans-unit id="arc.sql.pitr.retention.description">
       <source xml:lang="en">Configure retention for point-in-time backups. {0}</source>
-    </trans-unit>
-    <trans-unit id="arc.sql.replicas">
-      <source xml:lang="en">Replicas</source>
     </trans-unit>
     <trans-unit id="arc.sql.retention.days.description">
       <source xml:lang="en">Specify how long you want to keep your point-in-time backups.</source>
@@ -1428,13 +1428,13 @@
       <source xml:lang="en">Point in time retention (days)</source>
     </trans-unit>
     <trans-unit id="arc.sql.service.tier.business.critical">
-      <source xml:lang="en">BusinessCritical</source>
+      <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
     </trans-unit>
     <trans-unit id="arc.sql.service.tier.description">
-      <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
+      <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>
     </trans-unit>
     <trans-unit id="arc.sql.service.tier.general.purpose">
-      <source xml:lang="en">GeneralPurpose</source>
+      <source xml:lang="en">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</source>
     </trans-unit>
     <trans-unit id="arc.sql.service.tier.label">
       <source xml:lang="en">Service Tier</source>
@@ -1458,10 +1458,10 @@
       <source xml:lang="en">by Microsoft</source>
     </trans-unit>
     <trans-unit id="arc.sql.three.replicas">
-      <source xml:lang="en">3</source>
+      <source xml:lang="en">3 replicas</source>
     </trans-unit>
     <trans-unit id="arc.sql.two.replicas">
-      <source xml:lang="en">2</source>
+      <source xml:lang="en">2 replicas</source>
     </trans-unit>
     <trans-unit id="arc.sql.username">
       <source xml:lang="en">Username</source>
