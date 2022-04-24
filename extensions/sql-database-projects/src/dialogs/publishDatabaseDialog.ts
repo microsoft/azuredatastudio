@@ -181,8 +181,6 @@ export class PublishDatabaseDialog {
 
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
-
-			await this.loadProfileTextBox!.focus();
 		});
 	}
 
