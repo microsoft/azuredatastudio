@@ -347,7 +347,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		options?: IConnectionCompletionOptions): Promise<IConnectionResult> {
 		if (options && options.showConnectionDialogOnError) {
 			let params: INewConnectionParams = options && options.params ? options.params : {
-				connectionType: this._connectionStatusManager.isDefaultTypeUri(owner.uri) ? ConnectionType.default : ConnectionType.editor,
+				connectionType: this._connectionStatusManager.isEditorTypeUri(owner.uri) ? ConnectionType.editor : ConnectionType.default,
 				input: owner,
 				runQueryOnCompletion: RunQueryOnConnectionMode.none,
 				showDashboard: options.showDashboard
