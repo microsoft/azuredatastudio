@@ -95,6 +95,8 @@ import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
 import { ExtHostInteractive } from 'vs/workbench/api/common/extHostInteractive';
 import { functionalityNotSupportedError } from 'sql/base/common/locConstants';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
+import { VSCodeNotebookDocument } from 'sql/workbench/api/common/vscodeNotebookDocument';
+import { VSCodeNotebookEditor } from 'sql/workbench/api/common/vscodeNotebookEditor';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -717,10 +719,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				return extHostWebviewViews.registerWebviewViewProvider(extension, viewId, provider, options?.webviewOptions);
 			},
 			get activeNotebookEditor(): vscode.NotebookEditor | undefined {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebook.activeNotebookEditor;
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return new VSCodeNotebookEditor(extHostNotebookDocumentsAndEditors.getActiveEditor());
 			},
 			onDidChangeActiveNotebookEditor(listener, thisArgs?, disposables?) {
 				// {{SQL CARBON EDIT}} Disable VS Code notebooks
@@ -885,9 +885,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				return extHostDocumentSaveParticipant.getOnWillSaveTextDocumentEvent(extension)(listener, thisArgs, disposables);
 			},
 			get notebookDocuments(): vscode.NotebookDocument[] {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// return extHostNotebook.notebookDocuments.map(d => d.apiNotebook);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.getAllDocuments().map(doc => new VSCodeNotebookDocument(doc.document));
 			},
 			async openNotebookDocument(uriOrType?: URI | string, content?: vscode.NotebookData) {
 				// {{SQL CARBON EDIT}} Disable VS Code notebooks
