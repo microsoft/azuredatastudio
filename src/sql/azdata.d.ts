@@ -4912,9 +4912,9 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * A complex edit that will be applied in one transaction on a TextEditor.
+		 * A complex edit that will be applied in one transaction on a NotebookEditor.
 		 * This holds a description of the edits and if the edits are valid (i.e. no overlapping regions, document was not changed in the meantime, etc.)
-		 * they can be applied on a [document](#TextDocument) associated with a [text editor](#TextEditor).
+		 * they can be applied on a [document](#NotebookDocument) associated with a [Notebook editor](#NotebookEditor).
 		 *
 		 */
 		export interface NotebookEditorEdit {
