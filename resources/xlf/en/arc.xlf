@@ -995,6 +995,18 @@
     <trans-unit id="arc.data.controller.agreement">
       <source xml:lang="en">I accept {0} and {1}.</source>
     </trans-unit>
+    <trans-unit id="arc.data.controller.auto.upload.logs">
+      <source xml:lang="en">Auto-upload Logs</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.auto.upload.logs.description">
+      <source xml:lang="en">Enable the automatic upload of logs. Direct mode only.</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.auto.upload.metrics">
+      <source xml:lang="en">Auto-upload Metrics</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.auto.upload.metrics.description">
+      <source xml:lang="en">Enable the automatic upload of metrics. Direct mode only.</source>
+    </trans-unit>
     <trans-unit id="arc.data.controller.cluster.config.profile">
       <source xml:lang="en">Config profile</source>
     </trans-unit>
@@ -1010,6 +1022,9 @@
     <trans-unit id="arc.data.controller.cluster.environment.title">
       <source xml:lang="en">What is your target existing Kubernetes cluster environment?</source>
     </trans-unit>
+    <trans-unit id="arc.data.controller.connectivity.mode">
+      <source xml:lang="en">Connectivity mode</source>
+    </trans-unit>
     <trans-unit id="arc.data.controller.create.azureconfig.title">
       <source xml:lang="en">Azure Configuration</source>
     </trans-unit>
@@ -1019,8 +1034,14 @@
     <trans-unit id="arc.data.controller.create.summary.title">
       <source xml:lang="en">Review your configuration</source>
     </trans-unit>
+    <trans-unit id="arc.data.controller.custom.location">
+      <source xml:lang="en">Custom Location</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.custom.location.description">
+      <source xml:lang="en">The name of the custom location. Direct mode only.</source>
+    </trans-unit>
     <trans-unit id="arc.data.controller.details.description">
-      <source xml:lang="en">Provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring.</source>
+      <source xml:lang="en">For indirect mode, provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring. For direct mode you do not need to provide a namespace, but please provide the custom location name.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.details.title">
       <source xml:lang="en">Data controller details</source>
@@ -1042,6 +1063,9 @@
     </trans-unit>
     <trans-unit id="arc.data.controller.namespace">
       <source xml:lang="en">Data controller namespace</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.namespace.description">
+      <source xml:lang="en">Indirect mode only.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.namespace.validation.description">
       <source xml:lang="en">Namespace must consist of lower case alphanumeric characters or '-', start/end with an alphanumeric character, and be 63 characters or fewer in length.</source>
