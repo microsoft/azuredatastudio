@@ -255,6 +255,7 @@
 			"notebook.command.boldText": "Полужирный текст Markdown",
 			"notebook.command.clearactivecellresult": "Очистить результат ячейки",
 			"notebook.command.codeBlock": "Добавить блок кода",
+			"notebook.command.highlightText": "Выделить текст Markdown",
 			"notebook.command.italicizeText": "Курсивный текст Markdown",
 			"notebook.command.new": "Создать записную книжку",
 			"notebook.command.open": "Открыть записную книжку",

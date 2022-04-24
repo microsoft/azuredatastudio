@@ -60,10 +60,8 @@
 		},
 		"package": {
 			"close-workspace-command": "Закрыть рабочую область",
-			"data-workspace-view-container-name": "Проекты",
-			"extension-description": "Рабочая область данных",
-			"extension-displayName": "Рабочая область данных",
-			"main-view-name": "Проекты",
+			"data-workspace-view-container-name": "Проекты баз данных",
+			"main-view-name": "Проекты баз данных",
 			"manage-project-command": "Управление",
 			"new-command": "Создать",
 			"open-existing-command": "Открыть существующий",

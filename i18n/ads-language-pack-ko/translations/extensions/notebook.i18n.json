@@ -255,6 +255,7 @@
 			"notebook.command.boldText": "굵은 마크다운 텍스트",
 			"notebook.command.clearactivecellresult": "셀 결과 지우기",
 			"notebook.command.codeBlock": "코드 블록 추가",
+			"notebook.command.highlightText": "Markdown 텍스트 강조 표시",
 			"notebook.command.italicizeText": "Markdown 텍스트 기울임꼴",
 			"notebook.command.new": "새 Notebook",
 			"notebook.command.open": "Notebook 열기",

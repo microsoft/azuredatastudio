@@ -60,10 +60,8 @@
 		},
 		"package": {
 			"close-workspace-command": "작업 영역 닫기",
-			"data-workspace-view-container-name": "프로젝트",
-			"extension-description": "데이터 작업 영역",
-			"extension-displayName": "데이터 작업 영역",
-			"main-view-name": "프로젝트",
+			"data-workspace-view-container-name": "데이터베이스 프로젝트",
+			"main-view-name": "데이터베이스 프로젝트",
 			"manage-project-command": "관리",
 			"new-command": "새로 만들기",
 			"open-existing-command": "기존 항목 열기",

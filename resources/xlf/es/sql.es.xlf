@@ -1,32 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="src/sql/base/browser/ui/designer/designer" source-language="en" datatype="plaintext" target-language="es">
+  <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner" source-language="en" datatype="plaintext" target-language="es">
     <body>
-      <trans-unit id="designer.newRowText">
-        <source xml:lang="en">Add New</source>
-        <target state="translated">Agregar nuevo</target>
+      <trans-unit id="loadingCompletedMessage">
+        <source xml:lang="en">Loading completed</source>
+        <target state="translated">Carga completada</target>
       </trans-unit>
-      <trans-unit id="designer.removeRowText">
-        <source xml:lang="en">Remove</source>
-        <target state="translated">Quitar</target>
-      </trans-unit>
-      <trans-unit id="tableDesigner.unknownComponentType">
-        <source xml:lang="en">The component type: {0} is not supported</source>
-        <target state="translated">El tipo de componente: {0} no es compatible</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/base/browser/ui/designer/designerPropertiesPane" source-language="en" datatype="plaintext" target-language="es">
-    <body>
-      <trans-unit id="tableDesigner.propertiesPaneTitle">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">Propiedades</target>
-      </trans-unit>
-      <trans-unit id="tableDesigner.propertiesPaneTitleWithContext">
-        <source xml:lang="en">Properties - {0} {1}</source>
-        <note>{0} is the place holder for object type
-{1} is the place holder for object name</note>
-        <target state="translated">Propiedades: {0}{1}</target>
+      <trans-unit id="loadingMessage">
+        <source xml:lang="en">Loading</source>
+        <target state="translated">Cargando</target>
       </trans-unit>
     </body>
   </file>
@@ -333,6 +315,14 @@
         <source xml:lang="en">New SQL File</source>
         <target state="translated">Nuevo archivo SQL</target>
       </trans-unit>
+      <trans-unit id="workspace.trust.description">
+        <source xml:lang="en">Controls whether or not workspace trust is enabled within Azure Data Studio.</source>
+        <target state="translated">Controla si la confianza del área de trabajo está habilitada o no en Azure Data Studio.</target>
+      </trans-unit>
+      <trans-unit id="workspace.trust.emptyWindow.description">
+        <source xml:lang="en">Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.</source>
+        <target state="translated">Controla si la ventana vacía es de confianza de forma predeterminada en Azure Data Studio. Cuando se usa con "#{0}#", puede habilitar toda la funcionalidad de Azure Data Studio sin preguntar en una ventana vacía.</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/base/parts/editableDropdown/browser/dropdown" source-language="en" datatype="plaintext" target-language="es">
@@ -489,6 +479,10 @@
         <source xml:lang="en">Callout dialog box shadow color.</source>
         <target state="translated">Color de sombra del cuadro de diálogo de llamada.</target>
       </trans-unit>
+      <trans-unit id="designer.paneSeparator">
+        <source xml:lang="en">The pane separator color.</source>
+        <target state="translated">Color del separador de panel.</target>
+      </trans-unit>
       <trans-unit id="extensionPackGradientColorOne">
         <source xml:lang="en">The top color for the extension pack gradient</source>
         <target state="translated">Color superior del degradado del paquete de extensiones</target>
@@ -512,6 +506,10 @@
       <trans-unit id="gradientTwo">
         <source xml:lang="en">The bottom color for the banner image gradient</source>
         <target state="translated">Color inferior del degradado de la imagen del mensaje emergente</target>
+      </trans-unit>
+      <trans-unit id="groupHeaderBackground">
+        <source xml:lang="en">Background color of the group header.</source>
+        <target state="translated">Color de fondo del encabezado de grupo.</target>
       </trans-unit>
       <trans-unit id="infoBox.errorBackground">
         <source xml:lang="en">InfoBox: The background color when the notification type is error.</source>
@@ -868,6 +866,71 @@
       <trans-unit id="showConnectDialogOnStartup">
         <source xml:lang="en">Show connect dialog on startup</source>
         <target state="translated">Mostrar diálogo de conexión al inicio</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/browser/designer/designer" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="designer.generalGroupName">
+        <source xml:lang="en">General</source>
+        <target state="translated">General</target>
+      </trans-unit>
+      <trans-unit id="designer.loadingDesigner">
+        <source xml:lang="en">Loading designer...</source>
+        <target state="translated">Cargando el diseñador...</target>
+      </trans-unit>
+      <trans-unit id="designer.loadingDesignerCompleted">
+        <source xml:lang="en">Designer is loaded</source>
+        <target state="translated">El diseñador está cargado</target>
+      </trans-unit>
+      <trans-unit id="designer.newRowText">
+        <source xml:lang="en">Add New</source>
+        <target state="translated">Agregar nuevo</target>
+      </trans-unit>
+      <trans-unit id="designer.processingChanges">
+        <source xml:lang="en">Processing changes...</source>
+        <target state="translated">Procesando cambios...</target>
+      </trans-unit>
+      <trans-unit id="designer.processingChangesCompleted">
+        <source xml:lang="en">Changes have been processed</source>
+        <target state="translated">Se han procesado los cambios</target>
+      </trans-unit>
+      <trans-unit id="designer.removeRowText">
+        <source xml:lang="en">Remove</source>
+        <target state="translated">Quitar</target>
+      </trans-unit>
+      <trans-unit id="designer.savingChanges">
+        <source xml:lang="en">Saving changes...</source>
+        <target state="translated">Guardando cambios...</target>
+      </trans-unit>
+      <trans-unit id="designer.savingChangesCompleted">
+        <source xml:lang="en">Changes have been saved</source>
+        <target state="translated">Se han guardado los cambios</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.unknownComponentType">
+        <source xml:lang="en">The component type: {0} is not supported</source>
+        <target state="translated">El tipo de componente: {0} no es compatible</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/browser/designer/designerPropertiesPane" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="tableDesigner.propertiesPaneTitle">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">Propiedades</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.propertiesPaneTitleWithContext">
+        <source xml:lang="en">{0} Properties</source>
+        <note>{0} is the place holder for object type</note>
+        <target state="translated">Propiedades de {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/browser/designer/designerScriptEditor" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="designer.textEditorAriaLabel">
+        <source xml:lang="en">Designer text editor.</source>
+        <target state="translated">Editor de texto del diseñador.</target>
       </trans-unit>
     </body>
   </file>
@@ -1963,7 +2026,7 @@
       </trans-unit>
       <trans-unit id="schema.isQueryProvider">
         <source xml:lang="en">Whether the provider is also a query provider. The default value is true.</source>
-        <target state="new">Whether the provider is also a query provider. The default value is true.</target>
+        <target state="translated">Si el proveedor también es un proveedor de consultas. El valor predeterminado es true.</target>
       </trans-unit>
       <trans-unit id="schema.notebookKernelAlias">
         <source xml:lang="en">Notebook Kernel Alias for the provider</source>
@@ -3835,57 +3898,45 @@ Error: {1}</target>
   </file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component" source-language="en" datatype="plaintext" target-language="es">
     <body>
-      <trans-unit id="buttonBold">
+      <trans-unit id="bold">
         <source xml:lang="en">Bold</source>
         <target state="translated">Negrita</target>
-      </trans-unit>
-      <trans-unit id="buttonCode">
-        <source xml:lang="en">Code</source>
-        <target state="translated">Código</target>
-      </trans-unit>
-      <trans-unit id="buttonHighlight">
-        <source xml:lang="en">Highlight</source>
-        <target state="translated">Resaltar</target>
-      </trans-unit>
-      <trans-unit id="buttonImage">
-        <source xml:lang="en">Image</source>
-        <target state="translated">Imagen</target>
-      </trans-unit>
-      <trans-unit id="buttonItalic">
-        <source xml:lang="en">Italic</source>
-        <target state="translated">Cursiva</target>
-      </trans-unit>
-      <trans-unit id="buttonLink">
-        <source xml:lang="en">Link</source>
-        <target state="translated">Vínculo</target>
-      </trans-unit>
-      <trans-unit id="buttonList">
-        <source xml:lang="en">List</source>
-        <target state="translated">Lista</target>
-      </trans-unit>
-      <trans-unit id="buttonOrderedList">
-        <source xml:lang="en">Ordered list</source>
-        <target state="translated">Lista ordenada</target>
       </trans-unit>
       <trans-unit id="buttonPreview">
         <source xml:lang="en">Markdown preview toggle - off</source>
         <target state="translated">Alternancia de la vista previa de Markdown: desactivada</target>
       </trans-unit>
-      <trans-unit id="buttonUnderline">
-        <source xml:lang="en">Underline</source>
-        <target state="translated">Subrayado</target>
-      </trans-unit>
-      <trans-unit id="callout.insertImageHeading">
-        <source xml:lang="en">Insert image</source>
-        <target state="translated">Inserción de una imagen</target>
-      </trans-unit>
-      <trans-unit id="callout.insertLinkHeading">
-        <source xml:lang="en">Insert link</source>
-        <target state="translated">Inserción de un vínculo</target>
-      </trans-unit>
       <trans-unit id="dropdownHeading">
         <source xml:lang="en">Heading</source>
         <target state="translated">Encabezado</target>
+      </trans-unit>
+      <trans-unit id="highlight">
+        <source xml:lang="en">Highlight</source>
+        <target state="translated">Resaltar</target>
+      </trans-unit>
+      <trans-unit id="insertCode">
+        <source xml:lang="en">Insert code</source>
+        <target state="translated">Insertar código</target>
+      </trans-unit>
+      <trans-unit id="insertImage">
+        <source xml:lang="en">Insert image</source>
+        <target state="translated">Inserción de una imagen</target>
+      </trans-unit>
+      <trans-unit id="insertLink">
+        <source xml:lang="en">Insert link</source>
+        <target state="translated">Inserción de un vínculo</target>
+      </trans-unit>
+      <trans-unit id="insertList">
+        <source xml:lang="en">Insert list</source>
+        <target state="translated">Insertar lista</target>
+      </trans-unit>
+      <trans-unit id="insertOrderedList">
+        <source xml:lang="en">Insert ordered list</source>
+        <target state="translated">Insertar lista ordenada</target>
+      </trans-unit>
+      <trans-unit id="italic">
+        <source xml:lang="en">Italic</source>
+        <target state="translated">Cursiva</target>
       </trans-unit>
       <trans-unit id="markdownViewButton">
         <source xml:lang="en">Markdown View</source>
@@ -3914,6 +3965,10 @@ Error: {1}</target>
       <trans-unit id="splitViewButton">
         <source xml:lang="en">Split View</source>
         <target state="translated">Vista En dos paneles</target>
+      </trans-unit>
+      <trans-unit id="underline">
+        <source xml:lang="en">Underline</source>
+        <target state="translated">Subrayado</target>
       </trans-unit>
     </body>
   </file>
@@ -4810,6 +4865,10 @@ Error: {1}</target>
       <trans-unit id="queryEditor">
         <source xml:lang="en">Query Editor</source>
         <target state="translated">Editor de Power Query</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner">
+        <source xml:lang="en">Table Designer</source>
+        <target state="translated">Diseñador de tablas</target>
       </trans-unit>
     </body>
   </file>
@@ -5804,6 +5863,18 @@ Error: {1}</target>
       <trans-unit id="tableDesigner.saveTableChanges">
         <source xml:lang="en">Save Changes</source>
         <target state="translated">Guardar cambios</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="tableDesigner.configTitle">
+        <source xml:lang="en">Table Designer</source>
+        <target state="translated">Diseñador de tablas</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.featureEnabledDescription">
+        <source xml:lang="en">Controls whether the table designer feature is enabled. Default value is false.</source>
+        <target state="translated">Controla si la característica del diseñador de tablas está habilitada. El valor predeterminado es false.</target>
       </trans-unit>
     </body>
   </file>
@@ -7216,6 +7287,30 @@ Error: {1}</target>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/notebook/browser/models/cellEdit" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="addCellEdit">
+        <source xml:lang="en">Add Cell</source>
+        <target state="translated">Agregar celda</target>
+      </trans-unit>
+      <trans-unit id="convertCellTypeEdit">
+        <source xml:lang="en">Convert Cell Type</source>
+        <target state="translated">Convertir tipo de celda</target>
+      </trans-unit>
+      <trans-unit id="deleteCellEdit">
+        <source xml:lang="en">Delete Cell</source>
+        <target state="translated">Eliminar celda</target>
+      </trans-unit>
+      <trans-unit id="moveCellEdit">
+        <source xml:lang="en">Move Cell</source>
+        <target state="translated">Mover celda</target>
+      </trans-unit>
+      <trans-unit id="splitCellEdit">
+        <source xml:lang="en">Split Cell</source>
+        <target state="translated">Dividir celda</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/notebook/browser/models/clientSession" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="ServerNotStarted">
@@ -7976,9 +8071,101 @@ Error: {1}</target>
   </file>
   <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput" source-language="en" datatype="plaintext" target-language="es">
     <body>
-      <trans-unit id="tableDesigner.advancedTab">
-        <source xml:lang="en">Advanced</source>
-        <target state="translated">Avanzado</target>
+      <trans-unit id="designer.checkConstraint.description.expression">
+        <source xml:lang="en">The expression defining the check constraint.</source>
+        <target state="translated">Expresión que define la restricción CHECK.</target>
+      </trans-unit>
+      <trans-unit id="designer.checkConstraint.description.name">
+        <source xml:lang="en">The name of the check constraint.</source>
+        <target state="translated">Nombre de la restricción CHECK.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.allowNulls">
+        <source xml:lang="en">Specifies whether the column may have a NULL value.</source>
+        <target state="translated">Especifica si la columna puede tener un valor NULL.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.dataType">
+        <source xml:lang="en">Displays the data type name for the column</source>
+        <target state="translated">Muestra el nombre del tipo de datos de la columna</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.defaultValueBinding">
+        <source xml:lang="en">A predefined global default value for the column or binding.</source>
+        <target state="translated">Valor predeterminado global y predefinido para la columna o enlace.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.length">
+        <source xml:lang="en">The maximum length (in characters) that can be stored in this database object.</source>
+        <target state="translated">Longitud máxima (en caracteres) que se puede almacenar en este objeto de base de datos.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.name">
+        <source xml:lang="en">The name of the column object.</source>
+        <target state="translated">El nombre del objeto de la columna.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.precision">
+        <source xml:lang="en">For numeric data, the maximum number of decimal digits that can be stored in this database object.</source>
+        <target state="translated">Para datos numéricos, número máximo de dígitos decimales que se pueden almacenar en este objeto de base de datos.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.primaryKey">
+        <source xml:lang="en">Specifies whether the column is included in the primary key for the table.</source>
+        <target state="translated">Especifica si la columna se incluye en la clave principal de la tabla.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.scale">
+        <source xml:lang="en">For numeric data, the maximum number of decimal digits that can be stored in this database object to the right of decimal point.</source>
+        <target state="translated">Para los datos numéricos, el número máximo de dígitos decimales que se pueden almacenar en este objeto de base de datos a la derecha del punto decimal.</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.columnMapping">
+        <source xml:lang="en">The mapping between foreign key columns and primary key columns.</source>
+        <target state="translated">Asignación entre las columnas de la clave externa y las de la clave principal.</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.name">
+        <source xml:lang="en">The name of the foreign key.</source>
+        <target state="translated">Nombre de la clave externa.</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.onDeleteAction">
+        <source xml:lang="en">The behavior when a user tries to delete a row with data that is involved in a foreign key relationship.</source>
+        <target state="translated">Comportamiento cuando un usuario intenta eliminar una fila con datos que intervienen en una relación de clave externa.</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.onUpdateAction">
+        <source xml:lang="en">The behavior when a user tries to update a row with data that is involved in a foreign key relationship.</source>
+        <target state="translated">Comportamiento cuando un usuario intenta actualizar una fila con datos que intervienen en una relación de clave externa.</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.primaryKeyTable">
+        <source xml:lang="en">The table which contains the primary or unique key column.</source>
+        <target state="translated">Tabla que contiene la columna de clave principal o única.</target>
+      </trans-unit>
+      <trans-unit id="designer.table.description.description">
+        <source xml:lang="en">Description for the table.</source>
+        <target state="translated">Descripción de la tabla.</target>
+      </trans-unit>
+      <trans-unit id="designer.table.description.name">
+        <source xml:lang="en">The name of the table object.</source>
+        <target state="translated">El nombre del objeto de la tabla.</target>
+      </trans-unit>
+      <trans-unit id="designer.table.description.schema">
+        <source xml:lang="en">The schema that contains the table.</source>
+        <target state="translated">Esquema que contiene la tabla.</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.ForeignKeyTypeName">
+        <source xml:lang="en">Foreign Key</source>
+        <target state="translated">Clave externa</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.PrimaryKeyTableName">
+        <source xml:lang="en">Primary Key Table</source>
+        <target state="translated">Tabla de clave principal</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintExpressionTitle">
+        <source xml:lang="en">Expression</source>
+        <target state="translated">Expresión</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintNameTitle">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Nombre</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintTypeName">
+        <source xml:lang="en">Check Constraint</source>
+        <target state="translated">Restricción CHECK</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintsTabTitle">
+        <source xml:lang="en">Check Constraints</source>
+        <target state="translated">Restricciones CHECK</target>
       </trans-unit>
       <trans-unit id="tableDesigner.columnAllowNullTitle">
         <source xml:lang="en">Allow Nulls</source>
@@ -8000,6 +8187,14 @@ Error: {1}</target>
         <source xml:lang="en">Name</source>
         <target state="translated">Nombre</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.columnPrecisionTitle">
+        <source xml:lang="en">Precision</source>
+        <target state="translated">Precisión</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnScaleTitle">
+        <source xml:lang="en">Scale</source>
+        <target state="translated">Escala</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.columnTypeName">
         <source xml:lang="en">Column</source>
         <target state="translated">Columna</target>
@@ -8016,9 +8211,49 @@ Error: {1}</target>
         <source xml:lang="en">Description</source>
         <target state="translated">Descripción</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.errorInitializingTableDesigner">
+        <source xml:lang="en">An error occured while initializing the table designer: {0}</source>
+        <target state="translated">Se produjo un error al inicializar el diseñador de tablas: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.errorProcessingEdit">
+        <source xml:lang="en">An error occured while processing the change: {0}</source>
+        <target state="translated">Se produjo un error al procesar el cambio: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyColumn">
+        <source xml:lang="en">Foreign Key Column</source>
+        <target state="translated">Columna de clave externa</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyColumns">
+        <source xml:lang="en">Column Mapping</source>
+        <target state="translated">Asignación de columnas</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyNameTitle">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Nombre</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyOnDeleteAction">
+        <source xml:lang="en">On Delete Action</source>
+        <target state="translated">Al eliminar la acción</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyOnUpdateAction">
+        <source xml:lang="en">On Update Action</source>
+        <target state="translated">Al actualizar la acción</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeysTabTitle">
+        <source xml:lang="en">Foreign Keys</source>
+        <target state="translated">Claves externas</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.generalTab">
+        <source xml:lang="en">General</source>
+        <target state="translated">General</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.nameTitle">
         <source xml:lang="en">Table name</source>
         <target state="translated">Nombre de la tabla</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.primaryKeyColumn">
+        <source xml:lang="en">Primary Key Column</source>
+        <target state="translated">Columna de clave principal</target>
       </trans-unit>
       <trans-unit id="tableDesigner.saveChangeError">
         <source xml:lang="en">An error occured while saving changes: {0}</source>

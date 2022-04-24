@@ -902,6 +902,22 @@
         <source xml:lang="en">Reset</source>
         <target state="translated">リセット</target>
       </trans-unit>
+      <trans-unit id="file">
+        <source xml:lang="en">File</source>
+        <target state="translated">ファイル</target>
+      </trans-unit>
+      <trans-unit id="flat">
+        <source xml:lang="en">Flat</source>
+        <target state="translated">フラット</target>
+      </trans-unit>
+      <trans-unit id="objectType">
+        <source xml:lang="en">Object Type</source>
+        <target state="translated">オブジェクト型</target>
+      </trans-unit>
+      <trans-unit id="schema">
+        <source xml:lang="en">Schema</source>
+        <target state="translated">スキーマ</target>
+      </trans-unit>
       <trans-unit id="schemaCompare.ApplyConfirmation">
         <source xml:lang="en">Are you sure you want to update the target?</source>
         <target state="translated">ターゲットを更新しますか?</target>
@@ -927,16 +943,24 @@
         <target state="translated">追加</target>
       </trans-unit>
       <trans-unit id="schemaCompare.applyButtonDisabledTitle">
-        <source xml:lang="en">Apply is enabled when the target is a database</source>
-        <target state="translated">ターゲットがデータベースの場合に適用が有効になります</target>
+        <source xml:lang="en">Apply is enabled when the target is a database or database project</source>
+        <target state="translated">ターゲットがデータベースまたはデータベース プロジェクトの場合、[適用] は有効化されます。</target>
       </trans-unit>
       <trans-unit id="schemaCompare.applyButtonEnabledTitle">
         <source xml:lang="en">Apply changes to target</source>
         <target state="translated">ターゲットに変更を適用する</target>
       </trans-unit>
+      <trans-unit id="schemaCompare.applyError">
+        <source xml:lang="en">There was an error updating the project</source>
+        <target state="translated">プロジェクトの更新中にエラーが発生しました</target>
+      </trans-unit>
       <trans-unit id="schemaCompare.applyNoChanges">
         <source xml:lang="en">No changes to apply</source>
         <target state="translated">適用する変更はありません</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applySuccess">
+        <source xml:lang="en">Project was successfully updated</source>
+        <target state="translated">プロジェクトが正常に更新されました</target>
       </trans-unit>
       <trans-unit id="schemaCompare.cancelCompareButton">
         <source xml:lang="en">Stop</source>
@@ -1045,6 +1069,10 @@
       <trans-unit id="schemaCompare.optionsButton">
         <source xml:lang="en">Options</source>
         <target state="translated">オプション​​</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.projectButtonLabel">
+        <source xml:lang="en">Database Project</source>
+        <target state="translated">データベース プロジェクト</target>
       </trans-unit>
       <trans-unit id="schemaCompare.radioButtonsLabel">
         <source xml:lang="en">Type</source>
@@ -1162,9 +1190,25 @@
         <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
         <target state="translated">別のターゲット スキーマが選択されました。比較を表示して比較しますか?</target>
       </trans-unit>
+      <trans-unit id="schemaCompareDialog.dspErrorSource">
+        <source xml:lang="en">The source .sqlproj file does not specify a database schema component</source>
+        <target state="translated">ソース .sqlproj ファイルでデータベース スキーマ コンポーネントを指定していません</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.dspErrorTarget">
+        <source xml:lang="en">The target .sqlproj file does not specify a database schema component</source>
+        <target state="translated">ターゲットの .sqlproj ファイルは、データベース スキーマ コンポーネントを指定していません</target>
+      </trans-unit>
       <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
         <source xml:lang="en">File</source>
         <target state="translated">ファイル</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.noProjectExtension">
+        <source xml:lang="en">The sql-database-projects extension is required to perform schema comparison with database projects</source>
+        <target state="translated">複数のデータベース プロジェクトについてのスキーマ比較を実行するには、sql-database-projects 拡張機能が必要です</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.noProjectExtensionApply">
+        <source xml:lang="en">The sql-database-projects extension is required to apply changes to a project</source>
+        <target state="translated">プロジェクトに変更を適用するには、sql-database-projects 拡張機能が必要です</target>
       </trans-unit>
       <trans-unit id="schemaCompareDialog.ok">
         <source xml:lang="en">OK</source>
@@ -1186,6 +1230,10 @@
         <source xml:lang="en">Source file</source>
         <target state="translated">ソース ファイル</target>
       </trans-unit>
+      <trans-unit id="schemaCompareDialog.structureDropdownLabel">
+        <source xml:lang="en">Folder Structure</source>
+        <target state="translated">フォルダー構造</target>
+      </trans-unit>
       <trans-unit id="schemaCompareDialog.targetDatabaseDropdown">
         <source xml:lang="en">Target Database</source>
         <target state="translated">ターゲット データベース</target>
@@ -1201,6 +1249,14 @@
       <trans-unit id="schemaCompareOptions.RecompareMessage">
         <source xml:lang="en">Options have changed. Recompare to see the comparison?</source>
         <target state="translated">オプションが変更されました。比較を表示して再比較しますか?</target>
+      </trans-unit>
+      <trans-unit id="schemaObjectType">
+        <source xml:lang="en">Schema/Object Type</source>
+        <target state="translated">スキーマ/オブジェクト型</target>
+      </trans-unit>
+      <trans-unit id="targetStructure">
+        <source xml:lang="en">Target Folder Structure</source>
+        <target state="translated">ターゲット フォルダー 構造</target>
       </trans-unit>
     </body>
   </file>

@@ -60,10 +60,8 @@
 		},
 		"package": {
 			"close-workspace-command": "Cerrar área de trabajo",
-			"data-workspace-view-container-name": "Proyectos",
-			"extension-description": "Área de trabajo de datos",
-			"extension-displayName": "Área de trabajo de datos",
-			"main-view-name": "Proyectos",
+			"data-workspace-view-container-name": "Proyectos de base de datos",
+			"main-view-name": "Proyectos de base de datos",
 			"manage-project-command": "Administrar",
 			"new-command": "Nuevo",
 			"open-existing-command": "Abrir existente",

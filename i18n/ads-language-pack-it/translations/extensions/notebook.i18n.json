@@ -255,6 +255,7 @@
 			"notebook.command.boldText": "Testo Markdown grassetto",
 			"notebook.command.clearactivecellresult": "Cancella risultato della cella",
 			"notebook.command.codeBlock": "Aggiungi blocco di codice",
+			"notebook.command.highlightText": "Evidenzia testo Markdown",
 			"notebook.command.italicizeText": "Testo Markdown corsivo",
 			"notebook.command.new": "Nuovo notebook",
 			"notebook.command.open": "Apri notebook",

@@ -912,6 +912,10 @@
         <source xml:lang="en">Add Code Block</source>
         <target state="translated">添加代码块</target>
       </trans-unit>
+      <trans-unit id="notebook.command.highlightText">
+        <source xml:lang="en">Highlight Markdown Text</source>
+        <target state="translated">突出显示 Markdown 文本</target>
+      </trans-unit>
       <trans-unit id="notebook.command.italicizeText">
         <source xml:lang="en">Italicize Markdown Text</source>
         <target state="translated">倾斜 Markdown 文本</target>

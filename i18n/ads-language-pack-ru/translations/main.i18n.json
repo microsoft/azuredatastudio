@@ -9808,7 +9808,9 @@
 			"uninstallExtensionComplete": "Перезапустите Azure Data Studio, чтобы завершить удаление расширения {0}.",
 			"updateLocale": "Хотите изменить язык пользовательского интерфейса Azure Data Studio на {0} и выполнить перезапуск?",
 			"watermark.newNotebook": "Новая записная книжка",
-			"watermark.newSqlFile": "Новый файл SQL"
+			"watermark.newSqlFile": "Новый файл SQL",
+			"workspace.trust.description": "Определяет, включено ли доверие рабочей области в Azure Data Studio.",
+			"workspace.trust.emptyWindow.description": "Определяет, является ли пустое окно доверенным по умолчанию в Azure Data Studio. При использовании с \"#{0}#\" можно включить все функции Azure Data Studio без запросов в пустом окне."
 		},
 		"sql/base/parts/editableDropdown/browser/dropdown": {
 			"editableDropdown.errorValidate": "Необходимо выбрать вариант из списка",
@@ -9853,12 +9855,14 @@
 			"calloutDialogHeaderFooterBackground": "Цвет фона верхнего и нижнего колонтитулов диалогового окна выноски.",
 			"calloutDialogInteriorBorder": "Внутренние границы диалогового окна выноски, используемые для разделения элементов.",
 			"calloutDialogShadowColor": "Цвет тени диалогового окна выноски.",
+			"designer.paneSeparator": "Цвет разделителя панелей.",
 			"extensionPackGradientColorOne": "Верхний цвет для градиента пакета расширения",
 			"extensionPackGradientColorTwo": "Нижний цвет для градиента пакета расширения",
 			"extensionPackHeaderShadow": "Цвет тени для текста заголовка пакета расширения",
 			"gradientBackground": "Цвет фона для градиента изображения баннера",
 			"gradientOne": "Верхний цвет для градиента изображения баннера",
 			"gradientTwo": "Нижний цвет для градиента изображения баннера",
+			"groupHeaderBackground": "Цвет фона заголовка группы.",
 			"infoBox.errorBackground": "Информационное окно: цвет фона, если тип уведомления — ошибка.",
 			"infoBox.infomationBackground": "Информационное окно: цвет фона, если тип уведомления — информационное сообщение.",
 			"infoBox.successBackground": "Информационное окно: цвет фона, если тип уведомления — успешно.",
@@ -10271,7 +10275,7 @@
 			"schema.connectionOptions": "Параметры подключения",
 			"schema.displayName": "Отображаемое имя поставщика",
 			"schema.iconPath": "Путь к значку для типа сервера",
-			"schema.isQueryProvider": "Whether the provider is also a query provider. The default value is true.",
+			"schema.isQueryProvider": "Является ли поставщик также поставщиком запросов. Значение по умолчанию — true (истина).",
 			"schema.notebookKernelAlias": "Псевдоним ядра записной книжки для поставщика",
 			"schema.providerId": "Общий идентификатор поставщика"
 		},
@@ -10805,26 +10809,24 @@
 			"expandCellContents": "Развернуть содержимое ячеек кода"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
-			"buttonBold": "Полужирный",
-			"buttonCode": "Код",
-			"buttonHighlight": "Выделить цветом",
-			"buttonImage": "Изображение",
-			"buttonItalic": "Курсив",
-			"buttonLink": "Ссылка",
-			"buttonList": "Список",
-			"buttonOrderedList": "Упорядоченный список",
+			"bold": "Полужирный",
 			"buttonPreview": "Переключить предварительный просмотр Markdown — отключено",
-			"buttonUnderline": "Подчеркнутый",
-			"callout.insertImageHeading": "Вставка изображения",
-			"callout.insertLinkHeading": "Вставка ссылки",
 			"dropdownHeading": "Заголовок",
+			"highlight": "Выделить цветом",
+			"insertCode": "Вставить код",
+			"insertImage": "Вставка изображения",
+			"insertLink": "Вставка ссылки",
+			"insertList": "Вставить список",
+			"insertOrderedList": "Вставить упорядоченный список",
+			"italic": "Курсив",
 			"markdownViewButton": "Представление Markdown",
 			"optionHeading1": "Заголовок 1",
 			"optionHeading2": "Заголовок 2",
 			"optionHeading3": "Заголовок 3",
 			"optionParagraph": "Абзац",
 			"richTextViewButton": "Представление форматированного текста",
-			"splitViewButton": "Разделенное представление"
+			"splitViewButton": "Разделенное представление",
+			"underline": "Подчеркнутый"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
 			"componentRenderError": "Ошибка при отрисовке компонента: {0}",
@@ -11072,7 +11074,8 @@
 			"data": "Данные",
 			"notebook": "Записная книжка",
 			"profiler": "Профилировщик",
-			"queryEditor": "Редактор запросов"
+			"queryEditor": "Редактор запросов",
+			"tableDesigner": "Конструктор таблиц"
 		},
 		"sql/workbench/contrib/profiler/browser/profiler.contribution": {
 			"profiler.settings.Filters": "Фильтры профилировщика",
@@ -11984,15 +11987,6 @@
 			"queryManagement.noQueryRunnerForUri": "Не найдено средство выполнения запросов для URI: {0}",
 			"queryManagement.uriAlreadyHasQueryRunner": "URI: у {0} неожиданно оказалось выполнения запросов."
 		},
-		"sql/base/browser/ui/designer/designer": {
-			"designer.newRowText": "Добавить новый",
-			"designer.removeRowText": "Удалить",
-			"tableDesigner.unknownComponentType": "Тип компонента {0} не поддерживается"
-		},
-		"sql/base/browser/ui/designer/designerPropertiesPane": {
-			"tableDesigner.propertiesPaneTitle": "Свойства",
-			"tableDesigner.propertiesPaneTitleWithContext": "Свойства — {0} {1}"
-		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
 			"tableDesigner.newTable": "Создать таблицу"
 		},
@@ -12000,22 +11994,91 @@
 			"tableDesigner.saveTableChanges": "Сохранить изменения"
 		},
 		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
-			"tableDesigner.advancedTab": "Дополнительно",
+			"designer.checkConstraint.description.expression": "Выражение, определяющее проверочное ограничение.",
+			"designer.checkConstraint.description.name": "Имя проверочного ограничения.",
+			"designer.column.description.allowNulls": "Указывает, может ли столбец иметь значение NULL.",
+			"designer.column.description.dataType": "Отображает имя типа данных столбца.",
+			"designer.column.description.defaultValueBinding": "Предопределенное глобальное значение по умолчанию для столбца или привязки.",
+			"designer.column.description.length": "Максимальная длина (в символах), которая может быть сохранена в этом объекте базы данных.",
+			"designer.column.description.name": "Имя объекта столбца.",
+			"designer.column.description.precision": "Для числовых данных максимальное количество десятичных знаков, которые могут быть сохранены в этом объекте базы данных.",
+			"designer.column.description.primaryKey": "Указывает, включен ли столбец в первичный ключ таблицы.",
+			"designer.column.description.scale": "Для числовых данных максимальное количество десятичных знаков, которые могут быть сохранены в этом объекте базы данных справа от десятичного разделителя.",
+			"designer.foreignkey.description.columnMapping": "Сопоставление столбцов внешних ключей и столбцов первичных ключей.",
+			"designer.foreignkey.description.name": "Имя внешнего ключа.",
+			"designer.foreignkey.description.onDeleteAction": "Поведение, которое реализуется при попытке пользователя удалить строку с данными, участвующую в связи по внешнему ключу.",
+			"designer.foreignkey.description.onUpdateAction": "Поведение, которое реализуется при попытке пользователя обновить строку с данными, участвующую в связи по внешнему ключу.",
+			"designer.foreignkey.description.primaryKeyTable": "Таблица, которая содержит первичный или уникальный ключевой столбец.",
+			"designer.table.description.description": "Описание таблицы.",
+			"designer.table.description.name": "Имя объекта таблицы.",
+			"designer.table.description.schema": "Схема, содержащая таблицу.",
+			"tableDesigner.ForeignKeyTypeName": "Внешний ключ",
+			"tableDesigner.PrimaryKeyTableName": "Таблица первичных ключей",
+			"tableDesigner.checkConstraintExpressionTitle": "Выражение",
+			"tableDesigner.checkConstraintNameTitle": "Имя",
+			"tableDesigner.checkConstraintTypeName": "Проверочное ограничение",
+			"tableDesigner.checkConstraintsTabTitle": "Проверочные ограничения",
 			"tableDesigner.columnAllowNullTitle": "Разрешить значения NULL",
 			"tableDesigner.columnDefaultValueTitle": "Значение по умолчанию",
 			"tableDesigner.columnIsPrimaryKeyTitle": "Первичный ключ",
 			"tableDesigner.columnLengthTitle": "Длина",
 			"tableDesigner.columnNameTitle": "Имя",
+			"tableDesigner.columnPrecisionTitle": "Точность",
+			"tableDesigner.columnScaleTitle": "Масштаб",
 			"tableDesigner.columnTypeName": "Столбец",
 			"tableDesigner.columnTypeTitle": "Тип",
 			"tableDesigner.columnsTabTitle": "Столбцы",
 			"tableDesigner.descriptionTitle": "Описание",
+			"tableDesigner.errorInitializingTableDesigner": "Произошла ошибка при инициализации конструктора таблиц: {0}",
+			"tableDesigner.errorProcessingEdit": "Произошла ошибка при обработке изменения: {0}",
+			"tableDesigner.foreignKeyColumn": "Столбец внешних ключей",
+			"tableDesigner.foreignKeyColumns": "Сопоставление столбцов",
+			"tableDesigner.foreignKeyNameTitle": "Имя",
+			"tableDesigner.foreignKeyOnDeleteAction": "При действии удаления",
+			"tableDesigner.foreignKeyOnUpdateAction": "При действии обновления",
+			"tableDesigner.foreignKeysTabTitle": "Внешние ключи",
+			"tableDesigner.generalTab": "Общие",
 			"tableDesigner.nameTitle": "Имя таблицы",
+			"tableDesigner.primaryKeyColumn": "Столбец первичного ключа",
 			"tableDesigner.saveChangeError": "Произошла ошибка при сохранении изменений: {0}",
 			"tableDesigner.savedChangeSuccess": "Изменения успешно сохранены.",
 			"tableDesigner.savingChanges": "Сохранение изменений конструктора таблиц...",
 			"tableDesigner.schemaTitle": "Схема",
 			"tableDesigner.tableObjectType": "Таблицы"
+		},
+		"sql/base/browser/ui/loadingSpinner/loadingSpinner": {
+			"loadingCompletedMessage": "Загрузка завершена",
+			"loadingMessage": "Загрузка"
+		},
+		"sql/workbench/browser/designer/designer": {
+			"designer.generalGroupName": "Общие",
+			"designer.loadingDesigner": "Идет загрузка конструктора...",
+			"designer.loadingDesignerCompleted": "Конструктор загружен",
+			"designer.newRowText": "Добавить новый",
+			"designer.processingChanges": "Обработка изменений...",
+			"designer.processingChangesCompleted": "Изменения обработаны",
+			"designer.removeRowText": "Удалить",
+			"designer.savingChanges": "Сохранение изменений...",
+			"designer.savingChangesCompleted": "Изменения сохранены",
+			"tableDesigner.unknownComponentType": "Тип компонента {0} не поддерживается"
+		},
+		"sql/workbench/browser/designer/designerPropertiesPane": {
+			"tableDesigner.propertiesPaneTitle": "Свойства",
+			"tableDesigner.propertiesPaneTitleWithContext": "Свойства {0}"
+		},
+		"sql/workbench/browser/designer/designerScriptEditor": {
+			"designer.textEditorAriaLabel": "Текстовый редактор конструктора."
+		},
+		"sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution": {
+			"tableDesigner.configTitle": "Конструктор таблиц",
+			"tableDesigner.featureEnabledDescription": "Определяет, включена ли функция конструктора таблиц. Значение по умолчанию — false."
+		},
+		"sql/workbench/services/notebook/browser/models/cellEdit": {
+			"addCellEdit": "Добавить ячейку",
+			"convertCellTypeEdit": "Преобразование типа ячейки",
+			"deleteCellEdit": "Удалить ячейку",
+			"moveCellEdit": "Переместить ячейку",
+			"splitCellEdit": "Разбить ячейку"
 		}
 	}
 }

@@ -255,6 +255,7 @@
 			"notebook.command.boldText": "加粗 Markdown 文本",
 			"notebook.command.clearactivecellresult": "清除单元格结果",
 			"notebook.command.codeBlock": "添加代码块",
+			"notebook.command.highlightText": "突出显示 Markdown 文本",
 			"notebook.command.italicizeText": "倾斜 Markdown 文本",
 			"notebook.command.new": "新建笔记本",
 			"notebook.command.open": "打开笔记本",

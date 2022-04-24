@@ -255,6 +255,7 @@
 			"notebook.command.boldText": "Texto Negrito de Markdown",
 			"notebook.command.clearactivecellresult": "Limpar o Resultado da Célula",
 			"notebook.command.codeBlock": "Adicionar bloco de código",
+			"notebook.command.highlightText": "Destacar Texto de Markdown",
 			"notebook.command.italicizeText": "Italicize Markdown Texto",
 			"notebook.command.new": "Novo Notebook",
 			"notebook.command.open": "Abrir o Notebook",

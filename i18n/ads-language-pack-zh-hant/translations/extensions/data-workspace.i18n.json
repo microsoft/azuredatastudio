@@ -60,10 +60,8 @@
 		},
 		"package": {
 			"close-workspace-command": "關閉工作區",
-			"data-workspace-view-container-name": "專案",
-			"extension-description": "資料工作區",
-			"extension-displayName": "資料工作區",
-			"main-view-name": "專案",
+			"data-workspace-view-container-name": "資料庫專案",
+			"main-view-name": "資料庫專案",
 			"manage-project-command": "管理",
 			"new-command": "新增",
 			"open-existing-command": "開啟現有項目",

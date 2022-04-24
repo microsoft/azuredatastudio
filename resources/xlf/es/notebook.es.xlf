@@ -130,7 +130,7 @@
       </trans-unit>
       <trans-unit id="language">
         <source xml:lang="en">Language</source>
-        <target state="translated">Idioma</target>
+        <target state="translated">Lenguaje</target>
       </trans-unit>
       <trans-unit id="learnMore">
         <source xml:lang="en">Learn more.</source>
@@ -911,6 +911,10 @@
       <trans-unit id="notebook.command.codeBlock">
         <source xml:lang="en">Add Code Block</source>
         <target state="translated">Agregar bloque de código</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.highlightText">
+        <source xml:lang="en">Highlight Markdown Text</source>
+        <target state="translated">Resaltar texto de Markdown</target>
       </trans-unit>
       <trans-unit id="notebook.command.italicizeText">
         <source xml:lang="en">Italicize Markdown Text</source>

@@ -9808,7 +9808,9 @@
 			"uninstallExtensionComplete": "Vuelva a cargar Azure Data Studio para completar la desinstalación de la extensión {0}.",
 			"updateLocale": "¿Desea cambiar el idioma de la interfaz de usuario de Azure Data Studio a {0} y reiniciar?",
 			"watermark.newNotebook": "Nuevo cuaderno",
-			"watermark.newSqlFile": "Nuevo archivo SQL"
+			"watermark.newSqlFile": "Nuevo archivo SQL",
+			"workspace.trust.description": "Controla si la confianza del área de trabajo está habilitada o no en Azure Data Studio.",
+			"workspace.trust.emptyWindow.description": "Controla si la ventana vacía es de confianza de forma predeterminada en Azure Data Studio. Cuando se usa con \"#{0}#\", puede habilitar toda la funcionalidad de Azure Data Studio sin preguntar en una ventana vacía."
 		},
 		"sql/base/parts/editableDropdown/browser/dropdown": {
 			"editableDropdown.errorValidate": "Debe ser una opción de la lista",
@@ -9853,12 +9855,14 @@
 			"calloutDialogHeaderFooterBackground": "Fondo del encabezado y pie del cuadro de diálogo de llamada.",
 			"calloutDialogInteriorBorder": "Bordes interiores del cuadro de diálogo de llamada que se usan para separar elementos.",
 			"calloutDialogShadowColor": "Color de sombra del cuadro de diálogo de llamada.",
+			"designer.paneSeparator": "Color del separador de panel.",
 			"extensionPackGradientColorOne": "Color superior del degradado del paquete de extensiones",
 			"extensionPackGradientColorTwo": "Color inferior del degradado del paquete de extensiones",
 			"extensionPackHeaderShadow": "Color de fondo del texto del encabezado del paquete de extensiones",
 			"gradientBackground": "Color de fondo del degradado de la imagen del mensaje emergente",
 			"gradientOne": "Color superior del degradado de la imagen del mensaje emergente",
 			"gradientTwo": "Color inferior del degradado de la imagen del mensaje emergente",
+			"groupHeaderBackground": "Color de fondo del encabezado de grupo.",
 			"infoBox.errorBackground": "Cuadro de información: color de fondo cuando la notificación es sobre algún error.",
 			"infoBox.infomationBackground": "Cuadro de información: color de fondo cuando la notificación es informativa.",
 			"infoBox.successBackground": "Cuadro de información: color de fondo cuando la notificación es sobre algo correcto.",
@@ -10271,7 +10275,7 @@
 			"schema.connectionOptions": "Opciones para la conexión",
 			"schema.displayName": "Nombre para mostrar del proveedor",
 			"schema.iconPath": "Ruta de acceso al icono para el tipo de servidor",
-			"schema.isQueryProvider": "Whether the provider is also a query provider. The default value is true.",
+			"schema.isQueryProvider": "Si el proveedor también es un proveedor de consultas. El valor predeterminado es true.",
 			"schema.notebookKernelAlias": "Alias de kernel del cuaderno para el proveedor",
 			"schema.providerId": "Identificador común para el proveedor"
 		},
@@ -10805,26 +10809,24 @@
 			"expandCellContents": "Expandir contenido de la celda de código"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
-			"buttonBold": "Negrita",
-			"buttonCode": "Código",
-			"buttonHighlight": "Resaltar",
-			"buttonImage": "Imagen",
-			"buttonItalic": "Cursiva",
-			"buttonLink": "Vínculo",
-			"buttonList": "Lista",
-			"buttonOrderedList": "Lista ordenada",
+			"bold": "Negrita",
 			"buttonPreview": "Alternancia de la vista previa de Markdown: desactivada",
-			"buttonUnderline": "Subrayado",
-			"callout.insertImageHeading": "Inserción de una imagen",
-			"callout.insertLinkHeading": "Inserción de un vínculo",
 			"dropdownHeading": "Encabezado",
+			"highlight": "Resaltar",
+			"insertCode": "Insertar código",
+			"insertImage": "Inserción de una imagen",
+			"insertLink": "Inserción de un vínculo",
+			"insertList": "Insertar lista",
+			"insertOrderedList": "Insertar lista ordenada",
+			"italic": "Cursiva",
 			"markdownViewButton": "Vista de Markdown",
 			"optionHeading1": "Encabezado 1",
 			"optionHeading2": "Encabezado 2",
 			"optionHeading3": "Encabezado 3",
 			"optionParagraph": "Párrafo",
 			"richTextViewButton": "Vista de texto enriquecido",
-			"splitViewButton": "Vista En dos paneles"
+			"splitViewButton": "Vista En dos paneles",
+			"underline": "Subrayado"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
 			"componentRenderError": "Error al representar el componente: {0}",
@@ -11072,7 +11074,8 @@
 			"data": "Datos",
 			"notebook": "Notebook",
 			"profiler": "Profiler",
-			"queryEditor": "Editor de Power Query"
+			"queryEditor": "Editor de Power Query",
+			"tableDesigner": "Diseñador de tablas"
 		},
 		"sql/workbench/contrib/profiler/browser/profiler.contribution": {
 			"profiler.settings.Filters": "Filtros de Profiler",
@@ -11984,15 +11987,6 @@
 			"queryManagement.noQueryRunnerForUri": "No se encontró el ejecutor de consultas para el URI: {0}",
 			"queryManagement.uriAlreadyHasQueryRunner": "URI: inesperadamente {0} ya tiene un ejecutor de consultas."
 		},
-		"sql/base/browser/ui/designer/designer": {
-			"designer.newRowText": "Agregar nuevo",
-			"designer.removeRowText": "Quitar",
-			"tableDesigner.unknownComponentType": "El tipo de componente: {0} no es compatible"
-		},
-		"sql/base/browser/ui/designer/designerPropertiesPane": {
-			"tableDesigner.propertiesPaneTitle": "Propiedades",
-			"tableDesigner.propertiesPaneTitleWithContext": "Propiedades: {0}{1}"
-		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
 			"tableDesigner.newTable": "Nueva tabla"
 		},
@@ -12000,22 +11994,91 @@
 			"tableDesigner.saveTableChanges": "Guardar cambios"
 		},
 		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
-			"tableDesigner.advancedTab": "Avanzado",
+			"designer.checkConstraint.description.expression": "Expresión que define la restricción CHECK.",
+			"designer.checkConstraint.description.name": "Nombre de la restricción CHECK.",
+			"designer.column.description.allowNulls": "Especifica si la columna puede tener un valor NULL.",
+			"designer.column.description.dataType": "Muestra el nombre del tipo de datos de la columna",
+			"designer.column.description.defaultValueBinding": "Valor predeterminado global y predefinido para la columna o enlace.",
+			"designer.column.description.length": "Longitud máxima (en caracteres) que se puede almacenar en este objeto de base de datos.",
+			"designer.column.description.name": "El nombre del objeto de la columna.",
+			"designer.column.description.precision": "Para datos numéricos, número máximo de dígitos decimales que se pueden almacenar en este objeto de base de datos.",
+			"designer.column.description.primaryKey": "Especifica si la columna se incluye en la clave principal de la tabla.",
+			"designer.column.description.scale": "Para los datos numéricos, el número máximo de dígitos decimales que se pueden almacenar en este objeto de base de datos a la derecha del punto decimal.",
+			"designer.foreignkey.description.columnMapping": "Asignación entre las columnas de la clave externa y las de la clave principal.",
+			"designer.foreignkey.description.name": "Nombre de la clave externa.",
+			"designer.foreignkey.description.onDeleteAction": "Comportamiento cuando un usuario intenta eliminar una fila con datos que intervienen en una relación de clave externa.",
+			"designer.foreignkey.description.onUpdateAction": "Comportamiento cuando un usuario intenta actualizar una fila con datos que intervienen en una relación de clave externa.",
+			"designer.foreignkey.description.primaryKeyTable": "Tabla que contiene la columna de clave principal o única.",
+			"designer.table.description.description": "Descripción de la tabla.",
+			"designer.table.description.name": "El nombre del objeto de la tabla.",
+			"designer.table.description.schema": "Esquema que contiene la tabla.",
+			"tableDesigner.ForeignKeyTypeName": "Clave externa",
+			"tableDesigner.PrimaryKeyTableName": "Tabla de clave principal",
+			"tableDesigner.checkConstraintExpressionTitle": "Expresión",
+			"tableDesigner.checkConstraintNameTitle": "Nombre",
+			"tableDesigner.checkConstraintTypeName": "Restricción CHECK",
+			"tableDesigner.checkConstraintsTabTitle": "Restricciones CHECK",
 			"tableDesigner.columnAllowNullTitle": "Permitir NULL",
 			"tableDesigner.columnDefaultValueTitle": "Valor predeterminado",
 			"tableDesigner.columnIsPrimaryKeyTitle": "Clave principal",
 			"tableDesigner.columnLengthTitle": "Longitud",
 			"tableDesigner.columnNameTitle": "Nombre",
+			"tableDesigner.columnPrecisionTitle": "Precisión",
+			"tableDesigner.columnScaleTitle": "Escala",
 			"tableDesigner.columnTypeName": "Columna",
 			"tableDesigner.columnTypeTitle": "Tipo",
 			"tableDesigner.columnsTabTitle": "Columnas",
 			"tableDesigner.descriptionTitle": "Descripción",
+			"tableDesigner.errorInitializingTableDesigner": "Se produjo un error al inicializar el diseñador de tablas: {0}",
+			"tableDesigner.errorProcessingEdit": "Se produjo un error al procesar el cambio: {0}",
+			"tableDesigner.foreignKeyColumn": "Columna de clave externa",
+			"tableDesigner.foreignKeyColumns": "Asignación de columnas",
+			"tableDesigner.foreignKeyNameTitle": "Nombre",
+			"tableDesigner.foreignKeyOnDeleteAction": "Al eliminar la acción",
+			"tableDesigner.foreignKeyOnUpdateAction": "Al actualizar la acción",
+			"tableDesigner.foreignKeysTabTitle": "Claves externas",
+			"tableDesigner.generalTab": "General",
 			"tableDesigner.nameTitle": "Nombre de la tabla",
+			"tableDesigner.primaryKeyColumn": "Columna de clave principal",
 			"tableDesigner.saveChangeError": "Error al guardar los cambios: {0}",
 			"tableDesigner.savedChangeSuccess": "Los cambios se han guardado correctamente.",
 			"tableDesigner.savingChanges": "Guardando cambios del diseñador de tablas...",
 			"tableDesigner.schemaTitle": "Esquema",
 			"tableDesigner.tableObjectType": "Tabla"
+		},
+		"sql/base/browser/ui/loadingSpinner/loadingSpinner": {
+			"loadingCompletedMessage": "Carga completada",
+			"loadingMessage": "Cargando"
+		},
+		"sql/workbench/browser/designer/designer": {
+			"designer.generalGroupName": "General",
+			"designer.loadingDesigner": "Cargando el diseñador...",
+			"designer.loadingDesignerCompleted": "El diseñador está cargado",
+			"designer.newRowText": "Agregar nuevo",
+			"designer.processingChanges": "Procesando cambios...",
+			"designer.processingChangesCompleted": "Se han procesado los cambios",
+			"designer.removeRowText": "Quitar",
+			"designer.savingChanges": "Guardando cambios...",
+			"designer.savingChangesCompleted": "Se han guardado los cambios",
+			"tableDesigner.unknownComponentType": "El tipo de componente: {0} no es compatible"
+		},
+		"sql/workbench/browser/designer/designerPropertiesPane": {
+			"tableDesigner.propertiesPaneTitle": "Propiedades",
+			"tableDesigner.propertiesPaneTitleWithContext": "Propiedades de {0}"
+		},
+		"sql/workbench/browser/designer/designerScriptEditor": {
+			"designer.textEditorAriaLabel": "Editor de texto del diseñador."
+		},
+		"sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution": {
+			"tableDesigner.configTitle": "Diseñador de tablas",
+			"tableDesigner.featureEnabledDescription": "Controla si la característica del diseñador de tablas está habilitada. El valor predeterminado es false."
+		},
+		"sql/workbench/services/notebook/browser/models/cellEdit": {
+			"addCellEdit": "Agregar celda",
+			"convertCellTypeEdit": "Convertir tipo de celda",
+			"deleteCellEdit": "Eliminar celda",
+			"moveCellEdit": "Mover celda",
+			"splitCellEdit": "Dividir celda"
 		}
 	}
 }

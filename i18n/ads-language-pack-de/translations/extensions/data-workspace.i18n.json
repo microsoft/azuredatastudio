@@ -60,10 +60,8 @@
 		},
 		"package": {
 			"close-workspace-command": "Arbeitsbereich schließen",
-			"data-workspace-view-container-name": "Projekte",
-			"extension-description": "Datenarbeitsbereich",
-			"extension-displayName": "Datenarbeitsbereich",
-			"main-view-name": "Projekte",
+			"data-workspace-view-container-name": "Datenbankprojekte",
+			"main-view-name": "Datenbankprojekte",
 			"manage-project-command": "Verwalten",
 			"new-command": "Neu",
 			"open-existing-command": "Vorhandene öffnen",

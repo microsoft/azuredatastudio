@@ -912,6 +912,10 @@
         <source xml:lang="en">Add Code Block</source>
         <target state="translated">Ajouter un bloc de code</target>
       </trans-unit>
+      <trans-unit id="notebook.command.highlightText">
+        <source xml:lang="en">Highlight Markdown Text</source>
+        <target state="translated">Mettre en surbrillance le texte Markdown</target>
+      </trans-unit>
       <trans-unit id="notebook.command.italicizeText">
         <source xml:lang="en">Italicize Markdown Text</source>
         <target state="translated">Mettre en italique le texte de la démarque</target>

@@ -203,20 +203,12 @@
         <target state="translated">Arbeitsbereich schließen</target>
       </trans-unit>
       <trans-unit id="data-workspace-view-container-name">
-        <source xml:lang="en">Projects</source>
-        <target state="translated">Projekte</target>
-      </trans-unit>
-      <trans-unit id="extension-description">
-        <source xml:lang="en">Data workspace</source>
-        <target state="translated">Datenarbeitsbereich</target>
-      </trans-unit>
-      <trans-unit id="extension-displayName">
-        <source xml:lang="en">Data workspace</source>
-        <target state="translated">Datenarbeitsbereich</target>
+        <source xml:lang="en">Database Projects</source>
+        <target state="translated">Datenbankprojekte</target>
       </trans-unit>
       <trans-unit id="main-view-name">
-        <source xml:lang="en">Projects</source>
-        <target state="translated">Projekte</target>
+        <source xml:lang="en">Database Projects</source>
+        <target state="translated">Datenbankprojekte</target>
       </trans-unit>
       <trans-unit id="manage-project-command">
         <source xml:lang="en">Manage</source>

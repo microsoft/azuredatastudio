@@ -203,20 +203,12 @@
         <target state="translated">Закрыть рабочую область</target>
       </trans-unit>
       <trans-unit id="data-workspace-view-container-name">
-        <source xml:lang="en">Projects</source>
-        <target state="translated">Проекты</target>
-      </trans-unit>
-      <trans-unit id="extension-description">
-        <source xml:lang="en">Data workspace</source>
-        <target state="translated">Рабочая область данных</target>
-      </trans-unit>
-      <trans-unit id="extension-displayName">
-        <source xml:lang="en">Data workspace</source>
-        <target state="translated">Рабочая область данных</target>
+        <source xml:lang="en">Database Projects</source>
+        <target state="translated">Проекты баз данных</target>
       </trans-unit>
       <trans-unit id="main-view-name">
-        <source xml:lang="en">Projects</source>
-        <target state="translated">Проекты</target>
+        <source xml:lang="en">Database Projects</source>
+        <target state="translated">Проекты баз данных</target>
       </trans-unit>
       <trans-unit id="manage-project-command">
         <source xml:lang="en">Manage</source>

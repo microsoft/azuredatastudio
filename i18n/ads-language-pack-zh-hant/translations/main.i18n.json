@@ -9808,7 +9808,9 @@
 			"uninstallExtensionComplete": "請重新載入 Azure Data Studio 以完成延伸模組 {0} 的解除安裝。",
 			"updateLocale": "您想要變更 Azure Data Studio 的 UI 語言為 {0} 並重新啟動嗎?",
 			"watermark.newNotebook": "新增筆記本",
-			"watermark.newSqlFile": "新增 SQL 檔案"
+			"watermark.newSqlFile": "新增 SQL 檔案",
+			"workspace.trust.description": "控制是否在 Azure Data Studio 內啟用工作區信任。",
+			"workspace.trust.emptyWindow.description": "控制在 Azure Data Studio 內是否預設信任空白視窗。與 '#{0}#' 一起使用時，您可以啟用 Azure Data Studio 的完整功能，而不需要在空白視窗中提示。"
 		},
 		"sql/base/parts/editableDropdown/browser/dropdown": {
 			"editableDropdown.errorValidate": "必須是清單中的選項",
@@ -9853,12 +9855,14 @@
 			"calloutDialogHeaderFooterBackground": "圖說文字對話方塊標題與頁尾背景。",
 			"calloutDialogInteriorBorder": "用於分隔元素的圖說文字對話方塊內框線。",
 			"calloutDialogShadowColor": "圖說文字對話方塊陰影色彩。",
+			"designer.paneSeparator": "窗格分隔符號色彩。",
 			"extensionPackGradientColorOne": "延伸模組套件漸層的頂部色彩",
 			"extensionPackGradientColorTwo": "延伸模組套件漸層的底部色彩",
 			"extensionPackHeaderShadow": "延伸模組套件標題文字陰影色彩",
 			"gradientBackground": "橫幅影像漸層的背景色彩",
 			"gradientOne": "橫幅影像漸層的頂部色彩",
 			"gradientTwo": "橫幅影像漸層的底部色彩",
+			"groupHeaderBackground": "群組標頭的背景色彩。",
 			"infoBox.errorBackground": "資訊框: 通知類型為錯誤時的背景色彩。",
 			"infoBox.infomationBackground": "資訊框: 通知類型為資訊時的背景色彩。",
 			"infoBox.successBackground": "資訊框: 通知類型為成功時的背景色彩。",
@@ -10805,26 +10809,24 @@
 			"expandCellContents": "展開程式碼資料格內容"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
-			"buttonBold": "粗體",
-			"buttonCode": "程式碼",
-			"buttonHighlight": "醒目提示",
-			"buttonImage": "影像",
-			"buttonItalic": "斜體",
-			"buttonLink": "連結",
-			"buttonList": "清單",
-			"buttonOrderedList": "排序清單",
+			"bold": "粗體",
 			"buttonPreview": "Markdown 預覽切換 - 關閉",
-			"buttonUnderline": "底線",
-			"callout.insertImageHeading": "插入影像",
-			"callout.insertLinkHeading": "插入連結",
 			"dropdownHeading": "標題",
+			"highlight": "醒目提示",
+			"insertCode": "插入程式碼",
+			"insertImage": "插入影像",
+			"insertLink": "插入連結",
+			"insertList": "插入清單",
+			"insertOrderedList": "插入排序清單",
+			"italic": "斜體",
 			"markdownViewButton": "Markdown 檢視",
 			"optionHeading1": "標題 1",
 			"optionHeading2": "標題 2",
 			"optionHeading3": "標題 3",
 			"optionParagraph": "段落",
 			"richTextViewButton": "RTF 檢視",
-			"splitViewButton": "分割檢視"
+			"splitViewButton": "分割檢視",
+			"underline": "底線"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
 			"componentRenderError": "轉譯元件時發生錯誤: {0}",
@@ -11072,7 +11074,8 @@
 			"data": "資料",
 			"notebook": "Notebook",
 			"profiler": "分析工具",
-			"queryEditor": "查詢編輯器"
+			"queryEditor": "查詢編輯器",
+			"tableDesigner": "資料表設計工具"
 		},
 		"sql/workbench/contrib/profiler/browser/profiler.contribution": {
 			"profiler.settings.Filters": "分析工具篩選條件",
@@ -11984,15 +11987,6 @@
 			"queryManagement.noQueryRunnerForUri": "找不到 URI: {0} 的查詢執行器",
 			"queryManagement.uriAlreadyHasQueryRunner": "URI: {0} 意外地已有查詢執行器。"
 		},
-		"sql/base/browser/ui/designer/designer": {
-			"designer.newRowText": "新增",
-			"designer.removeRowText": "移除",
-			"tableDesigner.unknownComponentType": "不支援元件類型 {0}"
-		},
-		"sql/base/browser/ui/designer/designerPropertiesPane": {
-			"tableDesigner.propertiesPaneTitle": "屬性",
-			"tableDesigner.propertiesPaneTitleWithContext": "屬性 - {0} {1}"
-		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
 			"tableDesigner.newTable": "新增資料表"
 		},
@@ -12000,22 +11994,91 @@
 			"tableDesigner.saveTableChanges": "儲存變更"
 		},
 		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
-			"tableDesigner.advancedTab": "進階",
+			"designer.checkConstraint.description.expression": "定義檢查條件約束的運算式。",
+			"designer.checkConstraint.description.name": "檢查條件約束的名稱。",
+			"designer.column.description.allowNulls": "指定資料行能否含有 NULL 值。",
+			"designer.column.description.dataType": "顯示資料行的資料類型名稱",
+			"designer.column.description.defaultValueBinding": "資料行或繫結的預先定義全域預設值。",
+			"designer.column.description.length": "可儲存在這個資料庫物件中的長度上限 (位元數)。",
+			"designer.column.description.name": "資料行物件的名稱。",
+			"designer.column.description.precision": "針對數值資料，可儲存在此資料庫物件中的最大十進位數。",
+			"designer.column.description.primaryKey": "指定資料行是否包含在資料表的主索引鍵中。",
+			"designer.column.description.scale": "針對數值資料，可儲存在此資料庫物件中小數點右邊的最大十進位數字。",
+			"designer.foreignkey.description.columnMapping": "外部索引鍵資料行與主索引鍵資料行之間的對應。",
+			"designer.foreignkey.description.name": "外部索引鍵的名稱。",
+			"designer.foreignkey.description.onDeleteAction": "使用者嘗試刪除資料列時的行為，此資料列內含外部索引鍵關聯性中涉及的資料。",
+			"designer.foreignkey.description.onUpdateAction": "使用者嘗試更新資料列時的行為，此資料列內含外部索引鍵關聯性中涉及的資料。",
+			"designer.foreignkey.description.primaryKeyTable": "包含主索引鍵或唯一索引鍵資料行的資料表。",
+			"designer.table.description.description": "資料表的描述。",
+			"designer.table.description.name": "資料表物件的名稱。",
+			"designer.table.description.schema": "包含資料表的結構描述。",
+			"tableDesigner.ForeignKeyTypeName": "外部索引鍵",
+			"tableDesigner.PrimaryKeyTableName": "主索引鍵資料表",
+			"tableDesigner.checkConstraintExpressionTitle": "運算式",
+			"tableDesigner.checkConstraintNameTitle": "名稱",
+			"tableDesigner.checkConstraintTypeName": "檢查條件約束",
+			"tableDesigner.checkConstraintsTabTitle": "檢查條件約束",
 			"tableDesigner.columnAllowNullTitle": "允許 Null 值",
 			"tableDesigner.columnDefaultValueTitle": "預設值",
 			"tableDesigner.columnIsPrimaryKeyTitle": "主索引鍵",
 			"tableDesigner.columnLengthTitle": "長度",
 			"tableDesigner.columnNameTitle": "名稱",
+			"tableDesigner.columnPrecisionTitle": "有效位數",
+			"tableDesigner.columnScaleTitle": "小數位數",
 			"tableDesigner.columnTypeName": "資料行",
 			"tableDesigner.columnTypeTitle": "類型",
 			"tableDesigner.columnsTabTitle": "資料行",
 			"tableDesigner.descriptionTitle": "描述",
+			"tableDesigner.errorInitializingTableDesigner": "初始化資料表設計工具時發生錯誤: {0}",
+			"tableDesigner.errorProcessingEdit": "處理變更時發生錯誤: {0}",
+			"tableDesigner.foreignKeyColumn": "外部索引鍵資料行",
+			"tableDesigner.foreignKeyColumns": "資料行對應",
+			"tableDesigner.foreignKeyNameTitle": "名稱",
+			"tableDesigner.foreignKeyOnDeleteAction": "刪除動作時",
+			"tableDesigner.foreignKeyOnUpdateAction": "更新動作時",
+			"tableDesigner.foreignKeysTabTitle": "外部索引鍵",
+			"tableDesigner.generalTab": "一般",
 			"tableDesigner.nameTitle": "資料表名稱",
+			"tableDesigner.primaryKeyColumn": "主索引鍵資料行",
 			"tableDesigner.saveChangeError": "儲存變更時發生錯誤: {0}",
 			"tableDesigner.savedChangeSuccess": "已成功儲存變更。",
 			"tableDesigner.savingChanges": "正在儲存資料表設計工具變更...",
 			"tableDesigner.schemaTitle": "結構描述",
 			"tableDesigner.tableObjectType": "資料表"
+		},
+		"sql/base/browser/ui/loadingSpinner/loadingSpinner": {
+			"loadingCompletedMessage": "已完成載入",
+			"loadingMessage": "正在載入"
+		},
+		"sql/workbench/browser/designer/designer": {
+			"designer.generalGroupName": "一般",
+			"designer.loadingDesigner": "正在載入設計工具...",
+			"designer.loadingDesignerCompleted": "設計工具已載入",
+			"designer.newRowText": "新增",
+			"designer.processingChanges": "正在處理變更...",
+			"designer.processingChangesCompleted": "已處理變更",
+			"designer.removeRowText": "移除",
+			"designer.savingChanges": "正在儲存變更...",
+			"designer.savingChangesCompleted": "已儲存變更",
+			"tableDesigner.unknownComponentType": "不支援元件類型 {0}"
+		},
+		"sql/workbench/browser/designer/designerPropertiesPane": {
+			"tableDesigner.propertiesPaneTitle": "屬性",
+			"tableDesigner.propertiesPaneTitleWithContext": "{0} 屬性"
+		},
+		"sql/workbench/browser/designer/designerScriptEditor": {
+			"designer.textEditorAriaLabel": "設計工具文字編輯器。"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution": {
+			"tableDesigner.configTitle": "資料表設計工具",
+			"tableDesigner.featureEnabledDescription": "控制是否啟用資料表設計工具功能。預設值為 False。"
+		},
+		"sql/workbench/services/notebook/browser/models/cellEdit": {
+			"addCellEdit": "新增儲存格",
+			"convertCellTypeEdit": "轉換儲存格類型",
+			"deleteCellEdit": "刪除儲存格",
+			"moveCellEdit": "上移儲存格",
+			"splitCellEdit": "分割儲存格"
 		}
 	}
 }

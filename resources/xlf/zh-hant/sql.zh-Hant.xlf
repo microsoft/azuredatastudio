@@ -1,32 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="src/sql/base/browser/ui/designer/designer" source-language="en" datatype="plaintext" target-language="zh-Hant">
+  <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
-      <trans-unit id="designer.newRowText">
-        <source xml:lang="en">Add New</source>
-        <target state="translated">新增</target>
+      <trans-unit id="loadingCompletedMessage">
+        <source xml:lang="en">Loading completed</source>
+        <target state="translated">已完成載入</target>
       </trans-unit>
-      <trans-unit id="designer.removeRowText">
-        <source xml:lang="en">Remove</source>
-        <target state="translated">移除</target>
-      </trans-unit>
-      <trans-unit id="tableDesigner.unknownComponentType">
-        <source xml:lang="en">The component type: {0} is not supported</source>
-        <target state="translated">不支援元件類型 {0}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/base/browser/ui/designer/designerPropertiesPane" source-language="en" datatype="plaintext" target-language="zh-Hant">
-    <body>
-      <trans-unit id="tableDesigner.propertiesPaneTitle">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">屬性</target>
-      </trans-unit>
-      <trans-unit id="tableDesigner.propertiesPaneTitleWithContext">
-        <source xml:lang="en">Properties - {0} {1}</source>
-        <note>{0} is the place holder for object type
-{1} is the place holder for object name</note>
-        <target state="translated">屬性 - {0} {1}</target>
+      <trans-unit id="loadingMessage">
+        <source xml:lang="en">Loading</source>
+        <target state="translated">正在載入</target>
       </trans-unit>
     </body>
   </file>
@@ -333,6 +315,14 @@
         <source xml:lang="en">New SQL File</source>
         <target state="translated">新增 SQL 檔案</target>
       </trans-unit>
+      <trans-unit id="workspace.trust.description">
+        <source xml:lang="en">Controls whether or not workspace trust is enabled within Azure Data Studio.</source>
+        <target state="translated">控制是否在 Azure Data Studio 內啟用工作區信任。</target>
+      </trans-unit>
+      <trans-unit id="workspace.trust.emptyWindow.description">
+        <source xml:lang="en">Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.</source>
+        <target state="translated">控制在 Azure Data Studio 內是否預設信任空白視窗。與 '#{0}#' 一起使用時，您可以啟用 Azure Data Studio 的完整功能，而不需要在空白視窗中提示。</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/base/parts/editableDropdown/browser/dropdown" source-language="en" datatype="plaintext" target-language="zh-Hant">
@@ -489,6 +479,10 @@
         <source xml:lang="en">Callout dialog box shadow color.</source>
         <target state="translated">圖說文字對話方塊陰影色彩。</target>
       </trans-unit>
+      <trans-unit id="designer.paneSeparator">
+        <source xml:lang="en">The pane separator color.</source>
+        <target state="translated">窗格分隔符號色彩。</target>
+      </trans-unit>
       <trans-unit id="extensionPackGradientColorOne">
         <source xml:lang="en">The top color for the extension pack gradient</source>
         <target state="translated">延伸模組套件漸層的頂部色彩</target>
@@ -512,6 +506,10 @@
       <trans-unit id="gradientTwo">
         <source xml:lang="en">The bottom color for the banner image gradient</source>
         <target state="translated">橫幅影像漸層的底部色彩</target>
+      </trans-unit>
+      <trans-unit id="groupHeaderBackground">
+        <source xml:lang="en">Background color of the group header.</source>
+        <target state="translated">群組標頭的背景色彩。</target>
       </trans-unit>
       <trans-unit id="infoBox.errorBackground">
         <source xml:lang="en">InfoBox: The background color when the notification type is error.</source>
@@ -868,6 +866,71 @@
       <trans-unit id="showConnectDialogOnStartup">
         <source xml:lang="en">Show connect dialog on startup</source>
         <target state="translated">啟動時顯示連線對話方塊</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/browser/designer/designer" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="designer.generalGroupName">
+        <source xml:lang="en">General</source>
+        <target state="translated">一般</target>
+      </trans-unit>
+      <trans-unit id="designer.loadingDesigner">
+        <source xml:lang="en">Loading designer...</source>
+        <target state="translated">正在載入設計工具...</target>
+      </trans-unit>
+      <trans-unit id="designer.loadingDesignerCompleted">
+        <source xml:lang="en">Designer is loaded</source>
+        <target state="translated">設計工具已載入</target>
+      </trans-unit>
+      <trans-unit id="designer.newRowText">
+        <source xml:lang="en">Add New</source>
+        <target state="translated">新增</target>
+      </trans-unit>
+      <trans-unit id="designer.processingChanges">
+        <source xml:lang="en">Processing changes...</source>
+        <target state="translated">正在處理變更...</target>
+      </trans-unit>
+      <trans-unit id="designer.processingChangesCompleted">
+        <source xml:lang="en">Changes have been processed</source>
+        <target state="translated">已處理變更</target>
+      </trans-unit>
+      <trans-unit id="designer.removeRowText">
+        <source xml:lang="en">Remove</source>
+        <target state="translated">移除</target>
+      </trans-unit>
+      <trans-unit id="designer.savingChanges">
+        <source xml:lang="en">Saving changes...</source>
+        <target state="translated">正在儲存變更...</target>
+      </trans-unit>
+      <trans-unit id="designer.savingChangesCompleted">
+        <source xml:lang="en">Changes have been saved</source>
+        <target state="translated">已儲存變更</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.unknownComponentType">
+        <source xml:lang="en">The component type: {0} is not supported</source>
+        <target state="translated">不支援元件類型 {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/browser/designer/designerPropertiesPane" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="tableDesigner.propertiesPaneTitle">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">屬性</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.propertiesPaneTitleWithContext">
+        <source xml:lang="en">{0} Properties</source>
+        <note>{0} is the place holder for object type</note>
+        <target state="translated">{0} 屬性</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/browser/designer/designerScriptEditor" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="designer.textEditorAriaLabel">
+        <source xml:lang="en">Designer text editor.</source>
+        <target state="translated">設計工具文字編輯器。</target>
       </trans-unit>
     </body>
   </file>
@@ -3835,57 +3898,45 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
-      <trans-unit id="buttonBold">
+      <trans-unit id="bold">
         <source xml:lang="en">Bold</source>
         <target state="translated">粗體</target>
-      </trans-unit>
-      <trans-unit id="buttonCode">
-        <source xml:lang="en">Code</source>
-        <target state="translated">程式碼</target>
-      </trans-unit>
-      <trans-unit id="buttonHighlight">
-        <source xml:lang="en">Highlight</source>
-        <target state="translated">醒目提示</target>
-      </trans-unit>
-      <trans-unit id="buttonImage">
-        <source xml:lang="en">Image</source>
-        <target state="translated">影像</target>
-      </trans-unit>
-      <trans-unit id="buttonItalic">
-        <source xml:lang="en">Italic</source>
-        <target state="translated">斜體</target>
-      </trans-unit>
-      <trans-unit id="buttonLink">
-        <source xml:lang="en">Link</source>
-        <target state="translated">連結</target>
-      </trans-unit>
-      <trans-unit id="buttonList">
-        <source xml:lang="en">List</source>
-        <target state="translated">清單</target>
-      </trans-unit>
-      <trans-unit id="buttonOrderedList">
-        <source xml:lang="en">Ordered list</source>
-        <target state="translated">排序清單</target>
       </trans-unit>
       <trans-unit id="buttonPreview">
         <source xml:lang="en">Markdown preview toggle - off</source>
         <target state="translated">Markdown 預覽切換 - 關閉</target>
       </trans-unit>
-      <trans-unit id="buttonUnderline">
-        <source xml:lang="en">Underline</source>
-        <target state="translated">底線</target>
-      </trans-unit>
-      <trans-unit id="callout.insertImageHeading">
-        <source xml:lang="en">Insert image</source>
-        <target state="translated">插入影像</target>
-      </trans-unit>
-      <trans-unit id="callout.insertLinkHeading">
-        <source xml:lang="en">Insert link</source>
-        <target state="translated">插入連結</target>
-      </trans-unit>
       <trans-unit id="dropdownHeading">
         <source xml:lang="en">Heading</source>
         <target state="translated">標題</target>
+      </trans-unit>
+      <trans-unit id="highlight">
+        <source xml:lang="en">Highlight</source>
+        <target state="translated">醒目提示</target>
+      </trans-unit>
+      <trans-unit id="insertCode">
+        <source xml:lang="en">Insert code</source>
+        <target state="translated">插入程式碼</target>
+      </trans-unit>
+      <trans-unit id="insertImage">
+        <source xml:lang="en">Insert image</source>
+        <target state="translated">插入影像</target>
+      </trans-unit>
+      <trans-unit id="insertLink">
+        <source xml:lang="en">Insert link</source>
+        <target state="translated">插入連結</target>
+      </trans-unit>
+      <trans-unit id="insertList">
+        <source xml:lang="en">Insert list</source>
+        <target state="translated">插入清單</target>
+      </trans-unit>
+      <trans-unit id="insertOrderedList">
+        <source xml:lang="en">Insert ordered list</source>
+        <target state="translated">插入排序清單</target>
+      </trans-unit>
+      <trans-unit id="italic">
+        <source xml:lang="en">Italic</source>
+        <target state="translated">斜體</target>
       </trans-unit>
       <trans-unit id="markdownViewButton">
         <source xml:lang="en">Markdown View</source>
@@ -3914,6 +3965,10 @@ Error: {1}</source>
       <trans-unit id="splitViewButton">
         <source xml:lang="en">Split View</source>
         <target state="translated">分割檢視</target>
+      </trans-unit>
+      <trans-unit id="underline">
+        <source xml:lang="en">Underline</source>
+        <target state="translated">底線</target>
       </trans-unit>
     </body>
   </file>
@@ -4810,6 +4865,10 @@ Error: {1}</source>
       <trans-unit id="queryEditor">
         <source xml:lang="en">Query Editor</source>
         <target state="translated">查詢編輯器</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner">
+        <source xml:lang="en">Table Designer</source>
+        <target state="translated">資料表設計工具</target>
       </trans-unit>
     </body>
   </file>
@@ -5804,6 +5863,18 @@ Error: {1}</source>
       <trans-unit id="tableDesigner.saveTableChanges">
         <source xml:lang="en">Save Changes</source>
         <target state="translated">儲存變更</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="tableDesigner.configTitle">
+        <source xml:lang="en">Table Designer</source>
+        <target state="translated">資料表設計工具</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.featureEnabledDescription">
+        <source xml:lang="en">Controls whether the table designer feature is enabled. Default value is false.</source>
+        <target state="translated">控制是否啟用資料表設計工具功能。預設值為 False。</target>
       </trans-unit>
     </body>
   </file>
@@ -7216,6 +7287,30 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/notebook/browser/models/cellEdit" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="addCellEdit">
+        <source xml:lang="en">Add Cell</source>
+        <target state="translated">新增儲存格</target>
+      </trans-unit>
+      <trans-unit id="convertCellTypeEdit">
+        <source xml:lang="en">Convert Cell Type</source>
+        <target state="translated">轉換儲存格類型</target>
+      </trans-unit>
+      <trans-unit id="deleteCellEdit">
+        <source xml:lang="en">Delete Cell</source>
+        <target state="translated">刪除儲存格</target>
+      </trans-unit>
+      <trans-unit id="moveCellEdit">
+        <source xml:lang="en">Move Cell</source>
+        <target state="translated">上移儲存格</target>
+      </trans-unit>
+      <trans-unit id="splitCellEdit">
+        <source xml:lang="en">Split Cell</source>
+        <target state="translated">分割儲存格</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/notebook/browser/models/clientSession" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="ServerNotStarted">
@@ -7976,9 +8071,101 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
-      <trans-unit id="tableDesigner.advancedTab">
-        <source xml:lang="en">Advanced</source>
-        <target state="translated">進階</target>
+      <trans-unit id="designer.checkConstraint.description.expression">
+        <source xml:lang="en">The expression defining the check constraint.</source>
+        <target state="translated">定義檢查條件約束的運算式。</target>
+      </trans-unit>
+      <trans-unit id="designer.checkConstraint.description.name">
+        <source xml:lang="en">The name of the check constraint.</source>
+        <target state="translated">檢查條件約束的名稱。</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.allowNulls">
+        <source xml:lang="en">Specifies whether the column may have a NULL value.</source>
+        <target state="translated">指定資料行能否含有 NULL 值。</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.dataType">
+        <source xml:lang="en">Displays the data type name for the column</source>
+        <target state="translated">顯示資料行的資料類型名稱</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.defaultValueBinding">
+        <source xml:lang="en">A predefined global default value for the column or binding.</source>
+        <target state="translated">資料行或繫結的預先定義全域預設值。</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.length">
+        <source xml:lang="en">The maximum length (in characters) that can be stored in this database object.</source>
+        <target state="translated">可儲存在這個資料庫物件中的長度上限 (位元數)。</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.name">
+        <source xml:lang="en">The name of the column object.</source>
+        <target state="translated">資料行物件的名稱。</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.precision">
+        <source xml:lang="en">For numeric data, the maximum number of decimal digits that can be stored in this database object.</source>
+        <target state="translated">針對數值資料，可儲存在此資料庫物件中的最大十進位數。</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.primaryKey">
+        <source xml:lang="en">Specifies whether the column is included in the primary key for the table.</source>
+        <target state="translated">指定資料行是否包含在資料表的主索引鍵中。</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.scale">
+        <source xml:lang="en">For numeric data, the maximum number of decimal digits that can be stored in this database object to the right of decimal point.</source>
+        <target state="translated">針對數值資料，可儲存在此資料庫物件中小數點右邊的最大十進位數字。</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.columnMapping">
+        <source xml:lang="en">The mapping between foreign key columns and primary key columns.</source>
+        <target state="translated">外部索引鍵資料行與主索引鍵資料行之間的對應。</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.name">
+        <source xml:lang="en">The name of the foreign key.</source>
+        <target state="translated">外部索引鍵的名稱。</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.onDeleteAction">
+        <source xml:lang="en">The behavior when a user tries to delete a row with data that is involved in a foreign key relationship.</source>
+        <target state="translated">使用者嘗試刪除資料列時的行為，此資料列內含外部索引鍵關聯性中涉及的資料。</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.onUpdateAction">
+        <source xml:lang="en">The behavior when a user tries to update a row with data that is involved in a foreign key relationship.</source>
+        <target state="translated">使用者嘗試更新資料列時的行為，此資料列內含外部索引鍵關聯性中涉及的資料。</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.primaryKeyTable">
+        <source xml:lang="en">The table which contains the primary or unique key column.</source>
+        <target state="translated">包含主索引鍵或唯一索引鍵資料行的資料表。</target>
+      </trans-unit>
+      <trans-unit id="designer.table.description.description">
+        <source xml:lang="en">Description for the table.</source>
+        <target state="translated">資料表的描述。</target>
+      </trans-unit>
+      <trans-unit id="designer.table.description.name">
+        <source xml:lang="en">The name of the table object.</source>
+        <target state="translated">資料表物件的名稱。</target>
+      </trans-unit>
+      <trans-unit id="designer.table.description.schema">
+        <source xml:lang="en">The schema that contains the table.</source>
+        <target state="translated">包含資料表的結構描述。</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.ForeignKeyTypeName">
+        <source xml:lang="en">Foreign Key</source>
+        <target state="translated">外部索引鍵</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.PrimaryKeyTableName">
+        <source xml:lang="en">Primary Key Table</source>
+        <target state="translated">主索引鍵資料表</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintExpressionTitle">
+        <source xml:lang="en">Expression</source>
+        <target state="translated">運算式</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintNameTitle">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名稱</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintTypeName">
+        <source xml:lang="en">Check Constraint</source>
+        <target state="translated">檢查條件約束</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintsTabTitle">
+        <source xml:lang="en">Check Constraints</source>
+        <target state="translated">檢查條件約束</target>
       </trans-unit>
       <trans-unit id="tableDesigner.columnAllowNullTitle">
         <source xml:lang="en">Allow Nulls</source>
@@ -8000,6 +8187,14 @@ Error: {1}</source>
         <source xml:lang="en">Name</source>
         <target state="translated">名稱</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.columnPrecisionTitle">
+        <source xml:lang="en">Precision</source>
+        <target state="translated">有效位數</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnScaleTitle">
+        <source xml:lang="en">Scale</source>
+        <target state="translated">小數位數</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.columnTypeName">
         <source xml:lang="en">Column</source>
         <target state="translated">資料行</target>
@@ -8016,9 +8211,49 @@ Error: {1}</source>
         <source xml:lang="en">Description</source>
         <target state="translated">描述</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.errorInitializingTableDesigner">
+        <source xml:lang="en">An error occured while initializing the table designer: {0}</source>
+        <target state="translated">初始化資料表設計工具時發生錯誤: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.errorProcessingEdit">
+        <source xml:lang="en">An error occured while processing the change: {0}</source>
+        <target state="translated">處理變更時發生錯誤: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyColumn">
+        <source xml:lang="en">Foreign Key Column</source>
+        <target state="translated">外部索引鍵資料行</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyColumns">
+        <source xml:lang="en">Column Mapping</source>
+        <target state="translated">資料行對應</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyNameTitle">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名稱</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyOnDeleteAction">
+        <source xml:lang="en">On Delete Action</source>
+        <target state="translated">刪除動作時</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyOnUpdateAction">
+        <source xml:lang="en">On Update Action</source>
+        <target state="translated">更新動作時</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeysTabTitle">
+        <source xml:lang="en">Foreign Keys</source>
+        <target state="translated">外部索引鍵</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.generalTab">
+        <source xml:lang="en">General</source>
+        <target state="translated">一般</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.nameTitle">
         <source xml:lang="en">Table name</source>
         <target state="translated">資料表名稱</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.primaryKeyColumn">
+        <source xml:lang="en">Primary Key Column</source>
+        <target state="translated">主索引鍵資料行</target>
       </trans-unit>
       <trans-unit id="tableDesigner.saveChangeError">
         <source xml:lang="en">An error occured while saving changes: {0}</source>

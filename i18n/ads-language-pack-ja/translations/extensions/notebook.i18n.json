@@ -255,6 +255,7 @@
 			"notebook.command.boldText": "Markdown テキストを太字にする",
 			"notebook.command.clearactivecellresult": "セル結果をクリアする",
 			"notebook.command.codeBlock": "コード ブロックを追加する",
+			"notebook.command.highlightText": "Markdown テキストの強調表示",
 			"notebook.command.italicizeText": "Markdown テキストを斜体にする",
 			"notebook.command.new": "新しいノートブック",
 			"notebook.command.open": "ノートブックを開く",

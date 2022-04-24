@@ -255,6 +255,7 @@
 			"notebook.command.boldText": "將 Markdown 文字變為粗體",
 			"notebook.command.clearactivecellresult": "清除資料格結果",
 			"notebook.command.codeBlock": "新增程式碼區塊",
+			"notebook.command.highlightText": "將 Markdown 文字強調顯示",
 			"notebook.command.italicizeText": "將 Markdown 文字變為斜體",
 			"notebook.command.new": "新增 Notebook",
 			"notebook.command.open": "開啟 Notebook",
