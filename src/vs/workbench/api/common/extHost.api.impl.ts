@@ -50,6 +50,7 @@ import { throwProposedApiError, checkProposedApiEnabled } from 'vs/workbench/ser
 import { ProxyIdentifier } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/common/extensionDescriptionRegistry';
 import type * as vscode from 'vscode';
+import type * as azdata from 'azdata';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { values } from 'vs/base/common/collections';
 import { ExtHostEditorInsets } from 'vs/workbench/api/common/extHostCodeInsets';
@@ -93,10 +94,11 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 // import { ExtHostInteractive } from 'vs/workbench/api/common/extHostInteractive'; {{SQL CARBON EDIT}} Remove until we need it
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
 import { ExtHostInteractive } from 'vs/workbench/api/common/extHostInteractive';
-import { functionalityNotSupportedError } from 'sql/base/common/locConstants';
+import { functionalityNotSupportedError, invalidArgumentsError } from 'sql/base/common/locConstants';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
-import { VSCodeNotebookDocument } from 'sql/workbench/api/common/vscodeNotebookDocument';
-import { VSCodeNotebookEditor } from 'sql/workbench/api/common/vscodeNotebookEditor';
+import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
+import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
+import { convertToADSNotebookContents } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -752,11 +754,19 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				// checkProposedApiEnabled(extension);
 				// return extHostNotebookEditors.onDidChangeNotebookEditorVisibleRanges(listener, thisArgs, disposables);
 			},
-			showNotebookDocument(uriOrDocument, options?) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebook.showNotebookDocument(uriOrDocument, options);
+			showNotebookDocument(uriOrDocument: URI | vscode.NotebookDocument, options?: vscode.NotebookDocumentShowOptions): Thenable<vscode.NotebookEditor> {
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				let targetUri: URI;
+				if (URI.isUri(uriOrDocument)) {
+					targetUri = uriOrDocument;
+				} else {
+					targetUri = uriOrDocument.uri;
+				}
+				return extHostNotebookDocumentsAndEditors.showNotebookDocument(targetUri, {
+					viewColumn: options?.viewColumn,
+					preserveFocus: options?.preserveFocus,
+					preview: options?.preview
+				}).then(editor => new VSCodeNotebookEditor(editor));
 			},
 			registerExternalUriOpener(id: string, opener: vscode.ExternalUriOpener, metadata: vscode.ExternalUriOpenerMetadata) {
 				checkProposedApiEnabled(extension);
@@ -888,19 +898,19 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				// {{SQL CARBON EDIT}} Use our own notebooks
 				return extHostNotebookDocumentsAndEditors.getAllDocuments().map(doc => new VSCodeNotebookDocument(doc.document));
 			},
-			async openNotebookDocument(uriOrType?: URI | string, content?: vscode.NotebookData) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// let uri: URI;
-				// if (URI.isUri(uriOrType)) {
-				// 	uri = uriOrType;
-				// 	await extHostNotebook.openNotebookDocument(uriOrType);
-				// } else if (typeof uriOrType === 'string') {
-				// 	uri = URI.revive(await extHostNotebook.createNotebookDocument({ viewType: uriOrType, content }));
-				// } else {
-				// 	throw new Error('Invalid arguments');
-				// }
-				// return extHostNotebook.getNotebookDocument(uri).apiNotebook;
+			async openNotebookDocument(uriOrType?: URI | string, content?: vscode.NotebookData): Promise<vscode.NotebookDocument> {
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				let doc: azdata.nb.NotebookDocument;
+				if (URI.isUri(uriOrType)) {
+					let editor = await extHostNotebookDocumentsAndEditors.showNotebookDocument(uriOrType, {});
+					doc = editor.document;
+				} else if (typeof uriOrType === 'string') {
+					let convertedContents = convertToADSNotebookContents(content);
+					doc = await extHostNotebookDocumentsAndEditors.createNotebookDocument(uriOrType, convertedContents);
+				} else {
+					throw new Error(invalidArgumentsError);
+				}
+				return new VSCodeNotebookDocument(doc);
 			},
 			get onDidOpenNotebookDocument(): Event<vscode.NotebookDocument> {
 				// {{SQL CARBON EDIT}} Use our own notebooks
