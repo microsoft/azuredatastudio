@@ -24,6 +24,7 @@ import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ActiveEditorContext } from 'vs/workbench/common/editor';
 import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { nb } from 'azdata';
 
 function _normalizeOptions(options: model.IModelDecorationOptions): ModelDecorationOptions {
 	if (options instanceof ModelDecorationOptions) {
@@ -557,6 +558,66 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 					});
 				}
 			}
+		}
+		if (cell.cellType === 'code' && cell.outputs.length > 0) {
+			// i = output element index.
+			let i: number = 0;
+			cell.outputs.forEach(output => {
+				let findStartResults: number[] = [];
+				switch (output.output_type) {
+					case 'stream':
+						let cellValFormatted = output as nb.IStreamResult;
+						findStartResults = this.search(cellValFormatted.text.toString(), exp, matchCase, wholeWord, maxMatches - findResults.length);
+						findStartResults?.forEach(start => {
+							let range = new NotebookRange(cell, i + 1, start, i + 1, start + exp.length, false, i);
+							findResults.push(range);
+						});
+						i++;
+						break;
+					case 'error':
+						let error = output as nb.IErrorResult;
+						let errorValue = error.traceback?.length > 0 ? error.traceback.toString() : error.evalue;
+						findStartResults = this.search(errorValue, exp, matchCase, wholeWord, maxMatches - findResults.length);
+						findStartResults.forEach(start => {
+							let range = new NotebookRange(cell, i + 1, start, i + 1, start + exp.length, false, i);
+							findResults.push(range);
+						});
+						i++;
+						break;
+					case 'display_data':
+						let displayValue = output as nb.IDisplayData;
+						findStartResults = this.search(JSON.parse(JSON.stringify(displayValue.data))['text/html'], exp, matchCase, wholeWord, maxMatches - findResults.length);
+						findStartResults.forEach(start => {
+							let range = new NotebookRange(cell, i + 1, start, i + 1, start + exp.length, false, i);
+							findResults.push(range);
+						});
+						i++;
+						break;
+					case 'execute_result':
+						// When result is a table
+						let executeResult = output as nb.IExecuteResult;
+						const result = JSON.parse(JSON.stringify(executeResult.data));
+						const data = result['application/vnd.dataresource+json'].data;
+						if (data.length > 0) {
+							for (let row = 0; row < data.length; row++) {
+								let rowData = data[row];
+								let j: number = 0;
+								for (const key in rowData) {
+									let findStartResults = this.search(rowData[key].toString(), exp, matchCase, wholeWord, maxMatches - findResults.length);
+									if (findStartResults.length) {
+										let range = new NotebookRange(cell, row + 1, j + 1, row + 1, j + 1, false, i);
+										findResults.push(range);
+									}
+									j++;
+								}
+							}
+							i++;
+						}
+						break;
+					default: i++;
+						break;
+				}
+			});
 		}
 		return findResults;
 	}

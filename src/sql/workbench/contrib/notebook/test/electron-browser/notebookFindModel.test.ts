@@ -401,6 +401,166 @@ suite('Notebook Find Model', function (): void {
 		assert.strictEqual(notebookFindModel.findMatches.length, 2, 'Find failed on markdown edit');
 	});
 
+	test('Should find results in the output of the code cell when output is stream', async function (): Promise<void> {
+		let codeCellOutput: nb.IStreamResult = {
+			output_type: 'stream',
+			name: 'stdout',
+			text: 'trace\nhello world\n.local\n'
+		};
+		let cellContent: nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Markdown,
+				source: ['Hello World'],
+				metadata: { language: 'python' },
+				execution_count: 1
+			},
+			{
+				cell_type: 'code',
+				source: [
+					'print(\'trace\')\n',
+					'print(\'hello world\')\n',
+					'print(\'.local\')'
+				],
+				metadata: { language: 'python' },
+				outputs: [
+					codeCellOutput
+				],
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'mssql',
+					language: 'sql',
+					display_name: 'SQL'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		await initNotebookModel(cellContent);
+
+		// Need to set rendered text content for 1st cell
+		setRenderedTextContent(0);
+
+		let notebookFindModel = new NotebookFindModel(model);
+
+		await notebookFindModel.find('trace', false, false, max_find_count);
+		assert.strictEqual(notebookFindModel.findMatches.length, 2, 'Find failed on code cell and its output');
+
+		await notebookFindModel.find('hello', false, false, max_find_count);
+		assert.strictEqual(notebookFindModel.findMatches.length, 3, 'Find failed on code cell output');
+	});
+
+	test('Should find results in the output of the code cell when output is executeResult', async function (): Promise<void> {
+		let codeCellOutput: nb.IExecuteResult = {
+			output_type: 'execute_result',
+			execution_count: null,
+			data: {
+				'application/vnd.dataresource+json': {
+					'schema': {
+						'fields': [
+							{
+								'name': 'ContactTypeID'
+							},
+							{
+								'name': 'Name'
+							},
+							{
+								'name': 'ModifiedDate'
+							}
+						]
+					},
+					'data': [
+						{
+							'0': '1',
+							'1': 'Accounting Manager',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '2',
+							'1': 'Assistant Sales Agent',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '3',
+							'1': 'Assistant Sales Representative',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '4',
+							'1': 'Coordinator Foreign Markets',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '5',
+							'1': 'Export Administrator',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '6',
+							'1': 'International Marketing Manager',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '7',
+							'1': 'Marketing Assistant',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '8',
+							'1': 'Marketing Manager',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '9',
+							'1': 'Marketing Representative',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '10',
+							'1': 'Order Administrator',
+							'2': '2008-04-30 00:00:00.000'
+						}
+					]
+				}
+			}
+		};
+		let cellContent: nb.INotebookContents = {
+			cells: [
+				{
+					cell_type: 'code',
+					source: [
+						'Select top 10 * from Person.ContactType\n', ' -- Assistant'
+					],
+					metadata: { language: 'sql' },
+					outputs: [
+						codeCellOutput
+					],
+					execution_count: 1
+				}],
+			metadata: {
+				kernelspec: {
+					name: 'mssql',
+					language: 'sql',
+					display_name: 'SQL'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		max_find_count = 4;
+		await initNotebookModel(cellContent);
+
+		// Need to set rendered text content for 1st cell
+		setRenderedTextContent(0);
+
+		let notebookFindModel = new NotebookFindModel(model);
+		await notebookFindModel.find('Assistant', false, false, max_find_count);
+
+		assert.strictEqual(notebookFindModel.getFindCount(), 4, 'Find failed on executed code cell output');
+	});
+
+
 	test('Find next/previous should return the correct find index', async function (): Promise<void> {
 		// Need to set rendered text content for 2nd cell
 		setRenderedTextContent(1);

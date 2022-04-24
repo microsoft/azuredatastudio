@@ -250,7 +250,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			collector.addRule(`.notebook-preview .rangeHighlight { background-color: ${notebookFindMatchHighlightColor};}`);
 		}
 		if (notebookFindRangeHighlightColor) {
-			collector.addRule(`.notebook-preview .rangeSpecificHighlight { background-color: ${notebookFindRangeHighlightColor}!important;}`);
+			collector.addRule(`mark .rangeSpecificHighlight { background-color: ${notebookFindRangeHighlightColor}!important;}`);
 		}
 	});
 }

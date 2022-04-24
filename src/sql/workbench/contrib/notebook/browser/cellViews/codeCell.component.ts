@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
-import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges, HostListener, ViewChildren, QueryList } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges, HostListener, ViewChildren, QueryList, ViewChild } from '@angular/core';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { Deferred } from 'sql/base/common/promise';
 import { ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
-import { OutputComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/output.component';
+import { OutputAreaComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/outputArea.component';
 
 
 export const CODE_SELECTOR: string = 'code-cell-component';
@@ -23,7 +23,7 @@ export const CODE_SELECTOR: string = 'code-cell-component';
 
 export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChildren(CodeComponent) private codeCells: QueryList<ICellEditorProvider>;
-	@ViewChildren(OutputComponent) private outputCells: QueryList<ICellEditorProvider>;
+	@ViewChild(OutputAreaComponent) private outputAreaCell: OutputAreaComponent;
 	@Input() cellModel: ICellModel;
 	@Input() set model(value: NotebookModel) {
 		this._model = value;
@@ -38,7 +38,6 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 		this._model.updateActiveCell(undefined);
 	}
 
-	private _model: NotebookModel;
 	private _activeCellId: string;
 
 	public inputDeferred: Deferred<string>;
@@ -82,8 +81,8 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 		if (this.codeCells) {
 			editors.push(...this.codeCells.toArray());
 		}
-		if (this.outputCells) {
-			editors.push(...this.outputCells.toArray());
+		if (this.outputAreaCell) {
+			editors.push(...this.outputAreaCell.cellEditors);
 		}
 		return editors;
 	}
