@@ -4121,7 +4121,7 @@ Error: {1}</source>
       <source xml:lang="en">Zoom to fit</source>
     </trans-unit>
     <trans-unit id="queryPlanOpenGraphFile">
-      <source xml:lang="en">Open Plan File</source>
+      <source xml:lang="en">Show Query Plan XML</source>
     </trans-unit>
     <trans-unit id="queryPlanPropertiesActionLabel">
       <source xml:lang="en">Properties</source>
@@ -4130,7 +4130,7 @@ Error: {1}</source>
       <source xml:lang="en">Save Plan File</source>
     </trans-unit>
     <trans-unit id="queryPlanSearchNodeAction">
-      <source xml:lang="en">SearchNode</source>
+      <source xml:lang="en">Find Node</source>
     </trans-unit>
     <trans-unit id="queryPlanTitle">
       <source xml:lang="en">Query Plan (Preview)</source>
@@ -4168,6 +4168,12 @@ Error: {1}</source>
   <file original="src/sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget" source-language="en" datatype="plaintext"><body>
     <trans-unit id="cancelCustomZoomAction">
       <source xml:lang="en">Close (Escape)</source>
+    </trans-unit>
+    <trans-unit id="customZoomApplyButton">
+      <source xml:lang="en">Apply</source>
+    </trans-unit>
+    <trans-unit id="customZoomApplyButtonTitle">
+      <source xml:lang="en">Apply Zoom (Enter)</source>
     </trans-unit>
     <trans-unit id="invalidCustomZoomError">
       <source xml:lang="en">Select a zoom value between 1 to 200</source>
