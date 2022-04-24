@@ -81,7 +81,8 @@ export interface DesignerComponentInput {
 }
 
 export interface DesignerUIState {
-	activeTabId: PanelTabIdentifier;
+	activeContentTabId: PanelTabIdentifier;
+	activeScriptTabId: PanelTabIdentifier;
 }
 
 export type DesignerAction = 'publish' | 'initialize' | 'processEdit' | 'generateScript' | 'generateReport';
@@ -180,7 +181,6 @@ export interface DesignerTableProperties extends ComponentProperties {
 	 * Whether user can add new rows to the table. The default value is true.
 	 */
 	canAddRows?: boolean;
-
 	/**
 	 * Whether user can remove rows from the table. The default value is true.
 	 */
@@ -208,14 +208,14 @@ export enum DesignerEditType {
 
 export interface DesignerEdit {
 	type: DesignerEditType;
-	path: DesignerEditPath;
+	path: DesignerPropertyPath;
 	value?: any;
 }
 
-export type DesignerEditPath = (string | number)[];
-export const DesignerRootObjectPath: DesignerEditPath = [];
+export type DesignerPropertyPath = (string | number)[];
+export const DesignerRootObjectPath: DesignerPropertyPath = [];
 
-export type DesignerValidationError = { message: string, property?: DesignerEditPath };
+export type DesignerValidationError = { message: string, propertyPath?: DesignerPropertyPath };
 
 export interface DesignerEditResult {
 	isValid: boolean;

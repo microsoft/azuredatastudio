@@ -30,17 +30,23 @@
 }
 
 .designer-component .messages-container {
-	overflow: scroll;
+	overflow: hidden;
 	height: 100%;
 	width: 100%;
 }
 
 .designer-component .messages-container .message-item {
-	padding: 0px 5px 0px 25px;
-	background-position: 5px center;
-	background-size: 16px 16px;
-	user-select: text;
+	display: flex;
+}
+
+.designer-component .messages-container .message-item .message-icon {
+	margin: 0px 6px;
+	flex: 0 0 auto;
 	line-height: 25px;
+}
+
+.designer-component .messages-container .message-item .message-text {
+	flex: 1 1 auto;
 }
 
 .designer-component .tabbed-panel-container {
