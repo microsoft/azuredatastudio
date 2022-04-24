@@ -100,6 +100,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.all.backups.restored" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[All backups restored]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Todas las copias de seguridad restauradas]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.all.fields.required" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[All fields are required.]]></Val>
@@ -675,6 +684,15 @@
           <Val><![CDATA[Creating resource group]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Crear grupo de recursos]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.currently.restoring.file" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Currently restoring file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Restaurando archivo actualmente]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2040,6 +2058,18 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.path" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
+          <Val><![CDATA[Network share path]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ruta de acceso del recurso compartido de red]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[\\Servername.domainname.com\Backupfolder]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.path.format" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
           <Val><![CDATA[\\Servername.domainname.com\Backupfolder]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[\\Servername.domainname.com\Backupfolder]]></Val>
@@ -2049,10 +2079,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.storage.table.help" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter target database name for the selected source databases.]]></Val>
+          <Val><![CDATA[Enter target database name and network share path information for the selected source databases.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Escriba el nombre de base de datos de destino para las bases de datos de origen seleccionadas.]]></Val>
+            <Val><![CDATA[Escriba el nombre de la base de datos de destino y la información de la ruta de acceso del recurso compartido de red para las bases de datos de origen seleccionadas.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Enter target database name for the selected source databases.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
