@@ -117,7 +117,8 @@ describe('Publish Database Dialog', () => {
 				password: '',
 				port: 1433,
 				serverName: 'localhost',
-				userName: 'sa'
+				userName: 'sa',
+				dockerBaseImageEula: ''
 
 			},
 			deploySettings: {

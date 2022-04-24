@@ -70,6 +70,7 @@ export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources
 export const databaseReferencesNodeName = localize('databaseReferencesNodeName', "Database References");
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
 export const yesString = localize('yesString', "Yes");
+export const openEulaString = localize('openEulaString', "Open License Agreement");
 export const noString = localize('noString', "No");
 export const noStringDefault = localize('noStringDefault', "No (default)");
 export const okString = localize('okString', "Ok");
@@ -149,6 +150,14 @@ export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be 
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
+
+//
+export const eulaAgreementTemplate = localize({ key: 'eulaAgreementTemplate', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.");
+export function eulaAgreementText(name: string) { return localize({ key: 'eulaAgreementText', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.", name); }
+export const eulaAgreementTitle = localize('eulaAgreementTitle', "Microsoft SQL Server License Agreement");
+export const edgeEulaAgreementTitle = localize('edgeEulaAgreementTitle', "Microsoft Azure SQL Edge License Agreement");
+export const sqlServerEulaLink = 'https://go.microsoft.com/fwlink/?linkid=857698';
+export const sqlServerEdgeEulaLink = 'https://go.microsoft.com/fwlink/?linkid=2139274';
 export const connectionNamePrefix = 'SQLDbProject';
 export const sqlServerDockerRegistry = 'mcr.microsoft.com';
 export const sqlServerDockerRepository = 'mssql/server';
@@ -170,6 +179,8 @@ export const deployDbTaskName = localize('deployDbTaskName', "Deploying SQL Db P
 export const publishProjectSucceed = localize('publishProjectSucceed', "Database project published successfully");
 export const publishingProjectMessage = localize('publishingProjectMessage', "Publishing project in a container...");
 export const cleaningDockerImagesMessage = localize('cleaningDockerImagesMessage', "Cleaning existing deployments...");
+export const dockerImageMessage = localize('dockerImageMessage', "Docker Image:");
+export const dockerImageEulaMessage = localize('dockerImageEulaMessage', "License Agreement:");
 export const creatingDeploymentSettingsMessage = localize('creatingDeploymentSettingsMessage', "Creating deployment settings ...");
 export const runningDockerMessage = localize('runningDockerMessage', "Building and running the docker container ...");
 export function dockerNotRunningError(error: string) { return localize('dockerNotRunningError', "Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'", error || ''); }
