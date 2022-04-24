@@ -33,7 +33,7 @@
 	"sqlDatabaseProjects.generateProjectFromOpenApiSpec": "Generate SQL Project from OpenAPI/Swagger spec",
 
 	"sqlDatabaseProjects.Settings": "Database Projects",
-	"sqlDatabaseProjects.netCoreInstallLocation": "Full path to .NET Core SDK on the machine.",
+	"sqlDatabaseProjects.dotnetInstallLocation": "Full path to .NET SDK on the machine.",
 	"sqlDatabaseProjects.netCoreDoNotAsk": "Whether to prompt the user to install .NET Core when not detected.",
 	"sqlDatabaseProjects.nodejsDoNotAsk": "Whether to prompt the user to install Node.js when not detected.",
 	"sqlDatabaseProjects.autorestSqlVersion": "Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.",

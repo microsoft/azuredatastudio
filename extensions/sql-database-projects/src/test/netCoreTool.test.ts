@@ -9,7 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as sinon from 'sinon';
-import { NetCoreTool, DBProjectConfigurationKey, NetCoreInstallLocationKey, NetCoreNonWindowsDefaultPath } from '../tools/netcoreTool';
+import { NetCoreTool, DBProjectConfigurationKey, DotnetInstallLocationKey, NetCoreNonWindowsDefaultPath } from '../tools/netcoreTool';
 import { getQuotedPath } from '../common/utils';
 import { isNullOrUndefined } from 'util';
 import { generateTestFolderPath } from './testUtils';
@@ -29,7 +29,7 @@ describe('NetCoreTool: Net core tests', function (): void {
 	it('Should override dotnet default value with settings', async function (): Promise<void> {
 		try {
 			// update settings and validate
-			await vscode.workspace.getConfiguration(DBProjectConfigurationKey).update(NetCoreInstallLocationKey, 'test value path', true);
+			await vscode.workspace.getConfiguration(DBProjectConfigurationKey).update(DotnetInstallLocationKey, 'test value path', true);
 			const netcoreTool = new NetCoreTool(testContext.outputChannel);
 			sinon.stub(netcoreTool, 'showInstallDialog').returns(Promise.resolve());
 			should(netcoreTool.netcoreInstallLocation).equal('test value path'); // the path in settings should be taken
@@ -37,7 +37,7 @@ describe('NetCoreTool: Net core tests', function (): void {
 		}
 		finally {
 			// clean again
-			await vscode.workspace.getConfiguration(DBProjectConfigurationKey).update(NetCoreInstallLocationKey, '', true);
+			await vscode.workspace.getConfiguration(DBProjectConfigurationKey).update(DotnetInstallLocationKey, '', true);
 		}
 	});
 
