@@ -122,20 +122,29 @@ export class NewProjectDialog extends DialogBase {
 								'font-weight': 'bold'
 							}
 						}, {
-							textValue: projectType.description
+							textValue: projectType.description,
+							linkDisplayValue: projectType.linkDisplayValue
 						}
 					]
 				};
 			}),
 			iconHeight: '75px',
 			iconWidth: '75px',
-			cardWidth: '170px',
-			cardHeight: '170px',
+			cardWidth: '215px',
+			cardHeight: '195px',
 			ariaLabel: constants.TypeTitle,
 			width: '500px',
 			iconPosition: 'top',
 			selectedCardId: allProjectTypes.length > 0 ? allProjectTypes[0].id : undefined
 		}).component();
+
+		projectTypeRadioCardGroup.onLinkClick(async (value) => {
+			for (let projectType of allProjectTypes) {
+				if (value.cardId === projectType.id) {
+					void vscode.env.openExternal(vscode.Uri.parse(projectType.linkLocation!));
+				}
+			}
+		});
 
 		this.register(projectTypeRadioCardGroup.onSelectionChanged((e) => {
 			this.model.projectTypeId = e.cardId;

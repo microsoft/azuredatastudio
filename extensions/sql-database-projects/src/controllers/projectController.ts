@@ -173,7 +173,7 @@ export class ProjectsController {
 			'PROJECT_DSP': creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP
 		};
 
-		let newProjFileContents = templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
+		let newProjFileContents = creationParams.projectTypeId === constants.emptySqlDatabaseSdkProjectTypeId ? templates.macroExpansion(templates.newSdkSqlProjectTemplate, macroDict) : templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
 
 		let newProjFileName = creationParams.newProjName;
 
