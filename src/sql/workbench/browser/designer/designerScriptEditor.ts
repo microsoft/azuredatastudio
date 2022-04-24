@@ -84,9 +84,6 @@ export class DesignerScriptEditor extends BaseTextEditor implements DesignerText
 			options.renderIndentGuides = false;
 			options.rulers = [];
 			options.glyphMargin = true;
-			options.minimap = {
-				enabled: true
-			};
 		}
 		return options;
 	}

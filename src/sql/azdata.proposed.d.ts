@@ -1425,7 +1425,7 @@ declare module 'azdata' {
 			/**
 			 * Error messages of current state, and the property the caused the error.
 			 */
-			errors?: { message: string, property?: DesignerEditPath }[];
+			errors?: { message: string, propertyPath?: DesignerEditPath }[];
 		}
 
 		/**
