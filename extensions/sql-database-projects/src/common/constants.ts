@@ -559,3 +559,9 @@ export function jsonParseError(error: string, line: number, column: number) { re
 export const moreInformation = localize('moreInformation', "More Information");
 export const addPackageReferenceMessage = localize('addPackageReferenceMessage', 'To use SQL bindings, ensure your Azure Functions project has a reference to {0}', sqlExtensionPackageName);
 export const addSqlBindingPackageError = localize('addSqlBindingPackageError', 'Error adding Sql Binding extension package to project');
+export const failedToGetConnectionString = localize('failedToGetConnectionString', 'An error occurred generating the connection string for the selected connection');
+export const connectionProfile = localize('connectionProfile', 'Select a connection profile');
+export const userConnectionString = localize('userConnectionString', 'Enter connection string');
+export const selectConnectionString = localize('selectConnectionString', 'Select SQL connection string method');
+export const selectConnectionError = (err?: any) => err ? localize('selectConnectionError', "Failed to set connection string app setting: {0}", utils.getErrorMessage(err)) : localize('unableToSetConnectionString', "Failed to set connection string app setting");
+

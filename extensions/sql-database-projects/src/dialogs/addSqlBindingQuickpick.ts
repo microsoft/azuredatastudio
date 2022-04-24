@@ -15,6 +15,8 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, packageHelper: PackageHelper): Promise<void> {
 	TelemetryReporter.sendActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.startAddSqlBinding);
 
+	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+
 	if (!uri) {
 		// this command only shows in the command palette when the active editor is a .cs file, so we can safely assume that's the scenario
 		// when this is called without a uri
@@ -113,16 +115,16 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 			return;
 		}
 
-		let existingSettings: (vscode.QuickPickItem & { isCreateNew?: boolean })[] = [];
+		let existingSettings: (vscode.QuickPickItem)[] = [];
 		if (settings?.Values) {
 			existingSettings = Object.keys(settings.Values).map(setting => {
 				return {
 					label: setting
-				} as vscode.QuickPickItem & { isCreateNew?: boolean };
+				} as vscode.QuickPickItem;
 			});
 		}
 
-		existingSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon, isCreateNew: true });
+		existingSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon });
 		let sqlConnectionStringSettingExists = existingSettings.find(s => s.label === constants.sqlConnectionStringSetting);
 
 		while (!connectionStringSettingName) {
@@ -136,7 +138,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 				return;
 			}
 
-			if (selectedSetting.isCreateNew) {
+			if (selectedSetting.label === constants.createNewLocalAppSettingWithIcon) {
 				const newConnectionStringSettingName = await vscode.window.showInputBox(
 					{
 						title: constants.enterConnectionStringSettingName,
@@ -151,36 +153,78 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					continue;
 				}
 
-				const newConnectionStringValue = await vscode.window.showInputBox(
-					{
-						title: constants.enterConnectionString,
-						ignoreFocusOut: true,
-						value: 'Server=localhost;Initial Catalog={db_name};User ID=sa;Password={your_password};Persist Security Info=False',
-						validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
+				// show the connection string methods (user input and connection profile options)
+				const listOfConnectionStringMethods = [constants.connectionProfile, constants.userConnectionString];
+				while (true) {
+					const selectedConnectionStringMethod = await vscode.window.showQuickPick(listOfConnectionStringMethods, {
+						canPickMany: false,
+						title: constants.selectConnectionString,
+						ignoreFocusOut: true
+					});
+					if (!selectedConnectionStringMethod) {
+						// User cancelled
+						return;
 					}
-				) ?? '';
 
-				if (!newConnectionStringValue) {
-					// go back to select setting quickpick if user escapes from inputting the value in case they changed their mind
-					continue;
-				}
-
-				try {
-					const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectUri.fsPath), newConnectionStringSettingName, newConnectionStringValue);
-					if (success) {
-						connectionStringSettingName = newConnectionStringSettingName;
+					let connectionString: string = '';
+					if (selectedConnectionStringMethod === constants.userConnectionString) {
+						// User chooses to enter connection string manually
+						connectionString = await vscode.window.showInputBox(
+							{
+								title: constants.enterConnectionString,
+								ignoreFocusOut: true,
+								value: 'Server=localhost;Initial Catalog={db_name};User ID=sa;Password={your_password};Persist Security Info=False',
+								validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
+							}
+						) ?? '';
+					} else {
+						// Let user choose from existing connections to create connection string from
+						let connectionUri: string = '';
+						const connectionInfo = await vscodeMssqlApi.promptForConnection(true);
+						if (!connectionInfo) {
+							// User cancelled return to selectedConnectionStringMethod prompt
+							continue;
+						}
+						try {
+							// TO DO: https://github.com/microsoft/azuredatastudio/issues/18012
+							connectionUri = await vscodeMssqlApi.connect(connectionInfo);
+						} catch (e) {
+							// display an mssql error due to connection request failing and go back to prompt for connection string methods
+							console.warn(e);
+							continue;
+						}
+						try {
+							connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, false);
+						} catch (e) {
+							// failed to get connection string for selected connection and will go back to prompt for connection string methods
+							console.warn(e);
+							void vscode.window.showErrorMessage(constants.failedToGetConnectionString);
+							continue;
+						}
 					}
-				} catch (e) {
-					// display error message and show select setting quickpick again
-					void vscode.window.showErrorMessage(utils.getErrorMessage(e));
+					if (connectionString) {
+						try {
+							const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectUri.fsPath), newConnectionStringSettingName, connectionString);
+							if (success) {
+								// exit both loops and insert binding
+								connectionStringSettingName = newConnectionStringSettingName;
+								break;
+							} else {
+								void vscode.window.showErrorMessage(constants.selectConnectionError());
+							}
+						} catch (e) {
+							// display error message and show select setting quickpick again
+							void vscode.window.showErrorMessage(constants.selectConnectionError(e));
+							continue;
+						}
+					}
 				}
+			} else {
 				// If user cancels out of this or doesn't want to overwrite an existing setting
 				// just return them to the select setting quickpick in case they changed their mind
-			} else {
 				connectionStringSettingName = selectedSetting.label;
 			}
 		}
-
 	} else {
 		// if no AF project was found or there's more than one AF functions project in the workspace,
 		// ask for the user to input the setting name
