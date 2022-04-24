@@ -363,10 +363,13 @@
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerDashboard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Arc Data Controller Dashboard (Preview) - {0}]]></Val>
+          <Val><![CDATA[Azure Arc Data Controller Dashboard - {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Arc 資料控制器儀表板 (預覽) - {0}]]></Val>
+            <Val><![CDATA[Azure Arc 資料控制器儀表板 - {0}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Arc Data Controller Dashboard (Preview) - {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1374,10 +1377,13 @@
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.miaaDashboard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[SQL managed instance - Azure Arc Dashboard (Preview) - {0}]]></Val>
+          <Val><![CDATA[SQL managed instance - Azure Arc Dashboard - {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL 受控執行個體 - Azure Arc 儀表板 (預覽) - {0}]]></Val>
+            <Val><![CDATA[SQL 受控執行個體 - Azure Arc 儀表板 - {0}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[SQL managed instance - Azure Arc Dashboard (Preview) - {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1899,10 +1905,13 @@
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.postgresDashboard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[PostgreSQL Hyperscale - Azure Arc Dashboard (Preview) - {0}]]></Val>
+          <Val><![CDATA[PostgreSQL Hyperscale - Azure Arc Dashboard - {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[PostgreSQL 超大規模資料庫 - Azure Arc 儀表板 (預覽) - {0}]]></Val>
+            <Val><![CDATA[PostgreSQL 超大規模資料庫 - Azure Arc 儀表板 - {0}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[PostgreSQL Hyperscale - Azure Arc Dashboard (Preview) - {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4767,10 +4776,13 @@
       </Item>
       <Item ItemId=";extensions/arc/package.resource.type.azure.arc.display.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Arc data controller (preview)]]></Val>
+          <Val><![CDATA[Azure Arc data controller]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Arc 資料控制器 (預覽)]]></Val>
+            <Val><![CDATA[Azure Arc 資料控制器]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Arc data controller (preview)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
