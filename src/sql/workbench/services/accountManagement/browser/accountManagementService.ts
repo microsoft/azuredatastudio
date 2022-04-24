@@ -21,7 +21,6 @@ import { localize } from 'vs/nls';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
 import { values } from 'vs/base/common/collections';
-import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { INotificationService, Severity, INotification } from 'vs/platform/notification/common/notification';
 import { Action } from 'vs/base/common/actions';
@@ -362,9 +361,10 @@ export class AccountManagementService implements IAccountManagementService {
 	/**
 	 * Copy the user code to the clipboard and open a browser to the verification URI
 	 */
-	public copyUserCodeAndOpenBrowser(userCode: string, uri: string): void {
-		this._clipboardService.writeText(userCode).catch(err => onUnexpectedError(err));
-		this._openerService.open(URI.parse(uri)).catch(err => onUnexpectedError(err));
+	public async copyUserCodeAndOpenBrowser(userCode: string, uri: string): Promise<void> {
+		await this._clipboardService.writeText(userCode);
+		await this._openerService.open(URI.parse(uri));
+
 	}
 
 	private async _registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Promise<void> {
