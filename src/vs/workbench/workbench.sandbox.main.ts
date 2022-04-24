@@ -142,4 +142,8 @@ import 'vs/workbench/contrib/externalTerminal/electron-sandbox/externalTerminal.
 // Webview
 import 'vs/workbench/contrib/webview/electron-sandbox/webview.contribution';
 
+// {{SQL CARBON EDIT}}
+// Telemetry Opt Out
+import 'vs/workbench/contrib/welcome/telemetryOptOut/electron-sandbox/telemetryOptOut.contribution';
+
 //#endregion
