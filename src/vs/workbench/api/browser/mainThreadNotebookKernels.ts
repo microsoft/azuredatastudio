@@ -11,13 +11,13 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
 import { NotebookDto } from 'vs/workbench/api/browser/mainThreadNotebookDto';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
+// import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 import { INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { INotebookEditorService } from 'vs/workbench/contrib/notebook/browser/notebookEditorService';
 import { INotebookCellExecution, INotebookExecutionService } from 'vs/workbench/contrib/notebook/common/notebookExecutionService';
 import { INotebookKernel, INotebookKernelChangeEvent, INotebookKernelService } from 'vs/workbench/contrib/notebook/common/notebookKernelService';
 import { SerializableObjectWithBuffers } from 'vs/workbench/services/extensions/common/proxyIdentifier';
-import { ExtHostContext, ExtHostNotebookKernelsShape, ICellExecuteUpdateDto, IExtHostContext, INotebookKernelDto2, MainContext, MainThreadNotebookKernelsShape } from '../common/extHost.protocol';
+import { ExtHostContext, ExtHostNotebookKernelsShape, IExtHostContext, INotebookKernelDto2, MainContext, MainThreadNotebookKernelsShape } from '../common/extHost.protocol';
 
 abstract class MainThreadKernel implements INotebookKernel {
 
@@ -91,7 +91,7 @@ abstract class MainThreadKernel implements INotebookKernel {
 	abstract cancelNotebookCellExecution(uri: URI, cellHandles: number[]): Promise<void>;
 }
 
-@extHostNamedCustomer(MainContext.MainThreadNotebookKernels)
+// @extHostNamedCustomer(MainContext.MainThreadNotebookKernels) {{SQL CARBON EDIT}} Disable VS Code notebooks
 export class MainThreadNotebookKernels implements MainThreadNotebookKernelsShape {
 
 	private readonly _editors = new Map<INotebookEditor, IDisposable>();

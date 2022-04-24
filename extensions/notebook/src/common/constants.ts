@@ -93,3 +93,7 @@ export const SQL_PROVIDER = 'MSSQL';
 export const USER = 'user';
 export const AUTHTYPE = 'authenticationType';
 export const INTEGRATED_AUTH = 'integrated';
+
+// The version of the notebook file format that we support
+export const NBFORMAT = 4;
+export const NBFORMAT_MINOR = 2;

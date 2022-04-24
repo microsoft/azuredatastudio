@@ -77,6 +77,9 @@ export class ClientSession implements IClientSession {
 	}
 
 	private async startServer(kernelSpec: nb.IKernelSpec): Promise<void> {
+		if (!this._executeManager) {
+			throw new Error(localize('NoExecuteManager', "Server could not start because a provider was not defined for this notebook file type."));
+		}
 		let serverManager = this._executeManager.serverManager;
 		if (serverManager) {
 			await serverManager.startServer(kernelSpec);

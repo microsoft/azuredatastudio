@@ -11,8 +11,8 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
 
-import * as azdata from 'azdata';
-import * as vscode from 'vscode';
+import type * as azdata from 'azdata';
+import type * as vscode from 'vscode';
 
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/workbench/services/tasks/common/tasks';
@@ -887,7 +887,6 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 }
 
 export interface ExtHostNotebookShape {
-
 	/**
 	 * Looks up a notebook manager for a given notebook URI
 	 * @returns handle of the manager to be used when sending
@@ -935,6 +934,7 @@ export interface MainThreadNotebookShape extends IDisposable {
 	$unregisterExecuteProvider(handle: number): void;
 	$onFutureMessage(futureId: number, type: FutureMessageType, payload: azdata.nb.IMessage): void;
 	$onFutureDone(futureId: number, done: INotebookFutureDone): void;
+	$updateProviderDescriptionLanguages(providerId: string, languages: string[]): void;
 }
 
 export interface INotebookDocumentsAndEditorsDelta {

@@ -15,6 +15,7 @@ import { URI } from 'vs/base/common/uri';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
+// import { localize } from 'vs/nls'; {{SQL CARBON EDIT}} Notebook registration handled in SQL code
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IResourceEditorInput } from 'vs/platform/editor/common/editor';
@@ -23,13 +24,15 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IWorkspaceTrustManagementService } from 'vs/platform/workspace/common/workspaceTrust';
 import { NotebookExtensionDescription } from 'vs/workbench/api/common/extHost.protocol';
+import { IEditorInput } from 'vs/workbench/common/editor';
+import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { Memento } from 'vs/workbench/common/memento';
-import { INotebookEditorContribution, notebooksExtensionPoint, notebookRendererExtensionPoint } from 'vs/workbench/contrib/notebook/browser/extensionPoint';
+import { notebookRendererExtensionPoint } from 'vs/workbench/contrib/notebook/browser/extensionPoint'; // {{SQL CARBON EDIT}} Remove INotebookEditorContribution, notebooksExtensionPoint
 import { INotebookEditorOptions } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { NotebookDiffEditorInput } from 'vs/workbench/contrib/notebook/browser/notebookDiffEditorInput';
 import { NotebookCellTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookCellTextModel';
 import { NotebookTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookTextModel';
-import { ACCESSIBLE_NOTEBOOK_DISPLAY_ORDER, BUILTIN_RENDERER_ID, CellUri, DisplayOrderKey, INotebookExclusiveDocumentFilter, INotebookContributionData, INotebookRendererInfo, INotebookTextModel, IOrderedMimeType, IOutputDto, mimeTypeIsAlwaysSecure, mimeTypeSupportedByCore, NotebookData, NotebookEditorPriority, NotebookRendererMatch, NotebookTextDiffEditorPreview, RENDERER_NOT_AVAILABLE, sortMimeTypes, TransientOptions } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { ACCESSIBLE_NOTEBOOK_DISPLAY_ORDER, BUILTIN_RENDERER_ID, CellUri, DisplayOrderKey, INotebookExclusiveDocumentFilter, INotebookContributionData, INotebookRendererInfo, INotebookTextModel, IOrderedMimeType, IOutputDto, mimeTypeIsAlwaysSecure, mimeTypeSupportedByCore, NotebookDataDto, NotebookEditorPriority, NotebookRendererMatch, NotebookTextDiffEditorPreview, RENDERER_NOT_AVAILABLE, sortMimeTypes, TransientOptions } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { NotebookEditorInput } from 'vs/workbench/contrib/notebook/common/notebookEditorInput';
 import { INotebookEditorModelResolverService } from 'vs/workbench/contrib/notebook/common/notebookEditorModelResolverService';
 import { updateEditorTopPadding } from 'vs/workbench/contrib/notebook/common/notebookOptions';
@@ -38,7 +41,7 @@ import { NotebookEditorDescriptor, NotebookProviderInfo } from 'vs/workbench/con
 import { ComplexNotebookProviderInfo, INotebookContentProvider, INotebookSerializer, INotebookService, SimpleNotebookProviderInfo } from 'vs/workbench/contrib/notebook/common/notebookService';
 import { RegisteredEditorInfo, RegisteredEditorPriority, DiffEditorInputFactoryFunction, EditorInputFactoryFunction, IEditorResolverService, IEditorType, UntitledEditorInputFactoryFunction } from 'vs/workbench/services/editor/common/editorResolverService';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry';
+// import { IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry'; {{SQL CARBON EDIT}} Notebook registration handled in SQL code
 
 export class NotebookProviderInfoStore extends Disposable {
 
@@ -79,7 +82,7 @@ export class NotebookProviderInfoStore extends Disposable {
 			}
 		}));
 
-		notebooksExtensionPoint.setHandler(extensions => this._setupHandler(extensions));
+		// notebooksExtensionPoint.setHandler(extensions => this._setupHandler(extensions)); {{SQL CARBON EDIT}} Notebook registration handled in SQL code
 	}
 
 	override dispose(): void {
@@ -87,65 +90,53 @@ export class NotebookProviderInfoStore extends Disposable {
 		super.dispose();
 	}
 
-	private _setupHandler(extensions: readonly IExtensionPointUser<INotebookEditorContribution[]>[]) {
-		this._handled = true;
-		const builtins: NotebookProviderInfo[] = [...this._contributedEditors.values()].filter(info => !info.extension);
-		this._clear();
+	// {{SQL CARBON EDIT}} Notebook registration handled in SQL code
+	// private _setupHandler(extensions: readonly IExtensionPointUser<INotebookEditorContribution[]>[]) {
+	// 	this._handled = true;
+	// 	this._clear();
 
-		const builtinProvidersFromCache: Map<string, IDisposable> = new Map();
-		builtins.forEach(builtin => {
-			builtinProvidersFromCache.set(builtin.id, this.add(builtin));
-		});
+	// 	for (const extension of extensions) {
+	// 		for (const notebookContribution of extension.value) {
 
-		for (const extension of extensions) {
-			for (const notebookContribution of extension.value) {
+	// 			if (!notebookContribution.type) {
+	// 				extension.collector.error(`Notebook does not specify type-property`);
+	// 				continue;
+	// 			}
 
-				if (!notebookContribution.type) {
-					extension.collector.error(`Notebook does not specify type-property`);
-					continue;
-				}
+	// 			if (this.get(notebookContribution.type)) {
+	// 				extension.collector.error(`Notebook type '${notebookContribution.type}' already used`);
+	// 				continue;
+	// 			}
 
-				const existing = this.get(notebookContribution.type);
+	// 			this.add(new NotebookProviderInfo({
+	// 				extension: extension.description.identifier,
+	// 				id: notebookContribution.type,
+	// 				displayName: notebookContribution.displayName,
+	// 				selectors: notebookContribution.selector || [],
+	// 				priority: this._convertPriority(notebookContribution.priority),
+	// 				providerDisplayName: extension.description.isBuiltin ? localize('builtinProviderDisplayName', "Built-in") : extension.description.displayName || extension.description.identifier.value,
+	// 				exclusive: false
+	// 			}));
+	// 		}
+	// 	}
 
-				if (existing) {
-					if (!existing.extension && extension.description.isBuiltin && builtins.find(builtin => builtin.id === notebookContribution.type)) {
-						// we are registering an extension which is using the same view type which is already cached
-						builtinProvidersFromCache.get(notebookContribution.type)?.dispose();
-					} else {
-						extension.collector.error(`Notebook type '${notebookContribution.type}' already used`);
-						continue;
-					}
-				}
+	// 	const mementoObject = this._memento.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
+	// 	mementoObject[NotebookProviderInfoStore.CUSTOM_EDITORS_ENTRY_ID] = Array.from(this._contributedEditors.values());
+	// 	this._memento.saveMemento();
+	// }
 
-				this.add(new NotebookProviderInfo({
-					extension: extension.description.identifier,
-					id: notebookContribution.type,
-					displayName: notebookContribution.displayName,
-					selectors: notebookContribution.selector || [],
-					priority: this._convertPriority(notebookContribution.priority),
-					providerDisplayName: extension.description.displayName ?? extension.description.identifier.value,
-					exclusive: false
-				}));
-			}
-		}
+	// private _convertPriority(priority?: string) {
+	// 	if (!priority) {
+	// 		return ContributedEditorPriority.default;
+	// 	}
 
-		const mementoObject = this._memento.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
-		mementoObject[NotebookProviderInfoStore.CUSTOM_EDITORS_ENTRY_ID] = Array.from(this._contributedEditors.values());
-		this._memento.saveMemento();
-	}
+	// 	if (priority === NotebookEditorPriority.default) {
+	// 		return ContributedEditorPriority.default;
+	// 	}
 
-	private _convertPriority(priority?: string) {
-		if (!priority) {
-			return RegisteredEditorPriority.default;
-		}
+	// 	return ContributedEditorPriority.option;
 
-		if (priority === NotebookEditorPriority.default) {
-			return RegisteredEditorPriority.default;
-		}
-
-		return RegisteredEditorPriority.option;
-
-	}
+	// }
 
 	private _registerContributionPoint(notebookProviderInfo: NotebookProviderInfo): IDisposable {
 

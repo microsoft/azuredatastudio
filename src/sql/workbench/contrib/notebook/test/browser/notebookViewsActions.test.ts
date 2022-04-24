@@ -33,6 +33,8 @@ import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServic
 import sinon = require('sinon');
 import { InsertCellsModal } from 'sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
+import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -52,8 +54,8 @@ let initialNotebookContent: nb.INotebookContents = {
 			language: 'sql'
 		},
 	},
-	nbformat: 4,
-	nbformat_minor: 5
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 suite('Notebook Views Actions', function (): void {
@@ -165,6 +167,7 @@ suite('Notebook Views Actions', function (): void {
 
 	function setupServices() {
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
+		executeManagers[0].providerId = SQL_NOTEBOOK_PROVIDER;
 		executeManagers[0].sessionManager = mockSessionManager.object;
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);

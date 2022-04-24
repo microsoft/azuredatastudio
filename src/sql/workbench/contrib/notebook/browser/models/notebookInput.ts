@@ -444,10 +444,10 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 			this._providerId = providerIds.filter(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER)[0];
 			this._providers = providerIds;
 			this._standardKernels = [];
-			this._providers.forEach(provider => {
-				let standardKernels = getStandardKernelsForProvider(provider, this.notebookService);
+			for (let provider of this._providers) {
+				let standardKernels = await getStandardKernelsForProvider(provider, this.notebookService);
 				this._standardKernels.push(...standardKernels);
-			});
+			}
 			let serializationProvider = await this.notebookService.getOrCreateSerializationManager(this._providerId, this._resource);
 			this._contentLoader = this.instantiationService.createInstance(NotebookEditorContentLoader, this, serializationProvider.contentManager);
 		}

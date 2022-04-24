@@ -9,14 +9,14 @@ import { Emitter } from 'vs/base/common/event';
 import { DisposableStore, dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { NotebookDto } from 'vs/workbench/api/browser/mainThreadNotebookDto';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
+// import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 import { INotebookCellStatusBarService } from 'vs/workbench/contrib/notebook/common/notebookCellStatusBarService';
 import { INotebookCellStatusBarItemProvider, INotebookContributionData, NotebookData as NotebookData, TransientCellMetadata, TransientDocumentMetadata, TransientOptions } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { INotebookContentProvider, INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
 import { SerializableObjectWithBuffers } from 'vs/workbench/services/extensions/common/proxyIdentifier';
-import { ExtHostContext, ExtHostNotebookShape, IExtHostContext, MainContext, MainThreadNotebookShape, NotebookExtensionDescription } from '../common/extHost.protocol';
+import { ExtHostContext, ExtHostNotebookShape, IExtHostContext, MainThreadNotebookShape, NotebookExtensionDescription } from '../common/extHost.protocol'; // {{SQL CARBON EDIT}} Remove MainContext
 
-@extHostNamedCustomer(MainContext.MainThreadNotebook)
+// @extHostNamedCustomer(MainContext.MainThreadNotebook) {{SQL CARBON EDIT}} Disable VS Code notebooks
 export class MainThreadNotebooks implements MainThreadNotebookShape {
 
 	private readonly _disposables = new DisposableStore();

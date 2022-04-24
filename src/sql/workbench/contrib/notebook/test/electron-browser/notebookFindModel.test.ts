@@ -27,11 +27,13 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { ClientSession } from 'sql/workbench/services/notebook/browser/models/clientSession';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
-import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookRange, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
+import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -52,8 +54,8 @@ let expectedNotebookContent: nb.INotebookContents = {
 			display_name: 'SQL'
 		}
 	},
-	nbformat: 4,
-	nbformat_minor: 5
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let defaultUri = URI.file('/some/path.ipynb');
@@ -78,6 +80,9 @@ suite('Notebook Find Model', function (): void {
 	let configurationService: IConfigurationService;
 
 	setup(async () => {
+		let mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
+		executeManagers[0].providerId = SQL_NOTEBOOK_PROVIDER;
+		executeManagers[0].sessionManager = mockSessionManager.object;
 		sessionReady = new Deferred<void>();
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);
@@ -195,8 +200,8 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'SQL'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(markdownContent);
 
@@ -228,8 +233,8 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'Python'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(codeContent);
 		//initialize find
@@ -254,8 +259,8 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'Python'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(codeContent);
 		//initialize find
@@ -315,8 +320,8 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'Python'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(codeContent);
 		//initialize find
@@ -348,8 +353,8 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'Python'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(codeContent);
 		//initialize find
@@ -380,8 +385,8 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'SQL'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(markdownContent);
 
@@ -435,7 +440,7 @@ suite('Notebook Find Model', function (): void {
 				}
 			},
 			nbformat: 4,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(cellContent);
 
@@ -546,7 +551,7 @@ suite('Notebook Find Model', function (): void {
 				}
 			},
 			nbformat: 4,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		max_find_count = 4;
 		await initNotebookModel(cellContent);

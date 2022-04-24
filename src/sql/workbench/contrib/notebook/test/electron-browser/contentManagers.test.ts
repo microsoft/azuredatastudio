@@ -17,6 +17,7 @@ import { TestFileService } from 'vs/workbench/test/browser/workbenchTestServices
 import { IFileService, IReadFileOptions, IFileContent, IWriteFileOptions, IFileStatWithMetadata } from 'vs/platform/files/common/files';
 import { VSBuffer, VSBufferReadable } from 'vs/base/common/buffer';
 import { promisify } from 'util';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -32,8 +33,8 @@ let expectedNotebookContent: nb.INotebookContents = {
 			display_name: 'SQL'
 		}
 	},
-	nbformat: 4,
-	nbformat_minor: 2
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let notebookContentString = JSON.stringify(expectedNotebookContent);
@@ -105,8 +106,8 @@ suite('Local Content Manager', function (): void {
 					display_name: 'SQL'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 2
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let mimeContentString = JSON.stringify(mimeNotebook);
 		// when I read the content
@@ -155,8 +156,8 @@ suite('Local Content Manager', function (): void {
 					display_name: 'SQL'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 2
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let markdownNotebookContent = JSON.stringify(expectedNotebookMarkdownContent);
 		// verify that notebooks support markdown cells
@@ -189,8 +190,8 @@ suite('Local Content Manager', function (): void {
 					display_name: 'Python 3'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 2
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let streamOutputContent = JSON.stringify(expectedNotebookStreamOutputContent);
 		// Verify that the stream output type is supported
