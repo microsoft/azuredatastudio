@@ -541,7 +541,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Publish the table designer changes.
 	 */
-	$publishTableDesignerChanges(handle: number, table: azdata.designers.TableInfo): Thenable<void> { throw ni(); }
+	$publishTableDesignerChanges(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.PublishChangesResult> { throw ni(); }
 
 	/**
 	 * Generate scripts.

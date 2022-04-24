@@ -1056,7 +1056,7 @@ export namespace ProcessTableDesignerEditRequest {
 }
 
 export namespace PublishTableDesignerChangesRequest {
-	export const type = new RequestType<azdata.designers.TableInfo, void, void, void>('tabledesigner/publish');
+	export const type = new RequestType<azdata.designers.TableInfo, azdata.designers.PublishChangesResult, void, void>('tabledesigner/publish');
 }
 
 export namespace TableDesignerGenerateScriptRequest {

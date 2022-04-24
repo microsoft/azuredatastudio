@@ -38,7 +38,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	};
 
 	constructor(private readonly _provider: TableDesignerProvider,
-		private _tableInfo: azdata.designers.TableInfo,
+		public tableInfo: azdata.designers.TableInfo,
 		private _telemetryInfo: ITelemetryEventProperties,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@IAdsTelemetryService readonly _adsTelemetryService: IAdsTelemetryService,
@@ -77,7 +77,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			this.designerEditTypeDisplayValue[edit.type]).withAdditionalProperties(telemetryInfo);
 		const startTime = new Date().getTime();
 		this.updateState(this.valid, this.dirty, 'processEdit');
-		this._provider.processTableEdit(this._tableInfo, edit).then(
+		this._provider.processTableEdit(this.tableInfo, edit).then(
 			result => {
 				this._viewModel = result.viewModel;
 				this.updateState(result.isValid, !equals(this._viewModel, this._originalViewModel), undefined);
@@ -113,7 +113,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		const startTime = new Date().getTime();
 		try {
 			this.updateState(this.valid, this.dirty, 'generateScript');
-			const script = await this._provider.generateScript(this._tableInfo);
+			const script = await this._provider.generateScript(this.tableInfo);
 			this._queryEditorService.newSqlEditor({ initalContent: script });
 			this.updateState(this.valid, this.dirty);
 			notificationHandle.updateMessage(localize('tableDesigner.generatingScriptCompleted', "Script generated."));
@@ -133,16 +133,17 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		const publishEvent = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.PublishChanges).withAdditionalProperties(telemetryInfo);
 		const saveNotificationHandle = this._notificationService.notify({
 			severity: Severity.Info,
-			message: localize('tableDesigner.savingChanges', "Saving table designer changes..."),
+			message: localize('tableDesigner.savingChanges', "Publishing table designer changes..."),
 			sticky: true
 		});
 		const startTime = new Date().getTime();
 		try {
-			this.updateState(this.valid, this.dirty, 'save');
-			await this._provider.publishChanges(this._tableInfo);
+			this.updateState(this.valid, this.dirty, 'publish');
+			const result = await this._provider.publishChanges(this.tableInfo);
 			this._originalViewModel = this._viewModel;
-			this.updateState(true, false);
 			saveNotificationHandle.updateMessage(localize('tableDesigner.publishChangeSuccess', "The changes have been successfully published."));
+			this.tableInfo = result.newTableInfo;
+			this.updateState(true, false);
 			publishEvent.withAdditionalMeasurements({
 				'elapsedTimeMs': new Date().getTime() - startTime
 			}).send();
@@ -164,7 +165,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		let report;
 		try {
 			this.updateState(this.valid, this.dirty, 'generateReport');
-			report = await this._provider.generatePreviewReport(this._tableInfo);
+			report = await this._provider.generatePreviewReport(this.tableInfo);
 			reportNotificationHandle.close();
 			this.updateState(this.valid, this.dirty);
 		} catch (error) {
@@ -216,7 +217,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		}
 
 		this.updateState(this.valid, this.dirty, 'initialize');
-		this._provider.initializeTableDesigner(this._tableInfo).then(result => {
+		this._provider.initializeTableDesigner(this.tableInfo).then(result => {
 			this.doInitialization(result);
 			this._onInitialized.fire();
 		}, error => {
@@ -225,9 +226,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	private doInitialization(designerInfo: azdata.designers.TableDesignerInfo): void {
-		this.updateState(true, false);
+		this.updateState(true, this.tableInfo.isNewTable);
 		this._viewModel = designerInfo.viewModel;
-		this._originalViewModel = deepClone(this._viewModel);
+		this._originalViewModel = this.tableInfo.isNewTable ? undefined : deepClone(this._viewModel);
 		this.setDefaultData();
 
 		const tabs = [];
@@ -391,7 +392,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						itemProperties: this.addAdditionalTableProperties(options, columnProperties),
 						objectTypeDisplayName: localize('tableDesigner.columnTypeName', "Column"),
 						canAddRows: options.canAddRows,
-						canRemoveRows: options.canRemoveRows
+						canRemoveRows: options.canRemoveRows,
+						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
+						showRemoveRowConfirmation: options.showRemoveRowConfirmation
 					}
 				}
 			]
@@ -403,17 +406,17 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		const foreignKeyColumnMappingProperties: DesignerDataPropertyInfo[] = [
 			{
 				componentType: 'dropdown',
-				propertyName: designers.ForeignKeyColumnMappingProperty.ForeignKeyColumn,
+				propertyName: designers.ForeignKeyColumnMappingProperty.ForeignColumn,
 				componentProperties: {
-					title: localize('tableDesigner.foreignKeyColumn', "Foreign Key Column"),
+					title: localize('tableDesigner.foreignKey.foreignColumn', "Foreign Column"),
 					width: 150
 				}
 			},
 			{
 				componentType: 'dropdown',
-				propertyName: designers.ForeignKeyColumnMappingProperty.PrimaryKeyColumn,
+				propertyName: designers.ForeignKeyColumnMappingProperty.Column,
 				componentProperties: {
-					title: localize('tableDesigner.primaryKeyColumn', "Primary Key Column"),
+					title: localize('tableDesigner.foreignKey.column', "Column"),
 					width: 150
 				}
 			},
@@ -431,10 +434,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			},
 			{
 				componentType: 'dropdown',
-				propertyName: designers.TableForeignKeyProperty.PrimaryKeyTable,
+				propertyName: designers.TableForeignKeyProperty.ForeignTable,
 				description: localize('designer.foreignkey.description.primaryKeyTable', "The table which contains the primary or unique key column."),
 				componentProperties: {
-					title: localize('tableDesigner.PrimaryKeyTableName', "Primary Key Table"),
+					title: localize('tableDesigner.ForeignTableName', "Foreign Table"),
 					width: 200
 				}
 			},
@@ -460,14 +463,16 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				componentType: 'table',
 				propertyName: designers.TableForeignKeyProperty.Columns,
 				description: localize('designer.foreignkey.description.columnMapping', "The mapping between foreign key columns and primary key columns."),
-				group: localize('tableDesigner.foreignKeyColumns', "Column Mapping"),
+				group: localize('tableDesigner.foreignKeyColumns', "Columns"),
 				componentProperties: <DesignerTableProperties>{
-					ariaLabel: localize('tableDesigner.foreignKeyColumns', "Column Mapping"),
-					columns: [designers.ForeignKeyColumnMappingProperty.ForeignKeyColumn, designers.ForeignKeyColumnMappingProperty.PrimaryKeyColumn],
+					ariaLabel: localize('tableDesigner.foreignKeyColumns', "Columns"),
+					columns: [designers.ForeignKeyColumnMappingProperty.Column, designers.ForeignKeyColumnMappingProperty.ForeignColumn],
 					itemProperties: foreignKeyColumnMappingProperties,
 					objectTypeDisplayName: '',
 					canAddRows: options.canAddRows,
-					canRemoveRows: options.canRemoveRows
+					canRemoveRows: options.canRemoveRows,
+					removeRowConfirmationMessage: options.removeRowConfirmationMessage,
+					showRemoveRowConfirmation: options.showRemoveRowConfirmation
 				}
 			}
 		];
@@ -481,11 +486,13 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					showInPropertiesView: false,
 					componentProperties: <DesignerTableProperties>{
 						ariaLabel: localize('tableDesigner.foreignKeysTabTitle', "Foreign Keys"),
-						columns: this.getTableDisplayProperties(options, [designers.TableForeignKeyProperty.Name, designers.TableForeignKeyProperty.PrimaryKeyTable]),
+						columns: this.getTableDisplayProperties(options, [designers.TableForeignKeyProperty.Name, designers.TableForeignKeyProperty.ForeignTable]),
 						itemProperties: this.addAdditionalTableProperties(options, foreignKeyProperties),
 						objectTypeDisplayName: localize('tableDesigner.ForeignKeyTypeName', "Foreign Key"),
 						canAddRows: options.canAddRows,
-						canRemoveRows: options.canRemoveRows
+						canRemoveRows: options.canRemoveRows,
+						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
+						showRemoveRowConfirmation: options.showRemoveRowConfirmation
 					}
 				}
 			]
@@ -526,7 +533,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						itemProperties: this.addAdditionalTableProperties(options, checkConstraintProperties),
 						objectTypeDisplayName: localize('tableDesigner.checkConstraintTypeName', "Check Constraint"),
 						canAddRows: options.canAddRows,
-						canRemoveRows: options.canRemoveRows
+						canRemoveRows: options.canRemoveRows,
+						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
+						showRemoveRowConfirmation: options.showRemoveRowConfirmation
 					}
 				}
 			]
@@ -564,7 +573,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					itemProperties: this.addAdditionalTableProperties(columnSpecTableOptions, columnSpecProperties),
 					objectTypeDisplayName: '',
 					canAddRows: columnSpecTableOptions.canAddRows,
-					canRemoveRows: columnSpecTableOptions.canRemoveRows
+					canRemoveRows: columnSpecTableOptions.canRemoveRows,
+					removeRowConfirmationMessage: options.removeRowConfirmationMessage,
+					showRemoveRowConfirmation: options.showRemoveRowConfirmation
 				}
 			}
 		];
@@ -582,7 +593,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						itemProperties: this.addAdditionalTableProperties(options, indexProperties),
 						objectTypeDisplayName: localize('tableDesigner.IndexTypeName', "Index"),
 						canAddRows: options.canAddRows,
-						canRemoveRows: options.canRemoveRows
+						canRemoveRows: options.canRemoveRows,
+						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
+						showRemoveRowConfirmation: options.showRemoveRowConfirmation
 					}
 				}
 			]
@@ -616,7 +629,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	private createTelemetryInfo(): ITelemetryEventProperties {
 		let telemetryInfo = {
 			provider: this._provider.providerId,
-			isNewTable: this._tableInfo.isNewTable,
+			isNewTable: this.tableInfo.isNewTable,
 		};
 		Object.assign(telemetryInfo, this._telemetryInfo);
 		return telemetryInfo;
