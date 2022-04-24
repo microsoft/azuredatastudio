@@ -24,26 +24,33 @@ function defaultCellValueGetter(data: any): any {
 	return data;
 }
 
-function defaultSort<T extends Slick.SlickData>(args: Slick.OnSortEventArgs<T>, data: Array<T>, cellValueGetter: CellValueGetter = defaultCellValueGetter): Array<T> {
+export function defaultSort<T extends Slick.SlickData>(args: Slick.OnSortEventArgs<T>, data: Array<T>, cellValueGetter: CellValueGetter = defaultCellValueGetter): Array<T> {
 	if (!args.sortCol || !args.sortCol.field || data.length === 0) {
 		return data;
 	}
 	const field = args.sortCol.field;
 	const sign = args.sortAsc ? 1 : -1;
-	let sampleData = data[0][field];
-	sampleData = types.isObject(sampleData) ? cellValueGetter(sampleData) : sampleData;
-	let comparer: (a: T, b: T) => number;
-	if (!isNaN(Number(sampleData))) {
-		comparer = (a: T, b: T) => {
-			let anum = Number(cellValueGetter(a[field]));
-			let bnum = Number(cellValueGetter(b[field]));
-			return anum === bnum ? 0 : anum > bnum ? 1 : -1;
-		};
-	} else {
-		comparer = (a: T, b: T) => {
-			return stringCompare(cellValueGetter(a[field]), cellValueGetter(b[field]));
-		};
-	}
+	const comparer: (a: T, b: T) => number = (a: T, b: T) => {
+		const value1 = cellValueGetter(a[field]);
+		const value2 = cellValueGetter(b[field]);
+		const num1 = Number(value1);
+		const num2 = Number(value2);
+		const isValue1Number = !isNaN(num1);
+		const isValue2Number = !isNaN(num2);
+		// Order: undefined -> number -> string
+		if (value1 === undefined || value2 === undefined) {
+			return value1 === value2 ? 0 : (value1 === undefined ? -1 : 1);
+		} else if (isValue1Number || isValue2Number) {
+			if (isValue1Number && isValue2Number) {
+				return num1 === num2 ? 0 : num1 > num2 ? 1 : -1;
+			} else {
+				return isValue1Number ? -1 : 1;
+			}
+		} else {
+			return stringCompare(value1, value2);
+		}
+	};
+
 	return data.sort((a, b) => comparer(a, b) * sign);
 }
 
