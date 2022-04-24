@@ -120,7 +120,7 @@
       <source xml:lang="en">Cluster Context</source>
     </trans-unit>
     <trans-unit id="arc.controllerDashboard">
-      <source xml:lang="en">Azure Arc Data Controller Dashboard (Preview) - {0}</source>
+      <source xml:lang="en">Azure Arc Data Controller Dashboard - {0}</source>
     </trans-unit>
     <trans-unit id="arc.controllerKubeConfig">
       <source xml:lang="en">Kube Config File Path</source>
@@ -455,7 +455,7 @@
       <source xml:lang="en">A connection is required to list the databases on this instance.</source>
     </trans-unit>
     <trans-unit id="arc.miaaDashboard">
-      <source xml:lang="en">SQL managed instance - Azure Arc Dashboard (Preview) - {0}</source>
+      <source xml:lang="en">SQL managed instance - Azure Arc Dashboard - {0}</source>
     </trans-unit>
     <trans-unit id="arc.miaaProviderName">
       <source xml:lang="en">MSSQL</source>
@@ -629,7 +629,7 @@
       <source xml:lang="en">You can scale your Azure Arc-enabled</source>
     </trans-unit>
     <trans-unit id="arc.postgresDashboard">
-      <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc Dashboard (Preview) - {0}</source>
+      <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc Dashboard - {0}</source>
     </trans-unit>
     <trans-unit id="arc.postgresExtension">
       <source xml:lang="en">microsoft.azuredatastudio-postgresql</source>
@@ -1576,7 +1576,7 @@
       <source xml:lang="en">Creates an Azure Arc data controller</source>
     </trans-unit>
     <trans-unit id="resource.type.azure.arc.display.name">
-      <source xml:lang="en">Azure Arc data controller (preview)</source>
+      <source xml:lang="en">Azure Arc data controller</source>
     </trans-unit>
     <trans-unit id="should.be.integer">
       <source xml:lang="en">Value must be an integer</source>
