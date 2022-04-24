@@ -17,7 +17,7 @@ import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { TopOperationsState } from 'sql/workbench/common/editor/query/topOperationsState';
 
 const topOperationColumns: Array<Slick.Column<any>> = [
-	{ name: localize('topOperations.operation', "Operation"), field: 'operation', sortable: true },
+	{ name: localize('topOperations.operation', "Operation"), field: 'operation', sortable: true, width: 300 },
 	{ name: localize('topOperations.object', "Object"), field: 'object', sortable: true },
 	{ name: localize('topOperations.estCost', "Est Cost"), field: 'estCost', sortable: true },
 	{ name: localize('topOperations.estSubtreeCost', "Est Subtree Cost"), field: 'estSubtreeCost', sortable: true },
