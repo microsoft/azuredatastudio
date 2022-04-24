@@ -32,6 +32,7 @@ import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialo
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
+import { UpdateProjectFromDatabaseDialog } from '../dialogs/updateProjectFromDatabaseDialog';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
@@ -43,7 +44,8 @@ import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
 import { IDeployProfile } from '../models/deploy/deployProfile';
-import { FileProjectEntry, IDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
+import { EntryType, FileProjectEntry, IDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
+import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updateProject';
 
 const maxTableLength = 10;
 
@@ -453,23 +455,28 @@ export class ProjectsController {
 		return result;
 	}
 
-	public async schemaCompare(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
+	public async schemaCompare(source: dataworkspace.WorkspaceTreeItem | azdataType.IConnectionProfile, targetParam: any = undefined): Promise<void> {
 		try {
 			// check if schema compare extension is installed
 			if (vscode.extensions.getExtension(constants.schemaCompareExtensionId)) {
-				// build project
-				const dacpacPath = await this.buildProject(treeNode);
+				let sourceParam;
 
-				// check that dacpac exists
-				if (await utils.exists(dacpacPath)) {
-					TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked);
-					await vscode.commands.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
+				if (source as dataworkspace.WorkspaceTreeItem) {
+					sourceParam = this.getProjectFromContext(source as dataworkspace.WorkspaceTreeItem).projectFilePath;
 				} else {
+					sourceParam = source as azdataType.IConnectionProfile;
+				}
+
+				try {
+					TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked);
+					await vscode.commands.executeCommand(constants.schemaCompareStartCommand, sourceParam, targetParam, undefined);
+				} catch (e) {
 					throw new Error(constants.buildFailedCannotStartSchemaCompare);
 				}
 			} else {
 				throw new Error(constants.schemaCompareNotInstalled);
 			}
+
 		} catch (err) {
 			const props: Record<string, string> = {};
 			const message = utils.getErrorMessage(err);
@@ -484,6 +491,67 @@ export class ProjectsController {
 
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
+	}
+
+	public async getProjectScriptFiles(projectFilePath: string): Promise<string[]> {
+		const project = await Project.openProject(projectFilePath);
+
+		return project.files
+			.filter(f => f.fsUri.fsPath.endsWith(constants.sqlFileExtension))
+			.map(f => f.fsUri.fsPath);
+	}
+
+	public async getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
+		const project = await Project.openProject(projectFilePath);
+		return project.getProjectTargetVersion();
+	}
+
+	public async schemaComparePublishProjectChanges(operationId: string, projectFilePath: string, folderStructure: string): Promise<mssql.SchemaComparePublishProjectResult> {
+		const ext = vscode.extensions.getExtension(mssql.extension.name)!;
+		const service = (await ext.activate() as mssql.IExtension).schemaCompare;
+
+		const projectPath = path.dirname(projectFilePath);
+
+		let fs: mssql.ExtractTarget;
+
+		switch (folderStructure) {
+			case constants.file:
+				fs = mssql.ExtractTarget.file;
+				break;
+			case constants.flat:
+				fs = mssql.ExtractTarget.flat;
+				break;
+			case constants.objectType:
+				fs = mssql.ExtractTarget.objectType;
+				break;
+			case constants.schema:
+				fs = mssql.ExtractTarget.schema;
+				break;
+			case constants.schemaObjectType:
+			default:
+				fs = mssql.ExtractTarget.schemaObjectType;
+				break;
+		}
+
+		const result: mssql.SchemaComparePublishProjectResult = await service.schemaComparePublishProjectChanges(operationId, projectPath, fs, utils.getAzdataApi()!.TaskExecutionMode.execute);
+
+		const project = await Project.openProject(projectFilePath);
+
+		let toAdd: vscode.Uri[] = [];
+		result.addedFiles.forEach((f: any) => toAdd.push(vscode.Uri.file(f)));
+		await project.addToProject(toAdd);
+
+		let toRemove: vscode.Uri[] = [];
+		result.deletedFiles.forEach((f: any) => toRemove.push(vscode.Uri.file(f)));
+
+		let toRemoveEntries: FileProjectEntry[] = [];
+		toRemove.forEach(f => toRemoveEntries.push(new FileProjectEntry(f, f.path.replace(projectPath + '\\', ''), EntryType.File)));
+
+		toRemoveEntries.forEach(async f => await project.exclude(f));
+
+		await this.buildProject(project);
+
+		return result;
 	}
 
 	public async addFolderPrompt(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
@@ -778,9 +846,6 @@ export class ProjectsController {
 			}
 			return undefined;
 		}
-
-
-
 	}
 
 	/**
@@ -1244,6 +1309,118 @@ export class ProjectsController {
 			await (service as mssqlVscode.IDacFxService).createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, model.connectionUri, model.extractTarget as mssqlVscode.ExtractTarget, TaskExecutionMode.execute as unknown as mssqlVscode.TaskExecutionMode);
 		}
 		// TODO: Check for success; throw error
+	}
+
+	/**
+	 * Display dialog for user to configure existing SQL Project with the changes/differences from a database
+	 */
+	public async updateProjectFromDatabase(context: azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo | dataworkspace.WorkspaceTreeItem): Promise<UpdateProjectFromDatabaseDialog> {
+		let connection: azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined;
+		let project: Project | undefined;
+
+		try {
+			if ('connectionProfile' in context) {
+				connection = this.getConnectionProfileFromContext(context as azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo);
+			}
+		} catch { }
+
+		try {
+			if ('treeDataProvider' in context) {
+				project = this.getProjectFromContext(context as dataworkspace.WorkspaceTreeItem);
+			}
+		} catch { }
+
+		const updateProjectFromDatabaseDialog = this.getUpdateProjectFromDatabaseDialog(connection, project);
+
+		updateProjectFromDatabaseDialog.updateProjectFromDatabaseCallback = async (model) => await this.updateProjectFromDatabaseCallback(model);
+
+		await updateProjectFromDatabaseDialog.openDialog();
+
+		return updateProjectFromDatabaseDialog;
+	}
+
+	public getUpdateProjectFromDatabaseDialog(connection: azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined, project: Project | undefined): UpdateProjectFromDatabaseDialog {
+		return new UpdateProjectFromDatabaseDialog(connection, project);
+	}
+
+	public async updateProjectFromDatabaseCallback(model: UpdateProjectDataModel) {
+		try {
+			await this.updateProjectFromDatabaseApiCall(model);
+		} catch (err) {
+			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	/**
+	 * Uses the DacFx service to update an existing SQL Project with the changes/differences from a database
+	 */
+	public async updateProjectFromDatabaseApiCall(model: UpdateProjectDataModel): Promise<void> {
+		if (model.action === UpdateProjectAction.Compare) {
+			await vscode.commands.executeCommand(constants.schemaCompareRunComparisonCommand, model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
+		} else if (model.action === UpdateProjectAction.Update) {
+			await vscode.window.withProgress(
+				{
+					location: vscode.ProgressLocation.Notification,
+					title: constants.updatingProjectFromDatabase(path.basename(model.targetEndpointInfo.projectFilePath), model.sourceEndpointInfo.databaseName),
+					cancellable: false
+				}, async (_progress, _token) => {
+					return this.schemaCompareAndUpdateProject(model.sourceEndpointInfo, model.targetEndpointInfo);
+				});
+
+			void vscode.commands.executeCommand(constants.refreshDataWorkspaceCommand);
+			utils.getDataWorkspaceExtensionApi().showProjectsView();
+		} else {
+			throw new Error(`Unknown UpdateProjectAction: ${model.action}`);
+		}
+
+		return;
+	}
+
+	private async schemaCompareAndUpdateProject(source: mssql.SchemaCompareEndpointInfo, target: mssql.SchemaCompareEndpointInfo): Promise<void> {
+		// Run schema comparison
+		const ext = vscode.extensions.getExtension(mssql.extension.name)!;
+		const service = (await ext.activate() as mssql.IExtension).schemaCompare;
+		const deploymentOptions = await service.schemaCompareGetDefaultOptions();
+		const operationId = UUID.generateUuid();
+
+		target.targetScripts = await this.getProjectScriptFiles(target.projectFilePath);
+		target.dataSchemaProvider = await this.getProjectDatabaseSchemaProvider(target.projectFilePath);
+
+		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, 'SchemaComparisonStarted');
+
+		// Perform schema comparison.  Results are cached in SqlToolsService under the operationId
+		const comparisonResult: mssql.SchemaCompareResult = await service.schemaCompare(
+			operationId, source, target, utils.getAzdataApi()!.TaskExecutionMode.execute, deploymentOptions.defaultDeploymentOptions
+		);
+
+		if (!comparisonResult || !comparisonResult.success) {
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, 'SchemaComparisonFailed')
+				.withAdditionalProperties({
+					operationId: comparisonResult.operationId
+				}).send();
+			await vscode.window.showErrorMessage(constants.compareErrorMessage(comparisonResult?.errorMessage));
+			return;
+		}
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, 'SchemaComparisonFinished')
+			.withAdditionalProperties({
+				'endTime': Date.now().toString(),
+				'operationId': comparisonResult.operationId
+			}).send();
+
+		if (comparisonResult.areEqual) {
+			void vscode.window.showInformationMessage(constants.equalComparison);
+			return;
+		}
+
+		// Publish the changes (retrieved from the cache by operationId)
+		const publishResult = await this.schemaComparePublishProjectChanges(operationId, target.projectFilePath, target.folderStructure);
+
+		if (publishResult.success) {
+			void vscode.window.showInformationMessage(constants.applySuccess);
+		} else {
+			void vscode.window.showErrorMessage(constants.applyError(publishResult.errorMessage));
+		}
 	}
 
 	/**

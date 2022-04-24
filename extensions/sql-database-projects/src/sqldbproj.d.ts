@@ -35,6 +35,17 @@ declare module 'sqldbproj' {
 		 * @returns uri of the created the project or undefined if no project was created
 		 */
 		openSqlNewProjectDialog(allowedTargetPlatforms?: SqlTargetPlatform[]): Promise<vscode.Uri | undefined>;
+
+		/**
+		 * Gets the list of .sql scripts contained in a project
+		 * @param projectFilePath
+		 */
+		getProjectScriptFiles(projectFilePath: string): Promise<string[]>;
+
+		/**
+		 * Gets the Database Schema Provider version for a SQL project
+		 */
+		getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string>;
 	}
 
 	/**

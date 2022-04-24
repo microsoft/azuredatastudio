@@ -201,6 +201,7 @@ export const mockConnectionProfile: azdata.IConnectionProfile = {
 		database: 'My Database',
 		user: 'My User',
 		password: 'My Pwd',
-		authenticationType: 'SqlLogin'
+		authenticationType: 'SqlLogin',
+		connectionName: 'My Connection Name'
 	}
 };
