@@ -395,7 +395,7 @@ describe('ProjectsController', function (): void {
 					holler = generateHoller;
 					return Promise.resolve(undefined);
 				});
-
+				publishDialog.object.publishToExistingServer = true;
 				void projController.object.publishProject(proj);
 				await publishDialog.object.publishClick();
 
