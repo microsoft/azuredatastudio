@@ -92,6 +92,11 @@ declare module 'azdata' {
 			 */
 			dispose(): void;
 		}
+
+		/**
+		 * An event that is emitted when a [notebook document](#NotebookDocument) is closed.
+		 */
+		export const onDidCloseNotebookDocument: vscode.Event<NotebookDocument>;
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
