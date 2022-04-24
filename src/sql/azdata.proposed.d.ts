@@ -39,7 +39,10 @@ declare module 'azdata' {
 		}
 
 		export interface ICellOutput {
-			id?: string; // Unique identifier for this cell output
+			/**
+			 * Unique identifier for this cell output.
+			 */
+			id?: string;
 		}
 
 		export interface IExecuteResult {
@@ -53,7 +56,14 @@ declare module 'azdata' {
 		}
 
 		export interface IExecuteRequest {
-			notebookUri?: vscode.Uri; // URI of the notebook document that is sending this execute request
+			/**
+			 * URI of the notebook document that is sending this execute request.
+			 */
+			notebookUri?: vscode.Uri;
+			/**
+			 * The index of the cell which the code being executed is from.
+			 */
+			cellIndex: number;
 		}
 
 		export interface INotebookMetadata {

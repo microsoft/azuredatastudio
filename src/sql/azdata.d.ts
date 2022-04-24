@@ -5129,12 +5129,17 @@ declare module 'azdata' {
 			 */
 			text: MultilineString;
 		}
+
+		/**
+		 * Mime type -> contents mappings
+		 */
+		export type DisplayResultData = { [key: string]: any };
+
 		export interface IDisplayResult extends ICellOutput {
 			/**
-			 * Mime bundle expected to contain mime type -> contents mappings.
-			 * This is dynamic and is controlled by kernels, so cannot be more specific
+			 * The output data to display as a mapping object of mime type to contents
 			 */
-			data: { [key: string]: any };
+			data: DisplayResultData;
 		}
 		export interface IDisplayData extends IDisplayResult {
 			output_type: 'display_data';

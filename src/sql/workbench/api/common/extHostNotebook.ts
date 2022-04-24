@@ -17,6 +17,7 @@ import { VSCodeSerializationProvider } from 'sql/workbench/api/common/vscodeSeri
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { ADSNotebookController } from 'sql/workbench/api/common/adsNotebookController';
 import { VSCodeExecuteProvider } from 'sql/workbench/api/common/vscodeExecuteProvider';
+import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
 
 type Adapter = azdata.nb.NotebookSerializationProvider | azdata.nb.SerializationManager | azdata.nb.NotebookExecuteProvider | azdata.nb.ExecuteManager | azdata.nb.ISession | azdata.nb.IKernel | azdata.nb.IFuture;
 
@@ -27,7 +28,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	private _adapters = new Map<number, Adapter>();
 
 	// Notebook URI to manager lookup.
-	constructor(_mainContext: IMainContext) {
+	constructor(_mainContext: IMainContext, private _extHostNotebookDocumentsAndEditors: ExtHostNotebookDocumentsAndEditors) {
 		this._proxy = _mainContext.getProxy(SqlMainContext.MainThreadNotebook);
 	}
 
@@ -264,7 +265,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 
 	createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController {
 		let addLanguagesHandler = (id, languages) => this._proxy.$updateProviderDescriptionLanguages(id, languages);
-		let controller = new ADSNotebookController(extension, id, viewType, label, addLanguagesHandler, handler, extension.enableProposedApi ? rendererScripts : undefined);
+		let controller = new ADSNotebookController(extension, id, viewType, label, addLanguagesHandler, this._extHostNotebookDocumentsAndEditors, handler, extension.enableProposedApi ? rendererScripts : undefined);
 		let executeProvider = new VSCodeExecuteProvider(controller);
 		this.registerExecuteProvider(executeProvider);
 		return controller;

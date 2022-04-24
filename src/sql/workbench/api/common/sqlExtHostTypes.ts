@@ -633,10 +633,47 @@ export class CellRange {
 	}
 }
 
-export interface ISingleNotebookEditOperation {
+export const enum NotebookEditOperationType {
+	/**
+	 * Inserts a new cell with the specified content at the specified position.
+	 */
+	InsertCell = 0,
+	/**
+	 * Deletes a single cell.
+	 */
+	DeleteCell = 1,
+	/**
+	 * Replace the specified cell range with a new cell made from the specified content.
+	 */
+	ReplaceCells = 2,
+	/**
+	 * Update a cell with the specified new values. Currently only supports updating cell output.
+	 */
+	UpdateCell = 3,
+	/**
+	 * Updates a cell outputs with the specified new values.
+	 */
+	UpdateCellOutput = 4
+}
+
+// TODO This should be split up into separate edit operation types
+export interface INotebookEditOperation {
+	/**
+	 * The type of edit operation this is
+	 */
+	type: NotebookEditOperationType;
+	/**
+	 * The range of cells that this edit affects
+	 */
 	range: ICellRange;
+	/**
+	 * The cell metadata to use for the edit operation (only for some edit operations)
+	 */
 	cell: Partial<nb.ICellContents>;
-	forceMoveMarkers: boolean;
+	/**
+	 * Whether to append the content to the existing content or replace it.
+	 */
+	append?: boolean;
 }
 
 export class ConnectionProfile {

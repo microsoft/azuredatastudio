@@ -130,6 +130,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 		let executePromise: Promise<void>;
 		if (this._controller.executeHandler) {
 			let cell = <vscode.NotebookCell>{
+				index: content.cellIndex,
 				document: <vscode.TextDocument>{
 					uri: content.notebookUri,
 					languageId: this._kernelSpec.language,

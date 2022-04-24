@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
-import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, MoveDirection, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, MoveDirection, ViewMode, ICellEdit } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { KernelsLanguage, nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
@@ -19,7 +19,7 @@ import { NotebookContexts } from 'sql/workbench/services/notebook/browser/models
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity, INotificationService } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
-import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookEditOperation, NotebookEditOperationType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -35,7 +35,7 @@ import { isUUID } from 'vs/base/common/uuid';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
-import { AddCellEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
+import { AddCellEdit, CellOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, CellOutputDataEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
 
@@ -870,27 +870,59 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	pushEditOperations(edits: ISingleNotebookEditOperation[]): void {
+	pushEditOperations(edits: INotebookEditOperation[]): void {
 		if (this.inErrorState || !this._cells) {
 			return;
 		}
 
-		for (let edit of edits) {
-			let newCells: ICellModel[] = [];
-			if (edit.cell) {
-				// TODO: should we validate and complete required missing parameters?
-				let contents: nb.ICellContents = edit.cell as nb.ICellContents;
-				newCells.push(this._notebookOptions.factory.createCell(contents, { notebook: this, isTrusted: this._trustedMode }));
-				this.undoService.pushElement(new AddCellEdit(this, newCells[0], edit.range.start));
+		for (const edit of edits) {
+			const startCell = this.cells[edit.range.start];
+			switch (edit.type) {
+				case NotebookEditOperationType.UpdateCell:
+					if (!startCell) {
+						this.logService.warn(`Did not receive a valid starting cell when processing edit type ${edit.type}`);
+						continue;
+					}
+					startCell.processEdits([
+						new CellOutputEdit(edit.cell.outputs ?? [], !!edit.append)
+					]);
+					break;
+				case NotebookEditOperationType.UpdateCellOutput:
+					if (!startCell) {
+						this.logService.warn(`Did not receive a valid starting cell when processing edit type ${edit.type}`);
+						continue;
+					}
+					const cellEdits: ICellEdit[] = [];
+					edit.cell.outputs?.forEach(o => {
+						const targetOutput = startCell.outputs.find(o2 => o.id === o2.id);
+						if (!targetOutput) {
+							this.logService.warn(`Could not find target output with ID ${o.id} when updating cell output`);
+							return;
+						}
+						cellEdits.push(new CellOutputDataEdit(targetOutput.id, (o as nb.IDisplayData).data, !!edit.append));
+					});
+					startCell.processEdits(cellEdits);
+					break;
+				case NotebookEditOperationType.InsertCell:
+				case NotebookEditOperationType.ReplaceCells:
+				case NotebookEditOperationType.DeleteCell:
+					let newCells: ICellModel[] = [];
+					if (edit.cell) {
+						// TODO: should we validate and complete required missing parameters?
+						let contents: nb.ICellContents = edit.cell as nb.ICellContents;
+						newCells.push(this._notebookOptions.factory.createCell(contents, { notebook: this, isTrusted: this._trustedMode }));
+						this.undoService.pushElement(new AddCellEdit(this, newCells[0], edit.range.start));
+					}
+					this._cells.splice(edit.range.start, edit.range.end - edit.range.start, ...newCells);
+					if (newCells.length > 0) {
+						this.updateActiveCell(newCells[0]);
+					}
+					this._contentChangedEmitter.fire({
+						changeType: NotebookChangeType.CellsModified,
+						isDirty: true
+					});
+					break;
 			}
-			this._cells.splice(edit.range.start, edit.range.end - edit.range.start, ...newCells);
-			if (newCells.length > 0) {
-				this.updateActiveCell(newCells[0]);
-			}
-			this._contentChangedEmitter.fire({
-				changeType: NotebookChangeType.CellsModified,
-				isDirty: true
-			});
 		}
 	}
 

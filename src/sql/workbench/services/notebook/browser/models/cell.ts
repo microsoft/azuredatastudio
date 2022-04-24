@@ -12,7 +12,7 @@ import { localize } from 'vs/nls';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { CellTypes, CellType, NotebookChangeType, TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes, ICaretPosition } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes, ICaretPosition, ICellEdit, CellEditType } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -31,6 +31,8 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { IPosition } from 'vs/editor/common/core/position';
+import { CellOutputEdit, CellOutputDataEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
+import { ILogService } from 'vs/platform/log/common/log';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -93,6 +95,7 @@ export class CellModel extends Disposable implements ICellModel {
 		@optional(INotebookService) private _notebookService?: INotebookService,
 		@optional(ICommandService) private _commandService?: ICommandService,
 		@optional(IConfigurationService) private _configurationService?: IConfigurationService,
+		@optional(ILogService) private _logService?: ILogService
 	) {
 		super();
 		this.id = `${modelId++}`;
@@ -611,6 +614,7 @@ export class CellModel extends Disposable implements ICellModel {
 					if (tryMatchCellMagic(this.source[0]) !== ads_execute_command || !this._isCommandExecutionSettingEnabled) {
 						const future = kernel.requestExecute({
 							code: content,
+							cellIndex: this.notebookModel.findCellIndex(this),
 							stop_on_error: true,
 							notebookUri: this.notebookModel.notebookUri
 						}, false);
@@ -1012,6 +1016,39 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 		// defaulting to WYSIWYG
 		return CellEditModes.WYSIWYG;
+	}
+
+	public processEdits(edits: ICellEdit[]): void {
+		for (const edit of edits) {
+			switch (edit.type) {
+				case CellEditType.Output:
+					const outputEdit = edit as CellOutputEdit;
+					if (outputEdit.append) {
+						this._outputs.push(...outputEdit.outputs);
+					} else {
+						this._outputs = outputEdit.outputs;
+					}
+
+					break;
+				case CellEditType.OutputData:
+					const outputDataEdit = edit as CellOutputDataEdit;
+					const outputIndex = this._outputs.findIndex(o => outputDataEdit.outputId === o.id);
+					if (outputIndex > -1) {
+						const output = this._outputs[outputIndex] as nb.IExecuteResult;
+						// TODO: Append overwrites existing mime types currently
+						const newData = (edit as CellOutputDataEdit).append ?
+							Object.assign(output.data, outputDataEdit.data) :
+							outputDataEdit.data;
+						output.data = newData;
+						// We create a new object so that angular detects that the content has changed
+						this._outputs[outputIndex] = Object.assign({}, output);
+					} else {
+						this._logService.warn(`Unable to find output with ID ${outputDataEdit.outputId} when processing ReplaceOutputData`);
+					}
+					break;
+			}
+		}
+		this.fireOutputsChanged(false);
 	}
 
 	private setLanguageFromContents(cell: nb.ICellContents): void {

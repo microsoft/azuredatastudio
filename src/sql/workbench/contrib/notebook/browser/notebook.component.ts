@@ -29,7 +29,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction, RunParametersAction, NotebookViewsActionProvider } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
-import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
@@ -694,7 +694,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		return this.notebookParams.input.isDirty();
 	}
 
-	executeEdits(edits: ISingleNotebookEditOperation[]): boolean {
+	executeEdits(edits: INotebookEditOperation[]): boolean {
 		if (!edits || edits.length === 0) {
 			return false;
 		}

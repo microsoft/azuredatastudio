@@ -36,7 +36,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { LabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
-import { INotebookEditOperation } from 'sql/workbench/api/common/extHostNotebookEditor';
+import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export const NOTEBOOKVIEWS_SELECTOR: string = 'notebook-view-component';
 
