@@ -39,5 +39,5 @@
 	"sqlDatabaseProjects.autorestSqlVersion": "Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.",
 	"sqlDatabaseProjects.welcome": "No database projects currently open.\n[New Project](command:sqlDatabaseProjects.new)\n[Open Project](command:sqlDatabaseProjects.open)\n[Create Project From Database](command:sqlDatabaseProjects.importDatabase)",
 
-	"sqlDatabaseProjects.addSqlBinding":"Add SQL Binding"
+	"sqlDatabaseProjects.addSqlBinding":"Add SQL Binding (preview)"
 }
