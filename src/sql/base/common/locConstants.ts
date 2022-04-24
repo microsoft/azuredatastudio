@@ -39,6 +39,7 @@ export const fileActionsContributionNewQuery = localize('newQuery', "New Query")
 export const fileActionsContributionMiNewQuery = localize({ key: 'miNewQuery', comment: ['&& denotes a mnemonic'] }, "New &&Query");
 export const fileActionsContributionMiNewNotebook = localize({ key: 'miNewNotebook', comment: ['&& denotes a mnemonic'] }, "&&New Notebook");
 export const filesContributionMaxMemoryForLargeFilesMB = localize('maxMemoryForLargeFilesMB', "Controls the memory available to Azure Data Studio after restart when trying to open large files. Same effect as specifying `--max-memory=NEWSIZE` on the command line.");
+export const watcherExclude = localize('sql.watcherExclude', "Configure glob patterns of file paths to exclude from file watching. Patterns must match on absolute paths (i.e. prefix with ** or the full path to match properly). Changing this setting requires a restart. When you experience Azure Data Studio consuming lots of CPU time on startup, you can exclude large folders to reduce the initial load.");
 export function localizationsContributionUpdateLocale(locale: string): string { return localize('updateLocale', "Would you like to change Azure Data Studio's UI language to {0} and restart?", locale); }
 export function localizationsContributionActivateLanguagePack(locale: string): string { return localize('activateLanguagePack', "In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.", locale); }
 export const watermarkNewSqlFile = localize('watermark.newSqlFile', "New SQL File");
