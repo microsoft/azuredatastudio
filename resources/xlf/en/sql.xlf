@@ -718,6 +718,9 @@
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/editor/tableDesigner/tableDesignerInput" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableDesigner.OperationInProgressWarning">
+      <source xml:lang="en">The operation cannot be performed while another operation is in progress.</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.newTable">
       <source xml:lang="en">New Table</source>
     </trans-unit>
@@ -5871,6 +5874,15 @@ Error: {1}</source>
     <trans-unit id="designer.foreignkey.description.primaryKeyTable">
       <source xml:lang="en">The table which contains the primary or unique key column.</source>
     </trans-unit>
+    <trans-unit id="designer.index.column.description.name">
+      <source xml:lang="en">The name of the column.</source>
+    </trans-unit>
+    <trans-unit id="designer.index.description.columns">
+      <source xml:lang="en">The columns of the index.</source>
+    </trans-unit>
+    <trans-unit id="designer.index.description.name">
+      <source xml:lang="en">The name of the index.</source>
+    </trans-unit>
     <trans-unit id="designer.table.description.description">
       <source xml:lang="en">Description for the table.</source>
     </trans-unit>
@@ -5882,6 +5894,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.ForeignKeyTypeName">
       <source xml:lang="en">Foreign Key</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.IndexTypeName">
+      <source xml:lang="en">Index</source>
     </trans-unit>
     <trans-unit id="tableDesigner.PrimaryKeyTableName">
       <source xml:lang="en">Primary Key Table</source>
@@ -5972,6 +5987,18 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.generatingScriptCompleted">
       <source xml:lang="en">Script generated.</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.index.column.name">
+      <source xml:lang="en">Column</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.indexColumns">
+      <source xml:lang="en">Columns</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.indexName">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.indexesTabTitle">
+      <source xml:lang="en">Indexes</source>
     </trans-unit>
     <trans-unit id="tableDesigner.nameTitle">
       <source xml:lang="en">Table name</source>
