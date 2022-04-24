@@ -136,6 +136,9 @@
     <trans-unit id="connectionFailedError">
       <source xml:lang="en">Connection failed error: '{0}'</source>
     </trans-unit>
+    <trans-unit id="connectionProfile">
+      <source xml:lang="en">Select a connection profile</source>
+    </trans-unit>
     <trans-unit id="connectionRadioButtonLabel">
       <source xml:lang="en">Connections</source>
     </trans-unit>
@@ -389,6 +392,9 @@
     </trans-unit>
     <trans-unit id="extractTargetRequired">
       <source xml:lang="en">Target information for extract is required to create database project.</source>
+    </trans-unit>
+    <trans-unit id="failedToGetConnectionString">
+      <source xml:lang="en">An error occurred generating the connection string for the selected connection</source>
     </trans-unit>
     <trans-unit id="failedToParse">
       <source xml:lang="en">Failed to parse "{0}": {1}.</source>
@@ -747,6 +753,12 @@
     <trans-unit id="selectConnection">
       <source xml:lang="en">Select connection</source>
     </trans-unit>
+    <trans-unit id="selectConnectionError">
+      <source xml:lang="en">Failed to set connection string app setting: {0}</source>
+    </trans-unit>
+    <trans-unit id="selectConnectionString">
+      <source xml:lang="en">Select SQL connection string method</source>
+    </trans-unit>
     <trans-unit id="selectDacpac">
       <source xml:lang="en">Select .dacpac</source>
     </trans-unit>
@@ -876,6 +888,9 @@
     <trans-unit id="unableToPerformAction">
       <source xml:lang="en">Unable to locate '{0}' target: '{1}'</source>
     </trans-unit>
+    <trans-unit id="unableToSetConnectionString">
+      <source xml:lang="en">Failed to set connection string app setting</source>
+    </trans-unit>
     <trans-unit id="unexpectedProjectContext">
       <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
     </trans-unit>
@@ -905,6 +920,9 @@
     </trans-unit>
     <trans-unit id="updatingProjectFromDatabase">
       <source xml:lang="en">Updating {0} from {1}...</source>
+    </trans-unit>
+    <trans-unit id="userConnectionString">
+      <source xml:lang="en">Enter connection string</source>
     </trans-unit>
     <trans-unit id="userSelectionCancelled">
       <source xml:lang="en">User has cancelled selection for how to run autorest.</source>

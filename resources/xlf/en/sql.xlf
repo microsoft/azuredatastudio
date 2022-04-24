@@ -225,6 +225,9 @@
     <trans-unit id="vscodeFunctionalityNotSupportedError">
       <source xml:lang="en">This VS Code functionality is not supported in Azure Data Studio.</source>
     </trans-unit>
+    <trans-unit id="vscodeInvalidArgumentsError">
+      <source xml:lang="en">Invalid arguments</source>
+    </trans-unit>
     <trans-unit id="watermark.newNotebook">
       <source xml:lang="en">New Notebook</source>
     </trans-unit>
@@ -596,7 +599,7 @@
       <source xml:lang="en">A NavigationProvider with valid providerId must be passed to this method</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/api/common/vscodeExecuteProvider" source-language="en" datatype="plaintext"><body>
+  <file original="src/sql/workbench/api/common/notebooks/vscodeExecuteProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="errorStartBeforeReady">
       <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
     </trans-unit>
