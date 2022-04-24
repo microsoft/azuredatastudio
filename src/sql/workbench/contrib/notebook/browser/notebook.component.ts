@@ -133,9 +133,17 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			}
 			return false;
 		}));
+	}
+
+	ngOnInit() {
+		// We currently have to hook this onto window because the Notebook component currently doesn't support having document focus
+		// on its elements (we have a "virtual" focus that is updated as users click or navigate through cells). So some of the keyboard
+		// events we care about are fired when the document focus is on something else - typically the root window.
 		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
-			if (this.isActive() && this.model.activeCell) {
+			// Make sure that the current active element is an ancestor - this is to prevent us from handling events when the focus is
+			// on some other dialog or part of the app. 
+			if (DOM.isAncestor(this.container.nativeElement, document.activeElement) && this.isActive() && this.model.activeCell) {
+				const event = new StandardKeyboardEvent(e);
 				if (!this.model.activeCell?.isEditMode) {
 					if (event.keyCode === KeyCode.DownArrow) {
 						let next = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
@@ -167,9 +175,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				}
 			}
 		}));
-	}
-
-	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
