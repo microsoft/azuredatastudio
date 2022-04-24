@@ -4088,6 +4088,31 @@ Error: {1}</source>
       <source xml:lang="en">Top Operations</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/queryplan2/browser/actions/propertiesAction" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="queryPlanPropertiesActionLabel">
+      <source xml:lang="en">Properties</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/queryplan2/browser/queryPlan" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="queryIndex">
+      <source xml:lang="en">Query {0}: </source>
+    </trans-unit>
+    <trans-unit id="queryPlan2.configTitle">
+      <source xml:lang="en">Query Plan</source>
+    </trans-unit>
+    <trans-unit id="queryPlan2.featureEnabledDescription">
+      <source xml:lang="en">Controls whether the new query plan feature is enabled. Default value is false.</source>
+    </trans-unit>
+    <trans-unit id="queryPlanTitle">
+      <source xml:lang="en">Query Plan</source>
+    </trans-unit>
+    <trans-unit id="relativeToTheScript">
+      <source xml:lang="en">(relative to the script):</source>
+    </trans-unit>
+    <trans-unit id="relativeToTheScriptWithCost">
+      <source xml:lang="en">(relative to the script): {0}%</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="deployment.title">
       <source xml:lang="en">New Deployment...</source>
