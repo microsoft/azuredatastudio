@@ -454,7 +454,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
 		this._userNameInputBox.hideMessage();
 		this._passwordInputBox.hideMessage();
-		this._rememberPasswordCheckBox.checked = false;
 		this._azureAccountDropdown.hideMessage();
 		this._azureTenantDropdown.hideMessage();
 		this._tableContainer.classList.add('hide-username');
