@@ -194,7 +194,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 							continue;
 						}
 						try {
-							connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, false);
+							connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, false, false);
 						} catch (e) {
 							// failed to get connection string for selected connection and will go back to prompt for connection string methods
 							console.warn(e);
