@@ -227,7 +227,10 @@ export class WizardModal extends Modal {
 				.withAdditionalProperties({
 					wizardName: this._wizard.name,
 					pageNavigationFrom: this._wizard.pages[prevPageIndex].pageName ?? prevPageIndex,
-					pageNavigationTo: this._wizard.pages[index].pageName ?? index
+					pageNavigationTo: this._wizard.pages[index].pageName ?? index,
+					pageNavigationFromIndex: prevPageIndex,
+					pageNavigationToIndex: index,
+					direction: index > prevPageIndex ? 'forward' : 'backward'
 				}).send();
 		}
 	}
