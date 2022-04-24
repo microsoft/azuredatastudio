@@ -207,7 +207,7 @@ export class SkuEditParametersDialog {
 			this.dialog.okButton.label = SkuEditParametersDialog.UpdateButtonText;
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 
-			this.dialog.cancelButton.onClick(() => this._isOpen = false);
+			this._disposables.push(this.dialog.cancelButton.onClick(() => this._isOpen = false));
 
 			const dialogSetupPromises: Thenable<void>[] = [];
 			dialogSetupPromises.push(this.initializeDialog(this.dialog));
