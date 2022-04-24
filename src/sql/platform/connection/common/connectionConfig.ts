@@ -13,6 +13,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import * as nls from 'vs/nls';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { deepClone } from 'vs/base/common/objects';
+import { isDisposable } from 'vs/base/common/lifecycle';
 
 export const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
 export const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
@@ -99,8 +100,10 @@ export class ConnectionConfig {
 
 				// Remove the profile if already set
 				let sameProfileInList = profiles.find(value => {
-					let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
-					return matcher(providerConnectionProfile, connectionProfile);
+					const providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
+					const match = matcher(providerConnectionProfile, connectionProfile);
+					providerConnectionProfile.dispose();
+					return match;
 				});
 				if (sameProfileInList) {
 					let profileIndex = profiles.findIndex(value => value === sameProfileInList);
@@ -111,7 +114,14 @@ export class ConnectionConfig {
 					profiles.push(newProfile);
 				}
 
-				return this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, ConfigurationTarget.USER).then(() => connectionProfile);
+				return this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, ConfigurationTarget.USER).then(() => {
+					profiles.forEach(p => {
+						if (isDisposable(p)) {
+							p.dispose();
+						}
+					});
+					return connectionProfile;
+				});
 			});
 		} else {
 			return Promise.resolve(profile);

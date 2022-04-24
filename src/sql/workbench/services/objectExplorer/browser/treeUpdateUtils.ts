@@ -11,7 +11,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, isDisposable } from 'vs/base/common/lifecycle';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 
@@ -125,8 +125,12 @@ export class TreeUpdateUtils {
 
 			let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 			if (treeInput) {
-				if (treeInput !== tree.getInput()) {
+				const originalInput = tree.getInput();
+				if (treeInput !== originalInput) {
 					return tree.setInput(treeInput).then(async () => {
+						if (isDisposable(originalInput)) {
+							originalInput.dispose();
+						}
 						// Make sure to expand all folders that where expanded in the previous session
 						if (targetsToExpand) {
 							await tree.expandAll(targetsToExpand);
