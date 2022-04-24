@@ -365,23 +365,25 @@
                       ]
                     },
                     {
-                      "title": "%arc.data.controller.admin.account.title%",
+                      "title": "%arc.data.controller.metrics.and.logs.dashboard.credentials.title%",
                       "fields": [
                         {
-                          "label": "%arc.data.controller.admin.account.name%",
+                          "label": "%arc.data.controller.metrics.and.logs.dashboard.credentials.username%",
+                          "description": "%arc.data.controller.metrics.and.logs.dashboard.credentials.username.description%",
                           "variableName": "AZDATA_NB_VAR_ARC_ADMIN_USERNAME",
                           "type": "text",
                           "required": true,
-                          "defaultValue": "arcadmin",
+                          "defaultValue": "",
                           "enabled": true
                         },
                         {
-                          "label": "%arc.data.controller.admin.account.password%",
+                          "label": "%arc.data.controller.metrics.and.logs.dashboard.credentials.password%",
+                          "description": "%arc.data.controller.metrics.and.logs.dashboard.credentials.password.description%",
                           "variableName": "AZDATA_NB_VAR_ARC_ADMIN_PASSWORD",
                           "type": "sql_password",
                           "userName": "arcadmin",
                           "confirmationRequired": true,
-                          "confirmationLabel": "%arc.data.controller.admin.account.confirm.password%",
+                          "confirmationLabel": "%arc.data.controller.metrics.and.logs.dashboard.credentials.confirm.password%",
                           "defaultValue": "",
                           "required": true
                         }
