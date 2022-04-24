@@ -15,19 +15,20 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { request } from 'https';
 import * as mkdirp from 'mkdirp';
+import * as minimist from 'minimist';
 
-export function main(isWeb: boolean = false): void {
-	if (isWeb) {
-		setupQueryEditorWebTests();
-		setupNotebookViewTests();
-		setupAddRemoteBookDialogTests();
+export function main(opts: minimist.ParsedArgs): void {
+	if (opts.web) {
+		setupQueryEditorWebTests(opts);
+		setupNotebookViewTests(opts);
+		setupAddRemoteBookDialogTests(opts);
 	} else {
-		setupQueryEditorTests();
-		setupNotebookTests();
-		setupNotebookViewTests();
-		setupCreateBookDialogTests();
-		setupAddRemoteBookDialogTests();
-		setupImportTests();
+		setupQueryEditorTests(opts);
+		setupNotebookTests(opts);
+		setupNotebookViewTests(opts);
+		setupCreateBookDialogTests(opts);
+		setupAddRemoteBookDialogTests(opts);
+		setupImportTests(opts);
 	}
 }
 
@@ -42,7 +43,7 @@ const sqliteUrl = `https://github.com/Microsoft/azuredatastudio-sqlite/releases/
 
 export async function setup(app: ApplicationOptions): Promise<void> {
 	console.log('*** Downloading test extensions');
-	const releaseVersion = app.web ? '1.6.0' : '1.5.0';
+	const releaseVersion = '1.7.0';
 	const requestUrl = sqliteUrl.replace(RELEASE_VERSION, releaseVersion).replace(PLATFORM, process.platform).replace(RUNTIME, getRuntime(app.web || app.remote || false)).replace(VERSION, getVersion(app.web || app.remote || false));
 	const zip = await fetch(requestUrl);
 	if (!zip) {

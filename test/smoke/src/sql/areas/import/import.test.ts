@@ -4,9 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Application } from '../../../../../automation';
+import * as minimist from 'minimist';
+import { afterSuite, beforeSuite } from '../../../utils';
 
-export function setup() {
+export function setup(opts: minimist.ParsedArgs) {
 	describe('Import', () => {
+		beforeSuite(opts);
+		afterSuite(opts);
 
 		it('Opening import wizard without connection opens connection dialog', async function () {
 			const app = this.app as Application;
