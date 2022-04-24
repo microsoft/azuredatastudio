@@ -418,6 +418,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				if (account) {
 					await this._accountManagementService.refreshAccount(account);
 					await this.fillInAzureAccountOptions();
+					this.updateRefreshCredentialsLink();
 				}
 			}));
 		}
