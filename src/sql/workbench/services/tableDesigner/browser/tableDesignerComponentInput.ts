@@ -16,7 +16,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { TableDesignerPublishDialogResult, TableDesignerPublishDialog } from 'sql/workbench/services/tableDesigner/browser/tableDesignerPublishDialog';
 import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { TelemetryAction, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
+const ErrorDialogTitle: string = localize('tableDesigner.ErrorDialogTitle', "Table Designer Error");
 export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	private _viewModel: DesignerViewModel;
@@ -45,7 +47,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		@INotificationService private readonly _notificationService: INotificationService,
 		@IAdsTelemetryService readonly _adsTelemetryService: IAdsTelemetryService,
 		@IQueryEditorService private readonly _queryEditorService: IQueryEditorService,
-		@IInstantiationService private readonly _instantiationService: IInstantiationService) {
+		@IInstantiationService private readonly _instantiationService: IInstantiationService,
+		@IErrorMessageService private readonly _errorMessageService: IErrorMessageService) {
 	}
 
 	get valid(): boolean {
@@ -96,7 +99,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				}).send();
 			},
 			error => {
-				this._notificationService.error(localize('tableDesigner.errorProcessingEdit', "An error occured while processing the change: {0}", error?.message ?? error));
+				this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.errorProcessingEdit', "An error occured while processing the change: {0}", error?.message ?? error));
 				this.updateState(this.valid, this.dirty);
 				this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner,
 					this.designerEditTypeDisplayValue[edit.type]).withAdditionalProperties(telemetryInfo).send();
@@ -123,8 +126,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				'elapsedTimeMs': new Date().getTime() - startTime
 			}).send();
 		} catch (error) {
-			notificationHandle.updateSeverity(Severity.Error);
-			notificationHandle.updateMessage(localize('tableDesigner.generateScriptError', "An error occured while generating the script: {0}", error?.message ?? error));
+			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.generateScriptError', "An error occured while generating the script: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
 			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.GenerateScript).withAdditionalProperties(telemetryInfo).send();
 		}
@@ -152,8 +154,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				'elapsedTimeMs': new Date().getTime() - startTime
 			}).send();
 		} catch (error) {
-			saveNotificationHandle.updateSeverity(Severity.Error);
-			saveNotificationHandle.updateMessage(localize('tableDesigner.publishChangeError', "An error occured while publishing changes: {0}", error?.message ?? error));
+			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.publishChangeError', "An error occured while publishing changes: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
 			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.PublishChanges).withAdditionalProperties(telemetryInfo).send();
 		}
@@ -173,8 +174,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			reportNotificationHandle.close();
 			this.updateState(this.valid, this.dirty);
 		} catch (error) {
-			reportNotificationHandle.updateSeverity(Severity.Error);
-			reportNotificationHandle.updateMessage(localize('tableDesigner.generatePreviewReportError', "An error occured while generating preview report: {0}", error?.message ?? error));
+			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.generatePreviewReportError', "An error occured while generating preview report: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
 			return;
 		}
@@ -225,7 +225,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			this.doInitialization(result);
 			this._onInitialized.fire();
 		}, error => {
-			this._notificationService.error(localize('tableDesigner.errorInitializingTableDesigner', "An error occured while initializing the table designer: {0}", error?.message ?? error));
+			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.errorInitializingTableDesigner', "An error occured while initializing the table designer: {0}", error?.message ?? error));
 		});
 	}
 
