@@ -651,6 +651,9 @@
     <trans-unit id="designer.loadingDesignerCompleted">
       <source xml:lang="en">Designer is loaded</source>
     </trans-unit>
+    <trans-unit id="designer.messagesTabTitle">
+      <source xml:lang="en">Errors ({0})</source>
+    </trans-unit>
     <trans-unit id="designer.newRowText">
       <source xml:lang="en">Add New</source>
     </trans-unit>
@@ -674,6 +677,9 @@
     </trans-unit>
     <trans-unit id="designer.removeRowText">
       <source xml:lang="en">Remove</source>
+    </trans-unit>
+    <trans-unit id="designer.scriptTabTitle">
+      <source xml:lang="en">Scripts</source>
     </trans-unit>
     <trans-unit id="tableDesigner.unknownComponentType">
       <source xml:lang="en">The component type: {0} is not supported</source>
