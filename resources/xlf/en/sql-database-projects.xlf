@@ -795,6 +795,9 @@
     <trans-unit id="selectDatabase">
       <source xml:lang="en">Select database</source>
     </trans-unit>
+    <trans-unit id="selectFileString">
+      <source xml:lang="en">Select File</source>
+    </trans-unit>
     <trans-unit id="selectFolderStructure">
       <source xml:lang="en">Select folder structure</source>
     </trans-unit>
@@ -1004,6 +1007,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.addDatabaseReference">
       <source xml:lang="en">Add Database Reference</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.addExistingItem">
+      <source xml:lang="en">Add Existing Item...</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.addSqlBinding">
       <source xml:lang="en">Add SQL Binding (preview)</source>
