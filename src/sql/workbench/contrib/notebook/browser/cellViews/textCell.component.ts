@@ -366,8 +366,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private updateCellSource(): void {
 		let textOutputElement = <HTMLElement>this.output.nativeElement;
 		let newCellSource: string = this._htmlMarkdownConverter.convert(textOutputElement.innerHTML);
-		// reset cell attachments to remove unused image data since we're going to go through each of them again
-		this.cellModel.attachments = {};
 		this.cellModel.source = newCellSource;
 		this._changeRef.detectChanges();
 	}
