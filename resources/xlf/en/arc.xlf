@@ -980,18 +980,6 @@
     <trans-unit id="arc.cores-request.label">
       <source xml:lang="en">Cores Request</source>
     </trans-unit>
-    <trans-unit id="arc.data.controller.admin.account.confirm.password">
-      <source xml:lang="en">Confirm password</source>
-    </trans-unit>
-    <trans-unit id="arc.data.controller.admin.account.name">
-      <source xml:lang="en">Data controller login</source>
-    </trans-unit>
-    <trans-unit id="arc.data.controller.admin.account.password">
-      <source xml:lang="en">Password</source>
-    </trans-unit>
-    <trans-unit id="arc.data.controller.admin.account.title">
-      <source xml:lang="en">Administrator account</source>
-    </trans-unit>
     <trans-unit id="arc.data.controller.agreement">
       <source xml:lang="en">I accept {0} and {1}.</source>
     </trans-unit>
@@ -1054,6 +1042,24 @@
     </trans-unit>
     <trans-unit id="arc.data.controller.location">
       <source xml:lang="en">Location</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.confirm.password">
+      <source xml:lang="en">Confirm password</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.password">
+      <source xml:lang="en">Password</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.password.description">
+      <source xml:lang="en">Enter the password that will be used to log in to the metrics and logs dashboards.</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.title">
+      <source xml:lang="en">Metrics and Logs Dashboard Credentials</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.username">
+      <source xml:lang="en">Username</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.username.description">
+      <source xml:lang="en">Enter the username that will be used for the metrics and logs dashboards.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.name">
       <source xml:lang="en">Data controller name</source>
