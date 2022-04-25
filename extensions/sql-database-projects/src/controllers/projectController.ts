@@ -534,21 +534,23 @@ export class ProjectsController {
 
 		const result: mssql.SchemaComparePublishProjectResult = await service.schemaComparePublishProjectChanges(operationId, projectPath, fs, utils.getAzdataApi()!.TaskExecutionMode.execute);
 
-		const project = await Project.openProject(projectFilePath);
+		if (result.errorMessage === '') {
+			const project = await Project.openProject(projectFilePath);
 
-		let toAdd: vscode.Uri[] = [];
-		result.addedFiles.forEach((f: any) => toAdd.push(vscode.Uri.file(f)));
-		await project.addToProject(toAdd);
+			let toAdd: vscode.Uri[] = [];
+			result.addedFiles.forEach((f: any) => toAdd.push(vscode.Uri.file(f)));
+			await project.addToProject(toAdd);
 
-		let toRemove: vscode.Uri[] = [];
-		result.deletedFiles.forEach((f: any) => toRemove.push(vscode.Uri.file(f)));
+			let toRemove: vscode.Uri[] = [];
+			result.deletedFiles.forEach((f: any) => toRemove.push(vscode.Uri.file(f)));
 
-		let toRemoveEntries: FileProjectEntry[] = [];
-		toRemove.forEach(f => toRemoveEntries.push(new FileProjectEntry(f, f.path.replace(projectPath + '\\', ''), EntryType.File)));
+			let toRemoveEntries: FileProjectEntry[] = [];
+			toRemove.forEach(f => toRemoveEntries.push(new FileProjectEntry(f, f.path.replace(projectPath + '\\', ''), EntryType.File)));
 
-		toRemoveEntries.forEach(async f => await project.exclude(f));
+			toRemoveEntries.forEach(async f => await project.exclude(f));
 
-		await this.buildProject(project);
+			await this.buildProject(project);
+		}
 
 		return result;
 	}

@@ -898,8 +898,7 @@ export class SchemaCompareMainWindow {
 						throw new Error(`Unsupported SchemaCompareEndpointType: ${getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)}`);
 				}
 
-				if (!result || !result.success) {
-
+				if (!result || !result.success || result.errorMessage !== '') {
 					TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, getTelemetryErrorType(result?.errorMessage))
 						.withAdditionalProperties({
 							'operationId': this.comparisonResult.operationId,
@@ -912,6 +911,11 @@ export class SchemaCompareMainWindow {
 					this.generateScriptButton.title = loc.generateScriptEnabledMessage;
 					this.applyButton.enabled = true;
 					this.applyButton.title = loc.applyEnabledMessage;
+				} else if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
+					const workspaceApi = getDataWorkspaceExtensionApi();
+					workspaceApi.showProjectsView();
+
+					void vscode.window.showInformationMessage(loc.applySuccess);
 				}
 
 				TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyEnded')
@@ -920,13 +924,6 @@ export class SchemaCompareMainWindow {
 						'operationId': this.comparisonResult.operationId,
 						'targetType': getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)
 					}).send();
-
-				if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
-					const workspaceApi = getDataWorkspaceExtensionApi();
-					workspaceApi.showProjectsView();
-
-					void vscode.window.showInformationMessage(loc.applySuccess);
-				}
 			}
 		});
 	}
