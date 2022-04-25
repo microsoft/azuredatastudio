@@ -152,6 +152,9 @@ export class TableCellEditorFactory {
 					this._component.onValueChange(async () => {
 						await this.commitEdit();
 					});
+					this._component.onBlur(async () => {
+						await this.commitEdit();
+					});
 				} else {
 					this._component = new SelectBox([], undefined, self._contextViewProvider);
 					this._component.render(container);
