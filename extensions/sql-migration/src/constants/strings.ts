@@ -17,10 +17,13 @@ export function WIZARD_TITLE(instanceName: string): string {
 }
 // //#endregion
 
-// Resume Migration Dialog
+// Save and close
+export const SAVE_AND_CLOSE = localize('sql.migration.save.close', "Save and close");
+export const SAVE_AND_CLOSE_POPUP = localize('sql.migration.save.close.popup', "Configuration saved. Performance data collection will remain running in the background. You can stop the collection when you want to.");
 export const RESUME_TITLE = localize('sql.migration.resume.title', "Run migration workflow again");
-export const START_MIGRATION = localize('sql.migration.resume.start', "Start a new session");
-export const CONTINUE_MIGRATION = localize('sql.migration.resume.continue', "Resume previously saved session");
+export const START_NEW_SESSION = localize('sql.migration.start.session', "Start a new session");
+export const RESUME_SESSION = localize('sql.migration.resume.session', "Resume previously saved session");
+export const OPEN_SAVED_INFO_ERROR = localize("sql.migration.invalid.savedInfo", 'Cannot retrieve saved session. Try again by selecting new session.');
 
 // Databases for assessment
 export const DATABASE_FOR_ASSESSMENT_PAGE_TITLE = localize('sql.migration.database.assessment.title', "Databases for assessment");
@@ -267,6 +270,8 @@ export const ACCOUNTS_SELECTION_PAGE_TITLE = localize('sql.migration.wizard.acco
 export const ACCOUNTS_SELECTION_PAGE_DESCRIPTION = localize('sql.migration.wizard.account.description', "Select an Azure account linked to Azure Data Studio, or link one now.");
 export const ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR = localize('sql.migration.wizard.account.noAccount.error', "Add a linked account and then try again.");
 export const ACCOUNT_LINK_BUTTON_LABEL = localize('sql.migration.wizard.account.add.button.label', "Link account");
+export const INVALID_ACCOUNT_ERROR = localize('sql.migration.invalid.account.error', "To continue, select a valid Azure account.");
+
 export function accountLinkedMessage(count: number): string {
 	return count === 1 ? localize('sql.migration.wizard.account.count.single.message', '{0} account linked', count) : localize('sql.migration.wizard.account.count.multiple.message', '{0} accounts linked', count);
 }
@@ -665,8 +670,6 @@ export const SQL_MIGRATION_SERVICE_DETAILS_AUTH_KEYS_TITLE = localize('sql.migra
 export const SQL_MIGRATION_SERVICE_DETAILS_STATUS_UNAVAILABLE = localize('sql.migration.service.details.status.unavailable', "-- unavailable --");
 
 //Source Credentials page.
-export const SAVE_AND_CLOSE = localize('sql.migration.save.close', "Save and close");
-export const SAVE_AND_CLOSE_POPUP = localize('sql.migration.save.close.popup', "Configuration saved. Performance data collection will remain running in the background. You can stop the collection when you want to.");
 export const SOURCE_CONFIGURATION = localize('sql.migration.source.configuration', "Source configuration");
 export const SOURCE_CREDENTIALS = localize('sql.migration.source.credentials', "Source credentials");
 export const ENTER_YOUR_SQL_CREDS = localize('sql.migration.enter.your.sql.cred', "Enter the credentials for the source SQL Server instance. These credentials will be used while migrating databases to Azure SQL.");

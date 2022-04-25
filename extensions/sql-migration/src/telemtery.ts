@@ -19,6 +19,7 @@ export enum TelemetryViews {
 	MigrationCutoverDialog = 'MigrationCutoverDialog',
 	MigrationStatusDialog = 'MigrationStatusDialog',
 	MigrationWizardAccountSelectionPage = 'MigrationWizardAccountSelectionPage',
+	MigrationWizardTaSkuRecommendationPage = 'MigrationWizardTaSkuRecommendationPage',
 	MigrationWizardTargetSelectionPage = 'MigrationWizardTargetSelectionPage',
 	MigrationWizardIntegrationRuntimePage = 'MigrationWizardIntegrationRuntimePage',
 	MigrationWizardSummaryPage = 'MigrationWizardSummaryPage',
