@@ -144,10 +144,10 @@ export function timeoutPromise(errorMessage: string, ms: number = 10000): Promis
  * @param folderPath selected project folder path
  * @returns a promise with the unique file name, or undefined
  */
-export async function getUniqueFileName(fileName: string, folderPath?: string,): Promise<string | undefined> {
+export async function getUniqueFileName(fileName: string, folderPath?: string): Promise<string | undefined> {
 	if (!folderPath) {
 		// user is creating a brand new azure function project
-		return;
+		return undefined;
 	}
 
 	let count: number = 0;

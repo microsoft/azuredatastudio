@@ -243,6 +243,8 @@ export async function addNugetReferenceToProjectFile(selectedProjectFile: string
 /**
  * Adds the Sql Connection String to the local.settings.json
  * @param connectionString of the SQL Server connection that was chosen by the user
+ * @param projectFile path of the azure function project file
+ * @param settingName name of the setting to add to the local.settings.json
  */
 export async function addConnectionStringToConfig(connectionString: string, projectFile: string, settingName: string = constants.sqlConnectionStringSetting): Promise<void> {
 	const settingsFile = await getSettingsFile(projectFile);
@@ -510,10 +512,10 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 /**
  * Prompts the user to include password in the connection string and updates the connection string based on user input
  * @param connectionInfo connection info from the connection profile user selected
- * @param localSettingsPath path to the local.settings.json file (undefined when creating a new azure function project)
+ * @param localSettingsPath path to the local.settings.json file
  * @returns the updated connection string based on password prompts
  */
-export async function promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo: IConnectionInfo, localSettingsPath?: string): Promise<string | undefined> {
+export async function promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo: IConnectionInfo, localSettingsPath: string): Promise<string | undefined> {
 	let includePassword: string | undefined;
 	let connectionString: string = '';
 	let connectionDetails: ConnectionDetails;
@@ -557,7 +559,7 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 		if (includePassword !== constants.yesString && !userPassword && connectionInfo?.authenticationType === 'SqlLogin') {
 			// if user does not want to include password or user does not enter password, show warning message that they will have to enter it manually later in local.settings.json
 			void vscode.window.showWarningMessage(constants.userPasswordLater, constants.openFile, constants.closeButton).then(async (result) => {
-				if (result === constants.openFile && localSettingsPath) {
+				if (result === constants.openFile) {
 					// open local.settings.json file (if it exists)
 					void vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(localSettingsPath));
 				}
@@ -572,4 +574,22 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 		void vscode.window.showErrorMessage(constants.failedToGetConnectionString);
 		return undefined;
 	}
+}
+
+export async function getDatabase(connectionInfo: IConnectionInfo): Promise<string | undefined> {
+	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+
+	let connectionURI = await vscodeMssqlApi.connect(connectionInfo);
+	let listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
+	const selectedDatabase = (await vscode.window.showQuickPick(listDatabases, {
+		canPickMany: false,
+		title: constants.selectDatabase,
+		ignoreFocusOut: true
+	}));
+
+	if (!selectedDatabase) {
+		// User cancelled
+		return undefined;
+	}
+	return selectedDatabase;
 }

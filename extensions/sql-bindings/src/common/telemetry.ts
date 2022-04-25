@@ -36,7 +36,6 @@ export enum CreateAzureFunctionStep {
 	getAzureFunctionProject = 'getAzureFunctionProject',
 	learnMore = 'learnMore',
 	helpCreateAzureFunctionProject = 'helpCreateAzureFunctionProject',
-	getWorkspaceFolder = 'getWorkspaceFolder',
 	getSelectedFolder = 'getSelectedFolder',
 	getBindingType = 'getBindingType',
 	launchFromCommandPalette = 'launchFromCommandPalette',

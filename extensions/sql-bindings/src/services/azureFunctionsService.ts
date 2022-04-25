@@ -61,39 +61,32 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 						.withAdditionalProperties(propertyBag).send();
 
 					isCreateNewProject = true;
-					let workspaceFolder = vscode.workspace.rootPath;
-					if (!workspaceFolder) {
-						telemetryStep = CreateAzureFunctionStep.getSelectedFolder;
-						// user does not have a workspace open and therefore will have to pick a folder to create the project in
-						const browseProjectLocation = await vscode.window.showQuickPick(
-							[constants.browseEllipsisWithIcon],
-							{ title: constants.selectAzureFunctionProjFolder, ignoreFocusOut: true });
-						if (!browseProjectLocation) {
-							// User cancelled
-							return;
-						}
-						const projectFolders = (await vscode.window.showOpenDialog({
-							canSelectFiles: false,
-							canSelectFolders: true,
-							canSelectMany: false,
-							openLabel: constants.selectButton
-						}));
-						if (!projectFolders) {
-							// User cancelled
-							return;
-						}
-						telemetryStep = CreateAzureFunctionStep.getWorkspaceFolder;
-						projectFolder = projectFolders[0].fsPath;
-						break;
-					} else {
-						projectFolder = workspaceFolder;
-						break;
+					telemetryStep = CreateAzureFunctionStep.getSelectedFolder;
+					// user either has not folder open or an empty workspace
+					// prompt user to choose a folder to create the project in
+					const browseProjectLocation = await vscode.window.showQuickPick(
+						[constants.browseEllipsisWithIcon],
+						{ title: constants.selectAzureFunctionProjFolder, ignoreFocusOut: true });
+					if (!browseProjectLocation) {
+						// User cancelled
+						return;
 					}
-				} else {
-					return;
+					const projectFolders = (await vscode.window.showOpenDialog({
+						canSelectFiles: false,
+						canSelectFolders: true,
+						canSelectMany: false,
+						openLabel: constants.selectButton
+					}));
+					if (!projectFolders) {
+						// User cancelled
+						return;
+					}
+					projectFolder = projectFolders[0].fsPath;
+					break;
 				}
 			}
 		} else {
+			// user has an azure function project open
 			projectFolder = path.dirname(projectFile);
 		}
 		// create a system file watcher for the project folder
@@ -113,8 +106,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 
 		// Get connection string parameters and construct object name from prompt or connectionInfo given
-		let connectionURI: string;
-		let listDatabases: string[] | undefined;
 		let objectName: string | undefined;
 		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 		if (!node) {
@@ -133,17 +124,10 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 			// list databases based on connection profile selected
 			telemetryStep = CreateAzureFunctionStep.getDatabase;
-			connectionURI = await vscodeMssqlApi.connect(connectionInfo);
-			listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
-			const selectedDatabase = (await vscode.window.showQuickPick(listDatabases, {
-				canPickMany: false,
-				title: constants.selectDatabase,
-				ignoreFocusOut: true
-			}));
-
+			let selectedDatabase = await azureFunctionsUtils.getDatabase(connectionInfo);
 			if (!selectedDatabase) {
 				// User cancelled
-				return;
+				return undefined;
 			}
 			connectionInfo.database = selectedDatabase;
 
