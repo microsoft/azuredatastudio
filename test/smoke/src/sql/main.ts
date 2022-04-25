@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { setupWeb as setupQueryEditorWebTests } from './areas/queryEditor/queryEditor.test';
+import { setup as setupQueryEditorTests, setupWeb as setupQueryEditorWebTests } from './areas/queryEditor/queryEditor.test';
 import { setup as setupSqlQueryEditorTests } from './areas/queryEditor/sqlQueryEditor.test';
-//import { setup as setupNotebookTests } from './areas/notebook/notebook.test';
+import { setup as setupNotebookTests } from './areas/notebook/notebook.test';
 import { setup as setupNotebookViewTests } from './areas/notebook/notebookView.test';
-//import { setup as setupImportTests } from './areas/import/import.test';
-//import { setup as setupCreateBookDialogTests } from './areas/notebook/createBook.test';
+import { setup as setupImportTests } from './areas/import/import.test';
+import { setup as setupCreateBookDialogTests } from './areas/notebook/createBook.test';
 import { setup as setupAddRemoteBookDialogTests } from './areas/notebook/addRemoteBook.test';
 import { ApplicationOptions } from '../../../automation';
 import * as yazl from 'yauzl';
@@ -24,13 +24,13 @@ export function main(opts: minimist.ParsedArgs): void {
 		setupNotebookViewTests(opts);
 		setupAddRemoteBookDialogTests(opts);
 	} else {
-		// setupQueryEditorTests(opts);
+		setupQueryEditorTests(opts);
 		setupSqlQueryEditorTests(opts);
-		// setupNotebookTests(opts);
-		// setupNotebookViewTests(opts);
-		// setupCreateBookDialogTests(opts);
-		// setupAddRemoteBookDialogTests(opts);
-		// setupImportTests(opts);
+		setupNotebookTests(opts);
+		setupNotebookViewTests(opts);
+		setupCreateBookDialogTests(opts);
+		setupAddRemoteBookDialogTests(opts);
+		setupImportTests(opts);
 	}
 }
 
