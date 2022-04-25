@@ -11,7 +11,7 @@ import {
 	from 'sql/workbench/browser/designer/interfaces';
 import { IPanelTab, ITabbedPanelStyles, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import * as DOM from 'vs/base/browser/dom';
-import { Event } from 'vs/base/common/event';
+import { Emitter, Event } from 'vs/base/common/event';
 import { Orientation, Sizing, SplitView } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
@@ -45,6 +45,7 @@ import { alert } from 'vs/base/browser/ui/aria/aria';
 import { layoutDesignerTable, TableHeaderRowHeight, TableRowHeight } from 'sql/workbench/browser/designer/designerTableUtil';
 import { Dropdown, IDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
+import { debounce } from 'vs/base/common/decorators';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -96,6 +97,7 @@ export class Designer extends Disposable implements IThemable {
 	private _groupHeaders: HTMLElement[] = [];
 	private _messagesView: DesignerMessagesTabPanelView;
 	private _scriptEditorView: DesignerScriptEditorTabPanelView;
+	private _onStyleChangeEventEmitter = new Emitter<void>();
 
 	constructor(private readonly _container: HTMLElement,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
@@ -122,7 +124,8 @@ export class Designer extends Disposable implements IThemable {
 				},
 				editorStyler: (component) => {
 					this.styleComponent(component);
-				}
+				},
+				onStyleChange: this._onStyleChangeEventEmitter.event
 			}, this._contextViewProvider
 		);
 		this._loadingSpinner = new LoadingSpinner(this._container, { showText: true, fullSize: true });
@@ -254,6 +257,7 @@ export class Designer extends Disposable implements IThemable {
 		});
 
 		this._propertiesPane.descriptionElement.style.borderColor = styles.paneSeparator.toString();
+		this._onStyleChangeEventEmitter.fire();
 	}
 
 	public layout(dimension: DOM.Dimension) {
@@ -718,9 +722,11 @@ export class Designer extends Disposable implements IThemable {
 					ariaLabel: inputProperties.title,
 					type: inputProperties.inputType,
 				});
-				input.onLoseFocus((args) => {
-					if (args.hasChanged) {
-						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: args.value, source: view });
+				input.onDidChange(() => {
+					// The supress edit processing check is done in the handleEdit method, but since we have debounce operation on input box we
+					// have to do it here to avoid treating system originated value setting operation as user edits.
+					if (!this._supressEditProcessing) {
+						this.handleInputBoxEdit({ type: DesignerEditType.Update, path: propertyPath, value: input.value, source: view });
 					}
 				});
 				input.onInputFocus(() => {
@@ -935,6 +941,11 @@ export class Designer extends Disposable implements IThemable {
 
 		this.styleComponent(component);
 		return component;
+	}
+
+	@debounce(200)
+	private handleInputBoxEdit(edit: DesignerEdit) {
+		this.handleEdit(edit);
 	}
 
 	private startLoading(message: string, timeout: number): void {
