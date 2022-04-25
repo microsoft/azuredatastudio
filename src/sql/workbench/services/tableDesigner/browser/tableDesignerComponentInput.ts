@@ -197,7 +197,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			reportNotificationHandle.close();
 			this.updateState(this.valid, this.dirty);
 		} catch (error) {
-			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.generatePreviewReportError', "An error occured while generating preview report: {0}", error?.message ?? error));
+			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.generatePreviewReportError', "An error occurred while generating preview report: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
 			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.GeneratePreviewReport).withAdditionalProperties(telemetryInfo).send();
 			return;
@@ -253,7 +253,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			this.doInitialization(result);
 			this._onInitialized.fire();
 		}, error => {
-			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.errorInitializingTableDesigner', "An error occured while initializing the table designer: {0}", error?.message ?? error));
+			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.errorInitializingTableDesigner', "An error occurred while initializing the table designer: {0}", error?.message ?? error));
 		});
 	}
 
@@ -346,6 +346,23 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					width: 150
 				}
 			}, {
+				componentType: 'input',
+				propertyName: designers.TableColumnProperty.Description,
+				description: localize('designer.column.description.description', "Displays the description of the column"),
+				componentProperties: {
+					title: localize('tableDesigner.columnDescriptionTitle', "Description"),
+				}
+			}, {
+				componentType: 'dropdown',
+				propertyName: designers.TableColumnProperty.AdvancedType,
+				showInPropertiesView: false,
+				description: localize('designer.column.description.advancedType', "Displays the unified data type (including length, scale and precision) for the column"),
+				componentProperties: {
+					title: localize('tableDesigner.columnAdvancedTypeTitle', "Type"),
+					width: 120,
+					isEditable: true
+				}
+			}, {
 				componentType: 'dropdown',
 				propertyName: designers.TableColumnProperty.Type,
 				description: localize('designer.column.description.dataType', "Displays the data type name for the column"),
@@ -406,10 +423,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 		const displayProperties = this.getTableDisplayProperties(options, [
 			designers.TableColumnProperty.Name,
-			designers.TableColumnProperty.Type,
-			designers.TableColumnProperty.Length,
-			designers.TableColumnProperty.Precision,
-			designers.TableColumnProperty.Scale,
+			designers.TableColumnProperty.AdvancedType,
 			designers.TableColumnProperty.IsPrimaryKey,
 			designers.TableColumnProperty.AllowNulls,
 			designers.TableColumnProperty.DefaultValue,
@@ -467,6 +481,14 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				componentProperties: {
 					title: localize('tableDesigner.foreignKeyNameTitle', "Name"),
 					width: 300
+				}
+			},
+			{
+				componentType: 'input',
+				propertyName: designers.TableForeignKeyProperty.Description,
+				description: localize('designer.foreignkey.description.description', "The description of the foreign key."),
+				componentProperties: {
+					title: localize('tableDesigner.foreignKeyDescriptionTitle', "Description"),
 				}
 			},
 			{
@@ -559,6 +581,15 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				componentProperties: {
 					title: localize('tableDesigner.primaryKeyNameTitle', "Name")
 				}
+			},
+			{
+				componentType: 'input',
+				propertyName: designers.TableProperty.PrimaryKeyDescription,
+				showInPropertiesView: false,
+				description: localize('designer.table.primaryKeyDescription.description', "The description of the primary key."),
+				componentProperties: {
+					title: localize('tableDesigner.primaryKeyDescriptionTitle', "Description"),
+				}
 			});
 		if (view.additionalPrimaryKeyProperties) {
 			view.additionalPrimaryKeyProperties.forEach(component => {
@@ -601,6 +632,13 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				componentProperties: {
 					title: localize('tableDesigner.checkConstraintNameTitle', "Name"),
 					width: 200
+				}
+			}, {
+				componentType: 'input',
+				propertyName: designers.TableCheckConstraintProperty.Description,
+				description: localize('designer.checkConstraint.description.description', "The description of the check constraint."),
+				componentProperties: {
+					title: localize('tableDesigner.checkConstraintDescriptionTitle', "Description"),
 				}
 			}, {
 				componentType: 'input',
@@ -654,6 +692,14 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				description: localize('designer.index.description.name', "The name of the index."),
 				componentProperties: {
 					title: localize('tableDesigner.indexName', "Name"),
+					width: 200
+				}
+			}, {
+				componentType: 'input',
+				propertyName: designers.TableIndexProperty.Description,
+				description: localize('designer.index.description.description', "The description of the index."),
+				componentProperties: {
+					title: localize('tableDesigner.indexDescription', "Description"),
 					width: 200
 				}
 			}, {
