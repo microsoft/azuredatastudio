@@ -227,87 +227,107 @@ However we always want it to be the width of the container it is resizing.
 	z-index: 3;
 }
 
-.eps-container .save-plan-icon {
+.ep-save-plan-icon {
 	background-image: url(../images/actionIcons/save.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.eps-container .open-properties-icon {
+.ep-open-properties-icon {
 	background-image: url(../images/actionIcons/openProperties.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.eps-container .open-query-icon {
+.ep-open-query-icon {
 	background-image: url(../images/actionIcons/openQuery.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.eps-container .open-plan-file-icon {
+.ep-open-plan-file-icon {
 	background-image: url(../images/actionIcons/openPlanFile.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.eps-container .search-icon {
+.ep-search-icon {
 	background-image: url(../images/actionIcons/search.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.eps-container .sort-alphabetically-icon {
+.ep-sort-alphabetically-icon {
 	background-image: url(../images/actionIcons/sortAlphabetically.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.eps-container .sort-display-order-icon {
+.ep-sort-reverse-alphabetically-icon {
+	background-image: url(../images/actionIcons/sortReverseAlphabetically.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-sort-display-order-icon {
 	background-image: url(../images/actionIcons/sortByDisplayOrder.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.eps-container .zoom-in-icon {
+.ep-zoom-in-icon {
 	background-image: url(../images/actionIcons/zoomIn.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.eps-container .zoom-out-icon {
+.ep-zoom-out-icon {
 	background-image: url(../images/actionIcons/zoomOut.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.eps-container .custom-zoom-icon {
+.ep-custom-zoom-icon {
 	background-image: url(../images/actionIcons/customZoom.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.eps-container .zoom-to-fit-icon {
+.ep-zoom-to-fit-icon {
 	background-image: url(../images/actionIcons/zoomToFit.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.eps-container .zoom-icon {
+.ep-zoom-icon {
 	background-image: url(../images/actionIcons/zoom.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
+.ep-enable-tooltip-icon {
+	background-image: url(../images/actionIcons/enableTooltip.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-disable-tooltip-icon {
+	background-image: url(../images/actionIcons/disableTooltip.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
