@@ -14813,10 +14813,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/services/notebook/browser/models/clientSession.kernelRequiresConnection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Kernel {0} was not found. The default kernel will be used instead.]]></Val>
+          <Val><![CDATA[Kernel '{0}' was not found. The default kernel will be used instead.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ядро {0} не найдено. Будет использоваться ядро по умолчанию.]]></Val>
+            <Val><![CDATA[Ядро “{0}” не найдено. Будет использоваться ядро по умолчанию.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Kernel {0} was not found. The default kernel will be used instead.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
