@@ -933,4 +933,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	public override $getExecutionPlan(handle: number, planFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.GetExecutionPlanResult> {
 		return this._resolveProvider<azdata.executionPlan.ExecutionPlanProvider>(handle).getExecutionPlan(planFile);
 	}
+
+	public override $compareExecutionPlanGraph(handle: number, firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.ExecutionPlanComparisonResult> {
+		return this._resolveProvider<azdata.executionPlan.ExecutionPlanProvider>(handle).compareExecutionPlanGraph(firstPlanFile, secondPlanFile);
+	}
 }
