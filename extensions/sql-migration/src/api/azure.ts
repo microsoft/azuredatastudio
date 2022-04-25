@@ -337,8 +337,9 @@ export async function getMigrationAsyncOperationDetails(account: azdata.Account,
 
 export async function startMigrationCutover(account: azdata.Account, subscription: Subscription, migration: DatabaseMigration): Promise<any> {
 	const api = await getAzureCoreAPI();
-	const path = encodeURI(`${migration.id}/operations/${migration.properties.migrationOperationId}/cutover?api-version=2022-01-30-preview`);
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, undefined, true, undefined, undefined);
+	const path = encodeURI(`${migration.id}/cutover?api-version=2022-01-30-preview`);
+	const requestBody = { migrationOperationId: migration.properties.migrationOperationId };
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, requestBody, true, undefined, undefined);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
@@ -347,8 +348,9 @@ export async function startMigrationCutover(account: azdata.Account, subscriptio
 
 export async function stopMigration(account: azdata.Account, subscription: Subscription, migration: DatabaseMigration): Promise<void> {
 	const api = await getAzureCoreAPI();
-	const path = encodeURI(`${migration.id}/operations/${migration.properties.migrationOperationId}/cancel?api-version=2022-01-30-preview`);
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, undefined, true, undefined, undefined);
+	const path = encodeURI(`${migration.id}/cancel?api-version=2022-01-30-preview`);
+	const requestBody = { migrationOperationId: migration.properties.migrationOperationId };
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, requestBody, true, undefined, undefined);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
