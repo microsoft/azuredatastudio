@@ -171,7 +171,7 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 
 	// If we're not using AAD the tool prompts for a password on stdin
 	if (params.useAad !== true) {
-		proc.stdin?.end(password ? password : '');
+		proc.stdin!.end(password ? password : '');
 	}
 
 	// Save the process into our map so we can make sure to stop them if we exit before shutting down
