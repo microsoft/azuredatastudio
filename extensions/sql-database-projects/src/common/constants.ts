@@ -26,16 +26,20 @@ export const sqlProjectSdkVersion = '0.1.3-preview';
 
 // Project Provider
 export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
-export const emptyProjectTypeDisplayName = localize('emptyProjectTypeDisplayName', "SQL Database");
-export const emptyProjectTypeDescription = localize('emptyProjectTypeDescription', "Develop and publish schemas for SQL databases starting from an empty project");
+export const emptyProjectTypeDisplayName = localize('emptyProjectTypeDisplayName', "SQL Server Database");
+export const emptyProjectTypeDescription = localize('emptyProjectTypeDescription', "Develop and publish schemas for SQL Server databases starting from an empty project");
 
 export const edgeSqlDatabaseProjectTypeId = 'SqlDbEdgeProj';
-export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "SQL Edge");
-export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription', "Start with the core pieces to develop and publish schemas for SQL Edge");
+export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "Azure SQL Edge Database");
+export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription', "Start with the core pieces to develop and publish schemas for Azure SQL Edge Database");
 
 export const emptySqlDatabaseSdkProjectTypeId = 'EmptySqlDbSdkProj';
 export const emptySdkProjectTypeDisplayName = localize('emptySdkProjectTypeDisplayName', "SQL Database (SDK)");
 export const emptySdkProjectTypeDescription = localize('emptySdkProjectTypeDescription', "Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.");
+
+export const emptyAzureDbSqlDatabaseProjectTypeId = 'EmptyAzureSqlDbProj';
+export const emptyAzureDbProjectTypeDisplayName = localize('emptyAzureDbProjectTypeDisplayName', "Azure SQL Database");
+export const emptyAzureDbProjectTypeDescription = localize('emptyAzureDbProjectTypeDescription', "Develop and publish schemas for Azure SQL Database starting from an empty project");
 
 // Dashboard
 export const addItemAction = localize('addItemAction', "Add Item");
@@ -199,7 +203,7 @@ export const runningDockerMessage = localize('runningDockerMessage', "Running th
 export function dockerNotRunningError(error: string) { return localize('dockerNotRunningError', "Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'", error || ''); }
 export const dockerContainerNotRunningErrorMessage = localize('dockerContainerNotRunningErrorMessage', "Docker container is not running");
 export const dockerContainerFailedToRunErrorMessage = localize('dockerContainerFailedToRunErrorMessage', "Failed to run the docker container");
-export const connectingToSqlServerOnDockerMessage = localize('connectingToSqlServerOnDockerMessage', "Connecting to SQL Server on Docker");
+export const connectingToSqlServerMessage = localize('connectingToSqlServerOnDockerMessage', "Connecting to SQL Server");
 export const deployProjectFailedMessage = localize('deployProjectFailedMessage', "Failed to open a connection to the deployed database'");
 export const containerAlreadyExistForProject = localize('containerAlreadyExistForProject', "Containers already exist for this project. Do you want to delete them before deploying a new one?");
 export const checkoutOutputMessage = localize('checkoutOutputMessage', "Check output pane for more details");

@@ -38,34 +38,59 @@ export function getPublishServerName(target: string): string {
 	return target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure) ? constants.AzureSqlServerName : constants.SqlServerName;
 }
 
-export function getDockerBaseImages(): DockerImageInfo[] {
-	return [
-		{
-			name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2017-latest`,
-			agreementInfo: {
-				link: {
-					text: constants.eulaAgreementTitle,
-					url: constants.sqlServerEulaLink,
-				}
-			}
-		},
-		{
+export function getDockerBaseImages(target: string): DockerImageInfo[] {
+	if (target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure)) {
+		return [{
 			name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2019-latest`,
+			displayName: SqlTargetPlatform.sqlServer2019,
 			agreementInfo: {
 				link: {
 					text: constants.eulaAgreementTitle,
 					url: constants.sqlServerEulaLink,
 				}
 			}
-		},
-		{
+		}, {
 			name: `${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}:latest`,
+			displayName: SqlTargetPlatform.sqlEdge,
 			agreementInfo: {
 				link: {
 					text: constants.edgeEulaAgreementTitle,
 					url: constants.sqlServerEdgeEulaLink,
 				}
 			}
-		},
-	];
+		}];
+	} else {
+		return [
+			{
+				name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2017-latest`,
+				displayName: SqlTargetPlatform.sqlServer2017,
+				agreementInfo: {
+					link: {
+						text: constants.eulaAgreementTitle,
+						url: constants.sqlServerEulaLink,
+					}
+				}
+			},
+			{
+				name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2019-latest`,
+				displayName: SqlTargetPlatform.sqlServer2019,
+				agreementInfo: {
+					link: {
+						text: constants.eulaAgreementTitle,
+						url: constants.sqlServerEulaLink,
+					}
+				}
+			},
+			{
+				name: `${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}:latest`,
+				displayName: SqlTargetPlatform.sqlEdge,
+				agreementInfo: {
+					link: {
+						text: constants.edgeEulaAgreementTitle,
+						url: constants.sqlServerEdgeEulaLink,
+					}
+				}
+			},
+		];
+	}
 }
