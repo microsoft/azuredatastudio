@@ -303,6 +303,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.database.backup.load.error">
       <source xml:lang="en">An error occurred while accessing database details.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.database.checksum.info.text">
+      <source xml:lang="en">Ensure that your backups were taken with the WITH CHECKSUM option.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.database.migration.mode.description">
       <source xml:lang="en">To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.</source>
     </trans-unit>
@@ -338,6 +341,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.page.title">
       <source xml:lang="en">Database backup</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.private.endpoint.info.text">
+      <source xml:lang="en">Ensure that the Azure Storage account does not use a private endpoint.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.to.be.migrated">
       <source xml:lang="en">Database to be migrated</source>
