@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { getAzdataApi } from './common/utils';
-import { launchAddSqlBindingQuickpick } from '../src/dialogs/addSqlBindingQuickpick';
+import { launchAddSqlBindingQuickpick } from './dialogs/addSqlBindingQuickpick';
 
 export function activate(context: vscode.ExtensionContext): void {
 	void vscode.commands.executeCommand('setContext', 'azdataAvailable', !!getAzdataApi());
