@@ -3159,6 +3159,9 @@
       <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.newRowButtonAriaLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add new row to '{0}' table]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Agregar nueva fila a la tabla \"{0}\"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -14901,6 +14904,9 @@
       <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookServiceImpl.failedToCreateNotebookInput" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to create notebook input for provider '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se pudo crear la entrada del bloc de notas para el proveedor \"{0}\"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
