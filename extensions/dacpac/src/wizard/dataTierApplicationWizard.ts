@@ -17,10 +17,9 @@ import { ExtractConfigPage } from './pages/extractConfigPage';
 import { ImportConfigPage } from './pages/importConfigPage';
 import { DacFxDataModel } from './api/models';
 import { BasePage } from './api/basePage';
-import { TelemetryReporter, TelemetryViews } from '../telemetry';
+import { TelemetryAction, TelemetryReporter, TelemetryViews } from '../telemetry';
 import { TelemetryEventMeasures, TelemetryEventProperties } from '@microsoft/ads-extension-telemetry';
 
-const msSqlProvider = 'MSSQL';
 class Page {
 	wizardPage: azdata.window.WizardPage;
 	dacFxPage: BasePage;
@@ -313,153 +312,121 @@ export class DataTierApplicationWizard {
 	}
 
 	public async deploy(): Promise<mssql.DacFxResult> {
-		const deployStartTime = new Date().getTime();
-		let service: mssql.IDacFxService;
-		let ownerUri: string;
-		let result: mssql.DacFxResult;
 		let additionalProps: TelemetryEventProperties = {};
 		let additionalMeasurements: TelemetryEventMeasures = {};
-		try {
-			service = await this.getService(msSqlProvider);
-			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
-			result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
-		} catch (e) {
-			additionalProps.exceptionOccurred = 'true';
-		}
 
-		// If result is null which means exception occured, will be adding additional props to the Telemetry
-		if (!result) {
-			additionalProps = { ...additionalProps, ...this.getDacServiceArgsAsProps(service, this.model.database, this.model.filePath, ownerUri) };
-		}
-		additionalProps.deploymentStatus = result?.success.toString();
+		const service = await this.getService();
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+
+		const deployStartTime = new Date().getTime();
+		const result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
+
+		additionalMeasurements.totalDurationMs = (new Date().getTime() - deployStartTime);
+		additionalMeasurements.deployDacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
 		additionalProps.upgradeExistingDatabase = this.model.upgradeExisting.toString();
 		additionalProps.potentialDataLoss = this.model.potentialDataLoss.toString();
 
-		additionalMeasurements.deployDacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
-		additionalMeasurements.totalDurationMs = (new Date().getTime() - deployStartTime);
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.DeployDacpac, additionalProps, additionalMeasurements);
 
-		// Deploy Dacpac: 'Deploy button' clicked in deploy summary page, Reporting the event selection to the telemetry
-		this.sendDacServiceTelemetryEvent(TelemetryViews.DeployDacpac, 'DeployDacpacOperation', additionalProps, additionalMeasurements);
 		return result;
 	}
 
 	private async extract(): Promise<mssql.DacFxResult> {
-		const extractStartTime = new Date().getTime();
-		let service: mssql.IDacFxService;
-		let ownerUri: string;
-		let result: mssql.DacFxResult;
-		let additionalProps: TelemetryEventProperties = {};
 		let additionalMeasurements: TelemetryEventMeasures = {};
-		try {
-			service = await this.getService(msSqlProvider);
-			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
-			result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
-		} catch (e) {
-			additionalProps.exceptionOccurred = 'true';
-		}
 
-		// If result is null which means exception occured, will be adding additional props to the Telemetry
-		if (!result) {
-			additionalProps = { ...additionalProps, ...this.getDacServiceArgsAsProps(service, this.model.database, this.model.filePath, ownerUri) };
-		}
-		additionalProps.extractStatus = result?.success.toString();
-		additionalMeasurements.extractedDacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
+		const service = await this.getService();
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+
+		const extractStartTime = new Date().getTime();
+		const result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
+
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - extractStartTime);
-		// Extract Dacpac: 'Extract button' clicked in extract summary page, Reporting the event selection to the telemetry
-		this.sendDacServiceTelemetryEvent(TelemetryViews.ExtractDacpac, 'ExtractDacpacOperation', additionalProps, additionalMeasurements);
+		additionalMeasurements.extractedDacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
+
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.ExtractDacpac, undefined, additionalMeasurements);
+
 		return result;
 	}
 
 	private async export(): Promise<mssql.DacFxResult> {
-		const exportStartTime = new Date().getTime();
-		let service: mssql.IDacFxService;
-		let ownerUri: string;
-		let result: mssql.DacFxResult;
-		let additionalProps: TelemetryEventProperties = {};
 		let additionalMeasurements: TelemetryEventMeasures = {};
-		try {
-			service = await this.getService(msSqlProvider);
-			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
-			result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
-		} catch (e) {
-			additionalProps.exceptionOccurred = 'true';
-		}
 
-		// If result is null which means exception occured, will be adding additional props to the Telemetry
-		if (!result) {
-			additionalProps = { ...additionalProps, ...this.getDacServiceArgsAsProps(service, this.model.database, this.model.filePath, ownerUri) };
-		}
-		additionalProps.exportStatus = result?.success.toString();
-		additionalMeasurements.exportedBacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
+		const service = await this.getService();
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+
+		const exportStartTime = new Date().getTime();
+		const result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
+
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - exportStartTime);
-		// Export Bacpac: 'Export button' clicked in Export summary page, Reporting the event selection to the telemetry
-		this.sendDacServiceTelemetryEvent(TelemetryViews.ExportBacpac, 'ExportBacpacOperation', additionalProps, additionalMeasurements);
+		additionalMeasurements.exportedBacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
+
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.ExportBacpac, undefined, additionalMeasurements);
+
 		return result;
 	}
 
 	private async import(): Promise<mssql.DacFxResult> {
-		const importStartTime = new Date().getTime();
-		let service: mssql.IDacFxService;
-		let ownerUri: string;
-		let result: mssql.DacFxResult;
-		let additionalProps: TelemetryEventProperties = {};
 		let additionalMeasurements: TelemetryEventMeasures = {};
-		try {
-			service = await this.getService(msSqlProvider);
-			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
-			result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
-		} catch (e) {
-			additionalProps.exceptionOccurred = 'true';
-		}
 
-		// If result is null which means exception occured, will be adding additional props to the Telemetry
-		if (!result) {
-			additionalProps = { ...additionalProps, ...this.getDacServiceArgsAsProps(service, this.model.database, this.model.filePath, ownerUri) };
-		}
-		additionalProps.importStatus = result?.success.toString();
-		additionalMeasurements.importedBacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
+		const service = await this.getService();
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+
+		const importStartTime = new Date().getTime();
+		const result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
+
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - importStartTime);
-		// Import Bacpac: 'Import button' clicked in Import summary page, Reporting the event selection to the telemetry
-		this.sendDacServiceTelemetryEvent(TelemetryViews.ImportBacpac, 'ImportBacpacOperation', additionalProps, additionalMeasurements);
+		additionalMeasurements.importedBacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
+
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.ImportBacpac, undefined, additionalMeasurements);
+
 		return result;
 	}
 
 	public async generateDeployScript(): Promise<mssql.DacFxResult> {
-		const genScriptStartTime = new Date().getTime();
-		let service: mssql.IDacFxService;
-		let ownerUri: string;
-		let result: mssql.DacFxResult;
 		let additionalProps: TelemetryEventProperties = {};
 		let additionalMeasurements: TelemetryEventMeasures = {};
-		try {
-			this.wizard.message = {
-				text: loc.generatingScriptMessage,
-				level: azdata.window.MessageLevel.Information,
-				description: ''
-			};
+		this.wizard.message = {
+			text: loc.generatingScriptMessage,
+			level: azdata.window.MessageLevel.Information
+		};
 
-			service = await this.getService(msSqlProvider);
-			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
-			result = await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
-		} catch (e) {
-			additionalProps.exceptionOccurred = 'true';
-		}
+		const service = await this.getService();
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(loc.generateDeployErrorMessage(result?.errorMessage));
-		}
+		const genScriptStartTime = new Date().getTime();
+		const result = await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
 
-		// If result is null which means exception occured, will be adding additional props to the Telemetry
-		if (!result) {
-			additionalProps = { ...additionalProps, ...this.getDacServiceArgsAsProps(service, this.model.database, this.model.filePath, ownerUri) };
-		}
-		additionalProps.isScriptGenerated = result?.success.toString();
-		additionalProps.potentialDataLoss = this.model.potentialDataLoss.toString();
-		additionalMeasurements.deployDacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - genScriptStartTime);
-		// Deploy Dacpac 'generate script' button clicked in DeployPlanPage, Reporting the event selection to the telemetry with fail/sucess status
-		this.sendDacServiceTelemetryEvent(TelemetryViews.DeployDacpac, 'GenerateDeployScriptOperation', additionalProps, additionalMeasurements);
+		additionalMeasurements.deployDacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
+		additionalProps.potentialDataLoss = this.model.potentialDataLoss.toString();
+
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.GenerateScript, undefined, additionalMeasurements);
+
+		if (!result?.success && result.errorMessage) {
+			vscode.window.showErrorMessage(loc.generateDeployErrorMessage(result.errorMessage));
+		}
+
 		return result;
+	}
+
+	public async generateDeployPlan(): Promise<string> {
+		let additionalMeasurements: TelemetryEventMeasures = {};
+
+		const service = await this.getService();
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+
+		const deployPlanStartTime = new Date().getTime();
+		const result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
+
+		additionalMeasurements.totalDurationMs = (new Date().getTime() - deployPlanStartTime);
+
+		this.sendDacFxOperationTelemetryEvent(result, TelemetryAction.GenerateDeployPlan, undefined, additionalMeasurements);
+
+		if (!result?.success && result.errorMessage) {
+			vscode.window.showErrorMessage(loc.deployPlanErrorMessage(result.errorMessage));
+		}
+
+		return result.report;
 	}
 
 	public getPage(idx: number): Page {
@@ -501,56 +468,24 @@ export class DataTierApplicationWizard {
 			|| (this.selectedOperation === Operation.deploy) && idx === DeployOperationPath.summary;
 	}
 
-	public async generateDeployPlan(): Promise<string> {
-		const deployPlanStartTime = new Date().getTime();
-		let service: mssql.IDacFxService;
-		let ownerUri: string;
-		let result: mssql.GenerateDeployPlanResult;
-		let additionalProps: TelemetryEventProperties = {};
-		let additionalMeasurements: TelemetryEventMeasures = {};
-		try {
-			service = await this.getService(msSqlProvider);
-			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
-			result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
-		} catch (e) {
-			additionalProps.exceptionOccurred = 'true';
-		}
-
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(loc.deployPlanErrorMessage(result?.errorMessage));
-		}
-
-		// If result is null which means exception occured, will be adding additional props to the Telemetry
-		if (!result) {
-			additionalProps = { ...additionalProps, ...this.getDacServiceArgsAsProps(service, this.model.database, this.model.filePath, ownerUri) };
-		}
-		additionalProps.isPlanGenerated = result?.success.toString();
-		additionalMeasurements.totalDurationMs = (new Date().getTime() - deployPlanStartTime);
-		// send Generate deploy plan error/succes telemetry event
-		this.sendDacServiceTelemetryEvent(TelemetryViews.DeployPlanPage, 'GenerateDeployPlanOperation', additionalProps, additionalMeasurements);
-		return result.report;
-	}
-
-	private async getService(providerName: string): Promise<mssql.IDacFxService> {
+	private async getService(): Promise<mssql.IDacFxService> {
 		if (!this.dacfxService) {
 			this.dacfxService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).dacFx;
 		}
 		return this.dacfxService;
 	}
 
-	public getDacServiceArgsAsProps(service: mssql.IDacFxService, database: string, filePath: string, ownerUri: string): { [k: string]: string } {
-		return {
-			isServiceExist: (!!service).toString(),
-			isDatabaseExists: (!!database).toString(),
-			isFilePathExist: (!!filePath).toString(),
-			isOwnerUriExist: (!!ownerUri).toString()
-		};
-	}
-
-	private sendDacServiceTelemetryEvent(telemetryView: string, telemetryAction: string, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {
-		TelemetryReporter.createActionEvent(telemetryView, telemetryAction)
-			.withAdditionalProperties(additionalProps)
-			.withAdditionalMeasurements(additionalMeasurements)
-			.send();
+	private sendDacFxOperationTelemetryEvent(result: azdata.ResultStatus, telemetryAction: string, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {
+		if (result?.success) {
+			TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, telemetryAction)
+				.withAdditionalProperties(additionalProps)
+				.withAdditionalMeasurements(additionalMeasurements)
+				.send();
+		} else {
+			TelemetryReporter.createErrorEvent(TelemetryViews.DataTierApplicationWizard, telemetryAction)
+				.withAdditionalProperties(additionalProps)
+				.withAdditionalMeasurements(additionalMeasurements)
+				.send();
+		}
 	}
 }
