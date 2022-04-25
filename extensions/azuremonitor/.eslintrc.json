@@ -1,6 +1,6 @@
 {
 	"rules": {
-		"no-cond-assign": 0,
+		// Disabled until the issues can be fixed
 		"@typescript-eslint/explicit-function-return-type": ["off"]
 	}
 }

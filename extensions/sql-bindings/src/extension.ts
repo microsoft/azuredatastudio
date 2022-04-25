@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { ITreeNodeInfo } from 'vscode-mssql';
-import { IExtension, BindingType } from 'sql-bindings';
+import { IExtension, BindingType, GetAzureFunctionsResult, ResultStatus } from 'sql-bindings';
 import { getAzdataApi } from './common/utils';
 import { addSqlBinding, createAzureFunction, getAzureFunctions } from './services/azureFunctionsService';
 import { launchAddSqlBindingQuickpick } from './dialogs/addSqlBindingQuickpick';
@@ -19,19 +19,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		return await createAzureFunction(node);
 	}));
 	return {
-		addSqlBinding: async (bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string) => {
+		addSqlBinding: async (bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string): Promise<ResultStatus> => {
 			return addSqlBinding(bindingType, filePath, functionName, objectName, connectionStringSetting);
 		},
-		promptForBindingType: async () => {
+		promptForBindingType: async (): Promise<(vscode.QuickPickItem & { type: BindingType }) | undefined> => {
 			return promptForBindingType();
 		},
-		promptForObjectName: async (bindingType: BindingType) => {
+		promptForObjectName: async (bindingType: BindingType): Promise<string | undefined> => {
 			return promptForObjectName(bindingType);
 		},
-		promptAndUpdateConnectionStringSetting: async (projectUri: vscode.Uri | undefined) => {
+		promptAndUpdateConnectionStringSetting: async (projectUri: vscode.Uri | undefined): Promise<string | undefined> => {
 			return promptAndUpdateConnectionStringSetting(projectUri);
 		},
-		getAzureFunctions: async (filePath: string) => {
+		getAzureFunctions: async (filePath: string): Promise<GetAzureFunctionsResult> => {
 			return getAzureFunctions(filePath);
 		}
 	};
