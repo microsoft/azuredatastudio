@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as constants from '../common/constants';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as os from 'os';
 import * as path from 'path';
 import * as utils from '../common/utils';

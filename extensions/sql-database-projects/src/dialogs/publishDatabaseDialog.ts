@@ -11,7 +11,7 @@ import * as utils from '../common/utils';
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
 import { IDeploySettings } from '../models/IDeploySettings';
-import { DeploymentOptions } from '../../../mssql/src/mssql';
+import { DeploymentOptions } from 'mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
 import { getAgreementDisplayText, getConnectionName, getDockerBaseImages } from './utils';

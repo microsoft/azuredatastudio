@@ -6,7 +6,7 @@
 import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as vscodeMssql from 'vscode-mssql';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as templates from '../templates/templates';
 import * as path from 'path';
 

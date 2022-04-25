@@ -8,7 +8,7 @@ import * as path from 'path';
 import { promises as fs } from 'fs';
 import * as utils from '../common/utils';
 import { errorFindingBuildFilesLocation } from '../common/constants';
-import * as mssql from '../../../mssql/src/mssql';
+import * as mssql from 'mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import * as sqldbproj from 'sqldbproj';
 

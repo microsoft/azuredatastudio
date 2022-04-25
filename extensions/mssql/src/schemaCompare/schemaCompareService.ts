@@ -6,7 +6,7 @@
 import { AppContext } from '../appContext';
 import { SqlOpsDataClient, ISqlOpsFeature } from 'dataprotocol-client';
 import * as constants from '../constants';
-import * as mssql from '../mssql';
+import * as mssql from 'mssql';
 import * as Utils from '../utils';
 import { ClientCapabilities } from 'vscode-languageclient';
 import * as azdata from 'azdata';

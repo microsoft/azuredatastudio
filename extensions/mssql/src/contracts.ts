@@ -7,7 +7,7 @@ import { NotificationType, RequestType } from 'vscode-languageclient';
 import { ITelemetryEventProperties, ITelemetryEventMeasures } from './telemetry';
 import * as azdata from 'azdata';
 import { ConnectParams } from 'dataprotocol-client/lib/protocol';
-import * as mssql from './mssql';
+import * as mssql from 'mssql';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 

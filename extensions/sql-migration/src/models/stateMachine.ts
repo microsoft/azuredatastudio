@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs } from '../api/azure';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
