@@ -7,7 +7,6 @@ declare module 'vscode-mssql' {
 
 	import * as vscode from 'vscode';
 	import { RequestType } from 'vscode-languageclient';
-	import { BindingType, GetAzureFunctionsResult } from 'sql-bindings';
 
 	/**
 	 * Covers defining what the vscode-mssql extension exports to other extensions
@@ -40,11 +39,6 @@ declare module 'vscode-mssql' {
 		 * Service for accessing SchemaCompare functionality
 		 */
 		readonly schemaCompare: ISchemaCompareService;
-
-		/**
-		 * Service for accessing AzureFunctions functionality
-		 */
-		readonly azureFunctions: IAzureFunctionsService;
 
 		/**
 		 * Prompts the user to select an existing connection or create a new one, and then returns the result
@@ -101,7 +95,7 @@ declare module 'vscode-mssql' {
 		 * @param params The params to pass with the request
 		 * @returns A promise object for when the request receives a response
 		 */
-		 sendRequest<P, R, E, R0>(requestType: RequestType<P, R, E, R0>, params?: P): Promise<R>;
+		sendRequest<P, R, E, R0>(requestType: RequestType<P, R, E, R0>, params?: P): Promise<R>;
 	}
 
 	/**
@@ -300,24 +294,6 @@ declare module 'vscode-mssql' {
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 		getOptionsFromProfile(profilePath: string): Thenable<DacFxOptionsResult>;
 		validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
-	}
-
-	export interface IAzureFunctionsService {
-		/**
-		 * Adds a SQL Binding to a specified Azure function in a file
-		 * @param bindingType Type of SQL Binding
-		 * @param filePath Path of the file where the Azure Functions are
-		 * @param functionName Name of the function where the SQL Binding is to be added
-		 * @param objectName Name of Object for the SQL Query
-		 * @param connectionStringSetting Setting for the connection string
-		 */
-		addSqlBinding(bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string): Thenable<ResultStatus>;
-		/**
-		 * Gets the names of the Azure functions in the file
-		 * @param filePath Path of the file to get the Azure functions
-		 * @returns array of names of Azure functions in the file
-		 */
-		getAzureFunctions(filePath: string): Thenable<GetAzureFunctionsResult>;
 	}
 
 	export const enum TaskExecutionMode {

@@ -32,16 +32,6 @@ export function getErrorMessage(error: any): string {
 		: typeof error === 'string' ? error : `${JSON.stringify(error, undefined, '\t')}`;
 }
 
-export async function getAzureFunctionService(): Promise<vscodeMssql.IAzureFunctionsService> {
-	if (getAzdataApi()) {
-		// this isn't supported in ADS
-		throw new Error('Azure Functions service is not supported in Azure Data Studio');
-	} else {
-		const api = await getVscodeMssqlApi();
-		return api.azureFunctions;
-	}
-}
-
 export async function getVscodeMssqlApi(): Promise<vscodeMssql.IExtension> {
 	const ext = vscode.extensions.getExtension(vscodeMssql.extension.name) as vscode.Extension<vscodeMssql.IExtension>;
 	return ext.activate();
