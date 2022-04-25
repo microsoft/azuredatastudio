@@ -11,7 +11,7 @@ import * as vscode from 'vscode';
  */
 export class ExtHostObjectExplorerNodeStub implements azdata.objectexplorer.ObjectExplorerNode {
 	// Stub properties
-	private parent: azdata.objectexplorer.ObjectExplorerNode;
+	private parent: azdata.objectexplorer.ObjectExplorerNode | undefined;
 
 	// Base properties
 	public connectionId: string;
@@ -24,10 +24,10 @@ export class ExtHostObjectExplorerNodeStub implements azdata.objectexplorer.Obje
 	public metadata: azdata.ObjectMetadata;
 	public errorMessage: string;
 
-	constructor(nodeName: string, nodeSchema: string, nodeType: string, parent: azdata.objectexplorer.ObjectExplorerNode) {
+	constructor(nodeName: string, nodeSchema: string, nodeType: string, parent?: azdata.objectexplorer.ObjectExplorerNode) {
 		this.parent = parent;
 		this.nodeType = nodeType;
-		this.metadata = { metadataType: undefined, metadataTypeName: undefined, name: nodeName, schema: nodeSchema, urn: undefined, parentName: undefined, parentTypeName: undefined };
+		this.metadata = { metadataType: azdata.MetadataType.Table, metadataTypeName: 'MyMetadataTypeName', name: nodeName, schema: nodeSchema, urn: 'urn', parentName: undefined, parentTypeName: undefined };
 	}
 
 	isExpanded(): Thenable<boolean> {
@@ -38,7 +38,7 @@ export class ExtHostObjectExplorerNodeStub implements azdata.objectexplorer.Obje
 		throw new Error('Method not implemented');
 	}
 
-	setSelected(selected: boolean, clearOtherSelections: boolean = undefined): Thenable<void> {
+	setSelected(selected: boolean, clearOtherSelections: boolean): Thenable<void> {
 		throw new Error('Method not implemented');
 	}
 
