@@ -60,7 +60,7 @@
     "mime": "^1.4.1",
     "mkdirp": "^1.0.4",
     "p-limit": "^3.1.0",
-    "plist": "^3.0.1",
+    "plist": "^3.0.4",
     "rollup": "^1.20.3",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
