@@ -1661,4 +1661,27 @@ declare module 'azdata' {
 		 */
 		graphFileType: string;
 	}
+
+	/**
+	 * Component to display text with an icon representing the severity
+	 */
+	export interface InfoBoxComponent extends Component, InfoBoxComponentProperties {
+		/**
+		 * An event called when the InfoBox is clicked
+		 */
+		onDidClick: vscode.Event<void>;
+	}
+
+	export interface InfoBoxComponentProperties {
+		/**
+		 * Sets whether the infobox is clickable or not. This will display a right arrow at the end of infobox text.
+		 * Default value is false.
+		 */
+		isClickable?: boolean | undefined;
+
+		/**
+		 * Sets the ariaLabel for the right arrow button that shows up in clickable infoboxes
+		 */
+		clickableButtonAriaLabel?: string;
+	}
 }
