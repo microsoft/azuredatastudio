@@ -25,7 +25,6 @@ const extensionList = [
 	'resource-deployment',
 	'schema-compare',
 	'sql-database-projects',
-
 ];
 
 let argv = require('yargs')
