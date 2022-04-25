@@ -6,6 +6,7 @@
 import { Application } from '../../../../../automation';
 import * as minimist from 'minimist';
 import { afterSuite, beforeSuite } from '../../../utils';
+import * as assert from 'assert';
 
 export function setup(opts: minimist.ParsedArgs) {
 	describe('Notebook', () => {
@@ -143,7 +144,45 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.waitForTrustedElements();
 			});
 		});
+
+		describe('markdown', function () {
+			it('can create http link from markdown', async function () {
+				const app = this.app as Application;
+				const markdownString = '[Microsoft homepage](http://www.microsoft.com)';
+				const linkSelector = '.notebook-cell.active .notebook-text a[href=\'http://www.microsoft.com\']';
+				await verifyElementRendered(app, markdownString, linkSelector);
+			});
+			it('can create img from markdown', async function () {
+				const app = this.app as Application;
+				const markdownString = '![Churn-Index](https://www.ngdata.com/wp-content/uploads/2016/05/churn.jpg)';
+				// Verify image with the correct src and alt attributes is created
+				const imgSelector = '.notebook-cell.active .notebook-text img[src=\'https://www.ngdata.com/wp-content/uploads/2016/05/churn.jpg\'][alt=\'Churn-Index\']';
+				await verifyElementRendered(app, markdownString, imgSelector);
+			});
+		});
 	});
+}
+
+/**
+ * Verifies that the given markdown string is rendered into the expected HTML element in split view, rich text view
+ * and the text cell outside of edit mode.
+ * @param app The application
+ * @param markdownString The markdown text to enter for the element to render
+ * @param element The query selector for the element that is expected to be rendered
+ */
+async function verifyElementRendered(app: Application, markdownString: string, element: string): Promise<void> {
+	await app.workbench.sqlNotebook.newUntitledNotebook();
+	await app.workbench.sqlNotebook.addCell('markdown');
+	await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
+	await app.workbench.sqlNotebook.waitForTypeInEditor(markdownString);
+	// Verify link is shown in split view
+	await app.code.waitForElement(element);
+	await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Rich Text View');
+	// Verify link is shown in WYSIWYG view
+	await app.code.waitForElement(element);
+	// Verify link is shown outside of edit mode
+	await app.code.dispatchKeybinding('escape');
+	await app.code.waitForElement(element);
 }
 
 async function openAndRunNotebook(app: Application, filename: string): Promise<void> {
