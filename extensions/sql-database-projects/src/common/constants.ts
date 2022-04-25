@@ -139,22 +139,24 @@ export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 
 // Deploy
+export const SqlServerName = 'SQL server';
+export const AzureSqlServerName = 'Azure SQL server';
 export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
-export const publishToExistingServer = localize('publishToExistingServer', "Publish to existing server");
-export const publishToDockerContainer = localize('publishToDockerContainer', "Publish to new server in a container");
-export const enterPortNumber = localize('enterPortNumber', "Enter SQL server port number or press enter to use the default value");
-export const serverPortNumber = localize('serverPortNumber', "SQL server port number");
-export const serverPassword = localize('serverPassword', "SQL Server admin password");
-export const confirmServerPassword = localize('confirmServerPassword', "Confirm SQL Server admin password");
-export const baseDockerImage = localize('baseDockerImage', "Base SQL Server Docker image");
+export function publishToExistingServer(name: string) { return localize('publishToExistingServer', "Publish to an existing {0}", name); }
+export function publishToDockerContainer(name: string) { return localize('publishToDockerContainer', "Publish to new {0} local development container", name); }
+export function enterPortNumber(name: string) { return localize('enterPortNumber', "Enter {0} port number or press enter to use the default value", name); }
+export function serverPortNumber(name: string) { return localize('serverPortNumber', "{0} port number", name); }
+export function serverPassword(name: string) { return localize('serverPassword', "{0} admin password", name); }
+export function confirmServerPassword(name: string) { return localize('confirmServerPassword', "Confirm {0} admin password", name); }
+export function baseDockerImage(name: string) { return localize('baseDockerImage', "Base {0} Docker image", name); }
 export const publishTo = localize('publishTo', "Publish Target");
 export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
 export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
-export const enterPassword = localize('enterPassword', "Enter SQL Server admin password");
-export const confirmPassword = localize('confirmPassword', "Confirm SQL server admin password");
-export const selectBaseImage = localize('selectBaseImage', "Select the base SQL Server docker image");
-export const invalidSQLPasswordMessage = localize('invalidSQLPassword', "SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy");
-export const passwordNotMatch = localize('passwordNotMatch', "SQL Server password doesn't match the confirmation password");
+export function enterPassword(name: string) { return localize('enterPassword', "Enter {0} admin password", name); }
+export function confirmPassword(name: string) { return localize('confirmPassword', "Confirm {0} admin password", name); }
+export function selectBaseImage(name: string) { return localize('selectBaseImage', "Select the base {0} docker image", name); }
+export function invalidSQLPasswordMessage(name: string) { return localize('invalidSQLPassword', "{0} password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy", name); }
+export function passwordNotMatch(name: string) { return localize('passwordNotMatch', "{0} password doesn't match the confirmation password", name); }
 export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be number");
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
@@ -532,4 +534,9 @@ export const defaultDSP = targetPlatformToVersion.get(defaultTargetPlatform)!;
  */
 export function getTargetPlatformFromVersion(version: string): string {
 	return Array.from(targetPlatformToVersion.keys()).filter(k => targetPlatformToVersion.get(k) === version)[0];
+}
+
+export enum PublishTargetType {
+	existingServer = 'existingServer',
+	docker = 'docker',
 }

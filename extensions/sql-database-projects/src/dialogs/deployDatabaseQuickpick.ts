@@ -119,10 +119,11 @@ async function launchEulaQuickPick(baseImage: string): Promise<boolean> {
  */
 export async function launchPublishToDockerContainerQuickpick(project: Project): Promise<IDeployProfile | undefined> {
 
+	const name = uiUtils.getPublishServerName(project.getProjectTargetVersion());
 	let localDbSetting: ILocalDbSetting | undefined;
 	// Deploy to docker selected
 	let portNumber = await vscode.window.showInputBox({
-		title: constants.enterPortNumber,
+		title: constants.enterPortNumber(name),
 		ignoreFocusOut: true,
 		value: constants.defaultPortNumber,
 		validateInput: input => !utils.validateSqlServerPortNumber(input) ? constants.portMustBeNumber : undefined
@@ -136,10 +137,10 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 
 	let password: string | undefined = '';
 	password = await vscode.window.showInputBox({
-		title: constants.enterPassword,
+		title: constants.enterPassword(name),
 		ignoreFocusOut: true,
 		value: password,
-		validateInput: input => !utils.isValidSQLPassword(input) ? constants.invalidSQLPasswordMessage : undefined,
+		validateInput: input => !utils.isValidSQLPassword(input) ? constants.invalidSQLPasswordMessage(name) : undefined,
 		password: true
 	}
 	);
@@ -151,10 +152,10 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 
 	let confirmPassword: string | undefined = '';
 	confirmPassword = await vscode.window.showInputBox({
-		title: constants.confirmPassword,
+		title: constants.confirmPassword(name),
 		ignoreFocusOut: true,
 		value: confirmPassword,
-		validateInput: input => input !== password ? constants.passwordNotMatch : undefined,
+		validateInput: input => input !== password ? constants.passwordNotMatch(name) : undefined,
 		password: true
 	}
 	);
@@ -167,7 +168,7 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 	const baseImages = uiUtils.getDockerBaseImages();
 	const baseImage = await vscode.window.showQuickPick(
 		baseImages.map(x => x.name),
-		{ title: constants.selectBaseImage, ignoreFocusOut: true });
+		{ title: constants.selectBaseImage(name), ignoreFocusOut: true });
 
 	// Return when user hits escape
 	if (!baseImage) {

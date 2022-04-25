@@ -11,6 +11,7 @@ import { promptForPublishProfile } from './publishDatabaseDialog';
 import { getDefaultPublishDeploymentOptions, getVscodeMssqlApi } from '../common/utils';
 import { IConnectionInfo } from 'vscode-mssql';
 import { IDeploySettings } from '../models/IDeploySettings';
+import { getPublishServerName } from './utils';
 
 /**
  * Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
@@ -206,11 +207,11 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 	return settings;
 }
 
-export async function launchPublishTargetOption(): Promise<string | undefined> {
+export async function launchPublishTargetOption(project: Project): Promise<constants.PublishTargetType | undefined> {
 	// Show options to user for deploy to existing server or docker
-
+	const name = getPublishServerName(project.getProjectTargetVersion());
 	const publishOption = await vscode.window.showQuickPick(
-		[constants.publishToExistingServer, constants.publishToDockerContainer],
+		[constants.publishToExistingServer(name), constants.publishToDockerContainer(name)],
 		{ title: constants.selectPublishOption, ignoreFocusOut: true });
 
 	// Return when user hits escape
@@ -218,6 +219,13 @@ export async function launchPublishTargetOption(): Promise<string | undefined> {
 		return undefined;
 	}
 
-	return publishOption;
+	switch (publishOption) {
+		case constants.publishToExistingServer(name):
+			return constants.PublishTargetType.existingServer;
+		case constants.publishToDockerContainer(name):
+			return constants.PublishTargetType.docker;
+		default:
+			return constants.PublishTargetType.existingServer;
+	}
 }
 
