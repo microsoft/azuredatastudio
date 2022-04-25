@@ -123,6 +123,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 		}).component();
 
+		const backupChecksumInfoBox = this._view.modelBuilder.infoBox().withProps({
+			text: constants.DATABASE_BACKUP_CHECKSUM_INFO_TEXT,
+			style: 'information',
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				...styles.BODY_CSS
+			}
+		}).component();
+
 		this._networkShareButton = this._view.modelBuilder.radioButton()
 			.withProps({
 				name: buttonGroup,
@@ -160,6 +169,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems(
 			[
 				selectLocationText,
+				backupChecksumInfoBox,
 				this._networkShareButton,
 				this._blobContainerButton
 			]
@@ -457,6 +467,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 			}).component();
 
+		const azureStoragePrivateEndpointInfoBox = this._view.modelBuilder.infoBox().withProps({
+			text: constants.DATABASE_BACKUP_PRIVATE_ENDPOINT_INFO_TEXT,
+			style: 'information',
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				...styles.BODY_CSS
+			}
+		}).component();
+
 		this._networkShareTargetDatabaseNamesTable = this._view.modelBuilder.declarativeTable().withProps({
 			columns: [
 				{
@@ -560,6 +579,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._blobTableContainer = this._view.modelBuilder.flexContainer().withItems([
 			blobTableText,
 			allFieldsRequiredLabel,
+			azureStoragePrivateEndpointInfoBox,
 			this._blobContainerTargetDatabaseNamesTable
 		]).withProps({
 			CSSStyles: {
@@ -600,6 +620,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					'margin-bottom': '12px'
 				}
 			}).component();
+
+		const azureStoragePrivateEndpointInfoBox = this._view.modelBuilder.infoBox().withProps({
+			text: constants.DATABASE_BACKUP_PRIVATE_ENDPOINT_INFO_TEXT,
+			style: 'information',
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				...styles.BODY_CSS
+			}
+		}).component();
 
 		const subscriptionLabel = this._view.modelBuilder.text()
 			.withProps({
@@ -728,6 +757,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}).withItems([
 			azureAccountHeader,
 			azureAccountHelpText,
+			azureStoragePrivateEndpointInfoBox,
 			subscriptionLabel,
 			this._networkShareContainerSubscription,
 			locationLabel,
