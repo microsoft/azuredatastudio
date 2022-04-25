@@ -28,9 +28,9 @@ declare module 'sql-bindings' {
 		addSqlBinding(bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string): Promise<ResultStatus>;
 
 		/**
-		 * Prompts the user to select type of binding and returns result
+		 * Prompts the user to select type of binding and returns result or undefined if the user cancelled out of the prompt
 		 */
-		promptForBindingType(): Promise<(vscode.QuickPickItem & { type: BindingType })  | undefined>;
+		promptForBindingType(): Promise<BindingType | undefined>;
 
 		/**
 		 * Prompts the user to enter object name for the SQL query
