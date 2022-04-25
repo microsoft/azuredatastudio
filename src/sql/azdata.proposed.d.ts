@@ -1099,7 +1099,7 @@ declare module 'azdata' {
 			 * Generate preview report describing the changes to be made.
 			 * @param table the table information
 			 */
-			generatePreviewReport(table: TableInfo): Thenable<string>;
+			generatePreviewReport(table: TableInfo): Thenable<GeneratePreviewReportResult>;
 
 			/**
 			 * Notify the provider that the table designer has been closed.
@@ -1514,6 +1514,17 @@ declare module 'azdata' {
 			 * The new view.
 			 */
 			view: TableDesignerView;
+		}
+
+		export interface GeneratePreviewReportResult {
+			/**
+			 * Report generated for generate preview
+			 */
+			report: string;
+			/**
+			 * Format (mimeType) of the report
+			 */
+			mimeType: string;
 		}
 	}
 

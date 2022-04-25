@@ -1151,7 +1151,7 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 			}
 		};
 
-		const generatePreviewReport = (tableInfo: azdata.designers.TableInfo): Thenable<string> => {
+		const generatePreviewReport = (tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.GeneratePreviewReportResult> => {
 			try {
 				return client.sendRequest(contracts.TableDesignerGenerateChangePreviewReportRequest.type, tableInfo);
 			}
