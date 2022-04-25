@@ -14,7 +14,7 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 
 import { Uri, window } from 'vscode';
 import { ISqlProject, SqlTargetPlatform } from 'sqldbproj';
-import { promises as fs } from 'fs';
+import { promises as fs, readFileSync } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
@@ -248,7 +248,15 @@ export class Project implements ISqlProject {
 		const fileEntries: FileProjectEntry[] = [];
 		filesSet.forEach(f => {
 			const typeEntry = entriesWithType.find(e => e.relativePath === f);
-			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, typeEntry ? typeEntry.typeAttribute : undefined));
+			let containsCreateTableStatement;
+
+			// TODO: add check if table designer feature is enabled so we don't waste time reading all the files if it isn't
+			// read file to check if it has a "Create Table" statement
+			const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(f));
+			const fileContents = readFileSync(fullPath).toString();
+			containsCreateTableStatement = fileContents.toLowerCase().includes('create table');
+
+			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, typeEntry ? typeEntry.typeAttribute : undefined, containsCreateTableStatement));
 		});
 
 		return fileEntries;
@@ -1045,13 +1053,14 @@ export class Project implements ISqlProject {
 		return this.getCollectionProjectPropertyValue(constants.DatabaseSource);
 	}
 
-	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string): FileProjectEntry {
+	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string, containsCreateTableStatement?: boolean): FileProjectEntry {
 		let platformSafeRelativePath = utils.getPlatformSafeFileEntryPath(relativePath);
 		return new FileProjectEntry(
 			Uri.file(path.join(this.projectFolderPath, platformSafeRelativePath)),
 			utils.convertSlashesForSqlProj(relativePath),
 			entryType,
-			sqlObjectType);
+			sqlObjectType,
+			containsCreateTableStatement);
 	}
 
 	private findOrCreateItemGroup(containedTag?: string, prePostScriptExist?: { scriptExist: boolean; }): Element {
