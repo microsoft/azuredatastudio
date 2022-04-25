@@ -1150,7 +1150,7 @@
       </trans-unit>
       <trans-unit id="updatedToSdkStyleError">
         <source xml:lang="en">Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.</source>
-        <target state="new">Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.</target>
+        <target state="translated">{0} 프로젝트에서 SDK 스타일로 변환하지 못했습니다. .sqlproj에 대한 변경 내용이 롤백되었습니다.</target>
       </trans-unit>
       <trans-unit id="updatingProjectFromDatabase">
         <source xml:lang="en">Updating {0} from {1}...</source>

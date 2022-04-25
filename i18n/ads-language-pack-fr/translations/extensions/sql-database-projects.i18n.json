@@ -295,7 +295,7 @@
 			"updateProjectForRoundTrip": "Les cibles, les références et les références de la base de données système doivent être mises à jour pour générer le projet « {0} ». Si le projet a été créé dans SSDT, il continuera à fonctionner dans les deux outils. Voulez-vous mettre à jour le projet ?",
 			"updateProjectFromDatabaseDialogName": "Mettre à jour le projet à partir de la base de données",
 			"updateText": "Mettre à jour",
-			"updatedToSdkStyleError": "Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.",
+			"updatedToSdkStyleError": "La conversion du {0} de projet en style SDK a échoué. Les modifications apportées au fichier .sqlproj ont été restaurées.",
 			"updatingProjectFromDatabase": "Mise à jour de {0} à partir de {1}...",
 			"userSelectionCancelled": "L'utilisateur a annulé la sélection de la manière d'exécuter l'arrêt automatique.",
 			"userSelectionInstallGlobally": "L'utilisateur a choisi d'installer l'autorest dans le monde entier. Installation maintenant...",

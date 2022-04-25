@@ -295,7 +295,7 @@
 			"updateProjectForRoundTrip": "Per compilare il progetto, è necessario aggiornare le destinazioni, i riferimenti e i riferimenti al database di sistema '{0}'. Se il progetto è stato creato in SQL Server Data Tools, continuerà a funzionare in entrambi gli strumenti. Aggiornare il progetto?",
 			"updateProjectFromDatabaseDialogName": "Aggiorna progetto dal database",
 			"updateText": "Aggiorna",
-			"updatedToSdkStyleError": "Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.",
+			"updatedToSdkStyleError": "La conversione del progetto {0} in uno stile SDK non è riuscita. È stato eseguito il rollback delle modifiche al file con estensione .sqlproj.",
 			"updatingProjectFromDatabase": "Aggiornamento di {0} da {1}...",
 			"userSelectionCancelled": "L'utente ha annullato la selezione per la modalità di esecuzione dell'autorest.",
 			"userSelectionInstallGlobally": "L'utente ha selezionato l'installazione automatica.  Installazione in corso...",
