@@ -69,7 +69,6 @@
   },
   "devDependencies": {
     "@types/node": "^14.14.16",
-    "tslint": "^5.8.0",
     "should": "^13.2.1",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
