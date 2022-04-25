@@ -15,6 +15,8 @@ import { AzureArcTreeDataProvider } from './ui/tree/azureArcTreeDataProvider';
 import { ControllerTreeNode } from './ui/tree/controllerTreeNode';
 import { TreeNode } from './ui/tree/treeNode';
 import * as pricing from './common/pricingUtils';
+import * as workspace from './common/workspaceUtils';
+import { LogAnalyticsWorkspaceOptionsSourceProvider } from './providers/logAnalyticsWorkspaceOptionsSourceProvider';
 
 export async function activate(context: vscode.ExtensionContext): Promise<arc.IExtension> {
 	IconPathHelper.setExtensionContext(context);
@@ -61,6 +63,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 	// register option sources
 	const rdApi = <rd.IExtension>vscode.extensions.getExtension(rd.extension.name)?.exports;
 	context.subscriptions.push(rdApi.registerOptionsSourceProvider(new ArcControllersOptionsSourceProvider(treeDataProvider)));
+	context.subscriptions.push(rdApi.registerOptionsSourceProvider(new LogAnalyticsWorkspaceOptionsSourceProvider()));
+
+	// Register valueprovider for getting the Log Analytics workspace id from the workspace name.
+	context.subscriptions.push(rdApi.registerValueProvider({
+		id: 'workspace-name-to-id',
+		getValue: async (triggerFields: { [key: string]: rd.InputValueType }) => {
+			return workspace.getWorkspaceIdFromName(triggerFields);
+		}
+	}));
 
 	// Register valueprovider for getting the calculated cost per VCore.
 	context.subscriptions.push(rdApi.registerValueProvider({

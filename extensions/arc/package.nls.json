@@ -43,6 +43,9 @@
 	"arc.data.controller.auto.upload.metrics.description": "Enable the automatic upload of metrics. Direct mode only.",
 	"arc.data.controller.auto.upload.logs": "Auto-upload Logs",
 	"arc.data.controller.auto.upload.logs.description": "Enable the automatic upload of logs. Direct mode only.",
+	"arc.data.controller.log.analytics.workspace.names": "Log Analytics workspace",
+	"arc.data.controller.log.analytics.workspace.id": "Log Analytics workspace ID",
+	"arc.data.controller.log.analytics.primary.key": "Log Analytics primary key",
 
 	"arc.data.controller.metrics.and.logs.dashboard.credentials.title": "Metrics and Logs Dashboard Credentials",
 	"arc.data.controller.metrics.and.logs.dashboard.credentials.username": "Username",
