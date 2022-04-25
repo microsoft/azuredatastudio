@@ -543,15 +543,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._cells.findIndex(cell => cell.equals(cellModel));
 	}
 
-	public addCell(cellType: CellType, index?: number): ICellModel | undefined {
+	public addCell(cellType: CellType, index?: number, language?: string): ICellModel | undefined {
 		if (this.inErrorState) {
 			return undefined;
 		}
-		let cell = this.createCell(cellType);
+		let cell = this.createCell(cellType, language);
 		return this.insertCell(cell, index, true);
 	}
 
-	public splitCell(cellType: CellType, notebookService: INotebookService, index?: number, addToUndoStack: boolean = true): ICellModel | undefined {
+	public splitCell(cellType: CellType, notebookService: INotebookService, index?: number, language?: string, addToUndoStack: boolean = true): ICellModel | undefined {
 		if (this.inErrorState) {
 			return undefined;
 		}
@@ -626,7 +626,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					}
 					//If the selection is not from the start of the cell, create a new cell.
 					if (headContent.length) {
-						newCell = this.createCell(cellType);
+						newCell = this.createCell(cellType, language);
 						newCell.source = newSource;
 						newCellIndex++;
 						this.insertCell(newCell, newCellIndex, false);
@@ -639,7 +639,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 				if (tailCellContent.length) {
 					//tail cell will be of original cell type.
-					tailCell = this.createCell(this._cells[index].cellType);
+					tailCell = this.createCell(this._cells[index].cellType, language);
 					let tailSource = source.slice(tailRange.startLineNumber - 1) as string[];
 					if (selection.endColumn > 1) {
 						partialSource = source.slice(tailRange.startLineNumber - 1, tailRange.startLineNumber)[0].slice(tailRange.startColumn - 1);
@@ -833,13 +833,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	private createCell(cellType: CellType): ICellModel {
+	private createCell(cellType: CellType, language?: string): ICellModel {
 		let singleCell: nb.ICellContents = {
 			cell_type: cellType,
 			source: '',
 			metadata: {},
 			execution_count: undefined
 		};
+		if (language) {
+			singleCell.metadata.language = language;
+		}
 		return this._notebookOptions.factory.createCell(singleCell, { notebook: this, isTrusted: true });
 	}
 

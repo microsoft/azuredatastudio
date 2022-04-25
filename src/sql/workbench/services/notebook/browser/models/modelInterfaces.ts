@@ -389,7 +389,7 @@ export interface INotebookModel {
 	/**
 	 * Adds a cell to the index of the model
 	 */
-	addCell(cellType: CellType, index?: number): void;
+	addCell(cellType: CellType, index?: number, language?: string): void;
 
 	/**
 	 * Moves a cell up/down
