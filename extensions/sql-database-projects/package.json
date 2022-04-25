@@ -351,7 +351,7 @@
         },
         {
           "command": "sqlDatabaseProjects.newExternalStreamingJob",
-          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@4"
         },
         {
@@ -376,22 +376,22 @@
         },
         {
           "command": "sqlDatabaseProjects.validateExternalStreamingJob",
-          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.file.externalStreamingJob",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.file.externalStreamingJob",
           "group": "5_dbProjects_streamingJob"
         },
         {
           "command": "sqlDatabaseProjects.exclude",
-          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/",
           "group": "9_dbProjectsLast@1"
         },
         {
           "command": "sqlDatabaseProjects.delete",
-          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem == databaseProject.itemType.reference",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem == databaseProject.itemType.reference",
           "group": "9_dbProjectsLast@2"
         },
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
-          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
           "group": "9_dbProjectsLast@6"
         },
         {
