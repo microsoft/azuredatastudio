@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as os from 'os';
 import * as fs from 'fs';
 import * as vscode from 'vscode';
 import * as path from 'path';
@@ -134,32 +133,6 @@ export async function getAzureFunctionsExtensionApi(): Promise<AzureFunctionsExt
 }
 
 /**
- * TODO REMOVE defaultSqlBindingTextLines
- * Overwrites the Azure function methods body to work with the binding
- * @param filePath is the path for the function file (.cs for C# functions)
- */
-export function overwriteAzureFunctionMethodBody(filePath: string): void {
-	let defaultBindedFunctionText = fs.readFileSync(filePath, 'utf-8');
-	// Replace default binding text
-	let newValueLines = defaultBindedFunctionText.split(os.EOL);
-	const defaultFunctionTextToSkip = new Set(constants.defaultSqlBindingTextLines);
-	let replacedValueLines = [];
-	for (let defaultLine of newValueLines) {
-		// Skipped lines
-		if (defaultFunctionTextToSkip.has(defaultLine.trimStart())) {
-			continue;
-		} else if (defaultLine.trimStart() === constants.defaultBindingResult) { // Result change
-			replacedValueLines.push(defaultLine.replace(constants.defaultBindingResult, constants.sqlBindingResult));
-		} else {
-			// Normal lines to be included
-			replacedValueLines.push(defaultLine);
-		}
-	}
-	defaultBindedFunctionText = replacedValueLines.join(os.EOL);
-	fs.writeFileSync(filePath, defaultBindedFunctionText, 'utf-8');
-}
-
-/**
  * Gets the azure function project for the user to choose from a list of projects files
  * If only one project is found that project is used to add the binding to
  * if no project is found, user is informed there needs to be a C# Azure Functions project
@@ -276,7 +249,7 @@ export async function addNugetReferenceToProjectFile(selectedProjectFile: string
 export async function addConnectionStringToConfig(connectionString: string, projectFile: string): Promise<void> {
 	const settingsFile = await getSettingsFile(projectFile);
 	if (settingsFile) {
-		await setLocalAppSetting(path.dirname(settingsFile), constants.sqlConnectionString, connectionString);
+		await setLocalAppSetting(path.dirname(settingsFile), constants.sqlConnectionStringSetting, connectionString);
 	}
 }
 
