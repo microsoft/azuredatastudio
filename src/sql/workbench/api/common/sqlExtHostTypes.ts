@@ -965,7 +965,9 @@ export namespace designers {
 		Script = 'script',
 		ForeignKeys = 'foreignKeys',
 		CheckConstraints = 'checkConstraints',
-		Indexes = 'indexes'
+		Indexes = 'indexes',
+		PrimaryKeyName = 'primaryKeyName',
+		PrimaryKeyColumns = 'primaryKeyColumns'
 	}
 
 	export enum TableColumnProperty {

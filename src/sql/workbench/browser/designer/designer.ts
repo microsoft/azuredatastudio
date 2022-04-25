@@ -6,7 +6,7 @@
 import {
 	DesignerComponentInput, DesignerEditType, DesignerTab, DesignerEdit, DesignerPropertyPath, DesignerViewModel, DesignerDataPropertyInfo,
 	DesignerTableComponentRowData, DesignerTableProperties, InputBoxProperties, DropDownProperties, CheckBoxProperties,
-	DesignerEditProcessedEventArgs, DesignerStateChangedEventArgs, DesignerAction, DesignerUIState, ScriptProperty, DesignerRootObjectPath
+	DesignerEditProcessedEventArgs, DesignerStateChangedEventArgs, DesignerAction, ScriptProperty, DesignerRootObjectPath, CanBeDeletedProperty, DesignerUIArea
 }
 	from 'sql/workbench/browser/designer/interfaces';
 import { IPanelTab, ITabbedPanelStyles, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
@@ -42,6 +42,7 @@ import { DesignerPropertyPathValidator } from 'sql/workbench/browser/designer/de
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { listActiveSelectionBackground, listActiveSelectionForeground } from 'vs/platform/theme/common/colorRegistry';
 import { alert } from 'vs/base/browser/ui/aria/aria';
+import { layoutDesignerTable, TableHeaderRowHeight, TableRowHeight } from 'sql/workbench/browser/designer/designerTableUtil';
 import { Dropdown, IDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
 
@@ -62,12 +63,13 @@ export type DesignerUIComponent = InputBox | Checkbox | Table<Slick.SlickData> |
 export type CreateComponentsFunc = (container: HTMLElement, components: DesignerDataPropertyInfo[], parentPath: DesignerPropertyPath) => DesignerUIComponent[];
 export type SetComponentValueFunc = (definition: DesignerDataPropertyInfo, component: DesignerUIComponent, data: DesignerViewModel) => void;
 
-const TableRowHeight = 25;
-const TableHeaderRowHeight = 28;
+interface DesignerTableCellContext {
+	view: DesignerUIArea;
+	path: DesignerPropertyPath;
+}
+
 const ScriptTabId = 'scripts';
 const MessagesTabId = 'messages';
-
-type DesignerUIArea = 'PropertiesView' | 'ScriptView' | 'TopContentView' | 'TabsView';
 
 export class Designer extends Disposable implements IThemable {
 	private _loadingSpinner: LoadingSpinner;
@@ -107,11 +109,12 @@ export class Designer extends Disposable implements IThemable {
 				valueGetter: (item, column): string => {
 					return item[column.field].value;
 				},
-				valueSetter: (parentPath: DesignerPropertyPath, row: number, item: DesignerTableComponentRowData, column: Slick.Column<Slick.SlickData>, value: string): void => {
+				valueSetter: (context: DesignerTableCellContext, row: number, item: DesignerTableComponentRowData, column: Slick.Column<Slick.SlickData>, value: string): void => {
 					this.handleEdit({
 						type: DesignerEditType.Update,
-						path: [...parentPath, row, column.field],
-						value: value
+						path: [...context.path, row, column.field],
+						value: value,
+						source: context.view
 					});
 				},
 				optionsGetter: (item, column): string[] => {
@@ -148,7 +151,9 @@ export class Designer extends Disposable implements IThemable {
 		this._scriptTabbedPannel = new TabbedPanel(this._editorContainer);
 		this._messagesView = this._instantiationService.createInstance(DesignerMessagesTabPanelView);
 		this._register(this._messagesView.onMessageSelected((path) => {
-			this.selectProperty(path);
+			if (path && path.length > 0) {
+				this.selectProperty(path);
+			}
 		}));
 		this._scriptEditorView = new DesignerScriptEditorTabPanelView(this._instantiationService);
 		this._scriptTabbedPannel.pushTab({
@@ -258,24 +263,12 @@ export class Designer extends Disposable implements IThemable {
 
 
 	public setInput(input: DesignerComponentInput): void {
-		// Save state
-		if (this._input) {
-			this._input.designerUIState = this.getUIState();
-		}
-
-		// Clean up
+		this.saveUIState();
 		if (this._loadingTimeoutHandle) {
 			this.stopLoading();
 		}
-		this._buttons = [];
-		this._componentMap.clear();
-		DOM.clearNode(this._topContentContainer);
-		this._contentTabbedPanel.clearTabs();
-		this._propertiesPane.clear();
+		this.clearUI();
 		this._inputDisposable?.dispose();
-		this._groupHeaders = [];
-
-
 		// Initialize with new input
 		this._input = input;
 		this._inputDisposable = new DisposableStore();
@@ -307,6 +300,17 @@ export class Designer extends Disposable implements IThemable {
 		this._inputDisposable?.dispose();
 	}
 
+	private clearUI(): void {
+		this._buttons.forEach(button => button.dispose());
+		this._buttons = [];
+		this._componentMap.forEach(item => item.component.dispose());
+		this._componentMap.clear();
+		DOM.clearNode(this._topContentContainer);
+		this._contentTabbedPanel.clearTabs();
+		this._propertiesPane.clear();
+		this._groupHeaders = [];
+	}
+
 	private initializeDesigner(): void {
 		const view = this._input.view;
 		if (view.components) {
@@ -315,8 +319,8 @@ export class Designer extends Disposable implements IThemable {
 		view.tabs.forEach(tab => {
 			this._contentTabbedPanel.pushTab(this.createTabView(tab));
 		});
-		this.layoutTabbedPanel();
 		this.updateComponentValues();
+		this.layoutTabbedPanel();
 		this.updatePropertiesPane(DesignerRootObjectPath);
 		this.restoreUIState();
 	}
@@ -328,7 +332,15 @@ export class Designer extends Disposable implements IThemable {
 			alert(localize('designer.errorCountAlert', "{0} validation errors found.", args.result.errors.length));
 		}
 		try {
-			this.updateComponentValues();
+			if (args.result.refreshView) {
+				this.refresh();
+				if (!args.result.isValid) {
+					this._scriptTabbedPannel.showTab(MessagesTabId);
+				}
+			} else {
+				this.updateComponentValues();
+				this.layoutTabbedPanel();
+			}
 			if (edit.type === DesignerEditType.Add) {
 				// For tables in the main view, move focus to the first cell of the newly added row, and the properties pane will be showing the new object.
 				if (edit.path.length === 1) {
@@ -352,6 +364,10 @@ export class Designer extends Disposable implements IThemable {
 				if (edit.path.length === 4) {
 					this.updatePropertiesPane(this._propertiesPane.objectPath);
 				}
+			}
+			// try to move the focus back to where it was
+			if (args.result.refreshView) {
+				this.selectProperty(args.edit.path, args.edit.source, false);
 			}
 		} catch (err) {
 			this._notificationService.error(err);
@@ -397,8 +413,9 @@ export class Designer extends Disposable implements IThemable {
 	}
 
 	private refresh() {
-		this.updateComponentValues();
-		this.updatePropertiesPane(this._propertiesPane.objectPath);
+		this.saveUIState();
+		this.clearUI();
+		this.initializeDesigner();
 	}
 
 	private layoutTabbedPanel() {
@@ -408,19 +425,9 @@ export class Designer extends Disposable implements IThemable {
 	private layoutPropertiesPane() {
 		this._propertiesPane?.componentMap.forEach((v) => {
 			if (v.component instanceof Table) {
-				const rows = v.component.getData().getLength();
-				// Tables in properties pane, minimum height:2 rows, maximum height: 10 rows.
-				const actualHeight = this.getTableHeight(rows);
-				const minHeight = this.getTableHeight(2);
-				const maxHeight = this.getTableHeight(10);
-				const height = Math.min(Math.max(minHeight, actualHeight), maxHeight);
-				v.component.layout(new DOM.Dimension(this._propertiesPaneContainer.clientWidth - 10 /*padding*/, height));
+				layoutDesignerTable(v.component, this._propertiesPaneContainer.clientWidth);
 			}
 		});
-	}
-
-	private getTableHeight(rows: number): number {
-		return rows * TableRowHeight + TableHeaderRowHeight;
 	}
 
 	private updatePropertiesPane(objectPath: DesignerPropertyPath): void {
@@ -485,7 +492,7 @@ export class Designer extends Disposable implements IThemable {
 		this._messagesView.updateMessages(this._input.validationErrors);
 	}
 
-	private selectProperty(path: DesignerPropertyPath): void {
+	private selectProperty(path: DesignerPropertyPath, view?: DesignerUIArea, highlight: boolean = true): void {
 		if (!DesignerPropertyPathValidator.validate(path, this._input.viewModel)) {
 			return;
 		}
@@ -505,7 +512,10 @@ export class Designer extends Disposable implements IThemable {
 				if (tab) {
 					for (const component of tab.components) {
 						if (path[0] === component.propertyName) {
-							this._contentTabbedPanel.showTab(tab.title);
+							// if we are editing the top level property and the view is properties view, then we don't have to switch to the tab.
+							if (path.length !== 1 || view !== 'PropertiesView') {
+								this._contentTabbedPanel.showTab(tab.title);
+							}
 							found = true;
 							break;
 						}
@@ -520,7 +530,12 @@ export class Designer extends Disposable implements IThemable {
 		if (found) {
 			const propertyInfo = this._componentMap.get(<string>path[0]);
 			if (propertyInfo.defintion.componentType !== 'table') {
-				propertyInfo.component.focus();
+				if (view === 'PropertiesView') {
+					this.updatePropertiesPane(DesignerRootObjectPath);
+					this._propertiesPane.selectProperty(path);
+				} else {
+					propertyInfo.component.focus();
+				}
 				return;
 			} else {
 				const tableComponent = <Table<Slick.SlickData>>propertyInfo.component;
@@ -533,7 +548,9 @@ export class Designer extends Disposable implements IThemable {
 					this._propertiesPane.selectProperty(relativePath);
 				}
 			}
-			this.highlightActiveElement();
+			if (highlight) {
+				this.highlightActiveElement();
+			}
 		}
 	}
 
@@ -703,7 +720,7 @@ export class Designer extends Disposable implements IThemable {
 				});
 				input.onLoseFocus((args) => {
 					if (args.hasChanged) {
-						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: args.value });
+						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: args.value, source: view });
 					}
 				});
 				input.onInputFocus(() => {
@@ -727,7 +744,7 @@ export class Designer extends Disposable implements IThemable {
 					dropdown = new Dropdown(dropdownContainer, this._contextViewProvider, { values: dropdownProperties.values as string[] || [] });
 					dropdown.ariaLabel = componentDefinition.componentProperties?.title;
 					dropdown.onValueChange((value) => {
-						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: value });
+						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: value, source: view });
 					});
 					dropdown.onFocus(() => {
 						if (view === 'PropertiesView') {
@@ -742,7 +759,7 @@ export class Designer extends Disposable implements IThemable {
 					dropdown.render(dropdownContainer);
 					dropdown.selectElem.style.height = '25px';
 					dropdown.onDidSelect((e) => {
-						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: e.selected });
+						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: e.selected, source: view });
 					});
 					dropdown.onDidFocus(() => {
 						if (view === 'PropertiesView') {
@@ -760,7 +777,7 @@ export class Designer extends Disposable implements IThemable {
 				const checkboxProperties = componentDefinition.componentProperties as CheckBoxProperties;
 				const checkbox = new Checkbox(checkboxContainer, { label: '', ariaLabel: checkboxProperties.title });
 				checkbox.onChange((newValue) => {
-					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: newValue });
+					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: newValue, source: view });
 				});
 				checkbox.onFocus(() => {
 					if (view === 'PropertiesView') {
@@ -778,7 +795,7 @@ export class Designer extends Disposable implements IThemable {
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
 				if (tableProperties.canAddRows) {
 					const buttonContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
-					const addNewText = localize('designer.newRowText', "Add New");
+					const addNewText = tableProperties.labelForAddNewButton ?? localize('designer.newRowText', "Add New");
 					const addRowButton = new Button(buttonContainer, {
 						title: addNewText,
 						secondary: true
@@ -786,7 +803,8 @@ export class Designer extends Disposable implements IThemable {
 					addRowButton.onDidClick(() => {
 						this.handleEdit({
 							type: DesignerEditType.Add,
-							path: propertyPath
+							path: propertyPath,
+							source: view
 						});
 					});
 					this.styleComponent(addRowButton);
@@ -829,7 +847,8 @@ export class Designer extends Disposable implements IThemable {
 								this.handleEdit({
 									type: DesignerEditType.Update,
 									path: [...propertyPath, e.row, propertyDefinition.propertyName],
-									value: e.value
+									value: e.value,
+									source: view
 								});
 							});
 							return checkboxColumn.definition;
@@ -838,7 +857,7 @@ export class Designer extends Disposable implements IThemable {
 							return {
 								name: dropdownProperties.title,
 								field: propertyDefinition.propertyName,
-								editor: this._tableCellEditorFactory.getDropdownEditorClass(propertyPath, dropdownProperties.values as string[], dropdownProperties.isEditable),
+								editor: this._tableCellEditorFactory.getDropdownEditorClass({ view: view, path: propertyPath }, dropdownProperties.values as string[], dropdownProperties.isEditable),
 								width: dropdownProperties.width as number
 							};
 						default:
@@ -846,7 +865,7 @@ export class Designer extends Disposable implements IThemable {
 							return {
 								name: inputProperties.title,
 								field: propertyDefinition.propertyName,
-								editor: this._tableCellEditorFactory.getTextEditorClass(propertyPath, inputProperties.inputType),
+								editor: this._tableCellEditorFactory.getTextEditorClass({ view: view, path: propertyPath }, inputProperties.inputType),
 								width: inputProperties.width as number
 							};
 					}
@@ -858,7 +877,8 @@ export class Designer extends Disposable implements IThemable {
 						title: localize('designer.removeRowText', "Remove"),
 						width: 20,
 						resizable: false,
-						isFontIcon: true
+						isFontIcon: true,
+						enabledField: CanBeDeletedProperty
 					});
 					deleteRowColumn.onClick(async (e) => {
 						if (tableProperties.showRemoveRowConfirmation) {
@@ -873,7 +893,8 @@ export class Designer extends Disposable implements IThemable {
 						}
 						this.handleEdit({
 							type: DesignerEditType.Remove,
-							path: [...propertyPath, e.row]
+							path: [...propertyPath, e.row],
+							source: view
 						});
 					});
 					table.registerPlugin(deleteRowColumn);
@@ -887,7 +908,11 @@ export class Designer extends Disposable implements IThemable {
 				table.grid.onActiveCellChanged.subscribe((e, data) => {
 					if (view === 'TabsView' || view === 'TopContentView') {
 						if (data.row !== undefined) {
-							this.updatePropertiesPane([...propertyPath, data.row]);
+							if (tableProperties.showItemDetailInPropertiesView === false) {
+								this.updatePropertiesPane(DesignerRootObjectPath);
+							} else {
+								this.updatePropertiesPane([...propertyPath, data.row]);
+							}
 						} else {
 							this.updatePropertiesPane(DesignerRootObjectPath);
 						}
@@ -934,11 +959,13 @@ export class Designer extends Disposable implements IThemable {
 		}
 	}
 
-	private getUIState(): DesignerUIState {
-		return {
-			activeContentTabId: this._contentTabbedPanel.activeTabId,
-			activeScriptTabId: this._scriptTabbedPannel.activeTabId
-		};
+	private saveUIState(): void {
+		if (this._input) {
+			this._input.designerUIState = {
+				activeContentTabId: this._contentTabbedPanel.activeTabId,
+				activeScriptTabId: this._scriptTabbedPannel.activeTabId
+			};
+		}
 	}
 
 	private restoreUIState(): void {
