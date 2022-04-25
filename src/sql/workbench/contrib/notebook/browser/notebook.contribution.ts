@@ -412,9 +412,24 @@ registerComponentType({
 	mimeTypes: [
 		'text/plain',
 		'application/vnd.jupyter.stdout',
-		'application/vnd.jupyter.stderr'
+		'application/vnd.jupyter.stderr',
+		'application/vnd.code.notebook.stdout',
+		'application/vnd.code.notebook.stderr'
 	],
 	rank: 120,
+	safe: true,
+	ctor: MimeRendererComponent,
+	selector: MimeRendererComponent.SELECTOR
+});
+
+/**
+ * A mime renderer component for VS Code Notebook error data.
+ */
+registerComponentType({
+	mimeTypes: [
+		'application/vnd.code.notebook.error'
+	],
+	rank: 121,
 	safe: true,
 	ctor: MimeRendererComponent,
 	selector: MimeRendererComponent.SELECTOR

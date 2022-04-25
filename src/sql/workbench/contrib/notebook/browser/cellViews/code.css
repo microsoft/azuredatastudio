@@ -98,6 +98,10 @@ code-component .carbon-taskbar .codicon.hideIcon.execCountHundred {
 	margin-left: -6px;
 }
 
+code-component collapse-component {
+	flex-grow: 1;
+}
+
 code-component .hide-component-button {
 	height: 16px;
 	width: 100%;
@@ -106,6 +110,15 @@ code-component .hide-component-button {
 	background-repeat: no-repeat;
 	background-position: center;
 	background-color: transparent;
+	margin-top: 4px;
+	margin-bottom: 4px;
+}
+
+code-component .cellLanguage {
+	padding: 2px 15px;
+	display: inline-block;
+	text-align: center;
+	font-size: 16px;
 }
 
 code-component .parameter {

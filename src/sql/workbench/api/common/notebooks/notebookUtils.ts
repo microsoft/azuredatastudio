@@ -8,21 +8,30 @@ import type * as azdata from 'azdata';
 import { URI } from 'vs/base/common/uri';
 import { asArray } from 'vs/base/common/arrays';
 import { VSBuffer } from 'vs/base/common/buffer';
-import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { CellTypes, MimeTypes, OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 
-export function convertToVSCodeNotebookCell(cellSource: string | string[], index: number, uri: URI, language: string): vscode.NotebookCell {
+export const DotnetInteractiveJupyterLanguagePrefix = '.net-';
+export const DotnetInteractiveLanguagePrefix = 'dotnet-interactive.';
+export const DotnetInteractiveJupyterLabelPrefix = '.NET (';
+export const DotnetInteractiveLabel = '.NET Interactive';
+
+export function convertToVSCodeNotebookCell(cellKind: azdata.nb.CellType, cellIndex: number, cellUri: URI, docUri: URI, cellLanguage: string, cellSource?: string | string[]): vscode.NotebookCell {
 	return <vscode.NotebookCell>{
-		index: index,
+		kind: cellKind === CellTypes.Code ? NotebookCellKind.Code : NotebookCellKind.Markup,
+		index: cellIndex,
 		document: <vscode.TextDocument>{
-			uri: uri,
-			languageId: language,
-			getText: () => Array.isArray(cellSource) ? cellSource.join('') : cellSource,
+			uri: cellUri,
+			languageId: cellLanguage,
+			getText: () => Array.isArray(cellSource) ? cellSource.join('') : (cellSource ?? ''),
 		},
 		notebook: <vscode.NotebookDocument>{
-			uri: uri
-		}
+			uri: docUri
+		},
+		outputs: [],
+		metadata: {},
+		mime: undefined
 	};
 }
 
@@ -33,7 +42,7 @@ export function convertToADSCellOutput(outputs: vscode.NotebookCellOutput | vsco
 			outputData[item.mime] = VSBuffer.wrap(item.data).toString();
 		}
 		return {
-			output_type: 'execute_result',
+			output_type: OutputTypes.ExecuteResult,
 			data: outputData,
 			execution_count: executionOrder,
 			metadata: output.metadata,
@@ -59,7 +68,7 @@ export function convertToVSCodeCellOutput(output: azdata.nb.ICellOutput): vscode
 		case OutputTypes.Stream:
 			let streamOutput = output as azdata.nb.IStreamResult;
 			convertedOutputItems = [{
-				mime: 'text/html',
+				mime: MimeTypes.HTML,
 				data: VSBuffer.fromString(Array.isArray(streamOutput.text) ? streamOutput.text.join('') : streamOutput.text).buffer
 			}];
 			break;
@@ -67,7 +76,7 @@ export function convertToVSCodeCellOutput(output: azdata.nb.ICellOutput): vscode
 			let errorOutput = output as azdata.nb.IErrorResult;
 			let errorString = errorOutput.ename + ': ' + errorOutput.evalue + (errorOutput.traceback ? '\n' + errorOutput.traceback?.join('\n') : '');
 			convertedOutputItems = [{
-				mime: 'text/html',
+				mime: MimeTypes.HTML,
 				data: VSBuffer.fromString(errorString).buffer
 			}];
 			break;
@@ -79,28 +88,26 @@ export function convertToVSCodeCellOutput(output: azdata.nb.ICellOutput): vscode
 	};
 }
 
-export function convertToADSNotebookContents(notebookData: vscode.NotebookData): azdata.nb.INotebookContents {
+export function convertToADSNotebookContents(notebookData: vscode.NotebookData | undefined): azdata.nb.INotebookContents {
 	let result = {
-		cells: notebookData.cells?.map<azdata.nb.ICellContents>(cell => {
+		cells: notebookData?.cells?.map<azdata.nb.ICellContents>(cell => {
 			let executionOrder = cell.executionSummary?.executionOrder;
-			return {
-				cell_type: cell.kind === NotebookCellKind.Code ? 'code' : 'markdown',
+			let convertedCell: azdata.nb.ICellContents = {
+				cell_type: cell.kind === NotebookCellKind.Code ? CellTypes.Code : CellTypes.Markdown,
 				source: cell.value,
-				metadata: {
-					language: cell.languageId
-				},
 				execution_count: executionOrder,
 				outputs: cell.outputs ? convertToADSCellOutput(cell.outputs, executionOrder) : undefined
 			};
+			convertedCell.metadata = cell.metadata?.custom?.metadata ?? {};
+			if (!convertedCell.metadata.language) {
+				convertedCell.metadata.language = cell.languageId;
+			}
+			return convertedCell;
 		}),
-		metadata: notebookData.metadata ?? {},
-		nbformat: notebookData.metadata?.custom?.nbformat ?? NBFORMAT,
-		nbformat_minor: notebookData.metadata?.custom?.nbformat_minor ?? NBFORMAT_MINOR
+		metadata: notebookData?.metadata?.custom?.metadata ?? {},
+		nbformat: notebookData?.metadata?.custom?.nbformat ?? NBFORMAT,
+		nbformat_minor: notebookData?.metadata?.custom?.nbformat_minor ?? NBFORMAT_MINOR
 	};
-
-	// Clear out extra lingering vscode custom metadata
-	delete result.metadata.custom;
-
 	return result;
 }
 
@@ -108,20 +115,27 @@ export function convertToVSCodeNotebookData(notebook: azdata.nb.INotebookContent
 	let result: vscode.NotebookData = {
 		cells: notebook.cells?.map<vscode.NotebookCellData>(cell => {
 			return {
-				kind: cell.cell_type === 'code' ? NotebookCellKind.Code : NotebookCellKind.Markup,
-				value: Array.isArray(cell.source) ? cell.source.join('\n') : cell.source,
-				languageId: cell.metadata?.language,
+				kind: cell.cell_type === CellTypes.Code ? NotebookCellKind.Code : NotebookCellKind.Markup,
+				value: Array.isArray(cell.source) ? cell.source.join('') : cell.source,
+				languageId: cell.metadata?.language ?? notebook.metadata.language_info?.name,
 				outputs: cell.outputs?.map<vscode.NotebookCellOutput>(output => convertToVSCodeCellOutput(output)),
 				executionSummary: {
 					executionOrder: cell.execution_count
+				},
+				metadata: {
+					custom: {
+						metadata: cell.metadata
+					}
 				}
 			};
 		}),
-		metadata: notebook.metadata
-	};
-	result.metadata.custom = {
-		nbformat: notebook.nbformat,
-		nbformat_minor: notebook.nbformat_minor
+		metadata: {
+			custom: {
+				metadata: notebook.metadata,
+				nbformat: notebook.nbformat,
+				nbformat_minor: notebook.nbformat_minor
+			}
+		}
 	};
 	return result;
 }

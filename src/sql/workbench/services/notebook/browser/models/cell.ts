@@ -33,6 +33,8 @@ import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { IPosition } from 'vs/editor/common/core/position';
 import { CellOutputEdit, CellOutputDataEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IModeService } from 'vs/editor/common/services/modeService';
+import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -70,8 +72,9 @@ export class CellModel extends Disposable implements ICellModel {
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
-	private _metadata: nb.ICellMetadata;
+	private _metadata: ICellMetadata;
 	private _isCollapsed: boolean;
+	private _onLanguageChanged = new Emitter<string>();
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
 	private _isCommandExecutionSettingEnabled: boolean = false;
@@ -95,7 +98,8 @@ export class CellModel extends Disposable implements ICellModel {
 		@optional(INotebookService) private _notebookService?: INotebookService,
 		@optional(ICommandService) private _commandService?: ICommandService,
 		@optional(IConfigurationService) private _configurationService?: IConfigurationService,
-		@optional(ILogService) private _logService?: ILogService
+		@optional(ILogService) private _logService?: ILogService,
+		@optional(IModeService) private _modeService?: IModeService
 	) {
 		super();
 		this.id = `${modelId++}`;
@@ -122,6 +126,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public equals(other: ICellModel) {
 		return other !== undefined && other.id === this.id;
+	}
+
+	public get onLanguageChanged(): Event<string> {
+		return this._onLanguageChanged.event;
 	}
 
 	public get onCollapseStateChanged(): Event<boolean> {
@@ -385,6 +393,19 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._options.notebook.language;
 	}
 
+	public get displayLanguage(): string {
+		let result: string;
+		if (this._cellType === CellTypes.Markdown) {
+			result = 'Markdown';
+		} else if (this._modeService) {
+			let language = this._modeService.getLanguageName(this.language);
+			result = language ?? this.language;
+		} else {
+			result = this.language;
+		}
+		return result;
+	}
+
 	public get savedConnectionName(): string | undefined {
 		return this._savedConnectionName;
 	}
@@ -394,7 +415,10 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public setOverrideLanguage(newLanguage: string) {
-		this._language = newLanguage;
+		if (newLanguage !== this._language) {
+			this._language = newLanguage;
+			this._onLanguageChanged.fire(newLanguage);
+		}
 	}
 
 	public get onExecutionStateChange(): Event<CellExecutionState> {
@@ -616,7 +640,9 @@ export class CellModel extends Disposable implements ICellModel {
 							code: content,
 							cellIndex: this.notebookModel.findCellIndex(this),
 							stop_on_error: true,
-							notebookUri: this.notebookModel.notebookUri
+							notebookUri: this.notebookModel.notebookUri,
+							cellUri: this.cellUri,
+							language: this.language
 						}, false);
 						this.setFuture(future as FutureInternal);
 						this.fireExecutionStateChanged();
@@ -728,7 +754,7 @@ export class CellModel extends Disposable implements ICellModel {
 		this._future = future;
 		future.setReplyHandler({ handle: (msg) => this.handleReply(msg) });
 		future.setIOPubHandler({ handle: (msg) => this.handleIOPub(msg) });
-		future.setStdInHandler({ handle: (msg) => this.handleSdtIn(msg) });
+		future.setStdInHandler({ handle: (msg) => this.handleStdIn(msg) });
 	}
 	/**
 	 * Clear outputs can be done as part of the "Clear Outputs" action on a cell or as part of running a cell
@@ -933,7 +959,7 @@ export class CellModel extends Disposable implements ICellModel {
 	 * components. If one is registered the cell will call and wait on it, if not
 	 * it will immediately return to unblock error handling
 	 */
-	private handleSdtIn(msg: nb.IStdinMessage): void | Thenable<void> {
+	private handleStdIn(msg: nb.IStdinMessage): void | Thenable<void> {
 		let handler = async () => {
 			if (!this._stdInHandler) {
 				// No-op
@@ -995,7 +1021,7 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 		this._attachments = cell.attachments;
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
-		this.setLanguageFromContents(cell);
+		this.setLanguageFromContents(cell.cell_type, cell.metadata);
 		this._savedConnectionName = this._metadata.connection_name;
 		if (cell.outputs) {
 			for (let output of cell.outputs) {
@@ -1051,13 +1077,16 @@ export class CellModel extends Disposable implements ICellModel {
 		this.fireOutputsChanged(false);
 	}
 
-	private setLanguageFromContents(cell: nb.ICellContents): void {
-		if (cell.cell_type === CellTypes.Markdown) {
+	private setLanguageFromContents(cellType: string, metadata: ICellMetadata): void {
+		if (cellType === CellTypes.Markdown) {
 			this._language = 'markdown';
-		} else if (cell.metadata && cell.metadata.language) {
-			this._language = cell.metadata.language;
+		} else if (metadata?.language) {
+			this._language = metadata.language;
+		} else if (metadata?.dotnet_interactive?.language) {
+			this._language = `dotnet-interactive.${metadata.dotnet_interactive.language}`;
+		} else {
+			this._language = this._options?.notebook?.language;
 		}
-		// else skip, we set default language anyhow
 	}
 
 	private addOutput(output: nb.ICellOutput) {

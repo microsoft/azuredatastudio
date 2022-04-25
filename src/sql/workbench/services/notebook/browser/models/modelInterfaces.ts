@@ -501,6 +501,7 @@ export interface ICellModel {
 	cellUri: URI;
 	id: string;
 	readonly language: string;
+	readonly displayLanguage: string;
 	readonly cellGuid: string;
 	source: string | string[];
 	cellType: CellType;
@@ -530,6 +531,7 @@ export interface ICellModel {
 	isCollapsed: boolean;
 	isParameter: boolean;
 	isInjectedParameter: boolean;
+	readonly onLanguageChanged: Event<string>;
 	readonly onCollapseStateChanged: Event<boolean>;
 	readonly onParameterStateChanged: Event<boolean>;
 	readonly onCellModeChanged: Event<boolean>;

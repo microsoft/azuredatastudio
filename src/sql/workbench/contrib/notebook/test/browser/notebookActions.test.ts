@@ -67,7 +67,8 @@ class TestNotebookModel extends NotebookModelStub {
 					name: 'StandardKernel1',
 					displayName: 'StandardKernel1',
 					connectionProviderIds: ['Kernel1 connection 1', 'Kernel1 connection2'],
-					notebookProvider: 'kernel provider1'
+					notebookProvider: 'kernel provider1',
+					supportedLanguages: ['python']
 				}
 			],
 			[
@@ -76,7 +77,8 @@ class TestNotebookModel extends NotebookModelStub {
 					name: 'StandardKernel2',
 					displayName: 'StandardKernel2',
 					connectionProviderIds: ['Kernel1 connection 2', 'Kernel1 connection2'],
-					notebookProvider: 'kernel provider2'
+					notebookProvider: 'kernel provider2',
+					supportedLanguages: ['python']
 				}
 			]
 		]

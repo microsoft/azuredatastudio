@@ -703,7 +703,8 @@
             "connectionProviderIds": [
               "MSSQL"
             ],
-            "blockedOnSAW": true
+            "blockedOnSAW": true,
+            "supportedLanguages": ["python"]
           },
           {
             "name": "sparkkernel",
@@ -711,6 +712,7 @@
             "connectionProviderIds": [
               "MSSQL"
             ],
+            "supportedLanguages": ["scala"],
             "blockedOnSAW": true
           },
           {
@@ -719,17 +721,20 @@
             "connectionProviderIds": [
               "MSSQL"
             ],
+            "supportedLanguages": ["r"],
             "blockedOnSAW": true
           },
           {
             "name": "python3",
             "displayName": "Python 3",
-            "connectionProviderIds": []
+            "connectionProviderIds": [],
+            "supportedLanguages": ["python"]
           },
           {
             "name": "powershell",
             "displayName": "PowerShell",
-            "connectionProviderIds": []
+            "connectionProviderIds": [],
+            "supportedLanguages": ["powershell"]
           }
         ]
       }

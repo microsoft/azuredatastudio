@@ -59,6 +59,7 @@ export interface IStandardKernelWithProvider {
 	readonly displayName: string;
 	readonly connectionProviderIds: string[];
 	readonly notebookProvider: string;
+	readonly supportedLanguages: string[];
 }
 
 export interface IEndpoint {

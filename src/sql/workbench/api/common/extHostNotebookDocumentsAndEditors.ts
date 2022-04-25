@@ -23,6 +23,7 @@ import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNot
 import { ExtHostNotebookEditor } from 'sql/workbench/api/common/extHostNotebookEditor';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
+import { docNotFoundForUriError } from 'sql/base/common/locConstants';
 
 type Adapter = azdata.nb.NavigationProvider;
 
@@ -113,17 +114,19 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		if (delta.addedDocuments) {
 			for (const data of delta.addedDocuments) {
 				const resource = URI.revive(data.uri);
-				ok(!this._documents.has(resource.toString()), `document '${resource} already exists!'`);
-
-				const documentData = new ExtHostNotebookDocumentData(
-					this._proxy,
-					resource,
-					data.providerId,
-					data.isDirty,
-					data.cells
-				);
-				this._documents.set(resource.toString(), documentData);
-				addedDocuments.push(documentData);
+				// Can potentially have a document with this URI already if it was created
+				// separately from the notebook editor.
+				if (!this._documents.has(resource.toString())) {
+					const documentData = new ExtHostNotebookDocumentData(
+						this._proxy,
+						resource,
+						data.providerId,
+						data.isDirty,
+						data.cells
+					);
+					this._documents.set(resource.toString(), documentData);
+					addedDocuments.push(documentData);
+				}
 			}
 		}
 
@@ -220,6 +223,42 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	//#endregion
 
 	//#region Extension accessible methods
+	async createNotebookDocument(providerId: string, contents?: azdata.nb.INotebookContents): Promise<URI> {
+		let options: INotebookShowOptions = {};
+		if (contents) {
+			options.providerId = providerId;
+			options.initialContent = JSON.stringify(contents);
+		}
+		let uriComps = await this._proxy.$tryCreateNotebookDocument(options);
+		let uri = URI.revive(uriComps);
+		let notebookCells = contents?.cells?.map<azdata.nb.NotebookCell>(cellContents => {
+			return {
+				contents: cellContents,
+				uri: undefined
+			};
+		});
+
+		let documentData = new ExtHostNotebookDocumentData(
+			this._proxy,
+			uri,
+			providerId,
+			false,
+			notebookCells ?? []
+		);
+		this._documents.set(uri.toString(), documentData);
+		this._onDidOpenNotebook.fire(documentData.document);
+
+		return uri;
+	}
+
+	async openNotebookDocument(uri: vscode.Uri): Promise<azdata.nb.NotebookDocument> {
+		let docData = this._documents.get(uri.toString());
+		if (!docData) {
+			throw new Error(docNotFoundForUriError);
+		}
+		return docData.document;
+	}
+
 	showNotebookDocument(uri: vscode.Uri, showOptions: azdata.nb.NotebookShowOptions): Thenable<azdata.nb.NotebookEditor> {
 		return this.doShowNotebookDocument(uri, showOptions);
 	}
@@ -288,10 +327,6 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		return new Disposable(() => {
 			this._adapters.delete(handle);
 		});
-	}
-
-	createNotebookDocument(providerId: string, contents: azdata.nb.INotebookContents): Promise<azdata.nb.NotebookDocument> {
-		return this._proxy.$createNotebookDocument(providerId, contents);
 	}
 	//#endregion
 }
