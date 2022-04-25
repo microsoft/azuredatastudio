@@ -84,10 +84,13 @@
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.availableUpgradesDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Available upgrades for this resource are listed below. You can apply upgrades by selecting the upgrade button. Learn more about each of these releases at the]]></Val>
+          <Val><![CDATA[Available upgrades for this resource are listed below. You can apply upgrades by clicking the upgrade button.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[このリソースで利用可能なアップグレードを以下に示します。アップグレード ボタンを選択すると、アップグレードを適用できます。これらの各リリースの詳細については、]]></Val>
+            <Val><![CDATA[このリソースで利用可能なアップグレードを以下に示します。アップグレードは、以下のアップグレードを選択して適用できます。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Available upgrades for this resource are listed below. You can apply upgrades by selecting the upgrade button. Learn more about each of these releases at the]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2140,15 +2143,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.releaseDateNotParsed" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Release date could not be parsed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[リリース日を解析できませんでした。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.releaseNotes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Release Notes]]></Val>
@@ -2727,10 +2721,13 @@
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.versionLog" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[version log.]]></Val>
+          <Val><![CDATA[Learn more about each release here.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[バージョン ログ。]]></Val>
+            <Val><![CDATA[各リリースの詳細については、こちらを参照してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[version log.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
