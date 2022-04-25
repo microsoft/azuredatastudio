@@ -108,7 +108,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 				};
 				return details;
 			} catch (error) {
-				throw typeof (error) === 'string' ? new Error(error) : error;
+				throw typeof (error) === 'string' ? new Error(error) : Object.assign(error, { errorCode: error.response?.status }); // Add errorCode so that status info persists over RPC
 			}
 		});
 	}
