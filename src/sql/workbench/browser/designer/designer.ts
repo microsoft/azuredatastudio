@@ -42,6 +42,8 @@ import { DesignerPropertyPathValidator } from 'sql/workbench/browser/designer/de
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { listActiveSelectionBackground, listActiveSelectionForeground } from 'vs/platform/theme/common/colorRegistry';
 import { alert } from 'vs/base/browser/ui/aria/aria';
+import { Dropdown, IDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
+import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -50,11 +52,12 @@ export interface IDesignerStyle {
 	selectBoxStyles?: ISelectBoxStyles;
 	checkboxStyles?: ICheckboxStyles;
 	buttonStyles?: IButtonStyles;
+	dropdownStyles?: IListStyles & IInputBoxStyles & IDropdownStyles;
 	paneSeparator?: Color;
 	groupHeaderBackground?: Color;
 }
 
-export type DesignerUIComponent = InputBox | Checkbox | Table<Slick.SlickData> | SelectBox;
+export type DesignerUIComponent = InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Dropdown;
 
 export type CreateComponentsFunc = (container: HTMLElement, components: DesignerDataPropertyInfo[], parentPath: DesignerPropertyPath) => DesignerUIComponent[];
 export type SetComponentValueFunc = (definition: DesignerDataPropertyInfo, component: DesignerUIComponent, data: DesignerViewModel) => void;
@@ -191,7 +194,7 @@ export class Designer extends Disposable implements IThemable {
 		});
 	}
 
-	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Button): void {
+	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Button | Dropdown): void {
 		if (component instanceof InputBox) {
 			component.style(this._styles.inputBoxStyles);
 		} else if (component instanceof Checkbox) {
@@ -202,6 +205,8 @@ export class Designer extends Disposable implements IThemable {
 			component.style(this._styles.tableStyles);
 		} else if (component instanceof Button) {
 			component.style(this._styles.buttonStyles);
+		} else if (component instanceof Dropdown) {
+			component.style(this._styles.dropdownStyles);
 		} else {
 			component.style(this._styles.selectBoxStyles);
 		}
@@ -607,19 +612,33 @@ export class Designer extends Disposable implements IThemable {
 				checkbox.checked = checkboxData.checked;
 				break;
 			case 'dropdown':
-				const dropdown = component as SelectBox;
-				const defaultDropdownData = definition.componentProperties as DropDownProperties;
+				const dropdownProperties = definition.componentProperties as DropDownProperties;
 				const dropdownData = viewModel[definition.propertyName] as DropDownProperties;
-				if (dropdownData.enabled === false) {
-					dropdown.disable();
-				} else {
-					dropdown.enable();
-				}
-				const options = (dropdownData.values || defaultDropdownData.values || []) as string[];
-				dropdown.setOptions(options);
+				const options = (dropdownData.values || dropdownProperties.values || []) as string[];
 				const idx = options?.indexOf(dropdownData.value as string);
-				if (idx > -1) {
-					dropdown.select(idx);
+				let dropdown: Dropdown | SelectBox;
+				if (dropdownProperties.isEditable) {
+					dropdown = component as Dropdown;
+					if (dropdownData.enabled === false) {
+						dropdown.enabled = false;
+					} else {
+						dropdown.enabled = true;
+					}
+					dropdown.values = options;
+					if (idx > -1) {
+						dropdown.value = options[idx];
+					}
+				} else {
+					dropdown = component as SelectBox;
+					if (dropdownData.enabled === false) {
+						dropdown.disable();
+					} else {
+						dropdown.enable();
+					}
+					dropdown.setOptions(options);
+					if (idx > -1) {
+						dropdown.select(idx);
+					}
 				}
 				break;
 			default:
@@ -703,20 +722,36 @@ export class Designer extends Disposable implements IThemable {
 				container.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				const dropdownContainer = container.appendChild(DOM.$(''));
 				const dropdownProperties = componentDefinition.componentProperties as DropDownProperties;
-				const dropdown = new SelectBox(dropdownProperties.values as string[] || [], undefined, this._contextViewProvider, undefined);
-				dropdown.setAriaLabel(componentDefinition.componentProperties?.title);
-				dropdown.render(dropdownContainer);
-				dropdown.selectElem.style.height = '25px';
-				dropdown.onDidSelect((e) => {
-					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: e.selected });
-				});
-				dropdown.onDidFocus(() => {
-					if (view === 'PropertiesView') {
-						this._propertiesPane.updateDescription(componentDefinition);
-					} else if (view === 'TabsView' || view === 'TopContentView') {
-						this.updatePropertiesPane(DesignerRootObjectPath);
-					}
-				});
+				let dropdown;
+				if (dropdownProperties.isEditable) {
+					dropdown = new Dropdown(dropdownContainer, this._contextViewProvider, { values: dropdownProperties.values as string[] || [] });
+					dropdown.ariaLabel = componentDefinition.componentProperties?.title;
+					dropdown.onValueChange((value) => {
+						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: value });
+					});
+					dropdown.onFocus(() => {
+						if (view === 'PropertiesView') {
+							this._propertiesPane.updateDescription(componentDefinition);
+						} else if (view === 'TabsView' || view === 'TopContentView') {
+							this.updatePropertiesPane(DesignerRootObjectPath);
+						}
+					});
+				} else {
+					dropdown = new SelectBox(dropdownProperties.values as string[] || [], undefined, this._contextViewProvider, undefined);
+					dropdown.setAriaLabel(componentDefinition.componentProperties?.title);
+					dropdown.render(dropdownContainer);
+					dropdown.selectElem.style.height = '25px';
+					dropdown.onDidSelect((e) => {
+						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: e.selected });
+					});
+					dropdown.onDidFocus(() => {
+						if (view === 'PropertiesView') {
+							this._propertiesPane.updateDescription(componentDefinition);
+						} else if (view === 'TabsView' || view === 'TopContentView') {
+							this.updatePropertiesPane(DesignerRootObjectPath);
+						}
+					});
+				}
 				component = dropdown;
 				break;
 			case 'checkbox':
@@ -803,7 +838,7 @@ export class Designer extends Disposable implements IThemable {
 							return {
 								name: dropdownProperties.title,
 								field: propertyDefinition.propertyName,
-								editor: this._tableCellEditorFactory.getSelectBoxEditorClass(propertyPath, dropdownProperties.values as string[]),
+								editor: this._tableCellEditorFactory.getDropdownEditorClass(propertyPath, dropdownProperties.values as string[], dropdownProperties.isEditable),
 								width: dropdownProperties.width as number
 							};
 						default:

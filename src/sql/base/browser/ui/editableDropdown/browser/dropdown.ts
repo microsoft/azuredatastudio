@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/dropdownList';
 import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { DropdownDataSource, IDropdownListItem, DropdownListRenderer, SELECT_OPTION_ENTRY_TEMPLATE_ID } from 'sql/base/parts/editableDropdown/browser/dropdownList';
+import { DropdownDataSource, DropdownListRenderer, IDropdownListItem, SELECT_OPTION_ENTRY_TEMPLATE_ID } from 'sql/base/browser/ui/editableDropdown/browser/dropdownList';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
