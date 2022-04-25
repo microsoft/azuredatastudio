@@ -24,8 +24,8 @@ export interface ILocalSettingsJson {
 }
 
 export interface IFileFunctionObject {
-	filePromise: Promise<string> | undefined;
-	watcherDisposable: vscode.Disposable | undefined;
+	filePromise: Promise<string>;
+	watcherDisposable: vscode.Disposable;
 }
 
 /**
@@ -197,7 +197,7 @@ export async function getSettingsFile(projectFile: string): Promise<string | und
 }
 
 /**
- * Retrieves the new function file once the file is created and the watcher disposable
+ * New azure function file watcher and watcher disposable to be used to watch for changes to the azure function project
  * @param projectFolder is the parent directory to the project file
  * @returns the function file path once created and the watcher disposable
  */
