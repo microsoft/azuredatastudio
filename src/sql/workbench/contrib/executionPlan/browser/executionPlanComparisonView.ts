@@ -12,8 +12,9 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { ISashEvent, ISashLayoutProvider, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
 
-export class ExecutionPlanComparisonView {
+export class ExecutionPlanComparisonView implements ISashLayoutProvider {
 	private graphContainer: HTMLElement[] = [];
 	public azdataGraphDiagram: AzdataGraphView[] = [];
 
@@ -32,7 +33,7 @@ export class ExecutionPlanComparisonView {
 	public _onCellSelectedEmitter: Emitter<InternalExecutionPlanEdge | InternalExecutionPlanNode> = new Emitter<InternalExecutionPlanNode | InternalExecutionPlanEdge>();
 	public _onCellSelectedEvent: Event<InternalExecutionPlanNode | InternalExecutionPlanEdge>;
 
-
+	private _sashContainer: HTMLElement;
 	constructor(
 		parent: HTMLElement,
 		placeholder: HTMLElement,
@@ -63,7 +64,52 @@ export class ExecutionPlanComparisonView {
 		this._dropdown.render(this._dropdownContainer);
 		this._container.append(this._dropdownContainer);
 
+		this._sashContainer = DOM.$('.execution-plan-sash');
+		this._container.appendChild(this._sashContainer);
+		// resizing sash for the query plan.
+		const sash = new Sash(this._sashContainer, this, { orientation: Orientation.HORIZONTAL, size: 3 });
+		let originalHeight = this._container.offsetHeight;
+		let change = 0;
+		sash.onDidStart((e: ISashEvent) => {
+			originalHeight = this._container.offsetHeight;
+		});
+
+		/**
+		 * Using onDidChange for the smooth resizing of the graph diagram
+		 */
+		sash.onDidChange((evt: ISashEvent) => {
+			change = evt.startY - evt.currentY;
+			const newHeight = originalHeight + change;
+			if (newHeight < 200) {
+				return;
+			}
+			/**
+			 * Since the parent container is flex, we will have
+			 * to change the flex-basis property to change the height.
+			 */
+			this._container.style.minHeight = '200px';
+			this._container.style.flex = `0 0 ${newHeight}px`;
+		});
+
+		/**
+		 * Resizing properties window table only once at the end as it is a heavy operation and worsens the smooth resizing experience
+		 */
+		sash.onDidEnd(() => {
+
+		});
+
+
 		this._onCellSelectedEvent = this._onCellSelectedEmitter.event;
+	}
+
+	getHorizontalSashTop(sash: Sash): number {
+		return 0;
+	}
+	getHorizontalSashLeft?(sash: Sash): number {
+		return 0;
+	}
+	getHorizontalSashWidth?(sash: Sash): number {
+		return this._container.clientWidth;
 	}
 
 	private createPlanDiagram(container: HTMLElement, executionPlan: azdata.executionPlan.ExecutionPlanGraph, index: number) {
@@ -88,7 +134,7 @@ export class ExecutionPlanComparisonView {
 			this.graphContainer.push(graphContainer);
 			const diagramClose = this.createPlanDiagram(graphContainer, e, i);
 			this.azdataGraphDiagram.push(diagramClose.diagram);
-			this._container.append(graphContainer);
+			this._container.insertBefore(graphContainer, this._sashContainer);
 			graphContainer.style.display = 'none';
 		});
 
