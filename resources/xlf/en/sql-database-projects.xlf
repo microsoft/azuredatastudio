@@ -861,6 +861,9 @@
     <trans-unit id="updateText">
       <source xml:lang="en">Update</source>
     </trans-unit>
+    <trans-unit id="updatedToSdkStyleError">
+      <source xml:lang="en">Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.</source>
+    </trans-unit>
     <trans-unit id="updatingProjectFromDatabase">
       <source xml:lang="en">Updating {0} from {1}...</source>
     </trans-unit>
