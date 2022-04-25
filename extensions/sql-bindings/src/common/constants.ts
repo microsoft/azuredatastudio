@@ -69,7 +69,7 @@ export const enterConnectionString = localize('enterConnectionString', "Enter co
 export const saveChangesInFile = localize('saveChangesInFile', "There are unsaved changes in the current file. Save now?");
 export const save = localize('save', "Save");
 export function settingAlreadyExists(settingName: string): string { return localize('SettingAlreadyExists', 'Local app setting \'{0}\' already exists. Overwrite?', settingName); }
-export function failedToParse(errorMessage: string): string { return localize('failedToParse', 'Failed to parse "{0}": {1}.', azureFunctionLocalSettingsFileName, errorMessage); }
+export function failedToParse(filename: string, error: any): string { return localize('failedToParse', 'Failed to parse "{0}": {1}.', filename, utils.getErrorMessage(error)); }
 export function jsonParseError(error: string, line: number, column: number): string { return localize('jsonParseError', '{0} near line "{1}", column "{2}"', error, line, column); }
 export const moreInformation = localize('moreInformation', "More Information");
 export const addPackageReferenceMessage = localize('addPackageReferenceMessage', 'To use SQL bindings, ensure your Azure Functions project has a reference to {0}', sqlExtensionPackageName);
