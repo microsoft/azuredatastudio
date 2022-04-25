@@ -81,10 +81,12 @@ export class DashboardWidget {
 			}).component();
 
 			const header = this.createHeader(view);
+			// Files need to have the vscode-file scheme to be loaded by ADS
+			const watermarkUri = vscode.Uri.file(<string>IconPathHelper.migrationDashboardHeaderBackground.light).with({ scheme: 'vscode-file' });
 			container.addItem(header, {
 				CSSStyles: {
 					'background-image': `
-						url(${vscode.Uri.file(<string>IconPathHelper.migrationDashboardHeaderBackground.light)}),
+						url(${watermarkUri}),
 						linear-gradient(0deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 100%)
 					`,
 					'background-repeat': 'no-repeat',
