@@ -6,6 +6,8 @@
 
 declare module 'sql-bindings' {
 
+	import * as vscode from 'vscode';
+
 	export const enum extension {
 		name = 'Microsoft.sql-bindings',
 		vsCodeName = 'ms-mssql.sql-bindings-vscode'
@@ -26,11 +28,28 @@ declare module 'sql-bindings' {
 		addSqlBinding(bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string): Promise<ResultStatus>;
 
 		/**
+		 * Prompts the user to select type of binding and returns result
+		 */
+		promptForBindingType(): Promise<(vscode.QuickPickItem & { type: BindingType })  | undefined>;
+
+		/**
+		 * Prompts the user to enter object name for the SQL query
+		 * @param bindingType Type of SQL Binding
+		 */
+		promptForObjectName(bindingType: BindingType): Promise<string | undefined>;
+
+		/**
+		 * Prompts the user to enter connection setting and updates it from AF project
+		 * @param projectUri Azure Function project uri
+		 */
+		 promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined): Promise<string | undefined>;
+
+		/**
 		 * Gets the names of the Azure Functions in the file
 		 * @param filePath Path of the file to get the Azure Functions
 		 * @returns array of names of Azure Functions in the file
 		 */
-		 getAzureFunctions(filePath: string): Promise<GetAzureFunctionsResult>;
+		getAzureFunctions(filePath: string): Promise<GetAzureFunctionsResult>;
 	}
 
 	/**
@@ -82,7 +101,7 @@ declare module 'sql-bindings' {
 	/**
 	 * Parameters for getting the names of the Azure Functions in a file
 	 */
-	 export interface GetAzureFunctionsParams {
+	export interface GetAzureFunctionsParams {
 		/**
 		 * Absolute file path of file to get Azure Functions
 		 */
@@ -92,7 +111,7 @@ declare module 'sql-bindings' {
 	/**
 	 * Result from a get Azure Functions request
 	 */
-	 export interface GetAzureFunctionsResult extends ResultStatus {
+	export interface GetAzureFunctionsResult extends ResultStatus {
 		/**
 		 * Array of names of Azure Functions in the file
 		 */
