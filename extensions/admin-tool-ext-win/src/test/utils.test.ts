@@ -102,10 +102,10 @@ describe('buildUrn Method Tests', () => {
 
 	it('Urn should be correct with Multiple levels of Nodes without schemas', async function (): Promise<void> {
 		const rootNode: ExtHostObjectExplorerNodeStub =
-			new ExtHostObjectExplorerNodeStub('Databases', 'MySchema', 'Folder', undefined)
-				.createChild(dbName, 'MySchema', 'Database')
-				.createChild('Tables', 'MySchema', 'Folder')
-				.createChild(tableName, 'MySchema', 'Table');
+			new ExtHostObjectExplorerNodeStub('Databases', '', 'Folder', undefined)
+				.createChild(dbName, '', 'Database')
+				.createChild('Tables', '', 'Folder')
+				.createChild(tableName, '', 'Table');
 		should(await buildUrn(rootNode)).equal(
 			`Server/Database[@Name='${escapedDbName}']/Table[@Name='${escapedTableName}']`);
 	});
