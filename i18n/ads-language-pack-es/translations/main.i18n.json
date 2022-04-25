@@ -9956,6 +9956,8 @@
 			"table.selectAll": "Seleccionar todo",
 			"table.sortAscending": "Orden ascendente",
 			"table.sortDescending": "Orden descendente",
+			"tableFilter.blankStringDisplayText": "(Blanks)",
+			"tableFilter.nullDisplayText": "(NULL)",
 			"tableFilter.selectedCount": "{0} seleccionado",
 			"tableFilter.visibleCount": "{0} resultados"
 		},
@@ -9980,6 +9982,7 @@
 			"dataExplorer.context": "Menú contextual del elemento dataexplorer",
 			"dataGrid.context": "Menú contextual del elemento de cuadrícula de datos",
 			"default": "Habilitar la comprobación automática de actualizaciones. Azure Data Studio comprobará las actualizaciones de manera automática y periódica.",
+			"docNotFoundForUriError": "No se pudo abrir un documento de bloc de notas para el URI especificado.",
 			"enable locally": "Vuelva a cargar Azure Data Studio para habilitar esta extensión localmente.",
 			"enable remote": "Vuelva a cargar Azure Data Studio para habilitar esta extensión en {0}.",
 			"enableWindowsBackgroundUpdates": "Habilitar para descargar e instalar nuevas versiones de Azure Data Studio en segundo plano en Windows",
@@ -10006,16 +10009,13 @@
 			"sql.watcherExclude": "Configure los patrones globales de las rutas de acceso de archivo que se van a excluir de la inspección de archivos. Los patrones deben coincidir con rutas de acceso absolutas, por ejemplo, el prefijo con \"**/\" o la ruta de acceso completa para que la coincidencia sea correcta y el sufijo con \"/**\" para hacer coincidir los archivos de una ruta de acceso (como \"**/build/output/**\" o \"/Users/name/workspaces/project/build/output/**\"). Al cambiar esta configuración, es necesario realizar un reinicio. Si observa que Azure Data Studio consume mucho tiempo de CPU al iniciarse, puede excluir las carpetas grandes para reducir la carga inicial.",
 			"uninstallExtensionComplete": "Vuelva a cargar Azure Data Studio para completar la desinstalación de la extensión {0}.",
 			"updateLocale": "¿Desea cambiar el idioma de la interfaz de usuario de Azure Data Studio a {0} y reiniciar?",
+			"vscodeDocCreationFailedError": "No se pudo crear el documento del bloc de notas.",
 			"vscodeFunctionalityNotSupportedError": "Esta funcionalidad de VS Code no se admite en Azure Data Studio.",
-			"vscodeInvalidArgumentsError": "Argumentos no válidos",
+			"vscodeInvalidArgumentsError": "Argumentos no válidos.",
 			"watermark.newNotebook": "Nuevo cuaderno",
 			"watermark.newSqlFile": "Nuevo archivo SQL",
 			"workspace.trust.description": "Controla si la confianza del área de trabajo está habilitada o no en Azure Data Studio.",
 			"workspace.trust.emptyWindow.description": "Controla si la ventana vacía es de confianza de forma predeterminada en Azure Data Studio. Cuando se usa con \"#{0}#\", puede habilitar toda la funcionalidad de Azure Data Studio sin preguntar en una ventana vacía."
-		},
-		"sql/base/parts/editableDropdown/browser/dropdown": {
-			"editableDropdown.errorValidate": "Debe ser una opción de la lista",
-			"selectBox": "Seleccionar cuadro"
 		},
 		"sql/platform/accounts/common/accountActions": {
 			"NoAccountToRefresh": "No hay ninguna cuenta para actualizar",
@@ -10171,8 +10171,11 @@
 		"sql/workbench/browser/designer/designer": {
 			"designer.defaultRemoveRowConfirmationMessage": "¿Está seguro de que desea quitar la fila?",
 			"designer.generalGroupName": "General",
+			"designer.issueCountAlert": "Se encontraron {0} problemas de validación.",
+			"designer.issuesTabTitle": "Problemas ({0})",
 			"designer.loadingDesigner": "Cargando el diseñador...",
 			"designer.loadingDesignerCompleted": "El diseñador está cargado",
+			"designer.newRowButtonAriaLabel": "Agregar nueva fila a la tabla \\\"{0}\\\"",
 			"designer.newRowText": "Agregar nuevo",
 			"designer.processing": "Procesando...",
 			"designer.processingChanges": "Procesando cambios...",
@@ -10181,6 +10184,7 @@
 			"designer.publishChangesCompleted": "Los cambios se han publicado",
 			"designer.publishingChanges": "Publicando cambios...",
 			"designer.removeRowText": "Quitar",
+			"designer.scriptTabTitle": "Scripts",
 			"tableDesigner.unknownComponentType": "El tipo de componente: {0} no es compatible"
 		},
 		"sql/workbench/browser/designer/designerPropertiesPane": {
@@ -11027,7 +11031,10 @@
 			"textPreview": "Celda de texto"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
-			"parametersText": "Parámetros"
+			"cellLanguageDescription": "({0}): lenguaje actual",
+			"cellLanguageDescriptionConfigured": "({0})",
+			"parametersText": "Parámetros",
+			"selectCellLanguage": "Seleccionar el modo de lenguaje de celda"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/codeActions": {
 			"errorRunCell": "Error en la última ejecución. Haga clic para volver a ejecutar",
@@ -11137,6 +11144,7 @@
 			"notebook.useNewMarkdownRenderer": "Indica si se debe usar la versión más reciente del representador Markdown para los blocs de notas. Esto puede dar lugar a que Markdown se represente de forma diferente que las versiones anteriores.",
 			"notebookViews": "Vistas de Bloc de notas",
 			"notebookViews.enabled": "(Versión preliminar) Habilitar vistas del bloc de notas",
+			"restartNotebookKernel": "Reiniciar el kernel del cuaderno",
 			"search.actionsPosition": "Controla el posicionamiento de la actionbar en las filas en la vista de búsqueda.",
 			"search.actionsPositionAuto": "Posicione el actionbar a la derecha cuando la vista de búsqueda es estrecha, e inmediatamente después del contenido cuando la vista de búsqueda es amplia.",
 			"search.actionsPositionRight": "Posicionar siempre el actionbar a la derecha.",
@@ -11732,6 +11740,7 @@
 			"accountDialog.addConnection": "Agregar una cuenta",
 			"accountDialog.close": "Cerrar",
 			"accountDialog.didNotPickAuthProvider": "No ha seleccionado ningún proveedor de autenticación. Vuelva a intentarlo.",
+			"accountDialog.loadingProviderLabel": "Cargando cuentas...",
 			"accountDialog.noAccountLabel": "No hay ninguna cuenta vinculada. Agregue una cuenta.",
 			"accountDialog.noCloudsRegistered": "No tiene ninguna nube habilitada. Vaya a la configuración, busque la configuración de la cuenta de Azure y habilite por lo menos una nube.",
 			"accountExplorer.name": "Cuentas",
@@ -11966,7 +11975,9 @@
 			"NoExecuteManager": "No se pudo iniciar el servidor porque no se definió un proveedor para este tipo de archivo de bloc de notas.",
 			"ServerNotStarted": "El servidor no se pudo iniciar por una razón desconocida",
 			"clientSession.unknownError": "Error al iniciar la sesión del cuaderno",
-			"kernelRequiresConnection": "No se encontró el kernel {0}. En su lugar, se utilizará el kernel predeterminado."
+			"kernelRequiresConnection": "No se ha encontradoNo se encontró el kernel {0}. En su lugar, se utilizará el kernel predeterminado.",
+			"kernelRestartFailed": "Error al reiniciar el kernel: {0}",
+			"kernelRestartedSuccessfully": "El kernel se reinició correctamente"
 		},
 		"sql/workbench/services/notebook/browser/models/notebookContexts": {
 			"localhost": "localhost",
@@ -11985,6 +11996,7 @@
 		},
 		"sql/workbench/services/notebook/browser/notebookServiceImpl": {
 			"executeProviderTimeout": "Se agotó el tiempo de espera de disponibilidad de Proveedor de ejecución para el proveedor de cuadernos \"{0}\"",
+			"failedToCreateNotebookInput": "No se pudo crear la entrada del bloc de notas para el proveedor \\\"{0}\\\"",
 			"notebookServiceNoProvider": "El proveedor de cuadernos no existe",
 			"notebookUriNotDefined": "No se pasó ninguna URI al crear el administrador de cuadernos",
 			"serializationProviderTimeout": "Se agotó el tiempo de espera de disponibilidad de Proveedor de serialización para el proveedor de cuadernos \"{0}\"",
@@ -11997,6 +12009,7 @@
 			"notebookView.untitledView": "Vista sin título"
 		},
 		"sql/workbench/services/notebook/browser/sql/sqlSessionManager": {
+			"SqlKernelRestartNotSupported": "No se admite el reinicio del kernel de SQL",
 			"connectionRequired": "Se debe elegir una conexión para ejecutar celdas de cuaderno",
 			"sqlKernelError": "Error del kernel SQL",
 			"sqlMaxRowsDisplayed": "Mostrando las primeras {0} filas."
@@ -12205,10 +12218,21 @@
 			"designer.table.description.description": "Descripción de la tabla.",
 			"designer.table.description.name": "El nombre del objeto de la tabla.",
 			"designer.table.description.schema": "Esquema que contiene la tabla.",
-			"tableDesigner.ErrorDialogTitle": "Table Designer Error",
+			"designer.table.primaryKeyColumns.description": "Columnas de la clave principal.",
+			"designer.table.primaryKeyName.description": "Nombre de la clave principal.",
+			"tableDesigner.ErrorDialogTitle": "Error de Diseñador de tablas",
 			"tableDesigner.ForeignKeyTypeName": "Clave externa",
 			"tableDesigner.ForeignTableName": "Tabla externa",
 			"tableDesigner.IndexTypeName": "Índice",
+			"tableDesigner.PrimaryKeyTabTitle": "Clave principal",
+			"tableDesigner.TableSchemaValidationError": "Error en la validación del esquema de tabla: {0}",
+			"tableDesigner.addForeignKey": "Nueva clave externa",
+			"tableDesigner.addNewCheckConstraint": "Nueva restricción Check",
+			"tableDesigner.addNewColumn": "Nueva columna",
+			"tableDesigner.addNewColumnMapping": "Nueva asignación de columnas",
+			"tableDesigner.addNewColumnToIndex": "Agregar columna",
+			"tableDesigner.addNewColumnToPrimaryKey": "Agregar columna",
+			"tableDesigner.addNewIndex": "Nuevo índice",
 			"tableDesigner.checkConstraintExpressionTitle": "Expresión",
 			"tableDesigner.checkConstraintNameTitle": "Nombre",
 			"tableDesigner.checkConstraintTypeName": "Restricción CHECK",
@@ -12243,7 +12267,10 @@
 			"tableDesigner.indexColumns": "Columnas",
 			"tableDesigner.indexName": "Nombre",
 			"tableDesigner.indexesTabTitle": "Índices",
+			"tableDesigner.inputValidationError": "Error en la validación de entrada: {0}",
 			"tableDesigner.nameTitle": "Nombre de la tabla",
+			"tableDesigner.primaryKeyColumnsTitle": "Columnas de clave principal",
+			"tableDesigner.primaryKeyNameTitle": "Nombre",
 			"tableDesigner.publishChangeError": "Error al publicar los cambios: {0}",
 			"tableDesigner.publishChangeSuccess": "Los cambios se han publicado correctamente.",
 			"tableDesigner.savingChanges": "Publicando cambios del diseñador de tablas...",
@@ -12262,43 +12289,6 @@
 		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
 			"errorStartBeforeReady": "No se puede iniciar una sesión, el administrador aún no está inicializado"
 		},
-		"sql/workbench/contrib/queryplan2/browser/planHeader": {
-			"planHeaderIndexAndCost": "Consulta {0}: Costo de la consulta (relativo al script): {1} %"
-		},
-		"sql/workbench/contrib/queryplan2/browser/queryPlan": {
-			"openQueryAction": "Abrir consulta",
-			"queryPlanCustomZoom": "Zoom personalizado",
-			"queryPlanFitGraphLabel": "Ajustar al tamaño",
-			"queryPlanOpenGraphFile": "Open Plan File",
-			"queryPlanPropertiesActionLabel": "Propiedades",
-			"queryPlanSavePlanXML": "Save Plan File",
-			"queryPlanSearchNodeAction": "SearchNode",
-			"queryPlanTitle": "Query Plan (Preview)",
-			"queryPlanZoomInActionLabel": "Acercar",
-			"queryPlanZoomOutActionLabel": "Alejar"
-		},
-		"sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView": {
-			"nodePropertyViewNameNameColumnHeader": "Name",
-			"nodePropertyViewNameValueColumnHeader": "Value",
-			"nodePropertyViewTitle": "Properties",
-			"queryPlanPropertiesEdgeOperationName": "Edge",
-			"queryPlanPropertyViewClose": "Close",
-			"queryPlanPropertyViewSortAlphabetically": "Alphabetical",
-			"queryPlanPropertyViewSortByDisplayOrde": "Categorized"
-		},
-		"sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget": {
-			"cancelCustomZoomAction": "Close (Escape)",
-			"invalidCustomZoomError": "Select a zoom value between 1 to 200",
-			"qpZoomValueLabel": "Zoom (percent)",
-			"zoomAction": "Zoom (Enter)"
-		},
-		"sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget": {
-			"cancelSearchAction": "Close (Escape)",
-			"nextSearchItemAction": "Next Match (Enter)",
-			"previousSearchItemAction": "Previous Match (Shift+Enter)",
-			"queryPlanSearchTypeContains": "Contains",
-			"queryPlanSearchTypeEquals": "Equals"
-		},
 		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
 			"tableDesigner.PreviewFeature": "Característica en vista previa"
 		},
@@ -12312,6 +12302,68 @@
 			"tableDesigner.cancel": "Cancelar",
 			"tableDesigner.generateScript": "Generar script",
 			"tableDesigner.previewDatabaseUpdates": "Vista previa de actualizaciones de base de datos"
+		},
+		"sql/base/browser/ui/editableDropdown/browser/dropdown": {
+			"editableDropdown.errorValidate": "Debe ser una opción de la lista",
+			"selectBox": "Seleccionar cuadro"
+		},
+		"sql/workbench/browser/designer/designerIssuesTabPanelView": {
+			"designer.IssueListAriaLabel": "Problemas"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlan": {
+			"executionPlan.SaveFileDescription": "Archivos del plan de ejecución",
+			"executionPlanCustomZoom": "Zoom personalizado",
+			"executionPlanFileLoadingComplete": "Se generan planes de ejecución",
+			"executionPlanFileLoadingFailed": "No se pudo cargar el plan de ejecución",
+			"executionPlanFitGraphLabel": "Ajustar al tamaño",
+			"executionPlanOpenGraphFile": "Mostrar plan de consulta XML",
+			"executionPlanPropertiesActionLabel": "Propiedades",
+			"executionPlanSavePlanXML": "Guardar archivo de plan",
+			"executionPlanSearchNodeAction": "Buscar nodo",
+			"executionPlanTitle": "Plan de consulta (versión preliminar)",
+			"executionPlanZoomInActionLabel": "Acercar",
+			"executionPlanZoomOutActionLabel": "Alejar",
+			"loadingExecutionPlanFile": "Generando planes de ejecución",
+			"openQueryAction": "Abrir consulta"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
+			"executionPlanEditor": "Editor de planes de ejecución de consultas"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView": {
+			"executionPlanPropertiesEdgeOperationName": "Edge",
+			"executionPlanPropertyViewClose": "Cerrar",
+			"executionPlanPropertyViewSortAlphabetically": "Alfabético",
+			"executionPlanPropertyViewSortByDisplayOrder": "Por categorías",
+			"nodePropertyViewNameNameColumnHeader": "Nombre",
+			"nodePropertyViewNameValueColumnHeader": "Valor",
+			"nodePropertyViewTitle": "Propiedades"
+		},
+		"sql/workbench/contrib/executionPlan/browser/planHeader": {
+			"planHeaderIndexAndCost": "Consulta {0}: Costo de la consulta (relativo al script): {1} %"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
+			"cancelCustomZoomAction": "Cerrar (Escape)",
+			"customZoomApplyButton": "Aplicar",
+			"customZoomApplyButtonTitle": "Aplicar zoom (Entrar)",
+			"invalidCustomZoomError": "Seleccionar un valor de zoom entre 1 y 200",
+			"qpZoomValueLabel": "Zoom (porcentaje)",
+			"zoomAction": "Zoom (Entrar)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget": {
+			"cancelSearchAction": "Cerrar (Escape)",
+			"executionPlanSearchTypeContains": "Contiene",
+			"executionPlanSearchTypeEquals": "Es igual a",
+			"nextSearchItemAction": "Siguiente coincidencia (Entrar)",
+			"previousSearchItemAction": "Coincidencia anterior (Mayús+Entrar)"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookEditor.component": {
+			"loadingNotebookCompletedMessage": "Se completó la carga del bloc de notas {0}",
+			"loadingNotebookMessage": "Cargando bloc de notas {0}"
+		},
+		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"noHandlerRegistered": "No hay registrado ningún controlador de plan de ejecución válido",
+			"providerIdNotValidError": "Se requiere un proveedor válido para interactuar con ExecutionPlanService",
+			"selectExecutionPlanProvider": "Seleccionar un proveedor para abrir el plan de ejecución"
 		}
 	}
 }

@@ -373,6 +373,10 @@
         <source xml:lang="en">Error connecting to controller. {0}</source>
         <target state="translated">Fehler beim Verbinden mit dem Controller. {0}</target>
       </trans-unit>
+      <trans-unit id="arc.errorListingLogAnalyticsWorkspaces">
+        <source xml:lang="en">Error listing Log Analytics workspaces {0}</source>
+        <target state="translated">Fehler beim Auflisten der Log Analytics-Arbeitsbereiche {0}</target>
+      </trans-unit>
       <trans-unit id="arc.errorVerifyingPassword">
         <source xml:lang="en">Error encountered while verifying password. {0}</source>
         <target state="translated">Fehler beim Überprüfen des Kennworts. {0}</target>
@@ -1393,6 +1397,18 @@
         <source xml:lang="en">Location</source>
         <target state="translated">Speicherort</target>
       </trans-unit>
+      <trans-unit id="arc.data.controller.log.analytics.primary.key">
+        <source xml:lang="en">Log Analytics primary key</source>
+        <target state="translated">Primärschlüssel für Log Analytics</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.log.analytics.workspace.id">
+        <source xml:lang="en">Log Analytics workspace ID</source>
+        <target state="translated">ID des Log Analytics-Arbeitsbereichs</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.log.analytics.workspace.names">
+        <source xml:lang="en">Log Analytics workspace</source>
+        <target state="translated">Log Analytics-Arbeitsbereich</target>
+      </trans-unit>
       <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.confirm.password">
         <source xml:lang="en">Confirm password</source>
         <target state="translated">Kennwort bestätigen</target>
@@ -1803,7 +1819,7 @@
       </trans-unit>
       <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.description">
         <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>
-        <target state="new">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</target>
+        <target state="translated">Wählen Sie aus den neuesten V-Kern-Dienstebenen aus, die für SQL Managed Instance verfügbar sind – Azure Arc einschließlich Universell und Unternehmenskritisch.</target>
       </trans-unit>
       <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.text">
         <source xml:lang="en">Learn more</source>
@@ -1843,11 +1859,11 @@
       </trans-unit>
       <trans-unit id="arc.sql.high.availability">
         <source xml:lang="en">High availability</source>
-        <target state="new">High availability</target>
+        <target state="translated">Hohe Verfügbarkeit</target>
       </trans-unit>
       <trans-unit id="arc.sql.high.availability.description">
         <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</source>
-        <target state="new">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</target>
+        <target state="translated">Aktivieren Sie zusätzliche Replikate, um Hochverfügbarkeit zu erzielen. Die nachstehend ausgewählte Konfiguration für Compute- und Speicherressourcen wird auf alle Replikate angewendet.</target>
       </trans-unit>
       <trans-unit id="arc.sql.instance.name">
         <source xml:lang="en">Instance name</source>
@@ -1887,7 +1903,7 @@
       </trans-unit>
       <trans-unit id="arc.sql.one.replica">
         <source xml:lang="en">1 replica</source>
-        <target state="new">1 replica</target>
+        <target state="translated">1 Replikat</target>
       </trans-unit>
       <trans-unit id="arc.sql.pitr.description">
         <source xml:lang="en">Point in time restore</source>
@@ -1907,15 +1923,15 @@
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.business.critical">
         <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
-        <target state="new">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</target>
+        <target state="translated">[VORSCHAU] Unternehmenskritisch (Unbegrenzte virtuelle Kerne und RAM, erweiterte Hochverfügbarkeit)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.description">
         <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>
-        <target state="new">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</target>
+        <target state="translated">Wählen Sie aus den neuesten V-Kern-Dienstebenen aus, die für SQL Managed Instance verfügbar sind – Azure Arc einschließlich Universell und Unternehmenskritisch.</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.general.purpose">
         <source xml:lang="en">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</source>
-        <target state="new">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</target>
+        <target state="translated">Universell (bis zu 24 virtuelle Kerne und 128 Gi RAM, Standard-Hochverfügbarkeit)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.label">
         <source xml:lang="en">Service Tier</source>
@@ -1947,11 +1963,11 @@
       </trans-unit>
       <trans-unit id="arc.sql.three.replicas">
         <source xml:lang="en">3 replicas</source>
-        <target state="new">3 replicas</target>
+        <target state="translated">3 Replikate</target>
       </trans-unit>
       <trans-unit id="arc.sql.two.replicas">
         <source xml:lang="en">2 replicas</source>
-        <target state="new">2 replicas</target>
+        <target state="translated">2 Replikate</target>
       </trans-unit>
       <trans-unit id="arc.sql.username">
         <source xml:lang="en">Username</source>
