@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.monaco-workbench .hover-language-status-element {
+	display: flex;
+	justify-content: space-between;
+	padding: 4px 8px;
+}
+
+.monaco-workbench .hover-language-status-element:not(:last-child) {
+	border-bottom: 1px solid var(--code-notifications-border);
+}
+
+.monaco-workbench .hover-language-status-element .monaco-action-bar {
+	padding-left: 8px;
+}

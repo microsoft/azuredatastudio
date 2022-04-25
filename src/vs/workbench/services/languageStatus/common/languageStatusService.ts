@@ -5,7 +5,6 @@
 
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { Event } from 'vs/base/common/event';
-import { IMarkdownString } from 'vs/base/common/htmlContent';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import Severity from 'vs/base/common/severity';
 import { ITextModel } from 'vs/editor/common/model';
@@ -18,8 +17,9 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 export interface ILanguageStatus {
 	selector: LanguageSelector,
 	severity: Severity;
-	text: string;
-	message: string | IMarkdownString;
+	label: string;
+	detail: string;
+	source: string;
 }
 
 export interface ILanguageStatusProvider {
@@ -36,7 +36,7 @@ export interface ILanguageStatusService {
 
 	addStatus(status: ILanguageStatus): IDisposable;
 
-	getLanguageStatus(model: ITextModel): Promise<ILanguageStatus[]>;
+	getLanguageStatus(model: ITextModel): ILanguageStatus[];
 }
 
 
@@ -52,7 +52,7 @@ class LanguageStatusServiceImpl implements ILanguageStatusService {
 		return this._provider.register(status.selector, status);
 	}
 
-	async getLanguageStatus(model: ITextModel): Promise<ILanguageStatus[]> {
+	getLanguageStatus(model: ITextModel): ILanguageStatus[] {
 		return this._provider.ordered(model).sort((a, b) => b.severity - a.severity);
 	}
 }

@@ -2866,8 +2866,11 @@ declare module 'vscode' {
 
 	interface LanguageStatusItem {
 		selector: DocumentSelector;
+
 		text: string;
-		detail: string | MarkdownString
+		detail: string; // tooltip!
+		// command: string | Command | undefined;
+
 		severity: LanguageStatusSeverity;
 		dispose(): void;
 	}
