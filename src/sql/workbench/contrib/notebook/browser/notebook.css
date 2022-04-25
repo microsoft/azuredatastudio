@@ -251,3 +251,9 @@
 .monaco-workbench.mac .notebookEditor .select-container {
 	padding-top: 2px;
 }
+
+.notebookEditor .editorLoader .loading-spinner {
+	height: 40px;
+	width: 40px;
+	padding: 10px
+}
