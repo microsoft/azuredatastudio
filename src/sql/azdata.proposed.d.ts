@@ -8,20 +8,6 @@
 import * as vscode from 'vscode';
 
 declare module 'azdata' {
-
-	export namespace queryeditor {
-		/**
-		 * Opens an untitled text document. The editor will prompt the user for a file
-		 * path when the document is to be saved. The `options` parameter allows to
-		 * specify the *content* of the document.
-		 *
-		 * @param options Options to control how the document will be created.
-		 * @param providerId Optional provider ID this editor will be associated with. Defaults to MSSQL.
-		 * @return A promise that resolves to a [document](#QueryDocument).
-		 */
-		export function openQueryDocument(options?: { content?: string; }, providerId?: string): Thenable<QueryDocument>;
-	}
-
 	export namespace nb {
 		export interface NotebookDocument {
 			/**
@@ -380,73 +366,6 @@ declare module 'azdata' {
 		defaultValueOsOverrides?: DefaultValueOsOverride[];
 	}
 
-	export interface ModelBuilder {
-		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent, RadioCardGroupComponentProperties>;
-		listView(): ComponentBuilder<ListViewComponent, ListViewComponentProperties>;
-		tabbedPanel(): TabbedPanelComponentBuilder;
-		slider(): ComponentBuilder<SliderComponent, SliderComponentProperties>;
-	}
-
-	export interface RadioCard {
-		id: string;
-		descriptions: RadioCardDescription[];
-		icon?: IconPath;
-	}
-
-	export interface RadioCardDescription {
-		textValue: string;
-		linkDisplayValue?: string;
-		displayLinkCodicon?: boolean;
-		textStyles?: CssStyles;
-		linkStyles?: CssStyles;
-		linkCodiconStyles?: CssStyles;
-	}
-
-	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
-		cards: RadioCard[];
-		cardWidth: string;
-		cardHeight: string;
-		iconWidth?: string;
-		iconHeight?: string;
-		selectedCardId?: string;
-		orientation?: Orientation; // Defaults to horizontal
-		iconPosition?: 'top' | 'left'; // Defaults to top
-	}
-
-	export type RadioCardSelectionChangedEvent = { cardId: string; card: RadioCard };
-	export type RadioCardLinkClickEvent = { cardId: string, card: RadioCard, description: RadioCardDescription };
-
-	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
-		/**
-		 * The card object returned from this function is a clone of the internal representation - changes will not impact the original object
-		 */
-		onSelectionChanged: vscode.Event<RadioCardSelectionChangedEvent>;
-
-		onLinkClick: vscode.Event<RadioCardLinkClickEvent>;
-
-	}
-
-	export interface ListViewComponentProperties extends ComponentProperties {
-		title?: ListViewTitle;
-		options: ListViewOption[];
-		selectedOptionId?: string;
-	}
-
-	export interface ListViewTitle {
-		text?: string;
-		style?: CssStyles;
-	}
-
-	export interface ListViewOption {
-		label: string;
-		id: string;
-	}
-
-	export type ListViewClickEvent = { id: string };
-
-	export interface ListViewComponent extends Component, ListViewComponentProperties {
-		onDidClick: vscode.Event<ListViewClickEvent>;
-	}
 
 	export interface DeclarativeTableProperties {
 		/**
@@ -510,115 +429,6 @@ declare module 'azdata' {
 	}
 
 	/**
-	 * Panel component with tabs
-	 */
-	export interface TabbedPanelComponent extends Container<TabbedPanelLayout, any> {
-		/**
-		 * An event triggered when the selected tab is changed.
-		 * The event argument is the id of the selected tab.
-		 */
-		onTabChanged: vscode.Event<string>;
-
-		/**
-		 * update the tabs.
-		 * @param tabs new tabs
-		 */
-		updateTabs(tabs: (Tab | TabGroup)[]): void;
-
-		/**
-		 * Selects the tab with the specified id
-		 * @param id The id of the tab to select
-		 */
-		selectTab(id: string): void;
-	}
-
-	/**
-	 * Defines the tab orientation of TabbedPanelComponent
-	 */
-	export enum TabOrientation {
-		Vertical = 'vertical',
-		Horizontal = 'horizontal'
-	}
-
-	/**
-	 * Layout of TabbedPanelComponent, can be used to initialize the component when using ModelBuilder
-	 */
-	export interface TabbedPanelLayout {
-		/**
-		 * Tab orientation. Default horizontal.
-		 */
-		orientation?: TabOrientation;
-
-		/**
-		 * Whether to show the tab icon. Default false.
-		 */
-		showIcon?: boolean;
-
-		/**
-		 * Whether to show the tab navigation pane even when there is only one tab. Default false.
-		 */
-		alwaysShowTabs?: boolean;
-	}
-
-	/**
-	 * Represents the tab group of TabbedPanelComponent
-	 */
-	export interface TabGroup {
-		/**
-		 * Title of the tab group
-		 */
-		title: string;
-
-		/**
-		 * children of the tab group
-		 */
-		tabs: Tab[];
-	}
-
-	/**
-	 * Builder for TabbedPanelComponent
-	 */
-	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties> {
-		/**
-		 * Add the tabs to the component
-		 * @param tabs tabs/tab groups to be added
-		 */
-		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties>;
-	}
-
-	export interface SliderComponentProperties extends ComponentProperties {
-		/**
-		 * The value selected on the slider. Default initial value is the minimum value.
-		 */
-		value?: number,
-		/**
-		 * The minimum value of the slider. Default value is 1.
-		 */
-		min?: number,
-		/**
-		 * The maximum value of the slider. Default value is 100.
-		 */
-		max?: number,
-		/**
-		 * The value between each "tick" of the slider. Default is 1.
-		 */
-		step?: number,
-		/**
-		 * Whether to show the tick marks on the slider. Default is false.
-		 */
-		showTicks?: boolean
-		/**
-		 * The width of the slider, not including the value box.
-		 */
-		width?: number | string;
-	}
-
-	export interface SliderComponent extends Component, SliderComponentProperties {
-		onChanged: vscode.Event<number>;
-		onInput: vscode.Event<number>;
-	}
-
-	/**
 	 * The heading levels an HTML heading element can be.
 	 */
 	export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
@@ -643,109 +453,6 @@ declare module 'azdata' {
 		 * Sets the type of text box to be displayed
 		 */
 		textType?: TextType;
-	}
-
-	export namespace window {
-
-		/**
-		 * The reason that the dialog was closed
-		 */
-		export type CloseReason = 'close' | 'cancel' | 'ok';
-
-		export interface Dialog {
-			/**
-			 * Width of the dialog.
-			 * Default is 'narrow'.
-			 */
-			width?: DialogWidth;
-			/**
-			 * Dialog style type: normal, flyout, callout.
-			 * Default is 'flyout'.
-			 */
-			dialogStyle?: DialogStyle;
-			/**
-			 * Dialog position type: left, below and undefined.
-			 * Default is undefined.
-			 */
-			dialogPosition?: DialogPosition;
-			/**
-			 * Specify whether or not to render the Dialog header.
-			 * Default is true.
-			 */
-			renderHeader?: boolean;
-			/**
-			 * Specify whether or not to render the Dialog footer.
-			 * Default is true.
-			 */
-			renderFooter?: boolean;
-			/**
-			 * Positional data prior to opening of dialog.
-			 * Default is undefined.
-			 */
-			dialogProperties?: IDialogProperties;
-
-			/**
-			 * Fired when the dialog is closed for any reason. The value indicates the reason it was closed (such as 'ok' or 'cancel')
-			 */
-			onClosed: vscode.Event<CloseReason>;
-		}
-
-		export interface Wizard {
-			/**
-			 * Width of the wizard
-			 */
-			width?: DialogWidth;
-		}
-
-		/**
-		 * These dialog styles affect how the dialog displays in the application.
-		 * normal: Positioned top and centered.
-		 * flyout (default): Positioned full screen height, opens from the right side of the application.
-		 * callout: Opens below or beside parent element, contains footer section with buttons.
-		 */
-		export type DialogStyle = 'normal' | 'flyout' | 'callout';
-
-		/**
-		 * Where to position the dialog relative to the parent element
-		 */
-		export type DialogPosition = 'left' | 'below';
-
-		/**
-		 * The p
-		 * They are needed for positioning relative to the element which triggers the opening of the dialog.
-		 */
-		export interface IDialogProperties {
-			/**
-			 * x position of the dialog relative to the parent element
-			 */
-			xPos: number,
-			/**
-			 * y position of the dialog relative to the parent element
-			 */
-			yPos: number,
-			/**
-			 * width of the dialog
-			 */
-			width: number,
-			/**
-			 * height of the dialog
-			 */
-			height: number
-		}
-
-		/**
-		 * Create a dialog with the given title
-		 * @param title Title of the dialog, displayed at the top.
-		 * @param dialogName Name of the dialog.
-		 * @param width Width of the dialog, default is 'narrow'.
-		 * @param dialogStyle Defines the dialog style, default is 'flyout'.
-		 * @param dialogPosition Defines the dialog position, default is undefined
-		 * @param renderHeader Specify whether or not to render the Dialog header, default is true.
-		 * @param renderFooter Specify whether or not to render the Dialog footer, default is true.
-		 * @param dialogProperties Positional data prior to opening of dialog, default is undefined.
-		 */
-		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogProperties?: IDialogProperties): Dialog;
-
 	}
 
 	export interface TaskInfo {
@@ -965,31 +672,6 @@ declare module 'azdata' {
 		executionPlans: ExecutionPlanGraph[];
 	}
 
-	export interface ResultSetSummary {
-		/**
-		 * The visualization options for the result set.
-		 */
-		visualization?: VisualizationOptions;
-	}
-
-	/**
-	 * Defines all the supported visualization types
-	 */
-	export type VisualizationType = 'bar' | 'count' | 'doughnut' | 'horizontalBar' | 'image' | 'line' | 'pie' | 'scatter' | 'table' | 'timeSeries';
-
-	/**
-	 * Defines the configuration options for visualization
-	 */
-	export interface VisualizationOptions {
-		type: VisualizationType;
-	}
-
-	export interface PropertiesContainerComponentProperties {
-		/**
-		 * Whether to show the button that will hide/show the content of the container. Default value is false.
-		 */
-		showToggleButton?: boolean;
-	}
 
 	export interface ServerInfo {
 		/**
@@ -1000,13 +682,6 @@ declare module 'azdata' {
 		 * The physical memory of the host running the server.
 		 */
 		physicalMemoryInMb?: number;
-	}
-
-	export interface NodeInfo {
-		/**
-		 * Specify the icon for the node. The value could the path to the icon or and ADS icon defined in {@link SqlThemeIcon}.
-		 */
-		icon?: IconPath | SqlThemeIcon;
 	}
 
 	export interface ObjectMetadata {
@@ -1035,18 +710,6 @@ declare module 'azdata' {
 			 */
 			expiresOn?: number
 		}
-	}
-
-	export interface ConnectionInfoSummary {
-		/**
-		 * Indicates whether the server version is supported by ADS. The default value is true. If the value is false, ADS will show a warning message.
-		 */
-		isSupportedVersion?: boolean;
-
-		/**
-		 * The messages that will be appended to the Azure Data Studio's warning message about unsupported versions.
-		 */
-		unsupportedVersionMessage?: string;
 	}
 
 	export enum DataProviderType {

@@ -356,6 +356,10 @@ declare module 'azdata' {
 		 * Holds the connection profile for nodes, used by data explorer tree view api
 		 */
 		payload?: any;
+		/**
+		 * Specify the icon for the node. The value could the path to the icon or and ADS icon defined in {@link SqlThemeIcon}.
+		 */
+		icon?: IconPath | SqlThemeIcon;
 	}
 
 	export interface IConnectionProfile extends ConnectionInfo {
@@ -439,6 +443,14 @@ declare module 'azdata' {
 		 * information about the actual connection established
 		 */
 		connectionSummary: ConnectionSummary;
+		/**
+		 * Indicates whether the server version is supported by ADS. The default value is true. If the value is false, ADS will show a warning message.
+		 */
+		isSupportedVersion?: boolean;
+		/**
+		 * The messages that will be appended to the Azure Data Studio's warning message about unsupported versions.
+		 */
+		unsupportedVersionMessage?: string;
 	}
 
 	/**
@@ -942,6 +954,22 @@ declare module 'azdata' {
 		rowCount: number;
 		columnInfo: IDbColumn[];
 		complete: boolean;
+		/**
+		 * The visualization options for the result set.
+		 */
+		visualization?: VisualizationOptions;
+	}
+
+	/**
+	 * Defines all the supported visualization types
+	 */
+	export type VisualizationType = 'bar' | 'count' | 'doughnut' | 'horizontalBar' | 'image' | 'line' | 'pie' | 'scatter' | 'table' | 'timeSeries';
+
+	/**
+	 * Defines the configuration options for visualization
+	 */
+	export interface VisualizationOptions {
+		type: VisualizationType;
 	}
 
 	export interface BatchSummary {
@@ -2683,6 +2711,10 @@ declare module 'azdata' {
 		separator(): ComponentBuilder<SeparatorComponent, SeparatorComponentProperties>;
 		infoBox(): ComponentBuilder<InfoBoxComponent, InfoBoxComponentProperties>;
 		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent, PropertiesContainerComponentProperties>;
+		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent, RadioCardGroupComponentProperties>;
+		listView(): ComponentBuilder<ListViewComponent, ListViewComponentProperties>;
+		tabbedPanel(): TabbedPanelComponentBuilder;
+		slider(): ComponentBuilder<SliderComponent, SliderComponentProperties>;
 	}
 
 	export interface TreeComponentDataProvider<T> extends vscode.TreeDataProvider<T> {
@@ -3888,6 +3920,291 @@ declare module 'azdata' {
 		 * The properties to display
 		 */
 		propertyItems?: PropertiesContainerItem[] | undefined;
+		/**
+		 * Whether to show the button that will hide/show the content of the container. Default value is false.
+		 */
+		showToggleButton?: boolean;
+	}
+
+	/**
+	 * Represent a card in the radio card group component.
+	 */
+	export interface RadioCard {
+		/**
+		 * Id of the card.
+		 */
+		id: string;
+		/**
+		 * descriptions to be displayed in the card.
+		 */
+		descriptions: RadioCardDescription[];
+		/**
+		 * Icon of the card.
+		 */
+		icon?: IconPath;
+	}
+
+	/**
+	 * Represents a text component inside the radio card.
+	 */
+	export interface RadioCardDescription {
+		/**
+		 * The text to be displayed.
+		 */
+		textValue: string;
+		/**
+		 * The link's display text.
+		 */
+		linkDisplayValue?: string;
+		/**
+		 * Whether to show the link icon.
+		 */
+		displayLinkCodicon?: boolean;
+		/**
+		 * CSS styles for the text.
+		 */
+		textStyles?: CssStyles;
+		/**
+		 * CSS styles for the link.
+		 */
+		linkStyles?: CssStyles;
+		/**
+		 * CSS styles for the link icon.
+		 */
+		linkCodiconStyles?: CssStyles;
+	}
+
+	/**
+	 * Properties of radio card group component.
+	 */
+	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
+		/**
+		 * Cards information.
+		 */
+		cards: RadioCard[];
+		/**
+		 * Width of the card.
+		 */
+		cardWidth: string;
+		/**
+		 * Height of the card.
+		 */
+		cardHeight: string;
+		/**
+		 * Width of the icon.
+		 */
+		iconWidth?: string;
+		/**
+		 * Height of the icon.
+		 */
+		iconHeight?: string;
+		/**
+		 * Id of the currently selected card.
+		 */
+		selectedCardId?: string;
+		/**
+		 * Oritentation of the cards in the group. Default value is horizontal.
+		 */
+		orientation?: Orientation;
+		/**
+		 * Position of the icon. Default value is top.
+		 */
+		iconPosition?: 'top' | 'left';
+	}
+
+	/**
+	 * Event arguments when the selected card is changed.
+	 */
+	export type RadioCardSelectionChangedEvent = { cardId: string; card: RadioCard };
+	/**
+	 * Event arguments when a link in the radio card is clicked.
+	 */
+	export type RadioCardLinkClickEvent = { cardId: string, card: RadioCard, description: RadioCardDescription };
+
+	/**
+	 * Defines the radio card group component.
+	 */
+	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
+		/**
+		 * Raised when the selected card is changed.
+		 */
+		onSelectionChanged: vscode.Event<RadioCardSelectionChangedEvent>;
+		/**
+		 * Raised when a link a clicked in a card.
+		 */
+		onLinkClick: vscode.Event<RadioCardLinkClickEvent>;
+	}
+
+	/**
+	 * Properties for the list view component.
+	 */
+	export interface ListViewComponentProperties extends ComponentProperties {
+		/**
+		 * Title of the component.
+		 */
+		title?: ListViewTitle;
+		/**
+		 * Items in the list view.
+		 */
+		options: ListViewOption[];
+		/**
+		 * Id of the currently selected option.
+		 */
+		selectedOptionId?: string;
+	}
+
+	/**
+	 * Title of the list view component.
+	 */
+	export interface ListViewTitle {
+		/**
+		 * Display text.
+		 */
+		text?: string;
+		/**
+		 * CSS styles of the title.
+		 */
+		style?: CssStyles;
+	}
+
+	/**
+	 * Defines an item in list view component.
+	 */
+	export interface ListViewOption {
+		/**
+		 * Display text of the item.
+		 */
+		label: string;
+		/**
+		 * Id of the item.
+		 */
+		id: string;
+	}
+
+	/**
+	 * Event arg when a list view item is selected.
+	 */
+	export type ListViewClickEvent = { id: string };
+
+	/**
+	 * Defines the list view component.
+	 */
+	export interface ListViewComponent extends Component, ListViewComponentProperties {
+		/**
+		 * Fired when a list view item is selected.
+		 */
+		onDidClick: vscode.Event<ListViewClickEvent>;
+	}
+	/**
+	 * Panel component with tabs
+	 */
+	export interface TabbedPanelComponent extends Container<TabbedPanelLayout, any> {
+		/**
+		 * An event triggered when the selected tab is changed.
+		 * The event argument is the id of the selected tab.
+		 */
+		onTabChanged: vscode.Event<string>;
+
+		/**
+		 * update the tabs.
+		 * @param tabs new tabs
+		 */
+		updateTabs(tabs: (Tab | TabGroup)[]): void;
+
+		/**
+		 * Selects the tab with the specified id
+		 * @param id The id of the tab to select
+		 */
+		selectTab(id: string): void;
+	}
+
+	/**
+	 * Defines the tab orientation of TabbedPanelComponent
+	 */
+	export enum TabOrientation {
+		Vertical = 'vertical',
+		Horizontal = 'horizontal'
+	}
+
+	/**
+	 * Layout of TabbedPanelComponent, can be used to initialize the component when using ModelBuilder
+	 */
+	export interface TabbedPanelLayout {
+		/**
+		 * Tab orientation. Default horizontal.
+		 */
+		orientation?: TabOrientation;
+
+		/**
+		 * Whether to show the tab icon. Default false.
+		 */
+		showIcon?: boolean;
+
+		/**
+		 * Whether to show the tab navigation pane even when there is only one tab. Default false.
+		 */
+		alwaysShowTabs?: boolean;
+	}
+
+	/**
+	 * Represents the tab group of TabbedPanelComponent
+	 */
+	export interface TabGroup {
+		/**
+		 * Title of the tab group
+		 */
+		title: string;
+
+		/**
+		 * children of the tab group
+		 */
+		tabs: Tab[];
+	}
+
+	/**
+	 * Builder for TabbedPanelComponent
+	 */
+	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties> {
+		/**
+		 * Add the tabs to the component
+		 * @param tabs tabs/tab groups to be added
+		 */
+		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties>;
+	}
+
+	export interface SliderComponentProperties extends ComponentProperties {
+		/**
+		 * The value selected on the slider. Default initial value is the minimum value.
+		 */
+		value?: number,
+		/**
+		 * The minimum value of the slider. Default value is 1.
+		 */
+		min?: number,
+		/**
+		 * The maximum value of the slider. Default value is 100.
+		 */
+		max?: number,
+		/**
+		 * The value between each "tick" of the slider. Default is 1.
+		 */
+		step?: number,
+		/**
+		 * Whether to show the tick marks on the slider. Default is false.
+		 */
+		showTicks?: boolean
+		/**
+		 * The width of the slider, not including the value box.
+		 */
+		width?: number | string;
+	}
+
+	/**
+	 * Defines the slider component
+	 */
+	export interface SliderComponent extends Component, SliderComponentProperties {
+		onChanged: vscode.Event<number>;
+		onInput: vscode.Event<number>;
 	}
 
 	/**
@@ -3966,6 +4283,19 @@ declare module 'azdata' {
 		 * @param width Width of the dialog, default is 'narrow'.
 		 */
 		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth): Dialog;
+
+		/**
+		 * Create a dialog with the given title
+		 * @param title Title of the dialog, displayed at the top.
+		 * @param dialogName Name of the dialog.
+		 * @param width Width of the dialog, default is 'narrow'.
+		 * @param dialogStyle Defines the dialog style, default is 'flyout'.
+		 * @param dialogPosition Defines the dialog position, default is undefined
+		 * @param renderHeader Specify whether or not to render the Dialog header, default is true.
+		 * @param renderFooter Specify whether or not to render the Dialog footer, default is true.
+		 * @param dialogProperties Positional data prior to opening of dialog, default is undefined.
+		 */
+		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogProperties?: IDialogProperties): Dialog;
 
 		export interface ModelViewDashboard {
 			/**
@@ -4085,6 +4415,46 @@ declare module 'azdata' {
 			readonly onValidityChanged: vscode.Event<boolean>;
 		}
 
+		/**
+		 * The reason that the dialog was closed
+		 */
+		export type CloseReason = 'close' | 'cancel' | 'ok';
+		/**
+		 * These dialog styles affect how the dialog displays in the application.
+		 * normal: Positioned top and centered.
+		 * flyout (default): Positioned full screen height, opens from the right side of the application.
+		 * callout: Opens below or beside parent element, contains footer section with buttons.
+		 */
+		export type DialogStyle = 'normal' | 'flyout' | 'callout';
+
+		/**
+		 * Where to position the dialog relative to the parent element
+		 */
+		export type DialogPosition = 'left' | 'below';
+
+		/**
+		 * The p
+		 * They are needed for positioning relative to the element which triggers the opening of the dialog.
+		 */
+		export interface IDialogProperties {
+			/**
+			 * x position of the dialog relative to the parent element
+			 */
+			xPos: number,
+			/**
+			 * y position of the dialog relative to the parent element
+			 */
+			yPos: number,
+			/**
+			 * width of the dialog
+			 */
+			width: number,
+			/**
+			 * height of the dialog
+			 */
+			height: number
+		}
+
 		// Model view dialog classes
 		export interface Dialog extends ModelViewPanel {
 			/**
@@ -4131,6 +4501,42 @@ declare module 'azdata' {
 			dialogName?: string | undefined;
 
 			/**
+			 * Width of the dialog.
+			 * Default is 'narrow'.
+			 */
+			width?: DialogWidth;
+
+			/**
+			 * Dialog style type: normal, flyout, callout.
+			 * Default is 'flyout'.
+			 */
+			dialogStyle?: DialogStyle;
+
+			/**
+			 * Dialog position type: left, below and undefined.
+			 * Default is undefined.
+			 */
+			dialogPosition?: DialogPosition;
+
+			/**
+			 * Specify whether or not to render the Dialog header.
+			 * Default is true.
+			 */
+			renderHeader?: boolean;
+
+			/**
+			 * Specify whether or not to render the Dialog footer.
+			 * Default is true.
+			 */
+			renderFooter?: boolean;
+
+			/**
+			 * Positional data prior to opening of dialog.
+			 * Default is undefined.
+			 */
+			dialogProperties?: IDialogProperties;
+
+			/**
 			 * Register a callback that will be called when the user tries to click done. Only
 			 * one callback can be registered at once, so each registration call will clear
 			 * the previous registration.
@@ -4144,6 +4550,11 @@ declare module 'azdata' {
 			 * @param operationInfo Operation Information
 			 */
 			registerOperation(operationInfo: BackgroundOperationInfo): void;
+
+			/**
+			 * Fired when the dialog is closed for any reason. The value indicates the reason it was closed (such as 'ok' or 'cancel')
+			 */
+			onClosed: vscode.Event<CloseReason>;
 		}
 
 		export interface DialogTab extends ModelViewPanel {
@@ -4304,6 +4715,11 @@ declare module 'azdata' {
 			displayPageTitles: boolean;
 
 			/**
+			 * Width of the wizard
+			 */
+			width?: DialogWidth;
+
+			/**
 			 * Event fired when the wizard's page changes, containing information about the
 			 * previous page and the new page
 			 */
@@ -4427,6 +4843,17 @@ declare module 'azdata' {
 		 * Get a QueryDocument object for a file URI
 		 */
 		export function getQueryDocument(fileUri: string): Thenable<QueryDocument>;
+
+		/**
+		 * Opens an untitled text document. The editor will prompt the user for a file
+		 * path when the document is to be saved. The `options` parameter allows to
+		 * specify the *content* of the document.
+		 *
+		 * @param options Options to control how the document will be created.
+		 * @param providerId Optional provider ID this editor will be associated with. Defaults to MSSQL.
+		 * @return A promise that resolves to a [document](#QueryDocument).
+		 */
+		export function openQueryDocument(options?: { content?: string; }, providerId?: string): Thenable<QueryDocument>;
 	}
 
 	/**
