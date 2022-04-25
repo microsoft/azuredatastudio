@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="src/sql/base/browser/ui/editableDropdown/browser/dropdown" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="editableDropdown.errorValidate">
+      <source xml:lang="en">Must be an option from the list</source>
+    </trans-unit>
+    <trans-unit id="selectBox">
+      <source xml:lang="en">Select Box</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner" source-language="en" datatype="plaintext"><body>
     <trans-unit id="loadingCompletedMessage">
       <source xml:lang="en">Loading completed</source>
@@ -248,14 +256,6 @@
     </trans-unit>
     <trans-unit id="workspace.trust.emptyWindow.description">
       <source xml:lang="en">Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/base/parts/editableDropdown/browser/dropdown" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="editableDropdown.errorValidate">
-      <source xml:lang="en">Must be an option from the list</source>
-    </trans-unit>
-    <trans-unit id="selectBox">
-      <source xml:lang="en">Select Box</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/platform/accounts/common/accountActions" source-language="en" datatype="plaintext"><body>
