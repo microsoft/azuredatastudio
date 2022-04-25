@@ -50,7 +50,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
+import { DEFAULT_NB_LANGUAGE_MODE, INTERACTIVE_LANGUAGE_MODE, INTERACTIVE_PROVIDER_ID, JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
 
@@ -248,30 +248,60 @@ export class NotebookService extends Disposable implements INotebookService {
 		lifecycleService.onWillShutdown(() => this.shutdown());
 	}
 
-	public async createNotebookInput(options: INotebookShowOptions, resource?: UriComponents): Promise<IEditorInput | undefined> {
+	private getUntitledFileUri(): URI {
+		// Need to create a new untitled URI, so find the lowest numbered one that's available
+		let uri: URI;
+		let counter = 1;
+		do {
+			uri = URI.from({ scheme: Schemas.untitled, path: `Notebook-${counter}` });
+			counter++;
+		} while (this._untitledEditorService.get(uri));
+		return uri;
+	}
+
+	public async createNotebookInputFromContents(providerId: string, contents?: nb.INotebookContents, resource?: UriComponents): Promise<IEditorInput> {
 		let uri: URI;
 		if (resource) {
 			uri = URI.revive(resource);
 		} else {
-			// Need to create a new untitled URI, so find the lowest numbered one that's available
-			let counter = 1;
-			do {
-				uri = URI.from({ scheme: Schemas.untitled, path: `Notebook-${counter}` });
-				counter++;
-			} while (this._untitledEditorService.get(uri));
+			uri = this.getUntitledFileUri();
+			resource = uri;
+		}
+
+		let serializedContent: string;
+		if (contents) {
+			// Have to serialize contents again first, since our notebook code assumes input is based on the raw file contents
+			let manager = await this.getOrCreateSerializationManager(providerId, uri);
+			serializedContent = await manager.contentManager.serializeNotebook(contents);
+		}
+
+		let options: INotebookShowOptions = {
+			providerId: providerId,
+			initialContent: serializedContent
+		};
+		return this.createNotebookInput(options, resource);
+	}
+
+	private async createNotebookInput(options: INotebookShowOptions, resource?: UriComponents): Promise<IEditorInput | undefined> {
+		let uri: URI;
+		if (resource) {
+			uri = URI.revive(resource);
+		} else {
+			uri = this.getUntitledFileUri();
 		}
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
 		let fileInput: IEditorInput;
+		let languageMode = options.providerId === INTERACTIVE_PROVIDER_ID ? INTERACTIVE_LANGUAGE_MODE : DEFAULT_NB_LANGUAGE_MODE;
 		if (isUntitled && path.isAbsolute(uri.fsPath)) {
-			const model = this._untitledEditorService.create({ associatedResource: uri, mode: 'notebook', initialValue: options.initialContent });
+			const model = this._untitledEditorService.create({ associatedResource: uri, mode: languageMode, initialValue: options.initialContent });
 			fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 		} else {
 			if (isUntitled) {
-				const model = this._untitledEditorService.create({ untitledResource: uri, mode: 'notebook', initialValue: options.initialContent });
+				const model = this._untitledEditorService.create({ untitledResource: uri, mode: languageMode, initialValue: options.initialContent });
 				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 			} else {
-				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: 'notebook' });
+				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: languageMode });
 			}
 		}
 
@@ -478,8 +508,9 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	getProvidersForFileType(fileType: string): string[] | undefined {
-		let providers = this._fileToProviderDescriptions.get(fileType.toLowerCase());
-		return providers?.map(provider => provider.provider);
+		let provDescriptions = this._fileToProviderDescriptions.get(fileType.toLowerCase());
+		let providers = provDescriptions?.map(provider => provider.provider);
+		return [...new Set(providers)]; // Remove duplicates
 	}
 
 	public async getStandardKernelsForProvider(provider: string): Promise<nb.IStandardKernel[] | undefined> {
