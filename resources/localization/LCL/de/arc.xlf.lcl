@@ -853,6 +853,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.errorListingLogAnalyticsWorkspaces" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error listing Log Analytics workspaces {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Auflisten der Log Analytics-Arbeitsbereiche {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3182,7 +3185,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Log Analytics workspace]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Log Analytics-Arbeitsbereich]]></Val>
+            <Val><![CDATA[Log Analytics-Arbeitsbereich]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
