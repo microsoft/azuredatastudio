@@ -12366,7 +12366,7 @@
 			"selectExecutionPlanProvider": "選取要開啟執行計畫的提供者"
 		},
 		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
-			"table.showActions": "Show Actions"
+			"table.showActions": "顯示動作"
 		}
 	}
 }
