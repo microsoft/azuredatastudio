@@ -5911,6 +5911,12 @@ Error: {1}</source>
     <trans-unit id="designer.table.description.schema">
       <source xml:lang="en">The schema that contains the table.</source>
     </trans-unit>
+    <trans-unit id="designer.table.primaryKeyColumns.description">
+      <source xml:lang="en">Columns in the primary key.</source>
+    </trans-unit>
+    <trans-unit id="designer.table.primaryKeyName.description">
+      <source xml:lang="en">Name of the primary key.</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.ErrorDialogTitle">
       <source xml:lang="en">Table Designer Error</source>
     </trans-unit>
@@ -5922,6 +5928,30 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.IndexTypeName">
       <source xml:lang="en">Index</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.PrimaryKeyTabTitle">
+      <source xml:lang="en">Primary Key</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.addForeignKey">
+      <source xml:lang="en">New Foreign Key</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.addNewCheckConstraint">
+      <source xml:lang="en">New Check Constraint</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.addNewColumn">
+      <source xml:lang="en">New Column</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.addNewColumnMapping">
+      <source xml:lang="en">New Column Mapping</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.addNewColumnToIndex">
+      <source xml:lang="en">Add Column</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.addNewColumnToPrimaryKey">
+      <source xml:lang="en">Add Column</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.addNewIndex">
+      <source xml:lang="en">New Index</source>
     </trans-unit>
     <trans-unit id="tableDesigner.checkConstraintExpressionTitle">
       <source xml:lang="en">Expression</source>
@@ -6027,6 +6057,12 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.nameTitle">
       <source xml:lang="en">Table name</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.primaryKeyColumnsTitle">
+      <source xml:lang="en">Primary Key Columns</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.primaryKeyNameTitle">
+      <source xml:lang="en">Name</source>
     </trans-unit>
     <trans-unit id="tableDesigner.publishChangeError">
       <source xml:lang="en">An error occured while publishing changes: {0}</source>
