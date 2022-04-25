@@ -38,7 +38,7 @@ import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { AddCellEdit, CellOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, CellOutputDataEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
-import { DotnetInteractiveLabel } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { DotnetInteractiveDisplayName } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { IPYKERNEL_DISPLAY_NAME } from 'sql/workbench/common/constants';
 
 /*
@@ -1352,7 +1352,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (standardKernel) {
 				if (this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
 					// Special case .NET Interactive kernel name to handle inconsistencies between notebook providers and jupyter kernel specs
-					if (this._savedKernelInfo.display_name === DotnetInteractiveLabel) {
+					if (this._savedKernelInfo.display_name === DotnetInteractiveDisplayName) {
 						this._savedKernelInfo.oldName = this._savedKernelInfo.name;
 					}
 

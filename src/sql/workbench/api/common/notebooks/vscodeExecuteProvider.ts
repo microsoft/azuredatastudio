@@ -7,7 +7,7 @@ import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
 import { ADSNotebookController } from 'sql/workbench/api/common/notebooks/adsNotebookController';
 import * as nls from 'vs/nls';
-import { convertToVSCodeNotebookCell } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { addExternalInteractiveKernelMetadata, convertToVSCodeNotebookCell } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { URI } from 'vs/base/common/uri';
@@ -85,6 +85,9 @@ class VSCodeKernel implements azdata.nb.IKernel {
 			this._kernelSpec.language = this._controller.supportedLanguages[0];
 			this._kernelSpec.supportedLanguages = this._controller.supportedLanguages;
 		}
+
+		// Store external kernel names for .NET Interactive kernels for when notebook gets saved, so that notebook is usable outside of ADS
+		addExternalInteractiveKernelMetadata(this._kernelSpec);
 
 		this._name = this._kernelSpec.name;
 		this._info = {
