@@ -382,9 +382,10 @@ export class NotebookService extends Disposable implements INotebookService {
 
 		// Emit activation event if the provider is not one of the default options
 		if (p.id !== SQL_NOTEBOOK_PROVIDER && p.id !== JUPYTER_PROVIDER_ID) {
-			this._extensionService.whenInstalledExtensionsRegistered().then(() => {
-				this._extensionService.activateByEvent(`onNotebook:${p.id}`).catch(err => onUnexpectedError(err));
-			}).catch(err => onUnexpectedError(err));
+			this._extensionService.whenInstalledExtensionsRegistered()
+				.then(() => this._extensionService.activateByEvent(`onNotebook:${p.id}`))
+				.then(() => this._extensionService.activateByEvent(`onNotebook:*`))
+				.catch(err => onUnexpectedError(err));
 		}
 	}
 
