@@ -1089,6 +1089,10 @@ declare module 'azdata' {
 			 * Issues of current state.
 			 */
 			issues?: { severity: DesignerIssueSeverity, description: string, propertyPath?: DesignerEditPath }[];
+			/**
+			 * The input validation error.
+			 */
+			inputValidationError?: string;
 		}
 
 		/**
@@ -1118,6 +1122,10 @@ declare module 'azdata' {
 			 * Format (mimeType) of the report
 			 */
 			mimeType: string;
+			/**
+			 * The table schema validation error.
+			 */
+			schemaValidationError?: string;
 		}
 	}
 

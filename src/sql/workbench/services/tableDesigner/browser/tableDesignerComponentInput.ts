@@ -89,6 +89,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		this.updateState(this.valid, this.dirty, 'processEdit');
 		this._provider.processTableEdit(this.tableInfo, edit).then(
 			result => {
+				if (result.inputValidationError) {
+					this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.inputValidationError', "The input validation failed with error: {0}", result.inputValidationError));
+				}
 				this._viewModel = result.viewModel;
 				if (result.view) {
 					this.setDesignerView(result.view);
@@ -187,6 +190,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		} catch (error) {
 			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.generatePreviewReportError', "An error occured while generating preview report: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
+			return;
+		}
+		if (previewReportResult.schemaValidationError) {
+			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.TableSchemaValidationError', "Table schema validation failed with error: {0}", previewReportResult.schemaValidationError));
 			return;
 		}
 		const dialog = this._instantiationService.createInstance(TableDesignerPublishDialog);
