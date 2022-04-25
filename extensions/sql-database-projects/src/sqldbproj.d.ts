@@ -173,8 +173,6 @@ declare module 'sqldbproj' {
 	 * Target platforms for a sql project
 	 */
 	export const enum SqlTargetPlatform {
-		sqlServer2005 = 'SQL Server 2005',
-		sqlServer2008 = 'SQL Server 2008',
 		sqlServer2012 = 'SQL Server 2012',
 		sqlServer2014 = 'SQL Server 2014',
 		sqlServer2016 = 'SQL Server 2016',
