@@ -6,6 +6,8 @@
 declare module 'vscode-mssql' {
 
 	import * as vscode from 'vscode';
+	import { RequestType } from 'vscode-languageclient';
+	import { BindingType, GetAzureFunctionsResult } from 'sql-bindings';
 
 	/**
 	 * Covers defining what the vscode-mssql extension exports to other extensions
@@ -86,12 +88,20 @@ declare module 'vscode-mssql' {
 		getConnectionString(connectionUriOrDetails: string | ConnectionDetails, includePassword?: boolean, includeApplicationName?: boolean): Promise<string>;
 
 		/**
-	 	 * Set connection details for the provided connection info
-	 	 * Able to use this for getConnectionString requests to STS that require ConnectionDetails type
-	 	 * @param connectionInfo connection info of the connection
-	 	 * @returns connection details credentials for the connection
-	 	 */
+		 * Set connection details for the provided connection info
+		 * Able to use this for getConnectionString requests to STS that require ConnectionDetails type
+		 * @param connectionInfo connection info of the connection
+		 * @returns connection details credentials for the connection
+		 */
 		createConnectionDetails(connectionInfo: IConnectionInfo): ConnectionDetails;
+
+		/**
+		 * Send a request to the SQL Tools Server client
+		 * @param requestType The type of the request
+		 * @param params The params to pass with the request
+		 * @returns A promise object for when the request receives a response
+		 */
+		 sendRequest<P, R, E, R0>(requestType: RequestType<P, R, E, R0>, params?: P): Promise<R>;
 	}
 
 	/**
@@ -587,64 +597,6 @@ declare module 'vscode-mssql' {
 		parentName?: string;
 
 		parentTypeName?: string;
-	}
-
-	/**
-	 * Azure functions binding type
-	 */
-	export const enum BindingType {
-		input,
-		output
-	}
-
-	/**
-	 * Parameters for adding a SQL binding to an Azure function
-	 */
-	export interface AddSqlBindingParams {
-		/**
-		 * Aboslute file path of file to add SQL binding
-		 */
-		filePath: string;
-
-		/**
-		 * Name of function to add SQL binding
-		 */
-		functionName: string;
-
-		/**
-		 * Name of object to use in SQL binding
-		 */
-		objectName: string;
-
-		/**
-		 * Type of Azure function binding
-		 */
-		bindingType: BindingType;
-
-		/**
-		 * Name of SQL connection string setting specified in local.settings.json
-		 */
-		connectionStringSetting: string;
-	}
-
-	/**
-	 * Parameters for getting the names of the Azure functions in a file
-	 */
-	export interface GetAzureFunctionsParams {
-		/**
-		 * Absolute file path of file to get Azure functions
-		 */
-		filePath: string;
-	}
-
-	/**
-	 * Result from a get Azure functions request
-	 */
-	export interface GetAzureFunctionsResult extends ResultStatus {
-		/**
-		 * Array of names of Azure functions in the file
-		 */
-		azureFunctions: string[];
 	}
 
 	/**

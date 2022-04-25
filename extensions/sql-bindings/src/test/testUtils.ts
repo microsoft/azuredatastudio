@@ -9,6 +9,8 @@ import * as path from 'path';
 import * as TypeMoq from 'typemoq';
 import * as mssql from '../../../mssql/src/mssql';
 import * as vscodeMssql from 'vscode-mssql';
+import { RequestType } from 'vscode-languageclient';
+import { BindingType, GetAzureFunctionsResult } from 'sql-bindings';
 
 export interface TestUtils {
 	context: vscode.ExtensionContext;
@@ -136,8 +138,8 @@ export const mockGetAzureFunctionsResult = {
 };
 
 export class MockAzureFunctionService implements vscodeMssql.IAzureFunctionsService {
-	addSqlBinding(_: vscodeMssql.BindingType, __: string, ___: string, ____: string, _____: string): Thenable<vscodeMssql.ResultStatus> { return Promise.resolve(mockResultStatus); }
-	getAzureFunctions(_: string): Thenable<vscodeMssql.GetAzureFunctionsResult> { return Promise.resolve(mockGetAzureFunctionsResult); }
+	addSqlBinding(_: BindingType, __: string, ___: string, ____: string, _____: string): Thenable<vscodeMssql.ResultStatus> { return Promise.resolve(mockResultStatus); }
+	getAzureFunctions(_: string): Thenable<GetAzureFunctionsResult> { return Promise.resolve(mockGetAzureFunctionsResult); }
 }
 
 export const mockDacFxMssqlOptionResult: vscodeMssql.DacFxOptionsResult = {
@@ -253,6 +255,9 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 		this.dacFx = new MockDacFxMssqlService;
 		this.schemaCompare = new MockSchemaCompareService;
 		this.azureFunctions = new MockAzureFunctionService;
+	}
+	sendRequest<P, R, E, R0>(_: RequestType<P, R, E, R0>, __?: P): Promise<R> {
+		throw new Error('Method not implemented.');
 	}
 	promptForConnection(_?: boolean): Promise<vscodeMssql.IConnectionInfo | undefined> {
 		throw new Error('Method not implemented.');
