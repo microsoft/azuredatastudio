@@ -18,5 +18,5 @@ export interface ImportDataModel {
 	filePath: string;
 	version: string;
 	extractTarget: ExtractTarget;
-	sdkStyle?: boolean;
+	sdkStyle: boolean;
 }
