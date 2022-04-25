@@ -78,7 +78,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			}
 
 		} catch (e) {
-			void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 			propertyBag.quickPickStep = quickPickStep;
 			exitReason = 'error';
 			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, utils.getErrorType(e))
