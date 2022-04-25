@@ -508,7 +508,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
 		const autoSizeOnRender: boolean = !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns');
-		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: autoSizeOnRender, maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth'), extraColumnHeaderWidth: this.enableFilteringFeature ? FilterButtonWidth : 0 }));
+		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: autoSizeOnRender, maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth'), extraColumnHeaderWidth: FilterButtonWidth }));
 		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
@@ -534,14 +534,12 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			};
 			this.table.rerenderGrid();
 		}));
-		if (this.enableFilteringFeature) {
-			this.filterPlugin = new HeaderFilter(this.contextViewService, this.notificationService, {
-				disabledFilterMessage: localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'"),
-				refreshColumns: !autoSizeOnRender // The auto size columns plugin refreshes the columns so we don't need to refresh twice if both plugins are on.
-			});
-			this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
-			this.table.registerPlugin(this.filterPlugin);
-		}
+		this.filterPlugin = new HeaderFilter(this.contextViewService, this.notificationService, {
+			disabledFilterMessage: localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'"),
+			refreshColumns: !autoSizeOnRender // The auto size columns plugin refreshes the columns so we don't need to refresh twice if both plugins are on.
+		});
+		this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
+		this.table.registerPlugin(this.filterPlugin);
 		if (this.styles) {
 			this.table.style(this.styles);
 		}
@@ -719,16 +717,10 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this._onDidChange.fire(undefined);
 	}
 
-	private get enableFilteringFeature(): boolean {
-		return this.configurationService.getValue<boolean>('workbench')['enablePreviewFeatures'];
-	}
-
 	private setFilterState(): void {
-		if (this.enableFilteringFeature) {
-			const rowCount = this.table.getData().getLength();
-			this.filterPlugin.enabled = this.options.inMemoryDataProcessing
-				&& (this.options.inMemoryDataCountThreshold === undefined || this.options.inMemoryDataCountThreshold >= rowCount);
-		}
+		const rowCount = this.table.getData().getLength();
+		this.filterPlugin.enabled = this.options.inMemoryDataProcessing
+			&& (this.options.inMemoryDataCountThreshold === undefined || this.options.inMemoryDataCountThreshold >= rowCount);
 	}
 
 	private generateContext(cell?: Slick.Cell): IGridActionContext {
