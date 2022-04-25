@@ -686,8 +686,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			}
 
 			if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
-				let tenantId = connectionInfo.azureTenantId;
 				this.fillInAzureAccountOptions().then(async () => {
+					let tenantId = connectionInfo.azureTenantId;
 					let accountName = (this.authType === AuthenticationType.AzureMFA)
 						? connectionInfo.azureAccount : connectionInfo.userName;
 					this._azureAccountDropdown.selectWithOptionName(this.getModelValue(accountName));
