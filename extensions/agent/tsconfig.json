@@ -10,7 +10,8 @@
 		"experimentalDecorators": true,
 		"moduleResolution": "node",
 		"strict": false,
-		"noUnusedParameters": false
+		"noUnusedParameters": false,
+		"strictNullChecks": false
 	},
 	"exclude": [
 		"node_modules"
