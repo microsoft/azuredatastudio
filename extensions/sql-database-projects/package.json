@@ -17,9 +17,7 @@
     "onCommand:sqlDatabaseProjects.open",
     "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.updateProjectFromDatabase",
-    "onCommand:sqlDatabaseProjects.addSqlBinding",
     "onCommand:sqlDatabaseProjects.generateProjectFromOpenApiSpec",
-    "onCommand:sqlDatabaseProjects.addSqlBinding",
     "workspaceContains:**/*.sqlproj",
     "onView:dataworkspace.views.main"
   ],
@@ -179,11 +177,6 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.addSqlBinding",
-        "title": "%sqlDatabaseProjects.addSqlBinding%",
-        "category": "MS SQL"
-      },
-      {
         "command": "sqlDatabaseProjects.changeTargetPlatform",
         "title": "%sqlDatabaseProjects.changeTargetPlatform%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -295,10 +288,6 @@
         {
           "command": "sqlDatabaseProjects.editProjectFile",
           "when": "false"
-        },
-        {
-          "command": "sqlDatabaseProjects.addSqlBinding",
-          "when": "editorLangId == csharp && !azdataAvailable && resourceScheme != untitled"
         },
         {
           "command": "sqlDatabaseProjects.exclude",
@@ -461,7 +450,6 @@
     "@microsoft/ads-extension-telemetry": "^1.1.5",
     "fast-glob": "^3.2.7",
     "fs-extra": "^5.0.0",
-    "jsonc-parser": "^2.3.1",
     "promisify-child-process": "^3.1.1",
     "semver": "^7.3.5",
     "vscode-languageclient": "^5.3.0-next.1",

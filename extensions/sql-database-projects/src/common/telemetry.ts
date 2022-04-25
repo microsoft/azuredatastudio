@@ -16,7 +16,6 @@ export enum TelemetryViews {
 	ProjectController = 'ProjectController',
 	SqlProjectPublishDialog = 'SqlProjectPublishDialog',
 	ProjectTree = 'ProjectTree',
-	SqlBindingsQuickPick = 'SqlBindingsQuickPick'
 }
 
 export enum TelemetryActions {
@@ -33,7 +32,5 @@ export enum TelemetryActions {
 	build = 'build',
 	updateProjectForRoundtrip = 'updateProjectForRoundtrip',
 	changePlatformType = 'changePlatformType',
-	updateSystemDatabaseReferencesInProjFile = 'updateSystemDatabaseReferencesInProjFile',
-	startAddSqlBinding = 'startAddSqlBinding',
-	finishAddSqlBinding = 'finishAddSqlBinding'
+	updateSystemDatabaseReferencesInProjFile = 'updateSystemDatabaseReferencesInProjFile'
 }

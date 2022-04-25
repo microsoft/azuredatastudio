@@ -16,8 +16,6 @@ import { IconPathHelper } from '../common/iconHelper';
 import { WorkspaceTreeItem } from 'dataworkspace';
 import * as constants from '../common/constants';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
-import { launchAddSqlBindingQuickpick } from '../dialogs/addSqlBindingQuickpick';
-import { PackageHelper } from '../tools/packageHelper';
 import { GenerateProjectFromOpenApiSpecOptions } from 'sqldbproj';
 
 /**
@@ -26,13 +24,11 @@ import { GenerateProjectFromOpenApiSpecOptions } from 'sqldbproj';
 export default class MainController implements vscode.Disposable {
 	protected projectsController: ProjectsController;
 	protected netcoreTool: NetCoreTool;
-	protected packageHelper: PackageHelper;
 	private _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(constants.projectsOutputChannel);
 
 	public constructor(private context: vscode.ExtensionContext) {
 		this.projectsController = new ProjectsController(this._outputChannel);
 		this.netcoreTool = new NetCoreTool(this._outputChannel);
-		this.packageHelper = new PackageHelper(this._outputChannel);
 	}
 
 	public get extensionContext(): vscode.ExtensionContext {
@@ -88,8 +84,6 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: WorkspaceTreeItem) => { return this.projectsController.exclude(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.changeTargetPlatform', async (node: WorkspaceTreeItem) => { return this.projectsController.changeTargetPlatform(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.validateExternalStreamingJob', async (node: WorkspaceTreeItem) => { return this.projectsController.validateExternalStreamingJob(node); });
-
-		vscode.commands.registerCommand('sqlDatabaseProjects.addSqlBinding', async (uri: vscode.Uri | undefined) => { return launchAddSqlBindingQuickpick(uri, this.packageHelper); });
 
 		IconPathHelper.setExtensionContext(this.extensionContext);
 
