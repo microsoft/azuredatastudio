@@ -12,7 +12,6 @@ import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { deepClone, findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
-import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
 
 export class TargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -131,17 +130,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator((e) => {
-
-			sendSqlMigrationActionEvent(
-				TelemetryViews.MigrationWizardTargetSelectionPage,
-				TelemetryAction.OnPageLeave,
-				{
-					'sessionId': this.migrationStateModel?._sessionId,
-					'subscriptionId': this.migrationStateModel?._targetSubscription?.id,
-					'resourceGroup': this.migrationStateModel?._resourceGroup?.name,
-					'tenantId': this.migrationStateModel?._azureTenant?.id || this.migrationStateModel?._azureAccount?.properties?.tenants[0]?.id
-				}, {});
-
 			return true;
 		});
 	}
