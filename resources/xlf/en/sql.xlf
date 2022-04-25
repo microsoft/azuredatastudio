@@ -144,6 +144,9 @@
     <trans-unit id="default">
       <source xml:lang="en">Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.</source>
     </trans-unit>
+    <trans-unit id="docNotFoundForUriError">
+      <source xml:lang="en">Could not open a notebook document for the specified URI.</source>
+    </trans-unit>
     <trans-unit id="enable locally">
       <source xml:lang="en">Please reload Azure Data Studio to enable this extension locally.</source>
     </trans-unit>
@@ -225,11 +228,14 @@
     <trans-unit id="updateLocale">
       <source xml:lang="en">Would you like to change Azure Data Studio's UI language to {0} and restart?</source>
     </trans-unit>
+    <trans-unit id="vscodeDocCreationFailedError">
+      <source xml:lang="en">Failed to create notebook document.</source>
+    </trans-unit>
     <trans-unit id="vscodeFunctionalityNotSupportedError">
       <source xml:lang="en">This VS Code functionality is not supported in Azure Data Studio.</source>
     </trans-unit>
     <trans-unit id="vscodeInvalidArgumentsError">
-      <source xml:lang="en">Invalid arguments</source>
+      <source xml:lang="en">Invalid arguments.</source>
     </trans-unit>
     <trans-unit id="watermark.newNotebook">
       <source xml:lang="en">New Notebook</source>
@@ -642,6 +648,9 @@
     <trans-unit id="designer.defaultRemoveRowConfirmationMessage">
       <source xml:lang="en">Are you sure you want to remove the row?</source>
     </trans-unit>
+    <trans-unit id="designer.errorCountAlert">
+      <source xml:lang="en">{0} validation errors found.</source>
+    </trans-unit>
     <trans-unit id="designer.generalGroupName">
       <source xml:lang="en">General</source>
     </trans-unit>
@@ -653,6 +662,9 @@
     </trans-unit>
     <trans-unit id="designer.messagesTabTitle">
       <source xml:lang="en">Errors ({0})</source>
+    </trans-unit>
+    <trans-unit id="designer.newRowButtonAriaLabel">
+      <source xml:lang="en">Add new row to '{0}' table</source>
     </trans-unit>
     <trans-unit id="designer.newRowText">
       <source xml:lang="en">Add New</source>
@@ -683,6 +695,11 @@
     </trans-unit>
     <trans-unit id="tableDesigner.unknownComponentType">
       <source xml:lang="en">The component type: {0} is not supported</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/browser/designer/designerMessagesTabPanelView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.MessageListAriaLabel">
+      <source xml:lang="en">Errors</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/designer/designerPropertiesPane" source-language="en" datatype="plaintext"><body>
@@ -2254,6 +2271,108 @@
     </trans-unit>
     <trans-unit id="selectAll">
       <source xml:lang="en">Select All</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlan" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlan.SaveFileDescription">
+      <source xml:lang="en">Execution Plan Files</source>
+    </trans-unit>
+    <trans-unit id="executionPlanCustomZoom">
+      <source xml:lang="en">Custom Zoom</source>
+    </trans-unit>
+    <trans-unit id="executionPlanFitGraphLabel">
+      <source xml:lang="en">Zoom to fit</source>
+    </trans-unit>
+    <trans-unit id="executionPlanOpenGraphFile">
+      <source xml:lang="en">Show Query Plan XML</source>
+    </trans-unit>
+    <trans-unit id="executionPlanPropertiesActionLabel">
+      <source xml:lang="en">Properties</source>
+    </trans-unit>
+    <trans-unit id="executionPlanSavePlanXML">
+      <source xml:lang="en">Save Plan File</source>
+    </trans-unit>
+    <trans-unit id="executionPlanSearchNodeAction">
+      <source xml:lang="en">Find Node</source>
+    </trans-unit>
+    <trans-unit id="executionPlanTitle">
+      <source xml:lang="en">Query Plan (Preview)</source>
+    </trans-unit>
+    <trans-unit id="executionPlanZoomInActionLabel">
+      <source xml:lang="en">Zoom In</source>
+    </trans-unit>
+    <trans-unit id="executionPlanZoomOutActionLabel">
+      <source xml:lang="en">Zoom Out</source>
+    </trans-unit>
+    <trans-unit id="openQueryAction">
+      <source xml:lang="en">Open Query</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanPropertiesEdgeOperationName">
+      <source xml:lang="en">Edge</source>
+    </trans-unit>
+    <trans-unit id="executionPlanPropertyViewClose">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="executionPlanPropertyViewSortAlphabetically">
+      <source xml:lang="en">Alphabetical</source>
+    </trans-unit>
+    <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
+      <source xml:lang="en">Categorized</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameNameColumnHeader">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameValueColumnHeader">
+      <source xml:lang="en">Value</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewTitle">
+      <source xml:lang="en">Properties</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/planHeader" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="planHeaderIndexAndCost">
+      <source xml:lang="en">Query {0}: Query cost (relative to the script): {1}%</source>
+      <note>{0} is the index of the graph in the execution plan tab
+{1} is the relative cost in percentage of the graph to the rest of the graphs in execution plan tab </note>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="cancelCustomZoomAction">
+      <source xml:lang="en">Close (Escape)</source>
+    </trans-unit>
+    <trans-unit id="customZoomApplyButton">
+      <source xml:lang="en">Apply</source>
+    </trans-unit>
+    <trans-unit id="customZoomApplyButtonTitle">
+      <source xml:lang="en">Apply Zoom (Enter)</source>
+    </trans-unit>
+    <trans-unit id="invalidCustomZoomError">
+      <source xml:lang="en">Select a zoom value between 1 to 200</source>
+    </trans-unit>
+    <trans-unit id="qpZoomValueLabel">
+      <source xml:lang="en">Zoom (percent)</source>
+    </trans-unit>
+    <trans-unit id="zoomAction">
+      <source xml:lang="en">Zoom (Enter)</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="cancelSearchAction">
+      <source xml:lang="en">Close (Escape)</source>
+    </trans-unit>
+    <trans-unit id="executionPlanSearchTypeContains">
+      <source xml:lang="en">Contains</source>
+    </trans-unit>
+    <trans-unit id="executionPlanSearchTypeEquals">
+      <source xml:lang="en">Equals</source>
+    </trans-unit>
+    <trans-unit id="nextSearchItemAction">
+      <source xml:lang="en">Next Match (Enter)</source>
+    </trans-unit>
+    <trans-unit id="previousSearchItemAction">
+      <source xml:lang="en">Previous Match (Shift+Enter)</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/extensions/browser/contributionRenders" source-language="en" datatype="plaintext"><body>
@@ -4106,108 +4225,6 @@ Error: {1}</source>
       <source xml:lang="en">Top Operations</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/queryplan2/browser/planHeader" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="planHeaderIndexAndCost">
-      <source xml:lang="en">Query {0}: Query cost (relative to the script): {1}%</source>
-      <note>{0} is the index of the graph in the execution plan tab
-{1} is the relative cost in percentage of the graph to the rest of the graphs in execution plan tab </note>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/queryplan2/browser/queryPlan" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="openQueryAction">
-      <source xml:lang="en">Open Query</source>
-    </trans-unit>
-    <trans-unit id="queryPlan.SaveFileDescription">
-      <source xml:lang="en">Execution Plan Files</source>
-    </trans-unit>
-    <trans-unit id="queryPlanCustomZoom">
-      <source xml:lang="en">Custom Zoom</source>
-    </trans-unit>
-    <trans-unit id="queryPlanFitGraphLabel">
-      <source xml:lang="en">Zoom to fit</source>
-    </trans-unit>
-    <trans-unit id="queryPlanOpenGraphFile">
-      <source xml:lang="en">Show Query Plan XML</source>
-    </trans-unit>
-    <trans-unit id="queryPlanPropertiesActionLabel">
-      <source xml:lang="en">Properties</source>
-    </trans-unit>
-    <trans-unit id="queryPlanSavePlanXML">
-      <source xml:lang="en">Save Plan File</source>
-    </trans-unit>
-    <trans-unit id="queryPlanSearchNodeAction">
-      <source xml:lang="en">Find Node</source>
-    </trans-unit>
-    <trans-unit id="queryPlanTitle">
-      <source xml:lang="en">Query Plan (Preview)</source>
-    </trans-unit>
-    <trans-unit id="queryPlanZoomInActionLabel">
-      <source xml:lang="en">Zoom In</source>
-    </trans-unit>
-    <trans-unit id="queryPlanZoomOutActionLabel">
-      <source xml:lang="en">Zoom Out</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/queryplan2/browser/queryPlanPropertiesView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="nodePropertyViewNameNameColumnHeader">
-      <source xml:lang="en">Name</source>
-    </trans-unit>
-    <trans-unit id="nodePropertyViewNameValueColumnHeader">
-      <source xml:lang="en">Value</source>
-    </trans-unit>
-    <trans-unit id="nodePropertyViewTitle">
-      <source xml:lang="en">Properties</source>
-    </trans-unit>
-    <trans-unit id="executionPlanPropertiesEdgeOperationName">
-      <source xml:lang="en">Edge</source>
-    </trans-unit>
-    <trans-unit id="executionPlanPropertyViewClose">
-      <source xml:lang="en">Close</source>
-    </trans-unit>
-    <trans-unit id="executionPlanPropertyViewSortAlphabetically">
-      <source xml:lang="en">Alphabetical</source>
-    </trans-unit>
-    <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
-      <source xml:lang="en">Categorized</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/queryplan2/browser/widgets/customZoomWidget" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="cancelCustomZoomAction">
-      <source xml:lang="en">Close (Escape)</source>
-    </trans-unit>
-    <trans-unit id="customZoomApplyButton">
-      <source xml:lang="en">Apply</source>
-    </trans-unit>
-    <trans-unit id="customZoomApplyButtonTitle">
-      <source xml:lang="en">Apply Zoom (Enter)</source>
-    </trans-unit>
-    <trans-unit id="invalidCustomZoomError">
-      <source xml:lang="en">Select a zoom value between 1 to 200</source>
-    </trans-unit>
-    <trans-unit id="qpZoomValueLabel">
-      <source xml:lang="en">Zoom (percent)</source>
-    </trans-unit>
-    <trans-unit id="zoomAction">
-      <source xml:lang="en">Zoom (Enter)</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/queryplan2/browser/widgets/nodeSearchWidget" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="cancelSearchAction">
-      <source xml:lang="en">Close (Escape)</source>
-    </trans-unit>
-    <trans-unit id="nextSearchItemAction">
-      <source xml:lang="en">Next Match (Enter)</source>
-    </trans-unit>
-    <trans-unit id="previousSearchItemAction">
-      <source xml:lang="en">Previous Match (Shift+Enter)</source>
-    </trans-unit>
-    <trans-unit id="executionPlanSearchTypeContains">
-      <source xml:lang="en">Contains</source>
-    </trans-unit>
-    <trans-unit id="executionPlanSearchTypeEquals">
-      <source xml:lang="en">Equals</source>
-    </trans-unit>
-</body></file>
   <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="deployment.title">
       <source xml:lang="en">New Deployment...</source>
@@ -5321,6 +5338,9 @@ Error: {1}</source>
   <file original="src/sql/workbench/services/notebook/browser/notebookServiceImpl" source-language="en" datatype="plaintext"><body>
     <trans-unit id="executeProviderTimeout">
       <source xml:lang="en">Waiting for Execute Provider availability timed out for notebook provider '{0}'</source>
+    </trans-unit>
+    <trans-unit id="failedToCreateNotebookInput">
+      <source xml:lang="en">Failed to create notebook input for provider '{0}'</source>
     </trans-unit>
     <trans-unit id="notebookServiceNoProvider">
       <source xml:lang="en">Notebook provider does not exist</source>
