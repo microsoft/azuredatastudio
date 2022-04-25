@@ -317,6 +317,34 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.code.dispatchKeybinding('escape');
 				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleLabel, `p a[href="${sampleAddress}"]`);
 			});
+
+			it('can use keyboard shortcuts for cell toolbar actions', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
+				await app.workbench.sqlNotebook.waitForPlaceholderGone();
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Markdown View');
+				let testText = 'Markdown Keyboard Shortcut Test';
+				await app.workbench.sqlNotebook.waitForTypeInEditor(testText);
+				await app.workbench.sqlNotebook.selectAllTextInEditor();
+				const ctrlOrCmd = process.platform === 'darwin' ? 'cmd' : 'ctrl';
+				await app.code.dispatchKeybinding(ctrlOrCmd + '+b'); // bold
+				await app.code.dispatchKeybinding(ctrlOrCmd + '+i'); // italics
+				await app.code.dispatchKeybinding(ctrlOrCmd + '+u'); // underline
+				await app.code.dispatchKeybinding(ctrlOrCmd + '+shift+h'); // highlight
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(testText, 'p strong em u mark');
+
+				// Have to test code blocks separately, since they remove other formatting
+				testText = 'Markdown Code Block Test';
+				await app.workbench.sqlNotebook.addCell('markdown');
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Markdown View');
+				await app.workbench.sqlNotebook.waitForTypeInEditor(testText);
+				await app.workbench.sqlNotebook.selectAllTextInEditor();
+				await app.code.dispatchKeybinding(ctrlOrCmd + '+shift+k'); // code block
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(testText, 'pre code');
+			});
 		});
 
 		describe('markdown', function () {
