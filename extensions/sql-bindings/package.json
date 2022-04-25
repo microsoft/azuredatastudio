@@ -56,6 +56,13 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^5.0.0",
-    "tslint": "^5.8.0"
+    "tslint": "^5.8.0",
+    "should": "^13.2.1",
+    "sinon": "^9.0.2",
+    "typemoq": "^2.1.0",
+    "@microsoft/vscodetestcover": "^1.2.0",
+    "mocha": "^5.2.0",
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.7"
   }
 }
