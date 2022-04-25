@@ -6236,6 +6236,15 @@ Error: {1}</source>
       <source xml:lang="en">Preview Database Updates</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="TableDesigner.closeApplication">
+      <source xml:lang="en">&amp;&amp;Close Application</source>
+      <note>&amp;&amp; denotes a mnemonic</note>
+    </trans-unit>
+    <trans-unit id="TableDesigner.saveBeforeExit">
+      <source xml:lang="en">There are unsaved changes in Table Designer that will be lost if you close the application. Do you want to close the application?</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/tasks/common/tasksService" source-language="en" datatype="plaintext"><body>
     <trans-unit id="InProgressWarning">
       <source xml:lang="en">1 or more tasks are in progress. Are you sure you want to quit?</source>
