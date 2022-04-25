@@ -418,6 +418,7 @@ export class CellModel extends Disposable implements ICellModel {
 		if (newLanguage !== this._language) {
 			this._language = newLanguage;
 			this._onLanguageChanged.fire(newLanguage);
+			this.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
 		}
 	}
 

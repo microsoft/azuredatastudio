@@ -76,6 +76,8 @@ export interface INotebookService {
 
 	getStandardKernelsForProvider(provider: string): Promise<azdata.nb.IStandardKernel[] | undefined>;
 
+	getSupportedLanguagesForProvider(provider: string, kernelDisplayName?: string): Promise<string[]>;
+
 	getOrCreateSerializationManager(providerId: string, uri: URI): Promise<ISerializationManager>;
 
 	getOrCreateExecuteManager(providerId: string, uri: URI): Thenable<IExecuteManager>;
