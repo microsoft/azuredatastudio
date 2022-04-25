@@ -44,7 +44,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 			targetPlatforms: Array.from(constants.targetPlatformToVersion.keys()),
 			defaultTargetPlatform: constants.defaultTargetPlatform,
 			linkDisplayValue: constants.learnMore,
-			linkLocation: 'https://github.com/microsoft/DacFx/tree/main/src/Microsoft.Build.Sql'
+			linkLocation: constants.sdkLearnMoreUrl
 		},
 		{
 			id: constants.emptySqlDatabaseProjectTypeId,
