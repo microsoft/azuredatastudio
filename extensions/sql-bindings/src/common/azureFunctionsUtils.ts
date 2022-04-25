@@ -41,7 +41,7 @@ export async function getLocalSettingsJson(localSettingsPath: string): Promise<I
 			return JSON.parse(data);
 		} catch (error) {
 			console.log(error);
-			throw new Error(utils.formatString(constants.failedToParse(error.message), constants.azureFunctionLocalSettingsFileName, error.message));
+			throw new Error(constants.failedToParse(constants.azureFunctionLocalSettingsFileName, error));
 		}
 	}
 	return {
@@ -243,6 +243,7 @@ export async function addNugetReferenceToProjectFile(selectedProjectFile: string
 /**
  * Adds the Sql Connection String to the local.settings.json
  * @param connectionString of the SQL Server connection that was chosen by the user
+ * @param projectFile The path to the project the setting should be added to
  */
 export async function addConnectionStringToConfig(connectionString: string, projectFile: string): Promise<void> {
 	const settingsFile = await getSettingsFile(projectFile);
