@@ -84,10 +84,13 @@
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.availableUpgradesDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Available upgrades for this resource are listed below. You can apply upgrades by selecting the upgrade button. Learn more about each of these releases at the]]></Val>
+          <Val><![CDATA[Available upgrades for this resource are listed below. You can apply upgrades by clicking the upgrade button.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[As atualizações disponíveis para este recurso estão listadas abaixo. Você pode aplicar atualizações selecionando o botão de atualização. Saiba mais sobre cada um desses lançamentos no]]></Val>
+            <Val><![CDATA[As atualizações disponíveis para este recurso estão listadas abaixo. Você pode aplicar as atualizações ao clicar em o botão de atualização.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Available upgrades for this resource are listed below. You can apply upgrades by selecting the upgrade button. Learn more about each of these releases at the]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2140,15 +2143,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.releaseDateNotParsed" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Release date could not be parsed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[A data de lançamento não pôde ser analisada.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.releaseNotes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Release Notes]]></Val>
@@ -2727,10 +2721,13 @@
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.versionLog" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[version log.]]></Val>
+          <Val><![CDATA[Learn more about each release here.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[log de versão.]]></Val>
+            <Val><![CDATA[Saiba mais sobre cada versão aqui.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[version log.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
