@@ -68,9 +68,9 @@ export const enterConnectionStringSettingName = localize('enterConnectionStringS
 export const enterConnectionString = localize('enterConnectionString', "Enter connection string");
 export const saveChangesInFile = localize('saveChangesInFile', "There are unsaved changes in the current file. Save now?");
 export const save = localize('save', "Save");
-export function settingAlreadyExists(settingName: string) { return localize('SettingAlreadyExists', 'Local app setting \'{0}\' already exists. Overwrite?', settingName); }
-export function failedToParse(errorMessage: string) { return localize('failedToParse', 'Failed to parse "{0}": {1}.', azureFunctionLocalSettingsFileName, errorMessage); }
-export function jsonParseError(error: string, line: number, column: number) { return localize('jsonParseError', '{0} near line "{1}", column "{2}"', error, line, column); }
+export function settingAlreadyExists(settingName: string): string { return localize('SettingAlreadyExists', 'Local app setting \'{0}\' already exists. Overwrite?', settingName); }
+export function failedToParse(errorMessage: string): string { return localize('failedToParse', 'Failed to parse "{0}": {1}.', azureFunctionLocalSettingsFileName, errorMessage); }
+export function jsonParseError(error: string, line: number, column: number): string { return localize('jsonParseError', '{0} near line "{1}", column "{2}"', error, line, column); }
 export const moreInformation = localize('moreInformation', "More Information");
 export const addPackageReferenceMessage = localize('addPackageReferenceMessage', 'To use SQL bindings, ensure your Azure Functions project has a reference to {0}', sqlExtensionPackageName);
 export const addSqlBindingPackageError = localize('addSqlBindingPackageError', 'Error adding Sql Binding extension package to project');
@@ -78,11 +78,11 @@ export const failedToGetConnectionString = localize('failedToGetConnectionString
 export const connectionProfile = localize('connectionProfile', 'Select a connection profile');
 export const userConnectionString = localize('userConnectionString', 'Enter connection string');
 export const selectConnectionString = localize('selectConnectionString', 'Select SQL connection string method');
-export const selectConnectionError = (err?: any) => err ? localize('selectConnectionError', "Failed to set connection string app setting: {0}", utils.getErrorMessage(err)) : localize('unableToSetConnectionString', "Failed to set connection string app setting");
+export const selectConnectionError = (err?: any): string => err ? localize('selectConnectionError', "Failed to set connection string app setting: {0}", utils.getErrorMessage(err)) : localize('unableToSetConnectionString', "Failed to set connection string app setting");
 export const includePassword = localize('includePassword', 'Do you want to include the password from this connection in your local.settings.json file?');
 export const enterPasswordPrompt = localize('enterPasswordPrompt', 'Enter the password to be used for the connection string');
 export const enterPasswordManually = localize('enterPasswordManually', 'Enter password or press escape to cancel');
 export const userPasswordLater = localize('userPasswordLater', 'In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.');
 export const openFile = localize('openFile', "Open File");
 export const closeButton = localize('closeButton', "Close");
-export function addSqlBinding(functionName: string) { return localize('addSqlBinding', 'Adding SQL Binding to function "{0}"...'), functionName; }
+export function addSqlBinding(functionName: string): string { return localize('addSqlBinding', 'Adding SQL Binding to function "{0}"...'), functionName; }
