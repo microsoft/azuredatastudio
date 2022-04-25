@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as constants from '../constants';
 import { apiService } from '../../../services/apiService';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import * as vscode from 'vscode';
 import * as localizedConstants from '../../../localizedConstants';
 import { BasePage } from './basePage';

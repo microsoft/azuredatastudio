@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { ViewBase } from '../viewBase';
 import { ImportedModel, WorkspaceModel, ImportedModelDetails, ModelParameters } from '../../modelManagement/interfaces';

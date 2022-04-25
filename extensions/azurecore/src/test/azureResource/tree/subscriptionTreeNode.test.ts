@@ -9,7 +9,6 @@ import * as vscode from 'vscode';
 import 'mocha';
 import { AppContext } from '../../../appContext';
 
-import { azureResource } from 'azureResource';
 import { IAzureResourceTreeChangeHandler } from '../../../azureResource/tree/treeChangeHandler';
 import { AzureResourceSubscriptionTreeNode } from '../../../azureResource/tree/subscriptionTreeNode';
 import { AzureResourceItemType, AzureResourceServiceNames } from '../../../azureResource/constants';
@@ -17,7 +16,7 @@ import { AzureResourceService } from '../../../azureResource/resourceService';
 import { AzureResourceResourceTreeNode } from '../../../azureResource/resourceTreeNode';
 import { IAzureResourceCacheService } from '../../../azureResource/interfaces';
 import { generateGuid } from '../../../azureResource/utils';
-import { AzureAccount } from 'azurecore';
+import { AzureAccount, azureResource } from 'azurecore';
 
 // Mock services
 let appContext: AppContext;
