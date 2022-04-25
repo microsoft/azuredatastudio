@@ -648,20 +648,20 @@
     <trans-unit id="designer.defaultRemoveRowConfirmationMessage">
       <source xml:lang="en">Are you sure you want to remove the row?</source>
     </trans-unit>
-    <trans-unit id="designer.errorCountAlert">
-      <source xml:lang="en">{0} validation errors found.</source>
-    </trans-unit>
     <trans-unit id="designer.generalGroupName">
       <source xml:lang="en">General</source>
+    </trans-unit>
+    <trans-unit id="designer.issueCountAlert">
+      <source xml:lang="en">{0} validation issues found.</source>
+    </trans-unit>
+    <trans-unit id="designer.issuesTabTitle">
+      <source xml:lang="en">Issues ({0})</source>
     </trans-unit>
     <trans-unit id="designer.loadingDesigner">
       <source xml:lang="en">Loading designer...</source>
     </trans-unit>
     <trans-unit id="designer.loadingDesignerCompleted">
       <source xml:lang="en">Designer is loaded</source>
-    </trans-unit>
-    <trans-unit id="designer.messagesTabTitle">
-      <source xml:lang="en">Errors ({0})</source>
     </trans-unit>
     <trans-unit id="designer.newRowButtonAriaLabel">
       <source xml:lang="en">Add new row to '{0}' table</source>
@@ -697,9 +697,9 @@
       <source xml:lang="en">The component type: {0} is not supported</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/browser/designer/designerMessagesTabPanelView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="designer.MessageListAriaLabel">
-      <source xml:lang="en">Errors</source>
+  <file original="src/sql/workbench/browser/designer/designerIssuesTabPanelView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.IssueListAriaLabel">
+      <source xml:lang="en">Issues</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/designer/designerPropertiesPane" source-language="en" datatype="plaintext"><body>
@@ -5960,6 +5960,9 @@ Error: {1}</source>
     <trans-unit id="tableDesigner.PrimaryKeyTabTitle">
       <source xml:lang="en">Primary Key</source>
     </trans-unit>
+    <trans-unit id="tableDesigner.TableSchemaValidationError">
+      <source xml:lang="en">Table schema validation failed with error: {0}</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.addForeignKey">
       <source xml:lang="en">New Foreign Key</source>
     </trans-unit>
@@ -6082,6 +6085,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.indexesTabTitle">
       <source xml:lang="en">Indexes</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.inputValidationError">
+      <source xml:lang="en">The input validation failed with error: {0}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.nameTitle">
       <source xml:lang="en">Table name</source>
