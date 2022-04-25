@@ -10,6 +10,9 @@
     <trans-unit id="addPackageReferenceMessage">
       <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
     </trans-unit>
+    <trans-unit id="addSqlBinding">
+      <source xml:lang="en">Adding SQL Binding to function "{0}"...</source>
+    </trans-unit>
     <trans-unit id="addSqlBindingPackageError">
       <source xml:lang="en">Error adding Sql Binding extension package to project</source>
     </trans-unit>
