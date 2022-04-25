@@ -863,9 +863,9 @@ export class SqlDatabaseTree {
 		this._assessmentTitle.value = selectedIssue?.checkId || '';
 		this._descriptionText.value = selectedIssue?.description || '';
 		this._moreInfo.url = selectedIssue?.helpLink || '';
-		this._moreInfo.label = selectedIssue?.message || '';
+		this._moreInfo.label = selectedIssue?.displayName || '';
 		this._impactedObjects = selectedIssue?.impactedObjects || [];
-		this._recommendationText.value = selectedIssue?.message || ''; //TODO: Expose correct property for recommendation.
+		this._recommendationText.value = selectedIssue?.message || constants.NA;
 
 		await this._impactedObjectsTable.setDataValues(this._impactedObjects.map(
 			(object) => [{ value: object.objectType }, { value: object.name }]));
