@@ -71,6 +71,7 @@ export const enum TelemetryAction {
 	Click = 'Click',
 	FirewallRuleRequested = 'FirewallRuleCreated',
 	GenerateScript = 'GenerateScript',
+	GeneratePreviewReport = 'GeneratePreviewReport',
 	GetDataGridItems = 'GetDataGridItems',
 	GetDataGridColumns = 'GetDataGridColumns',
 	ModelViewDashboardOpened = 'ModelViewDashboardOpened',

@@ -1111,6 +1111,10 @@ declare module 'azdata' {
 			 * The input validation error.
 			 */
 			inputValidationError?: string;
+			/**
+			 * Metadata related to the table
+			 */
+			metadata?: { [key: string]: string };
 		}
 
 		/**
@@ -1129,6 +1133,10 @@ declare module 'azdata' {
 			 * The new view.
 			 */
 			view: TableDesignerView;
+			/**
+			 * Metadata related to the table to be captured
+			 */
+			metadata?: { [key: string]: string };
 		}
 
 		export interface GeneratePreviewReportResult {
@@ -1144,6 +1152,10 @@ declare module 'azdata' {
 			 * The table schema validation error.
 			 */
 			schemaValidationError?: string;
+			/**
+			 * Metadata related to the table to be captured
+			 */
+			metadata?: { [key: string]: string };
 		}
 	}
 
