@@ -1,0 +1,4 @@
+{
+	"%displayName%": "SQL Bindings",
+	"%description%": "Enables users to develop and publish Azure Functions with Azure SQL bindings"
+}
