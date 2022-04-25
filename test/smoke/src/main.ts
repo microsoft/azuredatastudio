@@ -53,7 +53,8 @@ const opts = minimist(args, {
 		'screenshots',
 		'log',
 		'extensionsDir', // {{SQL CARBON EDIT}} Let callers control extensions dir for non-packaged extensions
-		'electronArgs'
+		'electronArgs',
+		'databaseConnections' // {{SQL CARBON EDIT}} Let callers provide connections to databases
 	],
 	boolean: [
 		'verbose',
@@ -310,6 +311,13 @@ function createOptions(): ApplicationOptions {
 		log = 'trace';
 	}
 
+	let connections;
+	if (opts.databaseConnections) {
+		const rawConnectionConfig = fs.readFileSync(opts.databaseConnections);
+		connections = JSON.parse(rawConnectionConfig.toString()).connections;
+		console.log(connections);
+	}
+
 	return {
 		quality,
 		codePath: opts.build,
@@ -325,7 +333,8 @@ function createOptions(): ApplicationOptions {
 		web: opts.web,
 		headless: opts.headless,
 		browser: opts.browser,
-		extraArgs: (opts.electronArgs || '').split(' ').map(a => a.trim()).filter(a => !!a)
+		extraArgs: (opts.electronArgs || '').split(' ').map(a => a.trim()).filter(a => !!a),
+		connections: connections
 	};
 }
 

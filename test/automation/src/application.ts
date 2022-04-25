@@ -20,7 +20,29 @@ export interface ApplicationOptions extends SpawnOptions {
 	workspacePath: string;
 	waitTime: number;
 	screenshotsPath: string | null;
+	connections: SmokeTestConnection[]; // {{SQL CARBON EDIT}} Adding ability to pass connections in smoke tests
 }
+
+// {{SQL CARBON EDIT}} Smoke test connection interfaces
+export interface SmokeTestConnection {
+	id: string,
+	connectionDialogOptions: connectionDialogOption[]
+}
+
+export interface connectionDialogOption {
+	// name of the option
+	name: string,
+	// aria label of the option in the connection dialog. This property will be used to select the right element in the dialog.
+	ariaLabel: string,
+	value: string,
+	// type of the component in the connection dialog
+	visualComponentType: 'select' | 'input',
+	// time to wait after setting the value. This is useful when there are certain options that get displayed after the option is set as it gives some time for the UI to reflect the changes.
+	delayAfterSetting?: number,
+	// provide an alternate selector to be used in place of the selector generated using the default logic.
+	overrideSelector?: string,
+}
+// {{SQL CARBON EDIT}} end of edit
 
 export class Application {
 
@@ -149,5 +171,12 @@ export class Application {
 		// wait a bit, since focus might be stolen off widgets
 		// as soon as they open (e.g. quick access)
 		await new Promise(c => setTimeout(c, 1000));
+	}
+
+	// {{SQL CARBON EDIT}} Adding function to get smoke test connections
+	public getConnectionById(id: string): SmokeTestConnection | undefined {
+		if (this.options?.connections) {
+			return this.options.connections.find(c => c.id === id);
+		}
 	}
 }

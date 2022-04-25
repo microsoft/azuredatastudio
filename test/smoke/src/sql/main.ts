@@ -3,11 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { setup as setupQueryEditorTests, setupWeb as setupQueryEditorWebTests } from './areas/queryEditor/queryEditor.test';
-import { setup as setupNotebookTests } from './areas/notebook/notebook.test';
+import { setupWeb as setupQueryEditorWebTests } from './areas/queryEditor/queryEditor.test';
+import { setup as setupSqlQueryEditorTests } from './areas/queryEditor/sqlQueryEditor.test';
+//import { setup as setupNotebookTests } from './areas/notebook/notebook.test';
 import { setup as setupNotebookViewTests } from './areas/notebook/notebookView.test';
-import { setup as setupImportTests } from './areas/import/import.test';
-import { setup as setupCreateBookDialogTests } from './areas/notebook/createBook.test';
+//import { setup as setupImportTests } from './areas/import/import.test';
+//import { setup as setupCreateBookDialogTests } from './areas/notebook/createBook.test';
 import { setup as setupAddRemoteBookDialogTests } from './areas/notebook/addRemoteBook.test';
 import { ApplicationOptions } from '../../../automation';
 import * as yazl from 'yauzl';
@@ -23,12 +24,13 @@ export function main(opts: minimist.ParsedArgs): void {
 		setupNotebookViewTests(opts);
 		setupAddRemoteBookDialogTests(opts);
 	} else {
-		setupQueryEditorTests(opts);
-		setupNotebookTests(opts);
-		setupNotebookViewTests(opts);
-		setupCreateBookDialogTests(opts);
-		setupAddRemoteBookDialogTests(opts);
-		setupImportTests(opts);
+		// setupQueryEditorTests(opts);
+		setupSqlQueryEditorTests(opts);
+		// setupNotebookTests(opts);
+		// setupNotebookViewTests(opts);
+		// setupCreateBookDialogTests(opts);
+		// setupAddRemoteBookDialogTests(opts);
+		// setupImportTests(opts);
 	}
 }
 
@@ -39,11 +41,11 @@ const RUNTIME = '${RUNTIME}';
 const VERSION = '${VERSION}';
 const RELEASE_VERSION = '${RELEASE_VERSION}';
 
-const sqliteUrl = `https://github.com/Microsoft/azuredatastudio-sqlite/releases/download/${RELEASE_VERSION}/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
+const sqliteUrl = `https://github.com/Microsoft/azuredatastudio-sqlite/releases/download/${RELEASE_VERSION}/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-13.5.0.zip`;
 
 export async function setup(app: ApplicationOptions): Promise<void> {
 	console.log('*** Downloading test extensions');
-	const releaseVersion = '1.8.0';
+	const releaseVersion = '1.7.0';
 	const requestUrl = sqliteUrl.replace(RELEASE_VERSION, releaseVersion).replace(PLATFORM, process.platform).replace(RUNTIME, getRuntime(app.web || app.remote || false)).replace(VERSION, getVersion(app.web || app.remote || false));
 	const zip = await fetch(requestUrl);
 	if (!zip) {

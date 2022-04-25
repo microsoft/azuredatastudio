@@ -1,0 +1,41 @@
+{
+	"connections": [
+		{
+			"id": "sql2019",
+			"connectionDialogOptions": [
+				{
+					"name": "connectionType",
+					"ariaLabel": "Connection type",
+					"value": "Microsoft SQL Server",
+					"visualComponentType": "select",
+					"delayAfterSetting": 1000
+				},
+				{
+					"name": "server",
+					"ariaLabel": "Server",
+					"visualComponentType": "input",
+					"value": "localhost"
+				},
+				{
+					"name": "authenticationType",
+					"ariaLabel": "Authentication type",
+					"visualComponentType": "select",
+					"delayAfterSetting": 1000,
+					"value": "SQL Login"
+				},
+				{
+					"name": "username",
+					"ariaLabel": "User name",
+					"visualComponentType": "input",
+					"value": "sa"
+				},
+				{
+					"name": "password",
+					"ariaLabel": "Password",
+					"visualComponentType": "input",
+					"value": ""
+				}
+			]
+		}
+	]
+}

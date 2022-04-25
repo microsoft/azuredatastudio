@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { SmokeTestConnection } from '..';
 import { Code } from '../code';
 import { Dialog } from './dialog';
 
@@ -33,5 +34,23 @@ export class ConnectionDialog extends Dialog {
 		await this.code.waitAndClick(ConnectionDialog.CONNECT_BUTTON_SELECTOR);
 
 		await this.waitForDialogGone();
+	}
+
+	async fillConnectionDialog(connection: SmokeTestConnection, connectAfterFilling: boolean = true): Promise<void> {
+		if (connection) {
+			for (let i = 0; i < connection.connectionDialogOptions.length; i++) {
+				const param = connection.connectionDialogOptions[i];
+				const value = process.env[`${connection.id}_${param.name}`] ?? param.value;
+				const selector = param.overrideSelector ?? `.modal .modal-body ${param.visualComponentType}[aria-label="${param.ariaLabel}"]`;
+				this.code.waitForSetValue(selector, value);
+				if (param.delayAfterSetting) {
+					await new Promise((resolve) => setTimeout(resolve, param.delayAfterSetting));
+				}
+			}
+			if (connectAfterFilling) {
+				await this.code.waitAndClick(ConnectionDialog.CONNECT_BUTTON_SELECTOR);
+				await this.waitForDialogGone();
+			}
+		}
 	}
 }
