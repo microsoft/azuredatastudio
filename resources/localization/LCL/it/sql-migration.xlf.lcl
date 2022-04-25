@@ -2602,8 +2602,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.resume.continue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Resume previously saved session]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Continua ultimo tentativo di migrazione...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Riprendi sessione salvata in precedenza]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Continue last migration attempt...]]></Val>
@@ -2614,8 +2614,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.resume.start" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Start a new session]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Eseguire di nuovo la valutazione della migrazione (scelta consigliata)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Avvia una nuova sessione]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Start with migration assessment again (recommended)]]></Val>
@@ -2698,8 +2698,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.saved.assessment.result" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Saved session]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Risultato della valutazione sAlvato]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Sessione salvata]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Saved assessment result]]></Val>
@@ -3655,8 +3655,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation.view.assessment.mi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[To migrate to Azure SQL Managed Instance, view assessment results and select one or more databases.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Per eseguire la migrazione all'Istanza gestita di SQL di Azure (PaaS), visualizzare i risultati della valutazione e selezionare uno o più database.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Per eseguire la migrazione all'Istanza gestita di SQL di Azure, visualizzare i risultati della valutazione e selezionare uno o più database.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[To migrate to Azure SQL Managed Instance (PaaS), view assessment results and select one or more databases.]]></Val>
@@ -3667,8 +3667,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation.view.assessment.vm" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Per eseguire la migrazione a SQL Server per una macchina virtuale di Azure (IaaS), visualizzare i risultati della valutazione e selezionare uno o più database.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Per eseguire la migrazione a SQL Server per una macchina virtuale di Azure, visualizzare i risultati della valutazione e selezionare uno o più database.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[To migrate to SQL Server on Azure Virtual Machine (IaaS), view assessment results and select one or more databases.]]></Val>
