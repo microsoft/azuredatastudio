@@ -1413,9 +1413,13 @@ declare module 'azdata' {
 	 */
 	export interface InfoBoxComponent extends Component, InfoBoxComponentProperties {
 		/**
-		 * An event called when the InfoBox is clicked
+		 * An event fired when the InfoBox is clicked
 		 */
 		onDidClick: vscode.Event<void>;
+		/**
+		 * An event fired when the Infobox link is clicked
+		 */
+		onLinkClick: vscode.Event<InfoBoxLinkClickEventArgs>;
 	}
 
 	export interface InfoBoxComponentProperties {
@@ -1429,5 +1433,27 @@ declare module 'azdata' {
 		 * Sets the ariaLabel for the right arrow button that shows up in clickable infoboxes
 		 */
 		clickableButtonAriaLabel?: string;
+
+		/**
+		 * List of links to embed within the text. If links are specified there must be placeholder
+		 * values in the value indicating where the links should be placed, in the format {i}
+		 *
+		 * e.g. "Click {0} for more information!""
+		 */
+		links?: LinkArea[];
+	}
+
+	/**
+	 * Event argument for infobox link click event.
+	 */
+	export interface InfoBoxLinkClickEventArgs {
+		/**
+		 * Index of the link selected
+		 */
+		index: number;
+		/**
+		 * Link that is clicked
+		 */
+		link: LinkArea;
 	}
 }
