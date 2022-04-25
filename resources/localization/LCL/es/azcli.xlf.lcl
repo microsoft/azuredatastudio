@@ -364,6 +364,9 @@
       <Item ItemId=";extensions/azcli/dist/localizedConstants.az.platformUnsupported" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Platform '{0}' is currently unsupported]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La plataforma \"{0}\" no es compatible actualmente]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
