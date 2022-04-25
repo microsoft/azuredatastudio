@@ -126,5 +126,8 @@
     <trans-unit id="displayName">
       <source xml:lang="en">SQL Bindings</source>
     </trans-unit>
+    <trans-unit id="sqlBindings.addSqlBinding">
+      <source xml:lang="en">Add SQL Binding (preview)</source>
+    </trans-unit>
 </body></file>
 </xliff>
