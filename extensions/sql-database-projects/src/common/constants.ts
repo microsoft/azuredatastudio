@@ -106,6 +106,7 @@ export function deleteReferenceConfirmation(toDelete: string) { return localize(
 export function selectTargetPlatform(currentTargetPlatform: string) { return localize('selectTargetPlatform', "Current target platform: {0}. Select new target platform", currentTargetPlatform); }
 export function currentTargetPlatform(projectName: string, currentTargetPlatform: string) { return localize('currentTargetPlatform', "Target platform of the project {0} is now {1}", projectName, currentTargetPlatform); }
 export function projectUpdatedToSdkStyle(projectName: string) { return localize('projectUpdatedToSdkStyle', "The project {0} has been updated to be an SDK-style project. Click 'Learn More' for details on the Microsoft.Build.Sql SDK and ways to simplify the project file.", projectName); }
+export function updatedToSdkStyleError(projectName: string) { return localize('updatedToSdkStyleError', "Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.", projectName); }
 
 // Publish dialog strings
 
