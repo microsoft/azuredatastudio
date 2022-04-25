@@ -332,7 +332,8 @@ export function fileAlreadyExists(filename: string) { return localize('fileAlrea
 export function folderAlreadyExists(filename: string) { return localize('folderAlreadyExists', "A folder with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
 export function folderAlreadyExistsChooseNewLocation(filename: string) { return localize('folderAlreadyExistsChooseNewLocation', "A folder with the name '{0}' already exists on disk at this location. Please choose another location.", filename); }
 export function invalidInput(input: string) { return localize('invalidInput', "Invalid input: {0}", input); }
-export function invalidProjectPropertyValue(propertyName: string) { return localize('invalidPropertyValue', "Invalid value specified for the property '{0}' in .sqlproj file", propertyName); }
+export function invalidProjectPropertyValueInSqlProj(propertyName: string) { return localize('invalidPropertyValueInSqlProj', "Invalid value specified for the property '{0}' in .sqlproj file", propertyName); }
+export function invalidProjectPropertyValueProvided(propertyName: string) { return localize('invalidPropertyValueProvided', "Project property value '{0} is invalid", propertyName); }
 export function unableToCreatePublishConnection(input: string) { return localize('unableToCreatePublishConnection', "Unable to construct connection: {0}", input); }
 export function circularProjectReference(project1: string, project2: string) { return localize('cicularProjectReference', "Circular reference from project {0} to project {1}", project1, project2); }
 export function errorFindingBuildFilesLocation(err: any) { return localize('errorFindingBuildFilesLocation', "Error finding build files location: {0}", utils.getErrorMessage(err)); }
@@ -423,6 +424,7 @@ export const PropertyGroup = 'PropertyGroup';
 export const Type = 'Type';
 export const ExternalStreamingJob: string = 'ExternalStreamingJob';
 export const Sdk: string = 'Sdk';
+export const DatabaseSource = 'DatabaseSource';
 
 export const BuildElements = localize('buildElements', "Build Elements");
 export const FolderElements = localize('folderElements', "Folder Elements");
@@ -439,6 +441,14 @@ export const DefaultCollationProperty = 'DefaultCollation';
 
 /** Default database collation to use when none is specified in the project */
 export const DefaultCollation = 'SQL_Latin1_General_CP1_CI_AS';
+
+/**
+ * Well-known database source values that are allowed to be sent in telemetry.
+ *
+ * 'dsct-oracle-to-ms-sql' is the name of an extension which allows users to migrate from Oracle to Microsoft SQL platform.
+ * When looking at telemetry, we would like to know if a built or deployed database originated from the DSCT extension.
+ */
+export const WellKnownDatabaseSources = ['dsct-oracle-to-ms-sql'];
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
