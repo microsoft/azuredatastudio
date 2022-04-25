@@ -544,6 +544,8 @@ export class SqlThemeIcon {
 	static readonly ExternalTable = new SqlThemeIcon('ExternalTable');
 	static readonly ColumnMasterKey = new SqlThemeIcon('ColumnMasterKey');
 	static readonly ColumnEncryptionKey = new SqlThemeIcon('ColumnEncryptionKey');
+	static readonly GraphEdge = new SqlThemeIcon('GraphEdge');
+	static readonly GraphNode = new SqlThemeIcon('GraphNode');
 
 	public readonly id: string;
 
@@ -1013,5 +1015,12 @@ export namespace designers {
 		Add = 0,
 		Remove = 1,
 		Update = 2
+	}
+
+	export enum TableIcon {
+		Basic = 'Basic',
+		Temporal = 'Temporal',
+		GraphEdge = 'GraphEdge',
+		GraphNode = 'GraphNode'
 	}
 }
