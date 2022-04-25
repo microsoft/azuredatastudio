@@ -25,12 +25,12 @@ export function main(opts: minimist.ParsedArgs): void {
 		setupAddRemoteBookDialogTests(opts);
 	} else {
 		setupQueryEditorTests(opts);
-		setupSqlQueryEditorTests(opts);
 		setupNotebookTests(opts);
 		setupNotebookViewTests(opts);
 		setupCreateBookDialogTests(opts);
 		setupAddRemoteBookDialogTests(opts);
 		setupImportTests(opts);
+		setupSqlQueryEditorTests(opts);
 	}
 }
 
