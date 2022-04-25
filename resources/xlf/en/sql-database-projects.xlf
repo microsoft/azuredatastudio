@@ -122,7 +122,7 @@
       <source xml:lang="en">Confirm {0} admin password</source>
     </trans-unit>
     <trans-unit id="connectingToSqlServerOnDockerMessage">
-      <source xml:lang="en">Connecting to SQL Server on Docker</source>
+      <source xml:lang="en">Connecting to SQL Server</source>
     </trans-unit>
     <trans-unit id="connectionFailedError">
       <source xml:lang="en">Connection failed error: '{0}'</source>
@@ -290,16 +290,22 @@
       <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
     </trans-unit>
     <trans-unit id="edgeProjectTypeDescription">
-      <source xml:lang="en">Start with the core pieces to develop and publish schemas for SQL Edge</source>
+      <source xml:lang="en">Start with the core pieces to develop and publish schemas for Azure SQL Edge Database</source>
     </trans-unit>
     <trans-unit id="edgeProjectTypeDisplayName">
-      <source xml:lang="en">SQL Edge</source>
+      <source xml:lang="en">Azure SQL Edge Database</source>
+    </trans-unit>
+    <trans-unit id="emptyAzureDbProjectTypeDescription">
+      <source xml:lang="en">Develop and publish schemas for Azure SQL Database starting from an empty project</source>
+    </trans-unit>
+    <trans-unit id="emptyAzureDbProjectTypeDisplayName">
+      <source xml:lang="en">Azure SQL Database</source>
     </trans-unit>
     <trans-unit id="emptyProjectTypeDescription">
-      <source xml:lang="en">Develop and publish schemas for SQL databases starting from an empty project</source>
+      <source xml:lang="en">Develop and publish schemas for SQL Server databases starting from an empty project</source>
     </trans-unit>
     <trans-unit id="emptyProjectTypeDisplayName">
-      <source xml:lang="en">SQL Database</source>
+      <source xml:lang="en">SQL Server Database</source>
     </trans-unit>
     <trans-unit id="emptySdkProjectTypeDescription">
       <source xml:lang="en">Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.</source>
@@ -917,6 +923,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.close">
       <source xml:lang="en">Close Database Project</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.convertToSdkStyleProject">
+      <source xml:lang="en">Convert to SDK-style project</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.createProjectFromDatabase">
       <source xml:lang="en">Create Project From Database</source>
