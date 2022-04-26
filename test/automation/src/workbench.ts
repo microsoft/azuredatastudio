@@ -33,6 +33,7 @@ import { ManagePackagesDialog } from './sql/managePackagesDialog';
 import { CreateBookDialog } from './sql/createBookDialog';
 import { NotificationToast } from './sql/notificationToast';
 import { AddRemoteBookDialog } from './sql/addRemoteBookDialog';
+import { TaskPanel } from './sql/taskPanel';
 // {{END}}
 
 export interface Commands {
@@ -70,6 +71,7 @@ export class Workbench {
 	readonly managePackagesDialog: ManagePackagesDialog;
 	readonly notificationToast: NotificationToast;
 	readonly addRemoteBookDialog: AddRemoteBookDialog;
+	readonly taskPanel: TaskPanel;
 	// {{END}}
 
 	constructor(code: Code, userDataPath: string) {
@@ -99,6 +101,7 @@ export class Workbench {
 		this.configurePythonDialog = new ConfigurePythonDialog(code);
 		this.managePackagesDialog = new ManagePackagesDialog(code);
 		this.addRemoteBookDialog = new AddRemoteBookDialog(code);
+		this.taskPanel = new TaskPanel(code, this.quickaccess);
 		// {{END}}
 		this.notebook = new Notebook(this.quickaccess, code);
 		this.localization = new Localization(code);

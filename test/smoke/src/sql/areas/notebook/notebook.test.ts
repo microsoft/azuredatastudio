@@ -97,6 +97,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.notebookToolbar.managePackages();
 			await app.workbench.managePackagesDialog.waitForManagePackagesDialog();
 			await app.workbench.managePackagesDialog.addNewPackage('pyarrow');
+			await app.workbench.taskPanel.waitForTaskComplete('Installing pyarrow 7.0.0 succeeded');
 
 			// There should be no error output when running the cell after pyarrow has been installed
 			await app.workbench.sqlNotebook.runActiveCell();
