@@ -175,6 +175,9 @@
     <trans-unit id="valueMustNotBeEmpty">
       <source xml:lang="en">Value must not be empty</source>
     </trans-unit>
+    <trans-unit id="workspaceMustBeUsed">
+      <source xml:lang="en">The current folder is not a workspace folder. Please open a workspace folder and try again.</source>
+    </trans-unit>
     <trans-unit id="yesString">
       <source xml:lang="en">Yes</source>
     </trans-unit>
