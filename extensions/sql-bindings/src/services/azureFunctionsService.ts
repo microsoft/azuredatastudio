@@ -52,12 +52,12 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				if (projectCreate === constants.learnMore) {
 					telemetryStep = CreateAzureFunctionStep.learnMore;
 					void vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(constants.sqlBindingsDoc));
-					TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.learnMore)
+					TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 						.withAdditionalProperties(propertyBag).send();
 					return;
 				} else if (projectCreate === constants.createProject) {
 					telemetryStep = CreateAzureFunctionStep.helpCreateAzureFunctionProject;
-					TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.helpCreateAzureFunctionProject)
+					TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 						.withAdditionalProperties(propertyBag).send();
 
 					isCreateNewProject = true;
@@ -82,6 +82,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 						return;
 					}
 					projectFolder = projectFolders[0].fsPath;
+					TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
+						.withAdditionalProperties(propertyBag).send();
 					break;
 				}
 			}
@@ -101,7 +103,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		}
 		selectedBindingType = selectedBinding;
 		propertyBag.bindingType = selectedBindingType;
-		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding)
+		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 			.withAdditionalProperties(propertyBag).send();
 
 
@@ -119,7 +121,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				// User cancelled
 				return;
 			}
-			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding)
+			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 				.withAdditionalProperties(propertyBag).withConnectionInfo(connectionInfo).send();
 
 			// list databases based on connection profile selected
@@ -132,6 +134,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			connectionInfo.database = selectedDatabase;
 
 			// prompt user for object name to create function from
+			telemetryStep = CreateAzureFunctionStep.getObjectName;
 			objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding);
 			if (!objectName) {
 				// user cancelled
@@ -152,10 +155,10 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 					newNode = newNode.parentNode;
 				}
 			}
-
 			objectName = utils.generateQuotedFullName(node.metadata.schema, node.metadata.name);
+			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
+				.withAdditionalProperties(propertyBag).withConnectionInfo(connectionInfo).send();
 		}
-		telemetryStep = CreateAzureFunctionStep.getConnectionString;
 
 		// get function name from user
 		telemetryStep = CreateAzureFunctionStep.getAzureFunctionName;
@@ -172,7 +175,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		if (!functionName) {
 			return;
 		}
-		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.getAzureFunctionProject)
+		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 			.withAdditionalProperties(propertyBag)
 			.withConnectionInfo(connectionInfo).send();
 
@@ -191,6 +194,9 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		if (!isCreateNewProject && projectFile) {
 			telemetryStep = CreateAzureFunctionStep.getConnectionStringSettingName;
 			connectionStringSettingName = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(vscode.Uri.parse(projectFile), connectionInfo);
+			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
+				.withAdditionalProperties(propertyBag)
+				.withConnectionInfo(connectionInfo).send();
 		}
 
 		// create C# Azure Function with SQL Binding
@@ -209,6 +215,9 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			folderPath: projectFolder,
 			suppressCreateProjectPrompt: true
 		});
+		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
+			.withAdditionalProperties(propertyBag)
+			.withConnectionInfo(connectionInfo).send();
 
 		// prompt user for include password for connection string
 		if (isCreateNewProject) {

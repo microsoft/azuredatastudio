@@ -17,8 +17,6 @@ export enum TelemetryViews {
 export enum TelemetryActions {
 	// Create Azure Function with Sql Binding from Table
 	startCreateAzureFunctionWithSqlBinding = 'startCreateAzureFunctionWithSqlBinding',
-	helpCreateAzureFunctionProject = 'helpCreateAzureFunctionProject',
-	learnMore = 'learnMore',
 	finishCreateAzureFunctionWithSqlBinding = 'finishCreateAzureFunctionWithSqlBinding',
 	exitCreateAzureFunctionQuickpick = 'exitCreateAzureFunctionQuickpick',
 
