@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as constants from '../common/constants';
 import * as vscode from 'vscode';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import { PublishDatabaseDialog } from './publishDatabaseDialog';
 import { DeployOptionsModel } from '../models/options/deployOptionsModel';
 
