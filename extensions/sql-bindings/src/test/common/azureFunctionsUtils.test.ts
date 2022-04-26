@@ -12,7 +12,6 @@ import * as azureFunctionsUtils from '../../common/azureFunctionsUtils';
 
 const rootFolderPath = 'test';
 const localSettingsPath: string = path.join(rootFolderPath, 'local.settings.json');
-const projectFilePath: string = path.join(rootFolderPath, 'projectFilePath.csproj');
 
 describe('Tests to verify Azure Functions Utils functions', function (): void {
 
