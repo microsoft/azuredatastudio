@@ -69,7 +69,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 						}
 					);
 				} catch (e) {
-					// User cancelled
+					// connection error occurred
 					continue;
 				}
 				// list databases based on connection profile selected
