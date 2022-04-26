@@ -396,11 +396,13 @@ declare module 'az-ext' {
 				upgrade(
 					desiredVersion: string,
 					name: string,
-					// Direct mode arguments
-					resourceGroup?: string,
-					// Indirect mode arguments
-					namespace?: string,
-					usek8s?: boolean,
+					args: {
+						// Direct mode arguments
+						resourceGroup?: string,
+						// Indirect mode arguments
+						namespace?: string,
+						usek8s?: boolean
+					},
 					// Additional arguments
 					additionalEnvVars?: AdditionalEnvVars
 				): Promise<AzOutput<void>>

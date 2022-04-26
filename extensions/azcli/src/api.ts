@@ -157,17 +157,19 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 				upgrade: async (
 					desiredVersion: string,
 					name: string,
-					// Direct mode arguments
-					resourceGroup?: string,
-					// Indirect mode arguments
-					namespace?: string,
-					usek8s?: boolean,
+					args: {
+						// Direct mode arguments
+						resourceGroup?: string;
+						// Indirect mode arguments
+						namespace?: string;
+						usek8s?: boolean;
+					},
 					// Additional arguments
 					additionalEnvVars?: azExt.AdditionalEnvVars
 				) => {
 					await localAzDiscovered;
 					validateAz(azToolService.localAz);
-					return azToolService.localAz!.sql.miarc.upgrade(desiredVersion, name, resourceGroup, namespace, usek8s, additionalEnvVars);
+					return azToolService.localAz!.sql.miarc.upgrade(desiredVersion, name, args, additionalEnvVars);
 				}
 			},
 			midbarc: {
