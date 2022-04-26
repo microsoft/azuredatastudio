@@ -284,7 +284,7 @@ export async function isFunctionProject(folderPath: string): Promise<boolean> {
 /**
  * Prompts the user to select type of binding and returns result
  */
-export async function promptForBindingType(): Promise<(vscode.QuickPickItem & { type: BindingType }) | undefined> {
+export async function promptForBindingType(): Promise<BindingType | undefined> {
 	const inputOutputItems: (vscode.QuickPickItem & { type: BindingType })[] = [
 		{
 			label: constants.input,
@@ -302,7 +302,7 @@ export async function promptForBindingType(): Promise<(vscode.QuickPickItem & { 
 		ignoreFocusOut: true
 	}));
 
-	return selectedBinding;
+	return selectedBinding?.type;
 }
 
 /**
