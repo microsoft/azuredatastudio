@@ -90,7 +90,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding);
 				if (!objectName) {
 					// user cancelled
-					return;
+					continue;
 				}
 				break;
 			}
