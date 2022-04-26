@@ -30,6 +30,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 	try {
 		const azureFunctionApi = await azureFunctionsUtils.getAzureFunctionsExtensionApi();
 		if (!azureFunctionApi) {
+			exitReason = ExitReason.error;
 			propertyBag.exitReason = exitReason;
 			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
 				.withAdditionalProperties(propertyBag).send();
@@ -51,9 +52,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 					constants.createProject, constants.learnMore);
 				if (projectCreate === constants.learnMore) {
 					telemetryStep = CreateAzureFunctionStep.learnMore;
+					exitReason = ExitReason.exit;
 					void vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(constants.sqlBindingsDoc));
-					TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
-						.withAdditionalProperties(propertyBag).send();
 					return;
 				} else if (projectCreate === constants.createProject) {
 					telemetryStep = CreateAzureFunctionStep.helpCreateAzureFunctionProject;
@@ -126,7 +126,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 			// list databases based on connection profile selected
 			telemetryStep = CreateAzureFunctionStep.getDatabase;
-			let selectedDatabase = await azureFunctionsUtils.getDatabase(connectionInfo);
+			let selectedDatabase = await azureFunctionsUtils.promptSelectDatabase(connectionInfo);
 			if (!selectedDatabase) {
 				// User cancelled
 				return undefined;

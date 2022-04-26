@@ -53,5 +53,6 @@ export enum ExitReason {
 	cancelled = 'cancelled',
 	finishCreate = 'finishCreate',
 	timeout = 'timeout',
-	error = 'error'
+	error = 'error',
+	exit = 'exit'
 }

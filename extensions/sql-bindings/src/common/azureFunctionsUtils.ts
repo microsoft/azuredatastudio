@@ -576,7 +576,7 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 	}
 }
 
-export async function getDatabase(connectionInfo: IConnectionInfo): Promise<string | undefined> {
+export async function promptSelectDatabase(connectionInfo: IConnectionInfo): Promise<string | undefined> {
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 
 	let connectionURI = await vscodeMssqlApi.connect(connectionInfo);
