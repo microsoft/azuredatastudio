@@ -160,6 +160,11 @@ steps:
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
 
+  - script: |
+      set -e
+      yarn gulp compile-extensions
+    displayName: Compile Extensions
+
   - task: DockerInstaller@0
     displayName: Installing Docker
     inputs:
@@ -188,18 +193,14 @@ steps:
   # in continueOnError directly so instead make two copies of the task and only run one or the other based on the SMOKE_FAIL_ON_ERROR value
   - script: |
       set -e
-      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
-      APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
-      yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/linux/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions" --databaseConnections ../../$(testConnections.secureFilePath)
+      yarn smoketest --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/linux/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions" --databaseConnections ../../$(testConnections.secureFilePath)
     displayName: Run smoke tests (Electron) (Continue on Error)
     continueOnError: true
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
   - script: |
       set -e
-      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
-      APP_NAME="`ls $APP_ROOT | head -n 1`"
-      yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/linux/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions" --databaseConnections ../../$(testConnections.secureFilePath)
+      yarn smoketest --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/linux/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions" --databaseConnections ../../$(testConnections.secureFilePath)
     displayName: Run smoke tests (Electron) (Fail on Error)
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
