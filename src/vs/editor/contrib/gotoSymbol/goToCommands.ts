@@ -262,13 +262,7 @@ registerGoToAction(class GoToDefinitionAction extends DefinitionAction {
 			contextMenuOpts: {
 				group: 'navigation',
 				order: 1.1
-			},
-			/*menuOpts: { {{SQL CARBON EDIT}} remove entry
-				menuId: MenuId.MenubarGoMenu,
-				group: '4_symbol_nav',
-				order: 2,
-				title: nls.localize({ key: 'miGotoDefinition', comment: ['&& denotes a mnemonic'] }, "Go to &&Definition")
-			}*/
+			}
 		});
 		CommandsRegistry.registerCommandAlias('editor.action.goToDeclaration', GoToDefinitionAction.id);
 	}
@@ -380,12 +374,6 @@ registerGoToAction(class GoToDeclarationAction extends DeclarationAction {
 				group: 'navigation',
 				order: 1.3
 			},
-			/*menuOpts: { {{SQL CARBON EDIT}} remove entry
-				menuId: MenuId.MenubarGoMenu,
-				group: '4_symbol_nav',
-				order: 3,
-				title: nls.localize({ key: 'miGotoDeclaration', comment: ['&& denotes a mnemonic'] }, "Go to &&Declaration")
-			},*/
 		});
 	}
 
@@ -469,13 +457,7 @@ registerGoToAction(class GoToTypeDefinitionAction extends TypeDefinitionAction {
 			contextMenuOpts: {
 				group: 'navigation',
 				order: 1.4
-			},
-			/*menuOpts: { {{SQL CARBON EDIT}} remove entry
-				menuId: MenuId.MenubarGoMenu,
-				group: '4_symbol_nav',
-				order: 3,
-				title: nls.localize({ key: 'miGotoTypeDefinition', comment: ['&& denotes a mnemonic'] }, "Go to &&Type Definition")
-			}*/
+			}
 		});
 	}
 });
@@ -553,12 +535,6 @@ registerGoToAction(class GoToImplementationAction extends ImplementationAction {
 				primary: KeyMod.CtrlCmd | KeyCode.F12,
 				weight: KeybindingWeight.EditorContrib
 			},
-			/*menuOpts: { {{SQL CARBON EDIT}} remove entry
-				menuId: MenuId.MenubarGoMenu,
-				group: '4_symbol_nav',
-				order: 4,
-				title: nls.localize({ key: 'miGotoImplementation', comment: ['&& denotes a mnemonic'] }, "Go to &&Implementations")
-			},*/
 			contextMenuOpts: {
 				group: 'navigation',
 				order: 1.45
@@ -644,13 +620,7 @@ registerGoToAction(class GoToReferencesAction extends ReferencesAction {
 			contextMenuOpts: {
 				group: 'navigation',
 				order: 1.45
-			},
-			/*menuOpts: { {{SQL CARBON EDIT}} remove entry
-				menuId: MenuId.MenubarGoMenu,
-				group: '4_symbol_nav',
-				order: 5,
-				title: nls.localize({ key: 'miGotoReference', comment: ['&& denotes a mnemonic'] }, "Go to &&References")
-			},*/
+			}
 		});
 	}
 
@@ -818,3 +788,64 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommandAlias('editor.action.showReferences', 'editor.action.peekLocations');
 
 //#endregion
+
+// -- unconditionally register goto-action
+
+MenuRegistry.appendMenuItems([
+	{
+		id: MenuId.MenubarGoMenu,
+		item: {
+			command: {
+				id: 'editor.action.revealDefinition',
+				title: nls.localize({ key: 'miGotoDefinition', comment: ['&& denotes a mnemonic'] }, "Go to &&Definition")
+			},
+			group: '4_symbol_nav',
+			order: 2,
+		},
+	},
+	{
+		id: MenuId.MenubarGoMenu,
+		item: {
+			command: {
+				id: 'editor.action.revealDeclaration',
+				title: nls.localize({ key: 'miGotoDeclaration', comment: ['&& denotes a mnemonic'] }, "Go to &&Declaration")
+			},
+			group: '4_symbol_nav',
+			order: 3,
+
+		},
+	},
+	{
+		id: MenuId.MenubarGoMenu,
+		item: {
+			command: {
+				id: 'editor.action.goToTypeDefinition',
+				title: nls.localize({ key: 'miGotoTypeDefinition', comment: ['&& denotes a mnemonic'] }, "Go to &&Type Definition")
+			},
+			group: '4_symbol_nav',
+			order: 3,
+		},
+	},
+	{
+		id: MenuId.MenubarGoMenu,
+		item: {
+			command: {
+				id: 'editor.action.goToImplementation',
+				title: nls.localize({ key: 'miGotoImplementation', comment: ['&& denotes a mnemonic'] }, "Go to &&Implementations")
+			},
+			group: '4_symbol_nav',
+			order: 4,
+		},
+	},
+	{
+		id: MenuId.MenubarGoMenu,
+		item: {
+			command: {
+				id: 'editor.action.goToReferences',
+				title: nls.localize({ key: 'miGotoReference', comment: ['&& denotes a mnemonic'] }, "Go to &&References")
+			},
+			group: '4_symbol_nav',
+			order: 5,
+		},
+	},
+]);

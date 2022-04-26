@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { FileAccess } from 'vs/base/common/network';
-import { globals, isWeb } from 'vs/base/common/platform';
+import { globals } from 'vs/base/common/platform';
 import { env } from 'vs/base/common/process';
 import { IProductConfiguration } from 'vs/base/common/product';
 import { dirname, joinPath } from 'vs/base/common/resources';
