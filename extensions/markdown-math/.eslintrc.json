@@ -1,6 +1,5 @@
 {
 	"rules": {
-		"no-cond-assign": 0,
 		"@typescript-eslint/explicit-function-return-type": ["off"]
 	}
 }
