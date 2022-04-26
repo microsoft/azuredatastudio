@@ -106,7 +106,7 @@ describe('Add SQL Binding quick pick', () => {
 		// give object name
 		let inputBoxStub = sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves('dbo.table1');
 
-		// select connection profile
+		// select connection string setting name
 		quickpickStub.onThirdCall().resolves({ label: constants.createNewLocalAppSettingWithIcon });
 
 		// give connection string setting name
