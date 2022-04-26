@@ -189,11 +189,11 @@ export async function getHostFiles(): Promise<string[] | undefined> {
 
 /**
  * Gets the local.settings.json file path
- * @param projectFile path of the azure function project
+ * @param projectFolder The path to the project the setting should be added to
  * @returns the local.settings.json file path
  */
-export async function getSettingsFile(projectFile: string): Promise<string | undefined> {
-	return path.join(path.dirname(projectFile), 'local.settings.json');
+export async function getSettingsFile(projectFolder: string): Promise<string | undefined> {
+	return path.join(projectFolder, 'local.settings.json');
 }
 
 /**
@@ -243,11 +243,11 @@ export async function addNugetReferenceToProjectFile(selectedProjectFile: string
 /**
  * Adds the Sql Connection String to the local.settings.json
  * @param connectionString of the SQL Server connection that was chosen by the user
- * @param projectFile The path to the project the setting should be added to
+ * @param projectFolder The path to the project the setting should be added to
  * @param settingName The name of the setting to add to the local.settings.json
  */
-export async function addConnectionStringToConfig(connectionString: string, projectFile: string, settingName: string = constants.sqlConnectionStringSetting): Promise<void> {
-	const settingsFile = await getSettingsFile(projectFile);
+export async function addConnectionStringToConfig(connectionString: string, projectFolder: string, settingName: string = constants.sqlConnectionStringSetting): Promise<void> {
+	const settingsFile = await getSettingsFile(projectFolder);
 	if (settingsFile) {
 		await setLocalAppSetting(path.dirname(settingsFile), settingName, connectionString);
 	}

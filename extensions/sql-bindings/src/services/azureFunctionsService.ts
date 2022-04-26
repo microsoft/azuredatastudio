@@ -219,15 +219,14 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			.withAdditionalProperties(propertyBag)
 			.withConnectionInfo(connectionInfo).send();
 
+		// check for the new function file to be created and dispose of the file system watcher
+		const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
+		let functionFilePath = await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
+
 		// prompt user for include password for connection string
-		if (isCreateNewProject) {
+		if (isCreateNewProject && functionFilePath) {
 			telemetryStep = CreateAzureFunctionStep.promptForIncludePassword;
-			// for a new azure function project we need to get the newly create Azure Function project path so that we can set the connection string in local.settings.json that was created after the createFunction API call
-			projectFile = await azureFunctionsUtils.getAzureFunctionProject();
-			if (!projectFile) {
-				return;
-			}
-			let settingsFile = await azureFunctionsUtils.getSettingsFile(projectFile);
+			let settingsFile = await azureFunctionsUtils.getSettingsFile(projectFolder);
 			if (!settingsFile) {
 				return;
 			}
@@ -235,11 +234,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			if (!connectionString) {
 				return;
 			}
-			void azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFile, connectionStringSettingName);
+			void azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFolder, connectionStringSettingName);
 		}
-		// check for the new function file to be created and dispose of the file system watcher
-		const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
-		await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
 
 		propertyBag.telemetryStep = telemetryStep;
 		exitReason = ExitReason.finishCreate;
