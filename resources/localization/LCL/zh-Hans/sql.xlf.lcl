@@ -17244,6 +17244,9 @@
       <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerService.TableDesigner.closeApplication" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[&&Close Application]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[关闭应用程序(&&C)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
