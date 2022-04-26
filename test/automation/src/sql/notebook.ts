@@ -10,7 +10,7 @@ import { Editors } from '../editors';
 import { IElement } from '..';
 
 const winOrCtrl = process.platform === 'darwin' ? 'ctrl' : 'win';
-const ctrlOrCmd = process.platform === 'darwin' ? 'cmd' : 'ctrl';
+export const ctrlOrCmd = process.platform === 'darwin' ? 'cmd' : 'ctrl';
 
 export class Notebook {
 
