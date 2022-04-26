@@ -181,7 +181,7 @@ chartjs-color-string@^0.6.0:
 chartjs-color@^2.1.0:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/chartjs-color/-/chartjs-color-2.4.1.tgz#6118bba202fe1ea79dd7f7c0f9da93467296c3b0"
-  integrity sha512-haqOg1+Yebys/Ts/9bLo/BqUcONQOdr/hoEr2LLTRl6C5LXctUdHxsCYfvQVg5JIxITrfCNUDr4ntqmQk9+/0w==
+  integrity sha512-y4fs4FCirszla1GaJxqSg/qAql1nvmV1GB/cfr/ioSh8s17pekb/rmJ6oqBksoQ+EA4LL9SToeOIHLZf9X7JNg==
   dependencies:
     chartjs-color-string "^0.6.0"
     color-convert "^1.9.3"
