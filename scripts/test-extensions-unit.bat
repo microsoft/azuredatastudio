@@ -37,6 +37,7 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 					compile-extension:mssql^
 					compile-extension:notebook^
 					compile-extension:resource-deployment^
+					compile-extension:sql-bindings^
 					compile-extension:sql-database-projects
 
 	:: Configuration for more verbose output
@@ -54,7 +55,7 @@ if "%ADS_TEST_GREP%" == "" (
 	SET ADS_TEST_INVERT_GREP=1
 )
 
-set ALL_PLATFORMS_API_TESTS_EXTRA_ARGS=--disable-telemetry --crash-reporter-directory=%VSCODECRASHDIR% --no-cached-data --disable-updates --disable-keytar --user-data-dir=%VSCODEUSERDATADIR% --remote-debugging-port=9222 --extensions-dir=%VSCODEEXTENSIONSDIR%
+set ALL_PLATFORMS_API_TESTS_EXTRA_ARGS=--disable-telemetry --crash-reporter-directory=%VSCODECRASHDIR% --no-cached-data --disable-updates --user-data-dir=%VSCODEUSERDATADIR% --remote-debugging-port=9222 --extensions-dir=%VSCODEEXTENSIONSDIR%
 
 echo ***************************************************
 echo *** starting admin tool extension windows tests ***
@@ -120,6 +121,11 @@ REM echo ******************************************
 REM echo *** starting mssql tests ***
 REM echo ******************************************
 REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\mssql --extensionTestsPath=%~dp0\..\extensions\mssql\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+
+echo ********************************************
+echo *** starting sql-bindings tests ***
+echo ********************************************
+call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\sql-bindings --extensionTestsPath=%~dp0\..\extensions\sql-bindings\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
 echo ********************************************
 echo *** starting sql-database-projects tests ***

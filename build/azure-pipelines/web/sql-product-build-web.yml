@@ -1,7 +1,7 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: "12.13.0"
+    versionSpec: "14.x"
 
 - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
   inputs:
@@ -83,7 +83,6 @@ steps:
     yarn sqllint
     yarn extensions-lint
     yarn gulp hygiene
-    yarn strict-vscode
     yarn valid-layers-check
   displayName: Run hygiene, eslint
   condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
@@ -105,14 +104,26 @@ steps:
     yarn gulp compile-extensions
   displayName: Compile Extensions
 
-- script: |
-    set -e
-    node ./node_modules/playwright/install.js
-    APP_ROOT=$(Agent.BuildDirectory)/vscode-reh-web-linux-x64
-    xvfb-run yarn smoketest --build "$(Agent.BuildDirectory)/vscode-reh-web-linux-x64" --web --headless --screenshots "$(Build.ArtifactStagingDirectory)/smokeshots" --log "$(Build.ArtifactStagingDirectory)/logs/web/smoke.log"
-  displayName: Run smoke tests (Browser)
-  continueOnError: true
-  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+# disable smoke tests (karlb 3/2/2022)
+# # Per https://developercommunity.visualstudio.com/t/variablesexpressions-dont-work-with-continueonerro/1187733 we can't use variables
+# # in continueOnError directly so instead make two copies of the task and only run one or the other based on the SMOKE_FAIL_ON_ERROR value
+# - script: |
+#     set -e
+#     node ./node_modules/playwright/install.js
+#     APP_ROOT=$(Agent.BuildDirectory)/vscode-reh-web-linux-x64
+#     xvfb-run yarn smoketest --build "$(Agent.BuildDirectory)/vscode-reh-web-linux-x64" --web --headless --screenshots "$(Build.ArtifactStagingDirectory)/smokeshots" --log "$(Build.ArtifactStagingDirectory)/logs/web/smoke.log"
+#   displayName: Run smoke tests (Browser) (Continue on Error)
+#   continueOnError: true
+#   condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
+
+# disable smoke tests (karlb 3/2/2022)
+# - script: |
+#     set -e
+#     node ./node_modules/playwright/install.js
+#     APP_ROOT=$(Agent.BuildDirectory)/vscode-reh-web-linux-x64
+#     xvfb-run yarn smoketest --build "$(Agent.BuildDirectory)/vscode-reh-web-linux-x64" --web --headless --screenshots "$(Build.ArtifactStagingDirectory)/smokeshots" --log "$(Build.ArtifactStagingDirectory)/logs/web/smoke.log"
+#   displayName: Run smoke tests (Browser) (Fail on Error)
+#   condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
 # - script: |
 #     set -e

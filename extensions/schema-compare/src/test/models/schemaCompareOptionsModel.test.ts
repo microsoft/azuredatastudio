@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as should from 'should';
-import * as mssql from '../../../../mssql/src/mssql';
+import * as mssql from 'mssql';
 import { SchemaCompareOptionsModel } from '../../models/schemaCompareOptionsModel';
 
 describe('Schema Compare Options Model', () => {

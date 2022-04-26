@@ -84,10 +84,16 @@ import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboar
 import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/electron-browser/clipboardService';
 import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
 import { QueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryServiceImpl';
+import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
+import { AzureBlobService } from 'sql/workbench/services/azureBlob/browser/azureBlobService';
+import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
+import { AzureAccountService } from 'sql/workbench/services/azureAccount/browser/azureAccountService';
 
 registerSingleton(ISqlOAuthService, SqlOAuthService);
 registerSingleton(sqlIClipboardService, sqlClipboardService);
 registerSingleton(IQueryHistoryService, QueryHistoryService);
+registerSingleton(IAzureBlobService, AzureBlobService);
+registerSingleton(IAzureAccountService, AzureAccountService);
 // {{SQL CARBON EDIT}} - End
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -103,10 +109,6 @@ registerSingleton(IQueryHistoryService, QueryHistoryService);
 
 
 //#region --- workbench contributions
-
-// Webview
-import 'vs/workbench/contrib/webview/electron-browser/webview.contribution';
-
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //

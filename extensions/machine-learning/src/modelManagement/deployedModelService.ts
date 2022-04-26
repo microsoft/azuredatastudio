@@ -155,7 +155,6 @@ export class DeployedModelService {
 	/**
 	 * Verifies if the given table name is valid to be used as import table. If table doesn't exist returns true to create new table
 	 * Otherwise verifies the schema and returns true if the schema is supported
-	 * @param connection database connection
 	 * @param table config table name
 	 */
 	public async verifyConfigTable(table: DatabaseTable): Promise<boolean> {

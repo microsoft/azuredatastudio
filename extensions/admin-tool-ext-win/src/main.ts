@@ -47,7 +47,7 @@ function registerCommands(context: vscode.ExtensionContext): void {
 
 /**
  * Handler for command to launch SSMS Server Properties dialog
- * @param connectionId The connection context from the command
+ * @param connectionContext The connection context from the command
  */
 async function handleLaunchSsmsMinPropertiesDialogCommand(connectionContext?: azdata.ObjectExplorerContext): Promise<void> {
 	if (!connectionContext) {
@@ -75,13 +75,14 @@ async function handleLaunchSsmsMinPropertiesDialogCommand(connectionContext?: az
 
 /**
  * Handler for command to launch SSMS "Generate Script Wizard" dialog
- * @param connectionId The connection context from the command
+ * @param connectionContext The connection context from the command
  */
 async function handleLaunchSsmsMinGswDialogCommand(connectionContext?: azdata.ObjectExplorerContext): Promise<void> {
 	const action = 'GenerateScripts';
 	if (!connectionContext) {
 		TelemetryReporter.sendErrorEvent(TelemetryViews.SsmsMinGsw, 'NoConnectionContext');
 		void vscode.window.showErrorMessage(localize('adminToolExtWin.noConnectionContextForGsw', "No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand"));
+		return;
 	}
 
 	return launchSsmsDialog(
@@ -92,8 +93,7 @@ async function handleLaunchSsmsMinGswDialogCommand(connectionContext?: azdata.Ob
 /**
  * Launches SsmsMin with parameters from the specified connection
  * @param action The action to launch
- * @param params The params used to construct the command
- * @param urn The URN to pass to SsmsMin
+ * @param connectionContext The connection context from the command
  */
 async function launchSsmsDialog(action: string, connectionContext: azdata.ObjectExplorerContext): Promise<void> {
 	if (!connectionContext.connectionProfile) {
@@ -102,7 +102,7 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 		return;
 	}
 
-	let oeNode: azdata.objectexplorer.ObjectExplorerNode;
+	let oeNode: azdata.objectexplorer.ObjectExplorerNode | undefined;
 	// Server node is a Connection node and so doesn't have the NodeInfo
 	if (connectionContext.isConnectionNode) {
 		oeNode = undefined;
@@ -154,11 +154,11 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 			// Process has exited so remove from map of running processes
 			runningProcesses.delete(proc.pid);
 			const err = stderr.toString();
-			if ((execException && execException.code !== 0) || err !== '') {
+			if ((execException?.code !== 0) || err !== '') {
 				TelemetryReporter.sendErrorEvent(
 					TelemetryViews.SsmsMinDialog,
 					'LaunchSsmsDialogError',
-					execException ? execException.code.toString() : '',
+					execException ? execException?.code?.toString() : '',
 					getTelemetryErrorType(err));
 			}
 
@@ -171,7 +171,7 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 
 	// If we're not using AAD the tool prompts for a password on stdin
 	if (params.useAad !== true) {
-		proc.stdin.end(password ? password : '');
+		proc.stdin!.end(password ? password : '');
 	}
 
 	// Save the process into our map so we can make sure to stop them if we exit before shutting down

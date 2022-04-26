@@ -4,13 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as constants from '../common/constants';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as os from 'os';
 import * as path from 'path';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
 import * as vscode from 'vscode';
+import * as fse from 'fs-extra';
 import type * as azdataType from 'azdata';
 import * as dataworkspace from 'dataworkspace';
 import type * as mssqlVscode from 'vscode-mssql';
@@ -32,18 +33,21 @@ import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialo
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
+import { UpdateProjectFromDatabaseDialog } from '../dialogs/updateProjectFromDatabaseDialog';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
 import { getPublishDatabaseSettings, launchPublishTargetOption } from '../dialogs/publishDatabaseQuickpick';
 import { launchPublishToDockerContainerQuickpick } from '../dialogs/deployDatabaseQuickpick';
 import { DeployService } from '../models/deploy/deployService';
-import { SqlTargetPlatform } from 'sqldbproj';
+import { GenerateProjectFromOpenApiSpecOptions, SqlTargetPlatform } from 'sqldbproj';
 import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
 import { IDeployProfile } from '../models/deploy/deployProfile';
-import { FileProjectEntry, IDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
+import { EntryType, FileProjectEntry, IDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
+import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updateProject';
+import { targetPlatformToAssets } from '../projectProvider/projectAssets';
 
 const maxTableLength = 10;
 
@@ -148,13 +152,15 @@ export class ProjectsController {
 
 	/**
 	 * Creates a new folder with the project name in the specified location, and places the new .sqlproj inside it
-	 * @param newProjName
-	 * @param folderUri
-	 * @param projectGuid
+	 * @param creationParams
 	 */
 	public async createNewProject(creationParams: NewProjectParams): Promise<string> {
 		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.createNewProject)
-			.withAdditionalProperties({ template: creationParams.projectTypeId })
+			.withAdditionalProperties({
+				template: creationParams.projectTypeId,
+				sdkStyle: creationParams.sdkStyle!.toString(),
+				targetPlatform: creationParams.targetPlatform?.toString() ?? ''
+			})
 			.send();
 
 		if (creationParams.projectGuid && !UUID.isUUID(creationParams.projectGuid)) {
@@ -165,13 +171,15 @@ export class ProjectsController {
 			throw new Error(constants.invalidTargetPlatform(creationParams.targetPlatform, Array.from(constants.targetPlatformToVersion.keys())));
 		}
 
+		const targetPlatform = creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP;
+
 		const macroDict: Record<string, string> = {
 			'PROJECT_NAME': creationParams.newProjName,
 			'PROJECT_GUID': creationParams.projectGuid ?? UUID.generateUuid().toUpperCase(),
-			'PROJECT_DSP': creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP
+			'PROJECT_DSP': targetPlatform
 		};
 
-		let newProjFileContents = templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
+		let newProjFileContents = creationParams.sdkStyle ? templates.macroExpansion(templates.newSdkSqlProjectTemplate, macroDict) : templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
 
 		let newProjFileName = creationParams.newProjName;
 
@@ -185,8 +193,23 @@ export class ProjectsController {
 			throw new Error(constants.projectAlreadyExists(newProjFileName, path.parse(newProjFilePath).dir));
 		}
 
-		await fs.mkdir(path.dirname(newProjFilePath), { recursive: true });
+		const projectFolderPath = path.dirname(newProjFilePath);
+		await fs.mkdir(projectFolderPath, { recursive: true });
 		await fs.writeFile(newProjFilePath, newProjFileContents);
+
+		// Copy project readme
+		if (targetPlatformToAssets?.has(targetPlatform) && (targetPlatformToAssets?.get(targetPlatform)?.readmeFolder)) {
+			const readmeFolder = targetPlatformToAssets.get(targetPlatform)?.readmeFolder;
+
+			if (readmeFolder) {
+				const readmeFile = path.join(readmeFolder, 'README.md');
+				const folderExists = await utils.exists(readmeFile);
+				if (folderExists) {
+					await fs.copyFile(readmeFile, path.join(projectFolderPath, 'README.md'));
+					await fse.copy(path.join(readmeFolder, 'assets'), path.join(projectFolderPath, 'assets'));
+				}
+			}
+		}
 
 		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
 
@@ -237,6 +260,7 @@ export class ProjectsController {
 
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.build)
 				.withAdditionalMeasurements({ duration: timeToBuild })
+				.withAdditionalProperties({ databaseSource: utils.getWellKnownDatabaseSources(project.getDatabaseSourceValues()).join(';') })
 				.send();
 
 			return project.dacpacOutputPath;
@@ -249,6 +273,7 @@ export class ProjectsController {
 
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.build)
 				.withAdditionalMeasurements({ duration: timeToFailureBuild })
+				.withAdditionalProperties({ databaseSource: utils.getWellKnownDatabaseSources(project.getDatabaseSourceValues()).join(';') })
 				.send();
 
 			const message = utils.getErrorMessage(err);
@@ -264,11 +289,14 @@ export class ProjectsController {
 
 	/**
 	 * Publishes a project to docker container
-	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project or the Project itself
+	 * @param deployProfile
 	 */
 	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: IDeployProfile): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
 		try {
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer);
+
 			if (deployProfile && deployProfile.deploySettings) {
 				let connectionUri: string | undefined;
 				if (deployProfile.localDbSetting) {
@@ -278,6 +306,7 @@ export class ProjectsController {
 						deployProfile.deploySettings.connectionUri = connectionUri;
 					}
 				}
+
 				if (deployProfile.deploySettings.connectionUri) {
 					const publishResult = await this.publishOrScriptProject(project, deployProfile.deploySettings, true);
 					if (publishResult && publishResult.success) {
@@ -294,6 +323,7 @@ export class ProjectsController {
 			}
 		} catch (error) {
 			void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, error, this._outputChannel);
+			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer);
 		}
 		return;
 	}
@@ -322,7 +352,7 @@ export class ProjectsController {
 
 			return publishDatabaseDialog.waitForClose();
 		} else {
-			void this.publishDatabase(project);
+			return this.publishDatabase(project);
 		}
 	}
 
@@ -330,14 +360,14 @@ export class ProjectsController {
 	* Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
 	*/
 	private async publishDatabase(project: Project): Promise<void> {
-		const publishTarget = await launchPublishTargetOption();
+		const publishTarget = await launchPublishTargetOption(project);
 
 		// Return when user hits escape
 		if (!publishTarget) {
 			return undefined;
 		}
 
-		if (publishTarget === constants.publishToDockerContainer) {
+		if (publishTarget === constants.PublishTargetType.docker) {
 			const deployProfile = await launchPublishToDockerContainerQuickpick(project);
 			if (deployProfile?.deploySettings) {
 				await this.publishToDockerContainer(project, deployProfile);
@@ -373,6 +403,7 @@ export class ProjectsController {
 		const buildEndTime = new Date().getTime();
 		telemetryMeasures.buildDuration = buildEndTime - buildStartTime;
 		telemetryProps.buildSucceeded = (dacpacPath !== '').toString();
+		telemetryProps.databaseSource = utils.getWellKnownDatabaseSources(project.getDatabaseSourceValues()).join(';');
 
 		if (!dacpacPath) {
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
@@ -441,6 +472,8 @@ export class ProjectsController {
 		const timeToPublish = actionEndTime - actionStartTime;
 		telemetryProps.actionDuration = timeToPublish.toString();
 		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
+		telemetryProps.sqlcmdVariablesCount = Object.keys(project.sqlCmdVariables).length.toString();
+		telemetryProps.projectTargetPLatform = project.getProjectTargetVersion();
 
 		const currentPublishIndex = this.publishInfo.findIndex(d => d.startDate === currentPublishTimeInfo);
 		this.publishInfo[currentPublishIndex].status = result.success ? Status.success : Status.failed;
@@ -453,23 +486,28 @@ export class ProjectsController {
 		return result;
 	}
 
-	public async schemaCompare(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
+	public async schemaCompare(source: dataworkspace.WorkspaceTreeItem | azdataType.IConnectionProfile, targetParam: any = undefined): Promise<void> {
 		try {
 			// check if schema compare extension is installed
 			if (vscode.extensions.getExtension(constants.schemaCompareExtensionId)) {
-				// build project
-				const dacpacPath = await this.buildProject(treeNode);
+				let sourceParam;
 
-				// check that dacpac exists
-				if (await utils.exists(dacpacPath)) {
-					TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked);
-					await vscode.commands.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
+				if (source as dataworkspace.WorkspaceTreeItem) {
+					sourceParam = this.getProjectFromContext(source as dataworkspace.WorkspaceTreeItem).projectFilePath;
 				} else {
+					sourceParam = source as azdataType.IConnectionProfile;
+				}
+
+				try {
+					TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked);
+					await vscode.commands.executeCommand(constants.schemaCompareStartCommand, sourceParam, targetParam, undefined);
+				} catch (e) {
 					throw new Error(constants.buildFailedCannotStartSchemaCompare);
 				}
 			} else {
 				throw new Error(constants.schemaCompareNotInstalled);
 			}
+
 		} catch (err) {
 			const props: Record<string, string> = {};
 			const message = utils.getErrorMessage(err);
@@ -484,6 +522,69 @@ export class ProjectsController {
 
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
+	}
+
+	public async getProjectScriptFiles(projectFilePath: string): Promise<string[]> {
+		const project = await Project.openProject(projectFilePath);
+
+		return project.files
+			.filter(f => f.fsUri.fsPath.endsWith(constants.sqlFileExtension))
+			.map(f => f.fsUri.fsPath);
+	}
+
+	public async getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
+		const project = await Project.openProject(projectFilePath);
+		return project.getProjectTargetVersion();
+	}
+
+	public async schemaComparePublishProjectChanges(operationId: string, projectFilePath: string, folderStructure: string): Promise<mssql.SchemaComparePublishProjectResult> {
+		const ext = vscode.extensions.getExtension(mssql.extension.name)!;
+		const service = (await ext.activate() as mssql.IExtension).schemaCompare;
+
+		const projectPath = path.dirname(projectFilePath);
+
+		let fs: mssql.ExtractTarget;
+
+		switch (folderStructure) {
+			case constants.file:
+				fs = mssql.ExtractTarget.file;
+				break;
+			case constants.flat:
+				fs = mssql.ExtractTarget.flat;
+				break;
+			case constants.objectType:
+				fs = mssql.ExtractTarget.objectType;
+				break;
+			case constants.schema:
+				fs = mssql.ExtractTarget.schema;
+				break;
+			case constants.schemaObjectType:
+			default:
+				fs = mssql.ExtractTarget.schemaObjectType;
+				break;
+		}
+
+		const result: mssql.SchemaComparePublishProjectResult = await service.schemaComparePublishProjectChanges(operationId, projectPath, fs, utils.getAzdataApi()!.TaskExecutionMode.execute);
+
+		if (!result.errorMessage) {
+			const project = await Project.openProject(projectFilePath);
+
+			let toAdd: vscode.Uri[] = [];
+			result.addedFiles.forEach((f: any) => toAdd.push(vscode.Uri.file(f)));
+			await project.addToProject(toAdd);
+
+			let toRemove: vscode.Uri[] = [];
+			result.deletedFiles.forEach((f: any) => toRemove.push(vscode.Uri.file(f)));
+
+			let toRemoveEntries: FileProjectEntry[] = [];
+			toRemove.forEach(f => toRemoveEntries.push(new FileProjectEntry(f, f.path.replace(projectPath + '\\', ''), EntryType.File)));
+
+			toRemoveEntries.forEach(async f => await project.exclude(f));
+
+			await this.buildProject(project);
+		}
+
+		return result;
 	}
 
 	public async addFolderPrompt(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
@@ -584,6 +685,31 @@ export class ProjectsController {
 		}
 	}
 
+	public async addExistingItemPrompt(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(treeNode);
+
+		const uris = await vscode.window.showOpenDialog({
+			canSelectFiles: true,
+			canSelectFolders: false,
+			canSelectMany: false,
+			openLabel: constants.selectString,
+			title: constants.selectFileString
+		});
+
+		if (!uris) {
+			return;	// user cancelled
+		}
+
+		try {
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addExistingItem);
+			await project.addExistingItem(uris[0].fsPath);
+			this.refreshProjectsTree(treeNode);
+		} catch (err) {
+			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.addExistingItem);
+		}
+	}
+
 	public async exclude(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const node = context.element as BaseProjectTreeItem;
 		const project = this.getProjectFromContext(node);
@@ -660,6 +786,8 @@ export class ProjectsController {
 		if (root && fileOrFolder) {
 			// use relative path and not tree paths for files and folder
 			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts);
+
+			// trim trailing slash since folders with and without a trailing slash are allowed in a sqlproj
 			const trimmedUri = utils.trimChars(utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)), '/');
 			return allFileEntries.find(x => utils.trimChars(utils.getPlatformSafeFileEntryPath(x.relativePath), '/') === trimmedUri);
 		}
@@ -725,7 +853,7 @@ export class ProjectsController {
 
 	/**
 	 * Reloads the given project. Throws an error if given project is not a valid open project.
-	 * @param projectFileUri the uri of the project to be reloaded
+	 * @param context
 	 */
 	public async reloadProject(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
@@ -757,6 +885,35 @@ export class ProjectsController {
 	}
 
 	/**
+	 * Converts a legacy style project to an SDK-style project
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
+	public async convertToSdkStyleProject(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(context);
+
+		// confirm that user wants to update the project and knows the SSDT doesn't have support for displaying glob files yet
+		await vscode.window.showWarningMessage(constants.convertToSdkStyleConfirmation(project.projectFileName), { modal: true }, constants.yesString).then(async (result) => {
+			if (result === constants.yesString) {
+				const updateResult = await project.convertProjectToSdkStyle();
+				void this.reloadProject(context);
+
+				if (!updateResult) {
+					void vscode.window.showErrorMessage(constants.updatedToSdkStyleError(project.projectFileName));
+				} else {
+					void this.reloadProject(context);
+
+					// show message that project file can be simplified
+					const result = await vscode.window.showInformationMessage(constants.projectUpdatedToSdkStyle(project.projectFileName), constants.learnMore);
+
+					if (result === constants.learnMore) {
+						void vscode.env.openExternal(vscode.Uri.parse(constants.sdkLearnMoreUrl!));
+					}
+				}
+			}
+		});
+	}
+
+	/**
 	 * Adds a database reference to the project
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
@@ -776,9 +933,6 @@ export class ProjectsController {
 			}
 			return undefined;
 		}
-
-
-
 	}
 
 	/**
@@ -899,25 +1053,34 @@ export class ProjectsController {
 	 * 			outputFolder: 'C:\Source',
 	 * 			projectName: 'MyProject'}
 	 */
-	public async selectAutorestProjectLocation(projectName: string): Promise<{ newProjectFolder: string, outputFolder: string, projectName: string } | undefined> {
-		let valid = false;
-		let newProjectFolder: string = '';
-		let outputFolder: string = '';
+	public async selectAutorestProjectLocation(projectName: string, defaultOutputLocation: vscode.Uri | undefined): Promise<{ newProjectFolder: string, outputFolder: string, projectName: string } | undefined> {
+		let newProjectFolder = defaultOutputLocation ? path.join(defaultOutputLocation.fsPath, projectName) : '';
+		let outputFolder = defaultOutputLocation?.fsPath || '';
+		while (true) {
+			let quickPickTitle = '';
+			if (newProjectFolder && await utils.exists(newProjectFolder)) {
+				// Folder already exists at target location, prompt for new location
+				quickPickTitle = constants.folderAlreadyExistsChooseNewLocation(newProjectFolder);
+			}
+			else if (!newProjectFolder) {
+				// No target location yet
+				quickPickTitle = constants.selectProjectLocation;
+			}
+			else {
+				// Folder doesn't exist at target location so we're done
+				break;
+			}
+			const quickpickSelection = await vscode.window.showQuickPick([constants.browseEllipsisWithIcon], { title: quickPickTitle, ignoreFocusOut: true });
+			if (!quickpickSelection) {
+				return;
+			}
 
-		let quickpickSelection = await vscode.window.showQuickPick(
-			[constants.browseEllipsisWithIcon],
-			{ title: constants.selectProjectLocation, ignoreFocusOut: true });
-		if (!quickpickSelection) {
-			return;
-		}
-
-		while (!valid) {
 			const folders = await vscode.window.showOpenDialog({
 				canSelectFiles: false,
 				canSelectFolders: true,
 				canSelectMany: false,
 				openLabel: constants.selectString,
-				defaultUri: vscode.workspace.workspaceFolders?.[0]?.uri,
+				defaultUri: defaultOutputLocation ?? vscode.workspace.workspaceFolders?.[0]?.uri,
 				title: constants.selectProjectLocation
 			});
 
@@ -928,18 +1091,6 @@ export class ProjectsController {
 			outputFolder = folders[0].fsPath;
 
 			newProjectFolder = path.join(outputFolder, projectName);
-
-			if (await utils.exists(newProjectFolder)) {
-
-				quickpickSelection = await vscode.window.showQuickPick(
-					[constants.browseEllipsisWithIcon],
-					{ title: constants.folderAlreadyExistsChooseNewLocation(newProjectFolder), ignoreFocusOut: true });
-				if (!quickpickSelection) {
-					return;
-				}
-			} else {
-				valid = true;
-			}
 		}
 
 		return { newProjectFolder, outputFolder, projectName };
@@ -985,22 +1136,24 @@ export class ProjectsController {
 		return name;
 	}
 
-	public async generateProjectFromOpenApiSpec(): Promise<Project | undefined> {
+	public async generateProjectFromOpenApiSpec(options?: GenerateProjectFromOpenApiSpecOptions): Promise<Project | undefined> {
 		try {
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.generateProjectFromOpenApiSpec);
+
 			// 1. select spec file
-			const specPath: string | undefined = await this.selectAutorestSpecFile();
+			const specPath: string | undefined = options?.openApiSpecFile?.fsPath || await this.selectAutorestSpecFile();
 			if (!specPath) {
 				return;
 			}
 
 			// 2. prompt for project name
-			const projectName = await this.promptForAutorestProjectName(path.basename(specPath, path.extname(specPath)));
+			const projectName = await this.promptForAutorestProjectName(options?.defaultProjectName || path.basename(specPath, path.extname(specPath)));
 			if (!projectName) {
 				return;
 			}
 
 			// 3. select location, make new folder
-			const projectInfo = await this.selectAutorestProjectLocation(projectName!);
+			const projectInfo = await this.selectAutorestProjectLocation(projectName!, options?.defaultOutputLocation);
 			if (!projectInfo) {
 				return;
 			}
@@ -1023,7 +1176,8 @@ export class ProjectsController {
 			const newProjFilePath = await this.createNewProject({
 				newProjName: projectInfo.projectName,
 				folderUri: vscode.Uri.file(projectInfo.outputFolder),
-				projectTypeId: constants.emptySqlDatabaseProjectTypeId
+				projectTypeId: constants.emptySqlDatabaseProjectTypeId,
+				sdkStyle: false
 			});
 
 			const project = await Project.openProject(newProjFilePath);
@@ -1037,12 +1191,15 @@ export class ProjectsController {
 				await project.addScriptItem(path.relative(project.projectFolderPath, postDeploymentScript.fsPath), undefined, templates.postDeployScript);
 			}
 
-			// 7. add project to workspace and open
-			await this.openProjectInWorkspace(newProjFilePath);
+			if (options?.doNotOpenInWorkspace !== true) {
+				// 7. add project to workspace and open
+				await this.openProjectInWorkspace(newProjFilePath);
+			}
 
 			return project;
 		} catch (err) {
 			void vscode.window.showErrorMessage(constants.generatingProjectFailed(utils.getErrorMessage(err)));
+			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.generateProjectFromOpenApiSpec);
 			this._outputChannel.show();
 			return;
 		}
@@ -1191,22 +1348,35 @@ export class ProjectsController {
 
 	public async createProjectFromDatabaseCallback(model: ImportDataModel) {
 		try {
+
 			const newProjFolderUri = model.filePath;
 
 			const newProjFilePath = await this.createNewProject({
 				newProjName: model.projName,
 				folderUri: vscode.Uri.file(newProjFolderUri),
-				projectTypeId: constants.emptySqlDatabaseProjectTypeId
+				projectTypeId: model.sdkStyle ? constants.emptySqlDatabaseSdkProjectTypeId : constants.emptySqlDatabaseProjectTypeId,
+				sdkStyle: model.sdkStyle
 			});
 
 			model.filePath = path.dirname(newProjFilePath);
 			this.setFilePath(model);
 
 			const project = await Project.openProject(newProjFilePath);
+
+			const startTime = new Date();
+
 			await this.createProjectFromDatabaseApiCall(model); // Call ExtractAPI in DacFx Service
+
+			const timeToExtract = new Date().getTime() - startTime.getTime();
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.createProjectFromDatabase)
+				.withAdditionalMeasurements({ durationMs: timeToExtract })
+				.send();
+
 			let fileFolderList: vscode.Uri[] = model.extractTarget === mssql.ExtractTarget.file ? [vscode.Uri.file(model.filePath)] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
 
-			await project.addToProject(fileFolderList); // Add generated file structure to the project
+			if (!model.sdkStyle) {
+				await project.addToProject(fileFolderList); // Add generated file structure to the project
+			}
 
 			// add project to workspace
 			const workspaceApi = utils.getDataWorkspaceExtensionApi();
@@ -1214,6 +1384,7 @@ export class ProjectsController {
 			await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.createProjectFromDatabase);
 		}
 	}
 
@@ -1243,6 +1414,130 @@ export class ProjectsController {
 			await (service as mssqlVscode.IDacFxService).createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, model.connectionUri, model.extractTarget as mssqlVscode.ExtractTarget, TaskExecutionMode.execute as unknown as mssqlVscode.TaskExecutionMode);
 		}
 		// TODO: Check for success; throw error
+	}
+
+	/**
+	 * Display dialog for user to configure existing SQL Project with the changes/differences from a database
+	 */
+	public async updateProjectFromDatabase(context: azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo | dataworkspace.WorkspaceTreeItem): Promise<UpdateProjectFromDatabaseDialog> {
+		let connection: azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined;
+		let project: Project | undefined;
+
+		try {
+			if ('connectionProfile' in context) {
+				connection = this.getConnectionProfileFromContext(context as azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo);
+			}
+		} catch { }
+
+		try {
+			if ('treeDataProvider' in context) {
+				project = this.getProjectFromContext(context as dataworkspace.WorkspaceTreeItem);
+			}
+		} catch { }
+
+		const updateProjectFromDatabaseDialog = this.getUpdateProjectFromDatabaseDialog(connection, project);
+
+		updateProjectFromDatabaseDialog.updateProjectFromDatabaseCallback = async (model) => await this.updateProjectFromDatabaseCallback(model);
+
+		await updateProjectFromDatabaseDialog.openDialog();
+
+		return updateProjectFromDatabaseDialog;
+	}
+
+	public getUpdateProjectFromDatabaseDialog(connection: azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined, project: Project | undefined): UpdateProjectFromDatabaseDialog {
+		return new UpdateProjectFromDatabaseDialog(connection, project);
+	}
+
+	public async updateProjectFromDatabaseCallback(model: UpdateProjectDataModel) {
+		try {
+			const startTime = new Date();
+
+			await this.updateProjectFromDatabaseApiCall(model);
+
+			const timeToUpdate = new Date().getTime() - startTime.getTime();
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectFromDatabase)
+				.withAdditionalMeasurements({ durationMs: timeToUpdate })
+				.send();
+		} catch (err) {
+			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectFromDatabase);
+		}
+	}
+
+	/**
+	 * Uses the DacFx service to update an existing SQL Project with the changes/differences from a database
+	 */
+	public async updateProjectFromDatabaseApiCall(model: UpdateProjectDataModel): Promise<void> {
+		if (model.action === UpdateProjectAction.Compare) {
+			await vscode.commands.executeCommand(constants.schemaCompareRunComparisonCommand, model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
+		} else if (model.action === UpdateProjectAction.Update) {
+			await vscode.window.showWarningMessage(constants.applyConfirmation, { modal: true }, constants.yesString).then(async (result) => {
+				if (result === constants.yesString) {
+					await vscode.window.withProgress(
+						{
+							location: vscode.ProgressLocation.Notification,
+							title: constants.updatingProjectFromDatabase(path.basename(model.targetEndpointInfo.projectFilePath), model.sourceEndpointInfo.databaseName),
+							cancellable: false
+						}, async (_progress, _token) => {
+							return this.schemaCompareAndUpdateProject(model.sourceEndpointInfo, model.targetEndpointInfo);
+						});
+
+					void vscode.commands.executeCommand(constants.refreshDataWorkspaceCommand);
+					utils.getDataWorkspaceExtensionApi().showProjectsView();
+				}
+			});
+		} else {
+			throw new Error(`Unknown UpdateProjectAction: ${model.action}`);
+		}
+
+		return;
+	}
+
+	private async schemaCompareAndUpdateProject(source: mssql.SchemaCompareEndpointInfo, target: mssql.SchemaCompareEndpointInfo): Promise<void> {
+		// Run schema comparison
+		const ext = vscode.extensions.getExtension(mssql.extension.name)!;
+		const service = (await ext.activate() as mssql.IExtension).schemaCompare;
+		const deploymentOptions = await service.schemaCompareGetDefaultOptions();
+		const operationId = UUID.generateUuid();
+
+		target.targetScripts = await this.getProjectScriptFiles(target.projectFilePath);
+		target.dataSchemaProvider = await this.getProjectDatabaseSchemaProvider(target.projectFilePath);
+
+		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, 'SchemaComparisonStarted');
+
+		// Perform schema comparison.  Results are cached in SqlToolsService under the operationId
+		const comparisonResult: mssql.SchemaCompareResult = await service.schemaCompare(
+			operationId, source, target, utils.getAzdataApi()!.TaskExecutionMode.execute, deploymentOptions.defaultDeploymentOptions
+		);
+
+		if (!comparisonResult || !comparisonResult.success) {
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, 'SchemaComparisonFailed')
+				.withAdditionalProperties({
+					operationId: comparisonResult.operationId
+				}).send();
+			await vscode.window.showErrorMessage(constants.compareErrorMessage(comparisonResult?.errorMessage));
+			return;
+		}
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, 'SchemaComparisonFinished')
+			.withAdditionalProperties({
+				'endTime': Date.now().toString(),
+				'operationId': comparisonResult.operationId
+			}).send();
+
+		if (comparisonResult.areEqual) {
+			void vscode.window.showInformationMessage(constants.equalComparison);
+			return;
+		}
+
+		// Publish the changes (retrieved from the cache by operationId)
+		const publishResult = await this.schemaComparePublishProjectChanges(operationId, target.projectFilePath, target.folderStructure);
+
+		if (publishResult.success) {
+			void vscode.window.showInformationMessage(constants.applySuccess);
+		} else {
+			void vscode.window.showErrorMessage(constants.applyError(publishResult.errorMessage));
+		}
 	}
 
 	/**
@@ -1290,6 +1585,7 @@ export interface NewProjectParams {
 	newProjName: string;
 	folderUri: vscode.Uri;
 	projectTypeId: string;
+	sdkStyle: boolean;
 	projectGuid?: string;
 	targetPlatform?: SqlTargetPlatform;
 }

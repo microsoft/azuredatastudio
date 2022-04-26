@@ -8,20 +8,6 @@
 import * as vscode from 'vscode';
 
 declare module 'azdata' {
-
-	export namespace queryeditor {
-		/**
-		 * Opens an untitled text document. The editor will prompt the user for a file
-		 * path when the document is to be saved. The `options` parameter allows to
-		 * specify the *content* of the document.
-		 *
-		 * @param options Options to control how the document will be created.
-		 * @param providerId Optional provider ID this editor will be associated with. Defaults to MSSQL.
-		 * @return A promise that resolves to a [document](#QueryDocument).
-		 */
-		export function openQueryDocument(options?: { content?: string; }, providerId?: string): Thenable<QueryDocument>;
-	}
-
 	export namespace nb {
 		export interface NotebookDocument {
 			/**
@@ -30,12 +16,56 @@ declare module 'azdata' {
 			setTrusted(state: boolean): void;
 		}
 
+		export interface ISessionOptions {
+			/**
+			 * The spec for the kernel being used to create this session.
+			 */
+			kernelSpec?: IKernelSpec;
+		}
+
+		export interface IKernelSpec {
+			/**
+			 * The list of languages that are supported for this kernel.
+			 */
+			supportedLanguages?: string[];
+			/**
+			 * The original name for this kernel.
+			 */
+			oldName?: string;
+			/**
+			 * The original display name for this kernel.
+			 */
+			oldDisplayName?: string;
+			/**
+			 * The original language name for this kernel.
+			 */
+			oldLanguage?: string;
+		}
+
+		export interface ILanguageInfo {
+			/**
+			 * The original name for this language.
+			 */
+			oldName?: string;
+		}
+
 		export interface IStandardKernel {
+			/**
+			 * The list of languages that are supported for this kernel.
+			 */
+			supportedLanguages: string[];
 			readonly blockedOnSAW?: boolean;
 		}
 
 		export interface IKernelChangedArgs {
 			nbKernelAlias?: string
+		}
+
+		export interface ICellOutput {
+			/**
+			 * Unique identifier for this cell output.
+			 */
+			id?: string;
 		}
 
 		export interface IExecuteResult {
@@ -46,6 +76,25 @@ declare module 'azdata' {
 			output_type: string;
 			resultSet: ResultSetSummary;
 			data: any;
+		}
+
+		export interface IExecuteRequest {
+			/**
+			 * URI of the notebook document that is sending this execute request.
+			 */
+			notebookUri: vscode.Uri;
+			/**
+			 * URI of the notebook cell that is sending this execute request.
+			 */
+			cellUri: vscode.Uri;
+			/**
+			 * The language of the notebook document that is executing this request.
+			 */
+			language: string;
+			/**
+			 * The index of the cell which the code being executed is from.
+			 */
+			cellIndex: number;
 		}
 
 		export interface INotebookMetadata {
@@ -74,55 +123,148 @@ declare module 'azdata' {
 			 */
 			dispose(): void;
 		}
+
+		/**
+		 * An event that is emitted when a [notebook document](#NotebookDocument) is closed.
+		 */
+		export const onDidCloseNotebookDocument: vscode.Event<NotebookDocument>;
+
+		export interface IKernel {
+
+			/**
+			 * Restart a kernel.
+			 *
+			 * #### Notes
+			 * Uses the [Jupyter Notebook API](http://petstore.swagger.io/?url=https://raw.githubusercontent.com/jupyter/notebook/4.x/notebook/services/api/api.yaml#!/kernels).
+			 *
+			 * The promise is fulfilled on a valid response and rejected otherwise.
+			 *
+			 * It is assumed that the API call does not mutate the kernel id or name.
+			 *
+			 * The promise will be rejected if the kernel status is `Dead` or if the
+			 * request fails or the response is invalid.
+			 */
+			restart(): Thenable<void>;
+		}
 	}
 
-	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
-		| 'Float' | 'Image' | 'Int' | 'Money' | 'NChar' | 'NText' | 'NVarChar' | 'Real'
-		| 'UniqueIdentifier' | 'SmallDateTime' | 'SmallInt' | 'SmallMoney' | 'Text' | 'Timestamp'
-		| 'TinyInt' | 'VarBinary' | 'VarChar' | 'Variant' | 'Xml' | 'Udt' | 'Structured' | 'Date'
-		| 'Time' | 'DateTime2' | 'DateTimeOffset';
-
+	/**
+	 * The column information of a data set.
+	 */
 	export interface SimpleColumnInfo {
+		/**
+		 * The column name.
+		 */
 		name: string;
 		/**
-		 * This is expected to match the SqlDbTypes for serialization purposes
+		 * The data type of the column.
 		 */
-		dataTypeName: SqlDbType;
+		dataTypeName: string;
 	}
+
+	/**
+	 * The parameters for start data serialization request.
+	 */
 	export interface SerializeDataStartRequestParams {
 		/**
 		 * 'csv', 'json', 'excel', 'xml'
 		 */
 		saveFormat: string;
+		/**
+		 * The path of the target file.
+		 */
 		filePath: string;
+		/**
+		 * Whether the request is the last batch of the data set to be serialized.
+		 */
 		isLastBatch: boolean;
+		/**
+		 * Data to be serialized.
+		 */
 		rows: DbCellValue[][];
+		/**
+		 * The columns of the data set.
+		 */
 		columns: SimpleColumnInfo[];
+		/**
+		 * Whether to include column headers to the target file.
+		 */
 		includeHeaders?: boolean;
+		/**
+		 * The delimiter to seperate the cells.
+		 */
 		delimiter?: string;
+		/**
+		 * The line seperator.
+		 */
 		lineSeperator?: string;
+		/**
+		 * Character used for enclosing text fields when saving results as CSV.
+		 */
 		textIdentifier?: string;
+		/**
+		 * File encoding used when saving results as CSV.
+		 */
 		encoding?: string;
+		/**
+		 * When true, XML output will be formatted when saving results as XML.
+		 */
 		formatted?: boolean;
 	}
 
+	/**
+	 * The parameters for continue data serialization request.
+	 */
 	export interface SerializeDataContinueRequestParams {
+		/**
+		 * The path of the target file.
+		 */
 		filePath: string;
+		/**
+		 * Whether the request is the last batch.
+		 */
 		isLastBatch: boolean;
+		/**
+		 * Data to be serialized.
+		 */
 		rows: DbCellValue[][];
 	}
 
+	/**
+	 * The result of data serialization data request.
+	 */
 	export interface SerializeDataResult {
+		/**
+		 * The output message.
+		 */
 		messages?: string;
+		/**
+		 * Whether the serialization is succeeded.
+		 */
 		succeeded: boolean;
 	}
 
+	/**
+	 * The serialization provider.
+	 */
 	export interface SerializationProvider extends DataProvider {
+		/**
+		 * Start the data serialization.
+		 * @param requestParams the request parameters.
+		 */
 		startSerialization(requestParams: SerializeDataStartRequestParams): Thenable<SerializeDataResult>;
+		/**
+		 * Continue the data serialization.
+		 * @param requestParams the request parameters.
+		 */
 		continueSerialization(requestParams: SerializeDataContinueRequestParams): Thenable<SerializeDataResult>;
 	}
 
 	export namespace dataprotocol {
+		/**
+		 * Registers a SerializationProvider.
+		 * @param provider The data serialization provider.
+		 */
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
 		export function registerSqlAssessmentServicesProvider(provider: SqlAssessmentServicesProvider): vscode.Disposable;
 		/**
@@ -257,39 +399,6 @@ declare module 'azdata' {
 		title: string;
 	}
 
-	export interface DeclarativeTableColumn {
-		headerCssStyles?: CssStyles;
-		rowCssStyles?: CssStyles;
-		ariaLabel?: string;
-		showCheckAll?: boolean;
-		hidden?: boolean;
-	}
-
-
-	export enum DeclarativeDataType {
-		component = 'component',
-		menu = 'menu'
-	}
-
-	export type DeclarativeTableRowSelectedEvent = {
-		row: number
-	};
-
-	export interface DeclarativeTableComponent extends Component, DeclarativeTableProperties {
-		onRowSelected: vscode.Event<DeclarativeTableRowSelectedEvent>;
-		/**
-		 * Sets the filter currently applied to this table - only rows with index in the given array will be visible. undefined
-		 * will clear the filter
-		 */
-		setFilter(rowIndexes: number[] | undefined): void;
-
-		/**
-		 * Sets the data values.
-		 * @param v The new data values
-		 */
-		setDataValues(v: DeclarativeTableCellValue[][]): Promise<void>;
-	}
-
 	/*
 	 * Add optional azureAccount for connectionWidget.
 	 */
@@ -310,374 +419,6 @@ declare module 'azdata' {
 
 	export interface ConnectionOption {
 		defaultValueOsOverrides?: DefaultValueOsOverride[];
-	}
-
-	export interface ModelBuilder {
-		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent, RadioCardGroupComponentProperties>;
-		listView(): ComponentBuilder<ListViewComponent, ListViewComponentProperties>;
-		tabbedPanel(): TabbedPanelComponentBuilder;
-		slider(): ComponentBuilder<SliderComponent, SliderComponentProperties>;
-	}
-
-	export interface RadioCard {
-		id: string;
-		descriptions: RadioCardDescription[];
-		icon?: IconPath;
-	}
-
-	export interface RadioCardDescription {
-		textValue: string;
-		linkDisplayValue?: string;
-		displayLinkCodicon?: boolean;
-		textStyles?: CssStyles;
-		linkStyles?: CssStyles;
-		linkCodiconStyles?: CssStyles;
-	}
-
-	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
-		cards: RadioCard[];
-		cardWidth: string;
-		cardHeight: string;
-		iconWidth?: string;
-		iconHeight?: string;
-		selectedCardId?: string;
-		orientation?: Orientation; // Defaults to horizontal
-		iconPosition?: 'top' | 'left'; // Defaults to top
-	}
-
-	export type RadioCardSelectionChangedEvent = { cardId: string; card: RadioCard };
-	export type RadioCardLinkClickEvent = { cardId: string, card: RadioCard, description: RadioCardDescription };
-
-	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
-		/**
-		 * The card object returned from this function is a clone of the internal representation - changes will not impact the original object
-		 */
-		onSelectionChanged: vscode.Event<RadioCardSelectionChangedEvent>;
-
-		onLinkClick: vscode.Event<RadioCardLinkClickEvent>;
-
-	}
-
-	export interface ListViewComponentProperties extends ComponentProperties {
-		title?: ListViewTitle;
-		options: ListViewOption[];
-		selectedOptionId?: string;
-	}
-
-	export interface ListViewTitle {
-		text?: string;
-		style?: CssStyles;
-	}
-
-	export interface ListViewOption {
-		label: string;
-		id: string;
-	}
-
-	export type ListViewClickEvent = { id: string };
-
-	export interface ListViewComponent extends Component, ListViewComponentProperties {
-		onDidClick: vscode.Event<ListViewClickEvent>;
-	}
-
-	export interface DeclarativeTableProperties {
-		/**
-		 * dataValues will only be used if data is an empty array.
-		 * To set the dataValues, it is recommended to use the setDataValues method that returns a promise.
-		 */
-		dataValues?: DeclarativeTableCellValue[][];
-
-		/**
-		 * Gets a boolean value determines whether the row selection is enabled. Default value is false.
-		 */
-		enableRowSelection?: boolean;
-
-		/**
-		 * Gets or sets the selected row number of the table. -1 means to no selected row.
-		 */
-		selectedRow?: number;
-	}
-
-
-	export interface DeclarativeTableMenuCellValue {
-		/**
-		 * commands for the menu. Use an array for a group and menu separators will be added.
-		 */
-		commands: (string | string[])[];
-		/**
-		 * context that will be passed to the commands.
-		 */
-		context: { [key: string]: string | boolean | number } | string | boolean | number | undefined
-	}
-
-	export interface DeclarativeTableCellValue {
-		/**
-		 * The cell value
-		 */
-		value: string | number | boolean | Component | DeclarativeTableMenuCellValue;
-		/**
-		 * The aria-label of the cell
-		 */
-		ariaLabel?: string;
-		/**
-		 * The CSS style of the cell
-		 */
-		style?: CssStyles;
-		/**
-		 * A boolean value indicates whether the cell is enabled. Default value is true.
-		 * Note: this is currently only implemented for boolean type (checkbox).
-		 */
-		enabled?: boolean;
-	}
-
-	export interface DropDownProperties {
-		/**
-		 * Adds a short hint that describes the expected value for the editable dropdown
-		 */
-		placeholder?: string;
-		/**
-		 * Define error messages to show when custom validation fails. Note: For empty required dropdowns we use a default error message.
-		 */
-		validationErrorMessages?: string[];
-	}
-
-	/**
-	 * Panel component with tabs
-	 */
-	export interface TabbedPanelComponent extends Container<TabbedPanelLayout, any> {
-		/**
-		 * An event triggered when the selected tab is changed.
-		 * The event argument is the id of the selected tab.
-		 */
-		onTabChanged: vscode.Event<string>;
-
-		/**
-		 * update the tabs.
-		 * @param tabs new tabs
-		 */
-		updateTabs(tabs: (Tab | TabGroup)[]): void;
-
-		/**
-		 * Selects the tab with the specified id
-		 * @param id The id of the tab to select
-		 */
-		selectTab(id: string): void;
-	}
-
-	/**
-	 * Defines the tab orientation of TabbedPanelComponent
-	 */
-	export enum TabOrientation {
-		Vertical = 'vertical',
-		Horizontal = 'horizontal'
-	}
-
-	/**
-	 * Layout of TabbedPanelComponent, can be used to initialize the component when using ModelBuilder
-	 */
-	export interface TabbedPanelLayout {
-		/**
-		 * Tab orientation. Default horizontal.
-		 */
-		orientation?: TabOrientation;
-
-		/**
-		 * Whether to show the tab icon. Default false.
-		 */
-		showIcon?: boolean;
-
-		/**
-		 * Whether to show the tab navigation pane even when there is only one tab. Default false.
-		 */
-		alwaysShowTabs?: boolean;
-	}
-
-	/**
-	 * Represents the tab group of TabbedPanelComponent
-	 */
-	export interface TabGroup {
-		/**
-		 * Title of the tab group
-		 */
-		title: string;
-
-		/**
-		 * children of the tab group
-		 */
-		tabs: Tab[];
-	}
-
-	/**
-	 * Builder for TabbedPanelComponent
-	 */
-	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties> {
-		/**
-		 * Add the tabs to the component
-		 * @param tabs tabs/tab groups to be added
-		 */
-		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties>;
-	}
-
-	export interface SliderComponentProperties extends ComponentProperties {
-		/**
-		 * The value selected on the slider. Default initial value is the minimum value.
-		 */
-		value?: number,
-		/**
-		 * The minimum value of the slider. Default value is 1.
-		 */
-		min?: number,
-		/**
-		 * The maximum value of the slider. Default value is 100.
-		 */
-		max?: number,
-		/**
-		 * The value between each "tick" of the slider. Default is 1.
-		 */
-		step?: number,
-		/**
-		 * Whether to show the tick marks on the slider. Default is false.
-		 */
-		showTicks?: boolean
-		/**
-		 * The width of the slider, not including the value box.
-		 */
-		width?: number | string;
-	}
-
-	export interface SliderComponent extends Component, SliderComponentProperties {
-		onChanged: vscode.Event<number>;
-		onInput: vscode.Event<number>;
-	}
-
-	/**
-	 * The heading levels an HTML heading element can be.
-	 */
-	export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
-
-	/**
-	 * The type of text this is - used to determine display color.
-	 */
-	export enum TextType {
-		Normal = 'Normal',
-		Error = 'Error',
-		UnorderedList = 'UnorderedList',
-		OrderedList = 'OrderedList'
-	}
-
-	export interface TextComponentProperties {
-		/**
-		 * The heading level for this component - if set the text component will be created as an h#
-		 * HTML element with this value being the #.
-		 */
-		headingLevel?: HeadingLevel;
-		/**
-		 * Sets the type of text box to be displayed
-		 */
-		textType?: TextType;
-	}
-
-	export namespace window {
-
-		/**
-		 * The reason that the dialog was closed
-		 */
-		export type CloseReason = 'close' | 'cancel' | 'ok';
-
-		export interface Dialog {
-			/**
-			 * Width of the dialog.
-			 * Default is 'narrow'.
-			 */
-			width?: DialogWidth;
-			/**
-			 * Dialog style type: normal, flyout, callout.
-			 * Default is 'flyout'.
-			 */
-			dialogStyle?: DialogStyle;
-			/**
-			 * Dialog position type: left, below and undefined.
-			 * Default is undefined.
-			 */
-			dialogPosition?: DialogPosition;
-			/**
-			 * Specify whether or not to render the Dialog header.
-			 * Default is true.
-			 */
-			renderHeader?: boolean;
-			/**
-			 * Specify whether or not to render the Dialog footer.
-			 * Default is true.
-			 */
-			renderFooter?: boolean;
-			/**
-			 * Positional data prior to opening of dialog.
-			 * Default is undefined.
-			 */
-			dialogProperties?: IDialogProperties;
-
-			/**
-			 * Fired when the dialog is closed for any reason. The value indicates the reason it was closed (such as 'ok' or 'cancel')
-			 */
-			onClosed: vscode.Event<CloseReason>;
-		}
-
-		export interface Wizard {
-			/**
-			 * Width of the wizard
-			 */
-			width?: DialogWidth;
-		}
-
-		/**
-		 * These dialog styles affect how the dialog displays in the application.
-		 * normal: Positioned top and centered.
-		 * flyout (default): Positioned full screen height, opens from the right side of the application.
-		 * callout: Opens below or beside parent element, contains footer section with buttons.
-		 */
-		export type DialogStyle = 'normal' | 'flyout' | 'callout';
-
-		/**
-		 * Where to position the dialog relative to the parent element
-		 */
-		export type DialogPosition = 'left' | 'below';
-
-		/**
-		 * The p
-		 * They are needed for positioning relative to the element which triggers the opening of the dialog.
-		 */
-		export interface IDialogProperties {
-			/**
-			 * x position of the dialog relative to the parent element
-			 */
-			xPos: number,
-			/**
-			 * y position of the dialog relative to the parent element
-			 */
-			yPos: number,
-			/**
-			 * width of the dialog
-			 */
-			width: number,
-			/**
-			 * height of the dialog
-			 */
-			height: number
-		}
-
-		/**
-		 * Create a dialog with the given title
-		 * @param title Title of the dialog, displayed at the top.
-		 * @param dialogName Name of the dialog.
-		 * @param width Width of the dialog, default is 'narrow'.
-		 * @param dialogStyle Defines the dialog style, default is 'flyout'.
-		 * @param dialogPosition Defines the dialog position, default is undefined
-		 * @param renderHeader Specify whether or not to render the Dialog header, default is true.
-		 * @param renderFooter Specify whether or not to render the Dialog footer, default is true.
-		 * @param dialogProperties Positional data prior to opening of dialog, default is undefined.
-		 */
-		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogProperties?: IDialogProperties): Dialog;
-
 	}
 
 	export interface TaskInfo {
@@ -765,13 +506,6 @@ declare module 'azdata' {
 		delete?: boolean;
 	}
 
-	export enum CardType {
-		/**
-		 * Card with the icon as a background image
-		 */
-		Image = 'Image'
-	}
-
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location
@@ -803,15 +537,6 @@ declare module 'azdata' {
 		 * Append data to an existing table data.
 		 */
 		appendData(data: any[][]): Thenable<void>;
-	}
-
-	export interface LinkArea {
-		/*
-		* Accessibility information used when screen reader interacts with this link.
-		* Generally, a link has no need to set the `role` of the accessibilityInformation;
-		* but it is exposed for situations that may require it.
-		*/
-		accessibilityInformation?: vscode.AccessibilityInformation
 	}
 
 	export interface IconColumnCellValue {
@@ -852,9 +577,25 @@ declare module 'azdata' {
 		url?: string;
 	}
 
+	export interface ContextMenuColumnCellValue {
+		/**
+		 * The title of the hyperlink. By default, the title is 'Show Actions'
+		 */
+		title?: string;
+		/**
+		 * commands for the menu. Use an array for a group and menu separators will be added.
+		 */
+		commands: (string | string[])[];
+		/**
+		 * context that will be passed to the commands.
+		 */
+		context?: { [key: string]: string | boolean | number } | string | boolean | number | undefined
+	}
+
 	export enum ColumnType {
 		icon = 3,
-		hyperlink = 4
+		hyperlink = 4,
+		contextMenu = 5
 	}
 
 	export interface TableColumn {
@@ -890,48 +631,14 @@ declare module 'azdata' {
 		action: ActionOnCellCheckboxCheck;
 	}
 
-	export interface ResultSetSummary {
-		/**
-		 * The visualization options for the result set.
-		 */
-		visualization?: VisualizationOptions;
+	export interface ContextMenuColumn extends TableColumn {
 	}
 
-	/**
-	 * Defines all the supported visualization types
-	 */
-	export type VisualizationType = 'bar' | 'count' | 'doughnut' | 'horizontalBar' | 'image' | 'line' | 'pie' | 'scatter' | 'table' | 'timeSeries';
-
-	/**
-	 * Defines the configuration options for visualization
-	 */
-	export interface VisualizationOptions {
-		type: VisualizationType;
-	}
-
-	export interface PropertiesContainerComponentProperties {
+	export interface QueryExecuteResultSetNotificationParams {
 		/**
-		 * Whether to show the button that will hide/show the content of the container. Default value is false.
+		 * Contains execution plans returned by the database in ResultSets.
 		 */
-		showToggleButton?: boolean;
-	}
-
-	export interface ServerInfo {
-		/**
-		 * The CPU count of the host running the server.
-		 */
-		cpuCount?: number;
-		/**
-		 * The physical memory of the host running the server.
-		 */
-		physicalMemoryInMb?: number;
-	}
-
-	export interface NodeInfo {
-		/**
-		 * Specify the icon for the node. The value could the path to the icon or and ADS icon defined in {@link SqlThemeIcon}.
-		 */
-		icon?: IconPath | SqlThemeIcon;
+		executionPlans: executionPlan.ExecutionPlanGraph[];
 	}
 
 	export interface ObjectMetadata {
@@ -962,24 +669,14 @@ declare module 'azdata' {
 		}
 	}
 
-	export interface ConnectionInfoSummary {
-		/**
-		 * Indicates whether the server version is supported by ADS. The default value is true. If the value is false, ADS will show a warning message.
-		 */
-		isSupportedVersion?: boolean;
-
-		/**
-		 * The messages that will be appended to the Azure Data Studio's warning message about unsupported versions.
-		 */
-		unsupportedVersionMessage?: string;
-	}
-
 	export enum DataProviderType {
-		TableDesignerProvider = 'TableDesignerProvider'
+		TableDesignerProvider = 'TableDesignerProvider',
+		ExecutionPlanProvider = 'ExecutionPlanProvider'
 	}
 
 	export namespace dataprotocol {
 		export function registerTableDesignerProvider(provider: designers.TableDesignerProvider): vscode.Disposable;
+		export function registerExecutionPlanProvider(provider: executionPlan.ExecutionPlanProvider): vscode.Disposable;
 	}
 
 	export namespace designers {
@@ -987,32 +684,44 @@ declare module 'azdata' {
 		 * Open a table designer window.
 		 * @param providerId The table designer provider Id.
 		 * @param tableInfo The table information. The object will be passed back to the table designer provider as the unique identifier for the table.
+		 * @param telemetryInfo: Optional Key-value pair containing any extra information that needs to be sent via telemetry
 		 */
-		export function openTableDesigner(providerId: string, tableInfo: TableInfo): Thenable<void>;
+		export function openTableDesigner(providerId: string, tableInfo: TableInfo, telemetryInfo?: { [key: string]: string }): Thenable<void>;
 
 		/**
 		 * Definition for the table designer provider.
 		 */
 		export interface TableDesignerProvider extends DataProvider {
 			/**
-			 * Gets the table designer information for the specified table.
+			 * Initialize the table designer for the specified table.
 			 * @param table the table information.
 			 */
-			getTableDesignerInfo(table: TableInfo): Thenable<TableDesignerInfo>;
+			initializeTableDesigner(table: TableInfo): Thenable<TableDesignerInfo>;
+
 			/**
 			 * Process the table change.
 			 * @param table the table information
-			 * @param viewModel the object contains the state of the table designer
 			 * @param tableChangeInfo the information about the change user made through the UI.
 			 */
-			processTableEdit(table: TableInfo, viewModel: DesignerViewModel, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
+			processTableEdit(table: TableInfo, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult<TableDesignerView>>;
 
 			/**
-			 * Save the table
+			 * Publish the changes.
 			 * @param table the table information
-			 * @param viewModel the object contains the state of the table designer
 			 */
-			saveTable(table: TableInfo, viewModel: DesignerViewModel): Thenable<void>;
+			publishChanges(table: TableInfo): Thenable<PublishChangesResult>;
+
+			/**
+			 * Generate script for the changes.
+			 * @param table the table information
+			 */
+			generateScript(table: TableInfo): Thenable<string>;
+
+			/**
+			 * Generate preview report describing the changes to be made.
+			 * @param table the table information
+			 */
+			generatePreviewReport(table: TableInfo): Thenable<GeneratePreviewReportResult>;
 
 			/**
 			 * Notify the provider that the table designer has been closed.
@@ -1053,6 +762,11 @@ declare module 'azdata' {
 			 * Extension can store additional information that the provider needs to uniquely identify a table.
 			 */
 			[key: string]: any;
+			/**
+			 * Table icon type that's shown in the editor tab. Default is the basic
+			 * table icon.
+			 */
+			tableIcon?: TableIcon;
 		}
 
 		/**
@@ -1067,14 +781,16 @@ declare module 'azdata' {
 			 * The initial state of the designer.
 			 */
 			viewModel: DesignerViewModel;
-			/**
-			 * The supported column types
-			 */
-			columnTypes: string[];
-			/**
-			 * The list of schemas in the database.
-			 */
-			schemas: string[];
+		}
+
+		/**
+		 * Table icon that's shown on the editor tab
+		 */
+		export enum TableIcon {
+			Basic = 'Basic',
+			Temporal = 'Temporal',
+			GraphNode = 'GraphNode',
+			GraphEdge = 'GraphEdge'
 		}
 
 		/**
@@ -1089,6 +805,10 @@ declare module 'azdata' {
 			Script = 'script',
 			ForeignKeys = 'foreignKeys',
 			CheckConstraints = 'checkConstraints',
+			Indexes = 'indexes',
+			PrimaryKeyName = 'primaryKeyName',
+			PrimaryKeyDescription = 'primaryKeyDescription',
+			PrimaryKeyColumns = 'primaryKeyColumns'
 		}
 		/**
 		 * Name of the common table column properties.
@@ -1099,7 +819,9 @@ declare module 'azdata' {
 			DefaultValue = 'defaultValue',
 			Length = 'length',
 			Name = 'name',
+			Description = 'description',
 			Type = 'type',
+			AdvancedType = 'advancedType',
 			IsPrimaryKey = 'isPrimaryKey',
 			Precision = 'precision',
 			Scale = 'scale'
@@ -1111,7 +833,8 @@ declare module 'azdata' {
 		 */
 		export enum TableForeignKeyProperty {
 			Name = 'name',
-			PrimaryKeyTable = 'primaryKeyTable',
+			Description = 'description',
+			ForeignTable = 'foreignTable',
 			OnDeleteAction = 'onDeleteAction',
 			OnUpdateAction = 'onUpdateAction',
 			Columns = 'columns'
@@ -1121,8 +844,8 @@ declare module 'azdata' {
 		 * Name of the columns mapping properties for foreign key.
 		 */
 		export enum ForeignKeyColumnMappingProperty {
-			PrimaryKeyColumn = 'primaryKeyColumn',
-			ForeignKeyColumn = 'foreignKeyColumn'
+			Column = 'column',
+			ForeignColumn = 'foreignColumn'
 		}
 
 		/**
@@ -1131,7 +854,25 @@ declare module 'azdata' {
 		 */
 		export enum TableCheckConstraintProperty {
 			Name = 'name',
+			Description = 'description',
 			Expression = 'expression'
+		}
+
+		/**
+		 * Name of the common index properties.
+		 * Extensions can use the name to access the designer view model.
+		 */
+		export enum TableIndexProperty {
+			Name = 'name',
+			Description = 'description',
+			Columns = 'columns'
+		}
+
+		/**
+		 * Name of the common properties of table index column specification.
+		 */
+		export enum TableIndexColumnSpecificationProperty {
+			Column = 'column'
 		}
 
 		/**
@@ -1159,14 +900,42 @@ declare module 'azdata' {
 			 */
 			foreignKeyTableOptions?: TableDesignerBuiltInTableViewOptions;
 			/**
+			 * Foreign key column mapping table options.
+			 * Common foreign key column mapping properties are handled by Azure Data Studio. see {@link ForeignKeyColumnMappingProperty}.
+			 * Default columns to display values are: Column, ForeignColumn.
+			 */
+			foreignKeyColumnMappingTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
 			 * Check constraints table options.
 			 * Common check constraint properties are handled by Azure Data Studio. see {@link TableCheckConstraintProperty}
 			 * Default columns to display values are: Name, Expression.
 			 */
 			checkConstraintTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			 * Indexes table options.
+			 * Common index properties are handled by Azure Data Studio. see {@link TableIndexProperty}
+			 * Default columns to display values are: Name.
+			 */
+			indexTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			* Index column specification table options.
+			* Common index properties are handled by Azure Data Studio. see {@link TableIndexColumnSpecificationProperty}
+			* Default columns to display values are: Column.
+			*/
+			indexColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			* Primary column specification table options.
+			* Common index properties are handled by Azure Data Studio. see {@link TableIndexColumnSpecificationProperty}
+			* Default columns to display values are: Column.
+			*/
+			primaryKeyColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			 * Additional primary key properties. Common primary key properties: primaryKeyName, primaryKeyDescription.
+			 */
+			additionalPrimaryKeyProperties?: DesignerDataPropertyInfo[];
 		}
 
-		export interface TableDesignerBuiltInTableViewOptions {
+		export interface TableDesignerBuiltInTableViewOptions extends DesignerTablePropertiesBase {
 			/**
 			 * Whether to show the table. Default value is false.
 			 */
@@ -1175,14 +944,6 @@ declare module 'azdata' {
 			 * Properties to be displayed in the table, other properties can be accessed in the properties view.
 			 */
 			propertiesToDisplay?: string[];
-			/**
-			 * Whether adding new rows is supported.
-			 */
-			canAddRows?: boolean;
-			/**
-			 * Whether removing rows is supported.
-			 */
-			canRemoveRows?: boolean;
 			/**
 			 * Additional properties for the entity.
 			 */
@@ -1245,46 +1006,64 @@ declare module 'azdata' {
 		 */
 		export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
 
-		/**
-		 * The properties for the table component in the designer.
-		 */
-		export interface DesignerTableProperties extends ComponentProperties {
-			/**
-			 * the name of the properties to be displayed, properties not in this list will be accessible in properties pane.
-			 */
-			columns?: string[];
-
-			/**
-			 * The display name of the object type.
-			 */
-			objectTypeDisplayName: string;
-
-			/**
-			 * the properties of the table data item.
-			 */
-			itemProperties?: DesignerDataPropertyInfo[];
-
-			/**
-			 * The data to be displayed.
-			 */
-			data?: DesignerTableComponentDataItem[];
-
+		export interface DesignerTablePropertiesBase {
 			/**
 			 * Whether user can add new rows to the table. The default value is true.
 			 */
 			canAddRows?: boolean;
-
 			/**
 			 * Whether user can remove rows from the table. The default value is true.
 			 */
 			canRemoveRows?: boolean;
+			/**
+			 * Whether to show confirmation when user removes a row. The default value is false.
+			 */
+			showRemoveRowConfirmation?: boolean;
+			/**
+			 * The confirmation message to be displayed when user removes a row.
+			 */
+			removeRowConfirmationMessage?: string;
+			/**
+			 * Whether to show the item detail in properties view. The default value is true.
+			 */
+			showItemDetailInPropertiesView?: boolean;
+			/**
+			 * The label of the add new button. The default value is 'Add New'.
+			 */
+			labelForAddNewButton?: string;
+		}
+
+		/**
+		 * The properties for the table component in the designer.
+		 */
+		export interface DesignerTableProperties extends ComponentProperties, DesignerTablePropertiesBase {
+			/**
+			 * the name of the properties to be displayed, properties not in this list will be accessible in properties pane.
+			 */
+			columns?: string[];
+			/**
+			 * The display name of the object type.
+			 */
+			objectTypeDisplayName: string;
+			/**
+			 * the properties of the table data item.
+			 */
+			itemProperties?: DesignerDataPropertyInfo[];
+			/**
+			 * The data to be displayed.
+			 */
+			data?: DesignerTableComponentDataItem[];
 		}
 
 		/**
 		 * The data item of the designer's table component.
 		 */
 		export interface DesignerTableComponentDataItem {
-			[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+			[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties | boolean;
+			/**
+			 * Whether the row can be deleted. The default value is true.
+			 */
+			canBeDeleted?: boolean;
 		}
 
 		/**
@@ -1341,9 +1120,21 @@ declare module 'azdata' {
 		export type DesignerEditPath = (string | number)[];
 
 		/**
+		 * Severity of the messages returned by the provider after processing an edit.
+		 * 'error': The issue must be fixed in order to commit the changes.
+		 * 'warning': Inform the user the potential risks with the current state. e.g. Having multiple edge constraints is only useful as a temporary state.
+		 * 'information': Informational message.
+		 */
+		export type DesignerIssueSeverity = 'error' | 'warning' | 'information';
+
+		/**
 		 * The result returned by the table designer provider after handling an edit request.
 		 */
-		export interface DesignerEditResult {
+		export interface DesignerEditResult<T> {
+			/**
+			 * The new view information if the view needs to be refreshed.
+			 */
+			view?: T;
 			/**
 			 * The view model object.
 			 */
@@ -1353,9 +1144,316 @@ declare module 'azdata' {
 			 */
 			isValid: boolean;
 			/**
-			 * Error messages of current state, and the property the caused the error.
+			 * Issues of current state.
 			 */
-			errors?: { message: string, property?: DesignerEditPath }[];
+			issues?: { severity: DesignerIssueSeverity, description: string, propertyPath?: DesignerEditPath }[];
+			/**
+			 * The input validation error.
+			 */
+			inputValidationError?: string;
+			/**
+			 * Metadata related to the table
+			 */
+			metadata?: { [key: string]: string };
 		}
+
+		/**
+		 * The result returned by the table designer provider after handling the publish changes request.
+		 */
+		export interface PublishChangesResult {
+			/**
+			 * The new table information after the changes are published.
+			 */
+			newTableInfo: TableInfo;
+			/**
+			 * The new view model.
+			 */
+			viewModel: DesignerViewModel;
+			/**
+			 * The new view.
+			 */
+			view: TableDesignerView;
+			/**
+			 * Metadata related to the table to be captured
+			 */
+			metadata?: { [key: string]: string };
+		}
+
+		export interface GeneratePreviewReportResult {
+			/**
+			 * Report generated for generate preview
+			 */
+			report: string;
+			/**
+			 * Format (mimeType) of the report
+			 */
+			mimeType: string;
+			/**
+			 * The table schema validation error.
+			 */
+			schemaValidationError?: string;
+			/**
+			 * Metadata related to the table to be captured
+			 */
+			metadata?: { [key: string]: string };
+		}
+	}
+
+	export namespace executionPlan {
+		export interface ExecutionPlanGraph {
+			/**
+			 * Root of the execution plan tree
+			 */
+			root: ExecutionPlanNode;
+			/**
+			 * Underlying query for the execution plan graph.
+			 */
+			query: string;
+			/**
+			 * String representation of graph
+			 */
+			graphFile: ExecutionPlanGraphInfo;
+			/**
+			 * Query recommendations for optimizing performance
+			 */
+			recommendations: ExecutionPlanRecommendations[];
+		}
+
+		export interface ExecutionPlanNode {
+			/**
+			 * Type of the node. This property determines the icon that is displayed for it
+			 */
+			type: string;
+			/**
+			 * Cost associated with the node
+			 */
+			cost: number;
+			/**
+			 * Cost of the node subtree
+			 */
+			subTreeCost: number;
+			/**
+			 * Relative cost of the node compared to its siblings.
+			 */
+			relativeCost: number;
+			/**
+			 * Time take by the node operation in milliseconds
+			 */
+			elapsedTimeInMs: number;
+			/**
+			 * Node properties to be shown in the tooltip
+			 */
+			properties: ExecutionPlanGraphElementProperty[];
+			/**
+			 * Display name for the node
+			 */
+			name: string;
+			/**
+			 * Description associated with the node.
+			 */
+			description: string;
+			/**
+			 * Subtext displayed under the node name
+			 */
+			subtext: string[];
+			/**
+			 * Direct children of the nodes.
+			 */
+			children: ExecutionPlanNode[];
+			/**
+			 * Edges corresponding to the children.
+			 */
+			edges: ExecutionPlanEdge[];
+			/**
+			 * Warning/parallelism badges applicable to the current node
+			 */
+			badges: ExecutionPlanBadge[];
+		}
+
+		export interface ExecutionPlanBadge {
+			/**
+			 * Type of the node overlay. This determines the icon that is displayed for it
+			 */
+			type: BadgeType;
+			/**
+			 * Text to display for the overlay tooltip
+			 */
+			tooltip: string;
+		}
+
+		export enum BadgeType {
+			Warning = 0,
+			CriticalWarning = 1,
+			Parallelism = 2
+		}
+
+		export interface ExecutionPlanEdge {
+			/**
+			 * Count of the rows returned by the subtree of the edge.
+			 */
+			rowCount: number;
+			/**
+			 * Size of the rows returned by the subtree of the edge.
+			 */
+			rowSize: number;
+			/**
+			 * Edge properties to be shown in the tooltip.
+			 */
+			properties: ExecutionPlanGraphElementProperty[]
+		}
+
+		export interface ExecutionPlanGraphElementProperty {
+			/**
+			 * Name of the property
+			 */
+			name: string;
+			/**
+			 * value for the property
+			 */
+			value: string | ExecutionPlanGraphElementProperty[];
+			/**
+			 * Flag to show/hide props in tooltip
+			 */
+			showInTooltip: boolean;
+			/**
+			 * Display order of property
+			 */
+			displayOrder: number;
+			/**
+			 *  Flag to indicate if the property has a longer value so that it will be shown at the bottom of the tooltip
+			 */
+			positionAtBottom: boolean;
+			/**
+			 * Display value of property to show in tooltip and other UI element.
+			 */
+			displayValue: string;
+		}
+
+		export interface ExecutionPlanRecommendations {
+			/**
+			 * Text displayed in the show plan graph control description
+			 */
+			displayString: string;
+			/**
+			 * Query that is recommended to the user
+			 */
+			queryText: string;
+			/**
+			 * Query that will be opened in a new file once the user click on the recommendation
+			 */
+			queryWithDescription: string;
+		}
+
+		export interface ExecutionPlanGraphInfo {
+			/**
+			 * File contents
+			 */
+			graphFileContent: string;
+			/**
+			 * File type for execution plan. This will be the file type of the editor when the user opens the graph file
+			 */
+			graphFileType: string;
+		}
+
+		export interface GetExecutionPlanResult extends ResultStatus {
+			graphs: ExecutionPlanGraph[]
+		}
+
+		export interface ExecutionGraphComparisonResult {
+			/**
+			 * The base ExecutionPlanNode for the ExecutionGraphComparisonResult.
+			 */
+			baseNode: ExecutionPlanNode;
+			/**
+			 * The children of the ExecutionGraphComparisonResult.
+			 */
+			children: ExecutionGraphComparisonResult[];
+			/**
+			 * The group index of the ExecutionGraphComparisonResult.
+			 */
+			groupIndex: number;
+			/**
+			 * Flag to indicate if the ExecutionGraphComparisonResult has a matching node in the compared execution plan.
+			 */
+			hasMatch: boolean;
+			/**
+			 * List of matching nodes for the ExecutionGraphComparisonResult.
+			 */
+			matchingNodes: ExecutionGraphComparisonResult[];
+			/**
+			 * The parent of the ExecutionGraphComparisonResult.
+			 */
+			parentNode: ExecutionGraphComparisonResult;
+		}
+
+		export interface ExecutionPlanComparisonResult extends ResultStatus {
+			firstComparisonResult: ExecutionGraphComparisonResult;
+			secondComparisonResult: ExecutionGraphComparisonResult;
+		}
+
+		export interface ExecutionPlanProvider extends DataProvider {
+			// execution plan service methods
+
+			/**
+			 * Gets the execution plan graph from the provider for a given plan file
+			 * @param planFile file that contains the execution plan
+			 */
+			getExecutionPlan(planFile: ExecutionPlanGraphInfo): Thenable<GetExecutionPlanResult>;
+			/**
+			 * Compares two execution plans and identifies matching regions in both execution plans.
+			 * @param firstPlanFile file that contains the first execution plan.
+			 * @param secondPlanFile file that contains the second execution plan.
+			 */
+			compareExecutionPlanGraph(firstPlanFile: ExecutionPlanGraphInfo, secondPlanFile: ExecutionPlanGraphInfo): Thenable<ExecutionPlanComparisonResult>;
+		}
+	}
+
+	/**
+	 * Component to display text with an icon representing the severity
+	 */
+	export interface InfoBoxComponent extends Component, InfoBoxComponentProperties {
+		/**
+		 * An event fired when the InfoBox is clicked
+		 */
+		onDidClick: vscode.Event<void>;
+		/**
+		 * An event fired when the Infobox link is clicked
+		 */
+		onLinkClick: vscode.Event<InfoBoxLinkClickEventArgs>;
+	}
+
+	export interface InfoBoxComponentProperties {
+		/**
+		 * Sets whether the infobox is clickable or not. This will display a right arrow at the end of infobox text.
+		 * Default value is false.
+		 */
+		isClickable?: boolean | undefined;
+
+		/**
+		 * Sets the ariaLabel for the right arrow button that shows up in clickable infoboxes
+		 */
+		clickableButtonAriaLabel?: string;
+
+		/**
+		 * List of links to embed within the text. If links are specified there must be placeholder
+		 * values in the value indicating where the links should be placed, in the format {i}
+		 *
+		 * e.g. "Click {0} for more information!""
+		 */
+		links?: LinkArea[];
+	}
+
+	/**
+	 * Event argument for infobox link click event.
+	 */
+	export interface InfoBoxLinkClickEventArgs {
+		/**
+		 * Index of the link selected
+		 */
+		index: number;
+		/**
+		 * Link that is clicked
+		 */
+		link: LinkArea;
 	}
 }

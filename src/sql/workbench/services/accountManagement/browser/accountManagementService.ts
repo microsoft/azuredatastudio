@@ -377,8 +377,8 @@ export class AccountManagementService implements IAccountManagementService {
 		const accounts = await this._accountStore.getAccountsByProvider(providerMetadata.id);
 		const updatedAccounts = await provider.initialize(accounts);
 
-		// Don't add the accounts that are about to get deleted to the cache.
-		this._providers[providerMetadata.id].accounts = updatedAccounts.filter(s => s.delete === false);
+		// Don't add the accounts that are explicitly marked to be deleted to the cache.
+		this._providers[providerMetadata.id].accounts = updatedAccounts.filter(s => !s.delete);
 
 		const writePromises = updatedAccounts.map(async (account) => {
 			if (account.delete === true) {

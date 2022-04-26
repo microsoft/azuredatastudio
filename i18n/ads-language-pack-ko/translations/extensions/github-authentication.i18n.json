@@ -14,8 +14,8 @@
 		},
 		"dist/githubServer": {
 			"signingIn": "$(mark-github) github.com에 로그인하는 중...",
-			"signingInEnterprise": "$(mark-github) {0}에 로그인하는 중...",
-			"status.git.signIn.name": "GitHub 로그인"
+			"status.git.signIn.name": "GitHub 로그인",
+			"validUri": "GitHub 로그인 페이지에서 유효한 URI를 입력하세요."
 		},
 		"package": {
 			"description": "GitHub 인증 공급자",

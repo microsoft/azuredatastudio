@@ -2,14 +2,13 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.11.0",
+  "version": "1.1.0",
   "publisher": "Microsoft",
-  "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.32.0"
+    "azdata": ">=1.35.0"
   },
   "activationEvents": [
     "onCommand:arc.connectToController",
@@ -178,6 +177,20 @@
                           "inputWidth": "350px",
                           "variableName": "AZDATA_NB_VAR_ARC_CLUSTER_CONTEXT",
                           "configFileVariableName": "AZDATA_NB_VAR_ARC_CONFIG_FILE"
+                        },
+                        {
+                          "type": "options",
+                          "label": "%arc.data.controller.connectivity.mode%",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                          "options": {
+                            "values": [
+                              "Indirect",
+                              "Direct"
+                            ],
+                            "defaultValue": "Indirect",
+                            "optionsType": "radio"
+                          }
                         }
                       ]
                     }
@@ -260,20 +273,6 @@
                           "type": "readonly_text",
                           "label": "%arc.data.controller.details.description%",
                           "labelWidth": "600px"
-                        },
-                        {
-                          "type": "options",
-                          "label": "%arc.data.controller.connectivity.mode%",
-                          "required": true,
-                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                          "options": {
-                            "values": [
-                              "Indirect",
-                              "Direct"
-                            ],
-                            "defaultValue": "Indirect",
-                            "optionsType": "radio"
-                          }
                         },
                         {
                           "type": "text",
@@ -360,6 +359,49 @@
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
                             "value": "Direct"
+                          }
+                        },
+                        {
+                          "type": "options",
+                          "label": "%arc.data.controller.log.analytics.workspace.names%",
+                          "variableName": "AZDATA_NB_VAR_LOG_ANALYTICS_WORKSPACE_NAMES",
+                          "required": true,
+                          "options": {
+                            "source": {
+                              "providerId": "arc.logAnalyticsWorkspaceNames"
+                            },
+                            "optionsType": "dropdown"
+                          },
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_AUTO_UPLOAD_LOGS",
+                            "value": "true"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "label": "%arc.data.controller.log.analytics.workspace.id%",
+                          "required": true,
+                          "isEvaluated": true,
+                          "variableName": "AZDATA_NB_VAR_LOG_ANALYTICS_WORKSPACE_ID",
+                          "valueProvider": {
+                            "providerId": "workspace-name-to-id",
+                            "triggerFields": [
+                              "AZDATA_NB_VAR_LOG_ANALYTICS_WORKSPACE_NAMES"
+                            ]
+                          },
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_AUTO_UPLOAD_LOGS",
+                            "value": "true"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "label": "%arc.data.controller.log.analytics.primary.key%",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_LOG_ANALYTICS_PRIMARY_KEY",
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_AUTO_UPLOAD_LOGS",
+                            "value": "true"
                           }
                         }
                       ]
@@ -1046,16 +1088,50 @@
                     "fields": [
                       {
                         "type": "options",
-                        "label": "%arc.sql.replicas%",
+                        "label": "%arc.sql.service.tier.label%",
+                        "variableName": "AZDATA_NB_VAR_SQL_SERVICE_TIER",
+                        "description": "%arc.sql.service.tier.description%",
+                        "required": true,
+                        "options": {
+                          "values": [
+                            {
+                              "name": "BusinessCritical",
+                              "displayName": "%arc.sql.service.tier.business.critical%"
+                            },
+                            {
+                              "name": "GeneralPurpose",
+                              "displayName": "%arc.sql.service.tier.general.purpose%"
+                            }
+                          ],
+                          "defaultValue": "BusinessCritical",
+                          "optionsType": "radio"
+                        }
+                      },
+                      {
+                        "type": "checkbox",
+                        "label": "%arc.sql.dev.use.label%",
+                        "variableName": "AZDATA_NB_VAR_SQL_DEV_USE",
+                        "description": "%arc.sql.dev.use.description%",
+                        "defaultValue": false
+                      },
+                      {
+                        "type": "options",
+                        "label": "%arc.sql.high.availability%",
                         "description": "%arc.sql.high.availability.description%",
                         "required": true,
                         "variableName": "AZDATA_NB_VAR_SQL_REPLICAS",
                         "options": {
                           "values": [
-                            "%arc.sql.two.replicas%",
-                            "%arc.sql.three.replicas%"
+                            {
+                              "name": "2",
+                              "displayName": "%arc.sql.two.replicas%"
+                            },
+                            {
+                              "name": "3",
+                              "displayName": "%arc.sql.three.replicas%"
+                            }
                           ],
-                          "defaultValue": "%arc.sql.two.replicas%",
+                          "defaultValue": "2",
                           "optionsType": "radio"
                         },
                         "dynamicOptions":
@@ -1063,14 +1139,24 @@
                           "target": "AZDATA_NB_VAR_SQL_SERVICE_TIER",
                           "alternates": [
                             {
-                              "selection": "%arc.sql.service.tier.general.purpose%",
+                              "selection": "GeneralPurpose",
                               "alternateValues": [
-                                "%arc.sql.one.replica%"
+                                {
+                                  "name": "1",
+                                  "displayName": "%arc.sql.one.replica%"
+                                }
                               ],
-                              "defaultValue": "%arc.sql.one.replica%"
+                              "defaultValue": "1"
                             }
                           ]
                         }
+                      },
+                      {
+                        "type": "checkbox",
+                        "label": "%arc.sql.license.type.label%",
+                        "variableName": "AZDATA_NB_VAR_SQL_LICENSE_TYPE",
+                        "description": "%arc.sql.license.type.description%",
+                        "defaultValue": false
                       },
                       {
                         "label": "%arc.storage-class.data.label%",
@@ -1199,62 +1285,6 @@
                             "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
                           }
                         ]
-                      },
-                      {
-                        "type": "options",
-                        "label": "%arc.sql.service.tier.label%",
-                        "variableName": "AZDATA_NB_VAR_SQL_SERVICE_TIER",
-                        "description": "%arc.sql.service.tier.description%",
-                        "required": true,
-                        "options": {
-                          "values": [
-                            "%arc.sql.service.tier.business.critical%",
-                            "%arc.sql.service.tier.general.purpose%"
-                          ],
-                          "defaultValue": "%arc.sql.service.tier.business.critical%",
-                          "optionsType": "radio"
-                        }
-                      },
-                      {
-                        "type": "checkbox",
-                        "label": "%arc.sql.dev.use.label%",
-                        "variableName": "AZDATA_NB_VAR_SQL_DEV_USE",
-                        "description": "%arc.sql.dev.use.description%",
-                        "defaultValue": false
-                      },
-                      {
-                        "type": "checkbox",
-                        "label": "%arc.sql.license.type.label%",
-                        "variableName": "AZDATA_NB_VAR_SQL_LICENSE_TYPE",
-                        "description": "%arc.sql.license.type.description%",
-                        "defaultValue": false
-                      }
-                    ]
-                  },
-                  {
-                    "title": "%arc.sql.instance.retention.policy.title%",
-                    "fields": [
-                      {
-                        "type": "readonly_text",
-                        "label": "%arc.sql.pitr.retention.description%",
-                        "labelWidth": "600px",
-                        "enabled": true,
-                        "fieldHeight": "10px",
-                        "links": [
-                          {
-                            "text": "%arc.agreement.sql.help.text.learn.more%",
-                            "url": "https://docs.microsoft.com/azure/azure-arc/data/point-in-time-restore"
-                          }
-                        ]
-                      },
-                      {
-                        "label": "%arc.sql.retention.days.label%",
-                        "description": "%arc.sql.retention.days.description%",
-                        "variableName": "AZDATA_NB_VAR_SQL_RETENTION_DAYS",
-                        "type": "number",
-                        "min": 0,
-                        "max": 35,
-                        "required": false
                       }
                     ]
                   },
@@ -1329,6 +1359,33 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "title": "%arc.sql.instance.retention.policy.title%",
+                    "fields": [
+                      {
+                        "type": "readonly_text",
+                        "label": "%arc.sql.pitr.retention.description%",
+                        "labelWidth": "600px",
+                        "enabled": true,
+                        "fieldHeight": "10px",
+                        "links": [
+                          {
+                            "text": "%arc.agreement.sql.help.text.learn.more%",
+                            "url": "https://docs.microsoft.com/azure/azure-arc/data/point-in-time-restore"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "%arc.sql.retention.days.label%",
+                        "description": "%arc.sql.retention.days.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_RETENTION_DAYS",
+                        "type": "number",
+                        "min": 1,
+                        "max": 35,
+                        "required": false
+                      }
+                    ]
                   }
                  ]
               }
@@ -1376,6 +1433,9 @@
     "resourceDeploymentOptionsSources": [
       {
         "id": "arc.controllers"
+      },
+      {
+        "id": "arc.logAnalyticsWorkspaceNames"
       }
     ]
   },
@@ -1397,7 +1457,7 @@
     "should": "^13.2.3",
     "sinon": "^9.0.2",
     "typemoq": "2.1.0",
-    "vscodetestcover": "^1.1.0"
+    "@microsoft/vscodetestcover": "^1.2.0"
   },
   "__metadata": {
     "id": "68",

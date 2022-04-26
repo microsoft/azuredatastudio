@@ -11,6 +11,7 @@ import { promptForPublishProfile } from './publishDatabaseDialog';
 import { getDefaultPublishDeploymentOptions, getVscodeMssqlApi } from '../common/utils';
 import { IConnectionInfo } from 'vscode-mssql';
 import { IDeploySettings } from '../models/IDeploySettings';
+import { getPublishServerName } from './utils';
 
 /**
  * Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
@@ -109,13 +110,17 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 	// Add Create New at the top now so it'll show second to top below the suggested name of the current project
 	dbQuickpicks.unshift({ label: `$(add) ${constants.createNew}`, isCreateNew: true });
 
-	// Ensure the project name is an option, either adding it if it doesn't already exist or moving it to the top if it does
-	const projectNameIndex = dbs.findIndex(db => db === project.projectFileName);
+	// if a publish profile was loaded and had a database name, use that instead of the project file name
+	const dbName = publishProfile?.databaseName || project.projectFileName;
+
+	// Ensure the project name or name specified in the publish profile is an option, either adding it if it
+	// doesn't already exist or moving it to the top if it does
+	const projectNameIndex = dbs.findIndex(db => db === dbName);
 	if (projectNameIndex === -1) {
-		dbQuickpicks.unshift({ label: project.projectFileName, description: constants.newText });
+		dbQuickpicks.unshift({ label: dbName, description: constants.newText });
 	} else {
 		dbQuickpicks.splice(projectNameIndex, 1);
-		dbQuickpicks.unshift({ label: project.projectFileName });
+		dbQuickpicks.unshift({ label: dbName });
 	}
 
 	let databaseName: string | undefined = undefined;
@@ -196,17 +201,17 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 		serverName: connectionProfile?.server || '',
 		connectionUri: connectionUri || '',
 		sqlCmdVariables: sqlCmdVariables,
-		deploymentOptions: await getDefaultPublishDeploymentOptions(project),
+		deploymentOptions: publishProfile?.options ?? await getDefaultPublishDeploymentOptions(project),
 		profileUsed: !!publishProfile
 	};
 	return settings;
 }
 
-export async function launchPublishTargetOption(): Promise<string | undefined> {
+export async function launchPublishTargetOption(project: Project): Promise<constants.PublishTargetType | undefined> {
 	// Show options to user for deploy to existing server or docker
-
+	const name = getPublishServerName(project.getProjectTargetVersion());
 	const publishOption = await vscode.window.showQuickPick(
-		[constants.publishToExistingServer, constants.publishToDockerContainer],
+		[constants.publishToExistingServer(name), constants.publishToDockerContainer(name)],
 		{ title: constants.selectPublishOption, ignoreFocusOut: true });
 
 	// Return when user hits escape
@@ -214,6 +219,13 @@ export async function launchPublishTargetOption(): Promise<string | undefined> {
 		return undefined;
 	}
 
-	return publishOption;
+	switch (publishOption) {
+		case constants.publishToExistingServer(name):
+			return constants.PublishTargetType.existingServer;
+		case constants.publishToDockerContainer(name):
+			return constants.PublishTargetType.docker;
+		default:
+			return constants.PublishTargetType.existingServer;
+	}
 }
 

@@ -21,12 +21,14 @@ suite('notebookUtils', function (): void {
 	const testKernel: nb.IStandardKernel = {
 		name: 'testName',
 		displayName: 'testDisplayName',
-		connectionProviderIds: ['testId1', 'testId2']
+		connectionProviderIds: ['testId1', 'testId2'],
+		supportedLanguages: ['python']
 	};
 	const sqlStandardKernel: nb.IStandardKernel = {
 		name: notebookConstants.SQL,
 		displayName: notebookConstants.SQL,
-		connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER]
+		connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER],
+		supportedLanguages: ['sql']
 	};
 
 	function setupMockNotebookService() {
@@ -41,13 +43,13 @@ suite('notebookUtils', function (): void {
 
 		// getStandardKernelsForProvider
 		let returnHandler = (provider) => {
+			let result = undefined;
 			if (provider === testProvider) {
-				return [testKernel];
+				result = [testKernel];
 			} else if (provider === SQL_NOTEBOOK_PROVIDER) {
-				return [sqlStandardKernel];
-			} else {
-				return undefined;
+				result = [sqlStandardKernel];
 			}
+			return Promise.resolve(result);
 		};
 		mockNotebookService.setup(n => n.getStandardKernelsForProvider(TypeMoq.It.isAnyString())).returns(returnHandler);
 		mockNotebookService.setup(n => n.getStandardKernelsForProvider(TypeMoq.It.isAnyString())).returns(returnHandler);
@@ -91,24 +93,25 @@ suite('notebookUtils', function (): void {
 	test('getStandardKernelsForProvider Test', async function (): Promise<void> {
 		setupMockNotebookService();
 
-		let result = getStandardKernelsForProvider(undefined, undefined);
+		let result = await getStandardKernelsForProvider(undefined, undefined);
 		assert.deepStrictEqual(result, []);
 
-		result = getStandardKernelsForProvider(undefined, mockNotebookService.object);
+		result = await getStandardKernelsForProvider(undefined, mockNotebookService.object);
 		assert.deepStrictEqual(result, []);
 
-		result = getStandardKernelsForProvider('testProvider', undefined);
+		result = await getStandardKernelsForProvider('testProvider', undefined);
 		assert.deepStrictEqual(result, []);
 
-		result = getStandardKernelsForProvider('NotARealProvider', mockNotebookService.object);
+		result = await getStandardKernelsForProvider('NotARealProvider', mockNotebookService.object);
 		assert.deepStrictEqual(result, [Object.assign({ notebookProvider: 'NotARealProvider' }, sqlStandardKernel)]);
 
-		result = getStandardKernelsForProvider('testProvider', mockNotebookService.object);
+		result = await getStandardKernelsForProvider('testProvider', mockNotebookService.object);
 		assert.deepStrictEqual(result, [<IStandardKernelWithProvider>{
 			name: 'testName',
 			displayName: 'testDisplayName',
 			connectionProviderIds: ['testId1', 'testId2'],
-			notebookProvider: 'testProvider'
+			notebookProvider: 'testProvider',
+			supportedLanguages: ['python']
 		}]);
 	});
 

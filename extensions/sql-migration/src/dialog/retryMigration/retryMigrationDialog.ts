@@ -5,91 +5,92 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as mssql from '../../../../mssql';
-import { azureResource } from 'azureResource';
-import { getLocations, getResourceGroupFromId, getBlobContainerId, getFullResourceGroupFromId, getResourceName } from '../../api/azure';
-import { MigrationMode, MigrationStateModel, NetworkContainerType, SavedInfo, Page } from '../../models/stateMachine';
-import { MigrationContext } from '../../models/migrationLocalStorage';
+import * as mssql from 'mssql';
+import { azureResource } from 'azurecore';
+import { getLocations, getResourceGroupFromId, getBlobContainerId, getFullResourceGroupFromId, getResourceName, DatabaseMigration, getMigrationTargetInstance } from '../../api/azure';
+import { MigrationMode, MigrationStateModel, NetworkContainerType, SavedInfo } from '../../models/stateMachine';
+import { MigrationServiceContext } from '../../models/migrationLocalStorage';
 import { WizardController } from '../../wizard/wizardController';
 import { getMigrationModeEnum, getMigrationTargetTypeEnum } from '../../constants/helper';
+import * as constants from '../../constants/strings';
 
 export class RetryMigrationDialog {
-	private _context: vscode.ExtensionContext;
-	private _migration: MigrationContext;
 
-	constructor(context: vscode.ExtensionContext, migration: MigrationContext) {
-		this._context = context;
-		this._migration = migration;
+	constructor(
+		private readonly _context: vscode.ExtensionContext,
+		private readonly _serviceContext: MigrationServiceContext,
+		private readonly _migration: DatabaseMigration,
+		private readonly _onClosedCallback: () => Promise<void>) {
 	}
 
-	private createMigrationStateModel(migration: MigrationContext, connectionId: string, serverName: string, api: mssql.IExtension, location: azureResource.AzureLocation): MigrationStateModel {
+	private async createMigrationStateModel(serviceContext: MigrationServiceContext, migration: DatabaseMigration, connectionId: string, serverName: string, api: mssql.IExtension, location: azureResource.AzureLocation): Promise<MigrationStateModel> {
 		let stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration);
 
-		const sourceDatabaseName = migration.migrationContext.properties.sourceDatabaseName;
+		const sourceDatabaseName = migration.properties.sourceDatabaseName;
 		let savedInfo: SavedInfo;
 		savedInfo = {
-			closedPage: Page.AzureAccount,
-
-			// AzureAccount
-			azureAccount: migration.azureAccount,
-			azureTenant: migration.azureAccount.properties.tenants[0],
+			closedPage: 0,
 
 			// DatabaseSelector
-			selectedDatabases: [],
+			databaseAssessment: [sourceDatabaseName],
 
 			// SKURecommendation
-			databaseAssessment: [],
 			databaseList: [sourceDatabaseName],
-			migrationDatabases: [],
 			serverAssessment: null,
-
+			skuRecommendation: null,
 			migrationTargetType: getMigrationTargetTypeEnum(migration)!,
-			subscription: migration.subscription,
+
+			// TargetSelection
+			azureAccount: serviceContext.azureAccount!,
+			azureTenant: serviceContext.azureAccount!.properties.tenants[0]!,
+			subscription: serviceContext.subscription!,
 			location: location,
 			resourceGroup: {
-				id: getFullResourceGroupFromId(migration.targetManagedInstance.id),
-				name: getResourceGroupFromId(migration.targetManagedInstance.id),
-				subscription: migration.subscription
+				id: getFullResourceGroupFromId(migration.id),
+				name: getResourceGroupFromId(migration.id),
+				subscription: serviceContext.subscription!,
 			},
-			targetServerInstance: migration.targetManagedInstance,
+			targetServerInstance: await getMigrationTargetInstance(
+				serviceContext.azureAccount!,
+				serviceContext.subscription!,
+				migration),
 
 			// MigrationMode
 			migrationMode: getMigrationModeEnum(migration),
 
 			// DatabaseBackup
-			targetSubscription: migration.subscription,
-			targetDatabaseNames: [migration.migrationContext.name],
+			targetDatabaseNames: [migration.name],
 			networkContainerType: null,
 			networkShares: [],
 			blobs: [],
 
 			// Integration Runtime
-			migrationServiceId: migration.migrationContext.properties.migrationService,
+			sqlMigrationService: serviceContext.migrationService,
 		};
 
-		const getStorageAccountResourceGroup = (storageAccountResourceId: string) => {
+		const getStorageAccountResourceGroup = (storageAccountResourceId: string): azureResource.AzureResourceResourceGroup => {
 			return {
 				id: getFullResourceGroupFromId(storageAccountResourceId!),
 				name: getResourceGroupFromId(storageAccountResourceId!),
-				subscription: migration.subscription
+				subscription: this._serviceContext.subscription!
 			};
 		};
-		const getStorageAccount = (storageAccountResourceId: string) => {
+		const getStorageAccount = (storageAccountResourceId: string): azureResource.AzureGraphResource => {
 			const storageAccountName = getResourceName(storageAccountResourceId);
 			return {
 				type: 'microsoft.storage/storageaccounts',
 				id: storageAccountResourceId!,
 				tenantId: savedInfo.azureTenant?.id!,
-				subscriptionId: migration.subscription.id,
+				subscriptionId: this._serviceContext.subscription?.id!,
 				name: storageAccountName,
 				location: savedInfo.location!.name,
 			};
 		};
 
-		const sourceLocation = migration.migrationContext.properties.backupConfiguration.sourceLocation;
+		const sourceLocation = migration.properties.backupConfiguration?.sourceLocation;
 		if (sourceLocation?.fileShare) {
 			savedInfo.networkContainerType = NetworkContainerType.NETWORK_SHARE;
-			const storageAccountResourceId = migration.migrationContext.properties.backupConfiguration.targetLocation?.storageAccountResourceId!;
+			const storageAccountResourceId = migration.properties.backupConfiguration?.targetLocation?.storageAccountResourceId!;
 			savedInfo.networkShares = [
 				{
 					password: '',
@@ -108,9 +109,9 @@ export class RetryMigrationDialog {
 					blobContainer: {
 						id: getBlobContainerId(getFullResourceGroupFromId(storageAccountResourceId!), getResourceName(storageAccountResourceId!), sourceLocation?.azureBlob.blobContainerName),
 						name: sourceLocation?.azureBlob.blobContainerName,
-						subscription: migration.subscription
+						subscription: this._serviceContext.subscription!
 					},
-					lastBackupFile: getMigrationModeEnum(migration) === MigrationMode.OFFLINE ? migration.migrationContext.properties.offlineConfiguration.lastBackupName! : undefined,
+					lastBackupFile: getMigrationModeEnum(migration) === MigrationMode.OFFLINE ? migration.properties.offlineConfiguration?.lastBackupName! : undefined,
 					storageAccount: getStorageAccount(storageAccountResourceId!),
 					resourceGroup: getStorageAccountResourceGroup(storageAccountResourceId!),
 					storageKey: ''
@@ -125,10 +126,18 @@ export class RetryMigrationDialog {
 	}
 
 	public async openDialog(dialogName?: string) {
-		const locations = await getLocations(this._migration.azureAccount, this._migration.subscription);
+		const locations = await getLocations(
+			this._serviceContext.azureAccount!,
+			this._serviceContext.subscription!);
+
+		const targetInstance = await getMigrationTargetInstance(
+			this._serviceContext.azureAccount!,
+			this._serviceContext.subscription!,
+			this._migration);
+
 		let location: azureResource.AzureLocation;
 		locations.forEach(azureLocation => {
-			if (azureLocation.name === this._migration.targetManagedInstance.location) {
+			if (azureLocation.name === targetInstance.location) {
 				location = azureLocation;
 			}
 		});
@@ -148,9 +157,16 @@ export class RetryMigrationDialog {
 		}
 
 		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
-		const stateModel = this.createMigrationStateModel(this._migration, connectionId, serverName, api, location!);
+		const stateModel = await this.createMigrationStateModel(this._serviceContext, this._migration, connectionId, serverName, api, location!);
 
-		const wizardController = new WizardController(this._context, stateModel);
-		await wizardController.openWizard(stateModel.sourceConnectionId);
+		if (await stateModel.loadSavedInfo()) {
+			const wizardController = new WizardController(
+				this._context,
+				stateModel,
+				this._onClosedCallback);
+			await wizardController.openWizard(stateModel.sourceConnectionId);
+		} else {
+			void vscode.window.showInformationMessage(constants.MIGRATION_CANNOT_RETRY);
+		}
 	}
 }

@@ -2,7 +2,7 @@
   "name": "data-workspace",
   "displayName": "Data Workspace",
   "description": "Additional common functionality for database projects",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -133,12 +133,12 @@
       "view/item/context": [
         {
           "command": "projects.manageProject",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project && azdataAvailable",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && azdataAvailable",
           "group": "0_projectsFirst@1"
         },
         {
           "command": "projects.removeProject",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "9_dbProjectsLast@9"
         }
       ]
@@ -190,6 +190,6 @@
     "should": "^13.2.3",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.1.0"
+    "@microsoft/vscodetestcover": "^1.2.0"
   }
 }

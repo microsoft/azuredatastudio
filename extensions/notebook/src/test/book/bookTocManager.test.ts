@@ -576,8 +576,7 @@ describe('BookTocManagerTests', function () {
 					bookTocManager = new BookTocManager(sourceBookModel);
 					const fileBasename = `addSectionTest-${generateGuid()}`;
 					const sectionTitle = 'Section Test';
-					const testFilePath = path.join(run.sectionA.contentFolder, 'sectionA', fileBasename).concat(FileExtension.Markdown);
-					await fs.writeFile(testFilePath, '');
+					const testFilePath = path.join(run.sectionA.contentFolder, 'sectionA', sectionTitle,fileBasename).concat(FileExtension.Markdown);
 					const pathDetails = new TocEntryPathHandler(testFilePath, run.sourceBook.root, sectionTitle);
 					await bookTocManager.addNewTocEntry(pathDetails, sectionA, true);
 					let toc: JupyterBookSection[] = yaml.safeLoad((await fs.promises.readFile(run.sourceBook.tocPath)).toString());

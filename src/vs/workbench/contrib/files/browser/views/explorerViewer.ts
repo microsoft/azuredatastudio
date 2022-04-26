@@ -49,7 +49,6 @@ import { ICompressibleTreeRenderer } from 'vs/base/browser/ui/tree/objectTree';
 import { ICompressedTreeNode } from 'vs/base/browser/ui/tree/compressedObjectTreeModel';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { isNumber } from 'vs/base/common/types';
-import { domEvent } from 'vs/base/browser/event';
 import { IEditableData } from 'vs/workbench/common/views';
 import { IEditorInput } from 'vs/workbench/common/editor';
 import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentity';
@@ -92,25 +91,34 @@ export class ExplorerDataSource implements IAsyncDataSource<ExplorerItem | Explo
 			return Promise.resolve(element);
 		}
 
+		const wasError = element.isError;
 		const sortOrder = this.explorerService.sortOrderConfiguration.sortOrder;
-		const promise = element.fetchChildren(sortOrder).then(undefined, e => {
-
-			if (element instanceof ExplorerItem && element.isRoot) {
-				if (this.contextService.getWorkbenchState() === WorkbenchState.FOLDER) {
-					// Single folder create a dummy explorer item to show error
-					const placeholder = new ExplorerItem(element.resource, this.fileService, undefined, false);
-					placeholder.isError = true;
-					return [placeholder];
-				} else {
+		const promise = element.fetchChildren(sortOrder).then(
+			children => {
+				// Clear previous error decoration on root folder
+				if (element instanceof ExplorerItem && element.isRoot && !element.isError && wasError && this.contextService.getWorkbenchState() !== WorkbenchState.FOLDER) {
 					explorerRootErrorEmitter.fire(element.resource);
 				}
-			} else {
-				// Do not show error for roots since we already use an explorer decoration to notify user
-				this.notificationService.error(e);
+				return children;
 			}
+			, e => {
 
-			return []; // we could not resolve any children because of an error
-		});
+				if (element instanceof ExplorerItem && element.isRoot) {
+					if (this.contextService.getWorkbenchState() === WorkbenchState.FOLDER) {
+						// Single folder create a dummy explorer item to show error
+						const placeholder = new ExplorerItem(element.resource, this.fileService, undefined, false);
+						placeholder.isError = true;
+						return [placeholder];
+					} else {
+						explorerRootErrorEmitter.fire(element.resource);
+					}
+				} else {
+					// Do not show error for roots since we already use an explorer decoration to notify user
+					this.notificationService.error(e);
+				}
+
+				return []; // we could not resolve any children because of an error
+			});
 
 		this.progressService.withProgress({
 			location: ProgressLocation.Explorer,
@@ -328,13 +336,13 @@ export class FilesRenderer implements ICompressibleTreeRenderer<ExplorerItem, Fu
 			// accessibility
 			disposables.add(this._onDidChangeActiveDescendant.add(compressedNavigationController.onDidChange));
 
-			domEvent(templateData.container, 'mousedown')(e => {
+			disposables.add(DOM.addDisposableListener(templateData.container, 'mousedown', e => {
 				const result = getIconLabelNameFromHTMLElement(e.target);
 
 				if (result) {
 					compressedNavigationController.setIndex(result.index);
 				}
-			}, undefined, disposables);
+			}));
 
 			disposables.add(toDisposable(() => this.compressedNavigationControllers.delete(stat)));
 
@@ -1206,10 +1214,10 @@ function getFileOrFolderLabelSufix(items: ExplorerItem[]): string {
 	}
 
 	if (items.every(i => i.isDirectory)) {
-		return `${items.length} folders`;
+		return localize('numberOfFolders', "{0} folders", items.length);
 	}
 	if (items.every(i => !i.isDirectory)) {
-		return `${items.length} files`;
+		return localize('numberOfFiles', "{0} files", items.length);
 	}
 
 	return `${items.length} files and folders`;

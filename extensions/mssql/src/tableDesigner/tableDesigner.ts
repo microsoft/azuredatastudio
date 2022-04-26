@@ -8,17 +8,22 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { sqlProviderName } from '../constants';
 import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
+import { ITelemetryEventProperties, Telemetry } from '../telemetry';
 
 export function registerTableDesignerCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newTable', async (context: azdata.ObjectExplorerContext) => {
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
+		const tableIcon = context.nodeInfo.nodeSubType as azdata.designers.TableIcon;
+		const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: context.connectionProfile.serverName,
 			database: context.connectionProfile.databaseName,
 			isNewTable: true,
 			id: generateUuid(),
-			connectionString: connectionString
-		});
+			connectionString: connectionString,
+			accessToken: context.connectionProfile.options.azureAccountToken,
+			tableIcon: tableIcon
+		}, telemetryInfo);
 	}));
 
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.designTable', async (context: azdata.ObjectExplorerContext) => {
@@ -27,15 +32,26 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		const schema = context.nodeInfo.metadata.schema;
 		const name = context.nodeInfo.metadata.name;
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
-		const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
+		const tableIcon = context.nodeInfo.nodeSubType as azdata.designers.TableIcon;
+		const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: server,
 			database: database,
 			isNewTable: false,
 			name: name,
 			schema: schema,
-			id: `${connectionUri}|${database}|${schema}|${name}`,
-			connectionString: connectionString
-		});
+			id: `${sqlProviderName}|${server}|${database}|${schema}|${name}`,
+			connectionString: connectionString,
+			accessToken: context.connectionProfile.options.azureAccountToken,
+			tableIcon: tableIcon
+		}, telemetryInfo);
 	}));
+}
+
+async function getTelemetryInfo(context: azdata.ObjectExplorerContext, tableType: string): Promise<ITelemetryEventProperties> {
+	const serverInfo = await azdata.connection.getServerInfo(context.connectionProfile.id);
+	const telemetryInfo: ITelemetryEventProperties = {};
+	Telemetry.fillServerInfo(telemetryInfo, serverInfo);
+	telemetryInfo['tableType'] = tableType;
+	return telemetryInfo;
 }

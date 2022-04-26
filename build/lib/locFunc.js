@@ -18,6 +18,13 @@ const File = require("vinyl");
 const rimraf = require("rimraf");
 const gulp = require("gulp");
 const vfs = require("vinyl-fs");
+/**
+ * If you need to compile this file for any changes, please run: yarn tsc -p ./build/tsconfig.json
+ */
+//List of extensions that we changed from vscode, so we can exclude them from having "Microsoft." appended in front.
+const alteredVSCodeExtensions = [
+    'git'
+];
 const root = path.dirname(path.dirname(__dirname));
 // Modified packageLocalExtensionsStream from extensions.ts, but for langpacks.
 function packageLangpacksStream() {
@@ -96,7 +103,7 @@ function modifyI18nPackFiles(existingTranslationFolder, resultingTranslationPath
     let mainPack = { version: i18n.i18nPackVersion, contents: {} };
     let extensionsPacks = {};
     let errors = [];
-    return event_stream_1.through(function (xlf) {
+    return (0, event_stream_1.through)(function (xlf) {
         let rawResource = path.basename(xlf.relative, '.xlf');
         let resource = rawResource.substring(0, rawResource.lastIndexOf('.'));
         let contents = xlf.contents.toString();
@@ -134,10 +141,13 @@ function modifyI18nPackFiles(existingTranslationFolder, resultingTranslationPath
             for (let extension in extensionsPacks) {
                 const translatedExtFile = i18n.createI18nFile(`extensions/${extension}`, extensionsPacks[extension]);
                 this.queue(translatedExtFile);
-                //handle edge case for 'Microsoft.sqlservernotebook' where extension name is the same as extension ID.
-                //(Other extensions need to have publisher appended in front as their ID.)
-                const adsExtensionId = (extension === 'Microsoft.sqlservernotebook') ? extension : 'Microsoft.' + extension;
-                resultingTranslationPaths.push({ id: adsExtensionId, resourceName: `extensions/${extension}.i18n.json` });
+                // exclude altered vscode extensions from having a new path even if we provide a new I18n file.
+                if (alteredVSCodeExtensions.indexOf(extension) === -1) {
+                    //handle edge case for 'Microsoft.sqlservernotebook' where extension name is the same as extension ID.
+                    //(Other extensions need to have publisher appended in front as their ID.)
+                    let adsExtensionId = (extension === 'Microsoft.sqlservernotebook') ? extension : 'Microsoft.' + extension;
+                    resultingTranslationPaths.push({ id: adsExtensionId, resourceName: `extensions/${extension}.i18n.json` });
+                }
             }
             this.queue(null);
         })
@@ -162,7 +172,6 @@ const VSCODEExtensions = [
     "bat",
     "configuration-editing",
     "docker",
-    "extension-editing",
     "git-ui",
     "git",
     "github-authentication",

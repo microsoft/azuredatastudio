@@ -17,6 +17,7 @@
 			"fileDirname": "当前打开的文件的完整目录名",
 			"fileExtname": "当前打开文件的扩展名",
 			"lineNumber": "活动文件中当前选定行的行号",
+			"pathSeparator": "操作系统用于在文件路径中分隔组件的字符",
 			"relativeFile": "相对于 ${workspaceFolder}，当前打开的文件路径",
 			"relativeFileDirname": "当前打开的文件与 ${workspaceFolder} 相对的目录名",
 			"selectedText": "当前在活动文件中选定的文本",

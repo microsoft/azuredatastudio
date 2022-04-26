@@ -10,6 +10,7 @@ import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
 import * as templates from '../templates/templates';
+import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 
 import { Uri, window } from 'vscode';
 import { ISqlProject, SqlTargetPlatform } from 'sqldbproj';
@@ -146,8 +147,13 @@ export class Project implements ISqlProject {
 		try {
 			this._projectGuid = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ProjectGuid)[0].childNodes[0].nodeValue!;
 		} catch (e) {
-			void window.showErrorMessage(constants.errorReadingProject(constants.ProjectGuid, this.projectFilePath));
-			console.error(utils.getErrorMessage(e));
+			// if no project guid, add a new one
+			this._projectGuid = UUID.generateUuid();
+			const newProjectGuidNode = this.projFileXmlDoc!.createElement(constants.ProjectGuid);
+			const newProjectGuidTextNode = this.projFileXmlDoc!.createTextNode(`{${this._projectGuid}}`);
+			newProjectGuidNode.appendChild(newProjectGuidTextNode);
+			this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.PropertyGroup)[0]?.appendChild(newProjectGuidNode);
+			await this.serializeToProjFile(this.projFileXmlDoc);
 		}
 	}
 
@@ -232,6 +238,10 @@ export class Project implements ISqlProject {
 			this.preDeployScripts.forEach(f => filesSet.delete(f.relativePath));
 			this.postDeployScripts.forEach(f => filesSet.delete(f.relativePath));
 			this.noneDeployScripts.forEach(f => filesSet.delete(f.relativePath));
+
+			// remove any none remove scripts (these would be pre/post/none deploy scripts that were excluded)
+			const noneRemoveScripts = this.readNoneRemoveScripts();
+			noneRemoveScripts.forEach(f => filesSet.delete(f.relativePath));
 		}
 
 		// create a FileProjectEntry for each file
@@ -373,7 +383,10 @@ export class Project implements ISqlProject {
 			try {
 				const noneItems = itemGroup.getElementsByTagName(constants.None);
 				for (let n = 0; n < noneItems.length; n++) {
-					noneDeployScripts.push(this.createFileProjectEntry(noneItems[n].getAttribute(constants.Include)!, EntryType.File));
+					const includeAttribute = noneItems[n].getAttribute(constants.Include);
+					if (includeAttribute) {
+						noneDeployScripts.push(this.createFileProjectEntry(includeAttribute, EntryType.File));
+					}
 				}
 			} catch (e) {
 				void window.showErrorMessage(constants.errorReadingProject(constants.NoneElements, this.projectFilePath));
@@ -382,6 +395,30 @@ export class Project implements ISqlProject {
 		}
 
 		return noneDeployScripts;
+	}
+
+	/**
+	 * @returns all the files specified as  <None Remove="file.sql" /> in the sqlproj
+	 */
+	private readNoneRemoveScripts(): FileProjectEntry[] {
+		const noneRemoveScripts: FileProjectEntry[] = [];
+
+		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
+			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
+
+			// find all none remove scripts to specified in the sqlproj
+			try {
+				const noneItems = itemGroup.getElementsByTagName(constants.None);
+				for (let n = 0; n < noneItems.length; n++) {
+					noneRemoveScripts.push(this.createFileProjectEntry(noneItems[n].getAttribute(constants.Remove)!, EntryType.File));
+				}
+			} catch (e) {
+				void window.showErrorMessage(constants.errorReadingProject(constants.NoneElements, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
+			}
+		}
+
+		return noneRemoveScripts;
 	}
 
 	private readDatabaseReferences(): IDatabaseReferenceProjectEntry[] {
@@ -580,11 +617,97 @@ export class Project implements ISqlProject {
 		await this.createCleanFileNode(beforeBuildNode);
 	}
 
-	private async createCleanFileNode(parentNode: any): Promise<void> {
+	public async convertProjectToSdkStyle(): Promise<boolean> {
+		// don't do anything if the project is already SDK style or it's an SSDT project that hasn't been updated to build in ADS
+		if (this.isSdkStyleProject || !this._importedTargets.includes(constants.NetCoreTargets)) {
+			return false;
+		}
+
+		// make backup copy of project
+		await fs.copyFile(this._projectFilePath, this._projectFilePath + '_backup');
+
+		try {
+			// remove Build includes and folder includes
+			const beforeFiles = this.files.filter(f => f.type === EntryType.File);
+			const beforeFolders = this.files.filter(f => f.type === EntryType.Folder);
+
+			// remove Build includes
+			for (const file of beforeFiles) {
+				// only remove build includes in the same folder as the project
+				if (!file.relativePath.includes('..')) {
+					await this.exclude(file);
+				}
+			}
+
+			// remove Folder includes
+			for (const folder of beforeFolders) {
+				await this.exclude(folder);
+			}
+
+			// remove "Properties" folder if it's there. This isn't tracked in the project's folders here because ADS doesn't support it.
+			// It's a reserved folder only used for the UI in SSDT
+			try {
+				await this.removeFolderFromProjFile('Properties');
+			} catch { }
+
+			// remove SSDT and ADS SqlTasks imports
+			const importsToRemove = [];
+			for (let i = 0; i < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import).length; i++) {
+				const importTarget = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import)[i];
+				const projectAttributeVal = importTarget.getAttribute(constants.Project);
+
+				if (projectAttributeVal === constants.NetCoreTargets || projectAttributeVal === constants.SqlDbTargets || projectAttributeVal === constants.MsBuildtargets) {
+					importsToRemove.push(importTarget);
+				}
+			}
+
+			const parent = importsToRemove[0]?.parentNode;
+			importsToRemove.forEach(i => { parent?.removeChild(i); });
+
+			// add SDK node
+			const sdkNode = this.projFileXmlDoc!.createElement(constants.Sdk);
+			sdkNode.setAttribute(constants.Name, constants.sqlProjectSdk);
+			sdkNode.setAttribute(constants.Version, constants.sqlProjectSdkVersion);
+
+			const projectNode = this.projFileXmlDoc!.documentElement;
+			projectNode.insertBefore(sdkNode, projectNode.firstChild);
+
+			// TODO: also update system dacpac path, but might as well wait for them to get included in the SDK since the path will probably change again
+
+			await this.serializeToProjFile(this.projFileXmlDoc!);
+			await this.readProjFile();
+
+			// Make sure the same files are included as before and there aren't extra files included by the default **/*.sql glob
+			for (const file of this.files.filter(f => f.type === EntryType.File)) {
+				if (!beforeFiles.find(f => f.pathForSqlProj() === file.pathForSqlProj())) {
+					await this.exclude(file);
+				}
+			}
+
+			// add back any folders that were previously specified in the sqlproj, but aren't included by the **/*.sql glob because they're empty
+			const folders = this.files.filter(f => f.type === EntryType.Folder);
+			for (const folder of beforeFolders) {
+				if (!folders.find(f => f.relativePath === folder.relativePath)) {
+					await this.addFolderItem(folder.relativePath);
+				}
+			}
+		} catch (e) {
+			console.error(e);
+
+			// if there was an uncaught error during conversion, rollback project update
+			await fs.copyFile(this._projectFilePath + '_backup', this._projectFilePath);
+			await this.readProjFile();
+			return false;
+		}
+
+		return true;
+	}
+
+	private async createCleanFileNode(parentNode: Element): Promise<void> {
 		const deleteFileNode = this.projFileXmlDoc!.createElement(constants.Delete);
 		deleteFileNode.setAttribute(constants.Files, constants.ProjJsonToClean);
 		parentNode.appendChild(deleteFileNode);
-		await this.serializeToProjFile(this.projFileXmlDoc);
+		await this.serializeToProjFile(this.projFileXmlDoc!);
 	}
 
 	/**
@@ -675,6 +798,36 @@ export class Project implements ISqlProject {
 		return fileEntry;
 	}
 
+	/**
+	 * Adds a file to the project, and saves the project file
+	 *
+	 * @param filePath Absolute path of the file
+	 */
+	public async addExistingItem(filePath: string): Promise<FileProjectEntry> {
+		const exists = await utils.exists(filePath);
+		if (!exists) {
+			throw new Error(constants.noFileExist(filePath));
+		}
+
+		// Check if file already has been added to sqlproj
+		const normalizedRelativeFilePath = utils.convertSlashesForSqlProj(path.relative(this.projectFolderPath, filePath));
+		const existingEntry = this.files.find(f => f.relativePath.toUpperCase() === normalizedRelativeFilePath.toUpperCase());
+		if (existingEntry) {
+			return existingEntry;
+		}
+
+		// Ensure that parent folder item exist in the project for the corresponding file path
+		await this.ensureFolderItems(path.relative(this.projectFolderPath, path.dirname(filePath)));
+
+		// Update sqlproj XML
+		const fileEntry = this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
+		const xmlTag = path.extname(filePath) === constants.sqlFileExtension ? constants.Build : constants.None;
+		await this.addToProjFile(fileEntry, xmlTag);
+		this._files.push(fileEntry);
+
+		return fileEntry;
+	}
+
 	public async exclude(entry: FileProjectEntry): Promise<void> {
 		const toExclude: FileProjectEntry[] = this._files.concat(this._preDeployScripts).concat(this._postDeployScripts).concat(this._noneDeployScripts).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
 		await this.removeFromProjFile(toExclude);
@@ -703,7 +856,7 @@ export class Project implements ISqlProject {
 
 	/**
 	 * Set the target platform of the project
-	 * @param newTargetPlatform compat level of project
+	 * @param compatLevel compat level of project
 	 */
 	public async changeTargetPlatform(compatLevel: string): Promise<void> {
 		if (this.getProjectTargetVersion() !== compatLevel) {
@@ -734,7 +887,7 @@ export class Project implements ISqlProject {
 				}
 			}
 
-			await this.serializeToProjFile(this.projFileXmlDoc);
+			await this.serializeToProjFile(this.projFileXmlDoc!);
 		}
 	}
 
@@ -765,7 +918,8 @@ export class Project implements ISqlProject {
 
 	public getSystemDacpacUri(dacpac: string): Uri {
 		const versionFolder = this.getSystemDacpacFolderName();
-		return Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', versionFolder, dacpac));
+		const systemDacpacLocation = this.isSdkStyleProject ? '$(SystemDacpacsLocation)' : '$(NETCoreTargetsPath)';
+		return Uri.parse(path.join(systemDacpacLocation, 'SystemDacpacs', versionFolder, dacpac));
 	}
 
 	public getSystemDacpacSsdtUri(dacpac: string): Uri {
@@ -826,8 +980,6 @@ export class Project implements ISqlProject {
 
 	/**
 	 * Adds reference to a dacpac to the project
-	 * @param uri Uri of the dacpac
-	 * @param databaseName name of the database
 	 */
 	public async addDatabaseReference(settings: IDacpacReferenceSettings): Promise<void> {
 		const databaseReferenceEntry = new DacpacReferenceProjectEntry(settings);
@@ -842,8 +994,6 @@ export class Project implements ISqlProject {
 
 	/**
 	 * Adds reference to a another project in the workspace
-	 * @param uri Uri of the dacpac
-	 * @param databaseName name of the database
 	 */
 	public async addProjectReference(settings: IProjectReferenceSettings): Promise<void> {
 		const projectReferenceEntry = new SqlProjectReferenceProjectEntry(settings);
@@ -866,6 +1016,35 @@ export class Project implements ISqlProject {
 		await this.addToProjFile(sqlCmdVariableEntry);
 	}
 
+	/**
+	 * Appends given database source to the DatabaseSource property element.
+	 * If property element does not exist, then new one will be created.
+	 *
+	 * @param databaseSource Source of the database to add
+	 */
+	public addDatabaseSource(databaseSource: string): Promise<void> {
+		return this.addValueToCollectionProjectProperty(constants.DatabaseSource, databaseSource);
+	}
+
+	/**
+	 * Removes database source from the DatabaseSource property element.
+	 * If no sources remain, then property element will be removed from the project file.
+	 *
+	 * @param databaseSource Source of the database to remove
+	 */
+	public removeDatabaseSource(databaseSource: string): Promise<void> {
+		return this.removeValueFromCollectionProjectProperty(constants.DatabaseSource, databaseSource);
+	}
+
+	/**
+	 * Gets an array of all database sources specified in the project.
+	 *
+	 * @returns Array of all database sources
+	 */
+	public getDatabaseSourceValues(): string[] {
+		return this.getCollectionProjectPropertyValue(constants.DatabaseSource);
+	}
+
 	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string): FileProjectEntry {
 		let platformSafeRelativePath = utils.getPlatformSafeFileEntryPath(relativePath);
 		return new FileProjectEntry(
@@ -875,7 +1054,7 @@ export class Project implements ISqlProject {
 			sqlObjectType);
 	}
 
-	private findOrCreateItemGroup(containedTag?: string, prePostScriptExist?: { scriptExist: boolean; }): any {
+	private findOrCreateItemGroup(containedTag?: string, prePostScriptExist?: { scriptExist: boolean; }): Element {
 		let outputItemGroup = undefined;
 
 		// search for a particular item goup if a child type is provided
@@ -906,6 +1085,10 @@ export class Project implements ISqlProject {
 	}
 
 	private async addFileToProjFile(filePath: string, xmlTag: string, attributes?: Map<string, string>): Promise<void> {
+
+		// delete Remove node if a file has been previously excluded
+		await this.undoExcludeFileFromProjFile(xmlTag, filePath);
+
 		let itemGroup;
 
 		if (xmlTag === constants.PreDeploy || xmlTag === constants.PostDeploy) {
@@ -936,7 +1119,7 @@ export class Project implements ISqlProject {
 
 			// don't need to add an entry if it's already included by a glob pattern
 			// unless it has an attribute that needs to be added, like external streaming job which needs it so it can be determined if validation can run on it
-			if (attributes?.size === 0 && currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(filePath))) {
+			if ((!attributes || attributes.size === 0) && currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(filePath))) {
 				return;
 			}
 
@@ -963,6 +1146,8 @@ export class Project implements ISqlProject {
 		const noneNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.None);
 		const nodes = [fileNodes, preDeployNodes, postDeployNodes, noneNodes];
 
+		const isBuildElement = this.files.find(f => f.relativePath === path);
+
 		let deleted = false;
 
 		// remove the <Build Include="..."> entry if there is one
@@ -984,15 +1169,19 @@ export class Project implements ISqlProject {
 		if (this.isSdkStyleProject) {
 			// write any changes from removing an include node and get the current files included in the project
 			if (deleted) {
-				await this.serializeToProjFile(this.projFileXmlDoc);
+				await this.serializeToProjFile(this.projFileXmlDoc!);
 			}
+			this._preDeployScripts = this.readPreDeployScripts();
+			this._postDeployScripts = this.readPostDeployScripts();
+			this._noneDeployScripts = this.readNoneDeployScripts();
 			const currentFiles = await this.readFilesInProject();
 
-			// only add a node to exclude the file if it's still included by a glob
+			// only add a Remove node to exclude the file if it's still included by a glob
 			if (currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(path))) {
-				const removeFileNode = this.projFileXmlDoc!.createElement(constants.Build);
+				const removeFileNode = isBuildElement ? this.projFileXmlDoc!.createElement(constants.Build) : this.projFileXmlDoc!.createElement(constants.None);
 				removeFileNode.setAttribute(constants.Remove, utils.convertSlashesForSqlProj(path));
 				this.findOrCreateItemGroup(constants.Build).appendChild(removeFileNode);
+				return;
 			}
 
 			return;
@@ -1001,26 +1190,50 @@ export class Project implements ISqlProject {
 		throw new Error(constants.unableToFindObject(path, constants.fileObject));
 	}
 
-	private removeNode(includeString: string, nodes: any): boolean {
+	/**
+	 * Deletes a node from the project file similar to <Compile Include="{includeString}" />
+	 * @param includeString Path of the file that matches the Include portion of the node
+	 * @param nodes The collection of XML nodes to search from
+	 * @param undoRemove When true, will remove a node similar to <Compile Remove="{includeString}" />
+	 * @returns True when a node has been removed, false otherwise.
+	 */
+	private removeNode(includeString: string, nodes: HTMLCollectionOf<Element>, undoRemove: boolean = false): boolean {
+		// Default function behavior removes nodes like <Compile Include="..." />
+		// However when undoRemove is true, this function removes <Compile Remove="..." />
+		const xmlAttribute = undoRemove ? constants.Remove : constants.Include;
 		for (let i = 0; i < nodes.length; i++) {
 			const parent = nodes[i].parentNode;
 
-			if (nodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(includeString)) {
-				parent.removeChild(nodes[i]);
+			if (parent) {
+				if (nodes[i].getAttribute(xmlAttribute) === utils.convertSlashesForSqlProj(includeString)) {
+					parent.removeChild(nodes[i]);
 
-				// delete ItemGroup if this was the only entry
-				// only want element nodes, not text nodes
-				const otherChildren = Array.from(parent.childNodes).filter((c: any) => c.childNodes);
+					// delete ItemGroup if this was the only entry
+					// only want element nodes, not text nodes
+					const otherChildren = Array.from(parent.childNodes).filter((c: ChildNode) => c.childNodes);
 
-				if (otherChildren.length === 0) {
-					parent.parentNode.removeChild(parent);
+					if (otherChildren.length === 0) {
+						parent.parentNode?.removeChild(parent);
+					}
+
+					return true;
 				}
-
-				return true;
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Delete a Remove node from the sqlproj, ex: <Build Remove="Table1.sql" />
+	 * @param xmlTag The XML tag of the node (Build, None, PreDeploy, PostDeploy)
+	 * @param relativePath The relative path of the previously excluded file
+	 */
+	private async undoExcludeFileFromProjFile(xmlTag: string, relativePath: string): Promise<void> {
+		const nodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(xmlTag);
+		if (await this.removeNode(relativePath, nodes, true)) {
+			await this.serializeToProjFile(this.projFileXmlDoc!);
+		}
 	}
 
 	private async addFolderToProjFile(folderPath: string): Promise<void> {
@@ -1052,9 +1265,8 @@ export class Project implements ISqlProject {
 		// again when they convert to an SDK-style project
 		if (this.isSdkStyleProject) {
 			// update sqlproj if a node was deleted and load files and folders again
-			if (deleted) {
-				await this.writeToSqlProjAndUpdateFilesFolders();
-			}
+			await this.writeToSqlProjAndUpdateFilesFolders();
+
 			// get latest folders to see if it still exists
 			const currentFolders = await this.readFolders();
 
@@ -1090,7 +1302,7 @@ export class Project implements ISqlProject {
 	}
 
 	private async writeToSqlProjAndUpdateFilesFolders(): Promise<void> {
-		await this.serializeToProjFile(this.projFileXmlDoc);
+		await this.serializeToProjFile(this.projFileXmlDoc!);
 		const projFileText = await fs.readFile(this._projectFilePath);
 		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
 		this._files = await this.readFilesInProject();
@@ -1165,7 +1377,7 @@ export class Project implements ISqlProject {
 		return found;
 	}
 
-	private async addDatabaseReferenceChildren(referenceNode: any, entry: IDatabaseReferenceProjectEntry): Promise<void> {
+	private async addDatabaseReferenceChildren(referenceNode: Element, entry: IDatabaseReferenceProjectEntry): Promise<void> {
 		const suppressMissingDependenciesErrorNode = this.projFileXmlDoc!.createElement(constants.SuppressMissingDependenciesErrors);
 		const suppressMissingDependenciesErrorTextNode = this.projFileXmlDoc!.createTextNode(entry.suppressMissingDependenciesErrors ? constants.True : constants.False);
 		suppressMissingDependenciesErrorNode.appendChild(suppressMissingDependenciesErrorTextNode);
@@ -1197,7 +1409,7 @@ export class Project implements ISqlProject {
 		}
 	}
 
-	private addProjectReferenceChildren(referenceNode: any, entry: SqlProjectReferenceProjectEntry): void {
+	private addProjectReferenceChildren(referenceNode: Element, entry: SqlProjectReferenceProjectEntry): void {
 		// project name
 		const nameElement = this.projFileXmlDoc!.createElement(constants.Name);
 		const nameTextNode = this.projFileXmlDoc!.createTextNode(entry.projectName);
@@ -1232,7 +1444,7 @@ export class Project implements ISqlProject {
 		this._sqlCmdVariables[entry.variableName] = <string>entry.defaultValue;
 	}
 
-	private addSqlCmdVariableChildren(sqlCmdVariableNode: any, entry: SqlCmdVariableProjectEntry): void {
+	private addSqlCmdVariableChildren(sqlCmdVariableNode: Element, entry: SqlCmdVariableProjectEntry): void {
 		// add default value
 		const defaultValueNode = this.projFileXmlDoc!.createElement(constants.DefaultValue);
 		const defaultValueText = this.projFileXmlDoc!.createTextNode(entry.defaultValue);
@@ -1267,7 +1479,7 @@ export class Project implements ISqlProject {
 		return highestNumber + 1;
 	}
 
-	private async updateImportedTargetsToProjFile(condition: string, projectAttributeVal: string, oldImportNode?: any): Promise<any> {
+	private async updateImportedTargetsToProjFile(condition: string, projectAttributeVal: string, oldImportNode?: Element): Promise<Element> {
 		const importNode = this.projFileXmlDoc!.createElement(constants.Import);
 		importNode.setAttribute(constants.Condition, condition);
 		importNode.setAttribute(constants.Project, projectAttributeVal);
@@ -1280,7 +1492,7 @@ export class Project implements ISqlProject {
 			this._importedTargets.push(projectAttributeVal);	// Add new import target to the list
 		}
 
-		await this.serializeToProjFile(this.projFileXmlDoc);
+		await this.serializeToProjFile(this.projFileXmlDoc!);
 		return importNode;
 	}
 
@@ -1293,7 +1505,7 @@ export class Project implements ISqlProject {
 
 		this.findOrCreateItemGroup(constants.PackageReference).appendChild(packageRefNode);
 
-		await this.serializeToProjFile(this.projFileXmlDoc);
+		await this.serializeToProjFile(this.projFileXmlDoc!);
 	}
 
 	public containsSSDTOnlySystemDatabaseReferences(): boolean {
@@ -1363,7 +1575,7 @@ export class Project implements ISqlProject {
 				break; // not required but adding so that we dont miss when we add new items
 		}
 
-		await this.serializeToProjFile(this.projFileXmlDoc);
+		await this.serializeToProjFile(this.projFileXmlDoc!);
 	}
 
 	private async removeFromProjFile(entries: ProjectEntry | ProjectEntry[]): Promise<void> {
@@ -1394,17 +1606,17 @@ export class Project implements ISqlProject {
 			}
 		}
 
-		await this.serializeToProjFile(this.projFileXmlDoc);
+		await this.serializeToProjFile(this.projFileXmlDoc!);
 	}
 
-	private async serializeToProjFile(projFileContents: any): Promise<void> {
+	private async serializeToProjFile(projFileContents: Document): Promise<void> {
 		let xml = new xmldom.XMLSerializer().serializeToString(projFileContents);
-		xml = xmlFormat(xml, <any>{
+		xml = xmlFormat(xml, <xmlFormat.Options>{
 			collapseContent: true,
 			indentation: '  ',
 			lineSeparator: os.EOL,
 			whiteSpaceAtEndOfSelfclosingTag: true
-		}); // TODO: replace <any>
+		});
 
 		await fs.writeFile(this._projectFilePath, xml);
 
@@ -1438,6 +1650,73 @@ export class Project implements ISqlProject {
 				} else if (fileStat.isDirectory()) {
 					await this.addFolderItem(relativePath);
 				}
+			}
+		}
+	}
+
+	/**
+	 * Adds a value to the project property, where multiple values are separated by semicolon.
+	 * If property does not exist, the new one will be added. Otherwise a value will be appended
+	 * to the existing property.
+	 *
+	 * @param propertyName Name of the project property
+	 * @param valueToAdd Value to add to the project property. Values containing semicolon are not supported
+	 * @param caseSensitive Flag that indicates whether to use case-sensitive comparison when determining, if value is already present
+	 */
+	private async addValueToCollectionProjectProperty(propertyName: string, valueToAdd: string, caseSensitive: boolean = false): Promise<void> {
+		if (valueToAdd.includes(';')) {
+			throw new Error(constants.invalidProjectPropertyValueProvided(valueToAdd));
+		}
+
+		let collectionValues = this.getCollectionProjectPropertyValue(propertyName);
+
+		// Respect case-sensitivity flag
+		const normalizedValueToAdd = caseSensitive ? valueToAdd : valueToAdd.toUpperCase();
+
+		// Only add value if it is not present yet
+		if (collectionValues.findIndex(value => (caseSensitive ? value : value.toUpperCase()) === normalizedValueToAdd) < 0) {
+			collectionValues.push(valueToAdd);
+			await this.setProjectPropertyValue(propertyName, collectionValues.join(';'));
+		}
+	}
+
+	/**
+	 * Removes a value from the project property, where multiple values are separated by semicolon.
+	 * If property becomes empty after the removal of the value, then it will be completely removed
+	 * from the project file.
+	 * If value appears in the collection multiple times, only the first occurance will be removed.
+	 *
+	 * @param propertyName Name of the project property
+	 * @param valueToRemove Value to remove from the project property. Values containing semicolon are not supported
+	 * @param caseSensitive Flag that indicates whether to use case-sensitive comparison when removing the value
+	 */
+	protected async removeValueFromCollectionProjectProperty(propertyName: string, valueToRemove: string, caseSensitive: boolean = false): Promise<void> {
+		if (this.projFileXmlDoc === undefined) {
+			return;
+		}
+
+		if (valueToRemove.includes(';')) {
+			throw new Error(constants.invalidProjectPropertyValueProvided(valueToRemove));
+		}
+
+		let collectionValues = this.getCollectionProjectPropertyValue(propertyName);
+
+		// Respect case-sensitivity flag
+		const normalizedValueToRemove = caseSensitive ? valueToRemove : valueToRemove.toUpperCase();
+
+		const indexToRemove =
+			collectionValues.findIndex(value => (caseSensitive ? value : value.toUpperCase()) === normalizedValueToRemove);
+
+		if (indexToRemove >= 0) {
+			collectionValues.splice(indexToRemove, 1);
+
+			if (collectionValues.length === 0) {
+				// No elements left in the collection - remove the property entirely
+				this.removeProjectPropertyTag(propertyName);
+				await this.serializeToProjFile(this.projFileXmlDoc);
+			} else {
+				// Update property value with modified collection
+				await this.setProjectPropertyValue(propertyName, collectionValues.join(';'));
 			}
 		}
 	}
@@ -1482,10 +1761,114 @@ export class Project implements ISqlProject {
 		const firstPropertyElement = propertyElements[0];
 		if (firstPropertyElement.childNodes.length !== 1) {
 			// Property items are expected to have simple string content
-			throw new Error(constants.invalidProjectPropertyValue(propertyName));
+			throw new Error(constants.invalidProjectPropertyValueInSqlProj(propertyName));
 		}
 
 		return firstPropertyElement.childNodes[0].nodeValue!;
+	}
+
+	/**
+	 * Retrieves all semicolon-separated values specified in the project property.
+	 *
+	 * @param propertyName Name of the project property
+	 * @returns Array of semicolon-separated values specified in the property
+	 */
+	private getCollectionProjectPropertyValue(propertyName: string): string[] {
+		const propertyValue = this.evaluateProjectPropertyValue(propertyName);
+		if (propertyValue === undefined) {
+			return [];
+		}
+
+		return propertyValue.split(';')
+			.filter(value => value.length > 0);
+	}
+
+	/**
+	 * Sets the value of the project property.
+	 *
+	 * @param propertyName Name of the project property
+	 * @param propertyValue New value of the project property
+	 */
+	private async setProjectPropertyValue(propertyName: string, propertyValue: string): Promise<void> {
+		if (this.projFileXmlDoc === undefined) {
+			return;
+		}
+
+		let propertyElement: Element | undefined;
+
+		// Try to find an existing property element with the requested name.
+		// There could be multiple elements in different property groups or even within the
+		// same property group (different `Condition` attribute, for example). As of now,
+		// we always choose the first one and update it.
+		const propertyGroups = this.projFileXmlDoc.getElementsByTagName(constants.PropertyGroup);
+		for (let propertyGroupIndex = 0; propertyGroupIndex < propertyGroups.length; ++propertyGroupIndex) {
+			const propertyElements = propertyGroups[propertyGroupIndex].getElementsByTagName(propertyName);
+
+			if (propertyElements.length > 0) {
+				propertyElement = propertyElements[0];
+				break;
+			}
+		}
+
+		if (propertyElement === undefined) {
+			// If existing property element was not found, then we add a new one
+			propertyElement = this.addProjectPropertyTag(propertyName);
+		}
+
+		// Ensure property element was found or successfully added
+		if (propertyElement) {
+			if (propertyElement.childNodes.length > 0) {
+				propertyElement.replaceChild(this.projFileXmlDoc.createTextNode(propertyValue), propertyElement.childNodes[0]);
+			} else {
+				propertyElement.appendChild(this.projFileXmlDoc.createTextNode(propertyValue));
+			}
+
+			await this.serializeToProjFile(this.projFileXmlDoc);
+		}
+	}
+
+	/**
+	 * Adds an empty project property tag.
+	 *
+	 * @param propertyTag Tag to add
+	 * @returns Added HTMLElement tag
+	 */
+	private addProjectPropertyTag(propertyTag: string): HTMLElement | undefined {
+		if (this.projFileXmlDoc === undefined) {
+			return;
+		}
+
+		const propertyGroups = this.projFileXmlDoc.getElementsByTagName(constants.PropertyGroup);
+		let propertyGroup = propertyGroups.length > 0 ? propertyGroups[0] : undefined;
+		if (propertyGroup === undefined) {
+			propertyGroup = this.projFileXmlDoc.createElement(constants.PropertyGroup);
+			this.projFileXmlDoc.documentElement?.appendChild(propertyGroup);
+		}
+
+		const propertyElement = this.projFileXmlDoc.createElement(propertyTag);
+		propertyGroup.appendChild(propertyElement);
+		return propertyElement;
+	}
+
+	/**
+	 * Removes first occurrence of the project property.
+	 *
+	 * @param propertyTag Tag to remove
+	 */
+	private removeProjectPropertyTag(propertyTag: string) {
+		if (this.projFileXmlDoc === undefined) {
+			return;
+		}
+
+		const propertyGroups = this.projFileXmlDoc.getElementsByTagName(constants.PropertyGroup);
+
+		for (let propertyGroupIndex in propertyGroups) {
+			let propertiesWithTagName = propertyGroups[propertyGroupIndex].getElementsByTagName(propertyTag);
+			if (propertiesWithTagName.length > 0) {
+				propertiesWithTagName[0].parentNode?.removeChild(propertiesWithTagName[0]);
+				return;
+			}
+		}
 	}
 
 	/**
@@ -1496,6 +1879,10 @@ export class Project implements ISqlProject {
 	 * @returns Project entry for the last folder in the path, if path is under the project folder; otherwise `undefined`.
 	 */
 	private async ensureFolderItems(relativeFolderPath: string): Promise<FileProjectEntry | undefined> {
+		if (!relativeFolderPath) {
+			return;
+		}
+
 		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
 		const normalizedProjectFolderPath = path.normalize(this.projectFolderPath);
 

@@ -79,8 +79,8 @@
 	"dependencies": {
 		"dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.3.0",
 		"htmlparser2": "^3.10.1",
-		"@microsoft/ads-service-downloader": "0.2.3",
-		"vscode-extension-telemetry": "0.0.18",
+		"@microsoft/ads-service-downloader": "0.2.4",
+		"vscode-extension-telemetry": "0.4.2",
 		"vscode-nls": "^3.2.1"
 	},
 	"devDependencies": {
@@ -93,7 +93,7 @@
 		"should": "^13.2.1",
 		"sinon": "^9.0.2",
 		"typemoq": "^2.1.0",
-		"vscodetestcover": "^1.1.0"
+		"@microsoft/vscodetestcover": "^1.2.0"
 	},
 	"__metadata": {
 		"id": "23",

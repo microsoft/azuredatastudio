@@ -20,6 +20,8 @@ import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKe
 import { ExtHostNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IProductService } from 'vs/platform/product/common/productService';
+import { Disposable, NotebookCell, NotebookController, NotebookDocument, NotebookDocumentContentOptions, NotebookRegistrationData, NotebookRendererScript, NotebookSerializer } from 'vscode';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 suite('MainThreadNotebook Tests', () => {
 
@@ -181,6 +183,18 @@ suite('MainThreadNotebook Tests', () => {
 });
 
 class ExtHostNotebookStub implements ExtHostNotebookShape {
+	$registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): Disposable {
+		throw new Error('Method not implemented.');
+	}
+	$registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): Disposable {
+		throw new Error('Method not implemented.');
+	}
+	$registerNotebookSerializer(notebookType: string, serializer: NotebookSerializer, options?: NotebookDocumentContentOptions, registration?: NotebookRegistrationData): Disposable {
+		throw new Error('Method not implemented.');
+	}
+	$createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: NotebookCell[], notebook: NotebookDocument, controller: NotebookController) => void | Thenable<void>, rendererScripts?: NotebookRendererScript[]): NotebookController {
+		throw new Error('Method not implemented.');
+	}
 	$getSerializationManagerDetails(providerHandle: number, notebookUri: UriComponents): Thenable<ISerializationManagerDetails> {
 		throw new Error('Method not implemented.');
 	}
@@ -236,6 +250,9 @@ class ExtHostNotebookStub implements ExtHostNotebookShape {
 		throw new Error('Method not implemented.');
 	}
 	$interruptKernel(kernelId: number): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	$restartKernel(kernelId: number): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
 	$sendInputReply(futureId: number, content: azdata.nb.IInputReply): void {

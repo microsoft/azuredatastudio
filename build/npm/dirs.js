@@ -22,7 +22,6 @@ exports.dirs = [
 	'extensions/configuration-editing',
 	'extensions/dacpac',
 	'extensions/data-workspace',
-	'extensions/extension-editing',
 	'extensions/git',
 	'extensions/github',
 	'extensions/github-authentication',
@@ -49,9 +48,9 @@ exports.dirs = [
 	'extensions/server-report',
 	'extensions/simple-browser',
 	'extensions/sql-assessment',
+	'extensions/sql-bindings',
 	'extensions/sql-database-projects',
 	'extensions/sql-migration',
-	'extensions/testing-editor-contributions',
 	'extensions/vscode-test-resolver',
 	'extensions/xml-language-features',
 	// {{SQL CARBON EDIT}} - End

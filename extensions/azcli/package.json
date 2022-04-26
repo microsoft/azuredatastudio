@@ -2,14 +2,13 @@
   "name": "azcli",
   "displayName": "%azcli.arc.displayName%",
   "description": "%azcli.arc.description%",
-  "version": "0.3.0",
+  "version": "1.1.0",
   "publisher": "Microsoft",
-  "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.26.0"
+    "azdata": ">=1.35.0"
   },
   "activationEvents": [
     "*"
@@ -109,10 +108,7 @@
     "should": "^13.2.3",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.1.0"
-  },
-  "resolutions": {
-    "json-schema": "0.4.0"
+    "@microsoft/vscodetestcover": "^1.2.0"
   },
   "__metadata": {
     "id": "84",

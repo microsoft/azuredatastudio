@@ -8,8 +8,8 @@ import {
 	Output, OnChanges, SimpleChanges, EventEmitter
 } from '@angular/core';
 
-import { Dropdown, IDropdownOptions } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
+import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
 
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';

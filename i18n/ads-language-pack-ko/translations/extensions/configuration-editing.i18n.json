@@ -17,6 +17,7 @@
 			"fileDirname": "현재 열려 있는 파일의 dirname",
 			"fileExtname": "현재 열려 있는 파일의 확장명",
 			"lineNumber": "활성 파일에서 현재 선택된 줄 번호",
+			"pathSeparator": "운영 체제에서 파일 경로의 구성 요소를 구분하는 데 사용하는 문자",
 			"relativeFile": "${workspaceFolder}을(를) 기준으로 현재 열려 있는 파일",
 			"relativeFileDirname": "${workspaceFolder}와 관련된 현재 열린 파일의 dirname",
 			"selectedText": "활성 파일에서 현재 선택된 텍스트",

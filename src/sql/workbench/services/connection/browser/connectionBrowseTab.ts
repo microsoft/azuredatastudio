@@ -156,7 +156,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		this.treeMenus = this.instantiationService.createInstance(ConnectionBrowseTreeMenuProvider);
 		const actionViewItemProvider = (action: IAction) => {
 			if (action instanceof MenuItemAction) {
-				return this.instantiationService.createInstance(MenuEntryActionViewItem, action);
+				return this.instantiationService.createInstance(MenuEntryActionViewItem, action, undefined);
 			}
 			return undefined;
 		};
@@ -248,7 +248,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 				if (selectedNode.element.payload) {
 					this._onSelectedConnectionChanged.fire(
 						{
-							connectionProfile: selectedNode.element.payload,
+							connectionProfile: new ConnectionProfile(this.capabilitiesService, selectedNode.element.payload),
 							connect: connect,
 							source: 'azure'
 						});

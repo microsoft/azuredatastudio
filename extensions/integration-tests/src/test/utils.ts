@@ -276,8 +276,8 @@ export async function assertFileGenerationResult(filepath: string, retryCount: n
 
 /**
  *
- * @param tableName table to look for
  * @param schema schema to look for
+ * @param tableName table to look for
  * @param ownerUri owner uri
  * @param retryCount number of times to retry with a 5 second wait between each try
  * @param checkForData whether or not to check if the table has data

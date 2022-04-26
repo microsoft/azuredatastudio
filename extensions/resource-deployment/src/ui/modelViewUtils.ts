@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import * as fs from 'fs';
 import { EOL } from 'os';
 import * as path from 'path';
@@ -168,8 +168,9 @@ type AzureComponent = azdata.InputBoxComponent | azdata.DropDownComponent;
 /**
  * Creates an inputBox using the properties defined in context.fieldInfo object
  *
- * @param context - the fieldContext object for this field
- * @param inputBoxType - the type of inputBox
+ * @param root
+ * @param root.context - the fieldContext object for this field
+ * @param root.inputBoxType - the type of inputBox
  */
 function createInputBoxField({ context, inputBoxType = 'text' }: { context: FieldContext; inputBoxType?: azdata.InputBoxInputType; }) {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
@@ -437,7 +438,7 @@ async function hookUpDynamicOptions(context: WizardPageContext): Promise<void> {
 				const updateOptions = async () => {
 					const currentValue = await targetComponent.getValue();
 					if (field.dynamicOptions && field.options && fieldComponent && fieldComponent.setOptions) {
-						const targetValueFound = field.dynamicOptions.alternates.find(item => item.selection === currentValue);
+						let targetValueFound = field.dynamicOptions.alternates.find(item => item.selection === currentValue);
 						if (targetValueFound) {
 							fieldComponent.setOptions(<OptionsInfo>{
 								values: targetValueFound.alternateValues,
@@ -930,8 +931,8 @@ function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
  *
  * Only variables in the current model starting with {@see NoteBookEnvironmentVariablePrefix} are replaced.
  *
- * @param inputValue
  * @param inputComponents
+ * @param inputValue
  */
 async function substituteVariableValues(inputComponents: InputComponents, inputValue?: string): Promise<string | undefined> {
 	await Promise.all(Object.keys(inputComponents)
@@ -1645,7 +1646,12 @@ export function getPasswordMismatchMessage(fieldName: string): string {
 export async function setModelValues(inputComponents: InputComponents, model: Model): Promise<void> {
 	await Promise.all(Object.keys(inputComponents).map(async key => {
 		const value = await inputComponents[key].getValue();
-		model.setPropertyValue(key, value);
+		// Check if value is of type CategoryValue. If so, we need to get the name from the CategoryValue object.
+		if (typeof (value) === 'object') {
+			model.setPropertyValue(key, value.name);
+		} else {
+			model.setPropertyValue(key, value);
+		}
 	}));
 }
 

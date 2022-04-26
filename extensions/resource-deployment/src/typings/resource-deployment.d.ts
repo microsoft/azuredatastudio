@@ -24,7 +24,7 @@ declare module 'resource-deployment' {
 		getIsPassword?: (variableName: string) => boolean | Promise<boolean>;
 	}
 
-	export type InputValueType = string | number | boolean | undefined;
+	export type InputValueType = string | number | boolean | azdata.CategoryValue | undefined;
 
 	export interface IValueProvider {
 		/**

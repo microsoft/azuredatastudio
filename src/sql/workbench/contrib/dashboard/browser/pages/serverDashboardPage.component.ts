@@ -21,10 +21,9 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IMenuService } from 'vs/platform/actions/common/actions';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class ServerDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -55,11 +54,10 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 		@Inject(ICommandService) commandService: ICommandService,
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
 		@Inject(IMenuService) menuService: IMenuService,
-		@Inject(IKeybindingService) keybindingService: IKeybindingService,
-		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IWorkbenchThemeService) themeService: IWorkbenchThemeService
+		@Inject(IWorkbenchThemeService) themeService: IWorkbenchThemeService,
+		@Inject(IInstantiationService) instantiationService: IInstantiationService
 	) {
-		super(dashboardService, el, _cd, notificationService, angularEventingService, logService, commandService, contextKeyService, menuService, keybindingService, themeService);
+		super(dashboardService, el, _cd, notificationService, angularEventingService, logService, commandService, contextKeyService, menuService, themeService, instantiationService);
 
 		// special-case handling for MSSQL data provider
 		const connInfo = this.dashboardService.connectionManagementService.connectionInfo;

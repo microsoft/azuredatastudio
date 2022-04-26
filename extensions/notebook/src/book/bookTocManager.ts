@@ -325,7 +325,7 @@ export class BookTocManager implements IBookTocManager {
 	 * Moves a section to a book top level or another book's section. If there's a target section we add the the targetSection directory if it has one and append it to the
 	 * notebook's path. The overwrite option is set to false to prevent any issues with duplicated file names.
 	 * @param section The section that's been moved.
-	 * @param book The target book.
+	 * @param bookItem The target book.
 	*/
 	async moveSectionFiles(section: BookTreeItem, bookItem: BookTreeItem): Promise<void> {
 		const uri = path.posix.join(path.posix.sep, path.relative(section.rootContentPath, section.book.contentPath));
@@ -369,8 +369,8 @@ export class BookTocManager implements IBookTocManager {
 	/**
 	 * Moves a file to a book top level or a book's section. If there's a target section we add the the targetSection directory if it has one and append it to the
 	 * files's path. The overwrite option is set to false to prevent any issues with duplicated file names.
-	 * @param element Notebook, Markdown File, or book's notebook that will be added to the book.
-	 * @param targetBook Book that will be modified.
+	 * @param file Notebook, Markdown File, or book's notebook that will be added to the book.
+	 * @param book Book that will be modified.
 	*/
 	async moveFile(file: BookTreeItem, book: BookTreeItem): Promise<void> {
 		const rootPath = book.rootContentPath;
@@ -460,7 +460,6 @@ export class BookTocManager implements IBookTocManager {
 
 	public async addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void> {
 		let findSection: JupyterBookSection | undefined = undefined;
-		await fs.writeFile(pathDetails.filePath, '');
 		if (bookItem.contextValue === BookTreeItemType.section) {
 			findSection = { file: bookItem.book.page.file, title: bookItem.book.page.title };
 		}
@@ -470,8 +469,10 @@ export class BookTocManager implements IBookTocManager {
 		};
 
 		if (isSection) {
+			await fs.mkdir(path.dirname(pathDetails.filePath));
 			fileEntryInToc.sections = [];
 		}
+		await fs.writeFile(pathDetails.filePath, '');
 
 		if (bookItem.book.version === BookVersion.v1) {
 			fileEntryInToc = convertTo(BookVersion.v1, fileEntryInToc);

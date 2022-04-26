@@ -1,0 +1,317 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/azcli/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="az.accept">
+        <source xml:lang="en">Accept</source>
+        <target state="translated">承諾する</target>
+      </trans-unit>
+      <trans-unit id="az.arcdataExtensionNotInstalled">
+        <source xml:lang="en">This extension requires the Azure CLI extension 'arcdata' to be installed. Install the latest version using instructions from [here](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).</source>
+        <target state="translated">この拡張機能は、Azure CLI の拡張機能 'arcdata' がインストールされている必要があります。[こちら](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension) の手順に従って最新バージョンをインストールしてください。</target>
+      </trans-unit>
+      <trans-unit id="az.arcdataInstalled">
+        <source xml:lang="en">The Azure CLI arcdata extension was successfully installed. Restarting Azure Studio is required to complete configuration - features will not be activated until this is done.</source>
+        <target state="translated">Azure CLI arcdata 拡張機能が正常にインストールされました。構成を完了するには、Azure Studio を再起動する必要があります。この操作が完了するまで、機能はアクティブ化されません。</target>
+      </trans-unit>
+      <trans-unit id="az.askLater">
+        <source xml:lang="en">Ask Later</source>
+        <target state="translated">後で依頼する</target>
+      </trans-unit>
+      <trans-unit id="az.az">
+        <source xml:lang="en">Azure CLI</source>
+        <target state="translated">Azure CLI</target>
+      </trans-unit>
+      <trans-unit id="az.azInstalled">
+        <source xml:lang="en">Azure CLI was successfully installed. Restarting Azure Studio is required to complete configuration - features will not be activated until this is done.</source>
+        <target state="translated">Azure CLI が正常にインストールされました。構成を完了するには、Azure Studio を再起動する必要があります。この操作が完了するまで、機能はアクティブ化されません。</target>
+      </trans-unit>
+      <trans-unit id="az.azOutputParseErrorCaught">
+        <source xml:lang="en">An error occurred while parsing the output of az command: {0}. The output is not JSON.</source>
+        <target state="translated">az コマンド {0} の出力の解析中にエラーが発生しました。出力は JSON ではありません。</target>
+      </trans-unit>
+      <trans-unit id="az.azUserSettingReadLog">
+        <source xml:lang="en">Azure CLI user setting: {0}.{1} read, value: {2}</source>
+        <target state="translated">Azure CLI のユーザー設定: {0}。{1} が読み取られ、値: {2}</target>
+      </trans-unit>
+      <trans-unit id="az.azUserSettingUpdatedLog">
+        <source xml:lang="en">Azure CLI user setting: {0}.{1} updated, newValue: {2}</source>
+        <target state="translated">Azure CLI のユーザー設定: {0}。{1} が更新され、newValue: {2}</target>
+      </trans-unit>
+      <trans-unit id="az.checkingLatestAzVersion">
+        <source xml:lang="en">Checking for latest available version of Azure CLI</source>
+        <target state="translated">Azure CLI の使用可能な最新バージョンを確認しています</target>
+      </trans-unit>
+      <trans-unit id="az.couldNotFindArcdataWithPrompt">
+        <source xml:lang="en">Could not find the Azure CLI arcdata extension, install it now? If not then some features will not be able to function.</source>
+        <target state="translated">Azure CLI arcdata 拡張機能が見つかりませんでした。今すぐインストールしますか? そうでない場合は、一部の機能が動作しない可能性があります。</target>
+      </trans-unit>
+      <trans-unit id="az.couldNotFindAz">
+        <source xml:lang="en">Could not find Azure CLI. Error: {0}</source>
+        <target state="translated">Azure CLI が見つかりませんでした。エラー: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.couldNotFindAzArc">
+        <source xml:lang="en">Could not find the Azure CLI arcdata extension. Error: {0}</source>
+        <target state="translated">Azure CLI arcdata 拡張機能が見つかりませんでした。エラー: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.couldNotFindAzWithPrompt">
+        <source xml:lang="en">Could not find Azure CLI, install it now? If not then some features will not be able to function.</source>
+        <target state="translated">Azure CLI が見つかりませんでした。今すぐインストールしますか? そうでない場合は、一部の機能が動作しない可能性があります。</target>
+      </trans-unit>
+      <trans-unit id="az.currentlyInstalledVersionIsLatest">
+        <source xml:lang="en">Currently installed version of Azure CLI: {0} is same or newer than any other version available</source>
+        <target state="translated">現在インストールされている Azure CL {0} は、使用可能な他のバージョンと同じか、それより新しいバージョンです</target>
+      </trans-unit>
+      <trans-unit id="az.decline">
+        <source xml:lang="en">Decline</source>
+        <target state="translated">同意しない</target>
+      </trans-unit>
+      <trans-unit id="az.doNotAskAgain">
+        <source xml:lang="en">Don't Ask Again</source>
+        <target state="translated">今後このメッセージを表示しない</target>
+      </trans-unit>
+      <trans-unit id="az.downloadError">
+        <source xml:lang="en">Error while downloading</source>
+        <target state="translated">ダウンロード中のエラー</target>
+      </trans-unit>
+      <trans-unit id="az.downloadFinished">
+        <source xml:lang="en">Download finished</source>
+        <target state="translated">ダウンロードが完了しました</target>
+      </trans-unit>
+      <trans-unit id="az.downloadingProgressMb">
+        <source xml:lang="en">Downloading ({0} / {1} MB)</source>
+        <target state="translated">ダウンロード中 ({0} / {1} MB)</target>
+      </trans-unit>
+      <trans-unit id="az.downloadingTo">
+        <source xml:lang="en">Downloading {0} from {1} to {2}</source>
+        <target state="translated">{0} を {1} から {2} にダウンロードしています</target>
+      </trans-unit>
+      <trans-unit id="az.endpointOrNamespaceRequired">
+        <source xml:lang="en">Either an endpoint or a namespace must be specified</source>
+        <target state="translated">エンドポイントまたは名前空間のいずれかを指定しなければなりません</target>
+      </trans-unit>
+      <trans-unit id="az.executingCommand">
+        <source xml:lang="en">Executing command: '{0} {1}'</source>
+        <target state="translated">コマンドの実行中: '{0} {1}'</target>
+      </trans-unit>
+      <trans-unit id="az.failedToParseReleaseInfo">
+        <source xml:lang="en">Failed to parse the JSON of contents at: {0}.
+File contents:
+{1}
+Error: {2}</source>
+        <target state="translated">{0} でコンテンツの JSON を解析できませんでした。
+ファイル コンテンツ: 
+{1}
+エラー: {2}</target>
+      </trans-unit>
+      <trans-unit id="az.foundExistingAz">
+        <source xml:lang="en">Found existing Azure CLI installation of version (v{0}) at path:{1} with arcdata version: {2}.</source>
+        <target state="translated">バージョン (v{0}) の既存の Azure CLI のインストールが、arcdata バージョン {2} を持つパス {1} で見つかりました。</target>
+      </trans-unit>
+      <trans-unit id="az.gettingTextContentsOfUrl">
+        <source xml:lang="en">Getting text contents of resource at URL {0}</source>
+        <target state="translated">URL {0} でリソースのテキスト コンテンツを取得しています</target>
+      </trans-unit>
+      <trans-unit id="az.installError">
+        <source xml:lang="en">Error installing Azure CLI and arcdata extension: {0}</source>
+        <target state="translated">Azure CLI と arcdata 拡張機能のインストール中にエラーが発生しました: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.installingArcdata">
+        <source xml:lang="en">Installing the Azure CLI arcdata extension...</source>
+        <target state="translated">Azure CLI arcdata 拡張機能をインストールしています...</target>
+      </trans-unit>
+      <trans-unit id="az.installingAz">
+        <source xml:lang="en">Installing Azure CLI...</source>
+        <target state="translated">Azure CLI をインストールしています...</target>
+      </trans-unit>
+      <trans-unit id="az.latestAzVersionAvailable">
+        <source xml:lang="en">Latest available Azure CLI version: {0}.</source>
+        <target state="translated">Azure CLI の最新バージョン: {0}。</target>
+      </trans-unit>
+      <trans-unit id="az.missingRequiredVersion">
+        <source xml:lang="en">Azure CLI &gt;= {0} is required for this feature. Run the 'Azure CLI: Check for Update' command to install this and then try again.</source>
+        <target state="translated">この機能には、Azure CLI &gt;= {0} が必要です。'Azure CLI: Check for Update' コマンドを実行してからこれをインストールして、もう一度お試しください。</target>
+      </trans-unit>
+      <trans-unit id="az.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">いいえ</target>
+      </trans-unit>
+      <trans-unit id="az.noAz">
+        <source xml:lang="en">No Azure CLI is available, run the command 'Azure CLI: Install' to enable the features that require it.</source>
+        <target state="translated">使用可能な Azure CLI がありません。コマンド 'Azure CLI: Install' を実行し、それを必要とする機能を有効にします。</target>
+      </trans-unit>
+      <trans-unit id="az.noAzArc">
+        <source xml:lang="en">No Azure CLI arcdata extension is available.</source>
+        <target state="translated">使用可能な Azure CLI arcdata 拡張機能がありません。</target>
+      </trans-unit>
+      <trans-unit id="az.noAzWithLink">
+        <source xml:lang="en">No Azure CLI is available, [install the Azure CLI](command:az.install) to enable the features that require it.</source>
+        <target state="translated">使用可能な Azure CLI がありません。[Azure CLI の更新] (コマンド: az.install) を行い、それを必要とする機能を有効にします。</target>
+      </trans-unit>
+      <trans-unit id="az.noAzureCLI">
+        <source xml:lang="en">No Azure CLI is available. Install the latest version manually from [here](https://docs.microsoft.com/cli/azure/install-azure-cli) and then restart Azure Studio.</source>
+        <target state="translated">使用可能な Azure CLI がありません。[こちら](https://docs.microsoft.com/cli/azure/install-azure-cli) から最新バージョンを手動でインストールしてから、Azure Studio を再起動してください。</target>
+      </trans-unit>
+      <trans-unit id="az.noDownloadLink">
+        <source xml:lang="en">No download link available for platform '{0}'
+Release info: ${1}</source>
+        <target state="translated">プラットフォーム '{0}'
+リリース情報に利用可能なダウンロード リンクがありません: ${1}</target>
+      </trans-unit>
+      <trans-unit id="az.noReleaseVersion">
+        <source xml:lang="en">No release version available for platform '{0}'
+Release info: ${1}</source>
+        <target state="translated">プラットフォーム '{0}'
+リリース情報に利用可能なリリース バージョンがありません: ${1}</target>
+      </trans-unit>
+      <trans-unit id="az.parseVersionError">
+        <source xml:lang="en">An error occurred while parsing the output of az --version.</source>
+        <target state="translated">az --version の出力の解析中にエラーが発生しました。</target>
+      </trans-unit>
+      <trans-unit id="az.platformUnsupported">
+        <source xml:lang="en">Platform '{0}' is currently unsupported</source>
+        <target state="translated">プラットフォーム '{0}' は現在サポート外です</target>
+      </trans-unit>
+      <trans-unit id="az.promptForAzUpdate">
+        <source xml:lang="en">A new version of Azure CLI ( {0} ) is available, do you wish to update to it now?</source>
+        <target state="translated">Azure CLI の新しいバージョン ( {0} ) が利用できます。今すぐ更新しますか?</target>
+      </trans-unit>
+      <trans-unit id="az.promptForRequiredAzUpdate">
+        <source xml:lang="en">This extension requires Azure CLI &gt;= {0} to be installed, do you wish to update to the latest version ({1}) now? If you do not then some functionality may not work.</source>
+        <target state="translated">この拡張機能を使用するには、Azure CLI &gt;= {0} がインストールされている必要がありますが、今すぐ最新バージョン ({1}) に更新しますか? 更新しない場合、一部の機能が動作しない可能性があります。</target>
+      </trans-unit>
+      <trans-unit id="az.promptLog">
+        <source xml:lang="en">Prompting the user to accept the following: {0}</source>
+        <target state="translated">ユーザーが次に同意するよう促すダイアログの表示: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.requiredVersionNotAvailable">
+        <source xml:lang="en">This extension requires the Azure CLI extension 'arcdata' version &gt;= {0} to be installed, but the current version available is only {1}. Install the correct version using instructions from [here](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).</source>
+        <target state="translated">この拡張機能を使用するには、Azure CLI の拡張機能 'arcdata' バージョン &gt;= {0} がインストールされている必要がありますが、現在利用可能なバージョンは {1} のみです。[こちら](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension) の手順に従って正しいバージョンをインストールしてください。</target>
+      </trans-unit>
+      <trans-unit id="az.searchingForAz">
+        <source xml:lang="en">Searching for existing Azure CLI installation...</source>
+        <target state="translated">既存の Azure CLI のインストールを検索しています...</target>
+      </trans-unit>
+      <trans-unit id="az.skipInstall">
+        <source xml:lang="en">Skipping installation of Azure CLI and arcdata extension, since the operation was not user requested and config option: {0}.{1} is {2}</source>
+        <target state="translated">この操作はユーザーが要求したものではなく、構成オプション {0} でもないため、Azure CLI と arcdata 拡張機能のインストールをスキップします。{1} は {2} です</target>
+      </trans-unit>
+      <trans-unit id="az.stderrOutput">
+        <source xml:lang="en">stderr: {0}</source>
+        <target state="translated">stderr: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.stdoutOutput">
+        <source xml:lang="en">stdout: {0}</source>
+        <target state="translated">stdout: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.unexpectedCommandError">
+        <source xml:lang="en">Unexpected error executing command: {0}</source>
+        <target state="translated">コマンド {0} の実行中に予期しないエラーが発生しました</target>
+      </trans-unit>
+      <trans-unit id="az.unexpectedExitCode">
+        <source xml:lang="en">Unexpected exit code from command: {1} ({0})</source>
+        <target state="translated">コマンドからの予期しない終了コード: {1} ({0})</target>
+      </trans-unit>
+      <trans-unit id="az.unsupportedArcDataVersion">
+        <source xml:lang="en">Your downloaded version {1} of the Azure CLI extension 'arcdata' is not yet supported. The latest version is is {0}. Install the correct version using instructions from [here](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).</source>
+        <target state="translated">Azure CLI の拡張機能 'arcdata' のダウンロード済みバージョン {1} はまだサポートされていません。最新バージョンは {0} です。[こちら](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension) の手順に従って正しいバージョンをインストールしてください。</target>
+      </trans-unit>
+      <trans-unit id="az.updateCheckSkipped">
+        <source xml:lang="en">No check for new Azure CLI version availability performed as Azure CLI was not found to be installed</source>
+        <target state="translated">Azure CLI がインストールされていないことが判明したため、新しい Azure CLI バージョンの可用性のチェックが実行されませんでした。</target>
+      </trans-unit>
+      <trans-unit id="az.updateError">
+        <source xml:lang="en">Error updating Azure CLI: {0}</source>
+        <target state="translated">Azure CLI を更新中に発生したエラー: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.updatingAz">
+        <source xml:lang="en">Updating Azure CLI...</source>
+        <target state="translated">Azure CLI を更新しています...</target>
+      </trans-unit>
+      <trans-unit id="az.userRequestedInstall">
+        <source xml:lang="en">User requested to install Azure CLI and arcdata extension using 'Azure CLI: Install' command</source>
+        <target state="translated">ユーザーが 'Azure CLI: Install' コマンドを使用して Azure Data CLI と arcdata 拡張機能のインストールを要求しました</target>
+      </trans-unit>
+      <trans-unit id="az.userResponseInstall">
+        <source xml:lang="en">User Response on prompt to install Azure CLI: {0}</source>
+        <target state="translated">Azure CLI のインストールを促すダイアログの表示でのユーザー応答: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.userResponseUpdate">
+        <source xml:lang="en">User Response on prompt to update Azure CLI: {0}</source>
+        <target state="translated">Azure CLI の更新を促すダイアログの表示でのユーザー応答: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.versionForUpdate">
+        <source xml:lang="en">Found version: {0} that Azure CLI can be updated to from current version: {1}.</source>
+        <target state="translated">バージョン {0} が見つかりました。Azure CLI は、現在のバージョンから {1} を更新できます。</target>
+      </trans-unit>
+      <trans-unit id="az.yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">はい</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azcli/package" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="azcli.arc.azArcdataInstallKey.description">
+        <source xml:lang="en">Choose whether you will be prompted to download the Azure CLI arcdata extension.</source>
+        <target state="translated">Azure CLI arcdata 拡張機能のダウンロードを促すメッセージを表示するかどうかを選択します。</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.azArcdataUpdateKey.description">
+        <source xml:lang="en">Choose whether you will be prompted when an update of the Azure CLI arcdata extension is available.</source>
+        <target state="translated">Azure CLI arcdata 拡張機能が更新可能になった場合にダイアログを表示するかどうかを選択します。</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.category">
+        <source xml:lang="en">Azure CLI</source>
+        <target state="translated">Azure CLI</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.config.debug">
+        <source xml:lang="en">Log debug info to the output channel for all executed az commands</source>
+        <target state="translated">すべての実行済み az コマンドの出力チャネルにデバッグ情報を記録します</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.config.title">
+        <source xml:lang="en">Azure CLI Configuration</source>
+        <target state="translated">Azure CLI の構成</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.description">
+        <source xml:lang="en">Support for Azure CLI.</source>
+        <target state="translated">Azure CLI 対応。</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.displayName">
+        <source xml:lang="en">Azure CLI</source>
+        <target state="translated">Azure CLI</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.install.dontPrompt.description">
+        <source xml:lang="en">The user will not be prompted to install the Azure CLI arcdata extension</source>
+        <target state="translated">ユーザーに Azure CLI arcdata 拡張機能のインストールを促すダイアログは表示されません</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.install.prompt.description">
+        <source xml:lang="en">The user will be prompted to install the Azure CLI arcdata extension</source>
+        <target state="translated">ユーザーに Azure CLI arcdata 拡張機能のインストールを促すダイアログが表示されます</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.update.dontPrompt.description">
+        <source xml:lang="en">The user will not be prompted for update of the Azure CLI arcdata extension</source>
+        <target state="translated">ユーザーに Azure CLI arcdata 拡張機能の更新を促すダイアログは表示されません</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.update.prompt.description">
+        <source xml:lang="en">The user will be prompted for update of the Azure CLI arcdata extension</source>
+        <target state="translated">ユーザーに Azure CLI arcdata 拡張機能の更新を促すダイアログが表示されます</target>
+      </trans-unit>
+      <trans-unit id="azcli.azCliInstallKey.description">
+        <source xml:lang="en">Choose whether you will be prompted to install Azure CLI.</source>
+        <target state="translated">Azure CLI のインストールを促すメッセージを表示するかどうかを選択します。</target>
+      </trans-unit>
+      <trans-unit id="azcli.install.dontPrompt.description">
+        <source xml:lang="en">The user will not be prompted to install the Azure CLI</source>
+        <target state="translated">ユーザーに Azure CLI のインストールを促すメッセージは表示されません</target>
+      </trans-unit>
+      <trans-unit id="azcli.install.prompt.description">
+        <source xml:lang="en">The user will be prompted to install the Azure CLI</source>
+        <target state="translated">ユーザーに Azure CLI のインストールを促すメッセージが表示されます</target>
+      </trans-unit>
+      <trans-unit id="command.category">
+        <source xml:lang="en">Azure CLI</source>
+        <target state="translated">Azure CLI</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

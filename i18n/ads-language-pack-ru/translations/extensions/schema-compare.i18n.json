@@ -327,6 +327,7 @@
 		"package": {
 			"description": "Сравнение схем SQL для Azure Data Studio поддерживает сравнение схем баз данных и файлов DACPAC.",
 			"displayName": "Сравнение схем SQL Server",
+			"schemaCompare.runComparison": "Запустить сравнение схем...",
 			"schemaCompare.start": "Сравнение схем"
 		}
 	}

@@ -43,4 +43,3 @@ export function highlightSelectedText(): void {
 		document.execCommand('hiliteColor', false, 'Yellow');
 	}
 }
-

@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { WizardController } from './wizard/wizardController';
-import * as mssql from '../../mssql';
+import * as mssql from 'mssql';
 import { promises as fs } from 'fs';
 import * as loc from './constants/strings';
 import { MigrationNotebookInfo, NotebookPathHelper } from './constants/notebookPathHelper';
@@ -32,47 +32,54 @@ class SQLMigration {
 
 	async registerCommands(): Promise<void> {
 		const commandDisposables: vscode.Disposable[] = [ // Array of disposables returned by registerCommand
-			vscode.commands.registerCommand('sqlmigration.start', async () => {
-				await this.launchMigrationWizard();
-			}),
-			vscode.commands.registerCommand('sqlmigration.openNotebooks', async () => {
-				const input = vscode.window.createQuickPick<MigrationNotebookInfo>();
-				input.placeholder = loc.NOTEBOOK_QUICK_PICK_PLACEHOLDER;
+			vscode.commands.registerCommand(
+				'sqlmigration.start',
+				async () => await this.launchMigrationWizard()),
+			vscode.commands.registerCommand(
+				'sqlmigration.openNotebooks',
+				async () => {
+					const input = vscode.window.createQuickPick<MigrationNotebookInfo>();
+					input.placeholder = loc.NOTEBOOK_QUICK_PICK_PLACEHOLDER;
 
-				input.items = NotebookPathHelper.getAllMigrationNotebooks();
+					input.items = NotebookPathHelper.getAllMigrationNotebooks();
 
-				this.context.subscriptions.push(input.onDidAccept(async (e) => {
-					const selectedNotebook = input.selectedItems[0];
-					if (selectedNotebook) {
-						try {
-							await azdata.nb.showNotebookDocument(vscode.Uri.parse(`untitled: ${selectedNotebook.label}`), {
-								preview: false,
-								initialContent: (await fs.readFile(selectedNotebook.notebookPath)).toString(),
-								initialDirtyState: false
-							});
-						} catch (e) {
-							void vscode.window.showErrorMessage(`${loc.NOTEBOOK_OPEN_ERROR} - ${e.toString()}`);
+					this.context.subscriptions.push(input.onDidAccept(async (e) => {
+						const selectedNotebook = input.selectedItems[0];
+						if (selectedNotebook) {
+							try {
+								await azdata.nb.showNotebookDocument(vscode.Uri.parse(`untitled: ${selectedNotebook.label}`), {
+									preview: false,
+									initialContent: (await fs.readFile(selectedNotebook.notebookPath)).toString(),
+									initialDirtyState: false
+								});
+							} catch (e) {
+								void vscode.window.showErrorMessage(`${loc.NOTEBOOK_OPEN_ERROR} - ${e.toString()}`);
+							}
+							input.hide();
 						}
-						input.hide();
-					}
-				}));
+					}));
 
-				input.show();
-			}),
-			azdata.tasks.registerTask('sqlmigration.start', async () => {
-				await this.launchMigrationWizard();
-			}),
-			azdata.tasks.registerTask('sqlmigration.newsupportrequest', async () => {
-				await this.launchNewSupportRequest();
-			}),
-			azdata.tasks.registerTask('sqlmigration.sendfeedback', async () => {
-				const actionId = 'workbench.action.openIssueReporter';
-				const args = {
-					extensionId: 'microsoft.sql-migration',
-					issueTitle: loc.FEEDBACK_ISSUE_TITLE,
-				};
-				return await vscode.commands.executeCommand(actionId, args);
-			}),
+					input.show();
+				}),
+			azdata.tasks.registerTask(
+				'sqlmigration.start',
+				async () => await this.launchMigrationWizard()),
+			azdata.tasks.registerTask(
+				'sqlmigration.newsupportrequest',
+				async () => await this.launchNewSupportRequest()),
+			azdata.tasks.registerTask(
+				'sqlmigration.sendfeedback',
+				async () => {
+					const actionId = 'workbench.action.openIssueReporter';
+					const args = {
+						extensionId: 'microsoft.sql-migration',
+						issueTitle: loc.FEEDBACK_ISSUE_TITLE,
+					};
+					return await vscode.commands.executeCommand(actionId, args);
+				}),
+			azdata.tasks.registerTask(
+				'sqlmigration.refreshmigrations',
+				async (e) => await widget?.refreshMigrations()),
 		];
 
 		this.context.subscriptions.push(...commandDisposables);
@@ -97,14 +104,20 @@ class SQLMigration {
 			if (api) {
 				this.stateModel = new MigrationStateModel(this.context, connectionId, api.sqlMigration);
 				this.context.subscriptions.push(this.stateModel);
-				let savedInfo = this.checkSavedInfo(serverName);
+				const savedInfo = this.checkSavedInfo(serverName);
 				if (savedInfo) {
 					this.stateModel.savedInfo = savedInfo;
 					this.stateModel.serverName = serverName;
-					let savedAssessmentDialog = new SavedAssessmentDialog(this.context, this.stateModel);
+					const savedAssessmentDialog = new SavedAssessmentDialog(
+						this.context,
+						this.stateModel,
+						async () => await widget?.onDialogClosed());
 					await savedAssessmentDialog.openDialog();
 				} else {
-					const wizardController = new WizardController(this.context, this.stateModel);
+					const wizardController = new WizardController(
+						this.context,
+						this.stateModel,
+						async () => await widget?.onDialogClosed());
 					await wizardController.openWizard(connectionId);
 				}
 			}
@@ -131,10 +144,11 @@ class SQLMigration {
 }
 
 let sqlMigration: SQLMigration;
+let widget: DashboardWidget;
 export async function activate(context: vscode.ExtensionContext) {
 	sqlMigration = new SQLMigration(context);
 	await sqlMigration.registerCommands();
-	let widget = new DashboardWidget(context);
+	widget = new DashboardWidget(context);
 	widget.register();
 }
 

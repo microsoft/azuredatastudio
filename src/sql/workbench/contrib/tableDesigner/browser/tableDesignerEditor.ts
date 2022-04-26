@@ -16,16 +16,17 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { IEditorOpenContext } from 'vs/workbench/common/editor';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { SaveTableChangesAction } from 'sql/workbench/contrib/tableDesigner/browser/actions';
+import { PublishTableChangesAction } from 'sql/workbench/contrib/tableDesigner/browser/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { DesignerPaneSeparator } from 'sql/platform/theme/common/colorRegistry';
+import { localize } from 'vs/nls';
 
 export class TableDesignerEditor extends EditorPane {
 	public static readonly ID: string = 'workbench.editor.tableDesigner';
 
 	private _designer: Designer;
-	private _saveChangesAction: SaveTableChangesAction;
+	private _publishChangesAction: PublishTableChangesAction;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -44,26 +45,29 @@ export class TableDesignerEditor extends EditorPane {
 		await super.setInput(input, options, context, token);
 		const designerInput = input.getComponentInput();
 		this._designer.setInput(designerInput);
-		this._saveChangesAction.setContext(designerInput);
+		this._publishChangesAction.setContext(designerInput);
 	}
 
 	protected createEditor(parent: HTMLElement): void {
 		// The editor is only created once per editor group.
 		const container = parent.appendChild(DOM.$('.table-designer-main-container'));
-		const actionbarContainer = container.appendChild(DOM.$('.actionbar-container'));
+		const topRowContainer = container.appendChild(DOM.$('.top-row-container'));
+		const actionbarContainer = topRowContainer.appendChild(DOM.$('.actionbar-container'));
+		const previewFlag = topRowContainer.appendChild(DOM.$('.preview-flag-container.codicon.info'));
+		previewFlag.innerText = localize('tableDesigner.PreviewFeature', "Preview feature");
 		const designerContainer = container.appendChild(DOM.$('.designer-container'));
 		const actionbar = new ActionBar(actionbarContainer);
 		this._register(actionbar);
-		this._saveChangesAction = this._instantiationService.createInstance(SaveTableChangesAction);
-		this._saveChangesAction.enabled = false;
-		actionbar.push(this._saveChangesAction, { icon: true, label: false });
+		this._publishChangesAction = this._instantiationService.createInstance(PublishTableChangesAction);
+		this._publishChangesAction.enabled = false;
+		actionbar.push([this._publishChangesAction], { icon: true, label: false });
 
 		this._designer = this._instantiationService.createInstance(Designer, designerContainer);
 		this._register(attachDesignerStyler(this._designer, this.themeService));
 		this._register(registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 			const border = theme.getColor(DesignerPaneSeparator);
 			if (border) {
-				collector.addRule(`.table-designer-main-container .actionbar-container { border-color: ${border};}`);
+				collector.addRule(`.table-designer-main-container .top-row-container { border-color: ${border};}`);
 			}
 		}));
 	}

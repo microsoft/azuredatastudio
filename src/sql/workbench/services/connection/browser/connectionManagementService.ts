@@ -23,8 +23,8 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { Deferred } from 'sql/base/common/promise';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
+import { AzureResource, ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 import * as azdata from 'azdata';
 
@@ -207,6 +207,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Opens the connection dialog
 	 * @param params Include the uri, type of connection
+	 * @param options
 	 * @param model the existing connection profile to create a new one from
 	 */
 	public showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: Partial<interfaces.IConnectionProfile>, connectionResult?: IConnectionResult): Promise<void> {
@@ -287,7 +288,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	/**
 	 * Loads the  password and try to connect. If fails, shows the dialog so user can change the connection
-	 * @param Connection Profile
+	 * @param connection Profile
 	 * @param owner of the connection. Can be the editors
 	 * @param options to use after the connection is complete
 	 */
@@ -346,7 +347,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		options?: IConnectionCompletionOptions): Promise<IConnectionResult> {
 		if (options && options.showConnectionDialogOnError) {
 			let params: INewConnectionParams = options && options.params ? options.params : {
-				connectionType: this._connectionStatusManager.isDefaultTypeUri(owner.uri) ? ConnectionType.default : ConnectionType.editor,
+				connectionType: this._connectionStatusManager.isEditorTypeUri(owner.uri) ? ConnectionType.editor : ConnectionType.default,
 				input: owner,
 				runQueryOnCompletion: RunQueryOnConnectionMode.none,
 				showDashboard: options.showDashboard
@@ -361,7 +362,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	/**
 	 * Load the password and opens a new connection
-	 * @param Connection Profile
+	 * @param connection Profile
 	 * @param uri assigned to the profile (used only when connecting from an editor)
 	 * @param options to be used after the connection is completed
 	 * @param callbacks to call after the connection is completed
@@ -761,7 +762,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 *
 	 * @param uri the URI of the resource whose language has changed
 	 * @param language the base language
-	 * @param flavor the specific language flavor that's been set
+	 * @param provider
 	 * @throws {Error} if the provider is not in the list of registered providers
 	 */
 	public doChangeLanguageFlavor(uri: string, language: string, provider: string): void {
@@ -1157,9 +1158,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
-	 * Replaces connection info uri with new uri.
+	 * Replaces connection info uri with new uri. No-op if the URI does not currently have an associated connection.
 	 */
 	public changeConnectionUri(newUri: string, oldUri: string): void {
+		if (!this._connectionStatusManager.hasConnection(oldUri)) {
+			return;
+		}
 		this._connectionStatusManager.changeConnectionUri(newUri, oldUri);
 		if (!this._uriToProvider[oldUri]) {
 			this._logService.error(`No provider found for old URI : '${oldUri}'`);

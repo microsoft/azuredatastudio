@@ -9,6 +9,7 @@ import { promises as fs } from 'fs';
 // Project baselines
 export let newProjectFileBaseline: string;
 export let newProjectFileWithScriptBaseline: string;
+export let newProjectFileNoPropertiesFolderBaseline: string;
 export let openProjectFileBaseline: string;
 export let openDataSourcesBaseline: string;
 export let SSDTProjectFileBaseline: string;
@@ -34,12 +35,14 @@ export let openSdkStyleSqlProjectBaseline: string;
 export let openSdkStyleSqlProjectWithFilesSpecifiedBaseline: string;
 export let openSdkStyleSqlProjectWithGlobsSpecifiedBaseline: string;
 export let openSdkStyleSqlProjectWithBuildRemoveBaseline: string;
+export let openSdkStyleSqlProjectNoProjectGuidBaseline: string;
 
 const baselineFolderPath = __dirname;
 
 export async function loadBaselines() {
 	newProjectFileBaseline = await loadBaseline(baselineFolderPath, 'newSqlProjectBaseline.xml');
 	newProjectFileWithScriptBaseline = await loadBaseline(baselineFolderPath, 'newSqlProjectWithScriptBaseline.xml');
+	newProjectFileNoPropertiesFolderBaseline = await loadBaseline(baselineFolderPath, 'newSqlProjectNoPropertiesFolderBaseline.xml');
 	openProjectFileBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectBaseline.xml');
 	openDataSourcesBaseline = await loadBaseline(baselineFolderPath, 'openDataSourcesBaseline.json');
 	SSDTProjectFileBaseline = await loadBaseline(baselineFolderPath, 'SSDTProjectBaseline.xml');
@@ -65,6 +68,7 @@ export async function loadBaselines() {
 	openSdkStyleSqlProjectWithFilesSpecifiedBaseline = await loadBaseline(baselineFolderPath, 'openSdkStyleSqlProjectWithFilesSpecifiedBaseline.xml');
 	openSdkStyleSqlProjectWithGlobsSpecifiedBaseline = await loadBaseline(baselineFolderPath, 'openSdkStyleSqlProjectWithGlobsSpecifiedBaseline.xml');
 	openSdkStyleSqlProjectWithBuildRemoveBaseline = await loadBaseline(baselineFolderPath, 'openSdkStyleSqlProjectWithBuildRemoveBaseline.xml');
+	openSdkStyleSqlProjectNoProjectGuidBaseline = await loadBaseline(baselineFolderPath, 'openSdkStyleSqlProjectNoProjectGuidBaseline.xml');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {

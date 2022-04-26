@@ -29,8 +29,7 @@ export function getDeployedModelsQuery(table: DatabaseTable): string {
 
 /**
  * Verifies config table has the expected schema
- * @param databaseName
- * @param tableName
+ * @param table
  */
 export function getConfigTableVerificationQuery(table: DatabaseTable): string {
 	let tableName = table.tableName;

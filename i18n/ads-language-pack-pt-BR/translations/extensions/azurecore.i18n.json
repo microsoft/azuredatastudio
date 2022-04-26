@@ -18,7 +18,7 @@
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Ocorreu um erro com a autenticação ou os tokens foram excluídos do sistema. Tente adicionar a sua conta no Azure Data Studio novamente.",
 			"azure.noUniqueIdentifier": "O usuário não tinha um identificador exclusivo no AAD",
-			"azure.responseError": "A recuperação de token falhou com um erro. Abra ferramentas de desenvolvedor para exibir o erro",
+			"azure.responseError": "Falha na recuperação de token com um erro. [Abrir ferramentas para desenvolvedores] ({0}) para obter mais detalhes.",
 			"azure.tenantNotFound": "Locatário especificado com ID '{0}' não encontrado.",
 			"azureAuth.unidentifiedError": "Erro não identificado com a autenticação do Azure",
 			"azureWorkAccountDisplayName": "Conta corporativa ou de estudante",
@@ -233,8 +233,9 @@
 			"config.enablePublicCloudDescription": "A integração de nuvem pública do Azure deve estar habilitada?",
 			"config.enableUsGovCloudDescription": "A integração de nuvem do US Government Azure (Fairfax) deve estar habilitada?",
 			"config.enableUsNatCloudDescription": "A integração de nuvem Nacional dos EUA do Azure deve estar habilitada?",
+			"config.loggingLevel": "[Opcional] O detalhamento do registro em log para a extensão de Contas do Azure.",
 			"config.noSystemKeychain": "Desabilite a integração do conjunto de chaves do sistema. As credenciais serão armazenadas em um arquivo simples no diretório base do usuário.",
-			"config.piiLogging": "A PPI (Informações de Identificação Pessoal) deve ser registrada no modo de exibição do console localmente?"
+			"config.piiLogging": "As Informações de Identificação Pessoal (PII) devem ser registradas no canal de saída das Contas do Azure e no arquivo de log do canal de saída."
 		}
 	}
 }

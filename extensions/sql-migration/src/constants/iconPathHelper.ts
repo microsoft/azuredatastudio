@@ -40,6 +40,11 @@ export class IconPathHelper {
 	public static emptyTable: IconPath;
 	public static addAzureAccount: IconPath;
 	public static retry: IconPath;
+	public static edit: IconPath;
+	public static restartDataCollection: IconPath;
+	public static stop: IconPath;
+	public static view: IconPath;
+	public static sqlMigrationService: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -157,6 +162,26 @@ export class IconPathHelper {
 		IconPathHelper.retry = {
 			light: context.asAbsolutePath('images/retry.svg'),
 			dark: context.asAbsolutePath('images/retry.svg')
+		};
+		IconPathHelper.edit = {
+			light: context.asAbsolutePath('images/edit.svg'),
+			dark: context.asAbsolutePath('images/edit.svg')
+		};
+		IconPathHelper.restartDataCollection = {
+			light: context.asAbsolutePath('images/restartDataCollection.svg'),
+			dark: context.asAbsolutePath('images/restartDataCollection.svg')
+		};
+		IconPathHelper.stop = {
+			light: context.asAbsolutePath('images/stop.svg'),
+			dark: context.asAbsolutePath('images/stop.svg')
+		};
+		IconPathHelper.view = {
+			light: context.asAbsolutePath('images/view.svg'),
+			dark: context.asAbsolutePath('images/view.svg')
+		};
+		IconPathHelper.sqlMigrationService = {
+			light: context.asAbsolutePath('images/sqlMigrationService.svg'),
+			dark: context.asAbsolutePath('images/sqlMigrationService.svg'),
 		};
 	}
 }
