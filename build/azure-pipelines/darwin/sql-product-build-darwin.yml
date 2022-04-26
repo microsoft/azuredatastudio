@@ -128,30 +128,6 @@ steps:
       yarn gulp compile-extensions
     displayName: Compile Extensions
 
-  - task: DockerInstaller@0
-    displayName: Installing Docker
-    inputs:
-      dockerVersion: 17.09.0-ce
-      releaseType: stable
-
-  - script: docker pull mcr.microsoft.com/mssql/server:2019-latest
-    displayName: Pull MSSQL Docker Image
-
-  - bash: echo "##vso[task.setvariable variable=sql2019_password;issecret=true]Test-$(Build.BuildNumber)-$(Get-Date -format yyyyMMdd-Hmmss)"
-    displayName: Generate password for test server
-
-  - script: 'docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=$(sql2019_password)"
-    -e "MSSQL_AGENT_ENABLED=True"
-    -p 1433:1433 --name sql1 -h sql1
-    -d mcr.microsoft.com/mssql/server:2019-latest'
-    displayName: Starting Server in Docker Container
-
-  - task: DownloadSecureFile@1
-    displayName: Download Test Environment Configuration
-    name: testConnections
-    inputs:
-      secureFile: 'smokeTestsConnectionConfig.json'
-
   # Per https://developercommunity.visualstudio.com/t/variablesexpressions-dont-work-with-continueonerro/1187733 we can't use variables
   # in continueOnError directly so instead make two copies of the task and only run one or the other based on the SMOKE_FAIL_ON_ERROR value
   - script: |
