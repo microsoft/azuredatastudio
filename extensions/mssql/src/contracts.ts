@@ -58,6 +58,7 @@ export interface RefreshTokenNotificationParams {
 	provider: string;
 	resource: string;
 	accountId: string;
+	uri: string;
 }
 
 export namespace RefreshTokenNotification {
@@ -68,6 +69,7 @@ export interface RefreshTokenParams {
 	accountKey: string;
 	token: string;
 	expiresOn: Number;
+	uri: string;
 }
 
 export namespace RefreshToken {
