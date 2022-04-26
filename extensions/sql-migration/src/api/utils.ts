@@ -263,7 +263,6 @@ export async function getAzureAccounts(): Promise<azdata.Account[]> {
 		accounts = await azdata.accounts.getAllAccounts();
 	} catch (e) {
 		console.log(e);
-		accounts = [];
 	}
 	return accounts;
 }
@@ -297,7 +296,6 @@ export async function getAzureTenants(account?: azdata.Account): Promise<Tenant[
 		}
 	} catch (e) {
 		console.log(e);
-		tenants = [];
 	}
 	return tenants;
 }
@@ -329,7 +327,6 @@ export async function getAzureSubscriptions(account?: azdata.Account): Promise<a
 		}
 	} catch (e) {
 		console.log(e);
-		subscriptions = [];
 	}
 	subscriptions.sort((a, b) => a.name.localeCompare(b.name));
 	return subscriptions;
@@ -391,7 +388,6 @@ export async function getAzureLocations(account?: azdata.Account, subscription?:
 		}
 	} catch (e) {
 		console.log(e);
-		locations = [];
 	}
 	locations.sort((a, b) => a.displayName.localeCompare(b.displayName));
 	return locations;
@@ -469,7 +465,7 @@ export async function getAzureResourceGroupsByResources(resourceType: Selectable
 			case SelectableResourceType.SqlMigrationService:
 				const dmsInstances = resources as SqlMigrationService[];
 				resourceGroups = dmsInstances
-					.filter((dms) => dms.properties.provisioningState === 'Succeeded' && dms.location.toLowerCase() === location.name.toLowerCase())
+					.filter((dms) => dms.properties.provisioningState === ProvisioningState.Succeeded && dms.location.toLowerCase() === location.name.toLowerCase())
 					.map((dms) => {
 						return <azureResource.AzureResourceResourceGroup>{
 							id: getFullResourceGroupFromId(dms.id),
@@ -483,7 +479,6 @@ export async function getAzureResourceGroupsByResources(resourceType: Selectable
 		}
 	} catch (e) {
 		console.log(e);
-		resourceGroups = [];
 	}
 
 	// remove duplicates
@@ -500,7 +495,6 @@ export async function getAzureResourceGroups(account?: azdata.Account, subscript
 		}
 	} catch (e) {
 		console.log(e);
-		resourceGroups = [];
 	}
 	resourceGroups.sort((a, b) => a.name.localeCompare(b.name));
 	return resourceGroups;
@@ -533,7 +527,6 @@ export async function getManagedInstances(account?: azdata.Account, subscription
 		}
 	} catch (e) {
 		console.log(e);
-		managedInstances = [];
 	}
 	managedInstances.sort((a, b) => a.name.localeCompare(b.name));
 	return managedInstances;
@@ -585,7 +578,6 @@ export async function getVirtualMachines(account?: azdata.Account, subscription?
 		}
 	} catch (e) {
 		console.log(e);
-		virtualMachines = [];
 	}
 	virtualMachines.sort((a, b) => a.name.localeCompare(b.name));
 	return virtualMachines;
@@ -597,7 +589,7 @@ export async function getVirtualMachinesDropdownValues(virtualMachines: SqlVMSer
 		virtualMachines.forEach((virtualMachine) => {
 			if (virtualMachine.location.toLowerCase() === location.name.toLowerCase() && getResourceGroupFromId(virtualMachine.id).toLowerCase() === resourceGroup.name.toLowerCase()) {
 				let virtualMachineValue: azdata.CategoryValue;
-				if (virtualMachine.properties.provisioningState === 'Succeeded') {
+				if (virtualMachine.properties.provisioningState === ProvisioningState.Succeeded) {
 					virtualMachineValue = {
 						name: virtualMachine.id,
 						displayName: virtualMachine.name
@@ -632,7 +624,6 @@ export async function getStorageAccounts(account?: azdata.Account, subscription?
 		}
 	} catch (e) {
 		console.log(e);
-		storageAccounts = [];
 	}
 	storageAccounts.sort((a, b) => a.name.localeCompare(b.name));
 	return storageAccounts;
@@ -665,12 +656,11 @@ export async function getAzureSqlMigrationServices(account?: azdata.Account, sub
 	try {
 		if (account && subscription) {
 			sqlMigrationServices = (await getSqlMigrationServices(account, subscription)).filter(dms => {
-				return dms.properties.provisioningState === 'Succeeded';
+				return dms.properties.provisioningState === ProvisioningState.Succeeded;
 			});
 		}
 	} catch (e) {
 		console.log(e);
-		sqlMigrationServices = [];
 	}
 	sqlMigrationServices.sort((a, b) => a.name.localeCompare(b.name));
 	return sqlMigrationServices;
@@ -708,7 +698,6 @@ export async function getFileShare(account?: azdata.Account, subscription?: azur
 		}
 	} catch (e) {
 		console.log(e);
-		fileShares = [];
 	}
 	fileShares.sort((a, b) => a.name.localeCompare(b.name));
 	return fileShares;
@@ -741,7 +730,6 @@ export async function getBlobContainer(account?: azdata.Account, subscription?: 
 		}
 	} catch (e) {
 		console.log(e);
-		blobContainers = [];
 	}
 	blobContainers.sort((a, b) => a.name.localeCompare(b.name));
 	return blobContainers;
@@ -774,7 +762,6 @@ export async function getBlobLastBackupFileNames(account?: azdata.Account, subsc
 		}
 	} catch (e) {
 		console.log(e);
-		lastFileNames = [];
 	}
 	lastFileNames.sort((a, b) => a.name.localeCompare(b.name));
 	return lastFileNames;

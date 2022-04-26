@@ -14,6 +14,7 @@ import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { deepClone, selectDefaultDropdownValue, getAzureResourceGroupsDropdownValues, getAzureSubscriptions, getAzureSubscriptionsDropdownValues, getAzureLocationsDropdownValues, getAzureTenants, getAzureTenantsDropdownValues, getAzureAccounts, getAzureAccountsDropdownValues, getManagedInstances, getVirtualMachines, getManagedInstancesDropdownValues, getVirtualMachinesDropdownValues, SelectableResourceType, getAzureResourceGroupsByResources, getAzureLocations } from '../api/utils';
 import { azureResource } from 'azurecore';
 import { SqlVMServer } from '../api/azure';
+import { ProvisioningState } from '../models/migrationLocalStorage';
 
 export class TargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -87,12 +88,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
 				break;
 		}
-
 		await this.populateAzureAccountsDropdown();
-		// await this.populateTenant()
-		// await this.populateLocationDropdown();
-		// await this.populateResourceGroupDropdown();
-		// await this.populateResourceInstanceDropdown();
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			const errors: string[] = [];
@@ -125,7 +121,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			const resourceDropdownValue = (<azdata.CategoryValue>this._azureResourceDropdown.value)?.displayName;
 			switch (this.migrationStateModel._targetType) {
 				case MigrationTargetType.SQLMI: {
-					let targetMi = this.migrationStateModel._targetServerInstance as azureResource.AzureSqlManagedInstance;
+					const targetMi = this.migrationStateModel._targetServerInstance as azureResource.AzureSqlManagedInstance;
 					if (!targetMi || resourceDropdownValue === constants.NO_MANAGED_INSTANCE_FOUND) {
 						errors.push(constants.INVALID_MANAGED_INSTANCE_ERROR);
 						break;
@@ -137,12 +133,12 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					break;
 				}
 				case MigrationTargetType.SQLVM: {
-					let targetVm = this.migrationStateModel._targetServerInstance as SqlVMServer;
+					const targetVm = this.migrationStateModel._targetServerInstance as SqlVMServer;
 					if (!targetVm || resourceDropdownValue === constants.NO_VIRTUAL_MACHINE_FOUND) {
 						errors.push(constants.INVALID_VIRTUAL_MACHINE_ERROR);
 						break;
 					}
-					if (targetVm.properties.provisioningState !== 'Succeeded') {
+					if (targetVm.properties.provisioningState !== ProvisioningState.Succeeded) {
 						errors.push(constants.VM_NOT_READY_ERROR(targetVm.name, targetVm.properties.provisioningState));
 						break;
 					}
@@ -390,7 +386,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						const selectedVm = this.migrationStateModel._targetSqlVirtualMachines.find(vm => vm.name === value || constants.UNAVAILABLE_TARGET_PREFIX(vm.name) === value);
 						this.migrationStateModel._targetServerInstance = deepClone(selectedVm)! as SqlVMServer;
 
-						if (this.migrationStateModel._targetServerInstance.properties.provisioningState !== 'Succeeded') {
+						if (this.migrationStateModel._targetServerInstance.properties.provisioningState !== ProvisioningState.Succeeded) {
 							this.wizard.message = {
 								text: constants.VM_NOT_READY_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.provisioningState),
 								level: azdata.window.MessageLevel.Error
