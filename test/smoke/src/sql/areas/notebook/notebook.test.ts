@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Application } from '../../../../../automation';
-import { ctrlOrCmd } from '../../../../../automation/src/sql/notebook';
 import * as minimist from 'minimist';
 import { afterSuite, beforeSuite } from '../../../utils';
 import * as assert from 'assert';
@@ -334,27 +333,27 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			it('can bold text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, ctrlOrCmd + '+b', 'p strong');
+				await verifyToolbarKeyboardShortcut(app, app.workbench.sqlNotebook.ctrlOrCmd + '+b', 'p strong');
 			});
 
 			it('can italicize text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, ctrlOrCmd + '+i', 'p em');
+				await verifyToolbarKeyboardShortcut(app, app.workbench.sqlNotebook.ctrlOrCmd + '+i', 'p em');
 			});
 
 			it('can underline text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, ctrlOrCmd + '+u', 'p u');
+				await verifyToolbarKeyboardShortcut(app, app.workbench.sqlNotebook.ctrlOrCmd + '+u', 'p u');
 			});
 
 			it('can highlight text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, ctrlOrCmd + '+shift+h', 'p mark');
+				await verifyToolbarKeyboardShortcut(app, app.workbench.sqlNotebook.ctrlOrCmd + '+shift+h', 'p mark');
 			});
 
 			it('can codify text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, ctrlOrCmd + '+shift+k', 'pre code');
+				await verifyToolbarKeyboardShortcut(app, app.workbench.sqlNotebook.ctrlOrCmd + '+shift+k', 'pre code');
 			});
 		});
 
