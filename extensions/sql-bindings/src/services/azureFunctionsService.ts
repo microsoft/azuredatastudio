@@ -199,7 +199,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				} else {
 					// else an error would occur during the createFunction
 					exitReason = 'error';
-					void vscode.window.showErrorMessage(utils.formatString(constants.errorNewAzureFunction, error.message ?? error));
+					void vscode.window.showErrorMessage(constants.errorNewAzureFunction(error));
 				}
 				TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, errorType)
 					.withAdditionalProperties(propertyBag).send();
