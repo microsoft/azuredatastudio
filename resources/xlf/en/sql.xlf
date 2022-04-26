@@ -5932,6 +5932,9 @@ Error: {1}</source>
     <trans-unit id="serverGroup.cancel">
       <source xml:lang="en">Cancel</source>
     </trans-unit>
+    <trans-unit id="serverGroup.colorValue">
+      <source xml:lang="en">Color: {0}</source>
+    </trans-unit>
     <trans-unit id="serverGroup.ok">
       <source xml:lang="en">OK</source>
     </trans-unit>
@@ -6231,6 +6234,15 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.previewDatabaseUpdates">
       <source xml:lang="en">Preview Database Updates</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="TableDesigner.closeApplication">
+      <source xml:lang="en">&amp;&amp;Close Application</source>
+      <note>&amp;&amp; denotes a mnemonic</note>
+    </trans-unit>
+    <trans-unit id="TableDesigner.saveBeforeExit">
+      <source xml:lang="en">There are unsaved changes in Table Designer that will be lost if you close the application. Do you want to close the application?</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/tasks/common/tasksService" source-language="en" datatype="plaintext"><body>

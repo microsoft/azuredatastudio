@@ -599,3 +599,33 @@ export function getFoldersAlongPath(startFolder: string, endFolder: string): str
 
 	return folders;
 }
+
+/**
+ * Determines whether provided value is a well-known database source and therefore is allowed to be sent in telemetry.
+ *
+ * @param value Value to check if it is a well-known database source
+ * @returns Normalized database source value if it is well-known, otherwise returns undefined
+ */
+export function getWellKnownDatabaseSource(value: string): string | undefined {
+	const upperCaseValue = value.toUpperCase();
+	return constants.WellKnownDatabaseSources
+		.find(wellKnownSource => wellKnownSource.toUpperCase() === upperCaseValue);
+}
+
+/**
+ * Filters an array of specified database project sources to only those that are well-known.
+ *
+ * @param databaseSourceValues Array of database source values to filter
+ * @returns Array of well-known database sources
+ */
+export function getWellKnownDatabaseSources(databaseSourceValues: string[]): string[] {
+	const databaseSourceSet = new Set<string>();
+	for (let databaseSourceValue of databaseSourceValues) {
+		const wellKnownDatabaseSourceValue = getWellKnownDatabaseSource(databaseSourceValue);
+		if (wellKnownDatabaseSourceValue) {
+			databaseSourceSet.add(wellKnownDatabaseSourceValue);
+		}
+	}
+
+	return Array.from(databaseSourceSet);
+}

@@ -89,6 +89,7 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	let cellClasses = 'grid-cell-value-container';
 	let valueToDisplay = '';
 	let titleValue = '';
+	let cellStyle = '';
 
 	if (DBCellValue.isDBCellValue(value)) {
 		valueToDisplay = 'NULL';
@@ -102,6 +103,9 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	} else if (typeof value === 'string' || (value && value.text)) {
 		if (value.text) {
 			valueToDisplay = value.text;
+			if (value.style) {
+				cellStyle = value.style;
+			}
 		} else {
 			valueToDisplay = value;
 		}
@@ -109,7 +113,7 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 		titleValue = valueToDisplay;
 	}
 
-	return `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
+	return `<span title="${titleValue}" style="${cellStyle}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
 
 

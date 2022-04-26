@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AppContext } from './appContext';
-import { IExtension, ICmsService, IDacFxService, ISchemaCompareService, MssqlObjectExplorerBrowser, ILanguageExtensionService, ISqlAssessmentService, ISqlMigrationService } from 'mssql';
+import { IExtension, ICmsService, IDacFxService, ISchemaCompareService, MssqlObjectExplorerBrowser, ILanguageExtensionService, ISqlAssessmentService, ISqlMigrationService, IAzureBlobService } from 'mssql';
 import * as constants from './constants';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import * as azdata from 'azdata';
@@ -40,6 +40,9 @@ export function createMssqlApi(context: AppContext, sqlToolsServer: SqlToolsServ
 		},
 		get sqlMigration() {
 			return context.getService<ISqlMigrationService>(constants.SqlMigrationService);
+		},
+		get azureBlob() {
+			return context.getService<IAzureBlobService>(constants.AzureBlobService);
 		}
 	};
 }
