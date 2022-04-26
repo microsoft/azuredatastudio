@@ -41,7 +41,7 @@ export async function getLocalSettingsJson(localSettingsPath: string): Promise<I
 			return JSON.parse(data);
 		} catch (error) {
 			console.log(error);
-			throw new Error(utils.formatString(constants.failedToParse(error.message), constants.azureFunctionLocalSettingsFileName, error.message));
+			throw new Error(constants.failedToParse(constants.azureFunctionLocalSettingsFileName, error));
 		}
 	}
 	return {
@@ -243,8 +243,8 @@ export async function addNugetReferenceToProjectFile(selectedProjectFile: string
 /**
  * Adds the Sql Connection String to the local.settings.json
  * @param connectionString of the SQL Server connection that was chosen by the user
- * @param projectFile path of the azure function project file
- * @param settingName name of the setting to add to the local.settings.json
+ * @param projectFile The path to the project the setting should be added to
+ * @param settingName The name of the setting to add to the local.settings.json
  */
 export async function addConnectionStringToConfig(connectionString: string, projectFile: string, settingName: string = constants.sqlConnectionStringSetting): Promise<void> {
 	const settingsFile = await getSettingsFile(projectFile);
@@ -286,7 +286,7 @@ export async function isFunctionProject(folderPath: string): Promise<boolean> {
 /**
  * Prompts the user to select type of binding and returns result
  */
-export async function promptForBindingType(): Promise<(vscode.QuickPickItem & { type: BindingType }) | undefined> {
+export async function promptForBindingType(): Promise<BindingType | undefined> {
 	const inputOutputItems: (vscode.QuickPickItem & { type: BindingType })[] = [
 		{
 			label: constants.input,
@@ -304,7 +304,7 @@ export async function promptForBindingType(): Promise<(vscode.QuickPickItem & { 
 		ignoreFocusOut: true
 	}));
 
-	return selectedBinding;
+	return selectedBinding?.type;
 }
 
 /**

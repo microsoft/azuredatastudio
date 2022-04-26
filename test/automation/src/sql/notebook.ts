@@ -68,10 +68,10 @@ export class Notebook {
 		await this.code.waitForActiveElement(textarea);
 
 		await this.code.waitForTypeInEditor(textarea, text);
-		await this._waitForActiveCellEditorContents(c => c.indexOf(text) > -1);
+		await this.waitForActiveCellEditorContents(c => c.indexOf(text) > -1);
 	}
 
-	private async _waitForActiveCellEditorContents(accept: (contents: string) => boolean): Promise<any> {
+	async waitForActiveCellEditorContents(accept: (contents: string) => boolean): Promise<any> {
 		const selector = '.notebook-cell.active .monaco-editor .view-lines';
 		return this.code.waitForTextContent(selector, undefined, c => accept(c.replace(/\u00a0/g, ' ')));
 	}
@@ -81,9 +81,18 @@ export class Notebook {
 		await this.code.waitForElement(span);
 	}
 
+	public async selectAllTextInRichTextEditor(): Promise<void> {
+		const editor = '.notebook-cell.active .notebook-preview[contenteditable="true"]';
+		await this.selectAllText(editor);
+	}
+
 	public async selectAllTextInEditor(): Promise<void> {
 		const editor = '.notebook-cell.active .monaco-editor';
-		await this.code.waitAndClick(editor);
+		await this.selectAllText(editor);
+	}
+
+	private async selectAllText(selector: string): Promise<void> {
+		await this.code.waitAndClick(selector);
 		await this.code.dispatchKeybinding(ctrlOrCmd + '+a');
 	}
 

@@ -28,6 +28,7 @@ export class TimeoutError extends Error { }
 
 /**
  * Consolidates on the error message string
+ * @param error The error object to get the message from
  */
 export function getErrorMessage(error: any): string {
 	return (error instanceof Error)
@@ -92,24 +93,6 @@ export async function getAllProjectsInFolder(folder: vscode.Uri, projectExtensio
 
 	// glob will return an array of file paths with forward slashes, so they need to be converted back if on windows
 	return (await glob(projFilter)).map(p => vscode.Uri.file(path.resolve(p)));
-}
-
-/**
- * Format a string. Behaves like C#'s string.Format() function.
- */
-export function formatString(str: string, ...args: any[]): string {
-	// This is based on code originally from https://github.com/Microsoft/vscode/blob/master/src/vs/nls.js
-	// License: https://github.com/Microsoft/vscode/blob/master/LICENSE.txt
-	let result: string;
-	if (args.length === 0) {
-		result = str;
-	} else {
-		result = str.replace(/\{(\d+)\}/g, (match, rest) => {
-			let index = rest[0];
-			return typeof args[index] !== 'undefined' ? args[index] : match;
-		});
-	}
-	return result;
 }
 
 /**

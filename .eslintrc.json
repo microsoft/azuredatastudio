@@ -212,6 +212,7 @@
 				"restrictions": [
 					"vs/nls",
 					"azdata",
+					"mssql",
 					"azurecore",
 					"**/{vs,sql}/base/common/**",
 					"**/{vs,sql}/base/parts/*/common/**",
@@ -473,6 +474,7 @@
 				"restrictions": [
 					"vscode",
 					"azdata",
+					"mssql",
 					"azurecore",
 					"vs/nls",
 					"**/{vs,sql}/base/common/**",
@@ -579,6 +581,7 @@
 					"vs/nls",
 					"vs/css!./**/*",
 					"azdata",
+					"mssql",
 					"azurecore",
 					"vscode",
 					"**/{vs,sql}/base/**/{common,browser,worker}/**",

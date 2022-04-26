@@ -99,7 +99,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		if (!selectedBinding) {
 			return;
 		}
-		selectedBindingType = selectedBinding.type;
+		selectedBindingType = selectedBinding;
 		propertyBag.bindingType = selectedBindingType;
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding)
 			.withAdditionalProperties(propertyBag).send();
@@ -132,8 +132,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			connectionInfo.database = selectedDatabase;
 
 			// prompt user for object name to create function from
-			telemetryStep = CreateAzureFunctionStep.getObjectName;
-			objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding.type);
+			objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding);
 			if (!objectName) {
 				// user cancelled
 				return;
@@ -248,7 +247,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		} else {
 			// else an error would occur during the createFunction
 			exitReason = ExitReason.error;
-			void vscode.window.showErrorMessage(utils.formatString(constants.errorNewAzureFunction, error.message ?? error));
+			void vscode.window.showErrorMessage(constants.errorNewAzureFunction(error));
 		}
 		TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, errorType)
 			.withAdditionalProperties(propertyBag).send();
