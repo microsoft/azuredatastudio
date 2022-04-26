@@ -222,7 +222,7 @@ export class AzTool implements azExt.IAzApi {
 					resourceGroup?: string,
 					// Indirect mode arguments
 					namespace?: string,
-					usek8s?: boolean,
+					usek8s?: boolean
 					// Additional arguments
 				},
 				additionalEnvVars?: azExt.AdditionalEnvVars
