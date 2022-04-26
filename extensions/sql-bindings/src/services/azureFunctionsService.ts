@@ -26,7 +26,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 	let selectedBindingType: BindingType | undefined;
 	let connectionInfo: IConnectionInfo | undefined;
-	let connectionURI: string;
+	let connectionURI: string = '';
 	let listDatabases: string[] | undefined;
 	let objectName: string | undefined;
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
@@ -46,37 +46,54 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				.withAdditionalProperties(propertyBag).send();
 
 			// prompt user for connection profile to get connection info
-			quickPickStep = 'getConnectionInfo';
-			connectionInfo = await vscodeMssqlApi.promptForConnection(true);
-			if (!connectionInfo) {
-				// User cancelled
-				return;
+			while (true) {
+				connectionInfo = await vscodeMssqlApi.promptForConnection(true);
+				if (!connectionInfo) {
+					// User cancelled
+					return;
+				}
+				quickPickStep = 'getConnectionInfo';
+				try {
+					await vscode.window.withProgress(
+						{
+							location: vscode.ProgressLocation.Notification,
+							title: constants.connectionProgressTitle,
+							cancellable: false
+						}, async (_progress, _token) => {
+							// list databases based on connection profile selected
+							if (!connectionInfo) {
+								// User cancelled
+								return;
+							}
+							connectionURI = await vscodeMssqlApi.connect(connectionInfo);
+						}
+					);
+				} catch (e) {
+					// User cancelled
+					continue;
+				}
+				// list databases based on connection profile selected
+				listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
+				const selectedDatabase = (await vscode.window.showQuickPick(listDatabases, {
+					canPickMany: false,
+					title: constants.selectDatabase,
+					ignoreFocusOut: true
+				}));
+
+				if (!selectedDatabase) {
+					// User cancelled
+					continue;
+				}
+				connectionInfo.database = selectedDatabase;
+
+				// prompt user for object name to create function from
+				objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding.type);
+				if (!objectName) {
+					// user cancelled
+					return;
+				}
+				break;
 			}
-			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding)
-				.withAdditionalProperties(propertyBag).withConnectionInfo(connectionInfo).send();
-
-			// list databases based on connection profile selected
-			connectionURI = await vscodeMssqlApi.connect(connectionInfo);
-			listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
-			const selectedDatabase = (await vscode.window.showQuickPick(listDatabases, {
-				canPickMany: false,
-				title: constants.selectDatabase,
-				ignoreFocusOut: true
-			}));
-
-			if (!selectedDatabase) {
-				// User cancelled
-				return;
-			}
-			connectionInfo.database = selectedDatabase;
-
-			// prompt user for object name to create function from
-			objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding.type);
-			if (!objectName) {
-				// user cancelled
-				return;
-			}
-
 		} catch (e) {
 			propertyBag.quickPickStep = quickPickStep;
 			exitReason = 'error';
