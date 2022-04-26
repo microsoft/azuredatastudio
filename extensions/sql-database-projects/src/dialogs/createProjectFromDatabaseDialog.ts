@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import type * as azdataType from 'azdata';
+import * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as newProjectTool from '../tools/newProjectTool';
@@ -50,11 +50,37 @@ export class CreateProjectFromDatabaseDialog {
 
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 
+		let connected = false;
+		if (this.profile) {
+			const connections = await azdataType.connection.getConnections(true);
+			connected = !!connections.find(c => c.connectionId === this.profile!.id);
+
+			if (!connected) {
+				// if the connection clicked on isn't currently connected, try to connect
+				const result = await azdataType.connection.connect(this.profile, true, false);
+				connected = result.connected;
+
+				if (!result.connected) {
+					// if can't connect automatically, open connection dialog with the info from the profile
+					const connection = await azdataType.connection.openConnectionDialog(undefined, this.profile);
+					connected = !!connection;
+
+					// update these fields if connection was successful, to ensure they match the connection made
+					if (connected) {
+						this.profile.id = connection.connectionId;
+						this.profile.databaseName = connection.options['databaseName'];
+						this.profile.serverName = connection.options['server'];
+						this.profile.userName = connection.options['user'];
+					}
+				}
+			}
+		}
+
 		getAzdataApi()!.window.openDialog(this.dialog);
 		await this.initDialogComplete.promise;
 
-		if (this.profile) {
-			await this.updateConnectionComponents(getConnectionName(this.profile), this.profile.id, this.profile.databaseName!);
+		if (connected) {
+			await this.updateConnectionComponents(getConnectionName(this.profile), this.profile!.id, this.profile!.databaseName);
 		}
 
 		this.tryEnableCreateButton();

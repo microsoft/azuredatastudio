@@ -31,9 +31,8 @@ export class TableDesignerService implements ITableDesignerService {
 	private _providers = new Map<string, TableDesignerProvider>();
 
 	private async confirmBeforeExit(): Promise<boolean> {
-		let openTableDesignerEditors = this._editorService.editors.filter(e => e instanceof TableDesignerInput);
-		let dirtyEditors = openTableDesignerEditors.find(e => e.isDirty());
-		if (dirtyEditors) {
+		let dirtyTableDesigners = this._editorService.editors.filter(e => e instanceof TableDesignerInput && e.isDirty());
+		if (dirtyTableDesigners.length > 0) {
 			let result = await this._dialogService.confirm({
 				message: localize('TableDesigner.saveBeforeExit', 'There are unsaved changes in Table Designer that will be lost if you close the application. Do you want to close the application?'),
 				primaryButton: localize({ key: 'TableDesigner.closeApplication', comment: ['&& denotes a mnemonic'] }, "&&Close Application"),
