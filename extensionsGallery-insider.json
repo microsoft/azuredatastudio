@@ -4629,6 +4629,71 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "91",
+					"extensionName": "azuredatastudio-dma-oracle",
+					"displayName": "Database Migration Assessment for Oracle",
+					"shortDescription": "Provides a mechanism to evaluate the configuration of Oracle Database for migration to Azure",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.0.7",
+							"lastUpdated": "04/27/2022",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/1.0.7/azuredatastudio-dma-oracle-1.0.7.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/1.0.7/extension.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/1.0.7/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/1.0.7/CHANGELOG.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/1.0.7/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/1.0.7/LICENSE.rtf"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": "Microsoft.net-6-runtime,Microsoft.azuredatastudio-oracle"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.35.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -4637,7 +4702,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 76
+							"count": 77
 						}
 					]
 				}
