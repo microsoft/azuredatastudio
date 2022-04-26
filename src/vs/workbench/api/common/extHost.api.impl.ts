@@ -92,7 +92,6 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 // import { ExtHostNotebookDocuments } from 'vs/workbench/api/common/extHostNotebookDocuments'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 // import { ExtHostInteractive } from 'vs/workbench/api/common/extHostInteractive'; {{SQL CARBON EDIT}} Remove until we need it
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
-import { ExtHostInteractive } from 'vs/workbench/api/common/extHostInteractive';
 import { docCreationFailedError, functionalityNotSupportedError, invalidArgumentsError } from 'sql/base/common/locConstants';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';

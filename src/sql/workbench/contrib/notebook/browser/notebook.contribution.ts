@@ -62,8 +62,6 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/common/notebookCommon';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { DiffNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/diffNotebookInput';
 import { JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
 import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
 
@@ -737,9 +735,7 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 		@ILogService private _logService: ILogService,
 		@IEditorService private _editorService: IEditorService,
 		@IEditorResolverService private _editorResolverService: IEditorResolverService,
-		@IModeService private _modeService: IModeService,
-		@IConfigurationService private _configurationService: IConfigurationService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IModeService private _modeService: IModeService
 	) {
 		super();
 		this.registerEditorOverrides();

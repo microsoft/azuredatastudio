@@ -15,7 +15,7 @@ import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from 'vs/workbench/services/statusbar/common/statusbar';
+import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from 'vs/workbench/services/statusbar/browser/statusbar';
 export class TimeElapsedStatusBarContributions extends Disposable implements IWorkbenchContribution {
 
 	private static readonly ID = 'status.query.timeElapsed';
