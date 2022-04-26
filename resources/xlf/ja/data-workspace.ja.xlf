@@ -31,8 +31,8 @@
         <target state="translated">最新の情報に更新</target>
       </trans-unit>
       <trans-unit id="dataworkspace.NewProjectDialogTitle">
-        <source xml:lang="en">Create new project</source>
-        <target state="translated">新しいプロジェクトの作成</target>
+        <source xml:lang="en">Create new database project</source>
+        <target state="translated">新しいデータベース プロジェクトの作成</target>
       </trans-unit>
       <trans-unit id="dataworkspace.Type">
         <source xml:lang="en">Type</source>
@@ -54,6 +54,10 @@
         <source xml:lang="en">Create</source>
         <target state="translated">作成</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.default">
+        <source xml:lang="en">Default</source>
+        <target state="translated">既定</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.enterProjectName">
         <source xml:lang="en">Enter Project Name</source>
         <target state="translated">プロジェクト名を入力してください</target>
@@ -70,6 +74,10 @@
         <source xml:lang="en">Git repository URL</source>
         <target state="translated">Git リポジトリ URL</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.learnMore">
+        <source xml:lang="en">Learn More</source>
+        <target state="translated">詳細情報</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.localClonePathPlaceholder">
         <source xml:lang="en">Select location to clone repository locally</source>
         <target state="translated">リポジトリをローカルに複製する場所を選択してください</target>
@@ -85,6 +93,10 @@
       <trans-unit id="dataworkspace.nameCannotBeEmpty">
         <source xml:lang="en">Name cannot be empty</source>
         <target state="translated">名前を空にすることはできません。</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">いいえ</target>
       </trans-unit>
       <trans-unit id="dataworkspace.ok">
         <source xml:lang="en">OK</source>
@@ -150,6 +162,14 @@
         <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?</source>
         <target state="translated">プロジェクトをワークスペースに追加するには、Azure Data Studio を再起動する必要があります。今すぐ再起動しますか?</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.sdkLearnMorePlaceholder">
+        <source xml:lang="en">Click "Learn More" button for more information about SDK-style projects</source>
+        <target state="translated">SDK スタイルのプロジェクトの詳細については、[詳細情報] ボタンをクリックしてください</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.sdkStyleProject">
+        <source xml:lang="en">SDK-style project (Preview)</source>
+        <target state="translated">SDK スタイルのプロジェクト (プレビュー)</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.select">
         <source xml:lang="en">Select</source>
         <target state="translated">選択</target>
@@ -159,8 +179,12 @@
         <target state="translated">プロジェクトの場所を選択</target>
       </trans-unit>
       <trans-unit id="dataworkspace.selectProjectType">
-        <source xml:lang="en">Select Project Type</source>
-        <target state="translated">プロジェクトの種類を選択します</target>
+        <source xml:lang="en">Select Database Project Type</source>
+        <target state="translated">データベース プロジェクトの種類の選択</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.selectTargetPlatform">
+        <source xml:lang="en">Select Target Platform</source>
+        <target state="translated">ターゲット プラットフォームの選択</target>
       </trans-unit>
       <trans-unit id="dataworkspace.targetPlatform">
         <source xml:lang="en">Target Platform</source>
@@ -169,6 +193,10 @@
       <trans-unit id="dataworkspace.workspacePlaceholder">
         <source xml:lang="en">Select workspace ({0}) file</source>
         <target state="translated">ワークスペース ({0}) ファイルの選択</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.yesRecommended">
+        <source xml:lang="en">Yes (Recommended)</source>
+        <target state="translated">はい (推奨)</target>
       </trans-unit>
       <trans-unit id="fileDoesNotExist">
         <source xml:lang="en">File '{0}' doesn't exist</source>
@@ -228,10 +256,10 @@
 [Open existing](command:projects.openExisting)
 To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).
 </source>
-        <target state="translated">現在のワークスペースでプロジェクトが開かれていません。
-[新規作成] (command:projects.new)
-[既存のものを開く] (command:projects.openExisting)
-プロジェクトの詳細情報については、[ドキュメントを読む] ( https://aka.ms/azuredatastudio-projects) をご覧ください。
+        <target state="new">No projects open in current workspace.
+[Create new](command:projects.new)
+[Open existing](command:projects.openExisting)
+To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).
 </target>
       </trans-unit>
       <trans-unit id="projects-view-no-workspace-content">
@@ -239,10 +267,10 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
 [Create new](command:projects.new)
 [Open existing](command:projects.openExisting)
 To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).</source>
-        <target state="translated">新規作成するか、既存のものを開いて作業を開始します。
-[新規作成] (command:projects.new)
-[既存のものを開く] (command:projects.openExisting)
-プロジェクトの詳細情報については、[ドキュメントを読む] ( https://aka.ms/azuredatastudio-projects) をご覧ください。</target>
+        <target state="new">Create new or open existing to get started.
+[Create new](command:projects.new)
+[Open existing](command:projects.openExisting)
+To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).</target>
       </trans-unit>
       <trans-unit id="projects.defaultProjectSaveLocation">
         <source xml:lang="en">Full path to folder where new projects are saved by default.</source>

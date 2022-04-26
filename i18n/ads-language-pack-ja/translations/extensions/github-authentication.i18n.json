@@ -14,8 +14,8 @@
 		},
 		"dist/githubServer": {
 			"signingIn": "$(mark-github) github.com にサインインしています...",
-			"signingInEnterprise": "$(mark-github) {0} にサインインしています...",
-			"status.git.signIn.name": "GitHub サインイン"
+			"status.git.signIn.name": "GitHub サインイン",
+			"validUri": "GitHub ログインページの有効な URI を入力してください。"
 		},
 		"package": {
 			"description": "GitHub 認証プロバイダー",

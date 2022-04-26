@@ -72,3 +72,4 @@ export const userResponseToInstallPrompt = (response: string | undefined): strin
 export const userResponseToUpdatePrompt = (response: string | undefined): string => localize('az.userResponseUpdate', "User Response on prompt to update Azure CLI: {0}", response);
 export const userRequestedInstall = localize('az.userRequestedInstall', "User requested to install Azure CLI and arcdata extension using 'Azure CLI: Install' command");
 export const updateCheckSkipped = localize('az.updateCheckSkipped', "No check for new Azure CLI version availability performed as Azure CLI was not found to be installed");
+export const releaseDateNotParsed = localize('arc.releaseDateNotParsed', "Release date could not be parsed.");

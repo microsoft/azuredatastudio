@@ -12,7 +12,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { TableView, ITableViewOptions } from 'sql/base/browser/ui/table/highPerf/tableView';
 import { ScrollEvent } from 'vs/base/common/scrollable';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { domEvent } from 'vs/base/browser/event';
+import { DomEmitter } from 'vs/base/browser/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as platform from 'vs/base/common/platform';
 import { IListStyles, IStyleController } from 'vs/base/browser/ui/list/listWidget';
@@ -92,9 +92,9 @@ class DOMFocusController<T> implements IDisposable {
 		private list: Table<T>,
 		private view: TableView<T>
 	) {
-		this.disposables = [];
-
-		const onKeyDown = Event.chain(domEvent(view.domNode, 'keydown'))
+		const emitter = new DomEmitter(view.domNode, 'keydown');
+		this.disposables.push(emitter);
+		const onKeyDown = Event.chain(emitter.event)
 			.map(e => new StandardKeyboardEvent(e));
 
 		onKeyDown.filter(e => e.keyCode === KeyCode.Tab && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey)
@@ -323,7 +323,7 @@ function rowCountFilter(column: ITableColumn<any, any>): boolean {
 
 class KeyboardController<T> implements IDisposable {
 
-	private disposables: IDisposable[];
+	private disposables: IDisposable[] = [];
 	// private openController: IOpenController;
 
 	constructor(
@@ -332,11 +332,11 @@ class KeyboardController<T> implements IDisposable {
 		options?: ITableOptions<T>
 	) {
 		// const multipleSelectionSupport = !(options.multipleSelectionSupport === false);
-		this.disposables = [];
 
 		// this.openController = options.openController || DefaultOpenController;
-
-		const onKeyDown = Event.chain(domEvent(view.domNode, 'keydown'))
+		const emitter = new DomEmitter(view.domNode, 'keydown');
+		this.disposables.push(emitter);
+		const onKeyDown = Event.chain(emitter.event)
 			// .filter(e => !isInputElement(e.target as HTMLElement))
 			.map(e => new StandardKeyboardEvent(e));
 
@@ -732,13 +732,13 @@ export class Table<T> implements IDisposable {
 
 	private didJustPressContextMenuKey: boolean = false;
 	@memoize get onContextMenu(): Event<ITableContextMenuEvent<T>> {
-		const fromKeydown = Event.chain(domEvent(this.view.domNode, 'keydown'))
+		const fromKeydown = Event.chain(this.disposables.add(new DomEmitter(this.view.domNode, 'keydown')).event)
 			.map(e => new StandardKeyboardEvent(e))
 			.filter(e => this.didJustPressContextMenuKey = e.keyCode === KeyCode.ContextMenu || (e.shiftKey && e.keyCode === KeyCode.F10))
 			.filter(e => { e.preventDefault(); e.stopPropagation(); return false; })
 			.event as Event<any>;
 
-		const fromKeyup = Event.chain(domEvent(this.view.domNode, 'keyup'))
+		const fromKeyup = Event.chain(this.disposables.add(new DomEmitter(this.view.domNode, 'keyup')).event)
 			.filter(() => {
 				const didJustPressContextMenuKey = this.didJustPressContextMenuKey;
 				this.didJustPressContextMenuKey = false;
@@ -761,9 +761,9 @@ export class Table<T> implements IDisposable {
 		return Event.any<ITableContextMenuEvent<T>>(fromKeydown, fromKeyup, fromMouse);
 	}
 
-	get onKeyDown(): Event<KeyboardEvent> { return domEvent(this.view.domNode, 'keydown'); }
-	get onKeyUp(): Event<KeyboardEvent> { return domEvent(this.view.domNode, 'keyup'); }
-	get onKeyPress(): Event<KeyboardEvent> { return domEvent(this.view.domNode, 'keypress'); }
+	get onKeyDown(): Event<KeyboardEvent> { return this.disposables.add(new DomEmitter(this.view.domNode, 'keydown')).event; }
+	get onKeyUp(): Event<KeyboardEvent> { return this.disposables.add(new DomEmitter(this.view.domNode, 'keyup')).event; }
+	get onKeyPress(): Event<KeyboardEvent> { return this.disposables.add(new DomEmitter(this.view.domNode, 'keypress')).event; }
 
 	readonly onDidFocus: Event<void>;
 	readonly onDidBlur: Event<void>;
@@ -809,8 +809,8 @@ export class Table<T> implements IDisposable {
 			this.disposables.add(controller);
 		}
 
-		this.onDidFocus = Event.map(domEvent(this.view.domNode, 'focus', true), () => null!);
-		this.onDidBlur = Event.map(domEvent(this.view.domNode, 'blur', true), () => null!);
+		this.onDidFocus = Event.map(this.disposables.add(new DomEmitter(this.view.domNode, 'focus', true)).event, () => null!);
+		this.onDidBlur = Event.map(this.disposables.add(new DomEmitter(this.view.domNode, 'blur', true)).event, () => null!);
 
 		this.disposables.add(this.createMouseController());
 

@@ -11,7 +11,7 @@ import * as path from 'path';
 import { getCommonLaunchArgsAndCleanupOldLogFiles, getOrDownloadServer } from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature } from './features';
+import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature } from './features';
 import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import { SchemaCompareService } from './schemaCompare/schemaCompareService';
@@ -25,6 +25,8 @@ import { LanguageExtensionService } from './languageExtension/languageExtensionS
 import { SqlAssessmentService } from './sqlAssessment/sqlAssessmentService';
 import { NotebookConvertService } from './notebookConvert/notebookConvertService';
 import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
+import { SqlCredentialService } from './credentialstore/sqlCredentialService';
+import { AzureBlobService } from './azureBlob/azureBlobService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -86,10 +88,11 @@ export class SqlToolsServer {
 	}
 
 	private activateFeatures(context: AppContext): Promise<void> {
-		const credsStore = new CredentialStore(context.extensionContext.logPath, this.config);
+		const credsStore = new CredentialStore(context, this.config);
 		const resourceProvider = new AzureResourceProvider(context.extensionContext.logPath, this.config);
 		this.disposables.push(credsStore);
 		this.disposables.push(resourceProvider);
+		context.registerService(Constants.AzureBlobService, new AzureBlobService(this.client));
 		return Promise.all([credsStore.start(), resourceProvider.start()]).then();
 	}
 
@@ -163,7 +166,9 @@ function getClientOptions(context: AppContext): ClientOptions {
 			NotebookConvertService.asFeature(context),
 			ProfilerFeature,
 			SqlMigrationService.asFeature(context),
-			TableDesignerFeature
+			SqlCredentialService.asFeature(context),
+			TableDesignerFeature,
+			ExecutionPlanServiceFeature
 		],
 		outputChannel: new CustomOutputChannel()
 	};

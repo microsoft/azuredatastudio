@@ -55,10 +55,24 @@ export const textRendererFactory: IRenderMime.IRendererFactory = {
 	mimeTypes: [
 		'text/plain',
 		'application/vnd.jupyter.stdout',
-		'application/vnd.jupyter.stderr'
+		'application/vnd.jupyter.stderr',
+		'application/vnd.code.notebook.stdout',
+		'application/vnd.code.notebook.stderr'
 	],
 	defaultRank: 120,
 	createRenderer: options => new widgets.RenderedText(options)
+};
+
+/**
+ * A mime renderer factory for VS Code Notebook error data.
+ */
+export const errorRendererFactory: IRenderMime.IRendererFactory = {
+	safe: true,
+	mimeTypes: [
+		'application/vnd.code.notebook.error'
+	],
+	defaultRank: 121,
+	createRenderer: options => new widgets.ErrorText(options)
 };
 
 /**
@@ -101,6 +115,7 @@ export const standardRendererFactories: ReadonlyArray<IRenderMime.IRendererFacto
 	imageRendererFactory,
 	javaScriptRendererFactory,
 	textRendererFactory,
+	errorRendererFactory,
 	dataResourceRendererFactory,
 	ipywidgetFactory
 ];

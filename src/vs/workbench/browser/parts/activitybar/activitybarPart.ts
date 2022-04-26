@@ -207,7 +207,6 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 	private getActivityHoverOptions(): IActivityHoverOptions {
 		return {
 			position: () => this.layoutService.getSideBarPosition() === Position.LEFT ? HoverPosition.RIGHT : HoverPosition.LEFT,
-			delay: () => 0
 		};
 	}
 
@@ -752,6 +751,10 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 		return this.compositeBar.getVisibleComposites()
 			.filter(v => this.viewsService.getVisibleViewContainer(this.location)?.id === v.id || this.compositeBar.isPinned(v.id))
 			.map(v => v.id);
+	}
+
+	hideViewContainer(id: string): void {	// {{SQL CARBON EDIT}}
+		this.compositeBar.unpin(id);
 	}
 
 	focusActivityBar(): void {

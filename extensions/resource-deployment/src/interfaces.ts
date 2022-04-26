@@ -300,8 +300,8 @@ export interface DynamicOptionsInfo {
 }
 
 export interface DynamicOptionsAlternates {
-	selection: string,
-	alternateValues: string[],
+	selection: string
+	alternateValues: string[] | azdata.CategoryValue[],
 	defaultValue: string
 }
 

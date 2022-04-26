@@ -1,15 +1,24 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { getCodeForKeyCode } from 'vs/base/browser/keyboardEvent';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
+import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
+import { Event } from 'vs/base/common/event';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface ITableCellEditorOptions {
 	valueGetter?: (item: Slick.SlickData, column: Slick.Column<Slick.SlickData>) => string,
 	valueSetter?: (context: any, row: number, item: Slick.SlickData, column: Slick.Column<Slick.SlickData>, value: string) => void,
 	optionsGetter?: (item: Slick.SlickData, column: Slick.Column<Slick.SlickData>) => string[],
-	editorStyler: (component: InputBox | SelectBox) => void
+	editorStyler: (component: InputBox | SelectBox | Dropdown) => void,
+	onStyleChange: Event<void>;
 }
 
 export class TableCellEditorFactory {
@@ -26,18 +35,20 @@ export class TableCellEditorFactory {
 			optionsGetter: options.optionsGetter ?? function (item, column) {
 				return [];
 			},
-			editorStyler: options.editorStyler
+			editorStyler: options.editorStyler,
+			onStyleChange: options.onStyleChange
 		};
 	}
 
 	public getTextEditorClass(context: any, inputType: 'text' | 'number' = 'text'): any {
 		const self = this;
-		class TextEditor {
+		class TextEditor extends Disposable {
 			private _originalValue: string;
 			private _input: InputBox;
 			private _keyCaptureList: number[];
 
 			constructor(private _args: Slick.Editors.EditorOptions<Slick.SlickData>) {
+				super();
 				this.init();
 				const keycodesToCapture = [KeyCode.Home, KeyCode.End, KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.RightArrow];
 				this._keyCaptureList = keycodesToCapture.map(keycode => getCodeForKeyCode(keycode));
@@ -57,10 +68,25 @@ export class TableCellEditorFactory {
 				self._options.editorStyler(this._input);
 				this._input.element.style.height = '100%';
 				this._input.focus();
+				this._input.onLoseFocus(async () => {
+					await this.commitEdit();
+				});
+				this._register(this._input);
+				this._register(self._options.onStyleChange(() => {
+					self._options.editorStyler(this._input);
+				}));
+			}
+
+			private async commitEdit(): Promise<void> {
+				if (this.isValueChanged()) {
+					const item = this._args.grid.getDataItem(this._args.grid.getActiveCell().row);
+					await this.applyValue(item, this._input.value);
+					this._originalValue = this._input.value;
+				}
 			}
 
 			public destroy(): void {
-				this._input.dispose();
+				this.dispose();
 			}
 
 			public focus(): void {
@@ -78,8 +104,7 @@ export class TableCellEditorFactory {
 			}
 
 			public isValueChanged(): boolean {
-				return this._input.value !== this._originalValue.toString();
-
+				return this._input.value !== this._originalValue;
 			}
 
 			public serializeValue(): any {
@@ -96,14 +121,15 @@ export class TableCellEditorFactory {
 		return TextEditor;
 	}
 
-	public getSelectBoxEditorClass(context: any, defaultOptions: string[]): any {
+	public getDropdownEditorClass(context: any, defaultOptions: string[], isEditable?: boolean): any {
 		const self = this;
-		class TextEditor {
+		class DropdownEditor extends Disposable {
 			private _originalValue: string;
-			private _selectBox: SelectBox;
+			private _component: SelectBox | Dropdown;
 			private _keyCaptureList: number[];
 
 			constructor(private _args: Slick.Editors.EditorOptions<Slick.SlickData>) {
+				super();
 				this.init();
 				const keycodesToCapture = [KeyCode.Home, KeyCode.End, KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.RightArrow];
 				this._keyCaptureList = keycodesToCapture.map(keycode => getCodeForKeyCode(keycode));
@@ -119,21 +145,46 @@ export class TableCellEditorFactory {
 			public init(): void {
 				const container = DOM.$('');
 				this._args.container.appendChild(container);
-				this._selectBox = new SelectBox([], undefined, self._contextViewProvider);
 				container.style.height = '100%';
 				container.style.width = '100%';
-				this._selectBox.render(container);
-				this._selectBox.selectElem.style.height = '100%';
-				self._options.editorStyler(this._selectBox);
-				this._selectBox.focus();
+				if (isEditable) {
+					this._component = new Dropdown(container, self._contextViewProvider);
+					this._component.onValueChange(async () => {
+						await this.commitEdit();
+					});
+					this._component.onBlur(async () => {
+						await this.commitEdit();
+					});
+				} else {
+					this._component = new SelectBox([], undefined, self._contextViewProvider);
+					this._component.render(container);
+					this._component.selectElem.style.height = '100%';
+					this._component.onDidSelect(async () => {
+						await this.commitEdit();
+					});
+				}
+				self._options.editorStyler(this._component);
+				this._component.focus();
+				this._register(this._component);
+				this._register(self._options.onStyleChange(() => {
+					self._options.editorStyler(this._component);
+				}));
+			}
+
+			private async commitEdit(): Promise<void> {
+				if (this.isValueChanged()) {
+					const item = this._args.grid.getDataItem(this._args.grid.getActiveCell().row);
+					await this.applyValue(item, this._component.value);
+					this._originalValue = this._component.value;
+				}
 			}
 
 			public destroy(): void {
-				this._selectBox.dispose();
+				this.dispose();
 			}
 
 			public focus(): void {
-				this._selectBox.focus();
+				this._component.focus();
 			}
 
 			public loadValue(item: Slick.SlickData): void {
@@ -141,8 +192,13 @@ export class TableCellEditorFactory {
 				const options = self._options.optionsGetter(item, this._args.column) ?? defaultOptions;
 				const idx = options?.indexOf(this._originalValue);
 				if (idx > -1) {
-					this._selectBox.setOptions(options);
-					this._selectBox.select(idx);
+					if (this._component instanceof Dropdown) {
+						this._component.values = options;
+						this._component.value = options[idx];
+					} else {
+						this._component.setOptions(options);
+						this._component.select(idx);
+					}
 				}
 			}
 
@@ -152,12 +208,11 @@ export class TableCellEditorFactory {
 			}
 
 			public isValueChanged(): boolean {
-				return this._selectBox.value !== this._originalValue.toString();
-
+				return this._component.value !== this._originalValue;
 			}
 
 			public serializeValue(): any {
-				return this._selectBox.value;
+				return this._component.value;
 			}
 
 			public validate(): Slick.ValidateResults {
@@ -167,6 +222,6 @@ export class TableCellEditorFactory {
 				};
 			}
 		}
-		return TextEditor;
+		return DropdownEditor;
 	}
 }

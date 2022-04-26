@@ -84,7 +84,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 	}
 
 	private get _findDecorations(): NotebookFindDecorations {
-		return this.notebookInput.notebookFindModel.findDecorations;
+		return this.notebookInput?.notebookFindModel?.findDecorations;
 	}
 
 	public getPosition(): NotebookRange {
@@ -432,9 +432,11 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 	public async findNext(): Promise<void> {
 		try {
 			const p = await this.notebookFindModel.findNext();
-			this.setSelection(p);
-			this._updateFinderMatchState();
-			this._setCurrentFindMatch(p);
+			if (p !== this._currentMatch) {
+				this.setSelection(p);
+				this._updateFinderMatchState();
+				this._setCurrentFindMatch(p);
+			}
 		} catch (er) {
 			onUnexpectedError(er);
 		}
@@ -443,9 +445,11 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 	public async findPrevious(): Promise<void> {
 		try {
 			const p = await this.notebookFindModel.findPrevious();
-			this.setSelection(p);
-			this._updateFinderMatchState();
-			this._setCurrentFindMatch(p);
+			if (p !== this._currentMatch) {
+				this.setSelection(p);
+				this._updateFinderMatchState();
+				this._setCurrentFindMatch(p);
+			}
 		} catch (er) {
 			onUnexpectedError(er);
 		}

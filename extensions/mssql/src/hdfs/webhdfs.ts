@@ -108,7 +108,6 @@ export class WebHDFS {
 	 * Gets status message from response
 	 *
 	 * @param response response object
-	 * @param strict If set true then RemoteException must be present in the body
 	 * @returns Error message interpreted by status code
 	 */
 	private getStatusMessage(response: request.Response): string {
@@ -211,6 +210,7 @@ export class WebHDFS {
 	 * Send a request to WebHDFS REST API
 	 *
 	 * @param method HTTP method
+	 * @param urlValue
 	 * @param opts Options for request
 	 * @returns void
 	 */
@@ -319,8 +319,10 @@ export class WebHDFS {
 	/**
 	 * Change file owner
 	 *
+	 * @param path
 	 * @param userId User name
 	 * @param groupId Group name
+	 * @param callback
 	 * @returns void
 	 */
 	public chown(path: string, userId: string, groupId: string, callback: (error: HdfsError) => void): void {
@@ -511,7 +513,7 @@ export class WebHDFS {
 	 * Set ACL for the given path. The owner, group and other fields are required - other entries are optional.
 	 * @param path The path to the file/folder to set the ACL on
 	 * @param fileType The type of file we're setting to determine if defaults should be applied. Use undefined if type is unknown
-	 * @param ownerEntry The status containing the permissions to set
+	 * @param permissionStatus The status containing the permissions to set
 	 * @param callback Callback to handle the response
 	 */
 	public setAcl(path: string, fileType: FileType | undefined, permissionStatus: PermissionStatus, callback: (error: HdfsError) => void): void {
@@ -592,7 +594,11 @@ export class WebHDFS {
 	/**
 	 * Write data to the file
 	 *
+	 * @param path
+	 * @param data
 	 * @param append If set to true then append data to the file
+	 * @param opts
+	 * @param callback
 	 */
 	public writeFile(path: string, data: string | Buffer, append: boolean, opts: object,
 		callback: (error: HdfsError) => void): fs.WriteStream {
@@ -663,8 +669,9 @@ export class WebHDFS {
 	 * Create writable stream for given path
 	 *
 	 * @fires WebHDFS#finish
-	 * @param [append] If set to true then append data to the file
-	 *
+	 * @param path
+	 * @param append If set to true then append data to the file
+	 * @param opts
 	 * @example
 	 * let hdfs = WebHDFS.createClient();
 	 *

@@ -34,12 +34,17 @@ export function hdfsFileTypeToFileType(hdfsFileType: HdfsFileType | undefined): 
 export class FileStatus {
 	/**
 	 *
-	 * @param owner The ACL entry object for the owner permissions
+	 * @param accessTime
+	 * @param blockSize
 	 * @param group The ACL entry object for the group permissions
-	 * @param other The ACL entry object for the other permissions
-	 * @param stickyBit The sticky bit status for the object. If true the owner/root are
-	 * the only ones who can delete the resource or its contents (if a folder)
-	 * @param aclEntries The ACL entries defined for the object
+	 * @param length
+	 * @param modificationTime
+	 * @param owner The ACL entry object for the owner permissions
+	 * @param pathSuffix
+	 * @param permission
+	 * @param replication
+	 * @param snapshotEnabled
+	 * @param type
 	 */
 	constructor(
 		/**

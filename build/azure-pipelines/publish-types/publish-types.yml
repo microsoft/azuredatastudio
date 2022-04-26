@@ -6,6 +6,9 @@ trigger:
 
 pr: none
 
+pool:
+  vmImage: ubuntu-latest
+
 steps:
   - task: NodeTool@0
     inputs:
@@ -44,18 +47,21 @@ steps:
       git config --global user.name "Azure Data Studio"
 
       git clone https://$(GITHUB_TOKEN)@$(REPO) --depth=1
-      node build/azure-pipelines/publish-types/update-types.js
-
-      TAG_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
-
       cd DefinitelyTyped
 
       # Sync up to latest from the DT repo
       git remote add upstream https://github.com/DefinitelyTyped/DefinitelyTyped.git
       git fetch upstream
-      git merge upstream/master
-      git push origin
+      git reset --hard upstream/master
+      git push --force
 
+      # Update and format the typings file
+      cd ..
+      node build/azure-pipelines/publish-types/update-types.js
+      TAG_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
+
+      # Create and push the branch
+      cd DefinitelyTyped
       git diff --color | cat
       git add -A
       git status

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DbServerGraphData } from '../databaseServer/databaseServerService';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import { ResourceServiceBase } from '../resourceTreeDataProviderBase';
 
 export class AzureResourceGroupService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceResourceGroup> {

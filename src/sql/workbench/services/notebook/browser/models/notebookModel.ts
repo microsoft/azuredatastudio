@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
-import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, MoveDirection, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, MoveDirection, ViewMode, ICellEdit } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { KernelsLanguage, nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
@@ -19,7 +19,7 @@ import { NotebookContexts } from 'sql/workbench/services/notebook/browser/models
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity, INotificationService } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
-import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookEditOperation, NotebookEditOperationType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -35,9 +35,11 @@ import { isUUID } from 'vs/base/common/uuid';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
-import { AddCellEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
+import { AddCellEdit, CellOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, CellOutputDataEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
+import { DotnetInteractiveDisplayName } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { IPYKERNEL_DISPLAY_NAME } from 'sql/workbench/common/constants';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -177,13 +179,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			manager = this.executeManagers.find(manager => manager.providerId === SQL_NOTEBOOK_PROVIDER);
 		}
 		return manager;
-	}
-
-	public getExecuteManager(providerId: string): IExecuteManager | undefined {
-		if (providerId) {
-			return this.executeManagers.find(manager => manager.providerId === providerId);
-		}
-		return undefined;
 	}
 
 	public get notebookOptions(): INotebookModelOptions {
@@ -519,7 +514,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public async requestModelLoad(): Promise<void> {
 		try {
-			this.setDefaultKernelAndProviderId();
+			await this.setDefaultKernelAndProviderId();
 			this.trySetLanguageFromLangInfo();
 		} catch (error) {
 			this._inErrorState = true;
@@ -549,15 +544,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._cells.findIndex(cell => cell.equals(cellModel));
 	}
 
-	public addCell(cellType: CellType, index?: number): ICellModel | undefined {
+	public addCell(cellType: CellType, index?: number, language?: string): ICellModel | undefined {
 		if (this.inErrorState) {
 			return undefined;
 		}
-		let cell = this.createCell(cellType);
-		return this.insertCell(cell, index);
+		let cell = this.createCell(cellType, language);
+		return this.insertCell(cell, index, true);
 	}
 
-	public splitCell(cellType: CellType, notebookService: INotebookService, index?: number, addToUndoStack: boolean = true): ICellModel | undefined {
+	public splitCell(cellType: CellType, notebookService: INotebookService, index?: number, language?: string, addToUndoStack: boolean = true): ICellModel | undefined {
 		if (this.inErrorState) {
 			return undefined;
 		}
@@ -632,7 +627,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					}
 					//If the selection is not from the start of the cell, create a new cell.
 					if (headContent.length) {
-						newCell = this.createCell(cellType);
+						newCell = this.createCell(cellType, language);
 						newCell.source = newSource;
 						newCellIndex++;
 						this.insertCell(newCell, newCellIndex, false);
@@ -645,7 +640,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 				if (tailCellContent.length) {
 					//tail cell will be of original cell type.
-					tailCell = this.createCell(this._cells[index].cellType);
+					tailCell = this.createCell(this._cells[index].cellType, language);
 					let tailSource = source.slice(tailRange.startLineNumber - 1) as string[];
 					if (selection.endColumn > 1) {
 						partialSource = source.slice(tailRange.startLineNumber - 1, tailRange.startLineNumber)[0].slice(tailRange.startColumn - 1);
@@ -669,9 +664,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					this.undoService.pushElement(new SplitCellEdit(this, splitCells));
 				}
 				//make new cell Active
-				this.updateActiveCell(activeCell);
-				activeCell.isEditMode = true;
-
+				this.updateActiveCell(activeCell, true);
 				this._contentChangedEmitter.fire({
 					changeType: NotebookChangeType.CellsModified,
 					cells: [activeCell],
@@ -693,9 +686,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		for (let i = 1; i < cells.length; i++) {
 			firstCell.source = cells[i].prefix ? [...firstCell.source, ...cells[i].prefix, ...cells[i].cell.source] : [...firstCell.source, ...cells[i].cell.source];
 		}
-		firstCell.isEditMode = true;
 		// Set newly created cell as active cell
-		this.updateActiveCell(firstCell);
+		this.updateActiveCell(firstCell, true);
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsModified,
 			cells: [firstCell],
@@ -703,6 +695,20 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		});
 		for (let i = 1; i < cells.length; i++) {
 			this.deleteCell(cells[i].cell, false);
+		}
+	}
+
+	public splitCells(cells: SplitCell[], firstCellOriginalSource: string | string[]): void {
+		cells[0].cell.source = firstCellOriginalSource;
+		this.updateActiveCell(cells[0].cell, true);
+		this._contentChangedEmitter.fire({
+			changeType: NotebookChangeType.CellsModified,
+			cells: [cells[0].cell],
+			cellIndex: 0
+		});
+
+		for (let i = 1; i < cells.length; i++) {
+			this.insertCell(cells[i].cell, undefined, false);
 		}
 	}
 
@@ -716,11 +722,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._cells.push(cell);
 			index = undefined;
 		}
-		cell.isEditMode = true;
 		if (addToUndoStack) {
 			// Only make cell active when inserting the cell. If we update the active cell when undoing/redoing, the user would have to deselect the cell first
 			// and to undo multiple times.
-			this.updateActiveCell(cell);
+			this.updateActiveCell(cell, true);
 			this.undoService.pushElement(new AddCellEdit(this, cell, index));
 		}
 
@@ -796,15 +801,19 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		});
 	}
 
-	public updateActiveCell(cell?: ICellModel): void {
-		if (this._activeCell) {
-			this._activeCell.active = false;
+	public updateActiveCell(cell?: ICellModel, isEditMode: boolean = false): void {
+		if (this._activeCell !== cell) {
+			if (this._activeCell) {
+				this._activeCell.active = false;
+				this._activeCell.isEditMode = false;
+			}
+			this._activeCell = cell;
+			if (this._activeCell) {
+				this._activeCell.active = true;
+				this._activeCell.isEditMode = isEditMode;
+			}
+			this._onActiveCellChanged.fire(cell);
 		}
-		this._activeCell = cell;
-		if (this._activeCell) {
-			this._activeCell.active = true;
-		}
-		this._onActiveCellChanged.fire(cell);
 	}
 
 	public convertCellType(cell: ICellModel, addToUndoStack: boolean = true): void {
@@ -827,13 +836,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	private createCell(cellType: CellType): ICellModel {
+	private createCell(cellType: CellType, language?: string): ICellModel {
 		let singleCell: nb.ICellContents = {
 			cell_type: cellType,
 			source: '',
 			metadata: {},
 			execution_count: undefined
 		};
+		if (language) {
+			singleCell.metadata.language = language;
+		}
 		return this._notebookOptions.factory.createCell(singleCell, { notebook: this, isTrusted: true });
 	}
 
@@ -862,27 +874,59 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	pushEditOperations(edits: ISingleNotebookEditOperation[]): void {
+	pushEditOperations(edits: INotebookEditOperation[]): void {
 		if (this.inErrorState || !this._cells) {
 			return;
 		}
 
-		for (let edit of edits) {
-			let newCells: ICellModel[] = [];
-			if (edit.cell) {
-				// TODO: should we validate and complete required missing parameters?
-				let contents: nb.ICellContents = edit.cell as nb.ICellContents;
-				newCells.push(this._notebookOptions.factory.createCell(contents, { notebook: this, isTrusted: this._trustedMode }));
-				this.undoService.pushElement(new AddCellEdit(this, newCells[0], edit.range.start));
+		for (const edit of edits) {
+			const startCell = this.cells[edit.range.start];
+			switch (edit.type) {
+				case NotebookEditOperationType.UpdateCell:
+					if (!startCell) {
+						this.logService.warn(`Did not receive a valid starting cell when processing edit type ${edit.type}`);
+						continue;
+					}
+					startCell.processEdits([
+						new CellOutputEdit(edit.cell.outputs ?? [], !!edit.append)
+					]);
+					break;
+				case NotebookEditOperationType.UpdateCellOutput:
+					if (!startCell) {
+						this.logService.warn(`Did not receive a valid starting cell when processing edit type ${edit.type}`);
+						continue;
+					}
+					const cellEdits: ICellEdit[] = [];
+					edit.cell.outputs?.forEach(o => {
+						const targetOutput = startCell.outputs.find(o2 => o.id === o2.id);
+						if (!targetOutput) {
+							this.logService.warn(`Could not find target output with ID ${o.id} when updating cell output`);
+							return;
+						}
+						cellEdits.push(new CellOutputDataEdit(targetOutput.id, (o as nb.IDisplayData).data, !!edit.append));
+					});
+					startCell.processEdits(cellEdits);
+					break;
+				case NotebookEditOperationType.InsertCell:
+				case NotebookEditOperationType.ReplaceCells:
+				case NotebookEditOperationType.DeleteCell:
+					let newCells: ICellModel[] = [];
+					if (edit.cell) {
+						// TODO: should we validate and complete required missing parameters?
+						let contents: nb.ICellContents = edit.cell as nb.ICellContents;
+						newCells.push(this._notebookOptions.factory.createCell(contents, { notebook: this, isTrusted: this._trustedMode }));
+						this.undoService.pushElement(new AddCellEdit(this, newCells[0], edit.range.start));
+					}
+					this._cells.splice(edit.range.start, edit.range.end - edit.range.start, ...newCells);
+					if (newCells.length > 0) {
+						this.updateActiveCell(newCells[0]);
+					}
+					this._contentChangedEmitter.fire({
+						changeType: NotebookChangeType.CellsModified,
+						isDirty: true
+					});
+					break;
 			}
-			this._cells.splice(edit.range.start, edit.range.end - edit.range.start, ...newCells);
-			if (newCells.length > 0) {
-				this.updateActiveCell(newCells[0]);
-			}
-			this._contentChangedEmitter.fire({
-				changeType: NotebookChangeType.CellsModified,
-				isDirty: true
-			});
 		}
 	}
 
@@ -960,8 +1004,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._activeClientSession = clientSession;
 	}
 
-	public setDefaultKernelAndProviderId() {
-		if (this._capabilitiesService?.providers) {
+	public async setDefaultKernelAndProviderId(): Promise<void> {
+		if (!this._defaultKernel) {
+			await this.executeManager.sessionManager.ready;
+			if (this.executeManager.sessionManager.specs) {
+				let defaultKernelName = this.executeManager.sessionManager.specs.defaultKernel;
+				this._defaultKernel = this.executeManager.sessionManager.specs.kernels.find(kernel => kernel.name === defaultKernelName);
+			}
+		}
+
+		if (this._capabilitiesService?.providers && this.executeManager.providerId === SQL_NOTEBOOK_PROVIDER) {
 			let providers = this._capabilitiesService.providers;
 			for (const server in providers) {
 				let alias = providers[server].connection.notebookKernelAlias;
@@ -1000,6 +1052,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._defaultKernel = notebookConstants.sqlKernelSpec;
 			this._providerId = SQL_NOTEBOOK_PROVIDER;
 		}
+
 		if (!this._defaultLanguageInfo?.name) {
 			// update default language
 			this._defaultLanguageInfo = {
@@ -1091,12 +1144,22 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				language = KernelsLanguage.Python;
 			} else if (language.toLowerCase() === 'c#') {
 				language = KernelsLanguage.CSharp;
+			} else if (language.toLowerCase() === 'f#') {
+				language = KernelsLanguage.FSharp;
 			}
 		} else {
 			language = KernelsLanguage.Python;
 		}
 
+		// Update cell language if it was using the previous default, but skip updating the cell
+		// if it was using a more specific language.
+		let oldLanguage = this._language;
 		this._language = language.toLowerCase();
+		this._cells?.forEach(cell => {
+			if (!cell.language || cell.language === oldLanguage) {
+				cell.setOverrideLanguage(this._language);
+			}
+		});
 	}
 
 	public changeKernel(displayName: string): void {
@@ -1285,14 +1348,20 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private sanitizeSavedKernelInfo(): void {
 		if (this._savedKernelInfo) {
 			let displayName = this._savedKernelInfo.display_name;
-
-			if (this._savedKernelInfo.display_name !== displayName) {
-				this._savedKernelInfo.display_name = displayName;
-			}
 			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName || displayName.startsWith(kernel.displayName));
-			if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
-				this._savedKernelInfo.name = standardKernel.name;
-				this._savedKernelInfo.display_name = standardKernel.displayName;
+			if (standardKernel) {
+				if (this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
+					// Special case .NET Interactive kernel name to handle inconsistencies between notebook providers and jupyter kernel specs
+					if (this._savedKernelInfo.display_name === DotnetInteractiveDisplayName) {
+						this._savedKernelInfo.oldName = this._savedKernelInfo.name;
+					}
+
+					this._savedKernelInfo.name = standardKernel.name;
+					this._savedKernelInfo.display_name = standardKernel.displayName;
+				} else if (displayName === IPYKERNEL_DISPLAY_NAME && this._savedKernelInfo.name === standardKernel.name) {
+					// Handle Jupyter alias for Python 3 kernel
+					this._savedKernelInfo.display_name = standardKernel.displayName;
+				}
 			}
 		}
 	}
@@ -1376,7 +1445,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._savedKernelInfo = {
 					name: kernel.name,
 					display_name: spec.display_name,
-					language: spec.language
+					language: spec.language,
+					supportedLanguages: spec.supportedLanguages,
+					oldName: spec.oldName,
+					oldDisplayName: spec.oldDisplayName,
+					oldLanguage: spec.oldLanguage
 				};
 				this.clientSession?.configureKernel(this._savedKernelInfo);
 			} catch (err) {
@@ -1401,7 +1474,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._onProviderIdChanged.fire(this._providerId);
 
 				await this.shutdownActiveSession();
-				let manager = this.getExecuteManager(providerId);
+				let manager = this.executeManager;
 				if (manager) {
 					await this.startSession(manager, displayName, false, kernelAlias);
 				} else {
@@ -1502,7 +1575,29 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		let metadata = Object.create(null) as nb.INotebookMetadata;
 		// TODO update language and kernel when these change
 		metadata.kernelspec = this._savedKernelInfo;
+		delete metadata.kernelspec?.supportedLanguages;
+
 		metadata.language_info = this.languageInfo;
+
+		// Undo special casing for .NET Interactive
+		if (metadata.kernelspec?.oldName) {
+			metadata.kernelspec.name = metadata.kernelspec.oldName;
+			delete metadata.kernelspec.oldName;
+		}
+		if (metadata.kernelspec?.oldDisplayName) {
+			metadata.kernelspec.display_name = metadata.kernelspec.oldDisplayName;
+			delete metadata.kernelspec.oldDisplayName;
+		}
+		if (metadata.kernelspec?.oldLanguage) {
+			metadata.kernelspec.language = metadata.kernelspec.oldLanguage;
+			delete metadata.kernelspec.oldLanguage;
+		}
+		if (metadata.language_info?.oldName) {
+			metadata.language_info.name = metadata.language_info?.oldName;
+			delete metadata.language_info?.oldName;
+		}
+
+
 		metadata.tags = this._tags;
 		metadata.multi_connection_mode = this._multiConnectionMode ? this._multiConnectionMode : undefined;
 		if (this.configurationService.getValue(saveConnectionNameConfigName)) {

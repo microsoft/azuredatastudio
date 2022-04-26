@@ -17,6 +17,7 @@
 		"declaration": false,
 		"strict": false,
 		"noUnusedParameters": false,
+		"strictNullChecks": false
 	},
 	"exclude": [
 		"node_modules"

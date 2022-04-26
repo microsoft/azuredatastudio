@@ -99,6 +99,10 @@ export class ConfigurePythonWizard {
 		});
 
 		this._wizard.registerNavigationValidator(async (info) => {
+			// The pages have not been registered yet
+			if (pages.size === 0) {
+				return false;
+			}
 			let lastPage = pages.get(info.lastPage);
 			let newPage = pages.get(info.newPage);
 

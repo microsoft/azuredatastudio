@@ -349,9 +349,9 @@ export class OverflowActionBar extends ActionBar {
 		}
 	}
 
-	public override run(action: IAction, context?: any): Promise<any> {
+	public override async run(action: IAction, context?: any): Promise<void> {
 		this.hideOverflowDisplay();
-		return this._actionRunner.run(action, context);
+		this._actionRunner.run(action, context);
 	}
 
 	public get actionsList(): HTMLElement {

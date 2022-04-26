@@ -15,6 +15,7 @@ export interface IDashboardTab {
 	isHomeTab?: boolean;
 	group?: string;
 	iconClass?: string;
+	hideRefreshTask?: boolean;
 }
 
 export interface IDashboardTabGroup {

@@ -146,6 +146,7 @@
     "polly-js": "^1.6.3"
   },
   "devDependencies": {
+    "@microsoft/vscodetestcover": "^1.2.0",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.14.8",
     "@types/request": "^2.48.1",
@@ -154,10 +155,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.1.0"
-  },
-  "resolutions": {
-    "json-schema": "0.4.0"
+    "lodash": "^4.17.21"
   },
   "__metadata": {
     "id": "65",

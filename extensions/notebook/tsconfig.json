@@ -10,7 +10,8 @@
 		"noUnusedParameters": false,
 		"typeRoots": [
 			"./node_modules/@types"
-		]
+		],
+		"strictNullChecks": false
 	},
 	"include": [
 		"src/**/*"

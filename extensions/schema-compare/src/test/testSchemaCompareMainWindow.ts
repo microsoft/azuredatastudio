@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as should from 'should';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 

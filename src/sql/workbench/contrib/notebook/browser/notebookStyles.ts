@@ -6,7 +6,7 @@ import 'vs/css!./notebook';
 
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
-import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground } from 'vs/platform/theme/common/colorRegistry';
+import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, foreground } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
 import { cellBorder, notebookToolbarIcon, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder, notebookToolbarSelectBackground, splitBorder, notebookCellTagBackground, notebookCellTagForeground, notebookFindMatchHighlight, notebookFindRangeHighlight } from 'sql/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -14,6 +14,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import { getZoomLevel } from 'vs/base/browser/browser';
 import * as types from 'vs/base/common/types';
+import { cellStatusBarItemHover } from 'vs/workbench/contrib/notebook/browser/notebookEditorWidget';
 
 export function registerNotebookThemes(overrideEditorThemeSetting: boolean, configurationService: IConfigurationService): IDisposable {
 	return registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
@@ -181,6 +182,16 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			collector.addRule(`.notebookEditor .notebook-cell.active cell-toolbar-component { background-color: ${notebookToolbarSelectBackgroundColor};}`);
 		}
 
+		// Cell language button
+		const textColor = theme.getColor(foreground);
+		if (textColor) {
+			collector.addRule(`code-component .cellLanguage { color: ${textColor}; }`);
+		}
+		const cellStatusBarHoverBg = theme.getColor(cellStatusBarItemHover);
+		if (cellStatusBarHoverBg) {
+			collector.addRule(`code-component .cellLanguage:hover { background-color: ${cellStatusBarHoverBg}; }`);
+		}
+
 		// Markdown editor toolbar
 		const toolbarBackgroundColor = theme.getColor(toolbarBackground);
 		if (toolbarBackgroundColor) {
@@ -250,7 +261,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			collector.addRule(`.notebook-preview .rangeHighlight { background-color: ${notebookFindMatchHighlightColor};}`);
 		}
 		if (notebookFindRangeHighlightColor) {
-			collector.addRule(`.notebook-preview .rangeSpecificHighlight { background-color: ${notebookFindRangeHighlightColor}!important;}`);
+			collector.addRule(`mark .rangeSpecificHighlight { background-color: ${notebookFindRangeHighlightColor}!important;}`);
 		}
 	});
 }

@@ -18,7 +18,7 @@
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "인증 관련 오류가 발생했거나 토큰이 시스템에서 삭제되었습니다. 계정을 다시 Azure Data Studio에 추가해 보세요.",
 			"azure.noUniqueIdentifier": "해당 사용자는 AAD 내에 고유 식별자가 없습니다.",
-			"azure.responseError": "오류로 인해 토큰 검색에 실패했습니다. 개발자 도구를 열어 오류 확인",
+			"azure.responseError": "오류로 인해 토큰 검색에 실패했습니다. 자세한 내용은 [개발자 도구 열기]({0})를 참조하세요.",
 			"azure.tenantNotFound": "ID가 '{0}'인 지정된 테넌트를 찾을 수 없습니다.",
 			"azureAuth.unidentifiedError": "Azure 인증에서 식별되지 않은 오류 발생",
 			"azureWorkAccountDisplayName": "회사 또는 학교 계정",
@@ -233,8 +233,9 @@
 			"config.enablePublicCloudDescription": "Azure 퍼블릭 클라우드 통합을 사용하도록 설정한 경우",
 			"config.enableUsGovCloudDescription": "US Government Azure 클라우드(Fairfax) 통합을 사용하도록 설정한 경우",
 			"config.enableUsNatCloudDescription": "미국 국가 Azure 클라우드 통합이 사용되는지 여부",
+			"config.loggingLevel": "[선택 사항] Azure 계정 확장에 대한 로깅의 자세한 정도입니다.",
 			"config.noSystemKeychain": "시스템 키 집합 통합을 사용하지 않도록 설정합니다. 자격 증명은 사용자의 홈 디렉터리에서 플랫 파일에 저장됩니다.",
-			"config.piiLogging": "PII(개인 식별 정보)를 콘솔 보기에 로컬로 기록되는지 여부"
+			"config.piiLogging": "개인 식별 정보(PII)는 Azure 계정 출력 채널 및 출력 채널 로그 파일에 기록되어야 합니다."
 		}
 	}
 }

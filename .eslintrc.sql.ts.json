@@ -16,6 +16,7 @@
 			{
 				"ignoreVoid": true
 			}
-		]
+		],
+		"jsdoc/check-param-names": "error"
 	}
 }

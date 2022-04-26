@@ -102,20 +102,6 @@
 		},
 		{
 			"type": "npm",
-			"script": "strict-vscode-watch",
-			"label": "TS - Strict VSCode",
-			"isBackground": true,
-			"presentation": {
-				"reveal": "never"
-			},
-			"problemMatcher": {
-				"base": "$tsc-watch",
-				"owner": "typescript-vscode",
-				"applyTo": "allDocuments"
-			}
-		},
-		{
-			"type": "npm",
 			"script": "watch-webd",
 			"label": "Web Ext - Build",
 			"group": "build",
@@ -237,6 +223,18 @@
 			"script": "watch",
 			"label": "Watch sample-resource-deployment",
 			"path": "./samples/sample-resource-deployment/package.json",
+			"problemMatcher": "$tsc-watch",
+			"isBackground": true,
+			"presentation": {
+				"reveal": "never"
+			},
+			"group": "build"
+		},
+		{
+			"type": "npm",
+			"script": "watch",
+			"label": "Watch sample-notebook-provider",
+			"path": "./samples/sample-notebook-provider/package.json",
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
 			"presentation": {

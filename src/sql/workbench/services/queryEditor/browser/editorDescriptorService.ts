@@ -5,7 +5,7 @@
 
 import { EditorExtensions } from 'vs/workbench/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
-import { IEditorDescriptor, IEditorRegistry } from 'vs/workbench/browser/editor';
+import { IEditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/editor';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -13,7 +13,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 export interface IEditorDescriptorService {
 	_serviceBrand: undefined;
 
-	getEditor(input: EditorInput): IEditorDescriptor | undefined;
+	getEditor(input: EditorInput): IEditorPaneDescriptor | undefined;
 }
 
 export class EditorDescriptorService implements IEditorDescriptorService {
@@ -22,8 +22,8 @@ export class EditorDescriptorService implements IEditorDescriptorService {
 	constructor() {
 	}
 
-	public getEditor(input: EditorInput): IEditorDescriptor | undefined {
-		return Registry.as<IEditorRegistry>(EditorExtensions.Editors).getEditor(input);
+	public getEditor(input: EditorInput): IEditorPaneDescriptor | undefined {
+		return Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane).getEditorPane(input);
 	}
 }
 

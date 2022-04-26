@@ -17,6 +17,7 @@ import { ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { isUndefined } from 'vs/base/common/types';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as nls from 'vs/nls';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export const SERVICE_ID = 'queryManagementService';
 
@@ -119,7 +120,8 @@ export class QueryManagementService implements IQueryManagementService {
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
-		@ILogService private _logService: ILogService
+		@ILogService private _logService: ILogService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 	}
 
@@ -329,6 +331,9 @@ export class QueryManagementService implements IQueryManagementService {
 	public onResultSetUpdated(resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
 		this._notify(resultSetInfo.ownerUri, (runner: QueryRunner) => {
 			runner.handleResultSetUpdated(resultSetInfo.resultSetSummary);
+			if (resultSetInfo.executionPlans && this._configurationService.getValue('workbench.enablePreviewFeatures')) {
+				runner.handleExecutionPlanAvailable(resultSetInfo.executionPlans);
+			}
 		});
 	}
 

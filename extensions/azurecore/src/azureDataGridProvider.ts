@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { AppContext } from './appContext';
 import { AzureResourceServiceNames } from './azureResource/constants';
 import { IAzureResourceSubscriptionService } from './azureResource/interfaces';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import * as azureResourceUtils from './azureResource/utils';
 import * as constants from './constants';
 import * as loc from './localizedConstants';

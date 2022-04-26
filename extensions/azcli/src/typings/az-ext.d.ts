@@ -116,6 +116,12 @@ declare module 'az-ext' {
 		}
 	}
 
+	export interface DcListUpgradesResult {
+		versions: string[], // ["v1.4.1_2022-03-08", "v1.4.0_2022-02-25"]
+		currentVersion: string, // "v1.4.1_2022-03-08"
+		dates: string[] // ["03/08/2022", "02/25/2022"]
+	}
+
 	export interface StorageVolume {
 		className?: string, // "local-storage"
 		size: string // "5Gi"
@@ -185,6 +191,45 @@ declare module 'az-ext' {
 		restorePoint: string, // "2020-08-19T20:25:11Z"
 		sourceDatabase: string, //testDb
 		state: string //Completed
+	}
+
+	export interface LogAnalyticsWorkspaceListResult {
+		createdDate: string, // "2020-02-25T16:59:38Z"
+		customerId: string, // "7e136a79-c0b6-4878-86bf-7bf7a6a7e6f6",
+		eTag: string, // null,
+		etag: string, // "\"00006df1-0000-0700-0000-61ee552f0000\"",
+		features: {
+			clusterResourceId: string, // null,
+			disableLocalAuth: boolean, // null,
+			enableDataExport: boolean, // null,
+			enableLogAccessUsingOnlyResourcePermissions: boolean, //true,
+			immediatePurgeDataOn30Days: boolean, // null,
+			legacy: number, // 0,
+			searchVersion: number // 1
+		},
+		forceCmkForQuery: boolean, // null,
+		id: string, // "/subscriptions/a5082b19-8a6e-4bc5-8fdd-8ef39dfebc39/resourcegroups/bugbash/providers/microsoft.operationalinsights/workspaces/bugbash-logs",
+		location: string, // "westus",
+		modifiedDate: string, // "2022-02-21T09:18:22.3906451Z",
+		name: string, // "bugbash-logs",
+		privateLinkScopedResources: string, // null,
+		provisioningState: string, // "Succeeded",
+		publicNetworkAccessForIngestion: string, // "Enabled",
+		publicNetworkAccessForQuery: string, // "Enabled",
+		resourceGroup: string, // "bugbash",
+		retentionInDays: number, // 30,
+		sku: {
+			capacityReservationLevel: number, // null,
+			lastSkuUpdate: string, // "2020-02-25T16:59:38Z",
+			name: string, // "pergb2018"
+		},
+		tags: string[], //null,
+		type: string, //"Microsoft.OperationalInsights/workspaces",
+		workspaceCapping: {
+			dailyQuotaGb: number, //-1.0,
+			dataIngestionStatus: string, // "RespectQuota",
+			quotaNextResetTime: string, // "2022-02-21T19:00:00Z"
+		}
 	}
 
 	export interface PostgresServerShowResult {
@@ -293,7 +338,9 @@ declare module 'az-ext' {
 				config: {
 					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcConfigListResult[]>>,
 					show(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcConfigShowResult>>
-				}
+				},
+				listUpgrades(namespace: string, usek8s?: boolean, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcListUpgradesResult>>,
+				upgrade(desiredVersion: string, name: string, resourceGroup?: string, namespace?: string, usek8s?: boolean, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
 			}
 		},
 		postgres: {
@@ -328,7 +375,7 @@ declare module 'az-ext' {
 				delete(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
 				list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiListResult[]>>,
 				show(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiShowResult>>,
-				edit(
+				update(
 					name: string,
 					args: {
 						coresLimit?: string, //2
@@ -338,7 +385,12 @@ declare module 'az-ext' {
 						noWait?: boolean, //true
 						retentionDays?: string, //5
 					},
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
 					namespace?: string,
+					usek8s?: boolean,
+					// Additional arguments
 					additionalEnvVars?: AdditionalEnvVars
 				): Promise<AzOutput<void>>
 			},
@@ -355,6 +407,17 @@ declare module 'az-ext' {
 					namespace?: string,
 					additionalEnvVars?: AdditionalEnvVars
 				): Promise<AzOutput<SqlMiDbRestoreResult>>
+			}
+		},
+		monitor: {
+			logAnalytics: {
+				workspace: {
+					list(
+						resourceGroup?: string, // test-rg
+						subscription?: string, // 122c121a-095a-4f5d-22e4-cc6b238490a3
+						additionalEnvVars?: AdditionalEnvVars
+					): Promise<AzOutput<LogAnalyticsWorkspaceListResult[]>>
+				}
 			}
 		},
 		getPath(): Promise<string>,

@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { AzureModelRegistryService } from '../../modelManagement/azureModelRegistryService';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
@@ -47,6 +47,7 @@ export class ModelManagementController extends ControllerBase {
 
 	/**
 	 * Opens the dialog for model import
+	 * @param importTable
 	 * @param parent parent if the view is opened from another view
 	 * @param controller controller
 	 * @param apiWrapper apiWrapper

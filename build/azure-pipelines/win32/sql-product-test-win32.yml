@@ -1,7 +1,7 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: "12.13.0"
+    versionSpec: "14.x"
 
 - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
   inputs:
@@ -51,7 +51,7 @@ steps:
     $AppNameShort = $AppProductJson.nameShort
     exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; $env:INTEGRATION_TEST_CLI_PATH = "$AppRoot\bin\$AppNameShort"; .\scripts\sql-test-integration.bat }
   continueOnError: false
-  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+  condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['RUN_INTEGRATION_TESTS'], 'false')))
   displayName: Run stable tests
   env:
     BDC_BACKEND_USERNAME: $(ads-integration-test-bdc-server-username)
@@ -75,7 +75,7 @@ steps:
     $AppNameShort = $AppProductJson.nameShort
     exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; .\scripts\sql-test-integration-unstable.bat }
   continueOnError: true
-  condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
+  condition: and(succeeded(), and(eq(variables['RUN_UNSTABLE_TESTS'], 'true'), ne(variables['RUN_INTEGRATION_TESTS'], 'false')))
   displayName: Run unstable integration tests
   env:
     BDC_BACKEND_USERNAME: $(ads-integration-test-bdc-server-username)
@@ -99,4 +99,4 @@ steps:
     mergeTestResults: true
     failTaskOnFailedTests: true
   continueOnError: true
-  condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
+  condition: and(succeededOrFailed(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['RUN_INTEGRATION_TESTS'], 'false')))

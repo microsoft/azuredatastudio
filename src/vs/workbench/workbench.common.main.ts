@@ -97,6 +97,7 @@ import 'vs/workbench/services/authentication/browser/authenticationService';
 import 'vs/workbench/services/hover/browser/hoverService';
 import 'vs/workbench/services/experiment/common/experimentService';
 import 'vs/workbench/services/outline/browser/outlineService';
+import 'vs/workbench/services/languageDetection/browser/languageDetectionWorkerServiceImpl';
 
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
@@ -179,6 +180,8 @@ import { IJobManagementService } from 'sql/workbench/services/jobManagement/comm
 import { JobManagementService } from 'sql/workbench/services/jobManagement/common/jobManagementService';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { BackupService } from 'sql/platform/backup/common/backupServiceImp';
+import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
+import { AzureBlobService } from 'sql/workbench/services/azureBlob/browser/azureBlobService';
 import { IBackupUiService } from 'sql/workbench/contrib/backup/common/backupUiService';
 import { BackupUiService } from 'sql/workbench/contrib/backup/browser/backupUiService';
 import { IRestoreDialogController, IRestoreService } from 'sql/workbench/services/restore/common/restoreService';
@@ -212,6 +215,8 @@ import { DataGridProviderService } from 'sql/workbench/services/dataGridProvider
 import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
 import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/common/interface';
 import { TableDesignerService } from 'sql/workbench/services/tableDesigner/browser/tableDesignerService';
+import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
+import { ExecutionPlanService } from 'sql/workbench/services/executionPlan/common/executionPlanService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -226,6 +231,7 @@ registerSingleton(IMetadataService, MetadataService);
 registerSingleton(IAdminService, AdminService);
 registerSingleton(IJobManagementService, JobManagementService);
 registerSingleton(IBackupService, BackupService);
+registerSingleton(IAzureBlobService, AzureBlobService);
 registerSingleton(IBackupUiService, BackupUiService);
 registerSingleton(IScriptingService, ScriptingService);
 registerSingleton(IRestoreService, RestoreService);
@@ -252,14 +258,14 @@ registerSingleton(IOEShimService, OEShimService);
 registerSingleton(IAssessmentService, AssessmentService);
 registerSingleton(IDataGridProviderService, DataGridProviderService);
 registerSingleton(ITableDesignerService, TableDesignerService);
-
+registerSingleton(IExecutionPlanService, ExecutionPlanService);
 //#endregion
 
 
 //#region --- workbench contributions
 
 // Editor Override
-import 'vs/workbench/services/editor/browser/editorOverrideService';
+import 'vs/workbench/services/editor/browser/editorResolverService';
 
 // Telemetry
 import 'vs/workbench/contrib/telemetry/browser/telemetry.contribution';
@@ -274,6 +280,9 @@ import 'vs/workbench/contrib/performance/browser/performance.contribution';
 
 // Notebook
 import 'vs/workbench/contrib/notebook/browser/notebook.contribution';
+
+// Interactive
+import 'vs/workbench/contrib/interactive/browser/interactive.contribution';
 
 // Testing
 import 'vs/workbench/contrib/testing/browser/testing.contribution';
@@ -396,9 +405,14 @@ import 'vs/workbench/contrib/welcome/overlay/browser/welcomeOverlay';
 import 'vs/workbench/contrib/welcome/page/browser/welcomePage.contribution';
 // import 'vs/workbench/contrib/welcome/gettingStarted/browser/gettingStarted.contribution'; // {{SQL CARBON EDIT}} - remove vscode getting started
 import 'vs/workbench/contrib/welcome/walkThrough/browser/walkThrough.contribution';
+import 'vs/workbench/contrib/welcome/common/viewsWelcome.contribution';
+import 'vs/workbench/contrib/welcome/common/newFile.contribution';
 
 // Call Hierarchy
 import 'vs/workbench/contrib/callHierarchy/browser/callHierarchy.contribution';
+
+// Type Hierarchy
+import 'vs/workbench/contrib/typeHierarchy/browser/typeHierarchy.contribution';
 
 // Outline
 import 'vs/workbench/contrib/codeEditor/browser/outline/documentSymbolsOutline';
@@ -416,9 +430,6 @@ import 'vs/workbench/contrib/userDataSync/browser/userDataSync.contribution';
 // Code Actions
 import 'vs/workbench/contrib/codeActions/common/codeActions.contribution';
 
-// Welcome
-import 'vs/workbench/contrib/welcome/common/viewsWelcome.contribution';
-
 // Timeline
 import 'vs/workbench/contrib/timeline/browser/timeline.contribution';
 
@@ -427,6 +438,9 @@ import 'vs/workbench/contrib/workspace/browser/workspace.contribution';
 
 // Workspaces
 import 'vs/workbench/contrib/workspaces/browser/workspaces.contribution';
+
+// List
+import 'vs/workbench/contrib/list/browser/list.contribution';
 
 //#endregion
 
@@ -518,6 +532,9 @@ import 'sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.cont
 // Extension
 import 'sql/workbench/contrib/extensions/browser/extensions.contribution';
 
+// TSGOps ads light image
+import 'sql/workbench/contrib/tsgops/browser/tsgops.contribution';
+
 // Azure
 import 'sql/workbench/contrib/azure/browser/azure.contribution';
 
@@ -526,5 +543,8 @@ import 'sql/workbench/contrib/charts/browser/charts.contribution';
 
 // table designer
 import 'sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution';
+
+// execution plan
+import 'sql/workbench/contrib/executionPlan/browser/executionPlanContribution';
 
 //#endregion

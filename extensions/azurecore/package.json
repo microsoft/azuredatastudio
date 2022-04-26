@@ -110,6 +110,20 @@
             "type": "boolean",
             "default": false,
             "description": "%config.piiLogging%"
+          },
+          "azure.loggingLevel": {
+            "type": "string",
+            "description": "%config.loggingLevel%",
+            "default": "Error",
+            "enum": [
+              "Off",
+              "Critical",
+              "Error",
+              "Warning",
+              "Information",
+              "Verbose",
+              "All"
+            ]
           }
         }
       }
@@ -335,13 +349,13 @@
     "@azure/arm-subscriptions": "^3.0.0",
     "@azure/storage-blob": "^12.6.0",
     "axios": "^0.21.4",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "qs": "^6.9.1",
     "vscode-nls": "^4.0.0",
     "ws": "^7.2.0"
   },
   "devDependencies": {
-    "@types/keytar": "^4.4.2",
+    "@types/keytar": "4.4.0",
     "@types/mocha": "^5.2.5",
     "@types/node": "^12.11.7",
     "@types/qs": "^6.9.1",
@@ -354,6 +368,6 @@
     "should": "^13.2.1",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.1.0"
+    "@microsoft/vscodetestcover": "^1.2.0"
   }
 }

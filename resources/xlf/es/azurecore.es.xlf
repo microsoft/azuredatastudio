@@ -39,8 +39,8 @@
         <target state="translated">El usuario no tenía ningún identificador único en AAD.</target>
       </trans-unit>
       <trans-unit id="azure.responseError">
-        <source xml:lang="en">Token retrieval failed with an error. Open developer tools to view the error</source>
-        <target state="translated">Error al recuperar el token. Abra las herramientas de desarrollo para ver el error.</target>
+        <source xml:lang="en">Token retrieval failed with an error. [Open developer tools]({0}) for more details.</source>
+        <target state="translated">Error al recuperar el token. [Abra las herramientas de desarrollo]({0}) para obtener más detalles.</target>
       </trans-unit>
       <trans-unit id="azure.tenantNotFound">
         <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
@@ -795,13 +795,17 @@
         <source xml:lang="en">Should US National Azure cloud integration be enabled</source>
         <target state="translated">Indica si se debe habilitar la integración de la nube de Azure nacional de EE. UU.</target>
       </trans-unit>
+      <trans-unit id="config.loggingLevel">
+        <source xml:lang="en">[Optional] The verbosity of logging for the Azure Accounts extension.</source>
+        <target state="translated">[Optional] El nivel de detalle del registro de la extensión Cuentas de Azure.</target>
+      </trans-unit>
       <trans-unit id="config.noSystemKeychain">
         <source xml:lang="en">Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.</source>
         <target state="translated">Deshabilite la integración de las cadenas de claves del sistema. Las credenciales se almacenarán en un archivo plano en el directorio principal del usuario.</target>
       </trans-unit>
       <trans-unit id="config.piiLogging">
-        <source xml:lang="en">Should Personally Identifiable Information (PII) be logged in the console view locally</source>
-        <target state="translated">Indica si se debe registrar la información de identificación personal (PII) en la vista de la consola de forma local.</target>
+        <source xml:lang="en">Should Personally Identifiable Information (PII) be logged in the Azure Accounts output channel and the output channel log file.</source>
+        <target state="translated">La información de identificación personal (DCP) debe registrarse en el canal de salida de las cuentas de Azure y en el archivo de registro del canal de salida.</target>
       </trans-unit>
     </body>
   </file>

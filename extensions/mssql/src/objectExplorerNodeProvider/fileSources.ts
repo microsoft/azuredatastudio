@@ -379,8 +379,7 @@ class HdfsFileSource implements IFileSource {
 	 * Sets the ACL status for given path
 	 * @param path The path to the file/folder to set the ACL on
 	 * @param fileType The type of file we're setting to determine if defaults should be applied. Use undefined if type is unknown
-	 * @param ownerEntry The status containing the permissions to set
-	 * @param aclEntries The ACL entries to set
+	 * @param permissionStatus The permissions to set
 	 */
 	public setAcl(path: string, fileType: FileType | undefined, permissionStatus: PermissionStatus): Promise<void> {
 		return new Promise((resolve, reject) => {

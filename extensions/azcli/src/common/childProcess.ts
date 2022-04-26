@@ -82,7 +82,6 @@ export async function executeCommand(command: string, args: string[], additional
  * Executes a command with admin privileges. The user will be prompted to enter credentials for invocation of
  * this function. The exact prompt is platform-dependent.
  * @param command The command to execute
- * @param args The additional args
  */
 export async function executeSudoCommand(command: string): Promise<ProcessOutput> {
 	return new Promise((resolve, reject) => {

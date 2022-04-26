@@ -1,7 +1,7 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: "12.13.0"
+    versionSpec: "14.x"
 
 - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
   inputs:
@@ -84,7 +84,7 @@ steps:
 
 - script: |
     set -e
-    yarn npm-run-all -lp sqllint extensions-lint strict-vscode
+    yarn npm-run-all -lp sqllint extensions-lint
   displayName: SQL Hygiene
 
 - script: |
@@ -93,6 +93,7 @@ steps:
     AZURE_STORAGE_ACCESS_KEY="$(sourcemap-storage-key)" \
       node build/azure-pipelines/upload-sourcemaps
   displayName: Upload sourcemaps
+  condition: and(succeeded(), ne(variables['VSCODE_PUBLISH'], 'false'))
 
 - script: |
     set -e

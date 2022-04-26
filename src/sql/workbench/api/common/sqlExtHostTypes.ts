@@ -246,7 +246,8 @@ export enum ComponentEventType {
 	onCellAction,
 	onEnterKeyPressed,
 	onInput,
-	onComponentLoaded
+	onComponentLoaded,
+	onChildClick
 }
 
 export interface IComponentEventArgs {
@@ -382,7 +383,8 @@ export enum DataProviderType {
 	IconProvider = 'IconProvider',
 	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
 	DataGridProvider = 'DataGridProvider',
-	TableDesignerProvider = 'TableDesignerProvider'
+	TableDesignerProvider = 'TableDesignerProvider',
+	ExecutionPlanProvider = 'ExecutionPlanProvider'
 }
 
 export enum DeclarativeDataType {
@@ -430,7 +432,6 @@ export class TreeComponentItem extends vsExtTypes.TreeItem {
 	checked?: boolean;
 }
 
-// Accounts interfaces.ts > AzureResource should also be updated
 export enum AzureResource {
 	ResourceManagement = 0,
 	Sql = 1,
@@ -544,11 +545,26 @@ export class SqlThemeIcon {
 	static readonly ExternalTable = new SqlThemeIcon('ExternalTable');
 	static readonly ColumnMasterKey = new SqlThemeIcon('ColumnMasterKey');
 	static readonly ColumnEncryptionKey = new SqlThemeIcon('ColumnEncryptionKey');
+	static readonly GraphEdge = new SqlThemeIcon('GraphEdge');
+	static readonly GraphNode = new SqlThemeIcon('GraphNode');
 
 	public readonly id: string;
 
 	private constructor(id: string) {
 		this.id = id;
+	}
+}
+
+export interface ICellMetadata {
+	language?: string | undefined;
+	tags?: string[] | undefined;
+	azdata_cell_guid?: string | undefined;
+	connection_name?: string;
+	/**
+	 * .NET Interactive metadata. This is only required for compatibility with the .NET Interactive extension.
+	 */
+	dotnet_interactive?: {
+		language: string;
 	}
 }
 
@@ -633,10 +649,47 @@ export class CellRange {
 	}
 }
 
-export interface ISingleNotebookEditOperation {
+export const enum NotebookEditOperationType {
+	/**
+	 * Inserts a new cell with the specified content at the specified position.
+	 */
+	InsertCell = 0,
+	/**
+	 * Deletes a single cell.
+	 */
+	DeleteCell = 1,
+	/**
+	 * Replace the specified cell range with a new cell made from the specified content.
+	 */
+	ReplaceCells = 2,
+	/**
+	 * Update a cell with the specified new values. Currently only supports updating cell output.
+	 */
+	UpdateCell = 3,
+	/**
+	 * Updates a cell outputs with the specified new values.
+	 */
+	UpdateCellOutput = 4
+}
+
+// TODO This should be split up into separate edit operation types
+export interface INotebookEditOperation {
+	/**
+	 * The type of edit operation this is
+	 */
+	type: NotebookEditOperationType;
+	/**
+	 * The range of cells that this edit affects
+	 */
 	range: ICellRange;
+	/**
+	 * The cell metadata to use for the edit operation (only for some edit operations)
+	 */
 	cell: Partial<nb.ICellContents>;
-	forceMoveMarkers: boolean;
+	/**
+	 * Whether to append the content to the existing content or replace it.
+	 */
+	append?: boolean;
 }
 
 export class ConnectionProfile {
@@ -851,7 +904,8 @@ export enum ColumnType {
 	checkBox = 1,
 	button = 2,
 	icon = 3,
-	hyperlink = 4
+	hyperlink = 4,
+	contextMenu = 5
 }
 
 export enum ActionOnCellCheckboxCheck {
@@ -916,10 +970,16 @@ export namespace designers {
 		Script = 'script',
 		ForeignKeys = 'foreignKeys',
 		CheckConstraints = 'checkConstraints',
+		Indexes = 'indexes',
+		PrimaryKeyName = 'primaryKeyName',
+		PrimaryKeyDescription = 'primaryKeyDescription',
+		PrimaryKeyColumns = 'primaryKeyColumns'
 	}
 
 	export enum TableColumnProperty {
 		Name = 'name',
+		Description = 'description',
+		AdvancedType = 'advancedType',
 		Type = 'type',
 		AllowNulls = 'allowNulls',
 		DefaultValue = 'defaultValue',
@@ -931,25 +991,52 @@ export namespace designers {
 
 	export enum TableForeignKeyProperty {
 		Name = 'name',
-		PrimaryKeyTable = 'primaryKeyTable',
+		Description = 'description',
+		ForeignTable = 'foreignTable',
 		OnDeleteAction = 'onDeleteAction',
 		OnUpdateAction = 'onUpdateAction',
 		Columns = 'columns'
 	}
 
 	export enum ForeignKeyColumnMappingProperty {
-		PrimaryKeyColumn = 'primaryKeyColumn',
-		ForeignKeyColumn = 'foreignKeyColumn'
+		Column = 'column',
+		ForeignColumn = 'foreignColumn'
 	}
 
 	export enum TableCheckConstraintProperty {
 		Name = 'name',
+		Description = 'description',
 		Expression = 'expression'
+	}
+
+	export enum TableIndexProperty {
+		Name = 'name',
+		Description = 'description',
+		Columns = 'columns'
+	}
+
+	export enum TableIndexColumnSpecificationProperty {
+		Column = 'column'
 	}
 
 	export enum DesignerEditType {
 		Add = 0,
 		Remove = 1,
 		Update = 2
+	}
+
+	export enum TableIcon {
+		Basic = 'Basic',
+		Temporal = 'Temporal',
+		GraphEdge = 'GraphEdge',
+		GraphNode = 'GraphNode'
+	}
+}
+
+export namespace executionPlan {
+	export enum BadgeType {
+		Warning = 0,
+		CriticalWarning = 1,
+		Parallelism = 2
 	}
 }

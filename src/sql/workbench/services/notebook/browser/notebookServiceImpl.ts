@@ -50,7 +50,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { NotebookLanguage } from 'sql/workbench/common/constants';
+import { DEFAULT_NB_LANGUAGE_MODE, INTERACTIVE_LANGUAGE_MODE, INTERACTIVE_PROVIDER_ID, JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
 
@@ -134,6 +134,31 @@ export class ExecuteProviderDescriptor {
 	}
 }
 
+export class StandardKernelsDescriptor {
+	private _instanceReady = new Deferred<nb.IStandardKernel[]>();
+	constructor(private readonly _providerId: string, private _instance?: nb.IStandardKernel[]) {
+		if (_instance) {
+			this._instanceReady.resolve(_instance);
+		}
+	}
+
+	public get providerId(): string {
+		return this._providerId;
+	}
+
+	public get instanceReady(): Promise<nb.IStandardKernel[]> {
+		return this._instanceReady.promise;
+	}
+
+	public get instance(): nb.IStandardKernel[] | undefined {
+		return this._instance;
+	}
+	public set instance(value: nb.IStandardKernel[]) {
+		this._instance = value;
+		this._instanceReady.resolve(value);
+	}
+}
+
 export const NotebookUriNotDefined = localize('notebookUriNotDefined', "No URI was passed when creating a notebook manager");
 export const NotebookServiceNoProviderRegistered = localize('notebookServiceNoProvider', "Notebook provider does not exist");
 export const FailToSaveTrustState = 'Failed to save trust state to cache';
@@ -154,12 +179,13 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
 	private _editors = new Map<string, INotebookEditor>();
 	private _fileToProviderDescriptions = new Map<string, ProviderDescriptionRegistration[]>();
-	private _providerToStandardKernels = new Map<string, nb.IStandardKernel[]>();
+	private _providerToStandardKernels = new Map<string, StandardKernelsDescriptor>(); // Note: providerId key here should be in upper case
 	private _registrationComplete = new Deferred<void>();
 	private _isRegistrationComplete = false;
 	private _trustedCacheQueue: URI[] = [];
 	private _unTrustedCacheQueue: URI[] = [];
 	private _onCodeCellExecutionStart: Emitter<void> = new Emitter<void>();
+	private _notebookInputsMap: Map<string, IEditorInput> = new Map();
 
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
@@ -223,27 +249,68 @@ export class NotebookService extends Disposable implements INotebookService {
 		lifecycleService.onWillShutdown(() => this.shutdown());
 	}
 
-	public async openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined> {
-		const uri = URI.revive(resource);
+	private getUntitledFileUri(): URI {
+		// Need to create a new untitled URI, so find the lowest numbered one that's available
+		let uri: URI;
+		let counter = 1;
+		do {
+			uri = URI.from({ scheme: Schemas.untitled, path: `Notebook-${counter}` });
+			counter++;
+		} while (this._untitledEditorService.get(uri) || this._notebookInputsMap.has(uri.toString())); // Also have to check stored inputs, since those might not be opened in an editor yet.
+		return uri;
+	}
 
-		const editorOptions: ITextEditorOptions = {
-			preserveFocus: options.preserveFocus,
-			pinned: !options.preview
+	public async createNotebookInputFromContents(providerId: string, contents?: nb.INotebookContents, resource?: UriComponents): Promise<IEditorInput> {
+		let uri: URI;
+		if (resource) {
+			uri = URI.revive(resource);
+		} else {
+			uri = this.getUntitledFileUri();
+			resource = uri;
+		}
+
+		let options: INotebookShowOptions = {
+			providerId: providerId,
+			initialContent: contents
 		};
+		return this.createNotebookInput(options, resource);
+	}
+
+	private async createNotebookInput(options: INotebookShowOptions, resource?: UriComponents): Promise<IEditorInput | undefined> {
+		let uri: URI;
+		if (resource) {
+			uri = URI.revive(resource);
+			if (this._notebookInputsMap.has(uri.toString())) {
+				return this._notebookInputsMap.get(uri.toString());
+			}
+		} else {
+			uri = this.getUntitledFileUri();
+		}
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
 		let fileInput: IEditorInput;
+		let languageMode = options.providerId === INTERACTIVE_PROVIDER_ID ? INTERACTIVE_LANGUAGE_MODE : DEFAULT_NB_LANGUAGE_MODE;
+		let initialStringContents: string;
+		if (options.initialContent) {
+			if (typeof options.initialContent === 'string') {
+				initialStringContents = options.initialContent;
+			} else {
+				let manager = await this.getOrCreateSerializationManager(options.providerId, uri);
+				initialStringContents = await manager.contentManager.serializeNotebook(options.initialContent);
+			}
+		}
 		if (isUntitled && path.isAbsolute(uri.fsPath)) {
-			const model = this._untitledEditorService.create({ associatedResource: uri, mode: 'notebook', initialValue: options.initialContent });
+			const model = this._untitledEditorService.create({ associatedResource: uri, mode: languageMode, initialValue: initialStringContents });
 			fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 		} else {
 			if (isUntitled) {
-				const model = this._untitledEditorService.create({ untitledResource: uri, mode: 'notebook', initialValue: options.initialContent });
+				const model = this._untitledEditorService.create({ untitledResource: uri, mode: languageMode, initialValue: initialStringContents });
 				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 			} else {
-				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: 'notebook' });
+				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: languageMode });
 			}
 		}
+
 		// We only need to get the Notebook language association as such we only need to use ipynb
 		const inputCreator = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
 		if (inputCreator) {
@@ -251,6 +318,9 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (isINotebookInput(fileInput)) {
 				fileInput.defaultKernel = options.defaultKernel;
 				fileInput.connectionProfile = options.connectionProfile;
+				if (typeof options.initialContent !== 'string') {
+					fileInput.setNotebookContents(options.initialContent);
+				}
 
 				if (isUntitled) {
 					let untitledModel = await fileInput.resolve();
@@ -261,7 +331,22 @@ export class NotebookService extends Disposable implements INotebookService {
 				}
 			}
 		}
-		return await this._editorService.openEditor(fileInput, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
+
+		if (!fileInput) {
+			throw new Error(localize('failedToCreateNotebookInput', "Failed to create notebook input for provider '{0}'", options.providerId));
+		}
+
+		this._notebookInputsMap.set(uri.toString(), fileInput);
+		return fileInput;
+	}
+
+	public async openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined> {
+		const editorOptions: ITextEditorOptions = {
+			preserveFocus: options.preserveFocus,
+			pinned: !options.preview
+		};
+		let input = await this.createNotebookInput(options, resource);
+		return await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
 	}
 
 	/**
@@ -291,13 +376,15 @@ export class NotebookService extends Disposable implements INotebookService {
 		let sqlNotebookKernels = this._providerToStandardKernels.get(notebookConstants.SQL);
 		if (sqlNotebookKernels) {
 			let sqlConnectionTypes = this._queryManagementService.getRegisteredProviders();
-			let kernel = sqlNotebookKernels.find(p => p.name === notebookConstants.SQL);
+			let kernel = sqlNotebookKernels.instance.find(p => p.name === notebookConstants.SQL);
 			if (kernel) {
-				this._providerToStandardKernels.set(notebookConstants.SQL, [{
+				let descriptor = new StandardKernelsDescriptor(notebookConstants.SQL, [{
 					name: notebookConstants.SQL,
 					displayName: notebookConstants.SQL,
-					connectionProviderIds: sqlConnectionTypes
+					connectionProviderIds: sqlConnectionTypes,
+					supportedLanguages: [notebookConstants.sqlKernelSpec.language]
 				}]);
+				this._providerToStandardKernels.set(notebookConstants.SQL, descriptor);
 			}
 		}
 		this._isRegistrationComplete = true;
@@ -325,6 +412,20 @@ export class NotebookService extends Disposable implements INotebookService {
 				this._executeProviders.set(p.id, new ExecuteProviderDescriptor(p.id));
 			}
 			this.addStandardKernels(registration);
+		} else {
+			// Standard kernels might get registered later for VSCode notebooks, so add a descriptor to wait on
+			if (!this._providerToStandardKernels.has(p.id)) {
+				let descriptor = new StandardKernelsDescriptor(p.id);
+				this._providerToStandardKernels.set(p.id.toUpperCase(), descriptor);
+			}
+		}
+
+		// Emit activation event if the provider is not one of the default options
+		if (p.id !== SQL_NOTEBOOK_PROVIDER && p.id !== JUPYTER_PROVIDER_ID) {
+			this._extensionService.whenInstalledExtensionsRegistered()
+				.then(() => this._extensionService.activateByEvent(`onNotebook:${p.id}`))
+				.then(() => this._extensionService.activateByEvent(`onNotebook:*`))
+				.catch(err => onUnexpectedError(err));
 		}
 	}
 
@@ -392,18 +493,24 @@ export class NotebookService extends Disposable implements INotebookService {
 	// kernels to the dropdown
 	private addStandardKernels(provider: ProviderDescriptionRegistration) {
 		let providerUpperCase = provider.provider.toUpperCase();
-		let standardKernels = this._providerToStandardKernels.get(providerUpperCase);
+		let descriptor = this._providerToStandardKernels.get(providerUpperCase);
+		if (!descriptor) {
+			descriptor = new StandardKernelsDescriptor(provider.provider);
+		}
+		let standardKernels = descriptor.instance;
 		if (!standardKernels) {
 			standardKernels = [];
 		}
 		provider.standardKernels.forEach(kernel => {
 			standardKernels.push(kernel);
 		});
+
 		// Filter out unusable kernels when running on a SAW
 		if (this.productService.quality === 'saw') {
 			standardKernels = standardKernels.filter(kernel => !kernel.blockedOnSAW);
 		}
-		this._providerToStandardKernels.set(providerUpperCase, standardKernels);
+		descriptor.instance = standardKernels;
+		this._providerToStandardKernels.set(providerUpperCase, descriptor);
 	}
 
 	getSupportedFileExtensions(): string[] {
@@ -411,12 +518,38 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	getProvidersForFileType(fileType: string): string[] | undefined {
-		let providers = this._fileToProviderDescriptions.get(fileType.toLowerCase());
-		return providers?.map(provider => provider.provider);
+		let provDescriptions = this._fileToProviderDescriptions.get(fileType.toLowerCase());
+		let providers = provDescriptions?.map(provider => provider.provider);
+		return providers ? [...new Set(providers)] : undefined; // Use a set to remove duplicates
 	}
 
-	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] | undefined {
-		return this._providerToStandardKernels.get(provider.toUpperCase());
+	public async getStandardKernelsForProvider(provider: string): Promise<nb.IStandardKernel[] | undefined> {
+		let descriptor = this._providerToStandardKernels.get(provider.toUpperCase());
+		let kernels: nb.IStandardKernel[] = undefined;
+		if (descriptor) {
+			if (descriptor.instance) {
+				kernels = descriptor.instance;
+			} else {
+				kernels = await this.waitOnStandardKernelsAvailability(descriptor);
+			}
+		}
+		return kernels;
+	}
+
+	public async getSupportedLanguagesForProvider(provider: string, kernelDisplayName?: string): Promise<string[]> {
+		let languages: string[] = [];
+		let kernels = await this.getStandardKernelsForProvider(provider);
+		if (kernelDisplayName && kernels) {
+			kernels = kernels.filter(kernel => kernel.displayName === kernelDisplayName);
+		}
+		kernels?.forEach(kernel => {
+			if (kernel.supportedLanguages) {
+				languages.push(...kernel.supportedLanguages);
+			}
+		});
+		// Remove duplicates
+		languages = [...new Set(languages)];
+		return languages;
 	}
 
 	private shutdown(): void {
@@ -493,6 +626,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (this._editors.delete(editor.id)) {
 			this._onNotebookEditorRemove.fire(editor);
 		}
+		this._notebookInputsMap.delete(editor.notebookParams.notebookUri.toString());
+
 		// Remove the manager from the tracked list, and let the notebook provider know that it should update its mappings
 		this.sendNotebookCloseToProvider(editor);
 	}
@@ -588,18 +723,32 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	private async getExecuteProviderInstance(providerId: string, timeout?: number): Promise<IExecuteProvider> {
 		let providerDescriptor = this._executeProviders.get(providerId);
+		let kernelDescriptor = this._providerToStandardKernels.get(providerId.toUpperCase());
 		let instance: IExecuteProvider;
 
 		// Try get from actual provider, waiting on its registration
-		if (providerDescriptor) {
-			if (!providerDescriptor.instance) {
+		if (providerDescriptor && kernelDescriptor) {
+			if (!providerDescriptor.instance || !kernelDescriptor.instance) {
 				// Await extension registration before awaiting provider registration
 				try {
 					await this._extensionService.whenInstalledExtensionsRegistered();
 				} catch (error) {
 					this._logService.error(error);
 				}
-				instance = await this.waitOnExecuteProviderAvailability(providerDescriptor, timeout);
+
+				if (providerDescriptor.instance) {
+					instance = providerDescriptor.instance;
+				} else {
+					instance = await this.waitOnExecuteProviderAvailability(providerDescriptor, timeout);
+				}
+
+				// Even if we have an execute provider, we still need standard kernels to be able to use it
+				if (instance && !kernelDescriptor.instance) {
+					let kernels = await this.waitOnStandardKernelsAvailability(kernelDescriptor, timeout);
+					if (!kernels) {
+						instance = undefined;
+					}
+				}
 			} else {
 				instance = providerDescriptor.instance;
 			}
@@ -621,9 +770,15 @@ export class NotebookService extends Disposable implements INotebookService {
 	private waitOnSerializationProviderAvailability(providerDescriptor: SerializationProviderDescriptor, timeout?: number): Promise<ISerializationProvider | undefined> {
 		// Wait up to 30 seconds for the provider to be registered
 		timeout = timeout ?? 30000;
-		let promises: Promise<ISerializationProvider>[] = [
+		let promises: Promise<ISerializationProvider | undefined>[] = [
 			providerDescriptor.instanceReady,
-			new Promise<ISerializationProvider>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
+			new Promise<ISerializationProvider | undefined>((resolve, reject) => setTimeout(() => {
+				if (!providerDescriptor.instance) {
+					this._serializationProviders.delete(providerDescriptor.providerId); // Remove waiting descriptor so we don't timeout again
+					onUnexpectedError(localize('serializationProviderTimeout', 'Waiting for Serialization Provider availability timed out for notebook provider \'{0}\'', providerDescriptor.providerId));
+				}
+				resolve(undefined);
+			}, timeout))
 		];
 		return Promise.race(promises);
 	}
@@ -631,9 +786,31 @@ export class NotebookService extends Disposable implements INotebookService {
 	private waitOnExecuteProviderAvailability(providerDescriptor: ExecuteProviderDescriptor, timeout?: number): Promise<IExecuteProvider | undefined> {
 		// Wait up to 30 seconds for the provider to be registered
 		timeout = timeout ?? 30000;
-		let promises: Promise<IExecuteProvider>[] = [
+		let promises: Promise<IExecuteProvider | undefined>[] = [
 			providerDescriptor.instanceReady,
-			new Promise<IExecuteProvider>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
+			new Promise<IExecuteProvider | undefined>((resolve, reject) => setTimeout(() => {
+				if (!providerDescriptor.instance) {
+					this._executeProviders.delete(providerDescriptor.providerId); // Remove waiting descriptor so we don't timeout again
+					onUnexpectedError(localize('executeProviderTimeout', 'Waiting for Execute Provider availability timed out for notebook provider \'{0}\'', providerDescriptor.providerId));
+				}
+				resolve(undefined);
+			}, timeout))
+		];
+		return Promise.race(promises);
+	}
+
+	private waitOnStandardKernelsAvailability(kernelsDescriptor: StandardKernelsDescriptor, timeout?: number): Promise<nb.IStandardKernel[] | undefined> {
+		// Wait up to 30 seconds for the kernels to be registered
+		timeout = timeout ?? 30000;
+		let promises: Promise<nb.IStandardKernel[] | undefined>[] = [
+			kernelsDescriptor.instanceReady,
+			new Promise<nb.IStandardKernel[] | undefined>((resolve, reject) => setTimeout(() => {
+				if (!kernelsDescriptor.instance) {
+					this._providerToStandardKernels.delete(kernelsDescriptor.providerId.toUpperCase()); // Remove waiting descriptor so we don't timeout again
+					onUnexpectedError(localize('standardKernelsTimeout', 'Waiting for Standard Kernels availability timed out for notebook provider \'{0}\'', kernelsDescriptor.providerId));
+				}
+				resolve(undefined);
+			}, timeout))
 		];
 		return Promise.race(promises);
 	}
@@ -689,7 +866,12 @@ export class NotebookService extends Disposable implements INotebookService {
 		notebookRegistry.registerProviderDescription({
 			provider: serializationProvider.providerId,
 			fileExtensions: [DEFAULT_NOTEBOOK_FILETYPE],
-			standardKernels: [{ name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }]
+			standardKernels: [{
+				name: notebookConstants.SQL,
+				displayName: notebookConstants.SQL,
+				connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER],
+				supportedLanguages: [notebookConstants.sqlKernelSpec.language]
+			}]
 		});
 	}
 

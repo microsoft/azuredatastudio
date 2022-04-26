@@ -7,29 +7,14 @@ import { TableDesignerInput } from 'sql/workbench/browser/editor/tableDesigner/t
 import { TableDesignerEditor } from 'sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { EditorDescriptor, IEditorRegistry } from 'vs/workbench/browser/editor';
+import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/editor';
 import { EditorExtensions } from 'vs/workbench/common/editor';
-import { localize } from 'vs/nls';
-import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 
-const tableDesignerDescriptor = EditorDescriptor.create(
+const tableDesignerDescriptor = EditorPaneDescriptor.create(
 	TableDesignerEditor,
 	TableDesignerEditor.ID,
 	'TableDesignerEditor'
 );
 
-Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(tableDesignerDescriptor, [new SyncDescriptor(TableDesignerInput)]);
-
-Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConfiguration({
-	id: 'tableDesigner',
-	title: localize('tableDesigner.configTitle', "Table Designer"),
-	type: 'object',
-	properties: {
-		'tableDesigner.enableFeature': {
-			'type': 'boolean',
-			'default': false,
-			'description': localize('tableDesigner.featureEnabledDescription', "Controls whether the table designer feature is enabled. Default value is false.")
-		}
-	}
-});
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
+	.registerEditorPane(tableDesignerDescriptor, [new SyncDescriptor(TableDesignerInput)]);
