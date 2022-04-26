@@ -349,6 +349,7 @@ suite.skip('EditorGroupsService', () => {
 		const [part] = await createPart();
 
 		await part.whenReady;
+		assert.strictEqual(part.isReady, true);
 		await part.whenRestored;
 	});
 

@@ -14,7 +14,7 @@ import { IPager, mapPager, singlePagePager } from 'vs/base/common/paging';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import {
 	IExtensionGalleryService, ILocalExtension, IGalleryExtension, IQueryOptions,
-	InstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier, InstallOperation, DefaultIconPath, InstallOptions, WEB_EXTENSION_TAG, InstallExtensionResult
+	InstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier, InstallOperation, DefaultIconPath, InstallOptions, WEB_EXTENSION_TAG, InstallExtensionResult, TargetPlatform
 } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionManagementServer, IWorkbenchExtensionManagementService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, getMaliciousExtensionsSet, groupByExtension, ExtensionIdentifierWithVersion, getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
@@ -419,7 +419,7 @@ class Extensions extends Disposable {
 		}
 		// Loading the compatible version only there is an engine property
 		// Otherwise falling back to old way so that we will not make many roundtrips
-		const compatible = gallery.properties.engine ? await this.galleryService.getCompatibleExtension(gallery) : gallery;
+		const compatible = gallery.properties.engine ? await this.galleryService.getCompatibleExtension(gallery, await this.server.getTargetPlatform()) : gallery;
 		if (!compatible) {
 			return false;
 		}
@@ -435,7 +435,10 @@ class Extensions extends Disposable {
 	}
 
 	private async syncInstalledExtensionWithGallery(extension: Extension): Promise<void> {
-		const compatible = await this.galleryService.getCompatibleExtension(extension.identifier);
+		if (!this.galleryService.isEnabled()) {
+			return;
+		}
+		const compatible = await this.galleryService.getCompatibleExtension(extension.identifier, await this.server.getTargetPlatform());
 		if (compatible) {
 			extension.gallery = compatible;
 			this._onChange.fire({ extension });
@@ -1014,7 +1017,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 
 		if (this.extensionManagementServerService.webExtensionManagementServer) {
 			const configuredExtensionKind = this.extensionManifestPropertiesService.getUserConfiguredExtensionKind(extension.gallery.identifier);
-			return configuredExtensionKind ? configuredExtensionKind.includes('web') : extension.gallery.webExtension;
+			return configuredExtensionKind ? configuredExtensionKind.includes('web') : extension.gallery.allTargetPlatforms.includes(TargetPlatform.WEB);
 		}
 
 		return false;
@@ -1088,29 +1091,27 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		}, () => this.extensionManagementService.uninstall(toUninstall).then(() => undefined));
 	}
 
-	installVersion(extension: IExtension, version: string): Promise<IExtension> {
+	async installVersion(extension: IExtension, version: string): Promise<IExtension> {
 		if (!(extension instanceof Extension)) {
-			return Promise.resolve(extension);
+			return extension;
 		}
 
 		if (!extension.gallery) {
-			return Promise.reject(new Error('Missing gallery'));
+			throw new Error('Missing gallery');
 		}
 
-		return this.galleryService.getCompatibleExtension(extension.gallery.identifier, version)
-			.then(gallery => {
-				if (!gallery) {
-					return Promise.reject(new Error(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, version))); // {{SQL CARBON EDIT}} Change vscode to ads
-				}
-				return this.installWithProgress(async () => {
-					const installed = await this.installFromGallery(extension, gallery);
-					if (extension.latestVersion !== version) {
-						this.ignoreAutoUpdate(new ExtensionIdentifierWithVersion(gallery.identifier, version));
-					}
-					return installed;
-				}
-					, gallery.displayName);
-			});
+		const [gallery] = await this.galleryService.getExtensions([{ id: extension.gallery.identifier.id, version }], CancellationToken.None);
+		if (!gallery) {
+			throw new Error(nls.localize('not found', "Unable to install extension '{0}' because the requested version '{1}' is not found.", extension.gallery!.identifier.id, version));
+		}
+
+		return this.installWithProgress(async () => {
+			const installed = await this.installFromGallery(extension, gallery, { installGivenVersion: true });
+			if (extension.latestVersion !== version) {
+				this.ignoreAutoUpdate(new ExtensionIdentifierWithVersion(gallery.identifier, version));
+			}
+			return installed;
+		}, gallery.displayName);
 	}
 
 	reinstall(extension: IExtension): Promise<IExtension> {
@@ -1189,7 +1190,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		this._onChange.fire(extension);
 		try {
 			if (extension.state === ExtensionState.Installed && extension.local) {
-				await this.extensionManagementService.updateFromGallery(gallery, extension.local);
+				await this.extensionManagementService.updateFromGallery(gallery, extension.local, installOptions);
 			} else {
 				await this.extensionManagementService.installFromGallery(gallery, installOptions);
 			}

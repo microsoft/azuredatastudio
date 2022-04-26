@@ -115,7 +115,7 @@ registerAction2(class extends Action2 {
 				primary: KeyCode.Escape,
 				when: inWelcomeContext
 			},
-			precondition: ContextKeyEqualsExpr.create('activeEditor', 'gettingStartedPage'),
+			precondition: ContextKeyExpr.equals('activeEditor', 'gettingStartedPage'),
 			f1: true
 		});
 	}
