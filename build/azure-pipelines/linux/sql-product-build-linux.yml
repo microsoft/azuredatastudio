@@ -193,14 +193,20 @@ steps:
   # in continueOnError directly so instead make two copies of the task and only run one or the other based on the SMOKE_FAIL_ON_ERROR value
   - script: |
       set -e
-      yarn smoketest --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/linux/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions" --databaseConnections ../../$(testConnections.secureFilePath)
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
+      APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
+      sql2019_password=$(sql2019_password)
+      yarn smoketest --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/linux/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions" --databaseConnections $(testConnections.secureFilePath)
     displayName: Run smoke tests (Electron) (Continue on Error)
     continueOnError: true
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
   - script: |
       set -e
-      yarn smoketest --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/linux/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions" --databaseConnections ../../$(testConnections.secureFilePath)
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
+      APP_NAME="`ls $APP_ROOT | head -n 1`"
+      sql2019_password=$(sql2019_password)
+      yarn smoketest --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/linux/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions" --databaseConnections $(testConnections.secureFilePath)
     displayName: Run smoke tests (Electron) (Fail on Error)
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
