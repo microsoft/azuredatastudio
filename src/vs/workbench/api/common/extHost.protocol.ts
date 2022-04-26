@@ -75,7 +75,7 @@ import { ITreeItem as sqlITreeItem } from 'sql/workbench/common/views';
 export interface IEnvironment {
 	isExtensionDevelopmentDebug: boolean;
 	appName: string;
-	embedderIdentifier: string;
+	appHost: string;
 	appRoot?: URI;
 	appLanguage: string;
 	appUriScheme: string;

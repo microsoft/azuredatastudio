@@ -1731,8 +1731,8 @@ export class TerminalLink implements vscode.TerminalLink {
 }
 
 export enum TerminalLocation {
-	Panel = 0,
-	Editor = 1,
+	Panel = 1,
+	Editor = 2,
 }
 
 export class TerminalProfile implements vscode.TerminalProfile {

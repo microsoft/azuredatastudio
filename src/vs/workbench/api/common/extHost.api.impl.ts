@@ -315,7 +315,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 			get language() { return initData.environment.appLanguage; },
 			get appName() { return initData.environment.appName; },
 			get appRoot() { return initData.environment.appRoot?.fsPath ?? ''; },
-			get embedderIdentifier() { return initData.environment.embedderIdentifier; },
+			get appHost() { return initData.environment.appHost; },
 			get uriScheme() { return initData.environment.appUriScheme; },
 			get clipboard(): vscode.Clipboard { return extHostClipboard.value; },
 			get shell() {

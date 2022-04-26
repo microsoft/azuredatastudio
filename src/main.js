@@ -407,7 +407,7 @@ function configureCrashReporter() {
 	if (process.env['VSCODE_DEV']) {
 		crashReporter.start({
 			companyName: companyName,
-			productName: `${productName} Dev`,
+			productName: process.env['VSCODE_DEV'] ? `${productName} Dev` : productName,
 			submitURL,
 			uploadToServer: false,
 			compress: true
