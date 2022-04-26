@@ -10,7 +10,7 @@ import * as constants from './constants';
 import * as path from 'path';
 import * as glob from 'fast-glob';
 import * as dataworkspace from 'dataworkspace';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import * as fse from 'fs-extra';
 import * as which from 'which';
@@ -302,16 +302,6 @@ export async function getSchemaCompareService(): Promise<ISchemaCompareService> 
 	}
 }
 
-export async function getAzureFunctionService(): Promise<vscodeMssql.IAzureFunctionsService> {
-	if (getAzdataApi()) {
-		// this isn't supported in ADS
-		throw new Error('Azure Functions service is not supported in Azure Data Studio');
-	} else {
-		const api = await getVscodeMssqlApi();
-		return api.azureFunctions;
-	}
-}
-
 export async function getVscodeMssqlApi(): Promise<vscodeMssql.IExtension> {
 	const ext = vscode.extensions.getExtension(vscodeMssql.extension.name) as vscode.Extension<vscodeMssql.IExtension>;
 	return ext.activate();
@@ -475,23 +465,6 @@ export async function detectCommandInstallation(command: string): Promise<boolea
 	return false;
 }
 
-/**
- * Gets all the projects of the specified extension in the folder
- * @param folder
- * @param projectExtension project extension to filter on
- * @returns array of project uris
- */
-export async function getAllProjectsInFolder(folder: vscode.Uri, projectExtension: string): Promise<vscode.Uri[]> {
-	// path needs to use forward slashes for glob to work
-	const escapedPath = glob.escapePath(folder.fsPath.replace(/\\/g, '/'));
-
-	// filter for projects with the specified project extension
-	const projFilter = path.posix.join(escapedPath, '**', `*${projectExtension}`);
-
-	// glob will return an array of file paths with forward slashes, so they need to be converted back if on windows
-	return (await glob(projFilter)).map(p => vscode.Uri.file(path.resolve(p)));
-}
-
 export function validateSqlServerPortNumber(port: string | undefined): boolean {
 	if (!port) {
 		return false;
@@ -625,4 +598,34 @@ export function getFoldersAlongPath(startFolder: string, endFolder: string): str
 	}
 
 	return folders;
+}
+
+/**
+ * Determines whether provided value is a well-known database source and therefore is allowed to be sent in telemetry.
+ *
+ * @param value Value to check if it is a well-known database source
+ * @returns Normalized database source value if it is well-known, otherwise returns undefined
+ */
+export function getWellKnownDatabaseSource(value: string): string | undefined {
+	const upperCaseValue = value.toUpperCase();
+	return constants.WellKnownDatabaseSources
+		.find(wellKnownSource => wellKnownSource.toUpperCase() === upperCaseValue);
+}
+
+/**
+ * Filters an array of specified database project sources to only those that are well-known.
+ *
+ * @param databaseSourceValues Array of database source values to filter
+ * @returns Array of well-known database sources
+ */
+export function getWellKnownDatabaseSources(databaseSourceValues: string[]): string[] {
+	const databaseSourceSet = new Set<string>();
+	for (let databaseSourceValue of databaseSourceValues) {
+		const wellKnownDatabaseSourceValue = getWellKnownDatabaseSource(databaseSourceValue);
+		if (wellKnownDatabaseSourceValue) {
+			databaseSourceSet.add(wellKnownDatabaseSourceValue);
+		}
+	}
+
+	return Array.from(databaseSourceSet);
 }

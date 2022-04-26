@@ -20,9 +20,10 @@ declare module 'sqldbproj' {
 		 * @param location the parent directory
 		 * @param projectTypeId the ID of the project/template
 		 * @param targetPlatform the target platform for the project. Default is SQL Server 2019
+		 * @param sdkStyle whether the project is sdk-style. Default is false
 		 * @returns Uri of the newly created project file
 		 */
-		createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform: SqlTargetPlatform): Promise<vscode.Uri>;
+		createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform: SqlTargetPlatform, sdkStyle?: boolean): Promise<vscode.Uri>;
 
 		/**
 		 * Opens and loads a .sqlproj file
@@ -35,7 +36,40 @@ declare module 'sqldbproj' {
 		 * @returns uri of the created the project or undefined if no project was created
 		 */
 		openSqlNewProjectDialog(allowedTargetPlatforms?: SqlTargetPlatform[]): Promise<vscode.Uri | undefined>;
+
+		/**
+		 * Gets the list of .sql scripts contained in a project
+		 * @param projectFilePath
+		 */
+		getProjectScriptFiles(projectFilePath: string): Promise<string[]>;
+
+		/**
+		 * Gets the Database Schema Provider version for a SQL project
+		 */
+		getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string>;
 	}
+
+	/**
+	 * Options to use when generating a project from an OpenAPI spec
+	 */
+	export type GenerateProjectFromOpenApiSpecOptions = {
+		/**
+		 * The OpenAPI spec file to use instead of having the user select it
+		 */
+		openApiSpecFile?: vscode.Uri,
+		/**
+		 * The default name to give the generated project in the name input prompt
+		 */
+		defaultProjectName?: string,
+		/**
+		 * The default location to show when the user is selecting the output location of the project
+		 */
+		defaultOutputLocation?: vscode.Uri,
+		/**
+		 * If true then the project will not be opened in the workspace after being created
+		 */
+		doNotOpenInWorkspace?: boolean
+	};
 
 	export interface ISqlProject {
 		/**
@@ -72,6 +106,22 @@ declare module 'sqldbproj' {
 		 * @param defaultValue
 		 */
 		addSqlCmdVariable(name: string, defaultValue: string): Promise<void>;
+
+		/**
+		 * Appends given database source to the DatabaseSource property element.
+		 * If property element does not exist, then new one will be created.
+		 *
+		 * @param databaseSource Source of the database to add
+		 */
+		 addDatabaseSource(databaseSource: string): Promise<void>;
+
+		 /**
+		  * Removes database source from the DatabaseSource property element.
+		  * If no sources remain, then property element will be removed from the project file.
+		  *
+		  * @param databaseSource Source of the database to remove
+		  */
+		 removeDatabaseSource(databaseSource: string): Promise<void>;
 
 		/**
 		 * Excludes entry from project by removing it from the project file
@@ -140,14 +190,13 @@ declare module 'sqldbproj' {
 	 * Target platforms for a sql project
 	 */
 	export const enum SqlTargetPlatform {
-		sqlServer2005 = 'SQL Server 2005',
-		sqlServer2008 = 'SQL Server 2008',
 		sqlServer2012 = 'SQL Server 2012',
 		sqlServer2014 = 'SQL Server 2014',
 		sqlServer2016 = 'SQL Server 2016',
 		sqlServer2017 = 'SQL Server 2017',
 		sqlServer2019 = 'SQL Server 2019',
-		sqlAzure = 'Microsoft Azure SQL Database',
-		sqlDW = 'Microsoft Azure SQL Data Warehouse'
+		sqlAzure = 'Azure SQL Database',
+		sqlDW = 'Azure Synapse Dedicated SQL Pool',
+		sqlEdge = 'Azure SQL Edge'
 	}
 }

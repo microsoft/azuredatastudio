@@ -281,12 +281,12 @@
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.responseError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Token retrieval failed with an error. Open developer tools to view the error]]></Val>
+          <Val><![CDATA[Token retrieval failed with an error. [Open developer tools]5D;({0}) for more details.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Il recupero del token non è riuscito con un errore. Aprire gli strumenti di sviluppo per visualizzare l'errore]]></Val>
+            <Val><![CDATA[Il recupero del token non è riuscito generando un errore. [Aprire gli strumenti di sviluppo]5D; ({0}) per ulteriori dettagli.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Token retrival failed with an error. Open developer tools to view the error]]></Val>
+            <Val><![CDATA[Token retrieval failed with an error. Open developer tools to view the error]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1614,6 +1614,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/package.config.loggingLevel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[[Optional]5D; The verbosity of logging for the Azure Accounts extension.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[Optional]5D; Livello di dettaglio della registrazione per l'estensione Account di Azure.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/package.config.noSystemKeychain" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.]]></Val>
@@ -1625,10 +1634,13 @@
       </Item>
       <Item ItemId=";extensions/azurecore/package.config.piiLogging" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Should Personally Identifiable Information (PII) be logged in the console view locally]]></Val>
+          <Val><![CDATA[Should Personally Identifiable Information (PII) be logged in the Azure Accounts output channel and the output channel log file.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Indicare se le informazioni personali devono essere registrate nella visualizzazione della console in locale]]></Val>
+            <Val><![CDATA[Le informazioni personali (PII) devono essere registrate nel canale di output degli account di Azure e nel file di log del canale di output.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Should Personally Identifiable Information (PII) be logged in the console view locally]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

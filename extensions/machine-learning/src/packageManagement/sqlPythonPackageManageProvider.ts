@@ -57,8 +57,9 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 
 	/**
 	 * Execute a script to install or uninstall a python package inside current SQL Server connection
-	 * @param packageDetails Packages to install or uninstall
 	 * @param scriptMode can be 'install' or 'uninstall'
+	 * @param packageDetails Packages to install or uninstall
+	 * @param databaseName
 	 */
 	protected async executeScripts(scriptMode: ScriptMode, packageDetails: nbExtensionApis.IPackageDetails, databaseName: string): Promise<void> {
 		let connection = await this.getCurrentConnection();

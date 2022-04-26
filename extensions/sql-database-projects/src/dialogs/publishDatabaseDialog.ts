@@ -11,10 +11,10 @@ import * as utils from '../common/utils';
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
 import { IDeploySettings } from '../models/IDeploySettings';
-import { DeploymentOptions } from '../../../mssql/src/mssql';
+import { DeploymentOptions } from 'mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
-import { getAgreementDisplayText, getConnectionName, getDockerBaseImages } from './utils';
+import { getAgreementDisplayText, getConnectionName, getDockerBaseImages, getPublishServerName } from './utils';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IDeployProfile } from '../models/deploy/deployProfile';
 import { Deferred } from '../common/promise';
@@ -237,7 +237,7 @@ export class PublishDatabaseDialog {
 			await this.publish!(this.project, settings);
 		} else {
 			const dockerBaseImage = this.getBaseDockerImageName();
-			const baseImages = getDockerBaseImages();
+			const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
 			const imageInfo = baseImages.find(x => x.name === dockerBaseImage);
 			const settings: IDeployProfile = {
 				localDbSetting: {
@@ -320,7 +320,7 @@ export class PublishDatabaseDialog {
 	}
 
 	public getBaseDockerImageName(): string {
-		return <string>this.baseDockerImageDropDown?.value ?? '';
+		return (<azdataType.CategoryValue>this.baseDockerImageDropDown?.value)?.name ?? '';
 	}
 
 	public getDefaultDatabaseName(): string {
@@ -372,6 +372,7 @@ export class PublishDatabaseDialog {
 	}
 
 	private createPublishTypeRadioButtons(view: azdataType.ModelView): azdataType.Component {
+		const name = getPublishServerName(this.project.getProjectTargetVersion());
 		const publishToLabel = view.modelBuilder.text().withProps({
 			value: constants.publishTo,
 			width: cssStyles.publishDialogLabelWidth
@@ -379,7 +380,7 @@ export class PublishDatabaseDialog {
 		this.existingServerRadioButton = view.modelBuilder.radioButton()
 			.withProps({
 				name: 'publishType',
-				label: constants.publishToExistingServer
+				label: constants.publishToExistingServer(name)
 			}).component();
 
 		this.existingServerRadioButton.checked = true;
@@ -390,7 +391,7 @@ export class PublishDatabaseDialog {
 		this.dockerServerRadioButton = view.modelBuilder.radioButton()
 			.withProps({
 				name: 'publishType',
-				label: constants.publishToDockerContainer
+				label: constants.publishToDockerContainer(name)
 			}).component();
 
 		this.dockerServerRadioButton.onDidChangeCheckedState((checked) => {
@@ -544,10 +545,11 @@ export class PublishDatabaseDialog {
 	}
 
 	private createLocalDbInfoRow(view: azdataType.ModelView): azdataType.FlexContainer {
+		const name = getPublishServerName(this.project.getProjectTargetVersion());
 		this.serverPortTextBox = view.modelBuilder.inputBox().withProps({
 			value: constants.defaultPortNumber,
-			ariaLabel: constants.serverPortNumber,
-			placeHolder: constants.serverPortNumber,
+			ariaLabel: constants.serverPortNumber(name),
+			placeHolder: constants.serverPortNumber(name),
 			width: cssStyles.publishDialogTextboxWidth,
 			enabled: true,
 			inputType: 'number',
@@ -557,26 +559,26 @@ export class PublishDatabaseDialog {
 		this.serverPortTextBox.onTextChanged(() => {
 			this.tryEnableGenerateScriptAndOkButtons();
 		});
-		const serverPortRow = this.createFormRow(view, constants.serverPortNumber, this.serverPortTextBox);
+		const serverPortRow = this.createFormRow(view, constants.serverPortNumber(name), this.serverPortTextBox);
 		this.serverAdminPasswordTextBox = view.modelBuilder.inputBox().withProps({
 			value: '',
-			ariaLabel: constants.serverPassword,
-			placeHolder: constants.serverPassword,
+			ariaLabel: constants.serverPassword(name),
+			placeHolder: constants.serverPassword(name),
 			width: cssStyles.publishDialogTextboxWidth,
 			enabled: true,
 			inputType: 'password',
-			validationErrorMessage: constants.invalidSQLPasswordMessage
+			validationErrorMessage: constants.invalidSQLPasswordMessage(name)
 		}).withValidation(component => !utils.isEmptyString(component.value) && utils.isValidSQLPassword(component.value || '')).component();
 
-		const serverPasswordRow = this.createFormRow(view, constants.serverPassword, this.serverAdminPasswordTextBox);
+		const serverPasswordRow = this.createFormRow(view, constants.serverPassword(name), this.serverAdminPasswordTextBox);
 		this.serverConfigAdminPasswordTextBox = view.modelBuilder.inputBox().withProps({
 			value: '',
-			ariaLabel: constants.confirmServerPassword,
-			placeHolder: constants.confirmServerPassword,
+			ariaLabel: constants.confirmServerPassword(name),
+			placeHolder: constants.confirmServerPassword(name),
 			width: cssStyles.publishDialogTextboxWidth,
 			enabled: true,
 			inputType: 'password',
-			validationErrorMessage: constants.passwordNotMatch
+			validationErrorMessage: constants.passwordNotMatch(name)
 		}).withValidation(component => component.value === this.serverAdminPasswordTextBox?.value).component();
 		this.serverAdminPasswordTextBox.onTextChanged(() => {
 			this.tryEnableGenerateScriptAndOkButtons();
@@ -587,18 +589,19 @@ export class PublishDatabaseDialog {
 		this.serverConfigAdminPasswordTextBox.onTextChanged(() => {
 			this.tryEnableGenerateScriptAndOkButtons();
 		});
-		const serverConfirmPasswordRow = this.createFormRow(view, constants.confirmServerPassword, this.serverConfigAdminPasswordTextBox);
+		const serverConfirmPasswordRow = this.createFormRow(view, constants.confirmServerPassword(name), this.serverConfigAdminPasswordTextBox);
 
-		const baseImages = getDockerBaseImages();
+		const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
+		const baseImagesValues: azdataType.CategoryValue[] = baseImages.map(x => { return { name: x.name, displayName: x.displayName }; });
 		this.baseDockerImageDropDown = view.modelBuilder.dropDown().withProps({
-			values: baseImages.map(x => x.name),
-			ariaLabel: constants.baseDockerImage,
+			values: baseImagesValues,
+			ariaLabel: constants.baseDockerImage(name),
 			width: cssStyles.publishDialogTextboxWidth,
 			enabled: true
 		}).component();
 
 		const agreementInfo = baseImages[0].agreementInfo;
-		const dropDownRow = this.createFormRow(view, constants.baseDockerImage, this.baseDockerImageDropDown);
+		const dropDownRow = this.createFormRow(view, constants.baseDockerImage(name), this.baseDockerImageDropDown);
 		this.eulaCheckBox = view.modelBuilder.checkBox().withProps({
 			ariaLabel: getAgreementDisplayText(agreementInfo),
 			required: true
@@ -615,7 +618,7 @@ export class PublishDatabaseDialog {
 			if (this.eulaCheckBox) {
 				this.eulaCheckBox.checked = false;
 			}
-			const baseImage = getDockerBaseImages().find(x => x.name === this.baseDockerImageDropDown?.value);
+			const baseImage = getDockerBaseImages(this.project.getProjectTargetVersion()).find(x => x.name === (<azdataType.CategoryValue>this.baseDockerImageDropDown?.value).name);
 			if (baseImage?.agreementInfo.link) {
 				const text = view.modelBuilder.text().withProps({
 					value: constants.eulaAgreementTemplate,

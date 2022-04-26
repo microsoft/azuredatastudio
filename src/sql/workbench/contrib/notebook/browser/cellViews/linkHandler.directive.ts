@@ -11,6 +11,7 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { relative, resolve } from 'vs/base/common/path';
 import { IFileService } from 'vs/platform/files/common/files';
 import { isWeb } from 'vs/base/common/platform';
+import { FileAccess } from 'vs/base/common/network';
 
 const knownSchemes = new Set(['http', 'https', 'file', 'mailto', 'data', 'azuredatastudio', 'azuredatastudio-insiders', 'vscode', 'vscode-insiders', 'vscode-resource', 'onenote']);
 @Directive({
@@ -71,27 +72,33 @@ export class LinkHandlerDirective {
 				return;
 			}
 		}
-		if (uri && this.openerService && this.isSupportedLink(uri)) {
-			if (uri.fragment && uri.fragment.length > 0 && uri.fsPath === this.workbenchFilePath.fsPath) {
-				this.notebookService.navigateTo(this.notebookUri, uri.fragment);
-			} else {
-				if (uri.scheme === 'file') {
-					let exists = await this.fileService.exists(uri);
-					if (!exists) {
-						let relPath = relative(this.workbenchFilePath.fsPath, uri.fsPath);
-						let path = resolve(this.notebookUri.fsPath, relPath);
-						try {
-							uri = URI.file(path);
-						} catch (error) {
-							onUnexpectedError(error);
+		if (uri && this.openerService) {
+			// Store fragment before converting, since asFileUri removes the uri fragment
+			const fragment = uri.fragment;
+			// Convert vscode-file protocol URIs to file since that's what Notebooks expect to work with
+			uri = FileAccess.asFileUri(uri);
+			if (this.isSupportedLink(uri)) {
+				if (fragment && fragment.length > 0 && uri.fsPath === this.workbenchFilePath.fsPath) {
+					this.notebookService.navigateTo(this.notebookUri, fragment);
+				} else {
+					if (uri.scheme === 'file') {
+						let exists = await this.fileService.exists(uri);
+						if (!exists) {
+							let relPath = relative(this.workbenchFilePath.fsPath, uri.fsPath);
+							let path = resolve(this.notebookUri.fsPath, relPath);
+							try {
+								uri = URI.file(path);
+							} catch (error) {
+								onUnexpectedError(error);
+							}
 						}
 					}
-				}
-				if (this.forceOpenExternal(uri)) {
-					this.openerService.open(uri, { openExternal: true }).catch(onUnexpectedError);
-				}
-				else {
-					this.openerService.open(uri, { allowCommands: true }).catch(onUnexpectedError);
+					if (this.forceOpenExternal(uri)) {
+						this.openerService.open(uri, { openExternal: true }).catch(onUnexpectedError);
+					}
+					else {
+						this.openerService.open(uri, { allowCommands: true }).catch(onUnexpectedError);
+					}
 				}
 			}
 		}

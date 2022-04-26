@@ -38,6 +38,7 @@ const vscodeEntryPoints = _.flatten([
 	buildfile.base,
 	buildfile.workerExtensionHost,
 	buildfile.workerNotebook,
+	buildfile.workerLanguageDetection,
 	buildfile.workbenchDesktop,
 	buildfile.code
 ]);
@@ -64,8 +65,6 @@ const vscodeResources = [
 	'out-build/vs/workbench/contrib/debug/**/*.json',
 	'out-build/vs/workbench/contrib/externalTerminal/**/*.scpt',
 	'out-build/vs/workbench/contrib/webview/browser/pre/*.js',
-	'out-build/vs/workbench/contrib/webview/electron-browser/pre/*.js',
-	'out-build/vs/workbench/services/extensions/worker/extensionHostWorkerMain.js',
 	'out-build/vs/**/markdown.css',
 	'out-build/vs/workbench/contrib/tasks/**/*.json',
 	'out-build/vs/platform/files/**/*.exe',
@@ -116,11 +115,13 @@ const extensionsFilter = filter([
 	'**/agent.xlf',
 	'**/arc.xlf',
 	'**/asde-deployment.xlf',
+	'**/azcli.xlf',
 	'**/azurecore.xlf',
 	'**/azurehybridtoolkit.xlf',
 	'**/big-data-cluster.xlf',
 	'**/cms.xlf',
 	'**/dacpac.xlf',
+	'**/git.xlf',
 	'**/data-workspace.xlf',
 	'**/import.xlf',
 	'**/kusto.xlf',
@@ -134,6 +135,7 @@ const extensionsFilter = filter([
 	'**/schema-compare.xlf',
 	'**/server-report.xlf',
 	'**/sql-assessment.xlf',
+	'**/sql-bindings.xlf',
 	'**/sql-database-projects.xlf',
 	'**/sql-migration.xlf',
 	'**/xml-language-features.xlf'
@@ -288,7 +290,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 				'**/node-pty/build/Release/*',
 				'**/node-pty/lib/worker/conoutSocketWorker.js',
 				'**/node-pty/lib/shared/conout.js',
-				'**/*.wasm'
+				'**/*.wasm',
 			], 'node_modules.asar'));
 
 		let all = es.merge(

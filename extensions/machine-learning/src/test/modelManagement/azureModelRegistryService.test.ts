@@ -11,7 +11,7 @@ import * as should from 'should';
 import { AzureModelRegistryService } from '../../modelManagement/azureModelRegistryService';
 import { Config } from '../../configurations/config';
 import { HttpClient } from '../../common/httpClient';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 
 import * as utils from '../utils';
 import { Workspace, WorkspacesListByResourceGroupResponse } from '@azure/arm-machinelearningservices/esm/models';

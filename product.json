@@ -26,6 +26,7 @@
 	"telemetryOptOutUrl": "https://github.com/Microsoft/azuredatastudio/wiki/How-to-Disable-Telemetry-Reporting",
 	"urlProtocol": "azuredatastudio-oss",
 	"enableTelemetry": true,
+	"npsSurveyUrl": "https://aka.ms/azuredatastudio-nps",
 	"aiConfig": {
 		"asimovKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e"
 	},
@@ -36,7 +37,7 @@
 	"gettingStartedUrl": "https://go.microsoft.com/fwlink/?linkid=862039",
 	"releaseNotesUrl": "https://go.microsoft.com/fwlink/?linkid=875578",
 	"documentationUrl": "https://go.microsoft.com/fwlink/?linkid=862277",
-	"vscodeVersion": "1.58.0",
+	"vscodeVersion": "1.59.0",
 	"commit": "9ca6200018fc206d67a47229f991901a8a453781",
 	"date": "2017-12-15T12:00:00.000Z",
 	"recommendedExtensions": [
@@ -60,6 +61,7 @@
 		"Microsoft.sql-database-projects",
 		"Microsoft.sql-migration",
 		"Microsoft.machine-learning",
+		"ms-dotnettools.dotnet-interactive-vscode",
 		"Redgate.sql-prompt",
 		"Redgate.sql-search",
 		"SentryOne.plan-explorer"
@@ -75,7 +77,9 @@
 		"ms-vscode.remotehub",
 		"ms-vscode.remotehub-insiders",
 		"GitHub.remotehub",
-		"GitHub.remotehub-insiders"
+		"GitHub.remotehub-insiders",
+		"ms-dotnettools.dotnet-interactive-vscode",
+		"ms-toolsai.jupyter"
 	],
 	"extensionsGallery": {
 		"version": "0.0.76",
@@ -87,6 +91,5 @@
 			"version": "0.5.0",
 			"repo": "https://github.com/microsoft/azuredatastudio"
 		}
-	],
-	"webBuiltInExtensions": []
+	]
 }

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
-import { IEditorDescriptor } from 'vs/workbench/browser/editor';
+import { IEditorPaneDescriptor } from 'vs/workbench/browser/editor';
 import { URI } from 'vs/base/common/uri';
 
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
@@ -64,7 +64,7 @@ suite('SQL QueryEditor Tests', () => {
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((classDef, editor, action) => {
 			if (classDef.ID) {
 				if (classDef.ID === 'listDatabaseQueryActionItem') {
-					return new ListDatabasesActionItem(editor, undefined, connectionManagementService.object, undefined, undefined);
+					return new ListDatabasesActionItem(editor, action, undefined, connectionManagementService.object, undefined, undefined);
 				}
 			}
 			// Default
@@ -72,7 +72,7 @@ suite('SQL QueryEditor Tests', () => {
 		});
 
 		// Mock EditorDescriptorService to give us a mock editor description
-		let descriptor: IEditorDescriptor = {
+		let descriptor: IEditorPaneDescriptor = {
 			typeId: 'id',
 			name: 'name',
 			describes: function (obj: any): boolean { return true; },
@@ -292,7 +292,7 @@ suite('SQL QueryEditor Tests', () => {
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 				.returns((definition, editor, action, selectBox) => {
 					if (definition.ID === 'listDatabaseQueryActionItem') {
-						let item = new ListDatabasesActionItem(editor, undefined, connectionManagementService.object, undefined, undefined);
+						let item = new ListDatabasesActionItem(editor, action, undefined, connectionManagementService.object, undefined, undefined);
 						return item;
 					}
 					// Default

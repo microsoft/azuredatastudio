@@ -39,8 +39,8 @@
         <target state="translated">L'utilisateur n'a pas d'identificateur unique dans AAD</target>
       </trans-unit>
       <trans-unit id="azure.responseError">
-        <source xml:lang="en">Token retrieval failed with an error. Open developer tools to view the error</source>
-        <target state="translated">La récupération du jeton a échoué avec une erreur. Ouvrir les outils de développement pour voir l'erreur</target>
+        <source xml:lang="en">Token retrieval failed with an error. [Open developer tools]({0}) for more details.</source>
+        <target state="translated">La récupération du jeton a échoué avec une erreur. [Ouvrir les outils de développement]({0}) pour plus de détails.</target>
       </trans-unit>
       <trans-unit id="azure.tenantNotFound">
         <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
@@ -795,13 +795,17 @@
         <source xml:lang="en">Should US National Azure cloud integration be enabled</source>
         <target state="translated">Spécifie si l'intégration du cloud Azure US National doit être activée</target>
       </trans-unit>
+      <trans-unit id="config.loggingLevel">
+        <source xml:lang="en">[Optional] The verbosity of logging for the Azure Accounts extension.</source>
+        <target state="translated">[Optional] La verbosité de la journalisation de l’extension Comptes Azure</target>
+      </trans-unit>
       <trans-unit id="config.noSystemKeychain">
         <source xml:lang="en">Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.</source>
         <target state="translated">Désactivez l'intégration du trousseau système. Les informations d'identification sont stockées dans un fichier plat dans le dossier de base de l'utilisateur.</target>
       </trans-unit>
       <trans-unit id="config.piiLogging">
-        <source xml:lang="en">Should Personally Identifiable Information (PII) be logged in the console view locally</source>
-        <target state="translated">Les informations d'identification personnelle (PII) doivent-elles être journalisées localement dans la vue de console</target>
+        <source xml:lang="en">Should Personally Identifiable Information (PII) be logged in the Azure Accounts output channel and the output channel log file.</source>
+        <target state="translated">Si les informations d’identification personnelles (PII) doivent être journalisées dans le canal de sortie comptes Azure et le fichier journal du canal de sortie.</target>
       </trans-unit>
     </body>
   </file>

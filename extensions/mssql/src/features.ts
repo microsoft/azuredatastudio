@@ -1108,19 +1108,18 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		const getTableDesignerInfo = (tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> => {
+		const initializeTableDesigner = (tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> => {
 			try {
-				return client.sendRequest(contracts.GetTableDesignerInfoRequest.type, tableInfo);
+				return client.sendRequest(contracts.InitializeTableDesignerRequest.type, tableInfo);
 			}
 			catch (e) {
-				client.logFailedRequest(contracts.GetTableDesignerInfoRequest.type, e);
+				client.logFailedRequest(contracts.InitializeTableDesignerRequest.type, e);
 				return Promise.reject(e);
 			}
 		};
-		const processTableEdit = (tableInfo: azdata.designers.TableInfo, viewModel: azdata.designers.DesignerViewModel, tableChangeInfo: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> => {
+		const processTableEdit = (tableInfo: azdata.designers.TableInfo, tableChangeInfo: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult<azdata.designers.TableDesignerView>> => {
 			let params: contracts.TableDesignerEditRequestParams = {
 				tableInfo: tableInfo,
-				viewModel: viewModel,
 				tableChangeInfo: tableChangeInfo
 			};
 			try {
@@ -1132,16 +1131,32 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 			}
 		};
 
-		const saveTable = (tableInfo: azdata.designers.TableInfo, viewModel: azdata.designers.DesignerViewModel): Thenable<void> => {
-			let params: contracts.SaveTableDesignerChangesRequestParams = {
-				tableInfo: tableInfo,
-				viewModel: viewModel
-			};
+		const publishChanges = (tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.PublishChangesResult> => {
 			try {
-				return client.sendRequest(contracts.SaveTableDesignerChangesRequest.type, params);
+				return client.sendRequest(contracts.PublishTableDesignerChangesRequest.type, tableInfo);
 			}
 			catch (e) {
-				client.logFailedRequest(contracts.SaveTableDesignerChangesRequest.type, e);
+				client.logFailedRequest(contracts.PublishTableDesignerChangesRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+
+		const generateScript = (tableInfo: azdata.designers.TableInfo): Thenable<string> => {
+			try {
+				return client.sendRequest(contracts.TableDesignerGenerateScriptRequest.type, tableInfo);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.TableDesignerGenerateScriptRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+
+		const generatePreviewReport = (tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.GeneratePreviewReportResult> => {
+			try {
+				return client.sendRequest(contracts.TableDesignerGenerateChangePreviewReportRequest.type, tableInfo);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.TableDesignerGenerateChangePreviewReportRequest.type, e);
 				return Promise.reject(e);
 			}
 		};
@@ -1158,11 +1173,73 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 
 		return azdata.dataprotocol.registerTableDesignerProvider({
 			providerId: client.providerId,
-			getTableDesignerInfo,
+			initializeTableDesigner,
 			processTableEdit,
-			saveTable,
+			publishChanges,
+			generateScript,
+			generatePreviewReport,
 			disposeTableDesigner
 		});
 	}
 }
 
+
+/**
+ * Execution Plan Service Feature
+ * TODO: Move this feature to data protocol client repo once stablized
+ */
+export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		contracts.GetExecutionPlanRequest.type,
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, ExecutionPlanServiceFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		const getExecutionPlan = (planFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.GetExecutionPlanResult> => {
+			const params: contracts.GetExecutionPlanParams = { graphInfo: planFile };
+			return client.sendRequest(contracts.GetExecutionPlanRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.GetExecutionPlanRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		const compareExecutionPlanGraph = (firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.ExecutionPlanComparisonResult> => {
+			const params: contracts.ExecutionPlanComparisonParams = {
+				firstExecutionPlanGraphInfo: firstPlanFile,
+				secondExecutionPlanGraphInfo: secondPlanFile
+			};
+
+			return client.sendRequest(contracts.ExecutionPlanComparisonRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.ExecutionPlanComparisonRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		return azdata.dataprotocol.registerExecutionPlanProvider({
+			providerId: client.providerId,
+			getExecutionPlan,
+			compareExecutionPlanGraph
+		});
+	}
+}

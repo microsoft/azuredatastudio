@@ -409,6 +409,7 @@ export class TreeView extends HeightMap {
 	private treeStyler: _.ITreeStyler;
 	private rowsContainer: HTMLElement;
 	private scrollableElement: ScrollableElement;
+	// @ts-expect-error {{SQL CARBON EDIT}} This always errored - ignoring for now unless we find it impacting something
 	private msGesture: MSGesture | undefined;
 	private lastPointerType: string = '';
 
@@ -601,6 +602,7 @@ export class TreeView extends HeightMap {
 
 	private setupMSGesture(): void {
 		if ((<any>window).MSGesture) {
+			// @ts-expect-error {{SQL CARBON EDIT}} This always errored - ignoring for now unless we find it impacting something
 			this.msGesture = new MSGesture();
 			setTimeout(() => this.msGesture!.target = this.wrapper, 100); // TODO@joh, TODO@IETeam
 		}

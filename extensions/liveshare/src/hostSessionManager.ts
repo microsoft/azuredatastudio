@@ -35,13 +35,11 @@ export class HostSessionManager {
 			const queryProvider = new QueryProvider(true);
 			queryProvider.initialize(true, sharedService);
 
-			/* tslint:disable:no-unused-expression */
 			new StatusProvider(
 				isHost,
 				vslsApi,
 				connectionProvider,
 				sharedService);
-			/* tslint:enable:no-unused-expression */
 		});
 	}
 }

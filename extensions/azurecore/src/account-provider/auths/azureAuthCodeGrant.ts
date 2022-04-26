@@ -69,9 +69,6 @@ export class AzureAuthCodeGrant extends AzureAuth {
 	 *
 	 * @param tenant
 	 * @param resource
-	 * @param authCode
-	 * @param redirectUri
-	 * @param codeVerifier
 	 */
 	private async getTokenWithAuthorizationCode(tenant: Tenant, resource: Resource, { authCode, redirectUri, codeVerifier }: AuthCodeResponse): Promise<OAuthTokenResponse | undefined> {
 		const postData: AuthorizationCodePostData = {

@@ -36,12 +36,13 @@ suite('Notebook Input', function (): void {
 	const mockNotebookService = TypeMoq.Mock.ofType<INotebookService>(NotebookServiceStub);
 	mockNotebookService.setup(s => s.getProvidersForFileType(TypeMoq.It.isAny())).returns(() => [testProvider]);
 	mockNotebookService.setup(s => s.getStandardKernelsForProvider(TypeMoq.It.isAny())).returns(() => {
-		return [{
+		return Promise.resolve([{
 			name: 'TestName',
 			displayName: 'TestDisplayName',
 			connectionProviderIds: ['TestId'],
-			notebookProvider: testProvider
-		}];
+			notebookProvider: testProvider,
+			supportedLanguages: ['python']
+		}]);
 	});
 	let testManager: ISerializationManager = {
 		providerId: testProvider,
@@ -84,7 +85,7 @@ suite('Notebook Input', function (): void {
 		// Input title
 		assert.strictEqual(untitledNotebookInput.getTitle(), testTitle);
 
-		let noTitleInput = instantiationService.createInstance(UntitledNotebookInput, undefined, untitledUri, undefined);
+		let noTitleInput = instantiationService.createInstance(UntitledNotebookInput, undefined, untitledUri, untitledTextInput);
 		assert.strictEqual(noTitleInput.getTitle(), basenameOrAuthority(untitledUri));
 
 		// Text Input
@@ -129,12 +130,14 @@ suite('Notebook Input', function (): void {
 			name: 'TestName1',
 			displayName: 'TestDisplayName1',
 			connectionProviderIds: ['TestId1'],
-			notebookProvider: 'TestProvider'
+			notebookProvider: 'TestProvider',
+			supportedLanguages: ['python']
 		}, {
 			name: 'TestName2',
 			displayName: 'TestDisplayName2',
 			connectionProviderIds: ['TestId2'],
-			notebookProvider: 'TestProvider'
+			notebookProvider: 'TestProvider',
+			supportedLanguages: ['python']
 		}];
 		untitledNotebookInput.standardKernels = testKernels;
 		assert.deepStrictEqual(untitledNotebookInput.standardKernels, testKernels);
@@ -173,8 +176,6 @@ suite('Notebook Input', function (): void {
 	});
 
 	test('Matches other input', async function (): Promise<void> {
-		assert.strictEqual(untitledNotebookInput.matches(undefined), false, 'Input should not match undefined.');
-
 		assert.ok(untitledNotebookInput.matches(untitledNotebookInput), 'Input should match itself.');
 
 		let otherTestUri = URI.from({ scheme: Schemas.untitled, path: 'OtherTestPath' });

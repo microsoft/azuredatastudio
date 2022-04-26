@@ -17,6 +17,13 @@ steps:
       mv azuredatastudio-darwin-unsigned.zip azuredatastudio-darwin.zip
     displayName: 'Rename the file'
 
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core sdk for signing'
+    inputs:
+      packageType: sdk
+      version: 2.1.x
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
     inputs:

@@ -158,7 +158,8 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 
 	/**
 	 * Load data in the component
-	 * @param workspaceResource Azure workspace
+	 * @param modelParameters
+	 * @param table
 	 */
 	public async loadInputs(modelParameters: ModelParameters | undefined, table: DatabaseTable): Promise<void> {
 		await this.onLoading();

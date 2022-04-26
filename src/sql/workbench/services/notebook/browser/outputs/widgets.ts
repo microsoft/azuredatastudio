@@ -319,6 +319,34 @@ export class RenderedText extends RenderedCommon {
 	}
 }
 
+export class ErrorText extends RenderedCommon {
+	/**
+	 * Construct a new error text widget.
+	 *
+	 * @param options - The options for initializing the widget.
+	 */
+	constructor(options: IRenderMime.IRendererOptions) {
+		super(options);
+		this.addClass('jp-ErrorText');
+	}
+
+	/**
+	 * Render a mime model.
+	 *
+	 * @param model - The mime model to render.
+	 *
+	 * @returns A promise which resolves when rendering is complete.
+	 */
+	render(model: IRenderMime.IMimeModel): Promise<void> {
+		let err = JSON.parse(String(model.data[this.mimeType]));
+		let text = err.name && err.message ? `${err.name}: ${err.message}` : err.name || err.message;
+		return renderers.renderText({
+			host: this.node,
+			source: text
+		});
+	}
+}
+
 /**
  * A widget for displaying deprecated JavaScript output.
  */

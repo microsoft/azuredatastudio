@@ -34,7 +34,7 @@
 		},
 		"package": {
 			"config.gitAuthentication": "控制是否要在 VS Code 中為 git 命令啟用自動 GitHub 驗證。",
-			"description": "GitHub",
+			"description": "適用於 VS Code 的 GitHub 功能",
 			"displayName": "GitHub",
 			"welcome.publishFolder": "您也可以直接將此資料夾發佈到 GitHub 存放庫。發佈之後，您就可以存取 git 與 GitHub 所支援的原始檔控制功能。\r\n[$(github) 發佈至 GitHub](command:github.publish)",
 			"welcome.publishWorkspaceFolder": "您也可以直接將工作區資料夾發佈到 GitHub 存放庫。發佈之後，您就可以存取 git 與 GitHub 所支援的原始檔控制功能。\r\n[$(github) 發佈至 GitHub](command:github.publish)"

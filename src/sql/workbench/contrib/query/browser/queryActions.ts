@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/queryActions';
 import * as nls from 'vs/nls';
-import { Action, IActionRunner } from 'vs/base/common/actions';
+import { Action, IAction, IActionRunner } from 'vs/base/common/actions';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -27,7 +27,6 @@ import {
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
-import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -46,6 +45,7 @@ import { IRange } from 'vs/editor/common/core/range';
 import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { gen3Version, sqlDataWarehouse } from 'sql/platform/connection/common/constants';
+import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -583,6 +583,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		private _editor: QueryEditor,
+		public action: IAction,
 		@IContextViewService contextViewProvider: IContextViewService,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@INotificationService private readonly notificationService: INotificationService,

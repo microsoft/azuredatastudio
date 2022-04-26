@@ -27,11 +27,13 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { ClientSession } from 'sql/workbench/services/notebook/browser/models/clientSession';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
-import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookRange, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
+import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -52,8 +54,8 @@ let expectedNotebookContent: nb.INotebookContents = {
 			display_name: 'SQL'
 		}
 	},
-	nbformat: 4,
-	nbformat_minor: 5
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let defaultUri = URI.file('/some/path.ipynb');
@@ -78,6 +80,9 @@ suite('Notebook Find Model', function (): void {
 	let configurationService: IConfigurationService;
 
 	setup(async () => {
+		let mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
+		executeManagers[0].providerId = SQL_NOTEBOOK_PROVIDER;
+		executeManagers[0].sessionManager = mockSessionManager.object;
 		sessionReady = new Deferred<void>();
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);
@@ -195,8 +200,8 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'SQL'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(markdownContent);
 
@@ -228,8 +233,8 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'Python'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(codeContent);
 		//initialize find
@@ -254,8 +259,8 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'Python'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(codeContent);
 		//initialize find
@@ -315,8 +320,8 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'Python'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(codeContent);
 		//initialize find
@@ -348,8 +353,8 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'Python'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(codeContent);
 		//initialize find
@@ -380,8 +385,8 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'SQL'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(markdownContent);
 
@@ -400,6 +405,166 @@ suite('Notebook Find Model', function (): void {
 
 		assert.strictEqual(notebookFindModel.findMatches.length, 2, 'Find failed on markdown edit');
 	});
+
+	test('Should find results in the output of the code cell when output is stream', async function (): Promise<void> {
+		let codeCellOutput: nb.IStreamResult = {
+			output_type: 'stream',
+			name: 'stdout',
+			text: 'trace\nhello world\n.local\n'
+		};
+		let cellContent: nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Markdown,
+				source: ['Hello World'],
+				metadata: { language: 'python' },
+				execution_count: 1
+			},
+			{
+				cell_type: 'code',
+				source: [
+					'print(\'trace\')\n',
+					'print(\'hello world\')\n',
+					'print(\'.local\')'
+				],
+				metadata: { language: 'python' },
+				outputs: [
+					codeCellOutput
+				],
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'mssql',
+					language: 'sql',
+					display_name: 'SQL'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: NBFORMAT_MINOR
+		};
+		await initNotebookModel(cellContent);
+
+		// Need to set rendered text content for 1st cell
+		setRenderedTextContent(0);
+
+		let notebookFindModel = new NotebookFindModel(model);
+
+		await notebookFindModel.find('trace', false, false, max_find_count);
+		assert.strictEqual(notebookFindModel.findMatches.length, 2, 'Find failed on code cell and its output');
+
+		await notebookFindModel.find('hello', false, false, max_find_count);
+		assert.strictEqual(notebookFindModel.findMatches.length, 3, 'Find failed on code cell output');
+	});
+
+	test('Should find results in the output of the code cell when output is executeResult', async function (): Promise<void> {
+		let codeCellOutput: nb.IExecuteResult = {
+			output_type: 'execute_result',
+			execution_count: null,
+			data: {
+				'application/vnd.dataresource+json': {
+					'schema': {
+						'fields': [
+							{
+								'name': 'ContactTypeID'
+							},
+							{
+								'name': 'Name'
+							},
+							{
+								'name': 'ModifiedDate'
+							}
+						]
+					},
+					'data': [
+						{
+							'0': '1',
+							'1': 'Accounting Manager',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '2',
+							'1': 'Assistant Sales Agent',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '3',
+							'1': 'Assistant Sales Representative',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '4',
+							'1': 'Coordinator Foreign Markets',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '5',
+							'1': 'Export Administrator',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '6',
+							'1': 'International Marketing Manager',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '7',
+							'1': 'Marketing Assistant',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '8',
+							'1': 'Marketing Manager',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '9',
+							'1': 'Marketing Representative',
+							'2': '2008-04-30 00:00:00.000'
+						},
+						{
+							'0': '10',
+							'1': 'Order Administrator',
+							'2': '2008-04-30 00:00:00.000'
+						}
+					]
+				}
+			}
+		};
+		let cellContent: nb.INotebookContents = {
+			cells: [
+				{
+					cell_type: 'code',
+					source: [
+						'Select top 10 * from Person.ContactType\n', ' -- Assistant'
+					],
+					metadata: { language: 'sql' },
+					outputs: [
+						codeCellOutput
+					],
+					execution_count: 1
+				}],
+			metadata: {
+				kernelspec: {
+					name: 'mssql',
+					language: 'sql',
+					display_name: 'SQL'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: NBFORMAT_MINOR
+		};
+		max_find_count = 4;
+		await initNotebookModel(cellContent);
+
+		// Need to set rendered text content for 1st cell
+		setRenderedTextContent(0);
+
+		let notebookFindModel = new NotebookFindModel(model);
+		await notebookFindModel.find('Assistant', false, false, max_find_count);
+
+		assert.strictEqual(notebookFindModel.getFindCount(), 4, 'Find failed on executed code cell output');
+	});
+
 
 	test('Find next/previous should return the correct find index', async function (): Promise<void> {
 		// Need to set rendered text content for 2nd cell

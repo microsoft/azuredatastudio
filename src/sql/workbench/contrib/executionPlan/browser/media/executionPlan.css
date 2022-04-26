@@ -1,0 +1,333 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* Styling for the execution plan tab container */
+.eps-container {
+	width: 100%;
+	height: 100%;
+	overflow: scroll;
+	flex-direction: column;
+	display: flex;
+	flex-wrap: nowrap;
+}
+
+/* Styling for the a execution plan container in the tab */
+.eps-container .execution-plan {
+	width: 100%;
+	min-height: 500px;
+	display: flex;
+	overflow: hidden;
+	flex: 1;
+}
+
+/* horizontal height resizing sash container that is below a execution plan */
+.eps-container .execution-plan-sash {
+	width: 100%;
+	height: 3px;
+	position: relative;
+}
+
+/*
+The actual sash element constructed by code. Important is used here because the width of the sash is fixed.
+However we always want it to be the width of the container it is resizing.
+*/
+.eps-container .execution-plan-sash > div {
+	width: 100% !important;
+}
+
+/* Container that contains execution plan header, description and graph diagram */
+.eps-container .execution-plan .plan {
+	flex: 1;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}
+
+/* Container that contains views made by the action-bar actions */
+.eps-container .execution-plan .plan .plan-action-container {
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	right: 10px;
+}
+
+/* views created by the action-bar actions */
+.eps-container .execution-plan .plan .plan-action-container .child {
+	flex: 0 0 25px;
+	margin-left: auto;
+}
+
+/* Search node action view */
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget {
+	display: flex;
+	flex-direction: row;
+	padding: 5px;
+	height: auto;
+	width: 470px;
+}
+
+/* input bar styling in search node action view */
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container{
+	margin-left: 5px;
+}
+
+/* styling for select element in search node action view */
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container > select{
+	height: 100%;
+}
+
+/* Custom zoom action view */
+.eps-container .execution-plan .plan .plan-action-container .custom-zoom-view {
+	display: flex;
+	flex-direction: row;
+	padding: 5px;
+	height: auto;
+	width: 240px;
+}
+
+/* execution plan header that contains the relative query cost, query statement and recommendations */
+.eps-container .execution-plan .plan .header {
+	padding: 5px;
+	font-weight: bolder;
+}
+
+/* each link in execution plan recommendations */
+.eps-container .execution-plan .plan .header .recommendations > a {
+	width: fit-content;
+	align-items: left;
+	text-align: left;
+}
+
+/* graph diagram in execution plan */
+.eps-container .execution-plan .plan .diagram {
+	width: 100%;
+	height: 100%;
+	overflow: scroll;
+	position: relative;
+}
+
+/* Properties view in execution plan */
+.eps-container .execution-plan .properties {
+	flex: 0 0 500px;
+	overflow: hidden;
+	width: 500px;
+	height: calc( 100% - 2px );
+	display: flex;
+	flex-direction: column;
+	border-left: 1px solid;
+}
+
+/* Title container of the properties view */
+.eps-container .execution-plan .properties .title {
+	line-height: 30px;
+	height: 22px;
+	font-size: 11px;
+	font-weight: bold;
+	text-transform: uppercase;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	box-sizing: border-box;
+	margin-bottom: 5px;
+	padding-left: 5px;
+	flex: 0 0 30px;
+}
+
+/* text in title container of properties view */
+.eps-container .execution-plan .properties .title .text {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 11px;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	flex: 1;
+}
+
+/* action bar in the title container for the properties view. This contains the close icon */
+.eps-container .execution-plan .properties .title .action-bar {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 11px;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	flex: 0 0 30px;
+	margin-top: 5px;
+}
+
+/* Operation name styling in the properties view. */
+.eps-container .execution-plan .properties .operation-name {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 13px;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	flex: 0 0 25px;
+	margin-top: 3px;
+	margin-bottom: 5px;
+	margin-left: 5px;
+}
+
+/* Properties table container in properties view */
+.eps-container .execution-plan .properties .table-container {
+	overflow-y: scroll;
+	flex: 1;
+	flex-grow: 1;
+}
+
+/* Action bar for the execution plan */
+.eps-container .execution-plan .action-bar-container {
+	flex: 0 0 25px;
+}
+
+/* styling for the column headers in the properties table */
+.eps-container .properties .table-container .prop-table-header {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 11px;
+	min-width: 10px;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.eps-container .properties-header {
+	font-weight: bold;
+	padding: 5px;
+}
+
+.eps-container .properties-toggle {
+	height: 9px;
+	width: 9px;
+	display: inline-block;
+}
+
+.eps-container .properties-toggle .expand {
+	background: url(../images/expand.gif) no-repeat center center;
+}
+
+.eps-container .properties-toggle .collapse {
+	background: url(../images/collapse.gif) no-repeat center center;
+}
+
+/* Stylings necessary for tooltips to show up next to target nodes*/
+.mxTooltip {
+	border-style: solid;
+	border-width: 1px;
+	position: absolute;
+	cursor: default;
+	padding: 4px;
+	z-index: 3;
+}
+
+.ep-save-plan-icon {
+	background-image: url(../images/actionIcons/save.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-open-properties-icon {
+	background-image: url(../images/actionIcons/openProperties.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-open-query-icon {
+	background-image: url(../images/actionIcons/openQuery.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-open-plan-file-icon {
+	background-image: url(../images/actionIcons/openPlanFile.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-search-icon {
+	background-image: url(../images/actionIcons/search.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-sort-alphabetically-icon {
+	background-image: url(../images/actionIcons/sortAlphabetically.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-sort-reverse-alphabetically-icon {
+	background-image: url(../images/actionIcons/sortReverseAlphabetically.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-sort-display-order-icon {
+	background-image: url(../images/actionIcons/sortByDisplayOrder.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-zoom-in-icon {
+	background-image: url(../images/actionIcons/zoomIn.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-zoom-out-icon {
+	background-image: url(../images/actionIcons/zoomOut.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-custom-zoom-icon {
+	background-image: url(../images/actionIcons/customZoom.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-zoom-to-fit-icon {
+	background-image: url(../images/actionIcons/zoomToFit.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-zoom-icon {
+	background-image: url(../images/actionIcons/zoom.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-enable-tooltip-icon {
+	background-image: url(../images/actionIcons/enableTooltip.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-disable-tooltip-icon {
+	background-image: url(../images/actionIcons/disableTooltip.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}

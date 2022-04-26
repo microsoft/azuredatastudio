@@ -327,6 +327,7 @@
 		"package": {
 			"description": "Der SQL Server-Schemavergleich für Azure Data Studio unterstützt den Vergleich der Schemas von Datenbanken und DACPAC-Dateien.",
 			"displayName": "SQL Server-Schemavergleich",
+			"schemaCompare.runComparison": "Schemavergleich ausführen",
 			"schemaCompare.start": "Schemavergleich"
 		}
 	}

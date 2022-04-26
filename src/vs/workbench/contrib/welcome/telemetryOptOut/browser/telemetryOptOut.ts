@@ -41,7 +41,9 @@ export abstract class AbstractTelemetryOptOut implements IWorkbenchContribution 
 	}
 
 	protected async handleTelemetryOptOut(): Promise<void> {
-		if (this.productService.telemetryOptOutUrl && !this.storageService.get(AbstractTelemetryOptOut.TELEMETRY_OPT_OUT_SHOWN, StorageScope.GLOBAL) && !this.environmentService.disableTelemetry) { // {{SQL CARBON EDIT}} add check for disable telemetry
+		if (this.productService.telemetryOptOutUrl &&
+			!this.storageService.get(AbstractTelemetryOptOut.TELEMETRY_OPT_OUT_SHOWN, StorageScope.GLOBAL) &&
+			!this.environmentService.disableTelemetry) { // {{SQL CARBON EDIT}} Adding check to disable opt out toast when this flag is set.
 			const experimentId = 'telemetryOptOut';
 
 			const [count, experimentState] = await Promise.all([this.getWindowCount(), this.experimentService.getExperimentById(experimentId)]);
@@ -67,7 +69,6 @@ export abstract class AbstractTelemetryOptOut implements IWorkbenchContribution 
 	}
 
 	private showTelemetryOptOut(telemetryOptOutUrl: string): void {
-		// {{SQL CARBON EDIT}}
 		const optOutNotice = localize('telemetryOptOut.optOutNotice', "Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt out]({1}).", this.privacyUrl, this.productService.telemetryOptOutUrl);
 		const optInNotice = localize('telemetryOptOut.optInNotice', "Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt in]({1}).", this.privacyUrl, this.productService.telemetryOptOutUrl);
 

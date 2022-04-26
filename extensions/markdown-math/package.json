@@ -40,7 +40,7 @@
     ],
     "configuration": [
       {
-        "title": "Markdown",
+        "title": "Markdown Math",
         "properties": {
           "markdown.math.enabled": {
             "type": "boolean",

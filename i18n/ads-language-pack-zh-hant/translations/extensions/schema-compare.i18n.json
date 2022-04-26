@@ -327,6 +327,7 @@
 		"package": {
 			"description": "Azure Data Studio 的 SQL Server 結構描述比較支援比較資料庫和 dacpac 的結構描述。",
 			"displayName": "SQL Server 結構描述比較",
+			"schemaCompare.runComparison": "執行結構描述比較",
 			"schemaCompare.start": "結構描述比較"
 		}
 	}

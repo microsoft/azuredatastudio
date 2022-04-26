@@ -33,7 +33,7 @@ suite('ExtHostNotebook Tests', () => {
 		let mainContext = <IMainContext>{
 			getProxy: proxyType => mockProxy.object
 		};
-		extHostNotebook = new ExtHostNotebook(mainContext);
+		extHostNotebook = new ExtHostNotebook(mainContext, undefined);
 		notebookUri = URI.parse('file:/user/default/my.ipynb');
 		serializationProviderMock = TypeMoq.Mock.ofType(SerializationProviderStub, TypeMoq.MockBehavior.Loose);
 		serializationProviderMock.callBase = true;

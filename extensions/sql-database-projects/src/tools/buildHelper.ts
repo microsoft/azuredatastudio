@@ -8,7 +8,7 @@ import * as path from 'path';
 import { promises as fs } from 'fs';
 import * as utils from '../common/utils';
 import { errorFindingBuildFilesLocation } from '../common/constants';
-import * as mssql from '../../../mssql/src/mssql';
+import * as mssql from 'mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import * as sqldbproj from 'sqldbproj';
 
@@ -83,8 +83,12 @@ export class BuildHelper {
 	public constructBuildArguments(projectPath: string, buildDirPath: string, isSdkStyleProject: boolean): string {
 		projectPath = utils.getQuotedPath(projectPath);
 		buildDirPath = utils.getQuotedPath(buildDirPath);
+
+		// Right now SystemDacpacsLocation and NETCoreTargetsPath get set to the same thing, but separating them out for if we move
+		// the system dacpacs somewhere else and also so that the variable name makes more sense if building from the commandline,
+		// since SDK style projects don't to specify the targets path, just where the system dacpacs are
 		if (isSdkStyleProject) {
-			return ` build ${projectPath} /p:NetCoreBuild=true`;
+			return ` build ${projectPath} /p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath}`;
 		} else {
 			return ` build ${projectPath} /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath}`;
 		}

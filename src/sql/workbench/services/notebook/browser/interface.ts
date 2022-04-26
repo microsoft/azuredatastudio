@@ -7,10 +7,12 @@ import { URI } from 'vs/base/common/uri';
 import { Event } from 'vs/base/common/event';
 import { IContentLoader } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
+import { IEditorInput } from 'vs/workbench/common/editor';
 
-export interface INotebookInput {
-	defaultKernel?: azdata.nb.IKernelSpec,
-	connectionProfile?: azdata.IConnectionProfile,
+export interface INotebookInput extends IEditorInput {
+	defaultKernel?: azdata.nb.IKernelSpec;
+	connectionProfile?: azdata.IConnectionProfile;
+	setNotebookContents(contents: azdata.nb.INotebookContents): void;
 	isDirty(): boolean;
 	setDirty(boolean);
 	readonly notebookUri: URI;

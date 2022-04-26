@@ -1,7 +1,7 @@
-// /*---------------------------------------------------------------------------------------------
-//  *  Copyright (c) Microsoft Corporation. All rights reserved.
-//  *  Licensed under the Source EULA. See License.txt in the project root for license information.
-//  *--------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 // import { PGResourceInfo, ResourceType } from 'arc';
 // import * as azExt from 'azdata-ext';

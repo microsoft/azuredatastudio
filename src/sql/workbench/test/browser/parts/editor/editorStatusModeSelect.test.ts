@@ -7,8 +7,8 @@ import * as assert from 'assert';
 import * as sinon from 'sinon';
 import { setMode } from 'sql/workbench/browser/parts/editor/editorStatusModeSelect';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/browser/queryInputFactory';
-import { NotebookEditorInputAssociation } from 'sql/workbench/contrib/notebook/browser/models/notebookInputFactory';
+import { QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/browser/queryEditorFactory';
+import { NotebookEditorLanguageAssociation } from 'sql/workbench/contrib/notebook/browser/models/notebookEditorFactory';
 import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -45,7 +45,7 @@ suite('set mode', () => {
 
 	setup(() => {
 		disposables.push(languageAssociations.registerLanguageAssociation(QueryEditorLanguageAssociation.languages, QueryEditorLanguageAssociation, QueryEditorLanguageAssociation.isDefault));
-		disposables.push(languageAssociations.registerLanguageAssociation(NotebookEditorInputAssociation.languages, NotebookEditorInputAssociation));
+		disposables.push(languageAssociations.registerLanguageAssociation(NotebookEditorLanguageAssociation.languages, NotebookEditorLanguageAssociation));
 		instantiationService = workbenchInstantiationService();
 		instantiationService.stub(INotebookService, new NotebookServiceStub());
 		const editorService = new MockEditorService(instantiationService);

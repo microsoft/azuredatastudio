@@ -34,6 +34,11 @@ declare module 'dataworkspace' {
 		showProjectsView(): void;
 
 		/**
+		 * Fires event to refresh the project tree. The tree is not guaranteed to be refreshed after this call returns
+		 */
+		refreshProjectsTree(): void;
+
+		/**
 		 * Returns the default location to save projects
 		 */
 		defaultProjectSaveLocation: vscode.Uri | undefined;
@@ -67,8 +72,9 @@ declare module 'dataworkspace' {
 		 * @param location the parent directory of the project
 		 * @param projectTypeId the identifier of the selected project type
 		 * @param projectTargetPlatform the target platform of the project
+		 * @param sdkStyleProject whether or not a project is SDK-style
 		 */
-		createProject(name: string, location: vscode.Uri, projectTypeId: string, projectTargetPlatform?: string): Promise<vscode.Uri>;
+		createProject(name: string, location: vscode.Uri, projectTypeId: string, projectTargetPlatform?: string, sdkStyleProject?: boolean): Promise<vscode.Uri>;
 
 		/**
 		 * Gets the project data corresponding to the project file, to be placed in the dashboard container
@@ -129,6 +135,16 @@ declare module 'dataworkspace' {
 		 * Gets the default target platform
 		 */
 		readonly defaultTargetPlatform?: string;
+
+		/**
+		 * Whether or not sdk style project is an option
+		 */
+		readonly sdkStyleOption?: boolean;
+
+		/**
+		 * Location where clicking on the Learn More next to SDK style checkbox will go. sdkStyleOption needs to be set to true to use this
+		 */
+		readonly sdkStyleLearnMoreUrl?: string
 	}
 
 	/**

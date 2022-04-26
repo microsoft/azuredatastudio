@@ -8,13 +8,15 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { Emitter } from 'vs/base/common/event';
 import { DisposableStore, dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
+import { NotebookDto } from 'vs/workbench/api/browser/mainThreadNotebookDto';
+// import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 import { INotebookCellStatusBarService } from 'vs/workbench/contrib/notebook/common/notebookCellStatusBarService';
-import { INotebookCellStatusBarItemProvider, INotebookContributionData, NotebookDataDto, TransientCellMetadata, TransientDocumentMetadata, TransientOptions } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { INotebookCellStatusBarItemProvider, INotebookContributionData, NotebookData as NotebookData, TransientCellMetadata, TransientDocumentMetadata, TransientOptions } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { INotebookContentProvider, INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
-import { ExtHostContext, ExtHostNotebookShape, IExtHostContext, MainContext, MainThreadNotebookShape, NotebookExtensionDescription } from '../common/extHost.protocol';
+import { SerializableObjectWithBuffers } from 'vs/workbench/services/extensions/common/proxyIdentifier';
+import { ExtHostContext, ExtHostNotebookShape, IExtHostContext, MainThreadNotebookShape, NotebookExtensionDescription } from '../common/extHost.protocol'; // {{SQL CARBON EDIT}} Disable VS Code notebooks
 
-@extHostNamedCustomer(MainContext.MainThreadNotebook)
+// @extHostNamedCustomer(MainContext.MainThreadNotebook) {{SQL CARBON EDIT}} Disable VS Code notebooks
 export class MainThreadNotebooks implements MainThreadNotebookShape {
 
 	private readonly _disposables = new DisposableStore();
@@ -56,7 +58,7 @@ export class MainThreadNotebooks implements MainThreadNotebookShape {
 			open: async (uri: URI, backupId: string | undefined, untitledDocumentData: VSBuffer | undefined, token: CancellationToken) => {
 				const data = await this._proxy.$openNotebook(viewType, uri, backupId, untitledDocumentData, token);
 				return {
-					data,
+					data: NotebookDto.fromNotebookDataDto(data.value),
 					transientOptions: contentOptions
 				};
 			},
@@ -100,14 +102,16 @@ export class MainThreadNotebooks implements MainThreadNotebookShape {
 		}
 	}
 
+
 	$registerNotebookSerializer(handle: number, extension: NotebookExtensionDescription, viewType: string, options: TransientOptions, data: INotebookContributionData | undefined): void {
 		const registration = this._notebookService.registerNotebookSerializer(viewType, extension, {
 			options,
-			dataToNotebook: (data: VSBuffer): Promise<NotebookDataDto> => {
-				return this._proxy.$dataToNotebook(handle, data, CancellationToken.None);
+			dataToNotebook: async (data: VSBuffer): Promise<NotebookData> => {
+				const dto = await this._proxy.$dataToNotebook(handle, data, CancellationToken.None);
+				return NotebookDto.fromNotebookDataDto(dto.value);
 			},
-			notebookToData: (data: NotebookDataDto): Promise<VSBuffer> => {
-				return this._proxy.$notebookToData(handle, data, CancellationToken.None);
+			notebookToData: (data: NotebookData): Promise<VSBuffer> => {
+				return this._proxy.$notebookToData(handle, new SerializableObjectWithBuffers(NotebookDto.toNotebookDataDto(data)), CancellationToken.None);
 			}
 		});
 		const disposables = new DisposableStore();

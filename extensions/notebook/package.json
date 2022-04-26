@@ -329,6 +329,14 @@
           "Notebook"
         ],
         "configuration": "./language-configuration.json"
+      }, {
+        "id": "dib",
+        "extensions": [
+          ".dib"
+        ],
+        "aliases": [
+          ".NET Interactive Notebook"
+        ]
       }
     ],
     "menus": {
@@ -703,7 +711,8 @@
             "connectionProviderIds": [
               "MSSQL"
             ],
-            "blockedOnSAW": true
+            "blockedOnSAW": true,
+            "supportedLanguages": ["python"]
           },
           {
             "name": "sparkkernel",
@@ -711,6 +720,7 @@
             "connectionProviderIds": [
               "MSSQL"
             ],
+            "supportedLanguages": ["scala"],
             "blockedOnSAW": true
           },
           {
@@ -719,17 +729,20 @@
             "connectionProviderIds": [
               "MSSQL"
             ],
+            "supportedLanguages": ["r"],
             "blockedOnSAW": true
           },
           {
             "name": "python3",
             "displayName": "Python 3",
-            "connectionProviderIds": []
+            "connectionProviderIds": [],
+            "supportedLanguages": ["python"]
           },
           {
             "name": "powershell",
             "displayName": "PowerShell",
-            "connectionProviderIds": []
+            "connectionProviderIds": [],
+            "supportedLanguages": ["powershell"]
           }
         ]
       }
@@ -744,12 +757,12 @@
     "fs-extra": "^5.0.0",
     "glob": "^7.1.1",
     "js-yaml": "^3.12.1",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "request": "^2.88.0",
     "tar": "^6.1.9",
     "vscode-languageclient": "^5.3.0-next.1",
     "vscode-nls": "^4.0.0",
-    "ws": "^7.2.0"
+    "ws": "^7.4.6"
   },
   "devDependencies": {
     "@types/adm-zip": "^0.4.32",
@@ -771,11 +784,11 @@
     "should": "^13.2.3",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.1.0"
+    "@microsoft/vscodetestcover": "^1.2.0"
   },
   "resolutions": {
-    "url-parse": "^1.5.1",
-    "json-schema": "0.4.0"
+    "url-parse": "^1.5.8",
+    "moment": "^2.29.2"
   },
   "enableProposedApi": true
 }

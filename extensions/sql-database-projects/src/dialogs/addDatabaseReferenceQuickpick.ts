@@ -21,7 +21,6 @@ interface DbServerValues {
 
 /**
  * Create flow for adding a database reference using only VS Code-native APIs such as QuickPick
- * @param connectionInfo Optional connection info to use instead of prompting the user for a connection
  */
 export async function addDatabaseReferenceQuickpick(project: Project): Promise<AddDatabaseReferenceSettings | undefined> {
 

@@ -70,6 +70,7 @@ export interface IDashboardTabContrib {
 	isHomeTab?: boolean;
 	group?: string;
 	icon?: IUserFriendlyIcon;
+	hideRefreshTask?: boolean;
 }
 
 export interface IInsightTypeContrib {

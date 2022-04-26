@@ -105,8 +105,8 @@ export function getDatabaseStateDisplayText(state: string): string {
 
 /**
  * Opens an input box prompting and validating the user's input.
- * @param options Options for the input box
  * @param title An optional title for the input box
+ * @param options Options for the input box
  * @returns Promise resolving to the user's input if it passed validation,
  * or undefined if the input box was closed for any other reason
  */

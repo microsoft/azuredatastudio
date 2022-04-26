@@ -371,7 +371,7 @@ export class EditDataEditor extends EditorPane {
 		let actionID = ChangeMaxRowsAction.ID;
 		if (action.id === actionID) {
 			if (!this._changeMaxRowsActionItem) {
-				this._changeMaxRowsActionItem = this._instantiationService.createInstance(ChangeMaxRowsActionItem, this);
+				this._changeMaxRowsActionItem = this._instantiationService.createInstance(ChangeMaxRowsActionItem, this, action);
 			}
 			return this._changeMaxRowsActionItem;
 		}

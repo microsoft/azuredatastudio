@@ -47,22 +47,6 @@ export interface IAccountManagementService {
 	readonly updateAccountListEvent: Event<UpdateAccountListEventParams>;
 }
 
-// API sqlExtHostTypes.ts > AzureResource should also be updated
-// Enum matching the AzureResource enum from azdata.d.ts
-export enum AzureResource {
-	ResourceManagement = 0,
-	Sql = 1,
-	OssRdbms = 2,
-	AzureKeyVault = 3,
-	Graph = 4,
-	MicrosoftResourceManagement = 5,
-	AzureDevOps = 6,
-	MsGraph = 7,
-	AzureLogAnalytics = 8,
-	AzureStorage = 9,
-	AzureKusto = 10
-}
-
 export interface IAccountStore {
 	/**
 	 * Adds the provided account if the account doesn't exist. Updates the account if it already exists

@@ -345,6 +345,7 @@ export class BookModel {
 
 	/**
 	 * Recursively parses out a section of a Jupyter Book.
+	 * @param version
 	 * @param section The input data to parse
 	 */
 	public parseJupyterSections(version: string, section: any[]): JupyterBookSection[] {

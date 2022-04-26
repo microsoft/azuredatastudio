@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { Component, Input, ViewChildren, QueryList, ChangeDetectorRef, forwardRef, Inject, ViewChild, ElementRef, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
-import { ICellModel, INotebookModel, ISingleNotebookEditOperation, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, INotebookModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import 'vs/css!./notebookViewsGrid';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
@@ -14,7 +14,6 @@ import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootst
 import { Action } from 'vs/base/common/actions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { MenuItemAction } from 'vs/platform/actions/common/actions';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { onUnexpectedError } from 'vs/base/common/errors';
@@ -37,6 +36,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { LabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export const NOTEBOOKVIEWS_SELECTOR: string = 'notebook-view-component';
 
@@ -70,7 +70,6 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		@Inject(IBootstrapParams) private _notebookParams: INotebookParams,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
-		@Inject(IKeybindingService) private _keybindingService: IKeybindingService,
 		@Inject(IContextMenuService) private _contextMenuService: IContextMenuService,
 		@Inject(INotificationService) private _notificationService: INotificationService,
 		@Inject(INotebookService) private _notebookService: INotebookService,
@@ -104,7 +103,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		let notebookEditor = this.notebookParams.input;
 		return this._editorService.visibleEditors.some(e => e.matches(notebookEditor));
 	}
-	executeEdits(edits: ISingleNotebookEditOperation[]): boolean {
+	executeEdits(edits: INotebookEditOperation[]): boolean {
 		throw new Error('Method not implemented.');
 	}
 	async runCell(cell: ICellModel): Promise<boolean> {
@@ -314,7 +313,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 				action.tooltip = action.label;
 				action.label = '';
 			}
-			return new LabeledMenuItemActionItem(action, this._keybindingService, this._notificationService, 'notebook-button fixed-width');
+			return this._instantiationService.createInstance(LabeledMenuItemActionItem, action, 'notebook-button fixed-width');
 		}
 		return undefined;
 	}

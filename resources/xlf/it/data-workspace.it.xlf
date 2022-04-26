@@ -31,8 +31,8 @@
         <target state="translated">Aggiorna</target>
       </trans-unit>
       <trans-unit id="dataworkspace.NewProjectDialogTitle">
-        <source xml:lang="en">Create new project</source>
-        <target state="translated">Crea nuovo progetto</target>
+        <source xml:lang="en">Create new database project</source>
+        <target state="translated">Creare un nuovo progetto di database</target>
       </trans-unit>
       <trans-unit id="dataworkspace.Type">
         <source xml:lang="en">Type</source>
@@ -54,6 +54,10 @@
         <source xml:lang="en">Create</source>
         <target state="translated">Crea</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.default">
+        <source xml:lang="en">Default</source>
+        <target state="translated">Predefinito</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.enterProjectName">
         <source xml:lang="en">Enter Project Name</source>
         <target state="translated">Immettere il nome del progetto</target>
@@ -70,6 +74,10 @@
         <source xml:lang="en">Git repository URL</source>
         <target state="translated">URL del repository GIT</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.learnMore">
+        <source xml:lang="en">Learn More</source>
+        <target state="translated">Altre informazioni</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.localClonePathPlaceholder">
         <source xml:lang="en">Select location to clone repository locally</source>
         <target state="translated">Selezionare il percorso per clonare il repository in locale</target>
@@ -85,6 +93,10 @@
       <trans-unit id="dataworkspace.nameCannotBeEmpty">
         <source xml:lang="en">Name cannot be empty</source>
         <target state="translated">Il nome non può essere vuoto.</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">No</target>
       </trans-unit>
       <trans-unit id="dataworkspace.ok">
         <source xml:lang="en">OK</source>
@@ -150,6 +162,14 @@
         <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?</source>
         <target state="translated">È necessario riavviare Azure Data Studio per aggiungere il progetto all'area di lavoro. Riavvia ora?</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.sdkLearnMorePlaceholder">
+        <source xml:lang="en">Click "Learn More" button for more information about SDK-style projects</source>
+        <target state="translated">Fare clic sul pulsante "Altre informazioni" per altre informazioni sui progetti in stile SDK</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.sdkStyleProject">
+        <source xml:lang="en">SDK-style project (Preview)</source>
+        <target state="translated">Progetto in stile SDK (Anteprima)</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.select">
         <source xml:lang="en">Select</source>
         <target state="translated">Seleziona</target>
@@ -159,8 +179,12 @@
         <target state="translated">Seleziona percorso del progetto</target>
       </trans-unit>
       <trans-unit id="dataworkspace.selectProjectType">
-        <source xml:lang="en">Select Project Type</source>
-        <target state="translated">Seleziona tipo di progetto</target>
+        <source xml:lang="en">Select Database Project Type</source>
+        <target state="translated">Selezionare il tipo di progetto di database</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.selectTargetPlatform">
+        <source xml:lang="en">Select Target Platform</source>
+        <target state="translated">Selezione della piattaforma di destinazione</target>
       </trans-unit>
       <trans-unit id="dataworkspace.targetPlatform">
         <source xml:lang="en">Target Platform</source>
@@ -169,6 +193,10 @@
       <trans-unit id="dataworkspace.workspacePlaceholder">
         <source xml:lang="en">Select workspace ({0}) file</source>
         <target state="translated">Selezionare un file dell'area di lavoro ({0})</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.yesRecommended">
+        <source xml:lang="en">Yes (Recommended)</source>
+        <target state="translated">Sì (Scelta consigliata)</target>
       </trans-unit>
       <trans-unit id="fileDoesNotExist">
         <source xml:lang="en">File '{0}' doesn't exist</source>
@@ -228,10 +256,10 @@
 [Open existing](command:projects.openExisting)
 To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).
 </source>
-        <target state="translated">Nessun progetto aperto nell'area di lavoro corrente.
-[Crea nuovo] (comando: projects.new)
-[Apri esistente] (comando: projects.openExisting)
-Per altre informazioni sui progetti [vedere la documentazione] (https://aka.ms/azuredatastudio-projects).
+        <target state="new">No projects open in current workspace.
+[Create new](command:projects.new)
+[Open existing](command:projects.openExisting)
+To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).
 </target>
       </trans-unit>
       <trans-unit id="projects-view-no-workspace-content">
@@ -239,10 +267,10 @@ Per altre informazioni sui progetti [vedere la documentazione] (https://aka.ms/a
 [Create new](command:projects.new)
 [Open existing](command:projects.openExisting)
 To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).</source>
-        <target state="translated">Per iniziare, creare un nuovo progetto o aprirne uno esistente.
-[Crea nuovo] (comando: projects.new)
-[Apri esistente] (comando: projects.openExisting)
-Per altre informazioni sui progetti [vedere la documentazione] (https://aka.ms/azuredatastudio-projects).</target>
+        <target state="new">Create new or open existing to get started.
+[Create new](command:projects.new)
+[Open existing](command:projects.openExisting)
+To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).</target>
       </trans-unit>
       <trans-unit id="projects.defaultProjectSaveLocation">
         <source xml:lang="en">Full path to folder where new projects are saved by default.</source>

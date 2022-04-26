@@ -8,149 +8,151 @@ The original copyright notices and the licenses under which Microsoft received
 such components are set forth below. Microsoft reserves all rights not
 expressly granted herein, whether by implication, estoppel or otherwise.
 
-    angular: https://github.com/angular/angular
-    angular2-grid: https://github.com/BTMorton/angular2-grid
-    angular2-slickgrid: https://github.com/Microsoft/angular2-slickgrid
-    applicationinsights: https://github.com/Microsoft/ApplicationInsights-node.js
-    axios: https://github.com/axios/axios
-    bootstrap: https://github.com/twbs/bootstrap
-    chart.js: https://github.com/Timer/chartjs
-    chokidar: https://github.com/paulmillr/chokidar
-    comment-json: https://github.com/kaelzhang/node-comment-json
-    core-js: https://github.com/zloirock/core-js
-    decompress: https://github.com/kevva/decompress
-    emmet: https://github.com/emmetio/emmet
-    error-ex: https://github.com/Qix-/node-error-ex
-    escape-string-regexp: https://github.com/sindresorhus/escape-string-regexp
-    fast-plist: https://github.com/Microsoft/node-fast-plist
-    figures: https://github.com/sindresorhus/figures
-    find-remove: https://www.npmjs.com/package/find-remove
-    fs-extra: https://github.com/jprichardson/node-fs-extra
-    gc-signals: https://github.com/Microsoft/node-gc-signals
-    getmac: https://github.com/bevry/getmac
-    graceful-fs: https://github.com/isaacs/node-graceful-fs
-    gridstack: https://github.com/gridstack/gridstack.js
-    html-query-plan: https://github.com/JustinPealing/html-query-plan
-    http-proxy-agent: https://github.com/TooTallNate/node-https-proxy-agent
-    https-proxy-agent: https://github.com/TooTallNate/node-https-proxy-agent
-    iconv-lite: https://github.com/ashtuchkin/iconv-lite
-    jquery: https://github.com/jquery/jquery
-    jquery-ui: https://github.com/jquery/jquery-ui
-    jquery.event.drag: https://github.com/devongovett/jquery.event.drag
-    jschardet: https://github.com/aadsm/jschardet
-    jupyter-powershell: https://github.com/vors/jupyter-powershell
-    JupyterLab: https://github.com/jupyterlab/jupyterlab
-    keytar: https://github.com/atom/node-keytar
-    make-error: https://github.com/JsCommunity/make-error
-    mark.js: https://github.com/julmot/mark.js
-    minimist: https://github.com/substack/minimist
-    moment: https://github.com/moment/moment
-    native-keymap: https://github.com/Microsoft/node-native-keymap
-    native-watchdog: https://github.com/Microsoft/node-native-watchdog
-    ng2-charts: https://github.com/valor-software/ng2-charts
-    node-fetch: https://github.com/bitinn/node-fetch
-    node-pty: https://github.com/Tyriar/node-pty
-    nsfw: https://github.com/Axosoft/nsfw
-    optimist: https://github.com/substack/node-optimist
-    primeng: https://github.com/primefaces/primeng
-    process-nextick-args: https://github.com/calvinmetcalf/process-nextick-args
-    pty.js: https://github.com/chjj/pty.js
-    pyzmq: https://github.com/zeromq/pyzmq
-    qs: https://github.com/ljharb/qs
-    reflect-metadata: https://github.com/rbuckton/reflect-metadata
-    request: https://github.com/request/request
-    rxjs: https://github.com/ReactiveX/RxJS
-    semver: https://github.com/npm/node-semver
-    slickgrid: https://github.com/6pac/SlickGrid
-    sqltoolsservice: https://github.com/Microsoft/sqltoolsservice
-    svg.js: https://github.com/svgdotjs/svg.js
-    systemjs: https://github.com/systemjs/systemjs
-    temp-write: https://github.com/sindresorhus/temp-write
-    turndown: https://github.com/domchristie/turndown
-    turndown-plugin-gfm: https://github.com/domchristie/turndown-plugin-gfm
-    underscore: https://github.com/jashkenas/underscore
-    v8-profiler: https://github.com/node-inspector/v8-profiler
-    vscode: https://github.com/microsoft/vscode
-    vscode-debugprotocol: https://github.com/Microsoft/vscode-debugadapter-node
-    vscode-languageclient: https://github.com/Microsoft/vscode-languageserver-node
-    vscode-nls: https://github.com/Microsoft/vscode-nls
-    vscode-ripgrep: https://github.com/roblourens/vscode-ripgrep
-    vscode-textmate: https://github.com/Microsoft/vscode-textmate
-    winreg: https://github.com/fresc81/node-winreg
-    xmldom: https://github.com/xmldom/xmldom
-    xml-formatter: https://github.com/chrisbottin/xml-formatter
-    xterm: https://github.com/sourcelair/xterm.js
-    yargs: https://github.com/yargs/yargs
-    yauzl: https://github.com/thejoshwolfe/yauzl
-    zone.js: https://www.npmjs.com/package/zone
+angular: https://github.com/angular/angular
+angular2-grid: https://github.com/BTMorton/angular2-grid
+angular2-slickgrid: https://github.com/Microsoft/angular2-slickgrid
+applicationinsights: https://github.com/Microsoft/ApplicationInsights-node.js
+axios: https://github.com/axios/axios
+bootstrap: https://github.com/twbs/bootstrap
+chart.js: https://github.com/Timer/chartjs
+chokidar: https://github.com/paulmillr/chokidar
+comment-json: https://github.com/kaelzhang/node-comment-json
+core-js: https://github.com/zloirock/core-js
+decompress: https://github.com/kevva/decompress
+emmet: https://github.com/emmetio/emmet
+error-ex: https://github.com/Qix-/node-error-ex
+escape-string-regexp: https://github.com/sindresorhus/escape-string-regexp
+fast-plist: https://github.com/Microsoft/node-fast-plist
+figures: https://github.com/sindresorhus/figures
+find-remove: https://www.npmjs.com/package/find-remove
+fs-extra: https://github.com/jprichardson/node-fs-extra
+gc-signals: https://github.com/Microsoft/node-gc-signals
+getmac: https://github.com/bevry/getmac
+graceful-fs: https://github.com/isaacs/node-graceful-fs
+gridstack: https://github.com/gridstack/gridstack.js
+html-query-plan: https://github.com/JustinPealing/html-query-plan
+http-proxy-agent: https://github.com/TooTallNate/node-https-proxy-agent
+https-proxy-agent: https://github.com/TooTallNate/node-https-proxy-agent
+iconv-lite: https://github.com/ashtuchkin/iconv-lite
+jquery: https://github.com/jquery/jquery
+jquery-ui: https://github.com/jquery/jquery-ui
+jquery.event.drag: https://github.com/devongovett/jquery.event.drag
+jschardet: https://github.com/aadsm/jschardet
+jupyter-powershell: https://github.com/vors/jupyter-powershell
+JupyterLab: https://github.com/jupyterlab/jupyterlab
+keytar: https://github.com/atom/node-keytar
+make-error: https://github.com/JsCommunity/make-error
+mark.js: https://github.com/julmot/mark.js
+minimist: https://github.com/substack/minimist
+moment: https://github.com/moment/moment
+mxgraph: https://github.com/jgraph/mxgraph
+native-keymap: https://github.com/Microsoft/node-native-keymap
+native-watchdog: https://github.com/Microsoft/node-native-watchdog
+ng2-charts: https://github.com/valor-software/ng2-charts
+node-fetch: https://github.com/bitinn/node-fetch
+node-pty: https://github.com/Tyriar/node-pty
+nsfw: https://github.com/Axosoft/nsfw
+optimist: https://github.com/substack/node-optimist
+primeng: https://github.com/primefaces/primeng
+process-nextick-args: https://github.com/calvinmetcalf/process-nextick-args
+pty.js: https://github.com/chjj/pty.js
+pyzmq: https://github.com/zeromq/pyzmq
+qs: https://github.com/ljharb/qs
+reflect-metadata: https://github.com/rbuckton/reflect-metadata
+request: https://github.com/request/request
+rxjs: https://github.com/ReactiveX/RxJS
+semver: https://github.com/npm/node-semver
+slickgrid: https://github.com/6pac/SlickGrid
+sqltoolsservice: https://github.com/Microsoft/sqltoolsservice
+svg.js: https://github.com/svgdotjs/svg.js
+systemjs: https://github.com/systemjs/systemjs
+temp-write: https://github.com/sindresorhus/temp-write
+turndown: https://github.com/domchristie/turndown
+turndown-plugin-gfm: https://github.com/domchristie/turndown-plugin-gfm
+underscore: https://github.com/jashkenas/underscore
+v8-profiler: https://github.com/node-inspector/v8-profiler
+vscode: https://github.com/microsoft/vscode
+vscode-debugprotocol: https://github.com/Microsoft/vscode-debugadapter-node
+vscode-languageclient: https://github.com/Microsoft/vscode-languageserver-node
+vscode-nls: https://github.com/Microsoft/vscode-nls
+vscode-ripgrep: https://github.com/roblourens/vscode-ripgrep
+vscode-textmate: https://github.com/Microsoft/vscode-textmate
+winreg: https://github.com/fresc81/node-winreg
+xmldom: https://github.com/xmldom/xmldom
+xml-formatter: https://github.com/chrisbottin/xml-formatter
+xterm: https://github.com/sourcelair/xterm.js
+yargs: https://github.com/yargs/yargs
+yauzl: https://github.com/thejoshwolfe/yauzl
+zone.js: https://www.npmjs.com/package/zone
 
-    Microsoft PROSE SDK: https://microsoft.github.io/prose
+Microsoft PROSE SDK: https://microsoft.github.io/prose
 
-    atom/language-clojure version 0.22.7 (https://github.com/atom/language-clojure)
-    atom/language-coffee-script version 0.49.3 (https://github.com/atom/language-coffee-script)
-    atom/language-css version 0.44.4 (https://github.com/atom/language-css)
-    atom/language-java version 0.32.1 (https://github.com/atom/language-java)
-    atom/language-sass version 0.62.1 (https://github.com/atom/language-sass)
-    atom/language-shellscript version 0.26.0 (https://github.com/atom/language-shellscript)
-    atom/language-xml version 0.35.2 (https://github.com/atom/language-xml)
-    better-go-syntax version 1.0.0 (https://github.com/jeff-hykin/better-go-syntax/ )
-    Colorsublime-Themes version 0.1.0 (https://github.com/Colorsublime/Colorsublime-Themes)
-    daaain/Handlebars version 1.8.0 (https://github.com/daaain/Handlebars)
-    dart-lang/dart-syntax-highlight (https://github.com/dart-lang/dart-syntax-highlight)
-    davidrios/pug-tmbundle (https://github.com/davidrios/pug-tmbundle)
-    definitelytyped (https://github.com/DefinitelyTyped/DefinitelyTyped)
-    demyte/language-cshtml version 0.3.0 (https://github.com/demyte/language-cshtml)
-    Document Object Model version 4.0.0 (https://www.w3.org/DOM/)
-    dotnet/csharp-tmLanguage version 0.1.0 (https://github.com/dotnet/csharp-tmLanguage)
-    expand-abbreviation version 0.5.8 (https://github.com/emmetio/expand-abbreviation)
-    fadeevab/make.tmbundle (https://github.com/fadeevab/make.tmbundle)
-    freebroccolo/atom-language-swift (https://github.com/freebroccolo/atom-language-swift)
-    HTML 5.1 W3C Working Draft version 08 October 2015 (http://www.w3.org/TR/2015/WD-html51-20151008/)
-    Ikuyadeu/vscode-R version 1.3.0 (https://github.com/Ikuyadeu/vscode-R)
-    insane version 2.6.2 (https://github.com/bevacqua/insane)
-    Ionic documentation version 1.2.4 (https://github.com/ionic-team/ionic-site)
-    ionide/ionide-fsgrammar (https://github.com/ionide/ionide-fsgrammar)
-    jeff-hykin/cpp-textmate-grammar version 1.12.11 (https://github.com/jeff-hykin/cpp-textmate-grammar)
-    jeff-hykin/cpp-textmate-grammar version 1.15.5 (https://github.com/jeff-hykin/cpp-textmate-grammar)
-    js-beautify version 1.6.8 (https://github.com/beautify-web/js-beautify)
-    JuliaEditorSupport/atom-language-julia version 0.21.0 (https://github.com/JuliaEditorSupport/atom-language-julia)
-    Jxck/assert version 1.0.0 (https://github.com/Jxck/assert)
-    language-docker (https://github.com/moby/moby)
-    language-less version 0.34.2 (https://github.com/atom/language-less)
-    language-php version 0.46.2 (https://github.com/atom/language-php)
-    MagicStack/MagicPython version 1.1.1 (https://github.com/MagicStack/MagicPython)
-    marked version 1.1.0 (https://github.com/markedjs/marked)
-    mdn-data version 1.1.12 (https://github.com/mdn/data)
-    microsoft/TypeScript-TmLanguage version 0.0.1 (https://github.com/microsoft/TypeScript-TmLanguage)
-    microsoft/vscode-JSON.tmLanguage (https://github.com/microsoft/vscode-JSON.tmLanguage)
-    microsoft/vscode-markdown-tm-grammar version 1.0.0 (https://github.com/microsoft/vscode-markdown-tm-grammar)
-    microsoft/vscode-mssql version 1.9.0 (https://github.com/microsoft/vscode-mssql)
-    mmims/language-batchfile version 0.7.6 (https://github.com/mmims/language-batchfile)
-    NVIDIA/cuda-cpp-grammar (https://github.com/NVIDIA/cuda-cpp-grammar)
-    PowerShell/EditorSyntax version 1.0.0 (https://github.com/PowerShell/EditorSyntax)
-    rust-syntax version 0.4.3 (https://github.com/dustypomerleau/rust-syntax)
-    seti-ui version 0.1.0 (https://github.com/jesseweed/seti-ui)
-    shaders-tmLanguage version 0.1.0 (https://github.com/tgjones/shaders-tmLanguage)
-    textmate/asp.vb.net.tmbundle (https://github.com/textmate/asp.vb.net.tmbundle)
-    textmate/c.tmbundle (https://github.com/textmate/c.tmbundle)
-    textmate/diff.tmbundle (https://github.com/textmate/diff.tmbundle)
-    textmate/git.tmbundle (https://github.com/textmate/git.tmbundle)
-    textmate/groovy.tmbundle (https://github.com/textmate/groovy.tmbundle)
-    textmate/html.tmbundle (https://github.com/textmate/html.tmbundle)
-    textmate/ini.tmbundle (https://github.com/textmate/ini.tmbundle)
-    textmate/javascript.tmbundle (https://github.com/textmate/javascript.tmbundle)
-    textmate/lua.tmbundle (https://github.com/textmate/lua.tmbundle)
-    textmate/markdown.tmbundle (https://github.com/textmate/markdown.tmbundle)
-    textmate/perl.tmbundle (https://github.com/textmate/perl.tmbundle)
-    textmate/ruby.tmbundle (https://github.com/textmate/ruby.tmbundle)
-    textmate/yaml.tmbundle (https://github.com/textmate/yaml.tmbundle)
-    TypeScript-TmLanguage version 0.1.8 (https://github.com/microsoft/TypeScript-TmLanguage)
-    TypeScript-TmLanguage version 1.0.0 (https://github.com/microsoft/TypeScript-TmLanguage)
-    Unicode version 12.0.0 (https://home.unicode.org/)
-    vscode-codicons version 0.0.14 (https://github.com/microsoft/vscode-codicons)
-    vscode-logfile-highlighter version 2.11.0 (https://github.com/emilast/vscode-logfile-highlighter)
-    vscode-swift version 0.0.1 (https://github.com/owensd/vscode-swift)
-    Web Background Synchronization (https://github.com/WICG/background-sync)
+1.	atom/language-clojure version 0.22.7 (https://github.com/atom/language-clojure)
+2.	atom/language-coffee-script version 0.49.3 (https://github.com/atom/language-coffee-script)
+3.	atom/language-css version 0.44.6 (https://github.com/atom/language-css)
+4.	atom/language-java version 0.32.1 (https://github.com/atom/language-java)
+5.	atom/language-sass version 0.62.1 (https://github.com/atom/language-sass)
+6.	atom/language-shellscript version 0.26.0 (https://github.com/atom/language-shellscript)
+7.	atom/language-xml version 0.35.2 (https://github.com/atom/language-xml)
+8.	better-go-syntax version 1.0.0 (https://github.com/jeff-hykin/better-go-syntax/ )
+9.	Colorsublime-Themes version 0.1.0 (https://github.com/Colorsublime/Colorsublime-Themes)
+10.	daaain/Handlebars version 1.8.0 (https://github.com/daaain/Handlebars)
+11.	dart-lang/dart-syntax-highlight (https://github.com/dart-lang/dart-syntax-highlight)
+12.	davidrios/pug-tmbundle (https://github.com/davidrios/pug-tmbundle)
+13.	definitelytyped (https://github.com/DefinitelyTyped/DefinitelyTyped)
+14.	demyte/language-cshtml version 0.3.0 (https://github.com/demyte/language-cshtml)
+15.	Document Object Model version 4.0.0 (https://www.w3.org/DOM/)
+16.	dotnet/csharp-tmLanguage version 0.1.0 (https://github.com/dotnet/csharp-tmLanguage)
+17.	expand-abbreviation version 0.5.8 (https://github.com/emmetio/expand-abbreviation)
+18.	fadeevab/make.tmbundle (https://github.com/fadeevab/make.tmbundle)
+19.	freebroccolo/atom-language-swift (https://github.com/freebroccolo/atom-language-swift)
+20.	HTML 5.1 W3C Working Draft version 08 October 2015 (http://www.w3.org/TR/2015/WD-html51-20151008/)
+21.	Ikuyadeu/vscode-R version 2.0.0 (https://github.com/Ikuyadeu/vscode-R)
+22.	insane version 2.6.2 (https://github.com/bevacqua/insane)
+23.	Ionic documentation version 1.2.4 (https://github.com/ionic-team/ionic-site)
+24.	ionide/ionide-fsgrammar (https://github.com/ionide/ionide-fsgrammar)
+25.	James-Yu/LaTeX-Workshop version 8.19.1 (https://github.com/James-Yu/LaTeX-Workshop)
+26.	jeff-hykin/cpp-textmate-grammar version 1.12.11 (https://github.com/jeff-hykin/cpp-textmate-grammar)
+27.	jeff-hykin/cpp-textmate-grammar version 1.15.5 (https://github.com/jeff-hykin/cpp-textmate-grammar)
+28.	js-beautify version 1.6.8 (https://github.com/beautify-web/js-beautify)
+29.	JuliaEditorSupport/atom-language-julia version 0.21.1 (https://github.com/JuliaEditorSupport/atom-language-julia)
+30.	Jxck/assert version 1.0.0 (https://github.com/Jxck/assert)
+31.	language-docker (https://github.com/moby/moby)
+32.	language-less version 0.34.2 (https://github.com/atom/language-less)
+33.	language-php version 0.46.2 (https://github.com/atom/language-php)
+34.	MagicStack/MagicPython version 1.1.1 (https://github.com/MagicStack/MagicPython)
+35.	marked version 1.1.0 (https://github.com/markedjs/marked)
+36.	mdn-data version 1.1.12 (https://github.com/mdn/data)
+37.	microsoft/TypeScript-TmLanguage version 0.0.1 (https://github.com/microsoft/TypeScript-TmLanguage)
+38.	microsoft/vscode-JSON.tmLanguage (https://github.com/microsoft/vscode-JSON.tmLanguage)
+39.	microsoft/vscode-markdown-tm-grammar version 1.0.0 (https://github.com/microsoft/vscode-markdown-tm-grammar)
+40.	microsoft/vscode-mssql version 1.9.0 (https://github.com/microsoft/vscode-mssql)
+41.	mmims/language-batchfile version 0.7.6 (https://github.com/mmims/language-batchfile)
+42.	NVIDIA/cuda-cpp-grammar (https://github.com/NVIDIA/cuda-cpp-grammar)
+43.	PowerShell/EditorSyntax version 1.0.0 (https://github.com/PowerShell/EditorSyntax)
+44.	rust-syntax version 0.5.0 (https://github.com/dustypomerleau/rust-syntax)
+45.	seti-ui version 0.1.0 (https://github.com/jesseweed/seti-ui)
+46.	shaders-tmLanguage version 0.1.0 (https://github.com/tgjones/shaders-tmLanguage)
+47.	textmate/asp.vb.net.tmbundle (https://github.com/textmate/asp.vb.net.tmbundle)
+48.	textmate/c.tmbundle (https://github.com/textmate/c.tmbundle)
+49.	textmate/diff.tmbundle (https://github.com/textmate/diff.tmbundle)
+50.	textmate/git.tmbundle (https://github.com/textmate/git.tmbundle)
+51.	textmate/groovy.tmbundle (https://github.com/textmate/groovy.tmbundle)
+52.	textmate/html.tmbundle (https://github.com/textmate/html.tmbundle)
+53.	textmate/ini.tmbundle (https://github.com/textmate/ini.tmbundle)
+54.	textmate/javascript.tmbundle (https://github.com/textmate/javascript.tmbundle)
+55.	textmate/lua.tmbundle (https://github.com/textmate/lua.tmbundle)
+56.	textmate/markdown.tmbundle (https://github.com/textmate/markdown.tmbundle)
+57.	textmate/perl.tmbundle (https://github.com/textmate/perl.tmbundle)
+58.	textmate/ruby.tmbundle (https://github.com/textmate/ruby.tmbundle)
+59.	textmate/yaml.tmbundle (https://github.com/textmate/yaml.tmbundle)
+60.	TypeScript-TmLanguage version 0.1.8 (https://github.com/microsoft/TypeScript-TmLanguage)
+61.	TypeScript-TmLanguage version 1.0.0 (https://github.com/microsoft/TypeScript-TmLanguage)
+62.	Unicode version 12.0.0 (https://home.unicode.org/)
+63.	vscode-codicons version 0.0.14 (https://github.com/microsoft/vscode-codicons)
+64.	vscode-logfile-highlighter version 2.11.0 (https://github.com/emilast/vscode-logfile-highlighter)
+65.	vscode-swift version 0.0.1 (https://github.com/owensd/vscode-swift)
+66.	Web Background Synchronization (https://github.com/WICG/background-sync)
 
 
 %% atom/language-clojure NOTICES AND INFORMATION BEGIN HERE
@@ -1465,7 +1467,7 @@ END OF make-error NOTICES AND INFORMATION
 =========================================
 The MIT License (MIT)
 
-Copyright (c) 2014–2019 Julian Kühnel
+Copyright (c) 2021 REditorSupport
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -1536,6 +1538,193 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 =========================================
 END OF moment NOTICES AND INFORMATION
+
+
+%% mxgraph NOTICES AND INFORMATION BEGIN HERE
+=========================================
+TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+1. Definitions.
+
+  "License" shall mean the terms and conditions for use, reproduction,
+  and distribution as defined by Sections 1 through 9 of this document.
+
+  "Licensor" shall mean the copyright owner or entity authorized by
+  the copyright owner that is granting the License.
+
+  "Legal Entity" shall mean the union of the acting entity and all
+  other entities that control, are controlled by, or are under common
+  control with that entity. For the purposes of this definition,
+  "control" means (i) the power, direct or indirect, to cause the
+  direction or management of such entity, whether by contract or
+  otherwise, or (ii) ownership of fifty percent (50%) or more of the
+  outstanding shares, or (iii) beneficial ownership of such entity.
+
+  "You" (or "Your") shall mean an individual or Legal Entity
+  exercising permissions granted by this License.
+
+  "Source" form shall mean the preferred form for making modifications,
+  including but not limited to software source code, documentation
+  source, and configuration files.
+
+  "Object" form shall mean any form resulting from mechanical
+  transformation or translation of a Source form, including but
+  not limited to compiled object code, generated documentation,
+  and conversions to other media types.
+
+  "Work" shall mean the work of authorship, whether in Source or
+  Object form, made available under the License, as indicated by a
+  copyright notice that is included in or attached to the work
+  (an example is provided in the Appendix below).
+
+  "Derivative Works" shall mean any work, whether in Source or Object
+  form, that is based on (or derived from) the Work and for which the
+  editorial revisions, annotations, elaborations, or other modifications
+  represent, as a whole, an original work of authorship. For the purposes
+  of this License, Derivative Works shall not include works that remain
+  separable from, or merely link (or bind by name) to the interfaces of,
+  the Work and Derivative Works thereof.
+
+  "Contribution" shall mean any work of authorship, including
+  the original version of the Work and any modifications or additions
+  to that Work or Derivative Works thereof, that is intentionally
+  submitted to Licensor for inclusion in the Work by the copyright owner
+  or by an individual or Legal Entity authorized to submit on behalf of
+  the copyright owner. For the purposes of this definition, "submitted"
+  means any form of electronic, verbal, or written communication sent
+  to the Licensor or its representatives, including but not limited to
+  communication on electronic mailing lists, source code control systems,
+  and issue tracking systems that are managed by, or on behalf of, the
+  Licensor for the purpose of discussing and improving the Work, but
+  excluding communication that is conspicuously marked or otherwise
+  designated in writing by the copyright owner as "Not a Contribution."
+
+  "Contributor" shall mean Licensor and any individual or Legal Entity
+  on behalf of whom a Contribution has been received by Licensor and
+  subsequently incorporated within the Work.
+
+2. Grant of Copyright License. Subject to the terms and conditions of
+  this License, each Contributor hereby grants to You a perpetual,
+  worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+  copyright license to reproduce, prepare Derivative Works of,
+  publicly display, publicly perform, sublicense, and distribute the
+  Work and such Derivative Works in Source or Object form.
+
+3. Grant of Patent License. Subject to the terms and conditions of
+  this License, each Contributor hereby grants to You a perpetual,
+  worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+  (except as stated in this section) patent license to make, have made,
+  use, offer to sell, sell, import, and otherwise transfer the Work,
+  where such license applies only to those patent claims licensable
+  by such Contributor that are necessarily infringed by their
+  Contribution(s) alone or by combination of their Contribution(s)
+  with the Work to which such Contribution(s) was submitted. If You
+  institute patent litigation against any entity (including a
+  cross-claim or counterclaim in a lawsuit) alleging that the Work
+  or a Contribution incorporated within the Work constitutes direct
+  or contributory patent infringement, then any patent licenses
+  granted to You under this License for that Work shall terminate
+  as of the date such litigation is filed.
+
+4. Redistribution. You may reproduce and distribute copies of the
+  Work or Derivative Works thereof in any medium, with or without
+  modifications, and in Source or Object form, provided that You
+  meet the following conditions:
+
+  (a) You must give any other recipients of the Work or
+      Derivative Works a copy of this License; and
+
+  (b) You must cause any modified files to carry prominent notices
+      stating that You changed the files; and
+
+  (c) You must retain, in the Source form of any Derivative Works
+      that You distribute, all copyright, patent, trademark, and
+      attribution notices from the Source form of the Work,
+      excluding those notices that do not pertain to any part of
+      the Derivative Works; and
+
+  (d) If the Work includes a "NOTICE" text file as part of its
+      distribution, then any Derivative Works that You distribute must
+      include a readable copy of the attribution notices contained
+      within such NOTICE file, excluding those notices that do not
+      pertain to any part of the Derivative Works, in at least one
+      of the following places: within a NOTICE text file distributed
+      as part of the Derivative Works; within the Source form or
+      documentation, if provided along with the Derivative Works; or,
+      within a display generated by the Derivative Works, if and
+      wherever such third-party notices normally appear. The contents
+      of the NOTICE file are for informational purposes only and
+      do not modify the License. You may add Your own attribution
+      notices within Derivative Works that You distribute, alongside
+      or as an addendum to the NOTICE text from the Work, provided
+      that such additional attribution notices cannot be construed
+      as modifying the License.
+
+  (e) Neither the Work nor Derivative Works may be used or form any
+      part of a larger work that integrates or is supposed to be
+      integrated with a product or service owned or marketed by an
+      Atlassian entity, including its successors and assignees in title.
+
+  You may add Your own copyright statement to Your modifications and
+  may provide additional or different license terms and conditions
+  for use, reproduction, or distribution of Your modifications, or
+  for any such Derivative Works as a whole, provided Your use,
+  reproduction, and distribution of the Work otherwise complies with
+  the conditions stated in this License.
+
+5. Submission of Contributions. Unless You explicitly state otherwise,
+  any Contribution intentionally submitted for inclusion in the Work
+  by You to the Licensor shall be under the terms and conditions of
+  this License, without any additional terms or conditions.
+  Notwithstanding the above, nothing herein shall supersede or modify
+  the terms of any separate license agreement you may have executed
+  with Licensor regarding such Contributions.
+
+6. Trademarks. This License does not grant permission to use the trade
+  names, trademarks, service marks, or product names of the Licensor,
+  except as required for reasonable and customary use in describing the
+  origin of the Work and reproducing the content of the NOTICE file.
+
+7. Disclaimer of Warranty. Unless required by applicable law or
+  agreed to in writing, Licensor provides the Work (and each
+  Contributor provides its Contributions) on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+  implied, including, without limitation, any warranties or conditions
+  of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+  PARTICULAR PURPOSE. You are solely responsible for determining the
+  appropriateness of using or redistributing the Work and assume any
+  risks associated with Your exercise of permissions under this License.
+
+8. Limitation of Liability. In no event and under no legal theory,
+  whether in tort (including negligence), contract, or otherwise,
+  unless required by applicable law (such as deliberate and grossly
+  negligent acts) or agreed to in writing, shall any Contributor be
+  liable to You for damages, including any direct, indirect, special,
+  incidental, or consequential damages of any character arising as a
+  result of this License or out of the use or inability to use the
+  Work (including but not limited to damages for loss of goodwill,
+  work stoppage, computer failure or malfunction, or any and all
+  other commercial damages or losses), even if such Contributor
+  has been advised of the possibility of such damages.
+
+9. Accepting Warranty or Additional Liability. While redistributing
+  the Work or Derivative Works thereof, You may choose to offer,
+  and charge a fee for, acceptance of support, warranty, indemnity,
+  or other liability obligations and/or rights consistent with this
+  License. However, in accepting such obligations, You may act only
+  on Your own behalf and on Your sole responsibility, not on behalf
+  of any other Contributor, and only if You agree to indemnify,
+  defend, and hold each Contributor harmless for any liability
+  incurred by, or claims asserted against, such Contributor by reason
+  of your accepting any such warranty or additional liability.
+
+END OF TERMS AND CONDITIONS
+
+//SEIBERT/MEDIA GmbH, Wiesbaden, Germany is the exclusive licensee of
+JGraph for software products based on this codebase within the Atlassian
+ecosystem of products.
+=========================================
+END OF mxgraph NOTICES AND INFORMATION
 
 %% native-keymap NOTICES AND INFORMATION BEGIN HERE
 =========================================

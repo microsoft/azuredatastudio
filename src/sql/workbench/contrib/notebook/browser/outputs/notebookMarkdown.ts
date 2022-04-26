@@ -17,6 +17,7 @@ import { IMarkdownStringWithCellAttachments, MarkdownRenderOptionsWithCellAttach
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/common/notebookCommon';
+import { FileAccess, Schemas } from 'vs/base/common/network';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
@@ -98,7 +99,18 @@ export class NotebookMarkdownRenderer {
 			}
 			let attributes: string[] = [];
 			if (href) {
-				attributes.push(`src="${href}"`);
+				// VS Code blocks loading directly from the file protocol - we have to transform it to a vscode-file URI
+				// first. Since the href here can be either a file path, an HTTP/S link or embedded data though we first
+				// check if it's any of the others and if so then don't need to do anything.
+				let uri = URI.parse(href);
+				if (!(uri.scheme === Schemas.https ||
+					uri.scheme === Schemas.http ||
+					uri.scheme === Schemas.data ||
+					uri.scheme === Schemas.attachment ||
+					uri.scheme === Schemas.vscodeFileResource)) {
+					uri = FileAccess.asBrowserUri(URI.file(href));
+				}
+				attributes.push(`src="${uri.toString(true)}"`);
 			}
 			if (text) {
 				attributes.push(`alt="${text}"`);

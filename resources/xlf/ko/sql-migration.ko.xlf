@@ -46,13 +46,17 @@
         <source xml:lang="en">Apply</source>
         <target state="translated">적용</target>
       </trans-unit>
-      <trans-unit id="sql.migration.asessment.failed">
-        <source xml:lang="en">The assessment of your SQL Server instance '{0}' failed.</source>
-        <target state="translated">SQL Server 인스턴스 '{0}'을(를) 평가하지 못했습니다.</target>
+      <trans-unit id="sql.migration.assessed.databases">
+        <source xml:lang="en">(for {0} assessed databases)</source>
+        <target state="translated">({0} 평가된 데이터베이스의 경우)</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment">
         <source xml:lang="en">Assessment results for '{0}'</source>
         <target state="translated">‘{0}’에 대한 평가 결과</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.assessment.failed">
+        <source xml:lang="en">The assessment of your SQL Server instance '{0}' failed.</source>
+        <target state="translated">SQL Server 인스턴스 '{0}'을(를) 평가하지 못했습니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.in.progress">
         <source xml:lang="en">Assessment in progress</source>
@@ -73,6 +77,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.assessment.results">
         <source xml:lang="en">Assessment results</source>
         <target state="translated">평가 결과</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.assessment.results.and.recommendations.title">
+        <source xml:lang="en">Assessment results and recommendations</source>
+        <target state="translated">평가 결과 및 권장 사항</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessments.blocking.issue">
         <source xml:lang="en">This is a blocking issue that will prevent the database migration from succeeding.</source>
@@ -98,6 +106,10 @@ This may take some time.</source>
         <source xml:lang="en">Azure SQL</source>
         <target state="translated">Azure SQL</target>
       </trans-unit>
+      <trans-unit id="sql.migration.azure.sql.database">
+        <source xml:lang="en">Azure SQL Database</source>
+        <target state="translated">Azure SQL Database</target>
+      </trans-unit>
       <trans-unit id="sql.migration.azure.sql.database.managed.instance">
         <source xml:lang="en">Azure SQL Managed Instance</source>
         <target state="translated">Azure SQL Managed Instance</target>
@@ -105,6 +117,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.azure.sql.database.virtual.machine">
         <source xml:lang="en">SQL Server on Azure Virtual Machines</source>
         <target state="translated">Azure 가상 컴퓨터의 SQL Server</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.azure.sql.database.virtual.machine.short">
+        <source xml:lang="en">SQL Server on Azure VM</source>
+        <target state="translated">SQL Server on Azure VM</target>
       </trans-unit>
       <trans-unit id="sql.migration.azure.sql.target">
         <source xml:lang="en">Target type</source>
@@ -118,6 +134,18 @@ This may take some time.</source>
         <source xml:lang="en">Azure AD tenant</source>
         <target state="translated">Azure AD 테넌트</target>
       </trans-unit>
+      <trans-unit id="sql.migration.azureRecommendation.browse">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">찾아보기</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.azureRecommendation.folder.name">
+        <source xml:lang="en">Folder name</source>
+        <target state="translated">폴더 이름</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.azureRecommendation.open">
+        <source xml:lang="en">Open</source>
+        <target state="translated">열기</target>
+      </trans-unit>
       <trans-unit id="sql.migration.backup.location">
         <source xml:lang="en">Backup location</source>
         <target state="translated">백업 위치</target>
@@ -128,7 +156,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.bc.info">
         <source xml:lang="en">A SQL Managed Instance migration cutover to the Business Critical service tier can take significantly longer than General Purpose because three secondary replicas have to be seeded for Always On High Availability group. The duration of the operation depends on the size of the data. Seeding speed in 90% of cases is 220 GB/hour or higher.</source>
-        <target state="translated">중요 업무용 서비스 계층으로의 SQL Managed Instance 마이그레이션 전환은 Always On 고가용성 그룹에 대해 3개의 보조 복제본을 시드해야 하기 때문에 범용보다 훨씬 오래 걸릴 수 있습니다. 작업 기간은 데이터 크기에 따라 다릅니다. 90%의 경우 시딩 속도는 220GB/시간 이상입니다.</target>
+        <target state="translated">중요 업무용 서비스 계층으로의 SQL Managed Instance 마이그레이션 컷오버는 Always On 고가용성 그룹에 대해 3개의 보조 복제본을 시드해야 하기 때문에 범용보다 훨씬 오래 걸릴 수 있습니다. 작업 기간은 데이터 크기에 따라 다릅니다. 90%의 경우 시딩 속도는 220GB/시간 이상입니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.container.label">
         <source xml:lang="en">Blob container resource group</source>
@@ -179,8 +207,8 @@ This may take some time.</source>
         <target state="translated">먼저 스토리지 계정 값을 선택합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.can.be.migrated">
-        <source xml:lang="en">{0} out of {1} databases can be migrated</source>
-        <target state="translated">데이터베이스 {1}개 중 {0}개를 마이그레이션할 수 있습니다.</target>
+        <source xml:lang="en">{0}/{1} databases can be migrated</source>
+        <target state="translated">{0}/{1}개 데이터베이스를 마이그레이션할 수 있음</target>
       </trans-unit>
       <trans-unit id="sql.migration.cancel">
         <source xml:lang="en">Cancel</source>
@@ -200,7 +228,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.cannot.cutover">
         <source xml:lang="en">Migration is not in progress and cannot be cutover.</source>
-        <target state="translated">마이그레이션이 진행 중이 아니므로 중단할 수 없습니다.</target>
+        <target state="translated">마이그레이션이 진행 중이 아니므로 컷오버할 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cannot.retry">
         <source xml:lang="en">Migration cannot be retried.</source>
@@ -220,7 +248,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.completing.cutover.warning">
         <source xml:lang="en">Completing cutover without restoring all the backups may result in a data loss.</source>
-        <target state="translated">모든 백업을 복원하지 않고 중단을 완료하면 데이터가 손실될 수 있습니다.</target>
+        <target state="translated">모든 백업을 복원하지 않고 컷오버를 완료하면 데이터가 손실될 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.confirm.checkbox.message">
         <source xml:lang="en">I confirm there are no additional log backups to provide and want to complete cutover.</source>
@@ -288,7 +316,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.help.main">
         <source xml:lang="en">Perform the following steps before you complete cutover.</source>
-        <target state="translated">중단을 완료하기 전에 다음 단계를 수행합니다.</target>
+        <target state="translated">컷오버를 완료하기 전에 다음 단계를 수행합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.in.progress">
         <source xml:lang="en">Cutover in progress for database '{0}'</source>
@@ -315,8 +343,8 @@ This may take some time.</source>
         <target state="translated">2. 최종 트랜잭션 로그 차등 또는 백업을 만들어 Azure Storage Blob 컨테이너에 저장합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.step.2.network.share">
-        <source xml:lang="en">2. ​​Create a final transaction log backup and store it on the network share.</source>
-        <target state="translated">2. ​​최종 트랜잭션 로그 백업을 만들어 네트워크 공유에 저장합니다.</target>
+        <source xml:lang="en">2. Create a final transaction log backup and store it on the network share.</source>
+        <target state="translated">2. 최종 트랜잭션 로그 백업을 만들어 네트워크 공유에 저장합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.step.3.blob">
         <source xml:lang="en">3. Verify that all backups have been restored on the target database. The "Log backups pending restore" value should be zero.</source>
@@ -337,14 +365,6 @@ This may take some time.</source>
       <trans-unit id="sql.migration.dashboard.help.title">
         <source xml:lang="en">Help articles and video links</source>
         <target state="translated">도움말 및 비디오 링크</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.dashboard.link1.description">
-        <source xml:lang="en">Assessment rules used to determine the feasibility of migrating your SQL Server instance to Azure SQL Managed Instance.</source>
-        <target state="translated">SQL Server 인스턴스를 Azure SQL Managed Instance로 마이그레이션할 가능성을 결정하는 데 사용되는 평가 규칙입니다.</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.dashboard.link1.title">
-        <source xml:lang="en">Assessment rules for Azure SQL Managed Instance</source>
-        <target state="translated">Azure SQL Managed Instance에 대한 평가 규칙</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.migrate.task.button">
         <source xml:lang="en">Migrate to Azure SQL</source>
@@ -374,13 +394,21 @@ This may take some time.</source>
         <source xml:lang="en">Database '{0}' already exists on the target managed instance '{1}'.</source>
         <target state="translated">데이터베이스 '{0}'이(가) 대상 관리되는 인스턴스 '{1}'에 이미 있습니다.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.database.assessment.description">
+        <source xml:lang="en">Select the databases that you want to assess for migration to Azure SQL.</source>
+        <target state="translated">Azure SQL으로의 마이그레이션을 평가할 데이터베이스를 선택하세요.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.assessment.title">
+        <source xml:lang="en">Databases for assessment</source>
+        <target state="translated">평가용 데이터베이스</target>
+      </trans-unit>
       <trans-unit id="sql.migration.database.backup.load.error">
         <source xml:lang="en">An error occurred while accessing database details.</source>
         <target state="translated">데이터베이스 세부 정보에 액세스하는 동안 오류가 발생했습니다.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.database.migration">
-        <source xml:lang="en">Databases for migration</source>
-        <target state="translated">마이그레이션할 데이터베이스</target>
+      <trans-unit id="sql.migration.database.checksum.info.text">
+        <source xml:lang="en">Ensure that your backups were taken with the WITH CHECKSUM option.</source>
+        <target state="translated">WITH CHECKSUM 옵션을 사용하여 백업을 수행했는지 확인합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.migration.mode.description">
         <source xml:lang="en">To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.</source>
@@ -430,6 +458,10 @@ This may take some time.</source>
         <source xml:lang="en">Database backup</source>
         <target state="translated">데이터베이스 백업</target>
       </trans-unit>
+      <trans-unit id="sql.migration.database.private.endpoint.info.text">
+        <source xml:lang="en">Ensure that the Azure Storage account does not use a private endpoint.</source>
+        <target state="translated">Azure Storage 계정이 프라이빗 엔드포인트를 사용하지 않는지 확인합니다.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.database.to.be.migrated">
         <source xml:lang="en">Database to be migrated</source>
         <target state="translated">마이그레이션할 데이터베이스</target>
@@ -439,8 +471,8 @@ This may take some time.</source>
         <target state="translated">데이터베이스({0}/{1})</target>
       </trans-unit>
       <trans-unit id="sql.migration.databases.selected">
-        <source xml:lang="en">{0}/{1} Databases selected</source>
-        <target state="translated">{0}/{1} 데이터베이스 선택됨</target>
+        <source xml:lang="en">{0}/{1} databases selected</source>
+        <target state="translated">{0}/{1}개 데이터베이스 선택함</target>
       </trans-unit>
       <trans-unit id="sql.migration.databases.table.title">
         <source xml:lang="en">Databases</source>
@@ -461,10 +493,6 @@ This may take some time.</source>
       <trans-unit id="sql.migration.details.copied">
         <source xml:lang="en">Details copied</source>
         <target state="translated">세부 정보 복사됨</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.dms.portal.info">
-        <source xml:lang="en">Any existing Azure Database Migration Service in the Azure portal do not appear in Azure Data Studio. Any Database Migration Service created in Azure Data Studio will not be visible in the Azure portal yet.</source>
-        <target state="translated">Azure Portal의 기존 Azure Database Migration Service는 Azure Data Studio에 표시되지 않습니다. Azure Data Studio에서 만든 모든 데이터베이스 마이그레이션 서비스는 아직 Azure Portal에 표시되지 않습니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.dms.provision.failed">
         <source xml:lang="en">Failed to provision a Database Migration Service. Wait a few minutes and then try again.</source>
@@ -558,6 +586,10 @@ This may take some time.</source>
         <source xml:lang="en">Instance</source>
         <target state="translated">인스턴스</target>
       </trans-unit>
+      <trans-unit id="sql.migration.invalid.account.error">
+        <source xml:lang="en">To continue, select a valid Azure account.</source>
+        <target state="translated">계속하려면 유효한 Azure 계정을 선택합니다.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.invalid.blob.container.error">
         <source xml:lang="en">To continue, select a valid blob container for source database '{0}'.</source>
         <target state="translated">계속하려면 원본 데이터베이스 '{0}'에 대해 유효한 Blob 컨테이너를 선택하세요.</target>
@@ -578,6 +610,10 @@ This may take some time.</source>
         <source xml:lang="en">To continue, select a valid location.</source>
         <target state="translated">계속하려면 유효한 위치를 선택하세요.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.invalid.managedInstance.error">
+        <source xml:lang="en">To continue, select a valid managed instance.</source>
+        <target state="translated">계속하려면 유효한 관리되는 인스턴스를 선택하세요.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.invalid.migration.service.error">
         <source xml:lang="en">Select a valid Database Migration Service.</source>
         <target state="translated">유효한 데이터베이스 마이그레이션 서비스를 선택하세요.</target>
@@ -595,8 +631,12 @@ This may take some time.</source>
         <target state="translated">잘못된 OwnerUri(매개 변수 'OwnerUri')로 인해 데이터베이스에 연결할 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.invalid.resourceGroup.error">
-        <source xml:lang="en"> To continue, select a valid resource group.</source>
-        <target state="translated"> 계속하려면 유효한 리소스 그룹을 선택하세요.</target>
+        <source xml:lang="en">To continue, select a valid resource group.</source>
+        <target state="translated">계속하려면 유효한 리소스 그룹을 선택하세요.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.invalid.savedInfo">
+        <source xml:lang="en">Cannot retrieve saved session. Try again by selecting new session.</source>
+        <target state="translated">저장된 세션을 검색할 수 없습니다. 새 세션을 선택하여 다시 시도하세요.</target>
       </trans-unit>
       <trans-unit id="sql.migration.invalid.service.name.error">
         <source xml:lang="en">Enter a valid name for the Migration Service.</source>
@@ -617,6 +657,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.invalid.user.account">
         <source xml:lang="en">Invalid user account format. Example: {0}</source>
         <target state="translated">사용자 계정 형식이 잘못되었습니다. 예: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.invalid.virtualMachine.error">
+        <source xml:lang="en">To continue, select a valid virtual machine.</source>
+        <target state="translated">계속하려면 유효한 가상 머신을 선택하세요.</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.page.description">
         <source xml:lang="en">Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.</source>
@@ -706,9 +750,9 @@ This may take some time.</source>
         <source xml:lang="en">Location</source>
         <target state="translated">위치</target>
       </trans-unit>
-      <trans-unit id="sql.migration.managed.instance">
-        <source xml:lang="en">Azure SQL Managed Instance</source>
-        <target state="translated">Azure SQL Managed Instance</target>
+      <trans-unit id="sql.migration.mi.not.ready">
+        <source xml:lang="en">The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.</source>
+        <target state="translated">관리되는 인스턴스 '{0}'은(는) 현재 '{1}' 상태이므로 마이그레이션에 사용할 수 없습니다. 계속하려면 사용 가능한 관리형 인스턴스를 선택합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.migration.completed">
         <source xml:lang="en">Migrations completed</source>
@@ -745,6 +789,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.more.info">
         <source xml:lang="en">More info</source>
         <target state="translated">추가 정보</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.na">
+        <source xml:lang="en">N/A</source>
+        <target state="translated">해당 없음</target>
       </trans-unit>
       <trans-unit id="sql.migration.name">
         <source xml:lang="en">Name</source>
@@ -970,13 +1018,9 @@ This may take some time.</source>
         <source xml:lang="en">Resource group</source>
         <target state="translated">리소스 그룹</target>
       </trans-unit>
-      <trans-unit id="sql.migration.resume.continue">
-        <source xml:lang="en">Continue last migration attempt...</source>
-        <target state="translated">마지막 마이그레이션 시도 계속...</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.resume.start">
-        <source xml:lang="en">Start with migration assessment again (recommended)</source>
-        <target state="translated">마이그레이션 평가 다시 시작(권장)</target>
+      <trans-unit id="sql.migration.resume.session">
+        <source xml:lang="en">Resume previously saved session</source>
+        <target state="translated">이전에 저장된 세션 다시 시작</target>
       </trans-unit>
       <trans-unit id="sql.migration.resume.title">
         <source xml:lang="en">Run migration workflow again</source>
@@ -998,6 +1042,10 @@ This may take some time.</source>
         <source xml:lang="en">Save and close</source>
         <target state="translated">저장하고 닫기</target>
       </trans-unit>
+      <trans-unit id="sql.migration.save.close.popup">
+        <source xml:lang="en">Configuration saved. Performance data collection will remain running in the background. You can stop the collection when you want to.</source>
+        <target state="translated">구성을 저장했습니다. 백그라운드에서 성능 데이터 수집을 계속 실행합니다. 원하는 경우 수집을 중지할 수 있습니다.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.saved.assessment.cancel">
         <source xml:lang="en">Cancel</source>
         <target state="translated">취소</target>
@@ -1007,8 +1055,8 @@ This may take some time.</source>
         <target state="translated">다음</target>
       </trans-unit>
       <trans-unit id="sql.migration.saved.assessment.result">
-        <source xml:lang="en">Saved assessment result</source>
-        <target state="translated">저장된 평가 결과</target>
+        <source xml:lang="en">Saved session</source>
+        <target state="translated">저장된 세션</target>
       </trans-unit>
       <trans-unit id="sql.migration.search">
         <source xml:lang="en">Search</source>
@@ -1043,8 +1091,8 @@ This may take some time.</source>
         <target state="translated">SQL Server 인스턴스 또는 왼쪽에 있는 데이터베이스를 클릭하여 세부 정보를 봅니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.target.to.continue">
-        <source xml:lang="en">To continue, select a target database.</source>
-        <target state="translated">계속하려면 대상 데이터베이스를 선택하세요.</target>
+        <source xml:lang="en">To continue, select a target.</source>
+        <target state="translated">계속하려면 대상을 선택하세요.</target>
       </trans-unit>
       <trans-unit id="sql.migration.server">
         <source xml:lang="en">Server</source>
@@ -1158,21 +1206,313 @@ This may take some time.</source>
         <source xml:lang="en">Size</source>
         <target state="translated">크기</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.available.recommendations">
+        <source xml:lang="en">{0} recommendations available</source>
+        <target state="translated">{0} 권장 사항 사용 가능</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration">
+        <source xml:lang="en">Azure configuration</source>
+        <target state="translated">Azure 구성</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.businessCritical">
+        <source xml:lang="en">Business critical</source>
+        <target state="translated">중요 비즈니스용</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.db">
+        <source xml:lang="en">{0} - {1} vCore</source>
+        <target state="translated">{0} - {1} vCore</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.gen5">
+        <source xml:lang="en">Gen5</source>
+        <target state="translated">Gen5</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.generalPurpose">
+        <source xml:lang="en">General purpose</source>
+        <target state="translated">범용</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.mi">
+        <source xml:lang="en">{0} - {1} - {2} vCore</source>
+        <target state="translated">{0} - {1} - {2} vCore</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.miPreview">
+        <source xml:lang="en">{0} - {1} - {2} vCore - {3} GB</source>
+        <target state="translated">{0} - {1} - {2} vCore - {3}GB</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.premiumSeries">
+        <source xml:lang="en">Premium-series</source>
+        <target state="translated">프리미엄-데이터 계열</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.premiumSeriesMemoryOptimized">
+        <source xml:lang="en">Memory optimized premium-series</source>
+        <target state="translated">메모리 최적화 프리미엄-데이터 계열</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.storage">
+        <source xml:lang="en">{0} x {1}</source>
+        <target state="translated">{0} x {1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.vm">
+        <source xml:lang="en">{0} ({1} vCPU)</source>
+        <target state="translated">{0}({1} vCPU)</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.vmPreview">
+        <source xml:lang="en">Data: {0}, Log: {1}, tempdb: {2}</source>
+        <target state="translated">데이터: {0}, 로그: {1}, tempdb: {2}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.chooseMethod.instructions">
+        <source xml:lang="en">Choose how you want to provide performance data</source>
+        <target state="translated">성능 데이터를 제공할 방법 선택</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.collectData.method">
+        <source xml:lang="en">Collect performance data now</source>
+        <target state="translated">지금 성능 데이터 수집</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.collectDataSelectFolder.instructions">
+        <source xml:lang="en">Select a folder on your local drive where performance data will be saved</source>
+        <target state="translated">성능 데이터를 저장할 로컬 드라이브의 폴더 선택</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.description">
+        <source xml:lang="en">Azure recommendation requires performance data of SQL server instance to provide target recommendation. Enable performance data collection to receive the target recommendation for the databases you want to migrate. The longer this will be enabled the better the recommendation. You can disable performance data collection at any time.</source>
+        <target state="translated">대상 권장 사항을 제공하려면 Azure 권장 사항에 따라 SQL Server 인스턴스의 성능 데이터가 필요합니다. 마이그레이션할 데이터베이스에 대한 대상 권장 사항을 받으려면 성능 데이터 수집을 사용하도록 설정하세요. 오래 사용할수록 더 정확한 권장 사항이 제공됩니다. 언제든지 성능 데이터 수집을 사용하지 않도록 설정할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.description2">
+        <source xml:lang="en">You can also choose to select this data from an existing folder, if you have already collected it previously.</source>
+        <target state="translated">이미 데이터를 수집했다면 기존 폴더에서 이 데이터를 선택하도록 선택할 수도 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.openExisting.method">
+        <source xml:lang="en">I already have the performance data</source>
+        <target state="translated">성능 데이터가 이미 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.openExisting.popup">
+        <source xml:lang="en">Generating Azure recommendations using provided performance data...</source>
+        <target state="translated">제공된 성능 데이터를 사용하여 Azure 권장 사항을 생성하는 중...</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.openExistingSelectFolder.instructions">
+        <source xml:lang="en">Select a folder on your local drive where previously collected performance data was saved</source>
+        <target state="translated">이전에 수집한 성능 데이터가 저장된 로컬 드라이브의 폴더 선택</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.start">
+        <source xml:lang="en">Start</source>
+        <target state="translated">시작</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.start.popup">
+        <source xml:lang="en">Starting performance data collection...</source>
+        <target state="translated">성능 데이터 수집을 시작하는 중...</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.status.autoRefreshTimer">
+        <source xml:lang="en">Initial recommendations will automatically refresh in approximately {0} minute(s).</source>
+        <target state="translated">초기 권장 사항은 약 {0}분 후에 자동으로 새로 고쳐집니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.status.imported">
+        <source xml:lang="en">Azure recommendation has been applied using the provided data. Import or collect additional data to refine the recommendation.</source>
+        <target state="translated">제공된 데이터를 사용하여 Azure 권장 사항을 적용했습니다. 권장 사항을 구체화하려면 추가 데이터를 가져오거나 수집하세요.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.status.inProgress">
+        <source xml:lang="en">Data collection in progress. Generating initial recommendations...</source>
+        <target state="translated">데이터 수집이 진행 중입니다. 초기 권장 사항 생성 중...</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.status.manualRefreshTimer">
+        <source xml:lang="en">Check back periodically for updated recommendations by pressing the 'Refresh recommendation' button.</source>
+        <target state="translated">'권장 사항 새로 고침' 버튼을 눌러 주기적으로 업데이트된 권장 사항을 다시 확인합니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.status.notEnabled">
+        <source xml:lang="en">Azure recommendation collects and analyzes performance data and then recommends an appropriate sized database in Azure for your workload.</source>
+        <target state="translated">Azure 권장 사항은 성능 데이터를 수집하고 분석한 다음 워크로드에 적합한 크기의 Azure 데이터베이스를 권장합니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.status.refining">
+        <source xml:lang="en">Data collection still in progress. Refining existing recommendations...</source>
+        <target state="translated">데이터 수집이 아직 진행 중입니다. 기존 권장 사항을 세부 검색하는 중...</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.status.stopped">
+        <source xml:lang="en">Data collection for Azure recommendations has been stopped.</source>
+        <target state="translated">Azure 권장 사항용 데이터 수집을 중지했습니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.stop.popup">
+        <source xml:lang="en">Stopping performance data collection...</source>
+        <target state="translated">성능 데이터 수집을 중지하는 중...</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.tooltip.inProgress">
+        <source xml:lang="en">Running the performance collection for a longer period of time helps ensure a more accurate recommendation.</source>
+        <target state="translated">오래 성능 수집을 실행할수록 더욱 정확한 권장 사항이 제공됩니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureRecommendation.tooltip.notStarted">
+        <source xml:lang="en">Click the button below to import or collect database performance data.</source>
+        <target state="translated">데이터베이스 성능 데이터를 가져오거나 수집하려면 아래 버튼을 클릭하세요.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.card.azureRecommendation.inProgress">
+        <source xml:lang="en">Azure recommendation will be displayed once data collection is complete.</source>
+        <target state="translated">데이터 수집이 완료되면 Azure 권장 사항이 표시됩니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.card.azureRecommendation.notEnabled">
+        <source xml:lang="en">Azure recommendation is not available. Click “Get Azure recommendation” button below</source>
+        <target state="translated">Azure 권장 사항을 사용할 수 없습니다. 아래에서 \"Azure 권장 사항 가져오기\" 버튼을 클릭하세요.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.cpu">
+        <source xml:lang="en">{0} cores</source>
+        <target state="translated">{0} 코어</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.cpu.requirement">
+        <source xml:lang="en">CPU requirement</source>
+        <target state="translated">CPU 요구 사항</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.data.iops.requirement">
+        <source xml:lang="en">Data IOPS requirement</source>
+        <target state="translated">데이터 IOPS 요구 사항</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.data.storage.requirement">
+        <source xml:lang="en">Data storage requirement</source>
+        <target state="translated">데이터 스토리지 요구 사항</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.db.card.title">
+        <source xml:lang="en">Azure SQL Database</source>
+        <target state="translated">Azure SQL Database</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.gb">
+        <source xml:lang="en">{0} GB</source>
+        <target state="translated">{0}GB</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.get.recommendation">
+        <source xml:lang="en">Get Azure recommendation</source>
+        <target state="translated">Azure 권장 사항 가져오기</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.io.memory.requirement">
+        <source xml:lang="en">IO latency requirement</source>
+        <target state="translated">IO 대기 시간 요구 사항</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.iops">
+        <source xml:lang="en">{0} IOPS</source>
+        <target state="translated">{0} IOPS</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.location">
         <source xml:lang="en">Azure region for your Azure SQL target</source>
         <target state="translated">Azure SQL 대상에 대한 Azure 지역</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.log.storage.requirement">
+        <source xml:lang="en">Log storage requirement</source>
+        <target state="translated">로그 스토리지 요구 사항</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.logs.iops.requirement">
+        <source xml:lang="en">Logs IOPS requirement</source>
+        <target state="translated">로그 IOPS 요구 사항</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.memory.requirement">
+        <source xml:lang="en">Memory requirement</source>
+        <target state="translated">메모리 요구 사항</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.mi.card.title">
-        <source xml:lang="en">Azure SQL Managed Instance (PaaS)</source>
-        <target state="translated">Azure SQL Managed Instance(PaaS)</target>
+        <source xml:lang="en">Azure SQL Managed Instance</source>
+        <target state="translated">Azure SQL Managed Instance</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.ms">
+        <source xml:lang="en">{0} ms</source>
+        <target state="translated">{0}ms</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters">
+        <source xml:lang="en">Recommendation parameters</source>
+        <target state="translated">권장 사항 매개 변수</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.edit">
+        <source xml:lang="en">Edit parameters</source>
+        <target state="translated">매개 변수 편집</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.edit.title">
+        <source xml:lang="en">Edit recommendation parameters</source>
+        <target state="translated">권장 사항 매개 변수 편집</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.enable.preview">
+        <source xml:lang="en">Enable preview features</source>
+        <target state="translated">미리 보기 기능 사용</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.enable.preview.info">
+        <source xml:lang="en">Enabling this option will include the latest hardware generations that have significantly improved performance and scalability. These SKUs are currently in Preview and may not yet be available in all regions.</source>
+        <target state="translated">이 옵션을 사용하도록 설정하면 성능과 확장성이 크게 개선된 최신 하드웨어 세대가 포함됩니다. 이러한 SKU는 현재 미리 보기 상태로 제공되며, 일부 지역에서는 아직 사용할 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.percentage.utilization">
+        <source xml:lang="en">Percentage utilization</source>
+        <target state="translated">사용률(%)</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.percentage.utilization.tooltip">
+        <source xml:lang="en">Percentile of data points to be used during aggregation of the performance data.</source>
+        <target state="translated">성능 데이터를 집계하는 동안 사용할 데이터 요소의 백분위수입니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.scale.factor">
+        <source xml:lang="en">Scale factor</source>
+        <target state="translated">배율</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.scale.factor.invalid">
+        <source xml:lang="en">Invalid scale factor. Enter a positive integer value.</source>
+        <target state="translated">배율이 잘못되었습니다. 양의 정수 값을 입력하세요.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.scale.factor.tooltip">
+        <source xml:lang="en">Change scale factor if you want the Azure recommendation to be a percentage larger or smaller than you current workload.</source>
+        <target state="translated">Azure 권장 사항을 현재 워크로드보다 크거나 작은 비율로 설정하려면 배율을 변경합니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.text">
+        <source xml:lang="en">Enter the information below to edit the recommendation parameters.</source>
+        <target state="translated">권장 사항 매개 변수를 편집하려면 아래에 정보를 입력하세요.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.update">
+        <source xml:lang="en">Update</source>
+        <target state="translated">업데이트</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.percentage">
+        <source xml:lang="en">{0}%</source>
+        <target state="translated">{0}%</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.percentile">
+        <source xml:lang="en">{0}th percentile</source>
+        <target state="translated">{0}번째 백분위수</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.recommendation">
+        <source xml:lang="en">Azure recommendation</source>
+        <target state="translated">Azure 권장 사항</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation.view.assessment.mi">
-        <source xml:lang="en">To migrate to Azure SQL Managed Instance (PaaS), view assessment results and select one or more databases.</source>
-        <target state="translated">Azure SQL Managed Instance(PaaS)로 마이그레이션하려면 평가 결과를 보고 하나 이상의 데이터베이스를 선택합니다.</target>
+        <source xml:lang="en">To migrate to Azure SQL Managed Instance, view assessment results and select one or more databases.</source>
+        <target state="translated">Azure SQL Managed Instance로 마이그레이션하려면 평가 결과를 보고 하나 이상의 데이터베이스를 선택합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation.view.assessment.vm">
-        <source xml:lang="en">To migrate to SQL Server on Azure Virtual Machine (IaaS), view assessment results and select one or more databases.</source>
-        <target state="translated">Azure 가상 머신(IaaS)의 SQL Server로 마이그레이션하려면 평가 결과를 보고 하나 이상의 데이터베이스를 선택합니다.</target>
+        <source xml:lang="en">To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.</source>
+        <target state="translated">Azure 가상 머신의 SQL Server로 마이그레이션하려면 평가 결과를 보고 하나 이상의 데이터베이스를 선택합니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.recommendationReason">
+        <source xml:lang="en">Recommendation reason</source>
+        <target state="translated">권장 이유</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.recommendations">
+        <source xml:lang="en">Recommendations</source>
+        <target state="translated">권장 사항</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.recommendations.empty.time">
+        <source xml:lang="en">-</source>
+        <target state="translated">-</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.recommendations.lastRefreshed">
+        <source xml:lang="en">Last refreshed: {0}</source>
+        <target state="translated">마지막 새로 고침: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.recommendations.loading">
+        <source xml:lang="en">Loading...</source>
+        <target state="translated">로드 중...</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.recommendations.title">
+        <source xml:lang="en">{0} Recommendations</source>
+        <target state="translated">{0} 권장 사항</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.recommended.value">
+        <source xml:lang="en">Value</source>
+        <target state="translated">값</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.recommendedConfiguration">
+        <source xml:lang="en">Recommended configuration</source>
+        <target state="translated">맞춤 구성</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.refine.recommendation">
+        <source xml:lang="en">Refine Azure recommendation</source>
+        <target state="translated">Azure 권장 사항 상세 검색</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.refresh.recommendation">
+        <source xml:lang="en">Refresh recommendation</source>
+        <target state="translated">권장 사항 새로 고침</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.resource">
         <source xml:lang="en">Your Azure SQL target resource name</source>
@@ -1182,13 +1522,97 @@ This may take some time.</source>
         <source xml:lang="en">Resource group for your Azure SQL target</source>
         <target state="translated">Azure SQL 대상의 리소스 그룹</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.restart.performance.collection">
+        <source xml:lang="en">Restart data collection</source>
+        <target state="translated">데이터 수집 다시 시작</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.sourceProperties">
+        <source xml:lang="en">Source properties</source>
+        <target state="translated">원본 속성</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.sql.dataDisk">
+        <source xml:lang="en">SQL data files</source>
+        <target state="translated">SQL 데이터 파일</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.sql.logDisk">
+        <source xml:lang="en">SQL log files</source>
+        <target state="translated">SQL 로그 파일</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.sql.temp">
+        <source xml:lang="en">SQL tempdb</source>
+        <target state="translated">SQL tempdb</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.stop.performance.collection">
+        <source xml:lang="en">Stop data collection</source>
+        <target state="translated">데이터 수집 중지</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.storage.dimension">
+        <source xml:lang="en">Dimension</source>
+        <target state="translated">차원</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.storageGB">
+        <source xml:lang="en">{0} GB</source>
+        <target state="translated">{0}GB</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.subscription">
         <source xml:lang="en">Subscription name for your Azure SQL target</source>
         <target state="translated">Azure SQL 대상의 구독 이름</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.targetDeploymentType">
+        <source xml:lang="en">Target deployment type</source>
+        <target state="translated">대상 배포 유형</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration">
+        <source xml:lang="en">Recommendation target storage configuration</source>
+        <target state="translated">권장 대상 스토리지 구성</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.caching">
+        <source xml:lang="en">Host caching</source>
+        <target state="translated">호스트 캐싱</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.caching.na">
+        <source xml:lang="en">Not applicable</source>
+        <target state="translated">해당 사항 없음</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.caching.none">
+        <source xml:lang="en">None</source>
+        <target state="translated">없음</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.caching.readOnly">
+        <source xml:lang="en">Read-only</source>
+        <target state="translated">읽기 전용</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.caching.readWrite">
+        <source xml:lang="en">Read/write</source>
+        <target state="translated">읽기/쓰기</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.ephemeralTempdb">
+        <source xml:lang="en">Place tempdb on the local ephemeral SSD (default D:\) drive</source>
+        <target state="translated">tempdb를 로컬 임시 SSD(기본값 D:\) 드라이브에 배치합니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.info">
+        <source xml:lang="en">Below is the target storage configuration required to meet your storage performance needs.</source>
+        <target state="translated">다음은 스토리지 성능 요구 사항을 충족하는 데 필요한 대상 스토리지 구성입니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.local.SSD">
+        <source xml:lang="en">Local SSD</source>
+        <target state="translated">로컬 SSD</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.recommendedStorageConfiguration">
+        <source xml:lang="en">Recommended storage configuration</source>
+        <target state="translated">맞춤 스토리지 구성</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.targetStorageConfiguration.storage">
+        <source xml:lang="en">Storage</source>
+        <target state="translated">스토리지</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.viewDetails">
+        <source xml:lang="en">View details</source>
+        <target state="translated">세부 정보 보기</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.vm.card.title">
-        <source xml:lang="en">SQL Server on Azure Virtual Machine (IaaS)</source>
-        <target state="translated">Azure 가상 머신의 SQL Server(IaaS)</target>
+        <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
+        <target state="translated">Azure 가상 머신의 SQL Server</target>
       </trans-unit>
       <trans-unit id="sql.migration.source.configuration">
         <source xml:lang="en">Source configuration</source>
@@ -1207,8 +1631,8 @@ This may take some time.</source>
         <target state="translated">원본 데이터베이스</target>
       </trans-unit>
       <trans-unit id="sql.migration.source.details.sqlAuth">
-        <source xml:lang="en">Enter the SQL Authentication credentials used to connect to SQL Server instance {0}. ​These credentials will be used to connect to the SQL Server instance and identify valid backup files.</source>
-        <target state="translated">SQL Server 인스턴스 {0}에 연결하는 데 사용되는 SQL 인증 자격 증명을 입력합니다. ​이러한 자격 증명은 SQL Server 인스턴스에 연결하고 유효한 백업 파일을 식별하는 데 사용됩니다.</target>
+        <source xml:lang="en">Enter the SQL Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.</source>
+        <target state="translated">{0} SQL Server 인스턴스에 연결하는 데 사용할 SQL 인증 자격 증명을 입력합니다. SQL Server 인스턴스에 연결하고 유효한 백업 파일을 식별하는 데 이 자격 증명을 사용합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.source.details.windowAuth">
         <source xml:lang="en">Enter the Windows Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.</source>
@@ -1241,6 +1665,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.start.migration.button">
         <source xml:lang="en">Start migration</source>
         <target state="translated">마이그레이션 시작</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.start.session">
+        <source xml:lang="en">Start a new session</source>
+        <target state="translated">새 세션 시작</target>
       </trans-unit>
       <trans-unit id="sql.migration.start.time">
         <source xml:lang="en">Start time</source>
@@ -1398,6 +1826,10 @@ This may take some time.</source>
         <source xml:lang="en">Type:</source>
         <target state="translated">형식:</target>
       </trans-unit>
+      <trans-unit id="sql.migration.unavailable.managedInstance">
+        <source xml:lang="en">(Unavailable) {0}</source>
+        <target state="translated">(사용할 수 없음) {0}</target>
+      </trans-unit>
       <trans-unit id="sql.migration.unique.name">
         <source xml:lang="en">Select a unique name for this target database</source>
         <target state="translated">이 대상 데이터베이스의 고유한 이름 선택</target>
@@ -1458,6 +1890,14 @@ This may take some time.</source>
         <source xml:lang="en">Azure account</source>
         <target state="translated">Azure 계정</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.perfCollection.error">
+        <source xml:lang="en">Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:
+
+{1}</source>
+        <target state="translated">'{0}' 서버의 성능 데이터를 수집하는 동안 오류가 발생했습니다. 이 문제가 계속되면 데이터 수집 프로세스를 다시 시작해 보세요.
+
+{1}</target>
+      </trans-unit>
       <trans-unit id="sql.migration.wizard.sku.all">
         <source xml:lang="en">Based on the assessment results, all {0} of your databases in an online state can be migrated to Azure SQL.</source>
         <target state="translated">평가 결과에 따라 온라인 상태의 모든 {0} 데이터베이스를 Azure SQL로 마이그레이션할 수 있습니다.</target>
@@ -1483,10 +1923,22 @@ This may take some time.</source>
         <target state="translated">Azure SQL 대상 선택</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.sku.error">
-        <source xml:lang="en">An error occurred while assessing your databases.</source>
-        <target state="translated">데이터베이스를 평가하는 동안 오류가 발생했습니다.</target>
+        <source xml:lang="en">An error occurred while generating SKU recommendations for the server '{0}'.</source>
+        <target state="translated">'{0}' 서버의 SKU 권장 사항을 생성하는 동안 오류가 발생했습니다.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.wizard.sku.title">
+      <trans-unit id="sql.migration.wizard.sku.error.noRecommendation">
+        <source xml:lang="en">No recommendation available</source>
+        <target state="translated">사용할 수 있는 권장 사항 없음</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.sku.error.noRecommendation.reason">
+        <source xml:lang="en">No SKU recommendations were generated, as there were no SKUs which could satisfy the performance characteristics of your source. Try selecting a different target platform, adjusting recommendation parameters, or selecting a different set of databases to assess.</source>
+        <target state="translated">원본의 성능 특성을 만족할 SKU가 없어 SKU 권장 사항이 생성되지 않았습니다. 다른 대상 플랫폼을 선택하거나, 권장 사항 매개 변수를 조정하거나, 평가할 다른 데이터베이스 집합을 선택해 보세요.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.description">
+        <source xml:lang="en">Select an Azure account and your target {0}.</source>
+        <target state="translated">Azure 계정과 {0} 대상을 선택합니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.title">
         <source xml:lang="en">Azure SQL target</source>
         <target state="translated">Azure SQL 대상</target>
       </trans-unit>
@@ -1495,8 +1947,44 @@ This may take some time.</source>
         <target state="translated">예</target>
       </trans-unit>
       <trans-unit id="total.databases.selected">
-        <source xml:lang="en">{0} of {1} databases selected.</source>
+        <source xml:lang="en">{0} of {1} databases selected</source>
         <target state="translated">데이터베이스 {0}/{1}개가 선택됨</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/sql-migration/dist/dashboard/sqlServerDashboard" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="sql.migration.dashboard.help.description.dmsGuide">
+        <source xml:lang="en">A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.</source>
+        <target state="translated">Azure에서 데이터 자산을 마이그레이션하고 최신화하기 위한 단계별 지침을 제공하는 마이그레이션 문서의 허브입니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.description.mi">
+        <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Managed Instance with minimal downtime.</source>
+        <target state="translated">가동 중지 시간을 최소화하면서 SQL Server 인스턴스(온-프레미스 또는 Azure Virtual Machines)에서 Azure SQL Managed Instance로 데이터베이스를 마이그레이션하는 단계별 자습서입니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.description.migrateUsingADS">
+        <source xml:lang="en">The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.</source>
+        <target state="translated">Azure Data Studio용 Azure SQL 마이그레이션 확장은 Azure 권장 사항을 평가하고, 적합한 크기를 구하며, SQL Server 데이터베이스를 Azure로 마이그레이션하는 기능을 제공합니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.description.vm">
+        <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</source>
+        <target state="translated">가동 중지 시간을 최소화하면서 SQL Server 인스턴스(온-프레미스)에서 Azure Virtual Machines의 SQL Server로 데이터베이스를 마이그레이션하는 단계별 자습서입니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.dmsGuide">
+        <source xml:lang="en">Azure Database Migration Guides</source>
+        <target state="translated">Azure 데이터베이스 마이그레이션 가이드</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.mi">
+        <source xml:lang="en">Tutorial:  Migrate to Azure SQL Managed Instance (online)</source>
+        <target state="translated">자습서: Azure SQL Managed Instance(온라인)로 마이그레이션</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.migrateUsingADS">
+        <source xml:lang="en">Migrate databases using Azure Data Studio</source>
+        <target state="translated">Azure Data Studio를 사용하여 데이터베이스 마이그레이션</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.vm">
+        <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</source>
+        <target state="translated">자습서: Azure Virtual Machines에서 SQL Server로 마이그레이션(온라인)</target>
       </trans-unit>
     </body>
   </file>
@@ -1520,7 +2008,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="complete-cutover-menu">
         <source xml:lang="en">Complete cutover</source>
-        <target state="translated">중단 완료</target>
+        <target state="translated">컷오버 완료</target>
       </trans-unit>
       <trans-unit id="copy-migration-menu">
         <source xml:lang="en">Copy migration details</source>

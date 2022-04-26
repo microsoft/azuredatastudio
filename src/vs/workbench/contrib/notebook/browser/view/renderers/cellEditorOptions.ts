@@ -6,19 +6,19 @@
 import { Emitter, Event } from 'vs/base/common/event';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { deepClone } from 'vs/base/common/objects';
-import { Registry } from 'vs/platform/registry/common/platform';
-import { IConfigurationRegistry, Extensions as ConfigurationExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { IEditorOptions, LineNumbersType } from 'vs/editor/common/config/editorOptions';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { getNotebookEditorFromEditorPane, ICellViewModel, INotebookEditor, NOTEBOOK_CELL_LINE_NUMBERS, NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_IS_ACTIVE_EDITOR } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { localize } from 'vs/nls';
 import { Action2, MenuId, registerAction2 } from 'vs/platform/actions/common/actions';
-import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { Extensions as ConfigurationExtensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { Registry } from 'vs/platform/registry/common/platform';
 import { NOTEBOOK_ACTIONS_CATEGORY } from 'vs/workbench/contrib/notebook/browser/contrib/coreActions';
-import { NotebookOptions } from 'vs/workbench/contrib/notebook/common/notebookOptions';
+import { getNotebookEditorFromEditorPane, ICellViewModel, INotebookEditor, NOTEBOOK_CELL_LINE_NUMBERS, NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_IS_ACTIVE_EDITOR } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { NotebookCellInternalMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { NotebookOptions } from 'vs/workbench/contrib/notebook/common/notebookOptions';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export class CellEditorOptions extends Disposable {
 
@@ -37,15 +37,16 @@ export class CellEditorOptions extends Disposable {
 		selectOnLineNumbers: false,
 		lineNumbers: 'off',
 		lineDecorationsWidth: 0,
-		glyphMargin: false,
+		folding: false,
 		fixedOverflowWidgets: true,
 		minimap: { enabled: false },
-		renderValidationDecorations: 'on'
+		renderValidationDecorations: 'on',
+		lineNumbersMinChars: 3
 	};
 
 	private _value: IEditorOptions;
 	private _lineNumbers: 'on' | 'off' | 'inherit' = 'inherit';
-	private readonly _onDidChange = new Emitter<void>();
+	private readonly _onDidChange = this._register(new Emitter<void>());
 	readonly onDidChange: Event<void> = this._onDidChange.event;
 	private _localDisposableStore = this._register(new DisposableStore());
 
@@ -58,7 +59,7 @@ export class CellEditorOptions extends Disposable {
 		}));
 
 		this._register(notebookOptions.onDidChangeOptions(e => {
-			if (e.cellStatusBarVisibility || e.editorTopPadding || e.editorOptionsCustomizations) {
+			if (e.cellStatusBarVisibility || e.editorTopPadding || e.editorOptionsCustomizations || e.cellBreakpointMargin) {
 				this._recomputeOptions();
 			}
 		}));
@@ -90,10 +91,11 @@ export class CellEditorOptions extends Disposable {
 	}
 
 	private _computeEditorOptions() {
-		const renderLiNumbers = this.configurationService.getValue<'on' | 'off'>('notebook.lineNumbers') === 'on';
-		const lineNumbers: LineNumbersType = renderLiNumbers ? 'on' : 'off';
+		const renderLineNumbers = this.configurationService.getValue<'on' | 'off'>('notebook.lineNumbers') === 'on';
+		const lineNumbers: LineNumbersType = renderLineNumbers ? 'on' : 'off';
 		const editorOptions = deepClone(this.configurationService.getValue<IEditorOptions>('editor', { overrideIdentifier: this.language }));
-		const editorOptionsOverrideRaw = this.notebookOptions.getLayoutConfiguration().editorOptionsCustomizations ?? {};
+		const layoutConfig = this.notebookOptions.getLayoutConfiguration();
+		const editorOptionsOverrideRaw = layoutConfig.editorOptionsCustomizations ?? {};
 		let editorOptionsOverride: { [key: string]: any; } = {};
 		for (let key in editorOptionsOverrideRaw) {
 			if (key.indexOf('editor.') === 0) {
@@ -103,22 +105,13 @@ export class CellEditorOptions extends Disposable {
 		const computed = {
 			...editorOptions,
 			...CellEditorOptions.fixedEditorOptions,
-			... { lineNumbers },
+			... { lineNumbers, folding: lineNumbers === 'on' },
 			...editorOptionsOverride,
 			...{ padding: { top: 12, bottom: 12 } },
-			readonly: this.notebookEditor.viewModel?.options.isReadOnly ?? false
+			readOnly: this.notebookEditor.viewModel?.options.isReadOnly ?? false
 		};
 
-		if (!computed.folding) {
-			computed.lineDecorationsWidth = 16;
-		}
-
 		return computed;
-	}
-
-	override dispose(): void {
-		this._onDidChange.dispose();
-		super.dispose();
 	}
 
 	getValue(internalMetadata?: NotebookCellInternalMetadata): IEditorOptions {
@@ -132,21 +125,16 @@ export class CellEditorOptions extends Disposable {
 		};
 	}
 
-	setGlyphMargin(gm: boolean): void {
-		if (gm !== this._value.glyphMargin) {
-			this._value.glyphMargin = gm;
-			this._onDidChange.fire();
-		}
-	}
-
 	setLineNumbers(lineNumbers: 'on' | 'off' | 'inherit'): void {
 		this._lineNumbers = lineNumbers;
 		if (this._lineNumbers === 'inherit') {
 			const renderLiNumbers = this.configurationService.getValue<'on' | 'off'>('notebook.lineNumbers') === 'on';
 			const lineNumbers: LineNumbersType = renderLiNumbers ? 'on' : 'off';
 			this._value.lineNumbers = lineNumbers;
+			this._value.folding = lineNumbers === 'on';
 		} else {
 			this._value.lineNumbers = lineNumbers as LineNumbersType;
+			this._value.folding = lineNumbers === 'on';
 		}
 		this._onDidChange.fire();
 	}
@@ -172,20 +160,19 @@ registerAction2(class ToggleLineNumberAction extends Action2 {
 			id: 'notebook.toggleLineNumbers',
 			title: { value: localize('notebook.toggleLineNumbers', "Toggle Notebook Line Numbers"), original: 'Toggle Notebook Line Numbers' },
 			precondition: NOTEBOOK_EDITOR_FOCUSED,
-			menu: [{
-				id: MenuId.EditorTitle,
-				group: 'notebookLayout',
-				order: 2,
-				when: ContextKeyExpr.and(
-					NOTEBOOK_IS_ACTIVE_EDITOR,
-					ContextKeyExpr.notEquals('config.notebook.globalToolbar', true)
-				)
-			}, {
-				id: MenuId.NotebookToolbar,
-				group: 'notebookLayout',
-				order: 2,
-				when: ContextKeyExpr.equals('config.notebook.globalToolbar', true)
-			}],
+			menu: [
+				{
+					id: MenuId.NotebookEditorLayoutConfigure,
+					group: 'notebookLayoutDetails',
+					order: 1,
+					when: NOTEBOOK_IS_ACTIVE_EDITOR
+				},
+				{
+					id: MenuId.NotebookToolbar,
+					group: 'notebookLayout',
+					order: 2,
+					when: ContextKeyExpr.equals('config.notebook.globalToolbar', true)
+				}],
 			category: NOTEBOOK_ACTIONS_CATEGORY,
 			f1: true,
 			toggled: {

@@ -220,7 +220,9 @@ export function getScriptWithDBChange(currentDb: string, databaseName: string, s
 
 /**
  * Returns full name of model registration table
- * @param config config
+ * @param db
+ * @param table
+ * @param schema
  */
 export function getRegisteredModelsThreePartsName(db: string, table: string, schema: string) {
 	const dbName = doubleEscapeSingleBrackets(db);
@@ -231,7 +233,8 @@ export function getRegisteredModelsThreePartsName(db: string, table: string, sch
 
 /**
  * Returns full name of model registration table
- * @param config config object
+ * @param table
+ * @param schema
  */
 export function getRegisteredModelsTwoPartsName(table: string, schema: string) {
 	const schemaName = doubleEscapeSingleBrackets(schema);

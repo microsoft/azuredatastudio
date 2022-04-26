@@ -1,5 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="src/sql/base/browser/ui/editableDropdown/browser/dropdown" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="editableDropdown.errorValidate">
+        <source xml:lang="en">Must be an option from the list</source>
+        <target state="translated">必须是列表中的选项</target>
+      </trans-unit>
+      <trans-unit id="selectBox">
+        <source xml:lang="en">Select Box</source>
+        <target state="translated">选择框</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="loadingCompletedMessage">
@@ -88,6 +100,14 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/base/browser/ui/table/plugins/contextMenuColumn.plugin" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="table.showActions">
+        <source xml:lang="en">Show Actions</source>
+        <target state="translated">显示操作</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/base/browser/ui/table/plugins/headerFilter.plugin" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="headerFilter.cancel">
@@ -125,6 +145,14 @@
       <trans-unit id="table.sortDescending">
         <source xml:lang="en">Sort Descending</source>
         <target state="translated">降序排序</target>
+      </trans-unit>
+      <trans-unit id="tableFilter.blankStringDisplayText">
+        <source xml:lang="en">(Blanks)</source>
+        <target state="translated">(空白)</target>
+      </trans-unit>
+      <trans-unit id="tableFilter.nullDisplayText">
+        <source xml:lang="en">(NULL)</source>
+        <target state="translated">(NULL)</target>
       </trans-unit>
       <trans-unit id="tableFilter.selectedCount">
         <source xml:lang="en">{0} Selected</source>
@@ -208,6 +236,10 @@
         <source xml:lang="en">Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.</source>
         <target state="translated">启用自动更新检查。Azure Data Studio 将定期自动检查更新。</target>
       </trans-unit>
+      <trans-unit id="docNotFoundForUriError">
+        <source xml:lang="en">Could not open a notebook document for the specified URI.</source>
+        <target state="translated">无法打开指定的 URI 的笔记本文档。</target>
+      </trans-unit>
       <trans-unit id="enable locally">
         <source xml:lang="en">Please reload Azure Data Studio to enable this extension locally.</source>
         <target state="translated">请重新加载 Azure Data Studio 以在本地启用此扩展。</target>
@@ -259,6 +291,10 @@
         <source xml:lang="en">The notebook cell title menu</source>
         <target state="translated">笔记本单元格标题菜单</target>
       </trans-unit>
+      <trans-unit id="notebook.cellToolbarLocation.compatibilityDescription">
+        <source xml:lang="en">Where the cell toolbar should be shown, or whether it should be hidden. Note: This setting is only enabled for extension compatibility purposes, and so does not affect anything.</source>
+        <target state="translated">应在何处显示单元格工具栏，或者是否应隐藏该工具栏。注意：此设置仅出于扩展兼容性目的而启用，因此不会产生任何影响。</target>
+      </trans-unit>
       <trans-unit id="notebook.title">
         <source xml:lang="en">The notebook title menu</source>
         <target state="translated">笔记本标题菜单</target>
@@ -299,6 +335,10 @@
         <source xml:lang="en">Show Release Notes after an update. The Release Notes are opened in a new web browser window.</source>
         <target state="translated">更新后显示发行说明。发行说明会在新的 Web 浏览器窗口中打开。</target>
       </trans-unit>
+      <trans-unit id="sql.watcherExclude">
+        <source xml:lang="en">Configure glob patterns of file paths to exclude from file watching. Patterns must match on absolute paths, i.e. prefix with `**/` or the full path to match properly and suffix with `/**` to match files within a path (for example `**/build/output/**` or `/Users/name/workspaces/project/build/output/**`). Changing this setting requires a restart. When you experience Azure Data Studio consuming lots of CPU time on startup, you can exclude large folders to reduce the initial load.</source>
+        <target state="translated">配置文件路径的 glob 模式以从文件监视排除。模式必须在绝对路径上匹配(例如 ** 前缀或完整路径需正确匹配，以及路径内以“/**”前缀开头，例如“**/build/output/**”或“/Users/name/workspaces/project/build/output/**”)。更改此设置需要重启。如果在启动时遇到 Azure Data Studio 消耗大量 CPU 时间，则可以排除大型文件夹以减少初始加载。</target>
+      </trans-unit>
       <trans-unit id="uninstallExtensionComplete">
         <source xml:lang="en">Please reload Azure Data Studio to complete the uninstallation of the extension {0}.</source>
         <target state="translated">请重新加载 Azure Data Studio 以完成扩展 {0} 的卸载。</target>
@@ -306,6 +346,18 @@
       <trans-unit id="updateLocale">
         <source xml:lang="en">Would you like to change Azure Data Studio's UI language to {0} and restart?</source>
         <target state="translated">是否要将 Azure Data Studio 的 UI 语言更改为 {0} 并重启?</target>
+      </trans-unit>
+      <trans-unit id="vscodeDocCreationFailedError">
+        <source xml:lang="en">Failed to create notebook document.</source>
+        <target state="translated">未能创建笔记本文档。</target>
+      </trans-unit>
+      <trans-unit id="vscodeFunctionalityNotSupportedError">
+        <source xml:lang="en">This VS Code functionality is not supported in Azure Data Studio.</source>
+        <target state="translated">Azure Data Studio 中不支持此 VS Code 功能。</target>
+      </trans-unit>
+      <trans-unit id="vscodeInvalidArgumentsError">
+        <source xml:lang="en">Invalid arguments.</source>
+        <target state="translated">参数无效。</target>
       </trans-unit>
       <trans-unit id="watermark.newNotebook">
         <source xml:lang="en">New Notebook</source>
@@ -322,18 +374,6 @@
       <trans-unit id="workspace.trust.emptyWindow.description">
         <source xml:lang="en">Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.</source>
         <target state="translated">控制空窗口在 zure Data Studio 中是否默认受信任。当与 `#{0}#` 一起使用时，可以启用 zure Data Studio 的完整功能，而无需在空窗口中进行提示。</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/base/parts/editableDropdown/browser/dropdown" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="editableDropdown.errorValidate">
-        <source xml:lang="en">Must be an option from the list</source>
-        <target state="translated">必须是列表中的选项</target>
-      </trans-unit>
-      <trans-unit id="selectBox">
-        <source xml:lang="en">Select Box</source>
-        <target state="translated">选择框</target>
       </trans-unit>
     </body>
   </file>
@@ -825,6 +865,14 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/api/common/notebooks/vscodeExecuteProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="errorStartBeforeReady">
+        <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
+        <target state="translated">无法启动会话，管理器尚未初始化</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/browser/actions" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="clearSavedAccounts">
@@ -871,9 +919,21 @@
   </file>
   <file original="src/sql/workbench/browser/designer/designer" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
+      <trans-unit id="designer.defaultRemoveRowConfirmationMessage">
+        <source xml:lang="en">Are you sure you want to remove the row?</source>
+        <target state="translated">是否确实要删除该行?</target>
+      </trans-unit>
       <trans-unit id="designer.generalGroupName">
         <source xml:lang="en">General</source>
         <target state="translated">常规</target>
+      </trans-unit>
+      <trans-unit id="designer.issueCountAlert">
+        <source xml:lang="en">{0} validation issues found.</source>
+        <target state="translated">已找到 {0} 个验证问题。</target>
+      </trans-unit>
+      <trans-unit id="designer.issuesTabTitle">
+        <source xml:lang="en">Issues ({0})</source>
+        <target state="translated">问题({0})</target>
       </trans-unit>
       <trans-unit id="designer.loadingDesigner">
         <source xml:lang="en">Loading designer...</source>
@@ -883,9 +943,17 @@
         <source xml:lang="en">Designer is loaded</source>
         <target state="translated">已加载设计器</target>
       </trans-unit>
+      <trans-unit id="designer.newRowButtonAriaLabel">
+        <source xml:lang="en">Add new row to '{0}' table</source>
+        <target state="translated">将新行添加到 \"{0}\" 表</target>
+      </trans-unit>
       <trans-unit id="designer.newRowText">
         <source xml:lang="en">Add New</source>
         <target state="translated">新增</target>
+      </trans-unit>
+      <trans-unit id="designer.processing">
+        <source xml:lang="en">Processing...</source>
+        <target state="translated">正在处理...</target>
       </trans-unit>
       <trans-unit id="designer.processingChanges">
         <source xml:lang="en">Processing changes...</source>
@@ -895,21 +963,37 @@
         <source xml:lang="en">Changes have been processed</source>
         <target state="translated">已处理更改</target>
       </trans-unit>
+      <trans-unit id="designer.processingCompleted">
+        <source xml:lang="en">Processing completed</source>
+        <target state="translated">处理已完成</target>
+      </trans-unit>
+      <trans-unit id="designer.publishChangesCompleted">
+        <source xml:lang="en">Changes have been published</source>
+        <target state="translated">已发布更改</target>
+      </trans-unit>
+      <trans-unit id="designer.publishingChanges">
+        <source xml:lang="en">Publishing changes...</source>
+        <target state="translated">正在发布更改...</target>
+      </trans-unit>
       <trans-unit id="designer.removeRowText">
         <source xml:lang="en">Remove</source>
         <target state="translated">删除</target>
       </trans-unit>
-      <trans-unit id="designer.savingChanges">
-        <source xml:lang="en">Saving changes...</source>
-        <target state="translated">正在保存更改...</target>
-      </trans-unit>
-      <trans-unit id="designer.savingChangesCompleted">
-        <source xml:lang="en">Changes have been saved</source>
-        <target state="translated">更改已保存</target>
+      <trans-unit id="designer.scriptTabTitle">
+        <source xml:lang="en">Scripts</source>
+        <target state="translated">脚本</target>
       </trans-unit>
       <trans-unit id="tableDesigner.unknownComponentType">
         <source xml:lang="en">The component type: {0} is not supported</source>
         <target state="translated">组件类型: 不支持 {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/browser/designer/designerIssuesTabPanelView" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="designer.IssueListAriaLabel">
+        <source xml:lang="en">Issues</source>
+        <target state="translated">问题</target>
       </trans-unit>
     </body>
   </file>
@@ -980,6 +1064,10 @@
   </file>
   <file original="src/sql/workbench/browser/editor/tableDesigner/tableDesignerInput" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
+      <trans-unit id="tableDesigner.OperationInProgressWarning">
+        <source xml:lang="en">The operation cannot be performed while another operation is in progress.</source>
+        <target state="translated">当另一个操作正在进行时，无法执行该操作。</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.newTable">
         <source xml:lang="en">New Table</source>
         <target state="translated">新建表</target>
@@ -3126,6 +3214,168 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlan" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="executionPlan.SaveFileDescription">
+        <source xml:lang="en">Execution Plan Files</source>
+        <target state="translated">执行计划文件</target>
+      </trans-unit>
+      <trans-unit id="executionPlanCustomZoom">
+        <source xml:lang="en">Custom Zoom</source>
+        <target state="translated">自定义显示比例</target>
+      </trans-unit>
+      <trans-unit id="executionPlanFileLoadingComplete">
+        <source xml:lang="en">Execution plans are generated</source>
+        <target state="translated">已生成执行计划</target>
+      </trans-unit>
+      <trans-unit id="executionPlanFileLoadingFailed">
+        <source xml:lang="en">Failed to load execution plan</source>
+        <target state="translated">未能加载执行计划</target>
+      </trans-unit>
+      <trans-unit id="executionPlanFitGraphLabel">
+        <source xml:lang="en">Zoom to fit</source>
+        <target state="translated">缩放到合适大小</target>
+      </trans-unit>
+      <trans-unit id="executionPlanOpenGraphFile">
+        <source xml:lang="en">Show Query Plan XML</source>
+        <target state="translated">显示查询计划 XML</target>
+      </trans-unit>
+      <trans-unit id="executionPlanPropertiesActionLabel">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">属性</target>
+      </trans-unit>
+      <trans-unit id="executionPlanSavePlanXML">
+        <source xml:lang="en">Save Plan File</source>
+        <target state="translated">保存计划文件</target>
+      </trans-unit>
+      <trans-unit id="executionPlanSearchNodeAction">
+        <source xml:lang="en">Find Node</source>
+        <target state="translated">查找节点</target>
+      </trans-unit>
+      <trans-unit id="executionPlanTitle">
+        <source xml:lang="en">Query Plan (Preview)</source>
+        <target state="translated">查询计划(预览)</target>
+      </trans-unit>
+      <trans-unit id="executionPlanZoomInActionLabel">
+        <source xml:lang="en">Zoom In</source>
+        <target state="translated">放大</target>
+      </trans-unit>
+      <trans-unit id="executionPlanZoomOutActionLabel">
+        <source xml:lang="en">Zoom Out</source>
+        <target state="translated">缩小</target>
+      </trans-unit>
+      <trans-unit id="loadingExecutionPlanFile">
+        <source xml:lang="en">Generating execution plans</source>
+        <target state="translated">正在生成执行计划</target>
+      </trans-unit>
+      <trans-unit id="openQueryAction">
+        <source xml:lang="en">Open Query</source>
+        <target state="translated">打开查询</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="executionPlanEditor">
+        <source xml:lang="en">Query Execution Plan Editor</source>
+        <target state="translated">查询执行计划编辑器</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="executionPlanPropertiesEdgeOperationName">
+        <source xml:lang="en">Edge</source>
+        <target state="translated">边缘</target>
+      </trans-unit>
+      <trans-unit id="executionPlanPropertyViewClose">
+        <source xml:lang="en">Close</source>
+        <target state="translated">关闭</target>
+      </trans-unit>
+      <trans-unit id="executionPlanPropertyViewSortAlphabetically">
+        <source xml:lang="en">Alphabetical</source>
+        <target state="translated">按字母顺序</target>
+      </trans-unit>
+      <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
+        <source xml:lang="en">Categorized</source>
+        <target state="translated">按分类顺序</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameNameColumnHeader">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名称</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameValueColumnHeader">
+        <source xml:lang="en">Value</source>
+        <target state="translated">值</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewTitle">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">属性</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/planHeader" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="planHeaderIndexAndCost">
+        <source xml:lang="en">Query {0}: Query cost (relative to the script): {1}%</source>
+        <note>{0} is the index of the graph in the execution plan tab
+{1} is the relative cost in percentage of the graph to the rest of the graphs in execution plan tab </note>
+        <target state="translated">查询 {0}: 查询成本(相对于脚本): {1}%</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="cancelCustomZoomAction">
+        <source xml:lang="en">Close (Escape)</source>
+        <target state="translated">关闭(转义)</target>
+      </trans-unit>
+      <trans-unit id="customZoomApplyButton">
+        <source xml:lang="en">Apply</source>
+        <target state="translated">应用</target>
+      </trans-unit>
+      <trans-unit id="customZoomApplyButtonTitle">
+        <source xml:lang="en">Apply Zoom (Enter)</source>
+        <target state="translated">应用缩放(Enter)</target>
+      </trans-unit>
+      <trans-unit id="invalidCustomZoomError">
+        <source xml:lang="en">Select a zoom value between 1 to 200</source>
+        <target state="translated">选择介于 1 到 200 之间的缩放值</target>
+      </trans-unit>
+      <trans-unit id="qpZoomValueLabel">
+        <source xml:lang="en">Zoom (percent)</source>
+        <target state="translated">缩放(%)</target>
+      </trans-unit>
+      <trans-unit id="zoomAction">
+        <source xml:lang="en">Zoom (Enter)</source>
+        <target state="translated">缩放(Enter)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="cancelSearchAction">
+        <source xml:lang="en">Close (Escape)</source>
+        <target state="translated">关闭(转义)</target>
+      </trans-unit>
+      <trans-unit id="executionPlanSearchTypeContains">
+        <source xml:lang="en">Contains</source>
+        <target state="translated">包含</target>
+      </trans-unit>
+      <trans-unit id="executionPlanSearchTypeEquals">
+        <source xml:lang="en">Equals</source>
+        <target state="translated">等于</target>
+      </trans-unit>
+      <trans-unit id="nextSearchItemAction">
+        <source xml:lang="en">Next Match (Enter)</source>
+        <target state="translated">下一个匹配项(Enter)</target>
+      </trans-unit>
+      <trans-unit id="previousSearchItemAction">
+        <source xml:lang="en">Previous Match (Shift+Enter)</source>
+        <target state="translated">上一个匹配项(Shift+Enter)</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/extensions/browser/contributionRenders" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="insight condition">
@@ -3858,9 +4108,21 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/code.component" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
+      <trans-unit id="cellLanguageDescription">
+        <source xml:lang="en">({0}) - Current Language</source>
+        <target state="translated">({0}) - 当前语言</target>
+      </trans-unit>
+      <trans-unit id="cellLanguageDescriptionConfigured">
+        <source xml:lang="en">({0})</source>
+        <target state="translated">({0})</target>
+      </trans-unit>
       <trans-unit id="parametersText">
         <source xml:lang="en">Parameters</source>
         <target state="translated">参数</target>
+      </trans-unit>
+      <trans-unit id="selectCellLanguage">
+        <source xml:lang="en">Select Cell Language Mode</source>
+        <target state="translated">选择单元格语言模式</target>
       </trans-unit>
     </body>
   </file>
@@ -4258,6 +4520,10 @@ Error: {1}</source>
         <source xml:lang="en">(Preview) Enable Notebook Views</source>
         <target state="translated">(预览)启用笔记本视图</target>
       </trans-unit>
+      <trans-unit id="restartNotebookKernel">
+        <source xml:lang="en">Restart Notebook Kernel</source>
+        <target state="translated">重启笔记本内核</target>
+      </trans-unit>
       <trans-unit id="search.actionsPosition">
         <source xml:lang="en">Controls the positioning of the actionbar on rows in the search view.</source>
         <target state="translated">在搜索视图中控制操作栏的位置。</target>
@@ -4476,11 +4742,11 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="noParametersCell">
         <source xml:lang="en">This notebook cannot run with parameters until a parameter cell is added. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).</source>
-        <target state="translated">在添加参数单元格之前，此笔记本无法使用参数运行。[了解详细信息] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。</target>
+        <target state="new">This notebook cannot run with parameters until a parameter cell is added. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).</target>
       </trans-unit>
       <trans-unit id="noParametersInCell">
         <source xml:lang="en">This notebook cannot run with parameters until there are parameters added to the parameter cell. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).</source>
-        <target state="translated">在将参数添加到参数单元格之前，此笔记本无法使用参数运行。[了解详细信息] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。</target>
+        <target state="new">This notebook cannot run with parameters until there are parameters added to the parameter cell. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).</target>
       </trans-unit>
       <trans-unit id="notebook.findNext">
         <source xml:lang="en">Find Next String</source>
@@ -4521,6 +4787,18 @@ Error: {1}</source>
       <trans-unit id="notebookEditor.name">
         <source xml:lang="en">Notebook Editor</source>
         <target state="translated">笔记本编辑器</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/notebook/browser/notebookEditor.component" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="loadingNotebookCompletedMessage">
+        <source xml:lang="en">Loading notebook {0} completed</source>
+        <target state="translated">已完成加载笔记本 {0}</target>
+      </trans-unit>
+      <trans-unit id="loadingNotebookMessage">
+        <source xml:lang="en">Loading notebook {0}</source>
+        <target state="translated">正在加载笔记本 {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -5860,21 +6138,21 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="tableDesigner.saveTableChanges">
-        <source xml:lang="en">Save Changes</source>
-        <target state="translated">保存更改</target>
+      <trans-unit id="tableDesigner.generateScript">
+        <source xml:lang="en">Generate Script</source>
+        <target state="translated">生成脚本</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.publishTableChanges">
+        <source xml:lang="en">Publish Changes...</source>
+        <target state="translated">发布更改...</target>
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="tableDesigner.configTitle">
-        <source xml:lang="en">Table Designer</source>
-        <target state="translated">表设计器</target>
-      </trans-unit>
-      <trans-unit id="tableDesigner.featureEnabledDescription">
-        <source xml:lang="en">Controls whether the table designer feature is enabled. Default value is false.</source>
-        <target state="translated">控制是否启用表设计器功能。默认值为 false。</target>
+      <trans-unit id="tableDesigner.PreviewFeature">
+        <source xml:lang="en">Preview feature</source>
+        <target state="translated">预览功能</target>
       </trans-unit>
     </body>
   </file>
@@ -5965,6 +6243,22 @@ Error: {1}</source>
       <trans-unit id="taskAction.script">
         <source xml:lang="en">Script</source>
         <target state="translated">脚本</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/tsgops/browser/tsgopsActions" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="hideActivityBarViewContainers">
+        <source xml:lang="en">Hide the extension viewlet</source>
+        <target state="translated">隐藏扩展 viewlet</target>
+      </trans-unit>
+      <trans-unit id="hidePanel">
+        <source xml:lang="en">Hide the panel</source>
+        <target state="translated">隐藏面板</target>
+      </trans-unit>
+      <trans-unit id="hideSettings">
+        <source xml:lang="en">Hide the settings icon</source>
+        <target state="translated">隐藏设置图标</target>
       </trans-unit>
     </body>
   </file>
@@ -6085,14 +6379,6 @@ Error: {1}</source>
       <trans-unit id="welcomePage.name">
         <source xml:lang="en">Name</source>
         <target state="translated">名称</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.preview">
-        <source xml:lang="en">Preview</source>
-        <target state="translated">预览</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.previewBody">
-        <source xml:lang="en">This feature page is in preview. Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development.</source>
-        <target state="translated">此功能页面处于预览状态。预览功能引入了新功能，这些功能有望成为产品的永久组成部分。它们是稳定的，但需要改进额外的辅助功能。欢迎在功能开发期间提供早期反馈。</target>
       </trans-unit>
       <trans-unit id="welcomePage.resources">
         <source xml:lang="en">Resources</source>
@@ -6388,142 +6674,6 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="welcomePage.azdata">
-        <source xml:lang="en">Azure Data Studio</source>
-        <target state="translated">Azure Data Studio</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.azdataBlog">
-        <source xml:lang="en">Discover what's new in the latest release</source>
-        <target state="translated">了解最新版本中的新增功能</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.azdataBlogDescription">
-        <source xml:lang="en">New monthly blog posts each month showcasing our new features</source>
-        <target state="translated">每月推出新的月度博客文章，展示新功能</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.colorTheme">
-        <source xml:lang="en">Color theme</source>
-        <target state="translated">颜色主题</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.colorThemeDescription">
-        <source xml:lang="en">Make the editor and your code look the way you love</source>
-        <target state="translated">使编辑器和代码呈现你喜欢的外观</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.customize">
-        <source xml:lang="en">Customize</source>
-        <target state="translated">自定义</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.deploy">
-        <source xml:lang="en">Deploy</source>
-        <target state="translated">部署</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.extensionDescription">
-        <source xml:lang="en">Download extensions that you need, including the SQL Server Admin pack and more</source>
-        <target state="translated">下载所需的扩展，包括 SQL Server 管理包等</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.extensions">
-        <source xml:lang="en">Extensions</source>
-        <target state="translated">扩展</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.followTwitter">
-        <source xml:lang="en">Follow us on Twitter</source>
-        <target state="translated">在 Twitter 上关注我们</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.followTwitterDescription">
-        <source xml:lang="en">Keep up to date with how the community is using Azure Data Studio and to talk directly with the engineers.</source>
-        <target state="translated">保持了解社区如何使用 Azure Data Studio 并与工程师直接交谈。</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.gettingStarted">
-        <source xml:lang="en">Getting started</source>
-        <target state="translated">开始使用</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.gitHubRepository">
-        <source xml:lang="en">GitHub repository</source>
-        <target state="translated">GitHub 存储库</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.help">
-        <source xml:lang="en">Help</source>
-        <target state="translated">帮助</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.keyboardShortcut">
-        <source xml:lang="en">Keyboard Shortcuts</source>
-        <target state="translated">键盘快捷方式</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.keyboardShortcutDescription">
-        <source xml:lang="en">Find your favorite commands and customize them</source>
-        <target state="translated">查找你喜欢的命令并对其进行自定义</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.learn">
-        <source xml:lang="en">Learn</source>
-        <target state="translated">了解</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.moreRecent">
-        <source xml:lang="en">More...</source>
-        <target state="translated">更多...</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.newConnection">
-        <source xml:lang="en">New connection</source>
-        <target state="translated">新建连接</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.newDeployment">
-        <source xml:lang="en">New Deployment…</source>
-        <target state="translated">新建部署…</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.newNotebook">
-        <source xml:lang="en">New notebook</source>
-        <target state="translated">新建笔记本</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.newQuery">
-        <source xml:lang="en">New query</source>
-        <target state="translated">新建查询</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.noRecentFolders">
-        <source xml:lang="en">No recent folders</source>
-        <target state="translated">没有最近使用的文件夹</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.openFileLinuxPC">
-        <source xml:lang="en">Open file</source>
-        <target state="translated">打开文件</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.openFileMac">
-        <source xml:lang="en">Open file</source>
-        <target state="translated">打开文件</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.productDocumentation">
-        <source xml:lang="en">Documentation</source>
-        <target state="translated">文档</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.recent">
-        <source xml:lang="en">Recent</source>
-        <target state="translated">最近使用</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.releaseNotes">
-        <source xml:lang="en">Release notes</source>
-        <target state="translated">发行说明</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.reportIssue">
-        <source xml:lang="en">Report issue or feature request</source>
-        <target state="translated">报告问题或功能请求</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.showCommands">
-        <source xml:lang="en">Find and run all commands</source>
-        <target state="translated">查找并运行所有命令</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.showCommandsDescription">
-        <source xml:lang="en">Rapidly access and search commands from the Command Palette ({0})</source>
-        <target state="translated">使用命令面板快速访问和搜索命令 ({0})</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.showOnStartup">
-        <source xml:lang="en">Show welcome page on startup</source>
-        <target state="translated">启动时显示欢迎页</target>
-      </trans-unit>
-      <trans-unit id="welcomePage.start">
-        <source xml:lang="en">Start</source>
-        <target state="translated">开始</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="src/sql/workbench/services/accountManagement/browser/accountDialog" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="accountDialog.addConnection">
@@ -6537,6 +6687,10 @@ Error: {1}</source>
       <trans-unit id="accountDialog.didNotPickAuthProvider">
         <source xml:lang="en">You didn't select any authentication provider. Please try again.</source>
         <target state="translated">你没有选择任何身份验证提供程序。请重试。</target>
+      </trans-unit>
+      <trans-unit id="accountDialog.loadingProviderLabel">
+        <source xml:lang="en">Loading accounts...</source>
+        <target state="translated">正在加载帐户...</target>
       </trans-unit>
       <trans-unit id="accountDialog.noAccountLabel">
         <source xml:lang="en">There is no linked account. Please add an account.</source>
@@ -7040,6 +7194,22 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/executionPlan/common/executionPlanService" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="noHandlerRegistered">
+        <source xml:lang="en">No valid execution plan handler is registered</source>
+        <target state="translated">未注册有效的执行计划处理程序</target>
+      </trans-unit>
+      <trans-unit id="providerIdNotValidError">
+        <source xml:lang="en">Valid provider is required in order to interact with ExecutionPlanService</source>
+        <target state="translated">如果要与 ExecutionPlanService 交互，需要有效的提供程序</target>
+      </trans-unit>
+      <trans-unit id="selectExecutionPlanProvider">
+        <source xml:lang="en">Select a provider to open execution plan</source>
+        <target state="translated">选择提供程序以打开执行计划</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/fileBrowser/browser/fileBrowserDialog" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="fileBrowser.discard">
@@ -7313,6 +7483,10 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/services/notebook/browser/models/clientSession" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
+      <trans-unit id="NoExecuteManager">
+        <source xml:lang="en">Server could not start because a provider was not defined for this notebook file type.</source>
+        <target state="translated">服务器无法启动，因为没有为此笔记本文件类型定义提供程序。</target>
+      </trans-unit>
       <trans-unit id="ServerNotStarted">
         <source xml:lang="en">Server did not start for unknown reason</source>
         <target state="translated">由于未知原因，服务器未启动</target>
@@ -7322,8 +7496,16 @@ Error: {1}</source>
         <target state="translated">启动笔记本会话时出错</target>
       </trans-unit>
       <trans-unit id="kernelRequiresConnection">
-        <source xml:lang="en">Kernel {0} was not found. The default kernel will be used instead.</source>
+        <source xml:lang="en">Kernel '{0}' was not found. The default kernel will be used instead.</source>
         <target state="translated">未找到内核 {0}。将改为使用默认内核。</target>
+      </trans-unit>
+      <trans-unit id="kernelRestartFailed">
+        <source xml:lang="en">Kernel restart failed: {0}</source>
+        <target state="translated">内核重启失败: {0}</target>
+      </trans-unit>
+      <trans-unit id="kernelRestartedSuccessfully">
+        <source xml:lang="en">Kernel restarted successfully</source>
+        <target state="translated">已成功重启内核</target>
       </trans-unit>
     </body>
   </file>
@@ -7383,6 +7565,14 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/services/notebook/browser/notebookServiceImpl" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
+      <trans-unit id="executeProviderTimeout">
+        <source xml:lang="en">Waiting for Execute Provider availability timed out for notebook provider '{0}'</source>
+        <target state="translated">等待笔记本提供程序 "{0}" 的执行提供程序时超时</target>
+      </trans-unit>
+      <trans-unit id="failedToCreateNotebookInput">
+        <source xml:lang="en">Failed to create notebook input for provider '{0}'</source>
+        <target state="translated">无法为提供程序 \"{0}\" 创建笔记本输入</target>
+      </trans-unit>
       <trans-unit id="notebookServiceNoProvider">
         <source xml:lang="en">Notebook provider does not exist</source>
         <target state="translated">笔记本提供程序不存在</target>
@@ -7390,6 +7580,14 @@ Error: {1}</source>
       <trans-unit id="notebookUriNotDefined">
         <source xml:lang="en">No URI was passed when creating a notebook manager</source>
         <target state="translated">创建笔记本管理器时未传递 URI</target>
+      </trans-unit>
+      <trans-unit id="serializationProviderTimeout">
+        <source xml:lang="en">Waiting for Serialization Provider availability timed out for notebook provider '{0}'</source>
+        <target state="translated">等待笔记本提供程序 "{0}" 的序列化提供程序可用时超时</target>
+      </trans-unit>
+      <trans-unit id="standardKernelsTimeout">
+        <source xml:lang="en">Waiting for Standard Kernels availability timed out for notebook provider '{0}'</source>
+        <target state="translated">等待笔记本提供程序 "{0}" 的标准内核可用时超时</target>
       </trans-unit>
     </body>
   </file>
@@ -7411,6 +7609,10 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/services/notebook/browser/sql/sqlSessionManager" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
+      <trans-unit id="SqlKernelRestartNotSupported">
+        <source xml:lang="en">SQL kernel restart not supported</source>
+        <target state="translated">不支持 SQL 内核重启</target>
+      </trans-unit>
       <trans-unit id="connectionRequired">
         <source xml:lang="en">A connection must be chosen to run notebook cells</source>
         <target state="translated">必须选择连接才能运行笔记本单元格</target>
@@ -7498,6 +7700,10 @@ Error: {1}</source>
       <trans-unit id="carbon.extension.contributes.notebook.standardKernels">
         <source xml:lang="en">What kernels should be standard with this notebook provider</source>
         <target state="translated">此笔记本提供程序应标配哪些内核</target>
+      </trans-unit>
+      <trans-unit id="providerNotInRegistryError">
+        <source xml:lang="en">The specified provider '{0}' is not present in the notebook registry.</source>
+        <target state="translated">笔记本注册表中不存在指定的提供程序 "{0}"。</target>
       </trans-unit>
       <trans-unit id="vscode.extension.contributes.notebook.languagemagics">
         <source xml:lang="en">Contributes notebook language.</source>
@@ -7734,10 +7940,6 @@ Error: {1}</source>
       <trans-unit id="msgCancelQueryFailed">
         <source xml:lang="en">Canceling the query failed: {0}</source>
         <target state="translated">取消查询失败: {0}</target>
-      </trans-unit>
-      <trans-unit id="queryModelService.noQueryFoundForUri">
-        <source xml:lang="en">No Query found for {0}</source>
-        <target state="translated">找不到 {0} 的查询</target>
       </trans-unit>
       <trans-unit id="queryModelService.uriAlreadyHasQuery">
         <source xml:lang="en">{0} already has an existing query</source>
@@ -8131,6 +8333,18 @@ Error: {1}</source>
         <source xml:lang="en">The table which contains the primary or unique key column.</source>
         <target state="translated">包含主键列或唯一键列的表。</target>
       </trans-unit>
+      <trans-unit id="designer.index.column.description.name">
+        <source xml:lang="en">The name of the column.</source>
+        <target state="translated">列的名称。</target>
+      </trans-unit>
+      <trans-unit id="designer.index.description.columns">
+        <source xml:lang="en">The columns of the index.</source>
+        <target state="translated">索引的列。</target>
+      </trans-unit>
+      <trans-unit id="designer.index.description.name">
+        <source xml:lang="en">The name of the index.</source>
+        <target state="translated">索引的名称。</target>
+      </trans-unit>
       <trans-unit id="designer.table.description.description">
         <source xml:lang="en">Description for the table.</source>
         <target state="translated">表的说明。</target>
@@ -8143,13 +8357,65 @@ Error: {1}</source>
         <source xml:lang="en">The schema that contains the table.</source>
         <target state="translated">包含该表的架构。</target>
       </trans-unit>
+      <trans-unit id="designer.table.primaryKeyColumns.description">
+        <source xml:lang="en">Columns in the primary key.</source>
+        <target state="translated">主键中的列。</target>
+      </trans-unit>
+      <trans-unit id="designer.table.primaryKeyName.description">
+        <source xml:lang="en">Name of the primary key.</source>
+        <target state="translated">主键的名称。</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.ErrorDialogTitle">
+        <source xml:lang="en">Table Designer Error</source>
+        <target state="translated">表设计器错误</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.ForeignKeyTypeName">
         <source xml:lang="en">Foreign Key</source>
         <target state="translated">外键</target>
       </trans-unit>
-      <trans-unit id="tableDesigner.PrimaryKeyTableName">
-        <source xml:lang="en">Primary Key Table</source>
-        <target state="translated">主键表</target>
+      <trans-unit id="tableDesigner.ForeignTableName">
+        <source xml:lang="en">Foreign Table</source>
+        <target state="translated">外部表</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.IndexTypeName">
+        <source xml:lang="en">Index</source>
+        <target state="translated">索引</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.PrimaryKeyTabTitle">
+        <source xml:lang="en">Primary Key</source>
+        <target state="translated">主键</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.TableSchemaValidationError">
+        <source xml:lang="en">Table schema validation failed with error: {0}</source>
+        <target state="translated">表架构验证失败，出现错误: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.addForeignKey">
+        <source xml:lang="en">New Foreign Key</source>
+        <target state="translated">新建外键</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.addNewCheckConstraint">
+        <source xml:lang="en">New Check Constraint</source>
+        <target state="translated">新建 CHECK 约束</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.addNewColumn">
+        <source xml:lang="en">New Column</source>
+        <target state="translated">新建列</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.addNewColumnMapping">
+        <source xml:lang="en">New Column Mapping</source>
+        <target state="translated">新建列映射</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.addNewColumnToIndex">
+        <source xml:lang="en">Add Column</source>
+        <target state="translated">添加列</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.addNewColumnToPrimaryKey">
+        <source xml:lang="en">Add Column</source>
+        <target state="translated">添加列</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.addNewIndex">
+        <source xml:lang="en">New Index</source>
+        <target state="translated">新建索引</target>
       </trans-unit>
       <trans-unit id="tableDesigner.checkConstraintExpressionTitle">
         <source xml:lang="en">Expression</source>
@@ -8219,13 +8485,17 @@ Error: {1}</source>
         <source xml:lang="en">An error occured while processing the change: {0}</source>
         <target state="translated">处理更改时出错: {0}</target>
       </trans-unit>
-      <trans-unit id="tableDesigner.foreignKeyColumn">
-        <source xml:lang="en">Foreign Key Column</source>
-        <target state="translated">外键列</target>
+      <trans-unit id="tableDesigner.foreignKey.column">
+        <source xml:lang="en">Column</source>
+        <target state="translated">列</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKey.foreignColumn">
+        <source xml:lang="en">Foreign Column</source>
+        <target state="translated">外列</target>
       </trans-unit>
       <trans-unit id="tableDesigner.foreignKeyColumns">
-        <source xml:lang="en">Column Mapping</source>
-        <target state="translated">列映射</target>
+        <source xml:lang="en">Columns</source>
+        <target state="translated">列</target>
       </trans-unit>
       <trans-unit id="tableDesigner.foreignKeyNameTitle">
         <source xml:lang="en">Name</source>
@@ -8247,25 +8517,69 @@ Error: {1}</source>
         <source xml:lang="en">General</source>
         <target state="translated">常规</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.generatePreviewReportError">
+        <source xml:lang="en">An error occured while generating preview report: {0}</source>
+        <target state="translated">生成预览报表时出错: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.generateScriptError">
+        <source xml:lang="en">An error occured while generating the script: {0}</source>
+        <target state="translated">生成脚本时出错: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.generatingPreviewReport">
+        <source xml:lang="en">Generating preview report...</source>
+        <target state="translated">正在生成预览报表...</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.generatingScript">
+        <source xml:lang="en">Generating script...</source>
+        <target state="translated">正在生成脚本...</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.generatingScriptCompleted">
+        <source xml:lang="en">Script generated.</source>
+        <target state="translated">生成的脚本。</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.index.column.name">
+        <source xml:lang="en">Column</source>
+        <target state="translated">列</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.indexColumns">
+        <source xml:lang="en">Columns</source>
+        <target state="translated">列</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.indexName">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名称</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.indexesTabTitle">
+        <source xml:lang="en">Indexes</source>
+        <target state="translated">索引</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.inputValidationError">
+        <source xml:lang="en">The input validation failed with error: {0}</source>
+        <target state="translated">输入验证失败，出现错误: {0}</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.nameTitle">
         <source xml:lang="en">Table name</source>
         <target state="translated">表名</target>
       </trans-unit>
-      <trans-unit id="tableDesigner.primaryKeyColumn">
-        <source xml:lang="en">Primary Key Column</source>
+      <trans-unit id="tableDesigner.primaryKeyColumnsTitle">
+        <source xml:lang="en">Primary Key Columns</source>
         <target state="translated">主键列</target>
       </trans-unit>
-      <trans-unit id="tableDesigner.saveChangeError">
-        <source xml:lang="en">An error occured while saving changes: {0}</source>
-        <target state="translated">保存更改时出错: {0}</target>
+      <trans-unit id="tableDesigner.primaryKeyNameTitle">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名称</target>
       </trans-unit>
-      <trans-unit id="tableDesigner.savedChangeSuccess">
-        <source xml:lang="en">The changes have been successfully saved.</source>
-        <target state="translated">已成功保存更改。</target>
+      <trans-unit id="tableDesigner.publishChangeError">
+        <source xml:lang="en">An error occured while publishing changes: {0}</source>
+        <target state="translated">发布更改时出错: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.publishChangeSuccess">
+        <source xml:lang="en">The changes have been successfully published.</source>
+        <target state="translated">更改已成功发布。</target>
       </trans-unit>
       <trans-unit id="tableDesigner.savingChanges">
-        <source xml:lang="en">Saving table designer changes...</source>
-        <target state="translated">正在保存表设计器更改...</target>
+        <source xml:lang="en">Publishing table designer changes...</source>
+        <target state="translated">正在发布表设计器更改...</target>
       </trans-unit>
       <trans-unit id="tableDesigner.schemaTitle">
         <source xml:lang="en">Schema</source>
@@ -8274,6 +8588,26 @@ Error: {1}</source>
       <trans-unit id="tableDesigner.tableObjectType">
         <source xml:lang="en">Table</source>
         <target state="translated">表</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerPublishDialog" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="tableDesigner.UpdateDatabase">
+        <source xml:lang="en">Update Database</source>
+        <target state="translated">更新数据库</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">取消</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.generateScript">
+        <source xml:lang="en">Generate Script</source>
+        <target state="translated">生成脚本</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.previewDatabaseUpdates">
+        <source xml:lang="en">Preview Database Updates</source>
+        <target state="translated">预览数据库更新</target>
       </trans-unit>
     </body>
   </file>
