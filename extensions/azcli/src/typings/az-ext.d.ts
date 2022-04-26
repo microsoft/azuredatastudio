@@ -392,6 +392,17 @@ declare module 'az-ext' {
 					usek8s?: boolean,
 					// Additional arguments
 					additionalEnvVars?: AdditionalEnvVars
+				): Promise<AzOutput<void>>,
+				upgrade(
+					desiredVersion: string,
+					name: string,
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
+					namespace?: string,
+					usek8s?: boolean,
+					// Additional arguments
+					additionalEnvVars?: AdditionalEnvVars
 				): Promise<AzOutput<void>>
 			},
 			midbarc: {
