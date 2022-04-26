@@ -49,5 +49,6 @@ export class ManagePackagesDialog extends Dialog {
 
 		const closeButton = '.modal .modal-footer a[class="monaco-button monaco-text-button"][aria-label="Close"][aria-disabled="false"]';
 		await this.code.waitAndClick(closeButton);
+		await this.waitForDialogGone();
 	}
 }
