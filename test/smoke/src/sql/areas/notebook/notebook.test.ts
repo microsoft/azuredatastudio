@@ -82,7 +82,7 @@ export function setup(opts: minimist.ParsedArgs) {
 		});
 
 		// Temporarily skipping this test while investigating failure in builds
-		it.skip('can add a new package from the Manage Packages wizard', async function () {
+		it('can add a new package from the Manage Packages wizard', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');

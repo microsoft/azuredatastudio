@@ -52,6 +52,8 @@ export class Notebook {
 
 	async runActiveCell(): Promise<void> {
 		await this.code.dispatchKeybinding('F5');
+		const cellRunningIcon = '.notebook-cell.active .toolbarIconStop';
+		await this.code.waitForElement(cellRunningIcon);
 	}
 
 	async runAllCells(): Promise<void> {
