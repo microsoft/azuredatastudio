@@ -886,6 +886,7 @@ export class RestoreDialog extends Modal {
 		this.title = this._restoreTitle + ' - ' + serverName;
 		this._ownerUri = ownerUri;
 		this._urlInputBox.value = '';
+		this._targetDatabaseInputBox.value = '';
 		let title;
 		if (this._isManagedInstance) {
 			this._restoreFromSelectBox.setOptions([this._urlTitle]);
