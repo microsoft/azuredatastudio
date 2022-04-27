@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as vscodeMssql from 'vscode-mssql';
 import * as fs from 'fs';
@@ -39,27 +38,6 @@ export function getErrorMessage(error: any): string {
 export async function getVscodeMssqlApi(): Promise<vscodeMssql.IExtension> {
 	const ext = vscode.extensions.getExtension(vscodeMssql.extension.name) as vscode.Extension<vscodeMssql.IExtension>;
 	return ext.activate();
-}
-
-// Try to load the azdata API - but gracefully handle the failure in case we're running
-// in a context where the API doesn't exist (such as VS Code)
-let azdataApi: typeof azdataType | undefined = undefined;
-try {
-	azdataApi = require('azdata');
-	if (!azdataApi?.version) {
-		// webpacking makes the require return an empty object instead of throwing an error so make sure we clear the var
-		azdataApi = undefined;
-	}
-} catch {
-	// no-op
-}
-
-/**
- * Gets the azdata API if it's available in the context this extension is running in.
- * @returns The azdata API if it's available
- */
-export function getAzdataApi(): typeof azdataType | undefined {
-	return azdataApi;
 }
 
 export async function executeCommand(command: string, cwd?: string): Promise<string> {
