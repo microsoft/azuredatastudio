@@ -13,7 +13,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
  */
 export class UrlBrowserDialogService implements IUrlBrowserDialogService {
 	_serviceBrand: undefined;
-	private _urlBrowserDialog: UrlBrowserDialog;
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService
@@ -29,11 +28,11 @@ export class UrlBrowserDialogService implements IUrlBrowserDialogService {
 		defaultBackupName: string,
 		handleOnOk: (path: string) => void
 	): void {
-		this._urlBrowserDialog = this._instantiationService.createInstance(UrlBrowserDialog, localize('filebrowser.selectBlob', "Select a blob"), isRestoreDialog, defaultBackupName);
-		this._urlBrowserDialog.render();
+		const urlBrowserDialog = this._instantiationService.createInstance(UrlBrowserDialog, localize('filebrowser.selectBlob', "Select a blob"), isRestoreDialog, defaultBackupName);
+		urlBrowserDialog.render();
 
-		this._urlBrowserDialog.setWide(isWide);
-		this._urlBrowserDialog.onOk((filepath) => handleOnOk(filepath));
-		this._urlBrowserDialog.open(ownerUri, expandPath, fileFilters, fileValidationServiceType);
+		urlBrowserDialog.setWide(isWide);
+		urlBrowserDialog.onOk((filepath) => handleOnOk(filepath));
+		urlBrowserDialog.open(ownerUri, expandPath, fileFilters, fileValidationServiceType);
 	}
 }
