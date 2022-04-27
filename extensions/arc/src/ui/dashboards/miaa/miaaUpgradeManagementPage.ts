@@ -10,9 +10,9 @@ import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles, ConnectionMode } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
-import { UpgradeController } from '../../dialogs/upgradeController';
+import { UpgradeSqlMiaa } from '../../dialogs/upgradeSqlMiaa';
 
-export class ControllerUpgradesPage extends DashboardPage {
+export class MiaaUpgradeManagementPage extends DashboardPage {
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel) {
 		super(modelView, dashboard);
 		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
@@ -216,7 +216,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 
 		this.disposables.push(
 			upgradeButton.onDidClick(async () => {
-				const upgradeDialog = new UpgradeController(this._controllerModel);
+				const upgradeDialog = new UpgradeSqlMiaa(this._controllerModel);
 				upgradeDialog.showDialog(loc.upgradeDataController);
 				let dialogClosed = await upgradeDialog.waitForClose();
 				if (dialogClosed) {
@@ -232,20 +232,24 @@ export class ControllerUpgradesPage extends DashboardPage {
 							async (_progress, _token): Promise<void> => {
 								if (nextVersion !== '') {
 									if (this._controllerModel.info.connectionMode === ConnectionMode.direct) {
-										await this._azApi.az.arcdata.dc.upgrade(
+										await this._azApi.az.sql.miarc.upgrade(
 											nextVersion,
 											this._controllerModel.info.name,
-											this._controllerModel.info.resourceGroup,
-											undefined, // Indirect mode argument - namespace
-											undefined // Indirect mode argument - usek8s
+											{
+												resourceGroup: this._controllerModel.info.resourceGroup,
+												namespace: undefined, // Indirect mode argument - namespace
+												usek8s: undefined // Indirect mode argument - usek8s
+											}
 										);
 									} else {
-										await this._azApi.az.arcdata.dc.upgrade(
+										await this._azApi.az.sql.miarc.upgrade(
 											nextVersion,
 											this._controllerModel.info.name,
-											undefined, // Direct mode argument - resourceGroup
-											this._controllerModel.info.namespace,
-											true
+											{
+												resourceGroup: undefined, // Direct mode argument - resourceGroup
+												namespace: this._controllerModel.info.namespace,
+												usek8s: true
+											}
 										);
 									}
 								} else {
@@ -267,5 +271,6 @@ export class ControllerUpgradesPage extends DashboardPage {
 
 		return upgradeButton;
 	}
+
 }
 
