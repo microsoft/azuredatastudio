@@ -4,9 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import AdsTelemetryReporter, { TelemetryEventMeasures, TelemetryEventProperties } from '@microsoft/ads-extension-telemetry';
-import { getPackageInfo } from './api/utils';
 const packageJson = require('../package.json');
-let packageInfo = getPackageInfo(packageJson)!;
+let packageInfo = {
+	name: packageJson.name,
+	version: packageJson.version,
+	aiKey: packageJson.aiKey
+};
 
 export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 
@@ -19,7 +22,7 @@ export enum TelemetryViews {
 	MigrationCutoverDialog = 'MigrationCutoverDialog',
 	MigrationStatusDialog = 'MigrationStatusDialog',
 	MigrationWizardAccountSelectionPage = 'MigrationWizardAccountSelectionPage',
-	MigrationWizardTaSkuRecommendationPage = 'MigrationWizardTaSkuRecommendationPage',
+	MigrationWizardSkuRecommendationPage = 'MigrationWizardSkuRecommendationPage',
 	MigrationWizardTargetSelectionPage = 'MigrationWizardTargetSelectionPage',
 	MigrationWizardIntegrationRuntimePage = 'MigrationWizardIntegrationRuntimePage',
 	MigrationWizardSummaryPage = 'MigrationWizardSummaryPage',

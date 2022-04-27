@@ -15,7 +15,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
 import { createAuthenticationKeyTable } from '../../wizard/integrationRuntimePage';
 import * as EventEmitter from 'events';
-import { clearDialogMessage, getAzureResourceGroups, getAzureResourceGroupsDropdownValues } from '../../api/utils';
+import { clearDialogMessage, getAllResourceGroups, getAzureResourceGroupsDropdownValues } from '../../api/utils';
 import * as styles from '../../constants/styles';
 
 export class CreateSqlMigrationServiceDialog {
@@ -385,7 +385,7 @@ export class CreateSqlMigrationServiceDialog {
 	private async populateResourceGroups(): Promise<void> {
 		this.migrationServiceResourceGroupDropdown.loading = true;
 		try {
-			this._resourceGroups = await getAzureResourceGroups(this._model._azureAccount, this._model._targetSubscription);
+			this._resourceGroups = await getAllResourceGroups(this._model._azureAccount, this._model._targetSubscription, TelemetryViews.CreateDataMigrationServiceDialog);
 			this.migrationServiceResourceGroupDropdown.values = await getAzureResourceGroupsDropdownValues(this._resourceGroups);
 
 			const selectedResourceGroupValue = this.migrationServiceResourceGroupDropdown.values.find(v => v.name.toLowerCase() === this._resourceGroupPreset.toLowerCase());
