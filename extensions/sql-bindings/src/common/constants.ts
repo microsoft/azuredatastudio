@@ -87,4 +87,4 @@ export const userPasswordLater = localize('userPasswordLater', 'In order to user
 export const openFile = localize('openFile', "Open File");
 export const closeButton = localize('closeButton', "Close");
 export function addSqlBinding(functionName: string): string { return localize('addSqlBinding', 'Adding SQL Binding to function "{0}"...'), functionName; }
-export const connectionProgressTitle = localize('connectionProgressTitle', "Connecting to SQL Server Connection...");
+export const connectionProgressTitle = localize('connectionProgressTitle', "Testing SQL Server connection...");

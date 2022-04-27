@@ -26,8 +26,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 	let connectionInfo: IConnectionInfo | undefined;
 	let isCreateNewProject: boolean = false;
 	let newFunctionFileObject: azureFunctionsUtils.IFileFunctionObject | undefined;
-	let connectionURI: string = '';
-	let listDatabases: string[] | undefined;
 
 	try {
 		const azureFunctionApi = await azureFunctionsUtils.getAzureFunctionsExtensionApi();
@@ -123,6 +121,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 					return;
 				}
 				telemetryStep = 'getConnectionInfo';
+				let connectionURI: string = '';
 				try {
 					await vscode.window.withProgress(
 						{
@@ -135,11 +134,12 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 						}
 					);
 				} catch (e) {
-					// connection error occurred
+					// mssql connection error will be shown to the user
+					// we will then prompt user to choose a connection profile again
 					continue;
 				}
 				// list databases based on connection profile selected
-				listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
+				let listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
 				const selectedDatabase = (await vscode.window.showQuickPick(listDatabases, {
 					canPickMany: false,
 					title: constants.selectDatabase,
@@ -156,7 +156,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding);
 				if (!objectName) {
 					// user cancelled
-					continue;
+					return;
 				}
 				break;
 			}
