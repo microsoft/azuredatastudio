@@ -739,7 +739,7 @@ export class BackupComponent extends AngularDisposable {
 
 	private onBackupTypeChanged(): void {
 		if (this.getSelectedBackupType() === BackupConstants.labelDifferential) {
-			this.copyOnlyCheckBox!.checked = true;
+			this.copyOnlyCheckBox!.checked = false;
 			this.copyOnlyCheckBox!.disable();
 		} else {
 			this.copyOnlyCheckBox!.enable();
