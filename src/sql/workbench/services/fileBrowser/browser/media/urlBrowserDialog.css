@@ -11,7 +11,7 @@
 	box-sizing: border-box;
 }
 
-.url-table-content {
+.url-browser-dialog .url-table-content {
 	width: 100%;
 }
 
@@ -21,12 +21,12 @@
 	box-sizing: border-box;
 }
 
-.url-input-label {
+.url-browser-dialog .url-input-label {
 	width: 50px;
 	padding-bottom: 5px;
 }
 
-.url-input-box {
+.url-browser-dialog .url-input-box {
 	width: 200px;
 	padding-bottom: 5px;
 }
