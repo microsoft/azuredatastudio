@@ -16,7 +16,7 @@ export class TaskPanel {
 	}
 
 	async waitForTaskComplete(task: string): Promise<void> {
-		await this.code.waitForElement(`div.label[title*="${task}"]`);
+		await this.code.waitForElement(`div.label[title*="${task}"]`, undefined, 3000); // wait up to 5 minutes for task to complete
 	}
 
 }
