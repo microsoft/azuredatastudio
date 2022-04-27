@@ -755,10 +755,10 @@ describe('BooksTreeViewTests', function () {
 					should(showNotebookSpy.calledWith(vscode.Uri.file(notebookPath))).be.true(`Should have opened the notebook from ${notebookPath} in the editor.`);
 				});
 
-				it('openNotebookAsUntitled should open a notebook as untitled file in the editor @UNSTABLE@', async () => {
+				it('openNotebookAsUntitled should open a notebook as untitled file in the editor', async () => {
 					let notebookPath = run.folderPaths.notebook2File;
 					await bookTreeViewProvider.openNotebookAsUntitled(notebookPath);
-					should(azdata.nb.notebookDocuments.find(doc => doc.uri.scheme === 'untitled')).not.be.undefined();
+					should(azdata.nb.notebookDocuments.find(doc => doc.uri.scheme === 'untitled') !== undefined).be.true(`Should have opened notebook as untitled`);
 				});
 
 				it('openExternalLink should open link', async () => {
