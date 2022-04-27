@@ -370,9 +370,7 @@ export class UrlBrowserDialog extends Modal {
 		this._ownerUri = ownerUri;
 		this.enableOkButton();
 		this.enableCreateCredentialsButton();
-		this.spinner = true;
 		this.show();
-		this.spinner = false;
 	}
 
 	/* enter key */
