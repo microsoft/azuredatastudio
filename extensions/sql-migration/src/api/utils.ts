@@ -380,20 +380,6 @@ export async function getSqlVirtualMachineLocations(account?: azdata.Account, su
 	return locations;
 }
 
-// export async function getStorageAccountLocations(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, storageAccounts?: StorageAccount[], currentView?: TelemetryViews): Promise<azureResource.AzureLocation[]> {
-// 	let locations: azureResource.AzureLocation[] = [];
-// 	try {
-// 		if (account && subscription && storageAccounts) {
-// 			locations = await getLocations(account, subscription);
-// 			locations = locations.filter((loc, i) => storageAccounts.some(sa => sa.location.toLowerCase() === loc.name.toLowerCase()));
-// 		}
-// 	} catch (e) {
-// 		logError(currentView!, 'getStorageAccountLocations', e);
-// 	}
-// 	locations.sort((a, b) => a.displayName.localeCompare(b.displayName));
-// 	return locations;
-// }
-
 export async function getSqlMigrationServiceLocations(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, migrationServices?: SqlMigrationService[], currentView?: TelemetryViews): Promise<azureResource.AzureLocation[]> {
 	let locations: azureResource.AzureLocation[] = [];
 	try {
@@ -407,19 +393,6 @@ export async function getSqlMigrationServiceLocations(account?: azdata.Account, 
 	locations.sort((a, b) => a.displayName.localeCompare(b.displayName));
 	return locations;
 }
-
-// export async function getAllLocations(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<azureResource.AzureLocation[]> {
-// 	let locations: azureResource.AzureLocation[] = [];
-// 	try {
-// 		if (account && subscription) {
-// 			locations = await getLocations(account, subscription);
-//  		}
-// 	} catch (e) {
-// 		console.log(e);
-// 	}
-// 	locations.sort((a, b) => a.displayName.localeCompare(b.displayName));
-// 	return locations;
-// }
 
 export async function getAzureLocationsDropdownValues(locations: azureResource.AzureLocation[]): Promise<azdata.CategoryValue[]> {
 	let locationValues: azdata.CategoryValue[] = [];
@@ -749,38 +722,6 @@ export async function getAzureSqlMigrationServicesDropdownValues(sqlMigrationSer
 	}
 	return SqlMigrationServicesValues;
 }
-
-// export async function getFileShare(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, storageAccount?: StorageAccount, currentView?: TelemetryViews): Promise<azureResource.FileShare[]> {
-// 	let fileShares: azureResource.FileShare[] = [];
-// 	try {
-// 		if (account && subscription && storageAccount) {
-// 			fileShares = await getFileShares(account, subscription, storageAccount);
-// 		}
-// 	} catch (e) {
-// 		logError(currentView!, 'getFileShare', e);
-// 	}
-// 	fileShares.sort((a, b) => a.name.localeCompare(b.name));
-// 	return fileShares;
-// }
-
-// export async function getFileSharesValues(fileShares: azureResource.FileShare[]): Promise<azdata.CategoryValue[]> {
-// 	let fileSharesValues: azdata.CategoryValue[] = [];
-// 	fileShares.forEach((fileShare) => {
-// 		fileSharesValues.push({
-// 			name: fileShare.id,
-// 			displayName: fileShare.name
-// 		});
-// 	});
-// 	if (fileSharesValues.length === 0) {
-// 		fileSharesValues = [
-// 			{
-// 				displayName: constants.NO_FILESHARES_FOUND,
-// 				name: ''
-// 			}
-// 		];
-// 	}
-// 	return fileSharesValues;
-// }
 
 export async function getBlobContainer(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, storageAccount?: StorageAccount, currentView?: TelemetryViews): Promise<azureResource.BlobContainer[]> {
 	let blobContainers: azureResource.BlobContainer[] = [];
