@@ -165,30 +165,6 @@ steps:
       yarn gulp compile-extensions
     displayName: Compile Extensions
 
-  - bash: |
-      set -e
-      mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
-      cd /tmp
-      for folder in adsuser*/
-      do
-      folder=${folder%/}
-      # Only archive directories we want for debugging purposes
-      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
-      done
-    displayName: Archive Logs
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-
-  - script: |
-      set -e
-      yarn gulp vscode-linux-x64-build-deb
-    displayName: Build Deb
-
-  - script: |
-      set -e
-      yarn gulp vscode-linux-x64-build-rpm
-    displayName: Build Rpm
-
   - task: DockerInstaller@0
     displayName: Installing Docker
     inputs:
@@ -213,6 +189,15 @@ steps:
     inputs:
       secureFile: 'smokeTestsConnectionConfig.json'
 
+  - script: |
+      set -e
+      ps -ef
+      cat /proc/sys/fs/inotify/max_user_watches
+      lsof | wc -l
+    displayName: Diagnostics before smoke test run (processes, max_user_watches, number of opened file handles)
+    continueOnError: true
+    condition: and(succeededOrFailed(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
+
   # Per https://developercommunity.visualstudio.com/t/variablesexpressions-dont-work-with-continueonerro/1187733 we can't use variables
   # in continueOnError directly so instead make two copies of the task and only run one or the other based on the SMOKE_FAIL_ON_ERROR value
   - script: |
@@ -231,6 +216,39 @@ steps:
       yarn smoketest --build "$APP_PATH" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/linux-x64/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions" --databaseConnections $(testConnections.secureFilePath)
     displayName: Run smoke tests (Electron) (Fail on Error)
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
+
+  - script: |
+      set -e
+      ps -ef
+      cat /proc/sys/fs/inotify/max_user_watches
+      lsof | wc -l
+    displayName: Diagnostics after smoke test run (processes, max_user_watches, number of opened file handles)
+    continueOnError: true
+    condition: and(succeededOrFailed(), eq(variables['VSCODE_ARCH'], 'x64'), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
+
+  - bash: |
+      set -e
+      mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
+      cd /tmp
+      for folder in adsuser*/
+      do
+      folder=${folder%/}
+      # Only archive directories we want for debugging purposes
+      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
+      done
+    displayName: Archive Logs
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - script: |
+      set -e
+      yarn gulp vscode-linux-x64-build-deb
+    displayName: Build Deb
+
+  - script: |
+      set -e
+      yarn gulp vscode-linux-x64-build-rpm
+    displayName: Build Rpm
 
   - task: UseDotNet@2
     displayName: 'Install .NET Core sdk for signing'
