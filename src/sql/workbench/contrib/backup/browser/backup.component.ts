@@ -487,7 +487,6 @@ export class BackupComponent extends AngularDisposable {
 			this.backupNameBox!.focus();
 
 			if (this._engineEdition !== DatabaseEngineEdition.SqlManagedInstance) {
-				// Set backup path list
 				this.setDefaultBackupPaths();
 				let pathlist: ISelectOptionItem[] = [];
 				for (let i in this.backupPathTypePairs) {
