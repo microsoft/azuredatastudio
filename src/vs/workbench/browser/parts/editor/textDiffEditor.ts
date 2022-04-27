@@ -299,9 +299,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditorPan
 
 		// Clear Model
 		const diffEditor = this.getControl();
-		if (diffEditor) {
-			diffEditor.setModel(null);
-		}
+		diffEditor?.setModel(null);
 
 		// Pass to super
 		super.clearInput();
