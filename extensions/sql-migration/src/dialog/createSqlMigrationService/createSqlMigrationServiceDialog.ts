@@ -259,7 +259,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		this._disposables.push(
 			this.migrationServiceResourceGroupDropdown.onValueChanged(async (value) => {
-				const selectedResourceGroup = this._resourceGroups.find(rg => rg.name === value);
+				const selectedResourceGroup = this._resourceGroups.find(rg => rg.name === value || constants.NEW_RESOURCE_GROUP(rg.name) === value);
 				this._selectedResourceGroup = (selectedResourceGroup)
 					? selectedResourceGroup
 					: undefined!;
@@ -286,6 +286,8 @@ export class CreateSqlMigrationServiceDialog {
 			const createResourceGroupDialog = new CreateResourceGroupDialog(this._model._azureAccount, this._model._targetSubscription, this._model._targetServerInstance.location);
 			const createdResourceGroup = await createResourceGroupDialog.initialize();
 			if (createdResourceGroup) {
+				this._resourceGroups.push(createdResourceGroup);
+				this._selectedResourceGroup = createdResourceGroup;
 				this.migrationServiceResourceGroupDropdown.loading = true;
 				(<azdata.CategoryValue[]>this.migrationServiceResourceGroupDropdown.values).unshift({
 					displayName: constants.NEW_RESOURCE_GROUP(createdResourceGroup.name),

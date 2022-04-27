@@ -205,7 +205,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				this.wizard.message = {
 					text: ''
 				};
-				const selectedDms = this.migrationStateModel._sqlMigrationServices.find(dms => dms.name === value);
+				const selectedDms = this.migrationStateModel._sqlMigrationServices.find(dms => dms.name === value && dms.properties.resourceGroup.toLowerCase() === this.migrationStateModel._sqlMigrationServiceResourceGroup.name.toLowerCase());
 				if (selectedDms) {
 					this.migrationStateModel._sqlMigrationService = selectedDms;
 					await this.loadMigrationServiceStatus();
