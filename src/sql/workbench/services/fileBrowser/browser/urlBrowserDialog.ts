@@ -28,7 +28,7 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Account } from 'azdata';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
-import { Blob, BlobContainer, AzureGraphResource, AzureResourceSubscription, GetBlobsResult } from 'azurecore';
+import { azureResource, GetBlobsResult } from 'azurecore';
 import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
 import { Link } from 'vs/platform/opener/browser/link';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -39,13 +39,13 @@ export class UrlBrowserDialog extends Modal {
 
 	private _accounts: Account[];
 	private _selectedAccount: Account;
-	private _subscriptions: AzureResourceSubscription[];
-	private _selectedSubscription: AzureResourceSubscription;
-	private _storageAccounts: AzureGraphResource[];
-	private _selectedStorageAccount: AzureGraphResource;
-	private _blobContainers: BlobContainer[];
-	private _selectedBlobContainer: BlobContainer;
-	private _backupFiles: Blob[];
+	private _subscriptions: azureResource.AzureResourceSubscription[];
+	private _selectedSubscription: azureResource.AzureResourceSubscription;
+	private _storageAccounts: azureResource.AzureGraphResource[];
+	private _selectedStorageAccount: azureResource.AzureGraphResource;
+	private _blobContainers: azureResource.BlobContainer[];
+	private _selectedBlobContainer: azureResource.BlobContainer;
+	private _backupFiles: azureResource.Blob[];
 
 	private _ownerUri: string;
 	private _restoreDialog: boolean;
@@ -247,7 +247,7 @@ export class UrlBrowserDialog extends Modal {
 		}
 	}
 
-	private setSubscriptionsSelectorBoxOptions(subscriptions: AzureResourceSubscription[]) {
+	private setSubscriptionsSelectorBoxOptions(subscriptions: azureResource.AzureResourceSubscription[]) {
 		this._subscriptions = subscriptions;
 		const subscriptionDisplayNames: string[] = subscriptions.map(subscription => subscription.name);
 		this._subscriptionSelectorBox.setOptions(subscriptionDisplayNames);
@@ -272,12 +272,11 @@ export class UrlBrowserDialog extends Modal {
 				.then(getStorageAccountsResult => this.setStorageAccountSelectorBoxOptions(getStorageAccountsResult.resources))
 				.catch(getStorageAccountsResult => this.setStorageAccountSelectorBoxError(getStorageAccountsResult.errors));
 		} else {
-			this._selectedSubscription = '';
 			this.setStorageAccountSelectorBoxError({});
 		}
 	}
 
-	private setStorageAccountSelectorBoxOptions(storageAccounts: AzureGraphResource[]) {
+	private setStorageAccountSelectorBoxOptions(storageAccounts: azureResource.AzureGraphResource[]) {
 		this._storageAccounts = storageAccounts;
 		const storageAccountDisplayNames: string[] = this._storageAccounts.map(storageAccount => storageAccount.name);
 		this._storageAccountSelectorBox.setOptions(storageAccountDisplayNames);
@@ -302,12 +301,11 @@ export class UrlBrowserDialog extends Modal {
 				.then(getBlobContainersResult => this.setBlobContainersSelectorBoxOptions(getBlobContainersResult.blobContainers))
 				.catch(getBlobContainersResult => this.setBlobContainersSelectorBoxErrors(getBlobContainersResult.errors));
 		} else {
-			this._selectedStorageAccount = '';
 			this.setBlobContainersSelectorBoxErrors({});
 		}
 	}
 
-	private setBlobContainersSelectorBoxOptions(blobContainers: BlobContainer[]) {
+	private setBlobContainersSelectorBoxOptions(blobContainers: azureResource.BlobContainer[]) {
 		this._blobContainers = blobContainers;
 		const blobContainersDisplayNames: string[] = this._blobContainers.map(blobContainer => blobContainer.name);
 		this._blobContainerSelectorBox.setOptions(blobContainersDisplayNames);
@@ -335,7 +333,6 @@ export class UrlBrowserDialog extends Modal {
 					.then(getBlobsResult => this.setBackupFilesOptions(getBlobsResult))
 					.catch(getBlobsResult => this.setBackupFilesSelectorError(getBlobsResult));
 			} else {
-				this._selectedBlobContainer = '';
 				this.setBackupFilesSelectorError({});
 			}
 		}

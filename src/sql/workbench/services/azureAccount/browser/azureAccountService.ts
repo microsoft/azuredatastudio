@@ -36,22 +36,22 @@ export class AzureAccountService implements IAzureAccountService {
 		return this._proxy.getSubscriptions(account, ignoreErrors, selectedOnly);
 	}
 
-	public getStorageAccounts(account: azurecore.AzureAccount, subscriptions: azurecore.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountResult> {
+	public getStorageAccounts(account: azurecore.AzureAccount, subscriptions: azurecore.azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountResult> {
 		this.checkProxy();
 		return this._proxy.getStorageAccounts(account, subscriptions, ignoreErrors);
 	}
 
-	public getBlobContainers(account: azurecore.AzureAccount, subscription: azurecore.AzureResourceSubscription, storageAccount: azurecore.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetBlobContainersResult> {
+	public getBlobContainers(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetBlobContainersResult> {
 		this.checkProxy();
 		return this._proxy.getBlobContainers(account, subscription, storageAccount, ignoreErrors);
 	}
 
-	public getBlobs(account: azurecore.AzureAccount, subscription: azurecore.AzureResourceSubscription, storageAccount: azurecore.AzureGraphResource, containerName: string, ignoreErrors?: boolean): Promise<azurecore.GetBlobsResult> {
+	public getBlobs(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, containerName: string, ignoreErrors?: boolean): Promise<azurecore.GetBlobsResult> {
 		this.checkProxy();
 		return this._proxy.getBlobs(account, subscription, storageAccount, containerName, ignoreErrors);
 	}
 
-	public getStorageAccountAccessKey(account: azurecore.AzureAccount, subscription: azurecore.AzureResourceSubscription, storageAccount: azurecore.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountAccessKeyResult> {
+	public getStorageAccountAccessKey(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountAccessKeyResult> {
 		this.checkProxy();
 		return this._proxy.getStorageAccountAccessKey(account, subscription, storageAccount, ignoreErrors);
 	}

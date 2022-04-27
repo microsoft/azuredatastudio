@@ -19,22 +19,22 @@ export class ExtHostAzureAccount extends ExtHostAzureAccountShape {
 		return api.getSubscriptions(account, ignoreErrors, selectedOnly);
 	}
 
-	public override $getStorageAccounts(account: azurecore.AzureAccount, subscriptions: azurecore.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountResult> {
+	public override $getStorageAccounts(account: azurecore.AzureAccount, subscriptions: azurecore.azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountResult> {
 		const api = this.getApi();
 		return api.getStorageAccounts(account, subscriptions, ignoreErrors);
 	}
 
-	public override $getBlobContainers(account: azurecore.AzureAccount, subscription: azurecore.AzureResourceSubscription, storageAccount: azurecore.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetBlobContainersResult> {
+	public override $getBlobContainers(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetBlobContainersResult> {
 		const api = this.getApi();
 		return api.getBlobContainers(account, subscription, storageAccount);
 	}
 
-	public override $getBlobs(account: azurecore.AzureAccount, subscription: azurecore.AzureResourceSubscription, storageAccount: azurecore.AzureGraphResource, containerName: string, ignoreErrors?: boolean): Promise<azurecore.GetBlobsResult> {
+	public override $getBlobs(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, containerName: string, ignoreErrors?: boolean): Promise<azurecore.GetBlobsResult> {
 		const api = this.getApi();
 		return api.getBlobs(account, subscription, storageAccount, containerName, ignoreErrors);
 	}
 
-	public override $getStorageAccountAccessKey(account: azurecore.AzureAccount, subscription: azurecore.AzureResourceSubscription, storageAccount: azurecore.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountAccessKeyResult> {
+	public override $getStorageAccountAccessKey(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountAccessKeyResult> {
 		const api = this.getApi();
 		return api.getStorageAccountAccessKey(account, subscription, storageAccount, ignoreErrors);
 	}
