@@ -5,13 +5,11 @@
 import * as vscode from 'vscode';
 import { ITreeNodeInfo } from 'vscode-mssql';
 import { IExtension, BindingType, GetAzureFunctionsResult, ResultStatus } from 'sql-bindings';
-import { getAzdataApi } from './common/utils';
 import { addSqlBinding, createAzureFunction, getAzureFunctions } from './services/azureFunctionsService';
 import { launchAddSqlBindingQuickpick } from './dialogs/addSqlBindingQuickpick';
 import { promptForBindingType, promptAndUpdateConnectionStringSetting, promptForObjectName } from './common/azureFunctionsUtils';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
-	void vscode.commands.executeCommand('setContext', 'azdataAvailable', !!getAzdataApi());
 	// register the add sql binding command
 	context.subscriptions.push(vscode.commands.registerCommand('sqlBindings.addSqlBinding', async (uri: vscode.Uri | undefined) => { return launchAddSqlBindingQuickpick(uri); }));
 	// Generate Azure Function command
