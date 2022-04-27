@@ -258,12 +258,12 @@ export function getUserHome(): string | undefined {
 	return process.env.HOME || process.env.USERPROFILE;
 }
 
-export async function getAzureAccounts(currentView?: TelemetryViews): Promise<azdata.Account[]> {
+export async function getAzureAccounts(): Promise<azdata.Account[]> {
 	let accounts: azdata.Account[] = [];
 	try {
 		accounts = await azdata.accounts.getAllAccounts();
 	} catch (e) {
-		logError(currentView!, 'getAzureAccounts', e);
+		logError(TelemetryViews.Utils, 'utils.getAzureAccounts', e);
 	}
 	return accounts;
 }
@@ -289,14 +289,14 @@ export async function getAzureAccountsDropdownValues(accounts: azdata.Account[])
 	return accountsValues;
 }
 
-export function getAzureTenants(account?: azdata.Account, currentView?: TelemetryViews): Tenant[] {
+export function getAzureTenants(account?: azdata.Account): Tenant[] {
 	let tenants: Tenant[] = [];
 	try {
 		if (account) {
 			tenants = account.properties.tenants;
 		}
 	} catch (e) {
-		logError(currentView!, 'getAzureTenants', e);
+		logError(TelemetryViews.Utils, 'utils.getAzureTenants', e);
 	}
 	return tenants;
 }
@@ -320,14 +320,14 @@ export async function getAzureTenantsDropdownValues(tenants: Tenant[]): Promise<
 	return tenantsValues;
 }
 
-export async function getAzureSubscriptions(account?: azdata.Account, currentView?: TelemetryViews): Promise<azureResource.AzureResourceSubscription[]> {
+export async function getAzureSubscriptions(account?: azdata.Account): Promise<azureResource.AzureResourceSubscription[]> {
 	let subscriptions: azureResource.AzureResourceSubscription[] = [];
 	try {
 		if (account) {
 			subscriptions = !account.isStale ? await getSubscriptions(account) : [];
 		}
 	} catch (e) {
-		logError(currentView!, 'getAzureSubscriptions', e);
+		logError(TelemetryViews.Utils, 'utils.getAzureSubscriptions', e);
 	}
 	subscriptions.sort((a, b) => a.name.localeCompare(b.name));
 	return subscriptions;
@@ -352,7 +352,7 @@ export async function getAzureSubscriptionsDropdownValues(subscriptions: azureRe
 	return subscriptionsValues;
 }
 
-export async function getSqlManagedInstanceLocations(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, managedInstances?: azureResource.AzureSqlManagedInstance[], currentView?: TelemetryViews): Promise<azureResource.AzureLocation[]> {
+export async function getSqlManagedInstanceLocations(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, managedInstances?: azureResource.AzureSqlManagedInstance[]): Promise<azureResource.AzureLocation[]> {
 	let locations: azureResource.AzureLocation[] = [];
 	try {
 		if (account && subscription && managedInstances) {
@@ -360,13 +360,13 @@ export async function getSqlManagedInstanceLocations(account?: azdata.Account, s
 			locations = locations.filter((loc, i) => managedInstances.some(mi => mi.location.toLowerCase() === loc.name.toLowerCase()));
 		}
 	} catch (e) {
-		logError(currentView!, 'getSqlManagedInstanceLocations', e);
+		logError(TelemetryViews.Utils, 'utils.getSqlManagedInstanceLocations', e);
 	}
 	locations.sort((a, b) => a.displayName.localeCompare(b.displayName));
 	return locations;
 }
 
-export async function getSqlVirtualMachineLocations(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, virtualMachines?: SqlVMServer[], currentView?: TelemetryViews): Promise<azureResource.AzureLocation[]> {
+export async function getSqlVirtualMachineLocations(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, virtualMachines?: SqlVMServer[]): Promise<azureResource.AzureLocation[]> {
 	let locations: azureResource.AzureLocation[] = [];
 	try {
 		if (account && subscription && virtualMachines) {
@@ -374,13 +374,13 @@ export async function getSqlVirtualMachineLocations(account?: azdata.Account, su
 			locations = locations.filter((loc, i) => virtualMachines.some(vm => vm.location.toLowerCase() === loc.name.toLowerCase()));
 		}
 	} catch (e) {
-		logError(currentView!, 'getSqlVirtualMachineLocations', e);
+		logError(TelemetryViews.Utils, 'utils.getSqlVirtualMachineLocations', e);
 	}
 	locations.sort((a, b) => a.displayName.localeCompare(b.displayName));
 	return locations;
 }
 
-export async function getSqlMigrationServiceLocations(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, migrationServices?: SqlMigrationService[], currentView?: TelemetryViews): Promise<azureResource.AzureLocation[]> {
+export async function getSqlMigrationServiceLocations(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, migrationServices?: SqlMigrationService[]): Promise<azureResource.AzureLocation[]> {
 	let locations: azureResource.AzureLocation[] = [];
 	try {
 		if (account && subscription && migrationServices) {
@@ -388,7 +388,7 @@ export async function getSqlMigrationServiceLocations(account?: azdata.Account, 
 			locations = locations.filter((loc, i) => migrationServices.some(dms => dms.location.toLowerCase() === loc.name.toLowerCase()));
 		}
 	} catch (e) {
-		logError(currentView!, 'getSqlMigrationServiceLocations', e);
+		logError(TelemetryViews.Utils, 'utils.getSqlMigrationServiceLocations', e);
 	}
 	locations.sort((a, b) => a.displayName.localeCompare(b.displayName));
 	return locations;
@@ -413,7 +413,7 @@ export async function getAzureLocationsDropdownValues(locations: azureResource.A
 	return locationValues;
 }
 
-export async function getSqlManagedInstanceResourceGroups(managedInstances?: azureResource.AzureSqlManagedInstance[], location?: azureResource.AzureLocation, currentView?: TelemetryViews): Promise<azureResource.AzureResourceResourceGroup[]> {
+export async function getSqlManagedInstanceResourceGroups(managedInstances?: azureResource.AzureSqlManagedInstance[], location?: azureResource.AzureLocation): Promise<azureResource.AzureResourceResourceGroup[]> {
 	let resourceGroups: azureResource.AzureResourceResourceGroup[] = [];
 	try {
 		if (managedInstances && location) {
@@ -431,7 +431,7 @@ export async function getSqlManagedInstanceResourceGroups(managedInstances?: azu
 				});
 		}
 	} catch (e) {
-		logError(currentView!, 'getSqlManagedInstanceResourceGroups', e);
+		logError(TelemetryViews.Utils, 'utils.getSqlManagedInstanceResourceGroups', e);
 	}
 
 	// remove duplicates
@@ -440,7 +440,7 @@ export async function getSqlManagedInstanceResourceGroups(managedInstances?: azu
 	return resourceGroups;
 }
 
-export async function getSqlVirtualMachineResourceGroups(virtualMachines?: SqlVMServer[], location?: azureResource.AzureLocation, currentView?: TelemetryViews): Promise<azureResource.AzureResourceResourceGroup[]> {
+export async function getSqlVirtualMachineResourceGroups(virtualMachines?: SqlVMServer[], location?: azureResource.AzureLocation): Promise<azureResource.AzureResourceResourceGroup[]> {
 	let resourceGroups: azureResource.AzureResourceResourceGroup[] = [];
 	try {
 		if (virtualMachines && location) {
@@ -458,7 +458,7 @@ export async function getSqlVirtualMachineResourceGroups(virtualMachines?: SqlVM
 				});
 		}
 	} catch (e) {
-		logError(currentView!, 'getSqlVirtualMachineResourceGroups', e);
+		logError(TelemetryViews.Utils, 'utils.getSqlVirtualMachineResourceGroups', e);
 	}
 
 	// remove duplicates
@@ -467,7 +467,7 @@ export async function getSqlVirtualMachineResourceGroups(virtualMachines?: SqlVM
 	return resourceGroups;
 }
 
-export async function getStorageAccountResourceGroups(storageAccounts?: StorageAccount[], location?: azureResource.AzureLocation, currentView?: TelemetryViews): Promise<azureResource.AzureResourceResourceGroup[]> {
+export async function getStorageAccountResourceGroups(storageAccounts?: StorageAccount[], location?: azureResource.AzureLocation): Promise<azureResource.AzureResourceResourceGroup[]> {
 	let resourceGroups: azureResource.AzureResourceResourceGroup[] = [];
 	try {
 		if (storageAccounts && location) {
@@ -485,7 +485,7 @@ export async function getStorageAccountResourceGroups(storageAccounts?: StorageA
 				});
 		}
 	} catch (e) {
-		logError(currentView!, 'getStorageAccountResourceGroups', e);
+		logError(TelemetryViews.Utils, 'utils.getStorageAccountResourceGroups', e);
 	}
 
 	// remove duplicates
@@ -494,7 +494,7 @@ export async function getStorageAccountResourceGroups(storageAccounts?: StorageA
 	return resourceGroups;
 }
 
-export async function getSqlMigrationServiceResourceGroups(migrationServices?: SqlMigrationService[], location?: azureResource.AzureLocation, currentView?: TelemetryViews): Promise<azureResource.AzureResourceResourceGroup[]> {
+export async function getSqlMigrationServiceResourceGroups(migrationServices?: SqlMigrationService[], location?: azureResource.AzureLocation): Promise<azureResource.AzureResourceResourceGroup[]> {
 	let resourceGroups: azureResource.AzureResourceResourceGroup[] = [];
 	try {
 		if (migrationServices && location) {
@@ -511,7 +511,7 @@ export async function getSqlMigrationServiceResourceGroups(migrationServices?: S
 				});
 		}
 	} catch (e) {
-		logError(currentView!, 'getSqlMigrationServiceResourceGroups', e);
+		logError(TelemetryViews.Utils, 'utils.getSqlMigrationServiceResourceGroups', e);
 	}
 
 	// remove duplicates
@@ -520,14 +520,14 @@ export async function getSqlMigrationServiceResourceGroups(migrationServices?: S
 	return resourceGroups;
 }
 
-export async function getAllResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, currentView?: TelemetryViews): Promise<azureResource.AzureResourceResourceGroup[]> {
+export async function getAllResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<azureResource.AzureResourceResourceGroup[]> {
 	let resourceGroups: azureResource.AzureResourceResourceGroup[] = [];
 	try {
 		if (account && subscription) {
 			resourceGroups = await getResourceGroups(account, subscription);
 		}
 	} catch (e) {
-		logError(currentView!, 'getAllResourceGroups', e);
+		logError(TelemetryViews.Utils, 'utils.getAllResourceGroups', e);
 	}
 	resourceGroups.sort((a, b) => a.name.localeCompare(b.name));
 	return resourceGroups;
@@ -552,14 +552,14 @@ export async function getAzureResourceGroupsDropdownValues(resourceGroups: azure
 	return resourceGroupValues;
 }
 
-export async function getManagedInstances(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, currentView?: TelemetryViews): Promise<azureResource.AzureSqlManagedInstance[]> {
+export async function getManagedInstances(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<azureResource.AzureSqlManagedInstance[]> {
 	let managedInstances: azureResource.AzureSqlManagedInstance[] = [];
 	try {
 		if (account && subscription) {
 			managedInstances = await getAvailableManagedInstanceProducts(account, subscription);
 		}
 	} catch (e) {
-		logError(currentView!, 'getManagedInstances', e);
+		logError(TelemetryViews.Utils, 'utils.getManagedInstances', e);
 	}
 	managedInstances.sort((a, b) => a.name.localeCompare(b.name));
 	return managedInstances;
@@ -598,7 +598,7 @@ export async function getManagedInstancesDropdownValues(managedInstances: azureR
 	return managedInstancesValues;
 }
 
-export async function getVirtualMachines(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, currentView?: TelemetryViews): Promise<SqlVMServer[]> {
+export async function getVirtualMachines(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<SqlVMServer[]> {
 	let virtualMachines: SqlVMServer[] = [];
 	try {
 		if (account && subscription) {
@@ -610,7 +610,7 @@ export async function getVirtualMachines(account?: azdata.Account, subscription?
 			});
 		}
 	} catch (e) {
-		logError(currentView!, 'getVirtualMachines', e);
+		logError(TelemetryViews.Utils, 'utils.getVirtualMachines', e);
 	}
 	virtualMachines.sort((a, b) => a.name.localeCompare(b.name));
 	return virtualMachines;
@@ -649,14 +649,14 @@ export async function getVirtualMachinesDropdownValues(virtualMachines: SqlVMSer
 	return virtualMachineValues;
 }
 
-export async function getStorageAccounts(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, currentView?: TelemetryViews): Promise<StorageAccount[]> {
+export async function getStorageAccounts(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<StorageAccount[]> {
 	let storageAccounts: StorageAccount[] = [];
 	try {
 		if (account && subscription) {
 			storageAccounts = await getAvailableStorageAccounts(account, subscription);
 		}
 	} catch (e) {
-		logError(currentView!, 'getStorageAccounts', e);
+		logError(TelemetryViews.Utils, 'utils.getStorageAccounts', e);
 	}
 	storageAccounts.sort((a, b) => a.name.localeCompare(b.name));
 	return storageAccounts;
@@ -684,7 +684,7 @@ export async function getStorageAccountsDropdownValues(storageAccounts: StorageA
 	return storageAccountValues;
 }
 
-export async function getAzureSqlMigrationServices(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, currentView?: TelemetryViews): Promise<SqlMigrationService[]> {
+export async function getAzureSqlMigrationServices(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription): Promise<SqlMigrationService[]> {
 	let sqlMigrationServices: SqlMigrationService[] = [];
 	try {
 		if (account && subscription) {
@@ -693,7 +693,7 @@ export async function getAzureSqlMigrationServices(account?: azdata.Account, sub
 			});
 		}
 	} catch (e) {
-		logError(currentView!, 'getAzureSqlMigrationServices', e);
+		logError(TelemetryViews.Utils, 'utils.getAzureSqlMigrationServices', e);
 	}
 	sqlMigrationServices.sort((a, b) => a.name.localeCompare(b.name));
 	return sqlMigrationServices;
@@ -723,14 +723,14 @@ export async function getAzureSqlMigrationServicesDropdownValues(sqlMigrationSer
 	return SqlMigrationServicesValues;
 }
 
-export async function getBlobContainer(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, storageAccount?: StorageAccount, currentView?: TelemetryViews): Promise<azureResource.BlobContainer[]> {
+export async function getBlobContainer(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, storageAccount?: StorageAccount): Promise<azureResource.BlobContainer[]> {
 	let blobContainers: azureResource.BlobContainer[] = [];
 	try {
 		if (account && subscription && storageAccount) {
 			blobContainers = await getBlobContainers(account, subscription, storageAccount);
 		}
 	} catch (e) {
-		logError(currentView!, 'getBlobContainer', e);
+		logError(TelemetryViews.Utils, 'utils.getBlobContainer', e);
 	}
 	blobContainers.sort((a, b) => a.name.localeCompare(b.name));
 	return blobContainers;
@@ -755,14 +755,14 @@ export async function getBlobContainersValues(blobContainers: azureResource.Blob
 	return blobContainersValues;
 }
 
-export async function getBlobLastBackupFileNames(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, storageAccount?: StorageAccount, blobContainer?: azureResource.BlobContainer, currentView?: TelemetryViews): Promise<azureResource.Blob[]> {
+export async function getBlobLastBackupFileNames(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, storageAccount?: StorageAccount, blobContainer?: azureResource.BlobContainer): Promise<azureResource.Blob[]> {
 	let lastFileNames: azureResource.Blob[] = [];
 	try {
 		if (account && subscription && storageAccount && blobContainer) {
 			lastFileNames = await getBlobs(account, subscription, storageAccount, blobContainer.name);
 		}
 	} catch (e) {
-		logError(currentView!, 'getBlobLastBackupFileNames', e);
+		logError(TelemetryViews.Utils, 'utils.getBlobLastBackupFileNames', e);
 	}
 	lastFileNames.sort((a, b) => a.name.localeCompare(b.name));
 	return lastFileNames;

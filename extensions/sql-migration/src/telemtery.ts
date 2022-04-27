@@ -33,6 +33,7 @@ export enum TelemetryViews {
 	SkuRecommendationWizard = 'SkuRecommendationWizard',
 	DataCollectionWizard = 'GetAzureRecommendationDialog',
 	SelectMigrationServiceDialog = 'SelectMigrationServiceDialog',
+	Utils = 'Utils'
 }
 
 export enum TelemetryAction {

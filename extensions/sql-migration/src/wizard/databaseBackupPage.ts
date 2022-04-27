@@ -1277,7 +1277,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._networkShareStorageAccountResourceGroupDropdown.loading = true;
 		try {
 			this.migrationStateModel._storageAccounts = await getStorageAccounts(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription);
-			this.migrationStateModel._resourceGroups = await getStorageAccountResourceGroups(this.migrationStateModel._storageAccounts, this.migrationStateModel._location, TelemetryViews.DatabaseBackupPage);
+			this.migrationStateModel._resourceGroups = await getStorageAccountResourceGroups(this.migrationStateModel._storageAccounts, this.migrationStateModel._location);
 			this._networkShareStorageAccountResourceGroupDropdown.values = await getAzureResourceGroupsDropdownValues(this.migrationStateModel._resourceGroups);
 			selectDefaultDropdownValue(this._networkShareStorageAccountResourceGroupDropdown, this.migrationStateModel._databaseBackup?.networkShares[0]?.resourceGroup?.id, false);
 		} catch (error) {
@@ -1306,7 +1306,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._blobContainerResourceGroupDropdowns.forEach(v => v.loading = true);
 		try {
 			this.migrationStateModel._storageAccounts = await getStorageAccounts(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription);
-			this.migrationStateModel._resourceGroups = await getStorageAccountResourceGroups(this.migrationStateModel._storageAccounts, this.migrationStateModel._location, TelemetryViews.DatabaseBackupPage);
+			this.migrationStateModel._resourceGroups = await getStorageAccountResourceGroups(this.migrationStateModel._storageAccounts, this.migrationStateModel._location);
 			const resourceGroupValues = await getAzureResourceGroupsDropdownValues(this.migrationStateModel._resourceGroups);
 			this._blobContainerResourceGroupDropdowns.forEach((dropDown, index) => {
 				dropDown.values = resourceGroupValues;
@@ -1334,7 +1334,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobContainerDropdown(index: number): Promise<void> {
 		this._blobContainerDropdowns[index].loading = true;
 		try {
-			this.migrationStateModel._blobContainers = await getBlobContainer(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount, TelemetryViews.DatabaseBackupPage);
+			this.migrationStateModel._blobContainers = await getBlobContainer(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount);
 			this._blobContainerDropdowns[index].values = await getBlobContainersValues(this.migrationStateModel._blobContainers);
 			selectDefaultDropdownValue(this._blobContainerDropdowns[index], this.migrationStateModel._databaseBackup?.blobs[index]?.blobContainer?.id, false);
 		} catch (error) {
@@ -1347,7 +1347,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobLastBackupFileDropdown(index: number): Promise<void> {
 		this._blobContainerLastBackupFileDropdowns[index].loading = true;
 		try {
-			this.migrationStateModel._lastFileNames = await getBlobLastBackupFileNames(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount, this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer, TelemetryViews.DatabaseBackupPage);
+			this.migrationStateModel._lastFileNames = await getBlobLastBackupFileNames(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount, this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
 			this._blobContainerLastBackupFileDropdowns[index].values = await getBlobLastBackupFileNamesValues(this.migrationStateModel._lastFileNames);
 			selectDefaultDropdownValue(this._blobContainerLastBackupFileDropdowns[index], this.migrationStateModel._databaseBackup?.blobs[index]?.lastBackupFile, false);
 		} catch (error) {

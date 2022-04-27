@@ -372,8 +372,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		this._resourceGroupDropdown.loading = true;
 		this._dmsDropdown.loading = true;
 		try {
-			this.migrationStateModel._sqlMigrationServices = await getAzureSqlMigrationServices(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription, TelemetryViews.IntegrationRuntimePage);
-			this.migrationStateModel._resourceGroups = await getSqlMigrationServiceResourceGroups(this.migrationStateModel._sqlMigrationServices, this.migrationStateModel._location, TelemetryViews.IntegrationRuntimePage);
+			this.migrationStateModel._sqlMigrationServices = await getAzureSqlMigrationServices(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription);
+			this.migrationStateModel._resourceGroups = await getSqlMigrationServiceResourceGroups(this.migrationStateModel._sqlMigrationServices, this.migrationStateModel._location);
 			this._resourceGroupDropdown.values = await getAzureResourceGroupsDropdownValues(this.migrationStateModel._resourceGroups);
 			const resourceGroup = (this.migrationStateModel._sqlMigrationService)
 				? getFullResourceGroupFromId(this.migrationStateModel._sqlMigrationService?.id)
