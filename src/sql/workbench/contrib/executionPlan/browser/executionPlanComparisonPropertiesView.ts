@@ -197,11 +197,30 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 			const topProp = v.topProp;
 			const bottomProp = v.bottomProp;
+			const parentRowCellStyling = 'font-weight: bold';
 
 			if (topProp && bottomProp) {
 				row['displayOrder'] = v.topProp.displayOrder;
 				row['value1'] = removeLineBreaks(v.topProp.displayValue, ' ');
 				row['value2'] = removeLineBreaks(v.bottomProp.displayValue, ' ');
+				if ((topProp && !isString(topProp.value)) || (bottomProp && !isString(bottomProp.value))) {
+					row['name'] = {
+						text: row['name'],
+						style: parentRowCellStyling
+					};
+					row['displayOrder'] = {
+						text: row['displayOrder'],
+						style: parentRowCellStyling
+					};
+					row['value1'] = {
+						text: row['value1'],
+						style: parentRowCellStyling
+					};
+					row['value2'] = {
+						text: row['value2'],
+						style: parentRowCellStyling
+					};
+				}
 				rows.push(row);
 				if (!isString(topProp.value) && !isString(bottomProp.value)) {
 					this.convertPropertiesToTableRows(topProp.value, bottomProp.value, rows.length - 1, indent + 2, rows);
@@ -215,6 +234,18 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				row['value1'] = v.topProp.displayValue;
 				rows.push(row);
 				if (!isString(topProp.value)) {
+					row['name'] = {
+						text: row['name'],
+						style: parentRowCellStyling
+					};
+					row['displayOrder'] = {
+						text: row['displayOrder'],
+						style: parentRowCellStyling
+					};
+					row['value1'] = {
+						text: row['value1'],
+						style: parentRowCellStyling
+					};
 					this.convertPropertiesToTableRows(topProp.value, undefined, rows.length - 1, indent + 2, rows);
 				}
 			} else if (!topProp && bottomProp) {
@@ -222,6 +253,18 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				row['value2'] = v.bottomProp.displayValue;
 				rows.push(row);
 				if (!isString(bottomProp.value)) {
+					row['name'] = {
+						text: row['name'],
+						style: parentRowCellStyling
+					};
+					row['displayOrder'] = {
+						text: row['displayOrder'],
+						style: parentRowCellStyling
+					};
+					row['value2'] = {
+						text: row['value2'],
+						style: parentRowCellStyling
+					};
 					this.convertPropertiesToTableRows(undefined, bottomProp.value, rows.length - 1, indent + 2, rows);
 				}
 			}

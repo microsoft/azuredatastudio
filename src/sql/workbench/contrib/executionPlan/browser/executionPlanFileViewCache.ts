@@ -11,8 +11,7 @@ export class ExecutionPlanFileViewCache {
 
 	public executionPlanFileViewMap: Map<string, ExecutionPlanFileView> = new Map();
 
-	public executionPlanComparisonViewMap: Map<string,
-		ExecutionPlanComparisonEditorView> = new Map();
+	public executionPlanComparisonViewMap: Map<string, ExecutionPlanComparisonEditorView> = new Map();
 
 	private constructor() { }
 

@@ -19,6 +19,7 @@ import { Action } from 'vs/base/common/actions';
 import { addIconClassName, openPropertiesIconClassNames, zoomInIconClassNames, zoomOutIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { extname } from 'vs/base/common/path';
 import { ExecutionPlanComparisonView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanComparisonView';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export class ExecutionPlanComparisonEditorView {
 
@@ -50,7 +51,8 @@ export class ExecutionPlanComparisonEditorView {
 		@IFileDialogService public fileDialogService: IFileDialogService,
 		@ITextFileService public textFileService: ITextFileService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IThemeService private _themeService: IThemeService
+		@IThemeService private _themeService: IThemeService,
+		@INotificationService private _notificationService: INotificationService,
 	) {
 		// creating the parent container for the editor
 		this._container = DOM.$('.compare-execution-plan-editor');
@@ -115,24 +117,26 @@ export class ExecutionPlanComparisonEditorView {
 	}
 
 	public async addExecutionPlan(plan: azdata.executionPlan.ExecutionPlanGraphInfo): Promise<void> {
-		this._plans.push(plan);
-		const planView = this._instantiationService.createInstance(ExecutionPlanComparisonView, this._planContainer, this._placeholderContainer);
-		this._planControls.push(planView);
-		this.updatePlaceHolderContainer();
-		const l = this._plans.length;
-		planView._onCellSelectedEvent(e => {
-			if (l === 1) {
-				this._propertiesView.setTopElement(e);
-			} else {
-				this._propertiesView.setBottomElement(e);
-			}
-		});
-		new Promise(async (reject, resolve) => {
-			const executionPlanGraph = await this.executionPlanService.getExecutionPlan(plan);
+
+		try {
+			let executionPlanGraph = await this.executionPlanService.getExecutionPlan(plan);
+			this._plans.push(plan);
+			const planView = this._instantiationService.createInstance(ExecutionPlanComparisonView, this._planContainer, this._placeholderContainer);
+			this._planControls.push(planView);
+			this.updatePlaceHolderContainer();
+			const l = this._plans.length;
+			planView._onCellSelectedEvent(e => {
+				if (l === 1) {
+					this._propertiesView.setTopElement(e);
+				} else {
+					this._propertiesView.setBottomElement(e);
+				}
+			});
 			this._executionPlans.push(executionPlanGraph.graphs);
 			planView.addGraphs(executionPlanGraph.graphs);
-			resolve();
-		});
+		} catch (e) {
+			this._notificationService.error(e);
+		}
 	}
 
 	public togglePropertiesView() {
