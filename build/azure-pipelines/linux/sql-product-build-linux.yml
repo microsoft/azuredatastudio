@@ -202,20 +202,20 @@ steps:
   # in continueOnError directly so instead make two copies of the task and only run one or the other based on the SMOKE_FAIL_ON_ERROR value
   - script: |
       set -e
-      APP_PATH=$(agent.builddirectory)/azuredatastudio-linux-x64
-      APP_NAME="`ls $APP_ROOT | head -n 1`"
+      node ./node_modules/playwright/install.js
+      APP_ROOT=$(Agent.BuildDirectory)/azuredatastudio-linux-x64
       sql2019_password=$(sql2019_password)
-      yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/linux-x64/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions" --databaseConnections $(testConnections.secureFilePath)
+      yarn smoketest --build "$APP_ROOT" --headless --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/linux-x64/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions" --databaseConnections $(testConnections.secureFilePath)
     displayName: Run smoke tests (Electron) (Continue on Error)
     continueOnError: true
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
   - script: |
       set -e
-      APP_PATH=$(agent.builddirectory)/azuredatastudio-linux-x64
-      APP_NAME="`ls $APP_ROOT | head -n 1`"
+      node ./node_modules/playwright/install.js
+      APP_ROOT=$(Agent.BuildDirectory)/azuredatastudio-linux-x64
       sql2019_password=$(sql2019_password)
-      yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/linux-x64/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions" --databaseConnections $(testConnections.secureFilePath)
+      yarn smoketest --build "$APP_ROOT" --headless --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/linux-x64/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions" --databaseConnections $(testConnections.secureFilePath)
     displayName: Run smoke tests (Electron) (Fail on Error)
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
