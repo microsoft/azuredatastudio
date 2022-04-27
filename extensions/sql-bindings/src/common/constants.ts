@@ -29,9 +29,10 @@ export const selectAzureFunctionProjFolder = localize('selectAzureFunctionProjFo
 export const timeoutExtensionError = localize('timeoutExtensionError', 'Timed out waiting for extension to install');
 export const timeoutAzureFunctionFileError = localize('timeoutAzureFunctionFileError', 'Timed out waiting for Azure Function file to be created');
 export const timeoutProjectError = localize('timeoutProjectError', 'Timed out waiting for project to be created');
-export const errorNewAzureFunction = localize('errorNewAzureFunction', 'Error creating new Azure Function: {0}');
+export function errorNewAzureFunction(error: any): string { return localize('errorNewAzureFunction', 'Error creating new Azure Function: {0}', utils.getErrorMessage(error)); }
 export const azureFunctionsExtensionNotInstalled = localize('azureFunctionsExtensionNotInstalled', 'Azure Functions extension must be installed in order to use this feature.');
 export const azureFunctionsProjectMustBeOpened = localize('azureFunctionsProjectMustBeOpened', 'A C# Azure Functions project must be present in order to create a new Azure Function for this table.');
+export const workspaceMustBeUsed = localize('workspaceMustBeUsed', 'The current folder is not a workspace folder. Please open a workspace folder and try again.');
 export const needConnection = localize('needConnection', 'A connection is required to use Azure Function with SQL Binding');
 export const selectDatabase = localize('selectDatabase', 'Select Database');
 export const browseEllipsisWithIcon = `$(folder) ${localize('browseEllipsis', "Browse...")}`;
@@ -68,9 +69,9 @@ export const enterConnectionStringSettingName = localize('enterConnectionStringS
 export const enterConnectionString = localize('enterConnectionString', "Enter connection string");
 export const saveChangesInFile = localize('saveChangesInFile', "There are unsaved changes in the current file. Save now?");
 export const save = localize('save', "Save");
-export function settingAlreadyExists(settingName: string) { return localize('SettingAlreadyExists', 'Local app setting \'{0}\' already exists. Overwrite?', settingName); }
-export function failedToParse(errorMessage: string) { return localize('failedToParse', 'Failed to parse "{0}": {1}.', azureFunctionLocalSettingsFileName, errorMessage); }
-export function jsonParseError(error: string, line: number, column: number) { return localize('jsonParseError', '{0} near line "{1}", column "{2}"', error, line, column); }
+export function settingAlreadyExists(settingName: string): string { return localize('SettingAlreadyExists', 'Local app setting \'{0}\' already exists. Overwrite?', settingName); }
+export function failedToParse(filename: string, error: any): string { return localize('failedToParse', 'Failed to parse "{0}": {1}.', filename, utils.getErrorMessage(error)); }
+export function jsonParseError(error: string, line: number, column: number): string { return localize('jsonParseError', '{0} near line "{1}", column "{2}"', error, line, column); }
 export const moreInformation = localize('moreInformation', "More Information");
 export const addPackageReferenceMessage = localize('addPackageReferenceMessage', 'To use SQL bindings, ensure your Azure Functions project has a reference to {0}', sqlExtensionPackageName);
 export const addSqlBindingPackageError = localize('addSqlBindingPackageError', 'Error adding Sql Binding extension package to project');
@@ -78,11 +79,11 @@ export const failedToGetConnectionString = localize('failedToGetConnectionString
 export const connectionProfile = localize('connectionProfile', 'Select a connection profile');
 export const userConnectionString = localize('userConnectionString', 'Enter connection string');
 export const selectConnectionString = localize('selectConnectionString', 'Select SQL connection string method');
-export const selectConnectionError = (err?: any) => err ? localize('selectConnectionError', "Failed to set connection string app setting: {0}", utils.getErrorMessage(err)) : localize('unableToSetConnectionString', "Failed to set connection string app setting");
+export const selectConnectionError = (err?: any): string => err ? localize('selectConnectionError', "Failed to set connection string app setting: {0}", utils.getErrorMessage(err)) : localize('unableToSetConnectionString', "Failed to set connection string app setting");
 export const includePassword = localize('includePassword', 'Do you want to include the password from this connection in your local.settings.json file?');
 export const enterPasswordPrompt = localize('enterPasswordPrompt', 'Enter the password to be used for the connection string');
 export const enterPasswordManually = localize('enterPasswordManually', 'Enter password or press escape to cancel');
 export const userPasswordLater = localize('userPasswordLater', 'In order to user the SQL connection string later you will need to manually enter the password in your local.settings.json file.');
 export const openFile = localize('openFile', "Open File");
 export const closeButton = localize('closeButton', "Close");
-export function addSqlBinding(functionName: string) { return localize('addSqlBinding', 'Adding SQL Binding to function "{0}"...'), functionName; }
+export function addSqlBinding(functionName: string): string { return localize('addSqlBinding', 'Adding SQL Binding to function "{0}"...'), functionName; }

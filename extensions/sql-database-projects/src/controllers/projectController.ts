@@ -1181,6 +1181,8 @@ export class ProjectsController {
 
 	public async generateProjectFromOpenApiSpec(options?: GenerateProjectFromOpenApiSpecOptions): Promise<Project | undefined> {
 		try {
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.generateProjectFromOpenApiSpec);
+
 			// 1. select spec file
 			const specPath: string | undefined = options?.openApiSpecFile?.fsPath || await this.selectAutorestSpecFile();
 			if (!specPath) {
@@ -1240,6 +1242,7 @@ export class ProjectsController {
 			return project;
 		} catch (err) {
 			void vscode.window.showErrorMessage(constants.generatingProjectFailed(utils.getErrorMessage(err)));
+			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.generateProjectFromOpenApiSpec);
 			this._outputChannel.show();
 			return;
 		}

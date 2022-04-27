@@ -28,6 +28,7 @@ export class TimeoutError extends Error { }
 
 /**
  * Consolidates on the error message string
+ * @param error The error object to get the message from
  */
 export function getErrorMessage(error: any): string {
 	return (error instanceof Error)
@@ -95,24 +96,6 @@ export async function getAllProjectsInFolder(folder: vscode.Uri, projectExtensio
 }
 
 /**
- * Format a string. Behaves like C#'s string.Format() function.
- */
-export function formatString(str: string, ...args: any[]): string {
-	// This is based on code originally from https://github.com/Microsoft/vscode/blob/master/src/vs/nls.js
-	// License: https://github.com/Microsoft/vscode/blob/master/LICENSE.txt
-	let result: string;
-	if (args.length === 0) {
-		result = str;
-	} else {
-		result = str.replace(/\{(\d+)\}/g, (match, rest) => {
-			let index = rest[0];
-			return typeof args[index] !== 'undefined' ? args[index] : match;
-		});
-	}
-	return result;
-}
-
-/**
  * Generates a quoted full name for the object
  * @param schema of the object
  * @param objectName object chosen by the user
@@ -140,11 +123,16 @@ export function timeoutPromise(errorMessage: string, ms: number = 10000): Promis
  * Gets a unique file name
  * Increment the file name by adding 1 to function name if the file already exists
  * Undefined if the filename suffix count becomes greater than 1024
- * @param folderPath selected project folder path
  * @param fileName base filename to use
+ * @param folderPath selected project folder path
  * @returns a promise with the unique file name, or undefined
  */
-export async function getUniqueFileName(folderPath: string, fileName: string): Promise<string | undefined> {
+export async function getUniqueFileName(fileName: string, folderPath?: string): Promise<string | undefined> {
+	if (!folderPath) {
+		// user is creating a brand new azure function project
+		return undefined;
+	}
+
 	let count: number = 0;
 	const maxCount: number = 1024;
 	let uniqueFileName = fileName;
