@@ -10,6 +10,7 @@ import * as types from 'vs/base/common/types';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { coalesce } from 'vs/base/common/arrays';
+import { DeviceType } from 'sql/workbench/services/restore/common/constants';
 
 export interface RestoreOptionsElement {
 	optionMetadata: azdata.ServiceOption;
@@ -46,7 +47,7 @@ export class RestoreViewModel {
 	public readHeaderFromMedia?: boolean;
 	public selectedBackupSets?: string[];
 	public defaultBackupFolder?: string;
-	public deviceType?: number;
+	public deviceType?: DeviceType;
 	public databases: string[];
 
 	private _onSetLastBackupTaken = new Emitter<string>();
