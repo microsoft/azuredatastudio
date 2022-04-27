@@ -4,7 +4,7 @@
 		"If you want to provide a fix or improvement, please create a pull request against the original repository.",
 		"Once accepted there, we are happy to receive an update request."
 	],
-	"version": "https://github.com/dotnet/csharp-tmLanguage/commit/16612717ccd557383c0c821d7b6ae6662492ffde",
+	"version": "https://github.com/dotnet/csharp-tmLanguage/commit/53344c05ec5dd09e1dbc4a77a1aacd482403715a",
 	"name": "C#",
 	"scopeName": "source.cs",
 	"patterns": [
@@ -3170,7 +3170,7 @@
 			]
 		},
 		"conditional-operator": {
-			"begin": "\\?(?!\\s*[?.\\[]|\\s*$)",
+			"begin": "(?<!\\?\\s*)\\?(?!\\?|\\.|\\[)",
 			"beginCaptures": {
 				"0": {
 					"name": "keyword.operator.conditional.question-mark.cs"
