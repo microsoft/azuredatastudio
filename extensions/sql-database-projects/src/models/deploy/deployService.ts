@@ -137,11 +137,11 @@ export class DeployService {
 		this.logToOutput(constants.creatingAzureSqlServer(profile?.sqlDbSetting?.serverName));
 
 		// Create the server
-		const server = await this._azureSqlClient.createServer(profile.sqlDbSetting.subscriptionId, profile?.sqlDbSetting.resourceGroupName, profile?.sqlDbSetting.serverName, {
+		const server = await this._azureSqlClient.createServer(profile.sqlDbSetting.session, profile?.sqlDbSetting.resourceGroupName, profile?.sqlDbSetting.serverName, {
 			location: profile?.sqlDbSetting?.location,
 			administratorLogin: profile?.sqlDbSetting.userName,
 			administratorLoginPassword: profile?.sqlDbSetting.password
-		}, profile.sqlDbSetting.token);
+		});
 		if (server) {
 			this._outputChannel.appendLine(constants.serverCreated);
 			profile.sqlDbSetting.serverName = server;

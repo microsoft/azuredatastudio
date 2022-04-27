@@ -7,6 +7,9 @@ declare module 'vscode-mssql' {
 
 	import * as vscode from 'vscode';
 	import { RequestType } from 'vscode-languageclient';
+	import { Subscription, Location } from '@azure/arm-subscriptions';
+	import { ResourceGroup } from '@azure/arm-resources';
+	import { Server } from '@azure/arm-sql';
 
 	/**
 	 * Covers defining what the vscode-mssql extension exports to other extensions
@@ -44,6 +47,11 @@ declare module 'vscode-mssql' {
 		 * Service for accessing Azure Account functionality
 		 */
 		readonly azureAccountService: IAzureAccountService;
+
+		/**
+		 * Service for accessing Azure Resources functionality
+		 */
+		 readonly azureResourceService: IAzureResourceService;
 
 		/**
 		 * Prompts the user to select an existing connection or create a new one, and then returns the result
@@ -399,6 +407,13 @@ declare module 'vscode-mssql' {
 		isSignedIn?: boolean;
 	}
 
+	export interface IAzureAccountSession {
+		subscription: Subscription,
+		tenantId: string,
+		account: IAccount,
+		token: Token
+	}
+
 	export interface TokenKey {
 		/**
 		 * Account Key - uniquely identifies an account
@@ -437,6 +452,38 @@ declare module 'vscode-mssql' {
 		 * Returns an access token for given user and tenant
 		 */
 		getAccountSecurityToken(account: IAccount, tenantId: string | undefined): Promise<Token>;
+
+		/**
+		 * Returns Azure subscriptions with tenant and token for each given account
+		 */
+		getAccountSessions(account: IAccount): Promise<IAzureAccountSession[]>;
+	}
+
+	export interface IAzureResourceService {
+
+		/**
+		 * Returns Azure resource groups for given subscription
+		 * @param session Azure session
+		 * @returns List of resource groups
+		 */
+		getResourceGroups(session: IAzureAccountSession): Promise<ResourceGroup[]>;
+
+		/**
+		 * Creates or updates a Azure SQL server for given subscription, resource group and location
+		 * @param session Azure session
+		 * @param resourceGroupName resource group name
+		 * @param serverName SQL server name
+		 * @param parameters parameters for the SQL server
+		 * @returns name of the SQL server
+		 */
+		createOrUpdateServer(session: IAzureAccountSession, resourceGroupName: string, serverName: string, parameters: Server): Promise<string | undefined>;
+
+		/**
+		 * Returns Azure locations for given session
+		 * @param session Azure session
+		 * @returns List of locations
+		 */
+		getLocations(session: IAzureAccountSession): Promise<Location[]>;
 	}
 
 	export const enum TaskExecutionMode {

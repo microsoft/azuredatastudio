@@ -307,6 +307,18 @@ export async function getVscodeMssqlApi(): Promise<vscodeMssql.IExtension> {
 	return ext.activate();
 }
 
+export type AzureResourceServiceFactory = () => Promise<vscodeMssql.IAzureResourceService>;
+export async function defaultAzureResourceServiceFactory(): Promise<vscodeMssql.IAzureResourceService> {
+	const vscodeMssqlApi = await getVscodeMssqlApi();
+	return vscodeMssqlApi.azureResourceService;
+}
+
+export type AzureAccountServiceFactory = () => Promise<vscodeMssql.IAzureAccountService>;
+export async function defaultAzureAccountServiceFactory(): Promise<vscodeMssql.IAzureAccountService> {
+	const vscodeMssqlApi = await getVscodeMssqlApi();
+	return vscodeMssqlApi.azureAccountService;
+}
+
 /*
  * Returns the default deployment options from DacFx, filtered to appropriate options for the given project.
  */

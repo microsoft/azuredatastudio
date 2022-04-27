@@ -326,11 +326,16 @@ describe('deploy service', function (): void {
 				userName: 'sa',
 				connectionRetryTimeout: 1,
 				resourceGroupName: 'resourceGroups',
-				subscriptionId: 'subscriptionId',
-				token: {
-					key: '',
-					token: '',
-					tokenType: '',
+				session: {
+					subscription: {
+						subscriptionId: 'subscriptionId',
+					},token: {
+						key: '',
+						token: '',
+						tokenType: '',
+					},
+					tenantId: '',
+					account: undefined!
 				},
 				location: 'location'
 			}
@@ -339,17 +344,17 @@ describe('deploy service', function (): void {
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
 		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
 			undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
-		if (deployProfile?.sqlDbSetting) {
+		const session = deployProfile?.sqlDbSetting?.session;
+		if (deployProfile?.sqlDbSetting?.session && session) {
 			testContext.azureSqlClient.setup(x => x.createServer(
-				deployProfile.sqlDbSetting?.subscriptionId || '',
+				session,
 				deployProfile.sqlDbSetting?.resourceGroupName || '',
 				deployProfile.sqlDbSetting?.serverName || '',
 				{
 					location: deployProfile?.sqlDbSetting?.location || '',
 					administratorLogin: deployProfile?.sqlDbSetting?.userName,
 					administratorLoginPassword: deployProfile?.sqlDbSetting?.password
-				},
-				deployProfile.sqlDbSetting?.token || undefined!)).returns(() => Promise.resolve(fullyQualifiedDomainName));
+				})).returns(() => Promise.resolve(fullyQualifiedDomainName));
 		}
 		sandbox.stub(azdata.connection, 'connect').returns(Promise.resolve(mockConnectionResult));
 		sandbox.stub(azdata.connection, 'getUriForConnection').returns(Promise.resolve('connection'));

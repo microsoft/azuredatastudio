@@ -5,7 +5,7 @@
 
 import { IDeploySettings } from '../IDeploySettings';
 import type * as azdataType from 'azdata';
-import { Token } from 'vscode-mssql';
+import { IAzureAccountSession } from 'vscode-mssql';
 
 export enum AppSettingType {
 	None,
@@ -28,8 +28,7 @@ export interface IDeployAppIntegrationProfile {
 }
 
 export interface ISqlDbSetting extends ISqlConnectionProperties {
-	subscriptionId: string,
-	token: Token,
+	session: IAzureAccountSession
 	resourceGroupName: string,
 	location: string
 }

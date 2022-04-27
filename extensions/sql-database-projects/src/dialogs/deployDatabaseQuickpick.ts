@@ -264,8 +264,7 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 			password: password,
 			port: 1433,
 			dbName: '',
-			token: subscription.token,
-			subscriptionId: subscription.subscription.id || '',
+			session: subscription,
 			resourceGroupName: resourceGroup.name || '',
 			location: locationName
 		}
