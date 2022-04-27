@@ -9,14 +9,14 @@ import { QuickInput } from '../quickinput';
 import { Editors } from '../editors';
 import { IElement } from '..';
 
-const winOrCtrl = process.platform === 'darwin' ? 'ctrl' : 'win';
-const ctrlOrCmd = process.platform === 'darwin' ? 'cmd' : 'ctrl';
-
 export class Notebook {
 
 	public readonly notebookToolbar: NotebookToolbar;
 	public readonly textCellToolbar: TextCellToolbar;
 	public readonly view: NotebookTreeView;
+
+	public readonly winOrCtrl = process.platform === 'darwin' ? 'ctrl' : 'win';
+	public readonly ctrlOrCmd = process.platform === 'darwin' ? 'cmd' : 'ctrl';
 
 	constructor(private code: Code, private quickAccess: QuickAccess, private quickInput: QuickInput, private editors: Editors) {
 		this.notebookToolbar = new NotebookToolbar(code);
@@ -33,7 +33,7 @@ export class Notebook {
 	}
 
 	async newUntitledNotebook(): Promise<void> {
-		await this.code.dispatchKeybinding(winOrCtrl + '+Alt+n');
+		await this.code.dispatchKeybinding(this.winOrCtrl + '+Alt+n');
 		await this.editors.waitForActiveTab(`Notebook-0`);
 		await this.code.waitForElement('.notebookEditor');
 	}
@@ -117,7 +117,7 @@ export class Notebook {
 
 	private async selectAllText(selector: string): Promise<void> {
 		await this.code.waitAndClick(selector);
-		await this.code.dispatchKeybinding(ctrlOrCmd + '+a');
+		await this.code.dispatchKeybinding(this.ctrlOrCmd + '+a');
 	}
 
 	private static readonly placeholderSelector = 'div.placeholder-cell-component';

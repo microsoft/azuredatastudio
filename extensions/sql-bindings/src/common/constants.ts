@@ -32,6 +32,7 @@ export const timeoutProjectError = localize('timeoutProjectError', 'Timed out wa
 export function errorNewAzureFunction(error: any): string { return localize('errorNewAzureFunction', 'Error creating new Azure Function: {0}', utils.getErrorMessage(error)); }
 export const azureFunctionsExtensionNotInstalled = localize('azureFunctionsExtensionNotInstalled', 'Azure Functions extension must be installed in order to use this feature.');
 export const azureFunctionsProjectMustBeOpened = localize('azureFunctionsProjectMustBeOpened', 'A C# Azure Functions project must be present in order to create a new Azure Function for this table.');
+export const workspaceMustBeUsed = localize('workspaceMustBeUsed', 'The current folder is not a workspace folder. Please open a workspace folder and try again.');
 export const needConnection = localize('needConnection', 'A connection is required to use Azure Function with SQL Binding');
 export const selectDatabase = localize('selectDatabase', 'Select Database');
 export const browseEllipsisWithIcon = `$(folder) ${localize('browseEllipsis', "Browse...")}`;
