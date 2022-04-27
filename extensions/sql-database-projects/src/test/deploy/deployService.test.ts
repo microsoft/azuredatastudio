@@ -346,7 +346,7 @@ describe('deploy service', function (): void {
 			undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
 		const session = deployProfile?.sqlDbSetting?.session;
 		if (deployProfile?.sqlDbSetting?.session && session) {
-			testContext.azureSqlClient.setup(x => x.createServer(
+			testContext.azureSqlClient.setup(x => x.createOrUpdateServer(
 				session,
 				deployProfile.sqlDbSetting?.resourceGroupName || '',
 				deployProfile.sqlDbSetting?.serverName || '',

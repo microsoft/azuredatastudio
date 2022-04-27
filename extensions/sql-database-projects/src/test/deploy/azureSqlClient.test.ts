@@ -88,7 +88,7 @@ describe('Azure SQL client', function (): void {
 	it('Should return subscriptions successfully', async function (): Promise<void> {
 		const testContext = createContext();
 		const azureSqlClient = new AzureSqlClient(() => Promise.resolve(testContext.azureAccountService));
-		const result = await azureSqlClient.getSubscriptions(testContext.accounts[0]);
+		const result = await azureSqlClient.getSessions(testContext.accounts[0]);
 		should(result[0].subscription.id).deepEqual(testContext.subscriptions[0].id);
 	});
 

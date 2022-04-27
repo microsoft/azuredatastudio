@@ -142,10 +142,10 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 		return;
 	}
 
-	const subscriptions = await azureSqlClient.getSubscriptions(account);
+	const sessions = await azureSqlClient.getSessions(account);
 
 	const subscriptionName = await vscode.window.showQuickPick(
-		subscriptions.map(x => x.subscription.displayName || ''),
+		sessions.map(x => x.subscription.displayName || ''),
 		{ title: constants.azureSubscription, ignoreFocusOut: true });
 
 	// Return when user hits escape
@@ -153,13 +153,13 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 		return undefined;
 	}
 
-	const subscription = subscriptions.find(x => x.subscription.displayName === subscriptionName);
+	const session = sessions.find(x => x.subscription.displayName === subscriptionName);
 
-	if (!subscription?.subscription?.subscriptionId) {
+	if (!session?.subscription?.subscriptionId) {
 		return undefined;
 	}
 
-	const resourceGroups = await azureSqlClient.getResourceGroups(subscription);
+	const resourceGroups = await azureSqlClient.getResourceGroups(session);
 	const resourceGroupName = await vscode.window.showQuickPick(
 		resourceGroups.map(x => x.name || ''),
 		{ title: constants.resourceGroup, ignoreFocusOut: true });
@@ -176,7 +176,7 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 		return undefined;
 	}
 
-	let locations = await azureSqlClient.getLocations(subscription);
+	let locations = await azureSqlClient.getLocations(session);
 	if (resourceGroup.location) {
 		const defaultLocation = locations.find(x => x.name === resourceGroup.location);
 		if (defaultLocation) {
@@ -191,7 +191,7 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 
 	// Return when user hits escape
 	if (!locationName) {
-		locationName = resourceGroup?.location;
+		return undefined;
 	}
 
 	let serverName: string | undefined = '';
@@ -257,14 +257,14 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 	return {
 		// TODO add tenant
 		deploySettings: settings, sqlDbSetting: {
-			tenantId: subscription.tenantId,
-			accountId: subscription.account.key.id,
+			tenantId: session.tenantId,
+			accountId: session.account.key.id,
 			serverName: serverName,
 			userName: user,
 			password: password,
 			port: 1433,
 			dbName: '',
-			session: subscription,
+			session: session,
 			resourceGroupName: resourceGroup.name || '',
 			location: locationName
 		}

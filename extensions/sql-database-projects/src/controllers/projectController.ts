@@ -409,10 +409,13 @@ export class ProjectsController {
 				await this.publishToDockerContainer(project, deployProfile);
 			}
 		} else if (publishTarget === constants.PublishTargetType.newAzureServer) {
-			const settings = await launchCreateAzureServerQuickPick(project, this.azureSqlClient);
-
-			if (settings?.deploySettings && settings?.sqlDbSetting) {
-				await this.publishToNewAzureServer(project, settings);
+			try {
+				const settings = await launchCreateAzureServerQuickPick(project, this.azureSqlClient);
+				if (settings?.deploySettings && settings?.sqlDbSetting) {
+					await this.publishToNewAzureServer(project, settings);
+				}
+			} catch (error) {
+				void utils.showErrorMessageWithOutputChannel(constants.publishToNewAzureServerFailed, error, this._outputChannel);
 			}
 
 		} else {

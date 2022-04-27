@@ -45,9 +45,9 @@ export class AzureSqlClient {
 	}
 
 	/**
-	 * Returns Azure subscriptions for given account
+	 * Returns Azure sessions with subscription, tenant and token for given account
 	 */
-	public async getSubscriptions(account: IAccount): Promise<IAzureAccountSession[]> {
+	public async getSessions(account: IAccount): Promise<IAzureAccountSession[]> {
 		const azureAccountService = await this._azureAccountServiceFactory();
 		return await azureAccountService.getAccountSessions(account);
 	}
@@ -55,12 +55,9 @@ export class AzureSqlClient {
 	/**
 	 * Creates a new Azure SQL server for given subscription, resource group and location
 	 */
-	public async createServer(session: IAzureAccountSession, resourceGroupName: string, serverName: string, parameters: Server): Promise<string | undefined> {
-		if (session?.subscription && resourceGroupName) {
-			const azureResourceService = await this._azureResourceServiceFactory();
-			return await azureResourceService.createOrUpdateServer(session, resourceGroupName, serverName, parameters);
-		}
-		return undefined;
+	public async createOrUpdateServer(session: IAzureAccountSession, resourceGroupName: string, serverName: string, parameters: Server): Promise<string | undefined> {
+		const azureResourceService = await this._azureResourceServiceFactory();
+		return await azureResourceService.createOrUpdateServer(session, resourceGroupName, serverName, parameters);
 	}
 
 	/**
