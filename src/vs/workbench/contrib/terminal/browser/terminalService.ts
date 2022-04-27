@@ -953,7 +953,7 @@ export class TerminalService implements ITerminalService {
 					color: value.profile.color,
 					location: !!(keyMods?.alt && activeInstance) ? { splitActiveTerminal: true } : this.defaultLocation
 				});
-				return;
+				return undefined; // {{SQL CARBON EDIT}} - add return type
 			} else {
 				if (keyMods?.alt && activeInstance) {
 					// create split, only valid if there's an active instance
@@ -1252,7 +1252,7 @@ export class TerminalService implements ITerminalService {
 				return !this._activeInstance?.target ? TerminalLocation.Panel : this._activeInstance?.target;
 			}
 		}
-		return location;
+		return <any>location;
 	}
 
 	private _getSplitParent(location?: ITerminalLocationOptions): ITerminalInstance | undefined {

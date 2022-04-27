@@ -52,7 +52,7 @@ export class HTMLFileSystemProvider implements IFileSystemProviderWithFileReadWr
 
 	async stat(resource: URI): Promise<IStat> {
 		try {
-			const handle = await this.getHandle(resource);
+			const handle: any = await this.getHandle(resource);
 			if (!handle) {
 				throw this.createFileSystemProviderError(resource, 'No such file or directory, stat', FileSystemProviderErrorCode.FileNotFound);
 			}
@@ -81,7 +81,7 @@ export class HTMLFileSystemProvider implements IFileSystemProviderWithFileReadWr
 
 	async readdir(resource: URI): Promise<[string, FileType][]> {
 		try {
-			const handle = await this.getDirectoryHandle(resource);
+			const handle: any = await this.getDirectoryHandle(resource);
 			if (!handle) {
 				throw this.createFileSystemProviderError(resource, 'No such file or directory, readdir', FileSystemProviderErrorCode.FileNotFound);
 			}
@@ -182,7 +182,7 @@ export class HTMLFileSystemProvider implements IFileSystemProviderWithFileReadWr
 
 	async writeFile(resource: URI, content: Uint8Array, opts: FileWriteOptions): Promise<void> {
 		try {
-			let handle = await this.getFileHandle(resource);
+			let handle: any = await this.getFileHandle(resource);
 
 			// Validate target unless { create: true, overwrite: true }
 			if (!opts.create || !opts.overwrite) {

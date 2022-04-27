@@ -48,8 +48,6 @@ import { IExtensionManifestPropertiesService } from 'vs/workbench/services/exten
 import { IExtensionService, IExtensionsStatus } from 'vs/workbench/services/extensions/common/extensions';
 import { ExtensionEditor } from 'vs/workbench/contrib/extensions/browser/extensionEditor';
 
-import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
-
 interface IExtensionStateProvider<T> {
 	(extension: Extension): T;
 }

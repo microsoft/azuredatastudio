@@ -85,7 +85,7 @@ export class FileQueryEditorInput extends QueryEditorInput {
 		return this.text.isResolved();
 	}
 
-	public override rename(group: GroupIdentifier, target: URI): IMoveResult {
+	public override async rename(group: GroupIdentifier, target: URI): Promise<IMoveResult> {
 		return this.text.rename(group, target);
 	}
 

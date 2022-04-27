@@ -56,8 +56,8 @@ else {
 		Object.assign(product, {
 			version: '1.33.0-dev',
 			vscodeVersion: '1.59.0-dev',
-			nameLong: isWeb ? 'Azure Data Studio Web Dev' : 'Azure Data Studio Dev',
-			nameShort: isWeb ? 'Azure Data Studio Web Dev' : 'Azure Data Studio Dev',
+			nameLong: 'Azure Data Studio Dev',
+			nameShort: 'Azure Data Studio Dev',
 			applicationName: 'azuredatastudio-oss',
 			dataFolderName: '.azuredatastudio-oss',
 			urlProtocol: 'azuredatastudio-oss',

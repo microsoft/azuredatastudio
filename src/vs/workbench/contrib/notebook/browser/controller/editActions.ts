@@ -291,7 +291,7 @@ registerAction2(class ClearAllCellOutputsAction extends NotebookAction {
 });
 
 
-interface ILanguagePickInput extends IQuickPickItem {
+export interface ILanguagePickInput extends IQuickPickItem {  // {{SQL CARBON EDIT}} - export interface
 	languageId: string;
 	description: string;
 }
@@ -340,14 +340,14 @@ registerAction2(class ChangeCellLanguageAction extends NotebookCellAction<ICellR
 
 	protected override getCellContextFromArgs(accessor: ServicesAccessor, context?: ICellRange, ...additionalArgs: any[]): IChangeCellContext | undefined {
 		if (!context || typeof context.start !== 'number' || typeof context.end !== 'number' || context.start >= context.end) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} add return value
 		}
 
 		const language = additionalArgs.length && typeof additionalArgs[0] === 'string' ? additionalArgs[0] : undefined;
 		const activeEditorContext = this.getEditorContextFromArgsOrActive(accessor);
 
 		if (!activeEditorContext || !activeEditorContext.notebookEditor.viewModel || context.start >= activeEditorContext.notebookEditor.getLength()) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} add return value
 		}
 
 		// TODO@rebornix, support multiple cells

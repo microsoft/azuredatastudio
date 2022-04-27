@@ -508,7 +508,6 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		@ILogService private readonly logService: ILogService,
 		@IEnvironmentService private readonly environmentService: IEnvironmentService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		@IConfigurationService private configurationService: IConfigurationService, // {{SQL CARBON EDIT}}
 		@IFileService private readonly fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
@@ -581,7 +580,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			.withFlags(Flags.IncludeAssetUri, Flags.IncludeStatistics, Flags.IncludeCategoryAndTags, Flags.IncludeFiles, Flags.IncludeVersionProperties)
 			.withPage(1, 1)
 			.withFilter(FilterType.Target, 'Microsoft.VisualStudio.Code');
-		const { id, uuid } = <IExtensionIdentifier>arg1; // {{SQL CARBON EDIT}} @anthonydresser remove extension ? extension.identifier
+
 		if (uuid) {
 			query = query.withFilter(FilterType.ExtensionId, uuid);
 		} else {
@@ -595,24 +594,22 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		}
 
 		const allTargetPlatforms = getAllTargetPlatforms(rawExtension);
-		if (isNotWebExtensionInWebTargetPlatform(allTargetPlatforms, targetPlatform)) {
+
+		if (version) {
+			const versionAsset = rawExtension.versions.filter(v => v.version === version)[0];
+			if (versionAsset) {
+				const extension = toExtension(rawExtension, versionAsset, allTargetPlatforms, 0, query);
+				if (extension.properties.engine && isEngineValid(extension.properties.engine, this.productService.version, this.productService.date)) {
+					return extension;
+				}
+			}
 			return null;
 		}
 
-		for (let rawVersion of rawExtension.versions) {
-			// set engine property if does not exist
-			if (!getEngine(rawVersion)) {
-				const engine = await this.getEngine(rawVersion);
-				rawVersion = {
-					...rawVersion,
-					properties: [...(rawVersion.properties || []), { key: PropertyType.Engine, value: engine }]
-				};
-			}
-			if (await this.isRawExtensionVersionCompatible(rawVersion, allTargetPlatforms, targetPlatform)) {
-				return toExtension(rawExtension, rawVersion, allTargetPlatforms, 0, query);
-			}
+		const rawVersion = await this.getLastValidExtensionVersion(rawExtension, rawExtension.versions);
+		if (rawVersion) {
+			return toExtension(rawExtension, rawVersion, allTargetPlatforms, 0, query);
 		}
-
 		return null;
 	}
 
@@ -757,7 +754,8 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					filteredExtensions = filteredExtensions.filter(e => {
 						// we only have 1 version for our extensions in the gallery file, so this should always be the case
 						if (e.versions.length === 1) {
-							const extension = toExtension(e, e.versions[0], 0, query);
+							const allTargetPlatforms = getAllTargetPlatforms(e);
+							const extension = toExtension(e, e.versions[0], allTargetPlatforms, 0, query);
 							return extension.properties.localizedLanguages && extension.properties.localizedLanguages.length > 0;
 						}
 						return false;

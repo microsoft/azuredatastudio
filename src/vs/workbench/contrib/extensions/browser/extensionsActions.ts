@@ -2366,12 +2366,6 @@ export class InstallSpecificVersionOfExtensionAction extends Action {
 		return action.enabled && !!extension.local && this.extensionEnablementService.isEnabled(extension.local);
 	}
 
-	private isEnabled(extension: IExtension): boolean {
-		const action = this.instantiationService.createInstance(InstallAnotherVersionAction);
-		action.extension = extension;
-		return action.enabled && !!extension.local && this.extensionEnablementService.isEnabled(extension.local);
-	}
-
 	private async getExtensionEntries(): Promise<IExtensionPickItem[]> {
 		const installed = await this.extensionsWorkbenchService.queryLocal();
 		const entries: IExtensionPickItem[] = [];

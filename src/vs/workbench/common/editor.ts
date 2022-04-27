@@ -1002,7 +1002,7 @@ class EditorResourceAccessorImpl {
 		}
 
 		if (isResourceDiffEditorInput(editor) || isResourceSideBySideEditorInput(editor)) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} - return value required
 		}
 
 		// Original URI is the `preferredResource` of an editor if any
@@ -1063,7 +1063,7 @@ class EditorResourceAccessorImpl {
 		}
 
 		if (isResourceDiffEditorInput(editor) || isResourceSideBySideEditorInput(editor)) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} - return value required
 		}
 
 		// Canonical URI is the `resource` of an editor

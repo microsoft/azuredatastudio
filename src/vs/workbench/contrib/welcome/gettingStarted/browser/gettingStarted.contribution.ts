@@ -9,7 +9,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorExtensions, IEditorFactoryRegistry } from 'vs/workbench/common/editor';
 import { registerAction2, Action2 } from 'vs/platform/actions/common/actions'; // {{SQL CARBON EDIT}} Remove unused
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { ContextKeyEqualsExpr, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpr, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey'; // {{SQL CARBON EDIT}} Remove unused
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService'; // {{SQL CARBON EDIT}} Remove unused
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { KeyCode } from 'vs/base/common/keyCodes';
