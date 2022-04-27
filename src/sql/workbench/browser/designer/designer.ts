@@ -46,8 +46,9 @@ import { layoutDesignerTable, TableHeaderRowHeight, TableRowHeight } from 'sql/w
 import { Dropdown, IDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
 import { IAction } from 'vs/base/common/actions';
-import { AddAfterSelectedColumn, AddBeforeSelectedColumn } from 'sql/workbench/browser/designer/designerActions';
+import { AddAfterSelectedColumnAction, AddBeforeSelectedColumnAction, AddColumnAction, MoveRowDownAction, MoveRowUpAction } from 'sql/workbench/browser/designer/designerActions';
 import { RowMoveManager } from 'sql/base/browser/ui/table/plugins/rowMoveManager.plugin';
+import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -100,6 +101,7 @@ export class Designer extends Disposable implements IThemable {
 	private _issuesView: DesignerIssuesTabPanelView;
 	private _scriptEditorView: DesignerScriptEditorTabPanelView;
 	private _onStyleChangeEventEmitter = new Emitter<void>();
+	private _actionBar: Taskbar;
 
 	constructor(private readonly _container: HTMLElement,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
@@ -801,9 +803,10 @@ export class Designer extends Disposable implements IThemable {
 					container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				}
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
-				if (tableProperties.canAddRows) {
-					this.addTableDesignerTableButtons(container, tableProperties, propertyPath, view);
-				}
+				// if (tableProperties.canAddRows) {
+				// 	this.addTableDesignerTableButtons(container, tableProperties, propertyPath, view);
+				// }
+				this.addTableDesignerTaskbar(container, tableProperties, propertyPath, view);
 				const tableContainer = container.appendChild(DOM.$('.full-row'));
 				const table = new Table(tableContainer, {
 					dataProvider: new TableDataView()
@@ -980,78 +983,31 @@ export class Designer extends Disposable implements IThemable {
 		return component;
 	}
 
-	private addTableDesignerTableButtons(container: HTMLElement, tableProperties: DesignerTableProperties,
+	private addTableDesignerTaskbar(container: HTMLElement, tableProperties: DesignerTableProperties,
 		path: DesignerPropertyPath, view: DesignerUIArea): void {
-		// Add new button
-		const buttonContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
-		const addNewText = tableProperties.labelForAddNewButton ?? localize('designer.newRowText', "Add New");
-		const addRowButton = new Button(buttonContainer, {
-			title: addNewText,
-			secondary: true
-		});
-		addRowButton.onDidClick(() => {
-			this.handleEdit({
-				type: DesignerEditType.Add,
-				path: path,
-				source: view
-			});
-		});
-		this.styleComponent(addRowButton);
-		addRowButton.label = addNewText;
-		addRowButton.icon = {
-			id: `add-row-button new codicon`
-		};
-		addRowButton.ariaLabel = localize('designer.newRowButtonAriaLabel', "Add new row to '{0}' table", tableProperties.ariaLabel);
-		this._buttons.push(addRowButton);
 
-		// Move up button
-		const moveUpText = localize('designer.moveUpText', "Move Up");
-		const moveUpButton = new Button(buttonContainer, {
-			title: moveUpText,
-			secondary: true
-		});
-		moveUpButton.enabled = false;
-		moveUpButton.onDidClick(() => {
-			// get selected row
-			this.handleEdit({
-				type: DesignerEditType.Add,
-				path: path,
-				source: view
-			});
-		});
-		this.styleComponent(moveUpButton);
-		moveUpButton.label = moveUpText;
-		moveUpButton.icon = {
-			id: `add-row-button arrow-up codicon`
-		};
-		addRowButton.ariaLabel = localize('designer.moveUpButtonAriaLabel', "Move selected row up");
-		this._buttons.push(moveUpButton);
+		let needButtons: boolean = tableProperties.canAddRows || tableProperties.canMoveRows;
+		if (needButtons) {
+			const taskbarContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
 
-		// Move down button
-		// todo: add row number in message and get selected row
-		// disable until theres a selection
-		const moveDownText = localize('designer.moveDownText', "Move Down");
-		const moveDownButton = new Button(buttonContainer, {
-			title: moveDownText,
-			secondary: true
-		});
-		moveDownButton.enabled = false;
-		moveDownButton.onDidClick(() => {
-			// todo: get selected row
-			this.handleEdit({
-				type: DesignerEditType.Add,
-				path: path,
-				source: view
-			});
-		});
-		this.styleComponent(moveDownButton);
-		moveDownButton.label = moveDownText;
-		moveDownButton.icon = {
-			id: `add-row-button arrow-down codicon`
-		};
-		moveDownButton.ariaLabel = localize('designer.moveDownButtonAriaLabel', "Move selected row down");
+			this._actionBar = new Taskbar(taskbarContainer);
+			let actions: IAction[] = [];
 
-		this._buttons.push(moveDownButton);
+			if (tableProperties.canAddRows) {
+				let addColAction = this._instantiationService.createInstance(AddColumnAction, this, tableProperties);
+				actions.push(addColAction);
+			}
+			if (tableProperties.canMoveRows) {
+				let moveUpAction = this._instantiationService.createInstance(MoveRowUpAction, this);
+				let moveDownAction = this._instantiationService.createInstance(MoveRowDownAction, this);
+				actions.push(moveUpAction);
+				actions.push(moveDownAction);
+			}
+			let taskbarContent: ITaskbarContent[] = actions.map((a) => { return { action: a }; });
+			this._actionBar.setContent(taskbarContent);
+			let edit: DesignerEdit = { type: undefined, path: path, source: view };
+			this._actionBar.context = edit;
+		}
 	}
 
 	private openContextMenu(table: Table<Slick.SlickData>, event: ITableMouseEvent, edit: DesignerEdit): void {
@@ -1071,8 +1027,8 @@ export class Designer extends Disposable implements IThemable {
 
 	private getTableDesignerActions(): IAction[] {
 		let actions: IAction[];
-		let addColumnBefore = this._instantiationService.createInstance(AddBeforeSelectedColumn, this);
-		let addColumnAfter = this._instantiationService.createInstance(AddAfterSelectedColumn, this);
+		let addColumnBefore = this._instantiationService.createInstance(AddBeforeSelectedColumnAction, this);
+		let addColumnAfter = this._instantiationService.createInstance(AddAfterSelectedColumnAction, this);
 		actions = [addColumnBefore, addColumnAfter];
 		return actions;
 	}
