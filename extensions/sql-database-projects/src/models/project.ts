@@ -250,7 +250,6 @@ export class Project implements ISqlProject {
 			const typeEntry = entriesWithType.find(e => e.relativePath === f);
 			let containsCreateTableStatement;
 
-			// TODO: add check if table designer feature is enabled so we don't waste time reading all the files if it isn't
 			// read file to check if it has a "Create Table" statement
 			const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(f));
 

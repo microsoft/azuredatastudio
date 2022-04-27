@@ -399,7 +399,7 @@
         },
         {
           "command": "sqlDatabaseProjects.openInDesigner",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.file.table",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.file.table && config.workbench.enablePreviewFeatures",
           "group": "6_dbProjects_openInDesigner"
         },
         {
