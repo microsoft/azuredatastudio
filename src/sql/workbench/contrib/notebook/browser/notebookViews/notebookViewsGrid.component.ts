@@ -140,9 +140,10 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 		this._grid = GridStack.init({
 			alwaysShowResizeHandle: true,
 			styleInHead: true,
-			margin: 2,
+			margin: 5,
 			cellHeight: this._options.cellHeight,
 			staticGrid: false,
+			handleClass: 'grid-stack-header'
 		});
 
 

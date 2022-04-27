@@ -17,9 +17,9 @@ import { localize } from 'vs/nls';
 	selector: 'view-card-tab-component',
 	template: `
 	<ng-template #templateRef>
-		<div #tab [class]="activeClass + ' tab tab-actions-right sizing-fit'" role="tab" draggable="true">
+		<div #tab [class]="activeClass + ' tab tab-actions-right sizing-fit'" role="tab">
 			<div class="monaco-icon-label file-icon tabstitlecontrol.ts-name-file-icon ts-ext-file-icon ext-file-icon typescript-lang-file-icon tab-label tab-label-has-badge"><div class="monaco-icon-label-container" title="{{title}}"><span class="monaco-icon-name-container"><a class="label-name">{{title}}</a></span><span class="monaco-icon-description-container"></span></div></div>
-			<div class="tab-actions"><div class="monaco-action-bar animated"><ul class="actions-container" role="toolbar" aria-label="Tab actions"><li class="action-item" role="presentation"><a class="action-label codicon codicon-close" role="button" title="Close (Ctrl+F4)" tabindex="0"></a></li></ul></div></div>
+			<div class="tab-actions"></div>
 		</div>
 	</ng-template>`
 })
@@ -52,7 +52,7 @@ export class NotebookViewsCardTabComponent extends AngularDisposable implements 
 	}
 
 	public initialize(): void {
-		const title = this.title;
+		//const title = this.title;
 
 		const handleClickOrTouch = (e: MouseEvent | GestureEvent): void => {
 			this._tab.nativeElement.blur(); // prevent flicker of focus outline on tab until editor got focus
@@ -84,8 +84,8 @@ export class NotebookViewsCardTabComponent extends AngularDisposable implements 
 			if (this.tabTransfer.hasData(NotebookViewsCardTabComponent.prototype)) {
 				const data = this.tabTransfer.getData(NotebookViewsCardTabComponent.prototype);
 				if (Array.isArray(data)) {
-					const fromTab = data[0].title;
-					const toTab = title;
+					//const fromTab = data[0].title;
+					//const toTab = title;
 					this.activeView.moveTab(data[0].tab, 0, this.card);//Add fromCard
 					//Notify view component of change
 				}

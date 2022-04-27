@@ -19,6 +19,7 @@
 			class="grid-stack-item-content notebook-card"
 		>
 			<div class="grid-stack-content-wrapper">
+				<div class="grid-stack-header" ></div>
 				<!-- <div>header</div> -->
 				<div class="grid-stack-content-wrapper-inner">
 					<div #container>
@@ -32,12 +33,14 @@
 						</div>
 					</div>
 				</div>
-				<div class="tabs-and-actions-container">
-					<div class="tabs-container" role="tablist" draggable="true">
-						<ng-container *ngFor="let tab of tabs">
-							<view-card-tab-component #wrapper [tabTransfer]="tabTransfer" [card]="card" [tab]="tab" [active]="tab.guid === activeTab?.guid" [activeView]="activeView" (onTabSelected)="handleTabSelected($event)"></view-card-tab-component>
-							<ng-content *ngTemplateOutlet='wrapper.templateRef'></ng-content>
-						</ng-container>
+				<div class="title tabs" style="position: relative;box-sizing: border-box;overflow: hidden;padding-bottom: 2px;">
+					<div #tabscontainer class="tabs-and-actions-container">
+						<div #tablist class="tabs-container" role="tablist">
+							<ng-container *ngFor="let tab of tabs">
+								<view-card-tab-component #wrapper [tabTransfer]="tabTransfer" [card]="card" [tab]="tab" [active]="tab.guid === activeTab?.guid" [activeView]="activeView" (onTabSelected)="handleTabSelected($event)"></view-card-tab-component>
+								<ng-content *ngTemplateOutlet='wrapper.templateRef'></ng-content>
+							</ng-container>
+						</div>
 					</div>
 				</div>
 			</div>

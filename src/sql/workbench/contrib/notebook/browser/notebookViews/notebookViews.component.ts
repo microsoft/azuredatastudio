@@ -37,6 +37,7 @@ import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { LabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 
 export const NOTEBOOKVIEWS_SELECTOR: string = 'notebook-view-component';
 
@@ -368,3 +369,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		return [];// this._gridstack.hiddenItems.filter(i => this._cellsAwaitingInput.includes(i.cell)).map(i => i.cell);
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+
+});

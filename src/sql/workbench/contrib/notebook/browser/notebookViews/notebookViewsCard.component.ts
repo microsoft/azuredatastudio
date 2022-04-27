@@ -14,6 +14,10 @@ import { NotebookViewsCardTabComponent } from 'sql/workbench/contrib/notebook/br
 import { LocalSelectionTransfer } from 'vs/workbench/browser/dnd';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { TAB_BORDER, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
+import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { addDisposableListener, EventType } from 'vs/base/browser/dom';
+import { Gesture } from 'vs/base/browser/touch';
 
 @Component({
 	selector: 'view-card-component',
@@ -30,8 +34,12 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 
 	@ViewChild('templateRef') templateRef: TemplateRef<any>;
 	@ViewChild('item', { read: ElementRef }) private _item: ElementRef;
+	@ViewChild('tablist', { read: ElementRef }) private _tablist: ElementRef;
+	@ViewChild('tabscontainer', { read: ElementRef }) private _tabsContainer: ElementRef;
 
 	cell: ICellModel;
+	resizeObs: any;
+	private tabsScrollbar: ScrollableElement | undefined;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
@@ -45,6 +53,45 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 
 	ngAfterViewInit(): void {
 		//this.initialize();
+		this.tabsScrollbar =  this._register(this.createTabsScrollbar(this._tablist.nativeElement));
+		this._tabsContainer.nativeElement.appendChild(this.tabsScrollbar.getDomNode());
+
+		this.tabsScrollbar.setScrollPosition({
+			scrollLeft: 100 // during DND the container gets scrolled so we need to update the custom scrollbar
+		});
+
+		this._register(Gesture.addTarget(this._tablist.nativeElement));
+
+		// Forward scrolling inside the container to our custom scrollbar
+		this._register(addDisposableListener(this._tablist.nativeElement, EventType.SCROLL, () => {
+			if (this._tablist.nativeElement.classList.contains('scroll')) {
+				this.tabsScrollbar.setScrollPosition({
+					scrollLeft: this._tablist.nativeElement.scrollLeft // during DND the container gets scrolled so we need to update the custom scrollbar
+				});
+			}
+		}));
+
+		// Prevent auto-scrolling (https://github.com/microsoft/vscode/issues/16690)
+		this._register(addDisposableListener(this._tablist.nativeElement, EventType.MOUSE_DOWN, e => {
+			if (e.button === 1) {
+				e.preventDefault();
+			}
+		}));
+
+		this.resizeObs = new ResizeObserver(() => {
+			const visibleTabsWidth = this._tablist.nativeElement.offsetWidth;
+			const allTabsWidth = this._tablist.nativeElement.scrollWidth;
+
+			this.tabsScrollbar.setScrollDimensions({
+				width: visibleTabsWidth,
+				scrollWidth: allTabsWidth
+			});
+
+			this.detectChanges();
+		});
+
+
+		this.resizeObs.observe(this._tabsContainer.nativeElement as HTMLElement);
 	}
 
 	public initialize(): void {
@@ -66,6 +113,8 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 		this.cell = undefined;
 		this.detectChanges();
 		this.cell = this.cells.find(c => c.cellGuid === selectedTab.cell.guid);
+		this.activeView.resizeCell(this.cell, this.width, 10);
+		this.detectChanges();
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -113,11 +162,44 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	public detectChanges() {
 		this._changeRef.detectChanges();
 	}
+
+	private createTabsScrollbar(scrollable: HTMLElement): ScrollableElement {
+		const tabsScrollbar = new ScrollableElement(scrollable, {
+			horizontal: ScrollbarVisibility.Auto,
+			horizontalScrollbarSize: this.getTabsScrollbarSizing(),
+			vertical: ScrollbarVisibility.Hidden,
+			scrollYToX: true,
+			useShadows: false
+		});
+
+		tabsScrollbar.onScroll(e => {
+			scrollable.scrollLeft = e.scrollLeft;
+		});
+
+		return tabsScrollbar;
+	}
+
+	private getTabsScrollbarSizing(): number {
+		return 3;
+	}
 }
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 	const background = theme.getColor(EDITOR_GROUP_HEADER_TABS_BACKGROUND);
 	const border = theme.getColor(TAB_BORDER);
+
+	collector.addRule(`
+		.notebook-card {
+			border-color: ${border.toString()};
+		}
+	`);
+
+	collector.addRule(`
+		.notebook-card {
+			.grid-stack-headerborder-color: ${background.toString()};
+		}
+	`);
+
 
 	if (background && border) {
 		collector.addRule(`
