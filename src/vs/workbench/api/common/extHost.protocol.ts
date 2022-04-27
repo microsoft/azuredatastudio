@@ -144,7 +144,7 @@ export interface MainThreadClipboardShape extends IDisposable {
 export interface MainThreadCommandsShape extends IDisposable {
 	$registerCommand(id: string): void;
 	$unregisterCommand(id: string): void;
-	$executeCommand<T>(id: string, args: any[], retry: boolean): Promise<T | undefined>;
+	$executeCommand<T>(id: string, args: any[] | SerializableObjectWithBuffers<any[]>, retry: boolean): Promise<T | undefined>;
 	$getCommands(): Promise<string[]>;
 }
 
@@ -644,9 +644,10 @@ export interface MainThreadEditorTabsShape extends IDisposable {
 }
 
 export interface IEditorTabDto {
-	group: number;
-	name: string;
-	resource: UriComponents;
+	viewColumn: EditorGroupColumn;
+	label: string;
+	resource?: UriComponents;
+	editorId?: string;
 	isActive: boolean;
 }
 
@@ -685,6 +686,7 @@ export interface IWebviewPortMapping {
 
 export interface IWebviewOptions {
 	readonly enableScripts?: boolean;
+	readonly enableForms?: boolean;
 	readonly enableCommandUris?: boolean;
 	readonly localResourceRoots?: ReadonlyArray<UriComponents>;
 	readonly portMapping?: ReadonlyArray<IWebviewPortMapping>;
@@ -1118,6 +1120,7 @@ export interface IStartDebuggingOptions {
 	debugUI?: {
 		simple?: boolean;
 	};
+	suppressSaveBeforeStart?: boolean;
 }
 
 export interface MainThreadDebugServiceShape extends IDisposable {

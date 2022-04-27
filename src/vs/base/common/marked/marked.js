@@ -11,8 +11,8 @@
 
  (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.marked = factory());
+    typeof define === 'function' && define.amd ? define(factory) :
+      (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.marked = factory());
   }(this, (function () { 'use strict';
 
 	function _defineProperties(target, props) {
@@ -250,13 +250,13 @@
 	}
 
 	var noopTest = {
-	  exec: function noopTest() {}
+    exec: function noopTest() { }
 	};
 
 	function merge(obj) {
 	  var i = 1,
-		  target,
-		  key;
+      target,
+      key;
 
 	  for (; i < arguments.length; i++) {
 		target = arguments[i];
@@ -276,7 +276,7 @@
 	  // before it to distinguish it from an escaped pipe
 	  var row = tableRow.replace(/\|/g, function (match, offset, str) {
 		var escaped = false,
-			curr = offset;
+        curr = offset;
 
 		while (--curr >= 0 && str[curr] === '\\') {
 		  escaped = !escaped;
@@ -291,7 +291,7 @@
 		  return ' |';
 		}
 	  }),
-		  cells = row.split(/ \|/);
+      cells = row.split(/ \|/);
 	  var i = 0;
 
 	  if (cells.length > count) {
@@ -345,7 +345,7 @@
 
 	  var l = str.length;
 	  var level = 0,
-		  i = 0;
+      i = 0;
 
 	  for (; i < l; i++) {
 		if (str[i] === '\\') {
@@ -407,9 +407,9 @@
 
 	var defaults$1 = defaults.defaults;
 	var rtrim$1 = helpers.rtrim,
-		splitCells$1 = helpers.splitCells,
-		_escape = helpers.escape,
-		findClosingBracket$1 = helpers.findClosingBracket;
+    splitCells = helpers.splitCells,
+    _escape = helpers.escape,
+    findClosingBracket = helpers.findClosingBracket;
 
 	function outputLink(cap, link, raw) {
 	  var href = link.href;
@@ -417,13 +417,15 @@
 	  var text = cap[1].replace(/\\([\[\]])/g, '$1');
 
 	  if (cap[0].charAt(0) !== '!') {
-		return {
+      return {
 		  type: 'link',
 		  raw: raw,
 		  href: href,
 		  title: title,
 		  text: text
 		};
+      lexer.state.inLink = false;
+      return token;
 	  } else {
 		return {
 		  type: 'image',
@@ -951,9 +953,9 @@
 		if (!nextChar || nextChar && (prevChar === '' || this.rules.inline.punctuation.exec(prevChar))) {
 		  var lLength = match[0].length - 1;
 		  var rDelim,
-			  rLength,
-			  delimTotal = lLength,
-			  midDelimTotal = 0;
+          rLength,
+          delimTotal = lLength,
+          midDelimTotal = 0;
 		  var endReg = match[0][0] === '*' ? this.rules.inline.emStrong.rDelimAst : this.rules.inline.emStrong.rDelimUnd;
 		  endReg.lastIndex = 0;
 		  maskedSrc = maskedSrc.slice(-1 * src.length + lLength); // Bump maskedSrc to same section of string as src (move to lexer?)
@@ -1141,7 +1143,7 @@
 
 	var noopTest$1 = helpers.noopTest,
 		edit$1 = helpers.edit,
-		merge$1 = helpers.merge;
+    merge$1 = helpers.merge;
 	/**
 	 * Block-Level Grammar
 	 */
@@ -1156,17 +1158,17 @@
 	  list: /^( {0,3})(bull) [\s\S]+?(?:hr|def|\n{2,}(?! )(?! {0,3}bull )\n*|\s*$)/,
 	  html: '^ {0,3}(?:' // optional indentation
 	  + '<(script|pre|style)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)' // (1)
-	  + '|comment[^\\n]*(\\n+|$)' // (2)
-	  + '|<\\?[\\s\\S]*?(?:\\?>\\n*|$)' // (3)
-	  + '|<![A-Z][\\s\\S]*?(?:>\\n*|$)' // (4)
-	  + '|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>\\n*|$)' // (5)
+      + '|comment[^\\n]*(\\n+|$)' // (2)
+      + '|<\\?[\\s\\S]*?(?:\\?>\\n*|$)' // (3)
+      + '|<![A-Z][\\s\\S]*?(?:>\\n*|$)' // (4)
+      + '|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>\\n*|$)' // (5)
 	  // {{SQL CARBON EDIT}} Porting marked.js fix for non-empty lines followed by elements to not render properly
 	  // PR where this fix ocurred here: https://github.com/markedjs/marked/pull/2052/files?file-filters%5B%5D=.js, shipped in markedjs 2.0.4
-	  + '|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n *)+\\n|$)' // (6)
+      + '|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n *)+\\n|$)' // (6)
 		  + '|<(?!script|pre|style)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n *)+\\n|$)' // (7) open tag
 		  + '|</(?!script|pre|style)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n *)+\\n|$)' // (7) closing tag
 	  // {{SQL CARBON EDIT}} end fixes
-	  + ')',
+      + ')',
 	  def: /^ {0,3}\[(label)\]: *\n? *<?([^\s>]+)>?(?:(?: +\n? *| *\n *)(title))? *(?:\n+|$)/,
 	  nptable: noopTest$1,
 	  table: noopTest$1,
@@ -1188,9 +1190,9 @@
 	block._comment = /<!--(?!-?>)[\s\S]*?(?:-->|$)/;
 	block.html = edit$1(block.html, 'i').replace('comment', block._comment).replace('tag', block._tag).replace('attribute', / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex();
 	block.paragraph = edit$1(block._paragraph).replace('hr', block.hr).replace('heading', ' {0,3}#{1,6} ').replace('|lheading', '') // setex headings don't interrupt commonmark paragraphs
-	.replace('blockquote', ' {0,3}>').replace('fences', ' {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n').replace('list', ' {0,3}(?:[*+-]|1[.)]) ') // only lists starting from 1 can interrupt
+    .replace('blockquote', ' {0,3}>').replace('fences', ' {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n').replace('list', ' {0,3}(?:[*+-]|1[.)]) ') // only lists starting from 1 can interrupt
 	.replace('html', '</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|!--)').replace('tag', block._tag) // pars can be interrupted by type (6) html blocks
-	.getRegex();
+    .getRegex();
 	block.blockquote = edit$1(block.blockquote).replace('paragraph', block.paragraph).getRegex();
 	/**
 	 * Normal Block Grammar
@@ -1208,7 +1210,7 @@
 	  // Cells
 	  table: '^ *\\|(.+)\\n' // Header
 	  + ' {0,3}\\|?( *[-:]+[-| :]*)' // Align
-	  + '(?:\\n *((?:(?!\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)' // Cells
+    + '(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)' // Cells
 
 	});
 	block.gfm.nptable = edit$1(block.gfm.nptable).replace('hr', block.hr).replace('heading', ' {0,3}#{1,6} ').replace('blockquote', ' {0,3}>').replace('code', ' {4}[^\\n]').replace('fences', ' {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n').replace('list', ' {0,3}(?:[*+-]|1[.)]) ') // only lists starting from 1 can interrupt
@@ -1216,7 +1218,7 @@
 	.getRegex();
 	block.gfm.table = edit$1(block.gfm.table).replace('hr', block.hr).replace('heading', ' {0,3}#{1,6} ').replace('blockquote', ' {0,3}>').replace('code', ' {4}[^\\n]').replace('fences', ' {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n').replace('list', ' {0,3}(?:[*+-]|1[.)]) ') // only lists starting from 1 can interrupt
 	.replace('html', '</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|!--)').replace('tag', block._tag) // tables can be interrupted by type (6) html blocks
-	.getRegex();
+    .getRegex();
 	/**
 	 * Pedantic grammar (original John Gruber's loose markdown specification)
 	 */
@@ -1239,10 +1241,10 @@
 	  autolink: /^<(scheme:[^\s\x00-\x1f<>]*|email)>/,
 	  url: noopTest$1,
 	  tag: '^comment' + '|^</[a-zA-Z][\\w:-]*\\s*>' // self-closing tag
-	  + '|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>' // open tag
-	  + '|^<\\?[\\s\\S]*?\\?>' // processing instruction, e.g. <?php ?>
-	  + '|^<![a-zA-Z]+\\s[\\s\\S]*?>' // declaration, e.g. <!DOCTYPE html>
-	  + '|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>',
+      + '|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>' // open tag
+      + '|^<\\?[\\s\\S]*?\\?>' // processing instruction, e.g. <?php ?>
+      + '|^<![a-zA-Z]+\\s[\\s\\S]*?>' // declaration, e.g. <!DOCTYPE html>
+      + '|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>',
 	  // CDATA section
 	  link: /^!?\[(label)\]\(\s*(href)(?:\s+(title))?\s*\)/,
 	  reflink: /^!?\[(label)\]\[(?!\s*\])((?:\\[\[\]]?|[^\[\]\\])+)\]/,
@@ -1346,13 +1348,13 @@
 
 	function smartypants(text) {
 	  return text // em-dashes
-	  .replace(/---/g, "\u2014") // en-dashes
-	  .replace(/--/g, "\u2013") // opening singles
-	  .replace(/(^|[-\u2014/(\[{"\s])'/g, "$1\u2018") // closing singles & apostrophes
-	  .replace(/'/g, "\u2019") // opening doubles
-	  .replace(/(^|[-\u2014/(\[{\u2018\s])"/g, "$1\u201C") // closing doubles
-	  .replace(/"/g, "\u201D") // ellipses
-	  .replace(/\.{3}/g, "\u2026");
+      .replace(/---/g, "\u2014") // en-dashes
+      .replace(/--/g, "\u2013") // opening singles
+      .replace(/(^|[-\u2014/(\[{"\s])'/g, "$1\u2018") // closing singles & apostrophes
+      .replace(/'/g, "\u2019") // opening doubles
+      .replace(/(^|[-\u2014/(\[{\u2018\s])"/g, "$1\u201C") // closing doubles
+      .replace(/"/g, "\u201D") // ellipses
+      .replace(/\.{3}/g, "\u2026");
 	}
 	/**
 	 * mangle email addresses
@@ -1361,8 +1363,8 @@
 
 	function mangle(text) {
 	  var out = '',
-		  i,
-		  ch;
+      i,
+      ch;
 	  var l = text.length;
 
 	  for (i = 0; i < l; i++) {
@@ -1422,19 +1424,19 @@
 		var lexer = new Lexer(options);
 		return lexer.lex(src);
 	  }
-	  /**
-	   * Static Lex Inline Method
-	   */
-	  ;
+      /**
+       * Static Lex Inline Method
+       */
+      ;
 
 	  Lexer.lexInline = function lexInline(src, options) {
 		var lexer = new Lexer(options);
 		return lexer.inlineTokens(src);
 	  }
-	  /**
-	   * Preprocessing
-	   */
-	  ;
+      /**
+       * Preprocessing
+       */
+      ;
 
 	  var _proto = Lexer.prototype;
 
@@ -1444,10 +1446,10 @@
 		this.inline(this.tokens);
 		return this.tokens;
 	  }
-	  /**
-	   * Lexing
-	   */
-	  ;
+      /**
+       * Lexing
+       */
+      ;
 
 	  _proto.blockTokens = function blockTokens(src, tokens, top) {
 		if (tokens === void 0) {
@@ -1680,10 +1682,10 @@
 
 		return tokens;
 	  }
-	  /**
-	   * Lexing/Compiling
-	   */
-	  ;
+      /**
+       * Lexing/Compiling
+       */
+      ;
 
 	  _proto.inlineTokens = function inlineTokens(src, tokens, inLink, inRawBlock) {
 		if (tokens === void 0) {
@@ -1831,102 +1833,126 @@
 		  } // text
 
 
-		  if (token = this.tokenizer.inlineText(src, inRawBlock, smartypants)) {
-			src = src.substring(token.raw.length);
+        cutSrc = src;
 
-			if (token.raw.slice(-1) !== '_') {
-			  // Track prevChar before string of ____ started
-			  prevChar = token.raw.slice(-1);
-			}
+        if (this.options.extensions && this.options.extensions.startInline) {
+          (function () {
+            var startIndex = Infinity;
+            var tempSrc = src.slice(1);
+            var tempStart = void 0;
 
-			keepPrevChar = true;
-			lastToken = tokens[tokens.length - 1];
+            _this2.options.extensions.startInline.forEach(function (getStartIndex) {
+              tempStart = getStartIndex.call({
+                lexer: this
+              }, tempSrc);
 
-			if (lastToken && lastToken.type === 'text') {
-			  lastToken.raw += token.raw;
-			  lastToken.text += token.text;
-			} else {
-			  tokens.push(token);
-			}
+              if (typeof tempStart === 'number' && tempStart >= 0) {
+                startIndex = Math.min(startIndex, tempStart);
+              }
+            });
 
-			continue;
-		  }
+            if (startIndex < Infinity && startIndex >= 0) {
+              cutSrc = src.substring(0, startIndex + 1);
+            }
+          })();
+        }
 
-		  if (src) {
-			var errMsg = 'Infinite loop on byte: ' + src.charCodeAt(0);
+        if (token = this.tokenizer.inlineText(cutSrc, smartypants)) {
+          src = src.substring(token.raw.length);
 
-			if (this.options.silent) {
-			  console.error(errMsg);
-			  break;
-			} else {
-			  throw new Error(errMsg);
-			}
-		  }
-		}
+          if (token.raw.slice(-1) !== '_') {
+            // Track prevChar before string of ____ started
+            prevChar = token.raw.slice(-1);
+          }
 
-		return tokens;
-	  };
+          keepPrevChar = true;
+          lastToken = tokens[tokens.length - 1];
 
-	  _createClass(Lexer, null, [{
-		key: "rules",
-		get: function get() {
-		  return {
-			block: block$1,
-			inline: inline$1
-		  };
-		}
-	  }]);
+          if (lastToken && lastToken.type === 'text') {
+            lastToken.raw += token.raw;
+            lastToken.text += token.text;
+          } else {
+            tokens.push(token);
+          }
 
-	  return Lexer;
-	}();
+          continue;
+        }
 
-	var defaults$3 = defaults.defaults;
-	var cleanUrl$1 = helpers.cleanUrl,
-		escape$1 = helpers.escape;
-	/**
-	 * Renderer
-	 */
+        if (src) {
+          var errMsg = 'Infinite loop on byte: ' + src.charCodeAt(0);
 
-	var Renderer_1 = /*#__PURE__*/function () {
-	  function Renderer(options) {
-		this.options = options || defaults$3;
-	  }
+          if (this.options.silent) {
+            console.error(errMsg);
+            break;
+          } else {
+            throw new Error(errMsg);
+          }
+        }
+      }
 
-	  var _proto = Renderer.prototype;
+      return tokens;
+    };
 
-	  _proto.code = function code(_code, infostring, escaped) {
-		var lang = (infostring || '').match(/\S*/)[0];
+    _createClass(Lexer, null, [{
+      key: "rules",
+      get: function get() {
+        return {
+          block: block,
+          inline: inline
+        };
+      }
+    }]);
 
-		if (this.options.highlight) {
-		  var out = this.options.highlight(_code, lang);
+    return Lexer;
+  }();
 
-		  if (out != null && out !== _code) {
-			escaped = true;
-			_code = out;
-		  }
-		}
+  var defaults$2 = defaults$5.exports.defaults;
+  var cleanUrl = helpers.cleanUrl,
+      escape$1 = helpers.escape;
+  /**
+   * Renderer
+   */
 
-		_code = _code.replace(/\n$/, '') + '\n';
+  var Renderer_1 = /*#__PURE__*/function () {
+    function Renderer(options) {
+      this.options = options || defaults$2;
+    }
 
-		if (!lang) {
-		  return '<pre><code>' + (escaped ? _code : escape$1(_code, true)) + '</code></pre>\n';
-		}
+    var _proto = Renderer.prototype;
 
-		return '<pre><code class="' + this.options.langPrefix + escape$1(lang, true) + '">' + (escaped ? _code : escape$1(_code, true)) + '</code></pre>\n';
-	  };
+    _proto.code = function code(_code, infostring, escaped) {
+      var lang = (infostring || '').match(/\S*/)[0];
 
-	  _proto.blockquote = function blockquote(quote) {
-		return '<blockquote>\n' + quote + '</blockquote>\n';
-	  };
+      if (this.options.highlight) {
+        var out = this.options.highlight(_code, lang);
 
-	  _proto.html = function html(_html) {
-		return _html;
-	  };
+        if (out != null && out !== _code) {
+          escaped = true;
+          _code = out;
+        }
+      }
 
-	  _proto.heading = function heading(text, level, raw, slugger) {
-		if (this.options.headerIds) {
-		  return '<h' + level + ' id="' + this.options.headerPrefix + slugger.slug(raw) + '">' + text + '</h' + level + '>\n';
-		} // ignore IDs
+      _code = _code.replace(/\n$/, '') + '\n';
+
+      if (!lang) {
+        return '<pre><code>' + (escaped ? _code : escape$1(_code, true)) + '</code></pre>\n';
+      }
+
+      return '<pre><code class="' + this.options.langPrefix + escape$1(lang, true) + '">' + (escaped ? _code : escape$1(_code, true)) + '</code></pre>\n';
+    };
+
+    _proto.blockquote = function blockquote(quote) {
+      return '<blockquote>\n' + quote + '</blockquote>\n';
+    };
+
+    _proto.html = function html(_html) {
+      return _html;
+    };
+
+    _proto.heading = function heading(text, level, raw, slugger) {
+      if (this.options.headerIds) {
+        return '<h' + level + ' id="' + this.options.headerPrefix + slugger.slug(raw) + '">' + text + '</h' + level + '>\n';
+      } // ignore IDs
 
 
 		return '<h' + level + '>' + text + '</h' + level + '>\n';
@@ -1938,7 +1964,7 @@
 
 	  _proto.list = function list(body, ordered, start) {
 		var type = ordered ? 'ol' : 'ul',
-			startatt = ordered && start !== 1 ? ' start="' + start + '"' : '';
+        startatt = ordered && start !== 1 ? ' start="' + start + '"' : '';
 		return '<' + type + startatt + '>\n' + body + '</' + type + '>\n';
 	  };
 
@@ -1968,7 +1994,7 @@
 		var tag = flags.align ? '<' + type + ' align="' + flags.align + '">' : '<' + type + '>';
 		return tag + content + '</' + type + '>\n';
 	  } // span level renderer
-	  ;
+      ;
 
 	  _proto.strong = function strong(text) {
 		return '<strong>' + text + '</strong>';
@@ -2036,7 +2062,7 @@
 	 * returns only the textual part of the token
 	 */
 	var TextRenderer_1 = /*#__PURE__*/function () {
-	  function TextRenderer() {}
+    function TextRenderer() { }
 
 	  var _proto = TextRenderer.prototype;
 
@@ -2092,13 +2118,13 @@
 
 	  _proto.serialize = function serialize(value) {
 		return value.toLowerCase().trim() // remove html tags
-		.replace(/<[!\/a-z].*?>/ig, '') // remove unwanted chars
-		.replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,./:;<=>?@[\]^`{|}~]/g, '').replace(/\s/g, '-');
+        .replace(/<[!\/a-z].*?>/ig, '') // remove unwanted chars
+        .replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,./:;<=>?@[\]^`{|}~]/g, '').replace(/\s/g, '-');
 	  }
-	  /**
-	   * Finds the next safe (unique) slug to use
-	   */
-	  ;
+      /**
+       * Finds the next safe (unique) slug to use
+       */
+      ;
 
 	  _proto.getNextSafeSlug = function getNextSafeSlug(originalSlug, isDryRun) {
 		var slug = originalSlug;
@@ -2120,12 +2146,12 @@
 
 		return slug;
 	  }
-	  /**
-	   * Convert string to unique id
-	   * @param {object} options
-	   * @param {boolean} options.dryrun Generates the next unique slug without updating the internal accumulator.
-	   */
-	  ;
+      /**
+       * Convert string to unique id
+       * @param {object} options
+       * @param {boolean} options.dryrun Generates the next unique slug without updating the internal accumulator.
+       */
+      ;
 
 	  _proto.slug = function slug(value, options) {
 		if (options === void 0) {
@@ -2163,19 +2189,19 @@
 		var parser = new Parser(options);
 		return parser.parse(tokens);
 	  }
-	  /**
-	   * Static Parse Inline Method
-	   */
-	  ;
+      /**
+       * Static Parse Inline Method
+       */
+      ;
 
 	  Parser.parseInline = function parseInline(tokens, options) {
 		var parser = new Parser(options);
 		return parser.parseInline(tokens);
 	  }
-	  /**
-	   * Parse Loop
-	   */
-	  ;
+      /**
+       * Parse Loop
+       */
+      ;
 
 	  var _proto = Parser.prototype;
 
@@ -2185,23 +2211,23 @@
 		}
 
 		var out = '',
-			i,
-			j,
-			k,
-			l2,
-			l3,
-			row,
-			cell,
-			header,
-			body,
-			token,
-			ordered,
-			start,
-			loose,
-			itemBody,
-			item,
-			checked,
-			task,
+        i,
+        j,
+        k,
+        l2,
+        l3,
+        row,
+        cell,
+        header,
+        body,
+        token,
+        ordered,
+        start,
+        loose,
+        itemBody,
+        item,
+        checked,
+        task,
 			checkbox;
 		var l = tokens.length;
 
@@ -2361,15 +2387,15 @@
 
 		return out;
 	  }
-	  /**
-	   * Parse Inline Tokens
-	   */
-	  ;
+      /**
+       * Parse Inline Tokens
+       */
+      ;
 
 	  _proto.parseInline = function parseInline(tokens, renderer) {
 		renderer = renderer || this.renderer;
 		var out = '',
-			i,
+        i,
 			token;
 		var l = tokens.length;
 

@@ -59,6 +59,5 @@
 		"sql/workbench/services/notebook/browser/outputs/renderers.ts"
 	],
 	"ban-domparser-parsefromstring": [
-		"sql/workbench/contrib/queryPlan/browser/planXmlParser.ts"
 	]
 }

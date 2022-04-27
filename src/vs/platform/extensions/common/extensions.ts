@@ -32,6 +32,9 @@ export interface IConfigurationProperty {
 }
 
 export interface IConfiguration {
+	id?: string,
+	order?: number,
+	title?: string,
 	properties: { [key: string]: IConfigurationProperty; };
 }
 

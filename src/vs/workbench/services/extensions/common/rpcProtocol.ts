@@ -543,6 +543,8 @@ class MessageBuffer {
 		return 1;
 	}
 
+	public static readonly sizeUInt32 = 4;
+
 	public writeUInt8(n: number): void {
 		this._buff.writeUInt8(n, this._offset); this._offset += 1;
 	}
@@ -627,7 +629,7 @@ class MessageBuffer {
 					size += this.sizeVSBuffer(el.value);
 					break;
 				case ArgType.SerializedObjectWithBuffers:
-					size += this.sizeUInt8(); // buffer count
+					size += this.sizeUInt32; // buffer count
 					size += this.sizeLongString(el.value);
 					for (let i = 0; i < el.buffers.length; ++i) {
 						size += this.sizeVSBuffer(el.buffers[i]);
@@ -656,7 +658,7 @@ class MessageBuffer {
 					break;
 				case ArgType.SerializedObjectWithBuffers:
 					this.writeUInt8(ArgType.SerializedObjectWithBuffers);
-					this.writeUInt8(el.buffers.length);
+					this.writeUInt32(el.buffers.length);
 					this.writeLongString(el.value);
 					for (let i = 0; i < el.buffers.length; ++i) {
 						this.writeBuffer(el.buffers[i]);
@@ -682,7 +684,7 @@ class MessageBuffer {
 					arr[i] = this.readVSBuffer();
 					break;
 				case ArgType.SerializedObjectWithBuffers:
-					const bufferCount = this.readUInt8();
+					const bufferCount = this.readUInt32();
 					const jsonString = this.readLongString();
 					const buffers: VSBuffer[] = [];
 					for (let i = 0; i < bufferCount; ++i) {
@@ -877,14 +879,14 @@ class MessageIO {
 		const resBuff = VSBuffer.fromString(res);
 
 		let len = 0;
-		len += MessageBuffer.sizeUInt8(); // buffer count
+		len += MessageBuffer.sizeUInt32; // buffer count
 		len += MessageBuffer.sizeLongString(resBuff);
 		for (const buffer of buffers) {
 			len += MessageBuffer.sizeVSBuffer(buffer);
 		}
 
 		let result = MessageBuffer.alloc(MessageType.ReplyOKJSONWithBuffers, req, len);
-		result.writeUInt8(buffers.length);
+		result.writeUInt32(buffers.length);
 		result.writeLongString(resBuff);
 		for (const buffer of buffers) {
 			result.writeBuffer(buffer);
@@ -899,7 +901,7 @@ class MessageIO {
 	}
 
 	public static deserializeReplyOKJSONWithBuffers(buff: MessageBuffer, uriTransformer: IURITransformer | null): SerializableObjectWithBuffers<any> {
-		const bufferCount = buff.readUInt8();
+		const bufferCount = buff.readUInt32();
 		const res = buff.readLongString();
 
 		const buffers: VSBuffer[] = [];

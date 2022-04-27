@@ -22,6 +22,8 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { ISelection } from 'vs/editor/common/core/selection';
 import { TestItemImpl } from 'vs/workbench/api/common/extHostTestingPrivateApi';
+import { VSBuffer } from 'vs/base/common/buffer';
+import { SerializableObjectWithBuffers } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys'; // {{SQL CARBON EDIT}} Log extension contributed actions
 
 interface CommandHandler {
@@ -86,6 +88,9 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 						}
 						if (Range.isIRange((obj as modes.Location).range) && URI.isUri((obj as modes.Location).uri)) {
 							return extHostTypeConverter.location.to(obj);
+						}
+						if (obj instanceof VSBuffer) {
+							return obj.buffer.buffer;
 						}
 						if (!Array.isArray(obj)) {
 							return obj;
@@ -173,6 +178,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 
 		} else {
 			// automagically convert some argument types
+			let hasBuffers = false;
 			const toArgs = cloneAndChange(args, function (value) {
 				if (value instanceof extHostTypes.Position) {
 					return extHostTypeConverter.Position.from(value);
@@ -182,6 +188,12 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 					return extHostTypeConverter.location.from(value);
 				} else if (extHostTypes.NotebookRange.isNotebookRange(value)) {
 					return extHostTypeConverter.NotebookRange.from(value);
+				} else if (value instanceof ArrayBuffer) {
+					hasBuffers = true;
+					return VSBuffer.wrap(new Uint8Array(value));
+				} else if (value instanceof Uint8Array) {
+					hasBuffers = true;
+					return VSBuffer.wrap(value);
 				}
 				if (!Array.isArray(value)) {
 					return value;
@@ -189,7 +201,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 			});
 
 			try {
-				const result = await this._proxy.$executeCommand<T>(id, toArgs, retry);
+				const result = await this._proxy.$executeCommand<T>(id, hasBuffers ? new SerializableObjectWithBuffers(toArgs) : toArgs, retry);
 				return revive<any>(result);
 			} catch (e) {
 				// Rerun the command when it wasn't known, had arguments, and when retry
