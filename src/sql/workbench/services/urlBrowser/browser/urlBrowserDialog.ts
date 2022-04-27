@@ -437,8 +437,8 @@ export class UrlBrowserDialog extends Modal {
 
 	private nextYear(): string {
 		const today = new Date();
-		const nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDay());
-		return nextYear.toLocaleString().split(',')[0];
+		const nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+		return nextYear.toUTCString();
 	}
 
 	private registerListeners(): void {
