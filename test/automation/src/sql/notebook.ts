@@ -58,6 +58,11 @@ export class Notebook {
 		await this.code.dispatchKeybinding('F5');
 	}
 
+	async exitActiveCell(): Promise<void> {
+		await this.code.dispatchKeybinding('escape');
+		await this.code.dispatchKeybinding('escape');
+	}
+
 	async runAllCells(): Promise<void> {
 		await this.code.dispatchKeybinding('ctrl+shift+F5');
 	}

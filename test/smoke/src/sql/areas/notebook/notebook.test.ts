@@ -141,9 +141,10 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.waitForPlaceholderGone();
 				const activeCodeCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
 				await app.workbench.sqlNotebook.waitForTypeInEditor('code cell', activeCodeCellId); // the new cell should be in edit mode
+				await app.workbench.sqlNotebook.exitActiveCell();  // hitting escape twice deselects all cells
+				await app.workbench.sqlNotebook.waitForActiveCellGone();
 
-				await app.workbench.sqlNotebook.addCell('markdown'); // add markdown cell and wait for it to activate
-				await new Promise(c => setTimeout(c, 2000));
+				await app.workbench.sqlNotebook.addCell('markdown'); // add markdown cell
 				const activeTextCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
 				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
 				await app.workbench.sqlNotebook.waitForTypeInEditor('text cell', activeTextCellId); // Text cell should be in edit mode
@@ -158,23 +159,6 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.code.dispatchKeybinding('enter');
 				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
 				await app.workbench.sqlNotebook.waitForTypeInEditor('test', activeTextCellId); // text cell should be in edit mode after hitting enter
-
-				await app.code.dispatchKeybinding('escape');
-				await app.code.dispatchKeybinding('escape'); // hitting escape twice deselects all cells
-				await app.workbench.sqlNotebook.waitForActiveCellGone();
-			});
-
-			it('looping from top to bottom using keyboard', async function () {
-				const app = this.app as Application;
-				await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
-				const cellIds = await app.workbench.sqlNotebook.getCellIds();
-				await app.workbench.sqlNotebook.doubleClickTextCell();
-				await app.code.dispatchKeybinding('escape');
-				for (let id of cellIds) {
-					await app.workbench.sqlNotebook.waitForActiveCell(id);
-					await app.code.dispatchKeybinding('down');
-				}
-				await app.workbench.sqlNotebook.waitForActiveCell(cellIds[0]);
 			});
 
 			it('cannot move through cells when find widget is invoked', async function () {
