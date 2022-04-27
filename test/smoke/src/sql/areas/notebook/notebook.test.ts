@@ -7,6 +7,7 @@ import { Application } from '../../../../../automation';
 import * as minimist from 'minimist';
 import { afterSuite, beforeSuite } from '../../../utils';
 import * as assert from 'assert';
+import * as utils from './utils';
 
 export function setup(opts: minimist.ParsedArgs) {
 	describe('Notebook', () => {
@@ -151,7 +152,7 @@ export function setup(opts: minimist.ParsedArgs) {
 
 				await app.code.dispatchKeybinding('escape'); // exit edit mode and stay in browse mode
 				await app.code.dispatchKeybinding('up'); // select code cell
-				await app.workbench.sqlNotebook.waitForActiveCell(activeCodeCellId); // check that the code cell is now active
+				await app.workbench.sqlNotebook.getActiveCell(activeCodeCellId); // check that the code cell is now active
 				await app.code.dispatchKeybinding('enter');
 				await app.workbench.sqlNotebook.waitForTypeInEditor('test', activeCodeCellId); // code cell should be in edit mode after hitting enter
 				await app.code.dispatchKeybinding('escape'); // exit edit mode and stay in browse mode
@@ -163,7 +164,6 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			it('cannot move through cells when find widget is invoked', async function () {
 				const app = this.app as Application;
-				const findWidgetCmd = `${app.workbench.sqlNotebook.ctrlOrCmd}+f`;
 				await app.workbench.sqlNotebook.newUntitledNotebook();
 				await app.workbench.sqlNotebook.addCell('markdown');
 				await app.workbench.sqlNotebook.exitActiveCell();
@@ -172,10 +172,9 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.addCell('markdown');
 				await app.code.dispatchKeybinding('escape');
 				const activeCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
-				await app.code.dispatchKeybinding(findWidgetCmd);
-				await app.code.waitForElement('.editor-widget.find-widget.visible');
+				await app.workbench.sqlNotebook.notebookFind.openFindWidget();
 				await app.code.dispatchKeybinding('down');
-				await app.workbench.sqlNotebook.waitForActiveCell(activeCellId); // verify that the active cell is the same
+				await app.workbench.sqlNotebook.getActiveCell(activeCellId); // verify that the active cell is the same
 			});
 		});
 
@@ -380,27 +379,27 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			it('can bold text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, app.workbench.sqlNotebook.ctrlOrCmd + '+b', 'p strong');
+				await verifyToolbarKeyboardShortcut(app, utils.ctrlOrCmd + '+b', 'p strong');
 			});
 
 			it('can italicize text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, app.workbench.sqlNotebook.ctrlOrCmd + '+i', 'p em');
+				await verifyToolbarKeyboardShortcut(app, utils.ctrlOrCmd + '+i', 'p em');
 			});
 
 			it('can underline text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, app.workbench.sqlNotebook.ctrlOrCmd + '+u', 'p u');
+				await verifyToolbarKeyboardShortcut(app, utils.ctrlOrCmd + '+u', 'p u');
 			});
 
 			it('can highlight text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, app.workbench.sqlNotebook.ctrlOrCmd + '+shift+h', 'p mark');
+				await verifyToolbarKeyboardShortcut(app, utils.ctrlOrCmd + '+shift+h', 'p mark');
 			});
 
 			it('can codify text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, app.workbench.sqlNotebook.ctrlOrCmd + '+shift+k', 'pre code');
+				await verifyToolbarKeyboardShortcut(app, utils.ctrlOrCmd + '+shift+k', 'pre code');
 			});
 		});
 
