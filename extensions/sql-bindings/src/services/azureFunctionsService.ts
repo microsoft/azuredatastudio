@@ -148,6 +148,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 				if (!selectedDatabase) {
 					// User cancelled
+					// we will then prompt user to choose a connection profile again
 					continue;
 				}
 				connectionInfo.database = selectedDatabase;
