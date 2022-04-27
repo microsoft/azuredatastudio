@@ -327,7 +327,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}
 			this.migrationStateModel.refreshDatabaseBackupPage = true;
 			await this.populateResourceGroupDropdown();
-			await this.populateResourceInstanceDropdown();
 		}));
 
 		const azureResourceGroupLabel = this._view.modelBuilder.text().withProps({
@@ -450,7 +449,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private async populateTenantsDropdown(): Promise<void> {
 		try {
 			this.updateDropdownLoadingStatus(TargetDropDowns.Tenant, true);
-			if (this.migrationStateModel._azureAccount.isStale === false && this.migrationStateModel._azureAccount.properties.tenants.length > 1) {
+			if (this.migrationStateModel._azureAccount && this.migrationStateModel._azureAccount.isStale === false && this.migrationStateModel._azureAccount.properties.tenants.length > 1) {
 				this.migrationStateModel._accountTenants = getAzureTenants(this.migrationStateModel._azureAccount, TelemetryViews.MigrationWizardTargetSelectionPage);
 				this._accountTenantDropdown.values = await getAzureTenantsDropdownValues(this.migrationStateModel._accountTenants);
 				selectDefaultDropdownValue(this._accountTenantDropdown, this.migrationStateModel._azureTenant?.id, true);
@@ -461,11 +460,11 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				await this._accountTenantFlexContainer.updateCssStyles({
 					'display': 'none'
 				});
-				await this.populateSubscriptionDropdown();
 			}
 			await this._azureAccountsDropdown.validate();
 		} finally {
 			this.updateDropdownLoadingStatus(TargetDropDowns.Tenant, false);
+			await this.populateSubscriptionDropdown();
 		}
 	}
 
