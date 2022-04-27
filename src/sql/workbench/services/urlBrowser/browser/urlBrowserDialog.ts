@@ -109,7 +109,7 @@ export class UrlBrowserDialog extends Modal {
 		let tableContainer: HTMLElement = DOM.append(DOM.append(this._body, DOM.$('.option-section')), DOM.$('table.url-table-content'));
 		tableContainer.setAttribute('role', 'presentation');
 
-		let azureAccountLabel = localize('azurebrowser.account', "Azure Account*");
+		let azureAccountLabel = localize('urlBrowserDialog.account', "Azure Account*");
 		this._accountSelectorBox = new SelectBox([''], '', this._contextViewService);
 		this._accountSelectorBox.disable();
 		this._accountSelectorBox.setAriaLabel(azureAccountLabel);
@@ -134,28 +134,28 @@ export class UrlBrowserDialog extends Modal {
 		);
 		linkAccountButton.appendChild(linkAccount.el);
 
-		let tenantLabel = localize('azurebrowser.tenant', "Azure AD Tenant*");
+		let tenantLabel = localize('urlBrowserDialog.tenant', "Azure AD Tenant*");
 		this._tenantSelectorBox = new SelectBox([], '', this._contextViewService);
 		this._tenantSelectorBox.disable();
 		this._tenantSelectorBox.setAriaLabel(tenantLabel);
 		let tenantSelector = DialogHelper.appendRow(tableContainer, tenantLabel, 'url-input-label', 'url-input-box');
 		DialogHelper.appendInputSelectBox(tenantSelector, this._tenantSelectorBox);
 
-		let subscriptionLabel = localize('azurebrowser.subscription', "Azure subscription*");
+		let subscriptionLabel = localize('urlBrowserDialog.subscription', "Azure subscription*");
 		this._subscriptionSelectorBox = new SelectBox([], '', this._contextViewService);
 		this._subscriptionSelectorBox.disable();
 		this._subscriptionSelectorBox.setAriaLabel(subscriptionLabel);
 		let subscriptionSelector = DialogHelper.appendRow(tableContainer, subscriptionLabel, 'url-input-label', 'url-input-box');
 		DialogHelper.appendInputSelectBox(subscriptionSelector, this._subscriptionSelectorBox);
 
-		let storageAccountLabel = localize('azurebrowser.storageAccount', "Storage account*");
+		let storageAccountLabel = localize('urlBrowserDialog.storageAccount', "Storage account*");
 		this._storageAccountSelectorBox = new SelectBox([], '', this._contextViewService);
 		this._storageAccountSelectorBox.disable();
 		this._storageAccountSelectorBox.setAriaLabel(storageAccountLabel);
 		let storageAccountSelector = DialogHelper.appendRow(tableContainer, storageAccountLabel, 'url-input-label', 'url-input-box');
 		DialogHelper.appendInputSelectBox(storageAccountSelector, this._storageAccountSelectorBox);
 
-		let blobContainerLabel = localize('azurebrowser.blobContainer', "Blob container*");
+		let blobContainerLabel = localize('urlBrowserDialog.blobContainer', "Blob container*");
 		this._blobContainerSelectorBox = new SelectBox([], '', this._contextViewService);
 		this._blobContainerSelectorBox.disable();
 		this._blobContainerSelectorBox.setAriaLabel(blobContainerLabel);
@@ -163,7 +163,7 @@ export class UrlBrowserDialog extends Modal {
 		DialogHelper.appendInputSelectBox(blobContainerSelector, this._blobContainerSelectorBox);
 
 
-		let sharedAccessSignatureLabel = localize('azurebrowser.sharedAccessSignature', "Shared access signature generated*");
+		let sharedAccessSignatureLabel = localize('urlBrowserDialog.sharedAccessSignature', "Shared access signature generated*");
 		let sasInput = DialogHelper.appendRow(tableContainer, sharedAccessSignatureLabel, 'url-input-label', 'url-input-box');
 		this._sasInputBox = new InputBox(sasInput, this._contextViewService, { flexibleHeight: true });
 		this._sasInputBox.disable();
@@ -175,7 +175,7 @@ export class UrlBrowserDialog extends Modal {
 		this._sasButton.title = 'Create Credentials';
 		this._register(this._sasButton.onDidClick(e => this.generateSharedAccessSignature()));
 
-		let backupFileLabel = localize('azurebrowser.backupFile', "Backup file*");
+		let backupFileLabel = localize('urlBrowserDialog.backupFile', "Backup file*");
 
 		if (this._restoreDialog) {
 			this._backupFileSelectorBox = new SelectBox([], '', this._contextViewService);
