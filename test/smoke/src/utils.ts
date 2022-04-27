@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import minimist = require('minimist');
+import fs = require('fs');
 import { Suite, Context } from 'mocha';
 import { Application, ApplicationOptions } from '../../automation';
 
@@ -30,6 +31,10 @@ export function beforeSuite(opts: minimist.ParsedArgs, optionsTransform?: (opts:
 		// https://github.com/microsoft/vscode/issues/34988
 		const userDataPathSuffix = [...Array(8)].map(() => Math.random().toString(36)[3]).join('');
 		const userDataDir = options.userDataDir.concat(`-${userDataPathSuffix}`);
+
+		if (!fs.existsSync(userDataDir)) {
+			fs.mkdirSync(userDataDir, { recursive: true });
+		}
 
 		const app = new Application({ ...options, userDataDir });
 		await app.start();
