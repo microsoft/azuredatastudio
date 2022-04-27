@@ -192,8 +192,8 @@ import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/i
 import { FileBrowserService } from 'sql/workbench/services/fileBrowser/common/fileBrowserService';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { FileBrowserDialogController } from 'sql/workbench/services/fileBrowser/browser/fileBrowserDialogController';
-import { IUrlBrowserDialogService } from 'sql/workbench/services/fileBrowser/common/urlBrowserDialogService';
-import { UrlBrowserDialogService } from 'sql/workbench/services/fileBrowser/browser/urlBrowserDialogService';
+import { IUrlBrowserDialogService } from 'sql/workbench/services/urlBrowser/common/urlBrowserDialogService';
+import { UrlBrowserDialogService } from 'sql/workbench/services/urlBrowser/browser/urlBrowserDialogService';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { InsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogServiceImpl';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';

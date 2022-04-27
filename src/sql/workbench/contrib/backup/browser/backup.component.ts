@@ -37,7 +37,7 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IUrlBrowserDialogService } from 'sql/workbench/services/fileBrowser/common/urlBrowserDialogService';
+import { IUrlBrowserDialogService } from 'sql/workbench/services/urlBrowser/common/urlBrowserDialogService';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 

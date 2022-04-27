@@ -46,7 +46,7 @@ import { fileFiltersSet, DeviceType } from 'sql/workbench/services/restore/commo
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
-import { IUrlBrowserDialogService } from 'sql/workbench/services/fileBrowser/common/urlBrowserDialogService';
+import { IUrlBrowserDialogService } from 'sql/workbench/services/urlBrowser/common/urlBrowserDialogService';
 
 interface FileListElement {
 	logicalFileName: string;

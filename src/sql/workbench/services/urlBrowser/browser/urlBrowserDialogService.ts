@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { UrlBrowserDialog } from 'sql/workbench/services/fileBrowser/browser/urlBrowserDialog';
-import { IUrlBrowserDialogService } from 'sql/workbench/services/fileBrowser/common/urlBrowserDialogService';
+import { UrlBrowserDialog } from 'sql/workbench/services/urlBrowser/browser/urlBrowserDialog';
+import { IUrlBrowserDialogService } from 'sql/workbench/services/urlBrowser/common/urlBrowserDialogService';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
