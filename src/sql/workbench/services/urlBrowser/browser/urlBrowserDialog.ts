@@ -169,10 +169,11 @@ export class UrlBrowserDialog extends Modal {
 		this._sasInputBox.disable();
 		this._register(this._sasInputBox.onDidChange(() => this.enableOkButton()));
 
-		let sasButtonLabel = DialogHelper.appendRow(tableContainer, '', 'url-input-label', 'url-input-box');
-		this._sasButton = new Button(sasButtonLabel, { title: 'Create Credentials' });
-		this._sasButton.label = 'Create Credentials';
-		this._sasButton.title = 'Create Credentials';
+		let sasButtonContainer = DialogHelper.appendRow(tableContainer, '', 'url-input-label', 'url-input-box');
+		let sasButtonLabel = localize('urlBrowserDialog.sharedAccessSignatureButton', "Create Credentials");
+		this._sasButton = new Button(sasButtonContainer, { title: sasButtonLabel });
+		this._sasButton.label = sasButtonLabel;
+		this._sasButton.title = sasButtonLabel;
 		this._register(this._sasButton.onDidClick(e => this.generateSharedAccessSignature()));
 
 		let backupFileLabel = localize('urlBrowserDialog.backupFile', "Backup file*");
