@@ -22,7 +22,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		addSqlBinding: async (bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string): Promise<ResultStatus> => {
 			return addSqlBinding(bindingType, filePath, functionName, objectName, connectionStringSetting);
 		},
-		promptForBindingType: async (): Promise<(vscode.QuickPickItem & { type: BindingType }) | undefined> => {
+		promptForBindingType: async (): Promise<BindingType | undefined> => {
 			return promptForBindingType();
 		},
 		promptForObjectName: async (bindingType: BindingType): Promise<string | undefined> => {
