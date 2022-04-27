@@ -4,7 +4,7 @@
 
 .notebook-card .grid-stack-header {
 	width: 100%;
-    height: 20px;
+	height: 20px;
 }
 
 .notebook-card .tabs {
@@ -16,7 +16,8 @@
 
 .notebook-card .tabs-and-actions-container {
 	display: flex;
-	position: relative; /* position tabs border bottom or editor actions (when tabs wrap) relative to this container */
+	position: relative;
+	/* position tabs border bottom or editor actions (when tabs wrap) relative to this container */
 	border-top: 1px solid;
 }
 
@@ -32,11 +33,11 @@
 	height: 1px;
 }
 
-.notebook-card .tabs-and-actions-container > .monaco-scrollable-element {
+.notebook-card .tabs-and-actions-container>.monaco-scrollable-element {
 	flex: 1;
 }
 
-.notebook-card .tabs-and-actions-container > .monaco-scrollable-element .scrollbar {
+.notebook-card .tabs-and-actions-container>.monaco-scrollable-element .scrollbar {
 	z-index: 7;
 	cursor: default;
 }
@@ -47,14 +48,15 @@
 	display: flex;
 	height: 25px;
 	width: calc(100% - 25px);
-	scrollbar-width: none; /* Firefox: hide scrollbar */
+	scrollbar-width: none;
+	/* Firefox: hide scrollbar */
 }
 
 .notebook-card .tabs-container.scroll {
 	overflow: scroll !important;
 }
 
-.notebook-card > .tabs-and-actions-container.wrapping .tabs-container {
+.notebook-card>.tabs-and-actions-container.wrapping .tabs-container {
 
 	/* Enable wrapping via flex layout and dynamic height */
 	height: auto;
@@ -62,12 +64,13 @@
 }
 
 .notebook-card .tabs-container::-webkit-scrollbar {
-	display: none; /* Chrome + Safari: hide scrollbar */
+	display: none;
+	/* Chrome + Safari: hide scrollbar */
 }
 
 /* Tab */
 
-.notebook-card .tabs-container > .tab {
+.notebook-card .tabs-container>.tab {
 	position: relative;
 	display: flex;
 	white-space: nowrap;
@@ -79,42 +82,48 @@
 	border-right: 1px solid;
 }
 
-.notebook-card > .tabs-and-actions-container.wrapping .tabs-container > .tab:last-child {
-	margin-right: var(--last-tab-margin-right); /* when tabs wrap, we need a margin away from the absolute positioned editor actions */
+.notebook-card>.tabs-and-actions-container.wrapping .tabs-container>.tab:last-child {
+	margin-right: var(--last-tab-margin-right);
+	/* when tabs wrap, we need a margin away from the absolute positioned editor actions */
 }
 
-.notebook-card > .tabs-and-actions-container.wrapping .tabs-container > .tab.last-in-row:not(:last-child) {
-	border-right: 0 !important; /* ensure no border for every last tab in a row except last row (#115046) */
+.notebook-card>.tabs-and-actions-container.wrapping .tabs-container>.tab.last-in-row:not(:last-child) {
+	border-right: 0 !important;
+	/* ensure no border for every last tab in a row except last row (#115046) */
 }
 
-.notebook-card .tabs-container > .tab.sizing-shrink.has-icon.tab-actions-right,
-.notebook-card .tabs-container > .tab.sizing-shrink.has-icon.tab-actions-off:not(.sticky-compact) {
-	padding-left: 5px; /* reduce padding when we show icons and are in shrinking mode and tab actions is not left (unless sticky-compact) */
+.notebook-card .tabs-container>.tab.sizing-shrink.has-icon.tab-actions-right,
+.notebook-card .tabs-container>.tab.sizing-shrink.has-icon.tab-actions-off:not(.sticky-compact) {
+	padding-left: 5px;
+	/* reduce padding when we show icons and are in shrinking mode and tab actions is not left (unless sticky-compact) */
 }
 
-.notebook-card .tabs-container > .tab.sizing-fit {
+.notebook-card .tabs-container>.tab.sizing-fit {
 	width: 120px;
 	min-width: fit-content;
 	min-width: -moz-fit-content;
 	flex-shrink: 0;
 }
 
-.notebook-card > .tabs-and-actions-container.wrapping .tabs-container > .tab.sizing-fit.last-in-row:not(:last-child) {
-	flex-grow: 1; /* grow the last tab in a row for a more homogeneous look except for last row (#113801) */
+.notebook-card>.tabs-and-actions-container.wrapping .tabs-container>.tab.sizing-fit.last-in-row:not(:last-child) {
+	flex-grow: 1;
+	/* grow the last tab in a row for a more homogeneous look except for last row (#113801) */
 }
 
-.notebook-card .tabs-container > .tab.sizing-shrink {
+.notebook-card .tabs-container>.tab.sizing-shrink {
 	min-width: 80px;
-	flex-basis: 0; /* all tabs are even */
-	flex-grow: 1; /* all tabs grow even */
+	flex-basis: 0;
+	/* all tabs are even */
+	flex-grow: 1;
+	/* all tabs grow even */
 	max-width: fit-content;
 	max-width: -moz-fit-content;
 }
 
-.notebook-card .tabs-container > .tab.sizing-fit.sticky-compact,
-.notebook-card .tabs-container > .tab.sizing-shrink.sticky-compact,
-.notebook-card .tabs-container > .tab.sizing-fit.sticky-shrink,
-.notebook-card .tabs-container > .tab.sizing-shrink.sticky-shrink {
+.notebook-card .tabs-container>.tab.sizing-fit.sticky-compact,
+.notebook-card .tabs-container>.tab.sizing-shrink.sticky-compact,
+.notebook-card .tabs-container>.tab.sizing-fit.sticky-shrink,
+.notebook-card .tabs-container>.tab.sizing-shrink.sticky-shrink {
 
 	/** Sticky compact/shrink tabs do not scroll in case of overflow and are always above unsticky tabs which scroll under */
 	position: sticky;
@@ -125,8 +134,8 @@
 	flex-grow: 0;
 }
 
-.notebook-card .tabs-container > .tab.sizing-fit.sticky-compact,
-.notebook-card .tabs-container > .tab.sizing-shrink.sticky-compact {
+.notebook-card .tabs-container>.tab.sizing-fit.sticky-compact,
+.notebook-card .tabs-container>.tab.sizing-shrink.sticky-compact {
 
 	/** Sticky compact tabs have a fixed width of 38px */
 	width: 38px;
@@ -134,8 +143,8 @@
 	max-width: 38px;
 }
 
-.notebook-card .tabs-container > .tab.sizing-fit.sticky-shrink,
-.notebook-card .tabs-container > .tab.sizing-shrink.sticky-shrink {
+.notebook-card .tabs-container>.tab.sizing-fit.sticky-shrink,
+.notebook-card .tabs-container>.tab.sizing-shrink.sticky-shrink {
 
 	/** Sticky shrink tabs have a fixed width of 80px */
 	width: 80px;
@@ -143,39 +152,45 @@
 	max-width: 80px;
 }
 
-.notebook-card .tabs-container.disable-sticky-tabs > .tab.sizing-fit.sticky-compact,
-.notebook-card .tabs-container.disable-sticky-tabs > .tab.sizing-shrink.sticky-compact,
-.notebook-card .tabs-container.disable-sticky-tabs > .tab.sizing-fit.sticky-shrink,
-.notebook-card .tabs-container.disable-sticky-tabs > .tab.sizing-shrink.sticky-shrink {
-	position: static; /** disable sticky positions for sticky compact/shrink tabs if the available space is too little */
+.notebook-card .tabs-container.disable-sticky-tabs>.tab.sizing-fit.sticky-compact,
+.notebook-card .tabs-container.disable-sticky-tabs>.tab.sizing-shrink.sticky-compact,
+.notebook-card .tabs-container.disable-sticky-tabs>.tab.sizing-fit.sticky-shrink,
+.notebook-card .tabs-container.disable-sticky-tabs>.tab.sizing-shrink.sticky-shrink {
+	position: static;
+	/** disable sticky positions for sticky compact/shrink tabs if the available space is too little */
 }
 
-.notebook-card .tabs-container > .tab.tab-actions-left .action-label {
+.notebook-card .tabs-container>.tab.tab-actions-left .action-label {
 	margin-right: 4px !important;
 }
 
-.notebook-card .tabs-container > .tab.sizing-shrink.tab-actions-left::after,
-.notebook-card .tabs-container > .tab.sizing-shrink.tab-actions-off::after {
+.notebook-card .tabs-container>.tab.sizing-shrink.tab-actions-left::after,
+.notebook-card .tabs-container>.tab.sizing-shrink.tab-actions-off::after {
 	content: '';
 	display: flex;
 	flex: 0;
-	width: 5px; /* reserve space to hide tab fade when close button is left or off (fixes https://github.com/microsoft/vscode/issues/45728) */
+	width: 5px;
+	/* reserve space to hide tab fade when close button is left or off (fixes https://github.com/microsoft/vscode/issues/45728) */
 }
 
-.notebook-card .tabs-container > .tab.sizing-shrink.tab-actions-left {
-	min-width: 80px; /* make more room for close button when it shows to the left */
-	padding-right: 5px; /* we need less room when sizing is shrink */
+.notebook-card .tabs-container>.tab.sizing-shrink.tab-actions-left {
+	min-width: 80px;
+	/* make more room for close button when it shows to the left */
+	padding-right: 5px;
+	/* we need less room when sizing is shrink */
 }
 
-.notebook-card .tabs-container > .tab.dragged {
-	transform: translate3d(0px, 0px, 0px); /* forces tab to be drawn on a separate layer (fixes https://github.com/microsoft/vscode/issues/18733) */
+.notebook-card .tabs-container>.tab.dragged {
+	transform: translate3d(0px, 0px, 0px);
+	/* forces tab to be drawn on a separate layer (fixes https://github.com/microsoft/vscode/issues/18733) */
 }
 
-.notebook-card .tabs-container > .tab.dragged-over div {
-	pointer-events: none; /* prevents cursor flickering (fixes https://github.com/microsoft/vscode/issues/38753) */
+.notebook-card .tabs-container>.tab.dragged-over div {
+	pointer-events: none;
+	/* prevents cursor flickering (fixes https://github.com/microsoft/vscode/issues/38753) */
 }
 
-.notebook-card .tabs-container > .tab.tab-actions-left {
+.notebook-card .tabs-container>.tab.tab-actions-left {
 	flex-direction: row-reverse;
 	padding-left: 0;
 	padding-right: 10px;
@@ -183,14 +198,15 @@
 
 /* Tab border top/bottom */
 
-.notebook-card .tabs-container > .tab > .tab-border-top-container,
-.notebook-card .tabs-container > .tab > .tab-border-bottom-container {
-	display: none; /* hidden by default until a color is provided (see below) */
+.notebook-card .tabs-container>.tab>.tab-border-top-container,
+.notebook-card .tabs-container>.tab>.tab-border-bottom-container {
+	display: none;
+	/* hidden by default until a color is provided (see below) */
 }
 
-.notebook-card .tabs-container > .tab.active.tab-border-top > .tab-border-top-container,
-.notebook-card .tabs-container > .tab.active.tab-border-bottom > .tab-border-bottom-container,
-.notebook-card .tabs-container > .tab.dirty-border-top > .tab-border-top-container {
+.notebook-card .tabs-container>.tab.active.tab-border-top>.tab-border-top-container,
+.notebook-card .tabs-container>.tab.active.tab-border-bottom>.tab-border-bottom-container,
+.notebook-card .tabs-container>.tab.dirty-border-top>.tab-border-top-container {
 	display: block;
 	position: absolute;
 	left: 0;
@@ -198,21 +214,21 @@
 	width: 100%;
 }
 
-.notebook-card .tabs-container > .tab.active.tab-border-top > .tab-border-top-container {
+.notebook-card .tabs-container>.tab.active.tab-border-top>.tab-border-top-container {
 	z-index: 2;
 	top: 0;
 	height: 1px;
 	background-color: var(--tab-border-top-color);
 }
 
-.notebook-card .tabs-container > .tab.active.tab-border-bottom > .tab-border-bottom-container {
+.notebook-card .tabs-container>.tab.active.tab-border-bottom>.tab-border-bottom-container {
 	z-index: 6;
 	bottom: 0;
 	height: 1px;
 	background-color: var(--tab-border-bottom-color);
 }
 
-.notebook-card .tabs-container > .tab.dirty-border-top > .tab-border-top-container {
+.notebook-card .tabs-container>.tab.dirty-border-top>.tab-border-top-container {
 	z-index: 2;
 	top: 0;
 	height: 2px;
@@ -221,18 +237,20 @@
 
 /* Tab Label */
 
-.notebook-card .tabs-container > .tab .tab-label {
+.notebook-card .tabs-container>.tab .tab-label {
 	margin-top: auto;
 	margin-bottom: auto;
-	line-height: 25px; /* aligns icon and label vertically centered in the tab */
+	line-height: 25px;
+	/* aligns icon and label vertically centered in the tab */
 }
 
-.notebook-card .tabs-container > .tab.sizing-shrink .tab-label {
+.notebook-card .tabs-container>.tab.sizing-shrink .tab-label {
 	position: relative;
 }
 
-.notebook-card .tabs-container >  .tab.sizing-shrink > .tab-label > .monaco-icon-label-container::after {
-	content: ''; /* enables a linear gradient to overlay the end of the label when tabs overflow */
+.notebook-card .tabs-container>.tab.sizing-shrink>.tab-label>.monaco-icon-label-container::after {
+	content: '';
+	/* enables a linear gradient to overlay the end of the label when tabs overflow */
 	position: absolute;
 	right: 0;
 	width: 5px;
@@ -244,75 +262,88 @@
 	height: calc(100% - 2px);
 }
 
-.notebook-card .tabs-container >  .tab.sizing-shrink:focus > .tab-label > .monaco-icon-label-container::after {
-	opacity: 0; /* when tab has the focus this shade breaks the tab border (fixes https://github.com/microsoft/vscode/issues/57819) */
+.notebook-card .tabs-container>.tab.sizing-shrink:focus>.tab-label>.monaco-icon-label-container::after {
+	opacity: 0;
+	/* when tab has the focus this shade breaks the tab border (fixes https://github.com/microsoft/vscode/issues/57819) */
 }
 
-.notebook-card .tabs-container >  .tab.sizing-shrink > .tab-label.tab-label-has-badge::after {
-	padding-right: 5px; /* with tab sizing shrink and badges, we want a right-padding because the close button is hidden */
+.notebook-card .tabs-container>.tab.sizing-shrink>.tab-label.tab-label-has-badge::after {
+	padding-right: 5px;
+	/* with tab sizing shrink and badges, we want a right-padding because the close button is hidden */
 }
 
-.notebook-card .tabs-container > .tab.sticky-compact:not(.has-icon) .monaco-icon-label {
-	text-align: center; /* ensure that sticky-compact tabs without icon have label centered */
+.notebook-card .tabs-container>.tab.sticky-compact:not(.has-icon) .monaco-icon-label {
+	text-align: center;
+	/* ensure that sticky-compact tabs without icon have label centered */
 }
 
-.notebook-card .tabs-container > .tab.sizing-fit .monaco-icon-label,
-.notebook-card .tabs-container > .tab.sizing-fit .monaco-icon-label > .monaco-icon-label-container {
-	overflow: visible; /* fixes https://github.com/microsoft/vscode/issues/20182 */
+.notebook-card .tabs-container>.tab.sizing-fit .monaco-icon-label,
+.notebook-card .tabs-container>.tab.sizing-fit .monaco-icon-label>.monaco-icon-label-container {
+	overflow: visible;
+	/* fixes https://github.com/microsoft/vscode/issues/20182 */
 }
 
-.notebook-card .tabs-container > .tab.sizing-shrink > .monaco-icon-label > .monaco-icon-label-container {
+.notebook-card .tabs-container>.tab.sizing-shrink>.monaco-icon-label>.monaco-icon-label-container {
 	text-overflow: clip;
 	flex: none;
 }
 
-.monaco-workbench.hc-black .part.editor > .content .editor-group-container  .tabs-container > .tab.sizing-shrink > .monaco-icon-label > .monaco-icon-label-container {
+.monaco-workbench.hc-black .part.editor>.content .editor-group-container .tabs-container>.tab.sizing-shrink>.monaco-icon-label>.monaco-icon-label-container {
 	text-overflow: ellipsis;
 }
 
 /* Tab Actions */
 
-.notebook-card .tabs-container > .tab > .tab-actions {
+.notebook-card .tabs-container>.tab>.tab-actions {
 	margin-top: auto;
 	margin-bottom: auto;
 	width: 28px;
 }
 
-.notebook-card .tabs-container > .tab > .tab-actions > .monaco-action-bar {
+.notebook-card .tabs-container>.tab>.tab-actions>.monaco-action-bar {
 	width: 28px;
 }
 
-.notebook-card .tabs-container > .tab.tab-actions-right.sizing-shrink > .tab-actions {
+.notebook-card .tabs-container>.tab.tab-actions-right.sizing-shrink>.tab-actions {
 	flex: 0;
-	overflow: hidden; /* let the tab actions be pushed out of view when sizing is set to shrink to make more room */
+	overflow: hidden;
+	/* let the tab actions be pushed out of view when sizing is set to shrink to make more room */
 }
 
-.notebook-card .tabs-container > .tab.dirty.tab-actions-right.sizing-shrink > .tab-actions,
-.notebook-card .tabs-container > .tab.sticky.tab-actions-right.sizing-shrink > .tab-actions,
-.notebook-card .tabs-container > .tab.tab-actions-right.sizing-shrink:hover > .tab-actions,
-.notebook-card .tabs-container > .tab.tab-actions-right.sizing-shrink > .tab-actions:focus-within {
-	overflow: visible; /* ...but still show the tab actions on hover, focus and when dirty or sticky */
+.notebook-card .tabs-container>.tab.dirty.tab-actions-right.sizing-shrink>.tab-actions,
+.notebook-card .tabs-container>.tab.sticky.tab-actions-right.sizing-shrink>.tab-actions,
+.notebook-card .tabs-container>.tab.tab-actions-right.sizing-shrink:hover>.tab-actions,
+.notebook-card .tabs-container>.tab.tab-actions-right.sizing-shrink>.tab-actions:focus-within {
+	overflow: visible;
+	/* ...but still show the tab actions on hover, focus and when dirty or sticky */
 }
 
-.notebook-card .tabs-container > .tab.tab-actions-off:not(.dirty):not(.sticky) > .tab-actions,
-.notebook-card .tabs-container > .tab.tab-actions-off.sticky-compact > .tab-actions {
-	display: none; /* hide the tab actions when we are configured to hide it (unless dirty or sticky, but always when sticky-compact) */
+.notebook-card .tabs-container>.tab.tab-actions-off:not(.dirty):not(.sticky)>.tab-actions,
+.notebook-card .tabs-container>.tab.tab-actions-off.sticky-compact>.tab-actions {
+	display: none;
+	/* hide the tab actions when we are configured to hide it (unless dirty or sticky, but always when sticky-compact) */
 }
 
-.notebook-card.active  .tabs-container > .tab.active > .tab-actions .action-label,		/* always show tab actions for active tab */
-.notebook-card.active  .tabs-container > .tab > .tab-actions .action-label:focus,		/* always show tab actions on focus */
-.notebook-card.active  .tabs-container > .tab:hover > .tab-actions .action-label,		/* always show tab actions on hover */
-.notebook-card.active  .tabs-container > .tab.active:hover > .tab-actions .action-label,	/* always show tab actions on hover */
-.notebook-card.active  .tabs-container > .tab.sticky > .tab-actions .action-label,		/* always show tab actions for sticky tabs */
-.notebook-card.active  .tabs-container > .tab.dirty > .tab-actions .action-label {		/* always show tab actions for dirty tabs */
+.notebook-card.active .tabs-container>.tab.active>.tab-actions .action-label,
+/* always show tab actions for active tab */
+.notebook-card.active .tabs-container>.tab>.tab-actions .action-label:focus,
+/* always show tab actions on focus */
+.notebook-card.active .tabs-container>.tab:hover>.tab-actions .action-label,
+/* always show tab actions on hover */
+.notebook-card.active .tabs-container>.tab.active:hover>.tab-actions .action-label,
+/* always show tab actions on hover */
+.notebook-card.active .tabs-container>.tab.sticky>.tab-actions .action-label,
+/* always show tab actions for sticky tabs */
+.notebook-card.active .tabs-container>.tab.dirty>.tab-actions .action-label {
+	/* always show tab actions for dirty tabs */
 	opacity: 1;
 }
 
-.notebook-card .tabs-container > .tab > .tab-actions .actions-container {
+.notebook-card .tabs-container>.tab>.tab-actions .actions-container {
 	justify-content: center;
 }
 
-.notebook-card.active  .tabs-container > .tab > .tab-actions .action-label.codicon {
+.notebook-card.active .tabs-container>.tab>.tab-actions .action-label.codicon {
 	color: inherit;
 	font-size: 16px;
 	padding: 2px;
@@ -320,49 +351,57 @@
 	height: 16px;
 }
 
-.notebook-card.active  .tabs-container > .tab.sticky.dirty > .tab-actions .action-label:not(:hover)::before,
-.notebook-card .tabs-container > .tab.sticky.dirty > .tab-actions .action-label:not(:hover)::before {
-	content: "\ebb2"; /* use `pinned-dirty` icon unicode for sticky-dirty indication */
+.notebook-card.active .tabs-container>.tab.sticky.dirty>.tab-actions .action-label:not(:hover)::before,
+.notebook-card .tabs-container>.tab.sticky.dirty>.tab-actions .action-label:not(:hover)::before {
+	content: "\ebb2";
+	/* use `pinned-dirty` icon unicode for sticky-dirty indication */
 }
 
-.notebook-card.active  .tabs-container > .tab.dirty > .tab-actions .action-label:not(:hover)::before,
-.notebook-card .tabs-container > .tab.dirty > .tab-actions .action-label:not(:hover)::before {
-	content: "\ea71"; /* use `circle-filled` icon unicode for dirty indication */
+.notebook-card.active .tabs-container>.tab.dirty>.tab-actions .action-label:not(:hover)::before,
+.notebook-card .tabs-container>.tab.dirty>.tab-actions .action-label:not(:hover)::before {
+	content: "\ea71";
+	/* use `circle-filled` icon unicode for dirty indication */
 }
 
-.notebook-card .tabs-container > .tab.active > .tab-actions .action-label,
-.notebook-card .tabs-container > .tab.active:hover > .tab-actions .action-label,
-.notebook-card .tabs-container > .tab.dirty > .tab-actions .action-label,
-.notebook-card .tabs-container > .tab.sticky > .tab-actions .action-label,
-.notebook-card .tabs-container > .tab:hover > .tab-actions .action-label {
-	opacity: 0.5; /* show tab actions dimmed for inactive group */
+.notebook-card .tabs-container>.tab.active>.tab-actions .action-label,
+.notebook-card .tabs-container>.tab.active:hover>.tab-actions .action-label,
+.notebook-card .tabs-container>.tab.dirty>.tab-actions .action-label,
+.notebook-card .tabs-container>.tab.sticky>.tab-actions .action-label,
+.notebook-card .tabs-container>.tab:hover>.tab-actions .action-label {
+	opacity: 0.5;
+	/* show tab actions dimmed for inactive group */
 }
 
-.notebook-card .tabs-container > .tab > .tab-actions .action-label {
+.notebook-card .tabs-container>.tab>.tab-actions .action-label {
 	opacity: 0;
 }
 
 /* Tab Actions: Off */
 
-.notebook-card .tabs-container > .tab.tab-actions-off {
-	padding-right: 10px; /* give a little bit more room if tab actions is off */
+.notebook-card .tabs-container>.tab.tab-actions-off {
+	padding-right: 10px;
+	/* give a little bit more room if tab actions is off */
 }
 
-.notebook-card .tabs-container > .tab.sizing-shrink.tab-actions-off:not(.sticky-compact) {
-	padding-right: 5px; /* we need less room when sizing is shrink (unless tab is sticky-compact) */
+.notebook-card .tabs-container>.tab.sizing-shrink.tab-actions-off:not(.sticky-compact) {
+	padding-right: 5px;
+	/* we need less room when sizing is shrink (unless tab is sticky-compact) */
 }
 
-.notebook-card .tabs-container > .tab.tab-actions-off.dirty-border-top > .tab-actions {
-	display: none; /* hide dirty state when highlightModifiedTabs is enabled and when running without tab actions */
+.notebook-card .tabs-container>.tab.tab-actions-off.dirty-border-top>.tab-actions {
+	display: none;
+	/* hide dirty state when highlightModifiedTabs is enabled and when running without tab actions */
 }
 
-.notebook-card .tabs-container > .tab.tab-actions-off.dirty:not(.dirty-border-top):not(.sticky-compact),
-.notebook-card .tabs-container > .tab.tab-actions-off.sticky:not(.sticky-compact) {
-	padding-right: 0; /* remove extra padding when we are running without tab actions (unless tab is sticky-compact) */
+.notebook-card .tabs-container>.tab.tab-actions-off.dirty:not(.dirty-border-top):not(.sticky-compact),
+.notebook-card .tabs-container>.tab.tab-actions-off.sticky:not(.sticky-compact) {
+	padding-right: 0;
+	/* remove extra padding when we are running without tab actions (unless tab is sticky-compact) */
 }
 
-.notebook-card .tabs-container > .tab.tab-actions-off > .tab-actions {
-	pointer-events: none; /* don't allow tab actions to be clicked when running without tab actions */
+.notebook-card .tabs-container>.tab.tab-actions-off>.tab-actions {
+	pointer-events: none;
+	/* don't allow tab actions to be clicked when running without tab actions */
 }
 
 /* Breadcrumbs */
@@ -379,12 +418,14 @@
 }
 
 .notebook-card .tabs-breadcrumbs .breadcrumbs-control .monaco-icon-label::before {
-	height: 22px; /* tweak the icon size of the editor labels when icons are enabled */
+	height: 22px;
+	/* tweak the icon size of the editor labels when icons are enabled */
 }
 
 .notebook-card .tabs-breadcrumbs .breadcrumbs-control .outline-element-icon {
 	padding-right: 3px;
-	height: 22px; /* tweak the icon size of the editor labels when icons are enabled */
+	height: 22px;
+	/* tweak the icon size of the editor labels when icons are enabled */
 	line-height: 22px;
 }
 
@@ -405,7 +446,8 @@
 }
 
 .notebook-card .tabs-breadcrumbs .breadcrumbs-control .monaco-breadcrumb-item:last-child .codicon:last-child {
-	display: none; /* hides chevrons when last item */
+	display: none;
+	/* hides chevrons when last item */
 }
 
 /* Editor Actions Toolbar */
@@ -421,7 +463,7 @@
 	margin-right: 4px;
 }
 
-.notebook-card > .tabs-and-actions-container.wrapping .editor-actions {
+.notebook-card>.tabs-and-actions-container.wrapping .editor-actions {
 
 	/* When tabs are wrapped, position the editor actions at the end of the very last row */
 	position: absolute;

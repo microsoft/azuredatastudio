@@ -53,7 +53,7 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 
 	ngAfterViewInit(): void {
 		//this.initialize();
-		this.tabsScrollbar =  this._register(this.createTabsScrollbar(this._tablist.nativeElement));
+		this.tabsScrollbar = this._register(this.createTabsScrollbar(this._tablist.nativeElement));
 		this._tabsContainer.nativeElement.appendChild(this.tabsScrollbar.getDomNode());
 
 		this.tabsScrollbar.setScrollPosition({
