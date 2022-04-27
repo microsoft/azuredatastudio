@@ -163,15 +163,19 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			it('cannot move through cells when find widget is invoked', async function () {
 				const app = this.app as Application;
-				const findWidgetCmd = process.platform === 'darwin' ? 'cmd+f' : 'ctrl+f';
-				await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
-				const cellIds = await app.workbench.sqlNotebook.getCellIds();
-				await app.workbench.sqlNotebook.doubleClickTextCell();
+				const findWidgetCmd = `${app.workbench.sqlNotebook.ctrlOrCmd}+f`;
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.addCell('markdown');
+				await app.workbench.sqlNotebook.exitActiveCell();
+				await app.workbench.sqlNotebook.addCell('markdown');
+				await app.workbench.sqlNotebook.exitActiveCell();
+				await app.workbench.sqlNotebook.addCell('markdown');
 				await app.code.dispatchKeybinding('escape');
+				const activeCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
 				await app.code.dispatchKeybinding(findWidgetCmd);
+				await app.code.waitForElement('.editor-widget.find-widget.visible');
 				await app.code.dispatchKeybinding('down');
-				await app.code.dispatchKeybinding('down');
-				await app.workbench.sqlNotebook.waitForActiveCell(cellIds[0]); // first cell should be active
+				await app.workbench.sqlNotebook.waitForActiveCell(activeCellId); // verify that the active cell is the same
 			});
 		});
 

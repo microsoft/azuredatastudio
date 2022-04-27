@@ -75,13 +75,7 @@ export class Notebook {
 	}
 
 	async waitForActiveCell(id: string): Promise<void> {
-		const activeCellSelector = '.notebook-cell.active';
-		const activeCell = await this.code.waitForElement(activeCellSelector);
-		if (activeCell.attributes['aria-label'].includes('Code Cell')) {
-			await this.code.waitForElement(`.notebook-cell.active[id="${id}"] .monaco-editor`);
-		} else {
-			await this.code.waitForElement(`.notebook-cell.active[id="${id}"] ${Notebook.textCellPreviewSelector}`);
-		}
+		await this.code.waitForElement(`.notebook-cell.active[id="${id}"]`);
 	}
 
 	async waitForTypeInEditor(text: string, cellId?: string) {
