@@ -10,6 +10,9 @@
     <trans-unit id="addPackageReferenceMessage">
       <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
     </trans-unit>
+    <trans-unit id="addSqlBinding">
+      <source xml:lang="en">Adding SQL Binding to function "{0}"...</source>
+    </trans-unit>
     <trans-unit id="addSqlBindingPackageError">
       <source xml:lang="en">Error adding Sql Binding extension package to project</source>
     </trans-unit>
@@ -21,6 +24,9 @@
     </trans-unit>
     <trans-unit id="azureFunctionsProjectMustBeOpened">
       <source xml:lang="en">A C# Azure Functions project must be present in order to create a new Azure Function for this table.</source>
+    </trans-unit>
+    <trans-unit id="browseEllipsis">
+      <source xml:lang="en">Browse...</source>
     </trans-unit>
     <trans-unit id="closeButton">
       <source xml:lang="en">Close</source>
@@ -67,6 +73,9 @@
     <trans-unit id="functionNameTitle">
       <source xml:lang="en">Function Name</source>
     </trans-unit>
+    <trans-unit id="hasSpecialCharacters">
+      <source xml:lang="en">Name must not include special characters</source>
+    </trans-unit>
     <trans-unit id="includePassword">
       <source xml:lang="en">Do you want to include the password from this connection in your local.settings.json file?</source>
     </trans-unit>
@@ -87,6 +96,9 @@
     </trans-unit>
     <trans-unit id="nameMustNotBeEmpty">
       <source xml:lang="en">Name must not be empty</source>
+    </trans-unit>
+    <trans-unit id="needConnection">
+      <source xml:lang="en">A connection is required to use Azure Function with SQL Binding</source>
     </trans-unit>
     <trans-unit id="noAzureFunctionsInFile">
       <source xml:lang="en">No Azure functions in the current active file</source>
@@ -118,11 +130,17 @@
     <trans-unit id="selectBindingType">
       <source xml:lang="en">Select type of binding</source>
     </trans-unit>
+    <trans-unit id="selectButton">
+      <source xml:lang="en">Select</source>
+    </trans-unit>
     <trans-unit id="selectConnectionError">
       <source xml:lang="en">Failed to set connection string app setting: {0}</source>
     </trans-unit>
     <trans-unit id="selectConnectionString">
       <source xml:lang="en">Select SQL connection string method</source>
+    </trans-unit>
+    <trans-unit id="selectDatabase">
+      <source xml:lang="en">Select Database</source>
     </trans-unit>
     <trans-unit id="selectProject">
       <source xml:lang="en">Select the Azure Function project for the SQL Binding</source>

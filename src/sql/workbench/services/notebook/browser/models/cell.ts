@@ -46,6 +46,7 @@ export interface QueryResultId {
 
 export class CellModel extends Disposable implements ICellModel {
 	public id: string;
+	public cellLabel: string;
 
 	private _cellType: nb.CellType;
 	private _source: string | string[];
@@ -120,6 +121,11 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 		// if the fromJson() method was already called and _cellGuid was previously set, don't generate another UUID unnecessarily
 		this._cellGuid = this._cellGuid || generateUuid();
+		if (this._cellType === 'code') {
+			this.cellLabel = localize('codeCellLabel', "Code Cell {0}", this.id);
+		} else {
+			this.cellLabel = localize('mdCellLabel', "Markdown Cell {0}", this.id);
+		}
 		this.createUri();
 		this.populatePropertiesFromSettings();
 	}
@@ -281,7 +287,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set hover(value: boolean) {
 		this._hover = value;
-		this.fireExecutionStateChanged();
+		// The Run button is always visible while the cell is active, so we only need to emit this event for inactive cells
+		if (!this.active) {
+			this.fireExecutionStateChanged();
+		}
 	}
 
 	public get executionCount(): number | undefined {

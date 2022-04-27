@@ -16,6 +16,9 @@
     <trans-unit id="sql.migrate.text">
       <source xml:lang="en">Select the databases that you want to migrate to Azure SQL.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.account.credentials.refresh.required">
+      <source xml:lang="en">{0} (requires credentials refresh)</source>
+    </trans-unit>
     <trans-unit id="sql.migration.active.backup.files">
       <source xml:lang="en">Active backup files</source>
     </trans-unit>
@@ -229,7 +232,7 @@ This may take some time.</source>
       <source xml:lang="en">Migration cutover</source>
     </trans-unit>
     <trans-unit id="sql.migration.cutover.card">
-      <source xml:lang="en">Completing cutover</source>
+      <source xml:lang="en">Database migrations completing cutover</source>
     </trans-unit>
     <trans-unit id="sql.migration.cutover.error">
       <source xml:lang="en">An error occurred while initiating cutover.</source>
@@ -345,6 +348,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.database.private.endpoint.info.text">
       <source xml:lang="en">Ensure that the Azure Storage account does not use a private endpoint.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.database.status.column">
+      <source xml:lang="en">Status</source>
+    </trans-unit>
     <trans-unit id="sql.migration.database.to.be.migrated">
       <source xml:lang="en">Database to be migrated</source>
     </trans-unit>
@@ -388,7 +394,7 @@ This may take some time.</source>
       <source xml:lang="en">Error</source>
     </trans-unit>
     <trans-unit id="sql.migration.failed">
-      <source xml:lang="en">Migrations failed</source>
+      <source xml:lang="en">Database migrations failed</source>
     </trans-unit>
     <trans-unit id="sql.migration.feedback.issue.title">
       <source xml:lang="en">Feedback on the migration experience</source>
@@ -565,13 +571,10 @@ This may take some time.</source>
       <source xml:lang="en">The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.</source>
     </trans-unit>
     <trans-unit id="sql.migration.migration.completed">
-      <source xml:lang="en">Migrations completed</source>
+      <source xml:lang="en">Database migrations completed</source>
     </trans-unit>
     <trans-unit id="sql.migration.migration.in.progress">
       <source xml:lang="en">Database migrations in progress</source>
-    </trans-unit>
-    <trans-unit id="sql.migration.migration.not.started">
-      <source xml:lang="en">Migrations not started</source>
     </trans-unit>
     <trans-unit id="sql.migration.migration.status">
       <source xml:lang="en">Migration status</source>
@@ -753,6 +756,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.refresh.key2">
       <source xml:lang="en">Refresh key 2</source>
     </trans-unit>
+    <trans-unit id="sql.migration.refresh.migrations.error">
+      <source xml:lang="en">An error occurred while refreshing the migrations list: '{0}'.  Please check your linked Azure connection and click refresh to try again.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.resource.group.description">
       <source xml:lang="en">A resource group is a container that holds related resources for an Azure solution.</source>
     </trans-unit>
@@ -816,6 +822,63 @@ This may take some time.</source>
     <trans-unit id="sql.migration.select.prompt">
       <source xml:lang="en">Click on SQL Server instance or any of the databases on the left to view its details.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.select.service.apply.label">
+      <source xml:lang="en">Apply</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.delete.label">
+      <source xml:lang="en">Clear</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.description">
+      <source xml:lang="en">Azure Database Migration Service</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.heading">
+      <source xml:lang="en">Filter the migration list by Database Migration Service</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.prompt">
+      <source xml:lang="en">Select a Database Migration Service</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.select.a.">
+      <source xml:lang="en">Sign into Azure and select an account</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.select.a.location">
+      <source xml:lang="en">Select a location</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.select.a.resource.group">
+      <source xml:lang="en">Select a resource group</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.select.a.service">
+      <source xml:lang="en">Select a Database Migration Service</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.select.a.subscription">
+      <source xml:lang="en">Select a subscription</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.select.a.tenant">
+      <source xml:lang="en">Select a tenant</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.select.account.error">
+      <source xml:lang="en">An error occurred while loading available Azure accounts.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.select.location.error">
+      <source xml:lang="en">An error occurred while loading locations. Please check your Azure connection and try again.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.select.resource.group.error">
+      <source xml:lang="en">An error occurred while loading available resource groups. Please check your Azure connection and try again.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.select.service.error">
+      <source xml:lang="en">An error occurred while loading available database migration services. Please check your Azure connection and try again.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.select.subscription.error">
+      <source xml:lang="en">An error occurred while loading account subscriptions. Please check your Azure connection and try again.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.select.tenant.error">
+      <source xml:lang="en">An error occurred while loading available Azure account tenants.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.service.label">
+      <source xml:lang="en">Azure Database Migration Service</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.service.title">
+      <source xml:lang="en">Select Database Migration Service</source>
+    </trans-unit>
     <trans-unit id="sql.migration.select.target.to.continue">
       <source xml:lang="en">To continue, select a target.</source>
     </trans-unit>
@@ -863,6 +926,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.not.ready">
       <source xml:lang="en">Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.service.prompt">
+      <source xml:lang="en">{0} (change)</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.ready">
       <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the node - {1}</source>
@@ -1236,6 +1302,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.sql.assessment.notebook.title">
       <source xml:lang="en">SQL migration assessment</source>
     </trans-unit>
+    <trans-unit id="sql.migration.sql.database">
+      <source xml:lang="en">SQL Database</source>
+    </trans-unit>
     <trans-unit id="sql.migration.sql.managed.instance">
       <source xml:lang="en">SQL Managed Instance</source>
     </trans-unit>
@@ -1308,6 +1377,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.status.refresh.label">
       <source xml:lang="en">Refresh</source>
     </trans-unit>
+    <trans-unit id="sql.migration.status.select.service.MESSAGE">
+      <source xml:lang="en">Select a Database Migration Service to monitor migrations.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.status.succeeded">
       <source xml:lang="en">Succeeded</source>
     </trans-unit>
@@ -1378,7 +1450,7 @@ This may take some time.</source>
       <source xml:lang="en">Username</source>
     </trans-unit>
     <trans-unit id="sql.migration.view.all">
-      <source xml:lang="en">View all</source>
+      <source xml:lang="en">All database migrations</source>
     </trans-unit>
     <trans-unit id="sql.migration.view.select.button.label">
       <source xml:lang="en">View/Select</source>
@@ -1531,6 +1603,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="new-support-request-command">
       <source xml:lang="en">New support request</source>
+    </trans-unit>
+    <trans-unit id="refresh-migrations-command">
+      <source xml:lang="en">Refresh</source>
     </trans-unit>
     <trans-unit id="retry-migration-menu">
       <source xml:lang="en">Retry migration</source>

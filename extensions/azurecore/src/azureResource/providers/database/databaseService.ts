@@ -4,12 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ServiceClientCredentials } from '@azure/ms-rest-js';
-import { azureResource } from 'azureResource';
 import { IAzureResourceService } from '../../interfaces';
 import { serversQuery, DbServerGraphData } from '../databaseServer/databaseServerService';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { queryGraphResources, GraphData } from '../resourceTreeDataProviderBase';
-import { AzureAccount } from 'azurecore';
+import { AzureAccount, azureResource } from 'azurecore';
 
 interface DatabaseGraphData extends GraphData {
 	kind: string;

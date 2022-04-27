@@ -579,6 +579,19 @@
 	background: url("Table_Temporal.svg") center center no-repeat;
 }
 
+.vs .icon.table_graphnode,
+.vs-dark .icon.table_graphnode,
+.hc-black .icon.table_graphnode {
+	background: url("Table_GraphNode.svg") center center no-repeat;
+}
+
+.vs .icon.table_graphedge,
+.vs-dark .icon.table_graphedge,
+.hc-black .icon.table_graphedge {
+	background: url("Table_GraphEdge.svg") center center no-repeat;
+}
+
+
 .vs .icon.trigger,
 .vs-dark .icon.trigger,
 .hc-black .icon.trigger {

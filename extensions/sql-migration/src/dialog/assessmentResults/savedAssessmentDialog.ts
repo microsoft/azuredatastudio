@@ -22,7 +22,10 @@ export class SavedAssessmentDialog {
 	private context: vscode.ExtensionContext;
 	private _disposables: vscode.Disposable[] = [];
 
-	constructor(context: vscode.ExtensionContext, stateModel: MigrationStateModel) {
+	constructor(
+		context: vscode.ExtensionContext,
+		stateModel: MigrationStateModel,
+		private readonly _onClosedCallback: () => Promise<void>) {
 		this.stateModel = stateModel;
 		this.context = context;
 	}
@@ -53,7 +56,7 @@ export class SavedAssessmentDialog {
 
 			dialog.registerCloseValidator(async () => {
 				if (this.stateModel.resumeAssessment) {
-					if (!this.stateModel.loadSavedInfo()) {
+					if (await !this.stateModel.loadSavedInfo()) {
 						void vscode.window.showInformationMessage(constants.OPEN_SAVED_INFO_ERROR);
 						return false;
 					}
@@ -77,7 +80,11 @@ export class SavedAssessmentDialog {
 	}
 
 	protected async execute() {
-		const wizardController = new WizardController(this.context, this.stateModel);
+		const wizardController = new WizardController(
+			this.context,
+			this.stateModel,
+			this._onClosedCallback);
+
 		await wizardController.openWizard(this.stateModel.sourceConnectionId);
 		this._isOpen = false;
 	}
@@ -103,11 +110,11 @@ export class SavedAssessmentDialog {
 			checked: true
 		}).component();
 
-		radioStart.onDidChangeCheckedState((e) => {
+		this._disposables.push(radioStart.onDidChangeCheckedState((e) => {
 			if (e) {
 				this.stateModel.resumeAssessment = false;
 			}
-		});
+		}));
 		const radioContinue = view.modelBuilder.radioButton().withProps({
 			label: constants.RESUME_SESSION,
 			name: buttonGroup,
@@ -117,11 +124,11 @@ export class SavedAssessmentDialog {
 			checked: false
 		}).component();
 
-		radioContinue.onDidChangeCheckedState((e) => {
+		this._disposables.push(radioContinue.onDidChangeCheckedState((e) => {
 			if (e) {
 				this.stateModel.resumeAssessment = true;
 			}
-		});
+		}));
 
 		const flex = view.modelBuilder.flexContainer()
 			.withLayout({

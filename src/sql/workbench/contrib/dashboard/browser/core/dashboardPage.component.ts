@@ -83,7 +83,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	// tslint:disable:no-unused-variable
 	private readonly homeTabTitle: string = nls.localize('home', "Home");
 	private readonly homeTabId: string = 'homeTab';
-	private tabToolbarActionsConfig = new Map<string, any[]>();
+	private tabToolbarActionsConfig = new Map<string, {
+		actions: any[],
+		hideRefreshTask: boolean
+	}>();
+
 	private tabContents = new Map<string, string>();
 
 	static tabName = new RawContextKey<string>('tabName', undefined);
@@ -190,10 +194,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				}
 			});
 
-			if (primary.length > 0) {
-				let separator: HTMLElement = Taskbar.createTaskbarSeparator();
-				tasks.push({ element: separator });
-			}
 		}
 		return tasks;
 	}
@@ -219,8 +219,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		const toolbarTasks = this.tabToolbarActionsConfig.get(tabId);
 		let tasks = TaskRegistry.getTasks();
 		let content = [];
-		if (types.isArray(toolbarTasks) && toolbarTasks.length > 0) {
-			tasks = toolbarTasks.map(i => {
+		if (types.isArray(toolbarTasks.actions) && toolbarTasks.actions.length > 0) {
+			tasks = toolbarTasks.actions.map(i => {
 				if (types.isString(i)) {
 					if (tasks.some(x => x === i)) {
 						return i;
@@ -239,12 +239,29 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 		// get extension actions contributed to the page's toolbar
 		const contributedTasks = this.getContributedTasks(tabId);
+		if (content.length > 0 && contributedTasks.length > 0) {
+			/**
+			 * Adding the separator before adding contributed tasks if there other
+			 * toolbar tasks already present in the toolbar
+			 */
+			const separator: HTMLElement = Taskbar.createTaskbarSeparator();
+			content.push({ element: separator });
+		}
 		content.push(...contributedTasks);
 
-		const refreshAction = new RefreshWidgetAction(() => {
-			this.refresh();
-		}, this);
-		content.push({ action: refreshAction });
+		if (!toolbarTasks.hideRefreshTask) {
+			/**
+			 * Adding the separator only when there are other actions present on the task
+			 */
+			if (content.length > 0) {
+				const separator: HTMLElement = Taskbar.createTaskbarSeparator();
+				content.push({ element: separator });
+			}
+			const refreshAction = new RefreshWidgetAction(() => {
+				this.refresh();
+			}, this);
+			content.push({ action: refreshAction });
+		}
 		return content;
 	}
 
@@ -262,11 +279,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		toolbarActions.forEach(a => {
 			content.push({ action: a });
 		});
-
-		if (content.length > 0) {
-			let separator: HTMLElement = Taskbar.createTaskbarSeparator();
-			content.push({ element: separator });
-		}
 
 		return content;
 	}
@@ -442,7 +454,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				configs = cb.apply(this, [configs]);
 			});
 
-			this.processTasksWidgets(configs, value.id);
+			this.processTasksWidgets(configs, value.id, value.hideRefreshTask);
 
 			if (key === WIDGETS_CONTAINER) {
 				return { id: value.id, title: value.title, container: { 'widgets-container': configs }, alwaysShow: value.alwaysShow, iconClass: value.iconClass };
@@ -459,7 +471,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	 * @param widgets widgets
 	 * @param tabId tab id
 	 */
-	private processTasksWidgets(widgets: WidgetConfig[], tabId: string): void {
+	private processTasksWidgets(widgets: WidgetConfig[], tabId: string, hideRefreshTask?: boolean): void {
 		let index;
 		const allTasks = [];
 		// do this in a while loop since there might be multiple tasks widgets in a tab
@@ -473,7 +485,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				widgets.splice(index, 1);
 			}
 		} while (index !== -1);
-		this.tabToolbarActionsConfig.set(tabId, allTasks);
+		this.tabToolbarActionsConfig.set(tabId, {
+			actions: allTasks,
+			hideRefreshTask: hideRefreshTask
+		});
 	}
 
 	protected getContentType(tab: TabConfig): string {

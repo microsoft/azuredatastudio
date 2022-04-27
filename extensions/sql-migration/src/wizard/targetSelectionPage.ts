@@ -12,7 +12,7 @@ import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { deepClone, findDropDownItemIndex, selectDropDownIndex, selectDefaultDropdownValue } from '../api/utils';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 
 export class TargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -186,7 +186,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				const selectedAzureAccount = this.migrationStateModel.getAccount(selectedIndex);
 				// Making a clone of the account object to preserve the original tenants
 				this.migrationStateModel._azureAccount = deepClone(selectedAzureAccount);
-				if (this.migrationStateModel._azureAccount.properties.tenants.length > 1) {
+				if (selectedAzureAccount.isStale === false &&
+					this.migrationStateModel._azureAccount.properties.tenants.length > 1) {
 					this.migrationStateModel._accountTenants = selectedAzureAccount.properties.tenants;
 					this._accountTenantDropdown.values = await this.migrationStateModel.getTenantValues();
 					selectDropDownIndex(this._accountTenantDropdown, 0);
@@ -252,7 +253,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			fireOnTextChange: true,
 		}).component();
 
-		this._disposables.push(this._accountTenantDropdown.onValueChanged(value => {
+		this._disposables.push(this._accountTenantDropdown.onValueChanged(async (value) => {
 			/**
 			 * Replacing all the tenants in azure account with the tenant user has selected.
 			 * All azure requests will only run on this tenant from now on
@@ -263,6 +264,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			if (selectedIndex > -1) {
 				this.migrationStateModel._azureAccount.properties.tenants = [this.migrationStateModel.getTenant(selectedIndex)];
 			}
+			await this.populateSubscriptionDropdown();
 		}));
 
 		this._accountTenantFlexContainer = this._view.modelBuilder.flexContainer()
@@ -480,7 +482,14 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	public async populateResourceGroupDropdown(): Promise<void> {
 		try {
 			this.updateDropdownLoadingStatus(TargetDropDowns.ResourceGroup, true);
-			this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._targetSubscription);
+			switch (this.migrationStateModel._targetType) {
+				case MigrationTargetType.SQLMI:
+					this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupForManagedInstancesDropdownValues(this.migrationStateModel._targetSubscription);
+					break;
+				case MigrationTargetType.SQLVM:
+					this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupForVirtualMachinesDropdownValues(this.migrationStateModel._targetSubscription);
+					break;
+			}
 			selectDefaultDropdownValue(this._azureResourceGroupDropdown, this.migrationStateModel._resourceGroup?.id, false);
 		} catch (e) {
 			console.log(e);
