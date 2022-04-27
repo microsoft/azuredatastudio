@@ -246,18 +246,21 @@ export class Project implements ISqlProject {
 
 		// create a FileProjectEntry for each file
 		const fileEntries: FileProjectEntry[] = [];
-		filesSet.forEach(f => {
+		for (let f of Array.from(filesSet.values())) {
 			const typeEntry = entriesWithType.find(e => e.relativePath === f);
 			let containsCreateTableStatement;
 
 			// TODO: add check if table designer feature is enabled so we don't waste time reading all the files if it isn't
 			// read file to check if it has a "Create Table" statement
 			const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(f));
-			const fileContents = readFileSync(fullPath).toString();
-			containsCreateTableStatement = fileContents.toLowerCase().includes('create table');
+
+			if (await utils.exists(fullPath)) {
+				const fileContents = readFileSync(fullPath).toString();
+				containsCreateTableStatement = fileContents.toLowerCase().includes('create table');
+			}
 
 			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, typeEntry ? typeEntry.typeAttribute : undefined, containsCreateTableStatement));
-		});
+		}
 
 		return fileEntries;
 	}
