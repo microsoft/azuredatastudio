@@ -11,7 +11,12 @@ export const fileFiltersSet: { label: string, filters: string[] }[] = [
 	{ label: localize('backup.allFiles', "All Files"), filters: ['*'] }
 ];
 
+// Backup media device type
 export enum DeviceType {
+	logicalDevice = 0,
+	tape = 1,
 	file = 2,
+	pipe = 3,
+	virtualDevice = 4,
 	url = 5
 }
