@@ -472,11 +472,8 @@ export class BackupComponent extends AngularDisposable {
 		this.backupTypeOptions = [];
 
 		if (isMetadataPopulated) {
-			if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance) {
-				this.backupEnabled = false;
-			} else {
-				this.backupEnabled = true;
-			}
+			this.backupEnabled = true;
+
 			// Set recovery model
 			this.setControlsForRecoveryModel();
 
