@@ -106,7 +106,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 			.withAdditionalProperties(propertyBag).send();
 
-
 		// Get connection string parameters and construct object name from prompt or connectionInfo given
 		let objectName: string | undefined;
 		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
@@ -115,6 +114,53 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			telemetryStep = CreateAzureFunctionStep.launchFromCommandPalette;
 
 			// prompt user for connection profile to get connection info
+			while (true) {
+				connectionInfo = await vscodeMssqlApi.promptForConnection(true);
+				if (!connectionInfo) {
+					// User cancelled
+					return;
+				}
+				telemetryStep = 'getConnectionInfo';
+				let connectionURI: string = '';
+				try {
+					await vscode.window.withProgress(
+						{
+							location: vscode.ProgressLocation.Notification,
+							title: constants.connectionProgressTitle,
+							cancellable: false
+						}, async (_progress, _token) => {
+							// list databases based on connection profile selected
+							connectionURI = await vscodeMssqlApi.connect(connectionInfo!);
+						}
+					);
+				} catch (e) {
+					// mssql connection error will be shown to the user
+					// we will then prompt user to choose a connection profile again
+					continue;
+				}
+				// list databases based on connection profile selected
+				let listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
+				const selectedDatabase = (await vscode.window.showQuickPick(listDatabases, {
+					canPickMany: false,
+					title: constants.selectDatabase,
+					ignoreFocusOut: true
+				}));
+
+				if (!selectedDatabase) {
+					// User cancelled
+					// we will then prompt user to choose a connection profile again
+					continue;
+				}
+				connectionInfo.database = selectedDatabase;
+
+				// prompt user for object name to create function from
+				objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding);
+				if (!objectName) {
+					// user cancelled
+					return;
+				}
+				break;
+			}
 			telemetryStep = CreateAzureFunctionStep.getConnectionProfile;
 			connectionInfo = await vscodeMssqlApi.promptForConnection(true);
 			if (!connectionInfo) {
