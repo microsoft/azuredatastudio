@@ -517,6 +517,7 @@ export interface ICellModel {
 	readonly onOutputsChanged: Event<IOutputChangedEvent>;
 	readonly onTableUpdated: Event<ITableUpdatedEvent>;
 	readonly onExecutionStateChange: Event<CellExecutionState>;
+	readonly onExecutionComplete: Event<boolean>;
 	readonly executionState: CellExecutionState;
 	readonly notebookModel: NotebookModel;
 	setFuture(future: FutureInternal): void;

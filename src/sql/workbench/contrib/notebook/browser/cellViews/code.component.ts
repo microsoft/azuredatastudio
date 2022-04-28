@@ -276,13 +276,15 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			if (event === CellExecutionState.Running && !this.cellModel.stdInVisible) {
 				this.setFocusAndScroll();
 			}
+		}));
+		this._register(this.cellModel.onExecutionComplete(() => {
 			// Allow screen reader to announce when a cell is done running
 			let element: Element = document.getElementsByClassName('sr-only')[0];
-			if (event === CellExecutionState.Running) {
+			element.innerHTML = 'Cell execution is complete';
+			// Remove the text from the div so that the content is not read again when notebooks are re-opened
+			setTimeout(() => {
 				element.innerHTML = '';
-			} else {
-				element.innerHTML = 'Cell execution is complete';
-			}
+			}, 1000);
 		}));
 		this._register(this.cellModel.onLanguageChanged(language => {
 			let nativeElement = <HTMLElement>this.languageElement.nativeElement;
