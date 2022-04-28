@@ -596,6 +596,7 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 		if (xtermConstructor) {
 			return xtermConstructor;
 		}
+		// eslint-disable-next-line no-async-promise-executor
 		xtermConstructor = new Promise<typeof XTermTerminal>(async (resolve) => {
 			const Terminal = await this._terminalInstanceService.getXtermConstructor();
 			// Localize strings
@@ -2139,6 +2140,7 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 	}
 
 	async refreshProperty<T extends ProcessPropertyType>(type: ProcessPropertyType): Promise<IProcessPropertyMap[T]> {
+		await this.processReady;
 		return this._processManager.refreshProperty(type);
 	}
 

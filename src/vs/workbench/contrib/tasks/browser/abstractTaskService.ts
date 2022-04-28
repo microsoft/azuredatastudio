@@ -935,6 +935,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 			throw new TaskError(Severity.Info, nls.localize('TaskServer.noTask', 'Task to execute is undefined'), TaskErrors.TaskNotFound);
 		}
 
+		// eslint-disable-next-line no-async-promise-executor
 		return new Promise<ITaskSummary | undefined>(async (resolve) => {
 			let resolver = this.createResolver();
 			if (options && options.attachProblemMatcher && this.shouldAttachProblemMatcher(task) && !InMemoryTask.is(task)) {
@@ -2400,6 +2401,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 			}
 		});
 
+		// eslint-disable-next-line no-async-promise-executor
 		const timeout: boolean = await Promise.race([new Promise<boolean>(async (resolve) => {
 			await _createEntries;
 			resolve(false);
@@ -3081,6 +3083,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 			});
 		});
 
+		// eslint-disable-next-line no-async-promise-executor
 		const timeout: boolean = await Promise.race([new Promise<boolean>(async (resolve) => {
 			await entries;
 			resolve(false);
