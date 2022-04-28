@@ -360,16 +360,18 @@ export class SelectMigrationServiceDialog {
 	private async _populateTentantsDropdown(): Promise<void> {
 		try {
 			this._accountTenantDropdown.loading = true;
-			if (this._serviceContext.azureAccount && this._serviceContext.azureAccount.isStale === false && this._serviceContext.azureAccount.properties.tenants.length > 1) {
-				this._accountTenants = utils.getAzureTenants(this._serviceContext.azureAccount);
-				this._accountTenantDropdown.values = await utils.getAzureTenantsDropdownValues(this._accountTenants);
-				await this._accountTenantFlexContainer.updateCssStyles(STYLE_ShOW);
+			this._accountTenants = utils.getAzureTenants(this._serviceContext.azureAccount);
+			this._accountTenantDropdown.values = await utils.getAzureTenantsDropdownValues(this._accountTenants);
+			await this._accountTenantFlexContainer.updateCssStyles(
+				this._accountTenants.length > 1
+					? STYLE_ShOW
+					: STYLE_HIDE);
+			if (this._accountTenantDropdown.values.length > 0) {
 				utils.selectDefaultDropdownValue(
 					this._accountTenantDropdown,
 					this._serviceContext.tenant?.id,
 					false);
-			} else {
-				await this._accountTenantFlexContainer.updateCssStyles(STYLE_HIDE);
+				this._azureSubscriptionDropdown.loading = false;
 			}
 		} catch (error) {
 			logError(TelemetryViews.SelectMigrationServiceDialog, '_populateTentantsDropdown', error);
