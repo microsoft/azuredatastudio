@@ -11,7 +11,6 @@ import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { attachButtonStyler, attachInputBoxStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
@@ -61,8 +60,10 @@ export class UrlBrowserDialog extends Modal {
 	private _backupFileSelectorBox: SelectBox;
 	private _okButton: Button;
 	private _cancelButton: Button;
-	private _onOk = new Emitter<string>();
-	public onOk: Event<string> = this._onOk.event;
+	private _onOk: (value: string | PromiseLike<string>) => void;
+	public onOk: Promise<string> = new Promise(resolve => {
+		this._onOk = resolve;
+	});
 
 
 	constructor(title: string,
@@ -405,13 +406,12 @@ export class UrlBrowserDialog extends Modal {
 		} else {
 			returnValue = `https://${this._storageAccountSelectorBox.value}.blob${this._selectedAccount.properties.providerSettings.settings.azureStorageResource.endpointSuffix}/${this._blobContainerSelectorBox.value}/${this._backupFileInputBox.value}`;
 		}
-		this._onOk.fire(returnValue);
+		this._onOk(returnValue);
 		this.close('ok');
 	}
 
 
 	private close(hideReason: HideReason = 'close'): void {
-		this._onOk.dispose();
 		this.hide(hideReason);
 	}
 

@@ -32,7 +32,7 @@ export class UrlBrowserDialogService implements IUrlBrowserDialogService {
 		urlBrowserDialog.render();
 
 		urlBrowserDialog.setWide(isWide);
-		urlBrowserDialog.onOk((filepath) => handleOnOk(filepath));
+		urlBrowserDialog.onOk.then((filepath) => handleOnOk(filepath));
 		urlBrowserDialog.open(ownerUri, expandPath, fileFilters, fileValidationServiceType);
 	}
 }
