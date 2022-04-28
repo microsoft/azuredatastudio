@@ -34,6 +34,9 @@
     <trans-unit id="connectionProfile">
       <source xml:lang="en">Select a connection profile</source>
     </trans-unit>
+    <trans-unit id="connectionProgressTitle">
+      <source xml:lang="en">Testing SQL Server connection...</source>
+    </trans-unit>
     <trans-unit id="connectionStringSetting">
       <source xml:lang="en">Connection string setting name</source>
     </trans-unit>
