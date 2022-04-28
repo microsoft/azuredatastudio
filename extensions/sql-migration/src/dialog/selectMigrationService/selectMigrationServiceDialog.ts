@@ -9,7 +9,7 @@ import * as azurecore from 'azurecore';
 import { MigrationLocalStorage, MigrationServiceContext } from '../../models/migrationLocalStorage';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
-import { selectDefaultDropdownValue, deepClone, getAzureLocationsDropdownValues, getAzureResourceGroupsDropdownValues, getAzureAccounts, getAzureAccountsDropdownValues, getAzureTenants, getAzureTenantsDropdownValues, getAzureSubscriptions, getAzureSubscriptionsDropdownValues, getAzureSqlMigrationServices, getAzureSqlMigrationServicesDropdownValues, getSqlMigrationServiceLocations, getSqlMigrationServiceResourceGroups } from '../../api/utils';
+import * as utils from '../../api/utils';
 import { SqlMigrationService } from '../../api/azure';
 import { logError, TelemetryViews } from '../../telemtery';
 
@@ -142,7 +142,7 @@ export class SelectMigrationServiceDialog {
 			this._azureAccountsDropdown.onValueChanged(async (value) => {
 				const selectedAccount = this._azureAccounts.find(account => account.displayInfo.displayName === value);
 				this._serviceContext.azureAccount = (selectedAccount)
-					? deepClone(selectedAccount)
+					? utils.deepClone(selectedAccount)
 					: undefined!;
 				await this._populateTentantsDropdown();
 			}));
@@ -187,7 +187,7 @@ export class SelectMigrationServiceDialog {
 			this._accountTenantDropdown.onValueChanged(async value => {
 				const selectedTenant = this._accountTenants.find(tenant => tenant.displayName === value);
 				if (selectedTenant) {
-					this._serviceContext.tenant = deepClone(selectedTenant);
+					this._serviceContext.tenant = utils.deepClone(selectedTenant);
 					this._serviceContext.azureAccount!.properties.tenants = [selectedTenant];
 				} else {
 					this._serviceContext.tenant = undefined!;
@@ -228,7 +228,7 @@ export class SelectMigrationServiceDialog {
 			this._azureSubscriptionDropdown.onValueChanged(async (value) => {
 				const selectedSubscription = this._subscriptions.find(subscription => `${subscription.name} - ${subscription.id}` === value);
 				this._serviceContext.subscription = (selectedSubscription)
-					? deepClone(selectedSubscription)
+					? utils.deepClone(selectedSubscription)
 					: undefined!;
 				await this._populateLocationDropdown();
 			}));
@@ -254,7 +254,7 @@ export class SelectMigrationServiceDialog {
 			this._azureLocationDropdown.onValueChanged(async (value) => {
 				const selectedLocation = this._locations.find(location => location.displayName === value);
 				this._serviceContext.location = (selectedLocation)
-					? deepClone(selectedLocation)
+					? utils.deepClone(selectedLocation)
 					: undefined!;
 				await this._populateResourceGroupDropdown();
 			}));
@@ -280,7 +280,7 @@ export class SelectMigrationServiceDialog {
 			this._azureResourceGroupDropdown.onValueChanged(async (value) => {
 				const selectedResourceGroup = this._resourceGroups.find(rg => rg.name === value);
 				this._serviceContext.resourceGroup = (selectedResourceGroup)
-					? deepClone(selectedResourceGroup)
+					? utils.deepClone(selectedResourceGroup)
 					: undefined!;
 				await this._populateMigrationServiceDropdown();
 			}));
@@ -306,7 +306,7 @@ export class SelectMigrationServiceDialog {
 			this._azureServiceDropdown.onValueChanged(async (value) => {
 				const selectedDms = this._sqlMigrationServices.find(dms => dms.name === value);
 				this._serviceContext.migrationService = (selectedDms)
-					? deepClone(selectedDms)
+					? utils.deepClone(selectedDms)
 					: undefined!;
 				await this._updateButtonState();
 			}));
@@ -338,10 +338,10 @@ export class SelectMigrationServiceDialog {
 	private async _populateAzureAccountsDropdown(): Promise<void> {
 		try {
 			this._azureAccountsDropdown.loading = true;
-			this._azureAccounts = await getAzureAccounts();
-			this._azureAccountsDropdown.values = await getAzureAccountsDropdownValues(this._azureAccounts);
+			this._azureAccounts = await utils.getAzureAccounts();
+			this._azureAccountsDropdown.values = await utils.getAzureAccountsDropdownValues(this._azureAccounts);
 			if (this._azureAccountsDropdown.values.length > 0) {
-				selectDefaultDropdownValue(
+				utils.selectDefaultDropdownValue(
 					this._azureAccountsDropdown,
 					this._serviceContext.azureAccount?.displayInfo?.userId,
 					false);
@@ -361,10 +361,10 @@ export class SelectMigrationServiceDialog {
 		try {
 			this._accountTenantDropdown.loading = true;
 			if (this._serviceContext.azureAccount && this._serviceContext.azureAccount.isStale === false && this._serviceContext.azureAccount.properties.tenants.length > 1) {
-				this._accountTenants = getAzureTenants(this._serviceContext.azureAccount);
-				this._accountTenantDropdown.values = await getAzureTenantsDropdownValues(this._accountTenants);
+				this._accountTenants = utils.getAzureTenants(this._serviceContext.azureAccount);
+				this._accountTenantDropdown.values = await utils.getAzureTenantsDropdownValues(this._accountTenants);
 				await this._accountTenantFlexContainer.updateCssStyles(STYLE_ShOW);
-				selectDefaultDropdownValue(
+				utils.selectDefaultDropdownValue(
 					this._accountTenantDropdown,
 					this._serviceContext.tenant?.id,
 					false);
@@ -385,10 +385,10 @@ export class SelectMigrationServiceDialog {
 	private async _populateSubscriptionDropdown(): Promise<void> {
 		try {
 			this._azureSubscriptionDropdown.loading = true;
-			this._subscriptions = await getAzureSubscriptions(this._serviceContext.azureAccount);
-			this._azureSubscriptionDropdown.values = await getAzureSubscriptionsDropdownValues(this._subscriptions);
+			this._subscriptions = await utils.getAzureSubscriptions(this._serviceContext.azureAccount);
+			this._azureSubscriptionDropdown.values = await utils.getAzureSubscriptionsDropdownValues(this._subscriptions);
 			if (this._azureSubscriptionDropdown.values.length > 0) {
-				selectDefaultDropdownValue(
+				utils.selectDefaultDropdownValue(
 					this._azureSubscriptionDropdown,
 					this._serviceContext.subscription?.id,
 					false);
@@ -407,11 +407,11 @@ export class SelectMigrationServiceDialog {
 	private async _populateLocationDropdown(): Promise<void> {
 		try {
 			this._azureLocationDropdown.loading = true;
-			this._sqlMigrationServices = await getAzureSqlMigrationServices(this._serviceContext.azureAccount, this._serviceContext.subscription);
-			this._locations = await getSqlMigrationServiceLocations(this._serviceContext.azureAccount, this._serviceContext.subscription, this._sqlMigrationServices);
-			this._azureLocationDropdown.values = await getAzureLocationsDropdownValues(this._locations);
+			this._sqlMigrationServices = await utils.getAzureSqlMigrationServices(this._serviceContext.azureAccount, this._serviceContext.subscription);
+			this._locations = await utils.getSqlMigrationServiceLocations(this._serviceContext.azureAccount, this._serviceContext.subscription, this._sqlMigrationServices);
+			this._azureLocationDropdown.values = await utils.getAzureLocationsDropdownValues(this._locations);
 			if (this._azureLocationDropdown.values.length > 0) {
-				selectDefaultDropdownValue(
+				utils.selectDefaultDropdownValue(
 					this._azureLocationDropdown,
 					this._serviceContext.location?.displayName,
 					true);
@@ -430,10 +430,10 @@ export class SelectMigrationServiceDialog {
 	private async _populateResourceGroupDropdown(): Promise<void> {
 		try {
 			this._azureResourceGroupDropdown.loading = true;
-			this._resourceGroups = await getSqlMigrationServiceResourceGroups(this._sqlMigrationServices, this._serviceContext.location!);
-			this._azureResourceGroupDropdown.values = await getAzureResourceGroupsDropdownValues(this._resourceGroups);
+			this._resourceGroups = await utils.getSqlMigrationServiceResourceGroups(this._sqlMigrationServices, this._serviceContext.location!);
+			this._azureResourceGroupDropdown.values = await utils.getAzureResourceGroupsDropdownValues(this._resourceGroups);
 			if (this._azureResourceGroupDropdown.values.length > 0) {
-				selectDefaultDropdownValue(
+				utils.selectDefaultDropdownValue(
 					this._azureResourceGroupDropdown,
 					this._serviceContext.resourceGroup?.id,
 					false);
@@ -452,9 +452,9 @@ export class SelectMigrationServiceDialog {
 	private async _populateMigrationServiceDropdown(): Promise<void> {
 		try {
 			this._azureServiceDropdown.loading = true;
-			this._azureServiceDropdown.values = await getAzureSqlMigrationServicesDropdownValues(this._sqlMigrationServices, this._serviceContext.location!, this._serviceContext.resourceGroup!);
+			this._azureServiceDropdown.values = await utils.getAzureSqlMigrationServicesDropdownValues(this._sqlMigrationServices, this._serviceContext.location!, this._serviceContext.resourceGroup!);
 			if (this._azureServiceDropdown.values.length > 0) {
-				selectDefaultDropdownValue(
+				utils.selectDefaultDropdownValue(
 					this._azureServiceDropdown,
 					this._serviceContext?.migrationService?.id,
 					false);

@@ -15,7 +15,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
 import { createAuthenticationKeyTable } from '../../wizard/integrationRuntimePage';
 import * as EventEmitter from 'events';
-import { clearDialogMessage, getAllResourceGroups, getAzureResourceGroupsDropdownValues } from '../../api/utils';
+import * as utils from '../../api/utils';
 import * as styles from '../../constants/styles';
 
 export class CreateSqlMigrationServiceDialog {
@@ -94,7 +94,7 @@ export class CreateSqlMigrationServiceDialog {
 				}
 
 				try {
-					clearDialogMessage(this._dialogObject);
+					utils.clearDialogMessage(this._dialogObject);
 					this._selectedResourceGroup = resourceGroup;
 					this._createdMigrationService = await createSqlMigrationService(
 						this._model._azureAccount,
@@ -387,8 +387,8 @@ export class CreateSqlMigrationServiceDialog {
 	private async populateResourceGroups(): Promise<void> {
 		this.migrationServiceResourceGroupDropdown.loading = true;
 		try {
-			this._resourceGroups = await getAllResourceGroups(this._model._azureAccount, this._model._targetSubscription);
-			this.migrationServiceResourceGroupDropdown.values = await getAzureResourceGroupsDropdownValues(this._resourceGroups);
+			this._resourceGroups = await utils.getAllResourceGroups(this._model._azureAccount, this._model._targetSubscription);
+			this.migrationServiceResourceGroupDropdown.values = await utils.getAzureResourceGroupsDropdownValues(this._resourceGroups);
 
 			const selectedResourceGroupValue = this.migrationServiceResourceGroupDropdown.values.find(v => v.name.toLowerCase() === this._resourceGroupPreset.toLowerCase());
 			this.migrationServiceResourceGroupDropdown.value = (selectedResourceGroupValue) ? selectedResourceGroupValue : this.migrationServiceResourceGroupDropdown.values[0];
@@ -504,7 +504,7 @@ export class CreateSqlMigrationServiceDialog {
 		let migrationServiceStatus!: SqlMigrationService;
 		for (let i = 0; i < maxRetries; i++) {
 			try {
-				clearDialogMessage(this._dialogObject);
+				utils.clearDialogMessage(this._dialogObject);
 				migrationServiceStatus = await getSqlMigrationService(
 					this._model._azureAccount,
 					subscription,
