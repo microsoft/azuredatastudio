@@ -249,7 +249,7 @@ import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
 				'description': localize('telemetry.enableCrashReporting', "Enable crash reports to be collected. This helps us improve stability. \nThis option requires restart to take effect."),
 				'default': true,
 				'tags': ['usesOnlineServices', 'telemetry'],
-				'markdownDeprecationMessage': localize('enableCrashReporterDeprecated', "Deprecated due to being combined into the {0} setting. If this setting is false, no telemetry will be sent regardless of the new setting's value.", `\`#${TELEMETRY_SETTING_ID}#\``),
+				'markdownDeprecationMessage': localize('enableCrashReporterDeprecated', "If this setting is false, no telemetry will be sent regardless of the new setting's value. Deprecated due to being combined into the {0} setting.", `\`#${TELEMETRY_SETTING_ID}#\``),
 			}
 		}
 	});
