@@ -16,6 +16,7 @@ export class Notebook {
 	public readonly notebookFind: NotebookFind;
 	public readonly view: NotebookTreeView;
 
+	public readonly ctrlOrCmd = process.platform === 'darwin' ? 'cmd' : 'ctrl';
 	public readonly winOrCtrl = process.platform === 'darwin' ? 'ctrl' : 'win';
 	private static readonly activeCellSelector = '.notebook-cell.active';
 
