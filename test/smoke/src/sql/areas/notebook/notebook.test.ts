@@ -3,12 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Application } from '../../../../../automation';
+import { Application, ctrlOrCmd } from '../../../../../automation';
 import * as minimist from 'minimist';
 import { afterSuite, beforeSuite } from '../../../utils';
 import * as assert from 'assert';
-import * as constants from '../../../../../automation/src/sql/constants';
-
 export function setup(opts: minimist.ParsedArgs) {
 	describe('Notebook', () => {
 		beforeSuite(opts);
@@ -379,27 +377,27 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			it('can bold text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, `${constants.ctrlOrCmd}+b`, 'p strong');
+				await verifyToolbarKeyboardShortcut(app, `${ctrlOrCmd}+b`, 'p strong');
 			});
 
 			it('can italicize text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, `${constants.ctrlOrCmd}+i`, 'p em');
+				await verifyToolbarKeyboardShortcut(app, `${ctrlOrCmd}+i`, 'p em');
 			});
 
 			it('can underline text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, `${constants.ctrlOrCmd}+u`, 'p u');
+				await verifyToolbarKeyboardShortcut(app, `${ctrlOrCmd}+u`, 'p u');
 			});
 
 			it('can highlight text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, `${constants.ctrlOrCmd}+shift+h`, 'p mark');
+				await verifyToolbarKeyboardShortcut(app, `${ctrlOrCmd}+shift+h`, 'p mark');
 			});
 
 			it('can codify text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, `${constants.ctrlOrCmd}+shift+k`, 'pre code');
+				await verifyToolbarKeyboardShortcut(app, `${ctrlOrCmd}+shift+k`, 'pre code');
 			});
 		});
 
