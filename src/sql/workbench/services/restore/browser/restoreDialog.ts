@@ -284,7 +284,7 @@ export class RestoreDialog extends Modal {
 
 		this._targetDatabaseInputBox = new InputBox(inputTargetDatabaseContainer, this._contextViewService, {
 			ariaLabel: LocalizedStrings.TARGETDATABASE,
-			placeholder: localize('targetDatabaseTooltip', ""),
+			placeholder: localize('targetDatabaseTooltip', "Please enter target database name"),
 			validationOptions: {
 				validation: (value: string) => this.viewModel.databases.includes(value) ? ({ type: MessageType.ERROR, content: localize('restoreDialog.targetDatabaseAlreadyExists', "Target database already exists") }) : null
 			},
