@@ -8,13 +8,15 @@ import { QuickAccess } from '../quickaccess';
 import { QuickInput } from '../quickinput';
 import { Editors } from '../editors';
 import { IElement } from '..';
-import * as utils from '../../../smoke/src/sql/areas/notebook/utils';
 
 export class Notebook {
+
 	public readonly notebookToolbar: NotebookToolbar;
 	public readonly textCellToolbar: TextCellToolbar;
 	public readonly notebookFind: NotebookFind;
 	public readonly view: NotebookTreeView;
+
+	public readonly winOrCtrl = process.platform === 'darwin' ? 'ctrl' : 'win';
 	private static readonly activeCellSelector = '.notebook-cell.active';
 
 	constructor(private code: Code, private quickAccess: QuickAccess, private quickInput: QuickInput, private editors: Editors) {
@@ -33,7 +35,7 @@ export class Notebook {
 	}
 
 	async newUntitledNotebook(): Promise<void> {
-		await this.code.dispatchKeybinding(utils.winOrCtrl + '+Alt+n');
+		await this.code.dispatchKeybinding(this.winOrCtrl + '+Alt+n');
 		await this.editors.waitForActiveTab(`Notebook-0`);
 		await this.code.waitForElement('.notebookEditor');
 	}
@@ -110,7 +112,7 @@ export class Notebook {
 
 	private async selectAllText(selector: string): Promise<void> {
 		await this.code.waitAndClick(selector);
-		await this.code.dispatchKeybinding(utils.ctrlOrCmd + '+a');
+		await this.code.dispatchKeybinding(this.ctrlOrCmd + '+a');
 	}
 
 	private static readonly placeholderSelector = 'div.placeholder-cell-component';
@@ -457,11 +459,12 @@ export class NotebookTreeView {
 }
 
 export class NotebookFind {
+	public readonly ctrlOrCmd = process.platform === 'darwin' ? 'cmd' : 'ctrl';
 
 	constructor(private code: Code) { }
 
 	async openFindWidget(): Promise<void> {
-		const findWidgetCmd = `${utils.ctrlOrCmd}+f`;
+		const findWidgetCmd = `${this.ctrlOrCmd}+f`;
 		await this.code.dispatchKeybinding(findWidgetCmd);
 		await this.code.waitForElement('.editor-widget.find-widget.visible');
 	}
