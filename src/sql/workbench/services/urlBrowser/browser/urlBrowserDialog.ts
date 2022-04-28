@@ -27,10 +27,11 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Account } from 'azdata';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
-import { azureResource, GetBlobsResult } from 'azurecore';
+import { azureResource } from 'azurecore';
 import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
 import { Link } from 'vs/platform/opener/browser/link';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export class UrlBrowserDialog extends Modal {
 
@@ -116,7 +117,10 @@ export class UrlBrowserDialog extends Modal {
 		this._accountSelectorBox.setAriaLabel(azureAccountLabel);
 		let accountSelector = DialogHelper.appendRow(tableContainer, azureAccountLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(accountSelector, this._accountSelectorBox);
-		this._accountManagementService.getAccounts().then((accounts) => this.setAccountSelectorBoxOptions(accounts)).catch((reason) => this.setAccountSelectorBoxError(reason));
+		this._accountManagementService.getAccounts().then((accounts) => this.setAccountSelectorBoxOptions(accounts)).catch((err) => {
+			this.setAccountSelectorBoxOptions([]);
+			onUnexpectedError(err);
+		});
 
 		let linkAccountText = localize('urlBrowserDialog.linkAccount', "Link account");
 		let linkAccountButton = DialogHelper.appendRow(tableContainer, '', 'url-input-label', 'url-input-box');
@@ -129,7 +133,10 @@ export class UrlBrowserDialog extends Modal {
 			{
 				opener: async (href: string) => {
 					await this._accountManagementService.openAccountListDialog();
-					this._accountManagementService.getAccounts().then((accounts) => this.setAccountSelectorBoxOptions(accounts)).catch((reason) => this.setAccountSelectorBoxError(reason));
+					this._accountManagementService.getAccounts().then((accounts) => this.setAccountSelectorBoxOptions(accounts)).catch((err) => {
+						this.setAccountSelectorBoxOptions([]);
+						onUnexpectedError(err);
+					});
 				}
 			}
 		);
@@ -212,12 +219,6 @@ export class UrlBrowserDialog extends Modal {
 		}
 	}
 
-	private setAccountSelectorBoxError(reason: any) {
-		this._accountSelectorBox.setOptions([reason]);
-		this._accountSelectorBox.select(0);
-		this._accountSelectorBox.disable();
-	}
-
 	private onAccountSelectorBoxChanged(checkedAccount: number) {
 		if (this._accounts.length !== 0) {
 			this._selectedAccount = this._accounts[checkedAccount];
@@ -241,11 +242,14 @@ export class UrlBrowserDialog extends Modal {
 		if (this._accounts.length !== 0) {
 			this._azureAccountService.getSubscriptions(this._selectedAccount)
 				.then(getSubscriptionResult => this.setSubscriptionsSelectorBoxOptions(getSubscriptionResult.subscriptions))
-				.catch(getSubscriptionResult => this.setSubscriptionSelectorBoxError(getSubscriptionResult.error));
+				.catch(getSubscriptionResult => {
+					this.setSubscriptionsSelectorBoxOptions([]);
+					onUnexpectedError(getSubscriptionResult.errors);
+				});
 		} else {
 			this._tenantSelectorBox.setOptions([]);
 			this._tenantSelectorBox.disable();
-			this.setSubscriptionSelectorBoxError({});
+			this.setSubscriptionsSelectorBoxOptions([]);
 		}
 	}
 
@@ -261,20 +265,17 @@ export class UrlBrowserDialog extends Modal {
 		}
 	}
 
-	private setSubscriptionSelectorBoxError(getSubscriptionsError: any) {
-		this._subscriptionSelectorBox.setOptions([]);
-		this._subscriptionSelectorBox.select(0);
-		this._subscriptionSelectorBox.disable();
-	}
-
 	private onSubscriptionSelectorBoxChanged(checkedSubscription: number) {
 		if (this._subscriptions.length !== 0) {
 			this._selectedSubscription = this._subscriptions[checkedSubscription];
 			this._azureAccountService.getStorageAccounts(this._selectedAccount, [this._selectedSubscription])
 				.then(getStorageAccountsResult => this.setStorageAccountSelectorBoxOptions(getStorageAccountsResult.resources))
-				.catch(getStorageAccountsResult => this.setStorageAccountSelectorBoxError(getStorageAccountsResult.errors));
+				.catch(getStorageAccountsResult => {
+					this.setStorageAccountSelectorBoxOptions([]);
+					onUnexpectedError(getStorageAccountsResult.errors);
+				});
 		} else {
-			this.setStorageAccountSelectorBoxError({});
+			this.setStorageAccountSelectorBoxOptions([]);
 		}
 	}
 
@@ -290,20 +291,17 @@ export class UrlBrowserDialog extends Modal {
 		}
 	}
 
-	private setStorageAccountSelectorBoxError(errors: any) {
-		this._storageAccountSelectorBox.setOptions([]);
-		this._storageAccountSelectorBox.select(0);
-		this._storageAccountSelectorBox.disable();
-	}
-
 	private onStorageAccountSelectorBoxChanged(checkedStorageAccount: number) {
 		if (this._storageAccounts.length !== 0) {
 			this._selectedStorageAccount = this._storageAccounts[checkedStorageAccount];
 			this._azureAccountService.getBlobContainers(this._selectedAccount, this._selectedSubscription, this._selectedStorageAccount)
 				.then(getBlobContainersResult => this.setBlobContainersSelectorBoxOptions(getBlobContainersResult.blobContainers))
-				.catch(getBlobContainersResult => this.setBlobContainersSelectorBoxErrors(getBlobContainersResult.errors));
+				.catch(getBlobContainersResult => {
+					this.setBlobContainersSelectorBoxOptions([]);
+					onUnexpectedError(getBlobContainersResult.errors);
+				});
 		} else {
-			this.setBlobContainersSelectorBoxErrors({});
+			this.setBlobContainersSelectorBoxOptions([]);
 		}
 	}
 
@@ -319,30 +317,26 @@ export class UrlBrowserDialog extends Modal {
 		}
 	}
 
-	private setBlobContainersSelectorBoxErrors(errors: any) {
-		this._blobContainers = [];
-		this._blobContainerSelectorBox.setOptions([]);
-		this._blobContainerSelectorBox.select(0);
-		this._blobContainerSelectorBox.disable();
-	}
-
 	private onBlobContainersSelectorBoxChanged(checkedBlobContainer: number) {
 		this._sasInputBox.value = '';
 		if (this._restoreDialog) {
 			if (this._blobContainers.length !== 0) {
 				this._selectedBlobContainer = this._blobContainers[checkedBlobContainer];
 				this._azureAccountService.getBlobs(this._selectedAccount, this._selectedSubscription, this._selectedStorageAccount, this._selectedBlobContainer.name, true)
-					.then(getBlobsResult => this.setBackupFilesOptions(getBlobsResult))
-					.catch(getBlobsResult => this.setBackupFilesSelectorError(getBlobsResult));
+					.then(getBlobsResult => this.setBackupFilesOptions(getBlobsResult.blobs))
+					.catch(getBlobsResult => {
+						this.setBackupFilesOptions([]);
+						onUnexpectedError(getBlobsResult.errors);
+					});
 			} else {
-				this.setBackupFilesSelectorError({});
+				this.setBackupFilesOptions([]);
 			}
 		}
 		this.enableCreateCredentialsButton();
 	}
 
-	private setBackupFilesOptions(getBlobsResult: GetBlobsResult) {
-		this._backupFiles = getBlobsResult.blobs;
+	private setBackupFilesOptions(blobs: azureResource.Blob[]) {
+		this._backupFiles = blobs;
 		const backupFilesDisplayNames: string[] = this._backupFiles.map(backupFile => backupFile.name);
 		this._backupFileSelectorBox.setOptions(backupFilesDisplayNames);
 		this._backupFileSelectorBox.select(0);
@@ -351,12 +345,6 @@ export class UrlBrowserDialog extends Modal {
 		} else {
 			this._backupFileSelectorBox.enable();
 		}
-	}
-
-	private setBackupFilesSelectorError(errors: any) {
-		this._backupFileSelectorBox.setOptions([]);
-		this._backupFileSelectorBox.select(0);
-		this._backupFileSelectorBox.disable();
 	}
 
 	private setBackupFileDefaultValue() {
