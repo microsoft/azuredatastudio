@@ -15,7 +15,7 @@ describe('Publish Dialog Deploy Options Model', () => {
 
 		should.doesNotThrow(() => model.setDeploymentOptions());
 
-		should(model.getDeployOptionUtil('')).equal(undefined, 'should return false if invalid options is passed in');
+		should(model.getDeployOptionUtil('')).equal(undefined);
 
 	});
 
