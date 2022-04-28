@@ -101,7 +101,7 @@ export class ExtHostDocumentsAndEditors implements ExtHostDocumentsAndEditorsSha
 					// Add the Uri of the notebook that is using this text model for a cell's editor.
 					if (!data.notebook && data.notebookUri) {
 						data.notebook = <vscode.NotebookDocument>{
-							uri: data.notebookUri
+							uri: URI.revive(data.notebookUri)
 						};
 					}
 					ref = new Reference(new ExtHostDocumentData(
