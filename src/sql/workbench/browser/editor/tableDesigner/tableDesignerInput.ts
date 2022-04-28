@@ -9,7 +9,7 @@ import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { TableDesignerComponentInput } from 'sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import * as azdata from 'azdata';
-import { GroupIdentifier, IEditorInput, IRevertOptions, ISaveOptions } from 'vs/workbench/common/editor';
+import { GroupIdentifier, IRevertOptions, ISaveOptions } from 'vs/workbench/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { onUnexpectedError } from 'vs/base/common/errors';
@@ -93,7 +93,7 @@ export class TableDesignerInput extends EditorInput {
 		return this._designerComponentInput.pendingAction === 'publish';
 	}
 
-	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<EditorInput | undefined> {
 		if (this._designerComponentInput.pendingAction) {
 			this._notificationService.warn(localize('tableDesigner.OperationInProgressWarning', "The operation cannot be performed while another operation is in progress."));
 		} else {

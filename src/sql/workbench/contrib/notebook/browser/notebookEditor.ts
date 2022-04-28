@@ -20,7 +20,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ACTION_IDS, NOTEBOOK_MAX_MATCHES, IFindNotebookController, FindWidget, IConfigurationChangedEvent } from 'sql/workbench/contrib/notebook/browser/find/notebookFindWidget';
 import { IOverlayWidget } from 'vs/editor/browser/editorBrowser';
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
-import { IEditorAction } from 'vs/editor/common/editorCommon';
+import { ICodeEditorViewState, IEditorAction } from 'vs/editor/common/editorCommon';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { NotebookFindNextAction, NotebookFindPreviousAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
@@ -94,7 +94,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 	public getLastPosition(): NotebookRange {
 		return this._previousMatch;
 	}
-	public getCellEditor(cellGuid: string): BaseTextEditor | undefined {
+	public getCellEditor(cellGuid: string): BaseTextEditor<ICodeEditorViewState> | undefined {
 		let editorImpl = this._notebookService.findNotebookEditor(this.notebookInput.notebookUri);
 		if (editorImpl) {
 			let cellEditorProvider = editorImpl.cellEditors.filter(c => c.cellGuid() === cellGuid)[0];

@@ -172,7 +172,7 @@ export class SideBySideEditorInput extends EditorInput implements ISideBySideEdi
 
 	override async rename(group: GroupIdentifier, target: URI): Promise<IMoveResult | undefined> {
 		if (!this.hasIdenticalSides) {
-			return; // currently only enabled when both sides are identical
+			return undefined; // currently only enabled when both sides are identical
 		}
 
 		// Forward rename to primary side

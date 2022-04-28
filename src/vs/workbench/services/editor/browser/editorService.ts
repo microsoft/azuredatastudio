@@ -5,14 +5,14 @@
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IResourceEditorInput, IEditorOptions, EditorActivation, EditorResolution, IResourceEditorInputIdentifier, ITextResourceEditorInput } from 'vs/platform/editor/common/editor';
-import { SideBySideEditor, IEditorPane, GroupIdentifier, IUntitledTextResourceEditorInput, IResourceDiffEditorInput, IEditorInputWithOptions, isEditorInputWithOptions, IEditorIdentifier, IEditorCloseEvent, ITextDiffEditorPane, IRevertOptions, SaveReason, EditorsOrder, IWorkbenchEditorConfiguration, EditorResourceAccessor, IVisibleEditorPane, EditorInputCapabilities, isResourceDiffEditorInput, IUntypedEditorInput, isResourceEditorInput, isEditorInput, isEditorInputWithOptionsAndGroup } from 'vs/workbench/common/editor';
+import { SideBySideEditor, IEditorPane, GroupIdentifier, IUntitledTextResourceEditorInput, IResourceDiffEditorInput, IEditorInputWithOptions, isEditorInputWithOptions, IEditorIdentifier, IEditorCloseEvent, ITextDiffEditorPane, IRevertOptions, SaveReason, EditorsOrder, IWorkbenchEditorConfiguration, EditorResourceAccessor, IVisibleEditorPane, EditorInputCapabilities, isResourceDiffEditorInput, IUntypedEditorInput, isResourceEditorInput, isEditorInput, isEditorInputWithOptionsAndGroup, IFileEditorInput, IEditorFactoryRegistry, EditorExtensions } from 'vs/workbench/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { SideBySideEditorInput } from 'vs/workbench/common/editor/sideBySideEditorInput';
 import { ResourceMap } from 'vs/base/common/map';
 import { IFileService, FileOperationEvent, FileOperation, FileChangesEvent, FileChangeType } from 'vs/platform/files/common/files';
 import { Event, Emitter, MicrotaskEmitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { joinPath } from 'vs/base/common/resources';
+import { basename, joinPath } from 'vs/base/common/resources';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { IEditorGroupsService, IEditorGroup, GroupsOrder, IEditorReplacement, GroupChangeKind, isEditorReplacement } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IUntypedEditorReplacement, IEditorService, ISaveEditorsOptions, ISaveAllEditorsOptions, IRevertAllEditorsOptions, IBaseSaveRevertAllEditorOptions, IOpenEditorsOptions, PreferredGroup, isPreferredGroup, IEditorsChangeEvent } from 'vs/workbench/services/editor/common/editorService';
@@ -34,6 +34,15 @@ import { IWorkspaceTrustRequestService, WorkspaceTrustUriResponse } from 'vs/pla
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { findGroup } from 'vs/workbench/services/editor/common/editorGroupFinder';
 import { ITextEditorService } from 'vs/workbench/services/textfile/common/textEditorService';
+// {{SQL CARBON EDIT}} -- add back createEditorInput until we can remove all references
+import { TextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
+import { Schemas } from 'vs/base/common/network';
+import { Registry } from 'vs/platform/registry/common/platform';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+
+type CachedEditorInput = TextResourceEditorInput | IFileEditorInput | UntitledTextEditorInput;
 
 export class EditorService extends Disposable implements EditorServiceImpl {
 
@@ -61,8 +70,12 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 
 	//#endregion
 
+	// {{SQL CARBON EDIT}} -- add back createEditorInput until we can remove all references
+	private readonly fileEditorFactory = Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).getFileEditorFactory();
+
 	constructor(
 		@IEditorGroupsService private readonly editorGroupService: IEditorGroupsService,
+		@IUntitledTextEditorService private readonly untitledTextEditorService: IUntitledTextEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IFileService private readonly fileService: IFileService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
@@ -839,6 +852,175 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		}
 
 		return targetGroup?.replaceEditors(typedReplacements);
+	}
+
+	//#endregion
+
+	//#region createEditorInput()
+
+	// {{SQL CARBON EDIT}} -- add back createEditorInput until we can remove all references
+	private readonly editorInputCache = new ResourceMap<CachedEditorInput>();
+
+	createEditorInput(input: EditorInput | IUntypedEditorInput): EditorInput {
+
+		// Typed Editor Input Support (EditorInput)
+		if (input instanceof EditorInput) {
+			return input;
+		}
+
+		// Diff Editor Support
+		if (isResourceDiffEditorInput(input)) {
+			// const original = this.createEditorInput({ ...input.original, forceFile: true /*input.forceFile*/ });
+			// const modified = this.createEditorInput({ ...input.modified, forceFile: true /*input.forceFile*/ });
+
+			const original = this.createEditorInput(input.original);
+			const modified = this.createEditorInput(input.modified);
+
+			return this.instantiationService.createInstance(DiffEditorInput,
+				input.label,
+				input.description,
+				original,
+				modified,
+				undefined
+			);
+		}
+
+		// Untitled file support
+		const untitledInput = input as IUntitledTextResourceEditorInput;
+		if (untitledInput.forceUntitled || !untitledInput.resource || (untitledInput.resource.scheme === Schemas.untitled)) {
+			const untitledOptions = {
+				mode: untitledInput.mode,
+				initialValue: untitledInput.contents,
+				encoding: untitledInput.encoding
+			};
+
+			// Untitled resource: use as hint for an existing untitled editor
+			let untitledModel: IUntitledTextEditorModel;
+			if (untitledInput.resource?.scheme === Schemas.untitled) {
+				untitledModel = this.untitledTextEditorService.create({ untitledResource: untitledInput.resource, ...untitledOptions });
+			}
+
+			// Other resource: use as hint for associated filepath
+			else {
+				untitledModel = this.untitledTextEditorService.create({ associatedResource: untitledInput.resource, ...untitledOptions });
+			}
+
+			return this.createOrGetCached(untitledModel.resource, () => {
+
+				// Factory function for new untitled editor
+				const input = this.instantiationService.createInstance(UntitledTextEditorInput, untitledModel);
+
+				// We dispose the untitled model once the editor
+				// is being disposed. Even though we may have not
+				// created the model initially, the lifecycle for
+				// untitled is tightly coupled with the editor
+				// lifecycle for now.
+				Event.once(input.onWillDispose)(() => untitledModel.dispose());
+
+				return input;
+			}) as EditorInput;
+		}
+
+		// Text Resource Editor Support
+		const textResourceEditorInput = input as ITextResourceEditorInput;
+		if (textResourceEditorInput.resource instanceof URI) {
+
+			// Derive the label from the path if not provided explicitly
+			const label = textResourceEditorInput.label || basename(textResourceEditorInput.resource);
+
+			// We keep track of the preferred resource this input is to be created
+			// with but it may be different from the canonical resource (see below)
+			const preferredResource = textResourceEditorInput.resource;
+
+			// From this moment on, only operate on the canonical resource
+			// to ensure we reduce the chance of opening the same resource
+			// with different resource forms (e.g. path casing on Windows)
+			const canonicalResource = this.uriIdentityService.asCanonicalUri(preferredResource);
+
+			return this.createOrGetCached(canonicalResource, () => {
+
+				// File
+				//if (textResourceEditorInput.forceFile || this.fileService.canHandleResource(canonicalResource)) {
+				if (this.fileService.canHandleResource(canonicalResource)) {
+					return this.fileEditorFactory.createFileEditor(canonicalResource, preferredResource, textResourceEditorInput.label, textResourceEditorInput.description, textResourceEditorInput.encoding, textResourceEditorInput.mode, textResourceEditorInput.contents, this.instantiationService);
+				}
+
+				// Resource
+				return this.instantiationService.createInstance(TextResourceEditorInput, canonicalResource, textResourceEditorInput.label, textResourceEditorInput.description, textResourceEditorInput.mode, textResourceEditorInput.contents);
+			}, cachedInput => {
+
+				// Untitled
+				if (cachedInput instanceof UntitledTextEditorInput) {
+					return;
+				}
+
+				// Files
+				else if (!(cachedInput instanceof TextResourceEditorInput)) {
+					cachedInput.setPreferredResource(preferredResource);
+
+					if (textResourceEditorInput.label) {
+						cachedInput.setPreferredName(textResourceEditorInput.label);
+					}
+
+					if (textResourceEditorInput.description) {
+						cachedInput.setPreferredDescription(textResourceEditorInput.description);
+					}
+
+					if (textResourceEditorInput.encoding) {
+						cachedInput.setPreferredEncoding(textResourceEditorInput.encoding);
+					}
+
+					if (textResourceEditorInput.mode) {
+						cachedInput.setPreferredMode(textResourceEditorInput.mode);
+					}
+
+					if (typeof textResourceEditorInput.contents === 'string') {
+						cachedInput.setPreferredContents(textResourceEditorInput.contents);
+					}
+				}
+
+				// Resources
+				else {
+					if (label) {
+						cachedInput.setName(label);
+					}
+
+					if (textResourceEditorInput.description) {
+						cachedInput.setDescription(textResourceEditorInput.description);
+					}
+
+					if (textResourceEditorInput.mode) {
+						cachedInput.setPreferredMode(textResourceEditorInput.mode);
+					}
+
+					if (typeof textResourceEditorInput.contents === 'string') {
+						cachedInput.setPreferredContents(textResourceEditorInput.contents);
+					}
+				}
+			}) as EditorInput;
+		}
+
+		throw new Error('Unknown input type');
+	}
+
+	private createOrGetCached(resource: URI, factoryFn: () => CachedEditorInput, cachedFn?: (input: CachedEditorInput) => void): CachedEditorInput {
+
+		// Return early if already cached
+		let input = this.editorInputCache.get(resource);
+		if (input) {
+			if (cachedFn) {
+				cachedFn(input);
+			}
+
+			return input;
+		}
+
+		// Otherwise create and add to cache
+		input = factoryFn();
+		this.editorInputCache.set(resource, input);
+		Event.once(input.onWillDispose)(() => this.editorInputCache.delete(resource));
+
+		return input;
 	}
 
 	//#endregion

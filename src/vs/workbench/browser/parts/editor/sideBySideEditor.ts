@@ -391,14 +391,14 @@ export class SideBySideEditor extends AbstractEditorWithViewState<ISideBySideEdi
 
 	protected computeEditorViewState(resource: URI): ISideBySideEditorViewState | undefined {
 		if (!this.input || !isEqual(resource, this.toEditorViewStateResource(this.input))) {
-			return; // unexpected state
+			return undefined; // unexpected state
 		}
 
 		const primarViewState = this.primaryEditorPane?.getViewState();
 		const secondaryViewState = this.secondaryEditorPane?.getViewState();
 
 		if (!primarViewState || !secondaryViewState) {
-			return; // we actually need view states
+			return undefined; // we actually need view states
 		}
 
 		return {

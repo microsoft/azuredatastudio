@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IEditorInput } from 'vs/workbench/common/editor';
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -115,7 +114,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public get objectType(): string { return this._objectType; }
 	public showResultsEditor(): void { this._showResultsEditor.fire(undefined); }
 	public override isDirty(): boolean { return false; }
-	public override save(): Promise<IEditorInput | undefined> { return Promise.resolve(undefined); }
+	public override save(): Promise<EditorInput | undefined> { return Promise.resolve(undefined); }
 	public override get typeId(): string { return EditDataInput.ID; }
 	public setBootstrappedTrue(): void { this._hasBootstrapped = true; }
 	public get resource(): URI { return this._uri; }

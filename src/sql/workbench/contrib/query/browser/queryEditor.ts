@@ -45,6 +45,7 @@ import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
+import { ICodeEditorViewState } from 'vs/editor/common/editorCommon';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -69,7 +70,7 @@ export class QueryEditor extends EditorPane {
 
 	private textResourceEditor: TextResourceEditor;
 	private textFileEditor: TextFileEditor;
-	private currentTextEditor: BaseTextEditor;
+	private currentTextEditor: BaseTextEditor<ICodeEditorViewState>;
 
 	private textResourceEditorContainer: HTMLElement;
 	private textFileEditorContainer: HTMLElement;

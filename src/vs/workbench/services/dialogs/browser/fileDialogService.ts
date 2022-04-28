@@ -66,7 +66,7 @@ export class FileDialogService extends AbstractFileDialogService implements IFil
 			return; // `showOpenFilePicker` will throw an error when the user cancels
 		}
 
-		const uri = this.fileSystemProvider.registerFileHandle(fileHandle);
+		const uri = this.fileSystemProvider.registerFileHandle(<any>fileHandle);
 
 		await this.openerService.open(uri, { fromUserGesture: true, editorOptions: { pinned: true } });
 	}
@@ -119,7 +119,7 @@ export class FileDialogService extends AbstractFileDialogService implements IFil
 			return undefined; // `showSaveFilePicker` will throw an error when the user cancels {{SQL CARBON EDIT}} Avoid compiler warning from having strictNullChecks disabled
 		}
 
-		return this.fileSystemProvider.registerFileHandle(fileHandle);
+		return this.fileSystemProvider.registerFileHandle(<any>fileHandle);
 	}
 
 	private getFilePickerTypes(filters?: FileFilter[]): FilePickerAcceptType[] | undefined {
@@ -154,7 +154,7 @@ export class FileDialogService extends AbstractFileDialogService implements IFil
 			return undefined; // `showSaveFilePicker` will throw an error when the user cancels  {{SQL CARBON EDIT}} Avoid compiler warning from having strictNullChecks disabled
 		}
 
-		return this.fileSystemProvider.registerFileHandle(fileHandle);
+		return this.fileSystemProvider.registerFileHandle(<any>fileHandle);
 	}
 
 	async showOpenDialog(options: IOpenDialogOptions): Promise<URI[] | undefined> {
@@ -194,7 +194,7 @@ export class FileDialogService extends AbstractFileDialogService implements IFil
 			const activeTextModel = this.codeEditorService.getActiveCodeEditor()?.getModel();
 			if (activeTextModel) {
 				triggerDownload(VSBuffer.fromString(activeTextModel.getValue()).buffer, basename(activeTextModel.uri));
-				return;
+				return undefined;
 			}
 		}
 

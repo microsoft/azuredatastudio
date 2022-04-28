@@ -575,7 +575,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 			query = query.withFilter(FilterType.ExtensionName, id);
 		}
 
-		const { galleryExtensions } = await this.queryGallery(query, targetPlatform, CancellationToken.None);
+		const { galleryExtensions } = await this.queryGallery(query, CURRENT_TARGET_PLATFORM, CancellationToken.None);
 		const [rawExtension] = galleryExtensions;
 		if (!rawExtension || !rawExtension.versions.length) {
 			return null;

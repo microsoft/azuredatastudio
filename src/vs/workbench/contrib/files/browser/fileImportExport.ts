@@ -709,7 +709,7 @@ export class FileDownload {
 		this.reportProgress(file.name, 0, 0, operation);
 
 		// Start to download
-		const targetFile = await targetFolder.getFileHandle(file.name, { create: true });
+		const targetFile: any = await targetFolder.getFileHandle(file.name, { create: true });
 		const targetFileWriter = await targetFile.createWritable();
 
 		// For large files, write buffered using streams

@@ -18,8 +18,9 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { TelemetryView, TelemetryAction } from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
+import { IEditorPane } from 'vs/workbench/common/editor';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelViewDialog)
 export class MainThreadModelViewDialog extends Disposable implements MainThreadModelViewDialogShape {
@@ -31,7 +32,7 @@ export class MainThreadModelViewDialog extends Disposable implements MainThreadM
 	private readonly _wizardPageHandles = new Map<WizardPage, number>();
 	private readonly _wizards = new Map<number, Wizard>();
 	private readonly _editorInputModels = new Map<number, ModelViewInputModel>();
-	private readonly _editors = new Map<number, { pane: IEditorPane, input: IEditorInput }>();
+	private readonly _editors = new Map<number, { pane: IEditorPane, input: EditorInput }>();
 	private _dialogService: CustomDialogService;
 
 	constructor(

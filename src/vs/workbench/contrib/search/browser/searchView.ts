@@ -1613,7 +1613,7 @@ export class SearchView extends ViewPane {
 		this.inputPatternIncludes.setOnlySearchInOpenEditors(false);
 	}
 
-	protected updateSearchResultCount(disregardExcludesAndIgnores?: boolean): void {
+	protected updateSearchResultCount(disregardExcludesAndIgnores?: boolean, onlyOpenEditors: boolean = false, showOpenInEditor: boolean = true): void { // {{SQL CARBON EDIT}} - Hide Open in Editor in Notebooks viewlet
 		const fileCount = this.viewModel.searchResult.fileCount();
 		this.hasSearchResultsKey.set(fileCount > 0);
 

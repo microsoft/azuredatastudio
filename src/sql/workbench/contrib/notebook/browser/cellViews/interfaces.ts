@@ -14,6 +14,7 @@ import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { nb } from 'azdata';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { ICodeEditorViewState } from 'vs/editor/common/editorCommon';
 
 export const findHighlightClass = 'rangeHighlight';
 export const findRangeSpecificClass = 'rangeSpecificHighlight';
@@ -33,7 +34,7 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 
 	public abstract layout(): void;
 
-	public getEditor(): BaseTextEditor | undefined {
+	public getEditor(): BaseTextEditor<ICodeEditorViewState> | undefined {
 		return undefined;
 	}
 

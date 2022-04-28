@@ -8,7 +8,7 @@ import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
-import { IEditorFactoryRegistry, ActiveEditorContext, IEditorInput, EditorExtensions } from 'vs/workbench/common/editor';
+import { IEditorFactoryRegistry, ActiveEditorContext, EditorExtensions } from 'vs/workbench/common/editor';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
@@ -64,6 +64,7 @@ import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/common/notebookCommon';
 import { JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
 import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory)
 	.registerEditorSerializer(FileNotebookInput.ID, FileNoteBookEditorSerializer);
@@ -185,7 +186,7 @@ CommandsRegistry.registerCommand({
 	id: RESTART_JUPYTER_NOTEBOOK_SESSIONS,
 	handler: async (accessor: ServicesAccessor, restartJupyterServer: boolean = true) => {
 		const editorService: IEditorService = accessor.get(IEditorService);
-		const editors: readonly IEditorInput[] = editorService.editors;
+		const editors: readonly EditorInput[] = editorService.editors;
 		let jupyterServerRestarted: boolean = false;
 
 		for (let editor of editors) {
@@ -219,7 +220,7 @@ CommandsRegistry.registerCommand({
 	id: STOP_JUPYTER_NOTEBOOK_SESSIONS,
 	handler: async (accessor: ServicesAccessor) => {
 		const editorService: IEditorService = accessor.get(IEditorService);
-		const editors: readonly IEditorInput[] = editorService.editors;
+		const editors: readonly EditorInput[] = editorService.editors;
 
 		for (let editor of editors) {
 			if (editor instanceof NotebookInput) {
@@ -794,7 +795,7 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 		));
 	}
 
-	private convertInput(input: IEditorInput): IEditorInput {
+	private convertInput(input: EditorInput): EditorInput {
 		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
 		const notebookEditorInput = langAssociation?.syncConvertInput?.(input);
 		if (!notebookEditorInput) {

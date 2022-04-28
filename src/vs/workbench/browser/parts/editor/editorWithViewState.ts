@@ -126,12 +126,12 @@ export abstract class AbstractEditorWithViewState<T extends object> extends Edit
 	override getViewState(): T | undefined {
 		const input = this.input;
 		if (!input || !this.tracksEditorViewState(input)) {
-			return; // need valid input for view state
+			return undefined; // need valid input for view state
 		}
 
 		const resource = this.toEditorViewStateResource(input);
 		if (!resource) {
-			return; // need a resource for finding view state
+			return undefined; // need a resource for finding view state
 		}
 
 		return this.computeEditorViewState(resource);
@@ -165,7 +165,7 @@ export abstract class AbstractEditorWithViewState<T extends object> extends Edit
 
 		const resource = this.toEditorViewStateResource(input);
 		if (!resource) {
-			return; // need a resource for finding view state
+			return undefined; // need a resource for finding view state
 		}
 
 		return this.viewState.loadEditorState(this.group, resource);

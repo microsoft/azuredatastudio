@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/editordroptarget';
-import { LocalSelectionTransfer, DraggedEditorIdentifier, ResourcesDropHandler, DraggedEditorGroupIdentifier, DragAndDropObserver, containsDragType, CodeDataTransfers } from 'vs/workbench/browser/dnd';
+import { LocalSelectionTransfer, DraggedEditorIdentifier, ResourcesDropHandler, DraggedEditorGroupIdentifier, DragAndDropObserver, containsDragType, CodeDataTransfers, extractFilesDropData, extractEditorsDropData } from 'vs/workbench/browser/dnd';
 import { addDisposableListener, EventType, EventHelper, isAncestor } from 'vs/base/browser/dom';
 import { IEditorGroupsAccessor, IEditorGroupView, fillActiveEditorViewState } from 'vs/workbench/browser/parts/editor/editor';
 import { EDITOR_DRAG_AND_DROP_BACKGROUND } from 'vs/workbench/common/theme';
@@ -21,9 +21,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { assertIsDefined, assertAllDefined } from 'vs/base/common/types';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
-import Severity from 'vs/base/common/severity';
-import { localize } from 'vs/nls';
-import { ByteSize } from 'vs/platform/files/common/files';
+
 // {{SQL CARBON EDIT}}
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { SnippetController2 } from 'vs/editor/contrib/snippet/snippetController2';

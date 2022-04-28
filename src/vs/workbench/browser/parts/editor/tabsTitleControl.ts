@@ -6,7 +6,7 @@
 import 'vs/css!./media/tabstitlecontrol';
 import { isMacintosh, isWindows } from 'vs/base/common/platform';
 import { shorten } from 'vs/base/common/labels';
-import { EditorResourceAccessor, GroupIdentifier, IEditorInput, Verbosity, IEditorPartOptions, SideBySideEditor, DEFAULT_EDITOR_ASSOCIATION } from 'vs/workbench/common/editor';
+import { EditorResourceAccessor, GroupIdentifier, Verbosity, IEditorPartOptions, SideBySideEditor } from 'vs/workbench/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { computeEditorAriaLabel } from 'vs/workbench/browser/editor';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -1835,7 +1835,7 @@ export class TabsTitleControl extends TitleControl {
 	}
 
 	// {{SQL CARBON EDIT}} -- Display the editor's tab color
-	private setEditorTabColor(editor: IEditorInput, tabContainer: HTMLElement, isTabActive: boolean) {
+	private setEditorTabColor(editor: EditorInput, tabContainer: HTMLElement, isTabActive: boolean) {
 		let sqlEditor = editor as any;
 		const tabColorMode = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor')?.tabColorMode ?? 'off';
 		if (tabColorMode === 'off' || (tabColorMode !== 'border' && tabColorMode !== 'fill')

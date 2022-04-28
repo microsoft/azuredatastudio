@@ -222,7 +222,6 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 	private readonly _notificationService: INotificationService;
 
 	private readonly _reviewPane: DiffReview;
-	private _options: IDiffEditorOptions; // {{SQL CARBON EDIT}}
 
 	constructor(
 		domElement: HTMLElement,
@@ -248,8 +247,6 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		this._themeService = themeService;
 		this._notificationService = notificationService;
 
-		this._options = options; // {{SQL CARBON EDIT}}
-
 		this._id = (++DIFF_EDITOR_ID);
 		this._state = editorBrowser.DiffEditorState.Idle;
 		this._updatingDiffProgress = null;
@@ -257,7 +254,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		this._domElement = domElement;
 		options = options || {};
 
-		this._options = validateDiffEditorOptions(options, {
+		let diffOptions: any = {
 			enableSplitViewResizing: true,
 			renderSideBySide: true,
 			maxComputationTime: 5000,
@@ -268,7 +265,8 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 			diffCodeLens: false,
 			renderOverviewRuler: true,
 			diffWordWrap: 'inherit'
-		});
+		};
+		this._options = validateDiffEditorOptions(options, diffOptions);
 
 		if (typeof options.isInEmbeddedEditor !== 'undefined') {
 			this._contextKeyService.createKey('isInEmbeddedDiffEditor', options.isInEmbeddedEditor);
@@ -1051,7 +1049,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		const foreignModified = this._modifiedEditorState.getForeignViewZones(this._modifiedEditor.getWhitespaces());
 
 		// {{SQL CARBON EDIT}}
-		const diffDecorations = this._strategy.getEditorsDiffDecorations(lineChanges, this._ignoreTrimWhitespace, this._renderIndicators, foreignOriginal, foreignModified);
+		const diffDecorations = this._strategy.getEditorsDiffDecorations(lineChanges, this._options.ignoreTrimWhitespace, this._options.renderIndicators, foreignOriginal, foreignModified, this._originalEditor, this._modifiedEditor, this._options.reverse);
 
 		try {
 			this._currentlyChangingViewZones = true;
@@ -1365,7 +1363,7 @@ abstract class DiffEditorWidgetStyle extends Disposable {
 		return hasChanges;
 	}
 
-	// {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}} - add reverse parameter
 	public getEditorsDiffDecorations(lineChanges: editorCommon.ILineChange[], ignoreTrimWhitespace: boolean, renderIndicators: boolean, originalWhitespaces: IEditorWhitespace[], modifiedWhitespaces: IEditorWhitespace[], originalEditor: editorBrowser.ICodeEditor, modifiedEditor: editorBrowser.ICodeEditor, reverse?: boolean): IEditorsDiffDecorationsWithZones {
 		// Get view zones
 		modifiedWhitespaces = modifiedWhitespaces.sort((a, b) => {
@@ -2494,7 +2492,7 @@ function getViewRange(model: ITextModel, viewModel: IViewModel, startLineNumber:
 }
 
 function validateDiffEditorOptions(options: Readonly<IDiffEditorOptions>, defaults: ValidDiffEditorBaseOptions): ValidDiffEditorBaseOptions {
-	return {
+	let outOptions: any = {
 		enableSplitViewResizing: validateBooleanOption(options.enableSplitViewResizing, defaults.enableSplitViewResizing),
 		renderSideBySide: validateBooleanOption(options.renderSideBySide, defaults.renderSideBySide),
 		maxComputationTime: clampedInt(options.maxComputationTime, defaults.maxComputationTime, 0, Constants.MAX_SAFE_SMALL_INTEGER),
@@ -2506,6 +2504,7 @@ function validateDiffEditorOptions(options: Readonly<IDiffEditorOptions>, defaul
 		renderOverviewRuler: validateBooleanOption(options.renderOverviewRuler, defaults.renderOverviewRuler),
 		diffWordWrap: validateDiffWordWrap(options.diffWordWrap, defaults.diffWordWrap),
 	};
+	return outOptions;
 }
 
 function changedDiffEditorOptions(a: ValidDiffEditorBaseOptions, b: ValidDiffEditorBaseOptions) {

@@ -74,7 +74,7 @@ export class ExtHostNotebookKernels implements ExtHostNotebookKernelsShape {
 						}
 						return { notebookEditorId };
 					}
-					return v;
+					return <any>v;
 				})
 			],
 			ApiCommandResult.Void);

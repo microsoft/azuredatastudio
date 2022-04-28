@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IEditorFactoryRegistry, IEditorInput, IEditorSerializer, EditorExtensions } from 'vs/workbench/common/editor';
+import { IEditorFactoryRegistry, IEditorSerializer, EditorExtensions } from 'vs/workbench/common/editor';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FILE_EDITOR_INPUT_ID } from 'vs/workbench/contrib/files/common/files';
@@ -17,6 +17,7 @@ import { NotebookLanguage } from 'sql/workbench/common/constants';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { DiffNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/diffNotebookInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 const editorFactoryRegistry = Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory);
 
@@ -29,7 +30,7 @@ export class NotebookEditorLanguageAssociation implements ILanguageAssociation {
 
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService, @IConfigurationService private readonly configurationService: IConfigurationService) { }
 
-	convertInput(activeEditor: IEditorInput): NotebookInput | DiffNotebookInput | undefined {
+	convertInput(activeEditor: EditorInput): NotebookInput | DiffNotebookInput | undefined {
 		if (activeEditor instanceof FileEditorInput) {
 			return this.instantiationService.createInstance(FileNotebookInput, activeEditor.getName(), activeEditor.resource, activeEditor, true);
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
@@ -44,11 +45,11 @@ export class NotebookEditorLanguageAssociation implements ILanguageAssociation {
 		return undefined;
 	}
 
-	syncConvertInput(activeEditor: IEditorInput): NotebookInput | DiffNotebookInput | undefined {
+	syncConvertInput(activeEditor: EditorInput): NotebookInput | DiffNotebookInput | undefined {
 		return this.convertInput(activeEditor);
 	}
 
-	createBase(activeEditor: NotebookInput): IEditorInput {
+	createBase(activeEditor: NotebookInput): EditorInput {
 		return activeEditor.textInput;
 	}
 }

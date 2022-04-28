@@ -8,7 +8,6 @@ import * as sinon from 'sinon';
 import { ITestInstantiationService, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IEditorInput } from 'vs/workbench/common/editor';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
 import { QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/browser/queryEditorFactory';
@@ -27,6 +26,7 @@ import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/q
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { extUri } from 'vs/base/common/resources';
 import { IResourceEditorInputIdentifier } from 'vs/platform/editor/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 suite('Query Input Factory', () => {
 	let instantiationService: ITestInstantiationService;
@@ -337,8 +337,8 @@ class ServiceAccessor {
 }
 
 class MockEditorService extends TestEditorService {
-	private __activeEditor: IEditorInput | undefined = undefined;
-	public override get activeEditor(): IEditorInput | undefined {
+	private __activeEditor: EditorInput | undefined = undefined;
+	public override get activeEditor(): EditorInput | undefined {
 		return this.__activeEditor;
 	}
 

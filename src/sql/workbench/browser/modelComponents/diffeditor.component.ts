@@ -31,6 +31,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { IFileService } from 'vs/platform/files/common/files';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 @Component({
 	template: `
@@ -63,7 +64,8 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 		@Inject(ITextModelService) private _textModelService: ITextModelService,
 		@Inject(ILogService) logService: ILogService,
 		@Inject(ILabelService) private labelService: ILabelService,
-		@Inject(IFileService) private fileService: IFileService
+		@Inject(IFileService) private fileService: IFileService,
+		@Inject(IEditorService) private _editorService: IEditorService,
 	) {
 		super(changeRef, el, logService);
 	}
@@ -99,7 +101,7 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 		let editorinput1 = this._instantiationService.createInstance(TextResourceEditorInput, uri1, 'source', undefined, undefined, undefined);
 		let editorinput2 = this._instantiationService.createInstance(TextResourceEditorInput, uri2, 'target', undefined, undefined, undefined);
 		this._editorInput = new DiffEditorInput('DiffEditor', undefined, editorinput1, editorinput2, true,
-			this.labelService, this.fileService);
+			this.labelService, this.fileService, this._editorService);
 		this._editor.setInput(this._editorInput, undefined, undefined, cancellationTokenSource.token);
 
 

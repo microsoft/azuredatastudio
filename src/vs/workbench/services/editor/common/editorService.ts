@@ -260,6 +260,12 @@ export interface IEditorService {
 	findEditors(editor: IResourceEditorInputIdentifier, group: IEditorGroup | GroupIdentifier): EditorInput | undefined;
 
 	/**
+	 * Converts a lightweight input to a workbench editor input.
+	 */
+	createEditorInput(input: IUntypedEditorInput): EditorInput;
+
+
+	/**
 	 * Save the provided list of editors.
 	 *
 	 * @returns `true` if all editors saved and `false` otherwise.
