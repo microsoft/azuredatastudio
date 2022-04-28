@@ -46,8 +46,6 @@ export function renderHTML(options: renderHTML.IOptions): Promise<void> {
 	// Set the inner HTML of the host.
 	host.innerHTML = source;
 
-	host.tabIndex = 0;
-
 	if (host.getElementsByTagName('script').length > 0) {
 		// If output it trusted, eval any script tags contained in the HTML.
 		// This is not done automatically by the browser when script tags are
