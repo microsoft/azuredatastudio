@@ -482,6 +482,11 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 			}
 		}));
 
+		this._register(editor.onDidChangeHiddenAreas(() => {
+			this._updateDecorationsRunner.cancel();
+			this._updateDecorations();
+		}));
+
 		this._register(editor.onDidChangeModelContent(() => {
 			if (this._isVisible) {
 				this._beginUpdateDecorationsSoon();
@@ -542,6 +547,11 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 				this._updateDecorationsRunner.cancel();
 				this._updateDecorations();
 			}
+		}));
+
+		this._register(editor.onDidChangeHiddenAreas(() => {
+			this._updateDecorationsRunner.cancel();
+			this._updateDecorations();
 		}));
 
 		this._register(editor.onDidChangeModelContent(() => {
@@ -1067,7 +1077,6 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		// Clone scrollbar options before changing them
 		clonedOptions.scrollbar = { ...(clonedOptions.scrollbar || {}) };
 		clonedOptions.scrollbar.vertical = 'visible';
-		clonedOptions.folding = false;
 		clonedOptions.codeLens = this._options.diffCodeLens;
 		clonedOptions.fixedOverflowWidgets = true;
 		// clonedOptions.lineDecorationsWidth = '2ch';
