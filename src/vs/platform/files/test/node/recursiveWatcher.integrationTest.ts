@@ -121,7 +121,7 @@ flakySuite('Recursive Watcher (parcel)', () => {
 		// after a file event was send. At least one test was seen
 		// to crash when immediately re-watching the same folder
 		// from within the event callback due to a mutex lock issue.
-		return await timeout(5);
+		return await timeout(15);
 	}
 
 	test('basics', async function () {
@@ -325,7 +325,8 @@ flakySuite('Recursive Watcher (parcel)', () => {
 		await Promise.all([deleteFolderFuture1, deleteFolderFuture2]);
 	});
 
-	test('subsequent watch updates watchers (path)', async function () {
+	// TODO@bpasero native crash: https://github.com/microsoft/vscode/issues/135069
+	test.skip('subsequent watch updates watchers (path)', async function () {
 		await service.watch([{ path: testDir, excludes: [join(realpathSync(testDir), 'unrelated')] }]);
 
 		// New file (*.txt)

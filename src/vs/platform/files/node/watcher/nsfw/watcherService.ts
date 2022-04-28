@@ -3,14 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable } from 'vs/base/common/lifecycle';
 import { FileAccess } from 'vs/base/common/network';
 import { getNextTickChannel, ProxyChannel } from 'vs/base/parts/ipc/common/ipc';
 import { Client } from 'vs/base/parts/ipc/node/ipc.cp';
 import { IWatcherService } from 'vs/platform/files/node/watcher/nsfw/watcher';
-import { IDiskFileChange, ILogMessage, IWatchRequest } from 'vs/platform/files/node/watcher/watcher';
+import { IDiskFileChange, ILogMessage, IWatchRequest, WatcherService } from 'vs/platform/files/node/watcher/watcher';
 
-export class FileWatcher extends Disposable {
+export class FileWatcher extends WatcherService {
 
 	private static readonly MAX_RESTARTS = 5;
 
@@ -23,7 +22,7 @@ export class FileWatcher extends Disposable {
 		private requests: IWatchRequest[],
 		private readonly onDidFilesChange: (changes: IDiskFileChange[]) => void,
 		private readonly onLogMessage: (msg: ILogMessage) => void,
-		private verboseLogging: boolean,
+		private verboseLogging: boolean
 	) {
 		super();
 
@@ -35,7 +34,7 @@ export class FileWatcher extends Disposable {
 			FileAccess.asFileUri('bootstrap-fork', require).fsPath,
 			{
 				serverName: 'File Watcher (nsfw)',
-				args: ['--type=watcherService'],
+				args: ['--type=watcherServiceNSFW'],
 				env: {
 					VSCODE_AMD_ENTRYPOINT: 'vs/platform/files/node/watcher/nsfw/watcherApp',
 					VSCODE_PIPE_LOGGING: 'true',
