@@ -98,7 +98,7 @@ export class ExtHostDocumentsAndEditors implements ExtHostDocumentsAndEditorsSha
 				}
 				if (!ref) {
 					// {{SQL CARBON EDIT}}
-					// Add the Uri of the notebook that is using this text model for a cell's editor.
+					// Add URI of the notebook that is using this document for a cell's editor.
 					if (!data.notebook && data.notebookUri) {
 						data.notebook = <vscode.NotebookDocument>{
 							uri: URI.revive(data.notebookUri)
