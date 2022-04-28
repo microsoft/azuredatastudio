@@ -35,7 +35,7 @@ export class Notebook {
 	}
 
 	async newUntitledNotebook(): Promise<void> {
-		await this.code.dispatchKeybinding(constants.winOrCtrl + '+Alt+n');
+		await this.code.dispatchKeybinding(`${constants.winOrCtrl}+Alt+n`);
 		await this.editors.waitForActiveTab(`Notebook-0`);
 		await this.code.waitForElement('.notebookEditor');
 	}
@@ -109,7 +109,7 @@ export class Notebook {
 
 	private async selectAllText(selector: string): Promise<void> {
 		await this.code.waitAndClick(selector);
-		await this.code.dispatchKeybinding(constants.ctrlOrCmd + '+a');
+		await this.code.dispatchKeybinding(`${constants.ctrlOrCmd}+a`);
 	}
 
 	private static readonly placeholderSelector = 'div.placeholder-cell-component';

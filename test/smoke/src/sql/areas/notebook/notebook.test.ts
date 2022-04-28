@@ -379,27 +379,27 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			it('can bold text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, constants.ctrlOrCmd + '+b', 'p strong');
+				await verifyToolbarKeyboardShortcut(app, `${constants.ctrlOrCmd}+b`, 'p strong');
 			});
 
 			it('can italicize text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, constants.ctrlOrCmd + '+i', 'p em');
+				await verifyToolbarKeyboardShortcut(app, `${constants.ctrlOrCmd}+i`, 'p em');
 			});
 
 			it('can underline text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, constants.ctrlOrCmd + '+u', 'p u');
+				await verifyToolbarKeyboardShortcut(app, `${constants.ctrlOrCmd}+u`, 'p u');
 			});
 
 			it('can highlight text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, constants.ctrlOrCmd + '+shift+h', 'p mark');
+				await verifyToolbarKeyboardShortcut(app, `${constants.ctrlOrCmd}+shift+h`, 'p mark');
 			});
 
 			it('can codify text with keyboard shortcut', async function () {
 				const app = this.app as Application;
-				await verifyToolbarKeyboardShortcut(app, constants.ctrlOrCmd + '+shift+k', 'pre code');
+				await verifyToolbarKeyboardShortcut(app, `${constants.ctrlOrCmd}+shift+k`, 'pre code');
 			});
 		});
 
