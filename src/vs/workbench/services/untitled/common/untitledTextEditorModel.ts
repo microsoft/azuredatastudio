@@ -128,6 +128,7 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 
 	//#endregion
 
+	public notebookUri: URI; // {{SQL CARBON EDIT}}
 
 	constructor(
 		readonly resource: URI,
@@ -318,7 +319,8 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 			// accordingly.
 			const untitledContentsFactory = await createTextBufferFactoryFromStream(await this.textFileService.getDecodedStream(this.resource, untitledContents, { encoding: UTF8 }));
 
-			this.createTextEditorModel(untitledContentsFactory, this.resource, this.preferredMode);
+			// {{SQL CARBON EDIT}} Add notebookUri
+			this.createTextEditorModel(untitledContentsFactory, this.resource, this.preferredMode, this.notebookUri);
 			createdUntitledModel = true;
 		}
 

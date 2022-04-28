@@ -396,7 +396,8 @@ export class MainThreadDocumentsAndEditors {
 			lines: model.getLinesContent(),
 			EOL: model.getEOL(),
 			modeId: model.getLanguageIdentifier().language,
-			isDirty: this._textFileService.isDirty(model.uri)
+			isDirty: this._textFileService.isDirty(model.uri),
+			notebookUri: model.notebookUri // {{SQL CARBON EDIT}}
 		};
 	}
 

@@ -18,7 +18,8 @@ export type DocumentTokensProvider = DocumentSemanticTokensProvider | DocumentRa
 export interface IModelService {
 	readonly _serviceBrand: undefined;
 
-	createModel(value: string | ITextBufferFactory, languageSelection: ILanguageSelection | null, resource?: URI, isForSimpleWidget?: boolean): ITextModel;
+	// {{SQL CARBON EDIT}} Add notebookUri
+	createModel(value: string | ITextBufferFactory, languageSelection: ILanguageSelection | null, resource?: URI, isForSimpleWidget?: boolean, notebookUri?: URI): ITextModel;
 
 	updateModel(model: ITextModel, value: string | ITextBufferFactory): void;
 

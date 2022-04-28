@@ -493,7 +493,8 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 		return [EditOperation.replaceMove(oldRange, textBuffer.getValueInRange(newRange, EndOfLinePreference.TextDefined))];
 	}
 
-	public createModel(value: string | ITextBufferFactory, languageSelection: ILanguageSelection | null, resource?: URI, isForSimpleWidget: boolean = false): ITextModel {
+	// {{SQL CARBON EDIT}} Add notebookUri
+	public createModel(value: string | ITextBufferFactory, languageSelection: ILanguageSelection | null, resource?: URI, isForSimpleWidget: boolean = false, notebookUri?: URI): ITextModel {
 		let modelData: ModelData;
 
 		if (languageSelection) {
@@ -502,6 +503,7 @@ export class ModelServiceImpl extends Disposable implements IModelService {
 		} else {
 			modelData = this._createModelData(value, PLAINTEXT_LANGUAGE_IDENTIFIER, resource, isForSimpleWidget);
 		}
+		modelData.model.notebookUri = notebookUri;
 
 		this._onModelAdded.fire(modelData.model);
 

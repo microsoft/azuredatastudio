@@ -327,6 +327,9 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
 	private readonly _onBackgroundTokenizationStateChanged = this._register(new Emitter<void>());
 	public readonly onBackgroundTokenizationStateChanged: Event<void> = this._onBackgroundTokenizationStateChanged.event;
 
+	// {{SQL CARBON EDIT}}
+	public notebookUri?: URI;
+
 	constructor(
 		source: string | model.ITextBufferFactory,
 		creationOptions: model.ITextModelCreationOptions,
