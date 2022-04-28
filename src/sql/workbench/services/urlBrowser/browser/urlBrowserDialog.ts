@@ -109,11 +109,11 @@ export class UrlBrowserDialog extends Modal {
 		let tableContainer: HTMLElement = DOM.append(DOM.append(this._body, DOM.$('.option-section')), DOM.$('table.url-table-content'));
 		tableContainer.setAttribute('role', 'presentation');
 
-		let azureAccountLabel = localize('urlBrowserDialog.account', "Azure Account*");
+		let azureAccountLabel = localize('urlBrowserDialog.account', "Azure Account");
 		this._accountSelectorBox = new SelectBox([''], '', this._contextViewService);
 		this._accountSelectorBox.disable();
 		this._accountSelectorBox.setAriaLabel(azureAccountLabel);
-		let accountSelector = DialogHelper.appendRow(tableContainer, azureAccountLabel, 'url-input-label', 'url-input-box');
+		let accountSelector = DialogHelper.appendRow(tableContainer, azureAccountLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(accountSelector, this._accountSelectorBox);
 		this._accountManagementService.getAccounts().then((accounts) => this.setAccountSelectorBoxOptions(accounts)).catch((reason) => this.setAccountSelectorBoxError(reason));
 
@@ -134,37 +134,37 @@ export class UrlBrowserDialog extends Modal {
 		);
 		linkAccountButton.appendChild(linkAccount.el);
 
-		let tenantLabel = localize('urlBrowserDialog.tenant', "Azure AD Tenant*");
+		let tenantLabel = localize('urlBrowserDialog.tenant', "Azure AD Tenant");
 		this._tenantSelectorBox = new SelectBox([], '', this._contextViewService);
 		this._tenantSelectorBox.disable();
 		this._tenantSelectorBox.setAriaLabel(tenantLabel);
-		let tenantSelector = DialogHelper.appendRow(tableContainer, tenantLabel, 'url-input-label', 'url-input-box');
+		let tenantSelector = DialogHelper.appendRow(tableContainer, tenantLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(tenantSelector, this._tenantSelectorBox);
 
-		let subscriptionLabel = localize('urlBrowserDialog.subscription', "Azure subscription*");
+		let subscriptionLabel = localize('urlBrowserDialog.subscription', "Azure subscription");
 		this._subscriptionSelectorBox = new SelectBox([], '', this._contextViewService);
 		this._subscriptionSelectorBox.disable();
 		this._subscriptionSelectorBox.setAriaLabel(subscriptionLabel);
-		let subscriptionSelector = DialogHelper.appendRow(tableContainer, subscriptionLabel, 'url-input-label', 'url-input-box');
+		let subscriptionSelector = DialogHelper.appendRow(tableContainer, subscriptionLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(subscriptionSelector, this._subscriptionSelectorBox);
 
-		let storageAccountLabel = localize('urlBrowserDialog.storageAccount', "Storage account*");
+		let storageAccountLabel = localize('urlBrowserDialog.storageAccount', "Storage account");
 		this._storageAccountSelectorBox = new SelectBox([], '', this._contextViewService);
 		this._storageAccountSelectorBox.disable();
 		this._storageAccountSelectorBox.setAriaLabel(storageAccountLabel);
-		let storageAccountSelector = DialogHelper.appendRow(tableContainer, storageAccountLabel, 'url-input-label', 'url-input-box');
+		let storageAccountSelector = DialogHelper.appendRow(tableContainer, storageAccountLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(storageAccountSelector, this._storageAccountSelectorBox);
 
-		let blobContainerLabel = localize('urlBrowserDialog.blobContainer', "Blob container*");
+		let blobContainerLabel = localize('urlBrowserDialog.blobContainer', "Blob container");
 		this._blobContainerSelectorBox = new SelectBox([], '', this._contextViewService);
 		this._blobContainerSelectorBox.disable();
 		this._blobContainerSelectorBox.setAriaLabel(blobContainerLabel);
-		let blobContainerSelector = DialogHelper.appendRow(tableContainer, blobContainerLabel, 'url-input-label', 'url-input-box');
+		let blobContainerSelector = DialogHelper.appendRow(tableContainer, blobContainerLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(blobContainerSelector, this._blobContainerSelectorBox);
 
 
-		let sharedAccessSignatureLabel = localize('urlBrowserDialog.sharedAccessSignature', "Shared access signature generated*");
-		let sasInput = DialogHelper.appendRow(tableContainer, sharedAccessSignatureLabel, 'url-input-label', 'url-input-box');
+		let sharedAccessSignatureLabel = localize('urlBrowserDialog.sharedAccessSignature', "Shared access signature generated");
+		let sasInput = DialogHelper.appendRow(tableContainer, sharedAccessSignatureLabel, 'url-input-label', 'url-input-box', null, true);
 		this._sasInputBox = new InputBox(sasInput, this._contextViewService, { flexibleHeight: true });
 		this._sasInputBox.disable();
 		this._register(this._sasInputBox.onDidChange(() => this.enableOkButton()));
@@ -176,17 +176,17 @@ export class UrlBrowserDialog extends Modal {
 		this._sasButton.title = sasButtonLabel;
 		this._register(this._sasButton.onDidClick(e => this.generateSharedAccessSignature()));
 
-		let backupFileLabel = localize('urlBrowserDialog.backupFile', "Backup file*");
+		let backupFileLabel = localize('urlBrowserDialog.backupFile', "Backup file");
 
 		if (this._restoreDialog) {
 			this._backupFileSelectorBox = new SelectBox([], '', this._contextViewService);
 			this._backupFileSelectorBox.setAriaLabel(backupFileLabel);
-			let backupFileSelector = DialogHelper.appendRow(tableContainer, backupFileLabel, 'url-input-label', 'url-input-box');
+			let backupFileSelector = DialogHelper.appendRow(tableContainer, backupFileLabel, 'url-input-label', 'url-input-box', null, true);
 			DialogHelper.appendInputSelectBox(backupFileSelector, this._backupFileSelectorBox);
 			this._backupFileSelectorBox.setOptions([]);
 			this._backupFileSelectorBox.disable();
 		} else {
-			let fileInput = DialogHelper.appendRow(tableContainer, backupFileLabel, 'url-input-label', 'url-input-box');
+			let fileInput = DialogHelper.appendRow(tableContainer, backupFileLabel, 'url-input-label', 'url-input-box', null, true);
 			this._backupFileInputBox = new InputBox(fileInput, this._contextViewService, { flexibleHeight: true });
 			this.setBackupFileDefaultValue();
 		}
