@@ -257,6 +257,7 @@ export class SelectMigrationServiceDialog {
 					? utils.deepClone(selectedLocation)
 					: undefined!;
 				await this._populateResourceGroupDropdown();
+				await this._populateMigrationServiceDropdown();
 			}));
 
 		const azureResourceGroupLabel = this._view.modelBuilder.text()

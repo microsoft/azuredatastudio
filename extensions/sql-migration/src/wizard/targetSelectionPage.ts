@@ -337,6 +337,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}
 			this.migrationStateModel.refreshDatabaseBackupPage = true;
 			await this.populateResourceGroupDropdown();
+			await this.populateResourceInstanceDropdown();
 		}));
 
 		const azureResourceGroupLabel = this._view.modelBuilder.text().withProps({

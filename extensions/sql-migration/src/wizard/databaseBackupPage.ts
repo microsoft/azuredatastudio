@@ -962,13 +962,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					}).component();
 
 					this._disposables.push(blobContainerResourceDropdown.onValueChanged(async (value) => {
-						const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === value);
-						if (selectedResourceGroup && !blobResourceGroupErrorStrings.includes(value)) {
-							this.migrationStateModel._databaseBackup.blobs[index].resourceGroup = selectedResourceGroup;
-							await this.loadBlobStorageDropdown(index);
-							await blobContainerStorageAccountDropdown.updateProperties({ enabled: true });
-						} else {
-							await this.disableBlobTableDropdowns(index, constants.RESOURCE_GROUP);
+						if (this.migrationStateModel._resourceGroups) {
+							const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === value);
+							if (selectedResourceGroup && !blobResourceGroupErrorStrings.includes(value)) {
+								this.migrationStateModel._databaseBackup.blobs[index].resourceGroup = selectedResourceGroup;
+								await this.loadBlobStorageDropdown(index);
+								await blobContainerStorageAccountDropdown.updateProperties({ enabled: true });
+							} else {
+								await this.disableBlobTableDropdowns(index, constants.RESOURCE_GROUP);
+							}
 						}
 					}));
 					this._blobContainerResourceGroupDropdowns.push(blobContainerResourceDropdown);
@@ -986,24 +988,28 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this._blobContainerStorageAccountDropdowns.push(blobContainerStorageAccountDropdown);
 
 					this._disposables.push(blobContainerDropdown.onValueChanged(async (value) => {
-						const selectedBlobContainer = this.migrationStateModel._blobContainers.find(blob => blob.name === value);		// ?
-						if (selectedBlobContainer && !blobContainerErrorStrings.includes(value)) {
-							this.migrationStateModel._databaseBackup.blobs[index].blobContainer = selectedBlobContainer;
-							if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
-								await this.loadBlobLastBackupFileDropdown(index);
-								await blobContainerLastBackupFileDropdown.updateProperties({ enabled: true });
+						if (this.migrationStateModel._blobContainers) {
+							const selectedBlobContainer = this.migrationStateModel._blobContainers.find(blob => blob.name === value);
+							if (selectedBlobContainer && !blobContainerErrorStrings.includes(value)) {
+								this.migrationStateModel._databaseBackup.blobs[index].blobContainer = selectedBlobContainer;
+								if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
+									await this.loadBlobLastBackupFileDropdown(index);
+									await blobContainerLastBackupFileDropdown.updateProperties({ enabled: true });
+								}
+							} else {
+								await this.disableBlobTableDropdowns(index, constants.BLOB_CONTAINER);
 							}
-						} else {
-							await this.disableBlobTableDropdowns(index, constants.BLOB_CONTAINER);
 						}
 					}));
 					this._blobContainerDropdowns.push(blobContainerDropdown);
 
 					if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 						this._disposables.push(blobContainerLastBackupFileDropdown.onValueChanged(value => {
-							const selectedLastBackupFile = this.migrationStateModel._lastFileNames.find(fileName => fileName.name === value); 	// ?
-							if (selectedLastBackupFile && !blobFileErrorStrings.includes(value)) {
-								this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = selectedLastBackupFile.name;
+							if (this.migrationStateModel._lastFileNames) {
+								const selectedLastBackupFile = this.migrationStateModel._lastFileNames.find(fileName => fileName.name === value);
+								if (selectedLastBackupFile && !blobFileErrorStrings.includes(value)) {
+									this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = selectedLastBackupFile.name;
+								}
 							}
 						}));
 						this._blobContainerLastBackupFileDropdowns.push(blobContainerLastBackupFileDropdown);
