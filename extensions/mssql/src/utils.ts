@@ -105,12 +105,14 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 	launchArgs.push(logFile);
 
 	console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
-	console.log(`This process (ui Extenstion Host) is pid: ${process.pid}`);
+	console.log(`This process (ui Extension Host) is pid: ${process.pid}`);
 	// Delete old log files
 	let deletedLogFiles = removeOldLogFiles(logPath, fileName);
 	console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
 	launchArgs.push('--tracing-level');
 	launchArgs.push(getConfigTracingLevel());
+	// Always enable autoflush so that log entries are written immediately to disk, otherwise we can end up with partial logs
+	launchArgs.push('--autoflush-log');
 	return launchArgs;
 }
 
