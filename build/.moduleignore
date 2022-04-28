@@ -104,11 +104,11 @@ kerberos/build/**
 
 # END SQL Modules
 
-nsfw/binding.gyp
-nsfw/build/**
-nsfw/src/**
-nsfw/includes/**
-!nsfw/build/Release/*.node
+vscode-nsfw/binding.gyp
+vscode-nsfw/build/**
+vscode-nsfw/src/**
+vscode-nsfw/includes/**
+!vscode-nsfw/build/Release/*.node
 
 vsda/build/**
 vsda/ci/**
@@ -156,9 +156,8 @@ es6-promise/lib/**
 
 vscode-textmate/webpack.config.js
 
-# {{SQL CARBON EDIT }} We need more than just zone-node.js
-# zone.js/dist/**
-# !zone.js/dist/zone-node.js
+zone.js/dist/**
+!zone.js/dist/zone-node.js
 
 # https://github.com/xtermjs/xterm.js/issues/3137
 xterm/src/**

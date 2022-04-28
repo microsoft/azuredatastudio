@@ -6,7 +6,7 @@
 import 'vs/css!./media/tabstitlecontrol';
 import { isMacintosh, isWindows } from 'vs/base/common/platform';
 import { shorten } from 'vs/base/common/labels';
-import { EditorResourceAccessor, GroupIdentifier, Verbosity, IEditorPartOptions, SideBySideEditor } from 'vs/workbench/common/editor';
+import { EditorResourceAccessor, GroupIdentifier, Verbosity, IEditorPartOptions, SideBySideEditor, DEFAULT_EDITOR_ASSOCIATION } from 'vs/workbench/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { computeEditorAriaLabel } from 'vs/workbench/browser/editor';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -40,7 +40,7 @@ import { CloseOneEditorAction, UnpinEditorAction } from 'vs/workbench/browser/pa
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BreadcrumbsControl } from 'vs/workbench/browser/parts/editor/breadcrumbsControl';
 import { IFileService } from 'vs/platform/files/common/files';
-import { withNullAsUndefined, assertAllDefined, assertIsDefined } from 'vs/base/common/types';
+import { assertAllDefined, assertIsDefined } from 'vs/base/common/types';
 // import { IEditorService } from 'vs/workbench/services/editor/common/editorService'; {{SQL CARBON EDIT}} Remove unused
 import { basenameOrAuthority } from 'vs/base/common/resources';
 import { RunOnceScheduler } from 'vs/base/common/async';
@@ -56,14 +56,33 @@ import { UNLOCK_GROUP_COMMAND_ID } from 'vs/workbench/browser/parts/editor/edito
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query'; // {{SQL CARBON EDIT}}
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService'; // {{SQL CARBON EDIT}}
 
-interface IEditorInputLabel {
+interface EditorInputLabel {
 	name?: string;
 	description?: string;
+	forceDescription?: boolean;
 	title?: string;
 	ariaLabel?: string;
 }
 
-type AugmentedLabel = IEditorInputLabel & { editor: EditorInput };
+interface ITabsTitleControlLayoutOtions {
+
+	/**
+	 * Whether to force revealing the active tab, even when
+	 * the dimensions have not changed. This can be the case
+	 * when a tab was made active and needs to be revealed.
+	 */
+	forceRevealActiveTab?: true;
+}
+
+interface IScheduledTabsTitleControlLayout extends IDisposable {
+
+	/**
+	 * Associated options with the layout call.
+	 */
+	options?: ITabsTitleControlLayoutOtions;
+}
+
+type EditorInputLabelAndEditor = EditorInputLabel & { editor: EditorInput };
 
 export class TabsTitleControl extends TitleControl {
 
@@ -93,7 +112,7 @@ export class TabsTitleControl extends TitleControl {
 	private readonly unpinEditorAction = this._register(this.instantiationService.createInstance(UnpinEditorAction, UnpinEditorAction.ID, UnpinEditorAction.LABEL));
 
 	private readonly tabResourceLabels = this._register(this.instantiationService.createInstance(ResourceLabels, DEFAULT_LABELS_CONTAINER));
-	private tabLabels: IEditorInputLabel[] = [];
+	private tabLabels: EditorInputLabel[] = [];
 	private tabActionBars: ActionBar[] = [];
 	private tabDisposables: IDisposable[] = [];
 
@@ -102,7 +121,7 @@ export class TabsTitleControl extends TitleControl {
 		available: Dimension.None
 	};
 
-	private readonly layoutScheduled = this._register(new MutableDisposable());
+	private readonly layoutScheduler = this._register(new MutableDisposable<IScheduledTabsTitleControlLayout>());
 	private blockRevealActiveTab: boolean | undefined;
 
 	private path: IPath = isWindows ? win32 : posix;
@@ -221,7 +240,7 @@ export class TabsTitleControl extends TitleControl {
 		}));
 
 		// New file when double clicking on tabs container (but not tabs)
-		[TouchEventType.Tap, EventType.DBLCLICK].forEach(eventType => {
+		for (const eventType of [TouchEventType.Tap, EventType.DBLCLICK]) {
 			this._register(addDisposableListener(tabsContainer, eventType, async (e: MouseEvent | GestureEvent) => { // {{SQL CARBON EDIT}}
 				if (eventType === EventType.DBLCLICK) {
 					if (e.target !== tabsContainer) {
@@ -259,7 +278,7 @@ export class TabsTitleControl extends TitleControl {
 				);
 				*/
 			}));
-		});
+		}
 
 		// Prevent auto-scrolling (https://github.com/microsoft/vscode/issues/16690)
 		this._register(addDisposableListener(tabsContainer, EventType.MOUSE_DOWN, e => {
@@ -425,7 +444,7 @@ export class TabsTitleControl extends TitleControl {
 		this.computeTabLabels();
 
 		// Redraw all tabs
-		this.redraw();
+		this.redraw({ forceRevealActiveTab: true });
 
 		// Update Breadcrumbs
 		this.breadcrumbsControl?.update();
@@ -459,7 +478,7 @@ export class TabsTitleControl extends TitleControl {
 			this.computeTabLabels();
 
 			// Redraw all tabs
-			this.redraw();
+			this.redraw({ forceRevealActiveTab: true });
 		}
 
 		// No tabs to show
@@ -495,7 +514,7 @@ export class TabsTitleControl extends TitleControl {
 		);
 
 		// Moving an editor requires a layout to keep the active editor visible
-		this.layout(this.dimensions);
+		this.layout(this.dimensions, { forceRevealActiveTab: true });
 	}
 
 	pinEditor(editor: EditorInput): void {
@@ -522,7 +541,7 @@ export class TabsTitleControl extends TitleControl {
 		});
 
 		// A change to the sticky state requires a layout to keep the active editor visible
-		this.layout(this.dimensions);
+		this.layout(this.dimensions, { forceRevealActiveTab: true });
 	}
 
 	setActive(isGroupActive: boolean): void {
@@ -534,7 +553,7 @@ export class TabsTitleControl extends TitleControl {
 
 		// Activity has an impact on the toolbar, so we need to update and layout
 		this.updateEditorActionsToolbar();
-		this.layout(this.dimensions);
+		this.layout(this.dimensions, { forceRevealActiveTab: true });
 	}
 
 	private updateEditorLabelScheduler = this._register(new RunOnceScheduler(() => this.doUpdateEditorLabels(), 0));
@@ -599,7 +618,7 @@ export class TabsTitleControl extends TitleControl {
 		this.redraw();
 	}
 
-	private forEachTab(fn: (editor: EditorInput, index: number, tabContainer: HTMLElement, tabLabelWidget: IResourceLabel, tabLabel: IEditorInputLabel, tabActionBar: ActionBar) => void, fromIndex?: number, toIndex?: number): void {
+	private forEachTab(fn: (editor: EditorInput, index: number, tabContainer: HTMLElement, tabLabelWidget: IResourceLabel, tabLabel: EditorInputLabel, tabActionBar: ActionBar) => void, fromIndex?: number, toIndex?: number): void {
 		this.group.editors.forEach((editor, index) => {
 			if (typeof fromIndex === 'number' && fromIndex > index) {
 				return; // do nothing if we are not yet at `fromIndex`
@@ -613,11 +632,11 @@ export class TabsTitleControl extends TitleControl {
 		});
 	}
 
-	private withTab(editor: EditorInput, fn: (editor: EditorInput, index: number, tabContainer: HTMLElement, tabLabelWidget: IResourceLabel, tabLabel: IEditorInputLabel, tabActionBar: ActionBar) => void): void {
+	private withTab(editor: EditorInput, fn: (editor: EditorInput, index: number, tabContainer: HTMLElement, tabLabelWidget: IResourceLabel, tabLabel: EditorInputLabel, tabActionBar: ActionBar) => void): void {
 		this.doWithTab(this.group.getIndexOfEditor(editor), editor, fn);
 	}
 
-	private doWithTab(index: number, editor: EditorInput, fn: (editor: EditorInput, index: number, tabContainer: HTMLElement, tabLabelWidget: IResourceLabel, tabLabel: IEditorInputLabel, tabActionBar: ActionBar) => void): void {
+	private doWithTab(index: number, editor: EditorInput, fn: (editor: EditorInput, index: number, tabContainer: HTMLElement, tabLabelWidget: IResourceLabel, tabLabel: EditorInputLabel, tabActionBar: ActionBar) => void): void {
 		const tabsContainer = assertIsDefined(this.tabsContainer);
 		const tabContainer = tabsContainer.children[index] as HTMLElement;
 		const tabResourceLabel = this.tabResourceLabels.get(index);
@@ -798,7 +817,7 @@ export class TabsTitleControl extends TitleControl {
 		}));
 
 		// Double click: either pin or toggle maximized
-		[TouchEventType.Tap, EventType.DBLCLICK].forEach(eventType => {
+		for (const eventType of [TouchEventType.Tap, EventType.DBLCLICK]) {
 			disposables.add(addDisposableListener(tab, eventType, (e: MouseEvent | GestureEvent) => {
 				if (eventType === EventType.DBLCLICK) {
 					EventHelper.stop(e);
@@ -813,7 +832,7 @@ export class TabsTitleControl extends TitleControl {
 					this.group.pinEditor(editor);
 				}
 			}));
-		});
+		}
 
 		// Context menu
 		disposables.add(addDisposableListener(tab, EventType.CONTEXT_MENU, e => {
@@ -974,11 +993,12 @@ export class TabsTitleControl extends TitleControl {
 		const { verbosity, shortenDuplicates } = this.getLabelConfigFlags(labelFormat);
 
 		// Build labels and descriptions for each editor
-		const labels = this.group.editors.map((editor, index) => ({
+		const labels: EditorInputLabelAndEditor[] = this.group.editors.map((editor, index) => ({
 			editor,
 			name: editor.getName(),
 			description: editor.getDescription(verbosity),
-			title: withNullAsUndefined(editor.getTitle(Verbosity.LONG)),
+			forceDescription: editor.hasCapability(EditorInputCapabilities.ForceDescription),
+			title: editor.getTitle(Verbosity.LONG),
 			ariaLabel: computeEditorAriaLabel(editor, index, this.group, this.editorGroupService.count)
 		}));
 
@@ -990,63 +1010,68 @@ export class TabsTitleControl extends TitleControl {
 		this.tabLabels = labels;
 	}
 
-	private shortenTabLabels(labels: AugmentedLabel[]): void {
+	private shortenTabLabels(labels: EditorInputLabelAndEditor[]): void {
 
 		// Gather duplicate titles, while filtering out invalid descriptions
-		const mapTitleToDuplicates = new Map<string, AugmentedLabel[]>();
+		const mapNameToDuplicates = new Map<string, EditorInputLabelAndEditor[]>();
 		for (const label of labels) {
 			if (typeof label.description === 'string') {
-				getOrSet(mapTitleToDuplicates, label.name, []).push(label);
+				getOrSet(mapNameToDuplicates, label.name, []).push(label);
 			} else {
 				label.description = '';
 			}
 		}
 
-		// Identify duplicate titles and shorten descriptions
-		mapTitleToDuplicates.forEach(duplicateTitles => {
+		// Identify duplicate names and shorten descriptions
+		for (const [, duplicateLabels] of mapNameToDuplicates) {
 
 			// Remove description if the title isn't duplicated
-			if (duplicateTitles.length === 1) {
-				duplicateTitles[0].description = '';
+			// and we have no indication to enforce description
+			if (duplicateLabels.length === 1 && !duplicateLabels[0].forceDescription) {
+				duplicateLabels[0].description = '';
 
-				return;
+				continue;
 			}
 
 			// Identify duplicate descriptions
-			const mapDescriptionToDuplicates = new Map<string, AugmentedLabel[]>();
-			for (const label of duplicateTitles) {
-				getOrSet(mapDescriptionToDuplicates, label.description, []).push(label);
+			const mapDescriptionToDuplicates = new Map<string, EditorInputLabelAndEditor[]>();
+			for (const duplicateLabel of duplicateLabels) {
+				getOrSet(mapDescriptionToDuplicates, duplicateLabel.description, []).push(duplicateLabel);
 			}
 
 			// For editors with duplicate descriptions, check whether any long descriptions differ
 			let useLongDescriptions = false;
-			mapDescriptionToDuplicates.forEach((duplicateDescriptions, name) => {
-				if (!useLongDescriptions && duplicateDescriptions.length > 1) {
-					const [first, ...rest] = duplicateDescriptions.map(({ editor }) => editor.getDescription(Verbosity.LONG));
+			for (const [, duplicateLabels] of mapDescriptionToDuplicates) {
+				if (!useLongDescriptions && duplicateLabels.length > 1) {
+					const [first, ...rest] = duplicateLabels.map(({ editor }) => editor.getDescription(Verbosity.LONG));
 					useLongDescriptions = rest.some(description => description !== first);
 				}
-			});
+			}
 
 			// If so, replace all descriptions with long descriptions
 			if (useLongDescriptions) {
 				mapDescriptionToDuplicates.clear();
-				duplicateTitles.forEach(label => {
-					label.description = label.editor.getDescription(Verbosity.LONG);
-					getOrSet(mapDescriptionToDuplicates, label.description, []).push(label);
-				});
+				for (const duplicateLabel of duplicateLabels) {
+					duplicateLabel.description = duplicateLabel.editor.getDescription(Verbosity.LONG);
+					getOrSet(mapDescriptionToDuplicates, duplicateLabel.description, []).push(duplicateLabel);
+				}
 			}
 
 			// Obtain final set of descriptions
 			const descriptions: string[] = [];
-			mapDescriptionToDuplicates.forEach((_, description) => descriptions.push(description));
+			for (const [description] of mapDescriptionToDuplicates) {
+				descriptions.push(description);
+			}
 
-			// Remove description if all descriptions are identical
+			// Remove description if all descriptions are identical unless forced
 			if (descriptions.length === 1) {
 				for (const label of mapDescriptionToDuplicates.get(descriptions[0]) || []) {
-					label.description = '';
+					if (!label.forceDescription) {
+						label.description = '';
+					}
 				}
 
-				return;
+				continue;
 			}
 
 			// Shorten descriptions
@@ -1056,7 +1081,7 @@ export class TabsTitleControl extends TitleControl {
 					label.description = shortenedDescriptions[index];
 				}
 			});
-		});
+		}
 	}
 
 	private getLabelConfigFlags(value: string | undefined) {
@@ -1072,7 +1097,7 @@ export class TabsTitleControl extends TitleControl {
 		}
 	}
 
-	private redraw(): void {
+	private redraw(options?: ITabsTitleControlLayoutOtions): void {
 
 		// Border below tabs if any
 		const tabsContainerBorderColor = this.getColor(EDITOR_GROUP_HEADER_TABS_BORDER);
@@ -1095,10 +1120,10 @@ export class TabsTitleControl extends TitleControl {
 		this.updateEditorActionsToolbar();
 
 		// Ensure the active tab is always revealed
-		this.layout(this.dimensions);
+		this.layout(this.dimensions, options);
 	}
 
-	private redrawTab(editor: EditorInput, index: number, tabContainer: HTMLElement, tabLabelWidget: IResourceLabel, tabLabel: IEditorInputLabel, tabActionBar: ActionBar): void {
+	private redrawTab(editor: EditorInput, index: number, tabContainer: HTMLElement, tabLabelWidget: IResourceLabel, tabLabel: EditorInputLabel, tabActionBar: ActionBar): void {
 		const isTabSticky = this.group.isSticky(index);
 		const options = this.accessor.partOptions;
 
@@ -1117,21 +1142,21 @@ export class TabsTitleControl extends TitleControl {
 
 		// Settings
 		const tabActionsVisibility = isTabSticky && options.pinnedTabSizing === 'compact' ? 'off' /* treat sticky compact tabs as tabCloseButton: 'off' */ : options.tabCloseButton;
-		['off', 'left', 'right'].forEach(option => {
+		for (const option of ['off', 'left', 'right']) {
 			tabContainer.classList.toggle(`tab-actions-${option}`, tabActionsVisibility === option);
-		});
+		}
 
 		const tabSizing = isTabSticky && options.pinnedTabSizing === 'shrink' ? 'shrink' /* treat sticky shrink tabs as tabSizing: 'shrink' */ : options.tabSizing;
-		['fit', 'shrink'].forEach(option => {
+		for (const option of ['fit', 'shrink']) {
 			tabContainer.classList.toggle(`sizing-${option}`, tabSizing === option);
-		});
+		}
 
 		tabContainer.classList.toggle('has-icon', options.showIcons && options.hasIcons);
 
 		tabContainer.classList.toggle('sticky', isTabSticky);
-		['normal', 'compact', 'shrink'].forEach(option => {
+		for (const option of ['normal', 'compact', 'shrink']) {
 			tabContainer.classList.toggle(`sticky-${option}`, isTabSticky && options.pinnedTabSizing === option);
-		});
+		}
 
 		// Sticky compact/shrink tabs need a position to remain at their location
 		// when scrolling to stay in view (requirement for position: sticky)
@@ -1158,7 +1183,7 @@ export class TabsTitleControl extends TitleControl {
 		this.redrawTabActiveAndDirty(this.accessor.activeGroup === this.group, editor, tabContainer, tabActionBar);
 	}
 
-	private redrawTabLabel(editor: EditorInput, index: number, tabContainer: HTMLElement, tabLabelWidget: IResourceLabel, tabLabel: IEditorInputLabel): void {
+	private redrawTabLabel(editor: EditorInput, index: number, tabContainer: HTMLElement, tabLabelWidget: IResourceLabel, tabLabel: EditorInputLabel): void {
 		const options = this.accessor.partOptions;
 
 		// Unless tabs are sticky compact, show the full label and description
@@ -1385,7 +1410,7 @@ export class TabsTitleControl extends TitleControl {
 		return { total, offset };
 	}
 
-	layout(dimensions: ITitleControlDimensions): Dimension {
+	layout(dimensions: ITitleControlDimensions, options?: ITabsTitleControlLayoutOtions): Dimension {
 
 		// Remember dimensions that we get
 		Object.assign(this.dimensions, dimensions);
@@ -1393,12 +1418,22 @@ export class TabsTitleControl extends TitleControl {
 		// The layout of tabs can be an expensive operation because we access DOM properties
 		// that can result in the browser doing a full page layout to validate them. To buffer
 		// this a little bit we try at least to schedule this work on the next animation frame.
-		if (!this.layoutScheduled.value) {
-			this.layoutScheduled.value = scheduleAtNextAnimationFrame(() => {
-				this.doLayout(this.dimensions);
+		if (!this.layoutScheduler.value) {
+			const scheduledLayout = scheduleAtNextAnimationFrame(() => {
+				this.doLayout(this.dimensions, this.layoutScheduler.value?.options /* ensure to pick up latest options */);
 
-				this.layoutScheduled.clear();
+				this.layoutScheduler.clear();
 			});
+
+			this.layoutScheduler.value = { options, dispose: () => scheduledLayout.dispose() };
+		}
+
+		// Make sure to keep options updated
+		if (options?.forceRevealActiveTab) {
+			this.layoutScheduler.value.options = {
+				...this.layoutScheduler.value.options,
+				forceRevealActiveTab: true
+			};
 		}
 
 		// First time layout: compute the dimensions and store it
@@ -1409,7 +1444,7 @@ export class TabsTitleControl extends TitleControl {
 		return this.dimensions.used;
 	}
 
-	private doLayout(dimensions: ITitleControlDimensions): void {
+	private doLayout(dimensions: ITitleControlDimensions, options?: ITabsTitleControlLayoutOtions): void {
 
 		// Only layout if we have valid tab index and dimensions
 		const activeTabAndIndex = this.group.activeEditor ? this.getTabAndIndex(this.group.activeEditor) : undefined;
@@ -1420,7 +1455,7 @@ export class TabsTitleControl extends TitleControl {
 
 			// Tabs
 			const [activeTab, activeIndex] = activeTabAndIndex;
-			this.doLayoutTabs(activeTab, activeIndex, dimensions);
+			this.doLayoutTabs(activeTab, activeIndex, dimensions, options);
 		}
 
 		// Remember the dimensions used in the control so that we can
@@ -1448,7 +1483,7 @@ export class TabsTitleControl extends TitleControl {
 		}
 	}
 
-	private doLayoutTabs(activeTab: HTMLElement, activeIndex: number, dimensions: ITitleControlDimensions): void {
+	private doLayoutTabs(activeTab: HTMLElement, activeIndex: number, dimensions: ITitleControlDimensions, options?: ITabsTitleControlLayoutOtions): void {
 
 		// Always first layout tabs with wrapping support even if wrapping
 		// is disabled. The result indicates if tabs wrap and if not, we
@@ -1457,7 +1492,7 @@ export class TabsTitleControl extends TitleControl {
 		// wrapping is disabled (e.g. due to space constraints)
 		const tabsWrapMultiLine = this.doLayoutTabsWrapping(dimensions);
 		if (!tabsWrapMultiLine) {
-			this.doLayoutTabsNonWrapping(activeTab, activeIndex);
+			this.doLayoutTabsNonWrapping(activeTab, activeIndex, options);
 		}
 	}
 
@@ -1590,7 +1625,7 @@ export class TabsTitleControl extends TitleControl {
 		return tabsWrapMultiLine;
 	}
 
-	private doLayoutTabsNonWrapping(activeTab: HTMLElement, activeIndex: number): void {
+	private doLayoutTabsNonWrapping(activeTab: HTMLElement, activeIndex: number, options?: ITabsTitleControlLayoutOtions): void {
 		const [tabsContainer, tabsScrollbar] = assertAllDefined(this.tabsContainer, this.tabsScrollbar);
 
 		//
@@ -1658,15 +1693,21 @@ export class TabsTitleControl extends TitleControl {
 		}
 
 		// Update scrollbar
+		const { width: oldVisibleTabsWidth, scrollWidth: oldAllTabsWidth } = tabsScrollbar.getScrollDimensions();
 		tabsScrollbar.setScrollDimensions({
 			width: visibleTabsWidth,
 			scrollWidth: allTabsWidth
 		});
+		const dimensionsChanged = oldVisibleTabsWidth !== visibleTabsWidth || oldAllTabsWidth !== allTabsWidth;
 
-		// Return now if we are blocked to reveal the active tab and clear flag
-		// We also return if the active tab is positioned static because this
-		// means it is always visible anyway.
-		if (this.blockRevealActiveTab || typeof activeTabPosX !== 'number' || typeof activeTabWidth !== 'number' || activeTabPositionStatic) {
+		// Revealing the active tab is skipped under some conditions:
+		if (
+			this.blockRevealActiveTab ||							// explicitly disabled
+			typeof activeTabPosX !== 'number' ||					// invalid dimension
+			typeof activeTabWidth !== 'number' ||					// invalid dimension
+			activeTabPositionStatic ||								// static tab (sticky)
+			(!dimensionsChanged && !options?.forceRevealActiveTab) 	// dimensions did not change and we have low layout priority (https://github.com/microsoft/vscode/issues/133631)
+		) {
 			this.blockRevealActiveTab = false;
 			return;
 		}

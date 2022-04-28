@@ -67,8 +67,8 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "source-map": "0.6.1",
     "tmp": "^0.2.1",
-    "typescript": "^4.5.0-dev.20210914",
-    "vsce": "1.48.0",
+    "typescript": "^4.5.0-dev.20211004",
+    "vsce": "^1.100.0",
     "vscode-universal-bundler": "^0.0.2"
   },
   "scripts": {

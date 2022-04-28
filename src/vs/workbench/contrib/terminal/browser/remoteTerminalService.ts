@@ -17,7 +17,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { INotificationHandle, INotificationService, IPromptChoice, Severity } from 'vs/platform/notification/common/notification';
 import { IRemoteAuthorityResolverService } from 'vs/platform/remote/common/remoteAuthorityResolver';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
-import { IRequestResolveVariablesEvent, IShellLaunchConfig, IShellLaunchConfigDto, ITerminalChildProcess, ITerminalProfile, ITerminalsLayoutInfo, ITerminalsLayoutInfoById, TerminalIcon } from 'vs/platform/terminal/common/terminal';
+import { IRequestResolveVariablesEvent, IShellLaunchConfig, IShellLaunchConfigDto, ITerminalChildProcess, ITerminalProfile, ITerminalsLayoutInfo, ITerminalsLayoutInfoById, ProcessPropertyType, TerminalIcon } from 'vs/platform/terminal/common/terminal';
 import { IProcessDetails } from 'vs/platform/terminal/common/terminalProcess';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { RemotePty } from 'vs/workbench/contrib/terminal/browser/remotePty';
@@ -248,9 +248,14 @@ export class RemoteTerminalService extends Disposable implements IRemoteTerminal
 				workspaceName: termDto.workspaceName,
 				icon: termDto.icon,
 				color: termDto.color,
-				isOrphan: termDto.isOrphan
+				isOrphan: termDto.isOrphan,
+				fixedDimensions: termDto.fixedDimensions
 			};
 		});
+	}
+
+	async updateProperty(id: number, property: ProcessPropertyType, value: any): Promise<void> {
+		await this._remoteTerminalChannel?.updateProperty(id, property, value);
 	}
 
 	async updateTitle(id: number, title: string): Promise<void> {
@@ -315,11 +320,13 @@ export class RemoteTerminalService extends Disposable implements IRemoteTerminal
 		if (serializedState) {
 			try {
 				await this._remoteTerminalChannel.reviveTerminalProcesses(serializedState);
+				this._storageService.remove(TerminalStorageKeys.TerminalBufferState, StorageScope.WORKSPACE);
 				// If reviving processes, send the terminal layout info back to the pty host as it
 				// will not have been persisted on application exit
 				const layoutInfo = this._storageService.get(TerminalStorageKeys.TerminalLayoutInfo, StorageScope.WORKSPACE);
 				if (layoutInfo) {
 					await this._remoteTerminalChannel.setTerminalLayoutInfo(JSON.parse(layoutInfo));
+					this._storageService.remove(TerminalStorageKeys.TerminalLayoutInfo, StorageScope.WORKSPACE);
 				}
 			} catch {
 				// no-op

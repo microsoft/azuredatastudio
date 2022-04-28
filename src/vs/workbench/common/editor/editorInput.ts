@@ -48,7 +48,7 @@ export abstract class EditorInput extends AbstractEditorInput {
 	 * Unique type identifier for this input. Every editor input of the
 	 * same class should share the same type identifier. The type identifier
 	 * is used for example for serialising/deserialising editor inputs
-	 * via the serialisers of the `IEditorInputFactoryRegistry`.
+	 * via the serialisers of the `EditorInputFactoryRegistry`.
 	 */
 	abstract get typeId(): string;
 
@@ -100,13 +100,6 @@ export abstract class EditorInput extends AbstractEditorInput {
 	}
 
 	/**
-	 * Returns the extra classes to apply to the label of this input.
-	 */
-	getLabelExtraClasses(): string[] {
-		return [];
-	}
-
-	/**
 	 * Returns the display description of this input.
 	 */
 	getDescription(verbosity?: Verbosity): string | undefined {
@@ -118,6 +111,13 @@ export abstract class EditorInput extends AbstractEditorInput {
 	 */
 	getTitle(verbosity?: Verbosity): string {
 		return this.getName();
+	}
+
+	/**
+	 * Returns the extra classes to apply to the label of this input.
+	 */
+	getLabelExtraClasses(): string[] {
+		return [];
 	}
 
 	/**

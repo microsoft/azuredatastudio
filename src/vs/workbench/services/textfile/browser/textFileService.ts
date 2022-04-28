@@ -103,11 +103,17 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 			private registerListeners(): void {
 
 				// Creates
-				this._register(this.files.onDidCreate(model => {
+				this._register(this.files.onDidResolve(({ model }) => {
 					if (model.isReadonly() || model.hasState(TextFileEditorModelState.ORPHAN)) {
 						this._onDidChange.fire([model.resource]);
 					}
 				}));
+
+				// Removals: once a text file model is no longer
+				// under our control, make sure to signal this as
+				// decoration change because from this point on we
+				// have no way of updating the decoration anymore.
+				this._register(this.files.onDidRemove(modelUri => this._onDidChange.fire([modelUri])));
 
 				// Changes
 				this._register(this.files.onDidChangeReadonly(model => this._onDidChange.fire([model.resource])));
@@ -116,7 +122,7 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 
 			provideDecorations(uri: URI): IDecorationData | undefined {
 				const model = this.files.get(uri);
-				if (!model) {
+				if (!model || model.isDisposed()) {
 					return undefined;
 				}
 
@@ -344,7 +350,7 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 		// underlying file system cannot have both and then save.
 		// However, this will only work if the source exists
 		// and is not orphaned, so we need to check that too.
-		if (this.fileService.canHandleResource(source) && this.uriIdentityService.extUri.isEqual(source, target) && (await this.fileService.exists(source))) {
+		if (this.fileService.hasProvider(source) && this.uriIdentityService.extUri.isEqual(source, target) && (await this.fileService.exists(source))) {
 			await this.workingCopyFileService.move([{ file: { source, target } }], CancellationToken.None);
 
 			// At this point we don't know whether we have a
@@ -374,7 +380,7 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 
 		// Otherwise if the source can be handled by the file service
 		// we can simply invoke the copy() function to save as
-		else if (this.fileService.canHandleResource(source)) {
+		else if (this.fileService.hasProvider(source)) {
 			await this.fileService.copy(source, target, true);
 
 			success = true;
@@ -530,7 +536,7 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 	private async suggestSavePath(resource: URI): Promise<URI> {
 
 		// Just take the resource as is if the file service can handle it
-		if (this.fileService.canHandleResource(resource)) {
+		if (this.fileService.hasProvider(resource)) {
 			return resource;
 		}
 

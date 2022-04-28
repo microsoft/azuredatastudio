@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import product from 'vs/platform/product/common/product';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { localize } from 'vs/nls';
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
@@ -350,7 +351,13 @@ const registry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Con
 				// Testing has indicated that on Windows and Linux 500 ms matches the native hovers most closely.
 				// On Mac, the delay is 1500.
 				'default': isMacintosh ? 1500 : 500
-			}
+			},
+			'workbench.experimental.sidePanel.enabled': {
+				'type': 'boolean',
+				'default': false,
+				'description': localize('auxiliaryBarEnabled', "Controls whether the side panel opposite the side bar is enabled."),
+				'included': product.quality !== 'stable'
+			},
 		}
 	});
 

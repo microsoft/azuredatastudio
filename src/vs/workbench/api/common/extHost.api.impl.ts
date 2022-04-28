@@ -265,7 +265,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 		// namespace: commands
 		const commands: typeof vscode.commands = {
 			registerCommand(id: string, command: <T>(...args: any[]) => T | Thenable<T>, thisArgs?: any): vscode.Disposable {
-				return extHostCommands.registerCommand(true, id, command, thisArgs);
+				return extHostCommands.registerCommand(true, id, command, thisArgs, undefined, extension);
 			},
 			registerTextEditorCommand(id: string, callback: (textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, ...args: any[]) => void, thisArg?: any): vscode.Disposable {
 				return extHostCommands.registerCommand(true, id, (...args: any[]): any => {
@@ -285,7 +285,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 					}, (err) => {
 						extHostLogService.warn('An error occurred while running command ' + id, err);
 					});
-				});
+				}, undefined, undefined, extension);
 			},
 			registerDiffInformationCommand: (id: string, callback: (diff: vscode.LineChange[], ...args: any[]) => any, thisArg?: any): vscode.Disposable => {
 				checkProposedApiEnabled(extension);
@@ -298,7 +298,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 
 					const diff = await extHostEditors.getDiffInformation(activeTextEditor.id);
 					callback.apply(thisArg, [diff, ...args]);
-				});
+				}, undefined, undefined, extension);
 			},
 			executeCommand<T>(id: string, ...args: any[]): Thenable<T> {
 				return extHostCommands.executeCommand<T>(id, ...args);

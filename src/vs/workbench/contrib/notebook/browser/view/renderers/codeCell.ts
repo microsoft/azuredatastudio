@@ -17,7 +17,8 @@ import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
-import { CellFocusMode, CodeCellRenderTemplate, EXPAND_CELL_INPUT_COMMAND_ID, IActiveNotebookEditorDelegate } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { CellFocusMode, EXPAND_CELL_INPUT_COMMAND_ID, IActiveNotebookEditorDelegate } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { CodeCellRenderTemplate } from 'vs/workbench/contrib/notebook/browser/view/notebookRenderingCommon';
 import { CellOutputContainer } from 'vs/workbench/contrib/notebook/browser/view/renderers/cellOutput';
 import { ClickTargetType } from 'vs/workbench/contrib/notebook/browser/view/renderers/cellWidgets';
 import { CodeCellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/codeCellViewModel';
@@ -47,6 +48,11 @@ export class CodeCell extends Disposable {
 		const lineNum = this.viewCell.lineCount;
 		const lineHeight = this.viewCell.layoutInfo.fontInfo?.lineHeight || 17;
 		const editorPadding = this.notebookEditor.notebookOptions.computeEditorPadding(this.viewCell.internalMetadata);
+
+		// patch up focusMode
+		if (this.viewCell.focusMode === CellFocusMode.Editor && this.notebookEditor.getActiveCell() !== this.viewCell) {
+			this.viewCell.focusMode = CellFocusMode.Container;
+		}
 
 		const editorHeight = this.viewCell.layoutInfo.editorHeight === 0
 			? lineNum * lineHeight + editorPadding.top + editorPadding.bottom
@@ -82,7 +88,7 @@ export class CodeCell extends Disposable {
 
 				const realContentHeight = templateData.editor?.getContentHeight();
 				if (realContentHeight !== undefined && realContentHeight !== editorHeight) {
-					this.onCellHeightChange(realContentHeight);
+					this.onCellEditorHeightChange(realContentHeight);
 				}
 
 				focusEditorIfNeeded();
@@ -90,10 +96,6 @@ export class CodeCell extends Disposable {
 		});
 
 		const updateForFocusMode = () => {
-			if (this.notebookEditor.getFocus().start !== this.notebookEditor.getCellIndex(viewCell)) {
-				templateData.container.classList.toggle('cell-editor-focus', viewCell.focusMode === CellFocusMode.Editor);
-			}
-
 			if (viewCell.focusMode === CellFocusMode.Editor && this.notebookEditor.getActiveCell() === this.viewCell) {
 				templateData.editor?.focus();
 			}
@@ -139,9 +141,7 @@ export class CodeCell extends Disposable {
 					this.onCellWidthChange();
 				}
 			}
-		}));
 
-		this._register(viewCell.onDidChangeLayout((e) => {
 			if (e.totalHeight) {
 				this.relayoutCell();
 			}
@@ -150,7 +150,7 @@ export class CodeCell extends Disposable {
 		this._register(templateData.editor.onDidContentSizeChange((e) => {
 			if (e.contentHeightChanged) {
 				if (this.viewCell.layoutInfo.editorHeight !== e.contentHeight) {
-					this.onCellHeightChange(e.contentHeight);
+					this.onCellEditorHeightChange(e.contentHeight);
 				}
 			}
 		}));
@@ -244,10 +244,14 @@ export class CodeCell extends Disposable {
 		this._outputContainerRenderer = this.instantiationService.createInstance(CellOutputContainer, notebookEditor, viewCell, templateData, { limit: 500 });
 		this._outputContainerRenderer.render(editorHeight);
 		// Need to do this after the intial renderOutput
-		if (this.viewCell.metadata.outputCollapsed === undefined && this.viewCell.metadata.outputCollapsed === undefined) {
-			this.viewUpdateExpanded();
+		if (this.viewCell.metadata.outputCollapsed === undefined && this.viewCell.metadata.inputCollapsed === undefined) {
+			this.initialViewUpdateExpanded();
 			this.viewCell.layoutChange({});
 		}
+
+		this._register(this.viewCell.onLayoutInfoRead(() => {
+			this._outputContainerRenderer.probeHeight();
+		}));
 
 		this.updateForCollapseState();
 	}
@@ -269,7 +273,7 @@ export class CodeCell extends Disposable {
 		if (this.viewCell.metadata.outputCollapsed) {
 			this._collapseOutput();
 		} else {
-			this._showOutput();
+			this._showOutput(false);
 		}
 
 		this.relayoutCell();
@@ -333,7 +337,7 @@ export class CodeCell extends Disposable {
 	}
 
 	private _updateOutputInnertContainer(hide: boolean) {
-		const children = this.templateData.outputContainer.children;
+		const children = this.templateData.outputContainer.domNode.children;
 		for (let i = 0; i < children.length; i++) {
 			if (children[i].classList.contains('output-inner-container')) {
 				if (hide) {
@@ -352,19 +356,18 @@ export class CodeCell extends Disposable {
 		this._outputContainerRenderer.viewUpdateHideOuputs();
 	}
 
-	private _showOutput() {
+	private _showOutput(initRendering: boolean) {
 		this.templateData.container.classList.toggle('output-collapsed', false);
 		DOM.hide(this.templateData.cellOutputCollapsedContainer);
 		this._updateOutputInnertContainer(false);
-		this._outputContainerRenderer.viewUpdateShowOutputs();
+		this._outputContainerRenderer.viewUpdateShowOutputs(initRendering);
 	}
 
-	private viewUpdateExpanded(): void {
-		this._showInput();
-		this._showOutput();
+	private initialViewUpdateExpanded(): void {
 		this.templateData.container.classList.toggle('input-collapsed', false);
+		this._showInput();
 		this.templateData.container.classList.toggle('output-collapsed', false);
-		this._outputContainerRenderer.viewUpdateShowOutputs();
+		this._showOutput(true);
 		this.relayoutCell();
 	}
 
@@ -388,7 +391,7 @@ export class CodeCell extends Disposable {
 		);
 	}
 
-	private onCellHeightChange(newHeight: number): void {
+	private onCellEditorHeightChange(newHeight: number): void {
 		const viewLayout = this.templateData.editor.getLayoutInfo();
 		this.viewCell.editorHeight = newHeight;
 		this.relayoutCell();
@@ -411,7 +414,7 @@ export class CodeCell extends Disposable {
 		this._removeInputCollapsePreview();
 		this._outputContainerRenderer.dispose();
 		this._untrustedStatusItem?.dispose();
-		this.templateData.focusIndicatorLeft.style.height = 'initial';
+		this.templateData.focusIndicatorLeft.setHeight(0);
 
 		super.dispose();
 	}

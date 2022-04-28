@@ -20,7 +20,7 @@ import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { hash } from 'vs/base/common/hash';
 import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentity';
 import { iconRegistry } from 'vs/base/common/codicons';
-import { asArray } from 'vs/base/common/arrays';
+import { asArray, distinct } from 'vs/base/common/arrays';
 
 class DecorationRule {
 
@@ -186,7 +186,7 @@ class DecorationStyles {
 		let labelClassName = rule.itemColorClassName;
 		let badgeClassName = rule.itemBadgeClassName;
 		let iconClassName = rule.iconBadgeClassName;
-		let tooltip = data.filter(d => !isFalsyOrWhitespace(d.tooltip)).map(d => d.tooltip).join(' • ');
+		let tooltip = distinct(data.filter(d => !isFalsyOrWhitespace(d.tooltip)).map(d => d.tooltip)).join(' • ');
 		let strikethrough = data.some(d => d.strikethrough);
 
 		if (onlyChildren) {
@@ -224,25 +224,11 @@ class FileDecorationChangeEvent implements IResourceDecorationChangeEvent {
 	private readonly _data = TernarySearchTree.forUris<true>(_uri => true); // events ignore all path casings
 
 	constructor(all: URI | URI[]) {
-		for (let uri of asArray(all)) {
-			this._data.set(uri, true);
-		}
+		this._data.fill(true, asArray(all));
 	}
 
 	affectsResource(uri: URI): boolean {
 		return this._data.get(uri) ?? this._data.findSuperstr(uri) !== undefined;
-	}
-
-	static merge(all: (URI | URI[])[]): URI[] {
-		let res: URI[] = [];
-		for (let uriOrArray of all) {
-			if (Array.isArray(uriOrArray)) {
-				res = res.concat(uriOrArray);
-			} else {
-				res.push(uriOrArray);
-			}
-		}
-		return res;
 	}
 }
 
@@ -369,7 +355,7 @@ export class DecorationsService implements IDecorationsService {
 	declare readonly _serviceBrand: undefined;
 
 	private readonly _data = new LinkedList<DecorationProviderWrapper>();
-	private readonly _onDidChangeDecorationsDelayed = new DebounceEmitter<URI | URI[]>({ merge: FileDecorationChangeEvent.merge });
+	private readonly _onDidChangeDecorationsDelayed = new DebounceEmitter<URI | URI[]>({ merge: all => all.flat() });
 	private readonly _onDidChangeDecorations = new Emitter<IResourceDecorationChangeEvent>();
 	private readonly _decorationStyles: DecorationStyles;
 
@@ -398,7 +384,7 @@ export class DecorationsService implements IDecorationsService {
 			this._onDidChangeDecorationsDelayed,
 			this._onDidChangeDecorations
 		);
-		const remove = this._data.push(wrapper);
+		const remove = this._data.unshift(wrapper);
 
 		this._onDidChangeDecorations.fire({
 			// everything might have changed

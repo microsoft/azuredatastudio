@@ -44,6 +44,10 @@ export class StatusbarEntryItem extends Disposable {
 		return assertIsDefined(this.entry).name;
 	}
 
+	get hasCommand(): boolean {
+		return typeof this.entry?.command !== 'undefined';
+	}
+
 	constructor(
 		private container: HTMLElement,
 		entry: IStatusbarEntry,
@@ -170,7 +174,7 @@ export class StatusbarEntryItem extends Disposable {
 
 		// Custom command from us: Show tooltip
 		if (command === ShowTooltipCommand) {
-			this.hover?.show();
+			this.hover?.show(true /* focus */);
 		}
 
 		// Any other command is going through command service

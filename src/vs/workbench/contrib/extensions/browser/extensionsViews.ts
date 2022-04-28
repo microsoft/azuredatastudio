@@ -54,6 +54,7 @@ import { isVirtualWorkspace } from 'vs/platform/remote/common/remoteHosts';
 import { IWorkspaceTrustManagementService } from 'vs/platform/workspace/common/workspaceTrust';
 import { IWorkbenchLayoutService, Position } from 'vs/workbench/services/layout/browser/layoutService';
 import { HoverPosition } from 'vs/base/browser/ui/hover/hoverWidget';
+import { ILogService } from 'vs/platform/log/common/log';
 
 // Extensions that are automatically classified as Programming Language extensions, but should be Feature extensions
 const FORCE_FEATURE_EXTENSIONS = ['vscode.git', 'vscode.search-result'];
@@ -84,8 +85,6 @@ export interface ExtensionsListViewOptions {
 	fixedHeight?: boolean;
 	onDidChangeTitle?: Event<string>;
 }
-
-class ExtensionListViewWarning extends Error { }
 
 interface IQueryResult {
 	readonly model: IPagedModel<IExtension>;
@@ -135,7 +134,8 @@ export class ExtensionsListView extends ViewPane {
 		@IStorageService private readonly storageService: IStorageService,
 		@IWorkspaceTrustManagementService private readonly workspaceTrustManagementService: IWorkspaceTrustManagementService,
 		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService,
-		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService
+		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super({
 			...(viewletViewOptions as IViewPaneOptions),
@@ -253,6 +253,7 @@ export class ExtensionsListView extends ViewPane {
 			} catch (e) {
 				const model = new PagedModel([]);
 				if (!isPromiseCanceledError(e)) {
+					this.logService.error(e);
 					this.setModel(model, e);
 				}
 				return this.list ? this.list.model : model;
@@ -321,13 +322,8 @@ export class ExtensionsListView extends ViewPane {
 			return this.queryLocal(query, options);
 		}
 
-		try {
-			const model = await this.queryGallery(query, options, token);
-			return { model, disposables: new DisposableStore() };
-		} catch (e) {
-			console.warn('Error querying extensions gallery', getErrorMessage(e));
-			return Promise.reject(new ExtensionListViewWarning(localize('galleryError', "We cannot connect to the Extensions Marketplace at this time, please try again later.")));
-		}
+		const model = await this.queryGallery(query, options, token);
+		return { model, disposables: new DisposableStore() };
 	}
 
 	private async queryByIds(ids: string[], options: IQueryOptions, token: CancellationToken): Promise<IPagedModel<IExtension>> {
@@ -686,7 +682,7 @@ export class ExtensionsListView extends ViewPane {
 
 		let preferredResults: string[] = [];
 		if (text) {
-			options.text = text.substr(0, 350);
+			options.text = text.substring(0, 350);
 			options.source = 'searchText';
 			if (!hasUserDefinedSortOrder) {
 				const searchExperiments = await this.getSearchExperiments();
@@ -721,12 +717,17 @@ export class ExtensionsListView extends ViewPane {
 
 	}
 
-	private _searchExperiments: Promise<IExperiment[]> | undefined;
+	resetSearchExperiments() { ExtensionsListView.searchExperiments = undefined; }
+	private static searchExperiments: Promise<IExperiment[]> | undefined;
 	private getSearchExperiments(): Promise<IExperiment[]> {
-		if (!this._searchExperiments) {
-			this._searchExperiments = this.experimentService.getExperimentsByType(ExperimentActionType.ExtensionSearchResults);
+		if (!ExtensionsListView.searchExperiments) {
+			ExtensionsListView.searchExperiments = this.experimentService.getExperimentsByType(ExperimentActionType.ExtensionSearchResults)
+				.then(null, e => {
+					this.logService.error(e);
+					return [];
+				});
 		}
-		return this._searchExperiments;
+		return ExtensionsListView.searchExperiments;
 	}
 
 	private sortExtensions(extensions: IExtension[], options: IQueryOptions): IExtension[] {
@@ -1009,13 +1010,8 @@ export class ExtensionsListView extends ViewPane {
 
 			if (count === 0 && this.isBodyVisible()) {
 				if (error) {
-					if (error instanceof ExtensionListViewWarning) {
-						this.bodyTemplate.messageSeverityIcon.className = SeverityIcon.className(Severity.Warning);
-						this.bodyTemplate.messageBox.textContent = getErrorMessage(error);
-					} else {
-						this.bodyTemplate.messageSeverityIcon.className = SeverityIcon.className(Severity.Error);
-						this.bodyTemplate.messageBox.textContent = localize('error', "Error while loading extensions. {0}", getErrorMessage(error));
-					}
+					this.bodyTemplate.messageSeverityIcon.className = SeverityIcon.className(Severity.Error);
+					this.bodyTemplate.messageBox.textContent = localize('error', "Error while fetching extensions. {0}", getErrorMessage(error));
 				} else {
 					this.bodyTemplate.messageSeverityIcon.className = '';
 					this.bodyTemplate.messageBox.textContent = localize('no extensions found', "No extensions found.");

@@ -44,12 +44,22 @@ declare module 'vscode' {
 		isTrusted?: boolean;
 	}
 
+	export interface TunnelPrivacy {
+		themeIcon: string;
+		id: string;
+		label: string;
+	}
+
 	export interface TunnelOptions {
 		remoteAddress: { port: number, host: string; };
 		// The desired local port. If this port can't be used, then another will be chosen.
 		localAddressPort?: number;
 		label?: string;
+		/**
+		 * @deprecated Use privacy instead
+		 */
 		public?: boolean;
+		privacy?: string;
 		protocol?: string;
 	}
 
@@ -57,7 +67,11 @@ declare module 'vscode' {
 		remoteAddress: { port: number, host: string; };
 		//The complete local address(ex. localhost:1234)
 		localAddress: { port: number, host: string; } | string;
+		/**
+		 * @deprecated Use privacy instead
+		 */
 		public?: boolean;
+		privacy?: string;
 		// If protocol is not provided it is assumed to be http, regardless of the localAddress.
 		protocol?: string;
 	}
@@ -144,7 +158,14 @@ declare module 'vscode' {
 		 */
 		tunnelFeatures?: {
 			elevation: boolean;
+			/**
+			 * @deprecated Use privacy instead
+			 */
 			public: boolean;
+			/**
+			 * One of the the options must have the ID "private".
+			 */
+			privacyOptions: TunnelPrivacy[];
 		};
 
 		candidatePortSource?: CandidatePortSource;
@@ -1104,7 +1125,7 @@ declare module 'vscode' {
 	export interface QuickPick<T extends QuickPickItem> extends QuickInput {
 
 		/*
-		 * An optional flag that can be set to true to maintain the scroll position of the quick pick when the quick pick items are updated. Defaults to false.
+		 * An optional flag to maintain the scroll position of the quick pick when the quick pick items are updated. Defaults to false.
 		 */
 		keepScrollPosition?: boolean;
 	}
@@ -1388,7 +1409,7 @@ declare module 'vscode' {
 	export interface NotebookDecorationRenderOptions {
 		backgroundColor?: string | ThemeColor;
 		borderColor?: string | ThemeColor;
-		top: ThemableDecorationAttachmentRenderOptions;
+		top?: ThemableDecorationAttachmentRenderOptions;
 	}
 
 	export interface NotebookEditorDecorationType {
@@ -1824,7 +1845,7 @@ declare module 'vscode' {
 		 * An optional event to signal that inlay hints have changed.
 		 * @see {@link EventEmitter}
 		 */
-		onDidChangeInlayHints?: Event<void>;
+		onDidChangeInlayHints?: Event<undefined | Uri>;
 
 		/**
 		 *
@@ -2234,7 +2255,12 @@ declare module 'vscode' {
 		readonly label: string;
 
 		/**
-		 * The position of the tab
+		 * The index of the tab within the column
+		 */
+		readonly index: number;
+
+		/**
+		 * The column which the tab belongs to
 		 */
 		readonly viewColumn: ViewColumn;
 
@@ -2252,10 +2278,32 @@ declare module 'vscode' {
 		readonly viewId?: string;
 
 		/**
+		 * All the resources and viewIds represented by a tab
+		 * {@link Tab.resource resource} and {@link Tab.viewId viewId} will
+		 * always be at index 0.
+		 */
+		additionalResourcesAndViewIds: { resource?: Uri, viewId?: string }[];
+
+		/**
 		 * Whether or not the tab is currently active
 		 * Dictated by being the selected tab in the active group
 		 */
 		readonly isActive: boolean;
+
+		/**
+		 * Moves a tab to the given index within the column.
+		 * If the index is out of range, the tab will be moved to the end of the column.
+		 * If the column is out of range, a new one will be created after the last existing column.
+		 * @param index The index to move the tab to
+		 * @param viewColumn The column to move the tab into
+		 */
+		move(index: number, viewColumn: ViewColumn): Thenable<void>;
+
+		/**
+		 * Closes the tab. This makes the tab object invalid and the tab
+		 * should no longer be used for further actions.
+		 */
+		close(): Thenable<void>;
 	}
 
 	export namespace window {
@@ -2773,6 +2821,14 @@ declare module 'vscode' {
 		 * for a list of all supported tags and attributes.
 		 */
 		supportHtml?: boolean;
+	}
+
+	//#endregion
+
+	//#region @eamodio https://github.com/microsoft/vscode/issues/133935
+
+	export interface SourceControl {
+		actionButton?: Command;
 	}
 
 	//#endregion

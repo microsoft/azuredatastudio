@@ -522,7 +522,15 @@ export const enum EditorInputCapabilities {
 	 * Signals that the editor can split into 2 in the same
 	 * editor group.
 	 */
-	CanSplitInGroup = 1 << 5
+	CanSplitInGroup = 1 << 5,
+
+	/**
+	 * Signals that the editor wants it's description to be
+	 * visible when presented to the user. By default, a UI
+	 * component may decide to hide the description portion
+	 * for brevity.
+	 */
+	ForceDescription = 1 << 6
 }
 
 export type IUntypedEditorInput = IResourceEditorInput | ITextResourceEditorInput | IUntitledTextResourceEditorInput | IResourceDiffEditorInput | IResourceSideBySideEditorInput;
@@ -535,7 +543,7 @@ export function isEditorInput(editor: unknown): editor is EditorInput {
 	return editor instanceof AbstractEditorInput;
 }
 
-export interface IEditorInputWithPreferredResource {
+export interface EditorInputWithPreferredResource {
 
 	/**
 	 * An editor may provide an additional preferred resource alongside
@@ -557,8 +565,8 @@ export interface IEditorInputWithPreferredResource {
 	readonly preferredResource: URI;
 }
 
-function isEditorInputWithPreferredResource(editor: unknown): editor is IEditorInputWithPreferredResource {
-	const candidate = editor as IEditorInputWithPreferredResource | undefined;
+function isEditorInputWithPreferredResource(editor: unknown): editor is EditorInputWithPreferredResource {
+	const candidate = editor as EditorInputWithPreferredResource | undefined;
 
 	return URI.isUri(candidate?.preferredResource);
 }
@@ -613,7 +621,7 @@ export interface IUntypedFileEditorInput extends ITextResourceEditorInput {
  * This is a tagging interface to declare an editor input being capable of dealing with files. It is only used in the editor registry
  * to register this kind of input to the platform.
  */
-export interface IFileEditorInput extends EditorInput, IEncodingSupport, IModeSupport, IEditorInputWithPreferredResource {
+export interface IFileEditorInput extends EditorInput, IEncodingSupport, IModeSupport, EditorInputWithPreferredResource {
 
 	/**
 	 * Gets the resource this file input is about. This will always be the
@@ -672,23 +680,23 @@ export interface IFileEditorInput extends EditorInput, IEncodingSupport, IModeSu
 	isResolved(): boolean;
 }
 
-export interface IEditorInputWithOptions {
+export interface EditorInputWithOptions {
 	editor: EditorInput;
 	options?: IEditorOptions;
 }
 
-export interface IEditorInputWithOptionsAndGroup extends IEditorInputWithOptions {
+export interface EditorInputWithOptionsAndGroup extends EditorInputWithOptions {
 	group: IEditorGroup;
 }
 
-export function isEditorInputWithOptions(editor: unknown): editor is IEditorInputWithOptions {
-	const candidate = editor as IEditorInputWithOptions | undefined;
+export function isEditorInputWithOptions(editor: unknown): editor is EditorInputWithOptions {
+	const candidate = editor as EditorInputWithOptions | undefined;
 
 	return isEditorInput(candidate?.editor);
 }
 
-export function isEditorInputWithOptionsAndGroup(editor: unknown): editor is IEditorInputWithOptionsAndGroup {
-	const candidate = editor as IEditorInputWithOptionsAndGroup | undefined;
+export function isEditorInputWithOptionsAndGroup(editor: unknown): editor is EditorInputWithOptionsAndGroup {
+	const candidate = editor as EditorInputWithOptionsAndGroup | undefined;
 
 	return isEditorInputWithOptions(editor) && candidate?.group !== undefined;
 }
@@ -741,7 +749,9 @@ export enum EditorCloseContext {
 	UNKNOWN,
 
 	/**
-	 * The editor closed because it was in preview mode and got replaced.
+	 * The editor closed because it was replaced with another editor.
+	 * This can either happen via explicit replace call or when an
+	 * editor is in preview mode and another editor opens.
 	 */
 	REPLACE,
 
@@ -1123,12 +1133,8 @@ export async function pathsToEditors(paths: IPathData[] | undefined, fileService
 			return undefined; // {{SQL CARBON EDIT}} Strict null
 		}
 
-		// Since we are possibly the first ones to use the file service
-		// on the resource, we must ensure to activate the provider first
-		// before asking whether the resource can be handled.
-		await fileService.activateProvider(resource.scheme);
-
-		if (!fileService.canHandleResource(resource)) {
+		const canHandleResource = await fileService.canHandleResource(resource);
+		if (!canHandleResource) {
 			return undefined; // {{SQL CARBON EDIT}} Strict null
 		}
 
