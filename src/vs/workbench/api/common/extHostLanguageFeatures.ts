@@ -2012,7 +2012,7 @@ export class ExtHostLanguageFeatures implements extHostProtocol.ExtHostLanguageF
 		let result = this._createDisposable(handle);
 
 		if (eventHandle !== undefined) {
-			const subscription = provider.onDidChangeInlayHints!(uri => this._proxy.$emitInlayHintsEvent(eventHandle, uri));
+			const subscription = provider.onDidChangeInlayHints!(uri => this._proxy.$emitInlayHintsEvent(eventHandle));
 			result = Disposable.from(result, subscription);
 		}
 		return result;

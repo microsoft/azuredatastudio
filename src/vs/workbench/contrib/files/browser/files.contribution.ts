@@ -17,7 +17,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/file
 import { BinaryFileEditor } from 'vs/workbench/contrib/files/browser/editors/binaryFileEditor';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { isLinux, isNative, isWeb, isWindows } from 'vs/base/common/platform';
+import { isNative, isWeb, isWindows } from 'vs/base/common/platform';
 import { ExplorerViewletViewsContribution } from 'vs/workbench/contrib/files/browser/explorerViewlet';
 import { IEditorPaneRegistry, EditorPaneDescriptor } from 'vs/workbench/browser/editor';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
@@ -35,7 +35,6 @@ import { IExplorerService } from 'vs/workbench/contrib/files/browser/files';
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 import { FileEditorInputSerializer, FileEditorWorkingCopyEditorHandler } from 'vs/workbench/contrib/files/browser/editors/fileEditorHandler';
 import { ModesRegistry } from 'vs/editor/common/modes/modesRegistry';
-import product from 'vs/platform/product/common/product';
 
 class FileUriLabelContribution implements IWorkbenchContribution {
 
@@ -255,12 +254,22 @@ configurationRegistry.registerConfiguration({
 				'type': 'string'
 			},
 			'default': [],
-			'description': nls.localize('watcherInclude', "Configure extra paths to watch for changes inside the workspace. By default, all workspace folders will be watched recursively, except for folders that are symbolic links. You can explicitly add absolute or relative paths to support watching folders that are symbolic links. Relative paths will be resolved against the workspace folder to form an absolute path."),
+			'description': nls.localize('watcherInclude', "Configure extra paths to watch for changes inside the workspace. By default, all workspace folders will be watched recursively, except for folders that are symbolic links. You can explicitly add absolute or relative paths to support watching folders that are symbolic links. Relative paths will be resolved to an absolute path using the currently opened workspace."),
 			'scope': ConfigurationScope.RESOURCE
 		},
 		'files.legacyWatcher': {
-			'type': 'boolean',
-			'default': product.quality === 'stable' && isLinux,
+			'type': 'string',
+			'enum': [
+				'on',
+				'off',
+				'default',
+			],
+			'markdownEnumDescriptions': [
+				nls.localize('files.legacyWatcher.on', "Enable the legacy file watcher in case you see issues with the new file watcher."),
+				nls.localize('files.legacyWatcher.off', "Disable the legacy file watcher and enable the new file watcher to benefit from its capabilities."),
+				nls.localize('files.legacyWatcher.default', "The new file watcher will be enabled if you are using insiders version or whenever you open multi-root workspaces."),
+			],
+			'default': 'default',
 			'description': nls.localize('legacyWatcher', "Controls the mechanism used for file watching. Only change this when you see issues related to file watching."),
 		},
 		'files.hotExit': hotExitConfiguration,

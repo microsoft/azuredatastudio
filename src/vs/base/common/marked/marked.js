@@ -9,308 +9,317 @@
  * The code in this file is generated from files in ./src/
  */
 
+// ESM-uncomment-begin
+// let __marked_exports;
+// (function() {
+//   function define(factory) {
+//     __marked_exports = factory();
+//   }
+//   define.amd = true;
+// ESM-uncomment-end
+
  (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-      (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.marked = factory());
-  }(this, (function () { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.marked = factory());
+}(this, (function () { 'use strict';
 
-	function _defineProperties(target, props) {
-	  for (var i = 0; i < props.length; i++) {
-		var descriptor = props[i];
-		descriptor.enumerable = descriptor.enumerable || false;
-		descriptor.configurable = true;
-		if ("value" in descriptor) descriptor.writable = true;
-		Object.defineProperty(target, descriptor.key, descriptor);
-	  }
-	}
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
 
-	function _createClass(Constructor, protoProps, staticProps) {
-	  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-	  if (staticProps) _defineProperties(Constructor, staticProps);
-	  return Constructor;
-	}
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+  }
 
-	function _unsupportedIterableToArray(o, minLen) {
-	  if (!o) return;
-	  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-	  var n = Object.prototype.toString.call(o).slice(8, -1);
-	  if (n === "Object" && o.constructor) n = o.constructor.name;
-	  if (n === "Map" || n === "Set") return Array.from(o);
-	  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-	}
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
 
-	function _arrayLikeToArray(arr, len) {
-	  if (len == null || len > arr.length) len = arr.length;
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
 
-	  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
 
-	  return arr2;
-	}
+    return arr2;
+  }
 
-	function _createForOfIteratorHelperLoose(o, allowArrayLike) {
-	  var it;
+  function _createForOfIteratorHelperLoose(o, allowArrayLike) {
+    var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"];
+    if (it) return (it = it.call(o)).next.bind(it);
 
-	  if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) {
-		if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
-		  if (it) o = it;
-		  var i = 0;
-		  return function () {
-			if (i >= o.length) return {
-			  done: true
-			};
-			return {
-			  done: false,
-			  value: o[i++]
-			};
-		  };
-		}
+    if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
+      if (it) o = it;
+      var i = 0;
+      return function () {
+        if (i >= o.length) return {
+          done: true
+        };
+        return {
+          done: false,
+          value: o[i++]
+        };
+      };
+    }
 
-		throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-	  }
+    throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
 
-	  it = o[Symbol.iterator]();
-	  return it.next.bind(it);
-	}
+  var defaults$5 = {exports: {}};
 
-	function createCommonjsModule(fn) {
-	  var module = { exports: {} };
-		return fn(module, module.exports), module.exports;
-	}
+  function getDefaults$1() {
+    return {
+      baseUrl: null,
+      breaks: false,
+      extensions: null,
+      gfm: true,
+      headerIds: true,
+      headerPrefix: '',
+      highlight: null,
+      langPrefix: 'language-',
+      mangle: true,
+      pedantic: false,
+      renderer: null,
+      sanitize: false,
+      sanitizer: null,
+      silent: false,
+      smartLists: false,
+      smartypants: false,
+      tokenizer: null,
+      walkTokens: null,
+      xhtml: false
+    };
+  }
 
-	var defaults = createCommonjsModule(function (module) {
-	  function getDefaults() {
-		return {
-		  baseUrl: null,
-		  breaks: false,
-		  gfm: true,
-		  headerIds: true,
-		  headerPrefix: '',
-		  highlight: null,
-		  langPrefix: 'language-',
-		  mangle: true,
-		  pedantic: false,
-		  renderer: null,
-		  sanitize: false,
-		  sanitizer: null,
-		  silent: false,
-		  smartLists: false,
-		  smartypants: false,
-		  tokenizer: null,
-		  walkTokens: null,
-		  xhtml: false
-		};
-	  }
+  function changeDefaults$1(newDefaults) {
+    defaults$5.exports.defaults = newDefaults;
+  }
 
-	  function changeDefaults(newDefaults) {
-		module.exports.defaults = newDefaults;
-	  }
+  defaults$5.exports = {
+    defaults: getDefaults$1(),
+    getDefaults: getDefaults$1,
+    changeDefaults: changeDefaults$1
+  };
 
-	  module.exports = {
-		defaults: getDefaults(),
-		getDefaults: getDefaults,
-		changeDefaults: changeDefaults
-	  };
-	});
+  /**
+   * Helpers
+   */
+  var escapeTest = /[&<>"']/;
+  var escapeReplace = /[&<>"']/g;
+  var escapeTestNoEncode = /[<>"']|&(?!#?\w+;)/;
+  var escapeReplaceNoEncode = /[<>"']|&(?!#?\w+;)/g;
+  var escapeReplacements = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  };
 
-	/**
-	 * Helpers
-	 */
-	var escapeTest = /[&<>"']/;
-	var escapeReplace = /[&<>"']/g;
-	var escapeTestNoEncode = /[<>"']|&(?!#?\w+;)/;
-	var escapeReplaceNoEncode = /[<>"']|&(?!#?\w+;)/g;
-	var escapeReplacements = {
-	  '&': '&amp;',
-	  '<': '&lt;',
-	  '>': '&gt;',
-	  '"': '&quot;',
-	  "'": '&#39;'
-	};
+  var getEscapeReplacement = function getEscapeReplacement(ch) {
+    return escapeReplacements[ch];
+  };
 
-	var getEscapeReplacement = function getEscapeReplacement(ch) {
-	  return escapeReplacements[ch];
-	};
+  function escape$2(html, encode) {
+    if (encode) {
+      if (escapeTest.test(html)) {
+        return html.replace(escapeReplace, getEscapeReplacement);
+      }
+    } else {
+      if (escapeTestNoEncode.test(html)) {
+        return html.replace(escapeReplaceNoEncode, getEscapeReplacement);
+      }
+    }
 
-	function escape(html, encode) {
-	  if (encode) {
-		if (escapeTest.test(html)) {
-		  return html.replace(escapeReplace, getEscapeReplacement);
-		}
-	  } else {
-		if (escapeTestNoEncode.test(html)) {
-		  return html.replace(escapeReplaceNoEncode, getEscapeReplacement);
-		}
-	  }
+    return html;
+  }
 
-	  return html;
-	}
+  var unescapeTest = /&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/ig;
 
-	var unescapeTest = /&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/ig;
+  function unescape$1(html) {
+    // explicitly match decimal, hex, and named HTML entities
+    return html.replace(unescapeTest, function (_, n) {
+      n = n.toLowerCase();
+      if (n === 'colon') return ':';
 
-	function unescape(html) {
-	  // explicitly match decimal, hex, and named HTML entities
-	  return html.replace(unescapeTest, function (_, n) {
-		n = n.toLowerCase();
-		if (n === 'colon') return ':';
+      if (n.charAt(0) === '#') {
+        return n.charAt(1) === 'x' ? String.fromCharCode(parseInt(n.substring(2), 16)) : String.fromCharCode(+n.substring(1));
+      }
 
-		if (n.charAt(0) === '#') {
-		  return n.charAt(1) === 'x' ? String.fromCharCode(parseInt(n.substring(2), 16)) : String.fromCharCode(+n.substring(1));
-		}
+      return '';
+    });
+  }
 
-		return '';
-	  });
-	}
+  var caret = /(^|[^\[])\^/g;
 
-	var caret = /(^|[^\[])\^/g;
+  function edit$1(regex, opt) {
+    regex = regex.source || regex;
+    opt = opt || '';
+    var obj = {
+      replace: function replace(name, val) {
+        val = val.source || val;
+        val = val.replace(caret, '$1');
+        regex = regex.replace(name, val);
+        return obj;
+      },
+      getRegex: function getRegex() {
+        return new RegExp(regex, opt);
+      }
+    };
+    return obj;
+  }
 
-	function edit(regex, opt) {
-	  regex = regex.source || regex;
-	  opt = opt || '';
-	  var obj = {
-		replace: function replace(name, val) {
-		  val = val.source || val;
-		  val = val.replace(caret, '$1');
-		  regex = regex.replace(name, val);
-		  return obj;
-		},
-		getRegex: function getRegex() {
-		  return new RegExp(regex, opt);
-		}
-	  };
-	  return obj;
-	}
+  var nonWordAndColonTest = /[^\w:]/g;
+  var originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
 
-	var nonWordAndColonTest = /[^\w:]/g;
-	var originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
+  function cleanUrl$1(sanitize, base, href) {
+    if (sanitize) {
+      var prot;
 
-	function cleanUrl(sanitize, base, href) {
-	  if (sanitize) {
-		var prot;
+      try {
+        prot = decodeURIComponent(unescape$1(href)).replace(nonWordAndColonTest, '').toLowerCase();
+      } catch (e) {
+        return null;
+      }
 
-		try {
-		  prot = decodeURIComponent(unescape(href)).replace(nonWordAndColonTest, '').toLowerCase();
-		} catch (e) {
-		  return null;
-		}
+      if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0 || prot.indexOf('data:') === 0) {
+        return null;
+      }
+    }
 
-		if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0 || prot.indexOf('data:') === 0) {
-		  return null;
-		}
-	  }
+    if (base && !originIndependentUrl.test(href)) {
+      href = resolveUrl(base, href);
+    }
 
-	  if (base && !originIndependentUrl.test(href)) {
-		href = resolveUrl(base, href);
-	  }
+    try {
+      href = encodeURI(href).replace(/%25/g, '%');
+    } catch (e) {
+      return null;
+    }
 
-	  try {
-		href = encodeURI(href).replace(/%25/g, '%');
-	  } catch (e) {
-		return null;
-	  }
+    return href;
+  }
 
-	  return href;
-	}
+  var baseUrls = {};
+  var justDomain = /^[^:]+:\/*[^/]*$/;
+  var protocol = /^([^:]+:)[\s\S]*$/;
+  var domain = /^([^:]+:\/*[^/]*)[\s\S]*$/;
 
-	var baseUrls = {};
-	var justDomain = /^[^:]+:\/*[^/]*$/;
-	var protocol = /^([^:]+:)[\s\S]*$/;
-	var domain = /^([^:]+:\/*[^/]*)[\s\S]*$/;
+  function resolveUrl(base, href) {
+    if (!baseUrls[' ' + base]) {
+      // we can ignore everything in base after the last slash of its path component,
+      // but we might need to add _that_
+      // https://tools.ietf.org/html/rfc3986#section-3
+      if (justDomain.test(base)) {
+        baseUrls[' ' + base] = base + '/';
+      } else {
+        baseUrls[' ' + base] = rtrim$1(base, '/', true);
+      }
+    }
 
-	function resolveUrl(base, href) {
-	  if (!baseUrls[' ' + base]) {
-		// we can ignore everything in base after the last slash of its path component,
-		// but we might need to add _that_
-		// https://tools.ietf.org/html/rfc3986#section-3
-		if (justDomain.test(base)) {
-		  baseUrls[' ' + base] = base + '/';
-		} else {
-		  baseUrls[' ' + base] = rtrim(base, '/', true);
-		}
-	  }
+    base = baseUrls[' ' + base];
+    var relativeBase = base.indexOf(':') === -1;
 
-	  base = baseUrls[' ' + base];
-	  var relativeBase = base.indexOf(':') === -1;
+    if (href.substring(0, 2) === '//') {
+      if (relativeBase) {
+        return href;
+      }
 
-	  if (href.substring(0, 2) === '//') {
-		if (relativeBase) {
-		  return href;
-		}
+      return base.replace(protocol, '$1') + href;
+    } else if (href.charAt(0) === '/') {
+      if (relativeBase) {
+        return href;
+      }
 
-		return base.replace(protocol, '$1') + href;
-	  } else if (href.charAt(0) === '/') {
-		if (relativeBase) {
-		  return href;
-		}
+      return base.replace(domain, '$1') + href;
+    } else {
+      return base + href;
+    }
+  }
 
-		return base.replace(domain, '$1') + href;
-	  } else {
-		return base + href;
-	  }
-	}
+  var noopTest$1 = {
+    exec: function noopTest() {}
+  };
 
-	var noopTest = {
-    exec: function noopTest() { }
-	};
+  function merge$2(obj) {
+    var i = 1,
+        target,
+        key;
 
-	function merge(obj) {
-	  var i = 1,
-      target,
-      key;
+    for (; i < arguments.length; i++) {
+      target = arguments[i];
 
-	  for (; i < arguments.length; i++) {
-		target = arguments[i];
+      for (key in target) {
+        if (Object.prototype.hasOwnProperty.call(target, key)) {
+          obj[key] = target[key];
+        }
+      }
+    }
 
-		for (key in target) {
-		  if (Object.prototype.hasOwnProperty.call(target, key)) {
-			obj[key] = target[key];
-		  }
-		}
-	  }
+    return obj;
+  }
 
-	  return obj;
-	}
+  function splitCells$1(tableRow, count) {
+    // ensure that every cell-delimiting pipe has a space
+    // before it to distinguish it from an escaped pipe
+    var row = tableRow.replace(/\|/g, function (match, offset, str) {
+      var escaped = false,
+          curr = offset;
 
-	function splitCells(tableRow, count) {
-	  // ensure that every cell-delimiting pipe has a space
-	  // before it to distinguish it from an escaped pipe
-	  var row = tableRow.replace(/\|/g, function (match, offset, str) {
-		var escaped = false,
-        curr = offset;
+      while (--curr >= 0 && str[curr] === '\\') {
+        escaped = !escaped;
+      }
 
-		while (--curr >= 0 && str[curr] === '\\') {
-		  escaped = !escaped;
-		}
+      if (escaped) {
+        // odd number of slashes means | is escaped
+        // so we leave it alone
+        return '|';
+      } else {
+        // add space before unescaped |
+        return ' |';
+      }
+    }),
+        cells = row.split(/ \|/);
+    var i = 0; // First/last cell in a row cannot be empty if it has no leading/trailing pipe
 
-		if (escaped) {
-		  // odd number of slashes means | is escaped
-		  // so we leave it alone
-		  return '|';
-		} else {
-		  // add space before unescaped |
-		  return ' |';
-		}
-	  }),
-      cells = row.split(/ \|/);
-	  var i = 0;
+    if (!cells[0].trim()) {
+      cells.shift();
+    }
 
-	  if (cells.length > count) {
-		cells.splice(count);
-	  } else {
-		while (cells.length < count) {
-		  cells.push('');
-		}
-	  }
+    if (!cells[cells.length - 1].trim()) {
+      cells.pop();
+    }
 
-	  for (; i < cells.length; i++) {
-		// leading or trailing whitespace is ignored per the gfm spec
-		cells[i] = cells[i].trim().replace(/\\\|/g, '|');
-	  }
+    if (cells.length > count) {
+      cells.splice(count);
+    } else {
+      while (cells.length < count) {
+        cells.push('');
+      }
+    }
 
-	  return cells;
-	} // Remove trailing 'c's. Equivalent to str.replace(/c*$/, '').
-	// /c*$/ is vulnerable to REDOS.
-	// invert: Remove suffix of non-c chars instead. Default falsey.
+    for (; i < cells.length; i++) {
+      // leading or trailing whitespace is ignored per the gfm spec
+      cells[i] = cells[i].trim().replace(/\\\|/g, '|');
+    }
+
+    return cells;
+  } // Remove trailing 'c's. Equivalent to str.replace(/c*$/, '').
+  // /c*$/ is vulnerable to REDOS.
+  // invert: Remove suffix of non-c chars instead. Default falsey.
 
 
 	function rtrim(str, c, invert) {
@@ -2772,18 +2781,31 @@
 	 */
 
 
-	marked.Parser = Parser_1;
-	marked.parser = Parser_1.parse;
-	marked.Renderer = Renderer_1;
-	marked.TextRenderer = TextRenderer_1;
-	marked.Lexer = Lexer_1;
-	marked.lexer = Lexer_1.lex;
-	marked.Tokenizer = Tokenizer_1;
-	marked.Slugger = Slugger_1;
-	marked.parse = marked;
-	var marked_1 = marked;
+  marked.Parser = Parser;
+  marked.parser = Parser.parse;
+  marked.Renderer = Renderer;
+  marked.TextRenderer = TextRenderer;
+  marked.Lexer = Lexer;
+  marked.lexer = Lexer.lex;
+  marked.Tokenizer = Tokenizer;
+  marked.Slugger = Slugger;
+  marked.parse = marked;
+  var marked_1 = marked;
 
-	return marked_1;
+  return marked_1;
 
-  })));
-  
+})));
+
+// ESM-uncomment-begin
+// })();
+// export var marked = __marked_exports;
+// export var Parser = __marked_exports.Parser;
+// export var parser = __marked_exports.parser;
+// export var Renderer = __marked_exports.Renderer;
+// export var TextRenderer = __marked_exports.TextRenderer;
+// export var Lexer = __marked_exports.Lexer;
+// export var lexer = __marked_exports.lexer;
+// export var Tokenizer = __marked_exports.Tokenizer;
+// export var Slugger = __marked_exports.Slugger;
+// export var parse = __marked_exports.parse;
+// ESM-uncomment-end

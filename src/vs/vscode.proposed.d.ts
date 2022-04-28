@@ -1845,7 +1845,8 @@ declare module 'vscode' {
 		 * An optional event to signal that inlay hints have changed.
 		 * @see {@link EventEmitter}
 		 */
-		onDidChangeInlayHints?: Event<undefined | Uri>;
+		//todo@API needs proper doc (like others)
+		onDidChangeInlayHints?: Event<void>;
 
 		/**
 		 *

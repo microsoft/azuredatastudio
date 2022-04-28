@@ -3381,8 +3381,6 @@ declare namespace monaco.editor {
 		ignoreEmptyLines?: boolean;
 	}
 
-	export type EditorCommentsOptions = Readonly<Required<IEditorCommentsOptions>>;
-
 	/**
 	 * The kind of animation in which the editor's cursor should be rendered.
 	 */
@@ -3466,8 +3464,6 @@ declare namespace monaco.editor {
 		loop?: boolean;
 	}
 
-	export type EditorFindOptions = Readonly<Required<IEditorFindOptions>>;
-
 	export type GoToLocationValues = 'peek' | 'gotoAndPeek' | 'goto';
 
 	/**
@@ -3486,8 +3482,6 @@ declare namespace monaco.editor {
 		alternativeImplementationCommand?: string;
 		alternativeReferenceCommand?: string;
 	}
-
-	export type GoToLocationOptions = Readonly<Required<IGotoLocationOptions>>;
 
 	/**
 	 * Configuration options for editor hover
@@ -3509,8 +3503,6 @@ declare namespace monaco.editor {
 		 */
 		sticky?: boolean;
 	}
-
-	export type EditorHoverOptions = Readonly<Required<IEditorHoverOptions>>;
 
 	/**
 	 * A description for the overview ruler position.
@@ -3637,8 +3629,6 @@ declare namespace monaco.editor {
 		enabled?: boolean;
 	}
 
-	export type EditorLightbulbOptions = Readonly<Required<IEditorLightbulbOptions>>;
-
 	/**
 	 * Configuration options for editor inlayHints
 	 */
@@ -3659,8 +3649,6 @@ declare namespace monaco.editor {
 		 */
 		fontFamily?: string;
 	}
-
-	export type EditorInlayHintsOptions = Readonly<Required<IEditorInlayHintsOptions>>;
 
 	/**
 	 * Configuration options for editor minimap
@@ -3702,8 +3690,6 @@ declare namespace monaco.editor {
 		scale?: number;
 	}
 
-	export type EditorMinimapOptions = Readonly<Required<IEditorMinimapOptions>>;
-
 	/**
 	 * Configuration options for editor padding
 	 */
@@ -3716,11 +3702,6 @@ declare namespace monaco.editor {
 		 * Spacing between bottom edge of editor and last line.
 		 */
 		bottom?: number;
-	}
-
-	export interface InternalEditorPaddingOptions {
-		readonly top: number;
-		readonly bottom: number;
 	}
 
 	/**
@@ -3739,8 +3720,6 @@ declare namespace monaco.editor {
 		cycle?: boolean;
 	}
 
-	export type InternalParameterHintOptions = Readonly<Required<IEditorParameterHintOptions>>;
-
 	/**
 	 * Configuration options for quick suggestions
 	 */
@@ -3749,8 +3728,6 @@ declare namespace monaco.editor {
 		comments?: boolean;
 		strings?: boolean;
 	}
-
-	export type ValidQuickSuggestionsOptions = boolean | Readonly<Required<IQuickSuggestionsOptions>>;
 
 	export type LineNumbersType = 'on' | 'off' | 'relative' | 'interval' | ((lineNumber: number) => string);
 
@@ -3881,16 +3858,12 @@ declare namespace monaco.editor {
 		mode?: 'prefix' | 'subword' | 'subwordSmart';
 	}
 
-	export type InternalInlineSuggestOptions = Readonly<Required<IInlineSuggestOptions>>;
-
 	export interface IBracketPairColorizationOptions {
 		/**
 		 * Enable or disable bracket pair colorization.
 		*/
 		enabled?: boolean;
 	}
-
-	export type InternalBracketPairColorizationOptions = Readonly<Required<IBracketPairColorizationOptions>>;
 
 	export interface IGuidesOptions {
 		/**
@@ -3908,8 +3881,6 @@ declare namespace monaco.editor {
 		 */
 		highlightActiveIndentation?: boolean;
 	}
-
-	export type InternalGuidesOptions = Readonly<Required<IGuidesOptions>>;
 
 	/**
 	 * Configuration options for editor suggest widget
@@ -4069,13 +4040,9 @@ declare namespace monaco.editor {
 		showSnippets?: boolean;
 	}
 
-	export type InternalSuggestOptions = Readonly<Required<ISuggestOptions>>;
-
 	export interface ISmartSelectOptions {
 		selectLeadingAndTrailingWhitespace?: boolean;
 	}
-
-	export type SmartSelectOptions = Readonly<Required<ISmartSelectOptions>>;
 
 	/**
 	 * Describes how to indent wrapped lines.
@@ -4239,6 +4206,7 @@ declare namespace monaco.editor {
 		layoutInfo = 129,
 		wrappingInfo = 130
 	}
+
 	export const EditorOptions: {
 		acceptSuggestionOnCommitCharacter: IEditorOption<EditorOption.acceptSuggestionOnCommitCharacter, boolean>;
 		acceptSuggestionOnEnter: IEditorOption<EditorOption.acceptSuggestionOnEnter, 'on' | 'off' | 'smart'>;
@@ -4314,11 +4282,11 @@ declare namespace monaco.editor {
 		occurrencesHighlight: IEditorOption<EditorOption.occurrencesHighlight, boolean>;
 		overviewRulerBorder: IEditorOption<EditorOption.overviewRulerBorder, boolean>;
 		overviewRulerLanes: IEditorOption<EditorOption.overviewRulerLanes, number>;
-		padding: IEditorOption<EditorOption.padding, InternalEditorPaddingOptions>;
+		padding: IEditorOption<EditorOption.padding, Readonly<Required<IEditorPaddingOptions>>>;
 		parameterHints: IEditorOption<EditorOption.parameterHints, Readonly<Required<IEditorParameterHintOptions>>>;
 		peekWidgetDefaultFocus: IEditorOption<EditorOption.peekWidgetDefaultFocus, 'tree' | 'editor'>;
 		definitionLinkOpensInPeek: IEditorOption<EditorOption.definitionLinkOpensInPeek, boolean>;
-		quickSuggestions: IEditorOption<EditorOption.quickSuggestions, ValidQuickSuggestionsOptions>;
+		quickSuggestions: IEditorOption<EditorOption.quickSuggestions, any>;
 		quickSuggestionsDelay: IEditorOption<EditorOption.quickSuggestionsDelay, number>;
 		readOnly: IEditorOption<EditorOption.readOnly, boolean>;
 		renameOnType: IEditorOption<EditorOption.renameOnType, boolean>;
@@ -6689,7 +6657,7 @@ declare namespace monaco.languages {
 	}
 
 	export interface InlayHintsProvider {
-		onDidChangeInlayHints?: IEvent<void | Uri>;
+		onDidChangeInlayHints?: IEvent<void>;
 		provideInlayHints(model: editor.ITextModel, range: Range, token: CancellationToken): ProviderResult<InlayHint[]>;
 	}
 

@@ -1157,6 +1157,9 @@ export interface IEditorCommentsOptions {
 	ignoreEmptyLines?: boolean;
 }
 
+/**
+ * @internal
+ */
 export type EditorCommentsOptions = Readonly<Required<IEditorCommentsOptions>>;
 
 class EditorComments extends BaseEditorOption<EditorOption.comments, EditorCommentsOptions> {
@@ -1387,6 +1390,9 @@ export interface IEditorFindOptions {
 	loop?: boolean;
 }
 
+/**
+ * @internal
+ */
 export type EditorFindOptions = Readonly<Required<IEditorFindOptions>>;
 
 class EditorFind extends BaseEditorOption<EditorOption.find, EditorFindOptions> {
@@ -1639,6 +1645,9 @@ export interface IGotoLocationOptions {
 	alternativeReferenceCommand?: string;
 }
 
+/**
+ * @internal
+ */
 export type GoToLocationOptions = Readonly<Required<IGotoLocationOptions>>;
 
 class EditorGoToLocation extends BaseEditorOption<EditorOption.gotoLocation, GoToLocationOptions> {
@@ -1774,6 +1783,9 @@ export interface IEditorHoverOptions {
 	sticky?: boolean;
 }
 
+/**
+ * @internal
+ */
 export type EditorHoverOptions = Readonly<Required<IEditorHoverOptions>>;
 
 class EditorHover extends BaseEditorOption<EditorOption.hover, EditorHoverOptions> {
@@ -2395,6 +2407,9 @@ export interface IEditorLightbulbOptions {
 	enabled?: boolean;
 }
 
+/**
+ * @internal
+ */
 export type EditorLightbulbOptions = Readonly<Required<IEditorLightbulbOptions>>;
 
 class EditorLightbulb extends BaseEditorOption<EditorOption.lightbulb, EditorLightbulbOptions> {
@@ -2451,6 +2466,9 @@ export interface IEditorInlayHintsOptions {
 	fontFamily?: string;
 }
 
+/**
+ * @internal
+ */
 export type EditorInlayHintsOptions = Readonly<Required<IEditorInlayHintsOptions>>;
 
 class EditorInlayHints extends BaseEditorOption<EditorOption.inlayHints, EditorInlayHintsOptions> {
@@ -2559,6 +2577,9 @@ export interface IEditorMinimapOptions {
 	scale?: number;
 }
 
+/**
+ * @internal
+ */
 export type EditorMinimapOptions = Readonly<Required<IEditorMinimapOptions>>;
 
 class EditorMinimap extends BaseEditorOption<EditorOption.minimap, EditorMinimapOptions> {
@@ -2672,10 +2693,10 @@ export interface IEditorPaddingOptions {
 	bottom?: number;
 }
 
-export interface InternalEditorPaddingOptions {
-	readonly top: number;
-	readonly bottom: number;
-}
+/**
+ * @internal
+ */
+export type InternalEditorPaddingOptions = Readonly<Required<IEditorPaddingOptions>>;
 
 class EditorPadding extends BaseEditorOption<EditorOption.padding, InternalEditorPaddingOptions> {
 
@@ -2733,6 +2754,9 @@ export interface IEditorParameterHintOptions {
 	cycle?: boolean;
 }
 
+/**
+ * @internal
+ */
 export type InternalParameterHintOptions = Readonly<Required<IEditorParameterHintOptions>>;
 
 class EditorParameterHints extends BaseEditorOption<EditorOption.parameterHints, InternalParameterHintOptions> {
@@ -2799,6 +2823,9 @@ export interface IQuickSuggestionsOptions {
 	strings?: boolean;
 }
 
+/**
+ * @internal
+ */
 export type ValidQuickSuggestionsOptions = boolean | Readonly<Required<IQuickSuggestionsOptions>>;
 
 class EditorQuickSuggestions extends BaseEditorOption<EditorOption.quickSuggestions, ValidQuickSuggestionsOptions> {
@@ -3231,6 +3258,9 @@ export interface IInlineSuggestOptions {
 	mode?: 'prefix' | 'subword' | 'subwordSmart';
 }
 
+/**
+ * @internal
+ */
 export type InternalInlineSuggestOptions = Readonly<Required<IInlineSuggestOptions>>;
 
 /**
@@ -3278,6 +3308,9 @@ export interface IBracketPairColorizationOptions {
 	enabled?: boolean;
 }
 
+/**
+ * @internal
+ */
 export type InternalBracketPairColorizationOptions = Readonly<Required<IBracketPairColorizationOptions>>;
 
 /**
@@ -3335,6 +3368,9 @@ export interface IGuidesOptions {
 	highlightActiveIndentation?: boolean;
 }
 
+/**
+ * @internal
+ */
 export type InternalGuidesOptions = Readonly<Required<IGuidesOptions>>;
 
 /**
@@ -3545,6 +3581,9 @@ export interface ISuggestOptions {
 	showSnippets?: boolean;
 }
 
+/**
+ * @internal
+ */
 export type InternalSuggestOptions = Readonly<Required<ISuggestOptions>>;
 
 class EditorSuggest extends BaseEditorOption<EditorOption.suggest, InternalSuggestOptions> {
@@ -3856,6 +3895,9 @@ export interface ISmartSelectOptions {
 	selectLeadingAndTrailingWhitespace?: boolean
 }
 
+/**
+ * @internal
+ */
 export type SmartSelectOptions = Readonly<Required<ISmartSelectOptions>>;
 
 class SmartSelect extends BaseEditorOption<EditorOption.smartSelect, SmartSelectOptions> {
@@ -4147,21 +4189,6 @@ export const enum EditorOption {
 	wrappingInfo,
 }
 
-/**
- * WORKAROUND: TS emits "any" for complex editor options values (anything except string, bool, enum, etc. ends up being "any")
- * @monacodtsreplace
- * /accessibilitySupport, any/accessibilitySupport, AccessibilitySupport/
- * /comments, any/comments, EditorCommentsOptions/
- * /find, any/find, EditorFindOptions/
- * /fontInfo, any/fontInfo, FontInfo/
- * /gotoLocation, any/gotoLocation, GoToLocationOptions/
- * /hover, any/hover, EditorHoverOptions/
- * /lightbulb, any/lightbulb, EditorLightbulbOptions/
- * /minimap, any/minimap, EditorMinimapOptions/
- * /parameterHints, any/parameterHints, InternalParameterHintOptions/
- * /quickSuggestions, any/quickSuggestions, ValidQuickSuggestionsOptions/
- * /suggest, any/suggest, InternalSuggestOptions/
- */
 export const EditorOptions = {
 	acceptSuggestionOnCommitCharacter: register(new EditorBooleanOption(
 		EditorOption.acceptSuggestionOnCommitCharacter, 'acceptSuggestionOnCommitCharacter', true,
