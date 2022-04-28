@@ -8,6 +8,9 @@ import { QuickAccess } from '../quickaccess';
 import { QuickInput } from '../quickinput';
 import { Editors } from '../editors';
 import { IElement } from '..';
+import * as constants from '../sql/constants';
+
+const activeCellSelector = '.notebook-cell.active';
 
 export class Notebook {
 
@@ -15,10 +18,6 @@ export class Notebook {
 	public readonly textCellToolbar: TextCellToolbar;
 	public readonly notebookFind: NotebookFind;
 	public readonly view: NotebookTreeView;
-
-	public readonly ctrlOrCmd = process.platform === 'darwin' ? 'cmd' : 'ctrl';
-	public readonly winOrCtrl = process.platform === 'darwin' ? 'ctrl' : 'win';
-	private static readonly activeCellSelector = '.notebook-cell.active';
 
 	constructor(private code: Code, private quickAccess: QuickAccess, private quickInput: QuickInput, private editors: Editors) {
 		this.notebookToolbar = new NotebookToolbar(code);
@@ -36,7 +35,7 @@ export class Notebook {
 	}
 
 	async newUntitledNotebook(): Promise<void> {
-		await this.code.dispatchKeybinding(this.winOrCtrl + '+Alt+n');
+		await this.code.dispatchKeybinding(constants.winOrCtrl + '+Alt+n');
 		await this.editors.waitForActiveTab(`Notebook-0`);
 		await this.code.waitForElement('.notebookEditor');
 	}
@@ -50,11 +49,11 @@ export class Notebook {
 			await this.code.dispatchKeybinding('ctrl+shift+c');
 		}
 
-		await this.code.waitForElement(Notebook.activeCellSelector);
+		await this.code.waitForElement(activeCellSelector);
 	}
 
 	async waitForActiveCellGone(): Promise<void> {
-		await this.code.waitForElementGone(Notebook.activeCellSelector);
+		await this.code.waitForElementGone(activeCellSelector);
 	}
 
 	async runActiveCell(): Promise<void> {
@@ -73,15 +72,12 @@ export class Notebook {
 	// Cell Actions
 
 	async getActiveCell(id?: string): Promise<IElement> {
-		let activeCellSelector = Notebook.activeCellSelector;
-		if (id) {
-			activeCellSelector = `${Notebook.activeCellSelector}[id="${id}"]`;
-		}
-		return this.code.waitForElement(activeCellSelector);
+		const activeCell = id ? `${activeCellSelector}[id="${id}"]` : activeCellSelector;
+		return this.code.waitForElement(activeCell);
 	}
 
 	async waitForTypeInEditor(text: string, cellId?: string) {
-		const editor = cellId ? `${Notebook.activeCellSelector}[id="${cellId}"] .monaco-editor` : `${Notebook.activeCellSelector} .monaco-editor`;
+		const editor = cellId ? `${activeCellSelector}[id="${cellId}"] .monaco-editor` : `${activeCellSelector} .monaco-editor`;
 		await this.code.waitAndClick(editor);
 
 		const textarea = `${editor} textarea`;
@@ -92,7 +88,7 @@ export class Notebook {
 	}
 
 	async waitForActiveCellEditorContents(accept: (contents: string) => boolean): Promise<any> {
-		const selector = `${Notebook.activeCellSelector} .monaco-editor .view-lines`;
+		const selector = `${activeCellSelector} .monaco-editor .view-lines`;
 		return this.code.waitForTextContent(selector, undefined, c => accept(c.replace(/\u00a0/g, ' ')));
 	}
 
@@ -102,24 +98,24 @@ export class Notebook {
 	}
 
 	public async selectAllTextInRichTextEditor(): Promise<void> {
-		const editor = `${Notebook.activeCellSelector} .notebook-preview[contenteditable="true"]`;
+		const editor = `${activeCellSelector} .notebook-preview[contenteditable="true"]`;
 		await this.selectAllText(editor);
 	}
 
 	public async selectAllTextInEditor(): Promise<void> {
-		const editor = `${Notebook.activeCellSelector} .monaco-editor`;
+		const editor = `${activeCellSelector} .monaco-editor`;
 		await this.selectAllText(editor);
 	}
 
 	private async selectAllText(selector: string): Promise<void> {
 		await this.code.waitAndClick(selector);
-		await this.code.dispatchKeybinding(this.ctrlOrCmd + '+a');
+		await this.code.dispatchKeybinding(constants.ctrlOrCmd + '+a');
 	}
 
 	private static readonly placeholderSelector = 'div.placeholder-cell-component';
 	async addCellFromPlaceholder(cellType: 'Markdown' | 'Code'): Promise<void> {
 		await this.code.waitAndClick(`${Notebook.placeholderSelector} p a[id="add${cellType}"]`);
-		await this.code.waitForElement(Notebook.activeCellSelector);
+		await this.code.waitForElement(activeCellSelector);
 	}
 
 	async waitForPlaceholderGone(): Promise<void> {
@@ -192,12 +188,12 @@ export class Notebook {
 	// Cell Output Actions
 
 	async waitForJupyterErrorOutput(): Promise<void> {
-		const jupyterErrorOutput = `${Notebook.activeCellSelector} .notebook-output mime-output[data-mime-type="application/vnd.jupyter.stderr"]`;
+		const jupyterErrorOutput = `${activeCellSelector} .notebook-output mime-output[data-mime-type="application/vnd.jupyter.stderr"]`;
 		await this.code.waitForElement(jupyterErrorOutput);
 	}
 
 	async waitForActiveCellResults(): Promise<void> {
-		const outputComponent = `${Notebook.activeCellSelector} .notebook-output`;
+		const outputComponent = `${activeCellSelector} .notebook-output`;
 		await this.code.waitForElement(outputComponent);
 	}
 
@@ -212,7 +208,7 @@ export class Notebook {
 	}
 
 	async waitForActiveCellResultsGone(): Promise<void> {
-		const outputComponent = `${Notebook.activeCellSelector} .notebook-output`;
+		const outputComponent = `${activeCellSelector} .notebook-output`;
 		await this.code.waitForElementGone(outputComponent);
 	}
 
@@ -460,12 +456,11 @@ export class NotebookTreeView {
 }
 
 export class NotebookFind {
-	public readonly ctrlOrCmd = process.platform === 'darwin' ? 'cmd' : 'ctrl';
 
 	constructor(private code: Code) { }
 
 	async openFindWidget(): Promise<void> {
-		const findWidgetCmd = `${this.ctrlOrCmd}+f`;
+		const findWidgetCmd = `${constants.ctrlOrCmd}+f`;
 		await this.code.dispatchKeybinding(findWidgetCmd);
 		await this.code.waitForElement('.editor-widget.find-widget.visible');
 	}
