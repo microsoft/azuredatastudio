@@ -1687,6 +1687,10 @@ declare namespace monaco.editor {
 		 */
 		readonly id: string;
 		/**
+		 * The Uri of the notebook that contains this text model as part of a notebook cell.
+		 */
+		notebookUri?: Uri;
+		/**
 		 * Get the resolved options for this model.
 		 */
 		getOptions(): TextModelResolvedOptions;
