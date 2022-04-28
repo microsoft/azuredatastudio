@@ -189,8 +189,6 @@ export class SelectMigrationServiceDialog {
 				if (selectedTenant) {
 					this._serviceContext.tenant = utils.deepClone(selectedTenant);
 					this._serviceContext.azureAccount!.properties.tenants = [selectedTenant];
-				} else {
-					this._serviceContext.tenant = undefined!;
 				}
 				await this._populateSubscriptionDropdown();
 			}));
@@ -346,7 +344,6 @@ export class SelectMigrationServiceDialog {
 					this._azureAccountsDropdown,
 					this._serviceContext.azureAccount?.displayInfo?.userId,
 					false);
-				this._azureAccountsDropdown.loading = false;
 			}
 		} catch (error) {
 			logError(TelemetryViews.SelectMigrationServiceDialog, '_populateAzureAccountsDropdown', error);
@@ -372,7 +369,6 @@ export class SelectMigrationServiceDialog {
 					this._accountTenantDropdown,
 					this._serviceContext.tenant?.id,
 					false);
-				this._azureSubscriptionDropdown.loading = false;
 			}
 		} catch (error) {
 			logError(TelemetryViews.SelectMigrationServiceDialog, '_populateTentantsDropdown', error);
@@ -395,7 +391,6 @@ export class SelectMigrationServiceDialog {
 					this._azureSubscriptionDropdown,
 					this._serviceContext.subscription?.id,
 					false);
-				this._azureSubscriptionDropdown.loading = false;
 			}
 		} catch (error) {
 			logError(TelemetryViews.SelectMigrationServiceDialog, '_populateSubscriptionDropdown', error);
@@ -418,7 +413,6 @@ export class SelectMigrationServiceDialog {
 					this._azureLocationDropdown,
 					this._serviceContext.location?.displayName,
 					true);
-				this._azureLocationDropdown.loading = false;
 			}
 		} catch (error) {
 			logError(TelemetryViews.SelectMigrationServiceDialog, '_populateLocationDropdown', error);
@@ -440,7 +434,6 @@ export class SelectMigrationServiceDialog {
 					this._azureResourceGroupDropdown,
 					this._serviceContext.resourceGroup?.id,
 					false);
-				this._azureResourceGroupDropdown.loading = false;
 			}
 		} catch (error) {
 			logError(TelemetryViews.SelectMigrationServiceDialog, '_populateResourceGroupDropdown', error);

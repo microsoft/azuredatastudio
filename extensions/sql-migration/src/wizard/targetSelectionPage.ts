@@ -258,8 +258,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			 * All azure requests will only run on this tenant from now on
 			 */
 			const selectedTenant = this.migrationStateModel._accountTenants.find(tenant => tenant.displayName === value);
-			this.migrationStateModel._azureTenant = utils.deepClone(selectedTenant)!;
-			this.migrationStateModel._azureAccount.properties.tenants = [this.migrationStateModel._azureTenant];
+			if (selectedTenant) {
+				this.migrationStateModel._azureTenant = utils.deepClone(selectedTenant)!;
+				this.migrationStateModel._azureAccount.properties.tenants = [this.migrationStateModel._azureTenant];
+			}
 			await this.populateSubscriptionDropdown();
 		}));
 
@@ -395,35 +397,39 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				switch (this.migrationStateModel._targetType) {
 					case MigrationTargetType.SQLVM:
 						const selectedVm = this.migrationStateModel._targetSqlVirtualMachines.find(vm => vm.name === value || constants.UNAVAILABLE_TARGET_PREFIX(vm.name) === value);
-						this.migrationStateModel._targetServerInstance = utils.deepClone(selectedVm)! as SqlVMServer;
+						if (selectedVm) {
+							this.migrationStateModel._targetServerInstance = utils.deepClone(selectedVm)! as SqlVMServer;
 
-						if (this.migrationStateModel._targetServerInstance.properties.provisioningState !== ProvisioningState.Succeeded) {
-							this.wizard.message = {
-								text: constants.VM_NOT_READY_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.provisioningState),
-								level: azdata.window.MessageLevel.Error
-							};
-						} else {
-							this.wizard.message = {
-								text: '',
-								level: azdata.window.MessageLevel.Error
-							};
+							if (this.migrationStateModel._targetServerInstance.properties.provisioningState !== ProvisioningState.Succeeded) {
+								this.wizard.message = {
+									text: constants.VM_NOT_READY_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.provisioningState),
+									level: azdata.window.MessageLevel.Error
+								};
+							} else {
+								this.wizard.message = {
+									text: '',
+									level: azdata.window.MessageLevel.Error
+								};
+							}
 						}
 						break;
 
 					case MigrationTargetType.SQLMI:
 						const selectedMi = this.migrationStateModel._targetManagedInstances.find(mi => mi.name === value || constants.UNAVAILABLE_TARGET_PREFIX(mi.name) === value);
-						this.migrationStateModel._targetServerInstance = utils.deepClone(selectedMi)! as azureResource.AzureSqlManagedInstance;
+						if (selectedMi) {
+							this.migrationStateModel._targetServerInstance = utils.deepClone(selectedMi)! as azureResource.AzureSqlManagedInstance;
 
-						if (this.migrationStateModel._targetServerInstance.properties.state !== 'Ready') {
-							this.wizard.message = {
-								text: constants.MI_NOT_READY_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.state),
-								level: azdata.window.MessageLevel.Error
-							};
-						} else {
-							this.wizard.message = {
-								text: '',
-								level: azdata.window.MessageLevel.Error
-							};
+							if (this.migrationStateModel._targetServerInstance.properties.state !== 'Ready') {
+								this.wizard.message = {
+									text: constants.MI_NOT_READY_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.state),
+									level: azdata.window.MessageLevel.Error
+								};
+							} else {
+								this.wizard.message = {
+									text: '',
+									level: azdata.window.MessageLevel.Error
+								};
+							}
 						}
 						break;
 				}
@@ -460,18 +466,15 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private async populateTenantsDropdown(): Promise<void> {
 		try {
 			this.updateDropdownLoadingStatus(TargetDropDowns.Tenant, true);
-			if (this.migrationStateModel._azureAccount && this.migrationStateModel._azureAccount.isStale === false && this.migrationStateModel._azureAccount.properties.tenants.length > 1) {
+			if (this.migrationStateModel._azureAccount && this.migrationStateModel._azureAccount.isStale === false && this.migrationStateModel._azureAccount.properties.tenants.length > 0) {
 				this.migrationStateModel._accountTenants = utils.getAzureTenants(this.migrationStateModel._azureAccount);
 				this._accountTenantDropdown.values = await utils.getAzureTenantsDropdownValues(this.migrationStateModel._accountTenants);
 				utils.selectDefaultDropdownValue(this._accountTenantDropdown, this.migrationStateModel._azureTenant?.id, true);
-				await this._accountTenantFlexContainer.updateCssStyles({
-					'display': 'inline'
-				});
-			} else {
-				await this._accountTenantFlexContainer.updateCssStyles({
-					'display': 'none'
-				});
 			}
+			await this._accountTenantFlexContainer.updateCssStyles(this.migrationStateModel._azureAccount.properties.tenants.length > 1
+				? { 'display': 'inline' }
+				: { 'display': 'none' }
+			);
 			await this._azureAccountsDropdown.validate();
 		} finally {
 			this.updateDropdownLoadingStatus(TargetDropDowns.Tenant, false);
