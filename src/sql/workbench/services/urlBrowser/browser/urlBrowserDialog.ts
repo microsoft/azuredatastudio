@@ -415,24 +415,15 @@ export class UrlBrowserDialog extends Modal {
 		this.hide(hideReason);
 	}
 
-	private generateSharedAccessSignature() {
+	private async generateSharedAccessSignature() {
 		this.spinner = true;
 		const blobContainerUri = `https://${this._storageAccountSelectorBox.value}.blob${this._selectedAccount.properties.providerSettings.settings.azureStorageResource.endpointSuffix}/${this._blobContainerSelectorBox.value}`;
-		this._azureAccountService.getStorageAccountAccessKey(this._selectedAccount, this._selectedSubscription, this._selectedStorageAccount)
-			.then(getStorageAccountAccessKeyResult => {
-				const key1 = getStorageAccountAccessKeyResult.keyName1;
-				this._blobService.createSas(this._ownerUri, blobContainerUri, key1, this._selectedStorageAccount.name, this.nextYear())
-					.then(
-						result => {
-							const sas = result.sharedAccessSignature;
-							this._sasInputBox.value = sas;
-							this.spinner = false;
-						});
-			})
-			.catch(error => {
-				this.spinner = false;
-			});
-
+		const getStorageAccountAccessKeyResult = await this._azureAccountService.getStorageAccountAccessKey(this._selectedAccount, this._selectedSubscription, this._selectedStorageAccount);
+		const key1 = getStorageAccountAccessKeyResult.keyName1;
+		const createSasResult = await this._blobService.createSas(this._ownerUri, blobContainerUri, key1, this._selectedStorageAccount.name, this.nextYear());
+		const sas = createSasResult.sharedAccessSignature;
+		this._sasInputBox.value = sas;
+		this.spinner = false;
 	}
 
 	private nextYear(): string {
