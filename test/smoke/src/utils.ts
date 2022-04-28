@@ -21,23 +21,27 @@ export function itRepeat(n: number, description: string, callback: (this: Contex
 
 export function beforeSuite(opts: minimist.ParsedArgs, optionsTransform?: (opts: ApplicationOptions) => Promise<ApplicationOptions>) {
 	before(async function () {
-		let options: ApplicationOptions = { ...this.defaultOptions };
+		try {
+			let options: ApplicationOptions = { ...this.defaultOptions };
 
-		if (optionsTransform) {
-			options = await optionsTransform(options);
-		}
+			if (optionsTransform) {
+				options = await optionsTransform(options);
+			}
 
-		// https://github.com/microsoft/vscode/issues/34988
-		const userDataPathSuffix = [...Array(8)].map(() => Math.random().toString(36)[3]).join('');
-		const userDataDir = options.userDataDir.concat(`-${userDataPathSuffix}`);
+			// https://github.com/microsoft/vscode/issues/34988
+			const userDataPathSuffix = [...Array(8)].map(() => Math.random().toString(36)[3]).join('');
+			const userDataDir = options.userDataDir.concat(`-${userDataPathSuffix}`);
 
-		const app = new Application({ ...options, userDataDir });
-		await app.start();
-		this.app = app;
+			const app = new Application({ ...options, userDataDir });
+			await app.start();
+			this.app = app;
 
-		if (opts.log) {
-			const title = this.currentTest!.fullTitle();
-			app.logger.log('*** Test start:', title);
+			if (opts.log) {
+				const title = this.currentTest!.fullTitle();
+				app.logger.log('*** Test start:', title);
+			}
+		} catch (e) {
+			console.trace(e);
 		}
 	});
 }

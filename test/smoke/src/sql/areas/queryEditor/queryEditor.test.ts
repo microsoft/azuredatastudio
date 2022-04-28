@@ -12,6 +12,7 @@ export function setup(opts: minimist.ParsedArgs) {
 		setupCommonTests(opts);
 
 		it('can new file, connect and execute', async function () {
+
 			const app = this.app as Application;
 			await app.workbench.queryEditors.newUntitledQuery();
 			const untitled = 'SQLQuery_1';
@@ -25,6 +26,8 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.queryEditor.waitForResults();
 
 			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
+
+
 		});
 	});
 }

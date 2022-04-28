@@ -315,7 +315,6 @@ function createOptions(): ApplicationOptions {
 	if (opts.databaseConnections) {
 		const rawConnectionConfig = fs.readFileSync(opts.databaseConnections);
 		connections = JSON.parse(rawConnectionConfig.toString()).connections;
-		console.log(connections);
 	}
 
 	return {
