@@ -33,6 +33,8 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
 import { diffSets, diffMaps } from 'vs/base/common/collections';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { Schemas } from 'vs/base/common/network';
+import { CELL_URI_PATH_PREFIX } from 'sql/workbench/common/constants';
 
 
 class TextEditorSnapshot {
@@ -391,8 +393,11 @@ export class MainThreadDocumentsAndEditors {
 
 	private _toModelAddData(model: ITextModel): IModelAddedData {
 		// {{SQL CARBON EDIT}}
-		// Check if this TextModel is part of a notebook
-		let notebookUri = this._notebookService.getNotebookURIForCell(model.uri);
+		// Check if this TextModel is part of a notebook cell
+		let notebookUri: URI;
+		if (model.uri.scheme === Schemas.untitled && model.uri.path.startsWith(CELL_URI_PATH_PREFIX)) {
+			notebookUri = this._notebookService.getNotebookURIForCell(model.uri);
+		}
 		return {
 			uri: model.uri,
 			versionId: model.getVersionId(),
