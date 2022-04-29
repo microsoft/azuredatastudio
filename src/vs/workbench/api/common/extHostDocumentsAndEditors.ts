@@ -100,6 +100,7 @@ export class ExtHostDocumentsAndEditors implements ExtHostDocumentsAndEditorsSha
 					// {{SQL CARBON EDIT}}
 					// Add URI of the notebook that is using this document for a cell's editor.
 					if (!data.notebook && data.notebookUri) {
+						// We only use this notebook field for .NET Interactive's intellisense, which only uses the notebook's URI
 						data.notebook = <vscode.NotebookDocument>{
 							uri: URI.revive(data.notebookUri)
 						};

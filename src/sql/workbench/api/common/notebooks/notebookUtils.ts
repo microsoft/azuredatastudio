@@ -17,6 +17,7 @@ const DotnetInteractiveLanguagePrefix = 'dotnet-interactive.';
 export const DotnetInteractiveDisplayName = '.NET Interactive';
 
 export function convertToVSCodeNotebookCell(cellKind: azdata.nb.CellType, cellIndex: number, cellUri: URI, docUri: URI, cellLanguage: string, cellSource?: string | string[]): vscode.NotebookCell {
+	// We only use this notebook field for .NET Interactive's intellisense, which only uses the notebook's URI
 	let notebook = <vscode.NotebookDocument>{
 		uri: docUri
 	};
