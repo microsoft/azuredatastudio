@@ -199,8 +199,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 			if (remainingTime < maxTolerance) {
 				const result = await this.refreshToken(tenant, resource, cachedTokens.refreshToken);
-				accessToken = result?.accessToken;
-				expiresOn = Number(result?.expiresOn);
+				if (result) {
+					accessToken = result.accessToken;
+					expiresOn = Number(result.expiresOn);
+				}
 			}
 			// Let's just return here.
 			if (accessToken) {
@@ -242,6 +244,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @param tenant
 	 * @param resource
 	 * @param refreshToken
+	 * @returns The oauth token response or undefined. Undefined is returned when the user wants to ignore a tenant or chooses not to start the
+	 * re-authentication process for their tenant.
 	 */
 	public async refreshToken(tenant: Tenant, resource: Resource, refreshToken: RefreshToken | undefined): Promise<OAuthTokenResponse> | undefined {
 		Logger.pii('Refreshing token', [{ name: 'token', objOrArray: refreshToken }], []);
