@@ -307,6 +307,8 @@ export class ProjectsController {
 					const publishResult = await this.publishOrScriptProject(project, deployProfile.deploySettings, true);
 					if (publishResult && publishResult.success) {
 						if (deployProfile.sqlDbSetting) {
+
+							// Connecting to the deployed db to add the profile to connection viewlet
 							await this.deployService.getConnection(deployProfile.sqlDbSetting, true, deployProfile.sqlDbSetting.dbName);
 						}
 						void vscode.window.showInformationMessage(constants.publishProjectSucceed);
