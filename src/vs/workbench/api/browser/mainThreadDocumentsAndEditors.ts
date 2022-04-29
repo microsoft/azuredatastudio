@@ -390,6 +390,9 @@ export class MainThreadDocumentsAndEditors {
 	}
 
 	private _toModelAddData(model: ITextModel): IModelAddedData {
+		// {{SQL CARBON EDIT}}
+		// Check if this TextModel is part of a notebook
+		let notebookUri = this._notebookService.getNotebookURIForCell(model.uri);
 		return {
 			uri: model.uri,
 			versionId: model.getVersionId(),
@@ -397,7 +400,7 @@ export class MainThreadDocumentsAndEditors {
 			EOL: model.getEOL(),
 			modeId: model.getLanguageIdentifier().language,
 			isDirty: this._textFileService.isDirty(model.uri),
-			notebookUri: model.notebookUri // {{SQL CARBON EDIT}}
+			notebookUri: notebookUri
 		};
 	}
 

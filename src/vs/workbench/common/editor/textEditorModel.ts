@@ -126,19 +126,17 @@ export class BaseTextEditorModel extends EditorModel implements ITextEditorModel
 	 * Creates the text editor model with the provided value, optional preferred mode
 	 * (can be comma separated for multiple values) and optional resource URL.
 	 */
-	// {{SQL CARBON EDIT}} Add notebookUri
-	protected createTextEditorModel(value: ITextBufferFactory, resource: URI | undefined, preferredMode?: string, notebookUri?: URI): ITextModel {
+	protected createTextEditorModel(value: ITextBufferFactory, resource: URI | undefined, preferredMode?: string): ITextModel {
 		const firstLineText = this.getFirstLineText(value);
 		const languageSelection = this.getOrCreateMode(resource, this.modeService, preferredMode, firstLineText);
 
-		return this.doCreateTextEditorModel(value, languageSelection, resource, notebookUri);
+		return this.doCreateTextEditorModel(value, languageSelection, resource);
 	}
 
-	// {{SQL CARBON EDIT}} Add notebookUri
-	private doCreateTextEditorModel(value: ITextBufferFactory, languageSelection: ILanguageSelection, resource: URI | undefined, notebookUri?: URI): ITextModel {
+	private doCreateTextEditorModel(value: ITextBufferFactory, languageSelection: ILanguageSelection, resource: URI | undefined): ITextModel {
 		let model = resource && this.modelService.getModel(resource);
 		if (!model) {
-			model = this.modelService.createModel(value, languageSelection, resource, undefined, notebookUri);
+			model = this.modelService.createModel(value, languageSelection, resource);
 			this.createdEditorModel = true;
 
 			// Make sure we clean up when this model gets disposed
