@@ -54,7 +54,7 @@ export class PublishDatabaseDialog {
 	private connectionId: string | undefined;
 	private connectionIsDataSource: boolean | undefined;
 	private sqlCmdVars: Record<string, string> | undefined;
-	private deploymentOptions!: DeploymentOptions;
+	private deploymentOptions: DeploymentOptions | undefined;
 	private profileUsed: boolean = false;
 	private serverName: string | undefined;
 	protected optionsButton!: azdataType.ButtonComponent;
@@ -901,11 +901,11 @@ export class PublishDatabaseDialog {
 		return true;
 	}
 
-	//#region Deploy Display Options
+	//#region
 	/*
 	 * Creates Display options container with hyperlink options
 	 */
-	private createOptionsButton(view: azdataType.ModelView) {
+	private createOptionsButton(view: azdataType.ModelView): azdataType.FlexContainer {
 		const optionslabel = view.modelBuilder.text().withProps({
 			value: constants.publishOptions,
 			width: cssStyles.publishDialogLabelWidth
@@ -922,7 +922,7 @@ export class PublishDatabaseDialog {
 		this.optionsButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, 'PublishOptionsClicked');
 			// create fresh every time
-			this.publishOptionsDialog = new PublishOptionsDialog(this.deploymentOptions, this);
+			this.publishOptionsDialog = new PublishOptionsDialog(this.deploymentOptions!, this);
 			this.publishOptionsDialog.openDialog();
 		});
 

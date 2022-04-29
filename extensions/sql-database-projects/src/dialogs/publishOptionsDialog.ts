@@ -36,10 +36,10 @@ export class PublishOptionsDialog {
 
 		this.initializeDialog();
 
-		this.dialog.okButton.label = constants.OkButton;
+		this.dialog.okButton.label = constants.okString;
 		this.dialog.okButton.onClick(async () => this.execute());
 
-		this.dialog.cancelButton.label = constants.CancelButton;
+		this.dialog.cancelButton.label = constants.cancelButtonText;
 		this.dialog.cancelButton.onClick(async () => this.cancel());
 
 		let resetButton = azdata.window.createButton(constants.ResetButton);
@@ -149,7 +149,7 @@ export class PublishOptionsDialog {
 	* Reset button click, resets all the options selection
 	*/
 	private async reset(): Promise<void> {
-		let result = await this.publish.getDefaultDeploymentOptions();
+		const result = await this.publish.getDefaultDeploymentOptions();
 		this.optionsModel.deploymentOptions = result;
 
 		// This will update the Map table with default values

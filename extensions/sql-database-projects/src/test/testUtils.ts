@@ -244,4 +244,3 @@ export async function createOtherDummyFiles(testFolderPath: string): Promise<Uri
 
 	return filesList;
 }
-
