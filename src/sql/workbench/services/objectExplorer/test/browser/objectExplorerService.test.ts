@@ -325,9 +325,10 @@ suite('SQL Object Explorer Service tests', () => {
 	});
 
 	test('expand node should expand node correctly', async () => {
+		const tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName/tables', '', '', null, null, undefined, undefined);
 		await objectExplorerService.createNewSession(mssqlProviderName, connection);
 		objectExplorerService.onSessionCreated(1, objectExplorerSession);
-		const expandInfo = await objectExplorerService.expandNode(mssqlProviderName, objectExplorerSession, 'testServerName/tables');
+		const expandInfo = await objectExplorerService.expandNode(mssqlProviderName, objectExplorerSession, tablesNode);
 		assert.strictEqual(expandInfo !== null || expandInfo !== undefined, true);
 		assert.strictEqual(expandInfo.sessionId, '1234');
 		assert.strictEqual(expandInfo.nodes.length, 2);
@@ -337,9 +338,10 @@ suite('SQL Object Explorer Service tests', () => {
 	});
 
 	test('refresh node should refresh node correctly', async () => {
+		const tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName/tables', '', '', null, null, undefined, undefined);
 		await objectExplorerService.createNewSession(mssqlProviderName, connection);
 		objectExplorerService.onSessionCreated(1, objectExplorerSession);
-		const expandInfo = await objectExplorerService.refreshNode(mssqlProviderName, objectExplorerSession, 'testServerName/tables');
+		const expandInfo = await objectExplorerService.refreshNode(mssqlProviderName, objectExplorerSession, tablesNode);
 		assert.strictEqual(expandInfo !== null || expandInfo !== undefined, true);
 		assert.strictEqual(expandInfo.sessionId, '1234');
 		assert.strictEqual(expandInfo.nodes.length, 2);
@@ -651,8 +653,9 @@ suite('SQL Object Explorer Service tests', () => {
 		sqlOEProvider.setup(x => x.expandNode(TypeMoq.It.is(x => x.nodePath === nodePath))).callback(() => { }).returns(() => Promise.resolve(true));
 
 		// If I queue a second expand request (the first compconstes normally because of the original mock) and then close the session
-		await objectExplorerService.expandNode(mssqlProviderName, objectExplorerSession, objectExplorerSession.rootNode.nodePath);
-		const expandPromise = objectExplorerService.expandNode(mssqlProviderName, objectExplorerSession, objectExplorerSession.rootNode.nodePath);
+		const rootNode = new TreeNode(NodeType.Root, '', false, objectExplorerSession.rootNode.nodePath, '', '', null, null, undefined, undefined);
+		await objectExplorerService.expandNode(mssqlProviderName, objectExplorerSession, rootNode);
+		const expandPromise = objectExplorerService.expandNode(mssqlProviderName, objectExplorerSession, rootNode);
 		const closeSessionResult = await objectExplorerService.closeSession(mssqlProviderName, objectExplorerSession);
 
 		// Then the expand request has compconsted and the session is closed
