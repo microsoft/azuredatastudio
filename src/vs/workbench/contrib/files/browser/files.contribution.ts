@@ -35,7 +35,6 @@ import { IExplorerService } from 'vs/workbench/contrib/files/browser/files';
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 import { FileEditorInputSerializer, FileEditorWorkingCopyEditorHandler } from 'vs/workbench/contrib/files/browser/editors/fileEditorHandler';
 import { ModesRegistry } from 'vs/editor/common/modes/modesRegistry';
-import product from 'vs/platform/product/common/product';
 
 class FileUriLabelContribution implements IWorkbenchContribution {
 
@@ -312,7 +311,7 @@ configurationRegistry.registerConfiguration({
 		'files.experimentalSandboxedFileService': {
 			'type': 'boolean',
 			'description': nls.localize('files.experimentalSandboxedFileService', "Experimental: changes the file service to be sandboxed. Do not change this unless instructed!"),
-			'default': product.quality !== 'stable',
+			'default': true,
 			'scope': ConfigurationScope.APPLICATION
 		},
 	}
