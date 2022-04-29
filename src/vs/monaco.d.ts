@@ -1686,7 +1686,7 @@ declare namespace monaco.editor {
 		 * A unique identifier associated with this model.
 		 */
 		readonly id: string;
-		/**
+		/** // {{SQL CARBON EDIT}}
 		 * The Uri of the notebook that contains this text model as part of a notebook cell.
 		 */
 		notebookUri?: Uri;

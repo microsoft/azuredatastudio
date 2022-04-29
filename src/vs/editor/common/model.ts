@@ -589,8 +589,8 @@ export interface ITextModel {
 	 */
 	readonly isForSimpleWidget: boolean;
 
-	// {{SQL CARBON EDIT}}
-	/**
+
+	/** // {{SQL CARBON EDIT}}
 	 * The URI of the notebook that contains this text model as part of a notebook cell.
 	 */
 	notebookUri?: URI;
