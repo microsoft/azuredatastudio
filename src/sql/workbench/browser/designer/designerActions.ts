@@ -4,22 +4,28 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Designer } from 'sql/workbench/browser/designer/designer';
-import { DesignerEdit, DesignerEditType, DesignerTableProperties } from 'sql/workbench/browser/designer/interfaces';
+import { DesignerEditType, DesignerPropertyPath, DesignerTableProperties, DesignerUIArea } from 'sql/workbench/browser/designer/interfaces';
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
 
-export class AddColumnAction extends Action {
-	public static ID = 'tableDesigner.addColumnAction';
+export interface DesignerActionContext {
+	path: DesignerPropertyPath;
+	source: DesignerUIArea;
+	toIndex?: number;
+}
+
+export class AddRowAction extends Action {
+	public static ID = 'designer.addColumnAction';
 	public static ICON = 'add-row-button new codicon';
-	public static LABEL = localize('tableDesigner.addColumnAction', 'Add new row');
+	public static LABEL = localize('designer.addColumnAction', 'Add New');
 
 	constructor(private designer: Designer, tableProperties: DesignerTableProperties) {
-		super(AddColumnAction.ID, AddColumnAction.LABEL, AddColumnAction.ICON);
+		super(AddRowAction.ID, tableProperties.labelForAddNewButton || AddRowAction.LABEL, AddRowAction.ICON);
 		this.designer = designer;
 		this._tooltip = localize('designer.newRowButtonAriaLabel', "Add new row to '{0}' table", tableProperties.ariaLabel);
 	}
 
-	public override async run(edit: DesignerEdit): Promise<void> {
+	public override async run(edit: DesignerActionContext): Promise<void> {
 		Promise.resolve(() => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Add,
@@ -31,9 +37,9 @@ export class AddColumnAction extends Action {
 }
 
 export class MoveRowUpAction extends Action {
-	public static ID = 'tableDesigner.moveRowUpAction';
+	public static ID = 'designer.moveRowUpAction';
 	public static ICON = 'move-row-up-button arrow-up codicon';
-	public static LABEL = localize('tableDesigner.moveRowUpAction', 'Move row up');
+	public static LABEL = localize('designer.moveRowUpAction', 'Move row up');
 
 	constructor(private designer: Designer) {
 		super(MoveRowUpAction.ID, MoveRowUpAction.LABEL, MoveRowUpAction.ICON);
@@ -41,7 +47,7 @@ export class MoveRowUpAction extends Action {
 		this._tooltip = localize('designer.moveRowButtonAriaLabel', "Move selected row up one position");
 	}
 
-	public override async run(edit: DesignerEdit): Promise<void> {
+	public override async run(edit: DesignerActionContext): Promise<void> {
 		Promise.resolve(() => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Move,
@@ -53,9 +59,9 @@ export class MoveRowUpAction extends Action {
 }
 
 export class MoveRowDownAction extends Action {
-	public static ID = 'tableDesigner.moveRowDownAction';
+	public static ID = 'designer.moveRowDownAction';
 	public static ICON = 'move-row-down-button arrow-down codicon';
-	public static LABEL = localize('tableDesigner.moveRowDownAction', 'Move row down');
+	public static LABEL = localize('designer.moveRowDownAction', 'Move row down');
 
 	constructor(private designer: Designer) {
 		super(MoveRowDownAction.ID, MoveRowDownAction.LABEL, MoveRowDownAction.ICON);
@@ -63,7 +69,7 @@ export class MoveRowDownAction extends Action {
 		this._tooltip = localize('designer.moveRowButtonAriaLabel', "Move selected row up one position");
 	}
 
-	public override async run(edit: DesignerEdit): Promise<void> {
+	public override async run(edit: DesignerActionContext): Promise<void> {
 		Promise.resolve(() => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Move,
@@ -74,16 +80,16 @@ export class MoveRowDownAction extends Action {
 	}
 }
 
-export class AddBeforeSelectedColumnAction extends Action {
-	public static ID = 'tableDesigner.addBeforeSelectedColumn';
-	public static LABEL = localize('tableDesigner.addBeforeSelectedColumn', 'Add new column before');
+export class AddBeforeSelectedRowAction extends Action {
+	public static ID = 'designer.addBeforeSelectedRow';
+	public static LABEL = localize('designer.addBeforeSelectedRow', 'Add new row before');
 
 	constructor(private designer: Designer) {
-		super(AddBeforeSelectedColumnAction.ID, AddBeforeSelectedColumnAction.LABEL, 'addBeforeSelectedColumn');
+		super(AddBeforeSelectedRowAction.ID, AddBeforeSelectedRowAction.LABEL, 'addBeforeSelectedRow');
 		this.designer = designer;
 	}
 
-	public override async run(edit: DesignerEdit): Promise<void> {
+	public override async run(edit: DesignerActionContext): Promise<void> {
 		Promise.resolve(() => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Add,
@@ -94,15 +100,15 @@ export class AddBeforeSelectedColumnAction extends Action {
 	}
 }
 
-export class AddAfterSelectedColumnAction extends Action {
-	public static ID = 'tableDesigner.addAfterSelectedColumn';
-	public static LABEL = localize('tableDesigner.addAfterSelectedColumn', 'Add new column after');
+export class AddAfterSelectedRowAction extends Action {
+	public static ID = 'designer.addAfterSelectedColumn';
+	public static LABEL = localize('designer.addAfterSelectedRow', 'Add new row after');
 
 	constructor(private designer: Designer) {
-		super(AddAfterSelectedColumnAction.ID, AddAfterSelectedColumnAction.LABEL, 'addAfterSelectedColumn');
+		super(AddAfterSelectedRowAction.ID, AddAfterSelectedRowAction.LABEL, 'addAfterSelectedRow');
 	}
 
-	public override async run(edit: DesignerEdit): Promise<void> {
+	public override async run(edit: DesignerActionContext): Promise<void> {
 		Promise.resolve(() => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Add,

@@ -46,8 +46,8 @@ import { layoutDesignerTable, TableHeaderRowHeight, TableRowHeight } from 'sql/w
 import { Dropdown, IDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
 import { IAction } from 'vs/base/common/actions';
-import { AddAfterSelectedColumnAction, AddBeforeSelectedColumnAction, AddColumnAction, MoveRowDownAction, MoveRowUpAction } from 'sql/workbench/browser/designer/designerActions';
-import { RowMoveManager } from 'sql/base/browser/ui/table/plugins/rowMoveManager.plugin';
+import { AddAfterSelectedRowAction, AddBeforeSelectedRowAction, AddRowAction, DesignerActionContext, MoveRowDownAction, MoveRowUpAction } from 'sql/workbench/browser/designer/designerActions';
+import { RowMoveManager, RowMoveOnDragEventData } from 'sql/base/browser/ui/table/plugins/rowMoveManager.plugin';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 
 export interface IDesignerStyle {
@@ -803,9 +803,6 @@ export class Designer extends Disposable implements IThemable {
 					container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				}
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
-				// if (tableProperties.canAddRows) {
-				// 	this.addTableDesignerTableButtons(container, tableProperties, propertyPath, view);
-				// }
 				this.addTableDesignerTaskbar(container, tableProperties, propertyPath, view);
 				const tableContainer = container.appendChild(DOM.$('.full-row'));
 				const table = new Table(tableContainer, {
@@ -824,45 +821,60 @@ export class Designer extends Disposable implements IThemable {
 					headerRowHeight: TableHeaderRowHeight,
 					editorLock: new Slick.EditorLock()
 				});
+				let buttonColumn: Slick.Column<Slick.SlickData>[] = [];
+				if (tableProperties.canMoveRows) {
+					const moveRowsPlugin = new RowMoveManager({
+						cancelEditOnDrag: true,
+						id: 'moveRow',
+						iconCssClass: Codicon.grabber.classNames,
+						title: localize('designer.moveRowText', 'Move Row'),
+						width: 20,
+						resizable: false,
+						isFontIcon: true,
+						behavior: 'selectAndMove'
+					});
+					table.registerPlugin(moveRowsPlugin);
+					moveRowsPlugin.onBeforeMoveRows.subscribe((e: Slick.EventData, data: RowMoveOnDragEventData) => {
+						// no point in moving before or after itself
+						if (data.rows[0] === data.insertBefore || data.rows[0] === data.insertBefore - 1) {
+							e.stopPropagation();
+							return;
+						}
+					});
+					moveRowsPlugin.onMoveRows.subscribe((e: Slick.EventData, data: RowMoveOnDragEventData) => {
+						let left: Slick.SlickData[] = [];
+						let right: Slick.SlickData[] = [];
+						const row = data.rows[0];
+						const insertBefore = data.insertBefore;
+						let tableData = table.getData();
+						let tableRows = tableData.getItems();
 
-				let moveRowsPlugin = new RowMoveManager({
-					cancelEditOnDrag: true,
-					id: 'moveRow',
-					iconCssClass: Codicon.grabber.classNames,
-					title: localize('designer.moveRowText', 'Move Row'),
-					width: 20,
-					resizable: false,
-					isFontIcon: true,
-					behavior: 'selectAndMove'
-				});
-				moveRowsPlugin.onBeforeMoveRows.subscribe((e, data) => {
-					let test = data;
-				});
-				moveRowsPlugin.onMoveRows.subscribe((e, args) => {
-					let test = args;
-				});
+						left = tableRows.slice(0, insertBefore);
+						right = tableRows.slice(insertBefore, tableRows.length);
+						let extractedRow = [table.getData().getItem(row)];
 
-				table.grid.registerPlugin(moveRowsPlugin);
+						if (row < insertBefore) {
+							left.splice(row, 1);
+						} else {
+							right.splice(row - insertBefore, 1);
+						}
 
+						let newRows = left.concat(extractedRow.concat(right));
 
-
-				table.grid.onDragStart.subscribe((e, dd) => {
-					let test = dd;
-				});
-
-				table.grid.onDrag.subscribe(function (e, dd) {
-					let test = dd;
-				});
-
-				table.grid.onAddNewRow.subscribe((e, args) => {
-					let item = { name: 'New task', complete: false };
-					jQuery.extend(item, args.item);
-					// data.push(item); // data is probably the grid data already there
-					// table.grid.invalidateRows([data.length - 1]);
-					table.grid.updateRowCount();
-					table.grid.render();
-				});
-
+						table.grid.resetActiveCell();
+						table.grid.setData(newRows);
+						table.grid.setSelectedRows([left.length]);
+						table.grid.render();
+						this.handleEdit({
+							type: DesignerEditType.Move,
+							path: [...propertyPath, row],
+							source: view,
+							value: data.insertBefore
+						});
+					});
+					table.grid.registerPlugin(moveRowsPlugin);
+					buttonColumn.push(moveRowsPlugin.definition);
+				}
 				this._register(table.onContextMenu((e) => {
 					let edit: DesignerEdit = {
 						type: DesignerEditType.Add,
@@ -939,11 +951,7 @@ export class Designer extends Disposable implements IThemable {
 					table.registerPlugin(deleteRowColumn);
 					columns.push(deleteRowColumn.definition);
 				}
-
-				table.registerPlugin(moveRowsPlugin);
-				columns.unshift(moveRowsPlugin.definition);
-
-				table.columns = columns;
+				table.columns = buttonColumn.concat(columns);
 				table.grid.onBeforeEditCell.subscribe((e, data): boolean => {
 					return data.item[data.column.field].enabled !== false;
 				});
@@ -985,16 +993,12 @@ export class Designer extends Disposable implements IThemable {
 
 	private addTableDesignerTaskbar(container: HTMLElement, tableProperties: DesignerTableProperties,
 		path: DesignerPropertyPath, view: DesignerUIArea): void {
-
-		let needButtons: boolean = tableProperties.canAddRows || tableProperties.canMoveRows;
-		if (needButtons) {
+		if (tableProperties.canAddRows || tableProperties.canMoveRows) {
 			const taskbarContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
-
 			this._actionBar = new Taskbar(taskbarContainer);
 			let actions: IAction[] = [];
-
 			if (tableProperties.canAddRows) {
-				let addColAction = this._instantiationService.createInstance(AddColumnAction, this, tableProperties);
+				let addColAction = this._instantiationService.createInstance(AddRowAction, this, tableProperties);
 				actions.push(addColAction);
 			}
 			if (tableProperties.canMoveRows) {
@@ -1005,31 +1009,30 @@ export class Designer extends Disposable implements IThemable {
 			}
 			let taskbarContent: ITaskbarContent[] = actions.map((a) => { return { action: a }; });
 			this._actionBar.setContent(taskbarContent);
-			let edit: DesignerEdit = { type: undefined, path: path, source: view };
-			this._actionBar.context = edit;
+			let context: DesignerActionContext = { path: path, source: view };
+			this._actionBar.context = context;
 		}
 	}
 
-	private openContextMenu(table: Table<Slick.SlickData>, event: ITableMouseEvent, edit: DesignerEdit): void {
+	private openContextMenu(table: Table<Slick.SlickData>, event: ITableMouseEvent, designerActionContext: DesignerActionContext): void {
 		const rowIndex = event.cell.row;
 		let data = table.grid.getData() as Slick.DataProvider<Slick.SlickData>;
 		if (!data || rowIndex >= data.getLength()) {
 			return undefined;
 		}
-		edit.value = { 'fromIndex': rowIndex };
 		let actions = this.getTableDesignerActions();
 		this._contextMenuService.showContextMenu({
 			getAnchor: () => event.anchor,
 			getActions: () => actions,
-			getActionsContext: () => (edit)
+			getActionsContext: () => (designerActionContext)
 		});
 	}
 
 	private getTableDesignerActions(): IAction[] {
 		let actions: IAction[];
-		let addColumnBefore = this._instantiationService.createInstance(AddBeforeSelectedColumnAction, this);
-		let addColumnAfter = this._instantiationService.createInstance(AddAfterSelectedColumnAction, this);
-		actions = [addColumnBefore, addColumnAfter];
+		let addRowBefore = this._instantiationService.createInstance(AddBeforeSelectedRowAction, this);
+		let addRowAfter = this._instantiationService.createInstance(AddAfterSelectedRowAction, this);
+		actions = [addRowBefore, addRowAfter];
 		return actions;
 	}
 

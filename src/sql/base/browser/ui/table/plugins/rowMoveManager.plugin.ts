@@ -22,6 +22,11 @@ export interface RowMoveOnDragEventArgs {
 	canMove?: boolean;
 }
 
+export interface RowMoveOnDragEventData {
+	rows?: number[];
+	insertBefore: number;
+}
+
 // Wrapper interfaces for drag arguments to support selection
 export interface OnRowMoveDragInitEventArgs<T extends Slick.SlickData> extends Slick.OnDragInitEventArgs<T>, RowMoveOnDragEventArgs { }
 export interface OnRowMoveDragStartEventArgs<T extends Slick.SlickData> extends Slick.OnDragStartEventArgs<T>, RowMoveOnDragEventArgs { }
@@ -123,7 +128,7 @@ export class RowMoveManager<T extends Slick.SlickData> extends BaseClickableColu
 
 		let insertBefore = Math.max(0, Math.min(Math.round(top / this._grid.getOptions().rowHeight), this._grid.getDataLength()));
 		if (insertBefore !== data.insertBefore) {
-			let eventData = {
+			let eventData: RowMoveOnDragEventData = {
 				'rows': data.selectedRows,
 				'insertBefore': insertBefore
 			};
@@ -152,7 +157,7 @@ export class RowMoveManager<T extends Slick.SlickData> extends BaseClickableColu
 		data.selectionProxy.remove();
 
 		if (data.canMove) {
-			let eventData = {
+			let eventData: RowMoveOnDragEventData = {
 				'rows': data.selectedRows,
 				'insertBefore': data.insertBefore
 			};
