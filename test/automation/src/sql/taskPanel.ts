@@ -14,16 +14,11 @@ export class TaskPanel {
 	}
 
 	async showTaskPanel(): Promise<void> {
-		try {
-			await this.code.waitForElement(TaskPanel.taskPanelSelector);
-		} catch (e) {
-			await this.quickAccess.runCommand('workbench.action.tasks.toggleTasks');
-			await this.code.waitForElement(TaskPanel.taskPanelSelector);
-		}
+		await this.quickAccess.runCommand('workbench.panel.tasks.view.focus');
 	}
 
-	async waitForTaskComplete(task: string): Promise<void> {
-		await this.code.waitForElement(`${TaskPanel.taskPanelSelector} div.label[title="${task}"]`, undefined, 3000); // wait up to 5 minutes for task to complete
+	async waitForTaskComplete(task: string, waitTime: number = 600): Promise<void> {
+		await this.code.waitForElement(`${TaskPanel.taskPanelSelector} div.label[title="${task}"]`, undefined, waitTime); // By default, wait up to 1 minute for task to complete
 	}
 
 }
