@@ -95,7 +95,7 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			await app.workbench.sqlNotebook.notebookToolbar.managePackages();
 			await app.workbench.managePackagesDialog.waitForManagePackagesDialog();
-			await app.workbench.managePackagesDialog.addNewPackage('pyarrow');
+			await app.workbench.managePackagesDialog.addNewPackage('pyarrow', '7.0.0');
 			await app.workbench.taskPanel.showTaskPanel();
 			await app.workbench.taskPanel.waitForTaskComplete('Installing pyarrow 7.0.0 succeeded');
 
