@@ -106,44 +106,69 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 			.withAdditionalProperties(propertyBag).send();
 
-
 		// Get connection string parameters and construct object name from prompt or connectionInfo given
 		let objectName: string | undefined;
 		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 		if (!node) {
 			// if user selects command in command palette we prompt user for information
 			telemetryStep = CreateAzureFunctionStep.launchFromCommandPalette;
-
 			// prompt user for connection profile to get connection info
-			telemetryStep = CreateAzureFunctionStep.getConnectionProfile;
-			connectionInfo = await vscodeMssqlApi.promptForConnection(true);
-			if (!connectionInfo) {
-				// User cancelled
-				return;
-			}
-			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
-				.withAdditionalProperties(propertyBag).withConnectionInfo(connectionInfo).send();
+			while (true) {
+				connectionInfo = await vscodeMssqlApi.promptForConnection(true);
+				if (!connectionInfo) {
+					// User cancelled
+					return;
+				}
+				TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
+					.withAdditionalProperties(propertyBag).withConnectionInfo(connectionInfo).send();
+				telemetryStep = CreateAzureFunctionStep.getConnectionProfile;
+				let connectionURI: string = '';
+				try {
+					await vscode.window.withProgress(
+						{
+							location: vscode.ProgressLocation.Notification,
+							title: constants.connectionProgressTitle,
+							cancellable: false
+						}, async (_progress, _token) => {
+							// list databases based on connection profile selected
+							connectionURI = await vscodeMssqlApi.connect(connectionInfo!);
+						}
+					);
+				} catch (e) {
+					// mssql connection error will be shown to the user
+					// we will then prompt user to choose a connection profile again
+					continue;
+				}
+				// list databases based on connection profile selected
+				telemetryStep = CreateAzureFunctionStep.getDatabase;
+				let listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
+				const selectedDatabase = (await vscode.window.showQuickPick(listDatabases, {
+					canPickMany: false,
+					title: constants.selectDatabase,
+					ignoreFocusOut: true
+				}));
 
-			// list databases based on connection profile selected
-			telemetryStep = CreateAzureFunctionStep.getDatabase;
-			let selectedDatabase = await azureFunctionsUtils.promptSelectDatabase(connectionInfo);
-			if (!selectedDatabase) {
-				// User cancelled
-				return undefined;
-			}
-			connectionInfo.database = selectedDatabase;
+				if (!selectedDatabase) {
+					// User cancelled
+					// we will then prompt user to choose a connection profile again
+					continue;
+				}
+				connectionInfo.database = selectedDatabase;
 
-			// prompt user for object name to create function from
-			telemetryStep = CreateAzureFunctionStep.getObjectName;
-			objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding);
-			if (!objectName) {
-				// user cancelled
-				return;
+				// prompt user for object name to create function from
+				objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding);
+				if (!objectName) {
+					// user cancelled
+					return;
+				}
+				break;
 			}
 		} else {
 			// if user selects table in tree view we use connection info from Object Explorer node
 			telemetryStep = CreateAzureFunctionStep.launchFromTable;
 			connectionInfo = node.connectionInfo;
+			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
+				.withAdditionalProperties(propertyBag).withConnectionInfo(connectionInfo).send();
 			// set the database containing the selected table so it can be used
 			// for the initial catalog property of the connection string
 			let newNode: ITreeNodeInfo = node;
