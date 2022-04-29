@@ -35,6 +35,7 @@ import { CellOutputEdit, CellOutputDataEdit } from 'sql/workbench/services/noteb
 import { ILogService } from 'vs/platform/log/common/log';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { alert } from 'vs/base/browser/ui/aria/aria';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -62,7 +63,6 @@ export class CellModel extends Disposable implements ICellModel {
 	private _onTableUpdated = new Emitter<ITableUpdatedEvent>();
 	private _onCellModeChanged = new Emitter<boolean>();
 	private _onExecutionStateChanged = new Emitter<CellExecutionState>();
-	private _onExecutionCompleted = new Emitter<boolean>();
 	private _onCurrentEditModeChanged = new Emitter<CellEditModes>();
 	private _isTrusted: boolean;
 	private _active: boolean;
@@ -449,10 +449,6 @@ export class CellModel extends Disposable implements ICellModel {
 		this._onExecutionStateChanged.fire(this.executionState);
 	}
 
-	public get onExecutionComplete(): Event<boolean> {
-		return this._onExecutionCompleted.event;
-	}
-
 	public get onLoaded(): Event<string> {
 		return this._onCellLoaded.event;
 	}
@@ -595,7 +591,6 @@ export class CellModel extends Disposable implements ICellModel {
 			this._notebookService.serializeNotebookStateChange(this.notebookModel.notebookUri, NotebookChangeType.CellExecuted, this)
 				.catch(e => onUnexpectedError(e));
 		}
-		this._onExecutionCompleted.fire(true);
 	}
 
 	public get executionState(): CellExecutionState {
@@ -719,6 +714,8 @@ export class CellModel extends Disposable implements ICellModel {
 			// Serialize cell output once the cell is done executing
 			this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
 			this.notifyExecutionComplete();
+			// Allow screen reader to announce when a cell is done running
+			alert(localize('cellExecutionComplete', "Cell execution is complete"));
 		}
 
 		return true;
