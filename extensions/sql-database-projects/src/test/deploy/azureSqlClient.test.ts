@@ -5,7 +5,7 @@
 
 import * as should from 'should';
 import { AzureSqlClient } from '../../models/deploy/azureSqlClient';
-import { IAccount, IAzureAccountService, IAzureAccountSession, IAzureResourceService, ResourceGroup, Location, Subscription } from 'vscode-mssql';
+import { IAccount, IAzureAccountService, IAzureAccountSession, IAzureResourceService, azure } from 'vscode-mssql';
 
 
 
@@ -14,9 +14,9 @@ export interface TestContext {
 	azureResourceService: IAzureResourceService;
 	accounts: IAccount[];
 	session: IAzureAccountSession;
-	subscriptions: Subscription[];
-	locations: Location[];
-	groups: ResourceGroup[];
+	subscriptions: azure.subscription.Subscription[];
+	locations: azure.subscription.Location[];
+	groups: azure.resources.ResourceGroup[];
 }
 
 export function createContext(): TestContext {
@@ -32,9 +32,9 @@ export function createContext(): TestContext {
 		isStale: false,
 		isSignedIn: true
 	}];
-	const subscriptions: Subscription[] = [{ subscriptionId: 'id1' }, { subscriptionId: 'id2' }];
-	const locations: Location[] = [{ id: 'id1' }, { id: 'id2' }];
-	const groups: ResourceGroup[] = [{ id: 'id1', location: 'l1' }, { id: 'id2', location: 'l2' }];
+	const subscriptions: azure.subscription.Subscription[] = [{ subscriptionId: 'id1' }, { subscriptionId: 'id2' }];
+	const locations: azure.subscription.Location[] = [{ id: 'id1' }, { id: 'id2' }];
+	const groups: azure.resources.ResourceGroup[] = [{ id: 'id1', location: 'l1' }, { id: 'id2', location: 'l2' }];
 	const session: IAzureAccountSession = {
 		account: accounts[0],
 		subscription: subscriptions[0],

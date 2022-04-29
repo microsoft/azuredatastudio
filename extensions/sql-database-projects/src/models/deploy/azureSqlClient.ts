@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as utils from '../../common/utils';
-import { IAccount, IAzureAccountSession, ResourceGroup, Location, Server } from 'vscode-mssql';
+import { IAccount, IAzureAccountSession, azure } from 'vscode-mssql';
 
 /**
  * Client module to call Azure APIs for getting or creating resources
@@ -36,7 +36,7 @@ export class AzureSqlClient {
 	/**
 	 * Returns Azure locations for given subscription
 	 */
-	public async getLocations(session: IAzureAccountSession): Promise<Location[]> {
+	public async getLocations(session: IAzureAccountSession): Promise<azure.subscription.Location[]> {
 		const azureResourceService = await this._azureResourceServiceFactory();
 		return await azureResourceService.getLocations(session);
 	}
@@ -52,7 +52,7 @@ export class AzureSqlClient {
 	/**
 	 * Creates a new Azure SQL server for given subscription, resource group and location
 	 */
-	public async createOrUpdateServer(session: IAzureAccountSession, resourceGroupName: string, serverName: string, parameters: Server): Promise<string | undefined> {
+	public async createOrUpdateServer(session: IAzureAccountSession, resourceGroupName: string, serverName: string, parameters: azure.sql.Server): Promise<string | undefined> {
 		const azureResourceService = await this._azureResourceServiceFactory();
 		return await azureResourceService.createOrUpdateServer(session, resourceGroupName, serverName, parameters);
 	}
@@ -60,7 +60,7 @@ export class AzureSqlClient {
 	/**
 	 * Returns Azure resource groups for given subscription
 	 */
-	public async getResourceGroups(session: IAzureAccountSession): Promise<Array<ResourceGroup> | []> {
+	public async getResourceGroups(session: IAzureAccountSession): Promise<Array<azure.resources.ResourceGroup> | []> {
 		const azureResourceService = await this._azureResourceServiceFactory();
 		return await azureResourceService.getResourceGroups(session);
 	}
