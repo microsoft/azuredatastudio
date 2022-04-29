@@ -6,8 +6,8 @@
 import * as should from 'should';
 import { AzureSqlClient } from '../../models/deploy/azureSqlClient';
 import { IAccount, IAzureAccountService, IAzureAccountSession, IAzureResourceService } from 'vscode-mssql';
-import { Subscription, Location } from '@azure/arm-subscriptions';
-import { ResourceGroup } from '@azure/arm-resources';
+import { ResourceGroup } from '../../typings/arm-resources';
+import { Location, Subscription } from '../../typings/arm-subscriptions';
 
 export interface TestContext {
 	azureAccountService: IAzureAccountService;

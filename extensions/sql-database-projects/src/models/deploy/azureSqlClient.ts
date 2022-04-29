@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Location } from '@azure/arm-subscriptions';
-import { Server } from '@azure/arm-sql';
 import * as utils from '../../common/utils';
 import { IAccount, IAzureAccountSession } from 'vscode-mssql';
-import { ResourceGroup } from '@azure/arm-resources';
+import { ResourceGroup } from '../../typings/arm-resources';
+import { Location } from '../../typings/arm-subscriptions';
+import { Server } from '../../typings/arm-sql';
 
 /**
  * Client module to call Azure APIs for getting or creating resources
@@ -64,10 +64,7 @@ export class AzureSqlClient {
 	 * Returns Azure resource groups for given subscription
 	 */
 	public async getResourceGroups(session: IAzureAccountSession): Promise<Array<ResourceGroup> | []> {
-		if (session?.subscription?.subscriptionId) {
-			const azureResourceService = await this._azureResourceServiceFactory();
-			return await azureResourceService.getResourceGroups(session);
-		}
-		return [];
+		const azureResourceService = await this._azureResourceServiceFactory();
+		return await azureResourceService.getResourceGroups(session);
 	}
 }

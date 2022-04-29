@@ -167,7 +167,7 @@ export function baseDockerImage(name: string) { return localize('baseDockerImage
 export const publishTo = localize('publishTo', "Publish Target");
 export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
 export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
-export function enterUser(name: string) { return localize('enterUser', "Enter {0} admin user", name); }
+export function enterUser(name: string) { return localize('enterUser', "Enter {0} admin user name", name); }
 export function enterPassword(name: string) { return localize('enterPassword', "Enter {0} admin password", name); }
 export function confirmPassword(name: string) { return localize('confirmPassword', "Confirm {0} admin password", name); }
 export function selectBaseImage(name: string) { return localize('selectBaseImage', "Select the base {0} docker image", name); }

@@ -139,7 +139,7 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 	}
 
 	if (!account) {
-		return;
+		return undefined;
 	}
 
 	const sessions = await azureSqlClient.getSessions(account);
@@ -171,7 +171,7 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 
 	const resourceGroup = resourceGroups.find(x => x.name === resourceGroupName);
 
-	// Return when user hits escape
+	// Return resource group is invalid
 	if (!resourceGroup) {
 		return undefined;
 	}

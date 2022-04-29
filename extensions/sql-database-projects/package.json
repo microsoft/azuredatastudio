@@ -465,10 +465,7 @@
     "vscode-nls": "^4.1.2",
     "which": "^2.0.2",
     "xml-formatter": "2.1.0",
-    "xmldom": "^0.6.0",
-    "@azure/arm-resources": "^5.0.0",
-    "@azure/arm-subscriptions": "^5.0.0",
-    "@azure/arm-sql":"^9.0.0"
+    "xmldom": "^0.6.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^5.0.0",
