@@ -5,9 +5,9 @@
 
 import * as should from 'should';
 import { AzureSqlClient } from '../../models/deploy/azureSqlClient';
-import { IAccount, IAzureAccountService, IAzureAccountSession, IAzureResourceService } from 'vscode-mssql';
-import { ResourceGroup } from '../../typings/arm-resources';
-import { Location, Subscription } from '../../typings/arm-subscriptions';
+import { IAccount, IAzureAccountService, IAzureAccountSession, IAzureResourceService, ResourceGroup, Location, Subscription } from 'vscode-mssql';
+
+
 
 export interface TestContext {
 	azureAccountService: IAzureAccountService;
@@ -33,8 +33,8 @@ export function createContext(): TestContext {
 		isSignedIn: true
 	}];
 	const subscriptions: Subscription[] = [{ subscriptionId: 'id1' }, { subscriptionId: 'id2' }];
-	const locations: Location[] =  [{ id: 'id1' }, { id: 'id2' }];
-	const groups: ResourceGroup[] =  [{ id: 'id1', location: 'l1' }, { id: 'id2', location: 'l2' }];
+	const locations: Location[] = [{ id: 'id1' }, { id: 'id2' }];
+	const groups: ResourceGroup[] = [{ id: 'id1', location: 'l1' }, { id: 'id2', location: 'l2' }];
 	const session: IAzureAccountSession = {
 		account: accounts[0],
 		subscription: subscriptions[0],
@@ -61,7 +61,7 @@ export function createContext(): TestContext {
 			}),
 			getAccountSessions: () => Promise.resolve([session])
 		},
-		azureResourceService : {
+		azureResourceService: {
 			getLocations: () => Promise.resolve(locations),
 			getResourceGroups: () => Promise.resolve(groups),
 			createOrUpdateServer: () => Promise.resolve('new_server')

@@ -4,10 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as utils from '../../common/utils';
-import { IAccount, IAzureAccountSession } from 'vscode-mssql';
-import { ResourceGroup } from '../../typings/arm-resources';
-import { Location } from '../../typings/arm-subscriptions';
-import { Server } from '../../typings/arm-sql';
+import { IAccount, IAzureAccountSession, ResourceGroup, Location, Server } from 'vscode-mssql';
 
 /**
  * Client module to call Azure APIs for getting or creating resources
