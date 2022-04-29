@@ -606,6 +606,8 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public async runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean> {
 		try {
+			// Allow screen reader to announce when cell execution is started
+			alert(localize('cellExecutionStarted', "Cell execution started"));
 			if (!this.active && this !== this.notebookModel.activeCell) {
 				this.notebookModel.updateActiveCell(this);
 				this.active = true;
