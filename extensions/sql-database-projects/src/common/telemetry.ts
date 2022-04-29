@@ -38,5 +38,7 @@ export enum TelemetryActions {
 	finishAddSqlBinding = 'finishAddSqlBinding',
 	createProjectFromDatabase = 'createProjectFromDatabase',
 	updateProjectFromDatabase = 'updateProjectFromDatabase',
-	publishToContainer = 'publishToContainer'
+	publishToContainer = 'publishToContainer',
+	publishToNewAzureServer = 'publishToNewAzureServer',
+	generateProjectFromOpenApiSpec = 'generateProjectFromOpenApiSpec'
 }
