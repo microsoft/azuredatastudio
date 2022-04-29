@@ -776,7 +776,7 @@ declare module 'vscode-mssql' {
 	export namespace azure {
 
 		/**
-		 * Namespace for Azure Subscriptions
+		 * Namespace for Azure Subscriptions. Types from @azure/arm-subscriptions module
 		 */
 		export namespace subscription {
 			/** Location information. */
@@ -869,7 +869,7 @@ declare module 'vscode-mssql' {
 		}
 
 		/**
-		 * Namespace for Azure resources
+		 * Namespace for Azure resources. Types from @azure/arm-resources module
 		 */
 		export namespace resources {
 			export interface ResourceGroup {
@@ -908,10 +908,6 @@ declare module 'vscode-mssql' {
 				 */
 				readonly provisioningState?: string;
 			}
-			/*---------------------------------------------------------------------------------------------
-			 *  Copyright (c) Microsoft Corporation. All rights reserved.
-			 *  Licensed under the Source EULA. See License.txt in the project root for license information.
-			 *--------------------------------------------------------------------------------------------*/
 
 			export interface ResourceGroup {
 				/**
@@ -952,7 +948,7 @@ declare module 'vscode-mssql' {
 		}
 
 		/**
-		 * Namespace for Azure SQL APIs
+		 * Namespace for Azure SQL APIs. Types from @azure/arm-sql module
 		 */
 		export namespace sql {
 
