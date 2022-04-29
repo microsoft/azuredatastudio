@@ -145,6 +145,10 @@ export interface IOptimizeTaskOpts {
 	resources: string[];
 	loaderConfig: any;
 	/**
+	 * Additional info we append to the end of the loader
+	 */
+	externalLoaderInfo?: any;
+	/**
 	 * (true by default - append css and nls to loader)
 	 */
 	bundleLoader?: boolean;
@@ -222,7 +226,7 @@ export function optimizeTask(opts: IOptimizeTaskOpts): () => NodeJS.ReadWriteStr
 		});
 
 		const result = es.merge(
-			loader(src, bundledFileHeader, bundleLoader),
+			loader(src, bundledFileHeader, bundleLoader, opts.externalLoaderInfo),
 			bundlesStream,
 			resourcesStream,
 			bundleInfoStream

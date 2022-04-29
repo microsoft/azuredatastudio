@@ -53,7 +53,7 @@ import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
 			id: CloseWindowAction.ID,
 			weight: KeybindingWeight.WorkbenchContrib,
 			when: ContextKeyExpr.and(EditorsVisibleContext.toNegated(), SingleEditorGroupsContext),
-			primary: KeyMod.CtrlCmd | KeyCode.KEY_W
+			primary: KeyMod.CtrlCmd | KeyCode.KeyW
 		});
 	}
 
@@ -72,8 +72,8 @@ import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
 			nativeHostService.quit();
 		},
 		when: undefined,
-		mac: { primary: KeyMod.CtrlCmd | KeyCode.KEY_Q },
-		linux: { primary: KeyMod.CtrlCmd | KeyCode.KEY_Q }
+		mac: { primary: KeyMod.CtrlCmd | KeyCode.KeyQ },
+		linux: { primary: KeyMod.CtrlCmd | KeyCode.KeyQ }
 	});
 
 	// Actions: macOS Native Tabs

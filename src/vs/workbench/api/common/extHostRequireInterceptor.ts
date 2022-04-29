@@ -63,7 +63,7 @@ export abstract class RequireInterceptor {
 
 		this.register(new VSCodeNodeModuleFactory(this._apiFactory.vscode, extensionPaths, this._extensionRegistry, configProvider, this._logService)); // {{SQL CARBON EDIT}} // add node module
 		this.register(new AzdataNodeModuleFactory(this._apiFactory.azdata, extensionPaths, this._logService)); // {{SQL CARBON EDIT}} // add node module
-		this.register(this._instaService.createInstance(KeytarNodeModuleFactory));
+		this.register(this._instaService.createInstance(KeytarNodeModuleFactory, extensionPaths));
 		if (this._initData.remote.isRemote) {
 			this.register(this._instaService.createInstance(OpenNodeModuleFactory, extensionPaths, this._initData.environment.appUriScheme));
 		}
@@ -144,14 +144,17 @@ interface IKeytarModule {
 class KeytarNodeModuleFactory implements INodeModuleFactory {
 	public readonly nodeModuleName: string = 'keytar';
 
+	private readonly _mainThreadTelemetry: MainThreadTelemetryShape;
 	private alternativeNames: Set<string> | undefined;
 	private _impl: IKeytarModule;
 
 	constructor(
+		private readonly _extensionPaths: TernarySearchTree<URI, IExtensionDescription>,
 		@IExtHostRpcService rpcService: IExtHostRpcService,
 		@IExtHostInitDataService initData: IExtHostInitDataService,
 
 	) {
+		this._mainThreadTelemetry = rpcService.getProxy(MainContext.MainThreadTelemetry);
 		const { environment } = initData;
 		const mainThreadKeytar = rpcService.getProxy(MainContext.MainThreadKeytar);
 
@@ -186,7 +189,12 @@ class KeytarNodeModuleFactory implements INodeModuleFactory {
 		};
 	}
 
-	public load(_request: string, _parent: URI): any {
+	public load(_request: string, parent: URI): any {
+		const ext = this._extensionPaths.findSubstr(parent);
+		type ShimmingKeytarClassification = {
+			extension: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+		};
+		this._mainThreadTelemetry.$publicLog2<{ extension: string }, ShimmingKeytarClassification>('shimming.keytar', { extension: ext?.identifier.value ?? 'unknown_extension' });
 		return this._impl;
 	}
 

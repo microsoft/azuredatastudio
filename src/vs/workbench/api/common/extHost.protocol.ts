@@ -171,6 +171,7 @@ export interface MainThreadCommentsShape extends IDisposable {
 	$createCommentThread(handle: number, commentThreadHandle: number, threadId: string, resource: UriComponents, range: IRange, extensionId: ExtensionIdentifier): modes.CommentThread | undefined;
 	$updateCommentThread(handle: number, commentThreadHandle: number, threadId: string, resource: UriComponents, changes: CommentThreadChanges): void;
 	$deleteCommentThread(handle: number, commentThreadHandle: number): void;
+	$updateCommentingRanges(handle: number): void;
 	$onDidCommentThreadsChange(handle: number, event: modes.CommentThreadChangedEvent): void;
 }
 
@@ -911,6 +912,7 @@ export interface INotebookKernelDto2 {
 	label: string;
 	detail?: string;
 	description?: string;
+	kind?: string;
 	supportedLanguages?: string[];
 	supportsInterrupt?: boolean;
 	supportsExecutionOrder?: boolean;
@@ -1216,7 +1218,7 @@ export interface IModelAddedData {
 	versionId: number;
 	lines: string[];
 	EOL: string;
-	modeId: string;
+	languageId: string;
 	isDirty: boolean;
 }
 export interface ExtHostDocumentsShape {
@@ -2085,7 +2087,7 @@ export interface ExtHostNotebookKernelsShape {
 }
 
 export interface ExtHostInteractiveShape {
-	$willAddInteractiveDocument(uri: UriComponents, eol: string, modeId: string, notebookUri: UriComponents): void;
+	$willAddInteractiveDocument(uri: UriComponents, eol: string, languageId: string, notebookUri: UriComponents): void;
 	$willRemoveInteractiveDocument(uri: UriComponents, notebookUri: UriComponents): void;
 }
 

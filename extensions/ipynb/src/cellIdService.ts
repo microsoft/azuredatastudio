@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ExtensionContext, NotebookCellsChangeEvent, NotebookDocument, notebooks, workspace, WorkspaceEdit } from 'vscode';
@@ -14,11 +14,11 @@ import { nbformat } from '@jupyterlab/coreutils';
  * Ensure all new cells in notebooks with nbformat >= 4.5 have an id.
  * Details of the spec can be found here https://jupyter.org/enhancement-proposals/62-cell-id/cell-id.html#
  */
-export function ensureAllNewCellsHaveCellIds(context: ExtensionContext) {
+export function ensureAllNewCellsHaveCellIds(context: ExtensionContext): void {
 	notebooks.onDidChangeNotebookCells(onDidChangeNotebookCells, undefined, context.subscriptions);
 }
 
-function onDidChangeNotebookCells(e: NotebookCellsChangeEvent) {
+function onDidChangeNotebookCells(e: NotebookCellsChangeEvent): void {
 	const nbMetadata = getNotebookMetadata(e.document);
 	if (!isCellIdRequired(nbMetadata)) {
 		return;
@@ -43,7 +43,7 @@ function onDidChangeNotebookCells(e: NotebookCellsChangeEvent) {
 /**
  * Cell ids are required in notebooks only in notebooks with nbformat >= 4.5
  */
-function isCellIdRequired(metadata: Pick<Partial<nbformat.INotebookContent>, 'nbformat' | 'nbformat_minor'>) {
+function isCellIdRequired(metadata: Pick<Partial<nbformat.INotebookContent>, 'nbformat' | 'nbformat_minor'>): void {
 	if ((metadata.nbformat || 0) >= 5) {
 		return true;
 	}
@@ -53,7 +53,7 @@ function isCellIdRequired(metadata: Pick<Partial<nbformat.INotebookContent>, 'nb
 	return false;
 }
 
-function generateCellId(notebook: NotebookDocument) {
+function generateCellId(notebook: NotebookDocument): void {
 	while (true) {
 		// Details of the id can be found here https://jupyter.org/enhancement-proposals/62-cell-id/cell-id.html#adding-an-id-field,
 		// & here https://jupyter.org/enhancement-proposals/62-cell-id/cell-id.html#updating-older-formats
