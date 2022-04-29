@@ -9,7 +9,6 @@ import * as path from 'path';
 import * as TypeMoq from 'typemoq';
 import * as mssql from 'mssql';
 
-
 export interface TestContext {
 	context: vscode.ExtensionContext;
 	dacFxService: TypeMoq.IMock<mssql.IDacFxService>;

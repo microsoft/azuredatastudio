@@ -12,7 +12,7 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import * as assert from 'assert';
 import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
-import { convertToVSCodeNotebookCell, convertToVSCodeCellOutput, convertToADSCellOutput } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { convertToVSCodeNotebookCell, convertToVSCodeCellOutput, convertToADSCellOutput, convertToInternalInteractiveKernelMetadata, addExternalInteractiveKernelMetadata } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { URI } from 'vs/base/common/uri';
 import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
@@ -484,5 +484,119 @@ suite('Notebook Serializer', () => {
 	});
 });
 
-suite('Notebook Controller', () => {
+suite('.NET Interactive Kernel Metadata Conversion', async () => {
+	test('Convert to internal kernel metadata', async () => {
+		let originalMetadata: azdata.nb.INotebookMetadata = {
+			kernelspec: {
+				name: '.net-csharp',
+				display_name: '.NET (C#)',
+				language: 'C#'
+			},
+			language_info: {
+				name: 'C#'
+			}
+		};
+		let expectedCovertedMetadata: azdata.nb.INotebookMetadata = {
+			kernelspec: {
+				name: '.net-csharp',
+				display_name: '.NET Interactive',
+				language: 'dotnet-interactive.csharp',
+				oldDisplayName: '.NET (C#)',
+				oldLanguage: 'C#'
+			},
+			language_info: {
+				name: 'dotnet-interactive.csharp',
+				oldName: 'C#'
+			}
+		};
+
+		convertToInternalInteractiveKernelMetadata(originalMetadata);
+		assert.deepStrictEqual(originalMetadata, expectedCovertedMetadata);
+	});
+
+	test('Do not convert to internal metadata for non-Interactive kernels', async () => {
+		let originalMetadata: azdata.nb.INotebookMetadata = {
+			kernelspec: {
+				name: 'not-interactive',
+				display_name: '.NET (C#)',
+				language: 'C#'
+			},
+			language_info: {
+				name: 'C#'
+			}
+		};
+		let expectedCovertedMetadata: azdata.nb.INotebookMetadata = {
+			kernelspec: {
+				name: 'not-interactive',
+				display_name: '.NET (C#)',
+				language: 'C#'
+			},
+			language_info: {
+				name: 'C#'
+			}
+		};
+
+		convertToInternalInteractiveKernelMetadata(originalMetadata);
+		assert.deepStrictEqual(originalMetadata, expectedCovertedMetadata);
+	});
+
+	test('Add external kernel metadata', async () => {
+		let originalKernelSpec: azdata.nb.IKernelSpec = {
+			name: 'jupyter-notebook',
+			display_name: '.NET Interactive',
+			language: 'dotnet-interactive.csharp'
+		};
+		let expectedCovertedKernel: azdata.nb.IKernelSpec = {
+			name: 'jupyter-notebook',
+			display_name: '.NET Interactive',
+			language: 'dotnet-interactive.csharp',
+			oldName: '.net-csharp',
+			oldDisplayName: '.NET (C#)',
+			oldLanguage: 'C#'
+		};
+		addExternalInteractiveKernelMetadata(originalKernelSpec);
+		assert.deepStrictEqual(originalKernelSpec, expectedCovertedKernel);
+	});
+
+	test('Do not add external metadata to non-Interactive kernels', async () => {
+		// Different kernel name
+		let originalKernelSpec: azdata.nb.IKernelSpec = {
+			name: 'not-interactive',
+			display_name: '.NET Interactive',
+			language: 'dotnet-interactive.csharp'
+		};
+		let expectedCovertedKernel: azdata.nb.IKernelSpec = {
+			name: 'not-interactive',
+			display_name: '.NET Interactive',
+			language: 'dotnet-interactive.csharp'
+		};
+		addExternalInteractiveKernelMetadata(originalKernelSpec);
+		assert.deepStrictEqual(originalKernelSpec, expectedCovertedKernel);
+
+		// Different display name
+		originalKernelSpec = {
+			name: 'jupyter-notebook',
+			display_name: 'Not An Interactive Kernel',
+			language: 'dotnet-interactive.csharp'
+		};
+		expectedCovertedKernel = {
+			name: 'jupyter-notebook',
+			display_name: 'Not An Interactive Kernel',
+			language: 'dotnet-interactive.csharp'
+		};
+		addExternalInteractiveKernelMetadata(originalKernelSpec);
+		assert.deepStrictEqual(originalKernelSpec, expectedCovertedKernel);
+
+		// No language provided
+		originalKernelSpec = {
+			name: 'jupyter-notebook',
+			display_name: '.NET Interactive'
+		};
+		expectedCovertedKernel = {
+			name: 'jupyter-notebook',
+			display_name: '.NET Interactive'
+		};
+		addExternalInteractiveKernelMetadata(originalKernelSpec);
+		assert.deepStrictEqual(originalKernelSpec, expectedCovertedKernel);
+	});
 });
