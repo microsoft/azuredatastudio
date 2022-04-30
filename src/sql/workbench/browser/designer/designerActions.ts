@@ -3,15 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Table } from 'sql/base/browser/ui/table/table';
 import { Designer } from 'sql/workbench/browser/designer/designer';
 import { DesignerEditType, DesignerPropertyPath, DesignerTableProperties, DesignerUIArea } from 'sql/workbench/browser/designer/interfaces';
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
 
-export interface DesignerActionContext {
+export interface DesignerTableActionContext {
+	table: Table<Slick.SlickData>;
 	path: DesignerPropertyPath;
 	source: DesignerUIArea;
-	toIndex?: number;
 }
 
 export class AddRowAction extends Action {
@@ -25,12 +26,12 @@ export class AddRowAction extends Action {
 		this._tooltip = localize('designer.newRowButtonAriaLabel', "Add new row to '{0}' table", tableProperties.ariaLabel);
 	}
 
-	public override async run(edit: DesignerActionContext): Promise<void> {
+	public override async run(context: DesignerTableActionContext): Promise<void> {
 		Promise.resolve(() => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Add,
-				path: edit.path,
-				source: edit.source
+				path: context.path,
+				source: context.source
 			});
 		});
 	}
@@ -45,14 +46,17 @@ export class MoveRowUpAction extends Action {
 		super(MoveRowUpAction.ID, MoveRowUpAction.LABEL, MoveRowUpAction.ICON);
 		this.designer = designer;
 		this._tooltip = localize('designer.moveRowButtonAriaLabel', "Move selected row up one position");
+		this.enabled = false;
 	}
 
-	public override async run(edit: DesignerActionContext): Promise<void> {
+	public override async run(context: DesignerTableActionContext): Promise<void> {
+		let rowIndex = context.table.getSelectedRows()[0];
 		Promise.resolve(() => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Move,
-				path: edit.path,
-				source: edit.source
+				path: context.path,
+				source: context.source,
+				value: rowIndex - 1
 			});
 		});
 	}
@@ -67,14 +71,17 @@ export class MoveRowDownAction extends Action {
 		super(MoveRowDownAction.ID, MoveRowDownAction.LABEL, MoveRowDownAction.ICON);
 		this.designer = designer;
 		this._tooltip = localize('designer.moveRowButtonAriaLabel', "Move selected row up one position");
+		this.enabled = false;
 	}
 
-	public override async run(edit: DesignerActionContext): Promise<void> {
+	public override async run(context: DesignerTableActionContext): Promise<void> {
+		let rowIndex = context.table.getSelectedRows()[0];
 		Promise.resolve(() => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Move,
-				path: edit.path,
-				source: edit.source
+				path: context.path,
+				source: context.source,
+				value: rowIndex + 1
 			});
 		});
 	}
@@ -89,13 +96,15 @@ export class AddBeforeSelectedRowAction extends Action {
 		this.designer = designer;
 	}
 
-	public override async run(edit: DesignerActionContext): Promise<void> {
+	public override async run(context: DesignerTableActionContext): Promise<void> {
+		let rowIndex = context.table.getSelectedRows()[0];
 		Promise.resolve(() => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Add,
-				path: edit.path,
-				source: edit.source
-			}); // add index
+				path: context.path,
+				source: context.source,
+				value: rowIndex - 1
+			});
 		});
 	}
 }
@@ -108,13 +117,15 @@ export class AddAfterSelectedRowAction extends Action {
 		super(AddAfterSelectedRowAction.ID, AddAfterSelectedRowAction.LABEL, 'addAfterSelectedRow');
 	}
 
-	public override async run(edit: DesignerActionContext): Promise<void> {
+	public override async run(context: DesignerTableActionContext): Promise<void> {
+		let rowIndex = context.table.getSelectedRows()[0];
 		Promise.resolve(() => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Add,
-				path: edit.path,
-				source: edit.source
-			}); // add index
+				path: context.path,
+				source: context.source,
+				value: rowIndex + 1
+			});
 		});
 	}
 }

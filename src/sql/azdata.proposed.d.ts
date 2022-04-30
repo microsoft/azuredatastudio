@@ -1083,7 +1083,7 @@ declare module 'azdata' {
 			 */
 			Update = 2,
 			/**
-			 * Move a column to re-order
+			 * Change the position of an item in the collection.
 			 */
 			Move = 3
 		}
