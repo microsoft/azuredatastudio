@@ -92,6 +92,7 @@ async function launchServer(browserType: BrowserType): Promise<{ endpoint: url.U
 
 	// Ensure a tmp user-data-dir is used for the tests
 	const tmpDir = tmp.dirSync({ prefix: 't' });
+	console.log(tmpDir);
 	const testDataPath = tmpDir.name;
 	process.once('exit', () => rimraf.sync(testDataPath));
 
