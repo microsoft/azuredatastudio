@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import minimist = require('minimist');
-import path = require('path');
 import { Suite, Context } from 'mocha';
 import { Application, ApplicationOptions } from '../../automation';
 
