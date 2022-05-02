@@ -34,6 +34,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { ILogService } from 'vs/platform/log/common/log';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
+import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 
 export enum AuthenticationType {
 	SqlLogin = 'SqlLogin',
@@ -194,6 +195,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	protected fillInConnectionForm(authTypeChanged: boolean = false): void {
+		this.addInputOptionRadioButtons();
 		this.addConnectionStringInput();
 		// Server Name
 		this.addServerNameOption();
@@ -215,6 +217,20 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 		// Advanced Options
 		this.addAdvancedOptions();
+	}
+
+	private addInputOptionRadioButtons(): void {
+		if (this._connectionStringOptions.isEnabled) {
+			const groupName = 'input-option-type';
+			const inputOptionContainer = DialogHelper.appendRow(this._tableContainer, '', 'connection-label', 'connection-input');
+			const defaultInputOptionRadioButton = new RadioButton(inputOptionContainer, { label: 'Default', checked: !this._connectionStringOptions.isDefaultOption });
+			const connectionStringRadioButton = new RadioButton(inputOptionContainer, { label: 'Connection String', checked: this._connectionStringOptions.isDefaultOption });
+			defaultInputOptionRadioButton.name = groupName;
+			connectionStringRadioButton.name = groupName;
+			defaultInputOptionRadioButton.onDidChangeCheckedState(() => {
+				this.handleConnectionStringOptionChange(!defaultInputOptionRadioButton.checked);
+			});
+		}
 	}
 
 	private addConnectionStringInput(): void {
@@ -327,17 +343,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	protected addAdvancedOptions(): void {
-		const useConnectionStringLabel = localize('connectionWidget.useConnectionString', "Use connection string");
 		const rowContainer = DOM.append(this._tableContainer, DOM.$('tr.advanced-options-row'));
-		const connectionStringOptionContainer = DOM.append(rowContainer, DOM.$('td'));
-		connectionStringOptionContainer.setAttribute('align', 'left');
-		if (this._connectionStringOptions.isEnabled) {
-			this._useConnectionStringCheckBox = new Checkbox(connectionStringOptionContainer, { label: useConnectionStringLabel, checked: this._connectionStringOptions.isDefaultOption, ariaLabel: useConnectionStringLabel });
-			this.handleConnectionStringOptionChange();
-			this._useConnectionStringCheckBox.onChange(() => {
-				this.handleConnectionStringOptionChange();
-			});
-		}
+		DOM.append(rowContainer, DOM.$('td'));
 		const buttonContainer = DOM.append(rowContainer, DOM.$('td'));
 		buttonContainer.setAttribute('align', 'right');
 		const divContainer = DOM.append(buttonContainer, DOM.$('div.advanced-button'));
@@ -349,9 +356,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		});
 	}
 
-	private handleConnectionStringOptionChange(): void {
+	private handleConnectionStringOptionChange(useConnectionString: boolean): void {
 		const connectionStringClass = 'use-connection-string';
-		if (this._useConnectionStringCheckBox.checked) {
+		if (useConnectionString) {
 			this._tableContainer.classList.add(connectionStringClass);
 			this._connectionStringInputBox.layout();
 		} else {
