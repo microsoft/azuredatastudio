@@ -18,7 +18,7 @@ import { ProjectsController } from '../../controllers/projectController';
 import { IDeploySettings } from '../../models/IDeploySettings';
 import { emptySqlDatabaseProjectTypeId } from '../../common/constants';
 import { createContext, mockDacFxOptionsResult, TestContext } from '../testContext';
-import { IDeployProfile } from '../../models/deploy/deployProfile';
+import { ILocalDbDeployProfile } from '../../models/deploy/deployProfile';
 
 let testContext: TestContext;
 describe('Publish Database Dialog', () => {
@@ -112,7 +112,7 @@ describe('Publish Database Dialog', () => {
 
 		should(profile).deepEqual(expectedGenScript);
 
-		const expectedContainerPublishProfile: IDeployProfile = {
+		const expectedContainerPublishProfile: ILocalDbDeployProfile = {
 			localDbSetting: {
 				dbName: 'MockDatabaseName',
 				dockerBaseImage: '',
@@ -136,7 +136,7 @@ describe('Publish Database Dialog', () => {
 			}
 		};
 		dialog.object.publishToExistingServer = false;
-		let deployProfile: IDeployProfile | undefined;
+		let deployProfile: ILocalDbDeployProfile | undefined;
 		dialog.object.publishToContainer = (_, prof) => { deployProfile = prof; };
 		await dialog.object.publishClick();
 
