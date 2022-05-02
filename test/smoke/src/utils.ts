@@ -33,6 +33,7 @@ export function beforeSuite(opts: minimist.ParsedArgs, optionsTransform?: (opts:
 			const userDataDir = options.userDataDir.concat(`-${userDataPathSuffix}`);
 			console.log('user data');
 			console.log(userDataDir);
+			console.log(options);
 			const app = new Application({ ...options, userDataDir });
 			await app.start();
 			this.app = app;
