@@ -64,6 +64,21 @@
     <trans-unit id="autorestProjectName">
       <source xml:lang="en">New SQL project name</source>
     </trans-unit>
+    <trans-unit id="azureAccounts">
+      <source xml:lang="en">Azure accounts</source>
+    </trans-unit>
+    <trans-unit id="azureAddAccount">
+      <source xml:lang="en">Add an Account...</source>
+    </trans-unit>
+    <trans-unit id="azureServerName">
+      <source xml:lang="en">Azure SQL server name</source>
+    </trans-unit>
+    <trans-unit id="azureSqlServerCreated">
+      <source xml:lang="en">Azure SQL Server '{0}' created</source>
+    </trans-unit>
+    <trans-unit id="azureSubscription">
+      <source xml:lang="en">Azure subscription</source>
+    </trans-unit>
     <trans-unit id="baseDockerImage">
       <source xml:lang="en">Base {0} Docker image</source>
     </trans-unit>
@@ -121,7 +136,7 @@
     <trans-unit id="confirmServerPassword">
       <source xml:lang="en">Confirm {0} admin password</source>
     </trans-unit>
-    <trans-unit id="connectingToSqlServerOnDockerMessage">
+    <trans-unit id="connectingToSqlServerMessage">
       <source xml:lang="en">Connecting to SQL Server</source>
     </trans-unit>
     <trans-unit id="connectionFailedError">
@@ -147,6 +162,9 @@
     </trans-unit>
     <trans-unit id="createProjectSettings">
       <source xml:lang="en">Settings</source>
+    </trans-unit>
+    <trans-unit id="creatingAzureSqlServer">
+      <source xml:lang="en">Creating Azure SQL Server '{0}' ...</source>
     </trans-unit>
     <trans-unit id="creatingDeploymentSettingsMessage">
       <source xml:lang="en">Creating deployment settings ...</source>
@@ -342,6 +360,9 @@
     </trans-unit>
     <trans-unit id="enterSystemDbName">
       <source xml:lang="en">Enter a database name for this system database</source>
+    </trans-unit>
+    <trans-unit id="enterUser">
+      <source xml:lang="en">Enter {0} admin user name</source>
     </trans-unit>
     <trans-unit id="equalComparison">
       <source xml:lang="en">The project is already up to date with the database.</source>
@@ -645,6 +666,12 @@
     <trans-unit id="publishToExistingServer">
       <source xml:lang="en">Publish to an existing {0}</source>
     </trans-unit>
+    <trans-unit id="publishToNewAzureServer">
+      <source xml:lang="en">Publish to new Azure SQL logical server</source>
+    </trans-unit>
+    <trans-unit id="publishToNewAzureServerFailed">
+      <source xml:lang="en">Failed to publish to new Azure SQL server. {0}</source>
+    </trans-unit>
     <trans-unit id="publishingProjectMessage">
       <source xml:lang="en">Publishing project in a container...</source>
     </trans-unit>
@@ -663,11 +690,14 @@
     <trans-unit id="resetAllVars">
       <source xml:lang="en">Reset all variables</source>
     </trans-unit>
+    <trans-unit id="resourceGroup">
+      <source xml:lang="en">Resource group</source>
+    </trans-unit>
     <trans-unit id="retryFailedMessage">
       <source xml:lang="en">Operation '{0}' failed. Re-trying... Current Result: {1}. Error: '{2}'</source>
     </trans-unit>
     <trans-unit id="retryMessage">
-      <source xml:lang="en">Operation '{0}' failed. Re-trying... Error: '{1}'</source>
+      <source xml:lang="en">Operation '{0}' failed. Re-trying... Error: '{1}' </source>
     </trans-unit>
     <trans-unit id="retryRunMessage">
       <source xml:lang="en">Running operation '{2}' Attempt {0} of {1}</source>
@@ -755,6 +785,9 @@
     </trans-unit>
     <trans-unit id="server">
       <source xml:lang="en">Server</source>
+    </trans-unit>
+    <trans-unit id="serverCreated">
+      <source xml:lang="en">Server created</source>
     </trans-unit>
     <trans-unit id="serverName">
       <source xml:lang="en">Server name</source>
