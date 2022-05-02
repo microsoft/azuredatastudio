@@ -35,6 +35,7 @@ import { CellOutputEdit, CellOutputDataEdit } from 'sql/workbench/services/noteb
 import { ILogService } from 'vs/platform/log/common/log';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { CELL_URI_PATH_PREFIX } from 'sql/workbench/common/constants';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -1121,7 +1122,7 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	private createUri(): void {
-		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${this.id}` });
+		let uri = URI.from({ scheme: Schemas.untitled, path: `${CELL_URI_PATH_PREFIX}${this.id}` });
 		// Use this to set the internal (immutable) and public (shared with extension) uri properties
 		this.cellUri = uri;
 	}

@@ -425,6 +425,9 @@ suite('Notebook Serializer', () => {
 		assert.deepStrictEqual(actual.document.uri, expected.document.uri);
 		assert.strictEqual(actual.document.languageId, expected.document.languageId);
 		assert.deepStrictEqual(actual.notebook.uri, expected.notebook.uri);
+		assert.deepStrictEqual(actual.document.notebook.uri, expected.document.notebook.uri);
+		assert.deepStrictEqual(actual.document.notebook.uri, expected.notebook.uri);
+		assert.deepStrictEqual(actual.notebook.uri, expected.document.notebook.uri);
 	}
 	function validateCellsMatch(actual: vscode.NotebookCell[], expected: vscode.NotebookCell[]): void {
 		assert.strictEqual(actual.length, expected.length, 'Cell arrays did not have equal lengths.');
