@@ -133,7 +133,7 @@ export function setup(opts: minimist.ParsedArgs) {
 		});
 
 		describe('Notebook keyboard navigation', async () => {
-			it.skip('can enter and exit edit mode and navigate using keyboard nav', async function () {
+			it('can enter and exit edit mode and navigate using keyboard nav', async function () {
 				const app = this.app as Application;
 				await app.workbench.sqlNotebook.newUntitledNotebook();
 				await app.workbench.sqlNotebook.addCellFromPlaceholder('Code'); // add new code cell

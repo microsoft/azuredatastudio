@@ -455,7 +455,8 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			if (isEditMode) {
 				this._editor.getControl().focus();
 			} else {
-				(document.activeElement as HTMLElement).blur();
+				const currentCellSelector = `.notebook-cell[id="${this._activeCellId}"] .inputarea.monaco-mouse-cursor-text`;
+				(document.querySelector(currentCellSelector) as HTMLElement).blur();
 			}
 		}
 	}
