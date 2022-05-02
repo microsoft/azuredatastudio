@@ -24,25 +24,25 @@ export function beforeSuite(opts: minimist.ParsedArgs, optionsTransform?: (opts:
 	before(async function () {
 		try {
 			let options: ApplicationOptions = { ...this.defaultOptions };
-
+			console.log('executed options');
 			if (optionsTransform) {
 				options = await optionsTransform(options);
 			}
-
+			console.log('option transform');
 			// https://github.com/microsoft/vscode/issues/34988
-			// const userDataPathSuffix = [...Array(8)].map(() => Math.random().toString(36)[3]).join('');
-			// const userDataDir = options.userDataDir.concat(`-${userDataPathSuffix}`);
-
-			const userDataDir = path.join(options.userDataDir, 'd');
-
+			const userDataPathSuffix = [...Array(8)].map(() => Math.random().toString(36)[3]).join('');
+			const userDataDir = options.userDataDir.concat(`-${userDataPathSuffix}`);
+			console.log('user data');
+			console.log(userDataDir);
 			const app = new Application({ ...options, userDataDir });
 			await app.start();
 			this.app = app;
-
+			console.log('app');
 			if (opts.log) {
 				const title = this.currentTest!.fullTitle();
 				app.logger.log('*** Test start:', title);
 			}
+			console.log('opt log');
 		} catch (e) {
 			console.trace(e);
 		}
