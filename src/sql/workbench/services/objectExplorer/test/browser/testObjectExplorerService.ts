@@ -71,9 +71,9 @@ export class TestObjectExplorerService implements IObjectExplorerService {
 
 	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<azdata.ObjectExplorerSessionResponse> { throw new Error('Method not implemented'); }
 
-	public async expandNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo> { throw new Error('Method not implemented'); }
+	public async expandNode(providerId: string, session: azdata.ObjectExplorerSession, node: TreeNode): Promise<azdata.ObjectExplorerExpandInfo> { throw new Error('Method not implemented'); }
 
-	public async refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo> { throw new Error('Method not implemented'); }
+	public async refreshNode(providerId: string, session: azdata.ObjectExplorerSession, node: TreeNode): Promise<azdata.ObjectExplorerExpandInfo> { throw new Error('Method not implemented'); }
 
 	public async closeSession(providerId: string, session: azdata.ObjectExplorerSession): Promise<azdata.ObjectExplorerCloseSessionResponse> { throw new Error('Method not implemented'); }
 
