@@ -92,6 +92,15 @@ export function getConfigTracingLevel(): string {
 	}
 }
 
+export function getConfigParallelMessageProcessing(): boolean {
+	let config = getConfiguration();
+	if (config) {
+		return config['parallelMessageProcessing'];
+	} else {
+		return undefined;
+	}
+}
+
 export function getLogFileName(prefix: string, pid: number): string {
 	return `${prefix}_${pid}.log`;
 }

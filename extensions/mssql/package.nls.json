@@ -186,5 +186,6 @@
 	"objectsListProperties.name": "Name",
 
 	"title.newTable": "New Table",
-	"title.designTable": "Design"
+	"title.designTable": "Design",
+	"mssql.parallelMessageProcessing" : "[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel, The default value is false. Relaunch of ADS is required after making the change. This feature flag is introduced so that we can test the impact of making everything in parallel."
 }

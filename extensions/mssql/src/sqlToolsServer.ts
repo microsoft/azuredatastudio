@@ -8,7 +8,7 @@ import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { getCommonLaunchArgsAndCleanupOldLogFiles, getOrDownloadServer } from './utils';
+import { getCommonLaunchArgsAndCleanupOldLogFiles, getConfigParallelMessageProcessing, getOrDownloadServer } from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature } from './features';
@@ -106,6 +106,9 @@ export class SqlToolsServer {
 
 function generateServerOptions(logPath: string, executablePath: string): ServerOptions {
 	const launchArgs = getCommonLaunchArgsAndCleanupOldLogFiles(logPath, 'sqltools.log', executablePath);
+	if (getConfigParallelMessageProcessing()) {
+		launchArgs.push('--parallel-message-processing');
+	}
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
 
