@@ -58,4 +58,5 @@ exports.load = function (entrypoint, onLoad, onError) {
 
 	performance.mark(`code/fork/willLoadCode`);
 	loader([entrypoint], onLoad, onError);
+	console.log('loading done');
 };
