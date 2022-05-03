@@ -39,6 +39,7 @@ if (nlsConfig && nlsConfig.pseudo) {
 }
 
 exports.load = function (entrypoint, onLoad, onError) {
+	console.log(entrypoint, onLoad, onError);
 	if (!entrypoint) {
 		return;
 	}
