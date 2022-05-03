@@ -434,6 +434,26 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Markdown View');
 				await app.workbench.sqlNotebook.waitForActiveCellEditorContents(s => s.includes('- **_<u><mark>Markdown Test</mark></u>_**'));
 			});
+
+			it('can save WYSIWYG notebook', async function () {
+				const app = this.app as Application;
+				const filename = 'emptyNotebook.ipynb';
+				await app.workbench.sqlNotebook.openFile(filename);
+
+				await app.workbench.sqlNotebook.addCell('markdown');
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Markdown View');
+				let text = 'WYSIWYG Test';
+				await app.workbench.sqlNotebook.waitForTypeInEditor(text);
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Rich Text View');
+				await app.workbench.sqlNotebook.selectAllTextInRichTextEditor();
+				await app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
+
+				await app.workbench.quickaccess.runCommand('workbench.action.files.save');
+				await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
+
+				await app.workbench.sqlNotebook.openFile(filename);
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(text, 'p strong');
+			});
 		});
 
 		describe('Cell Actions', function () {
