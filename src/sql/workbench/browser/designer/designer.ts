@@ -101,6 +101,7 @@ export class Designer extends Disposable implements IThemable {
 	private _groupHeaders: HTMLElement[] = [];
 	private _issuesView: DesignerIssuesTabPanelView;
 	private _scriptEditorView: DesignerScriptEditorTabPanelView;
+	private _taskbar: Taskbar;
 	private _onStyleChangeEventEmitter = new Emitter<void>();
 
 	constructor(private readonly _container: HTMLElement,
@@ -318,6 +319,11 @@ export class Designer extends Disposable implements IThemable {
 		this._contentTabbedPanel.clearTabs();
 		this._propertiesPane.clear();
 		this._groupHeaders = [];
+		if (this._taskbar) {
+			this._actions.forEach(action => action.dispose());
+			this._actions = [];
+			this._taskbar.dispose();
+		}
 	}
 
 	private initializeDesigner(): void {
@@ -803,7 +809,7 @@ export class Designer extends Disposable implements IThemable {
 					container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				}
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
-				let taskbar = this.addDesignerTaskbar(container, tableProperties, propertyPath, view);
+				this.addDesignerTaskbar(container, tableProperties);
 				const tableContainer = container.appendChild(DOM.$('.full-row'));
 				const table = new Table(tableContainer, {
 					dataProvider: new TableDataView()
@@ -820,9 +826,6 @@ export class Designer extends Disposable implements IThemable {
 					rowHeight: TableRowHeight,
 					headerRowHeight: TableHeaderRowHeight,
 					editorLock: new Slick.EditorLock()
-				});
-				table.onSelectedRowsChanged((e: Slick.EventData, data: Slick.OnSelectedRowsChangedEventArgs<Slick.SlickData>) => {
-					taskbar.context = { path: propertyPath, source: view, rowIndex: data.rows[0] };
 				});
 				let buttonColumn: Slick.Column<Slick.SlickData>[] = [];
 				if (tableProperties.canInsertRows) {
@@ -884,7 +887,9 @@ export class Designer extends Disposable implements IThemable {
 				});
 				table.grid.registerPlugin(moveRowsPlugin);
 				buttonColumn.push(moveRowsPlugin.definition);
+				this._taskbar.context = { table: table, path: propertyPath, source: view };
 				// }
+
 				table.ariaLabel = tableProperties.ariaLabel;
 				const columns = tableProperties.columns.map(propName => {
 					const propertyDefinition = tableProperties.itemProperties.find(item => item.propertyName === propName);
@@ -993,26 +998,24 @@ export class Designer extends Disposable implements IThemable {
 		return component;
 	}
 
-	private addDesignerTaskbar(container: HTMLElement, tableProperties: DesignerTableProperties,
-		path: DesignerPropertyPath, view: DesignerUIArea): Taskbar | undefined {
-		if (tableProperties.canAddRows || tableProperties.canMoveRows) {
-			const taskbarContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
-			let taskbar = new Taskbar(taskbarContainer);
-			if (tableProperties.canAddRows) {
-				let addColAction = this._instantiationService.createInstance(AddRowAction, this, tableProperties);
-				this._actions.push(addColAction);
-			}
-			// if (tableProperties.canMoveRows) {
-			let moveUpAction = this._instantiationService.createInstance(MoveRowUpAction, this);
-			let moveDownAction = this._instantiationService.createInstance(MoveRowDownAction, this);
-			this._actions.push(moveUpAction);
-			this._actions.push(moveDownAction);
-			// }
-			let taskbarContent: ITaskbarContent[] = this._actions.map((a) => { return { action: a }; });
-			taskbar.setContent(taskbarContent);
-			return taskbar;
+	private addDesignerTaskbar(container: HTMLElement, tableProperties: DesignerTableProperties): void {
+		// if (tableProperties.canAddRows || tableProperties.canMoveRows) {
+		let taskbarContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
+		this._taskbar = new Taskbar(taskbarContainer);
+		if (tableProperties.canAddRows) {
+			let addColAction = this._instantiationService.createInstance(AddRowAction, this, tableProperties);
+			this._actions.push(addColAction);
 		}
-		return undefined;
+		// if (tableProperties.canMoveRows) {
+
+		let moveUpAction = this._instantiationService.createInstance(MoveRowUpAction, this);
+		let moveDownAction = this._instantiationService.createInstance(MoveRowDownAction, this);
+		this._actions.push(moveUpAction);
+		this._actions.push(moveDownAction);
+		// }
+		let taskbarContent: ITaskbarContent[] = this._actions.map((a) => { return { action: a }; });
+		this._taskbar.setContent(taskbarContent);
+		// }
 	}
 
 	private openContextMenu(table: Table<Slick.SlickData>, event: ITableMouseEvent, propertyPath: DesignerPropertyPath, view: DesignerUIArea): void {

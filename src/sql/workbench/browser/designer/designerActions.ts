@@ -27,11 +27,13 @@ export class AddRowAction extends Action {
 	}
 
 	public override async run(context: DesignerTableActionContext): Promise<void> {
+		const lastIndex = context.table.getData().getItems().length;
 		Promise.resolve(() => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Add,
 				path: context.path,
-				source: context.source
+				source: context.source,
+				value: lastIndex
 			});
 		});
 	}
@@ -40,46 +42,69 @@ export class AddRowAction extends Action {
 export class MoveRowUpAction extends Action {
 	public static ID = 'designer.moveRowUpAction';
 	public static ICON = 'move-row-up-button arrow-up codicon';
-	public static LABEL = localize('designer.moveRowUpAction', 'Move row up');
+	public static LABEL = localize('designer.moveRowUpAction', 'Move Up');
 
 	constructor(private designer: Designer) {
 		super(MoveRowUpAction.ID, MoveRowUpAction.LABEL, MoveRowUpAction.ICON);
 		this.designer = designer;
-		this._tooltip = localize('designer.moveRowButtonAriaLabel', "Move selected row up one position");
+		this._tooltip = localize('designer.moveRowUpButtonAriaLabel', "Move selected row up one position");
 		this.enabled = false;
 	}
 
 	public override async run(context: DesignerTableActionContext): Promise<void> {
 		let rowIndex = context.table.getSelectedRows()[0];
+		const tableData = context.table.getData().getItems();
+		const prev = tableData[rowIndex - 1];
+		if (rowIndex - 1 < 0) {
+			return;
+		}
+		tableData[rowIndex - 1] = tableData[rowIndex];
+		tableData[rowIndex] = prev;
+		context.table.grid.resetActiveCell();
+		context.table.grid.setData(tableData);
+		context.table.grid.setSelectedRows([rowIndex - 1]);
+		context.table.grid.render();
 		Promise.resolve(() => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Move,
-				path: context.path,
+				path: [...context.path, rowIndex],
 				source: context.source,
 				value: rowIndex - 1
 			});
 		});
+
 	}
 }
 
 export class MoveRowDownAction extends Action {
 	public static ID = 'designer.moveRowDownAction';
 	public static ICON = 'move-row-down-button arrow-down codicon';
-	public static LABEL = localize('designer.moveRowDownAction', 'Move row down');
+	public static LABEL = localize('designer.moveRowDownAction', 'Move Down');
 
 	constructor(private designer: Designer) {
 		super(MoveRowDownAction.ID, MoveRowDownAction.LABEL, MoveRowDownAction.ICON);
 		this.designer = designer;
-		this._tooltip = localize('designer.moveRowButtonAriaLabel', "Move selected row up one position");
+		this._tooltip = localize('designer.moveRowDownButtonAriaLabel', "Move selected row down one position");
 		this.enabled = false;
 	}
 
 	public override async run(context: DesignerTableActionContext): Promise<void> {
 		let rowIndex = context.table.getSelectedRows()[0];
+		const tableData = context.table.getData().getItems();
+		if (rowIndex + 1 >= tableData.length) {
+			return;
+		}
+		const next = tableData[rowIndex + 1];
+		tableData[rowIndex + 1] = tableData[rowIndex];
+		tableData[rowIndex] = next;
+		context.table.grid.resetActiveCell();
+		context.table.grid.setData(tableData);
+		context.table.grid.setSelectedRows([rowIndex + 1]);
+		context.table.grid.render();
 		Promise.resolve(() => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Move,
-				path: context.path,
+				path: [...context.path, rowIndex],
 				source: context.source,
 				value: rowIndex + 1
 			});
