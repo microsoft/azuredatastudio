@@ -139,7 +139,6 @@ export class Application {
 	}
 
 	private async startApplication(extraArgs: string[] = []): Promise<any> {
-		console.log(extraArgs);
 		this._code = await spawn({
 			...this.options,
 			extraArgs: [...(this.options.extraArgs || []), ...extraArgs],

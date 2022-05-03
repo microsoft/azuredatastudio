@@ -114,18 +114,18 @@ async function createDriverHandle(): Promise<string> {
 
 export async function spawn(options: SpawnOptions): Promise<Code> {
 	const handle = await createDriverHandle();
+	console.log('This is the missing folder', handle);
+	fs.mkdirSync(handle);
 
 	let child: cp.ChildProcess | undefined;
 	let connectDriver: typeof connectElectronDriver;
 
 	copyExtension(options.extensionsPath, 'vscode-notebook-tests');
-	console.log(options.web);
 	if (options.web) {
 		await launch(options.userDataDir, options.workspacePath, options.codePath, options.extensionsPath, Boolean(options.verbose));
 		connectDriver = connectPlaywrightDriver.bind(connectPlaywrightDriver, options);
 		return connect(connectDriver, child, '', handle, options.logger);
 	}
-	console.log({ ...process.env });
 	const env = { ...process.env };
 	const codePath = options.codePath;
 	const outPath = codePath ? getBuildOutPath(codePath) : getDevOutPath();
@@ -145,7 +145,6 @@ export async function spawn(options: SpawnOptions): Promise<Code> {
 		`--logsPath=${path.join(repoPath, '.build', 'logs', 'smoke-tests')}`,
 		'--driver', handle
 	];
-	console.log(args);
 	if (process.platform === 'linux') {
 		args.push('--disable-gpu'); // Linux has trouble in VMs to render properly with GPU enabled
 	}
@@ -194,7 +193,6 @@ export async function spawn(options: SpawnOptions): Promise<Code> {
 	}
 
 	const electronPath = codePath ? getBuildElectronPath(codePath) : getDevElectronPath();
-	console.log(electronPath, args, spawnOptions);
 	child = cp.spawn(electronPath, args, spawnOptions);
 	instances.add(child);
 	child.once('exit', () => instances.delete(child!));
