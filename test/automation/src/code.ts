@@ -71,11 +71,12 @@ async function connect(connectDriver: typeof connectElectronDriver, child: cp.Ch
 			const { client, driver } = await connectDriver(outPath, handlePath);
 			return new Code(client, driver, logger);
 		} catch (err) {
+			console.log(errCount, err);
 			if (++errCount > 50) {
 				if (child) {
 					child.kill();
 				}
-				//throw err;
+				throw err;
 			}
 
 			// retry
