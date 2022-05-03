@@ -146,6 +146,8 @@ export interface INotebookService {
 	openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined>;
 
 	getUntitledUriPath(originalTitle: string): string;
+
+	getNotebookURIForCell(cellUri: URI): URI | undefined;
 }
 
 export interface IExecuteProvider {
