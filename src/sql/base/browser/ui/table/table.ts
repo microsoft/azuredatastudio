@@ -20,6 +20,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
 import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
+import { expandableColumnFormatter } from 'sql/base/browser/ui/table/formatters';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -123,35 +124,32 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
 
 		this._grid.onClick.subscribe((e, data) => {
-			const row = data.grid.getDataItem(data.row);
-			if (row['isParent']) {
-				if (!row._expanded) {
-					(<any>row)._expanded = true;
-				} else {
-					(<any>row)._expanded = false;
-				}
-				data.grid.updateRow(data.row);
-				this._data.filter(data.grid.getColumns());
-				this.rerenderGrid();
+			if (this.isTreeGrid()) {
+				this.toggleTreeGridParent(data.row, data.cell);
 			}
 		});
 
 		this._grid.onKeyDown.subscribe((e, data) => {
-			if ((<any>e).keyCode === 13) {
-				const row = data.grid.getDataItem(data.row);
-				if (row['isParent']) {
-					if (!row._expanded) {
-						(<any>row)._expanded = true;
-					} else {
-						(<any>row)._expanded = false;
+			if (this.isTreeGrid()) {
+				if ((<any>e).keyCode === 13) {
+					this.toggleTreeGridParent(data.row, data.cell);
+				} else if ((<any>e).keyCode === 37) {
+					if (data.cell === 0) {
+						const rowData = this._data.getItem(data.row);
+						if (rowData?.parent && rowData.parent !== -1) {
+							this.toggleTreeGridParent(rowData.parent, this.expandableColumnIndex(), false);
+							this.setActiveCell(rowData.parent, 0);
+						}
 					}
-					data.grid.updateRow(data.row);
-					this._data.filter(data.grid.getColumns());
-					this.rerenderGrid();
-					this.focus();
+				} else if ((<any>e).keyCode === 39) {
+					if (data.cell === (this._grid.getColumns().length - 1)) {
+						this.toggleTreeGridParent(data.row, this.expandableColumnIndex(), true);
+					}
 				}
 			}
+		});
 
+		this._grid.onRendered.subscribe((e, data) => {
 		});
 	}
 
@@ -205,6 +203,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 			this._data = data;
 		} else {
 			this._data = new TableDataView<T>(data);
+		}
+		if (this.isTreeGrid()) {
+			this.transGridDataToTreeGridData(this._data);
 		}
 		this._grid.setData(this._data, true);
 		this._data.filter(this._grid.getColumns());
@@ -437,5 +438,54 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	public get container(): HTMLElement {
 		return this._tableContainer;
+	}
+
+	// Checks if the current table is a tree grid. Every tree grid should have a column with expandableColumnFormatter
+	private isTreeGrid(): boolean {
+		return this._grid.getColumns().filter(c => c.formatter === expandableColumnFormatter).length > 0;
+	}
+
+	private expandableColumnIndex(): number {
+		return this._grid.getColumns().findIndex(c => c.formatter === expandableColumnFormatter);
+	}
+
+	private toggleTreeGridParent(row: number, cell: number, forceState?: boolean): void {
+		const rowData = this._data.getItem(row);
+		if (rowData['isParent'] && this._grid.getColumns()[cell].formatter === expandableColumnFormatter) {
+			if (forceState === undefined) {
+				if (!rowData._expanded) {
+					(<any>rowData)._expanded = true;
+				} else {
+					(<any>rowData)._expanded = false;
+				}
+			} else {
+				(<any>rowData)._expanded = forceState;
+			}
+			this._data.filter(this._grid.getColumns());
+			this.rerenderGrid();
+			this.focus();
+		}
+	}
+
+	// We need to transform the grid data to tree grid data. This includes adding attributes to data rows that help us better set different aria attributes.
+	private transGridDataToTreeGridData(data: IDisposableDataProvider<T>): IDisposableDataProvider<T> {
+		for (let i = 0; i < data.getLength(); i++) {
+			const dataRow = <any>data.getItem(i);
+			if (dataRow.parent === undefined || dataRow.parent === -1) {
+				dataRow.level = 1;
+			} else {
+				const parentRow = <any>data.getItem(dataRow.parent);
+				dataRow.level = parentRow.level + 1;
+				if (parentRow.setSize === undefined) {
+					parentRow.setSize = 1;
+				} else {
+					parentRow.setSize += 1;
+				}
+				dataRow.posInSet = parentRow.setSize;
+				parentRow._expanded = false;
+				parentRow.isParent = true;
+			}
+		}
+		return data;
 	}
 }

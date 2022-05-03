@@ -144,7 +144,7 @@ export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: an
 }
 
 export function expandableColumnFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
-	const spacer = `<span style='display:inline-block;height:1px;width:${(15 * dataContext['indent'])}px'></span>`;
+	const spacer = `<span style='display:inline-block;height:1px;width:${(15 * (dataContext['level'] - 1))}px'></span>`;
 
 	const textDisplayElement = createTextCell(value);
 

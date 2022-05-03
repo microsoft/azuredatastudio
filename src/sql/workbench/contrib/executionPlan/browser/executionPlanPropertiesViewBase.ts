@@ -34,7 +34,6 @@ export abstract class ExecutionPlanPropertiesViewBase {
 	// Properties table
 	private _tableComponent: Table<Slick.SlickData>;
 	private _tableComponentDataView: TableDataView<Slick.SlickData>;
-	private _tableComponentDataModel: { [key: string]: string }[];
 	private _tableContainer!: HTMLElement;
 
 	private _tableWidth;
@@ -84,7 +83,6 @@ export abstract class ExecutionPlanPropertiesViewBase {
 		this._tableContainer.appendChild(table);
 
 		this._tableComponentDataView = new TableDataView();
-		this._tableComponentDataModel = [];
 		this._tableComponent = new Table(table, {
 			dataProvider: this._tableComponentDataView, columns: []
 		}, {
@@ -140,13 +138,8 @@ export abstract class ExecutionPlanPropertiesViewBase {
 	public populateTable(columns: Slick.Column<Slick.SlickData>[], data: { [key: string]: string }[]) {
 		this._tableComponent.columns = columns;
 		this._tableContainer.scrollTo(0, 0);
-		this._tableComponentDataView.clear();
-		this._tableComponentDataModel = data;
-		this._tableComponentDataView.push(this._tableComponentDataModel);
+		this._tableComponentDataView = new TableDataView(data);
 		this._tableComponent.setData(this._tableComponentDataView);
-		this._tableComponent.autosizeColumns();
-		this._tableComponent.updateRowCount();
-		this.resizeTable();
 	}
 
 	private resizeTable(): void {

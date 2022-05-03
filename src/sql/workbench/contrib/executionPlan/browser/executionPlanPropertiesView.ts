@@ -131,14 +131,15 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 			rows.push(row);
 			row['name'] = p.name;
 			row['parent'] = parentIndex;
-			row['indent'] = indent;
+			//row['indent'] = indent;
 			if (!isString(p.value)) {
 				row['value'] = removeLineBreaks(p.displayValue, ' ');
-				row['isParent'] = true;
+				row['tootltip'] = p.displayValue;
+				//row['isParent'] = true;
 				this.convertModelToTableRows(p.value, rows.length - 1, indent + 2, rows);
 			} else {
-				row['value'] = removeLineBreaks(p.value, ' ');
-				row['tooltip'] = p.value;
+				row['value'] = removeLineBreaks(p.displayValue, ' ');
+				row['tooltip'] = p.displayValue;
 			}
 		});
 		return rows;
