@@ -8,7 +8,6 @@ import * as cp from 'child_process';
 import * as os from 'os';
 import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
-import { tmpName } from 'tmp';
 import { IDriver, connect as connectElectronDriver, IDisposable, IElement, Thenable, ILocalizedStrings, ILocaleInfo } from './driver';
 import { connect as connectPlaywrightDriver, launch } from './playwrightDriver';
 import { Logger } from './logger';
