@@ -75,7 +75,7 @@ async function connect(connectDriver: typeof connectElectronDriver, child: cp.Ch
 				if (child) {
 					child.kill();
 				}
-				throw err;
+				//throw err;
 			}
 
 			// retry
@@ -114,8 +114,6 @@ async function createDriverHandle(): Promise<string> {
 
 export async function spawn(options: SpawnOptions): Promise<Code> {
 	const handle = await createDriverHandle();
-	console.log('This is the missing folder', handle);
-	fs.mkdirSync(handle);
 
 	let child: cp.ChildProcess | undefined;
 	let connectDriver: typeof connectElectronDriver;
