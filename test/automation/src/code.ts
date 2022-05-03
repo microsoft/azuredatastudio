@@ -8,6 +8,7 @@ import * as cp from 'child_process';
 import * as os from 'os';
 import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
+import { tmpName } from 'tmp';
 import { IDriver, connect as connectElectronDriver, IDisposable, IElement, Thenable, ILocalizedStrings, ILocaleInfo } from './driver';
 import { connect as connectPlaywrightDriver, launch } from './playwrightDriver';
 import { Logger } from './logger';
@@ -70,6 +71,7 @@ async function connect(connectDriver: typeof connectElectronDriver, child: cp.Ch
 			const { client, driver } = await connectDriver(outPath, handlePath);
 			return new Code(client, driver, logger);
 		} catch (err) {
+			console.log(errCount, err);
 			if (++errCount > 50) {
 				if (child) {
 					child.kill();
@@ -107,11 +109,7 @@ async function createDriverHandle(): Promise<string> {
 		const name = [...Array(15)].map(() => Math.random().toString(36)[3]).join('');
 		return `\\\\.\\pipe\\${name}`;
 	} else {
-		const tmpPath = path.join(os.homedir(), [...Array(15)].map(() => Math.random().toString(36)[3]).join(''));
-		console.log(tmpPath);
-		fs.mkdirSync(tmpPath);
-		return tmpPath;
-		//return await new Promise<string>((c, e) => tmpName((err, handlePath) => err ? e(err) : c(handlePath)));
+		return await new Promise<string>((c, e) => tmpName((err, handlePath) => err ? e(err) : c(handlePath)));
 	}
 }
 

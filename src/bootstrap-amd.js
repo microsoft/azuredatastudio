@@ -39,7 +39,6 @@ if (nlsConfig && nlsConfig.pseudo) {
 }
 
 exports.load = function (entrypoint, onLoad, onError) {
-	console.log(entrypoint, onLoad, onError);
 	if (!entrypoint) {
 		return;
 	}
@@ -59,5 +58,4 @@ exports.load = function (entrypoint, onLoad, onError) {
 
 	performance.mark(`code/fork/willLoadCode`);
 	loader([entrypoint], onLoad, onError);
-	console.log('loading done');
 };
