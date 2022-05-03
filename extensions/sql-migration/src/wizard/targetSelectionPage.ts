@@ -199,9 +199,13 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			},
 		}).component();
 		this._disposables.push(this._azureAccountsDropdown.onValueChanged(async (value) => {
-			const selectedAccount = this.migrationStateModel._azureAccounts.find(account => account.displayInfo.displayName === value);
-			this.migrationStateModel._azureAccount = utils.deepClone(selectedAccount)!;
-			await this.populateTenantsDropdown();
+			if (value && value !== 'undefined') {
+				const selectedAccount = this.migrationStateModel._azureAccounts.find(account => account.displayInfo.displayName === value);
+				this.migrationStateModel._azureAccount = (selectedAccount)
+					? utils.deepClone(selectedAccount)!
+					: undefined!;
+				await this.populateTenantsDropdown();
+			}
 		}));
 
 		const linkAccountButton = this._view.modelBuilder.hyperlink()
@@ -253,16 +257,18 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		}).component();
 
 		this._disposables.push(this._accountTenantDropdown.onValueChanged(async (value) => {
-			/**
-			 * Replacing all the tenants in azure account with the tenant user has selected.
-			 * All azure requests will only run on this tenant from now on
-			 */
-			const selectedTenant = this.migrationStateModel._accountTenants.find(tenant => tenant.displayName === value);
-			if (selectedTenant) {
-				this.migrationStateModel._azureTenant = utils.deepClone(selectedTenant)!;
-				this.migrationStateModel._azureAccount.properties.tenants = [this.migrationStateModel._azureTenant];
+			if (value && value !== 'undefined') {
+				/**
+				 * Replacing all the tenants in azure account with the tenant user has selected.
+				 * All azure requests will only run on this tenant from now on
+				 */
+				const selectedTenant = this.migrationStateModel._accountTenants.find(tenant => tenant.displayName === value);
+				if (selectedTenant) {
+					this.migrationStateModel._azureTenant = utils.deepClone(selectedTenant)!;
+					this.migrationStateModel._azureAccount.properties.tenants = [this.migrationStateModel._azureTenant];
+				}
+				await this.populateSubscriptionDropdown();
 			}
-			await this.populateSubscriptionDropdown();
 		}));
 
 		this._accountTenantFlexContainer = this._view.modelBuilder.flexContainer()
@@ -304,12 +310,14 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			},
 		}).component();
 		this._disposables.push(this._azureSubscriptionDropdown.onValueChanged(async (value) => {
-			if (value && value !== constants.NO_SUBSCRIPTIONS_FOUND) {
+			if (value && value !== 'undefined' && value !== constants.NO_SUBSCRIPTIONS_FOUND) {
 				const selectedSubscription = this.migrationStateModel._subscriptions.find(subscription => `${subscription.name} - ${subscription.id}` === value);
-				this.migrationStateModel._targetSubscription = utils.deepClone(selectedSubscription)!;
+				this.migrationStateModel._targetSubscription = (selectedSubscription)
+					? utils.deepClone(selectedSubscription)!
+					: undefined!;
+				this.migrationStateModel.refreshDatabaseBackupPage = true;
+				await this.populateLocationDropdown();
 			}
-			this.migrationStateModel.refreshDatabaseBackupPage = true;
-			await this.populateLocationDropdown();
 		}));
 
 		const azureLocationLabel = this._view.modelBuilder.text().withProps({
@@ -333,13 +341,15 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			},
 		}).component();
 		this._disposables.push(this._azureLocationDropdown.onValueChanged(async (value) => {
-			if (value && value !== constants.NO_LOCATION_FOUND) {
+			if (value && value !== 'undefined' && value !== constants.NO_LOCATION_FOUND) {
 				const selectedLocation = this.migrationStateModel._locations.find(location => location.displayName === value);
-				this.migrationStateModel._location = utils.deepClone(selectedLocation)!;
+				this.migrationStateModel._location = (selectedLocation)
+					? utils.deepClone(selectedLocation)!
+					: undefined!;
+				this.migrationStateModel.refreshDatabaseBackupPage = true;
+				await this.populateResourceGroupDropdown();
+				await this.populateResourceInstanceDropdown();
 			}
-			this.migrationStateModel.refreshDatabaseBackupPage = true;
-			await this.populateResourceGroupDropdown();
-			await this.populateResourceInstanceDropdown();
 		}));
 
 		const azureResourceGroupLabel = this._view.modelBuilder.text().withProps({
@@ -363,11 +373,13 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			},
 		}).component();
 		this._disposables.push(this._azureResourceGroupDropdown.onValueChanged(async (value) => {
-			if (value && value !== constants.RESOURCE_GROUP_NOT_FOUND) {
+			if (value && value !== 'undefined' && value !== constants.RESOURCE_GROUP_NOT_FOUND) {
 				const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === value);
-				this.migrationStateModel._resourceGroup = utils.deepClone(selectedResourceGroup)!;
+				this.migrationStateModel._resourceGroup = (selectedResourceGroup)
+					? utils.deepClone(selectedResourceGroup)!
+					: undefined!;
+				await this.populateResourceInstanceDropdown();
 			}
-			await this.populateResourceInstanceDropdown();
 		}));
 
 		this._azureResourceDropdownLabel = this._view.modelBuilder.text().withProps({

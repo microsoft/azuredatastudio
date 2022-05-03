@@ -259,10 +259,12 @@ export class CreateSqlMigrationServiceDialog {
 
 		this._disposables.push(
 			this.migrationServiceResourceGroupDropdown.onValueChanged(async (value) => {
-				const selectedResourceGroup = this._resourceGroups.find(rg => rg.name === value || constants.NEW_RESOURCE_GROUP(rg.name) === value);
-				this._selectedResourceGroup = (selectedResourceGroup)
-					? selectedResourceGroup
-					: undefined!;
+				if (value && value !== 'undefined') {
+					const selectedResourceGroup = this._resourceGroups.find(rg => rg.name === value || constants.NEW_RESOURCE_GROUP(rg.name) === value);
+					this._selectedResourceGroup = (selectedResourceGroup)
+						? selectedResourceGroup
+						: undefined!;
+				}
 			}));
 
 		const migrationServiceNameLabel = this._view.modelBuilder.text().withProps({

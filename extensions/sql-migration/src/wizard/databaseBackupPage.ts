@@ -687,12 +687,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				},
 			}).component();
 		this._disposables.push(this._networkShareStorageAccountResourceGroupDropdown.onValueChanged(async (value) => {
-			const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === value);
-			if (selectedResourceGroup) {
-				for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
-					this.migrationStateModel._databaseBackup.networkShares[i].resourceGroup = selectedResourceGroup;
+			if (value && value !== 'undefined') {
+				const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === value);
+				if (selectedResourceGroup) {
+					for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
+						this.migrationStateModel._databaseBackup.networkShares[i].resourceGroup = selectedResourceGroup;
+					}
+					await this.loadNetworkShareStorageDropdown();
 				}
-				await this.loadNetworkShareStorageDropdown();
 			}
 		}));
 
@@ -714,10 +716,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				fireOnTextChange: true,
 			}).component();
 		this._disposables.push(this._networkShareContainerStorageAccountDropdown.onValueChanged((value) => {
-			const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === value);
-			if (selectedStorageAccount) {
-				for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
-					this.migrationStateModel._databaseBackup.networkShares[i].storageAccount = selectedStorageAccount;
+			if (value && value !== 'undefined') {
+				const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === value);
+				if (selectedStorageAccount) {
+					for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
+						this.migrationStateModel._databaseBackup.networkShares[i].storageAccount = selectedStorageAccount;
+					}
 				}
 			}
 		}));
@@ -962,7 +966,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					}).component();
 
 					this._disposables.push(blobContainerResourceDropdown.onValueChanged(async (value) => {
-						if (this.migrationStateModel._resourceGroups) {
+						if (value && value !== 'undefined' && this.migrationStateModel._resourceGroups) {
 							const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === value);
 							if (selectedResourceGroup && !blobResourceGroupErrorStrings.includes(value)) {
 								this.migrationStateModel._databaseBackup.blobs[index].resourceGroup = selectedResourceGroup;
@@ -976,19 +980,21 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this._blobContainerResourceGroupDropdowns.push(blobContainerResourceDropdown);
 
 					this._disposables.push(blobContainerStorageAccountDropdown.onValueChanged(async (value) => {
-						const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === value);
-						if (selectedStorageAccount && !blobStorageAccountErrorStrings.includes(value)) {
-							this.migrationStateModel._databaseBackup.blobs[index].storageAccount = selectedStorageAccount;
-							await this.loadBlobContainerDropdown(index);
-							await blobContainerDropdown.updateProperties({ enabled: true });
-						} else {
-							await this.disableBlobTableDropdowns(index, constants.STORAGE_ACCOUNT);
+						if (value && value !== 'undefined') {
+							const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === value);
+							if (selectedStorageAccount && !blobStorageAccountErrorStrings.includes(value)) {
+								this.migrationStateModel._databaseBackup.blobs[index].storageAccount = selectedStorageAccount;
+								await this.loadBlobContainerDropdown(index);
+								await blobContainerDropdown.updateProperties({ enabled: true });
+							} else {
+								await this.disableBlobTableDropdowns(index, constants.STORAGE_ACCOUNT);
+							}
 						}
 					}));
 					this._blobContainerStorageAccountDropdowns.push(blobContainerStorageAccountDropdown);
 
 					this._disposables.push(blobContainerDropdown.onValueChanged(async (value) => {
-						if (this.migrationStateModel._blobContainers) {
+						if (value && value !== 'undefined' && this.migrationStateModel._blobContainers) {
 							const selectedBlobContainer = this.migrationStateModel._blobContainers.find(blob => blob.name === value);
 							if (selectedBlobContainer && !blobContainerErrorStrings.includes(value)) {
 								this.migrationStateModel._databaseBackup.blobs[index].blobContainer = selectedBlobContainer;
@@ -1005,10 +1011,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 					if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 						this._disposables.push(blobContainerLastBackupFileDropdown.onValueChanged(value => {
-							if (this.migrationStateModel._lastFileNames) {
-								const selectedLastBackupFile = this.migrationStateModel._lastFileNames.find(fileName => fileName.name === value);
-								if (selectedLastBackupFile && !blobFileErrorStrings.includes(value)) {
-									this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = selectedLastBackupFile.name;
+							if (value && value !== 'undefined') {
+								if (this.migrationStateModel._lastFileNames) {
+									const selectedLastBackupFile = this.migrationStateModel._lastFileNames.find(fileName => fileName.name === value);
+									if (selectedLastBackupFile && !blobFileErrorStrings.includes(value)) {
+										this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = selectedLastBackupFile.name;
+									}
 								}
 							}
 						}));

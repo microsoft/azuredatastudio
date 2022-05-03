@@ -170,13 +170,13 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}
 		}).component();
 		this._disposables.push(this._resourceGroupDropdown.onValueChanged(async (value) => {
-			const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === value);
-			if (selectedResourceGroup && value !== constants.RESOURCE_GROUP_NOT_FOUND) {
-				this.migrationStateModel._sqlMigrationServiceResourceGroup = selectedResourceGroup;
-			} else {
-				this.migrationStateModel._sqlMigrationServiceResourceGroup = undefined!;
+			if (value && value !== 'undefined' && value !== constants.RESOURCE_GROUP_NOT_FOUND) {
+				const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === value);
+				this.migrationStateModel._sqlMigrationServiceResourceGroup = (selectedResourceGroup)
+					? selectedResourceGroup
+					: undefined!;
+				await this.populateDms();
 			}
-			await this.populateDms();
 		}));
 
 		const migrationServiceDropdownLabel = this._view.modelBuilder.text().withProps({
@@ -198,7 +198,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}
 		}).component();
 		this._disposables.push(this._dmsDropdown.onValueChanged(async (value) => {
-			if (value && value !== constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR) {
+			if (value && value !== 'undefined' && value !== constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR) {
 				if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
 					this._dmsInfoContainer.display = 'inline';
 				}

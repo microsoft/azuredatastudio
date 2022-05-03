@@ -140,11 +140,13 @@ export class SelectMigrationServiceDialog {
 			}).component();
 		this._disposables.push(
 			this._azureAccountsDropdown.onValueChanged(async (value) => {
-				const selectedAccount = this._azureAccounts.find(account => account.displayInfo.displayName === value);
-				this._serviceContext.azureAccount = (selectedAccount)
-					? utils.deepClone(selectedAccount)
-					: undefined!;
-				await this._populateTentantsDropdown();
+				if (value && value !== 'undefined') {
+					const selectedAccount = this._azureAccounts.find(account => account.displayInfo.displayName === value);
+					this._serviceContext.azureAccount = (selectedAccount)
+						? utils.deepClone(selectedAccount)
+						: undefined!;
+					await this._populateTentantsDropdown();
+				}
 			}));
 
 		const linkAccountButton = this._view.modelBuilder.hyperlink()
@@ -185,12 +187,14 @@ export class SelectMigrationServiceDialog {
 			}).component();
 		this._disposables.push(
 			this._accountTenantDropdown.onValueChanged(async value => {
-				const selectedTenant = this._accountTenants.find(tenant => tenant.displayName === value);
-				if (selectedTenant) {
-					this._serviceContext.tenant = utils.deepClone(selectedTenant);
-					this._serviceContext.azureAccount!.properties.tenants = [selectedTenant];
+				if (value && value !== 'undefined') {
+					const selectedTenant = this._accountTenants.find(tenant => tenant.displayName === value);
+					if (selectedTenant) {
+						this._serviceContext.tenant = utils.deepClone(selectedTenant);
+						this._serviceContext.azureAccount!.properties.tenants = [selectedTenant];
+					}
+					await this._populateSubscriptionDropdown();
 				}
-				await this._populateSubscriptionDropdown();
 			}));
 
 		this._accountTenantFlexContainer = this._view.modelBuilder.flexContainer()
@@ -224,11 +228,13 @@ export class SelectMigrationServiceDialog {
 			}).component();
 		this._disposables.push(
 			this._azureSubscriptionDropdown.onValueChanged(async (value) => {
-				const selectedSubscription = this._subscriptions.find(subscription => `${subscription.name} - ${subscription.id}` === value);
-				this._serviceContext.subscription = (selectedSubscription)
-					? utils.deepClone(selectedSubscription)
-					: undefined!;
-				await this._populateLocationDropdown();
+				if (value && value !== 'undefined') {
+					const selectedSubscription = this._subscriptions.find(subscription => `${subscription.name} - ${subscription.id}` === value);
+					this._serviceContext.subscription = (selectedSubscription)
+						? utils.deepClone(selectedSubscription)
+						: undefined!;
+					await this._populateLocationDropdown();
+				}
 			}));
 
 		const azureLocationLabel = this._view.modelBuilder.text()
@@ -250,12 +256,14 @@ export class SelectMigrationServiceDialog {
 			}).component();
 		this._disposables.push(
 			this._azureLocationDropdown.onValueChanged(async (value) => {
-				const selectedLocation = this._locations.find(location => location.displayName === value);
-				this._serviceContext.location = (selectedLocation)
-					? utils.deepClone(selectedLocation)
-					: undefined!;
-				await this._populateResourceGroupDropdown();
-				await this._populateMigrationServiceDropdown();
+				if (value && value !== 'undefined') {
+					const selectedLocation = this._locations.find(location => location.displayName === value);
+					this._serviceContext.location = (selectedLocation)
+						? utils.deepClone(selectedLocation)
+						: undefined!;
+					await this._populateResourceGroupDropdown();
+					await this._populateMigrationServiceDropdown();
+				}
 			}));
 
 		const azureResourceGroupLabel = this._view.modelBuilder.text()
@@ -277,11 +285,13 @@ export class SelectMigrationServiceDialog {
 			}).component();
 		this._disposables.push(
 			this._azureResourceGroupDropdown.onValueChanged(async (value) => {
-				const selectedResourceGroup = this._resourceGroups.find(rg => rg.name === value);
-				this._serviceContext.resourceGroup = (selectedResourceGroup)
-					? utils.deepClone(selectedResourceGroup)
-					: undefined!;
-				await this._populateMigrationServiceDropdown();
+				if (value && value !== 'undefined') {
+					const selectedResourceGroup = this._resourceGroups.find(rg => rg.name === value);
+					this._serviceContext.resourceGroup = (selectedResourceGroup)
+						? utils.deepClone(selectedResourceGroup)
+						: undefined!;
+					await this._populateMigrationServiceDropdown();
+				}
 			}));
 
 		this._azureServiceDropdownLabel = this._view.modelBuilder.text()
@@ -303,11 +313,13 @@ export class SelectMigrationServiceDialog {
 			}).component();
 		this._disposables.push(
 			this._azureServiceDropdown.onValueChanged(async (value) => {
-				const selectedDms = this._sqlMigrationServices.find(dms => dms.name === value);
-				this._serviceContext.migrationService = (selectedDms)
-					? utils.deepClone(selectedDms)
-					: undefined!;
-				await this._updateButtonState();
+				if (value && value !== 'undefined') {
+					const selectedDms = this._sqlMigrationServices.find(dms => dms.name === value);
+					this._serviceContext.migrationService = (selectedDms)
+						? utils.deepClone(selectedDms)
+						: undefined!;
+					await this._updateButtonState();
+				}
 			}));
 
 		this._disposables.push(
