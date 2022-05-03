@@ -109,7 +109,11 @@ async function createDriverHandle(): Promise<string> {
 		const name = [...Array(15)].map(() => Math.random().toString(36)[3]).join('');
 		return `\\\\.\\pipe\\${name}`;
 	} else {
-		return await new Promise<string>((c, e) => tmpName((err, handlePath) => err ? e(err) : c(handlePath)));
+		const tmpPath = path.join(os.tmpdir(), [...Array(15)].map(() => Math.random().toString(36)[3]).join(''));
+		console.log(tmpPath);
+		fs.mkdirSync(tmpPath);
+		return tmpPath;
+		//return await new Promise<string>((c, e) => tmpName((err, handlePath) => err ? e(err) : c(handlePath)));
 	}
 }
 
