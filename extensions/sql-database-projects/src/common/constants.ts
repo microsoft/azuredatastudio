@@ -149,9 +149,16 @@ export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not 
 // Deploy
 export const SqlServerName = 'SQL server';
 export const AzureSqlServerName = 'Azure SQL server';
+export const AzureSqlLogicalServerName = 'Azure SQL logical server';
 export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
 export function publishToExistingServer(name: string) { return localize('publishToExistingServer', "Publish to an existing {0}", name); }
 export function publishToDockerContainer(name: string) { return localize('publishToDockerContainer', "Publish to new {0} local development container", name); }
+export const publishToNewAzureServer = localize('publishToNewAzureServer', "Publish to new Azure SQL logical server");
+export const azureServerName = localize('azureServerName', "Azure SQL server name");
+export const azureSubscription = localize('azureSubscription', "Azure subscription");
+export const resourceGroup = localize('resourceGroup', "Resource group");
+export const azureLocation = localize('location', "Location");
+export const azureAccounts = localize('azureAccounts', "Azure accounts");
 export function enterPortNumber(name: string) { return localize('enterPortNumber', "Enter {0} port number or press enter to use the default value", name); }
 export function serverPortNumber(name: string) { return localize('serverPortNumber', "{0} port number", name); }
 export function serverPassword(name: string) { return localize('serverPassword', "{0} admin password", name); }
@@ -160,6 +167,7 @@ export function baseDockerImage(name: string) { return localize('baseDockerImage
 export const publishTo = localize('publishTo', "Publish Target");
 export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
 export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
+export function enterUser(name: string) { return localize('enterUser', "Enter {0} admin user name", name); }
 export function enterPassword(name: string) { return localize('enterPassword', "Enter {0} admin password", name); }
 export function confirmPassword(name: string) { return localize('confirmPassword', "Confirm {0} admin password", name); }
 export function selectBaseImage(name: string) { return localize('selectBaseImage', "Select the base {0} docker image", name); }
@@ -205,12 +213,16 @@ export const runningDockerMessage = localize('runningDockerMessage', "Running th
 export function dockerNotRunningError(error: string) { return localize('dockerNotRunningError', "Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'", error || ''); }
 export const dockerContainerNotRunningErrorMessage = localize('dockerContainerNotRunningErrorMessage', "Docker container is not running");
 export const dockerContainerFailedToRunErrorMessage = localize('dockerContainerFailedToRunErrorMessage', "Failed to run the docker container");
-export const connectingToSqlServerMessage = localize('connectingToSqlServerOnDockerMessage', "Connecting to SQL Server");
+export const connectingToSqlServerMessage = localize('connectingToSqlServerMessage', "Connecting to SQL Server");
+export const serverCreated = localize('serverCreated', "Server created");
 export const deployProjectFailedMessage = localize('deployProjectFailedMessage', "Failed to open a connection to the deployed database'");
 export const containerAlreadyExistForProject = localize('containerAlreadyExistForProject', "Containers already exist for this project. Do you want to delete them before deploying a new one?");
 export const checkoutOutputMessage = localize('checkoutOutputMessage', "Check output pane for more details");
+export function creatingAzureSqlServer(name: string): string { return localize('creatingAzureSqlServer', "Creating Azure SQL Server '{0}' ...", name); }
+export function azureSqlServerCreated(name: string): string { return localize('azureSqlServerCreated', "Azure SQL Server '{0}' created", name); }
 export function taskFailedError(taskName: string, err: string): string { return localize('taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
 export function publishToContainerFailed(errorMessage: string) { return localize('publishToContainerFailed', "Failed to publish to container. {0}", errorMessage); }
+export function publishToNewAzureServerFailed(errorMessage: string) { return localize('publishToNewAzureServerFailed', "Failed to publish to new Azure SQL server. {0}", errorMessage); }
 export function deployAppSettingUpdateFailed(appSetting: string) { return localize('deployAppSettingUpdateFailed', "Failed to update app setting '{0}'", appSetting); }
 export function deployAppSettingUpdating(appSetting: string) { return localize('deployAppSettingUpdating', "Updating app setting: '{0}'", appSetting); }
 export function connectionFailedError(error: string) { return localize('connectionFailedError', "Connection failed error: '{0}'", error); }
@@ -220,7 +232,7 @@ export function retryWaitMessage(numberOfSeconds: number, name: string) { return
 export function retryRunMessage(attemptNumber: number, numberOfAttempts: number, name: string) { return localize('retryRunMessage', "Running operation '{2}' Attempt {0} of {1}", attemptNumber, numberOfAttempts, name); }
 export function retrySucceedMessage(name: string, result: string) { return localize('retrySucceedMessage', "Operation '{0}' completed successfully. Result: {1}", name, result); }
 export function retryFailedMessage(name: string, result: string, error: string) { return localize('retryFailedMessage', "Operation '{0}' failed. Re-trying... Current Result: {1}. Error: '{2}'", name, result, error); }
-export function retryMessage(name: string, error: string) { return localize('retryMessage', "Operation '{0}' failed. Re-trying... Error: '{1}'", name, error || ''); }
+export function retryMessage(name: string, error: string) { return localize('retryMessage', "Operation '{0}' failed. Re-trying... Error: '{1}' ", name, error); }
 
 // Add Database Reference dialog strings
 
@@ -332,7 +344,8 @@ export function fileAlreadyExists(filename: string) { return localize('fileAlrea
 export function folderAlreadyExists(filename: string) { return localize('folderAlreadyExists', "A folder with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
 export function folderAlreadyExistsChooseNewLocation(filename: string) { return localize('folderAlreadyExistsChooseNewLocation', "A folder with the name '{0}' already exists on disk at this location. Please choose another location.", filename); }
 export function invalidInput(input: string) { return localize('invalidInput', "Invalid input: {0}", input); }
-export function invalidProjectPropertyValue(propertyName: string) { return localize('invalidPropertyValue', "Invalid value specified for the property '{0}' in .sqlproj file", propertyName); }
+export function invalidProjectPropertyValueInSqlProj(propertyName: string) { return localize('invalidPropertyValueInSqlProj', "Invalid value specified for the property '{0}' in .sqlproj file", propertyName); }
+export function invalidProjectPropertyValueProvided(propertyName: string) { return localize('invalidPropertyValueProvided', "Project property value '{0} is invalid", propertyName); }
 export function unableToCreatePublishConnection(input: string) { return localize('unableToCreatePublishConnection', "Unable to construct connection: {0}", input); }
 export function circularProjectReference(project1: string, project2: string) { return localize('cicularProjectReference', "Circular reference from project {0} to project {1}", project1, project2); }
 export function errorFindingBuildFilesLocation(err: any) { return localize('errorFindingBuildFilesLocation', "Error finding build files location: {0}", utils.getErrorMessage(err)); }
@@ -423,6 +436,7 @@ export const PropertyGroup = 'PropertyGroup';
 export const Type = 'Type';
 export const ExternalStreamingJob: string = 'ExternalStreamingJob';
 export const Sdk: string = 'Sdk';
+export const DatabaseSource = 'DatabaseSource';
 
 export const BuildElements = localize('buildElements', "Build Elements");
 export const FolderElements = localize('folderElements', "Folder Elements");
@@ -439,6 +453,14 @@ export const DefaultCollationProperty = 'DefaultCollation';
 
 /** Default database collation to use when none is specified in the project */
 export const DefaultCollation = 'SQL_Latin1_General_CP1_CI_AS';
+
+/**
+ * Well-known database source values that are allowed to be sent in telemetry.
+ *
+ * 'dsct-oracle-to-ms-sql' is the name of an extension which allows users to migrate from Oracle to Microsoft SQL platform.
+ * When looking at telemetry, we would like to know if a built or deployed database originated from the DSCT extension.
+ */
+export const WellKnownDatabaseSources = ['dsct-oracle-to-ms-sql'];
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
@@ -481,6 +503,8 @@ export const passwordSetting = 'Password';
 export const integratedAuth = 'Integrated';
 export const azureMfaAuth = 'AzureMFA';
 export const sqlAuth = 'SqlAuth';
+
+export const azureAddAccount = localize('azureAddAccount', "Add an Account...");
 
 // Tree item types
 export enum DatabaseProjectItemType {
@@ -550,4 +574,5 @@ export function getTargetPlatformFromVersion(version: string): string {
 export enum PublishTargetType {
 	existingServer = 'existingServer',
 	docker = 'docker',
+	newAzureServer = 'newAzureServer'
 }

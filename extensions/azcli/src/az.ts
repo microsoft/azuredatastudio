@@ -90,6 +90,36 @@ export class AzTool implements azExt.IAzApi {
 				show: (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.DcConfigShowResult>> => {
 					return this.executeCommand<azExt.DcConfigShowResult>(['arcdata', 'dc', 'config', 'show', '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
 				}
+			},
+			listUpgrades: async (namespace: string, usek8s?: boolean, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.DcListUpgradesResult>> => {
+				const argsArray = ['arcdata', 'dc', 'list-upgrades'];
+				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
+				if (usek8s) { argsArray.push('--use-k8s'); }
+
+				const output = await this.executeCommand<string>(argsArray, additionalEnvVars);
+				const versions = <string[]>parseDcListUpgrades(output.stdout);
+				const currentVersion = <string>parseCurrentVersion(output.stdout);
+				let dates: string[] = [];
+				for (let i = 0; i < versions.length; i++) {
+					dates.push(parseReleaseDateFromUpgrade(versions[i]));
+				}
+				return {
+					stdout: {
+						versions: versions,
+						currentVersion: currentVersion,
+						dates: dates
+					},
+					stderr: output.stderr
+				};
+			},
+			upgrade: (desiredVersion: string, name: string, resourceGroup?: string, namespace?: string, usek8s?: boolean, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
+				const argsArray = ['arcdata', 'dc', 'upgrade', '--desired-version', desiredVersion, '--name', name];
+				// Direct mode argument
+				if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
+				// Indirect mode arguments
+				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
+				if (usek8s) { argsArray.push('--use-k8s'); }
+				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
 		}
 	};
@@ -182,6 +212,25 @@ export class AzTool implements azExt.IAzApi {
 				if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
 				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
 				if (usek8s) { argsArray.push('--use-k8s'); }
+				return this.executeCommand<void>(argsArray, additionalEnvVars);
+			},
+			upgrade: (
+				desiredVersion: string,
+				name: string,
+				args: {
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
+					namespace?: string,
+					usek8s?: boolean
+					// Additional arguments
+				},
+				additionalEnvVars?: azExt.AdditionalEnvVars
+			): Promise<azExt.AzOutput<void>> => {
+				const argsArray = ['sql', 'mi-arc', 'upgrade', '--desired-version', desiredVersion, '--name', name];
+				if (args.resourceGroup) { argsArray.push('--resource-group', args.resourceGroup); }
+				if (args.namespace) { argsArray.push('--k8s-namespace', args.namespace); }
+				if (args.usek8s) { argsArray.push('--use-k8s'); }
 				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
 		},
@@ -553,6 +602,70 @@ function parseArcExtensionVersion(raw: string): string | undefined {
 	// connectedk8s                       1.1.5
 	// ...
 	const exp = /arcdata\s*(\d*.\d*.\d*)/;
+	return exp.exec(raw)?.pop();
+}
+
+/**
+ * Parses out all available upgrades
+ * @param raw The raw version output from az arcdata dc list-upgrades
+ */
+function parseDcListUpgrades(raw: string): string[] | undefined {
+	// Currently the version is a multi-line string that contains other version information such
+	// as the Python installation, with the first line holding the version of az itself.
+	//
+	// Found 6 valid versions.  The current datacontroller version is v1.2.0_2021-12-15.
+	// v1.4.1_2022-03-08
+	// v1.4.0_2022-02-25
+	// v1.3.0_2022-01-27
+	// v1.2.0_2021-12-15 << current version
+	// v1.1.0_2021-11-02
+	// v1.0.0_2021-07-30
+	let versions: string[] = [];
+	const lines = raw.split('\n');
+	const exp = /^(v\d*.\d*.\d*.\d*.\d*.\d*.\d)/;
+	for (let i = 1; i < lines.length; i++) {
+		let result = exp.exec(lines[i])?.pop();
+		if (result) {
+			versions.push(result);
+		}
+	}
+	return versions;
+}
+
+/**
+ * Parses out the release date from the upgrade version number and formats it into MM/DD/YYYY format.
+ * For example: v1.4.1_2022-03-08 ==> 03/08/2022
+ * @param raw The raw upgrade version number, such as: v1.4.1_2022-03-08
+ */
+function parseReleaseDateFromUpgrade(raw: string): string {
+	let formattedDate = '';
+	const exp = /^v\d*.\d*.\d*_(\d*).(\d*).(\d*.\d)/;
+	let rawDate = exp.exec(raw);
+	if (rawDate) {
+		formattedDate += rawDate[2] + '/' + rawDate[3] + '/' + rawDate[1];
+	} else {
+		console.error(loc.releaseDateNotParsed);
+	}
+	return formattedDate;
+}
+
+/**
+ * Parses out the current version number out of all available upgrades
+ * @param raw The raw version output from az arcdata dc list-upgrades
+ */
+function parseCurrentVersion(raw: string): string | undefined {
+	// Currently the version is a multi-line string that contains other version information such
+	// as the Python installation, with the first line holding the version of az itself.
+	//
+	// Found 6 valid versions.  The current datacontroller version is v1.2.0_2021-12-15.
+	// v1.4.1_2022-03-08
+	// v1.4.0_2022-02-25
+	// v1.3.0_2022-01-27
+	// v1.2.0_2021-12-15 << current version
+	// v1.1.0_2021-11-02
+	// v1.0.0_2021-07-30
+
+	const exp = /The current datacontroller version is\s*(v\d*.\d*.\d*.\d*.\d*.\d*.\d)/;
 	return exp.exec(raw)?.pop();
 }
 

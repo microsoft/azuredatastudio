@@ -25,11 +25,17 @@
     <trans-unit id="azureFunctionsProjectMustBeOpened">
       <source xml:lang="en">A C# Azure Functions project must be present in order to create a new Azure Function for this table.</source>
     </trans-unit>
+    <trans-unit id="browseEllipsis">
+      <source xml:lang="en">Browse...</source>
+    </trans-unit>
     <trans-unit id="closeButton">
       <source xml:lang="en">Close</source>
     </trans-unit>
     <trans-unit id="connectionProfile">
       <source xml:lang="en">Select a connection profile</source>
+    </trans-unit>
+    <trans-unit id="connectionProgressTitle">
+      <source xml:lang="en">Testing SQL Server connection...</source>
     </trans-unit>
     <trans-unit id="connectionStringSetting">
       <source xml:lang="en">Connection string setting name</source>
@@ -127,6 +133,9 @@
     <trans-unit id="selectBindingType">
       <source xml:lang="en">Select type of binding</source>
     </trans-unit>
+    <trans-unit id="selectButton">
+      <source xml:lang="en">Select</source>
+    </trans-unit>
     <trans-unit id="selectConnectionError">
       <source xml:lang="en">Failed to set connection string app setting: {0}</source>
     </trans-unit>
@@ -168,6 +177,9 @@
     </trans-unit>
     <trans-unit id="valueMustNotBeEmpty">
       <source xml:lang="en">Value must not be empty</source>
+    </trans-unit>
+    <trans-unit id="workspaceMustBeUsed">
+      <source xml:lang="en">The current folder is not a workspace folder. Please open a workspace folder and try again.</source>
     </trans-unit>
     <trans-unit id="yesString">
       <source xml:lang="en">Yes</source>

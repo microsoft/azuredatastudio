@@ -1,11 +1,10 @@
 # Change Log
 
-## Version 1.35.1
-* Release date: March 17, 2022
+## Version 1.36.1
+* Release date: April 22, 2022
 * Release status: General Availability
-## Hotfix release
-- Fix for [Excel number format #18615](https://github.com/microsoft/azuredatastudio/issues/18615)
-- Fix for [Geometry Data Type Returned as Unknown Charset in Results Grid #18630](https://github.com/microsoft/azuredatastudio/issues/18630)
+## What's new in this version
+- April Hotfix addressing these issues https://github.com/microsoft/azuredatastudio/milestone/88?closed=1.
 
 | Platform																|
 | ---------------------------------------	|
@@ -17,25 +16,42 @@
 | [Linux RPM][linux-rpm]									|
 | [Linux DEB][linux-deb]									|
 
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2187459
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2187520
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2187460
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2187461
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2187462
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2187521
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2187522
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2193235
+[win-system]: https://go.microsoft.com/fwlink/?linkid=2193326
+[win-zip]: https://go.microsoft.com/fwlink/?linkid=2193236
+[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2192971
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2193237
+[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2193238
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2193327
+
+## Version 1.36.0
+* Release date: April 20, 2022
+* Release status: General Availability
+## What's new in this version
+- General Availability of the Azure SQL Migration Extension for ADS
+- Support for .NET Interactive Notebooks Extension
+- New Table Designer Features including support for System Versioned, Graph and Memory Optomized Tables
+- Query Plan Viewer Updates includign warning and parallelism icons, the option to disable tooltips and support for opening .sqlplan files
+- Improvements in SQL Projects and Schema Compare
+
+## Version 1.35.1
+* Release date: March 17, 2022
+* Release status: General Availability
+## Hotfix release
+- Fix for [Excel number format #18615](https://github.com/microsoft/azuredatastudio/issues/18615)
+- Fix for [Geometry Data Type Returned as Unknown Charset in Results Grid #18630](https://github.com/microsoft/azuredatastudio/issues/18630)
 
  ## Version 1.35.0
 * Release date: February 24, 2022
 * Release status: General Availability
 ## What's new in this version
 * New Features:
-    *  Table Designer - Added functionality for creation and management of tables for SQL Servers. Built using DacFx framework 
-    *  Query Plan Viewer - Added functionality for users to view a graphic view of estimated and actual query plans without need for an extension 
+    *  Table Designer - Added functionality for creation and management of tables for SQL Servers. Built using DacFx framework
+    *  Query Plan Viewer - Added functionality for users to view a graphic view of estimated and actual query plans without need for an extension
     *  Azure Arc Extension - Updated the Data Controller deployment wizard and the SQL Managed Instance - Azure Arc deployment wizard to reflect the deployment experience in Azure Portal
 
 * Bug Fixes:
-    *  Azure Arc Extension - SQL Managed Instance-Azure Arc is now fixed for both indirect connectivity mode and direct connectivity mode 
+    *  Azure Arc Extension - SQL Managed Instance-Azure Arc is now fixed for both indirect connectivity mode and direct connectivity mode
     *  Notebooks - Support for keyboard navigation between cells to minimize mouse clicking
 
  ## Version 1.34.0
@@ -48,9 +64,9 @@
     *  Support for project build with .NET 6 in SQL Database Projects extension
     *  Publish to container in SQL Database Projects extension
     *  Undo and redo support for notebook cell-level operations
-    
+
 * Extension Updates:
-    *  Azure SQL Migration 
+    *  Azure SQL Migration
     *  Langpacks
     *  SQL Database Projects
 
@@ -60,7 +76,7 @@
     *  Fix to pre-populate target database names in the migration wizard in Azure SQL Migration extension
     *  Fix to column sorting in grids where the presence of null values could lead to unexpected results
     *  Fix for Python upgrades when two or more notebooks were open
- 
+
 ## Version 1.33.1
 * Release date: Nov 4, 2021
 * Release status: General Availability
@@ -74,18 +90,18 @@
 * Release status: General Availability
 ## What's new in this version
 * New Notebook Features:
-    *  Notebook Views 
-    *  Split cell support 
-    *  Keyboard shortcuts for Markdown Toolbar Cells 
+    *  Notebook Views
+    *  Split cell support
+    *  Keyboard shortcuts for Markdown Toolbar Cells
        * Ctrl/Cmd + B = Bold Text
        * Ctrl/Cmd + I = Italicize Text
        * Ctrl/Cmd + U = Underline Text
        * Ctrl/Cmd + Shift + K = Add Code Block
        * Ctrl/Cmd + Shift + H = Highlight Text
-    *  Book improvements 
+    *  Book improvements
        * Add a new section
        * Drag and Drop
-  
+
 * Extension Updates:
     * Import
     * Langpacks
@@ -101,8 +117,8 @@
 * Release date: August 18, 2021
 * Release status: General Availability
 * Extension Updates:
-    * Arc/Az CLI extensions - Azure Arc extension now uses Azure CLI instead of Azure Data CLI for deploying and interacting with Azure Arc 
-       instances    
+    * Arc/Az CLI extensions - Azure Arc extension now uses Azure CLI instead of Azure Data CLI for deploying and interacting with Azure Arc
+       instances
     *  Langpacks
     *  SQL Database Projects
     *  Azure Monitor

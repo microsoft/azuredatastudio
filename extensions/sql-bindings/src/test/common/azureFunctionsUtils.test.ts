@@ -9,11 +9,9 @@ import * as should from 'should';
 import * as sinon from 'sinon';
 import * as constants from '../../common/constants';
 import * as azureFunctionsUtils from '../../common/azureFunctionsUtils';
-import { EOL } from 'os';
 
-let rootFolderPath = 'test';
-let localSettingsPath: string = `${rootFolderPath}/local.settings.json`;
-let projectFilePath: string = `${rootFolderPath}//projectFilePath.csproj`;
+const rootFolderPath = 'test';
+const localSettingsPath: string = path.join(rootFolderPath, 'local.settings.json');
 
 describe('Tests to verify Azure Functions Utils functions', function (): void {
 
@@ -37,7 +35,7 @@ describe('Tests to verify Azure Functions Utils functions', function (): void {
 
 		let writeFileStub = sinon.stub(fs.promises, 'writeFile');
 		await azureFunctionsUtils.setLocalAppSetting(path.dirname(localSettingsPath), 'test4', 'test4');
-		should(writeFileStub.calledWithExactly(localSettingsPath, `{${EOL}  "IsEncrypted": false,${EOL}  "Values": {${EOL}    "test1": "test1",${EOL}    "test2": "test2",${EOL}    "test3": "test3",${EOL}    "test4": "test4"${EOL}  }${EOL}}`)).equals(true);
+		should(writeFileStub.calledWithExactly(localSettingsPath, `{\n  "IsEncrypted": false,\n  "Values": {\n    "test1": "test1",\n    "test2": "test2",\n    "test3": "test3",\n    "test4": "test4"\n  }\n}`)).equals(true);
 	});
 
 	it('Should not overwrite setting if value already exists in local.settings.json', async () => {
@@ -56,7 +54,7 @@ describe('Tests to verify Azure Functions Utils functions', function (): void {
 	});
 
 	it('Should get settings file given project file', async () => {
-		const settingsFile = await azureFunctionsUtils.getSettingsFile(projectFilePath);
+		const settingsFile = await azureFunctionsUtils.getSettingsFile(rootFolderPath);
 		should(settingsFile).equals(localSettingsPath);
 	});
 
@@ -69,8 +67,8 @@ describe('Tests to verify Azure Functions Utils functions', function (): void {
 		const connectionString = 'testConnectionString';
 
 		let writeFileStub = sinon.stub(fs.promises, 'writeFile');
-		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFilePath);
-		should(writeFileStub.calledWithExactly(localSettingsPath, `{${EOL}  "IsEncrypted": false,${EOL}  "Values": {${EOL}    "test1": "test1",${EOL}    "test2": "test2",${EOL}    "test3": "test3",${EOL}    "SqlConnectionString": "testConnectionString"${EOL}  }${EOL}}`)).equals(true);
+		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, rootFolderPath);
+		should(writeFileStub.calledWithExactly(localSettingsPath, `{\n  "IsEncrypted": false,\n  "Values": {\n    "test1": "test1",\n    "test2": "test2",\n    "test3": "test3",\n    "SqlConnectionString": "testConnectionString"\n  }\n}`)).equals(true);
 	});
 
 	afterEach(async function (): Promise<void> {
