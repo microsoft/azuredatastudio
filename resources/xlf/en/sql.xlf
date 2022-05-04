@@ -3446,6 +3446,9 @@ Error: {1}</source>
     <trans-unit id="trustLabel">
       <source xml:lang="en">Trusted</source>
     </trans-unit>
+    <trans-unit id="untitledNotSupported">
+      <source xml:lang="en">Run with parameters is not supported for Untitled notebooks. Please save the notebook before continuing. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).</source>
+    </trans-unit>
     <trans-unit id="untrustLabel">
       <source xml:lang="en">Not Trusted</source>
     </trans-unit>
@@ -5338,6 +5341,12 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/notebook/browser/models/cell" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="cellExecutionComplete">
+      <source xml:lang="en">Cell execution is complete</source>
+    </trans-unit>
+    <trans-unit id="cellExecutionStarted">
+      <source xml:lang="en">Cell execution started</source>
+    </trans-unit>
     <trans-unit id="codeCellLabel">
       <source xml:lang="en">Code Cell {0}</source>
     </trans-unit>
