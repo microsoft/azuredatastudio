@@ -189,7 +189,7 @@ export class UrlBrowserDialog extends Modal {
 		} else {
 			let fileInput = DialogHelper.appendRow(tableContainer, backupFileLabel, 'url-input-label', 'url-input-box', null, true);
 			this._backupFileInputBox = this._register(new InputBox(fileInput, this._contextViewService, { flexibleHeight: true }));
-			this.setBackupFileDefaultValue();
+			this._backupFileInputBox.value = this._defaultBackupName;
 		}
 
 		this._okButton = this.addFooterButton(localize('fileBrowser.ok', "OK"), () => this.ok());
@@ -338,10 +338,6 @@ export class UrlBrowserDialog extends Modal {
 		} else {
 			this._backupFileSelectorBox.enable();
 		}
-	}
-
-	private setBackupFileDefaultValue() {
-		this._backupFileInputBox.value = this._defaultBackupName;
 	}
 
 	public open(ownerUri: string,
