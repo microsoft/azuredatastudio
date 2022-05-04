@@ -150,9 +150,9 @@ export function treeGridExpandableColumnFormatter(row: number | undefined, cell:
 
 	if (dataContext['isParent']) {
 		if (dataContext.expanded) {
-			return `<div aria-expanded="true">${spacer}<span class='codicon codicon-chevron-down toggle' style='font-weight:bold;'></span>&nbsp; ${textDisplayElement}</div>`;
+			return `<div>${spacer}<span class='codicon codicon-chevron-down toggle' style='font-weight:bold;'></span>&nbsp; ${textDisplayElement}</div>`;
 		} else {
-			return `<div aria-expanded="false">${spacer}<span class='codicon codicon-chevron-right toggle' style='font-weight:bold;'></span>&nbsp; ${textDisplayElement}</div>`;
+			return `<div>${spacer}<span class='codicon codicon-chevron-right toggle' style='font-weight:bold;'></span>&nbsp; ${textDisplayElement}</div>`;
 		}
 	} else {
 		return `${spacer}${textDisplayElement}`;
@@ -178,13 +178,15 @@ function createTextCell(value: any): string {
 	} else if (typeof value === 'string' || (value && value.text)) {
 		if (value.text) {
 			valueToDisplay = value.text;
+			if (value.style) {
+				cellStyle = value.style;
+			}
 		} else {
 			valueToDisplay = value;
 		}
 		valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
 		titleValue = valueToDisplay;
 	}
-
 	return `<span title="${titleValue}" style="${cellStyle}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
 
