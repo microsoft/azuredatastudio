@@ -23,7 +23,6 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { invalidProvider } from 'sql/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class RestoreService implements IRestoreService {
 
@@ -325,7 +324,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 							const engineEdition: number = this._connectionService.getConnectionInfo(this._ownerUri).serverInfo.engineEditionId;
 							// database list is filled only after getMssqlRestoreConfigInfo() calling before will always set to empty value
 							restoreDialog.viewModel.resetRestoreOptions(connection.databaseName!, restoreDialog.viewModel.databaseList);
-							restoreDialog.open(connection.serverName, this._ownerUri!, engineEdition === DatabaseEngineEdition.SqlManagedInstance);
+							restoreDialog.open(connection.serverName, this._ownerUri!, engineEdition);
 							restoreDialog.validateRestore();
 						}, restoreConfigError => {
 							reject(restoreConfigError);
