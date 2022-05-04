@@ -40,6 +40,9 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
 		super(parent, configuration, options);
 
+		// Changing table role from grid to treegrid
+		this._tableContainer.setAttribute('role', 'treegrid');
+
 		if (!configuration || !configuration.dataProvider || isArray(configuration.dataProvider)) {
 			this._data = new TableDataView<T>(configuration && configuration.dataProvider as Array<T>,
 				undefined,
@@ -78,8 +81,6 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 		});
 
 		this._grid.onRendered.subscribe((e, data) => {
-			// Changing table role from grid to treegrid
-			this._tableContainer.setAttribute('role', 'treegrid');
 			const visibleRows = this._grid.getViewport();
 			for (let i = visibleRows.top; i < visibleRows.bottom; i++) {
 				const rowData = this._data.getItem(i);

@@ -406,7 +406,4 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	public get container(): HTMLElement {
 		return this._tableContainer;
 	}
-
-
-
 }
