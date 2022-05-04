@@ -209,6 +209,7 @@ export class UrlBrowserDialog extends Modal {
 		this._cancelButton = this.addFooterButton(localize('fileBrowser.discard', "Discard"), () => this.close(), 'right', true);
 
 		this.registerListeners();
+		this.registerThemeStylers();
 	}
 
 	private setAccountSelectorBoxOptions(accounts: Account[]) {
@@ -425,20 +426,28 @@ export class UrlBrowserDialog extends Modal {
 			this.enableOkButton();
 		}));
 
-		// Theme styler
+		if (this._backupFileInputBox) {
+			this._register(this._backupFileInputBox.onDidChange(e => this.enableOkButton()));
+		}
+		if (this._backupFileSelectorBox) {
+			this._register(this._backupFileSelectorBox.onDidSelect(e => this.enableOkButton()));
+		}
+	}
+
+
+	private registerThemeStylers(): void {
 		this._register(attachSelectBoxStyler(this._tenantSelectorBox, this._themeService));
 		this._register(attachSelectBoxStyler(this._accountSelectorBox, this._themeService));
 		this._register(attachSelectBoxStyler(this._subscriptionSelectorBox, this._themeService));
 		this._register(attachSelectBoxStyler(this._storageAccountSelectorBox, this._themeService));
 		this._register(attachSelectBoxStyler(this._blobContainerSelectorBox, this._themeService));
 		this._register(attachInputBoxStyler(this._sasInputBox, this._themeService));
+
 		if (this._backupFileInputBox) {
 			this._register(attachInputBoxStyler(this._backupFileInputBox, this._themeService));
-			this._register(this._backupFileInputBox.onDidChange(e => this.enableOkButton()));
 		}
 		if (this._backupFileSelectorBox) {
 			this._register(attachSelectBoxStyler(this._backupFileSelectorBox, this._themeService));
-			this._register(this._backupFileSelectorBox.onDidSelect(e => this.enableOkButton()));
 		}
 		this._register(attachButtonStyler(this._sasButton, this._themeService));
 		this._register(attachButtonStyler(this._okButton, this._themeService));
