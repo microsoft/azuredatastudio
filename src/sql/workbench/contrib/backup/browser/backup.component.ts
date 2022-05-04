@@ -486,15 +486,6 @@ export class BackupComponent extends AngularDisposable {
 			this.setDefaultBackupName();
 			this.backupNameBox!.focus();
 
-			if (this._engineEdition !== DatabaseEngineEdition.SqlManagedInstance) {
-				this.setDefaultBackupPaths();
-				let pathlist: ISelectOptionItem[] = [];
-				for (let i in this.backupPathTypePairs) {
-					pathlist.push({ text: i });
-				}
-				this.pathListBox!.setOptions(pathlist, 0);
-			}
-
 			// Set encryption
 			let encryptorItems = this.populateEncryptorCombo();
 			this.encryptorSelectBox!.setOptions(encryptorItems, 0);
