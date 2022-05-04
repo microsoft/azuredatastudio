@@ -764,7 +764,7 @@ export class BackupComponent extends AngularDisposable {
 			(filepath => this.handleFilePathAdded(filepath)));
 	}
 
-	private handleUrlPathAdded(url: string) {
+	private handleUrlPathAdded(url: string): void {
 		if (url && !this.backupPathTypePairs![url]) {
 			this.backupPathTypePairs![url] = BackupConstants.deviceTypeURL;
 			this.urlInputBox.value = url;
@@ -774,7 +774,7 @@ export class BackupComponent extends AngularDisposable {
 		}
 	}
 
-	private handleFilePathAdded(filepath: string) {
+	private handleFilePathAdded(filepath: string): void {
 		if (filepath && !this.backupPathTypePairs![filepath]) {
 			if ((this.getBackupPathCount() < BackupConstants.maxDevices)) {
 				this.backupPathTypePairs![filepath] = BackupConstants.deviceTypeFile;
