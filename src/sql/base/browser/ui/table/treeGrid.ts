@@ -51,7 +51,7 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 		}
 
 		this._grid.onClick.subscribe((e, data) => {
-			this.toggleTreeGridParent(data.row, data.cell);
+			this.setCellExpandedState(data.row, data.cell);
 			return false;
 		});
 
@@ -61,16 +61,16 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 				let event = new StandardKeyboardEvent(keyboardEvent);
 				if (event.keyCode === KeyCode.Enter) {
 					// toggle the collapsed state of the row
-					this.toggleTreeGridParent(data.row, data.cell);
+					this.setCellExpandedState(data.row, data.cell);
 				} else if (event.keyCode === KeyCode.LeftArrow) {
 					// Left arrow on first cell of the expanded row collapses it
 					if (data.cell === 0) {
-						this.toggleTreeGridParent(data.row, this.expandableColumnIndex(), false);
+						this.setCellExpandedState(data.row, this.expandableColumnIndex(), false);
 					}
 				} else if (event.keyCode === KeyCode.RightArrow) {
 					// Right arrow on last cell of the collapsed row expands it.
 					if (data.cell === (this._grid.getColumns().length - 1)) {
-						this.toggleTreeGridParent(data.row, this.expandableColumnIndex(), true);
+						this.setCellExpandedState(data.row, this.expandableColumnIndex(), true);
 					}
 				}
 			}
@@ -118,13 +118,13 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 		this._data.filter(this._grid.getColumns());
 	}
 
-	private toggleTreeGridParent(row: number, cell: number, forceState?: boolean): void {
+	private setCellExpandedState(row: number, cell: number, expanded?: boolean): void {
 		const rowData = this._data.getItem(row);
 		if (rowData['isParent'] && this._grid.getColumns()[cell].formatter === treeGridExpandableColumnFormatter) {
-			if (forceState === undefined) {
+			if (expanded === undefined) {
 				(<any>rowData).expanded = !rowData.expanded;
 			} else {
-				(<any>rowData).expanded = forceState;
+				(<any>rowData).expanded = expanded;
 			}
 			this._data.filter(this._grid.getColumns());
 			this.rerenderGrid();
