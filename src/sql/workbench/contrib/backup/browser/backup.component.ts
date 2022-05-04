@@ -878,7 +878,7 @@ export class BackupComponent extends AngularDisposable {
 			}
 			let defaultNewBackupLocation = this.defaultNewBackupFolder + serverPathSeparator + this.getDefaultBackupFileName();
 
-			// Add a default new backup locationthis.backupPathTypePairs![filepath] = BackupConstants.deviceTypeFile;
+			// Add a default new backup location
 			if (this.toUrlCheckBox!.checked) {
 				this.backupPathTypePairs![defaultNewBackupLocation] = BackupConstants.deviceTypeURL;
 			} else {
