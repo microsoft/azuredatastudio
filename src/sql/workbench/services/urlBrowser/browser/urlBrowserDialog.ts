@@ -34,6 +34,18 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { Deferred } from 'sql/base/common/promise';
 
+/**
+ * This function adds one year to the current date and returns it in the UTC format.
+ * It's used to pass an expiration date argument to the create shared access signature RPC.
+ * It returns the date in the UTC format for locale time zone independence.
+ * @returns next year's UTC date
+ */
+function nextYear(): string {
+	const today = new Date();
+	const nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+	return nextYear.toUTCString();
+}
+
 export class UrlBrowserDialog extends Modal {
 
 	private _accounts: Account[];
@@ -397,16 +409,10 @@ export class UrlBrowserDialog extends Modal {
 		const blobContainerUri = `https://${this._storageAccountSelectorBox.value}.blob${this._selectedAccount.properties.providerSettings.settings.azureStorageResource.endpointSuffix}/${this._blobContainerSelectorBox.value}`;
 		const getStorageAccountAccessKeyResult = await this._azureAccountService.getStorageAccountAccessKey(this._selectedAccount, this._selectedSubscription, this._selectedStorageAccount);
 		const key1 = getStorageAccountAccessKeyResult.keyName1;
-		const createSasResult = await this._blobService.createSas(this._ownerUri, blobContainerUri, key1, this._selectedStorageAccount.name, this.nextYear());
+		const createSasResult = await this._blobService.createSas(this._ownerUri, blobContainerUri, key1, this._selectedStorageAccount.name, nextYear());
 		const sas = createSasResult.sharedAccessSignature;
 		this._sasInputBox.value = sas;
 		this.spinner = false;
-	}
-
-	private nextYear(): string {
-		const today = new Date();
-		const nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
-		return nextYear.toUTCString();
 	}
 
 	private registerListeners(): void {
