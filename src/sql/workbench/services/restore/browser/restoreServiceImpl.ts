@@ -250,7 +250,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 				restoreInfo.targetDatabaseName = restoreDialog.viewModel.targetDatabaseName;
 			}
 			restoreInfo.overwriteTargetDatabase = overwriteTargetDatabase;
-			restoreInfo.deviceType = restoreDialog.viewModel.deviceType.valueOf();
+			restoreInfo.deviceType = restoreDialog.viewModel.deviceType;
 
 			// Set other restore options
 			restoreDialog.viewModel.getRestoreAdvancedOptions(restoreInfo.options);
