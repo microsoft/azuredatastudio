@@ -80,7 +80,8 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 		this._grid.onRendered.subscribe((e, data) => {
 			// Changing table role from grid to treegrid
 			this._tableContainer.setAttribute('role', 'treegrid');
-			for (let i = 0; i < this._data.getLength(); i++) {
+			const visibleRows = this._grid.getViewport();
+			for (let i = visibleRows.top; i < visibleRows.bottom; i++) {
 				const rowData = this._data.getItem(i);
 				// Getting the row div that corresponds to the data row
 				const rowElement = this._tableContainer.querySelector(`div [role="row"][aria-rowindex="${(i + 1)}"]`);
@@ -118,6 +119,12 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 		this._data.filter(this._grid.getColumns());
 	}
 
+	/**
+	 * This functions toggles the expanded state of a parent cell.
+	 * @param row row index of the parent cell
+	 * @param cell cell/ column index of the parent cell
+	 * @param expanded force a state on the parent cell
+	 */
 	private setCellExpandedState(row: number, cell: number, expanded?: boolean): void {
 		const rowData = this._data.getItem(row);
 		if (rowData['isParent'] && this._grid.getColumns()[cell].formatter === treeGridExpandableColumnFormatter) {
@@ -132,14 +139,16 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 		}
 	}
 
-
-	// Gets the index for the expandable column
+	/**
+	 * Gets the index for the expandable column
+	 */
 	private expandableColumnIndex(): number {
 		return this._grid.getColumns().findIndex(c => c.formatter === treeGridExpandableColumnFormatter);
 	}
 
-
-	// We need to transform the grid data to include required aria attributes to the rows
+	/**
+	 * We need to transform the grid data to include required aria attributes for the tree grid
+	 */
 	private transformData(data: IDisposableDataProvider<T>): IDisposableDataProvider<T> {
 		for (let i = 0; i < data.getLength(); i++) {
 			const dataRow = <any>data.getItem(i);
