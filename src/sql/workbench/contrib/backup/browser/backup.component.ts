@@ -299,11 +299,11 @@ export class BackupComponent extends AngularDisposable {
 		this.urlInputBox = this._register(new InputBox(this.urlPathElement!.nativeElement, this.contextViewService, {
 			ariaLabel: LocalizedStrings.BACKUP_URL
 		}));
-		this.urlInputBox.onDidChange((value) => this.onUrlInputBoxChanged(value));
+		this._register(this.urlInputBox.onDidChange((value) => this.onUrlInputBoxChanged(value)));
 
 		this.pathListBox = this._register(new ListBox([], this.contextViewService));
 		this.pathListBox.setAriaLabel(LocalizedStrings.BACKUP_DEVICE);
-		this.pathListBox.onKeyDown(e => {
+		this._register(this.pathListBox.onKeyDown(e => {
 			if (this.pathListBox!.selectedOptions.length > 0) {
 				const key = e.keyCode;
 				const ctrlOrCmd = e.ctrlKey || e.metaKey;
@@ -320,7 +320,7 @@ export class BackupComponent extends AngularDisposable {
 					e.stopPropagation();
 				}
 			}
-		});
+		}));
 		this.pathListBox.render(this.filePathElement!.nativeElement);
 
 		// Set backup path add/remove buttons
@@ -443,21 +443,21 @@ export class BackupComponent extends AngularDisposable {
 		// Set script footer button
 		this.scriptButton = this._register(new Button(this.scriptButtonElement!.nativeElement, { secondary: true }));
 		this.scriptButton.label = localize('backupComponent.script', "Script");
-		this.scriptButton.onDidClick(() => this.onScript());
+		this._register(this.scriptButton.onDidClick(() => this.onScript()));
 		this._register(attachButtonStyler(this.scriptButton, this.themeService));
 		this.scriptButton.enabled = false;
 
 		// Set backup footer button
 		this.backupButton = this._register(new Button(this.backupButtonElement!.nativeElement));
 		this.backupButton.label = localize('backupComponent.backup', "Backup");
-		this.backupButton.onDidClick(() => this.onOk());
+		this._register(this.backupButton.onDidClick(() => this.onOk()));
 		this._register(attachButtonStyler(this.backupButton, this.themeService));
 		this.backupEnabled = false;
 
 		// Set cancel footer button
 		this.cancelButton = this._register(new Button(this.cancelButtonElement!.nativeElement, { secondary: true }));
 		this.cancelButton.label = localize('backupComponent.cancel', "Cancel");
-		this.cancelButton.onDidClick(() => this.onCancel());
+		this._register(this.cancelButton.onDidClick(() => this.onCancel()));
 		this._register(attachButtonStyler(this.cancelButton, this.themeService));
 	}
 
@@ -621,9 +621,9 @@ export class BackupComponent extends AngularDisposable {
 		this._register(attachCheckboxStyler(this.continueOnErrorCheckBox!, this.themeService));
 
 		this._register(this.backupTypeSelectBox!.onDidSelect(selected => this.onBackupTypeChanged()));
-		this.addUrlPathButton!.onDidClick(() => this.onAddUrlClick());
-		this.addFilePathButton!.onDidClick(() => this.onAddFileClick());
-		this.removeFilePathButton!.onDidClick(() => this.onRemoveClick());
+		this._register(this.addUrlPathButton!.onDidClick(() => this.onAddUrlClick()));
+		this._register(this.addFilePathButton!.onDidClick(() => this.onAddFileClick()));
+		this._register(this.removeFilePathButton!.onDidClick(() => this.onRemoveClick()));
 		this._register(this.mediaNameBox!.onDidChange(mediaName => {
 			this.mediaNameChanged(mediaName);
 		}));
