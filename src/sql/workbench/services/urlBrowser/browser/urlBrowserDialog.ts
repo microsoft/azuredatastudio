@@ -32,6 +32,7 @@ import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobServic
 import { Link } from 'vs/platform/opener/browser/link';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { Deferred } from 'sql/base/common/promise';
 
 export class UrlBrowserDialog extends Modal {
 
@@ -61,10 +62,7 @@ export class UrlBrowserDialog extends Modal {
 	private _backupFileSelectorBox: SelectBox;
 	private _okButton: Button;
 	private _cancelButton: Button;
-	private _onOk: (value: string | PromiseLike<string>) => void;
-	public onOk: Promise<string> = new Promise(resolve => {
-		this._onOk = resolve;
-	});
+	public onOk: Deferred<string> | undefined = new Deferred();
 
 
 	constructor(title: string,
@@ -394,7 +392,7 @@ export class UrlBrowserDialog extends Modal {
 		} else {
 			returnValue = `https://${this._storageAccountSelectorBox.value}.blob${this._selectedAccount.properties.providerSettings.settings.azureStorageResource.endpointSuffix}/${this._blobContainerSelectorBox.value}/${this._backupFileInputBox.value}`;
 		}
-		this._onOk(returnValue);
+		this.onOk.resolve(returnValue);
 		this.close('ok');
 	}
 
