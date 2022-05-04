@@ -234,66 +234,66 @@ export class BackupComponent extends AngularDisposable {
 	ngOnInit() {
 		this.addFooterButtons();
 
-		this.recoveryBox = new InputBox(this.recoveryModelElement!.nativeElement, this.contextViewService, {
+		this.recoveryBox = this._register(new InputBox(this.recoveryModelElement!.nativeElement, this.contextViewService, {
 			placeholder: this.recoveryModel,
 			ariaLabel: LocalizedStrings.RECOVERY_MODEL
-		});
+		}));
 		// Set backup type
-		this.backupTypeSelectBox = new SelectBox([], '', this.contextViewService, undefined, { ariaLabel: this.localizedStrings.BACKUP_TYPE });
+		this.backupTypeSelectBox = this._register(new SelectBox([], '', this.contextViewService, undefined, { ariaLabel: this.localizedStrings.BACKUP_TYPE }));
 		this.backupTypeSelectBox.render(this.backupTypeElement!.nativeElement);
 
 		// Set copy-only check box
-		this.copyOnlyCheckBox = new Checkbox(this.copyOnlyElement!.nativeElement, {
+		this.copyOnlyCheckBox = this._register(new Checkbox(this.copyOnlyElement!.nativeElement, {
 			label: LocalizedStrings.COPY_ONLY,
 			checked: false,
 			onChange: (viaKeyboard) => { },
 			ariaLabel: LocalizedStrings.COPY_ONLY
-		});
+		}));
 
 		// Set to url check box
-		this.toUrlCheckBox = new Checkbox(this.toUrlElement!.nativeElement, {
+		this.toUrlCheckBox = this._register(new Checkbox(this.toUrlElement!.nativeElement, {
 			label: LocalizedStrings.TO_URL,
 			checked: false,
 			onChange: () => this.onChangeToUrl(),
 			ariaLabel: LocalizedStrings.TO_URL
-		});
+		}));
 
 		// Encryption checkbox
-		this.encryptCheckBox = new Checkbox(this.encryptElement!.nativeElement, {
+		this.encryptCheckBox = this._register(new Checkbox(this.encryptElement!.nativeElement, {
 			label: LocalizedStrings.ENCRYPTION,
 			checked: false,
 			onChange: () => this.onChangeEncrypt(),
 			ariaLabel: LocalizedStrings.ENCRYPTION
-		});
+		}));
 
 		// Verify backup checkbox
-		this.verifyCheckBox = new Checkbox(this.verifyElement!.nativeElement, {
+		this.verifyCheckBox = this._register(new Checkbox(this.verifyElement!.nativeElement, {
 			label: LocalizedStrings.VERIFY_CONTAINER,
 			checked: false,
 			onChange: () => { },
 			ariaLabel: LocalizedStrings.VERIFY_CONTAINER
-		});
+		}));
 
 		// Perform checksum checkbox
-		this.checksumCheckBox = new Checkbox(this.checksumElement!.nativeElement, {
+		this.checksumCheckBox = this._register(new Checkbox(this.checksumElement!.nativeElement, {
 			label: LocalizedStrings.CHECKSUM_CONTAINER,
 			checked: false,
 			onChange: () => { },
 			ariaLabel: LocalizedStrings.CHECKSUM_CONTAINER
-		});
+		}));
 
 		// Continue on error checkbox
-		this.continueOnErrorCheckBox = new Checkbox(this.continueOnErrorElement!.nativeElement, {
+		this.continueOnErrorCheckBox = this._register(new Checkbox(this.continueOnErrorElement!.nativeElement, {
 			label: LocalizedStrings.CONTINUE_ON_ERROR_CONTAINER,
 			checked: false,
 			onChange: () => { },
 			ariaLabel: LocalizedStrings.CONTINUE_ON_ERROR_CONTAINER
-		});
+		}));
 
 		// Set backup name
-		this.backupNameBox = new InputBox(this.backupNameElement!.nativeElement, this.contextViewService, {
+		this.backupNameBox = this._register(new InputBox(this.backupNameElement!.nativeElement, this.contextViewService, {
 			ariaLabel: LocalizedStrings.BACKUP_NAME
-		});
+		}));
 
 		// Set backup path list
 		this.urlInputBox = this._register(new InputBox(this.urlPathElement!.nativeElement, this.contextViewService, {
@@ -301,7 +301,7 @@ export class BackupComponent extends AngularDisposable {
 		}));
 		this.urlInputBox.onDidChange((value) => this.onUrlInputBoxChanged(value));
 
-		this.pathListBox = new ListBox([], this.contextViewService);
+		this.pathListBox = this._register(new ListBox([], this.contextViewService));
 		this.pathListBox.setAriaLabel(LocalizedStrings.BACKUP_DEVICE);
 		this.pathListBox.onKeyDown(e => {
 			if (this.pathListBox!.selectedOptions.length > 0) {
