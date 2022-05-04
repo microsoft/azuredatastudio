@@ -140,6 +140,7 @@ export abstract class ExecutionPlanPropertiesViewBase {
 		this._tableContainer.scrollTo(0, 0);
 		this._tableComponentDataView = new TableDataView(data);
 		this._tableComponent.setData(this._tableComponentDataView);
+		this.resizeTable();
 	}
 
 	private resizeTable(): void {

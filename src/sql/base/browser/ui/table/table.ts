@@ -21,6 +21,7 @@ import { range } from 'vs/base/common/arrays';
 import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { expandableColumnFormatter } from 'sql/base/browser/ui/table/formatters';
+import { generateUuid } from 'vs/base/common/uuid';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -132,16 +133,15 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._grid.onKeyDown.subscribe((e, data) => {
 			if (this.isTreeGrid()) {
 				if ((<any>e).keyCode === 13) {
+					// When we press enter on an collapsed cell we expand it.
 					this.toggleTreeGridParent(data.row, data.cell);
 				} else if ((<any>e).keyCode === 37) {
+					// Left arrow on first cell of the expanded row collapses it
 					if (data.cell === 0) {
-						const rowData = this._data.getItem(data.row);
-						if (rowData?.parent && rowData.parent !== -1) {
-							this.toggleTreeGridParent(rowData.parent, this.expandableColumnIndex(), false);
-							this.setActiveCell(rowData.parent, 0);
-						}
+						this.toggleTreeGridParent(data.row, this.expandableColumnIndex(), false);
 					}
 				} else if ((<any>e).keyCode === 39) {
+					// Right arrow on last cell of the collapsed row expands it.
 					if (data.cell === (this._grid.getColumns().length - 1)) {
 						this.toggleTreeGridParent(data.row, this.expandableColumnIndex(), true);
 					}
@@ -150,6 +150,30 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		});
 
 		this._grid.onRendered.subscribe((e, data) => {
+			if (this.isTreeGrid()) {
+				// Changing table role from grid to treegrid
+				this._tableContainer.setAttribute('role', 'treegrid');
+				for (let i = 0; i < this._data.getLength(); i++) {
+					const rowData = this._data.getItem(i);
+					// Getting the row div that corresponds to the data row
+					const rowElement = this._tableContainer.querySelector(`div [role="row"][aria-rowindex="${(i + 1)}"]`);
+					// If the row element is found in the dom, we are setting the required aria attributes for it.
+					if (rowElement) {
+						if (rowData._expanded !== undefined) {
+							rowElement.ariaExpanded = rowData._expanded;
+						}
+						if (rowData.level !== undefined) {
+							rowElement.ariaLevel = rowData.level;
+						}
+						if (rowData.setSize !== undefined) {
+							rowElement.ariaSetSize = rowData.setSize;
+						}
+						if (rowData.posInSet !== undefined) {
+							rowElement.ariaPosInSet = rowData.posInSet;
+						}
+					}
+				}
+			}
 		});
 	}
 
@@ -445,10 +469,12 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		return this._grid.getColumns().filter(c => c.formatter === expandableColumnFormatter).length > 0;
 	}
 
+	// Gets the index for the expandable column
 	private expandableColumnIndex(): number {
 		return this._grid.getColumns().findIndex(c => c.formatter === expandableColumnFormatter);
 	}
 
+	// This expands/collapse the tree grid item
 	private toggleTreeGridParent(row: number, cell: number, forceState?: boolean): void {
 		const rowData = this._data.getItem(row);
 		if (rowData['isParent'] && this._grid.getColumns()[cell].formatter === expandableColumnFormatter) {
@@ -467,7 +493,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		}
 	}
 
-	// We need to transform the grid data to tree grid data. This includes adding attributes to data rows that help us better set different aria attributes.
+	// We need to transform grid data to tree grid data. This includes adding required aria attributes to the rows
 	private transGridDataToTreeGridData(data: IDisposableDataProvider<T>): IDisposableDataProvider<T> {
 		for (let i = 0; i < data.getLength(); i++) {
 			const dataRow = <any>data.getItem(i);
@@ -484,6 +510,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 				dataRow.posInSet = parentRow.setSize;
 				parentRow._expanded = false;
 				parentRow.isParent = true;
+				if (!parentRow._guid) {
+					parentRow._guid = generateUuid();
+				}
+				dataRow.parentGuid = parentRow._guid;
 			}
 		}
 		return data;
