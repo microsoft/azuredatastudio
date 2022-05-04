@@ -200,13 +200,13 @@ export class RestoreDialog extends Modal {
 		const urlInputContainer = DOM.append(this._restoreFromUrlElement, DOM.$('.dialog-input-section'));
 		DOM.append(urlInputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.BACKURL;
 
-		this._urlInputBox = new InputBox(DOM.append(urlInputContainer, DOM.$('.dialog-input')), this._contextViewService, urlValidationOptions);
+		this._urlInputBox = this._register(new InputBox(DOM.append(urlInputContainer, DOM.$('.dialog-input')), this._contextViewService, urlValidationOptions));
 
 		const urlBrowseContainer = DOM.append(this._restoreFromUrlElement, DOM.$('.dialog-input-section'));
 		DOM.append(urlBrowseContainer, DOM.$('.dialog-label')).innerText = '';
 
 		let browseLabel = localize('restoreDialog.browse', "Browse");
-		this._browseUrlButton = new Button(DOM.append(urlBrowseContainer, DOM.$('.file-browser')), { secondary: true });
+		this._browseUrlButton = this._register(new Button(DOM.append(urlBrowseContainer, DOM.$('.file-browser')), { secondary: true }));
 		this._browseUrlButton.label = browseLabel;
 		this._browseUrlButton.setWidth('50px');
 
@@ -224,9 +224,9 @@ export class RestoreDialog extends Modal {
 		const filePathInputContainer = DOM.append(this._restoreFromBackupFileElement, DOM.$('.dialog-input-section'));
 		DOM.append(filePathInputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.BACKFILEPATH;
 
-		this._filePathInputBox = new InputBox(DOM.append(filePathInputContainer, DOM.$('.dialog-input')), this._contextViewService, validationOptions);
+		this._filePathInputBox = this._register(new InputBox(DOM.append(filePathInputContainer, DOM.$('.dialog-input')), this._contextViewService, validationOptions));
 
-		this._browseFileButton = new Button(DOM.append(filePathInputContainer, DOM.$('.file-browser')), { secondary: true });
+		this._browseFileButton = this._register(new Button(DOM.append(filePathInputContainer, DOM.$('.file-browser')), { secondary: true }));
 		this._browseFileButton.label = '...';
 
 		this._sourceDatabasesElement = DOM.$('.source-database-list');
@@ -252,12 +252,12 @@ export class RestoreDialog extends Modal {
 		// Get the bootstrap params and perform the bootstrap
 		dropdownContainer.style.width = '100%';
 
-		this._databaseDropdown = new Dropdown(dropdownContainer, this._contextViewService,
+		this._databaseDropdown = this._register(new Dropdown(dropdownContainer, this._contextViewService,
 			{
 				strictSelection: false,
 				ariaLabel: LocalizedStrings.TARGETDATABASE
 			}
-		);
+		));
 		this._databaseDropdown.onValueChange(s => {
 			this.databaseSelected(s);
 		});
@@ -282,13 +282,13 @@ export class RestoreDialog extends Modal {
 		// Get the bootstrap params and perform the bootstrap
 		inputTargetDatabaseContainer.style.width = '100%';
 
-		this._targetDatabaseInputBox = new InputBox(inputTargetDatabaseContainer, this._contextViewService, {
+		this._targetDatabaseInputBox = this._register(new InputBox(inputTargetDatabaseContainer, this._contextViewService, {
 			ariaLabel: LocalizedStrings.TARGETDATABASE,
 			placeholder: localize('targetDatabaseTooltip', "Please enter target database name"),
 			validationOptions: {
 				validation: (value: string) => this.viewModel.databases.includes(value) ? ({ type: MessageType.ERROR, content: localize('restoreDialog.targetDatabaseAlreadyExists', "Target database already exists") }) : null
 			},
-		});
+		}));
 
 		const restoreToLabel = localize('restoreTo', "Restore to");
 		const destinationRestoreToAriaOptions = {
@@ -296,7 +296,7 @@ export class RestoreDialog extends Modal {
 		};
 		this._destinationRestoreToContainer = DOM.append(destinationElement, DOM.$('.dialog-input-section'));
 		DOM.append(this._destinationRestoreToContainer, DOM.$('.dialog-label')).innerText = restoreToLabel;
-		this._destinationRestoreToInputBox = new InputBox(DOM.append(this._destinationRestoreToContainer, DOM.$('.dialog-input')), this._contextViewService, mixin(destinationRestoreToAriaOptions, null));
+		this._destinationRestoreToInputBox = this._register(new InputBox(DOM.append(this._destinationRestoreToContainer, DOM.$('.dialog-input')), this._contextViewService, mixin(destinationRestoreToAriaOptions, null)));
 
 		// Restore plan section
 		const restorePlanElement = DOM.$('.restore-plan-section.new-section');
@@ -307,8 +307,8 @@ export class RestoreDialog extends Modal {
 		this._restorePlanTableContainer = DOM.append(restorePlanElement, DOM.$('.dialog-input-section.restore-list'));
 		DOM.hide(this._restorePlanTableContainer);
 		this._restorePlanData = new TableDataView<Slick.SlickData>();
-		this._restorePlanTable = new Table<Slick.SlickData>(this._restorePlanTableContainer,
-			{ dataProvider: this._restorePlanData, columns: this._restorePlanColumn }, { enableColumnReorder: false });
+		this._restorePlanTable = this._register(new Table<Slick.SlickData>(this._restorePlanTableContainer,
+			{ dataProvider: this._restorePlanData, columns: this._restorePlanColumn }, { enableColumnReorder: false }));
 		this._restorePlanTable.setTableTitle(localize('restorePlan', "Restore plan"));
 		this._restorePlanTable.setSelectionModel(new RowSelectionModel({ selectActiveRow: false }));
 		this._restorePlanTable.onSelectedRowsChanged((e, data) => this.backupFileCheckboxChanged(e, data));
@@ -358,8 +358,8 @@ export class RestoreDialog extends Modal {
 			field: 'restoreAs'
 		}];
 		this._fileListData = new TableDataView<FileListElement>();
-		this._fileListTable = new Table<FileListElement>(this._fileListTableContainer,
-			{ dataProvider: this._fileListData, columns }, { enableColumnReorder: false });
+		this._fileListTable = this._register(new Table<FileListElement>(this._fileListTableContainer,
+			{ dataProvider: this._fileListData, columns }, { enableColumnReorder: false }));
 		this._fileListTable.setSelectionModel(new RowSelectionModel());
 
 		// Content in options tab
@@ -540,12 +540,12 @@ export class RestoreDialog extends Modal {
 	}
 
 	private createCheckBoxHelper(container: HTMLElement, label: string, isChecked: boolean, onCheck: (viaKeyboard: boolean) => void): Checkbox {
-		const checkbox = new Checkbox(DOM.append(container, DOM.$('.dialog-input-section')), {
+		const checkbox = this._register(new Checkbox(DOM.append(container, DOM.$('.dialog-input-section')), {
 			label: label,
 			checked: isChecked,
 			onChange: onCheck,
 			ariaLabel: label
-		});
+		}));
 		this._register(attachCheckboxStyler(checkbox, this._themeService));
 		return checkbox;
 	}
@@ -554,7 +554,7 @@ export class RestoreDialog extends Modal {
 		const inputContainer = DOM.append(container, DOM.$('.dialog-input-section'));
 		DOM.append(inputContainer, DOM.$('.dialog-label')).innerText = label;
 		const inputCellContainer = DOM.append(inputContainer, DOM.$('.dialog-input'));
-		const selectBox = new SelectBox(options, selectedOption, this._contextViewService, inputCellContainer, { ariaLabel: label });
+		const selectBox = this._register(new SelectBox(options, selectedOption, this._contextViewService, inputCellContainer, { ariaLabel: label }));
 		selectBox.render(inputCellContainer);
 		return selectBox;
 	}
@@ -565,7 +565,7 @@ export class RestoreDialog extends Modal {
 		};
 		const inputContainer = DOM.append(container, DOM.$('.dialog-input-section'));
 		DOM.append(inputContainer, DOM.$('.dialog-label')).innerText = label;
-		return new InputBox(DOM.append(inputContainer, DOM.$('.dialog-input')), this._contextViewService, mixin(ariaOptions, options));
+		return this._register(new InputBox(DOM.append(inputContainer, DOM.$('.dialog-input')), this._contextViewService, mixin(ariaOptions, options)));
 	}
 
 	private clearRestorePlanDataTable(): void {
