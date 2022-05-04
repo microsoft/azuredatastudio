@@ -792,7 +792,7 @@ export class RestoreDialog extends Modal {
 			if (!this._panel.contains(this._optionsTab.identifier)) {
 				this._panel.pushTab(this._optionsTab);
 			}
-			this.viewModel.deviceType = DeviceType.file;
+			this.viewModel.deviceType = DeviceType.File;
 		} else if (selectedRestoreFrom === this._databaseTitle) {
 			this._sourceDatabaseSelectBox.enable();
 			this.viewModel.onRestoreFromChanged(false);
@@ -808,7 +808,7 @@ export class RestoreDialog extends Modal {
 			if (!this._panel.contains(this._optionsTab.identifier)) {
 				this._panel.pushTab(this._optionsTab);
 			}
-			this.viewModel.deviceType = DeviceType.file;
+			this.viewModel.deviceType = DeviceType.File;
 		} else if (selectedRestoreFrom === this._urlTitle) {
 			this.viewModel.onRestoreFromChanged(true);
 			DOM.hide(this._destinationRestoreToContainer!);
@@ -820,7 +820,7 @@ export class RestoreDialog extends Modal {
 			this._panel.removeTab(this._fileTab.identifier);
 			this._panel.removeTab(this._optionsTab.identifier);
 			this._databaseDropdown.value = '';
-			this.viewModel.deviceType = DeviceType.url;
+			this.viewModel.deviceType = DeviceType.Url;
 		}
 		this.resetRestoreContent();
 	}

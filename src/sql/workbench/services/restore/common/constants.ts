@@ -13,10 +13,10 @@ export const fileFiltersSet: { label: string, filters: string[] }[] = [
 
 // Backup media device type
 export enum DeviceType {
-	logicalDevice = 0,
-	tape = 1,
-	file = 2,
-	pipe = 3,
-	virtualDevice = 4,
-	url = 5
+	LogicalDevice = 0,
+	Tape = 1,
+	File = 2,
+	Pipe = 3,
+	VirtualDevice = 4,
+	Url = 5
 }
