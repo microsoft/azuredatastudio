@@ -36,8 +36,6 @@ import { Deferred } from 'sql/base/common/promise';
 
 export class UrlBrowserDialog extends Modal {
 
-	private _defaultBackupName: string;
-
 	private _accounts: Account[];
 	private _selectedAccount: Account;
 	private _subscriptions: azureResource.AzureResourceSubscription[];
@@ -49,7 +47,6 @@ export class UrlBrowserDialog extends Modal {
 	private _backupFiles: azureResource.Blob[];
 
 	private _ownerUri: string;
-	private _restoreDialog: boolean;
 	private _body: HTMLElement;
 	private _accountSelectorBox: SelectBox;
 	private _tenantSelectorBox: SelectBox;
@@ -66,8 +63,8 @@ export class UrlBrowserDialog extends Modal {
 
 
 	constructor(title: string,
-		restoreDialog: boolean,
-		defaultBackupName: string,
+		private _restoreDialog: boolean,
+		private _defaultBackupName: string,
 		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -82,8 +79,6 @@ export class UrlBrowserDialog extends Modal {
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(title, TelemetryKeys.ModalDialogName.UrlBrowser, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'flyout', hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
-		this._defaultBackupName = defaultBackupName;
-		this._restoreDialog = restoreDialog;
 	}
 
 	protected layout(height?: number): void {
