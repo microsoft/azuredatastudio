@@ -68,7 +68,12 @@ declare module 'sqldbproj' {
 		/**
 		 * If true then the project will not be opened in the workspace after being created
 		 */
-		doNotOpenInWorkspace?: boolean
+		doNotOpenInWorkspace?: boolean,
+
+		/**
+		 * Create SQL Project SDK style or non SDK style. The default is non SDK style.
+		 */
+		isSDKStyle?: boolean
 	};
 
 	export interface ISqlProject {
@@ -113,15 +118,15 @@ declare module 'sqldbproj' {
 		 *
 		 * @param databaseSource Source of the database to add
 		 */
-		 addDatabaseSource(databaseSource: string): Promise<void>;
+		addDatabaseSource(databaseSource: string): Promise<void>;
 
-		 /**
-		  * Removes database source from the DatabaseSource property element.
-		  * If no sources remain, then property element will be removed from the project file.
-		  *
-		  * @param databaseSource Source of the database to remove
-		  */
-		 removeDatabaseSource(databaseSource: string): Promise<void>;
+		/**
+		 * Removes database source from the DatabaseSource property element.
+		 * If no sources remain, then property element will be removed from the project file.
+		 *
+		 * @param databaseSource Source of the database to remove
+		 */
+		removeDatabaseSource(databaseSource: string): Promise<void>;
 
 		/**
 		 * Excludes entry from project by removing it from the project file
