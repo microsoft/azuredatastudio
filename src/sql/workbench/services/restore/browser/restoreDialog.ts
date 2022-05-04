@@ -35,7 +35,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/workbench/services/restore/browser/restoreViewModel';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
 import { IPanelTab, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { DatabaseEngineEdition, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -92,7 +92,7 @@ export class RestoreDialog extends Modal {
 	private _fileTab?: IPanelTab;
 	private _optionsTab?: IPanelTab;
 
-	private _engineEdition?: azdata.DatabaseEngineEdition;
+	private _engineEdition?: DatabaseEngineEdition;
 
 	// File option
 	private readonly _relocateDatabaseFilesOption = 'relocateDbFiles';
@@ -607,7 +607,7 @@ export class RestoreDialog extends Modal {
 
 	public enableRestoreButton(enabled: boolean) {
 		this.spinner = false;
-		if (this._engineEdition === azdata.DatabaseEngineEdition.SqlManagedInstance && this.viewModel.databases.includes(this._targetDatabaseInputBox.value)) {
+		if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance && this.viewModel.databases.includes(this._targetDatabaseInputBox.value)) {
 			this._restoreButton!.enabled = false;
 			this._scriptButton!.enabled = false;
 		}
@@ -870,7 +870,7 @@ export class RestoreDialog extends Modal {
 
 	private resetDialog(): void {
 		this.hideError();
-		if (this._engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance) {
+		if (this._engineEdition !== DatabaseEngineEdition.SqlManagedInstance) {
 			this._restoreFromSelectBox!.selectWithOptionName(this._databaseTitle);
 			this.onRestoreFromChanged(this._databaseTitle);
 		}
@@ -881,14 +881,14 @@ export class RestoreDialog extends Modal {
 		this.resetRestoreContent();
 	}
 
-	public open(serverName: string, ownerUri: string, engineEdition: azdata.DatabaseEngineEdition) {
+	public open(serverName: string, ownerUri: string, engineEdition: DatabaseEngineEdition) {
 		this._engineEdition = engineEdition;
 		this.title = this._restoreTitle + ' - ' + serverName;
 		this._ownerUri = ownerUri;
 		this._urlInputBox.value = '';
 		this._targetDatabaseInputBox.value = '';
 		let title;
-		if (this._engineEdition === azdata.DatabaseEngineEdition.SqlManagedInstance) {
+		if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance) {
 			this._restoreFromSelectBox.setOptions([this._urlTitle]);
 			title = this._urlTitle;
 			// to fetch databases
