@@ -751,8 +751,7 @@ export class BackupComponent extends AngularDisposable {
 			FileValidationConstants.backup,
 			false,
 			false,
-			this.getDefaultBackupFileName(),
-			(url => this.handleUrlPathAdded(url)));
+			this.getDefaultBackupFileName()).then(url => this.handleUrlPathAdded(url));
 	}
 
 	private onAddFileClick(): void {

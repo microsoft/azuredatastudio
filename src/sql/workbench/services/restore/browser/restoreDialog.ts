@@ -719,8 +719,8 @@ export class RestoreDialog extends Modal {
 			FileValidationConstants.restore,
 			true,
 			true,
-			'',
-			url => this.onUrlBrowsed(url));
+			'')
+			.then(url => this.onUrlBrowsed(url));
 	}
 
 	private onUrlBrowsed(url: string) {

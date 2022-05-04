@@ -25,14 +25,13 @@ export class UrlBrowserDialogService implements IUrlBrowserDialogService {
 		fileValidationServiceType: string,
 		isWide: boolean,
 		isRestoreDialog: boolean,
-		defaultBackupName: string,
-		handleOnOk: (path: string) => void
-	): void {
+		defaultBackupName: string
+	): Promise<string> {
 		const urlBrowserDialog = this._instantiationService.createInstance(UrlBrowserDialog, localize('filebrowser.selectBlob', "Select a blob"), isRestoreDialog, defaultBackupName);
 		urlBrowserDialog.render();
 
 		urlBrowserDialog.setWide(isWide);
-		urlBrowserDialog.onOk.then((filepath) => handleOnOk(filepath));
 		urlBrowserDialog.open(ownerUri, expandPath, fileFilters, fileValidationServiceType);
+		return urlBrowserDialog.onOk;
 	}
 }
