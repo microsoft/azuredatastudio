@@ -545,6 +545,9 @@ export class BackupComponent extends AngularDisposable {
 		this._changeDetectorRef.detectChanges();
 	}
 
+	/**
+	 * Set backup file path options in the list box
+	 */
 	private setBackupPathList() {
 		let pathlist: ISelectOptionItem[] = [];
 		if (!this.toUrlCheckBox.checked) {
