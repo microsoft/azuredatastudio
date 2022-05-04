@@ -427,7 +427,7 @@ export class RestoreDialog extends Modal {
 		};
 		this._panel.pushTab(this._optionsTab);
 
-		this._panel.onTabChange(c => {
+		this._register(this._panel.onTabChange(c => {
 			if (c === this._fileTab.identifier && this._fileListTable) {
 				this._fileListTable.resizeCanvas();
 				this._fileListTable.autosizeColumns();
@@ -435,7 +435,7 @@ export class RestoreDialog extends Modal {
 			if (c !== this._generalTab.identifier) {
 				this._restoreFromSelectBox!.hideMessage();
 			}
-		});
+		}));
 
 		this._restorePlanTable.grid.onKeyDown.subscribe(e => {
 			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
@@ -664,7 +664,7 @@ export class RestoreDialog extends Modal {
 		this._register(attachTableStyler(this._fileListTable!, this._themeService));
 		this._register(attachTableStyler(this._restorePlanTable!, this._themeService));
 
-		this._targetDatabaseInputBox.onDidChange(dbName => {
+		this._register(this._targetDatabaseInputBox.onDidChange(dbName => {
 			if (!this.viewModel.databases.includes(dbName)) {
 				if (this.viewModel.targetDatabaseName !== dbName) {
 					this.viewModel.targetDatabaseName = dbName;
@@ -676,19 +676,19 @@ export class RestoreDialog extends Modal {
 					this.enableRestoreButton(false);
 				}
 			}
-		});
+		}));
 
 		this._register(this._filePathInputBox!.onLoseFocus(params => {
 			this.onFilePathLoseFocus(params);
 		}));
 
-		this._browseFileButton!.onDidClick(() => {
+		this._register(this._browseFileButton!.onDidClick(() => {
 			this.onFileBrowserRequested();
-		});
+		}));
 
-		this._browseUrlButton!.onDidClick(() => {
+		this._register(this._browseUrlButton!.onDidClick(() => {
 			this.onUrlBrowserRequested();
-		});
+		}));
 
 		this._register(this._sourceDatabaseSelectBox!.onDidSelect(selectedDatabase => {
 			this.onSourceDatabaseChanged(selectedDatabase.selected);
