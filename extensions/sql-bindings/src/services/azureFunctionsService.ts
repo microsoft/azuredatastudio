@@ -13,6 +13,7 @@ import * as azureFunctionsContracts from '../contracts/azureFunctions/azureFunct
 import { CreateAzureFunctionStep, TelemetryActions, TelemetryReporter, TelemetryViews, ExitReason } from '../common/telemetry';
 import { AddSqlBindingParams, BindingType, GetAzureFunctionsParams, GetAzureFunctionsResult, ResultStatus } from 'sql-bindings';
 import { IConnectionInfo, ITreeNodeInfo } from 'vscode-mssql';
+import { addConnectionStringStep } from '../createNewProject/addConnectionStringStep';
 
 export const hostFileName: string = 'host.json';
 
@@ -223,6 +224,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				.withAdditionalProperties(propertyBag)
 				.withConnectionInfo(connectionInfo).send();
 		}
+		// addtional execution step that will be used by vscode-azurefunctions to execute when creating a new azure function project
+		let connectionStringExecuteStep = addConnectionStringStep(projectFolder, connectionInfo, connectionStringSettingName);
 
 		// create C# Azure Function with SQL Binding
 		telemetryStep = 'createFunctionAPI';
@@ -238,7 +241,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				...(selectedBindingType === BindingType.output && { table: objectName })
 			},
 			folderPath: projectFolder,
-			suppressCreateProjectPrompt: true
+			suppressCreateProjectPrompt: true,
+			...(isCreateNewProject && { executeStep: connectionStringExecuteStep })
 		});
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 			.withAdditionalProperties(propertyBag)
