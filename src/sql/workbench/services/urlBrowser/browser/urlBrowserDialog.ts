@@ -81,7 +81,7 @@ export class UrlBrowserDialog extends Modal {
 		@IAzureBlobService private _blobService: IAzureBlobService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
-		super(title, TelemetryKeys.ModalDialogName.FileBrowser, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'flyout', hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
+		super(title, TelemetryKeys.ModalDialogName.UrlBrowser, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'flyout', hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
 		this._defaultBackupName = defaultBackupName;
 		this._restoreDialog = restoreDialog;
 	}
