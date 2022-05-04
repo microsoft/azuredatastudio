@@ -133,7 +133,6 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 			rows.push(row);
 			row['name'] = p.name;
 			row['parent'] = parentIndex;
-			//row['indent'] = indent;
 			if (!isString(p.value)) {
 				// Styling values in the parent row differently to make them more apparent and standout compared to the rest of the cells.
 				row['name'] = {
