@@ -20,8 +20,6 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
 import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
-import { treeGridExpandableColumnFormatter } from 'sql/base/browser/ui/table/formatters';
-import { generateUuid } from 'vs/base/common/uuid';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -35,14 +33,14 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private styleElement: HTMLStyleElement;
 	private idPrefix: string;
 
-	private _grid: Slick.Grid<T>;
-	private _columns: Slick.Column<T>[];
-	private _data: IDisposableDataProvider<T>;
+	protected _grid: Slick.Grid<T>;
+	protected _columns: Slick.Column<T>[];
+	protected _data: IDisposableDataProvider<T>;
 	private _sorter?: ITableSorter<T>;
 
 	private _autoscroll?: boolean;
 	private _container: HTMLElement;
-	private _tableContainer: HTMLElement;
+	protected _tableContainer: HTMLElement;
 
 	private _classChangeTimeout: any;
 
@@ -123,58 +121,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.mapMouseEvent(this._grid.onHeaderClick, this._onHeaderClick);
 		this.mapMouseEvent(this._grid.onDblClick, this._onDoubleClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
-
-		this._grid.onClick.subscribe((e, data) => {
-			if (this.isTreeGrid()) {
-				this.toggleTreeGridParent(data.row, data.cell);
-			}
-		});
-
-		this._grid.onKeyDown.subscribe((e, data) => {
-			if (this.isTreeGrid()) {
-				if ((<any>e).keyCode === 13) {
-					// When we press enter on an collapsed cell we expand it.
-					this.toggleTreeGridParent(data.row, data.cell);
-				} else if ((<any>e).keyCode === 37) {
-					// Left arrow on first cell of the expanded row collapses it
-					if (data.cell === 0) {
-						this.toggleTreeGridParent(data.row, this.expandableColumnIndex(), false);
-					}
-				} else if ((<any>e).keyCode === 39) {
-					// Right arrow on last cell of the collapsed row expands it.
-					if (data.cell === (this._grid.getColumns().length - 1)) {
-						this.toggleTreeGridParent(data.row, this.expandableColumnIndex(), true);
-					}
-				}
-			}
-		});
-
-		this._grid.onRendered.subscribe((e, data) => {
-			if (this.isTreeGrid()) {
-				// Changing table role from grid to treegrid
-				this._tableContainer.setAttribute('role', 'treegrid');
-				for (let i = 0; i < this._data.getLength(); i++) {
-					const rowData = this._data.getItem(i);
-					// Getting the row div that corresponds to the data row
-					const rowElement = this._tableContainer.querySelector(`div [role="row"][aria-rowindex="${(i + 1)}"]`);
-					// If the row element is found in the dom, we are setting the required aria attributes for it.
-					if (rowElement) {
-						if (rowData.expanded !== undefined) {
-							rowElement.ariaExpanded = rowData.expanded;
-						}
-						if (rowData.level !== undefined) {
-							rowElement.ariaLevel = rowData.level;
-						}
-						if (rowData.setSize !== undefined) {
-							rowElement.ariaSetSize = rowData.setSize;
-						}
-						if (rowData.posInSet !== undefined) {
-							rowElement.ariaPosInSet = rowData.posInSet;
-						}
-					}
-				}
-			}
-		});
 	}
 
 	public rerenderGrid() {
@@ -227,9 +173,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 			this._data = data;
 		} else {
 			this._data = new TableDataView<T>(data);
-		}
-		if (this.isTreeGrid()) {
-			this.transGridDataToTreeGridData(this._data);
 		}
 		this._grid.setData(this._data, true);
 		this._data.filter(this._grid.getColumns());
@@ -464,58 +407,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		return this._tableContainer;
 	}
 
-	// Checks if the current table is a tree grid. Every tree grid should have a column with expandableColumnFormatter
-	private isTreeGrid(): boolean {
-		return this._grid.getColumns().filter(c => c.formatter === treeGridExpandableColumnFormatter).length > 0;
-	}
 
-	// Gets the index for the expandable column
-	private expandableColumnIndex(): number {
-		return this._grid.getColumns().findIndex(c => c.formatter === treeGridExpandableColumnFormatter);
-	}
 
-	// This expands/collapse the tree grid item
-	private toggleTreeGridParent(row: number, cell: number, forceState?: boolean): void {
-		const rowData = this._data.getItem(row);
-		if (rowData['isParent'] && this._grid.getColumns()[cell].formatter === treeGridExpandableColumnFormatter) {
-			if (forceState === undefined) {
-				if (!rowData.expanded) {
-					(<any>rowData).expanded = true;
-				} else {
-					(<any>rowData).expanded = false;
-				}
-			} else {
-				(<any>rowData).expanded = forceState;
-			}
-			this._data.filter(this._grid.getColumns());
-			this.rerenderGrid();
-			this.focus();
-		}
-	}
-
-	// We need to transform grid data to tree grid data. This includes adding required aria attributes to the rows
-	private transGridDataToTreeGridData(data: IDisposableDataProvider<T>): IDisposableDataProvider<T> {
-		for (let i = 0; i < data.getLength(); i++) {
-			const dataRow = <any>data.getItem(i);
-			if (dataRow.parent === undefined || dataRow.parent === -1) {
-				dataRow.level = 1;
-			} else {
-				const parentRow = <any>data.getItem(dataRow.parent);
-				dataRow.level = parentRow.level + 1;
-				if (parentRow.setSize === undefined) {
-					parentRow.setSize = 1;
-				} else {
-					parentRow.setSize += 1;
-				}
-				dataRow.posInSet = parentRow.setSize;
-				parentRow.expanded = false;
-				parentRow.isParent = true;
-				if (!parentRow._guid) {
-					parentRow._guid = generateUuid();
-				}
-				dataRow.parentGuid = parentRow._guid;
-			}
-		}
-		return data;
-	}
 }
