@@ -64,12 +64,13 @@ function defaultFilter<T extends Slick.SlickData>(data: T[], columns: Filterable
 			});
 		}
 	});
-	const collapsibleTable = columns.find(c => c.formatter === expandableColumnFormatter);
-	if (collapsibleTable) {
+
+	const isTreeGrid = columns.find(c => c.formatter === expandableColumnFormatter);
+	if (isTreeGrid) {
 		filteredData = filteredData.filter((item) => {
 			let parent = data[item.parent];
 			while (parent) {
-				if (!parent._expanded) {
+				if (!parent.expanded) {
 					return false;
 				}
 				parent = data[parent.parent];
