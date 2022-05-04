@@ -149,7 +149,7 @@ export function expandableColumnFormatter(row: number | undefined, cell: any | u
 	const textDisplayElement = createTextCell(value);
 
 	if (dataContext['isParent']) {
-		if (dataContext._expanded) {
+		if (dataContext.expanded) {
 			return `<div aria-expanded="true">${spacer}<span class='codicon codicon-chevron-down toggle' style='font-weight:bold;'></span>&nbsp; ${textDisplayElement}</div>`;
 		} else {
 			return `<div aria-expanded="false">${spacer}<span class='codicon codicon-chevron-right toggle' style='font-weight:bold;'></span>&nbsp; ${textDisplayElement}</div>`;

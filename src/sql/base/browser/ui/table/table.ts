@@ -159,8 +159,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 					const rowElement = this._tableContainer.querySelector(`div [role="row"][aria-rowindex="${(i + 1)}"]`);
 					// If the row element is found in the dom, we are setting the required aria attributes for it.
 					if (rowElement) {
-						if (rowData._expanded !== undefined) {
-							rowElement.ariaExpanded = rowData._expanded;
+						if (rowData.expanded !== undefined) {
+							rowElement.ariaExpanded = rowData.expanded;
 						}
 						if (rowData.level !== undefined) {
 							rowElement.ariaLevel = rowData.level;
@@ -479,13 +479,13 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		const rowData = this._data.getItem(row);
 		if (rowData['isParent'] && this._grid.getColumns()[cell].formatter === expandableColumnFormatter) {
 			if (forceState === undefined) {
-				if (!rowData._expanded) {
-					(<any>rowData)._expanded = true;
+				if (!rowData.expanded) {
+					(<any>rowData).expanded = true;
 				} else {
-					(<any>rowData)._expanded = false;
+					(<any>rowData).expanded = false;
 				}
 			} else {
-				(<any>rowData)._expanded = forceState;
+				(<any>rowData).expanded = forceState;
 			}
 			this._data.filter(this._grid.getColumns());
 			this.rerenderGrid();
@@ -508,7 +508,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 					parentRow.setSize += 1;
 				}
 				dataRow.posInSet = parentRow.setSize;
-				parentRow._expanded = false;
+				parentRow.expanded = false;
 				parentRow.isParent = true;
 				if (!parentRow._guid) {
 					parentRow._guid = generateUuid();
