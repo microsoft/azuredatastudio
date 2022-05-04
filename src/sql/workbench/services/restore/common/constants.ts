@@ -11,7 +11,8 @@ export const fileFiltersSet: { label: string, filters: string[] }[] = [
 	{ label: localize('backup.allFiles', "All Files"), filters: ['*'] }
 ];
 
-// Backup media device type
+// Backup media device type: https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.devicetype
+// Used as backupDeviceType RPC param
 export enum DeviceType {
 	LogicalDevice = 0,
 	Tape = 1,
