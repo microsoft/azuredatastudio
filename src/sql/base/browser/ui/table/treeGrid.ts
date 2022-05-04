@@ -20,7 +20,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 function defaultTreeGridFilter<T extends Slick.SlickData>(data: T[], columns: FilterableColumn<T>[], cellValueGetter: CellValueGetter = defaultCellValueGetter): T[] {
 	let filteredData = defaultFilter(data, columns, cellValueGetter);
 
-	// Showing only rows which have no parent or parent expanded.
+	// filtering out rows which have parent/grandparents collapsed.
 	filteredData = filteredData.filter((item) => {
 		let parent = data[item.parent];
 		while (parent) {
