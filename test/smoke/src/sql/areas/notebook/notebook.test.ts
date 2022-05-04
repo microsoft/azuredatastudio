@@ -436,7 +436,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.waitForActiveCellEditorContents(s => s.includes('- **_<u><mark>Markdown Test</mark></u>_**'));
 			});
 
-			it('can save WYSIWYG notebook', async function () {
+			it('can save and reopen WYSIWYG notebook', async function () {
 				const app = this.app as Application;
 				const filename = 'emptyNotebook.ipynb';
 				await app.workbench.sqlNotebook.openFile(filename);
