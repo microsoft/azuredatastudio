@@ -11,8 +11,10 @@ import { MigrationStateModel, MigrationTargetType, StateChangeEvent } from '../m
 import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { deepClone, findDropDownItemIndex, selectDropDownIndex, selectDefaultDropdownValue } from '../api/utils';
+import * as utils from '../api/utils';
 import { azureResource } from 'azurecore';
+import { SqlVMServer } from '../api/azure';
+import { ProvisioningState } from '../models/migrationLocalStorage';
 
 export class TargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -27,6 +29,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private _azureResourceGroupDropdown!: azdata.DropDownComponent;
 	private _azureResourceDropdownLabel!: azdata.TextComponent;
 	private _azureResourceDropdown!: azdata.DropDownComponent;
+
+	private _migrationTargetPlatform!: MigrationTargetType;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.AZURE_SQL_TARGET_PAGE_TITLE), migrationStateModel);
@@ -87,8 +91,15 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				break;
 		}
 
-		await this.populateResourceInstanceDropdown();
 		await this.populateAzureAccountsDropdown();
+		if (this._migrationTargetPlatform !== this.migrationStateModel._targetType) {
+			// if the user had previously selected values on this page, then went back to change the migration target platform
+			// and came back, forcibly reload the location/resource group/resource values since they will now be different
+			this._migrationTargetPlatform = this.migrationStateModel._targetType;
+			await this.populateLocationDropdown();
+			await this.populateResourceGroupDropdown();
+			await this.populateResourceInstanceDropdown();
+		}
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			const errors: string[] = [];
@@ -121,7 +132,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			const resourceDropdownValue = (<azdata.CategoryValue>this._azureResourceDropdown.value)?.displayName;
 			switch (this.migrationStateModel._targetType) {
 				case MigrationTargetType.SQLMI: {
-					let targetMi = this.migrationStateModel._targetServerInstance as azureResource.AzureSqlManagedInstance;
+					const targetMi = this.migrationStateModel._targetServerInstance as azureResource.AzureSqlManagedInstance;
 					if (!targetMi || resourceDropdownValue === constants.NO_MANAGED_INSTANCE_FOUND) {
 						errors.push(constants.INVALID_MANAGED_INSTANCE_ERROR);
 						break;
@@ -133,9 +144,14 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					break;
 				}
 				case MigrationTargetType.SQLVM: {
-					if (!this.migrationStateModel._targetServerInstance ||
-						resourceDropdownValue === constants.NO_VIRTUAL_MACHINE_FOUND) {
+					const targetVm = this.migrationStateModel._targetServerInstance as SqlVMServer;
+					if (!targetVm || resourceDropdownValue === constants.NO_VIRTUAL_MACHINE_FOUND) {
 						errors.push(constants.INVALID_VIRTUAL_MACHINE_ERROR);
+						break;
+					}
+					if (targetVm.properties.provisioningState !== ProvisioningState.Succeeded) {
+						errors.push(constants.VM_NOT_READY_ERROR(targetVm.name, targetVm.properties.provisioningState));
+						break;
 					}
 					break;
 				}
@@ -176,34 +192,20 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			required: true,
+			fireOnTextChange: true,
+			placeholder: constants.SELECT_AN_ACCOUNT,
 			CSSStyles: {
 				'margin-top': '-1em'
 			},
 		}).component();
 		this._disposables.push(this._azureAccountsDropdown.onValueChanged(async (value) => {
-			const selectedIndex = findDropDownItemIndex(this._azureAccountsDropdown, value);
-			if (selectedIndex > -1) {
-				const selectedAzureAccount = this.migrationStateModel.getAccount(selectedIndex);
-				// Making a clone of the account object to preserve the original tenants
-				this.migrationStateModel._azureAccount = deepClone(selectedAzureAccount);
-				if (selectedAzureAccount.isStale === false &&
-					this.migrationStateModel._azureAccount.properties.tenants.length > 1) {
-					this.migrationStateModel._accountTenants = selectedAzureAccount.properties.tenants;
-					this._accountTenantDropdown.values = await this.migrationStateModel.getTenantValues();
-					selectDropDownIndex(this._accountTenantDropdown, 0);
-					await this._accountTenantFlexContainer.updateCssStyles({
-						'display': 'inline'
-					});
-				} else {
-					await this._accountTenantFlexContainer.updateCssStyles({
-						'display': 'none'
-					});
-				}
-				await this._azureAccountsDropdown.validate();
-			} else {
-				this.migrationStateModel._azureAccount = undefined!;
+			if (value && value !== 'undefined') {
+				const selectedAccount = this.migrationStateModel._azureAccounts.find(account => account.displayInfo.displayName === value);
+				this.migrationStateModel._azureAccount = (selectedAccount)
+					? utils.deepClone(selectedAccount)!
+					: undefined!;
+				await this.populateTenantsDropdown();
 			}
-			await this.populateSubscriptionDropdown();
 		}));
 
 		const linkAccountButton = this._view.modelBuilder.hyperlink()
@@ -251,20 +253,22 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			fireOnTextChange: true,
+			placeholder: constants.SELECT_A_TENANT
 		}).component();
 
 		this._disposables.push(this._accountTenantDropdown.onValueChanged(async (value) => {
-			/**
-			 * Replacing all the tenants in azure account with the tenant user has selected.
-			 * All azure requests will only run on this tenant from now on
-			 */
-			const selectedIndex = findDropDownItemIndex(this._accountTenantDropdown, value);
-			const selectedTenant = this.migrationStateModel.getTenant(selectedIndex);
-			this.migrationStateModel._azureTenant = deepClone(selectedTenant);
-			if (selectedIndex > -1) {
-				this.migrationStateModel._azureAccount.properties.tenants = [this.migrationStateModel.getTenant(selectedIndex)];
+			if (value && value !== 'undefined') {
+				/**
+				 * Replacing all the tenants in azure account with the tenant user has selected.
+				 * All azure requests will only run on this tenant from now on
+				 */
+				const selectedTenant = this.migrationStateModel._accountTenants.find(tenant => tenant.displayName === value);
+				if (selectedTenant) {
+					this.migrationStateModel._azureTenant = utils.deepClone(selectedTenant)!;
+					this.migrationStateModel._azureAccount.properties.tenants = [this.migrationStateModel._azureTenant];
+				}
+				await this.populateSubscriptionDropdown();
 			}
-			await this.populateSubscriptionDropdown();
 		}));
 
 		this._accountTenantFlexContainer = this._view.modelBuilder.flexContainer()
@@ -300,21 +304,20 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			editable: true,
 			required: true,
 			fireOnTextChange: true,
+			placeholder: constants.SELECT_A_SUBSCRIPTION,
 			CSSStyles: {
 				'margin-top': '-1em'
 			},
 		}).component();
 		this._disposables.push(this._azureSubscriptionDropdown.onValueChanged(async (value) => {
-			const selectedIndex = findDropDownItemIndex(this._azureSubscriptionDropdown, value);
-			if (selectedIndex > -1 &&
-				value !== constants.NO_SUBSCRIPTIONS_FOUND) {
-				this.migrationStateModel._targetSubscription = this.migrationStateModel.getSubscription(selectedIndex);
-			} else {
-				this.migrationStateModel._targetSubscription = undefined!;
+			if (value && value !== 'undefined' && value !== constants.NO_SUBSCRIPTIONS_FOUND) {
+				const selectedSubscription = this.migrationStateModel._subscriptions.find(subscription => `${subscription.name} - ${subscription.id}` === value);
+				this.migrationStateModel._targetSubscription = (selectedSubscription)
+					? utils.deepClone(selectedSubscription)!
+					: undefined!;
+				this.migrationStateModel.refreshDatabaseBackupPage = true;
+				await this.populateLocationDropdown();
 			}
-			this.migrationStateModel.refreshDatabaseBackupPage = true;
-			await this.populateLocationDropdown();
-			await this.populateResourceGroupDropdown();
 		}));
 
 		const azureLocationLabel = this._view.modelBuilder.text().withProps({
@@ -332,20 +335,21 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			editable: true,
 			required: true,
 			fireOnTextChange: true,
+			placeholder: constants.SELECT_A_LOCATION,
 			CSSStyles: {
 				'margin-top': '-1em'
 			},
 		}).component();
 		this._disposables.push(this._azureLocationDropdown.onValueChanged(async (value) => {
-			const selectedIndex = findDropDownItemIndex(this._azureLocationDropdown, value);
-			if (selectedIndex > -1 &&
-				value !== constants.NO_LOCATION_FOUND) {
-				this.migrationStateModel._location = this.migrationStateModel.getLocation(selectedIndex);
-			} else {
-				this.migrationStateModel._location = undefined!;
+			if (value && value !== 'undefined' && value !== constants.NO_LOCATION_FOUND) {
+				const selectedLocation = this.migrationStateModel._locations.find(location => location.displayName === value);
+				this.migrationStateModel._location = (selectedLocation)
+					? utils.deepClone(selectedLocation)!
+					: undefined!;
+				this.migrationStateModel.refreshDatabaseBackupPage = true;
+				await this.populateResourceGroupDropdown();
+				await this.populateResourceInstanceDropdown();
 			}
-			this.migrationStateModel.refreshDatabaseBackupPage = true;
-			await this.populateResourceInstanceDropdown();
 		}));
 
 		const azureResourceGroupLabel = this._view.modelBuilder.text().withProps({
@@ -363,19 +367,19 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			editable: true,
 			required: true,
 			fireOnTextChange: true,
+			placeholder: constants.SELECT_A_RESOURCE_GROUP,
 			CSSStyles: {
 				'margin-top': '-1em'
 			},
 		}).component();
 		this._disposables.push(this._azureResourceGroupDropdown.onValueChanged(async (value) => {
-			const selectedIndex = findDropDownItemIndex(this._azureResourceGroupDropdown, value);
-			if (selectedIndex > -1 &&
-				value !== constants.RESOURCE_GROUP_NOT_FOUND) {
-				this.migrationStateModel._resourceGroup = this.migrationStateModel.getAzureResourceGroup(selectedIndex);
-			} else {
-				this.migrationStateModel._resourceGroup = undefined!;
+			if (value && value !== 'undefined' && value !== constants.RESOURCE_GROUP_NOT_FOUND) {
+				const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === value);
+				this.migrationStateModel._resourceGroup = (selectedResourceGroup)
+					? utils.deepClone(selectedResourceGroup)!
+					: undefined!;
+				await this.populateResourceInstanceDropdown();
 			}
-			await this.populateResourceInstanceDropdown();
 		}));
 
 		this._azureResourceDropdownLabel = this._view.modelBuilder.text().withProps({
@@ -393,39 +397,54 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			editable: true,
 			required: true,
 			fireOnTextChange: true,
+			placeholder: constants.SELECT_A_SERVICE,
 			CSSStyles: {
 				'margin-top': '-1em'
 			},
 		}).component();
 		this._disposables.push(this._azureResourceDropdown.onValueChanged(async (value) => {
-			const selectedIndex = findDropDownItemIndex(this._azureResourceDropdown, value);
-			if (selectedIndex > -1 &&
-				value !== constants.NO_MANAGED_INSTANCE_FOUND &&
-				value !== constants.NO_VIRTUAL_MACHINE_FOUND) {
+			if (value && value !== 'undefined' && value !== constants.NO_MANAGED_INSTANCE_FOUND && value !== constants.NO_VIRTUAL_MACHINE_FOUND) {
 				this.migrationStateModel._sqlMigrationServices = undefined!;
 
 				switch (this.migrationStateModel._targetType) {
 					case MigrationTargetType.SQLVM:
-						this.migrationStateModel._targetServerInstance = this.migrationStateModel.getVirtualMachine(selectedIndex);
+						const selectedVm = this.migrationStateModel._targetSqlVirtualMachines.find(vm => vm.name === value || constants.UNAVAILABLE_TARGET_PREFIX(vm.name) === value);
+						if (selectedVm) {
+							this.migrationStateModel._targetServerInstance = utils.deepClone(selectedVm)! as SqlVMServer;
+
+							if (this.migrationStateModel._targetServerInstance.properties.provisioningState !== ProvisioningState.Succeeded) {
+								this.wizard.message = {
+									text: constants.VM_NOT_READY_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.provisioningState),
+									level: azdata.window.MessageLevel.Error
+								};
+							} else {
+								this.wizard.message = {
+									text: '',
+									level: azdata.window.MessageLevel.Error
+								};
+							}
+						}
 						break;
 
 					case MigrationTargetType.SQLMI:
-						this.migrationStateModel._targetServerInstance = this.migrationStateModel.getManagedInstance(selectedIndex);
-						if (this.migrationStateModel._targetServerInstance.properties.state !== 'Ready') {
-							this.wizard.message = {
-								text: constants.MI_NOT_READY_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.state),
-								level: azdata.window.MessageLevel.Error
-							};
-						} else {
-							this.wizard.message = {
-								text: '',
-								level: azdata.window.MessageLevel.Error
-							};
+						const selectedMi = this.migrationStateModel._targetManagedInstances.find(mi => mi.name === value || constants.UNAVAILABLE_TARGET_PREFIX(mi.name) === value);
+						if (selectedMi) {
+							this.migrationStateModel._targetServerInstance = utils.deepClone(selectedMi)! as azureResource.AzureSqlManagedInstance;
+
+							if (this.migrationStateModel._targetServerInstance.properties.state !== 'Ready') {
+								this.wizard.message = {
+									text: constants.MI_NOT_READY_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.state),
+									level: azdata.window.MessageLevel.Error
+								};
+							} else {
+								this.wizard.message = {
+									text: '',
+									level: azdata.window.MessageLevel.Error
+								};
+							}
 						}
 						break;
 				}
-			} else {
-				this.migrationStateModel._targetServerInstance = undefined!;
 			}
 		}));
 
@@ -448,18 +467,40 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private async populateAzureAccountsDropdown(): Promise<void> {
 		try {
 			this.updateDropdownLoadingStatus(TargetDropDowns.AzureAccount, true);
-			this._azureAccountsDropdown.values = await this.migrationStateModel.getAccountValues();
-			selectDefaultDropdownValue(this._azureAccountsDropdown, this.migrationStateModel._azureAccount?.displayInfo?.userId, false);
+			this.migrationStateModel._azureAccounts = await utils.getAzureAccounts();
+			this._azureAccountsDropdown.values = await utils.getAzureAccountsDropdownValues(this.migrationStateModel._azureAccounts);
+			utils.selectDefaultDropdownValue(this._azureAccountsDropdown, this.migrationStateModel._azureAccount?.displayInfo?.userId, false);
 		} finally {
 			this.updateDropdownLoadingStatus(TargetDropDowns.AzureAccount, false);
 		}
 	}
 
+	private async populateTenantsDropdown(): Promise<void> {
+		try {
+			this.updateDropdownLoadingStatus(TargetDropDowns.Tenant, true);
+			if (this.migrationStateModel._azureAccount && this.migrationStateModel._azureAccount.isStale === false && this.migrationStateModel._azureAccount.properties.tenants.length > 0) {
+				this.migrationStateModel._accountTenants = utils.getAzureTenants(this.migrationStateModel._azureAccount);
+				this._accountTenantDropdown.values = await utils.getAzureTenantsDropdownValues(this.migrationStateModel._accountTenants);
+				utils.selectDefaultDropdownValue(this._accountTenantDropdown, this.migrationStateModel._azureTenant?.id, true);
+			}
+			await this._accountTenantFlexContainer.updateCssStyles(this.migrationStateModel._azureAccount.properties.tenants.length > 1
+				? { 'display': 'inline' }
+				: { 'display': 'none' }
+			);
+			await this._azureAccountsDropdown.validate();
+		} finally {
+			this.updateDropdownLoadingStatus(TargetDropDowns.Tenant, false);
+			await this.populateSubscriptionDropdown();
+		}
+	}
+
+
 	private async populateSubscriptionDropdown(): Promise<void> {
 		try {
 			this.updateDropdownLoadingStatus(TargetDropDowns.Subscription, true);
-			this._azureSubscriptionDropdown.values = await this.migrationStateModel.getSubscriptionsDropdownValues();
-			selectDefaultDropdownValue(this._azureSubscriptionDropdown, this.migrationStateModel._targetSubscription?.id, false);
+			this.migrationStateModel._subscriptions = await utils.getAzureSubscriptions(this.migrationStateModel._azureAccount);
+			this._azureSubscriptionDropdown.values = await utils.getAzureSubscriptionsDropdownValues(this.migrationStateModel._subscriptions);
+			utils.selectDefaultDropdownValue(this._azureSubscriptionDropdown, this.migrationStateModel._targetSubscription?.id, false);
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -470,8 +511,18 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	public async populateLocationDropdown(): Promise<void> {
 		try {
 			this.updateDropdownLoadingStatus(TargetDropDowns.Location, true);
-			this._azureLocationDropdown.values = await this.migrationStateModel.getAzureLocationDropdownValues(this.migrationStateModel._targetSubscription);
-			selectDefaultDropdownValue(this._azureLocationDropdown, this.migrationStateModel._location?.displayName, true);
+			switch (this.migrationStateModel._targetType) {
+				case MigrationTargetType.SQLMI:
+					this.migrationStateModel._targetManagedInstances = await utils.getManagedInstances(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription);
+					this.migrationStateModel._locations = await utils.getSqlManagedInstanceLocations(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription, this.migrationStateModel._targetManagedInstances);
+					break;
+				case MigrationTargetType.SQLVM:
+					this.migrationStateModel._targetSqlVirtualMachines = await utils.getVirtualMachines(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription);
+					this.migrationStateModel._locations = await utils.getSqlVirtualMachineLocations(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription, this.migrationStateModel._targetSqlVirtualMachines);
+					break;
+			}
+			this._azureLocationDropdown.values = await utils.getAzureLocationsDropdownValues(this.migrationStateModel._locations);
+			utils.selectDefaultDropdownValue(this._azureLocationDropdown, this.migrationStateModel._location?.displayName, true);
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -484,13 +535,14 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			this.updateDropdownLoadingStatus(TargetDropDowns.ResourceGroup, true);
 			switch (this.migrationStateModel._targetType) {
 				case MigrationTargetType.SQLMI:
-					this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupForManagedInstancesDropdownValues(this.migrationStateModel._targetSubscription);
+					this.migrationStateModel._resourceGroups = await utils.getSqlManagedInstanceResourceGroups(this.migrationStateModel._targetManagedInstances, this.migrationStateModel._location);
 					break;
 				case MigrationTargetType.SQLVM:
-					this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupForVirtualMachinesDropdownValues(this.migrationStateModel._targetSubscription);
+					this.migrationStateModel._resourceGroups = await utils.getSqlVirtualMachineResourceGroups(this.migrationStateModel._targetSqlVirtualMachines, this.migrationStateModel._location);
 					break;
 			}
-			selectDefaultDropdownValue(this._azureResourceGroupDropdown, this.migrationStateModel._resourceGroup?.id, false);
+			this._azureResourceGroupDropdown.values = await utils.getAzureResourceGroupsDropdownValues(this.migrationStateModel._resourceGroups);
+			utils.selectDefaultDropdownValue(this._azureResourceGroupDropdown, this.migrationStateModel._resourceGroup?.id, false);
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -503,15 +555,15 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			this.updateDropdownLoadingStatus(TargetDropDowns.ResourceInstance, true);
 			switch (this.migrationStateModel._targetType) {
 				case MigrationTargetType.SQLMI: {
-					this._azureResourceDropdown.values = await this.migrationStateModel.getManagedInstanceValues(this.migrationStateModel._targetSubscription, this.migrationStateModel._location, this.migrationStateModel._resourceGroup);
+					this._azureResourceDropdown.values = await utils.getManagedInstancesDropdownValues(this.migrationStateModel._targetManagedInstances, this.migrationStateModel._location, this.migrationStateModel._resourceGroup);
 					break;
 				}
 				case MigrationTargetType.SQLVM: {
-					this._azureResourceDropdown.values = await this.migrationStateModel.getSqlVirtualMachineValues(this.migrationStateModel._targetSubscription, this.migrationStateModel._location, this.migrationStateModel._resourceGroup);
+					this._azureResourceDropdown.values = await utils.getVirtualMachinesDropdownValues(this.migrationStateModel._targetSqlVirtualMachines, this.migrationStateModel._location, this.migrationStateModel._resourceGroup);
 					break;
 				}
 			}
-			selectDefaultDropdownValue(this._azureResourceDropdown, this.migrationStateModel._targetServerInstance?.name, true);
+			utils.selectDefaultDropdownValue(this._azureResourceDropdown, this.migrationStateModel._targetServerInstance?.name, true);
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -537,6 +589,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 export enum TargetDropDowns {
 	AzureAccount,
+	Tenant,
 	Subscription,
 	Location,
 	ResourceGroup,

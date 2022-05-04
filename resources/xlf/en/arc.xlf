@@ -26,7 +26,7 @@
       <source xml:lang="en">Available Upgrades</source>
     </trans-unit>
     <trans-unit id="arc.availableUpgradesDescription">
-      <source xml:lang="en">Available upgrades for this resource are listed below. You can apply upgrades by selecting the upgrade button. Learn more about each of these releases at the</source>
+      <source xml:lang="en">Available upgrades for this resource are listed below. You can apply upgrades by clicking the upgrade button.</source>
     </trans-unit>
     <trans-unit id="arc.backup">
       <source xml:lang="en">Backup</source>
@@ -706,9 +706,6 @@
     <trans-unit id="arc.releaseDate">
       <source xml:lang="en">Release Date</source>
     </trans-unit>
-    <trans-unit id="arc.releaseDateNotParsed">
-      <source xml:lang="en">Release date could not be parsed.</source>
-    </trans-unit>
     <trans-unit id="arc.releaseNotes">
       <source xml:lang="en">Release Notes</source>
     </trans-unit>
@@ -899,7 +896,7 @@
       <source xml:lang="en">Version</source>
     </trans-unit>
     <trans-unit id="arc.versionLog">
-      <source xml:lang="en">version log.</source>
+      <source xml:lang="en">Learn more about each release here.</source>
     </trans-unit>
     <trans-unit id="arc.worker">
       <source xml:lang="en">Worker</source>

@@ -126,6 +126,8 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 				break;
 		}
 
+		const parentRowCellStyling = 'font-weight: bold';
+
 		props.forEach((p, i) => {
 			let row = {};
 			rows.push(row);
@@ -133,9 +135,16 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 			row['parent'] = parentIndex;
 			//row['indent'] = indent;
 			if (!isString(p.value)) {
-				row['value'] = removeLineBreaks(p.displayValue, ' ');
+				// Styling values in the parent row differently to make them more apparent and standout compared to the rest of the cells.
+				row['name'] = {
+					text: row['name'],
+					style: parentRowCellStyling
+				};
+				row['value'] = {
+					text: removeLineBreaks(p.displayValue, ' '),
+					style: parentRowCellStyling
+				};
 				row['tootltip'] = p.displayValue;
-				//row['isParent'] = true;
 				this.convertModelToTableRows(p.value, rows.length - 1, indent + 2, rows);
 			} else {
 				row['value'] = removeLineBreaks(p.displayValue, ' ');

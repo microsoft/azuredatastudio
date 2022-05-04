@@ -164,6 +164,7 @@ function createTextCell(value: any): string {
 	let cellClasses = 'grid-cell-value-container';
 	let valueToDisplay = '';
 	let titleValue = '';
+	let cellStyle = '';
 
 	if (DBCellValue.isDBCellValue(value)) {
 		valueToDisplay = 'NULL';
@@ -184,7 +185,7 @@ function createTextCell(value: any): string {
 		titleValue = valueToDisplay;
 	}
 
-	return `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
+	return `<span title="${titleValue}" style="${cellStyle}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
 
 /** The following code is a rewrite over the both formatter function using dom builder

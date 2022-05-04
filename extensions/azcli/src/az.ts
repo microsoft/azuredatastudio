@@ -213,6 +213,25 @@ export class AzTool implements azExt.IAzApi {
 				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
 				if (usek8s) { argsArray.push('--use-k8s'); }
 				return this.executeCommand<void>(argsArray, additionalEnvVars);
+			},
+			upgrade: (
+				desiredVersion: string,
+				name: string,
+				args: {
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
+					namespace?: string,
+					usek8s?: boolean
+					// Additional arguments
+				},
+				additionalEnvVars?: azExt.AdditionalEnvVars
+			): Promise<azExt.AzOutput<void>> => {
+				const argsArray = ['sql', 'mi-arc', 'upgrade', '--desired-version', desiredVersion, '--name', name];
+				if (args.resourceGroup) { argsArray.push('--resource-group', args.resourceGroup); }
+				if (args.namespace) { argsArray.push('--k8s-namespace', args.namespace); }
+				if (args.usek8s) { argsArray.push('--use-k8s'); }
+				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
 		},
 		midbarc: {
