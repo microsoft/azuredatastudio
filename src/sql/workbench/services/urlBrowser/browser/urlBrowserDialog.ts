@@ -117,9 +117,8 @@ export class UrlBrowserDialog extends Modal {
 		tableContainer.setAttribute('role', 'presentation');
 
 		let azureAccountLabel = localize('urlBrowserDialog.account', "Azure Account");
-		this._accountSelectorBox = this._register(new SelectBox([''], '', this._contextViewService));
+		this._accountSelectorBox = this._register(new SelectBox([''], '', this._contextViewService, null, { ariaLabel: azureAccountLabel }));
 		this._accountSelectorBox.disable();
-		this._accountSelectorBox.setAriaLabel(azureAccountLabel);
 		let accountSelector = DialogHelper.appendRow(tableContainer, azureAccountLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(accountSelector, this._accountSelectorBox);
 		this._accountManagementService.getAccounts().then((accounts) => this.setAccountSelectorBoxOptions(accounts)).catch((err) => {
@@ -148,30 +147,26 @@ export class UrlBrowserDialog extends Modal {
 		linkAccountButton.appendChild(linkAccount.el);
 
 		let tenantLabel = localize('urlBrowserDialog.tenant', "Azure AD Tenant");
-		this._tenantSelectorBox = this._register(new SelectBox([], '', this._contextViewService));
+		this._tenantSelectorBox = this._register(new SelectBox([], '', this._contextViewService, null, { ariaLabel: tenantLabel }));
 		this._tenantSelectorBox.disable();
-		this._tenantSelectorBox.setAriaLabel(tenantLabel);
 		let tenantSelector = DialogHelper.appendRow(tableContainer, tenantLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(tenantSelector, this._tenantSelectorBox);
 
 		let subscriptionLabel = localize('urlBrowserDialog.subscription', "Azure subscription");
-		this._subscriptionSelectorBox = this._register(new SelectBox([], '', this._contextViewService));
+		this._subscriptionSelectorBox = this._register(new SelectBox([], '', this._contextViewService, null, { ariaLabel: subscriptionLabel }));
 		this._subscriptionSelectorBox.disable();
-		this._subscriptionSelectorBox.setAriaLabel(subscriptionLabel);
 		let subscriptionSelector = DialogHelper.appendRow(tableContainer, subscriptionLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(subscriptionSelector, this._subscriptionSelectorBox);
 
 		let storageAccountLabel = localize('urlBrowserDialog.storageAccount', "Storage account");
-		this._storageAccountSelectorBox = this._register(new SelectBox([], '', this._contextViewService));
+		this._storageAccountSelectorBox = this._register(new SelectBox([], '', this._contextViewService, null, { ariaLabel: storageAccountLabel }));
 		this._storageAccountSelectorBox.disable();
-		this._storageAccountSelectorBox.setAriaLabel(storageAccountLabel);
 		let storageAccountSelector = DialogHelper.appendRow(tableContainer, storageAccountLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(storageAccountSelector, this._storageAccountSelectorBox);
 
 		let blobContainerLabel = localize('urlBrowserDialog.blobContainer', "Blob container");
-		this._blobContainerSelectorBox = this._register(new SelectBox([], '', this._contextViewService));
+		this._blobContainerSelectorBox = this._register(new SelectBox([], '', this._contextViewService, null, { ariaLabel: blobContainerLabel }));
 		this._blobContainerSelectorBox.disable();
-		this._blobContainerSelectorBox.setAriaLabel(blobContainerLabel);
 		let blobContainerSelector = DialogHelper.appendRow(tableContainer, blobContainerLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(blobContainerSelector, this._blobContainerSelectorBox);
 
@@ -192,8 +187,7 @@ export class UrlBrowserDialog extends Modal {
 		let backupFileLabel = localize('urlBrowserDialog.backupFile', "Backup file");
 
 		if (this._restoreDialog) {
-			this._backupFileSelectorBox = this._register(new SelectBox([], '', this._contextViewService));
-			this._backupFileSelectorBox.setAriaLabel(backupFileLabel);
+			this._backupFileSelectorBox = this._register(new SelectBox([], '', this._contextViewService, null, { ariaLabel: backupFileLabel }));
 			let backupFileSelector = DialogHelper.appendRow(tableContainer, backupFileLabel, 'url-input-label', 'url-input-box', null, true);
 			DialogHelper.appendInputSelectBox(backupFileSelector, this._backupFileSelectorBox);
 			this._backupFileSelectorBox.setOptions([]);
