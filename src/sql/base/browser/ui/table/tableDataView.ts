@@ -9,7 +9,7 @@ import { compare as stringCompare } from 'vs/base/common/strings';
 
 import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
-import { expandableColumnFormatter } from 'sql/base/browser/ui/table/formatters';
+import { treeGridExpandableColumnFormatter } from 'sql/base/browser/ui/table/formatters';
 
 export interface IFindPosition {
 	col: number;
@@ -65,7 +65,7 @@ function defaultFilter<T extends Slick.SlickData>(data: T[], columns: Filterable
 		}
 	});
 
-	const isTreeGrid = columns.find(c => c.formatter === expandableColumnFormatter);
+	const isTreeGrid = columns.find(c => c.formatter === treeGridExpandableColumnFormatter);
 	if (isTreeGrid) {
 		filteredData = filteredData.filter((item) => {
 			let parent = data[item.parent];

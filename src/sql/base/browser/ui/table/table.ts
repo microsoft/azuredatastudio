@@ -20,7 +20,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
 import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
-import { expandableColumnFormatter } from 'sql/base/browser/ui/table/formatters';
+import { treeGridExpandableColumnFormatter } from 'sql/base/browser/ui/table/formatters';
 import { generateUuid } from 'vs/base/common/uuid';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
@@ -466,18 +466,18 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	// Checks if the current table is a tree grid. Every tree grid should have a column with expandableColumnFormatter
 	private isTreeGrid(): boolean {
-		return this._grid.getColumns().filter(c => c.formatter === expandableColumnFormatter).length > 0;
+		return this._grid.getColumns().filter(c => c.formatter === treeGridExpandableColumnFormatter).length > 0;
 	}
 
 	// Gets the index for the expandable column
 	private expandableColumnIndex(): number {
-		return this._grid.getColumns().findIndex(c => c.formatter === expandableColumnFormatter);
+		return this._grid.getColumns().findIndex(c => c.formatter === treeGridExpandableColumnFormatter);
 	}
 
 	// This expands/collapse the tree grid item
 	private toggleTreeGridParent(row: number, cell: number, forceState?: boolean): void {
 		const rowData = this._data.getItem(row);
-		if (rowData['isParent'] && this._grid.getColumns()[cell].formatter === expandableColumnFormatter) {
+		if (rowData['isParent'] && this._grid.getColumns()[cell].formatter === treeGridExpandableColumnFormatter) {
 			if (forceState === undefined) {
 				if (!rowData.expanded) {
 					(<any>rowData).expanded = true;
