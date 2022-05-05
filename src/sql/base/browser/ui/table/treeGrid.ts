@@ -12,7 +12,6 @@ import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { generateUuid } from 'vs/base/common/uuid';
 import { CellValueGetter, defaultCellValueGetter, defaultFilter, TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
-import { isArray } from 'vs/base/common/types';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 
@@ -43,14 +42,14 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 		// Changing table role from grid to treegrid
 		this._tableContainer.setAttribute('role', 'treegrid');
 
-		if (!configuration || !configuration.dataProvider || isArray(configuration.dataProvider)) {
+		if (configuration?.dataProvider && configuration.dataProvider instanceof TableDataView) {
+			this._data = configuration.dataProvider;
+		} else {
 			this._data = new TableDataView<T>(configuration && configuration.dataProvider as Array<T>,
 				undefined,
 				undefined,
 				defaultTreeGridFilter,
 				undefined);
-		} else {
-			this._data = configuration.dataProvider;
 		}
 
 		this._grid.onClick.subscribe((e, data) => {
@@ -68,12 +67,12 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 				} else if (event.keyCode === KeyCode.LeftArrow) {
 					// Left arrow on first cell of the expanded row collapses it
 					if (data.cell === 0) {
-						this.setCellExpandedState(data.row, this.expandableColumnIndex(), false);
+						this.setCellExpandedState(data.row, this.getExpandableColumnIndex(), false);
 					}
 				} else if (event.keyCode === KeyCode.RightArrow) {
 					// Right arrow on last cell of the collapsed row expands it.
 					if (data.cell === (this._grid.getColumns().length - 1)) {
-						this.setCellExpandedState(data.row, this.expandableColumnIndex(), true);
+						this.setCellExpandedState(data.row, this.getExpandableColumnIndex(), true);
 					}
 				}
 			}
@@ -141,9 +140,10 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 	}
 
 	/**
-	 * Gets the index for the expandable column
+	 * Gets the index of the column that has expandable column formatter. This column contains the chevron
+	 * icon that indicates if the row is expanded or collapsed.
 	 */
-	private expandableColumnIndex(): number {
+	private getExpandableColumnIndex(): number {
 		return this._grid.getColumns().findIndex(c => c.formatter === treeGridExpandableColumnFormatter);
 	}
 
