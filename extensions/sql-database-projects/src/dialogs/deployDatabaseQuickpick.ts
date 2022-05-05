@@ -332,9 +332,28 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 	}
 
 	const imageInfo = baseImages.find(x => x.displayName === baseImage);
+
+	if (!imageInfo) {
+		return undefined;
+	}
+
 	const eulaAccepted = await launchEulaQuickPick(imageInfo);
 	if (!eulaAccepted) {
 		return undefined;
+	}
+
+	let imageTags = uiUtils.getImageTags(imageInfo, project.getProjectTargetVersion());
+	const imageTag = await vscode.window.showQuickPick(
+		imageTags,
+		{ title: constants.selectImageTag(name), ignoreFocusOut: true });
+
+	if (!imageTag) {
+		return undefined;
+	}
+
+	let imageName = imageInfo.name;
+	if (imageTag && imageTag !== constants.dockerImageDefaultTag) {
+		imageName = `${imageName}:${imageTag}`;
 	}
 
 	localDbSetting = {
@@ -343,8 +362,8 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		dbName: project.projectFileName,
 		password: password,
 		port: +portNumber,
-		dockerBaseImage: imageInfo?.name || '',
-		dockerBaseImageEula: imageInfo?.agreementInfo?.link?.url || ''
+		dockerBaseImage: imageName,
+		dockerBaseImageEula: imageInfo.agreementInfo.link.url
 	};
 
 	let deploySettings = await getPublishDatabaseSettings(project, false);
@@ -359,7 +378,6 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 
 	// Get the database name from deploy settings
 	localDbSetting.dbName = deploySettings.databaseName;
-
 
 	return {
 		localDbSetting: localDbSetting,

@@ -53,7 +53,8 @@ export interface ISqlConnectionProperties {
 export interface DockerImageInfo {
 	name: string,
 	displayName: string,
-	agreementInfo: AgreementInfo
+	agreementInfo: AgreementInfo,
+	tagsUrl: string
 }
 export interface AgreementInfo {
 	link: azdataType.LinkArea;
