@@ -47,7 +47,7 @@ export class AccountFeature implements StaticFeature {
 			return await this.tokenCache.getData(request);
 		});
 		this._client.onNotification(contracts.RefreshTokenNotification.type, async (request) => {
-			// Refresh token, then inform client the token has been updated. This is done as separate notification messages due to the synchronous processing nature of STS currently
+			// Refresh token, then inform client the token has been updated. This is done as separate notification messages due to the synchronous processing nature of STS currently https://github.com/microsoft/azuredatastudio/issues/17179
 			let result = await this.refreshToken(request);
 			if (!result) {
 				void window.showErrorMessage(localizedConstants.tokenRefreshFailed);
