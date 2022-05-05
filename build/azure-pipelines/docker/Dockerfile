@@ -1,5 +1,5 @@
 #Download base image ubuntu 21.04
-FROM ubuntu:21.04
+FROM mcr.microsoft.com/oss/mirror/docker.io/library/ubuntu:21.04
 ENV TZ=America/Los_Angeles
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
