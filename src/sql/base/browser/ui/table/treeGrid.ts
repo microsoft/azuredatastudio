@@ -7,14 +7,12 @@ import 'vs/css!./media/slick.grid';
 
 import { FilterableColumn, ITableConfiguration } from 'sql/base/browser/ui/table/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { treeGridExpandableColumnFormatter } from 'sql/base/browser/ui/table/formatters';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { generateUuid } from 'vs/base/common/uuid';
 import { CellValueGetter, defaultCellValueGetter, defaultFilter, TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
-
 
 function defaultTreeGridFilter<T extends Slick.SlickData>(data: T[], columns: FilterableColumn<T>[], cellValueGetter: CellValueGetter = defaultCellValueGetter): T[] {
 	let filteredData = defaultFilter(data, columns, cellValueGetter);
@@ -34,12 +32,12 @@ function defaultTreeGridFilter<T extends Slick.SlickData>(data: T[], columns: Fi
 	return filteredData;
 }
 
-
+/**
+ * TreeGrid component displays a hierarchical table data grouped into expandable and collapsible nodes.
+ */
 export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
 		super(parent, configuration, options);
-
-		// Changing table role from grid to treegrid
 		this._tableContainer.setAttribute('role', 'treegrid');
 
 		if (configuration?.dataProvider && configuration.dataProvider instanceof TableDataView) {
@@ -53,30 +51,34 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 		}
 
 		this._grid.onClick.subscribe((e, data) => {
-			this.setCellExpandedState(data.row, data.cell);
+			this.expandRow(data.row);
 			return false;
 		});
 
+		// The events returned by grid are Jquery events. These events can be handled by returning false which executes preventDefault and stopPropagation
 		this._grid.onKeyDown.subscribe((e, data) => {
 			const keyboardEvent = (<any>e).originalEvent;
 			if (keyboardEvent instanceof KeyboardEvent) {
 				let event = new StandardKeyboardEvent(keyboardEvent);
 				if (event.keyCode === KeyCode.Enter) {
 					// toggle the collapsed state of the row
-					this.setCellExpandedState(data.row, data.cell);
+					this.expandRow(data.row);
+					return false;
 				} else if (event.keyCode === KeyCode.LeftArrow) {
 					// Left arrow on first cell of the expanded row collapses it
 					if (data.cell === 0) {
-						this.setCellExpandedState(data.row, this.getExpandableColumnIndex(), false);
+						this.expandRow(data.row, false); // Collapsing state
+						return false;
 					}
 				} else if (event.keyCode === KeyCode.RightArrow) {
 					// Right arrow on last cell of the collapsed row expands it.
 					if (data.cell === (this._grid.getColumns().length - 1)) {
-						this.setCellExpandedState(data.row, this.getExpandableColumnIndex(), true);
+						this.expandRow(data.row, true);
+						return false;
 					}
 				}
 			}
-			return false;
+			return true;
 		});
 
 		this._grid.onRendered.subscribe((e, data) => {
@@ -114,20 +116,19 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 		} else {
 			this._data = new TableDataView<T>(data, undefined, undefined, defaultTreeGridFilter);
 		}
-		this.transformData(this._data);
+		this.addTreeGridDataAttributes(this._data);
 		this._grid.setData(this._data, true);
 		this._data.filter(this._grid.getColumns());
 	}
 
 	/**
-	 * This functions toggles the expanded state of a parent cell.
-	 * @param row row index of the parent cell
-	 * @param cell cell/ column index of the parent cell
-	 * @param expanded force a state on the parent cell
+	 * This function expands the row
+	 * @param row row index to be expanded
+	 * @param expanded optional flag to force the expanded state on the rowindex. If not provided, the expanded value of the row is toggled.
 	 */
-	private setCellExpandedState(row: number, cell: number, expanded?: boolean): void {
+	private expandRow(row: number, expanded?: boolean): void {
 		const rowData = this._data.getItem(row);
-		if (rowData['isParent'] && this._grid.getColumns()[cell].formatter === treeGridExpandableColumnFormatter) {
+		if (rowData['isParent']) {
 			if (expanded === undefined) {
 				(<any>rowData).expanded = !rowData.expanded;
 			} else {
@@ -140,17 +141,9 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 	}
 
 	/**
-	 * Gets the index of the column that has expandable column formatter. This column contains the chevron
-	 * icon that indicates if the row is expanded or collapsed.
+	 * We need to transform the grid data to include additional properties that are necessary for rendering a tree grid.
 	 */
-	private getExpandableColumnIndex(): number {
-		return this._grid.getColumns().findIndex(c => c.formatter === treeGridExpandableColumnFormatter);
-	}
-
-	/**
-	 * We need to transform the grid data to include required aria attributes for the tree grid
-	 */
-	private transformData(data: IDisposableDataProvider<T>): IDisposableDataProvider<T> {
+	private addTreeGridDataAttributes(data: IDisposableDataProvider<T>): IDisposableDataProvider<T> {
 		for (let i = 0; i < data.getLength(); i++) {
 			const dataRow = <any>data.getItem(i);
 			if (dataRow.parent === undefined || dataRow.parent === -1) {
