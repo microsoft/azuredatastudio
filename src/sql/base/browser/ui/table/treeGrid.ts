@@ -129,6 +129,7 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 
 	public override set columns(columns: Slick.Column<T>[]) {
 		if (columns[0]) {
+			// Create a new formatter for the first column that adds level based indentation and a chevron icon.
 			columns[0].formatter = createTreeGridExpandableColumnFormatter(columns[0].formatter ?? textFormatter);
 		}
 		super.columns = columns;
