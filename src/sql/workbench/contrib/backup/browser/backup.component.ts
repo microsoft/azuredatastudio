@@ -472,7 +472,7 @@ export class BackupComponent extends AngularDisposable {
 		this.backupTypeOptions = [];
 
 		if (isMetadataPopulated) {
-			this.backupEnabled = true;
+			this.enableBackupButton();
 
 			// Set recovery model
 			this.setControlsForRecoveryModel();
@@ -709,6 +709,7 @@ export class BackupComponent extends AngularDisposable {
 	private onUrlInputBoxChanged(value: string) {
 		this.backupPathTypePairs = {};
 		this.backupPathTypePairs[value] = BackupConstants.deviceTypeURL;
+		this.enableBackupButton();
 	}
 
 	private onChangeMediaFormat(): void {
@@ -959,9 +960,13 @@ export class BackupComponent extends AngularDisposable {
 
 	private enableBackupButton(): void {
 		if (!this.backupButton!.enabled) {
-			if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance && this.urlInputBox.value.length > 0 ||
-				((!this.isFormatChecked || this.mediaNameBox!.value) && this.backupRetainDaysBox!.validate() === undefined)) {
+			if ((this._engineEdition === DatabaseEngineEdition.SqlManagedInstance && this.urlInputBox.value.length > 0) ||
+				(this._engineEdition !== DatabaseEngineEdition.SqlManagedInstance && (!this.isFormatChecked || this.mediaNameBox!.value) && this.backupRetainDaysBox!.validate() === undefined)) {
 				this.backupEnabled = true;
+			}
+		} else {
+			if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance && this.urlInputBox.value.length === 0) {
+				this.backupEnabled = false;
 			}
 		}
 	}
