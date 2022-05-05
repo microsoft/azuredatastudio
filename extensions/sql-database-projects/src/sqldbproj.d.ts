@@ -68,7 +68,12 @@ declare module 'sqldbproj' {
 		/**
 		 * If true then the project will not be opened in the workspace after being created
 		 */
-		doNotOpenInWorkspace?: boolean
+		doNotOpenInWorkspace?: boolean,
+
+		/**
+		 * Create SQL Project SDK style or non SDK style. The default is non SDK style.
+		 */
+		isSDKStyle?: boolean
 	};
 
 	export interface ISqlProject {
