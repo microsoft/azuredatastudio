@@ -139,9 +139,9 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 	}
 
 	/**
-	 * We need to transform the grid data to include additional properties that are necessary for rendering a tree grid.
+	 * We need to augment the grid data to include additional properties that are necessary for rendering a tree grid.
 	 */
-	private addTreeGridDataAttributes(data: IDisposableDataProvider<T>): IDisposableDataProvider<T> {
+	private addTreeGridDataAttributes(data: IDisposableDataProvider<T>): void {
 		for (let i = 0; i < data.getLength(); i++) {
 			const dataRow = <any>data.getItem(i);
 			if (dataRow.parent === undefined || dataRow.parent === -1) {
@@ -163,6 +163,5 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 				dataRow.parentGuid = parentRow._guid;
 			}
 		}
-		return data;
 	}
 }
