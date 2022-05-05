@@ -70,9 +70,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._register(this._data);
 
 		if (configuration && configuration.columns) {
-			this._columns = configuration.columns;
+			this.columns = configuration.columns;
 		} else {
-			this._columns = new Array<Slick.Column<T>>();
+			this.columns = new Array<Slick.Column<T>>();
 		}
 
 		let newOptions = mixin(options || {}, getDefaultOptions<T>(), false);
