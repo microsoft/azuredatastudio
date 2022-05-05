@@ -83,7 +83,7 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 
 		this._grid.onRendered.subscribe((e, data) => {
 			const visibleRows = this._grid.getViewport();
-			for (let i = visibleRows.top; i < visibleRows.bottom; i++) {
+			for (let i = visibleRows.top; i <= visibleRows.bottom; i++) {
 				const rowData = this._data.getItem(i);
 				// Getting the row div that corresponds to the data row
 				const rowElement = this._tableContainer.querySelector(`div [role="row"][aria-rowindex="${(i + 1)}"]`);
@@ -91,15 +91,21 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 				if (rowElement) {
 					if (rowData.expanded !== undefined) {
 						rowElement.ariaExpanded = rowData.expanded;
-					}
-					if (rowData.level !== undefined) {
-						rowElement.ariaLevel = rowData.level;
+					} else {
+						rowElement.removeAttribute('aria-expanded');
 					}
 					if (rowData.setSize !== undefined) {
 						rowElement.ariaSetSize = rowData.setSize;
+					} else {
+						rowElement.removeAttribute('aria-setsize');
 					}
 					if (rowData.posInSet !== undefined) {
 						rowElement.ariaPosInSet = rowData.posInSet;
+					} else {
+						rowElement.removeAttribute('aria-posinset');
+					}
+					if (rowData.level !== undefined) {
+						rowElement.ariaLevel = rowData.level;
 					}
 				}
 			}
