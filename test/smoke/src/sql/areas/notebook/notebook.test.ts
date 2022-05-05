@@ -81,8 +81,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.waitForActiveCellResults();
 		});
 
-		// Temporarily skipping this test while investigating failure in builds
-		it.skip('can add a new package from the Manage Packages wizard', async function () {
+		it('can add a new package from the Manage Packages wizard', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
@@ -96,7 +95,9 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			await app.workbench.sqlNotebook.notebookToolbar.managePackages();
 			await app.workbench.managePackagesDialog.waitForManagePackagesDialog();
-			await app.workbench.managePackagesDialog.addNewPackage('pyarrow');
+			await app.workbench.managePackagesDialog.addNewPackage('pyarrow', '7.0.0');
+			await app.workbench.taskPanel.showTaskPanel();
+			await app.workbench.taskPanel.waitForTaskComplete('Installing pyarrow 7.0.0 succeeded');
 
 			// There should be no error output when running the cell after pyarrow has been installed
 			await app.workbench.sqlNotebook.runActiveCell();
