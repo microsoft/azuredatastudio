@@ -115,10 +115,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	}
 
 	private initActionBar() {
-		let linkButtonContainer: HTMLElement;
-		let imageButtonContainer: HTMLElement;
-
-		linkButtonContainer = DOM.$('li.action-item');
+		let linkButtonContainer = DOM.$('li.action-item');
 		linkButtonContainer.setAttribute('role', 'presentation');
 		let linkButton = new Button(linkButtonContainer);
 		linkButton.title = this.insertLink;
@@ -132,7 +129,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			await this.onInsertButtonClick(e, MarkdownButtonType.LINK_PREVIEW);
 		}));
 
-		imageButtonContainer = DOM.$('li.action-item');
+		let imageButtonContainer = DOM.$('li.action-item');
 		imageButtonContainer.setAttribute('role', 'presentation');
 		let imageButton = new Button(imageButtonContainer);
 		imageButton.title = this.insertImage;
