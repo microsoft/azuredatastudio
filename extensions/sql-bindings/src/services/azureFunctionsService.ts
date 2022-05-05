@@ -141,13 +141,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				}
 				// list databases based on connection profile selected
 				telemetryStep = CreateAzureFunctionStep.getDatabase;
-				let listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
-				const selectedDatabase = (await vscode.window.showQuickPick(listDatabases, {
-					canPickMany: false,
-					title: constants.selectDatabase,
-					ignoreFocusOut: true
-				}));
-
+				const selectedDatabase = await azureFunctionsUtils.promptSelectDatabase(connectionURI);
 				if (!selectedDatabase) {
 					// User cancelled
 					// we will then prompt user to choose a connection profile again
@@ -156,7 +150,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				connectionInfo.database = selectedDatabase;
 
 				// prompt user for object name to create function from
-				objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding);
+				objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding, connectionURI, selectedDatabase);
 				if (!objectName) {
 					// user cancelled
 					return;

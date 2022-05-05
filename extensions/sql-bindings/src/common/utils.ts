@@ -174,3 +174,7 @@ export function getErrorType(error: any): string | undefined {
 	}
 }
 
+export function listTablesQuery(database: string): string {
+	return `select table_name from ${database}.INFORMATION_SCHEMA.TABLES where TABLE_TYPE = 'BASE TABLE'`;
+
+}

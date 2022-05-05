@@ -19,3 +19,14 @@ export namespace AddSqlBindingRequest {
 export namespace GetAzureFunctionsRequest {
 	export const type = new RequestType<GetAzureFunctionsParams, GetAzureFunctionsResult, void, void>('azureFunctions/getAzureFunctions');
 }
+
+// ------------------------------- < Execute String > ------------------------------------
+export interface QueryExecuteStringParams {
+	query: string;
+	ownerUri: string;
+}
+export namespace QueryExecuteStringRequest {
+	export const type = new RequestType<QueryExecuteStringParams, QueryExecuteResult, void, void>('query/executeString');
+}
+
+export interface QueryExecuteResult { }

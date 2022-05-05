@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as utils from './utils';
 import * as constants from './constants';
+import * as azureFunctionsContracts from '../contracts/azureFunctions/azureFunctionsContracts';
 import { BindingType } from 'sql-bindings';
 import { ConnectionDetails, IConnectionInfo } from 'vscode-mssql';
 // https://github.com/microsoft/vscode-azurefunctions/blob/main/src/vscode-azurefunctions.api.d.ts
@@ -310,14 +311,77 @@ export async function promptForBindingType(): Promise<BindingType | undefined> {
 /**
  * Prompts the user to enter object name for the SQL query
  * @param bindingType Type of SQL Binding
+ * @param connectionURI connection URI of the SQL Server connection
+ * @param selectedDatabase database that the user selected
+ * @returns the object name from user's input or menu choice
  */
-export async function promptForObjectName(bindingType: BindingType): Promise<string | undefined> {
-	return vscode.window.showInputBox({
-		prompt: bindingType === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
-		placeHolder: constants.placeHolderObject,
-		validateInput: input => input ? undefined : constants.nameMustNotBeEmpty,
-		ignoreFocusOut: true
-	});
+export async function promptForObjectName(bindingType: BindingType, connectionURI?: string, selectedDatabase?: string): Promise<string | undefined> {
+	// show the connection string methods (user input and connection profile options)
+	const listOfObjectNameMethods = [constants.objectName, constants.userObjectName];
+	while (true) {
+		const selectedObjectNameMethod = await vscode.window.showQuickPick(listOfObjectNameMethods, {
+			canPickMany: false,
+			title: constants.selectObjectName,
+			ignoreFocusOut: true
+		});
+		if (!selectedObjectNameMethod) {
+			// User cancelled
+			return;
+		}
+		if (selectedObjectNameMethod === constants.userObjectName) {
+			// user manually eneters table or view to query or upsert into
+			return vscode.window.showInputBox({
+				prompt: bindingType === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
+				placeHolder: constants.placeHolderObject,
+				validateInput: input => input ? undefined : constants.nameMustNotBeEmpty,
+				ignoreFocusOut: true
+			}) ?? '';
+		} else {
+			const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+			// let listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
+
+			// const selectedDatabase = (await vscode.window.showQuickPick(listDatabases, {
+			// 	canPickMany: false,
+			// 	title: constants.selectDatabase,
+			// 	ignoreFocusOut: true
+			// }));
+
+			// if (!selectedDatabase) {
+			// 	// User cancelled
+			// 	return;
+			// }
+
+			const listOfTableOrView = [constants.selectTable];
+			const selectedObjectToQuery = await vscode.window.showQuickPick(listOfTableOrView, {
+				canPickMany: false,
+				title: constants.selectTableOrView,
+				ignoreFocusOut: true
+			});
+			if (!selectedObjectToQuery) {
+				// User cancelled
+				return;
+			}
+			let selectedObjectName: string | undefined;
+			if (selectedObjectToQuery === constants.selectTable) {
+				// Create query to get list of tables from database selected
+				const params = { ownerUri: connectionURI, query: utils.listTablesQuery(selectedDatabase!) };
+				let listTables: string[] = await vscodeMssqlApi.sendRequest(azureFunctionsContracts.QueryExecuteStringRequest.type, params);
+				console.log(listTables);
+				selectedObjectName = await vscode.window.showQuickPick(listTables, {
+					canPickMany: false,
+					title: constants.selectTable,
+					ignoreFocusOut: true
+				});
+			}
+
+			if (!selectedObjectName) {
+				// User cancelled
+				return;
+			}
+
+			// return selectedObjectName;
+		}
+	}
 }
 
 /**
@@ -576,10 +640,9 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 	}
 }
 
-export async function promptSelectDatabase(connectionInfo: IConnectionInfo): Promise<string | undefined> {
+export async function promptSelectDatabase(connectionURI: string): Promise<string | undefined> {
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 
-	let connectionURI = await vscodeMssqlApi.connect(connectionInfo);
 	let listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
 	const selectedDatabase = (await vscode.window.showQuickPick(listDatabases, {
 		canPickMany: false,
