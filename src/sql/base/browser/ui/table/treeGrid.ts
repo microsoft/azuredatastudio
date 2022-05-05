@@ -122,9 +122,7 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 	}
 
 	/**
-	 * This function expands the row
-	 * @param row row index to be expanded
-	 * @param expanded optional flag to force the expanded state on the rowindex. If not provided, the expanded value of the row is toggled.
+	 *  Sets the expanded state to the specified value, or if undefined toggles the current state of the cell
 	 */
 	private expandRow(row: number, expanded?: boolean): void {
 		const rowData = this._data.getItem(row);
