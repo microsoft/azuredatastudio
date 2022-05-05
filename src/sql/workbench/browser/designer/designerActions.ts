@@ -13,6 +13,7 @@ export interface DesignerTableActionContext {
 	table: Table<Slick.SlickData>;
 	path: DesignerPropertyPath;
 	source: DesignerUIArea;
+	selectedRow?: number;
 }
 
 export class AddRowAction extends Action {
@@ -28,13 +29,13 @@ export class AddRowAction extends Action {
 
 	public override async run(context: DesignerTableActionContext): Promise<void> {
 		const lastIndex = context.table.getData().getItems().length;
-		Promise.resolve(() => {
+		return new Promise((resolve) => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Add,
-				path: context.path,
+				path: [...context.path, lastIndex],
 				source: context.source,
-				value: lastIndex
 			});
+			resolve();
 		});
 	}
 }
@@ -53,26 +54,18 @@ export class MoveRowUpAction extends Action {
 
 	public override async run(context: DesignerTableActionContext): Promise<void> {
 		let rowIndex = context.table.getSelectedRows()[0];
-		const tableData = context.table.getData().getItems();
-		const prev = tableData[rowIndex - 1];
 		if (rowIndex - 1 < 0) {
 			return;
 		}
-		tableData[rowIndex - 1] = tableData[rowIndex];
-		tableData[rowIndex] = prev;
-		context.table.grid.resetActiveCell();
-		context.table.grid.setData(tableData);
-		context.table.grid.setSelectedRows([rowIndex - 1]);
-		context.table.grid.render();
-		Promise.resolve(() => {
+		return new Promise((resolve) => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Move,
 				path: [...context.path, rowIndex],
 				source: context.source,
 				value: rowIndex - 1
 			});
+			resolve();
 		});
-
 	}
 }
 
@@ -94,20 +87,14 @@ export class MoveRowDownAction extends Action {
 		if (rowIndex + 1 >= tableData.length) {
 			return;
 		}
-		const next = tableData[rowIndex + 1];
-		tableData[rowIndex + 1] = tableData[rowIndex];
-		tableData[rowIndex] = next;
-		context.table.grid.resetActiveCell();
-		context.table.grid.setData(tableData);
-		context.table.grid.setSelectedRows([rowIndex + 1]);
-		context.table.grid.render();
-		Promise.resolve(() => {
+		return new Promise((resolve) => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Move,
 				path: [...context.path, rowIndex],
 				source: context.source,
 				value: rowIndex + 1
 			});
+			resolve();
 		});
 	}
 }
@@ -122,14 +109,14 @@ export class AddBeforeSelectedRowAction extends Action {
 	}
 
 	public override async run(context: DesignerTableActionContext): Promise<void> {
-		let rowIndex = context.table.getSelectedRows()[0];
-		Promise.resolve(() => {
+		let rowIndex = context.selectedRow;
+		return new Promise((resolve) => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Add,
-				path: context.path,
-				source: context.source,
-				value: rowIndex - 1
+				path: [...context.path, rowIndex],
+				source: context.source
 			});
+			resolve();
 		});
 	}
 }
@@ -143,14 +130,14 @@ export class AddAfterSelectedRowAction extends Action {
 	}
 
 	public override async run(context: DesignerTableActionContext): Promise<void> {
-		let rowIndex = context.table.getSelectedRows()[0];
-		Promise.resolve(() => {
+		let rowIndex = context.selectedRow;
+		return new Promise((resolve) => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Add,
-				path: context.path,
-				source: context.source,
-				value: rowIndex + 1
+				path: [...context.path, rowIndex + 1],
+				source: context.source
 			});
+			resolve();
 		});
 	}
 }

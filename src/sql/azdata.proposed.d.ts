@@ -1016,6 +1016,14 @@ declare module 'azdata' {
 			 */
 			canRemoveRows?: boolean;
 			/**
+			 * Whether user can move rows from one index to another. The default value is true.
+			 */
+			canMoveRows?: boolean;
+			/**
+			 * Whether user can insert rows at a given index to the table. The default value is true.
+			 */
+			canInsertRows?: boolean;
+			/**
 			 * Whether to show confirmation when user removes a row. The default value is false.
 			 */
 			showRemoveRowConfirmation?: boolean;

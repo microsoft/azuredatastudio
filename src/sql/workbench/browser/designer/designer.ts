@@ -358,12 +358,35 @@ export class Designer extends Disposable implements IThemable {
 			}
 			if (edit.type === DesignerEditType.Add) {
 				// For tables in the main view, move focus to the first cell of the newly added row, and the properties pane will be showing the new object.
-				if (edit.path.length === 1) {
+				if (edit.path.length === 2) {
 					const propertyName = edit.path[0] as string;
-					const tableData = this._input.viewModel[propertyName] as DesignerTableProperties;
+					const index = edit.path[1] as number;
 					const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
 					try {
-						table.setActiveCell(tableData.data.length - 1, 0);
+						table.grid.resetActiveCell();
+						table.grid.invalidateAllRows();
+						table.rerenderGrid();
+						table.setSelectedRows([index]);
+						table.setActiveCell(index, 0);
+					}
+					catch {
+						// Ignore the slick grid error when setting active cell.
+					}
+				} else {
+					this.updatePropertiesPane(this._propertiesPane.objectPath);
+				}
+			} else if (edit.type === DesignerEditType.Move) {
+				// Move the focus to the row that was moved
+				if (edit.path.length === 2) {
+					const propertyName = edit.path[0] as string;
+					const toIndex = edit.value as number;
+					const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
+					try {
+						table.grid.resetActiveCell();
+						table.grid.invalidateAllRows();
+						table.rerenderGrid();
+						table.setSelectedRows([toIndex]);
+						table.setActiveCell(toIndex, 0);
 					}
 					catch {
 						// Ignore the slick grid error when setting active cell.
@@ -834,62 +857,41 @@ export class Designer extends Disposable implements IThemable {
 						this.openContextMenu(table, e, propertyPath, view);
 					}));
 				}
-				// if (tableProperties.canMoveRows) {
-				// Add move drag and drop
-				const moveRowsPlugin = new RowMoveManager({
-					cancelEditOnDrag: true,
-					id: 'moveRow',
-					iconCssClass: Codicon.grabber.classNames,
-					title: localize('designer.moveRowText', 'Move Row'),
-					width: 20,
-					resizable: false,
-					isFontIcon: true,
-					behavior: 'selectAndMove'
-				});
-				table.registerPlugin(moveRowsPlugin);
-				moveRowsPlugin.onBeforeMoveRows.subscribe((e: Slick.EventData, data: RowMoveOnDragEventData) => {
-					// no point in moving before or after itself
-					if (data.rows[0] === data.insertBefore || data.rows[0] === data.insertBefore - 1) {
-						e.stopPropagation();
-						return;
-					}
-				});
-				moveRowsPlugin.onMoveRows.subscribe((e: Slick.EventData, data: RowMoveOnDragEventData) => {
-					let left: Slick.SlickData[] = [];
-					let right: Slick.SlickData[] = [];
-					const row = data.rows[0];
-					const insertBefore = data.insertBefore;
-					let tableData = table.getData();
-					let tableRows = tableData.getItems();
-
-					left = tableRows.slice(0, insertBefore);
-					right = tableRows.slice(insertBefore, tableRows.length);
-					let extractedRow = [table.getData().getItem(row)];
-
-					if (row < insertBefore) {
-						left.splice(row, 1);
-					} else {
-						right.splice(row - insertBefore, 1);
-					}
-
-					let newRows = left.concat(extractedRow.concat(right));
-
-					table.grid.resetActiveCell();
-					table.grid.setData(newRows);
-					table.grid.setSelectedRows([left.length]);
-					table.grid.render();
-					this.handleEdit({
-						type: DesignerEditType.Move,
-						path: [...propertyPath, row],
-						source: view,
-						value: data.insertBefore
+				if (tableProperties.canMoveRows) {
+					// Add row move drag and drop
+					const moveRowsPlugin = new RowMoveManager({
+						cancelEditOnDrag: true,
+						id: 'moveRow',
+						iconCssClass: Codicon.grabber.classNames,
+						title: localize('designer.moveRowText', 'Move Row'),
+						width: 20,
+						resizable: false,
+						isFontIcon: true,
+						behavior: 'selectAndMove'
 					});
-				});
-				table.grid.registerPlugin(moveRowsPlugin);
-				buttonColumn.push(moveRowsPlugin.definition);
-				this._taskbar.context = { table: table, path: propertyPath, source: view };
-				// }
-
+					table.registerPlugin(moveRowsPlugin);
+					moveRowsPlugin.onBeforeMoveRows.subscribe((e: Slick.EventData, data: RowMoveOnDragEventData) => {
+						// no point in moving before or after itself
+						if (data.rows[0] === data.insertBefore || data.rows[0] === data.insertBefore - 1) {
+							e.stopPropagation();
+							return;
+						}
+					});
+					moveRowsPlugin.onMoveRows.subscribe((e: Slick.EventData, data: RowMoveOnDragEventData) => {
+						const row = data.rows[0];
+						this.handleEdit({
+							type: DesignerEditType.Move,
+							path: [...propertyPath, row],
+							source: view,
+							value: data.insertBefore
+						});
+					});
+					table.grid.registerPlugin(moveRowsPlugin);
+					buttonColumn.push(moveRowsPlugin.definition);
+				}
+				if (tableProperties.canAddRows || tableProperties.canMoveRows) {
+					this._taskbar.context = { table: table, path: propertyPath, source: view };
+				}
 				table.ariaLabel = tableProperties.ariaLabel;
 				const columns = tableProperties.columns.map(propName => {
 					const propertyDefinition = tableProperties.itemProperties.find(item => item.propertyName === propName);
@@ -999,23 +1001,22 @@ export class Designer extends Disposable implements IThemable {
 	}
 
 	private addDesignerTaskbar(container: HTMLElement, tableProperties: DesignerTableProperties): void {
-		// if (tableProperties.canAddRows || tableProperties.canMoveRows) {
-		let taskbarContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
-		this._taskbar = new Taskbar(taskbarContainer);
-		if (tableProperties.canAddRows) {
-			let addColAction = this._instantiationService.createInstance(AddRowAction, this, tableProperties);
-			this._actions.push(addColAction);
+		if (tableProperties.canAddRows || tableProperties.canMoveRows) {
+			let taskbarContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
+			this._taskbar = new Taskbar(taskbarContainer);
+			if (tableProperties.canAddRows) {
+				let addColAction = this._instantiationService.createInstance(AddRowAction, this, tableProperties);
+				this._actions.push(addColAction);
+			}
+			if (tableProperties.canMoveRows) {
+				let moveUpAction = this._instantiationService.createInstance(MoveRowUpAction, this);
+				let moveDownAction = this._instantiationService.createInstance(MoveRowDownAction, this);
+				this._actions.push(moveUpAction);
+				this._actions.push(moveDownAction);
+			}
+			let taskbarContent: ITaskbarContent[] = this._actions.map((a) => { return { action: a }; });
+			this._taskbar.setContent(taskbarContent);
 		}
-		// if (tableProperties.canMoveRows) {
-
-		let moveUpAction = this._instantiationService.createInstance(MoveRowUpAction, this);
-		let moveDownAction = this._instantiationService.createInstance(MoveRowDownAction, this);
-		this._actions.push(moveUpAction);
-		this._actions.push(moveDownAction);
-		// }
-		let taskbarContent: ITaskbarContent[] = this._actions.map((a) => { return { action: a }; });
-		this._taskbar.setContent(taskbarContent);
-		// }
 	}
 
 	private openContextMenu(table: Table<Slick.SlickData>, event: ITableMouseEvent, propertyPath: DesignerPropertyPath, view: DesignerUIArea): void {
@@ -1023,7 +1024,8 @@ export class Designer extends Disposable implements IThemable {
 		let designerActionContext: DesignerTableActionContext = {
 			table: table,
 			path: propertyPath,
-			source: view
+			source: view,
+			selectedRow: rowIndex
 		};
 		let data = table.grid.getData() as Slick.DataProvider<Slick.SlickData>;
 		if (!data || rowIndex >= data.getLength()) {
