@@ -170,7 +170,10 @@ export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: an
 	};
 }
 
-export function treeGridExpandableColumnFormatter<T>(formattingFunction: Slick.Formatter<T>) {
+/**
+ * Creates a formatter for the first column of the treegrid. This method will wrap the output of the provided formatter with a level based indentation and a chevron icon for tree grid parents that indicates their expand/collapse state.
+ */
+export function createTreeGridExpandableColumnFormatter<T>(formattingFunction: Slick.Formatter<T>): Slick.Formatter<T> {
 	return (row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string => {
 		const spacer = `<span style='display:inline-block;height:1px;width:${(15 * (dataContext['level'] - 1))}px'></span>`;
 
