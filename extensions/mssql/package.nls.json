@@ -187,5 +187,5 @@
 
 	"title.newTable": "New Table",
 	"title.designTable": "Design",
-	"mssql.parallelMessageProcessing" : "[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel, The default value is false. Relaunch of ADS is required after making the change. This feature flag is introduced so that we can test the impact of making everything in parallel."
+	"mssql.parallelMessageProcessing" : "[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed."
 }
