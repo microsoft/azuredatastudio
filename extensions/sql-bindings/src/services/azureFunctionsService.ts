@@ -13,7 +13,7 @@ import * as azureFunctionsContracts from '../contracts/azureFunctions/azureFunct
 import { CreateAzureFunctionStep, TelemetryActions, TelemetryReporter, TelemetryViews, ExitReason } from '../common/telemetry';
 import { AddSqlBindingParams, BindingType, GetAzureFunctionsParams, GetAzureFunctionsResult, ResultStatus } from 'sql-bindings';
 import { IConnectionInfo, ITreeNodeInfo } from 'vscode-mssql';
-import { addConnectionStringStep } from '../createNewProject/addConnectionStringStep';
+import { createAddConnectionStringStep } from '../createNewProject/addConnectionStringStep';
 
 export const hostFileName: string = 'host.json';
 
@@ -225,7 +225,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				.withConnectionInfo(connectionInfo).send();
 		}
 		// addtional execution step that will be used by vscode-azurefunctions to execute only when creating a new azure function project
-		let connectionStringExecuteStep = addConnectionStringStep(projectFolder, connectionInfo, connectionStringSettingName);
+		let connectionStringExecuteStep = createAddConnectionStringStep(projectFolder, connectionInfo, connectionStringSettingName);
 
 		// create C# Azure Function with SQL Binding
 		telemetryStep = 'createFunctionAPI';
@@ -250,22 +250,9 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 		// check for the new function file to be created and dispose of the file system watcher
 		const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
-		let functionFilePath = await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
+		await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
 
-		// prompt user for include password for connection string
-		if (isCreateNewProject && functionFilePath) {
-			telemetryStep = CreateAzureFunctionStep.promptForIncludePassword;
-			let settingsFile = await azureFunctionsUtils.getSettingsFile(projectFolder);
-			if (!settingsFile) {
-				return;
-			}
-			let connectionString = await azureFunctionsUtils.promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo, settingsFile);
-			if (!connectionString) {
-				return;
-			}
-			void azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFolder, connectionStringSettingName);
-		}
-
+		telemetryStep = 'finishCreateFunction';
 		propertyBag.telemetryStep = telemetryStep;
 		exitReason = ExitReason.finishCreate;
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.finishCreateAzureFunctionWithSqlBinding)
