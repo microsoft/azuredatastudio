@@ -53,6 +53,9 @@ export namespace SecurityTokenRequest {
 
 // ------------------------------- < Refresh Token Notification > ---------------------------------
 
+/**
+ * Parameters for a refresh token notification sent from STS to ADS
+ */
 export interface RefreshTokenParams {
 	authority: string;
 	provider: string;
@@ -65,6 +68,9 @@ export namespace RefreshTokenNotification {
 	export const type = new NotificationType<RefreshTokenParams, void>('account/refreshToken');
 }
 
+/**
+ * Parameters for a new refresh token sent from ADS to STS
+ */
 export interface TokenRefreshedParams {
 	accountKey: string;
 	token: string;

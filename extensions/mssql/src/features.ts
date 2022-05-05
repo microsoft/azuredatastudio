@@ -47,8 +47,12 @@ export class AccountFeature implements StaticFeature {
 			return await this.tokenCache.getData(request);
 		});
 		this._client.onNotification(contracts.RefreshTokenNotification.type, async (request) => {
-			// Refresh token, then inform client the token has been updated. This is done as separate notification messages due to the synchronous processing nature of STS currently <provide link to relevant issue>
+			// Refresh token, then inform client the token has been updated. This is done as separate notification messages due to the synchronous processing nature of STS currently
 			let result = await this.refreshToken(request);
+			if (!result) {
+				void window.showErrorMessage(localizedConstants.tokenRefreshFailed);
+				throw Error(localizedConstants.tokenRefreshFailed);
+			}
 			this._client.sendNotification(contracts.RefreshToken.type, result);
 		});
 	}
@@ -103,19 +107,14 @@ export class AccountFeature implements StaticFeature {
 
 		// find account
 		const accountList = await azdata.accounts.getAllAccounts();
-		let account: azdata.Account;
-		accountList.forEach(element => {
-			if (element.key.accountId === request.accountId) {
-				account = element;
-			}
-		});
+		const account = accountList.find(a => a.key.accountId === request.accountId);
 
 		// find tenant
 		const tenant = account.properties.tenants.find((tenant: azurecore.Tenant) => request.authority.includes(tenant.id));
 		const unauthorizedMessage = localizedConstants.mssqlInsufficentPriveleges(account.key.accountId);
 		if (!tenant) {
 			void window.showErrorMessage(unauthorizedMessage);
-			return undefined;
+			throw Error(localizedConstants.failedToFindTenants);
 		}
 
 		// Get the updated token, which will handle refreshing it if necessary
