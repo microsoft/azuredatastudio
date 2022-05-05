@@ -121,7 +121,7 @@ export async function getAzureFunctionsExtensionApi(): Promise<AzureFunctionsExt
 			return undefined;
 		}
 	}
-	const azureFunctionApi = apiProvider.getApi<AzureFunctionsExtensionApi>('*');
+	const azureFunctionApi = apiProvider.getApi<AzureFunctionsExtensionApi>('^1.8.0');
 	if (azureFunctionApi) {
 		return azureFunctionApi;
 	} else {
