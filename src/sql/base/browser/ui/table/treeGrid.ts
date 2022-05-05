@@ -13,6 +13,7 @@ import { CellValueGetter, defaultCellValueGetter, defaultFilter, TableDataView }
 import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { textFormatter, treeGridExpandableColumnFormatter } from 'sql/base/browser/ui/table/formatters';
 
 function defaultTreeGridFilter<T extends Slick.SlickData>(data: T[], columns: FilterableColumn<T>[], cellValueGetter: CellValueGetter = defaultCellValueGetter): T[] {
 	let filteredData = defaultFilter(data, columns, cellValueGetter);
@@ -39,7 +40,9 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
 		super(parent, configuration, options);
 		this._tableContainer.setAttribute('role', 'treegrid');
-
+		if (this._columns[0]) {
+			this._columns[0].formatter = this._columns[0].formatter ? treeGridExpandableColumnFormatter(this._columns[0].formatter) : treeGridExpandableColumnFormatter(textFormatter);
+		}
 		if (configuration?.dataProvider && configuration.dataProvider instanceof TableDataView) {
 			this._data = configuration.dataProvider;
 		} else {
@@ -125,6 +128,13 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 		this.addTreeGridDataAttributes(this._data);
 		this._grid.setData(this._data, true);
 		this._data.filter(this._grid.getColumns());
+	}
+
+	public override set columns(columns: Slick.Column<T>[]) {
+		if (columns[0]) {
+			columns[0].formatter = columns[0].formatter ? treeGridExpandableColumnFormatter(columns[0].formatter) : treeGridExpandableColumnFormatter(textFormatter);
+		}
+		super.columns = columns;
 	}
 
 	/**

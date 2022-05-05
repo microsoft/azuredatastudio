@@ -143,20 +143,22 @@ export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: an
 	};
 }
 
-export function treeGridExpandableColumnFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
-	const spacer = `<span style='display:inline-block;height:1px;width:${(15 * (dataContext['level'] - 1))}px'></span>`;
+export function treeGridExpandableColumnFormatter(formattingFunction: Slick.Formatter<any>) {
+	return (row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string => {
+		const spacer = `<span style='display:inline-block;height:1px;width:${(15 * (dataContext['level'] - 1))}px'></span>`;
 
-	const textDisplayElement = createTextCell(value);
+		const innerCellContent = formattingFunction(row, cell, value, columnDef, dataContext);
 
-	if (dataContext['isParent']) {
-		if (dataContext.expanded) {
-			return `<div>${spacer}<span class='codicon codicon-chevron-down toggle' style='font-weight:bold;'></span>&nbsp; ${textDisplayElement}</div>`;
+		if (dataContext['isParent']) {
+			if (dataContext.expanded) {
+				return `<div>${spacer}<span class='codicon codicon-chevron-down toggle' style='font-weight:bold;'></span>&nbsp; ${innerCellContent}</div>`;
+			} else {
+				return `<div>${spacer}<span class='codicon codicon-chevron-right toggle' style='font-weight:bold;'></span>&nbsp; ${innerCellContent}</div>`;
+			}
 		} else {
-			return `<div>${spacer}<span class='codicon codicon-chevron-right toggle' style='font-weight:bold;'></span>&nbsp; ${textDisplayElement}</div>`;
+			return `${spacer}${innerCellContent}`;
 		}
-	} else {
-		return `${spacer}${textDisplayElement}`;
-	}
+	};
 }
 
 
