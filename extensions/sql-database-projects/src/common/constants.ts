@@ -437,6 +437,8 @@ export const Type = 'Type';
 export const ExternalStreamingJob: string = 'ExternalStreamingJob';
 export const Sdk: string = 'Sdk';
 export const DatabaseSource = 'DatabaseSource';
+export const VisualStudioVersion = 'VisualStudioVersion';
+export const SSDTExists = 'SSDTExists';
 
 export const BuildElements = localize('buildElements', "Build Elements");
 export const FolderElements = localize('folderElements', "Folder Elements");
@@ -474,6 +476,11 @@ export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' A
 export const RoundTripSqlDbNotPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' == \'\'';
 export const DacpacRootPath = '$(DacPacRootPath)';
 export const ProjJsonToClean = '$(BaseIntermediateOutputPath)\\project.assets.json';
+
+// Sqlproj VS property conditions
+export const VSVersionCondition = '\'$(VisualStudioVersion)\' == \'\'';
+export const SsdtExistsCondition = '\'$(SSDTExists)\' == \'\'';
+export const targetsExistsCondition = 'Exists(\'$(MSBuildExtensionsPath)\\Microsoft\\VisualStudio\\v$(VisualStudioVersion)\\SSDT\\Microsoft.Data.Tools.Schema.SqlTasks.targets\')';
 
 // SqlProj Reference Assembly Information
 export const NETFrameworkAssembly = 'Microsoft.NETFramework.ReferenceAssemblies';
