@@ -51,9 +51,9 @@ export namespace SecurityTokenRequest {
 }
 // ------------------------------- </ Security Token Request > ------------------------------------------
 
-// ------------------------------- < Refresh Token Request > ---------------------------------
+// ------------------------------- < Refresh Token Notification > ---------------------------------
 
-export interface RefreshTokenNotificationParams {
+export interface RefreshTokenParams {
 	authority: string;
 	provider: string;
 	resource: string;
@@ -62,10 +62,10 @@ export interface RefreshTokenNotificationParams {
 }
 
 export namespace RefreshTokenNotification {
-	export const type = new NotificationType<RefreshTokenNotificationParams, void>('account/refreshTokenNotification');
+	export const type = new NotificationType<RefreshTokenParams, void>('account/refreshToken');
 }
 
-export interface RefreshTokenParams {
+export interface TokenRefreshedParams {
 	accountKey: string;
 	token: string;
 	expiresOn: Number;
@@ -73,7 +73,7 @@ export interface RefreshTokenParams {
 }
 
 export namespace RefreshToken {
-	export const type = new NotificationType<RefreshTokenParams, void>('account/refreshToken');
+	export const type = new NotificationType<TokenRefreshedParams, void>('account/tokenRefreshed');
 }
 
 // ------------------------------- </ Refresh Token Request > -------------------------------
