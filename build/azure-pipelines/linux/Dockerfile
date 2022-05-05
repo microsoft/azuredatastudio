@@ -1,5 +1,5 @@
 #Download base image ubuntu 18.04
-FROM mcr.microsoft.com/oss/mirror/docker.io/library/ubuntu:18.04
+FROM ubuntu:18.04
 
 #Adding apt repos for g++-4.9
 RUN echo "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main" >> /etc/apt/sources.list
