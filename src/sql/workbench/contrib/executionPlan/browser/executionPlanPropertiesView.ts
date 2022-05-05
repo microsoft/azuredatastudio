@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { removeLineBreaks } from 'sql/base/common/strings';
 import { isString } from 'vs/base/common/types';
-import { treeGridExpandableColumnFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { ExecutionPlanPropertiesViewBase, PropertiesSortType } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
 
 export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase {
@@ -93,7 +93,7 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 				width: 250,
 				editor: Slick.Editors.Text,
 				headerCssClass: 'prop-table-header',
-				formatter: treeGridExpandableColumnFormatter
+				formatter: textFormatter
 			},
 			{
 				id: 'value',

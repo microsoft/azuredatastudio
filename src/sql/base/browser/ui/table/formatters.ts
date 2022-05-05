@@ -86,7 +86,34 @@ export function hyperLinkFormatter(row: number | undefined, cell: any | undefine
  * Format all text to replace all new lines with spaces and performs HTML entity encoding
  */
 export function textFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
-	return createTextCell(value);
+	let cellClasses = 'grid-cell-value-container';
+	let valueToDisplay = '';
+	let titleValue = '';
+	let cellStyle = '';
+
+	if (DBCellValue.isDBCellValue(value)) {
+		valueToDisplay = 'NULL';
+		if (!value.isNull) {
+			valueToDisplay = value.displayValue.replace(/(\r\n|\n|\r)/g, ' ');
+			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+			titleValue = valueToDisplay;
+		} else {
+			cellClasses += ' missing-value';
+		}
+	} else if (typeof value === 'string' || (value && value.text)) {
+		if (value.text) {
+			valueToDisplay = value.text;
+			if (value.style) {
+				cellStyle = value.style;
+			}
+		} else {
+			valueToDisplay = value;
+		}
+		valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+		titleValue = valueToDisplay;
+	}
+
+	return `<span title="${titleValue}" style="${cellStyle}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
 
 
@@ -159,37 +186,6 @@ export function treeGridExpandableColumnFormatter<T>(formattingFunction: Slick.F
 			return `${spacer}${innerCellContent}`;
 		}
 	};
-}
-
-
-function createTextCell(value: any): string {
-	let cellClasses = 'grid-cell-value-container';
-	let valueToDisplay = '';
-	let titleValue = '';
-	let cellStyle = '';
-
-	if (DBCellValue.isDBCellValue(value)) {
-		valueToDisplay = 'NULL';
-		if (!value.isNull) {
-			valueToDisplay = value.displayValue.replace(/(\r\n|\n|\r)/g, ' ');
-			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
-			titleValue = valueToDisplay;
-		} else {
-			cellClasses += ' missing-value';
-		}
-	} else if (typeof value === 'string' || (value && value.text)) {
-		if (value.text) {
-			valueToDisplay = value.text;
-			if (value.style) {
-				cellStyle = value.style;
-			}
-		} else {
-			valueToDisplay = value;
-		}
-		valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
-		titleValue = valueToDisplay;
-	}
-	return `<span title="${titleValue}" style="${cellStyle}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
 
 /** The following code is a rewrite over the both formatter function using dom builder
