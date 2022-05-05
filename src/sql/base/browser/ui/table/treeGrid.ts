@@ -51,7 +51,7 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 		}
 
 		this._grid.onClick.subscribe((e, data) => {
-			this.expandRow(data.row);
+			this.setRowExpandedState(data.row);
 			return false;
 		});
 
@@ -62,18 +62,18 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 				let event = new StandardKeyboardEvent(keyboardEvent);
 				if (event.keyCode === KeyCode.Enter) {
 					// toggle the collapsed state of the row
-					this.expandRow(data.row);
+					this.setRowExpandedState(data.row);
 					return false;
 				} else if (event.keyCode === KeyCode.LeftArrow) {
 					// Left arrow on first cell of the expanded row collapses it
 					if (data.cell === 0) {
-						this.expandRow(data.row, false); // Collapsing state
+						this.setRowExpandedState(data.row, false); // Collapsing state
 						return false;
 					}
 				} else if (event.keyCode === KeyCode.RightArrow) {
 					// Right arrow on last cell of the collapsed row expands it.
 					if (data.cell === (this._grid.getColumns().length - 1)) {
-						this.expandRow(data.row, true);
+						this.setRowExpandedState(data.row, true);
 						return false;
 					}
 				}
@@ -124,7 +124,7 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 	/**
 	 *  Sets the expanded state to the specified value, or if undefined toggles the current state of the cell
 	 */
-	private expandRow(row: number, expanded?: boolean): void {
+	private setRowExpandedState(row: number, expanded?: boolean): void {
 		const rowData = this._data.getItem(row);
 		if (rowData['isParent']) {
 			if (expanded === undefined) {
@@ -139,7 +139,7 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 	}
 
 	/**
-	 * We need to augment the grid data to include additional properties that are necessary for rendering a tree grid.
+	 * Adds additional properties to data rows necessary for displaying as part of the tree grid structure.
 	 */
 	private addTreeGridDataAttributes(data: IDisposableDataProvider<T>): void {
 		for (let i = 0; i < data.getLength(); i++) {
