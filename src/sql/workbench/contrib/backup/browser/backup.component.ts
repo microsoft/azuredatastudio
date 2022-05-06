@@ -959,6 +959,7 @@ export class BackupComponent extends AngularDisposable {
 
 	private enableBackupButton(): void {
 		if (!this.backupButton!.enabled) {
+			//Managed Instance backup doesn't support backup expiration date nor backup media set
 			if ((this._engineEdition === DatabaseEngineEdition.SqlManagedInstance && this.urlInputBox.value.length > 0) ||
 				(this._engineEdition !== DatabaseEngineEdition.SqlManagedInstance && (!this.isFormatChecked || this.mediaNameBox!.value) && this.backupRetainDaysBox!.validate() === undefined)) {
 				this.backupEnabled = true;
