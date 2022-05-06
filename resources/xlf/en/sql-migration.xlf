@@ -375,8 +375,20 @@ This may take some time.</source>
     <trans-unit id="sql.migration.details.copied">
       <source xml:lang="en">Details copied</source>
     </trans-unit>
+    <trans-unit id="sql.migration.dms.location">
+      <source xml:lang="en">Azure region for your Azure Database Migration Service. Only regions that contain a service will be shown.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.dms.provision.failed">
       <source xml:lang="en">Failed to provision a Database Migration Service. Wait a few minutes and then try again.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.dms.resource">
+      <source xml:lang="en">Your Azure Database Migration Service resource name</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.dms.resource_group">
+      <source xml:lang="en">Resource group for your Azure SQL target. Only resource groups that contain a service will be shown.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.dms.subscription">
+      <source xml:lang="en">Subscription name for your Azure Database Migration Service</source>
     </trans-unit>
     <trans-unit id="sql.migration.duration">
       <source xml:lang="en">Duration</source>
@@ -679,10 +691,10 @@ This may take some time.</source>
       <source xml:lang="en">No issues found for migrating to SQL Server on Azure Virtual Machine.</source>
     </trans-unit>
     <trans-unit id="sql.migration.no.location.found">
-      <source xml:lang="en">No location found.</source>
+      <source xml:lang="en">No locations found.</source>
     </trans-unit>
     <trans-unit id="sql.migration.no.managedInstance.found">
-      <source xml:lang="en">No managed instance found.</source>
+      <source xml:lang="en">No managed instances found.</source>
     </trans-unit>
     <trans-unit id="sql.migration.no.pending.backups">
       <source xml:lang="en">No pending backups. Click refresh to check current status.</source>
@@ -691,13 +703,13 @@ This may take some time.</source>
       <source xml:lang="en">Assessment results are unavailable.</source>
     </trans-unit>
     <trans-unit id="sql.migration.no.storageAccount.found">
-      <source xml:lang="en">No storage account found.</source>
+      <source xml:lang="en">No storage accounts found.</source>
     </trans-unit>
     <trans-unit id="sql.migration.no.subscription.found">
-      <source xml:lang="en">No subscription found.</source>
+      <source xml:lang="en">No subscriptions found.</source>
     </trans-unit>
     <trans-unit id="sql.migration.no.virtualMachine.found">
-      <source xml:lang="en">No virtual machine found.</source>
+      <source xml:lang="en">No virtual machines found.</source>
     </trans-unit>
     <trans-unit id="sql.migration.notebook.open.error">
       <source xml:lang="en">Failed to open the migration notebook.</source>
@@ -1102,7 +1114,7 @@ This may take some time.</source>
       <source xml:lang="en">{0} IOPS</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.location">
-      <source xml:lang="en">Azure region for your Azure SQL target</source>
+      <source xml:lang="en">Azure region for your Azure SQL target. Only regions that contain a target eligible for migration will be shown.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.log.storage.requirement">
       <source xml:lang="en">Log storage requirement</source>
@@ -1204,7 +1216,7 @@ This may take some time.</source>
       <source xml:lang="en">Your Azure SQL target resource name</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.resource_group">
-      <source xml:lang="en">Resource group for your Azure SQL target</source>
+      <source xml:lang="en">Resource group for your Azure SQL target. Only resource groups that contain a target eligible for migration will be shown.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.restart.performance.collection">
       <source xml:lang="en">Restart data collection</source>
@@ -1440,7 +1452,7 @@ This may take some time.</source>
     <trans-unit id="sql.migration.type.label">
       <source xml:lang="en">Type:</source>
     </trans-unit>
-    <trans-unit id="sql.migration.unavailable.managedInstance">
+    <trans-unit id="sql.migration.unavailable.target">
       <source xml:lang="en">(Unavailable) {0}</source>
     </trans-unit>
     <trans-unit id="sql.migration.unique.name">
@@ -1454,6 +1466,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.view.select.button.label">
       <source xml:lang="en">View/Select</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.vm.not.ready">
+      <source xml:lang="en">The virtual machine '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available virtual machine.</source>
     </trans-unit>
     <trans-unit id="sql.migration.warning">
       <source xml:lang="en">Warning</source>
