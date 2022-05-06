@@ -110,7 +110,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private _htmlMarkdownConverter: HTMLMarkdownConverter;
 	private markdownPreviewLineHeight: number;
 	public readonly onDidClickLink = this._onDidClickLink.event;
-	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
 	private _editorHeight: number;
 	private readonly _markdownMaxHeight = 4000;
@@ -139,7 +138,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			}
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
-			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 			if (e.affectsConfiguration('notebook.markdownPreviewLineHeight')) {
 				this.markdownPreviewLineHeight = this._configurationService.getValue('notebook.markdownPreviewLineHeight');
@@ -188,7 +186,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	ngOnInit() {
 		this._editorHeight = document.querySelector('.editor-container').clientHeight;
-		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.setFocusAndScroll();
