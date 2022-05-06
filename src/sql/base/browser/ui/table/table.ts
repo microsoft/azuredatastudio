@@ -69,12 +69,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		this._register(this._data);
 
-		if (configuration && configuration.columns) {
-			this.columns = configuration.columns;
-		} else {
-			this.columns = new Array<Slick.Column<T>>();
-		}
-
 		let newOptions = mixin(options || {}, getDefaultOptions<T>(), false);
 
 		this._container = document.createElement('div');
@@ -98,7 +92,14 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._tableContainer = document.createElement('div');
 		this._container.appendChild(this._tableContainer);
 		this.styleElement = DOM.createStyleSheet(this._container);
-		this._grid = new Slick.Grid<T>(this._tableContainer, this._data, this._columns, newOptions);
+		this._grid = new Slick.Grid<T>(this._tableContainer, this._data, [], newOptions);
+
+		if (configuration && configuration.columns) {
+			this.columns = configuration.columns;
+		} else {
+			this.columns = new Array<Slick.Column<T>>();
+		}
+
 		this.idPrefix = this._tableContainer.classList[0];
 		this._container.classList.add(this.idPrefix);
 		if (configuration && configuration.sorter) {
