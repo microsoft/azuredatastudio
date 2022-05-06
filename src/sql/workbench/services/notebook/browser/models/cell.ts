@@ -771,7 +771,7 @@ export class CellModel extends Disposable implements ICellModel {
 		if (this._future) {
 			this._future.dispose();
 		}
-		this.clearOutputs(true);
+		// this.clearOutputs(true);
 		this._future = future;
 		future.setReplyHandler({ handle: (msg) => this.handleReply(msg) });
 		future.setIOPubHandler({ handle: (msg) => this.handleIOPub(msg) });
@@ -1065,7 +1065,7 @@ export class CellModel extends Disposable implements ICellModel {
 		return CellEditModes.WYSIWYG;
 	}
 
-	public processEdits(edits: ICellEdit[]): void {
+	private processOutputEdits(edits: ICellEdit[]): void {
 		for (const edit of edits) {
 			switch (edit.type) {
 				case CellEditType.Output:
@@ -1096,6 +1096,15 @@ export class CellModel extends Disposable implements ICellModel {
 			}
 		}
 		this.fireOutputsChanged(false);
+	}
+
+	public processEdits(edits: ICellEdit[]): void {
+		// Wait for any in-progress operations to complete before doing any edits so that we don't hit any race conditions
+		if (this._future?.inProgress) {
+			this._future.done.then(() => this.processOutputEdits(edits));
+		} else {
+			this.processOutputEdits(edits);
+		}
 	}
 
 	private setLanguageFromContents(cellType: string, metadata: ICellMetadata): void {
