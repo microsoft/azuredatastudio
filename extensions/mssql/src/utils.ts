@@ -20,6 +20,7 @@ const configLogRetentionMinutes = 'logRetentionMinutes';
 const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
 const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
+const parallelMessageProcessingConfig = 'parallelMessageProcessing';
 
 /**
  *
@@ -92,13 +93,16 @@ export function getConfigTracingLevel(): string {
 	}
 }
 
-export function getConfigParallelMessageProcessing(): boolean {
-	let config = getConfiguration();
-	if (config) {
-		return config['parallelMessageProcessing'];
-	} else {
-		return undefined;
+export async function getParallelMessageProcessingConfig(): Promise<boolean> {
+	const config = getConfiguration();
+	if (!config) {
+		return false;
 	}
+	const quality = await getProductQuality();
+	const setting = config.inspect(parallelMessageProcessingConfig);
+	// For dev environment, we want to enable the feature by default unless it is set explicitely.
+	// Note: the quality property is not set for dev environment, we can use this to determine whether it is dev environment.
+	return (quality === undefined && setting.globalValue === undefined && setting.workspaceValue === undefined) ? true : config[parallelMessageProcessingConfig];
 }
 
 export function getLogFileName(prefix: string, pid: number): string {
@@ -360,4 +364,9 @@ export async function getOrDownloadServer(config: IConfig, handleServerEvent?: (
 	}
 
 	return serverdownloader.getOrDownloadServer();
+}
+
+async function getProductQuality(): Promise<string> {
+	const content = await fs.readFile(path.join(vscode.env.appRoot, 'product.json'));
+	return JSON.parse(content?.toString())?.quality;
 }

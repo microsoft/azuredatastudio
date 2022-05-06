@@ -8,7 +8,7 @@ import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { getCommonLaunchArgsAndCleanupOldLogFiles, getConfigParallelMessageProcessing, getOrDownloadServer } from './utils';
+import { getCommonLaunchArgsAndCleanupOldLogFiles, getOrDownloadServer, getParallelMessageProcessingConfig } from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature } from './features';
@@ -45,7 +45,7 @@ export class SqlToolsServer {
 			const serverPath = await this.download(context);
 			this.installDirectory = path.dirname(serverPath);
 			const installationComplete = Date.now();
-			let serverOptions = generateServerOptions(context.extensionContext.logPath, serverPath);
+			let serverOptions = await generateServerOptions(context.extensionContext.logPath, serverPath);
 			let clientOptions = getClientOptions(context);
 			this.client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();
@@ -104,9 +104,10 @@ export class SqlToolsServer {
 	}
 }
 
-function generateServerOptions(logPath: string, executablePath: string): ServerOptions {
+async function generateServerOptions(logPath: string, executablePath: string): Promise<ServerOptions> {
 	const launchArgs = getCommonLaunchArgsAndCleanupOldLogFiles(logPath, 'sqltools.log', executablePath);
-	if (getConfigParallelMessageProcessing()) {
+	const enableAsyncMessageProcessing = await getParallelMessageProcessingConfig();
+	if (enableAsyncMessageProcessing) {
 		launchArgs.push('--parallel-message-processing');
 	}
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
