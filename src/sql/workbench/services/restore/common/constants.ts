@@ -12,7 +12,6 @@ export const fileFiltersSet: { label: string, filters: string[] }[] = [
 ];
 
 // Backup media device type: https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.devicetype
-// Used as backupDeviceType RPC param
 export enum DeviceType {
 	LogicalDevice = 0,
 	Tape = 1,
