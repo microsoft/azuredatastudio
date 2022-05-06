@@ -538,7 +538,7 @@ export class PublishDatabaseDialog {
 			width: cssStyles.publishDialogLabelWidth
 		}).component();
 
-		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, this.targetConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, this.targetConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin': '-8px 10px -15px 0' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 		connectionRow.insertItem(selectConnectionButton, 2, { CSSStyles: { 'margin-right': '0px' } });
 
 		return connectionRow;
@@ -906,18 +906,12 @@ export class PublishDatabaseDialog {
 	 * Creates Display options container with hyperlink options
 	 */
 	private createOptionsButton(view: azdataType.ModelView): azdataType.FlexContainer {
-		const optionslabel = view.modelBuilder.text().withProps({
-			value: constants.publishOptions,
-			width: cssStyles.publishDialogLabelWidth
-		}).component();
-
-		this.optionsButton = view.modelBuilder.hyperlink().withProps({
+		this.optionsButton = view.modelBuilder.button().withProps({
 			label: constants.configureOptions,
-			title: constants.configureOptions,
-			url: ''
+			secondary: true
 		}).component();
 
-		const optionsRow = view.modelBuilder.flexContainer().withItems([optionslabel, this.optionsButton], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const optionsRow = view.modelBuilder.flexContainer().withItems([this.optionsButton], { CSSStyles: { flex: '0 0 auto', 'margin': '8px 0 0 295px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		this.optionsButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, 'PublishOptionsClicked');
