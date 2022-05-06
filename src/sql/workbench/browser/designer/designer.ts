@@ -362,12 +362,14 @@ export class Designer extends Disposable implements IThemable {
 					const propertyName = edit.path[0] as string;
 					const index = edit.path[1] as number;
 					const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
+					const tableProperties = this._componentMap.get(propertyName).defintion.componentProperties as DesignerTableProperties;
+					const selectedCellIndex = tableProperties.canMoveRows ? 1 : 0;
 					try {
 						table.grid.resetActiveCell();
 						table.grid.invalidateAllRows();
 						table.rerenderGrid();
-						table.setSelectedRows([index]);
-						table.setActiveCell(index, 0);
+						table.setActiveCell(index, selectedCellIndex);
+						table.setSelectedRows([]);
 					}
 					catch {
 						// Ignore the slick grid error when setting active cell.
@@ -381,12 +383,14 @@ export class Designer extends Disposable implements IThemable {
 					const propertyName = edit.path[0] as string;
 					const toIndex = edit.value as number;
 					const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
+					const tableProperties = this._componentMap.get(propertyName).defintion.componentProperties as DesignerTableProperties;
+					const selectedCellIndex = tableProperties.canMoveRows ? 1 : 0;
 					try {
 						table.grid.resetActiveCell();
 						table.grid.invalidateAllRows();
 						table.rerenderGrid();
+						table.setActiveCell(toIndex, selectedCellIndex);
 						table.setSelectedRows([toIndex]);
-						table.setActiveCell(toIndex, 0);
 					}
 					catch {
 						// Ignore the slick grid error when setting active cell.
@@ -883,7 +887,7 @@ export class Designer extends Disposable implements IThemable {
 							type: DesignerEditType.Move,
 							path: [...propertyPath, row],
 							source: view,
-							value: data.insertBefore
+							value: data.insertBefore < row ? data.insertBefore : data.insertBefore - 1
 						});
 					});
 					table.grid.registerPlugin(moveRowsPlugin);
@@ -1004,6 +1008,7 @@ export class Designer extends Disposable implements IThemable {
 		if (tableProperties.canAddRows || tableProperties.canMoveRows) {
 			let taskbarContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
 			this._taskbar = new Taskbar(taskbarContainer);
+			this._actions = [];
 			if (tableProperties.canAddRows) {
 				let addColAction = this._instantiationService.createInstance(AddRowAction, this, tableProperties);
 				this._actions.push(addColAction);
