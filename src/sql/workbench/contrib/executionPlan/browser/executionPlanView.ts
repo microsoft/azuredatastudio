@@ -197,7 +197,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 		};
 
 		this._container.onkeydown = (e: KeyboardEvent) => {
-			if (e.ctrlKey && e.key === 'f') {
+			if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
 				let searchNodeAction = self._instantiationService.createInstance(SearchNodeAction, 'HotKey');
 				searchNodeAction.run(self);
 			}
