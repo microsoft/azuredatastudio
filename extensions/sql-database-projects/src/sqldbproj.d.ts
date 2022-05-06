@@ -20,9 +20,10 @@ declare module 'sqldbproj' {
 		 * @param location the parent directory
 		 * @param projectTypeId the ID of the project/template
 		 * @param targetPlatform the target platform for the project. Default is SQL Server 2019
+		 * @param sdkStyle whether the project is sdk-style. Default is false
 		 * @returns Uri of the newly created project file
 		 */
-		createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform: SqlTargetPlatform): Promise<vscode.Uri>;
+		createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform: SqlTargetPlatform, sdkStyle?: boolean): Promise<vscode.Uri>;
 
 		/**
 		 * Opens and loads a .sqlproj file
@@ -67,7 +68,12 @@ declare module 'sqldbproj' {
 		/**
 		 * If true then the project will not be opened in the workspace after being created
 		 */
-		doNotOpenInWorkspace?: boolean
+		doNotOpenInWorkspace?: boolean,
+
+		/**
+		 * Create SQL Project SDK style or non SDK style. The default is non SDK style.
+		 */
+		isSDKStyle?: boolean
 	};
 
 	export interface ISqlProject {
