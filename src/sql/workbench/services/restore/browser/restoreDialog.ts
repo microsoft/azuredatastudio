@@ -720,11 +720,7 @@ export class RestoreDialog extends Modal {
 			true,
 			true,
 			'')
-			.then(url => this.onUrlBrowsed(url));
-	}
-
-	private onUrlBrowsed(url: string) {
-		this._urlInputBox!.value = url;
+			.then(url => this._urlInputBox!.value = url);
 	}
 
 	private onFileBrowsed(filepath: string) {
