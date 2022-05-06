@@ -687,7 +687,6 @@ export class BackupComponent extends AngularDisposable {
 	}
 
 	private onChangeToUrl(): void {
-		//change "Backup files" to "Backup URL"
 		if (this.toUrlCheckBox!.checked) {
 			this.filePathElement.nativeElement.hidden = true;
 			this.filePathButtonsElement.nativeElement.hidden = true;
