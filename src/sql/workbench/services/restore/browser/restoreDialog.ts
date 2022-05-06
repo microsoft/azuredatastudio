@@ -466,7 +466,7 @@ export class RestoreDialog extends Modal {
 		});
 	}
 
-	private focusOnFirstEnabledFooterButton() {
+	private focusOnFirstEnabledFooterButton(): void {
 		if (this._scriptButton!.enabled) {
 			this._scriptButton!.focus();
 		} else if (this._restoreButton!.enabled) {
@@ -488,7 +488,7 @@ export class RestoreDialog extends Modal {
 		this.viewModel.databases = vals;
 	}
 
-	private createLabelElement(container: HTMLElement, content: string, isHeader?: boolean) {
+	private createLabelElement(container: HTMLElement, content: string, isHeader?: boolean): void {
 		let className = 'dialog-label';
 		if (isHeader) {
 			className += ' header';
@@ -522,17 +522,17 @@ export class RestoreDialog extends Modal {
 		this._optionsMap[optionName] = propertyWidget!;
 	}
 
-	private onBooleanOptionChecked(optionName: string) {
+	private onBooleanOptionChecked(optionName: string): void {
 		this.viewModel.setOptionValue(optionName, (<Checkbox>this._optionsMap[optionName]).checked);
 		this.validateRestore(false);
 	}
 
-	private onCatagoryOptionChanged(optionName: string) {
+	private onCatagoryOptionChanged(optionName: string): void {
 		this.viewModel.setOptionValue(optionName, (<SelectBox>this._optionsMap[optionName]).value);
 		this.validateRestore(false);
 	}
 
-	private onStringOptionChanged(optionName: string, params: OnLoseFocusParams) {
+	private onStringOptionChanged(optionName: string, params: OnLoseFocusParams): void {
 		if (params.hasChanged && params.value) {
 			this.viewModel.setOptionValue(optionName, params.value);
 			this.validateRestore(false);
@@ -589,7 +589,7 @@ export class RestoreDialog extends Modal {
 		this._scriptButton!.enabled = false;
 	}
 
-	public onValidateResponseFail(errorMessage: string) {
+	public onValidateResponseFail(errorMessage: string): void {
 		this.resetRestoreContent();
 		if (this.isRestoreFromDatabaseSelected) {
 			this._sourceDatabaseSelectBox!.showMessage({ type: MessageType.ERROR, content: errorMessage });
@@ -599,13 +599,13 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	public removeErrorMessage() {
+	public removeErrorMessage(): void {
 		this._filePathInputBox!.hideMessage();
 		this._sourceDatabaseSelectBox!.hideMessage();
 		this._destinationRestoreToInputBox!.hideMessage();
 	}
 
-	public enableRestoreButton(enabled: boolean) {
+	public enableRestoreButton(enabled: boolean): void {
 		this.spinner = false;
 		if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance && this.viewModel.databases.includes(this._targetDatabaseInputBox.value)) {
 			this._restoreButton!.enabled = false;
@@ -723,7 +723,7 @@ export class RestoreDialog extends Modal {
 			.then(url => this._urlInputBox!.value = url);
 	}
 
-	private onFileBrowsed(filepath: string) {
+	private onFileBrowsed(filepath: string): void {
 		const oldFilePath = this._filePathInputBox!.value;
 		if (strings.isFalsyOrWhitespace(this._filePathInputBox!.value)) {
 			this._filePathInputBox!.value = filepath;
@@ -736,7 +736,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private onFilePathLoseFocus(params: OnLoseFocusParams) {
+	private onFilePathLoseFocus(params: OnLoseFocusParams): void {
 		if (params.value) {
 			if (params.hasChanged || (this.viewModel.filePath !== params.value)) {
 				this.onFilePathChanged(params.value);
@@ -744,19 +744,19 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private onFilePathChanged(filePath: string) {
+	private onFilePathChanged(filePath: string): void {
 		this.viewModel.filePath = filePath;
 		this.viewModel.selectedBackupSets = undefined;
 		this.validateRestore(true);
 	}
 
-	private onUrlPathChanged(urlPath: string) {
+	private onUrlPathChanged(urlPath: string): void {
 		this.viewModel.filePath = urlPath;
 		this.viewModel.selectedBackupSets = undefined;
 		this.validateRestore(true);
 	}
 
-	private onSourceDatabaseChanged(selectedDatabase: string) {
+	private onSourceDatabaseChanged(selectedDatabase: string): void {
 		// This check is to avoid any unnecessary even firing (to remove flickering)
 		if (this.viewModel.sourceDatabaseName === undefined) {
 			this.viewModel.sourceDatabaseName = null;
@@ -771,7 +771,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private onRestoreFromChanged(selectedRestoreFrom: string) {
+	private onRestoreFromChanged(selectedRestoreFrom: string): void {
 		this.removeErrorMessage();
 		if (selectedRestoreFrom === this._backupFileTitle) {
 			this._sourceDatabaseSelectBox.enable();
@@ -839,26 +839,26 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	public hideError() {
+	public hideError(): void {
 		this.setError('');
 	}
 
 	/* Overwrite esapce key behavior */
-	protected override onClose() {
+	protected override onClose(): void {
 		this.cancel();
 	}
 
 	/* Overwrite enter key behavior */
-	protected override onAccept() {
+	protected override onAccept(): void {
 		this.restore(false);
 	}
 
-	public cancel() {
+	public cancel(): void {
 		this._onCancel.fire();
 		this.close('cancel');
 	}
 
-	public close(hideReason: HideReason = 'close') {
+	public close(hideReason: HideReason = 'close'): void {
 		this.resetDialog();
 		this.hide(hideReason);
 		this._onCloseEvent.fire();
@@ -877,7 +877,7 @@ export class RestoreDialog extends Modal {
 		this.resetRestoreContent();
 	}
 
-	public open(serverName: string, ownerUri: string, engineEdition: DatabaseEngineEdition) {
+	public open(serverName: string, ownerUri: string, engineEdition: DatabaseEngineEdition): void {
 		this._engineEdition = engineEdition;
 		this.title = this._restoreTitle + ' - ' + serverName;
 		this._ownerUri = ownerUri;
@@ -915,18 +915,18 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private updateLastBackupTaken(value: string) {
+	private updateLastBackupTaken(value: string): void {
 		this._destinationRestoreToInputBox!.value = value;
 	}
 
-	private updateFilePath(value: string) {
+	private updateFilePath(value: string): void {
 		this._filePathInputBox!.value = value;
 		if (!value) {
 			this._filePathInputBox!.hideMessage();
 		}
 	}
 
-	private updateSourceDatabaseName(databaseNamesParam: SouceDatabaseNamesParam) {
+	private updateSourceDatabaseName(databaseNamesParam: SouceDatabaseNamesParam): void {
 		// Always adding an empty name as the first item so if the selected db name is not in the list,
 		// The empty string would be selected and not the first db in the list
 		let dbNames: string[] = [];
@@ -944,7 +944,7 @@ export class RestoreDialog extends Modal {
 		this._databaseDropdown!.value = value;
 	}
 
-	private updateRestoreOption(optionParam: RestoreOptionParam) {
+	private updateRestoreOption(optionParam: RestoreOptionParam): void {
 		const widget = this._optionsMap[optionParam.optionName];
 		if (widget) {
 			if (widget instanceof Checkbox) {
@@ -960,7 +960,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private enableDisableWiget(widget: Checkbox | SelectBox | InputBox, isReadOnly: boolean) {
+	private enableDisableWiget(widget: Checkbox | SelectBox | InputBox, isReadOnly: boolean): void {
 		if (isReadOnly) {
 			widget.disable();
 		} else {
@@ -968,7 +968,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private updateRestoreDatabaseFiles(dbFiles: azdata.RestoreDatabaseFileInfo[]) {
+	private updateRestoreDatabaseFiles(dbFiles: azdata.RestoreDatabaseFileInfo[]): void {
 		this.clearFileListTable();
 		if (dbFiles && dbFiles.length > 0) {
 			const data = [];
@@ -990,7 +990,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private updateBackupSetsToRestore(backupSetsToRestore: azdata.DatabaseFileInfo[]) {
+	private updateBackupSetsToRestore(backupSetsToRestore: azdata.DatabaseFileInfo[]): void {
 		if (this._isBackupFileCheckboxChanged) {
 			const selectedRow = [];
 			for (let i = 0; i < backupSetsToRestore.length; i++) {
