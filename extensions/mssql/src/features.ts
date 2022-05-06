@@ -111,15 +111,17 @@ export class AccountFeature implements StaticFeature {
 
 		// find tenant
 		const tenant = account.properties.tenants.find((tenant: azurecore.Tenant) => request.authority.includes(tenant.id));
-		const unauthorizedMessage = localizedConstants.mssqlInsufficentPriveleges(account.key.accountId);
 		if (!tenant) {
-			void window.showErrorMessage(unauthorizedMessage);
+			void window.showErrorMessage(localizedConstants.failedToFindTenants);
 			throw Error(localizedConstants.failedToFindTenants);
 		}
 
 		// Get the updated token, which will handle refreshing it if necessary
 		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
-
+		if (!securityToken) {
+			void window.showErrorMessage(localizedConstants.tokenRefreshFailed);
+			throw Error(localizedConstants.tokenRefreshFailed);
+		}
 		let params: contracts.TokenRefreshedParams = {
 			accountKey: JSON.stringify(account.key),
 			token: securityToken.token,

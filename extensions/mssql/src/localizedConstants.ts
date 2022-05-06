@@ -60,3 +60,4 @@ export function sparkConnectionRequired(name: string): string { return localize(
 export function mssqlInsufficentPriveleges(account: string): string { return localize('mssql.insufficientPriveleges', "The configured Azure account for {0} does not have sufficient permissions.", account); }
 export const failedToFindTenants = localize('mssql.failedToFindTenants', "Failed to find tenants");
 export const tokenRefreshFailed = localize('mssql.tokenRefreshFailed', "Token refresh failed");
+

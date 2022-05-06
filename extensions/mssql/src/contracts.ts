@@ -68,6 +68,12 @@ export namespace RefreshTokenNotification {
 	export const type = new NotificationType<RefreshTokenParams, void>('account/refreshToken');
 }
 
+
+
+// ------------------------------- </ Refresh Token Notification > -------------------------------
+
+// ------------------------------- < Token Refreshed Notification > ---------------------------------
+
 /**
  * Parameters for a new refresh token sent from ADS to STS
  */
@@ -78,11 +84,12 @@ export interface TokenRefreshedParams {
 	uri: string;
 }
 
-export namespace RefreshToken {
+export namespace TokenRefreshedNotification {
 	export const type = new NotificationType<TokenRefreshedParams, void>('account/tokenRefreshed');
 }
 
-// ------------------------------- </ Refresh Token Request > -------------------------------
+// ------------------------------- </ Token Refreshed Notification > -------------------------------
+
 
 // ------------------------------- < Agent Management > ------------------------------------
 // Job management parameters
