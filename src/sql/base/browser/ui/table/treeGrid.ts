@@ -169,7 +169,9 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 					parentRow.setSize += 1;
 				}
 				dataRow.posInSet = parentRow.setSize;
-				parentRow.expanded = false;
+				if (parentRow.expanded === undefined) {
+					parentRow.expanded = false;
+				}
 				parentRow.isParent = true;
 				if (!parentRow._guid) {
 					parentRow._guid = generateUuid();
