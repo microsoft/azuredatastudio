@@ -151,13 +151,14 @@ export const SqlServerName = 'SQL server';
 export const AzureSqlServerName = 'Azure SQL server';
 export const SqlServerDockerImageName = 'Microsoft SQL Server';
 export const AzureSqlDbFullDockerImageName = 'Azure SQL Database emulator Full';
-export const AzureSqlDbFullLiteImageName = 'Azure SQL Database emulator Lite';
+export const AzureSqlDbLiteDockerImageName = 'Azure SQL Database emulator Lite';
 export const AzureSqlLogicalServerName = 'Azure SQL logical server';
 export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
-export const dockerImageDefaultTag = localize('dockerImageDefaultTag', "default");
+export const defaultQuickPickItem = localize('defaultQuickPickItem', "Default - image defined as default in the container registry");
+export function dockerImagesPlaceHolder(name: string) { return localize('dockerImagesPlaceHolder', 'Use {0} on local arm64/Apple Silicon', name); }
 export function publishToExistingServer(name: string) { return localize('publishToExistingServer', "Publish to an existing {0}", name); }
 export function publishToDockerContainer(name: string) { return localize('publishToDockerContainer', "Publish to new {0} local development container", name); }
-export const publishToAzureEmulator = localize('publishToAzureEmulator', "Publish to new Azure SQL database emulator");
+export const publishToAzureEmulator = localize('publishToAzureEmulator', "Publish to new Azure SQL Database emulator");
 export const publishToNewAzureServer = localize('publishToNewAzureServer', "Publish to new Azure SQL logical server");
 export const azureServerName = localize('azureServerName', "Azure SQL server name");
 export const azureSubscription = localize('azureSubscription', "Azure subscription");
@@ -183,6 +184,7 @@ export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be 
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
+export const dockerImageDefaultTag = 'latest';
 
 // Publish to Container
 export const eulaAgreementTemplate = localize({ key: 'eulaAgreementTemplate', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.");

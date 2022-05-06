@@ -41,6 +41,15 @@ export function getPublishServerName(target: string): string {
 }
 
 /**
+ * Returns the docker image place holder based on the target version
+ */
+export function getDockerImagePlaceHolder(target: string): string {
+	return target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure) ?
+		constants.dockerImagesPlaceHolder(constants.AzureSqlDbLiteDockerImageName) :
+		constants.dockerImagesPlaceHolder(SqlTargetPlatform.sqlEdge);
+}
+
+/**
  * Returns the list of image tags for given target
  * @param imageInfo docker image info
  * @param target project target version
@@ -77,14 +86,12 @@ export async function getImageTags(imageInfo: DockerImageInfo, target: string): 
 			});
 
 			imageTags = imageTags ?? [];
-			imageTags = imageTags.sort();
+			imageTags = imageTags.sort((a, b) => a.indexOf(constants.dockerImageDefaultTag) > 0 ? -1 : a.localeCompare(b));
 		}
 	} catch (err) {
 		// Ignore the error. If http request fails, we just use the default tag
 		console.debug(`Failed to get docker image tags ${err}`);
 	}
-
-	imageTags.unshift(constants.dockerImageDefaultTag);
 
 	return imageTags;
 }
@@ -105,17 +112,19 @@ export function getDockerBaseImages(target: string): DockerImageInfo[] {
 					url: constants.sqlServerEulaLink,
 				}
 			},
-			tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.sqlServerDockerRepository}/tags/list`
+			tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.sqlServerDockerRepository}/tags/list`,
+			defaultTag: constants.dockerImageDefaultTag
 		}, {
 			name: `${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}`,
-			displayName: constants.AzureSqlDbFullLiteImageName,
+			displayName: constants.AzureSqlDbLiteDockerImageName,
 			agreementInfo: {
 				link: {
 					text: constants.edgeEulaAgreementTitle,
 					url: constants.sqlServerEdgeEulaLink,
 				}
 			},
-			tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.azureSqlEdgeDockerRepository}/tags/list`
+			tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.azureSqlEdgeDockerRepository}/tags/list`,
+			defaultTag: constants.dockerImageDefaultTag
 		}];
 	} else {
 		return [
@@ -128,7 +137,8 @@ export function getDockerBaseImages(target: string): DockerImageInfo[] {
 						url: constants.sqlServerEulaLink,
 					}
 				},
-				tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.sqlServerDockerRepository}/tags/list`
+				tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.sqlServerDockerRepository}/tags/list`,
+				defaultTag: constants.dockerImageDefaultTag
 			},
 			{
 				name: `${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}`,
@@ -139,7 +149,8 @@ export function getDockerBaseImages(target: string): DockerImageInfo[] {
 						url: constants.sqlServerEdgeEulaLink,
 					}
 				},
-				tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.azureSqlEdgeDockerRepository}/tags/list`
+				tagsUrl: `https://${constants.sqlServerDockerRegistry}/v2/${constants.azureSqlEdgeDockerRepository}/tags/list`,
+				defaultTag: constants.dockerImageDefaultTag
 			},
 		];
 	}

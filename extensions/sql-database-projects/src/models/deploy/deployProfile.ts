@@ -54,7 +54,8 @@ export interface DockerImageInfo {
 	name: string,
 	displayName: string,
 	agreementInfo: AgreementInfo,
-	tagsUrl: string
+	tagsUrl: string,
+	defaultTag: string
 }
 export interface AgreementInfo {
 	link: azdataType.LinkArea;

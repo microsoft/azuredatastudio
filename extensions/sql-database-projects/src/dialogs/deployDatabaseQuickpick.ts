@@ -275,7 +275,8 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
  * Create flow for publishing a database to docker container using only VS Code-native APIs such as QuickPick
  */
 export async function launchPublishToDockerContainerQuickpick(project: Project): Promise<ILocalDbDeployProfile | undefined> {
-	const name = uiUtils.getPublishServerName(project.getProjectTargetVersion());
+	const target = project.getProjectTargetVersion();
+	const name = uiUtils.getPublishServerName(target);
 	let localDbSetting: ILocalDbSetting | undefined;
 	// Deploy to docker selected
 	let portNumber = await vscode.window.showInputBox({
@@ -321,10 +322,10 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		return undefined;
 	}
 
-	const baseImages = uiUtils.getDockerBaseImages(project.getProjectTargetVersion());
+	const baseImages = uiUtils.getDockerBaseImages(target);
 	const baseImage = await vscode.window.showQuickPick(
 		baseImages.map(x => x.displayName),
-		{ title: constants.selectBaseImage(name), ignoreFocusOut: true });
+		{ title: constants.selectBaseImage(name), ignoreFocusOut: true, placeHolder: uiUtils.getDockerImagePlaceHolder(target) });
 
 	// Return when user hits escape
 	if (!baseImage) {
@@ -342,18 +343,30 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		return undefined;
 	}
 
-	let imageTags = uiUtils.getImageTags(imageInfo, project.getProjectTargetVersion());
+	let imageTags = await uiUtils.getImageTags(imageInfo, target);
+	let imageTagsItems: vscode.QuickPickItem[] = imageTags.map(tag => { return { label: tag }; });
+
+	if (imageInfo.defaultTag) {
+		// move the default to be the first one in the list
+		const defaultIndex = imageTagsItems.findIndex(i => i.label === imageInfo.defaultTag);
+		if (defaultIndex > -1) {
+			imageTagsItems.splice(defaultIndex, 1);
+		}
+		// add default next to the default value
+		imageTagsItems.unshift({ label: imageInfo.defaultTag, description: constants.defaultQuickPickItem });
+	}
 	const imageTag = await vscode.window.showQuickPick(
-		imageTags,
+		imageTagsItems,
 		{ title: constants.selectImageTag(name), ignoreFocusOut: true });
 
 	if (!imageTag) {
 		return undefined;
 	}
 
+	// Add the image tag if it's not the latest
 	let imageName = imageInfo.name;
-	if (imageTag && imageTag !== constants.dockerImageDefaultTag) {
-		imageName = `${imageName}:${imageTag}`;
+	if (imageTag && imageTag.label !== constants.dockerImageDefaultTag) {
+		imageName = `${imageName}:${imageTag.label}`;
 	}
 
 	localDbSetting = {

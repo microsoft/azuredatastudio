@@ -6,9 +6,18 @@
 import * as os from 'os';
 import axios, { AxiosRequestConfig } from 'axios';
 
+/**
+ * Class includes method for making http request
+ */
 export class HttpClient {
 	private static cache: Map<string, any> = new Map();
 
+	/**
+	 * Makes http GET request to the given url. If useCache is set to true, returns the result from cache if exists
+	 * @param url url to make http GET request against
+	 * @param useCache if true and result is already cached the cached value will be returned
+	 * @returns result if http GET request
+	 */
 	public static async getRequest(url: string, useCache = false): Promise<any> {
 
 		if (useCache) {
