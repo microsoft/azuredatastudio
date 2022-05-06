@@ -195,6 +195,15 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 				});
 			}
 		};
+
+		this._container.onkeydown = (e: KeyboardEvent) => {
+			if (e.ctrlKey && e.key === 'f') {
+				let searchNodeAction = self._instantiationService.createInstance(SearchNodeAction, 'HotKey');
+				searchNodeAction.run(self);
+			}
+
+			e.stopPropagation();
+		};
 	}
 
 	getHorizontalSashTop(sash: Sash): number {
@@ -271,7 +280,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 	}
 }
 
-type ExecutionPlanActionSource = 'ContextMenu' | 'ActionBar';
+type ExecutionPlanActionSource = 'ContextMenu' | 'ActionBar' | 'HotKey';
 
 export class OpenQueryAction extends Action {
 	public static ID = 'ep.OpenQueryAction';
