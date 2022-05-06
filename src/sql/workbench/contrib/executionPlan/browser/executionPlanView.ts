@@ -200,9 +200,9 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
 				let searchNodeAction = self._instantiationService.createInstance(SearchNodeAction, 'HotKey');
 				searchNodeAction.run(self);
-			}
 
-			e.stopPropagation();
+				e.stopPropagation();
+			}
 		};
 	}
 
