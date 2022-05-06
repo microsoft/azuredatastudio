@@ -1101,7 +1101,7 @@ export class CellModel extends Disposable implements ICellModel {
 	public processEdits(edits: ICellEdit[]): void {
 		// Wait for any in-progress operations to complete before doing any edits so that we don't hit any race conditions
 		if (this._future?.inProgress) {
-			this._future.done.then(() => this.processOutputEdits(edits));
+			this._future.done.then(() => this.processOutputEdits(edits), error => onUnexpectedError(error));
 		} else {
 			this.processOutputEdits(edits);
 		}
