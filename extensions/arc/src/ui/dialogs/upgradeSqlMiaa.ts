@@ -32,7 +32,7 @@ export class UpgradeSqlMiaa extends InitializingComponent {
 				CSSStyles: { ...cssStyles.title, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' },
 			}).component();
 			const areYouSureInfo = this.modelBuilder.text().withProps({
-				value: loc.upgradeDialog,
+				value: loc.upgradeDialogMiaa,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'max-width': 'auto' }
 			}).component();
 			const upgradeDialog = this.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
@@ -47,7 +47,7 @@ export class UpgradeSqlMiaa extends InitializingComponent {
 			upgradeDialog.addItem(monitorUpgradeInfo, { CSSStyles: { 'margin-right': '5px' } });
 
 			const monitorUpgradeCommandInfo = this.modelBuilder.text().withProps({
-				value: 'kubectl get datacontrollers -A',
+				value: 'kubectl get sqlmi -A',
 				CSSStyles: { ...cssStyles.code, 'margin-block-start': '0px', 'max-width': 'auto' }
 			}).component();
 

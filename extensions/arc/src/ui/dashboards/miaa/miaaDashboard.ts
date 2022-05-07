@@ -32,7 +32,7 @@ export class MiaaDashboard extends Dashboard {
 		const connectionStringsPage = new MiaaConnectionStringsPage(modelView, this.dashboard, this._miaaModel);
 		const computeAndStoragePage = new MiaaComputeAndStoragePage(modelView, this.dashboard, this._miaaModel);
 		const miaaBackupsPage = new MiaaBackupsPage(modelView, this.dashboard, this._controllerModel, this._miaaModel);
-		const upgradeManagementPage = new MiaaUpgradeManagementPage(modelView, this.dashboard, this._controllerModel);
+		const upgradeManagementPage = new MiaaUpgradeManagementPage(modelView, this.dashboard, this._controllerModel, this._miaaModel);
 		return [
 			overviewPage.tab,
 			{

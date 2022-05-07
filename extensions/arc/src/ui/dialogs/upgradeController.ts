@@ -32,7 +32,7 @@ export class UpgradeController extends InitializingComponent {
 				CSSStyles: { ...cssStyles.title, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' },
 			}).component();
 			const areYouSureInfo = this.modelBuilder.text().withProps({
-				value: loc.upgradeDialog,
+				value: loc.upgradeDialogController,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'max-width': 'auto' }
 			}).component();
 			const upgradeDialog = this.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
