@@ -72,7 +72,7 @@ export class PublishOptionsDialog {
 
 			// Get the description of the selected option
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
-				let row = this.optionsTable.selectedRows![0];
+				const row = this.optionsTable.selectedRows![0];
 				let label = this.optionsModel.optionsLabels[row];
 				await this.descriptionText.updateProperties({
 					value: this.optionsModel.getDescription(label)

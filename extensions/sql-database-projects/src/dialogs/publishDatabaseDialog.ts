@@ -144,10 +144,10 @@ export class PublishDatabaseDialog {
 			const profileRow = this.createProfileRow(view);
 			this.connectionRow = this.createConnectionRow(view);
 			this.databaseRow = this.createDatabaseRow(view);
-			const displayOptions = this.createOptionsButton(view);
+			const displayOptionsButton = this.createOptionsButton(view);
 
 			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			horizontalFormSection.addItems([profileRow, this.databaseRow, displayOptions]);
+			horizontalFormSection.addItems([profileRow, this.databaseRow, displayOptionsButton]);
 
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
@@ -901,9 +901,8 @@ export class PublishDatabaseDialog {
 		return true;
 	}
 
-	//#region
 	/*
-	 * Creates Display options container with hyperlink options
+	 * Creates Display options container with a 'configure options' button
 	 */
 	private createOptionsButton(view: azdataType.ModelView): azdataType.FlexContainer {
 		this.optionsButton = view.modelBuilder.button().withProps({
@@ -936,7 +935,6 @@ export class PublishDatabaseDialog {
 	public setDeploymentOptions(deploymentOptions: DeploymentOptions): void {
 		this.deploymentOptions = deploymentOptions;
 	}
-	//#endregion
 }
 
 export function promptForPublishProfile(defaultPath: string): Thenable<vscode.Uri[] | undefined> {
