@@ -1324,6 +1324,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.location" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure region for your Azure Database Migration Service. Only regions that contain a service will be shown.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Database Migration Service における Azure リージョン。サービスを含むリージョンのみが表示されます。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1342,18 +1345,27 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.resource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Your Azure Database Migration Service resource name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Database Migration Service のリソース名。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.resource_group" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Resource group for your Azure SQL target. Only resource groups that contain a service will be shown.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL ターゲット用途のリソース グループ。サービスを含むリソース グループのみが表示されます。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.subscription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Subscription name for your Azure Database Migration Service]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Database Migration Service のサブスクリプション名。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2383,8 +2395,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.no.location.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No locations found.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[場所が見つかりませんでした。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[場所が見つかりません。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No location found.]]></Val>
@@ -2395,7 +2407,7 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.no.managedInstance.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No managed instances found.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[マネージド インスタンスが見つかりません。]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -2425,8 +2437,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.no.storageAccount.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No storage accounts found.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ストレージ アカウントが見つかりませんでした。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ストレージ アカウントが見つかりません。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No storage account found.]]></Val>
@@ -3715,8 +3727,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.location" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure region for your Azure SQL target. Only regions that contain a target eligible for migration will be shown.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure SQL ターゲットの Azure リージョン]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL ターゲット用途の Azure リージョン。移行先として適しているターゲットを含むリージョンのみが表示されます。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure region for your Azure SQL target]]></Val>
@@ -4033,8 +4045,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.resource_group" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Resource group for your Azure SQL target. Only resource groups that contain a target eligible for migration will be shown.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure SQL ターゲットのリソース グループ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL ターゲット用途のリソース グループ。移行先として適したターゲットを含むリソース グループのみが表示されます。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Resource group for your Azure SQL target]]></Val>
@@ -4837,6 +4849,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.vm.not.ready" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The virtual machine '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available virtual machine.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[仮想マシン '{0}' は現在 '{1}' 状態であるため、移行できません。続行するには、利用可能な仮想マシンを選択します。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
