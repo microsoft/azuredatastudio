@@ -57,7 +57,7 @@ export namespace SecurityTokenRequest {
  * Parameters for a refresh token notification sent from STS to ADS
  */
 export interface RefreshTokenParams {
-	authority: string;
+	tenantId: string;
 	provider: string;
 	resource: string;
 	accountId: string;
