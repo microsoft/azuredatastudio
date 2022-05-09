@@ -15,6 +15,7 @@ import { ControllerModel } from '../../models/controllerModel';
 export class UpgradeSqlMiaa extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
 	private pitrSettings: UpgradeModel = [];
+	private upgradeMiaaDialogName = 'UpgradeSqlMiaaDialog';
 
 	protected _completionPromise = new Deferred<UpgradeModel | undefined>();
 	protected disposables: vscode.Disposable[] = [];
@@ -23,7 +24,7 @@ export class UpgradeSqlMiaa extends InitializingComponent {
 	}
 
 	public showDialog(dialogTitle: string): azdata.window.Dialog {
-		const dialog = azdata.window.createModelViewDialog(dialogTitle, dialogTitle, 'narrow', 'flyout');
+		const dialog = azdata.window.createModelViewDialog(dialogTitle, this.upgradeMiaaDialogName, 'narrow', 'flyout');
 		dialog.cancelButton.onClick(() => this.handleCancel());
 		dialog.registerContent(async view => {
 			this.modelBuilder = view.modelBuilder;

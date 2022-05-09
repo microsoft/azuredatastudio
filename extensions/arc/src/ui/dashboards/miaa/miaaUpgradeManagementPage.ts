@@ -63,7 +63,7 @@ export class MiaaUpgradeManagementPage extends DashboardPage {
 
 		const upgradesVersionLogLink = this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.versionLog,
-			url: 'https://docs.microsoft.com/en-us/azure/azure-arc/data/upgrade-sql-managed-instance-direct-cli?WT.mc_id=Portal-Microsoft_Azure_HybridData_Platform'
+			url: 'https://docs.microsoft.com/azure/azure-arc/data/upgrade-sql-managed-instance-direct-cli?WT.mc_id=Portal-Microsoft_Azure_HybridData_Platform'
 		}).component();
 
 		const upgradesInfoAndLink = this.modelView.modelBuilder.flexContainer()
@@ -257,12 +257,12 @@ export class MiaaUpgradeManagementPage extends DashboardPage {
 		this.disposables.push(
 			upgradeButton.onDidClick(async () => {
 				const upgradeDialog = new UpgradeSqlMiaa(this._controllerModel);
-				upgradeDialog.showDialog(loc.upgradeDataController);
+				upgradeDialog.showDialog(loc.upgradeMiaa);
 				let dialogClosed = await upgradeDialog.waitForClose();
 				if (dialogClosed) {
 					try {
 						upgradeButton.enabled = false;
-						vscode.window.showInformationMessage(loc.upgradingMiaa);
+						vscode.window.showInformationMessage(loc.upgradingMiaa('kubectl get sqlmi -A\' should not be localized.'));
 						await vscode.window.withProgress(
 							{
 								location: vscode.ProgressLocation.Notification,

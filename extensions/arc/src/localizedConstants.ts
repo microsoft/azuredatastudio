@@ -354,8 +354,8 @@ export const upgradeDialogMiaa = localize('arc.upgradeDialogMiaa', "During a SQL
 export const monitorUpgrade = localize('arc.monitorUpgrade', "You can check the status of the upgrade by running the following command:");
 export function errorListingLogAnalyticsWorkspaces(error: any): string { return localize('arc.errorListingLogAnalyticsWorkspaces', "Error listing Log Analytics workspaces {0}", getErrorMessage(error, true)); }
 export const noUpgrades = localize('arc.noUpgrades', 'The current version is the latest version. No upgrades available.');
-export const upgradingController = localize('arc.upgradingController', "Data controller is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get datacontrollers -A'"); // 'kubectl get datacontrollers -A' should not be localized.
-export const upgradingMiaa = localize('arc.upgradingMiaa', "SQL managed instance is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get sqlmi -A'"); // 'kubectl get sqlmi -A' should not be localized.
+export function upgradingController(param: any): string { return localize('arc.upgradingController', "Data controller is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get datacontrollers -A'", param); }
+export function upgradingMiaa(param: any): string { return localize('arc.upgradingMiaa', "SQL managed instance is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get sqlmi -A'", param); }
 export const currentVersion = localize('arc.currentVersion', "Current version");
 export const showMiaaError = localize('arc.showMiaaError', "Error showing details of SQL managed instance.");
 export const miaaVersionError = localize('arc.miaaVersionError', "Error getting SQL managed instance version number.");

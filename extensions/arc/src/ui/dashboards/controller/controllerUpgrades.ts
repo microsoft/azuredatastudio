@@ -221,7 +221,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 				if (dialogClosed) {
 					try {
 						upgradeButton.enabled = false;
-						vscode.window.showInformationMessage(loc.upgradingController);
+						vscode.window.showInformationMessage(loc.upgradingController('kubectl get datacontrollers -A\' should not be localized.'));
 						await vscode.window.withProgress(
 							{
 								location: vscode.ProgressLocation.Notification,
