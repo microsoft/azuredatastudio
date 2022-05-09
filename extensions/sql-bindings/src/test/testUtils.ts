@@ -23,11 +23,13 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 	dacFx: vscodeMssql.IDacFxService;
 	schemaCompare: vscodeMssql.ISchemaCompareService;
 	azureAccountService: vscodeMssql.IAzureAccountService;
+	azureResourceService: vscodeMssql.IAzureResourceService;
 
 	constructor() {
 		this.dacFx = TypeMoq.Mock.ofType<vscodeMssql.IDacFxService>().object;
 		this.schemaCompare = TypeMoq.Mock.ofType<vscodeMssql.ISchemaCompareService>().object;
 		this.azureAccountService = TypeMoq.Mock.ofType<vscodeMssql.IAzureAccountService>().object;
+		this.azureResourceService = TypeMoq.Mock.ofType<vscodeMssql.IAzureResourceService>().object;
 	}
 
 	promptForFirewallRule(_: string, __: vscodeMssql.IConnectionInfo): Promise<boolean> {
