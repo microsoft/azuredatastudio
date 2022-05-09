@@ -119,8 +119,8 @@ export class AccountFeature implements StaticFeature {
 		// Get the updated token, which will handle refreshing it if necessary
 		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
 		if (!securityToken) {
-			void window.showErrorMessage(localizedConstants.tokenRefreshFailed);
-			throw Error(localizedConstants.tokenRefreshFailed);
+			void window.showErrorMessage(localizedConstants.tokenRefreshFailedToken);
+			throw Error(localizedConstants.tokenRefreshFailedToken);
 		}
 		let params: contracts.TokenRefreshedParams = {
 			token: securityToken.token,

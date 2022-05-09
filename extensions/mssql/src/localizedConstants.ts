@@ -58,5 +58,7 @@ export function sparkConnectionRequired(name: string): string { return localize(
 
 
 export const failedToFindTenants = localize('mssql.failedToFindTenants', "Failed to find tenants");
-export const tokenRefreshFailed = localize('mssql.tokenRefreshFailed', "Token refresh failed");
+export const tokenRefreshFailed = localize('mssql.tokenRefreshFailed', "Editor token refresh failed");
+export const tokenRefreshFailedToken = localize('mssql.tokenRefreshFailedToken', "Editor token refresh failed - no security token");
+
 
