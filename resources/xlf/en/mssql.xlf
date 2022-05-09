@@ -974,6 +974,9 @@
     <trans-unit id="mssql.logRetentionMinutes">
       <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
     </trans-unit>
+    <trans-unit id="mssql.parallelMessageProcessing">
+      <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.</source>
+    </trans-unit>
     <trans-unit id="mssql.provider.displayName">
       <source xml:lang="en">Microsoft SQL Server</source>
     </trans-unit>
