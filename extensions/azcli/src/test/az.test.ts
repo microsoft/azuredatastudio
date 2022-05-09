@@ -110,15 +110,18 @@ describe('az', function () {
 		describe('sql', function (): void {
 			describe('mi-arc', function (): void {
 				it('delete', async function (): Promise<void> {
+					// Assume indirect mode
 					await azTool.sql.miarc.delete(name, namespace);
 					verifyExecuteCommandCalledWithArgs(['sql', 'mi-arc', 'delete', name, '--k8s-namespace', namespace, '--use-k8s']);
 				});
 				it('list', async function (): Promise<void> {
+					// Assume indirect mode
 					await azTool.sql.miarc.list(namespace);
 					verifyExecuteCommandCalledWithArgs(['sql', 'mi-arc', 'list', '--k8s-namespace', namespace, '--use-k8s']);
 				});
 				it('show', async function (): Promise<void> {
-					await azTool.sql.miarc.show(name, namespace);
+					// Assume indirect mode
+					await azTool.sql.miarc.show(name, {resourceGroup: undefined, namespace: namespace});
 					verifyExecuteCommandCalledWithArgs(['sql', 'mi-arc', 'show', name, '--k8s-namespace', namespace, '--use-k8s']);
 				});
 			});

@@ -12,10 +12,10 @@ import { InitializingComponent } from '../components/initializingComponent';
 import { UpgradeModel } from '../../models/miaaModel';
 import { ControllerModel } from '../../models/controllerModel';
 
-export class UpgradeController extends InitializingComponent {
+export class UpgradeSqlMiaa extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
 	private pitrSettings: UpgradeModel = [];
-	private upgradeControllerDialogName = 'UpgradeControllerDialog';
+	private upgradeMiaaDialogName = 'UpgradeSqlMiaaDialog';
 
 	protected _completionPromise = new Deferred<UpgradeModel | undefined>();
 	protected disposables: vscode.Disposable[] = [];
@@ -24,7 +24,7 @@ export class UpgradeController extends InitializingComponent {
 	}
 
 	public showDialog(dialogTitle: string): azdata.window.Dialog {
-		const dialog = azdata.window.createModelViewDialog(dialogTitle, this.upgradeControllerDialogName, 'narrow', 'flyout');
+		const dialog = azdata.window.createModelViewDialog(dialogTitle, this.upgradeMiaaDialogName, 'narrow', 'flyout');
 		dialog.cancelButton.onClick(() => this.handleCancel());
 		dialog.registerContent(async view => {
 			this.modelBuilder = view.modelBuilder;
@@ -33,7 +33,7 @@ export class UpgradeController extends InitializingComponent {
 				CSSStyles: { ...cssStyles.title, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' },
 			}).component();
 			const areYouSureInfo = this.modelBuilder.text().withProps({
-				value: loc.upgradeDialogController,
+				value: loc.upgradeDialogMiaa,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'max-width': 'auto' }
 			}).component();
 			const upgradeDialog = this.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
@@ -48,7 +48,7 @@ export class UpgradeController extends InitializingComponent {
 			upgradeDialog.addItem(monitorUpgradeInfo, { CSSStyles: { 'margin-right': '5px' } });
 
 			const monitorUpgradeCommandInfo = this.modelBuilder.text().withProps({
-				value: 'kubectl get datacontrollers -A',
+				value: 'kubectl get sqlmi -A',
 				CSSStyles: { ...cssStyles.code, 'margin-block-start': '0px', 'max-width': 'auto' }
 			}).component();
 
