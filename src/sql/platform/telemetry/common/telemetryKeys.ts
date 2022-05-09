@@ -49,7 +49,8 @@ export const enum TelemetryView {
 }
 
 export const enum TelemetryError {
-	DatabaseConnectionError = 'DatabaseConnectionError'
+	DatabaseConnectionError = 'DatabaseConnectionError',
+	ObjectExplorerExpandError = 'ObjectExplorerExpandError'
 }
 
 export const enum TelemetryAction {

@@ -34,6 +34,9 @@
     <trans-unit id="connectionProfile">
       <source xml:lang="en">Select a connection profile</source>
     </trans-unit>
+    <trans-unit id="connectionProgressTitle">
+      <source xml:lang="en">Testing SQL Server connection...</source>
+    </trans-unit>
     <trans-unit id="connectionStringSetting">
       <source xml:lang="en">Connection string setting name</source>
     </trans-unit>
@@ -174,6 +177,9 @@
     </trans-unit>
     <trans-unit id="valueMustNotBeEmpty">
       <source xml:lang="en">Value must not be empty</source>
+    </trans-unit>
+    <trans-unit id="workspaceMustBeUsed">
+      <source xml:lang="en">The current folder is not a workspace folder. Please open a workspace folder and try again.</source>
     </trans-unit>
     <trans-unit id="yesString">
       <source xml:lang="en">Yes</source>
