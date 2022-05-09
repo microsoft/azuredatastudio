@@ -57,7 +57,6 @@ export const sparkJobSubmissionNoSqlBigDataClusterFound = localize('sparkJobSubm
 export function sparkConnectionRequired(name: string): string { return localize('sparkConnectionRequired', "Please connect to the Spark cluster before View {0} History.", name); }
 
 
-export function mssqlInsufficentPriveleges(account: string): string { return localize('mssql.insufficientPriveleges', "The configured Azure account for {0} does not have sufficient permissions.", account); }
 export const failedToFindTenants = localize('mssql.failedToFindTenants', "Failed to find tenants");
 export const tokenRefreshFailed = localize('mssql.tokenRefreshFailed', "Token refresh failed");
 

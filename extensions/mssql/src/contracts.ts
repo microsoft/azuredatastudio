@@ -57,10 +57,25 @@ export namespace SecurityTokenRequest {
  * Parameters for a refresh token notification sent from STS to ADS
  */
 export interface RefreshTokenParams {
+	/**
+	 * The tenant ID
+	 */
 	tenantId: string;
+	/**
+	 * The provider that indicates the type of linked account to query
+	 */
 	provider: string;
+	/**
+	 * The identifier of the target resource of the requested token
+	 */
 	resource: string;
+	/**
+	 * The account ID
+	 */
 	accountId: string;
+	/**
+	 * The URI for the editor that needs a token refresh
+	 */
 	uri: string;
 }
 
@@ -78,9 +93,17 @@ export namespace RefreshTokenNotification {
  * Parameters for a new refresh token sent from ADS to STS
  */
 export interface TokenRefreshedParams {
-	accountKey: string;
+	/**
+	 * The refresh token
+	 */
 	token: string;
+	/**
+	 * The token expiration, a Unix epoch
+	 */
 	expiresOn: Number;
+	/**
+	 * The URI for the editor that needs a token refresh
+	 */
 	uri: string;
 }
 

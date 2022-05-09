@@ -123,7 +123,6 @@ export class AccountFeature implements StaticFeature {
 			throw Error(localizedConstants.tokenRefreshFailed);
 		}
 		let params: contracts.TokenRefreshedParams = {
-			accountKey: JSON.stringify(account.key),
 			token: securityToken.token,
 			expiresOn: securityToken.expiresOn,
 			uri: request.uri
