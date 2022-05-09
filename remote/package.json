@@ -16,7 +16,7 @@
     "applicationinsights": "1.0.8",
     "angular2-grid": "2.0.6",
     "ansi_up": "^5.1.0",
-    "azdataGraph": "github:Microsoft/azdataGraph#0.0.19",
+    "azdataGraph": "github:Microsoft/azdataGraph#0.0.21",
     "chart.js": "^2.9.4",
     "chokidar": "3.5.2",
     "cookie": "^0.4.0",

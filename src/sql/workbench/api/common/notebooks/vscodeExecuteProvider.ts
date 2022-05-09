@@ -7,8 +7,10 @@ import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
 import { ADSNotebookController } from 'sql/workbench/api/common/notebooks/adsNotebookController';
 import * as nls from 'vs/nls';
-import { convertToVSCodeNotebookCell } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { addExternalInteractiveKernelMetadata, convertToVSCodeNotebookCell } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
+import { URI } from 'vs/base/common/uri';
 
 class VSCodeFuture implements azdata.nb.IFuture {
 	private _inProgress = true;
@@ -71,6 +73,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	private readonly _name: string;
 	private readonly _info: azdata.nb.IInfoReply;
 	private readonly _kernelSpec: azdata.nb.IKernelSpec;
+	private _activeRequest: azdata.nb.IExecuteRequest;
 
 	constructor(private readonly _controller: ADSNotebookController, private readonly _options: azdata.nb.ISessionOptions) {
 		this._id = this._options.kernelId ?? (VSCodeKernel.kernelId++).toString();
@@ -82,6 +85,9 @@ class VSCodeKernel implements azdata.nb.IKernel {
 			this._kernelSpec.language = this._controller.supportedLanguages[0];
 			this._kernelSpec.supportedLanguages = this._controller.supportedLanguages;
 		}
+
+		// Store external kernel names for .NET Interactive kernels for when notebook gets saved, so that notebook is usable outside of ADS
+		addExternalInteractiveKernelMetadata(this._kernelSpec);
 
 		this._name = this._kernelSpec.name;
 		this._info = {
@@ -136,11 +142,20 @@ class VSCodeKernel implements azdata.nb.IKernel {
 		return Promise.resolve(this.spec);
 	}
 
+	private cleanUpActiveExecution(cellUri: URI) {
+		this._activeRequest = undefined;
+		this._controller.removeCellExecution(cellUri);
+	}
+
 	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
+		if (this._activeRequest) {
+			throw new Error(nls.localize('notebookMultipleRequestsError', "Cannot execute code cell. Another cell is currently being executed."));
+		}
 		let executePromise: Promise<void>;
 		if (this._controller.executeHandler) {
 			let cell = convertToVSCodeNotebookCell(CellTypes.Code, content.cellIndex, content.cellUri, content.notebookUri, content.language ?? this._kernelSpec.language, content.code);
-			executePromise = Promise.resolve(this._controller.executeHandler([cell], cell.notebook, this._controller));
+			this._activeRequest = content;
+			executePromise = Promise.resolve(this._controller.executeHandler([cell], cell.notebook, this._controller)).then(() => this.cleanUpActiveExecution(content.cellUri));
 		} else {
 			executePromise = Promise.resolve();
 		}
@@ -154,7 +169,16 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	}
 
 	public async interrupt(): Promise<void> {
-		return;
+		if (this._activeRequest) {
+			if (this._controller.interruptHandler) {
+				let doc = this._controller.getNotebookDocument(this._activeRequest.notebookUri);
+				await this._controller.interruptHandler.call(this._controller, new VSCodeNotebookDocument(doc));
+			} else {
+				let exec = this._controller.getCellExecution(this._activeRequest.cellUri);
+				exec?.tokenSource.cancel();
+			}
+			this.cleanUpActiveExecution(this._activeRequest.cellUri);
+		}
 	}
 
 	public async restart(): Promise<void> {

@@ -3,11 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Application } from '../../../../../automation';
+import { Application, ctrlOrCmd } from '../../../../../automation';
 import * as minimist from 'minimist';
 import { afterSuite, beforeSuite } from '../../../utils';
 import * as assert from 'assert';
-
 export function setup(opts: minimist.ParsedArgs) {
 	describe('Notebook', () => {
 		beforeSuite(opts);
@@ -59,6 +58,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.waitForColorization('6', 'mtk1'); // employees
 		});
 
+
 		// Python Notebooks
 
 		it('can open new notebook, configure Python, and execute one cell', async function () {
@@ -79,6 +79,29 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			await app.workbench.sqlNotebook.runActiveCell();
 			await app.workbench.sqlNotebook.waitForActiveCellResults();
+		});
+
+		it('can add a new package from the Manage Packages wizard', async function () {
+			const app = this.app as Application;
+			await app.workbench.sqlNotebook.newUntitledNotebook();
+			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
+			await app.workbench.sqlNotebook.notebookToolbar.changeKernel('Python 3');
+			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
+
+			await app.workbench.sqlNotebook.addCell('code');
+			await app.workbench.sqlNotebook.waitForTypeInEditor('import pyarrow');
+			await app.workbench.sqlNotebook.runActiveCell();
+			await app.workbench.sqlNotebook.waitForJupyterErrorOutput();
+
+			await app.workbench.sqlNotebook.notebookToolbar.managePackages();
+			await app.workbench.managePackagesDialog.waitForManagePackagesDialog();
+			await app.workbench.managePackagesDialog.addNewPackage('pyarrow', '7.0.0');
+			await app.workbench.taskPanel.showTaskPanel();
+			await app.workbench.taskPanel.waitForTaskComplete('Installing pyarrow 7.0.0 succeeded');
+
+			// There should be no error output when running the cell after pyarrow has been installed
+			await app.workbench.sqlNotebook.runActiveCell();
+			await app.workbench.sqlNotebook.waitForActiveCellResultsGone();
 		});
 
 		it('can open ipynb file, run all, and save notebook with outputs', async function () {
@@ -108,6 +131,50 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			// Close any open wizards
 			await app.code.dispatchKeybinding('escape');
+		});
+
+		describe('Notebook keyboard navigation', async () => {
+			it.skip('can enter and exit edit mode and navigate using keyboard nav', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.addCellFromPlaceholder('Code'); // add new code cell
+				await app.workbench.sqlNotebook.waitForPlaceholderGone();
+				const activeCodeCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
+				await app.workbench.sqlNotebook.waitForTypeInEditor('code cell', activeCodeCellId); // the new cell should be in edit mode
+				await app.workbench.sqlNotebook.exitActiveCell();
+				await app.workbench.sqlNotebook.waitForActiveCellGone();
+
+				await app.workbench.sqlNotebook.addCell('markdown'); // add markdown cell
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
+				const activeTextCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
+				await app.workbench.sqlNotebook.waitForTypeInEditor('text cell', activeTextCellId); // Text cell should be in edit mode
+
+				await app.code.dispatchKeybinding('escape'); // exit edit mode and stay in browse mode
+				await app.code.dispatchKeybinding('up'); // select code cell
+				await app.workbench.sqlNotebook.getActiveCell(activeCodeCellId); // check that the code cell is now active
+				await app.code.dispatchKeybinding('enter');
+				await app.workbench.sqlNotebook.waitForTypeInEditor('test', activeCodeCellId); // code cell should be in edit mode after hitting enter
+				await app.code.dispatchKeybinding('escape'); // exit edit mode and stay in browse mode
+				await app.code.dispatchKeybinding('down'); // select text cell
+				await app.code.dispatchKeybinding('enter');
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
+				await app.workbench.sqlNotebook.waitForTypeInEditor('test', activeTextCellId); // text cell should be in edit mode after hitting enter
+			});
+
+			it('cannot move through cells when find widget is invoked', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.addCell('markdown');
+				await app.workbench.sqlNotebook.exitActiveCell();
+				await app.workbench.sqlNotebook.addCell('markdown');
+				await app.workbench.sqlNotebook.exitActiveCell();
+				await app.workbench.sqlNotebook.addCell('markdown');
+				await app.code.dispatchKeybinding('escape');
+				const activeCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
+				await app.workbench.sqlNotebook.notebookFind.openFindWidget();
+				await app.code.dispatchKeybinding('down');
+				await app.workbench.sqlNotebook.getActiveCell(activeCellId); // verify that the active cell is the same
+			});
 		});
 
 		describe('Notebook Toolbar Actions', async () => {
@@ -163,6 +230,19 @@ export function setup(opts: minimist.ParsedArgs) {
 				} else {
 					await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, selector);
 				}
+			}
+
+			async function verifyToolbarKeyboardShortcut(app: Application, keyboardShortcut: string, selector: string) {
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
+				await app.workbench.sqlNotebook.waitForPlaceholderGone();
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Markdown View');
+				let testText = 'Markdown Keyboard Shortcut Test';
+				await app.workbench.sqlNotebook.waitForTypeInEditor(testText);
+				await app.workbench.sqlNotebook.selectAllTextInEditor();
+				await app.code.dispatchKeybinding(keyboardShortcut);
+				await app.code.dispatchKeybinding('escape');
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(testText, selector);
 			}
 
 			it('can bold selected text', async function () {
@@ -295,6 +375,31 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.code.dispatchKeybinding('escape');
 				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleLabel, `p a[href="${sampleAddress}"]`);
 			});
+
+			it('can bold text with keyboard shortcut', async function () {
+				const app = this.app as Application;
+				await verifyToolbarKeyboardShortcut(app, `${ctrlOrCmd}+b`, 'p strong');
+			});
+
+			it('can italicize text with keyboard shortcut', async function () {
+				const app = this.app as Application;
+				await verifyToolbarKeyboardShortcut(app, `${ctrlOrCmd}+i`, 'p em');
+			});
+
+			it('can underline text with keyboard shortcut', async function () {
+				const app = this.app as Application;
+				await verifyToolbarKeyboardShortcut(app, `${ctrlOrCmd}+u`, 'p u');
+			});
+
+			it('can highlight text with keyboard shortcut', async function () {
+				const app = this.app as Application;
+				await verifyToolbarKeyboardShortcut(app, `${ctrlOrCmd}+shift+h`, 'p mark');
+			});
+
+			it('can codify text with keyboard shortcut', async function () {
+				const app = this.app as Application;
+				await verifyToolbarKeyboardShortcut(app, `${ctrlOrCmd}+shift+k`, 'pre code');
+			});
 		});
 
 		describe('markdown', function () {
@@ -304,12 +409,52 @@ export function setup(opts: minimist.ParsedArgs) {
 				const linkSelector = '.notebook-cell.active .notebook-text a[href=\'http://www.microsoft.com\']';
 				await verifyElementRendered(app, markdownString, linkSelector);
 			});
+
 			it('can create img from markdown', async function () {
 				const app = this.app as Application;
 				const markdownString = '![Churn-Index](https://www.ngdata.com/wp-content/uploads/2016/05/churn.jpg)';
 				// Verify image with the correct src and alt attributes is created
 				const imgSelector = '.notebook-cell.active .notebook-text img[src=\'https://www.ngdata.com/wp-content/uploads/2016/05/churn.jpg\'][alt=\'Churn-Index\']';
 				await verifyElementRendered(app, markdownString, imgSelector);
+			});
+
+			it('can convert WYSIWYG to Markdown', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
+				await app.workbench.sqlNotebook.waitForPlaceholderGone();
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Markdown View');
+				await app.workbench.sqlNotebook.waitForTypeInEditor('Markdown Test');
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Rich Text View');
+				await app.workbench.sqlNotebook.selectAllTextInRichTextEditor();
+				await app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
+				await app.workbench.sqlNotebook.textCellToolbar.italicizeSelectedText();
+				await app.workbench.sqlNotebook.textCellToolbar.underlineSelectedText();
+				await app.workbench.sqlNotebook.textCellToolbar.highlightSelectedText();
+				await app.workbench.sqlNotebook.textCellToolbar.insertList();
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Markdown View');
+				await app.workbench.sqlNotebook.waitForActiveCellEditorContents(s => s.includes('- **_<u><mark>Markdown Test</mark></u>_**'));
+			});
+
+			it('can save and reopen WYSIWYG notebook', async function () {
+				const app = this.app as Application;
+				const filename = 'emptyNotebook.ipynb';
+				await app.workbench.sqlNotebook.openFile(filename);
+
+				// Add some text to a WYSIWYG cell and add some basic styling
+				await app.workbench.sqlNotebook.addCell('markdown');
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Markdown View');
+				let text = 'WYSIWYG Test';
+				await app.workbench.sqlNotebook.waitForTypeInEditor(text);
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Rich Text View');
+				await app.workbench.sqlNotebook.selectAllTextInRichTextEditor();
+				await app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
+
+				// Save file, close it, and then reopen to verify WYSIWYG cell contents are the same
+				await app.workbench.quickaccess.runCommand('workbench.action.files.save');
+				await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
+				await app.workbench.sqlNotebook.openFile(filename);
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(text, 'p strong');
 			});
 		});
 

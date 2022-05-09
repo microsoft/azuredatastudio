@@ -6,8 +6,7 @@
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
-    "vscode": "^1.30.1",
-    "azdata": ">=1.35.0"
+    "vscode": "^1.30.1"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "media/defaultExtensionIcon.png",
@@ -47,18 +46,17 @@
       "commandPalette": [
         {
           "command": "sqlBindings.addSqlBinding",
-          "when": "editorLangId == csharp && !azdataAvailable && resourceScheme != untitled"
+          "when": "editorLangId == csharp && resourceScheme != untitled"
         },
         {
           "command": "sqlBindings.createAzureFunction",
-          "when": "view == objectExplorer && viewItem == Table && !azdataAvailable",
           "group": "zAzure_Function@1"
         }
       ],
       "view/item/context": [
         {
           "command": "sqlBindings.createAzureFunction",
-          "when": "view == objectExplorer && viewItem == Table && !azdataAvailable",
+          "when": "view == objectExplorer && viewItem == Table",
           "group": "zAzure_Function@1"
         }
       ]

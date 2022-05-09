@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AppSettingType, IDeployAppIntegrationProfile, IDeployProfile, ILocalDbSetting } from './deployProfile';
+import { AppSettingType, IDeployAppIntegrationProfile, ILocalDbDeployProfile, ILocalDbSetting, ISqlConnectionProperties, ISqlDbDeployProfile } from './deployProfile';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Project } from '../project';
 import * as constants from '../../common/constants';
@@ -13,6 +13,8 @@ import * as vscode from 'vscode';
 import { ConnectionResult } from 'azdata';
 import * as templates from '../../templates/templates';
 import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
+import { AzureSqlClient } from './azureSqlClient';
+import { IFireWallRuleError } from 'vscode-mssql';
 
 interface DockerImageSpec {
 	label: string;
@@ -21,7 +23,7 @@ interface DockerImageSpec {
 }
 export class DeployService {
 
-	constructor(private _outputChannel: vscode.OutputChannel, shellExecutionHelper: ShellExecutionHelper | undefined = undefined) {
+	constructor(private _azureSqlClient = new AzureSqlClient(), private _outputChannel: vscode.OutputChannel, shellExecutionHelper: ShellExecutionHelper | undefined = undefined) {
 		this._shellExecutionHelper = shellExecutionHelper ?? new ShellExecutionHelper(this._outputChannel);
 	}
 
@@ -50,7 +52,7 @@ export class DeployService {
 		return undefined;
 	}
 
-	public async updateAppSettings(profile: IDeployAppIntegrationProfile, deployProfile: IDeployProfile | undefined): Promise<void> {
+	public async updateAppSettings(profile: IDeployAppIntegrationProfile, deployProfile: ILocalDbDeployProfile | undefined): Promise<void> {
 		// Update app settings
 		//
 		if (!profile.appSettingFile) {
@@ -122,7 +124,37 @@ export class DeployService {
 		return { label: imageLabel, tag: imageTag, containerName: dockerName };
 	}
 
-	public async deploy(profile: IDeployProfile, project: Project): Promise<string | undefined> {
+	/**
+	 * Creates a new Azure Sql server and tries to connect to the new server. If connection fails because of firewall rule, it prompts user to add firewall rule settings
+	 * @param profile Azure Sql server settings
+	 * @returns connection url for the new server
+	 */
+	public async createNewAzureSqlServer(profile: ISqlDbDeployProfile | undefined): Promise<string | undefined> {
+		if (!profile?.sqlDbSetting) {
+			return undefined;
+		}
+
+		this.logToOutput(constants.creatingAzureSqlServer(profile?.sqlDbSetting?.serverName));
+
+		// Create the server
+		const server = await this._azureSqlClient.createOrUpdateServer(profile.sqlDbSetting.session, profile?.sqlDbSetting.resourceGroupName, profile?.sqlDbSetting.serverName, {
+			location: profile?.sqlDbSetting?.location,
+			administratorLogin: profile?.sqlDbSetting.userName,
+			administratorLoginPassword: profile?.sqlDbSetting.password
+		});
+		if (server) {
+			this._outputChannel.appendLine(constants.serverCreated);
+			profile.sqlDbSetting.serverName = server;
+
+			this.logToOutput(constants.azureSqlServerCreated(profile?.sqlDbSetting?.serverName));
+
+			// Connect to the server
+			return await this.getConnection(profile.sqlDbSetting, false, constants.master);
+		}
+		return undefined;
+	}
+
+	public async deployToContainer(profile: ILocalDbDeployProfile, project: Project): Promise<string | undefined> {
 		return await this.executeTask(constants.deployDbTaskName, async () => {
 			if (!profile.localDbSetting) {
 				return undefined;
@@ -218,7 +250,7 @@ export class DeployService {
 	}
 
 	// Connects to a database
-	private async connectToDatabase(profile: ILocalDbSetting, saveConnectionAndPassword: boolean, database: string): Promise<ConnectionResult | string | undefined> {
+	private async connectToDatabase(profile: ISqlConnectionProperties, saveConnectionAndPassword: boolean, database: string): Promise<ConnectionResult | string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		const vscodeMssqlApi = getAzdataApi ? undefined : await utils.getVscodeMssqlApi();
 		if (getAzdataApi) {
@@ -248,7 +280,7 @@ export class DeployService {
 				encrypt: false,
 				connectTimeout: 30,
 				applicationName: 'SQL Database Project',
-				accountId: undefined,
+				accountId: profile.accountId,
 				azureAccountToken: undefined,
 				applicationIntent: undefined,
 				attachDbFilename: undefined,
@@ -272,9 +304,19 @@ export class DeployService {
 				workstationId: undefined,
 				profileName: profile.profileName,
 				expiresOn: undefined,
-				tenantId: undefined
+				tenantId: profile.tenantId
 			};
-			let connectionUrl = await vscodeMssqlApi.connect(connectionProfile, saveConnectionAndPassword);
+			let connectionUrl = '';
+			try {
+				connectionUrl = await vscodeMssqlApi.connect(connectionProfile, saveConnectionAndPassword);
+			} catch (err) {
+				const firewallRuleError = <IFireWallRuleError>err;
+				if (firewallRuleError?.connectionUri) {
+					await vscodeMssqlApi.promptForFirewallRule(err.connectionUri, connectionProfile);
+				} else {
+					throw err;
+				}
+			}
 			return connectionUrl;
 		} else {
 			return undefined;
@@ -307,7 +349,7 @@ export class DeployService {
 		return connectionResult ? connectionResult.connectionId : <string>connection;
 	}
 
-	public async getConnection(profile: ILocalDbSetting, saveConnectionAndPassword: boolean, database: string): Promise<string | undefined> {
+	public async getConnection(profile: ISqlConnectionProperties, saveConnectionAndPassword: boolean, database: string): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		let connection = await utils.retry(
 			constants.connectingToSqlServerMessage,

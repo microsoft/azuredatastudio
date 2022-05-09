@@ -150,9 +150,9 @@ array-uniq@^1.0.2:
   resolved "https://registry.yarnpkg.com/array-uniq/-/array-uniq-1.0.3.tgz#af6ac877a25cc7f74e058894753858dfdb24fdb6"
   integrity sha1-r2rId6Jcx/dOBYiUdThY39sk/bY=
 
-"azdataGraph@github:Microsoft/azdataGraph#0.0.19":
-  version "0.0.19"
-  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/4f5e3ef88b997c0190d2bd688a586b993f9fed67"
+"azdataGraph@github:Microsoft/azdataGraph#0.0.21":
+  version "0.0.21"
+  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/59f38fc96ab8beadb5ed2b6986ae3f39d662d040"
 
 chalk@^2.3.0, chalk@^2.4.1:
   version "2.4.2"
