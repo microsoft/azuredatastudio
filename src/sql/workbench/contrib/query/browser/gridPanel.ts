@@ -65,6 +65,11 @@ const ACTIONBAR_HEIGHT = 120;
 // this handles min size if rows is greater than the min grid visible rows
 const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 
+// The regex to check whether a string is a valid JSON string. It is used to determine:
+// 1. whether the cell should be rendered as a hyperlink.
+// 2. when user clicks a cell, whether the cell content should be displayed in a new text editor as json.
+// Based on the requirements, the solution doesn't need to be very accurate, a simple regex is enough since it is more
+// performant than trying to parse the string to object.
 const IsJsonRegex = /({.*?})/g;
 
 export class GridPanel extends Disposable {
@@ -397,15 +402,13 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.container.style.height = '100%';
 
 		this.columns = this.resultSet.columnInfo.map((c, i) => {
-			let isLinked = c.isXml;
-
 			return <Slick.Column<T>>{
 				id: i.toString(),
 				name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
 					? localize('xmlShowplan', "XML Showplan")
 					: escape(c.columnName),
 				field: i.toString(),
-				formatter: isLinked ? hyperLinkFormatter : queryResultTextFormatter,
+				formatter: c.isXml ? hyperLinkFormatter : queryResultTextFormatter,
 				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
 			};
 		});
