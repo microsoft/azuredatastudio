@@ -161,7 +161,6 @@ export class RowMoveManager<T extends Slick.SlickData> extends BaseClickableColu
 				'rows': data.selectedRows,
 				'insertBefore': data.insertBefore
 			};
-			// TODO:  _grid.remapCellCssClasses ?
 			this.onMoveRows.notify(eventData);
 		}
 	}
