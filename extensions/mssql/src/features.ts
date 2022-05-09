@@ -51,6 +51,7 @@ export class AccountFeature implements StaticFeature {
 			let result = await this.refreshToken(request);
 			if (!result) {
 				void window.showErrorMessage(localizedConstants.tokenRefreshFailed);
+				console.log(`Token Refresh Failed ${request.toString()}`);
 				throw Error(localizedConstants.tokenRefreshFailed);
 			}
 			this._client.sendNotification(contracts.TokenRefreshedNotification.type, result);
