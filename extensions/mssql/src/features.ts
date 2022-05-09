@@ -13,7 +13,7 @@ import * as Utils from './utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { DataItemCache } from './util/dataCache';
 import * as azurecore from 'azurecore';
-import localizedConstants from './localizedConstants';
+import * as localizedConstants from './localizedConstants';
 
 const localize = nls.loadMessageBundle();
 
@@ -53,7 +53,7 @@ export class AccountFeature implements StaticFeature {
 				void window.showErrorMessage(localizedConstants.tokenRefreshFailed);
 				throw Error(localizedConstants.tokenRefreshFailed);
 			}
-			this._client.sendNotification(contracts.RefreshToken.type, result);
+			this._client.sendNotification(contracts.TokenRefreshedNotification.type, result);
 		});
 	}
 
