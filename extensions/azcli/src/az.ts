@@ -181,8 +181,24 @@ export class AzTool implements azExt.IAzApi {
 			list: (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.SqlMiListResult[]>> => {
 				return this.executeCommand<azExt.SqlMiListResult[]>(['sql', 'mi-arc', 'list', '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
 			},
-			show: (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.SqlMiShowResult>> => {
-				return this.executeCommand<azExt.SqlMiShowResult>(['sql', 'mi-arc', 'show', '-n', name, '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
+			show: (
+				name: string,
+				args: {
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
+					namespace?: string
+					// Additional arguments
+				},
+				additionalEnvVars?: azExt.AdditionalEnvVars
+			): Promise<azExt.AzOutput<azExt.SqlMiShowResult>> => {
+				const argsArray = ['sql', 'mi-arc', 'show', '-n', name];
+				if (args.resourceGroup) { argsArray.push('--resource-group', args.resourceGroup); }
+				if (args.namespace) {
+					argsArray.push('--k8s-namespace', args.namespace);
+					argsArray.push('--use-k8s');
+				}
+				return this.executeCommand<azExt.SqlMiShowResult>(argsArray, additionalEnvVars);
 			},
 			update: (
 				name: string,
@@ -212,6 +228,25 @@ export class AzTool implements azExt.IAzApi {
 				if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
 				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
 				if (usek8s) { argsArray.push('--use-k8s'); }
+				return this.executeCommand<void>(argsArray, additionalEnvVars);
+			},
+			upgrade: (
+				name: string,
+				args: {
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
+					namespace?: string
+					// Additional arguments
+				},
+				additionalEnvVars?: azExt.AdditionalEnvVars
+			): Promise<azExt.AzOutput<void>> => {
+				const argsArray = ['sql', 'mi-arc', 'upgrade', '--name', name];
+				if (args.resourceGroup) { argsArray.push('--resource-group', args.resourceGroup); }
+				if (args.namespace) {
+					argsArray.push('--k8s-namespace', args.namespace);
+					argsArray.push('--use-k8s');
+				}
 				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
 		},

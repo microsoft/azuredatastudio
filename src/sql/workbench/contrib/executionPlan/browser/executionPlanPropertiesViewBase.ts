@@ -4,8 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as DOM from 'vs/base/browser/dom';
-import { Table } from 'sql/base/browser/ui/table/table';
-import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
@@ -16,6 +14,7 @@ import { sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames, sor
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 import { contrastBorder, listHoverBackground } from 'vs/platform/theme/common/colorRegistry';
+import { TreeGrid } from 'sql/base/browser/ui/table/treeGrid';
 
 export abstract class ExecutionPlanPropertiesViewBase {
 	// Title bar with close button action
@@ -32,9 +31,7 @@ export abstract class ExecutionPlanPropertiesViewBase {
 	private _headerActions: ActionBar;
 
 	// Properties table
-	private _tableComponent: Table<Slick.SlickData>;
-	private _tableComponentDataView: TableDataView<Slick.SlickData>;
-	private _tableComponentDataModel: { [key: string]: string }[];
+	private _tableComponent: TreeGrid<Slick.SlickData>;
 	private _tableContainer!: HTMLElement;
 
 	private _tableWidth;
@@ -83,10 +80,8 @@ export abstract class ExecutionPlanPropertiesViewBase {
 		const table = DOM.$('.table');
 		this._tableContainer.appendChild(table);
 
-		this._tableComponentDataView = new TableDataView();
-		this._tableComponentDataModel = [];
-		this._tableComponent = new Table(table, {
-			dataProvider: this._tableComponentDataView, columns: []
+		this._tableComponent = new TreeGrid(table, {
+			columns: []
 		}, {
 			rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
 			forceFitColumns: true,
@@ -140,12 +135,7 @@ export abstract class ExecutionPlanPropertiesViewBase {
 	public populateTable(columns: Slick.Column<Slick.SlickData>[], data: { [key: string]: string }[]) {
 		this._tableComponent.columns = columns;
 		this._tableContainer.scrollTo(0, 0);
-		this._tableComponentDataView.clear();
-		this._tableComponentDataModel = data;
-		this._tableComponentDataView.push(this._tableComponentDataModel);
-		this._tableComponent.setData(this._tableComponentDataView);
-		this._tableComponent.autosizeColumns();
-		this._tableComponent.updateRowCount();
+		this._tableComponent.setData(data);
 		this.resizeTable();
 	}
 

@@ -1784,6 +1784,9 @@ describe('Project: legacy to SDK-style updates', function (): void {
 		let projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText.includes('<Build Include=')).equal(true, 'sqlproj should have Build Includes before converting');
 		should(projFileText.includes('<Folder Include=')).equal(true, 'sqlproj should have Folder Includes before converting');
+		should(projFileText.includes('<VisualStudioVersion Condition="\'$(VisualStudioVersion)\' == \'\'">')).equal(true, 'sqlproj should have VisualStudioVersion property with empty condition before converting');
+		should(projFileText.includes('<SSDTExists Condition="Exists(\'$(MSBuildExtensionsPath)\\Microsoft\\VisualStudio\\v$(VisualStudioVersion)\\SSDT\\Microsoft.Data.Tools.Schema.SqlTasks.targets\')">')).equal(true, 'sqlproj should have SSDTExists property before converting');
+		should(projFileText.includes('<VisualStudioVersion Condition="\'$(SSDTExists)\' == \'\'">')).equal(true, 'sqlproj should have VisualStudioVersion property with SSDTExists condition before converting');
 
 		await project.convertProjectToSdkStyle();
 
@@ -1796,6 +1799,9 @@ describe('Project: legacy to SDK-style updates', function (): void {
 		should(projFileText.includes('<Folder Include=')).equal(false, 'All Folder Includes should have been removed');
 		should(project.files.filter(f => f.type === EntryType.File).length).equal(beforeFileCount, 'Same number of files should be included after Build Includes are removed');
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(beforeFolderCount, 'Same number of folders should be included after Folder Includes are removed');
+		should(projFileText.includes('<VisualStudioVersion Condition="\'$(VisualStudioVersion)\' == \'\'">')).equal(false, 'VisualStudioVersion property with empty condition should be removed');
+		should(projFileText.includes('<SSDTExists Condition="Exists(\'$(MSBuildExtensionsPath)\\Microsoft\\VisualStudio\\v$(VisualStudioVersion)\\SSDT\\Microsoft.Data.Tools.Schema.SqlTasks.targets\')">')).equal(false, 'SSDTExists property should be removed');
+		should(projFileText.includes('<VisualStudioVersion Condition="\'$(SSDTExists)\' == \'\'">')).equal(false, 'VisualStudioVersion property with SSDTExists condition should be removed');
 	});
 
 	it('Should not fail if legacy style project does not have Properties folder in sqlproj', async function (): Promise<void> {

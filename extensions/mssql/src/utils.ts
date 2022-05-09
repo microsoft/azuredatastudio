@@ -20,6 +20,7 @@ const configLogRetentionMinutes = 'logRetentionMinutes';
 const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
 const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
+const parallelMessageProcessingConfig = 'parallelMessageProcessing';
 
 /**
  *
@@ -92,6 +93,18 @@ export function getConfigTracingLevel(): string {
 	}
 }
 
+export async function getParallelMessageProcessingConfig(): Promise<boolean> {
+	const config = getConfiguration();
+	if (!config) {
+		return false;
+	}
+	const quality = await getProductQuality();
+	const setting = config.inspect(parallelMessageProcessingConfig);
+	// For dev environment, we want to enable the feature by default unless it is set explicitely.
+	// Note: the quality property is not set for dev environment, we can use this to determine whether it is dev environment.
+	return (quality === undefined && setting.globalValue === undefined && setting.workspaceValue === undefined) ? true : config[parallelMessageProcessingConfig];
+}
+
 export function getLogFileName(prefix: string, pid: number): string {
 	return `${prefix}_${pid}.log`;
 }
@@ -105,12 +118,14 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 	launchArgs.push(logFile);
 
 	console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
-	console.log(`This process (ui Extenstion Host) is pid: ${process.pid}`);
+	console.log(`This process (ui Extension Host) is pid: ${process.pid}`);
 	// Delete old log files
 	let deletedLogFiles = removeOldLogFiles(logPath, fileName);
 	console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
 	launchArgs.push('--tracing-level');
 	launchArgs.push(getConfigTracingLevel());
+	// Always enable autoflush so that log entries are written immediately to disk, otherwise we can end up with partial logs
+	launchArgs.push('--autoflush-log');
 	return launchArgs;
 }
 
@@ -349,4 +364,9 @@ export async function getOrDownloadServer(config: IConfig, handleServerEvent?: (
 	}
 
 	return serverdownloader.getOrDownloadServer();
+}
+
+async function getProductQuality(): Promise<string> {
+	const content = await fs.readFile(path.join(vscode.env.appRoot, 'product.json'));
+	return JSON.parse(content?.toString())?.quality;
 }

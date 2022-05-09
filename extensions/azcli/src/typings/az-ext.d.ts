@@ -179,6 +179,7 @@ declare module 'az-ext' {
 			logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:miaa1'))
 			metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
 			primaryEndpoint?: string // "10.91.86.39:32718"
+			runningVersion: string // "v1.5.0_2022-04-05"
 		}
 	}
 
@@ -374,7 +375,17 @@ declare module 'az-ext' {
 			miarc: {
 				delete(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
 				list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiListResult[]>>,
-				show(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiShowResult>>,
+				show(
+					name: string,
+					args: {
+						// Direct mode arguments
+						resourceGroup?: string,
+						// Indirect mode arguments
+						namespace?: string
+					},
+					// Additional arguments
+					additionalEnvVars?: AdditionalEnvVars
+				): Promise<AzOutput<SqlMiShowResult>>,
 				update(
 					name: string,
 					args: {
@@ -390,6 +401,17 @@ declare module 'az-ext' {
 					// Indirect mode arguments
 					namespace?: string,
 					usek8s?: boolean,
+					// Additional arguments
+					additionalEnvVars?: AdditionalEnvVars
+				): Promise<AzOutput<void>>,
+				upgrade(
+					name: string,
+					args: {
+						// Direct mode arguments
+						resourceGroup?: string,
+						// Indirect mode arguments
+						namespace?: string
+					},
 					// Additional arguments
 					additionalEnvVars?: AdditionalEnvVars
 				): Promise<AzOutput<void>>

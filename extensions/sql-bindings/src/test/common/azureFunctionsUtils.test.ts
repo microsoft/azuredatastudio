@@ -12,7 +12,6 @@ import * as azureFunctionsUtils from '../../common/azureFunctionsUtils';
 
 const rootFolderPath = 'test';
 const localSettingsPath: string = path.join(rootFolderPath, 'local.settings.json');
-const projectFilePath: string = path.join(rootFolderPath, 'projectFilePath.csproj');
 
 describe('Tests to verify Azure Functions Utils functions', function (): void {
 
@@ -55,7 +54,7 @@ describe('Tests to verify Azure Functions Utils functions', function (): void {
 	});
 
 	it('Should get settings file given project file', async () => {
-		const settingsFile = await azureFunctionsUtils.getSettingsFile(projectFilePath);
+		const settingsFile = await azureFunctionsUtils.getSettingsFile(rootFolderPath);
 		should(settingsFile).equals(localSettingsPath);
 	});
 
@@ -68,7 +67,7 @@ describe('Tests to verify Azure Functions Utils functions', function (): void {
 		const connectionString = 'testConnectionString';
 
 		let writeFileStub = sinon.stub(fs.promises, 'writeFile');
-		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFilePath);
+		await azureFunctionsUtils.addConnectionStringToConfig(connectionString, rootFolderPath);
 		should(writeFileStub.calledWithExactly(localSettingsPath, `{\n  "IsEncrypted": false,\n  "Values": {\n    "test1": "test1",\n    "test2": "test2",\n    "test3": "test3",\n    "SqlConnectionString": "testConnectionString"\n  }\n}`)).equals(true);
 	});
 
