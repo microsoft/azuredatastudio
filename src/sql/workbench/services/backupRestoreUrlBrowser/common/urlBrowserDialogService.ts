@@ -5,8 +5,8 @@
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
-export const IUrlBrowserDialogService = createDecorator<IUrlBrowserDialogService>('urlBrowserDialogService');
-export interface IUrlBrowserDialogService {
+export const IBackupRestoreUrlBrowserDialogService = createDecorator<IBackupRestoreUrlBrowserDialogService>('backupRestoreUrlBrowserDialogService');
+export interface IBackupRestoreUrlBrowserDialogService {
 	_serviceBrand: undefined;
 	/**
 	 * Show url browser dialog

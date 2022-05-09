@@ -46,7 +46,7 @@ function nextYear(): string {
 	return nextYear.toUTCString();
 }
 
-export class UrlBrowserDialog extends Modal {
+export class BackupRestoreUrlBrowserDialog extends Modal {
 
 	private _accounts: Account[];
 	private _selectedAccount: Account;
@@ -116,7 +116,7 @@ export class UrlBrowserDialog extends Modal {
 		let tableContainer: HTMLElement = DOM.append(DOM.append(this._body, DOM.$('.option-section')), DOM.$('table.url-table-content'));
 		tableContainer.setAttribute('role', 'presentation');
 
-		let azureAccountLabel = localize('urlBrowserDialog.account', "Azure Account");
+		let azureAccountLabel = localize('backupRestoreUrlBrowserDialog.account', "Azure Account");
 		this._accountSelectorBox = this._register(new SelectBox([''], '', this._contextViewService, null, { ariaLabel: azureAccountLabel }));
 		this._accountSelectorBox.disable();
 		let accountSelector = DialogHelper.appendRow(tableContainer, azureAccountLabel, 'url-input-label', 'url-input-box', null, true);
@@ -126,7 +126,7 @@ export class UrlBrowserDialog extends Modal {
 			onUnexpectedError(err);
 		});
 
-		let linkAccountText = localize('urlBrowserDialog.linkAccount', "Link account");
+		let linkAccountText = localize('backupRestoreUrlBrowserDialog.linkAccount', "Link account");
 		let linkAccountButton = DialogHelper.appendRow(tableContainer, '', 'url-input-label', 'url-input-box');
 		const linkAccount: Link = this._register(this._instantiationService.createInstance(Link,
 			{
@@ -146,45 +146,45 @@ export class UrlBrowserDialog extends Modal {
 		));
 		linkAccountButton.appendChild(linkAccount.el);
 
-		let tenantLabel = localize('urlBrowserDialog.tenant', "Azure AD Tenant");
+		let tenantLabel = localize('backupRestoreUrlBrowserDialog.tenant', "Azure AD Tenant");
 		this._tenantSelectorBox = this._register(new SelectBox([], '', this._contextViewService, null, { ariaLabel: tenantLabel }));
 		this._tenantSelectorBox.disable();
 		let tenantSelector = DialogHelper.appendRow(tableContainer, tenantLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(tenantSelector, this._tenantSelectorBox);
 
-		let subscriptionLabel = localize('urlBrowserDialog.subscription', "Azure subscription");
+		let subscriptionLabel = localize('backupRestoreUrlBrowserDialog.subscription', "Azure subscription");
 		this._subscriptionSelectorBox = this._register(new SelectBox([], '', this._contextViewService, null, { ariaLabel: subscriptionLabel }));
 		this._subscriptionSelectorBox.disable();
 		let subscriptionSelector = DialogHelper.appendRow(tableContainer, subscriptionLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(subscriptionSelector, this._subscriptionSelectorBox);
 
-		let storageAccountLabel = localize('urlBrowserDialog.storageAccount', "Storage account");
+		let storageAccountLabel = localize('backupRestoreUrlBrowserDialog.storageAccount', "Storage account");
 		this._storageAccountSelectorBox = this._register(new SelectBox([], '', this._contextViewService, null, { ariaLabel: storageAccountLabel }));
 		this._storageAccountSelectorBox.disable();
 		let storageAccountSelector = DialogHelper.appendRow(tableContainer, storageAccountLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(storageAccountSelector, this._storageAccountSelectorBox);
 
-		let blobContainerLabel = localize('urlBrowserDialog.blobContainer', "Blob container");
+		let blobContainerLabel = localize('backupRestoreUrlBrowserDialog.blobContainer', "Blob container");
 		this._blobContainerSelectorBox = this._register(new SelectBox([], '', this._contextViewService, null, { ariaLabel: blobContainerLabel }));
 		this._blobContainerSelectorBox.disable();
 		let blobContainerSelector = DialogHelper.appendRow(tableContainer, blobContainerLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(blobContainerSelector, this._blobContainerSelectorBox);
 
 
-		let sharedAccessSignatureLabel = localize('urlBrowserDialog.sharedAccessSignature', "Shared access signature generated");
+		let sharedAccessSignatureLabel = localize('backupRestoreUrlBrowserDialog.sharedAccessSignature', "Shared access signature generated");
 		let sasInput = DialogHelper.appendRow(tableContainer, sharedAccessSignatureLabel, 'url-input-label', 'url-input-box', null, true);
 		this._sasInputBox = this._register(new InputBox(sasInput, this._contextViewService, { flexibleHeight: true }));
 		this._sasInputBox.disable();
 		this._register(this._sasInputBox.onDidChange(() => this.enableOkButton()));
 
 		let sasButtonContainer = DialogHelper.appendRow(tableContainer, '', 'url-input-label', 'url-input-box');
-		let sasButtonLabel = localize('urlBrowserDialog.sharedAccessSignatureButton', "Create Credentials");
+		let sasButtonLabel = localize('backupRestoreUrlBrowserDialog.sharedAccessSignatureButton', "Create Credentials");
 		this._sasButton = this._register(new Button(sasButtonContainer, { title: sasButtonLabel }));
 		this._sasButton.label = sasButtonLabel;
 		this._sasButton.title = sasButtonLabel;
 		this._register(this._sasButton.onDidClick(e => this.generateSharedAccessSignature()));
 
-		let backupFileLabel = localize('urlBrowserDialog.backupFile', "Backup file");
+		let backupFileLabel = localize('backupRestoreUrlBrowserDialog.backupFile', "Backup file");
 
 		if (this._restoreDialog) {
 			this._backupFileSelectorBox = this._register(new SelectBox([], '', this._contextViewService, null, { ariaLabel: backupFileLabel }));

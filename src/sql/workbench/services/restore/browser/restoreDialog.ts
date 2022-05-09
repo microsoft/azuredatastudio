@@ -46,7 +46,7 @@ import { fileFiltersSet, DeviceType } from 'sql/workbench/services/restore/commo
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
-import { IUrlBrowserDialogService } from 'sql/workbench/services/urlBrowser/common/urlBrowserDialogService';
+import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -153,7 +153,7 @@ export class RestoreDialog extends Modal {
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IFileBrowserDialogController private fileBrowserDialogService: IFileBrowserDialogController,
-		@IUrlBrowserDialogService private urlBrowserDialogService: IUrlBrowserDialogService,
+		@IBackupRestoreUrlBrowserDialogService private backupRestoreUrlBrowserDialogService: IBackupRestoreUrlBrowserDialogService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
@@ -713,7 +713,7 @@ export class RestoreDialog extends Modal {
 	}
 
 	private onUrlBrowserRequested(): void {
-		this.urlBrowserDialogService.showDialog(this._ownerUri!,
+		this.backupRestoreUrlBrowserDialogService.showDialog(this._ownerUri!,
 			this.viewModel.defaultBackupFolder!,
 			fileFiltersSet,
 			FileValidationConstants.restore,

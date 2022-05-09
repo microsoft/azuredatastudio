@@ -37,7 +37,7 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IUrlBrowserDialogService } from 'sql/workbench/services/urlBrowser/common/urlBrowserDialogService';
+import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -221,7 +221,7 @@ export class BackupComponent extends AngularDisposable {
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IFileBrowserDialogController) private fileBrowserDialogService: IFileBrowserDialogController,
-		@Inject(IUrlBrowserDialogService) private urlBrowserDialogService: IUrlBrowserDialogService,
+		@Inject(IBackupRestoreUrlBrowserDialogService) private backupRestoreUrlBrowserDialogService: IBackupRestoreUrlBrowserDialogService,
 		@Inject(IBackupUiService) private _backupUiService: IBackupUiService,
 		@Inject(IBackupService) private _backupService: IBackupService,
 		@Inject(IClipboardService) private clipboardService: IClipboardService,
@@ -745,7 +745,7 @@ export class BackupComponent extends AngularDisposable {
 	}
 
 	private onAddUrlClick(): void {
-		this.urlBrowserDialogService.showDialog(this._uri!,
+		this.backupRestoreUrlBrowserDialogService.showDialog(this._uri!,
 			this.defaultNewBackupFolder!,
 			fileFiltersSet,
 			FileValidationConstants.backup,

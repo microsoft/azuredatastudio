@@ -3,15 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { UrlBrowserDialog } from 'sql/workbench/services/urlBrowser/browser/urlBrowserDialog';
-import { IUrlBrowserDialogService } from 'sql/workbench/services/urlBrowser/common/urlBrowserDialogService';
+import { BackupRestoreUrlBrowserDialog } from 'sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialog';
+import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 /**
  * Url browser dialog service
  */
-export class UrlBrowserDialogService implements IUrlBrowserDialogService {
+export class BackupRestoreUrlBrowserDialogService implements IBackupRestoreUrlBrowserDialogService {
 	_serviceBrand: undefined;
 
 	constructor(
@@ -27,11 +27,11 @@ export class UrlBrowserDialogService implements IUrlBrowserDialogService {
 		isRestoreDialog: boolean,
 		defaultBackupName: string
 	): Promise<string> {
-		const urlBrowserDialog = this._instantiationService.createInstance(UrlBrowserDialog, localize('filebrowser.selectBlob', "Select a blob"), isRestoreDialog, defaultBackupName);
-		urlBrowserDialog.render();
+		const backupRestoreUrlBrowserDialog = this._instantiationService.createInstance(BackupRestoreUrlBrowserDialog, localize('filebrowser.selectBlob', "Select a blob"), isRestoreDialog, defaultBackupName);
+		backupRestoreUrlBrowserDialog.render();
 
-		urlBrowserDialog.setWide(isWide);
-		urlBrowserDialog.open(ownerUri, expandPath, fileFilters, fileValidationServiceType);
-		return urlBrowserDialog.onOk;
+		backupRestoreUrlBrowserDialog.setWide(isWide);
+		backupRestoreUrlBrowserDialog.open(ownerUri, expandPath, fileFilters, fileValidationServiceType);
+		return backupRestoreUrlBrowserDialog.onOk;
 	}
 }
