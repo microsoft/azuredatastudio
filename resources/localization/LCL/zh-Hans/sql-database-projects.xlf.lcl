@@ -238,6 +238,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.azureAccounts" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure accounts]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure 帐户]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -253,12 +256,18 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.azureServerName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL server name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL Server 名称]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.azureSqlServerCreated" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Server '{0}' created]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL Server “{0}” 已创建]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -544,6 +553,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.creatingAzureSqlServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Creating Azure SQL Server '{0}' ...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在创建 Azure SQL Server “{0}”...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1153,6 +1165,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.enterUser" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter {0} admin user name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[输入 {0} 管理员用户名]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2086,12 +2101,18 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.publishToNewAzureServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Publish to new Azure SQL logical server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[发布到新的 Azure SQL 逻辑服务器]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.publishToNewAzureServerFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to publish to new Azure SQL server. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[无法发布到新 Azure SQL 服务器。{0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2170,8 +2191,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.retryMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Operation '{0}' failed. Re-trying... Error: '{1}' ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[操作 "{0}" 失败。正在重试...错误: "{1}"]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[操作 “{0}” 失败。正在重试...错误: “{1}” ]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Operation '{0}' failed. Re-trying... Error: '{1}']]></Val>
@@ -2455,6 +2476,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.serverCreated" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server created]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已创建服务器]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

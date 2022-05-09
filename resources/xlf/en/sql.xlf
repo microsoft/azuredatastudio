@@ -3142,9 +3142,6 @@ Error: {1}</source>
     <trans-unit id="cellRunFailed">
       <source xml:lang="en">Run Cells failed - See error in output of the currently selected cell for more information.</source>
     </trans-unit>
-    <trans-unit id="code">
-      <source xml:lang="en">Code</source>
-    </trans-unit>
     <trans-unit id="codeCellsPreview">
       <source xml:lang="en">Add cell</source>
     </trans-unit>
@@ -3166,14 +3163,8 @@ Error: {1}</source>
     <trans-unit id="previousButtonLabel">
       <source xml:lang="en">&lt; Previous</source>
     </trans-unit>
-    <trans-unit id="runAll">
-      <source xml:lang="en">Run Cells</source>
-    </trans-unit>
     <trans-unit id="runAllPreview">
       <source xml:lang="en">Run all</source>
-    </trans-unit>
-    <trans-unit id="text">
-      <source xml:lang="en">Text</source>
     </trans-unit>
     <trans-unit id="textPreview">
       <source xml:lang="en">Text cell</source>
