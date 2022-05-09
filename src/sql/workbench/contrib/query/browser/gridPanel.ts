@@ -65,6 +65,8 @@ const ACTIONBAR_HEIGHT = 120;
 // this handles min size if rows is greater than the min grid visible rows
 const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 
+const IsJsonRegex = /({.*?})/g;
+
 export class GridPanel extends Disposable {
 	private container = document.createElement('div');
 	private scrollableView: ScrollableView;
@@ -395,7 +397,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.container.style.height = '100%';
 
 		this.columns = this.resultSet.columnInfo.map((c, i) => {
-			let isLinked = c.isXml || c.isJson;
+			let isLinked = c.isXml;
 
 			return <Slick.Column<T>>{
 				id: i.toString(),
@@ -403,7 +405,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					? localize('xmlShowplan', "XML Showplan")
 					: escape(c.columnName),
 				field: i.toString(),
-				formatter: isLinked ? hyperLinkFormatter : textFormatter,
+				formatter: isLinked ? hyperLinkFormatter : queryResultTextFormatter,
 				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
 			};
 		});
@@ -693,17 +695,20 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	private async onTableClick(event: ITableMouseEvent) {
 		// account for not having the number column
-		let column = this.resultSet.columnInfo[event.cell.cell - 1];
+		const column = this.resultSet.columnInfo[event.cell.cell - 1];
 		// handle if a showplan link was clicked
-		if (column && (column.isXml || column.isJson)) {
+		if (column) {
 			const subset = await this.getRowData(event.cell.row, 1);
-			let value = subset[0][event.cell.cell - 1];
-			let content = value.displayValue;
-			const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
-			await input.resolve();
-			await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
-			input.setDirty(false);
-			await this.editorService.openEditor(input);
+			const value = subset[0][event.cell.cell - 1];
+			const isJson = isJsonCell(value);
+			if (column.isXml || isJson) {
+				const content = value.displayValue;
+				const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
+				await input.resolve();
+				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
+				input.setDirty(false);
+				await this.editorService.openEditor(input);
+			}
 		}
 	}
 
@@ -934,5 +939,17 @@ class GridTable<T> extends GridTableBase<T> {
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
 		];
+	}
+}
+
+function isJsonCell(value: ICellValue): boolean {
+	return !!(value && !value.isNull && value.displayValue?.match(IsJsonRegex));
+}
+
+function queryResultTextFormatter(row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string {
+	if (isJsonCell(value)) {
+		return hyperLinkFormatter(row, cell, value, columnDef, dataContext);
+	} else {
+		return textFormatter(row, cell, value, columnDef, dataContext);
 	}
 }
