@@ -46,7 +46,7 @@ import { layoutDesignerTable, TableHeaderRowHeight, TableRowHeight } from 'sql/w
 import { Dropdown, IDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
 import { IAction } from 'vs/base/common/actions';
-import { AddAfterSelectedRowAction, AddBeforeSelectedRowAction, AddRowAction, DesignerTableActionContext, MoveRowDownAction, MoveRowUpAction } from 'sql/workbench/browser/designer/designerActions';
+import { InsertAfterSelectedRowAction, InsertBeforeSelectedRowAction, AddRowAction, DesignerTableActionContext, MoveRowDownAction, MoveRowUpAction } from 'sql/workbench/browser/designer/designerActions';
 import { RowMoveManager, RowMoveOnDragEventData } from 'sql/base/browser/ui/table/plugins/rowMoveManager.plugin';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 
@@ -216,6 +216,7 @@ export class Designer extends Disposable implements IThemable {
 		} else if (component instanceof TabbedPanel) {
 			component.style(this._styles.tabbedPanelStyles);
 		} else if (component instanceof Table) {
+			this.removeTableSelectionStyles();
 			component.style(this._styles.tableStyles);
 		} else if (component instanceof Button) {
 			component.style(this._styles.buttonStyles);
@@ -224,6 +225,17 @@ export class Designer extends Disposable implements IThemable {
 		} else {
 			component.style(this._styles.selectBoxStyles);
 		}
+	}
+
+	private removeTableSelectionStyles(): void {
+		this._styles.tableStyles.listActiveSelectionBackground = undefined;
+		this._styles.tableStyles.listActiveSelectionForeground = undefined;
+		this._styles.tableStyles.listFocusAndSelectionBackground = undefined;
+		this._styles.tableStyles.listFocusAndSelectionForeground = undefined;
+		this._styles.tableStyles.listInactiveFocusBackground = undefined;
+		this._styles.tableStyles.listInactiveFocusForeground = undefined;
+		this._styles.tableStyles.listInactiveSelectionBackground = undefined;
+		this._styles.tableStyles.listInactiveSelectionForeground = undefined;
 	}
 
 	private styleGroupHeader(header: HTMLElement): void {
@@ -874,15 +886,13 @@ export class Designer extends Disposable implements IThemable {
 						behavior: 'selectAndMove'
 					});
 					table.registerPlugin(moveRowsPlugin);
-					moveRowsPlugin.onBeforeMoveRows.subscribe((e: Slick.EventData, data: RowMoveOnDragEventData) => {
+					moveRowsPlugin.onMoveRows.subscribe((e: Slick.EventData, data: RowMoveOnDragEventData) => {
+						const row = data.rows[0];
 						// no point in moving before or after itself
-						if (data.rows[0] === data.insertBefore || data.rows[0] === data.insertBefore - 1) {
+						if (row === data.insertBefore || row === data.insertBefore - 1) {
 							e.stopPropagation();
 							return;
 						}
-					});
-					moveRowsPlugin.onMoveRows.subscribe((e: Slick.EventData, data: RowMoveOnDragEventData) => {
-						const row = data.rows[0];
 						this.handleEdit({
 							type: DesignerEditType.Move,
 							path: [...propertyPath, row],
@@ -1046,9 +1056,9 @@ export class Designer extends Disposable implements IThemable {
 
 	private getDesignerActions(): IAction[] {
 		let actions: IAction[];
-		let addRowBefore = this._instantiationService.createInstance(AddBeforeSelectedRowAction, this);
-		let addRowAfter = this._instantiationService.createInstance(AddAfterSelectedRowAction, this);
-		actions = [addRowBefore, addRowAfter];
+		let insertRowBefore = this._instantiationService.createInstance(InsertBeforeSelectedRowAction, this);
+		let insertRowAfter = this._instantiationService.createInstance(InsertAfterSelectedRowAction, this);
+		actions = [insertRowBefore, insertRowAfter];
 		return actions;
 	}
 

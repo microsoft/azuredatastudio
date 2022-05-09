@@ -99,12 +99,12 @@ export class MoveRowDownAction extends Action {
 	}
 }
 
-export class AddBeforeSelectedRowAction extends Action {
-	public static ID = 'designer.addBeforeSelectedRow';
-	public static LABEL = localize('designer.addBeforeSelectedRow', 'Add new row before');
+export class InsertBeforeSelectedRowAction extends Action {
+	public static ID = 'designer.insertBeforeSelectedRow';
+	public static LABEL = localize('designer.insertBeforeSelectedRow', 'Insert row before');
 
 	constructor(private designer: Designer) {
-		super(AddBeforeSelectedRowAction.ID, AddBeforeSelectedRowAction.LABEL, 'addBeforeSelectedRow');
+		super(InsertBeforeSelectedRowAction.ID, InsertBeforeSelectedRowAction.LABEL, 'insertBeforeSelectedRow');
 		this.designer = designer;
 	}
 
@@ -121,12 +121,12 @@ export class AddBeforeSelectedRowAction extends Action {
 	}
 }
 
-export class AddAfterSelectedRowAction extends Action {
-	public static ID = 'designer.addAfterSelectedColumn';
-	public static LABEL = localize('designer.addAfterSelectedRow', 'Add new row after');
+export class InsertAfterSelectedRowAction extends Action {
+	public static ID = 'designer.insertAfterSelectedColumn';
+	public static LABEL = localize('designer.insertAfterSelectedColumn', 'Insert row after');
 
 	constructor(private designer: Designer) {
-		super(AddAfterSelectedRowAction.ID, AddAfterSelectedRowAction.LABEL, 'addAfterSelectedRow');
+		super(InsertAfterSelectedRowAction.ID, InsertAfterSelectedRowAction.LABEL, 'insertAfterSelectedColumn');
 	}
 
 	public override async run(context: DesignerTableActionContext): Promise<void> {
