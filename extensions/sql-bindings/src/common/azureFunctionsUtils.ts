@@ -593,3 +593,7 @@ export async function promptSelectDatabase(connectionInfo: IConnectionInfo): Pro
 	}
 	return selectedDatabase;
 }
+
+export async function validateObjectName(name: string): Promise<void> {
+
+}
