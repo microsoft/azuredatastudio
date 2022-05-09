@@ -110,7 +110,7 @@ export class AccountFeature implements StaticFeature {
 		const account = accountList.find(a => a.key.accountId === request.accountId);
 
 		// find tenant
-		const tenant = account.properties.tenants.find((tenant: azurecore.Tenant) => request.authority.includes(tenant.id));
+		const tenant = account.properties.tenants.find(request.tenantId);
 		if (!tenant) {
 			void window.showErrorMessage(localizedConstants.failedToFindTenants);
 			throw Error(localizedConstants.failedToFindTenants);
