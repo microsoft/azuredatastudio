@@ -707,7 +707,7 @@ export class BackupComponent extends AngularDisposable {
 
 	private onUrlInputBoxChanged(value: string) {
 		this.backupPathTypePairs = {};
-		this.backupPathTypePairs[value] = BackupConstants.deviceTypeURL;
+		this.backupPathTypePairs[value] = BackupConstants.MediaDeviceType.Url;
 		this.enableBackupButton();
 	}
 
@@ -765,7 +765,7 @@ export class BackupComponent extends AngularDisposable {
 
 	private handleUrlPathAdded(url: string): void {
 		if (url && !this.backupPathTypePairs![url]) {
-			this.backupPathTypePairs![url] = BackupConstants.deviceTypeURL;
+			this.backupPathTypePairs![url] = BackupConstants.MediaDeviceType.File;
 			this.urlInputBox.value = url;
 			this.enableBackupButton();
 
@@ -776,7 +776,7 @@ export class BackupComponent extends AngularDisposable {
 	private handleFilePathAdded(filepath: string): void {
 		if (filepath && !this.backupPathTypePairs![filepath]) {
 			if ((this.getBackupPathCount() < BackupConstants.maxDevices)) {
-				this.backupPathTypePairs![filepath] = BackupConstants.deviceTypeFile;
+				this.backupPathTypePairs![filepath] = BackupConstants.MediaDeviceType.File;
 
 				this.pathListBox!.add(filepath);
 				this.enableBackupButton();
@@ -795,7 +795,7 @@ export class BackupComponent extends AngularDisposable {
 	private onRemoveClick(): void {
 		this.pathListBox!.selectedOptions.forEach(selected => {
 			if (this.backupPathTypePairs![selected]) {
-				if (this.backupPathTypePairs![selected] === BackupConstants.deviceTypeURL) {
+				if (this.backupPathTypePairs![selected] === BackupConstants.MediaDeviceType.Url) {
 					// stop showing warning message since url path is getting removed
 					this.pathListBox!.setValidation(true);
 					this.containsBackupToUrl = false;
@@ -879,9 +879,9 @@ export class BackupComponent extends AngularDisposable {
 
 			// Add a default new backup location
 			if (this.toUrlCheckBox!.checked) {
-				this.backupPathTypePairs![defaultNewBackupLocation] = BackupConstants.deviceTypeURL;
+				this.backupPathTypePairs![defaultNewBackupLocation] = BackupConstants.MediaDeviceType.Url;
 			} else {
-				this.backupPathTypePairs![defaultNewBackupLocation] = BackupConstants.deviceTypeFile;
+				this.backupPathTypePairs![defaultNewBackupLocation] = BackupConstants.MediaDeviceType.File;
 			}
 		}
 	}
@@ -940,9 +940,9 @@ export class BackupComponent extends AngularDisposable {
 
 	private getBackupDeviceType(): number {
 		if (this.toUrlCheckBox!.checked) {
-			return BackupConstants.backupDeviceTypeURL;
+			return BackupConstants.PhisicalDeviceType.Url;
 		}
-		return BackupConstants.backupDeviceTypeDisk;
+		return BackupConstants.PhisicalDeviceType.Disk;
 	}
 
 	private getBackupPathCount(): number {

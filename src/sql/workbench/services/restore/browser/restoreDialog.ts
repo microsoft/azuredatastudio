@@ -42,11 +42,12 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler, attachTabbedPanelStyler } from 'sql/workbench/common/styler';
-import { fileFiltersSet, DeviceType } from 'sql/workbench/services/restore/common/constants';
+import { fileFiltersSet } from 'sql/workbench/services/restore/common/constants';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
+import { MediaDeviceType } from 'sql/workbench/contrib/backup/common/constants';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -788,7 +789,7 @@ export class RestoreDialog extends Modal {
 			if (!this._panel.contains(this._optionsTab.identifier)) {
 				this._panel.pushTab(this._optionsTab);
 			}
-			this.viewModel.deviceType = DeviceType.File;
+			this.viewModel.deviceType = MediaDeviceType.File;
 		} else if (selectedRestoreFrom === this._databaseTitle) {
 			this._sourceDatabaseSelectBox.enable();
 			this.viewModel.onRestoreFromChanged(false);
@@ -804,7 +805,7 @@ export class RestoreDialog extends Modal {
 			if (!this._panel.contains(this._optionsTab.identifier)) {
 				this._panel.pushTab(this._optionsTab);
 			}
-			this.viewModel.deviceType = DeviceType.File;
+			this.viewModel.deviceType = MediaDeviceType.File;
 		} else if (selectedRestoreFrom === this._urlTitle) {
 			this.viewModel.onRestoreFromChanged(true);
 			DOM.hide(this._destinationRestoreToContainer!);
@@ -816,7 +817,7 @@ export class RestoreDialog extends Modal {
 			this._panel.removeTab(this._fileTab.identifier);
 			this._panel.removeTab(this._optionsTab.identifier);
 			this._databaseDropdown.value = '';
-			this.viewModel.deviceType = DeviceType.Url;
+			this.viewModel.deviceType = MediaDeviceType.Url;
 		}
 		this.resetRestoreContent();
 	}

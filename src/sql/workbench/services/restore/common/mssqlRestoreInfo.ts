@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DeviceType } from 'sql/workbench/services/restore/common/constants';
+import { MediaDeviceType } from 'sql/workbench/contrib/backup/common/constants';
 
 export class MssqlRestoreInfo implements azdata.RestoreInfo {
 
@@ -30,11 +30,11 @@ export class MssqlRestoreInfo implements azdata.RestoreInfo {
 		this.options['backupFilePaths'] = value;
 	}
 
-	public get deviceType(): DeviceType {
+	public get deviceType(): MediaDeviceType {
 		return this.options['deviceType'];
 	}
 
-	public set deviceType(value: DeviceType) {
+	public set deviceType(value: MediaDeviceType) {
 		this.options['deviceType'] = value;
 	}
 
