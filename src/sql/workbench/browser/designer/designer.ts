@@ -382,7 +382,7 @@ export class Designer extends Disposable implements IThemable {
 						table.grid.invalidateAllRows();
 						table.rerenderGrid();
 						table.setActiveCell(index, selectedCellIndex);
-						table.setSelectedRows([]);
+						table.setSelectedRows([index]);
 					}
 					catch {
 						// Ignore the slick grid error when setting active cell.
@@ -977,11 +977,24 @@ export class Designer extends Disposable implements IThemable {
 					columns.push(deleteRowColumn.definition);
 				}
 				table.columns = buttonColumn.concat(columns);
-				table.columns.forEach((v, i) => table.columns[i].id = i.toString());
+				table.columns.forEach((v, i) => table.columns[i].id = table.columns[i].id || i.toString());
 				table.grid.onBeforeEditCell.subscribe((e, data): boolean => {
 					return data.item[data.column.field].enabled !== false;
 				});
 				let disabledActions = this._actions.filter(b => b.enabled === false);
+				table.grid.onClick.subscribe((e, data) => {
+					const dataLength = table.grid.getDataLength();
+					disabledActions.forEach((b) => {
+						if (data.row === dataLength - 1 && b instanceof MoveRowDownAction) {
+							b.enabled = false;
+						} else if (data.row === 0 && b instanceof MoveRowUpAction) {
+							b.enabled = false;
+						} else {
+							b.enabled = true;
+						}
+					});
+					table.grid.setSelectedRows([data.row]);
+				});
 				table.grid.onActiveCellChanged.subscribe((e, data) => {
 					if (view === 'TabsView' || view === 'TopContentView') {
 						if (data.row !== undefined) {
@@ -998,10 +1011,11 @@ export class Designer extends Disposable implements IThemable {
 							this._propertiesPane.updateDescription(componentDefinition);
 						}
 					}
-					disabledActions.forEach(b => b.enabled = true);
 				});
 				table.onBlur((e) => {
 					disabledActions.forEach(b => b.enabled = false);
+					table.grid.setSelectedRows([]);
+					table.grid.resetActiveCell();
 				});
 				component = table;
 				break;
