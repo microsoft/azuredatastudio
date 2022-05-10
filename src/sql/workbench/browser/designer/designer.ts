@@ -375,7 +375,8 @@ export class Designer extends Disposable implements IThemable {
 					const index = edit.path[1] as number;
 					const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
 					const tableProperties = this._componentMap.get(propertyName).defintion.componentProperties as DesignerTableProperties;
-					const selectedCellIndex = tableProperties.canMoveRows ? 1 : 0;
+					let selectedCellIndex = tableProperties.itemProperties.findIndex(p => p.componentType === 'input');
+					selectedCellIndex = tableProperties.canMoveRows ? selectedCellIndex + 1 : selectedCellIndex;
 					try {
 						table.grid.resetActiveCell();
 						table.grid.invalidateAllRows();
@@ -396,7 +397,8 @@ export class Designer extends Disposable implements IThemable {
 					const toIndex = edit.value as number;
 					const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
 					const tableProperties = this._componentMap.get(propertyName).defintion.componentProperties as DesignerTableProperties;
-					const selectedCellIndex = tableProperties.canMoveRows ? 1 : 0;
+					let selectedCellIndex = tableProperties.itemProperties.findIndex(p => p.componentType === 'input');
+					selectedCellIndex = tableProperties.canMoveRows ? selectedCellIndex + 1 : selectedCellIndex;
 					try {
 						table.grid.resetActiveCell();
 						table.grid.invalidateAllRows();
