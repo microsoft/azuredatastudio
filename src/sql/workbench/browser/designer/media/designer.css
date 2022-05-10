@@ -171,3 +171,18 @@
 .hc-black .designer-component .slick-cell.isDragging {
 	background-color: transparent;
 }
+
+.designer-component .slick-reorder-proxy {
+	background: #0060C0;
+	opacity: 0.5;
+}
+
+.vs-dark .designer-component .slick-reorder-proxy {
+	background: #094771;
+	opacity: 0.5;
+}
+
+.slick-reorder-guide {
+	background: #2c3295;
+	opacity: 1;
+}

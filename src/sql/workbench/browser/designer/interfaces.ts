@@ -188,11 +188,11 @@ export interface DesignerTableProperties extends ComponentProperties {
 	 */
 	canRemoveRows?: boolean;
 	/**
-	 * Whether user can move rows from one index to another. The default value is true.
+	 * Whether user can move rows from one index to another. The default value is false.
 	 */
 	canMoveRows?: boolean;
 	/**
-	 * Whether user can insert rows at a given index to the table. The default value is true.
+	 * Whether user can insert rows at a given index to the table. The default value is false.
 	 */
 	canInsertRows?: boolean;
 	/**
