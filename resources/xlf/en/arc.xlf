@@ -478,6 +478,9 @@
     <trans-unit id="arc.miaaType">
       <source xml:lang="en">SQL managed instance - Azure Arc</source>
     </trans-unit>
+    <trans-unit id="arc.miaaVersionError">
+      <source xml:lang="en">Error getting SQL managed instance version number.</source>
+    </trans-unit>
     <trans-unit id="arc.missingExtension">
       <source xml:lang="en">The {0} extension is required to view engine settings. Do you wish to install it now?</source>
     </trans-unit>
@@ -567,6 +570,9 @@
     </trans-unit>
     <trans-unit id="arc.onlyNextImmediateVersion">
       <source xml:lang="en">Currently, only upgrading to the next immediate version is supported.</source>
+    </trans-unit>
+    <trans-unit id="arc.onlyNextImmediateVersionMiaa">
+      <source xml:lang="en">The version of a SQL Managed Instance can not be newer than the version of its data controller. Currently, only upgrading to the next immediate version is supported.</source>
     </trans-unit>
     <trans-unit id="arc.openDashboardFailed">
       <source xml:lang="en">Error opening dashboard. {0}</source>
@@ -808,6 +814,9 @@
     <trans-unit id="arc.settings">
       <source xml:lang="en">Settings</source>
     </trans-unit>
+    <trans-unit id="arc.showMiaaError">
+      <source xml:lang="en">Error showing details of SQL managed instance.</source>
+    </trans-unit>
     <trans-unit id="arc.sourceDatabase">
       <source xml:lang="en">Source database</source>
     </trans-unit>
@@ -871,14 +880,23 @@
     <trans-unit id="arc.upgradeDataController">
       <source xml:lang="en">Upgrade Data Controller</source>
     </trans-unit>
-    <trans-unit id="arc.upgradeDialog">
+    <trans-unit id="arc.upgradeDialogController">
       <source xml:lang="en">During a data controller upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the data controller will not cause downtime for the data services (SQL Managed Instance or PostgreSQL server).</source>
+    </trans-unit>
+    <trans-unit id="arc.upgradeDialogMiaa">
+      <source xml:lang="en">During a SQL managed instance upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the SQL managed instance will not cause downtime for the data services (SQL Managed Instance or PostgreSQL server).</source>
     </trans-unit>
     <trans-unit id="arc.upgradeManagement">
       <source xml:lang="en">Upgrade Management</source>
     </trans-unit>
-    <trans-unit id="arc.upgrading">
+    <trans-unit id="arc.upgradeMiaa">
+      <source xml:lang="en">Upgrade SQL Managed Instance</source>
+    </trans-unit>
+    <trans-unit id="arc.upgradingController">
       <source xml:lang="en">Data controller is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get datacontrollers -A'</source>
+    </trans-unit>
+    <trans-unit id="arc.upgradingMiaa">
+      <source xml:lang="en">SQL managed instance is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get sqlmi -A'</source>
     </trans-unit>
     <trans-unit id="arc.userCancelledError">
       <source xml:lang="en">User cancelled the dialog</source>
