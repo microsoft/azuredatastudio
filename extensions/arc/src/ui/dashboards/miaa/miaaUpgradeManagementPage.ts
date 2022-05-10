@@ -179,7 +179,7 @@ export class MiaaUpgradeManagementPage extends DashboardPage {
 					this._controllerModel.azAdditionalEnvVars
 				);
 			}
-			return miaaShowResult.stdout.status.runningVersion;
+			return miaaShowResult.stdout.properties.k8SRaw.status.runningVersion;
 		} catch (e) {
 			console.error(loc.showMiaaError, e);
 			return undefined;
