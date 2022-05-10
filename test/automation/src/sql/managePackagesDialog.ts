@@ -39,9 +39,9 @@ export class ManagePackagesDialog extends Dialog {
 
 		if (packageVersion) {
 			const versionSelectBox = `${ManagePackagesDialog.dialogPage} select[class="monaco-select-box monaco-select-box-dropdown-padding"][aria-label="Package Version"]`;
-			const versionOption = `${versionSelectBox} option[value="${packageVersion}]`;
-			this.code.waitForElement(versionOption);
-			this.code.waitForSetValue(versionSelectBox, packageVersion);
+			const versionOption = `${versionSelectBox} option`;
+			await this.code.waitForElement(versionOption);
+			await this.code.waitForSetValue(versionSelectBox, packageVersion);
 		}
 
 		const installButton = `${ManagePackagesDialog.dialogPage} a[class="monaco-button monaco-text-button"][aria-label="Install"][aria-disabled="false"]`;
