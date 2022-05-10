@@ -940,9 +940,9 @@ export class BackupComponent extends AngularDisposable {
 
 	private getBackupDeviceType(): number {
 		if (this.toUrlCheckBox!.checked) {
-			return BackupConstants.PhisicalDeviceType.Url;
+			return BackupConstants.PhysicalDeviceType.Url;
 		}
-		return BackupConstants.PhisicalDeviceType.Disk;
+		return BackupConstants.PhysicalDeviceType.Disk;
 	}
 
 	private getBackupPathCount(): number {

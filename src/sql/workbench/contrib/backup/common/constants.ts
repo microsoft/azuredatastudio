@@ -11,15 +11,15 @@ export const maxDevices: number = 64;
 /**
  * Backup phisical device type: https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.backupdevicetype
  */
-export enum PhisicalDeviceType {
-	CDRom = 7,
+export enum PhysicalDeviceType {
 	Disk = 2,
 	FloppyA = 3,
 	FloppyB = 4,
-	Pipe = 6,
 	Tape = 5,
-	Unknown = 100,
-	Url = 9
+	Pipe = 6,
+	CDRom = 7,
+	Url = 9,
+	Unknown = 100
 }
 
 /**
