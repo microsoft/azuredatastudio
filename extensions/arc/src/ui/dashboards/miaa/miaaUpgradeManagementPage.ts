@@ -10,10 +10,11 @@ import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles, ConnectionMode } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
-import { UpgradeController } from '../../dialogs/upgradeController';
+import { UpgradeSqlMiaa } from '../../dialogs/upgradeSqlMiaa';
+import { MiaaModel } from '../../../models/miaaModel';
 
-export class ControllerUpgradesPage extends DashboardPage {
-	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel) {
+export class MiaaUpgradeManagementPage extends DashboardPage {
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView, dashboard);
 		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 	}
@@ -62,7 +63,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 
 		const upgradesVersionLogLink = this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.versionLog,
-			url: 'https://docs.microsoft.com/azure/azure-arc/data/version-log'
+			url: 'https://docs.microsoft.com/azure/azure-arc/data/upgrade-sql-managed-instance-direct-cli?WT.mc_id=Portal-Microsoft_Azure_HybridData_Platform'
 		}).component();
 
 		const upgradesInfoAndLink = this.modelView.modelBuilder.flexContainer()
@@ -75,7 +76,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 		content.addItem(upgradesInfoAndLink, { CSSStyles: { 'min-height': '30px' } });
 
 		const infoOnlyNextImmediateVersion = this.modelView.modelBuilder.text().withProps({
-			value: loc.onlyNextImmediateVersion,
+			value: loc.onlyNextImmediateVersionMiaa,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 		}).component();
 
@@ -156,24 +157,64 @@ export class ControllerUpgradesPage extends DashboardPage {
 		).component();
 	}
 
-	private formatTableData(result: azExt.AzOutput<azExt.DcListUpgradesResult>): (string | azdata.ButtonComponent)[][] {
+	private async getMiaaVersion(): Promise<string | undefined> {
+		try {
+			let miaaShowResult;
+			if (this._controllerModel.info.connectionMode === ConnectionMode.direct) {
+				miaaShowResult = await this._azApi.az.sql.miarc.show(
+					this._miaaModel.info.name,
+					{
+						resourceGroup: this._controllerModel.info.resourceGroup,
+						namespace: undefined
+					},
+					this._controllerModel.azAdditionalEnvVars
+				);
+			} else {
+				miaaShowResult = await this._azApi.az.sql.miarc.show(
+					this._miaaModel.info.name,
+					{
+						resourceGroup: undefined,
+						namespace: this._controllerModel.info.namespace
+					},
+					this._controllerModel.azAdditionalEnvVars
+				);
+			}
+			return miaaShowResult.stdout.properties.k8SRaw.status.runningVersion;
+		} catch (e) {
+			console.error(loc.showMiaaError, e);
+			return undefined;
+		}
+	}
+
+	private async formatTableData(result: azExt.AzOutput<azExt.DcListUpgradesResult>): Promise<(string | azdata.ButtonComponent)[][]> {
 		let formattedValues: (string | azdata.ButtonComponent)[][] = [];
+
 		const versions = result.stdout.versions;
 		const dates = result.stdout.dates;
-		const currentVersion = result.stdout.currentVersion;
-		const nextVersion = this.getNextVersion(versions, currentVersion);
 
-		// Iterate through all data controller versions from latest to oldest and stop when the loop reaches the current version.
-		// Only makes table entries for the current version and newer. The upgrade button will only be enabled for the very next
-		// version due to Azure CLI constraints.
-		for (let i = 0; i < versions.length; i++) {
-			if (versions[i] === currentVersion) {
-				formattedValues.push([versions[i], dates[i], this.createUpgradeButton(loc.currentVersion, false, '')]);
-				break;
-			} else if (versions[i] === nextVersion) {
-				formattedValues.push([versions[i], dates[i], this.createUpgradeButton(loc.upgrade, true, nextVersion)]);
-			} else {
-				formattedValues.push([versions[i], dates[i], this.createUpgradeButton(loc.upgrade, false, '')]);
+		const currentControllerVersion = result.stdout.currentVersion;
+
+		const currentMiaaVersion = await this.getMiaaVersion();
+		const nextMiaaVersion = currentMiaaVersion ? this.getNextVersion(versions, currentMiaaVersion) : console.error(loc.miaaVersionError);
+
+		if (currentMiaaVersion === currentControllerVersion) {
+			for (let i = 0; i < versions.length; i++) {
+				if (versions[i] === currentMiaaVersion) {
+					formattedValues.push([versions[i], dates[i], this.createUpgradeButton(loc.currentVersion, false)]);
+					break;
+				} else {
+					formattedValues.push([versions[i], dates[i], this.createUpgradeButton(loc.upgrade, false)]);
+				}
+			}
+		} else {
+			for (let i = 0; i < versions.length; i++) {
+				if (versions[i] === nextMiaaVersion) {
+					formattedValues.push([versions[i], dates[i], this.createUpgradeButton(loc.upgrade, true)]);
+					formattedValues.push([versions[i + 1], dates[i + 1], this.createUpgradeButton(loc.currentVersion, false)]);
+					break;
+				} else {
+					formattedValues.push([versions[i], dates[i], this.createUpgradeButton(loc.upgrade, false)]);
+				}
 			}
 		}
 		return formattedValues;
@@ -181,7 +222,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 
 	private async handleTableUpdated(): Promise<void> {
 		const result = await this._azApi.az.arcdata.dc.listUpgrades(this._controllerModel.info.namespace);
-		let tableDisplay = this.formatTableData(result);
+		let tableDisplay = await this.formatTableData(result);
 		let tableValues = tableDisplay.map(d => {
 			return d.map((value: any): azdata.DeclarativeTableCellValue => {
 				return { value: value };
@@ -207,7 +248,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 	}
 
 	//Create restore button for every database entry in the database table
-	private createUpgradeButton(label: string, enabled: boolean, nextVersion: string): azdata.ButtonComponent | string {
+	private createUpgradeButton(label: string, enabled: boolean): azdata.ButtonComponent | string {
 		let upgradeButton = this.modelView.modelBuilder.button().withProps({
 			label: label,
 			enabled: enabled
@@ -215,40 +256,36 @@ export class ControllerUpgradesPage extends DashboardPage {
 
 		this.disposables.push(
 			upgradeButton.onDidClick(async () => {
-				const upgradeDialog = new UpgradeController(this._controllerModel);
-				upgradeDialog.showDialog(loc.upgradeDataController);
+				const upgradeDialog = new UpgradeSqlMiaa(this._controllerModel);
+				upgradeDialog.showDialog(loc.upgradeMiaa);
 				let dialogClosed = await upgradeDialog.waitForClose();
 				if (dialogClosed) {
 					try {
 						upgradeButton.enabled = false;
-						vscode.window.showInformationMessage(loc.upgradingController('kubectl get datacontrollers -A\' should not be localized.'));
+						vscode.window.showInformationMessage(loc.upgradingMiaa('kubectl get sqlmi -A\' should not be localized.'));
 						await vscode.window.withProgress(
 							{
 								location: vscode.ProgressLocation.Notification,
-								title: loc.updatingInstance(this._controllerModel.info.name),
+								title: loc.updatingInstance(this._miaaModel.info.name),
 								cancellable: true
 							},
 							async (_progress, _token): Promise<void> => {
-								if (nextVersion !== '') {
-									if (this._controllerModel.info.connectionMode === ConnectionMode.direct) {
-										await this._azApi.az.arcdata.dc.upgrade(
-											nextVersion,
-											this._controllerModel.info.name,
-											this._controllerModel.info.resourceGroup,
-											undefined, // Indirect mode argument - namespace
-											undefined // Indirect mode argument - usek8s
-										);
-									} else {
-										await this._azApi.az.arcdata.dc.upgrade(
-											nextVersion,
-											this._controllerModel.info.name,
-											undefined, // Direct mode argument - resourceGroup
-											this._controllerModel.info.namespace,
-											true
-										);
-									}
+								if (this._controllerModel.info.connectionMode === ConnectionMode.direct) {
+									await this._azApi.az.sql.miarc.upgrade(
+										this._miaaModel.info.name,
+										{
+											resourceGroup: this._controllerModel.info.resourceGroup,
+											namespace: undefined
+										}
+									);
 								} else {
-									vscode.window.showInformationMessage(loc.noUpgrades);
+									await this._azApi.az.sql.miarc.upgrade(
+										this._miaaModel.info.name,
+										{
+											resourceGroup: undefined,
+											namespace: this._controllerModel.info.namespace,
+										}
+									);
 								}
 
 								try {

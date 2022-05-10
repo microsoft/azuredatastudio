@@ -74,11 +74,11 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 
 	private getConnectionStrings(): KeyValue[] {
 		const config = this._miaaModel.config;
-		if (!config?.status.primaryEndpoint) {
+		if (!config?.properties?.k8SRaw?.status.primaryEndpoint) {
 			return [];
 		}
 
-		const externalEndpoint = parseIpAndPort(config.status.primaryEndpoint);
+		const externalEndpoint = parseIpAndPort(config.properties?.k8SRaw?.status.primaryEndpoint);
 		const username = this._miaaModel.username ?? '{your_username_here}';
 
 		return [
@@ -97,7 +97,7 @@ $conn = sqlsrv_connect($serverName, $connectionInfo);`),
 	}
 
 	private updateConnectionStrings(): void {
-		this._connectionStringsMessage.value = !this._miaaModel.config?.status.primaryEndpoint ? loc.noExternalEndpoint : '';
+		this._connectionStringsMessage.value = !this._miaaModel.config?.properties?.k8SRaw?.status.primaryEndpoint ? loc.noExternalEndpoint : '';
 		this._keyValueContainer.refresh(this.getConnectionStrings());
 	}
 }

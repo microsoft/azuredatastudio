@@ -128,10 +128,20 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 					validateAz(azToolService.localAz);
 					return azToolService.localAz!.sql.miarc.list(namespace, additionalEnvVars);
 				},
-				show: async (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+				show: async (
+					name: string,
+					args: {
+						// Direct mode arguments
+						resourceGroup?: string;
+						// Indirect mode arguments
+						namespace?: string;
+					},
+					// Additional arguments
+					additionalEnvVars?: azExt.AdditionalEnvVars
+				) => {
 					await localAzDiscovered;
 					validateAz(azToolService.localAz);
-					return azToolService.localAz!.sql.miarc.show(name, namespace, additionalEnvVars);
+					return azToolService.localAz!.sql.miarc.show(name, args, additionalEnvVars);
 				},
 				update: async (
 					name: string,
@@ -155,21 +165,19 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 					return azToolService.localAz!.sql.miarc.update(name, args, resourceGroup, namespace, usek8s, additionalEnvVars);
 				},
 				upgrade: async (
-					desiredVersion: string,
 					name: string,
 					args: {
 						// Direct mode arguments
 						resourceGroup?: string;
 						// Indirect mode arguments
 						namespace?: string;
-						usek8s?: boolean;
 					},
 					// Additional arguments
 					additionalEnvVars?: azExt.AdditionalEnvVars
 				) => {
 					await localAzDiscovered;
 					validateAz(azToolService.localAz);
-					return azToolService.localAz!.sql.miarc.upgrade(desiredVersion, name, args, additionalEnvVars);
+					return azToolService.localAz!.sql.miarc.upgrade(name, args, additionalEnvVars);
 				}
 			},
 			midbarc: {
