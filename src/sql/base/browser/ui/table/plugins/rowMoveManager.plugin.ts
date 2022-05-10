@@ -76,6 +76,13 @@ export class RowMoveManager<T extends Slick.SlickData> extends BaseClickableColu
 
 	private onDragStart(e: MouseEvent, data: OnRowMoveDragStartEventArgs<T>) {
 		let cell = this._grid.getCellFromEvent(e);
+		let highlightStyle = {};
+		const columns = this._grid.getColumns();
+		highlightStyle[cell.row] = {};
+		columns.forEach((c) => {
+			highlightStyle[cell.row][c.id] = 'isDragging';
+		});
+		this._grid.setCellCssStyles('isDragging', highlightStyle);
 
 		if (this.options.cancelEditOnDrag && this._grid.getEditorLock().isActive()) {
 			this._grid.getEditorLock().cancelCurrentEdit();
@@ -151,6 +158,7 @@ export class RowMoveManager<T extends Slick.SlickData> extends BaseClickableColu
 			return;
 		}
 		this._dragging = false;
+		this._grid.removeCellCssStyles('isDragging');
 		e.stopImmediatePropagation();
 
 		data.guide.remove();

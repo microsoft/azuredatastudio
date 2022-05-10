@@ -975,6 +975,7 @@ export class Designer extends Disposable implements IThemable {
 					columns.push(deleteRowColumn.definition);
 				}
 				table.columns = buttonColumn.concat(columns);
+				table.columns.forEach((v, i) => table.columns[i].id = i.toString());
 				table.grid.onBeforeEditCell.subscribe((e, data): boolean => {
 					return data.item[data.column.field].enabled !== false;
 				});
