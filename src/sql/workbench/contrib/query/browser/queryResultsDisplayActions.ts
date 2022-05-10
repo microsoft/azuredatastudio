@@ -7,44 +7,49 @@ import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { QueryResultsWriterMode } from 'sql/workbench/contrib/query/common/queryResultsWriterStatus';
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
+import { IQuickInputService, QuickPickInput } from 'vs/platform/quickinput/common/quickInput';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
-export class QueryResultsToFileAction extends Action {
-	public static ID = 'sql.action.query.queryResultsToFile';
-	public static LABEL = nls.localize('queryResults.resultsToFile', 'Query Results to File');
+export class ChangeQueryResultsOutputAction extends Action {
+	public static ID = 'workbench.action.editor.changeQueryResultsOutput';
+	public static LABEL = nls.localize('changeQueryResultsOutput', 'Change Results Output Mode');
+	private static RESULTS_TO_FILE = nls.localize('workbench.action.editor.queryResultsToFile', 'Query Results to File');
+	private static RESULTS_TO_GRID = nls.localize('workbench.action.editor.queryResultsToGrid', 'Query Results to Grid');
 
 	constructor(
 		actionId: string,
 		actionLabel: string,
-		@IEditorService private readonly editorService: IEditorService
+		@IEditorService private readonly editorService: IEditorService,
+		@IQuickInputService private readonly quickInputService: IQuickInputService
 	) {
 		super(actionId, actionLabel);
 	}
 
-	public override run(): Promise<void> {
+	override async run(): Promise<void> {
 		let editor = this.editorService.activeEditorPane as QueryEditor;
-		editor.queryResultsWriterMode = QueryResultsWriterMode.ToFile;
+		if (!editor) {
+			await this.quickInputService.pick([{ label: nls.localize('noEditor', "No text editor active at this time") }]);
+			return;
+		}
 
-		return Promise.resolve();
-	}
-}
 
-export class QueryResultsToGridAction extends Action {
-	public static ID = 'sql.action.query.queryResultsToGrid';
-	public static LABEL = nls.localize('queryResults.resultsToGrid', 'Query Results to Grid');
+		const outputModes = [ChangeQueryResultsOutputAction.RESULTS_TO_GRID, ChangeQueryResultsOutputAction.RESULTS_TO_FILE];
+		const picks: QuickPickInput[] = outputModes.map(mode => {
+			return {
+				label: mode
+			};
+		});
 
-	constructor(
-		actionId: string,
-		actionLabel: string,
-		@IEditorService private readonly editorService: IEditorService
-	) {
-		super(actionId, actionLabel);
-	}
+		const pick = await this.quickInputService.pick(picks, { placeHolder: nls.localize('pickLanguage', "Select Query Results Output Mode"), matchOnDescription: true });
+		if (!pick) {
+			return;
+		}
 
-	public override run(): Promise<void> {
-		let editor = this.editorService.activeEditorPane as QueryEditor;
-		editor.queryResultsWriterMode = QueryResultsWriterMode.ToGrid;
-
-		return Promise.resolve();
+		if (pick.label === ChangeQueryResultsOutputAction.RESULTS_TO_GRID) {
+			editor.queryResultsWriterMode = QueryResultsWriterMode.ToGrid;
+		}
+		else {
+			editor.queryResultsWriterMode = QueryResultsWriterMode.ToFile;
+		}
 	}
 }

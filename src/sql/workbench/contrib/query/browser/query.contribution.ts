@@ -47,7 +47,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/file
 import { IEditorResolverService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorResolverService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { QueryResultsToFileAction, QueryResultsToGridAction } from 'sql/workbench/contrib/query/browser/queryResultsDisplayActions';
+import { ChangeQueryResultsOutputAction } from 'sql/workbench/contrib/query/browser/queryResultsDisplayActions';
 
 export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
@@ -228,23 +228,13 @@ actionRegistry.registerWorkbenchAction(
 	'Change Language Flavor'
 );
 
-// Query Result writer actions
 actionRegistry.registerWorkbenchAction(
 	SyncActionDescriptor.create(
-		QueryResultsToGridAction,
-		QueryResultsToGridAction.ID,
-		QueryResultsToGridAction.LABEL
+		ChangeQueryResultsOutputAction,
+		ChangeQueryResultsOutputAction.ID,
+		ChangeQueryResultsOutputAction.LABEL
 	),
-	'Query Results to Grid'
-);
-
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		QueryResultsToFileAction,
-		QueryResultsToFileAction.ID,
-		QueryResultsToFileAction.LABEL
-	),
-	'Query Results to File'
+	'Change Results Output Mode'
 );
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
