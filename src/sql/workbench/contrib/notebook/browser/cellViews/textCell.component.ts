@@ -195,7 +195,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.updatePreview();
 		this.setFocusAndScroll();
 		this._htmlMarkdownConverter = this._instantiationService.createInstance(HTMLMarkdownConverter, this.notebookUri);
-		this._register(this.cellModel.onOutputsChanged(_e => {
+		this._register(this.cellModel.onOutputsChanged(() => {
 			this.updatePreview();
 		}));
 		this._register(this.cellModel.onCellEditModeChanged(_editMode => {

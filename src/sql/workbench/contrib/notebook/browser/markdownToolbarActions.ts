@@ -33,7 +33,7 @@ export class TransformMarkdownAction extends Action {
 		this._tooltip = tooltip;
 	}
 	public override async run(context: any): Promise<void> {
-		if (!context?.cellModel?.showMarkdown && context?.cellModel?.showPreview) {
+		if (context?.cellModel?.currentCellEditMode === CellEditModes.WYSIWYG) {
 			this.transformDocumentCommand();
 		} else {
 			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel);
