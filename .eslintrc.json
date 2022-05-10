@@ -1149,6 +1149,7 @@
 				"src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin.ts",
 				"src/sql/base/browser/ui/table/plugins/headerFilter.plugin.ts",
 				"src/sql/base/browser/ui/table/plugins/rowDetailView.ts",
+				"src/sql/base/browser/ui/table/plugins/rowMoveManager.plugin.ts",
 				"src/sql/base/browser/ui/table/plugins/rowSelectionModel.plugin.ts",
 				"src/sql/workbench/services/notebook/browser/outputs/factories.ts",
 				"src/sql/workbench/services/notebook/browser/outputs/mimemodel.ts",
