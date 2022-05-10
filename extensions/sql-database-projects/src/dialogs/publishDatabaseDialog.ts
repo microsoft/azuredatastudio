@@ -914,7 +914,7 @@ export class PublishDatabaseDialog {
 
 		this.optionsButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, 'PublishOptionsClicked');
-			// create fresh every time
+			// Create fresh options with default selections each time when creating the 'configure options' button
 			this.publishOptionsDialog = new PublishOptionsDialog(this.deploymentOptions!, this);
 			this.publishOptionsDialog.openDialog();
 		});

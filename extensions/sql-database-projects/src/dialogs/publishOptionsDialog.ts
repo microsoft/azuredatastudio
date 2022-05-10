@@ -3,36 +3,37 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as constants from '../common/constants';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
+import * as utils from '../common/utils';
+import type * as azdataType from 'azdata';
 import { PublishDatabaseDialog } from './publishDatabaseDialog';
 import { DeployOptionsModel } from '../models/options/deployOptionsModel';
 
 export class PublishOptionsDialog {
 
-	public dialog!: azdata.window.Dialog;
-	private optionsTab: azdata.window.DialogTab | undefined;
+	public dialog!: azdataType.window.Dialog;
+	private optionsTab: azdataType.window.DialogTab | undefined;
 	private disposableListeners: vscode.Disposable[] = [];
-	private descriptionHeading!: azdata.TableComponent;
-	private descriptionText!: azdata.TextComponent;
-	private optionsTable!: azdata.TableComponent;
+	private descriptionHeading!: azdataType.TableComponent;
+	private descriptionText!: azdataType.TextComponent;
+	private optionsTable!: azdataType.TableComponent;
 	private optionsModel: DeployOptionsModel;
-	private optionsFlexBuilder!: azdata.FlexContainer;
+	private optionsFlexBuilder!: azdataType.FlexContainer;
 
 	constructor(defaultOptions: mssql.DeploymentOptions, private publish: PublishDatabaseDialog) {
 		this.optionsModel = new DeployOptionsModel(defaultOptions);
 	}
 
 	protected initializeDialog(): void {
-		this.optionsTab = azdata.window.createTab(constants.GeneralOptions);
+		this.optionsTab = utils.getAzdataApi()!.window.createTab(constants.GeneralOptions);
 		this.intializeDeploymentOptionsDialogTab();
 		this.dialog.content = [this.optionsTab];
 	}
 
 	public openDialog(): void {
-		this.dialog = azdata.window.createModelViewDialog(constants.GeneralOptions);
+		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.GeneralOptions);
 
 		this.initializeDialog();
 
@@ -42,12 +43,12 @@ export class PublishOptionsDialog {
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 		this.dialog.cancelButton.onClick(async () => this.cancel());
 
-		let resetButton = azdata.window.createButton(constants.ResetButton);
+		let resetButton = utils.getAzdataApi()!.window.createButton(constants.ResetButton);
 		resetButton.onClick(async () => await this.reset());
 		this.dialog.customButtons = [];
 		this.dialog.customButtons.push(resetButton);
 
-		azdata.window.openDialog(this.dialog);
+		utils.getAzdataApi()!.window.openDialog(this.dialog);
 	}
 
 	private intializeDeploymentOptionsDialogTab(): void {
@@ -81,7 +82,7 @@ export class PublishOptionsDialog {
 
 			// Update deploy options value on checkbox onchange
 			this.disposableListeners.push(this.optionsTable.onCellAction!((rowState) => {
-				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
+				let checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.optionsModel.optionsLabels[checkboxState.row];
 					this.optionsModel.optionsLookup[label] = checkboxState.checked;
@@ -109,11 +110,11 @@ export class PublishOptionsDialog {
 		await this.optionsTable.updateProperties({
 			data: data,
 			columns: [
-				<azdata.CheckboxColumn>
+				<azdataType.CheckboxColumn>
 				{
 					value: constants.OptionInclude,
-					type: azdata.ColumnType.checkBox,
-					action: azdata.ActionOnCellCheckboxCheck.customAction,
+					type: utils.getAzdataApi()!.ColumnType.checkBox,
+					action: utils.getAzdataApi()!.ActionOnCellCheckboxCheck.customAction,
 					headerCssClass: 'display-none',
 					cssClass: 'no-borders align-with-header',
 					width: 50
