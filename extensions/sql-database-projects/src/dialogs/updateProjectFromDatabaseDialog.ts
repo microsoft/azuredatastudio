@@ -384,8 +384,9 @@ export class UpdateProjectFromDatabaseDialog {
 			width: cssStyles.updateProjectFromDatabaseLabelWidth
 		}).component();
 
-		const projectLocationRow = view.modelBuilder.flexContainer().withItems([projectLocationLabel, this.projectFileTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-5px', 'margin-top': '-10px' } }).component();
-		projectLocationRow.addItem(browseFolderButton, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '-5px', 'margin-top': '-10px' } });
+		const projectLocationRow = view.modelBuilder.flexContainer().withItems([projectLocationLabel,], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-5px', 'margin-top': '-7px' } }).component();
+		projectLocationRow.addItem(this.projectFileTextBox, { CSSStyles: { 'margin-right': '10px' } });
+		projectLocationRow.addItem(browseFolderButton, { CSSStyles: { 'margin-top': '2px' } });
 
 		return projectLocationRow;
 	}
@@ -482,8 +483,8 @@ export class UpdateProjectFromDatabaseDialog {
 			width: cssStyles.updateProjectFromDatabaseLabelWidth
 		}).component();
 
-		const actionRow = view.modelBuilder.flexContainer().withItems([actionLabel, <azdata.FlexContainer>radioButtons], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-
+		const actionRow = view.modelBuilder.flexContainer().withItems([actionLabel], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '-17px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		actionRow.addItem(radioButtons);
 		return actionRow;
 	}
 

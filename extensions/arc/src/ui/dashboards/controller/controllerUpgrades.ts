@@ -32,7 +32,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 	}
 
 	public get icon(): { dark: string, light: string } {
-		return IconPathHelper.pitr;
+		return IconPathHelper.upgrade;
 	}
 	protected async refresh(): Promise<void> {
 		await Promise.resolve(this._controllerModel.refresh(false, this._controllerModel.info.namespace));
@@ -161,20 +161,19 @@ export class ControllerUpgradesPage extends DashboardPage {
 		const versions = result.stdout.versions;
 		const dates = result.stdout.dates;
 		const currentVersion = result.stdout.currentVersion;
-		const nextVersion = this.getNextUpgrade(result.stdout.versions, result.stdout.currentVersion);
-		let currentVersionHit = false;
+		const nextVersion = this.getNextVersion(versions, currentVersion);
+
+		// Iterate through all data controller versions from latest to oldest and stop when the loop reaches the current version.
+		// Only makes table entries for the current version and newer. The upgrade button will only be enabled for the very next
+		// version due to Azure CLI constraints.
 		for (let i = 0; i < versions.length; i++) {
-			if (currentVersionHit) {
-				continue;
+			if (versions[i] === currentVersion) {
+				formattedValues.push([versions[i], dates[i], this.createUpgradeButton(loc.currentVersion, false, '')]);
+				break;
+			} else if (versions[i] === nextVersion) {
+				formattedValues.push([versions[i], dates[i], this.createUpgradeButton(loc.upgrade, true, nextVersion)]);
 			} else {
-				if (versions[i] === currentVersion) {
-					formattedValues.push([versions[i], dates[i], this.createUpgradeButton(loc.currentVersion, false, '')]);
-					currentVersionHit = true;
-				} else if (versions[i] === nextVersion) {
-					formattedValues.push([versions[i], dates[i], this.createUpgradeButton(loc.upgrade, true, nextVersion)]);
-				} else {
-					formattedValues.push([versions[i], dates[i], this.createUpgradeButton(loc.upgrade, false, '')]);
-				}
+				formattedValues.push([versions[i], dates[i], this.createUpgradeButton(loc.upgrade, false, '')]);
 			}
 		}
 		return formattedValues;
@@ -194,12 +193,12 @@ export class ControllerUpgradesPage extends DashboardPage {
 		this._upgradesContainer.addItem(this._upgradesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
 	}
 
-	// Given the list of available versions and the current version, if the current version is not the latest,
-	// then return the next version available. (Can only upgrade to next version due to limitations by Azure CLI arcdata extension.)
-	// If current version is the latest, then return undefined.
-	private getNextUpgrade(versions: string[], currentVersion: string): string | undefined {
+	// Given the list of available versions and the current version, if the current version is not the newest,
+	// then return the next version available. List of versions is ordered newest to oldest.
+	// If current version is the newest, then return undefined.
+	private getNextVersion(versions: string[], currentVersion: string): string | undefined {
 		let index = versions.indexOf(currentVersion);
-		// The version at index 0 will be the latest
+		// The version at index 0 will be the newest
 		if (index > 0) {
 			return versions[index - 1];
 		} else {
@@ -222,12 +221,12 @@ export class ControllerUpgradesPage extends DashboardPage {
 				if (dialogClosed) {
 					try {
 						upgradeButton.enabled = false;
-						vscode.window.showInformationMessage(loc.upgrading);
+						vscode.window.showInformationMessage(loc.upgradingController('kubectl get datacontrollers -A\' should not be localized.'));
 						await vscode.window.withProgress(
 							{
 								location: vscode.ProgressLocation.Notification,
 								title: loc.updatingInstance(this._controllerModel.info.name),
-								cancellable: false
+								cancellable: true
 							},
 							async (_progress, _token): Promise<void> => {
 								if (nextVersion !== '') {

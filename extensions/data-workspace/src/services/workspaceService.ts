@@ -24,9 +24,16 @@ export class WorkspaceService implements IWorkspaceService {
 	readonly onDidWorkspaceProjectsChange: vscode.Event<void> = this._onDidWorkspaceProjectsChange?.event;
 
 	private openedProjects: vscode.Uri[] | undefined = undefined;
+	private excludedProjects: string[] | undefined;
 
 	constructor() {
 		this.getProjectsInWorkspace(undefined, true).catch(err => console.error('Error initializing projects in workspace ', err));
+
+		TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectsLoaded)
+			.withAdditionalProperties({
+				openProjectCount: this.openedProjects?.length.toString() ?? '0',
+				exludedProjectCount: this.excludedProjects?.length.toString() ?? '0'
+			}).send();
 	}
 
 	get isProjectProviderAvailable(): boolean {
@@ -137,8 +144,8 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 
 		// remove excluded projects specified in workspace file
-		const excludedProjects = this.getWorkspaceConfigurationValue<string[]>(ExcludedProjectsConfigurationName);
-		this.openedProjects = this.openedProjects.filter(project => !excludedProjects.find(excludedProject => excludedProject === vscode.workspace.asRelativePath(project)));
+		this.excludedProjects = this.getWorkspaceConfigurationValue<string[]>(ExcludedProjectsConfigurationName);
+		this.openedProjects = this.openedProjects.filter(project => !this.excludedProjects?.find(excludedProject => excludedProject === vscode.workspace.asRelativePath(project)));
 
 		// filter by specified extension
 		if (ext) {

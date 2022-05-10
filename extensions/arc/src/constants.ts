@@ -35,6 +35,7 @@ export class IconPathHelper {
 	public static properties: IconPath;
 	public static networking: IconPath;
 	public static pitr: IconPath;
+	public static upgrade: IconPath;
 	public static refresh: IconPath;
 	public static reset: IconPath;
 	public static support: IconPath;
@@ -159,6 +160,10 @@ export class IconPathHelper {
 		IconPathHelper.pitr = {
 			light: context.asAbsolutePath('images/pitr.svg'),
 			dark: context.asAbsolutePath('images/pitr.svg'),
+		};
+		IconPathHelper.upgrade = {
+			light: context.asAbsolutePath('images/upgrade.svg'),
+			dark: context.asAbsolutePath('images/upgrade.svg'),
 		};
 	}
 }

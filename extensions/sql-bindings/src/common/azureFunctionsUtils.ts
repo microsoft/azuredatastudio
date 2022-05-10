@@ -41,7 +41,7 @@ export async function getLocalSettingsJson(localSettingsPath: string): Promise<I
 			return JSON.parse(data);
 		} catch (error) {
 			console.log(error);
-			throw new Error(utils.formatString(constants.failedToParse(error.message), constants.azureFunctionLocalSettingsFileName, error.message));
+			throw new Error(constants.failedToParse(constants.azureFunctionLocalSettingsFileName, error));
 		}
 	}
 	return {
@@ -121,7 +121,7 @@ export async function getAzureFunctionsExtensionApi(): Promise<AzureFunctionsExt
 			return undefined;
 		}
 	}
-	const azureFunctionApi = apiProvider.getApi<AzureFunctionsExtensionApi>('*');
+	const azureFunctionApi = apiProvider.getApi<AzureFunctionsExtensionApi>('^1.8.0');
 	if (azureFunctionApi) {
 		return azureFunctionApi;
 	} else {
@@ -189,21 +189,21 @@ export async function getHostFiles(): Promise<string[] | undefined> {
 
 /**
  * Gets the local.settings.json file path
- * @param projectFile path of the azure function project
+ * @param projectFolder The path to the project the setting should be added to
  * @returns the local.settings.json file path
  */
-export async function getSettingsFile(projectFile: string): Promise<string | undefined> {
-	return path.join(path.dirname(projectFile), 'local.settings.json');
+export async function getSettingsFile(projectFolder: string): Promise<string | undefined> {
+	return path.join(projectFolder, 'local.settings.json');
 }
 
 /**
- * Retrieves the new function file once the file is created and the watcher disposable
- * @param projectFile is the path to the project file
+ * New azure function file watcher and watcher disposable to be used to watch for changes to the azure function project
+ * @param projectFolder is the parent directory to the project file
  * @returns the function file path once created and the watcher disposable
  */
-export function waitForNewFunctionFile(projectFile: string): IFileFunctionObject {
+export function waitForNewFunctionFile(projectFolder: string): IFileFunctionObject {
 	const watcher = vscode.workspace.createFileSystemWatcher((
-		path.dirname(projectFile), '**/*.cs'), false, true, true);
+		new vscode.RelativePattern(projectFolder, '**/*.cs')), false, true, true);
 	const filePromise = new Promise<string>((resolve, _) => {
 		watcher.onDidCreate((e) => {
 			resolve(e.fsPath);
@@ -243,11 +243,13 @@ export async function addNugetReferenceToProjectFile(selectedProjectFile: string
 /**
  * Adds the Sql Connection String to the local.settings.json
  * @param connectionString of the SQL Server connection that was chosen by the user
+ * @param projectFolder The path to the project the setting should be added to
+ * @param settingName The name of the setting to add to the local.settings.json
  */
-export async function addConnectionStringToConfig(connectionString: string, projectFile: string): Promise<void> {
-	const settingsFile = await getSettingsFile(projectFile);
+export async function addConnectionStringToConfig(connectionString: string, projectFolder: string, settingName: string = constants.sqlConnectionStringSetting): Promise<void> {
+	const settingsFile = await getSettingsFile(projectFolder);
 	if (settingsFile) {
-		await setLocalAppSetting(path.dirname(settingsFile), constants.sqlConnectionStringSetting, connectionString);
+		await setLocalAppSetting(path.dirname(settingsFile), settingName, connectionString);
 	}
 }
 
@@ -284,7 +286,7 @@ export async function isFunctionProject(folderPath: string): Promise<boolean> {
 /**
  * Prompts the user to select type of binding and returns result
  */
-export async function promptForBindingType(): Promise<(vscode.QuickPickItem & { type: BindingType }) | undefined> {
+export async function promptForBindingType(): Promise<BindingType | undefined> {
 	const inputOutputItems: (vscode.QuickPickItem & { type: BindingType })[] = [
 		{
 			label: constants.input,
@@ -302,7 +304,7 @@ export async function promptForBindingType(): Promise<(vscode.QuickPickItem & { 
 		ignoreFocusOut: true
 	}));
 
-	return selectedBinding;
+	return selectedBinding?.type;
 }
 
 /**
@@ -425,7 +427,6 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 					continue;
 				}
 
-				// show the connection string methods (user input and connection profile options)
 				const listOfConnectionStringMethods = [constants.connectionProfile, constants.userConnectionString];
 				let selectedConnectionStringMethod: string | undefined;
 				let connectionString: string | undefined = '';
@@ -559,7 +560,7 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 			// if user does not want to include password or user does not enter password, show warning message that they will have to enter it manually later in local.settings.json
 			void vscode.window.showWarningMessage(constants.userPasswordLater, constants.openFile, constants.closeButton).then(async (result) => {
 				if (result === constants.openFile) {
-					// open local.settings.json file
+					// open local.settings.json file (if it exists)
 					void vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(localSettingsPath));
 				}
 			});
@@ -573,4 +574,22 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 		void vscode.window.showErrorMessage(constants.failedToGetConnectionString);
 		return undefined;
 	}
+}
+
+export async function promptSelectDatabase(connectionInfo: IConnectionInfo): Promise<string | undefined> {
+	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+
+	let connectionURI = await vscodeMssqlApi.connect(connectionInfo);
+	let listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
+	const selectedDatabase = (await vscode.window.showQuickPick(listDatabases, {
+		canPickMany: false,
+		title: constants.selectDatabase,
+		ignoreFocusOut: true
+	}));
+
+	if (!selectedDatabase) {
+		// User cancelled
+		return undefined;
+	}
+	return selectedDatabase;
 }

@@ -82,6 +82,7 @@ async function handleLaunchSsmsMinGswDialogCommand(connectionContext?: azdata.Ob
 	if (!connectionContext) {
 		TelemetryReporter.sendErrorEvent(TelemetryViews.SsmsMinGsw, 'NoConnectionContext');
 		void vscode.window.showErrorMessage(localize('adminToolExtWin.noConnectionContextForGsw', "No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand"));
+		return;
 	}
 
 	return launchSsmsDialog(
@@ -101,7 +102,7 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 		return;
 	}
 
-	let oeNode: azdata.objectexplorer.ObjectExplorerNode;
+	let oeNode: azdata.objectexplorer.ObjectExplorerNode | undefined;
 	// Server node is a Connection node and so doesn't have the NodeInfo
 	if (connectionContext.isConnectionNode) {
 		oeNode = undefined;
@@ -153,11 +154,11 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 			// Process has exited so remove from map of running processes
 			runningProcesses.delete(proc.pid);
 			const err = stderr.toString();
-			if ((execException && execException.code !== 0) || err !== '') {
+			if ((execException?.code !== 0) || err !== '') {
 				TelemetryReporter.sendErrorEvent(
 					TelemetryViews.SsmsMinDialog,
 					'LaunchSsmsDialogError',
-					execException ? execException.code.toString() : '',
+					execException ? execException?.code?.toString() : '',
 					getTelemetryErrorType(err));
 			}
 
@@ -170,7 +171,7 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 
 	// If we're not using AAD the tool prompts for a password on stdin
 	if (params.useAad !== true) {
-		proc.stdin.end(password ? password : '');
+		proc.stdin!.end(password ? password : '');
 	}
 
 	// Save the process into our map so we can make sure to stop them if we exit before shutting down

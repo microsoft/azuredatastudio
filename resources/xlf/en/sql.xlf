@@ -3142,9 +3142,6 @@ Error: {1}</source>
     <trans-unit id="cellRunFailed">
       <source xml:lang="en">Run Cells failed - See error in output of the currently selected cell for more information.</source>
     </trans-unit>
-    <trans-unit id="code">
-      <source xml:lang="en">Code</source>
-    </trans-unit>
     <trans-unit id="codeCellsPreview">
       <source xml:lang="en">Add cell</source>
     </trans-unit>
@@ -3166,14 +3163,8 @@ Error: {1}</source>
     <trans-unit id="previousButtonLabel">
       <source xml:lang="en">&lt; Previous</source>
     </trans-unit>
-    <trans-unit id="runAll">
-      <source xml:lang="en">Run Cells</source>
-    </trans-unit>
     <trans-unit id="runAllPreview">
       <source xml:lang="en">Run all</source>
-    </trans-unit>
-    <trans-unit id="text">
-      <source xml:lang="en">Text</source>
     </trans-unit>
     <trans-unit id="textPreview">
       <source xml:lang="en">Text cell</source>
@@ -3445,6 +3436,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="trustLabel">
       <source xml:lang="en">Trusted</source>
+    </trans-unit>
+    <trans-unit id="untitledNotSupported">
+      <source xml:lang="en">Run with parameters is not supported for Untitled notebooks. Please save the notebook before continuing. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).</source>
     </trans-unit>
     <trans-unit id="untrustLabel">
       <source xml:lang="en">Not Trusted</source>
@@ -5338,6 +5332,12 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/notebook/browser/models/cell" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="cellExecutionComplete">
+      <source xml:lang="en">Cell execution is complete</source>
+    </trans-unit>
+    <trans-unit id="cellExecutionStarted">
+      <source xml:lang="en">Cell execution started</source>
+    </trans-unit>
     <trans-unit id="codeCellLabel">
       <source xml:lang="en">Code Cell {0}</source>
     </trans-unit>
@@ -6234,6 +6234,15 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.previewDatabaseUpdates">
       <source xml:lang="en">Preview Database Updates</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="TableDesigner.closeApplication">
+      <source xml:lang="en">&amp;&amp;Close Application</source>
+      <note>&amp;&amp; denotes a mnemonic</note>
+    </trans-unit>
+    <trans-unit id="TableDesigner.saveBeforeExit">
+      <source xml:lang="en">There are unsaved changes in Table Designer that will be lost if you close the application. Do you want to close the application?</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/tasks/common/tasksService" source-language="en" datatype="plaintext"><body>
