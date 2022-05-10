@@ -1,7 +1,6 @@
 // Adopted and converted to typescript from https://github.com/mleibman/SlickGrid/blob/gh-pages/plugins/slick.rowmovemanager.js
 // heavily modified
 
-// eslint-disable-next-line header/header
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { BaseClickableColumn, ClickableColumnOptions, IconColumnOptions } from 'sql/base/browser/ui/table/plugins/tableColumn';
 import { mixin } from 'vs/base/common/objects';
