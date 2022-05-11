@@ -16,7 +16,7 @@ export class HttpClient {
 	 * Makes http GET request to the given url. If useCache is set to true, returns the result from cache if exists
 	 * @param url url to make http GET request against
 	 * @param useCache if true and result is already cached the cached value will be returned
-	 * @returns result if http GET request
+	 * @returns result of http GET request
 	 */
 	public static async getRequest(url: string, useCache = false): Promise<any> {
 
