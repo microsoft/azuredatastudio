@@ -285,8 +285,10 @@ export async function isFunctionProject(folderPath: string): Promise<boolean> {
 
 /**
  * Prompts the user to select type of binding and returns result
+ *
+ * @param funcName (Optional) Name of the function to which we are adding the SQL Binding
  */
-export async function promptForBindingType(): Promise<BindingType | undefined> {
+export async function promptForBindingType(funcName?: string): Promise<BindingType | undefined> {
 	const inputOutputItems: (vscode.QuickPickItem & { type: BindingType })[] = [
 		{
 			label: constants.input,
@@ -300,7 +302,7 @@ export async function promptForBindingType(): Promise<BindingType | undefined> {
 
 	const selectedBinding = (await vscode.window.showQuickPick(inputOutputItems, {
 		canPickMany: false,
-		title: constants.selectBindingType,
+		title: constants.selectBindingType(funcName),
 		ignoreFocusOut: true
 	}));
 
