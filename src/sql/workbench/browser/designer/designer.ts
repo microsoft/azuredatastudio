@@ -818,7 +818,7 @@ export class Designer extends Disposable implements IThemable {
 					container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				}
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
-				let taskbar = this.addTableTaskbar(container, tableProperties);
+				const taskbar = this.addTableTaskbar(container, tableProperties);
 				const tableContainer = container.appendChild(DOM.$('.full-row'));
 				const table = new Table(tableContainer, {
 					dataProvider: new TableDataView()
@@ -841,10 +841,10 @@ export class Designer extends Disposable implements IThemable {
 					this._actionsMap.get(taskbar).map(a => a.table = table);
 				}
 				const columns: Slick.Column<Slick.SlickData>[] = [];
-				if (tableProperties.canInsertRows) {
+				if (tableProperties.canInsertRows || tableProperties.canMoveRows) {
 					// Add move context menu actions
 					this._register(table.onContextMenu((e) => {
-						this.openContextMenu(table, e, propertyPath, view);
+						this.openContextMenu(table, e, propertyPath, view, tableProperties);
 					}));
 				}
 				if (tableProperties.canMoveRows) {
@@ -1000,18 +1000,18 @@ export class Designer extends Disposable implements IThemable {
 		if (tableProperties.canAddRows || tableProperties.canMoveRows) {
 			const taskbarContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
 			const taskbar = new Taskbar(taskbarContainer);
-			let actions = [];
+			const actions = [];
 			if (tableProperties.canAddRows) {
-				let addRowAction = this._instantiationService.createInstance(AddRowAction, this, tableProperties);
+				const addRowAction = this._instantiationService.createInstance(AddRowAction, this, tableProperties);
 				actions.push(addRowAction);
 			}
 			if (tableProperties.canMoveRows) {
-				let moveUpAction = this._instantiationService.createInstance(MoveRowUpAction, this);
-				let moveDownAction = this._instantiationService.createInstance(MoveRowDownAction, this);
+				const moveUpAction = this._instantiationService.createInstance(MoveRowUpAction, this);
+				const moveDownAction = this._instantiationService.createInstance(MoveRowDownAction, this);
 				actions.push(moveUpAction);
 				actions.push(moveDownAction);
 			}
-			let taskbarContent: ITaskbarContent[] = actions.map((a) => { return { action: a }; });
+			const taskbarContent: ITaskbarContent[] = actions.map((a) => { return { action: a }; });
 			taskbar.setContent(taskbarContent);
 			this._actionsMap.set(taskbar, actions);
 			return taskbar;
@@ -1019,19 +1019,25 @@ export class Designer extends Disposable implements IThemable {
 		return undefined;
 	}
 
-	private openContextMenu(table: Table<Slick.SlickData>, event: ITableMouseEvent, propertyPath: DesignerPropertyPath, view: DesignerUIArea): void {
+	private openContextMenu(
+		table: Table<Slick.SlickData>,
+		event: ITableMouseEvent,
+		propertyPath: DesignerPropertyPath,
+		view: DesignerUIArea,
+		tableProperties: DesignerTableProperties
+	): void {
 		const rowIndex = event.cell.row;
-		let tableActionContext: DesignerTableActionContext = {
+		const tableActionContext: DesignerTableActionContext = {
 			table: table,
 			path: propertyPath,
 			source: view,
 			selectedRow: rowIndex
 		};
-		let data = table.grid.getData() as Slick.DataProvider<Slick.SlickData>;
+		const data = table.grid.getData() as Slick.DataProvider<Slick.SlickData>;
 		if (!data || rowIndex >= data.getLength()) {
 			return undefined;
 		}
-		let actions = this.getTableActions();
+		const actions = this.getTableActions(tableProperties);
 		actions.forEach(a => {
 			if (a instanceof DesignerTableAction) {
 				a.table = table;
@@ -1045,13 +1051,20 @@ export class Designer extends Disposable implements IThemable {
 		});
 	}
 
-	private getTableActions(): IAction[] {
-		let actions: IAction[];
-		let insertRowBefore = this._instantiationService.createInstance(InsertBeforeSelectedRowAction, this);
-		let insertRowAfter = this._instantiationService.createInstance(InsertAfterSelectedRowAction, this);
-		let moveRowUp = this._instantiationService.createInstance(MoveRowUpAction, this);
-		let moveRowDown = this._instantiationService.createInstance(MoveRowDownAction, this);
-		actions = [insertRowBefore, insertRowAfter, moveRowUp, moveRowDown];
+	private getTableActions(tableProperties: DesignerTableProperties): IAction[] {
+		const actions: IAction[] = [];
+		if (tableProperties.canInsertRows) {
+			const insertRowBefore = this._instantiationService.createInstance(InsertBeforeSelectedRowAction, this);
+			const insertRowAfter = this._instantiationService.createInstance(InsertAfterSelectedRowAction, this);
+			actions.push(insertRowBefore);
+			actions.push(insertRowAfter);
+		}
+		if (tableProperties.canMoveRows) {
+			const moveRowUp = this._instantiationService.createInstance(MoveRowUpAction, this);
+			const moveRowDown = this._instantiationService.createInstance(MoveRowDownAction, this);
+			actions.push(moveRowUp);
+			actions.push(moveRowDown);
+		}
 		return actions;
 	}
 
@@ -1096,10 +1109,19 @@ export class Designer extends Disposable implements IThemable {
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 	const listHoverBackgroundColor = theme.getColor(listHoverBackground);
+	const listActiveSelectionBackgroundColor = theme.getColor(listActiveSelectionBackground);
 	if (listHoverBackgroundColor) {
 		collector.addRule(`
 		.designer-component .slick-cell.isDragging {
 			background-color: ${listHoverBackgroundColor};
+		}
+		.designer-component .slick-reorder-proxy {
+			background: ${listActiveSelectionBackgroundColor};
+			opacity: 0.5;
+		}
+		.designer-component .slick-reorder-guide {
+			background: ${listActiveSelectionBackgroundColor};
+			opacity: 1;
 		}
 		`);
 	}

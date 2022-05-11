@@ -74,8 +74,8 @@ export class RowMoveManager<T extends Slick.SlickData> extends BaseClickableColu
 	}
 
 	private onDragStart(e: MouseEvent, data: OnRowMoveDragStartEventArgs<T>) {
-		let cell = this._grid.getCellFromEvent(e);
-		let highlightStyle = {};
+		const cell = this._grid.getCellFromEvent(e);
+		const highlightStyle = {};
 		const columns = this._grid.getColumns();
 		highlightStyle[cell.row] = {};
 		columns.forEach((c) => {
@@ -101,7 +101,7 @@ export class RowMoveManager<T extends Slick.SlickData> extends BaseClickableColu
 			this._grid.setSelectedRows(selectedRows);
 		}
 
-		let rowHeight = this._grid.getOptions().rowHeight;
+		const rowHeight = this._grid.getOptions().rowHeight;
 
 		data.selectedRows = selectedRows;
 
@@ -129,12 +129,12 @@ export class RowMoveManager<T extends Slick.SlickData> extends BaseClickableColu
 
 		e.stopImmediatePropagation();
 
-		let top = e.pageY - jQuery(this._canvas).offset().top;
+		const top = e.pageY - jQuery(this._canvas).offset().top;
 		data.selectionProxy.css('top', top - 5);
 
-		let insertBefore = Math.max(0, Math.min(Math.round(top / this._grid.getOptions().rowHeight), this._grid.getDataLength()));
+		const insertBefore = Math.max(0, Math.min(Math.round(top / this._grid.getOptions().rowHeight), this._grid.getDataLength()));
 		if (insertBefore !== data.insertBefore) {
-			let eventData: RowMoveOnDragEventData = {
+			const eventData: RowMoveOnDragEventData = {
 				'rows': data.selectedRows,
 				'insertBefore': insertBefore
 			};
@@ -164,7 +164,7 @@ export class RowMoveManager<T extends Slick.SlickData> extends BaseClickableColu
 		data.selectionProxy.remove();
 
 		if (data.canMove) {
-			let eventData: RowMoveOnDragEventData = {
+			const eventData: RowMoveOnDragEventData = {
 				'rows': data.selectedRows,
 				'insertBefore': data.insertBefore
 			};

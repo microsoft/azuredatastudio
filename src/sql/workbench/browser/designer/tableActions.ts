@@ -160,7 +160,7 @@ export class InsertBeforeSelectedRowAction extends Action {
 	}
 
 	public override async run(context: DesignerTableActionContext): Promise<void> {
-		let rowIndex = context.selectedRow;
+		const rowIndex = context.selectedRow;
 		return new Promise((resolve) => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Add,
@@ -181,7 +181,7 @@ export class InsertAfterSelectedRowAction extends Action {
 	}
 
 	public override async run(context: DesignerTableActionContext): Promise<void> {
-		let rowIndex = context.selectedRow;
+		const rowIndex = context.selectedRow;
 		return new Promise((resolve) => {
 			this.designer.handleEdit({
 				type: DesignerEditType.Add,
