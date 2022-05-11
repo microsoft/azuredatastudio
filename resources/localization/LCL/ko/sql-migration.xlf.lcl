@@ -1321,6 +1321,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.location" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure region for your Azure Database Migration Service. Only regions that contain a service will be shown.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Database Migration Service의 Azure 지역입니다. 서비스를 포함하는 지역만 표시합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.provision.failed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to provision a Database Migration Service. Wait a few minutes and then try again.]]></Val>
@@ -1330,6 +1339,33 @@
           <Prev Cat="Text">
             <Val><![CDATA[Database migration service has failed to provision. Please try again after some time.]]></Val>
           </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.resource" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Your Azure Database Migration Service resource name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Database Migration Service 리소스 이름]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.resource_group" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Resource group for your Azure SQL target. Only resource groups that contain a service will be shown.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL 대상의 리소스 그룹입니다. 서비스를 포함하는 리소스 그룹만 표시합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.subscription" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Subscription name for your Azure Database Migration Service]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Database Migration Service의 구독 이름]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2358,24 +2394,24 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.no.location.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No location found.]]></Val>
+          <Val><![CDATA[No locations found.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[위치를 찾을 수 없습니다.]]></Val>
+            <Val><![CDATA[위치를 찾을 수 없음.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[No location found]]></Val>
+            <Val><![CDATA[No location found.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.no.managedInstance.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No managed instance found.]]></Val>
+          <Val><![CDATA[No managed instances found.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[관리되는 인스턴스를 찾을 수 없음]]></Val>
+            <Val><![CDATA[관리되는 인스턴스를 찾을 수 없음.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[No managed instance found]]></Val>
+            <Val><![CDATA[No managed instance found.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -2400,36 +2436,36 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.no.storageAccount.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No storage account found.]]></Val>
+          <Val><![CDATA[No storage accounts found.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[스토리지 계정이 없습니다.]]></Val>
+            <Val><![CDATA[스토리지 계정을 찾을 수 없음.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[No storage account found]]></Val>
+            <Val><![CDATA[No storage account found.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.no.subscription.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No subscription found.]]></Val>
+          <Val><![CDATA[No subscriptions found.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[구독을 찾을 수 없습니다.]]></Val>
+            <Val><![CDATA[구독을 찾을 수 없음.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[No subscription found]]></Val>
+            <Val><![CDATA[No subscription found.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.no.virtualMachine.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No virtual machine found.]]></Val>
+          <Val><![CDATA[No virtual machines found.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[가상 머신이 없습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[No virtual machine found]]></Val>
+            <Val><![CDATA[No virtual machine found.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -3690,10 +3726,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.location" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure region for your Azure SQL target]]></Val>
+          <Val><![CDATA[Azure region for your Azure SQL target. Only regions that contain a target eligible for migration will be shown.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL 대상에 대한 Azure 지역]]></Val>
+            <Val><![CDATA[Azure SQL 대상의 Azure 지역입니다. 마이그레이션에 적합한 대상을 포함하는 지역만 표시합니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure region for your Azure SQL target]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4005,10 +4044,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.resource_group" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Resource group for your Azure SQL target]]></Val>
+          <Val><![CDATA[Resource group for your Azure SQL target. Only resource groups that contain a target eligible for migration will be shown.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL 대상의 리소스 그룹]]></Val>
+            <Val><![CDATA[Azure SQL 대상의 리소스 그룹입니다. 마이그레이션에 적합한 대상을 포함하는 리소스 그룹만 표시합니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Resource group for your Azure SQL target]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4756,7 +4798,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.unavailable.managedInstance" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.unavailable.target" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[(Unavailable) {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -4800,6 +4842,15 @@
           <Val><![CDATA[View/Select]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[보기/선택]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.vm.not.ready" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The virtual machine '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available virtual machine.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['{0}' 가상 머신은 현재 '{1}' 상태이므로 마이그레이션에 사용할 수 없습니다. 계속하려면 사용 가능한 가상 머신을 선택하세요.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

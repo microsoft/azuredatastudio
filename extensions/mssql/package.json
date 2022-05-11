@@ -383,6 +383,11 @@
           "type": "boolean",
           "description": "%mssql.ignorePlatformWarning%",
           "default": false
+        },
+        "mssql.parallelMessageProcessing": {
+          "type": "boolean",
+          "description": "%mssql.parallelMessageProcessing%",
+          "default": false
         }
       }
     },
