@@ -857,7 +857,7 @@ export class Designer extends Disposable implements IThemable {
 					taskbar.context = { table: table, path: propertyPath, source: view };
 					this._actionsMap.get(taskbar).map(a => a.table = table);
 				}
-				let columns: Slick.Column<Slick.SlickData>[] = [];
+				const columns: Slick.Column<Slick.SlickData>[] = [];
 				if (tableProperties.canInsertRows) {
 					// Add move context menu actions
 					this._register(table.onContextMenu((e) => {
@@ -895,7 +895,7 @@ export class Designer extends Disposable implements IThemable {
 					columns.push(moveRowsPlugin.definition);
 				}
 				table.ariaLabel = tableProperties.ariaLabel;
-				tableProperties.columns.map((propName, index) => {
+				columns.push(...tableProperties.columns.map((propName, index) => {
 					const propertyDefinition = tableProperties.itemProperties.find(item => item.propertyName === propName);
 					switch (propertyDefinition.componentType) {
 						case 'checkbox':
@@ -914,32 +914,27 @@ export class Designer extends Disposable implements IThemable {
 									source: view
 								});
 							});
-							columns.push(checkboxColumn.definition);
 							return checkboxColumn.definition;
 						case 'dropdown':
 							const dropdownProperties = propertyDefinition.componentProperties as DropDownProperties;
-							const dropdown = {
+							return {
 								id: index.toString(),
 								name: dropdownProperties.title,
 								field: propertyDefinition.propertyName,
 								editor: this._tableCellEditorFactory.getDropdownEditorClass({ view: view, path: propertyPath }, dropdownProperties.values as string[], dropdownProperties.isEditable),
 								width: dropdownProperties.width as number
 							};
-							columns.push(dropdown);
-							return dropdown;
 						default:
 							const inputProperties = propertyDefinition.componentProperties as InputBoxProperties;
-							const input = {
+							return {
 								id: index.toString(),
 								name: inputProperties.title,
 								field: propertyDefinition.propertyName,
 								editor: this._tableCellEditorFactory.getTextEditorClass({ view: view, path: propertyPath }, inputProperties.inputType),
 								width: inputProperties.width as number
 							};
-							columns.push(input);
-							return input;
 					}
-				});
+				}));
 				if (tableProperties.canRemoveRows) {
 					const deleteRowColumn = new ButtonColumn({
 						id: 'deleteRow',
@@ -995,12 +990,12 @@ export class Designer extends Disposable implements IThemable {
 						}
 					}
 					if (data.row !== undefined) {
-						currentTableActions.map(a => a.updateState(data.row));
+						currentTableActions.forEach(a => a.updateState(data.row));
 						table.grid.setSelectedRows([data.row]);
 					}
 				});
 				table.onBlur((e) => {
-					currentTableActions.map(a => a.updateState());
+					currentTableActions.forEach(a => a.updateState());
 					table.grid.setSelectedRows([]);
 					table.grid.resetActiveCell();
 				});

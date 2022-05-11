@@ -18,13 +18,13 @@ export interface DesignerTableActionContext {
 
 export class DesignerTableAction extends Action {
 
-	private _table: Table<Slick.SlickData>;
+	protected _table: Table<Slick.SlickData>;
 
 	constructor(
 		id: string,
 		label: string,
 		icon: string,
-		private needsRowSelection: boolean
+		protected needsRowSelection: boolean
 	) {
 		super(id, label, icon);
 	}
@@ -35,20 +35,12 @@ export class DesignerTableAction extends Action {
 	}
 
 	public updateState(row?: number) {
-		if (row !== undefined) {
+		if (row === undefined) {
 			if (!this.needsRowSelection) {
 				this.enabled = true;
-				return;
-			}
-			if (row === this._table.getData().getLength() - 1 && this instanceof MoveRowDownAction) {
-				this.enabled = false;
-			} else if (row === 0 && this instanceof MoveRowUpAction) {
-				this.enabled = false;
 			} else {
-				this.enabled = true;
+				this.enabled = false;
 			}
-		} else {
-			this.enabled = !this.needsRowSelection;
 		}
 	}
 }
@@ -107,6 +99,15 @@ export class MoveRowUpAction extends DesignerTableAction {
 			resolve();
 		});
 	}
+
+	public override updateState(row?: number): void {
+		if (row === 0 && this instanceof MoveRowUpAction) {
+			this.enabled = false;
+		} else {
+			this.enabled = true;
+		}
+		super.updateState(row);
+	}
 }
 
 export class MoveRowDownAction extends DesignerTableAction {
@@ -136,6 +137,16 @@ export class MoveRowDownAction extends DesignerTableAction {
 			});
 			resolve();
 		});
+	}
+
+	public override updateState(row?: number): void {
+		super.updateState(row);
+		if (row === this._table.getData().getLength() - 1 && this instanceof MoveRowDownAction) {
+			this.enabled = false;
+		} else {
+			this.enabled = true;
+		}
+		super.updateState(row);
 	}
 }
 
