@@ -25,23 +25,25 @@ export class ManagePackagesDialog extends Dialog {
 
 		const loadingSpinner = `${ManagePackagesDialog.dialogPage} div.modelview-loadingComponent-spinner`;
 
-		// Wait for "Search Pip packages" placeholder in the input box to know that the tab has finished initializing
+		// Wait for "Search Pip packages" placeholder in the input box and N/A for package information to know that the tab has finished initializing
 		const searchPipPackagesInput = `${ManagePackagesDialog.dialogPage} input[placeholder="Search Pip packages"]`;
 		await this.code.waitForElement(searchPipPackagesInput);
+		const packageNameSelector = `${ManagePackagesDialog.dialogPage} div[id="textContainer"] span`;
+		await this.code.waitForTextContent(packageNameSelector, 'N/A');
+		const versionSelectBox = `${ManagePackagesDialog.dialogPage} select[class="monaco-select-box monaco-select-box-dropdown-padding"][aria-label="Package Version"]`;
+		await this.code.waitForTextContent(versionSelectBox, 'N/A');
+
 		const searchInputBox = `${ManagePackagesDialog.dialogPage} .monaco-inputbox`;
 		await this.code.waitAndClick(searchInputBox);
-
 		const searchInputBoxEditor = `${searchInputBox} input.input`;
 		await this.code.waitForTypeInEditor(searchInputBoxEditor, packageName);
 
 		const searchButton = `${ManagePackagesDialog.dialogPage} a[class="monaco-button monaco-text-button"][aria-label="Search"][aria-disabled="false"]`;
 		await this.code.waitAndClick(searchButton);
 
-		const packageNameSelector = `${ManagePackagesDialog.dialogPage} div[id="textContainer"] span`;
 		await this.code.waitForTextContent(packageNameSelector, packageName);
 
 		if (packageVersion) {
-			const versionSelectBox = `${ManagePackagesDialog.dialogPage} select[class="monaco-select-box monaco-select-box-dropdown-padding"][aria-label="Package Version"]`;
 			await this.code.waitForSetValue(versionSelectBox, packageVersion);
 		}
 
