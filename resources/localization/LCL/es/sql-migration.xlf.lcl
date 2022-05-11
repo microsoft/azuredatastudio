@@ -1324,6 +1324,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.location" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure region for your Azure Database Migration Service. Only regions that contain a service will be shown.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Región de Azure para su servicio de Azure Database Migration Service. Solo se mostrarán las regiones que contienen un servicio.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1342,18 +1345,27 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.resource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Your Azure Database Migration Service resource name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nombre del recurso de Azure Database Migration Service]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.resource_group" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Resource group for your Azure SQL target. Only resource groups that contain a service will be shown.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Grupo de recursos para el destino de Azure SQL. Solo se mostrarán los grupos de recursos que contienen un servicio.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.subscription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Subscription name for your Azure Database Migration Service]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nombre de suscripción para su servicio de Azure Database Migration Service.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2383,8 +2395,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.no.location.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No locations found.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[No se encontró ninguna ubicación.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se han encontrado ubicaciones.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No location found.]]></Val>
@@ -2395,8 +2407,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.no.managedInstance.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No managed instances found.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[No se encontraron instancias administradas.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se han encontrado instancias administradas.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No managed instance found.]]></Val>
@@ -2425,8 +2437,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.no.storageAccount.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No storage accounts found.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[No se encontró ninguna cuenta de almacenamiento.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se ha encontrado ninguna cuenta de almacenamiento.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No storage account found.]]></Val>
@@ -2438,7 +2450,7 @@
         <Str Cat="Text">
           <Val><![CDATA[No subscriptions found.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[No se encontraron suscripciones.]]></Val>
+            <Val><![CDATA[No se han encontrado suscripciones.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No subscription found.]]></Val>
@@ -3715,8 +3727,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.location" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure region for your Azure SQL target. Only regions that contain a target eligible for migration will be shown.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Región de Azure para su destino de Azure SQL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Región de Azure para el destino de Azure SQL. Solo se mostrarán las regiones que contienen un destino apto para la migración.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure region for your Azure SQL target]]></Val>
@@ -4033,8 +4045,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.resource_group" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Resource group for your Azure SQL target. Only resource groups that contain a target eligible for migration will be shown.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Grupo de recursos para el destino de Azure SQL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Grupo de recursos para el destino de Azure SQL. Solo se mostrarán los grupos de recursos que contengan un destino apto para la migración.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Resource group for your Azure SQL target]]></Val>
@@ -4837,6 +4849,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.vm.not.ready" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The virtual machine '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available virtual machine.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La máquina virtual \"{0}\" no está disponible para la migración porque se encuentra actualmente en el estado \"{1}\". Para continuar, seleccione una máquina virtual disponible.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

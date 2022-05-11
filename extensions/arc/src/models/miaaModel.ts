@@ -15,6 +15,7 @@ import { ConnectToMiaaSqlDialog } from '../ui/dialogs/connectMiaaDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { ControllerModel, Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
+import { ConnectionMode } from '../constants';
 
 export type DatabaseModel = { name: string, status: string, earliestBackup: string, lastBackup: string };
 export type RPModel = { recoveryPointObjective: string, retentionDays: string };
@@ -98,10 +99,29 @@ export class MiaaModel extends ResourceModel {
 		this._refreshPromise = new Deferred();
 		try {
 			try {
-				const result = await this._azApi.az.sql.miarc.show(this.info.name, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars);
+				let result;
+				if (this.controllerModel.info.connectionMode === ConnectionMode.direct) {
+					result = await this._azApi.az.sql.miarc.show(
+						this.info.name,
+						{
+							resourceGroup: this.controllerModel.info.resourceGroup,
+							namespace: undefined
+						},
+						this.controllerModel.azAdditionalEnvVars
+					);
+				} else {
+					result = await this._azApi.az.sql.miarc.show(
+						this.info.name,
+						{
+							resourceGroup: undefined,
+							namespace: this.controllerModel.info.namespace
+						},
+						this.controllerModel.azAdditionalEnvVars
+					);
+				}
 				this._config = result.stdout;
 				this.configLastUpdated = new Date();
-				this.rpSettings.retentionDays = this._config?.spec?.backup?.retentionPeriodInDays?.toString() ?? '';
+				this.rpSettings.retentionDays = this._config?.properties?.k8SRaw?.spec?.backup?.retentionPeriodInDays?.toString() ?? '';
 				this._onConfigUpdated.fire(this._config);
 				this._onDatabasesUpdated.fire(this._databases);
 			} catch (err) {
@@ -115,7 +135,7 @@ export class MiaaModel extends ResourceModel {
 			}
 
 			// If we have an external endpoint configured then fetch the databases now
-			if (this._config.status.primaryEndpoint) {
+			if (this._config.properties?.k8SRaw?.status.primaryEndpoint) {
 				this.getDatabases(false).catch(_err => {
 					// If an error occurs still fire the event so callers can know to
 					// update (e.g. so dashboards don't show the loading icon forever)
@@ -197,7 +217,7 @@ export class MiaaModel extends ResourceModel {
 	}
 
 	protected createConnectionProfile(): azdata.IConnectionProfile {
-		const ipAndPort = parseIpAndPort(this.config?.status.primaryEndpoint || '');
+		const ipAndPort = parseIpAndPort(this.config?.properties?.k8SRaw?.status.primaryEndpoint || '');
 		return {
 			serverName: `${ipAndPort.ip},${ipAndPort.port}`,
 			databaseName: '',

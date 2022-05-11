@@ -288,7 +288,7 @@ export class MiaaBackupsPage extends DashboardPage {
 		} else {
 			// If we don't have an endpoint then there's no point in showing the connect button - but the logic
 			// to display text informing the user of this is already handled by the handleMiaaConfigUpdated
-			if (this._miaaModel?.config?.status.primaryEndpoint) {
+			if (this._miaaModel?.config?.properties?.k8SRaw?.status.primaryEndpoint) {
 				this._connectToServerLoading.loading = false;
 				this._connectToServerButton.enabled = true;
 			}
@@ -296,7 +296,7 @@ export class MiaaBackupsPage extends DashboardPage {
 	}
 
 	private refreshRD(): void {
-		this._saveArgs.retentionDays = this._miaaModel.config?.spec?.backup?.retentionPeriodInDays.toString() ?? '';
+		this._saveArgs.retentionDays = this._miaaModel.config?.properties?.k8SRaw?.spec?.backup?.retentionPeriodInDays.toString() ?? '';
 	}
 
 	// Create restore button for every database entry in the database table
