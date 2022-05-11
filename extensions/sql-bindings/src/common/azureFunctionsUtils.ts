@@ -338,20 +338,8 @@ export async function promptForObjectName(bindingType: BindingType, connectionUR
 			}) ?? '';
 		} else {
 			const vscodeMssqlApi = await utils.getVscodeMssqlApi();
-			// let listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
 
-			// const selectedDatabase = (await vscode.window.showQuickPick(listDatabases, {
-			// 	canPickMany: false,
-			// 	title: constants.selectDatabase,
-			// 	ignoreFocusOut: true
-			// }));
-
-			// if (!selectedDatabase) {
-			// 	// User cancelled
-			// 	return;
-			// }
-
-			const listOfTableOrView = [constants.selectTable];
+			const listOfTableOrView = [constants.selectTable, constants.selectView];
 			const selectedObjectToQuery = await vscode.window.showQuickPick(listOfTableOrView, {
 				canPickMany: false,
 				title: constants.selectTableOrView,

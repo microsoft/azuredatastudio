@@ -64,24 +64,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 					telemetryStep = CreateAzureFunctionStep.getSelectedFolder;
 					// user either has not folder open or an empty workspace
 					// prompt user to choose a folder to create the project in
-					const browseProjectLocation = await vscode.window.showQuickPick(
-						[constants.browseEllipsisWithIcon],
-						{ title: constants.selectAzureFunctionProjFolder, ignoreFocusOut: true });
-					if (!browseProjectLocation) {
-						// User cancelled
-						return;
-					}
-					const projectFolders = (await vscode.window.showOpenDialog({
-						canSelectFiles: false,
-						canSelectFolders: true,
-						canSelectMany: false,
-						openLabel: constants.selectButton
-					}));
-					if (!projectFolders) {
-						// User cancelled
-						return;
-					}
-					projectFolder = projectFolders[0].fsPath;
+
+					projectFolder = '/Users/vasubhog/GitProjects/workspaceAFTets';
 					TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 						.withAdditionalProperties(propertyBag).send();
 					break;
