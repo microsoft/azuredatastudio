@@ -33,14 +33,14 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private styleElement: HTMLStyleElement;
 	private idPrefix: string;
 
-	private _grid: Slick.Grid<T>;
-	private _columns: Slick.Column<T>[];
-	private _data: IDisposableDataProvider<T>;
+	protected _grid: Slick.Grid<T>;
+	protected _columns: Slick.Column<T>[];
+	protected _data: IDisposableDataProvider<T>;
 	private _sorter?: ITableSorter<T>;
 
 	private _autoscroll?: boolean;
 	private _container: HTMLElement;
-	private _tableContainer: HTMLElement;
+	protected _tableContainer: HTMLElement;
 
 	private _classChangeTimeout: any;
 
@@ -69,12 +69,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		this._register(this._data);
 
-		if (configuration && configuration.columns) {
-			this._columns = configuration.columns;
-		} else {
-			this._columns = new Array<Slick.Column<T>>();
-		}
-
 		let newOptions = mixin(options || {}, getDefaultOptions<T>(), false);
 
 		this._container = document.createElement('div');
@@ -98,7 +92,14 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._tableContainer = document.createElement('div');
 		this._container.appendChild(this._tableContainer);
 		this.styleElement = DOM.createStyleSheet(this._container);
-		this._grid = new Slick.Grid<T>(this._tableContainer, this._data, this._columns, newOptions);
+		this._grid = new Slick.Grid<T>(this._tableContainer, this._data, [], newOptions);
+
+		if (configuration && configuration.columns) {
+			this.columns = configuration.columns;
+		} else {
+			this.columns = new Array<Slick.Column<T>>();
+		}
+
 		this.idPrefix = this._tableContainer.classList[0];
 		this._container.classList.add(this.idPrefix);
 		if (configuration && configuration.sorter) {
@@ -175,6 +176,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 			this._data = new TableDataView<T>(data);
 		}
 		this._grid.setData(this._data, true);
+		this._data.filter(this._grid.getColumns());
 	}
 
 	getData(): IDisposableDataProvider<T> {
