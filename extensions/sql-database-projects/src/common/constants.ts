@@ -149,10 +149,16 @@ export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not 
 // Deploy
 export const SqlServerName = 'SQL server';
 export const AzureSqlServerName = 'Azure SQL server';
+export const SqlServerDockerImageName = 'Microsoft SQL Server';
+export const AzureSqlDbFullDockerImageName = 'Azure SQL Database emulator Full';
+export const AzureSqlDbLiteDockerImageName = 'Azure SQL Database emulator Lite';
 export const AzureSqlLogicalServerName = 'Azure SQL logical server';
 export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
+export const defaultQuickPickItem = localize('defaultQuickPickItem', "Default - image defined as default in the container registry");
+export function dockerImagesPlaceHolder(name: string) { return localize('dockerImagesPlaceHolder', 'Use {0} on local arm64/Apple Silicon', name); }
 export function publishToExistingServer(name: string) { return localize('publishToExistingServer', "Publish to an existing {0}", name); }
 export function publishToDockerContainer(name: string) { return localize('publishToDockerContainer', "Publish to new {0} local development container", name); }
+export const publishToAzureEmulator = localize('publishToAzureEmulator', "Publish to new Azure SQL Database emulator");
 export const publishToNewAzureServer = localize('publishToNewAzureServer', "Publish to new Azure SQL logical server");
 export const azureServerName = localize('azureServerName', "Azure SQL server name");
 export const azureSubscription = localize('azureSubscription', "Azure subscription");
@@ -171,12 +177,14 @@ export function enterUser(name: string) { return localize('enterUser', "Enter {0
 export function enterPassword(name: string) { return localize('enterPassword', "Enter {0} admin password", name); }
 export function confirmPassword(name: string) { return localize('confirmPassword', "Confirm {0} admin password", name); }
 export function selectBaseImage(name: string) { return localize('selectBaseImage', "Select the base {0} docker image", name); }
+export function selectImageTag(name: string) { return localize('selectImageTag', "Select the image tag or press enter to use the default value", name); }
 export function invalidSQLPasswordMessage(name: string) { return localize('invalidSQLPassword', "{0} password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy", name); }
 export function passwordNotMatch(name: string) { return localize('passwordNotMatch', "{0} password doesn't match the confirmation password", name); }
 export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be number");
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
+export const dockerImageDefaultTag = 'latest';
 
 // Publish to Container
 export const eulaAgreementTemplate = localize({ key: 'eulaAgreementTemplate', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.");

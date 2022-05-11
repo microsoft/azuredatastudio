@@ -213,9 +213,13 @@ export async function launchPublishTargetOption(project: Project): Promise<const
 	const target = project.getProjectTargetVersion();
 	const name = getPublishServerName(target);
 	const logicalServerName = target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure) ? constants.AzureSqlLogicalServerName : constants.SqlServerName;
+
+	// Options list based on target
 	const options = target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure) ?
-		[constants.publishToDockerContainer(name), constants.publishToNewAzureServer, constants.publishToExistingServer(logicalServerName)] :
+		[constants.publishToAzureEmulator, constants.publishToNewAzureServer, constants.publishToExistingServer(logicalServerName)] :
 		[constants.publishToDockerContainer(name), constants.publishToExistingServer(logicalServerName)];
+
+	// Show the options to the user
 	const publishOption = await vscode.window.showQuickPick(
 		options,
 		{ title: constants.selectPublishOption, ignoreFocusOut: true });
@@ -225,10 +229,13 @@ export async function launchPublishTargetOption(project: Project): Promise<const
 		return undefined;
 	}
 
+	// Map the title to the publish option type
 	switch (publishOption) {
 		case constants.publishToExistingServer(name):
 			return constants.PublishTargetType.existingServer;
 		case constants.publishToDockerContainer(name):
+			return constants.PublishTargetType.docker;
+		case constants.publishToAzureEmulator:
 			return constants.PublishTargetType.docker;
 		case constants.publishToNewAzureServer:
 			return constants.PublishTargetType.newAzureServer;
