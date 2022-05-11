@@ -101,7 +101,7 @@ export class MoveRowUpAction extends DesignerTableAction {
 	}
 
 	public override updateState(row?: number): void {
-		if (row === 0 && this instanceof MoveRowUpAction) {
+		if (row === 0) {
 			this.enabled = false;
 		} else {
 			this.enabled = true;
@@ -141,7 +141,7 @@ export class MoveRowDownAction extends DesignerTableAction {
 
 	public override updateState(row?: number): void {
 		super.updateState(row);
-		if (row === this._table.getData().getLength() - 1 && this instanceof MoveRowDownAction) {
+		if (row === this._table.getData().getLength() - 1) {
 			this.enabled = false;
 		} else {
 			this.enabled = true;
