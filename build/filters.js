@@ -122,7 +122,8 @@ module.exports.indentationFilter = [
 	'!extensions/simple-browser/media/*.js',
 	'!resources/xlf/LocProject.json',
 	'!build/**/*',
-	'!test/coverage/**'
+	'!test/coverage/**',
+	'!extensions/**/coverage/**'
 ];
 
 module.exports.copyrightFilter = [
