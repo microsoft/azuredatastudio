@@ -85,9 +85,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		this._register(DOM.addDisposableListener(this._container, DOM.EventType.BLUR, () => {
 			clearTimeout(this._classChangeTimeout);
+			this._onBlur.fire();
 			this._classChangeTimeout = setTimeout(() => {
 				this._container.classList.remove('focused');
-				this._onBlur.fire();
 			}, 100);
 		}, true));
 

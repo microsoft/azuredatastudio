@@ -94,14 +94,13 @@ export class Designer extends Disposable implements IThemable {
 	private _input: DesignerComponentInput;
 	private _tableCellEditorFactory: TableCellEditorFactory;
 	private _propertiesPane: DesignerPropertiesPane;
-	private _buttons: Button[] = [];
-	private _actions: IAction[] = [];
 	private _inputDisposable: DisposableStore;
 	private _loadingTimeoutHandle: any;
 	private _groupHeaders: HTMLElement[] = [];
 	private _issuesView: DesignerIssuesTabPanelView;
 	private _scriptEditorView: DesignerScriptEditorTabPanelView;
-	private _taskbar: Taskbar;
+	private _taskbars: Taskbar[] = [];
+	private _actionsMap: Map<Taskbar, IAction[]> = new Map<Taskbar, IAction[]>();
 	private _onStyleChangeEventEmitter = new Emitter<void>();
 
 	constructor(private readonly _container: HTMLElement,
@@ -262,10 +261,6 @@ export class Designer extends Disposable implements IThemable {
 			separatorBorder: styles.paneSeparator
 		});
 
-		this._buttons.forEach((button) => {
-			this.styleComponent(button);
-		});
-
 		this._groupHeaders.forEach((header) => {
 			this.styleGroupHeader(header);
 		});
@@ -323,19 +318,13 @@ export class Designer extends Disposable implements IThemable {
 	}
 
 	private clearUI(): void {
-		this._buttons.forEach(button => button.dispose());
-		this._buttons = [];
 		this._componentMap.forEach(item => item.component.dispose());
 		this._componentMap.clear();
 		DOM.clearNode(this._topContentContainer);
 		this._contentTabbedPanel.clearTabs();
 		this._propertiesPane.clear();
 		this._groupHeaders = [];
-		if (this._taskbar) {
-			this._actions.forEach(action => action.dispose());
-			this._actions = [];
-			this._taskbar.dispose();
-		}
+		this._taskbars.map(t => t.dispose());
 	}
 
 	private initializeDesigner(): void {
@@ -369,7 +358,7 @@ export class Designer extends Disposable implements IThemable {
 				this.layoutTabbedPanel();
 			}
 			if (edit.type === DesignerEditType.Add) {
-				// For tables in the main view, move focus to the first cell of the newly added row, and the properties pane will be showing the new object.
+				// For tables in the main view, move focus to the first editable cell of the newly added row, and the properties pane will be showing the new object.
 				if (edit.path.length === 2) {
 					const propertyName = edit.path[0] as string;
 					const index = edit.path[1] as number;
@@ -379,8 +368,6 @@ export class Designer extends Disposable implements IThemable {
 					selectedCellIndex = tableProperties.canMoveRows ? selectedCellIndex + 1 : selectedCellIndex;
 					try {
 						table.grid.resetActiveCell();
-						table.grid.invalidateAllRows();
-						table.rerenderGrid();
 						table.setActiveCell(index, selectedCellIndex);
 						table.setSelectedRows([index]);
 					}
@@ -401,8 +388,6 @@ export class Designer extends Disposable implements IThemable {
 					selectedCellIndex = tableProperties.canMoveRows ? selectedCellIndex + 1 : selectedCellIndex;
 					try {
 						table.grid.resetActiveCell();
-						table.grid.invalidateAllRows();
-						table.rerenderGrid();
 						table.setActiveCell(toIndex, selectedCellIndex);
 						table.setSelectedRows([toIndex]);
 					}
@@ -850,7 +835,7 @@ export class Designer extends Disposable implements IThemable {
 					container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				}
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
-				this.addDesignerTaskbar(container, tableProperties);
+				let taskbar = this.addTableTaskbar(container, tableProperties);
 				const tableContainer = container.appendChild(DOM.$('.full-row'));
 				const table = new Table(tableContainer, {
 					dataProvider: new TableDataView()
@@ -868,6 +853,9 @@ export class Designer extends Disposable implements IThemable {
 					headerRowHeight: TableHeaderRowHeight,
 					editorLock: new Slick.EditorLock()
 				});
+				if (taskbar) {
+					taskbar.context = { table: table, path: propertyPath, source: view };
+				}
 				let buttonColumn: Slick.Column<Slick.SlickData>[] = [];
 				if (tableProperties.canInsertRows) {
 					// Add move context menu actions
@@ -905,15 +893,13 @@ export class Designer extends Disposable implements IThemable {
 					table.grid.registerPlugin(moveRowsPlugin);
 					buttonColumn.push(moveRowsPlugin.definition);
 				}
-				if (tableProperties.canAddRows || tableProperties.canMoveRows) {
-					this._taskbar.context = { table: table, path: propertyPath, source: view };
-				}
 				table.ariaLabel = tableProperties.ariaLabel;
-				const columns = tableProperties.columns.map(propName => {
+				const columns = tableProperties.columns.map((propName, index) => {
 					const propertyDefinition = tableProperties.itemProperties.find(item => item.propertyName === propName);
 					switch (propertyDefinition.componentType) {
 						case 'checkbox':
 							const checkboxColumn = new CheckBoxColumn({
+								id: index.toString(),
 								field: propertyDefinition.propertyName,
 								name: propertyDefinition.componentProperties.title,
 								width: propertyDefinition.componentProperties.width as number
@@ -931,6 +917,7 @@ export class Designer extends Disposable implements IThemable {
 						case 'dropdown':
 							const dropdownProperties = propertyDefinition.componentProperties as DropDownProperties;
 							return {
+								id: index.toString(),
 								name: dropdownProperties.title,
 								field: propertyDefinition.propertyName,
 								editor: this._tableCellEditorFactory.getDropdownEditorClass({ view: view, path: propertyPath }, dropdownProperties.values as string[], dropdownProperties.isEditable),
@@ -939,6 +926,7 @@ export class Designer extends Disposable implements IThemable {
 						default:
 							const inputProperties = propertyDefinition.componentProperties as InputBoxProperties;
 							return {
+								id: index.toString(),
 								name: inputProperties.title,
 								field: propertyDefinition.propertyName,
 								editor: this._tableCellEditorFactory.getTextEditorClass({ view: view, path: propertyPath }, inputProperties.inputType),
@@ -977,24 +965,13 @@ export class Designer extends Disposable implements IThemable {
 					columns.push(deleteRowColumn.definition);
 				}
 				table.columns = buttonColumn.concat(columns);
-				table.columns.forEach((v, i) => table.columns[i].id = table.columns[i].id || i.toString());
 				table.grid.onBeforeEditCell.subscribe((e, data): boolean => {
 					return data.item[data.column.field].enabled !== false;
 				});
-				let disabledActions = this._actions.filter(b => b.enabled === false);
-				table.grid.onClick.subscribe((e, data) => {
-					const dataLength = table.grid.getDataLength();
-					disabledActions.forEach((b) => {
-						if (data.row === dataLength - 1 && b instanceof MoveRowDownAction) {
-							b.enabled = false;
-						} else if (data.row === 0 && b instanceof MoveRowUpAction) {
-							b.enabled = false;
-						} else {
-							b.enabled = true;
-						}
-					});
-					table.grid.setSelectedRows([data.row]);
-				});
+				let disabledActions = [];
+				if (taskbar) {
+					disabledActions = this._actionsMap.get(taskbar).filter(b => b.enabled === false);
+				}
 				table.grid.onActiveCellChanged.subscribe((e, data) => {
 					if (view === 'TabsView' || view === 'TopContentView') {
 						if (data.row !== undefined) {
@@ -1011,6 +988,21 @@ export class Designer extends Disposable implements IThemable {
 							this._propertiesPane.updateDescription(componentDefinition);
 						}
 					}
+					const dataLength = table.grid.getDataLength();
+					disabledActions.forEach((b) => {
+						// active cell change within the grid, otherwise it's
+						// an out of focus event
+						if (data.row !== undefined) {
+							if (data.row === dataLength - 1 && b instanceof MoveRowDownAction) {
+								b.enabled = false;
+							} else if (data.row === 0 && b instanceof MoveRowUpAction) {
+								b.enabled = false;
+							} else {
+								b.enabled = true;
+							}
+						}
+					});
+					table.grid.setSelectedRows([data.row]);
 				});
 				table.onBlur((e) => {
 					disabledActions.forEach(b => b.enabled = false);
@@ -1031,24 +1023,27 @@ export class Designer extends Disposable implements IThemable {
 		return component;
 	}
 
-	private addDesignerTaskbar(container: HTMLElement, tableProperties: DesignerTableProperties): void {
+	private addTableTaskbar(container: HTMLElement, tableProperties: DesignerTableProperties): Taskbar | undefined {
 		if (tableProperties.canAddRows || tableProperties.canMoveRows) {
-			let taskbarContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
-			this._taskbar = new Taskbar(taskbarContainer);
-			this._actions = [];
+			const taskbarContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
+			const taskbar = new Taskbar(taskbarContainer);
+			let actions = [];
 			if (tableProperties.canAddRows) {
-				let addColAction = this._instantiationService.createInstance(AddRowAction, this, tableProperties);
-				this._actions.push(addColAction);
+				let addRowAction = this._instantiationService.createInstance(AddRowAction, this, tableProperties);
+				actions.push(addRowAction);
 			}
 			if (tableProperties.canMoveRows) {
 				let moveUpAction = this._instantiationService.createInstance(MoveRowUpAction, this);
 				let moveDownAction = this._instantiationService.createInstance(MoveRowDownAction, this);
-				this._actions.push(moveUpAction);
-				this._actions.push(moveDownAction);
+				actions.push(moveUpAction);
+				actions.push(moveDownAction);
 			}
-			let taskbarContent: ITaskbarContent[] = this._actions.map((a) => { return { action: a }; });
-			this._taskbar.setContent(taskbarContent);
+			let taskbarContent: ITaskbarContent[] = actions.map((a) => { return { action: a }; });
+			taskbar.setContent(taskbarContent);
+			this._actionsMap.set(taskbar, actions);
+			return taskbar;
 		}
+		return undefined;
 	}
 
 	private openContextMenu(table: Table<Slick.SlickData>, event: ITableMouseEvent, propertyPath: DesignerPropertyPath, view: DesignerUIArea): void {
@@ -1063,7 +1058,7 @@ export class Designer extends Disposable implements IThemable {
 		if (!data || rowIndex >= data.getLength()) {
 			return undefined;
 		}
-		let actions = this.getDesignerActions();
+		let actions = this.getTableActions();
 		this._contextMenuService.showContextMenu({
 			getAnchor: () => event.anchor,
 			getActions: () => actions,
@@ -1071,7 +1066,7 @@ export class Designer extends Disposable implements IThemable {
 		});
 	}
 
-	private getDesignerActions(): IAction[] {
+	private getTableActions(): IAction[] {
 		let actions: IAction[];
 		let insertRowBefore = this._instantiationService.createInstance(InsertBeforeSelectedRowAction, this);
 		let insertRowAfter = this._instantiationService.createInstance(InsertAfterSelectedRowAction, this);
