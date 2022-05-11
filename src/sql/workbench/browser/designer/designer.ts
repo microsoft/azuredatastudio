@@ -39,8 +39,8 @@ import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { DesignerIssuesTabPanelView } from 'sql/workbench/browser/designer/designerIssuesTabPanelView';
 import { DesignerScriptEditorTabPanelView } from 'sql/workbench/browser/designer/designerScriptEditorTabPanelView';
 import { DesignerPropertyPathValidator } from 'sql/workbench/browser/designer/designerPropertyPathValidator';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { listActiveSelectionBackground, listActiveSelectionForeground } from 'vs/platform/theme/common/colorRegistry';
+import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { listActiveSelectionBackground, listActiveSelectionForeground, listHoverBackground } from 'vs/platform/theme/common/colorRegistry';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { layoutDesignerTable, TableHeaderRowHeight, TableRowHeight } from 'sql/workbench/browser/designer/designerTableUtil';
 import { Dropdown, IDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
@@ -341,6 +341,27 @@ export class Designer extends Disposable implements IThemable {
 		this.restoreUIState();
 	}
 
+	private handleCellFocusAfterAddOrMove(edit: DesignerEdit): void {
+		if (edit.path.length === 2) {
+			const propertyName = edit.path[0] as string;
+			const index = edit.type === DesignerEditType.Add ? edit.path[1] as number : edit.value as number;
+			const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
+			const tableProperties = this._componentMap.get(propertyName).defintion.componentProperties as DesignerTableProperties;
+			let selectedCellIndex = tableProperties.itemProperties.findIndex(p => p.componentType === 'input');
+			selectedCellIndex = tableProperties.canMoveRows ? selectedCellIndex + 1 : selectedCellIndex;
+			try {
+				table.grid.resetActiveCell();
+				table.setActiveCell(index, selectedCellIndex);
+				table.setSelectedRows([index]);
+			}
+			catch {
+				// Ignore the slick grid error when setting active cell.
+			}
+		} else {
+			this.updatePropertiesPane(this._propertiesPane.objectPath);
+		}
+	}
+
 	private handleEditProcessedEvent(args: DesignerEditProcessedEventArgs): void {
 		const edit = args.edit;
 		this._supressEditProcessing = true;
@@ -357,46 +378,8 @@ export class Designer extends Disposable implements IThemable {
 				this.updateComponentValues();
 				this.layoutTabbedPanel();
 			}
-			if (edit.type === DesignerEditType.Add) {
-				// For tables in the main view, move focus to the first editable cell of the newly added row, and the properties pane will be showing the new object.
-				if (edit.path.length === 2) {
-					const propertyName = edit.path[0] as string;
-					const index = edit.path[1] as number;
-					const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
-					const tableProperties = this._componentMap.get(propertyName).defintion.componentProperties as DesignerTableProperties;
-					let selectedCellIndex = tableProperties.itemProperties.findIndex(p => p.componentType === 'input');
-					selectedCellIndex = tableProperties.canMoveRows ? selectedCellIndex + 1 : selectedCellIndex;
-					try {
-						table.grid.resetActiveCell();
-						table.setActiveCell(index, selectedCellIndex);
-						table.setSelectedRows([index]);
-					}
-					catch {
-						// Ignore the slick grid error when setting active cell.
-					}
-				} else {
-					this.updatePropertiesPane(this._propertiesPane.objectPath);
-				}
-			} else if (edit.type === DesignerEditType.Move) {
-				// Move the focus to the row that was moved
-				if (edit.path.length === 2) {
-					const propertyName = edit.path[0] as string;
-					const toIndex = edit.value as number;
-					const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
-					const tableProperties = this._componentMap.get(propertyName).defintion.componentProperties as DesignerTableProperties;
-					let selectedCellIndex = tableProperties.itemProperties.findIndex(p => p.componentType === 'input');
-					selectedCellIndex = tableProperties.canMoveRows ? selectedCellIndex + 1 : selectedCellIndex;
-					try {
-						table.grid.resetActiveCell();
-						table.setActiveCell(toIndex, selectedCellIndex);
-						table.setSelectedRows([toIndex]);
-					}
-					catch {
-						// Ignore the slick grid error when setting active cell.
-					}
-				} else {
-					this.updatePropertiesPane(this._propertiesPane.objectPath);
-				}
+			if (edit.type === DesignerEditType.Add || edit.type === DesignerEditType.Move) {
+				this.handleCellFocusAfterAddOrMove(edit);
 			} else if (edit.type === DesignerEditType.Update) {
 				// for edit, update the properties pane with new values of current object.
 				this.updatePropertiesPane(this._propertiesPane.objectPath);
@@ -1038,7 +1021,7 @@ export class Designer extends Disposable implements IThemable {
 
 	private openContextMenu(table: Table<Slick.SlickData>, event: ITableMouseEvent, propertyPath: DesignerPropertyPath, view: DesignerUIArea): void {
 		const rowIndex = event.cell.row;
-		let designerActionContext: DesignerTableActionContext = {
+		let tableActionContext: DesignerTableActionContext = {
 			table: table,
 			path: propertyPath,
 			source: view,
@@ -1049,10 +1032,16 @@ export class Designer extends Disposable implements IThemable {
 			return undefined;
 		}
 		let actions = this.getTableActions();
+		actions.forEach(a => {
+			if (a instanceof DesignerTableAction) {
+				a.table = table;
+				a.updateState(rowIndex);
+			}
+		});
 		this._contextMenuService.showContextMenu({
 			getAnchor: () => event.anchor,
 			getActions: () => actions,
-			getActionsContext: () => (designerActionContext)
+			getActionsContext: () => (tableActionContext)
 		});
 	}
 
@@ -1060,7 +1049,9 @@ export class Designer extends Disposable implements IThemable {
 		let actions: IAction[];
 		let insertRowBefore = this._instantiationService.createInstance(InsertBeforeSelectedRowAction, this);
 		let insertRowAfter = this._instantiationService.createInstance(InsertAfterSelectedRowAction, this);
-		actions = [insertRowBefore, insertRowAfter];
+		let moveRowUp = this._instantiationService.createInstance(MoveRowUpAction, this);
+		let moveRowDown = this._instantiationService.createInstance(MoveRowDownAction, this);
+		actions = [insertRowBefore, insertRowAfter, moveRowUp, moveRowDown];
 		return actions;
 	}
 
@@ -1102,3 +1093,14 @@ export class Designer extends Disposable implements IThemable {
 		}
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const listHoverBackgroundColor = theme.getColor(listHoverBackground);
+	if (listHoverBackgroundColor) {
+		collector.addRule(`
+		.designer-component .slick-cell.isDragging {
+			background-color: ${listHoverBackgroundColor};
+		}
+		`);
+	}
+});

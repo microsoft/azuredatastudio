@@ -160,10 +160,6 @@
 	cursor: move;
 }
 
-.designer-component .slick-cell.isDragging {
-	background-color: #dcdcdc;
-}
-
 .vs-dark .designer-component .slick-cell.isDragging {
 	background-color: #444444;
 }

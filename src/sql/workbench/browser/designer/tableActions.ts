@@ -85,7 +85,7 @@ export class MoveRowUpAction extends DesignerTableAction {
 	}
 
 	public override async run(context: DesignerTableActionContext): Promise<void> {
-		let rowIndex = context.table.getSelectedRows()[0];
+		let rowIndex = context.selectedRow ?? context.table.getSelectedRows()[0];
 		if (rowIndex - 1 < 0) {
 			return;
 		}
@@ -123,7 +123,7 @@ export class MoveRowDownAction extends DesignerTableAction {
 	}
 
 	public override async run(context: DesignerTableActionContext): Promise<void> {
-		let rowIndex = context.table.getSelectedRows()[0];
+		let rowIndex = context.selectedRow ?? context.table.getSelectedRows()[0];
 		const tableData = context.table.getData().getItems();
 		if (rowIndex + 1 >= tableData.length) {
 			return;
@@ -150,7 +150,7 @@ export class MoveRowDownAction extends DesignerTableAction {
 	}
 }
 
-export class InsertBeforeSelectedRowAction extends DesignerTableAction {
+export class InsertBeforeSelectedRowAction extends Action {
 	public static ID = 'designer.insertBeforeSelectedRow';
 	public static LABEL = localize('designer.insertBeforeSelectedRow', 'Insert before');
 
@@ -172,7 +172,7 @@ export class InsertBeforeSelectedRowAction extends DesignerTableAction {
 	}
 }
 
-export class InsertAfterSelectedRowAction extends DesignerTableAction {
+export class InsertAfterSelectedRowAction extends Action {
 	public static ID = 'designer.insertAfterSelectedColumn';
 	public static LABEL = localize('designer.insertAfterSelectedColumn', 'Insert after');
 
