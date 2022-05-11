@@ -321,7 +321,7 @@ declare module 'azurecore' {
 	export type AzureRestResponse = { response: any, errors: Error[] };
 	export type GetBlobsResult = { blobs: azureResource.Blob[], errors: Error[] };
 	export type GetStorageAccountAccessKeyResult = { keyName1: string, keyName2: string, errors: Error[] };
-  
+
 	export namespace azureResource {
 
 		/**
