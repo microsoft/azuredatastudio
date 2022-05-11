@@ -285,7 +285,6 @@ export async function isFunctionProject(folderPath: string): Promise<boolean> {
 
 /**
  * Prompts the user to select type of binding and returns result
- *
  * @param funcName (Optional) Name of the function to which we are adding the SQL Binding
  */
 export async function promptForBindingType(funcName?: string): Promise<BindingType | undefined> {
