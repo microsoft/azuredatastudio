@@ -43,7 +43,6 @@ export interface RequestSecurityTokenParams {
 export interface RequestSecurityTokenResponse {
 	accountKey: string;
 	token: string;
-	expiresOn: Number;
 }
 
 export namespace SecurityTokenRequest {

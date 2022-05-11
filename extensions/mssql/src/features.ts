@@ -97,8 +97,7 @@ export class AccountFeature implements StaticFeature {
 
 		let params: contracts.RequestSecurityTokenResponse = {
 			accountKey: JSON.stringify(account.key),
-			token: securityToken.token,
-			expiresOn: securityToken.expiresOn
+			token: securityToken.token
 		};
 
 		return params;
