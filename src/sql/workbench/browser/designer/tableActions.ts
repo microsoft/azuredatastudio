@@ -16,13 +16,53 @@ export interface DesignerTableActionContext {
 	selectedRow?: number;
 }
 
-export class AddRowAction extends Action {
-	public static ID = 'designer.addColumnAction';
+export class DesignerTableAction extends Action {
+
+	private _table: Table<Slick.SlickData>;
+
+	constructor(
+		id: string,
+		label: string,
+		icon: string,
+		private needsRowSelection: boolean
+	) {
+		super(id, label, icon);
+	}
+
+
+	public set table(table: Table<Slick.SlickData>) {
+		this._table = table;
+	}
+
+	public updateState(row?: number) {
+		if (row !== undefined) {
+			if (!this.needsRowSelection) {
+				this.enabled = true;
+				return;
+			}
+			if (row === this._table.getData().getLength() - 1 && this instanceof MoveRowDownAction) {
+				this.enabled = false;
+			} else if (row === 0 && this instanceof MoveRowUpAction) {
+				this.enabled = false;
+			} else {
+				this.enabled = true;
+			}
+		} else {
+			this.enabled = !this.needsRowSelection;
+		}
+	}
+}
+
+export class AddRowAction extends DesignerTableAction {
+	public static ID = 'designer.addRowAction';
 	public static ICON = 'add-row-button new codicon';
 	public static LABEL = localize('designer.addColumnAction', 'Add New');
 
-	constructor(private designer: Designer, tableProperties: DesignerTableProperties) {
-		super(AddRowAction.ID, tableProperties.labelForAddNewButton || AddRowAction.LABEL, AddRowAction.ICON);
+	constructor(
+		private designer: Designer,
+		tableProperties: DesignerTableProperties,
+	) {
+		super(AddRowAction.ID, tableProperties.labelForAddNewButton || AddRowAction.LABEL, AddRowAction.ICON, false);
 		this.designer = designer;
 		this._tooltip = localize('designer.newRowButtonAriaLabel', "Add new row to '{0}' table", tableProperties.ariaLabel);
 	}
@@ -40,13 +80,13 @@ export class AddRowAction extends Action {
 	}
 }
 
-export class MoveRowUpAction extends Action {
+export class MoveRowUpAction extends DesignerTableAction {
 	public static ID = 'designer.moveRowUpAction';
 	public static ICON = 'move-row-up-button arrow-up codicon';
 	public static LABEL = localize('designer.moveRowUpAction', 'Move Up');
 
 	constructor(private designer: Designer) {
-		super(MoveRowUpAction.ID, MoveRowUpAction.LABEL, MoveRowUpAction.ICON);
+		super(MoveRowUpAction.ID, MoveRowUpAction.LABEL, MoveRowUpAction.ICON, true);
 		this.designer = designer;
 		this._tooltip = localize('designer.moveRowUpButtonAriaLabel', "Move selected row up one position");
 		this.enabled = false;
@@ -69,13 +109,13 @@ export class MoveRowUpAction extends Action {
 	}
 }
 
-export class MoveRowDownAction extends Action {
+export class MoveRowDownAction extends DesignerTableAction {
 	public static ID = 'designer.moveRowDownAction';
 	public static ICON = 'move-row-down-button arrow-down codicon';
 	public static LABEL = localize('designer.moveRowDownAction', 'Move Down');
 
 	constructor(private designer: Designer) {
-		super(MoveRowDownAction.ID, MoveRowDownAction.LABEL, MoveRowDownAction.ICON);
+		super(MoveRowDownAction.ID, MoveRowDownAction.LABEL, MoveRowDownAction.ICON, true);
 		this.designer = designer;
 		this._tooltip = localize('designer.moveRowDownButtonAriaLabel', "Move selected row down one position");
 		this.enabled = false;
@@ -99,12 +139,12 @@ export class MoveRowDownAction extends Action {
 	}
 }
 
-export class InsertBeforeSelectedRowAction extends Action {
+export class InsertBeforeSelectedRowAction extends DesignerTableAction {
 	public static ID = 'designer.insertBeforeSelectedRow';
 	public static LABEL = localize('designer.insertBeforeSelectedRow', 'Insert before');
 
 	constructor(private designer: Designer) {
-		super(InsertBeforeSelectedRowAction.ID, InsertBeforeSelectedRowAction.LABEL, 'insertBeforeSelectedRow');
+		super(InsertBeforeSelectedRowAction.ID, InsertBeforeSelectedRowAction.LABEL, 'insertBeforeSelectedRow', true);
 		this.designer = designer;
 	}
 
@@ -121,12 +161,12 @@ export class InsertBeforeSelectedRowAction extends Action {
 	}
 }
 
-export class InsertAfterSelectedRowAction extends Action {
+export class InsertAfterSelectedRowAction extends DesignerTableAction {
 	public static ID = 'designer.insertAfterSelectedColumn';
 	public static LABEL = localize('designer.insertAfterSelectedColumn', 'Insert after');
 
 	constructor(private designer: Designer) {
-		super(InsertAfterSelectedRowAction.ID, InsertAfterSelectedRowAction.LABEL, 'insertAfterSelectedColumn');
+		super(InsertAfterSelectedRowAction.ID, InsertAfterSelectedRowAction.LABEL, 'insertAfterSelectedColumn', true);
 	}
 
 	public override async run(context: DesignerTableActionContext): Promise<void> {

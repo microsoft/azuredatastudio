@@ -46,7 +46,7 @@ import { layoutDesignerTable, TableHeaderRowHeight, TableRowHeight } from 'sql/w
 import { Dropdown, IDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
 import { IAction } from 'vs/base/common/actions';
-import { InsertAfterSelectedRowAction, InsertBeforeSelectedRowAction, AddRowAction, DesignerTableActionContext, MoveRowDownAction, MoveRowUpAction } from 'sql/workbench/browser/designer/designerActions';
+import { InsertAfterSelectedRowAction, InsertBeforeSelectedRowAction, AddRowAction, DesignerTableActionContext, MoveRowDownAction, MoveRowUpAction, DesignerTableAction } from 'sql/workbench/browser/designer/tableActions';
 import { RowMoveManager, RowMoveOnDragEventData } from 'sql/base/browser/ui/table/plugins/rowMoveManager.plugin';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 
@@ -100,7 +100,7 @@ export class Designer extends Disposable implements IThemable {
 	private _issuesView: DesignerIssuesTabPanelView;
 	private _scriptEditorView: DesignerScriptEditorTabPanelView;
 	private _taskbars: Taskbar[] = [];
-	private _actionsMap: Map<Taskbar, IAction[]> = new Map<Taskbar, IAction[]>();
+	private _actionsMap: Map<Taskbar, DesignerTableAction[]> = new Map<Taskbar, DesignerTableAction[]>();
 	private _onStyleChangeEventEmitter = new Emitter<void>();
 
 	constructor(private readonly _container: HTMLElement,
@@ -855,8 +855,9 @@ export class Designer extends Disposable implements IThemable {
 				});
 				if (taskbar) {
 					taskbar.context = { table: table, path: propertyPath, source: view };
+					this._actionsMap.get(taskbar).map(a => a.table = table);
 				}
-				let buttonColumn: Slick.Column<Slick.SlickData>[] = [];
+				let columns: Slick.Column<Slick.SlickData>[] = [];
 				if (tableProperties.canInsertRows) {
 					// Add move context menu actions
 					this._register(table.onContextMenu((e) => {
@@ -891,10 +892,10 @@ export class Designer extends Disposable implements IThemable {
 						});
 					});
 					table.grid.registerPlugin(moveRowsPlugin);
-					buttonColumn.push(moveRowsPlugin.definition);
+					columns.push(moveRowsPlugin.definition);
 				}
 				table.ariaLabel = tableProperties.ariaLabel;
-				const columns = tableProperties.columns.map((propName, index) => {
+				tableProperties.columns.map((propName, index) => {
 					const propertyDefinition = tableProperties.itemProperties.find(item => item.propertyName === propName);
 					switch (propertyDefinition.componentType) {
 						case 'checkbox':
@@ -913,25 +914,30 @@ export class Designer extends Disposable implements IThemable {
 									source: view
 								});
 							});
+							columns.push(checkboxColumn.definition);
 							return checkboxColumn.definition;
 						case 'dropdown':
 							const dropdownProperties = propertyDefinition.componentProperties as DropDownProperties;
-							return {
+							const dropdown = {
 								id: index.toString(),
 								name: dropdownProperties.title,
 								field: propertyDefinition.propertyName,
 								editor: this._tableCellEditorFactory.getDropdownEditorClass({ view: view, path: propertyPath }, dropdownProperties.values as string[], dropdownProperties.isEditable),
 								width: dropdownProperties.width as number
 							};
+							columns.push(dropdown);
+							return dropdown;
 						default:
 							const inputProperties = propertyDefinition.componentProperties as InputBoxProperties;
-							return {
+							const input = {
 								id: index.toString(),
 								name: inputProperties.title,
 								field: propertyDefinition.propertyName,
 								editor: this._tableCellEditorFactory.getTextEditorClass({ view: view, path: propertyPath }, inputProperties.inputType),
 								width: inputProperties.width as number
 							};
+							columns.push(input);
+							return input;
 					}
 				});
 				if (tableProperties.canRemoveRows) {
@@ -964,13 +970,13 @@ export class Designer extends Disposable implements IThemable {
 					table.registerPlugin(deleteRowColumn);
 					columns.push(deleteRowColumn.definition);
 				}
-				table.columns = buttonColumn.concat(columns);
+				table.columns = columns;
 				table.grid.onBeforeEditCell.subscribe((e, data): boolean => {
 					return data.item[data.column.field].enabled !== false;
 				});
-				let disabledActions = [];
+				let currentTableActions = [];
 				if (taskbar) {
-					disabledActions = this._actionsMap.get(taskbar).filter(b => b.enabled === false);
+					currentTableActions = this._actionsMap.get(taskbar);
 				}
 				table.grid.onActiveCellChanged.subscribe((e, data) => {
 					if (view === 'TabsView' || view === 'TopContentView') {
@@ -988,24 +994,13 @@ export class Designer extends Disposable implements IThemable {
 							this._propertiesPane.updateDescription(componentDefinition);
 						}
 					}
-					const dataLength = table.grid.getDataLength();
-					disabledActions.forEach((b) => {
-						// active cell change within the grid, otherwise it's
-						// an out of focus event
-						if (data.row !== undefined) {
-							if (data.row === dataLength - 1 && b instanceof MoveRowDownAction) {
-								b.enabled = false;
-							} else if (data.row === 0 && b instanceof MoveRowUpAction) {
-								b.enabled = false;
-							} else {
-								b.enabled = true;
-							}
-						}
-					});
-					table.grid.setSelectedRows([data.row]);
+					if (data.row !== undefined) {
+						currentTableActions.map(a => a.updateState(data.row));
+						table.grid.setSelectedRows([data.row]);
+					}
 				});
 				table.onBlur((e) => {
-					disabledActions.forEach(b => b.enabled = false);
+					currentTableActions.map(a => a.updateState());
 					table.grid.setSelectedRows([]);
 					table.grid.resetActiveCell();
 				});
