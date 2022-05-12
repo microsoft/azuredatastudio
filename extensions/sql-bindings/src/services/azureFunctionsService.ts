@@ -123,39 +123,13 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				}
 				TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 					.withAdditionalProperties(propertyBag).withConnectionInfo(connectionInfo).send();
-				telemetryStep = CreateAzureFunctionStep.getConnectionProfile;
-				let connectionURI: string = '';
-				try {
-					await vscode.window.withProgress(
-						{
-							location: vscode.ProgressLocation.Notification,
-							title: constants.connectionProgressTitle,
-							cancellable: false
-						}, async (_progress, _token) => {
-							// list databases based on connection profile selected
-							connectionURI = await vscodeMssqlApi.connect(connectionInfo!);
-						}
-					);
-				} catch (e) {
-					// mssql connection error will be shown to the user
-					// we will then prompt user to choose a connection profile again
-					continue;
-				}
-				// list databases based on connection profile selected
-				telemetryStep = CreateAzureFunctionStep.getDatabase;
-				const selectedDatabase = await azureFunctionsUtils.promptSelectDatabase(connectionURI);
-				if (!selectedDatabase) {
-					// User cancelled
-					// we will then prompt user to choose a connection profile again
-					continue;
-				}
-				connectionInfo.database = selectedDatabase;
+				telemetryStep = CreateAzureFunctionStep.getObjectName;
 
 				// prompt user for object name to create function from
-				objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding, connectionURI, selectedDatabase);
+				objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding, connectionInfo);
 				if (!objectName) {
 					// user cancelled
-					return;
+					continue;
 				}
 				break;
 			}
@@ -206,21 +180,21 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 		// We need to set the azureWebJobsStorage to a placeholder
 		// to suppress the warning for opening the wizard - but will ask them to overwrite if they are creating new azureFunction
-		// issue https://github.com/microsoft/azuredatastudio/issues/18780
+		// issue https://github.com/microsoft/azuredatastudi o/issues/18780
 		telemetryStep = CreateAzureFunctionStep.setAzureWebJobsStorage;
 		await azureFunctionsUtils.setLocalAppSetting(projectFolder, constants.azureWebJobsStorageSetting, constants.azureWebJobsStoragePlaceholder);
 
 		// prompt for Connection String Setting Name
-		let connectionStringSettingName: string | undefined = constants.sqlConnectionStringSetting;
+		let connectionStringInfo: any = { connectionStringSettingName: constants.sqlConnectionStringSetting, connectionInfo: connectionInfo };
 		if (!isCreateNewProject && projectFile) {
 			telemetryStep = CreateAzureFunctionStep.getConnectionStringSettingName;
-			connectionStringSettingName = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(vscode.Uri.parse(projectFile), connectionInfo);
+			connectionStringInfo = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(vscode.Uri.parse(projectFile), connectionInfo);
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 				.withAdditionalProperties(propertyBag)
 				.withConnectionInfo(connectionInfo).send();
 		}
 		// addtional execution step that will be used by vscode-azurefunctions to execute only when creating a new azure function project
-		let connectionStringExecuteStep = createAddConnectionStringStep(projectFolder, connectionInfo, connectionStringSettingName);
+		let connectionStringExecuteStep = createAddConnectionStringStep(projectFolder, connectionInfo, connectionStringInfo.connectionStringSettingName);
 
 		// create C# Azure Function with SQL Binding
 		telemetryStep = 'createFunctionAPI';
@@ -231,7 +205,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			templateId: templateId,
 			functionName: functionName,
 			functionSettings: {
-				connectionStringSetting: connectionStringSettingName,
+				connectionStringSetting: connectionStringInfo.connectionStringSettingName,
 				...(selectedBindingType === BindingType.input && { object: objectName }),
 				...(selectedBindingType === BindingType.output && { table: objectName })
 			},

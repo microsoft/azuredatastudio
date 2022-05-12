@@ -38,11 +38,11 @@ export const selectDatabase = localize('selectDatabase', 'Select Database');
 export const browseEllipsisWithIcon = `$(folder) ${localize('browseEllipsis', "Browse...")}`;
 export const selectButton = localize('selectButton', 'Select');
 export const selectObjectName = localize('selectObjectName', 'Select object name method');
-export const objectName = localize('objectName', 'Select SQL table or view name');
-export const userObjectName = localize('userObjectName', 'Enter SQL table or view to query');
-export const selectTableOrView = localize('selectTableOrView', 'Select table or view to query');
+export const enterObjectName = localize('enterObjectName', 'Enter SQL table or view to query');
+export const selectTableOrView = localize('selectTableOrView', 'Select table to query');
+export const enterObjectNameToUpsert = localize('enterObjectNameToUpsert', 'Enter SQL table or view to upsert into');
+export const selectTableToUpsert = localize('selectTableToUpsert', 'Select table to upsert into');
 export const selectTable = localize('selectTable', 'Select table to use');
-export const selectView = localize('selectView', 'Select view to use');
 
 // Insert SQL binding
 export const hostFileName = 'host.json';
