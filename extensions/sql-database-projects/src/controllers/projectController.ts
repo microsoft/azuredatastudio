@@ -333,7 +333,9 @@ export class ProjectsController {
 	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: ILocalDbDeployProfile): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
 		try {
-			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer);
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer)
+				.withAdditionalProperties({ image: deployProfile.localDbSetting!.dockerBaseImage })
+				.send();
 
 			if (deployProfile && deployProfile.deploySettings) {
 				let connectionUri: string | undefined;
@@ -361,7 +363,9 @@ export class ProjectsController {
 			}
 		} catch (error) {
 			void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, error, this._outputChannel);
-			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer);
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer)
+				.withAdditionalProperties({ image: deployProfile.localDbSetting!.dockerBaseImage })
+				.send();
 		}
 		return;
 	}
