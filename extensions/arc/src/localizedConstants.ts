@@ -337,7 +337,7 @@ export const loadingClusterContextsError = (error: any): string => localize('arc
 
 // Upgrade
 export const upgradeManagement = localize('arc.upgradeManagement', "Upgrade Management");
-export const availableUpgrades = localize('arc.availableUpgrades', "Available Upgrades");
+export const availableUpgrades = localize('arc.availableUpgrades', "Available Upgrades (Preview)");
 export const availableUpgradesDescription = localize('arc.availableUpgradesDescription', "Available upgrades for this resource are listed below. You can apply upgrades by clicking the upgrade button.");
 export const versionLog = localize('arc.versionLog', "Learn more about each release here.");
 export const onlyNextImmediateVersion = localize('arc.onlyNextImmediateVersion', "Currently, only upgrading to the next immediate version is supported.");
