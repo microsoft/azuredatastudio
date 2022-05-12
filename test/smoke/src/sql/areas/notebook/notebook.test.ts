@@ -81,7 +81,8 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.waitForActiveCellResults();
 		});
 
-		it('can add a new package from the Manage Packages wizard', async function () {
+		// Skip this test for now since it is not stable - the way that the wizard is initialized needs to be refactored
+		it.skip('can add a new package from the Manage Packages wizard', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
@@ -434,6 +435,27 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.textCellToolbar.insertList();
 				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Markdown View');
 				await app.workbench.sqlNotebook.waitForActiveCellEditorContents(s => s.includes('- **_<u><mark>Markdown Test</mark></u>_**'));
+			});
+
+			it('can save and reopen WYSIWYG notebook', async function () {
+				const app = this.app as Application;
+				const filename = 'emptyNotebook.ipynb';
+				await app.workbench.sqlNotebook.openFile(filename);
+
+				// Add some text to a WYSIWYG cell and add some basic styling
+				await app.workbench.sqlNotebook.addCell('markdown');
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Markdown View');
+				let text = 'WYSIWYG Test';
+				await app.workbench.sqlNotebook.waitForTypeInEditor(text);
+				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Rich Text View');
+				await app.workbench.sqlNotebook.selectAllTextInRichTextEditor();
+				await app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
+
+				// Save file, close it, and then reopen to verify WYSIWYG cell contents are the same
+				await app.workbench.quickaccess.runCommand('workbench.action.files.save');
+				await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
+				await app.workbench.sqlNotebook.openFile(filename);
+				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(text, 'p strong');
 			});
 		});
 

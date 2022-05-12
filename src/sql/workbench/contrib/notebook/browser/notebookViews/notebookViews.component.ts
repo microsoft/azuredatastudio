@@ -20,7 +20,6 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { localize } from 'vs/nls';
 import { Deferred } from 'sql/base/common/promise';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { CellType, CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { isUndefinedOrNull } from 'vs/base/common/types';
@@ -58,7 +57,6 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 	@ViewChildren(TextCellComponent) private _textCells: QueryList<TextCellComponent>;
 
 	protected _actionBar: Taskbar;
-	public previewFeaturesEnabled: boolean = false;
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 	private _runAllCellsAction: RunAllCellsAction;
 	private _scrollTop: number;
@@ -74,15 +72,11 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		@Inject(INotificationService) private _notificationService: INotificationService,
 		@Inject(INotebookService) private _notebookService: INotebookService,
 		@Inject(IConnectionManagementService) private _connectionManagementService: IConnectionManagementService,
-		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 		@Inject(IEditorService) private _editorService: IEditorService,
 		@Inject(ViewContainerRef) private _containerRef: ViewContainerRef,
 		@Inject(ComponentFactoryResolver) private _componentFactoryResolver: ComponentFactoryResolver,
 	) {
 		super();
-		this._register(this._configurationService.onDidChangeConfiguration(e => {
-			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
-		}));
 	}
 
 	public get notebookParams(): INotebookParams {
@@ -309,7 +303,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		// This is similar behavior that exists in MenuItemActionItem
 		if (action instanceof MenuItemAction) {
 
-			if (action.item.id.includes('jupyter.cmd') && this.previewFeaturesEnabled) {
+			if (action.item.id.includes('jupyter.cmd')) {
 				action.tooltip = action.label;
 				action.label = '';
 			}

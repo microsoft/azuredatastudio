@@ -68,8 +68,6 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		}
 	}
 
-	public previewFeaturesEnabled: boolean = false;
-
 	public bold = localize('bold', "Bold");
 	public italic = localize('italic', "Italic");
 	public underline = localize('underline', "Underline");
@@ -92,7 +90,6 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 
 	private _taskbarContent: Array<ITaskbarContent>;
 	private _wysiwygTaskbarContent: Array<ITaskbarContent>;
-	private _previewModeTaskbarContent: Array<ITaskbarContent>;
 	private _linkCallout: LinkCalloutDialog;
 
 	@Input() public cellModel: ICellModel;
@@ -111,9 +108,6 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
-		this._register(this._configurationService.onDidChangeConfiguration(e => {
-			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
-		}));
 	}
 
 	ngOnInit() {
@@ -121,43 +115,31 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	}
 
 	private initActionBar() {
-		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
+		let linkButtonContainer = DOM.$('li.action-item');
+		linkButtonContainer.setAttribute('role', 'presentation');
+		let linkButton = new Button(linkButtonContainer);
+		linkButton.title = this.insertLink;
+		linkButton.element.setAttribute('class', 'action-label codicon insert-link masked-icon');
+		let buttonStyle: IButtonStyles = {
+			buttonBackground: null
+		};
+		linkButton.style(buttonStyle);
 
-		let linkButton: TransformMarkdownAction;
-		let imageButton: TransformMarkdownAction;
-		let linkButtonContainer: HTMLElement;
-		let imageButtonContainer: HTMLElement;
+		this._register(DOM.addDisposableListener(linkButtonContainer, DOM.EventType.CLICK, async e => {
+			await this.onInsertButtonClick(e, MarkdownButtonType.LINK_PREVIEW);
+		}));
 
-		if (this.previewFeaturesEnabled) {
-			linkButtonContainer = DOM.$('li.action-item');
-			linkButtonContainer.setAttribute('role', 'presentation');
-			let linkButton = new Button(linkButtonContainer);
-			linkButton.title = this.insertLink;
-			linkButton.element.setAttribute('class', 'action-label codicon insert-link masked-icon');
-			let buttonStyle: IButtonStyles = {
-				buttonBackground: null
-			};
-			linkButton.style(buttonStyle);
+		let imageButtonContainer = DOM.$('li.action-item');
+		imageButtonContainer.setAttribute('role', 'presentation');
+		let imageButton = new Button(imageButtonContainer);
+		imageButton.title = this.insertImage;
+		imageButton.element.setAttribute('class', 'action-label codicon insert-image masked-icon');
 
-			this._register(DOM.addDisposableListener(linkButtonContainer, DOM.EventType.CLICK, async e => {
-				await this.onInsertButtonClick(e, MarkdownButtonType.LINK_PREVIEW);
-			}));
+		imageButton.style(buttonStyle);
 
-			imageButtonContainer = DOM.$('li.action-item');
-			imageButtonContainer.setAttribute('role', 'presentation');
-			let imageButton = new Button(imageButtonContainer);
-			imageButton.title = this.insertImage;
-			imageButton.element.setAttribute('class', 'action-label codicon insert-image masked-icon');
-
-			imageButton.style(buttonStyle);
-
-			this._register(DOM.addDisposableListener(imageButtonContainer, DOM.EventType.CLICK, async e => {
-				await this.onInsertButtonClick(e, MarkdownButtonType.IMAGE_PREVIEW);
-			}));
-		} else {
-			linkButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.linkText', '', 'insert-link masked-icon', this.insertLink, this.cellModel, MarkdownButtonType.LINK);
-			imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'insert-image masked-icon', this.insertImage, this.cellModel, MarkdownButtonType.IMAGE);
-		}
+		this._register(DOM.addDisposableListener(imageButtonContainer, DOM.EventType.CLICK, async e => {
+			await this.onInsertButtonClick(e, MarkdownButtonType.IMAGE_PREVIEW);
+		}));
 
 		let boldButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.boldText', '', 'bold masked-icon', this.bold, this.cellModel, MarkdownButtonType.BOLD);
 		let italicButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.italicText', '', 'italic masked-icon', this.italic, this.cellModel, MarkdownButtonType.ITALIC);
@@ -202,10 +184,10 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			{ action: underlineButton },
 			{ action: highlightButton },
 			{ action: codeButton },
-			{ action: linkButton },
+			{ element: linkButtonContainer },
 			{ action: listButton },
 			{ action: orderedListButton },
-			{ action: imageButton },
+			{ element: imageButtonContainer },
 			{ element: buttonDropdownContainer },
 			{ action: this._toggleTextViewAction },
 			{ action: this._toggleSplitViewAction },
@@ -226,31 +208,11 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			{ action: this._toggleMarkdownViewAction }
 		];
 
-		this._previewModeTaskbarContent = [
-			{ action: boldButton },
-			{ action: italicButton },
-			{ action: underlineButton },
-			{ action: highlightButton },
-			{ action: codeButton },
-			{ element: linkButtonContainer },
-			{ action: listButton },
-			{ action: orderedListButton },
-			{ element: imageButtonContainer },
-			{ element: buttonDropdownContainer },
-			{ action: this._toggleTextViewAction },
-			{ action: this._toggleSplitViewAction },
-			{ action: this._toggleMarkdownViewAction }
-		];
-
 		// Hide link and image buttons in WYSIWYG mode
 		if (this.cellModel.showPreview && !this.cellModel.showMarkdown) {
 			this._actionBar.setContent(this._wysiwygTaskbarContent);
 		} else {
-			if (this.previewFeaturesEnabled) {
-				this._actionBar.setContent(this._previewModeTaskbarContent);
-			} else {
-				this._actionBar.setContent(this._taskbarContent);
-			}
+			this._actionBar.setContent(this._taskbarContent);
 		}
 		this._notebookEditor = this._notebookService.findNotebookEditor(this.cellModel?.notebookModel?.notebookUri);
 		this.updateActiveViewAction();
@@ -321,11 +283,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	}
 
 	public showLinkAndImageButtons() {
-		if (this.previewFeaturesEnabled) {
-			this._actionBar.setContent(this._previewModeTaskbarContent);
-		} else {
-			this._actionBar.setContent(this._taskbarContent);
-		}
+		this._actionBar.setContent(this._taskbarContent);
 	}
 
 	private removeActiveClassFromModeActions() {
