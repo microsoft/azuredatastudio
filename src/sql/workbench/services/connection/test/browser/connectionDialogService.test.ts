@@ -52,7 +52,7 @@ import { TestTreeView } from 'sql/workbench/services/connection/test/browser/tes
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { ConnectionTreeService, IConnectionTreeService } from 'sql/workbench/services/connection/common/connectionTreeService';
 import { ConnectionBrowserView } from 'sql/workbench/services/connection/browser/connectionBrowseTab';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionProviderProperties, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 suite('ConnectionDialogService tests', () => {
 	const testTreeViewId = 'testTreeView';
@@ -114,6 +114,14 @@ suite('ConnectionDialogService tests', () => {
 		});
 		mockConnectionManagementService.setup(x => x.getConnectionGroups(TypeMoq.It.isAny())).returns(() => {
 			return [new ConnectionProfileGroup('test_group', undefined, 'test_group')];
+		});
+		mockConnectionManagementService.setup(x => x.getProviderProperties(TypeMoq.It.isAny())).returns(() => {
+			return <ConnectionProviderProperties>{
+				connectionStringOptions: {
+					isEnabled: true,
+					isDefault: false
+				}
+			};
 		});
 		testConnectionDialog = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, testInstantiationService, mockConnectionManagementService.object, undefined, undefined, viewDescriptorService, new TestThemeService(), new TestLayoutService(), new NullAdsTelemetryService(), new MockContextKeyService(), undefined, new NullLogService(), new TestTextResourcePropertiesService(new TestConfigurationService), new TestConfigurationService(), new TestCapabilitiesService());
 		testConnectionDialog.render();
