@@ -114,8 +114,11 @@
 	width: fit-content;
 	background-repeat: no-repeat;
 	background-size: 13px;
-	padding-left: 17px;
 	background-position: 2px center;
+}
+
+.designer-component .add-row-button-container .actions-container {
+	padding-left: 0px !important;
 }
 
 .designer-component .top-content-container .components-grid {
@@ -151,4 +154,8 @@
 .designer-component .description-component-content {
 	padding-top: 10px;
 	padding-left: 25px;
+}
+
+.designer-component .codicon-grabber {
+	cursor: move;
 }
