@@ -49,6 +49,8 @@ import { IAction } from 'vs/base/common/actions';
 import { InsertAfterSelectedRowAction, InsertBeforeSelectedRowAction, AddRowAction, DesignerTableActionContext, MoveRowDownAction, MoveRowUpAction, DesignerTableAction } from 'sql/workbench/browser/designer/tableActions';
 import { RowMoveManager, RowMoveOnDragEventData } from 'sql/base/browser/ui/table/plugins/rowMoveManager.plugin';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
+import { listFocusAndSelectionBackground } from 'sql/platform/theme/common/colors';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -836,6 +838,7 @@ export class Designer extends Disposable implements IThemable {
 					headerRowHeight: TableHeaderRowHeight,
 					editorLock: new Slick.EditorLock()
 				});
+				table.grid.setSelectionModel(new RowSelectionModel());
 				if (taskbar) {
 					taskbar.context = { table: table, path: propertyPath, source: view };
 					this._actionsMap.get(taskbar).map(a => a.table = table);
@@ -1110,6 +1113,7 @@ export class Designer extends Disposable implements IThemable {
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 	const listHoverBackgroundColor = theme.getColor(listHoverBackground);
 	const listActiveSelectionBackgroundColor = theme.getColor(listActiveSelectionBackground);
+	const listFocusSelectionBackgroundColor = theme.getColor(listFocusAndSelectionBackground);
 	if (listHoverBackgroundColor) {
 		collector.addRule(`
 		.designer-component .slick-cell.isDragging {
@@ -1119,8 +1123,11 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 			background: ${listActiveSelectionBackgroundColor};
 			opacity: 0.5;
 		}
+		.vs-dark .designer-component .slick-reorder-proxy {
+			opacity: 0.3;
+		}
 		.designer-component .slick-reorder-guide {
-			background: ${listActiveSelectionBackgroundColor};
+			background: ${listFocusSelectionBackgroundColor};
 			opacity: 1;
 		}
 		`);
