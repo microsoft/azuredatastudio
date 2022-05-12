@@ -58,7 +58,7 @@ export const yesString = localize('yesString', "Yes");
 export const noString = localize('noString', "No");
 export const input = localize('input', "Input");
 export const output = localize('output', "Output");
-export const selectBindingType = localize('selectBindingType', "Select type of binding");
+export function selectBindingType(funcName?: string): string { return funcName ? localize('selectBindingTypeToSpecifiedFunction', "Select type of binding for the function '{0}'", funcName) : localize('selectBindingType', "Select type of binding"); }
 export const selectAzureFunction = localize('selectAzureFunction', "Select an Azure function in the current file to add SQL binding to");
 export const sqlTableOrViewToQuery = localize('sqlTableOrViewToQuery', "SQL table or view to query");
 export const sqlTableToUpsert = localize('sqlTableToUpsert', "SQL table to upsert into");

@@ -24,6 +24,7 @@ export class AzdataGraphView {
 	private _diagram: any;
 	private _diagramModel: AzDataGraphCell;
 	private _uniqueElementId: number = -1;
+	private _cellInFocus: AzDataGraphCell;
 
 	private _graphElementPropertiesSet: Set<string> = new Set();
 
@@ -35,9 +36,12 @@ export class AzdataGraphView {
 		private _executionPlan: azdata.executionPlan.ExecutionPlanGraph,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
 	) {
+		this._parentContainer.tabIndex = 0;
 		this._diagramModel = this.populate(this._executionPlan.root);
 		this._diagram = new azdataGraph.azdataQueryPlan(this._parentContainer, this._diagramModel, executionPlanNodeIconPaths, badgeIconPaths);
 		this.setGraphProperties();
+		this.selectElement(this._executionPlan.root);
+		this._cellInFocus = this._diagram.graph.getSelectionCell();
 		this.initializeGraphEvents();
 	}
 
@@ -62,19 +66,26 @@ export class AzdataGraphView {
 
 	private initializeGraphEvents(): void {
 		this.onElementSelected = this._onElementSelectedEmitter.event;
-		this._diagram.graph.addListener('click', (sender, evt) => {
-			// Updating properties view table on node clicks
-			const cell = evt.properties['cell'];
-			let selectedGraphElement: InternalExecutionPlanElement;
-			if (cell) {
-				selectedGraphElement = this.getElementById(cell.id);
-				this.selectElement(cell.id);
-			} else if (!this.getSelectedElement()) {
-				selectedGraphElement = this._executionPlan.root;
-				this.selectElement(undefined);
+		this._diagram.graph.getSelectionModel().addListener('change', (sender, evt) => {
+			if (evt.properties?.removed) {
+				if (this._cellInFocus.id === evt.properties.removed[0].id) {
+					return;
+				}
+				const newSelection = evt.properties.removed[0];
+				this._onElementSelectedEmitter.fire(this.getElementById(newSelection.id));
+				this.centerElement(this.getElementById(newSelection.id));
+				this._cellInFocus = evt.properties.removed[0];
+			} else {
+				if (evt.properties?.added) {
+					const getPreviousSelection = evt.properties.added[0];
+					this.selectElement(this.getElementById(getPreviousSelection.id));
+				}
 			}
-			this._onElementSelectedEmitter.fire(selectedGraphElement ?? this.getSelectedElement());
-			evt.consume();
+		});
+
+		// Focusing the parent container when we click the graph
+		this._diagram.graph.addListener('click', (sender, evt) => {
+			this._parentContainer.focus();
 		});
 	}
 
@@ -250,7 +261,6 @@ export class AzdataGraphView {
 			return;
 		}
 
-		this._diagram.graph.setSelectionCell(cell);
 		const cellRect = this._diagram.graph.getCellBounds(cell);
 
 		const cellMidPoint: Point = {

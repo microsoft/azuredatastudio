@@ -29,8 +29,9 @@ declare module 'sql-bindings' {
 
 		/**
 		 * Prompts the user to select type of binding and returns result or undefined if the user cancelled out of the prompt
+		 * @param funcName (Optional) Name of the function we are adding the SQL Binding to
 		 */
-		promptForBindingType(): Promise<BindingType | undefined>;
+		promptForBindingType(funcName?: string): Promise<BindingType | undefined>;
 
 		/**
 		 * Prompts the user to enter object name for the SQL query

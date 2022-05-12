@@ -32,7 +32,6 @@ import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/te
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/common/interface';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
-
 /**
  * Main thread class for handling data protocol management registration.
  */

@@ -36,6 +36,9 @@ import { fileFiltersSet } from 'sql/workbench/services/restore/common/constants'
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
+import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
+
 export const BACKUP_SELECTOR: string = 'backup-component';
 
 export class RestoreItemSource {
@@ -86,6 +89,7 @@ const LocalizedStrings = {
 	RECOVERY_MODEL: localize('backup.recoveryModel', "Recovery model"),
 	BACKUP_TYPE: localize('backup.backupType', "Backup type"),
 	BACKUP_DEVICE: localize('backup.backupDevice', "Backup files"),
+	BACKUP_URL: localize('backup.backupUrl', "Backup URL"),
 	ALGORITHM: localize('backup.algorithm', "Algorithm"),
 	CERTIFICATE_OR_ASYMMETRIC_KEY: localize('backup.certificateOrAsymmetricKey', "Certificate or Asymmetric key"),
 	MEDIA: localize('backup.media', "Media"),
@@ -101,6 +105,7 @@ const LocalizedStrings = {
 	EXPIRATION: localize('backup.expiration', "Expiration"),
 	SET_BACKUP_RETAIN_DAYS: localize('backup.setBackupRetainDays', "Set backup retain days"),
 	COPY_ONLY: localize('backup.copyOnly', "Copy-only backup"),
+	TO_URL: localize('backup.toUrl', "Save backup to URL"),
 	ADVANCED_CONFIGURATION: localize('backup.advancedConfiguration', "Advanced Configuration"),
 	COMPRESSION: localize('backup.compression', "Compression"),
 	SET_BACKUP_COMPRESSION: localize('backup.setBackupCompression', "Set backup compression"),
@@ -118,7 +123,8 @@ const LocalizedStrings = {
 	templateUrl: decodeURI(require.toUrl('./backup.component.html'))
 })
 export class BackupComponent extends AngularDisposable {
-	@ViewChild('pathContainer', { read: ElementRef }) pathElement?: ElementRef;
+	@ViewChild('urlPathContainer', { read: ElementRef }) urlPathElement?: ElementRef;
+	@ViewChild('filePathContainer', { read: ElementRef }) filePathElement?: ElementRef;
 	@ViewChild('backupTypeContainer', { read: ElementRef }) backupTypeElement?: ElementRef;
 	@ViewChild('backupsetName', { read: ElementRef }) backupNameElement?: ElementRef;
 	@ViewChild('compressionContainer', { read: ElementRef }) compressionElement?: ElementRef;
@@ -131,9 +137,15 @@ export class BackupComponent extends AngularDisposable {
 	@ViewChild('backupDaysContainer', { read: ElementRef }) backupDaysElement?: ElementRef;
 	@ViewChild('backupButtonContainer', { read: ElementRef }) backupButtonElement?: ElementRef;
 	@ViewChild('cancelButtonContainer', { read: ElementRef }) cancelButtonElement?: ElementRef;
-	@ViewChild('addPathContainer', { read: ElementRef }) addPathElement?: ElementRef;
-	@ViewChild('removePathContainer', { read: ElementRef }) removePathElement?: ElementRef;
+	@ViewChild('filePathButtonsContainer', { read: ElementRef }) filePathButtonsElement?: ElementRef;
+	@ViewChild('addFilePathContainer', { read: ElementRef }) addFilePathElement?: ElementRef;
+	@ViewChild('removeFilePathContainer', { read: ElementRef }) removeFilePathElement?: ElementRef;
+	@ViewChild('urlPathButtonsContainer', { read: ElementRef }) urlPathButtonsElement?: ElementRef;
+	@ViewChild('addUrlPathContainer', { read: ElementRef }) addUrlPathElement?: ElementRef;
 	@ViewChild('copyOnlyContainer', { read: ElementRef }) copyOnlyElement?: ElementRef;
+	@ViewChild('filePathContainerLabel', { read: ElementRef }) filePathLabelElement?: ElementRef;
+	@ViewChild('urlPathContainerLabel', { read: ElementRef }) urlPathLabelElement?: ElementRef;
+	@ViewChild('toUrlContainer', { read: ElementRef }) toUrlElement?: ElementRef;
 	@ViewChild('encryptCheckContainer', { read: ElementRef }) encryptElement?: ElementRef;
 	@ViewChild('encryptContainer', { read: ElementRef }) encryptContainerElement?: ElementRef;
 	@ViewChild('verifyContainer', { read: ElementRef }) verifyElement?: ElementRef;
@@ -149,6 +161,7 @@ export class BackupComponent extends AngularDisposable {
 	private localizedStrings = LocalizedStrings;
 
 	private _uri?: string;
+	private _engineEdition?: number;
 
 	private connection?: IConnectionProfile;
 	private databaseName?: string;
@@ -162,6 +175,7 @@ export class BackupComponent extends AngularDisposable {
 
 	// UI element disable flag
 	public disableTlog?: boolean;
+	public disableMedia?: boolean;
 
 	public selectedBackupComponent?: string;
 	private selectedFilesText?: string;
@@ -185,15 +199,18 @@ export class BackupComponent extends AngularDisposable {
 	private backupButton?: Button;
 	private cancelButton?: Button;
 	private scriptButton?: Button;
-	private addPathButton?: Button;
-	private removePathButton?: Button;
+	private addUrlPathButton?: Button;
+	private addFilePathButton?: Button;
+	private removeFilePathButton?: Button;
 	private pathListBox?: ListBox;
+	private urlInputBox?: InputBox;
 	private compressionSelectBox?: SelectBox;
 	private algorithmSelectBox?: SelectBox;
 	private encryptorSelectBox?: SelectBox;
 	private mediaNameBox?: InputBox;
 	private mediaDescriptionBox?: InputBox;
 	private copyOnlyCheckBox?: Checkbox;
+	private toUrlCheckBox?: Checkbox;
 	private encryptCheckBox?: Checkbox;
 	private verifyCheckBox?: Checkbox;
 	private checksumCheckBox?: Checkbox;
@@ -204,6 +221,7 @@ export class BackupComponent extends AngularDisposable {
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IFileBrowserDialogController) private fileBrowserDialogService: IFileBrowserDialogController,
+		@Inject(IBackupRestoreUrlBrowserDialogService) private backupRestoreUrlBrowserDialogService: IBackupRestoreUrlBrowserDialogService,
 		@Inject(IBackupUiService) private _backupUiService: IBackupUiService,
 		@Inject(IBackupService) private _backupService: IBackupService,
 		@Inject(IClipboardService) private clipboardService: IClipboardService,
@@ -216,63 +234,76 @@ export class BackupComponent extends AngularDisposable {
 	ngOnInit() {
 		this.addFooterButtons();
 
-		this.recoveryBox = new InputBox(this.recoveryModelElement!.nativeElement, this.contextViewService, {
+		this.recoveryBox = this._register(new InputBox(this.recoveryModelElement!.nativeElement, this.contextViewService, {
 			placeholder: this.recoveryModel,
 			ariaLabel: LocalizedStrings.RECOVERY_MODEL
-		});
+		}));
 		// Set backup type
-		this.backupTypeSelectBox = new SelectBox([], '', this.contextViewService, undefined, { ariaLabel: this.localizedStrings.BACKUP_TYPE });
+		this.backupTypeSelectBox = this._register(new SelectBox([], '', this.contextViewService, undefined, { ariaLabel: this.localizedStrings.BACKUP_TYPE }));
 		this.backupTypeSelectBox.render(this.backupTypeElement!.nativeElement);
 
 		// Set copy-only check box
-		this.copyOnlyCheckBox = new Checkbox(this.copyOnlyElement!.nativeElement, {
+		this.copyOnlyCheckBox = this._register(new Checkbox(this.copyOnlyElement!.nativeElement, {
 			label: LocalizedStrings.COPY_ONLY,
 			checked: false,
 			onChange: (viaKeyboard) => { },
 			ariaLabel: LocalizedStrings.COPY_ONLY
-		});
+		}));
+
+		// Set to url check box
+		this.toUrlCheckBox = this._register(new Checkbox(this.toUrlElement!.nativeElement, {
+			label: LocalizedStrings.TO_URL,
+			checked: false,
+			onChange: () => this.onChangeToUrl(),
+			ariaLabel: LocalizedStrings.TO_URL
+		}));
 
 		// Encryption checkbox
-		this.encryptCheckBox = new Checkbox(this.encryptElement!.nativeElement, {
+		this.encryptCheckBox = this._register(new Checkbox(this.encryptElement!.nativeElement, {
 			label: LocalizedStrings.ENCRYPTION,
 			checked: false,
 			onChange: () => this.onChangeEncrypt(),
 			ariaLabel: LocalizedStrings.ENCRYPTION
-		});
+		}));
 
 		// Verify backup checkbox
-		this.verifyCheckBox = new Checkbox(this.verifyElement!.nativeElement, {
+		this.verifyCheckBox = this._register(new Checkbox(this.verifyElement!.nativeElement, {
 			label: LocalizedStrings.VERIFY_CONTAINER,
 			checked: false,
 			onChange: () => { },
 			ariaLabel: LocalizedStrings.VERIFY_CONTAINER
-		});
+		}));
 
 		// Perform checksum checkbox
-		this.checksumCheckBox = new Checkbox(this.checksumElement!.nativeElement, {
+		this.checksumCheckBox = this._register(new Checkbox(this.checksumElement!.nativeElement, {
 			label: LocalizedStrings.CHECKSUM_CONTAINER,
 			checked: false,
 			onChange: () => { },
 			ariaLabel: LocalizedStrings.CHECKSUM_CONTAINER
-		});
+		}));
 
 		// Continue on error checkbox
-		this.continueOnErrorCheckBox = new Checkbox(this.continueOnErrorElement!.nativeElement, {
+		this.continueOnErrorCheckBox = this._register(new Checkbox(this.continueOnErrorElement!.nativeElement, {
 			label: LocalizedStrings.CONTINUE_ON_ERROR_CONTAINER,
 			checked: false,
 			onChange: () => { },
 			ariaLabel: LocalizedStrings.CONTINUE_ON_ERROR_CONTAINER
-		});
+		}));
 
 		// Set backup name
-		this.backupNameBox = new InputBox(this.backupNameElement!.nativeElement, this.contextViewService, {
+		this.backupNameBox = this._register(new InputBox(this.backupNameElement!.nativeElement, this.contextViewService, {
 			ariaLabel: LocalizedStrings.BACKUP_NAME
-		});
+		}));
 
 		// Set backup path list
-		this.pathListBox = new ListBox([], this.contextViewService);
+		this.urlInputBox = this._register(new InputBox(this.urlPathElement!.nativeElement, this.contextViewService, {
+			ariaLabel: LocalizedStrings.BACKUP_URL
+		}));
+		this._register(this.urlInputBox.onDidChange((value) => this.onUrlInputBoxChanged(value)));
+
+		this.pathListBox = this._register(new ListBox([], this.contextViewService));
 		this.pathListBox.setAriaLabel(LocalizedStrings.BACKUP_DEVICE);
-		this.pathListBox.onKeyDown(e => {
+		this._register(this.pathListBox.onKeyDown(e => {
 			if (this.pathListBox!.selectedOptions.length > 0) {
 				const key = e.keyCode;
 				const ctrlOrCmd = e.ctrlKey || e.metaKey;
@@ -289,17 +320,19 @@ export class BackupComponent extends AngularDisposable {
 					e.stopPropagation();
 				}
 			}
-		});
-		this.pathListBox.render(this.pathElement!.nativeElement);
+		}));
+		this.pathListBox.render(this.filePathElement!.nativeElement);
 
 		// Set backup path add/remove buttons
-		this.addPathButton = this._register(new Button(this.addPathElement!.nativeElement, { secondary: true }));
-		this.addPathButton.label = '+';
-		this.addPathButton.title = localize('addFile', "Add a file");
-
-		this.removePathButton = this._register(new Button(this.removePathElement!.nativeElement, { secondary: true }));
-		this.removePathButton.label = '-';
-		this.removePathButton.title = localize('removeFile', "Remove files");
+		this.addUrlPathButton = this._register(new Button(this.addUrlPathElement!.nativeElement, { secondary: true }));
+		this.addUrlPathButton.label = localize('backupBrowseButton', "Browse");
+		this.addUrlPathButton.title = localize('addUrl', "Add URL");
+		this.addFilePathButton = this._register(new Button(this.addFilePathElement!.nativeElement, { secondary: true }));
+		this.addFilePathButton.label = '+';
+		this.addFilePathButton.title = localize('addFile', "Add File");
+		this.removeFilePathButton = this._register(new Button(this.removeFilePathElement!.nativeElement, { secondary: true }));
+		this.removeFilePathButton.label = '-';
+		this.removeFilePathButton.title = localize('removeFile', "Remove files");
 
 		// Set compression
 		this.compressionSelectBox = this._register(new SelectBox(this.compressionOptions, this.compressionOptions[0], this.contextViewService, undefined, { ariaLabel: this.localizedStrings.SET_BACKUP_COMPRESSION }));
@@ -350,6 +383,10 @@ export class BackupComponent extends AngularDisposable {
 		this.recoveryBox.disable();
 		this.mediaNameBox.disable();
 		this.mediaDescriptionBox.disable();
+		this.backupTypeSelectBox.disable();
+		this.copyOnlyCheckBox.disable();
+		this.backupRetainDaysBox.disable();
+		this.toUrlCheckBox.disable();
 
 		this.registerListeners();
 		this.updateTheme(this.themeService.getColorTheme());
@@ -370,6 +407,8 @@ export class BackupComponent extends AngularDisposable {
 
 		this.connection = param.connection;
 		this._uri = param.ownerUri;
+
+		this._engineEdition = this.connectionManagementService.getConnectionInfo(this._uri).serverInfo.engineEditionId;
 
 		// Get backup configuration info
 		this._backupService.getBackupConfigInfo(this._uri).then(configInfo => {
@@ -404,21 +443,21 @@ export class BackupComponent extends AngularDisposable {
 		// Set script footer button
 		this.scriptButton = this._register(new Button(this.scriptButtonElement!.nativeElement, { secondary: true }));
 		this.scriptButton.label = localize('backupComponent.script', "Script");
-		this.scriptButton.onDidClick(() => this.onScript());
+		this._register(this.scriptButton.onDidClick(() => this.onScript()));
 		this._register(attachButtonStyler(this.scriptButton, this.themeService));
 		this.scriptButton.enabled = false;
 
 		// Set backup footer button
 		this.backupButton = this._register(new Button(this.backupButtonElement!.nativeElement));
 		this.backupButton.label = localize('backupComponent.backup', "Backup");
-		this.backupButton.onDidClick(() => this.onOk());
+		this._register(this.backupButton.onDidClick(() => this.onOk()));
 		this._register(attachButtonStyler(this.backupButton, this.themeService));
 		this.backupEnabled = false;
 
 		// Set cancel footer button
 		this.cancelButton = this._register(new Button(this.cancelButtonElement!.nativeElement, { secondary: true }));
 		this.cancelButton.label = localize('backupComponent.cancel', "Cancel");
-		this.cancelButton.onDidClick(() => this.onCancel());
+		this._register(this.cancelButton.onDidClick(() => this.onCancel()));
 		this._register(attachButtonStyler(this.cancelButton, this.themeService));
 	}
 
@@ -433,7 +472,7 @@ export class BackupComponent extends AngularDisposable {
 		this.backupTypeOptions = [];
 
 		if (isMetadataPopulated) {
-			this.backupEnabled = true;
+			this.enableBackupButton();
 
 			// Set recovery model
 			this.setControlsForRecoveryModel();
@@ -446,14 +485,6 @@ export class BackupComponent extends AngularDisposable {
 
 			this.setDefaultBackupName();
 			this.backupNameBox!.focus();
-
-			// Set backup path list
-			this.setDefaultBackupPaths();
-			let pathlist: ISelectOptionItem[] = [];
-			for (let i in this.backupPathTypePairs) {
-				pathlist.push({ text: i });
-			}
-			this.pathListBox!.setOptions(pathlist, 0);
 
 			// Set encryption
 			let encryptorItems = this.populateEncryptorCombo();
@@ -482,6 +513,26 @@ export class BackupComponent extends AngularDisposable {
 			this.recoveryBox!.disable();
 			this.mediaNameBox!.disable();
 			this.mediaDescriptionBox!.disable();
+			if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance) {
+				this.toUrlCheckBox.checked = true;
+				this.copyOnlyCheckBox.checked = true;
+				this.backupTypeSelectBox!.disable();
+				this.copyOnlyCheckBox!.disable();
+				this.backupRetainDaysBox!.disable();
+				this.disableMedia = true;
+			} else {
+				this.toUrlCheckBox.checked = false;
+				this.copyOnlyCheckBox.checked = false;
+				this.backupRetainDaysBox!.enable();
+				this.copyOnlyCheckBox!.enable();
+				this.backupTypeSelectBox!.enable();
+				this.disableMedia = false;
+			}
+			this.onChangeToUrl();
+
+			// Set backup path list
+			this.setBackupPathList();
+
 			this.recoveryBox!.value = this.recoveryModel!;
 
 			// show warning message if latest backup file path contains url
@@ -495,14 +546,29 @@ export class BackupComponent extends AngularDisposable {
 	}
 
 	/**
+	 * Set backup file path options in the list box
+	 */
+	private setBackupPathList() {
+		let pathlist: ISelectOptionItem[] = [];
+		if (!this.toUrlCheckBox.checked) {
+			for (let i in this.backupPathTypePairs) {
+				pathlist.push({ text: i });
+			}
+			this.setDefaultBackupPaths();
+			this.pathListBox!.setOptions(pathlist, 0);
+		}
+	}
+
+	/**
 	 * Reset dialog controls to their initial state.
 	 */
 	private resetDialog(): void {
 		this.isFormatChecked = false;
 		this.isEncryptChecked = false;
 
-		this.copyOnlyCheckBox!.checked = false;
-		this.copyOnlyCheckBox!.enable();
+		this.copyOnlyCheckBox!.checked = true;
+		this.copyOnlyCheckBox!.disable();
+		this.toUrlCheckBox!.checked = false;
 		this.compressionSelectBox!.setOptions(this.compressionOptions, 0);
 		this.encryptCheckBox!.checked = false;
 		this.encryptCheckBox!.enable();
@@ -517,6 +583,7 @@ export class BackupComponent extends AngularDisposable {
 		this.algorithmSelectBox!.setOptions(this.encryptionAlgorithms, 0);
 		this.selectedInitOption = this.existingMediaOptions[0];
 		this.containsBackupToUrl = false;
+		this.urlInputBox!.value = '';
 		this.pathListBox!.setValidation(true);
 
 		this.cancelButton!.applyStyles();
@@ -530,23 +597,27 @@ export class BackupComponent extends AngularDisposable {
 		this._register(attachInputBoxStyler(this.recoveryBox!, this.themeService));
 		this._register(attachSelectBoxStyler(this.backupTypeSelectBox!, this.themeService));
 		this._register(attachListBoxStyler(this.pathListBox!, this.themeService));
-		this._register(attachButtonStyler(this.addPathButton!, this.themeService));
-		this._register(attachButtonStyler(this.removePathButton!, this.themeService));
+		this._register(attachButtonStyler(this.addUrlPathButton!, this.themeService));
+		this._register(attachButtonStyler(this.addFilePathButton!, this.themeService));
+		this._register(attachButtonStyler(this.removeFilePathButton!, this.themeService));
 		this._register(attachSelectBoxStyler(this.compressionSelectBox!, this.themeService));
 		this._register(attachSelectBoxStyler(this.algorithmSelectBox!, this.themeService));
 		this._register(attachSelectBoxStyler(this.encryptorSelectBox!, this.themeService));
 		this._register(attachInputBoxStyler(this.mediaNameBox!, this.themeService));
+		this._register(attachInputBoxStyler(this.urlInputBox!, this.themeService));
 		this._register(attachInputBoxStyler(this.mediaDescriptionBox!, this.themeService));
 		this._register(attachInputBoxStyler(this.backupRetainDaysBox!, this.themeService));
 		this._register(attachCheckboxStyler(this.copyOnlyCheckBox!, this.themeService));
+		this._register(attachCheckboxStyler(this.toUrlCheckBox!, this.themeService));
 		this._register(attachCheckboxStyler(this.encryptCheckBox!, this.themeService));
 		this._register(attachCheckboxStyler(this.verifyCheckBox!, this.themeService));
 		this._register(attachCheckboxStyler(this.checksumCheckBox!, this.themeService));
 		this._register(attachCheckboxStyler(this.continueOnErrorCheckBox!, this.themeService));
 
 		this._register(this.backupTypeSelectBox!.onDidSelect(selected => this.onBackupTypeChanged()));
-		this.addPathButton!.onDidClick(() => this.onAddClick());
-		this.removePathButton!.onDidClick(() => this.onRemoveClick());
+		this._register(this.addUrlPathButton!.onDidClick(() => this.onAddUrlClick()));
+		this._register(this.addFilePathButton!.onDidClick(() => this.onAddFileClick()));
+		this._register(this.removeFilePathButton!.onDidClick(() => this.onRemoveClick()));
 		this._register(this.mediaNameBox!.onDidChange(mediaName => {
 			this.mediaNameChanged(mediaName);
 		}));
@@ -605,7 +676,7 @@ export class BackupComponent extends AngularDisposable {
 			this.setEncryptOptionsEnabled(true);
 
 			// Force to choose format media option since otherwise encryption cannot be done
-			if (!this.isFormatChecked) {
+			if (!this.isFormatChecked && !this.toUrlCheckBox.checked) {
 				this.onChangeMediaFormat();
 			}
 		} else {
@@ -613,6 +684,31 @@ export class BackupComponent extends AngularDisposable {
 		}
 		this.isEncryptChecked = this.encryptCheckBox!.checked;
 		this.detectChange();
+	}
+
+	private onChangeToUrl(): void {
+		if (this.toUrlCheckBox!.checked) {
+			this.filePathElement.nativeElement.hidden = true;
+			this.filePathButtonsElement.nativeElement.hidden = true;
+			this.filePathLabelElement.nativeElement.hidden = true;
+			this.urlPathLabelElement.nativeElement.hidden = false;
+			this.urlPathElement.nativeElement.hidden = false;
+			this.urlPathButtonsElement.nativeElement.hidden = false;
+		} else {
+			this.filePathElement.nativeElement.hidden = false;
+			this.filePathButtonsElement.nativeElement.hidden = false;
+			this.filePathLabelElement.nativeElement.hidden = false;
+			this.urlPathLabelElement.nativeElement.hidden = true;
+			this.urlPathElement.nativeElement.hidden = true;
+			this.urlPathButtonsElement.nativeElement.hidden = true;
+		}
+		this.setBackupPathList();
+	}
+
+	private onUrlInputBoxChanged(value: string) {
+		this.backupPathTypePairs = {};
+		this.backupPathTypePairs[value] = BackupConstants.MediaDeviceType.Url;
+		this.enableBackupButton();
 	}
 
 	private onChangeMediaFormat(): void {
@@ -648,19 +744,40 @@ export class BackupComponent extends AngularDisposable {
 		this._changeDetectorRef.detectChanges();
 	}
 
-	private onAddClick(): void {
+	private onAddUrlClick(): void {
+		this.backupRestoreUrlBrowserDialogService.showDialog(this._uri!,
+			this.defaultNewBackupFolder!,
+			fileFiltersSet,
+			FileValidationConstants.backup,
+			false,
+			false,
+			this.getDefaultBackupFileName()).then(url => this.handleUrlPathAdded(url));
+	}
+
+	private onAddFileClick(): void {
 		this.fileBrowserDialogService.showDialog(this._uri!,
 			this.defaultNewBackupFolder!,
 			fileFiltersSet,
 			FileValidationConstants.backup,
 			false,
-			(filepath => this.handlePathAdded(filepath)));
+			(filepath => this.handleFilePathAdded(filepath)));
 	}
 
-	private handlePathAdded(filepath: string) {
+	private handleUrlPathAdded(url: string): void {
+		if (url && !this.backupPathTypePairs![url]) {
+			this.backupPathTypePairs![url] = BackupConstants.MediaDeviceType.File;
+			this.urlInputBox.value = url;
+			this.enableBackupButton();
+
+			this._changeDetectorRef.detectChanges();
+		}
+	}
+
+	private handleFilePathAdded(filepath: string): void {
 		if (filepath && !this.backupPathTypePairs![filepath]) {
 			if ((this.getBackupPathCount() < BackupConstants.maxDevices)) {
-				this.backupPathTypePairs![filepath] = BackupConstants.deviceTypeFile;
+				this.backupPathTypePairs![filepath] = BackupConstants.MediaDeviceType.File;
+
 				this.pathListBox!.add(filepath);
 				this.enableBackupButton();
 				this.enableAddRemoveButtons();
@@ -678,7 +795,7 @@ export class BackupComponent extends AngularDisposable {
 	private onRemoveClick(): void {
 		this.pathListBox!.selectedOptions.forEach(selected => {
 			if (this.backupPathTypePairs![selected]) {
-				if (this.backupPathTypePairs![selected] === BackupConstants.deviceTypeURL) {
+				if (this.backupPathTypePairs![selected] === BackupConstants.MediaDeviceType.Url) {
 					// stop showing warning message since url path is getting removed
 					this.pathListBox!.setValidation(true);
 					this.containsBackupToUrl = false;
@@ -703,12 +820,12 @@ export class BackupComponent extends AngularDisposable {
 
 	private enableAddRemoveButtons(): void {
 		if (this.pathListBox!.count === 0) {
-			this.removePathButton!.enabled = false;
+			this.removeFilePathButton!.enabled = false;
 		} else if (this.pathListBox!.count === BackupConstants.maxDevices) {
-			this.addPathButton!.enabled = false;
+			this.addFilePathButton!.enabled = false;
 		} else {
-			this.removePathButton!.enabled = true;
-			this.addPathButton!.enabled = true;
+			this.removeFilePathButton!.enabled = true;
+			this.addFilePathButton!.enabled = true;
 		}
 	}
 
@@ -758,13 +875,22 @@ export class BackupComponent extends AngularDisposable {
 			if (this.defaultNewBackupFolder[0] === '/') {
 				serverPathSeparator = '/';
 			}
-			let d: Date = new Date();
-			let formattedDateTime: string = `-${d.getFullYear()}${d.getMonth() + 1}${d.getDate()}-${d.getHours()}-${d.getMinutes()}-${d.getSeconds()}`;
-			let defaultNewBackupLocation = this.defaultNewBackupFolder + serverPathSeparator + this.databaseName + formattedDateTime + '.bak';
+			let defaultNewBackupLocation = this.defaultNewBackupFolder + serverPathSeparator + this.getDefaultBackupFileName();
 
 			// Add a default new backup location
-			this.backupPathTypePairs![defaultNewBackupLocation] = BackupConstants.deviceTypeFile;
+			if (this.toUrlCheckBox!.checked) {
+				this.backupPathTypePairs![defaultNewBackupLocation] = BackupConstants.MediaDeviceType.Url;
+			} else {
+				this.backupPathTypePairs![defaultNewBackupLocation] = BackupConstants.MediaDeviceType.File;
+			}
 		}
+	}
+
+	private getDefaultBackupFileName(): string {
+		let d: Date = new Date();
+		let formattedDateTime: string = `-${d.getFullYear()}${d.getMonth() + 1}${d.getDate()}-${d.getHours()}-${d.getMinutes()}-${d.getSeconds()}`;
+		let defaultBackupFileName = this.databaseName + formattedDateTime + '.bak';
+		return defaultBackupFileName;
 	}
 
 	private enableMediaInput(enable: boolean): void {
@@ -812,8 +938,15 @@ export class BackupComponent extends AngularDisposable {
 		return backupType!;
 	}
 
+	private getBackupDeviceType(): number {
+		if (this.toUrlCheckBox!.checked) {
+			return BackupConstants.PhysicalDeviceType.Url;
+		}
+		return BackupConstants.PhysicalDeviceType.Disk;
+	}
+
 	private getBackupPathCount(): number {
-		return this.pathListBox!.count;
+		return this.urlInputBox!.value.length;
 	}
 
 	private getSelectedBackupType(): string {
@@ -826,8 +959,14 @@ export class BackupComponent extends AngularDisposable {
 
 	private enableBackupButton(): void {
 		if (!this.backupButton!.enabled) {
-			if (this.pathListBox!.count > 0 && (!this.isFormatChecked || this.mediaNameBox!.value) && this.backupRetainDaysBox!.validate() === undefined) {
+			//Managed Instance backup doesn't support backup expiration date nor backup media set
+			if ((this._engineEdition === DatabaseEngineEdition.SqlManagedInstance && this.urlInputBox.value.length > 0) ||
+				(this._engineEdition !== DatabaseEngineEdition.SqlManagedInstance && (!this.isFormatChecked || this.mediaNameBox!.value) && this.backupRetainDaysBox!.validate() === undefined)) {
 				this.backupEnabled = true;
+			}
+		} else {
+			if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance && this.urlInputBox.value.length === 0) {
+				this.backupEnabled = false;
 			}
 		}
 	}
@@ -880,7 +1019,7 @@ export class BackupComponent extends AngularDisposable {
 			databaseName: this.databaseName!,
 			backupType: this.getBackupTypeNumber(),
 			backupComponent: 0,
-			backupDeviceType: BackupConstants.backupDeviceTypeDisk,
+			backupDeviceType: this.getBackupDeviceType(),
 			backupPathList: backupPathArray,
 			selectedFiles: this.selectedFilesText!,
 			backupsetName: this.backupNameBox!.value,
