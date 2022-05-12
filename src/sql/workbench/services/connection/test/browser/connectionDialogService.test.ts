@@ -173,7 +173,7 @@ suite('ConnectionDialogService tests', () => {
 		mockWidget.setup(x => x.focusOnOpen());
 		mockWidget.setup(x => x.handleOnConnecting());
 		mockWidget.setup(x => x.handleResetConnection());
-		mockWidget.setup(x => x.connect(TypeMoq.It.isValue(connectionProfile))).returns(() => true);
+		mockWidget.setup(x => x.connect(TypeMoq.It.isValue(connectionProfile))).returns(() => Promise.resolve(true));
 		mockWidget.setup(x => x.createConnectionWidget(TypeMoq.It.isAny()));
 		mockWidget.setup(x => x.updateServerGroup(TypeMoq.It.isAny()));
 		mockWidget.setup(x => x.initDialog(TypeMoq.It.isAny()));

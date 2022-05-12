@@ -15,8 +15,6 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as styler from 'sql/platform/theme/common/styler';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
@@ -29,12 +27,12 @@ import * as DOM from 'vs/base/browser/dom';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import Severity from 'vs/base/common/severity';
 
 export enum AuthenticationType {
 	SqlLogin = 'SqlLogin',
@@ -45,7 +43,11 @@ export enum AuthenticationType {
 	None = 'None' // Kusto supports no authentication
 }
 
+const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
+
 export class ConnectionWidget extends lifecycle.Disposable {
+	private _defaultInputOptionRadioButton: RadioButton;
+	private _connectionStringRadioButton: RadioButton;
 	private _previousGroupOption: string;
 	private _serverGroupOptions: IConnectionProfileGroup[];
 	private _connectionStringInputBox: InputBox;
@@ -78,7 +80,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _connectionNameInputBox: InputBox;
 	protected _databaseNameInputBox: Dropdown;
 	protected _advancedButton: Button;
-	protected _useConnectionStringCheckBox: Checkbox;
 	private static readonly _authTypes: AuthenticationType[] =
 		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.dSTSAuth, AuthenticationType.None];
 	private static readonly _osByName = {
@@ -114,11 +115,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		@IThemeService protected _themeService: IThemeService,
 		@IContextViewService protected _contextViewService: IContextViewService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@IClipboardService private _clipboardService: IClipboardService,
-		@IConfigurationService private _configurationService: IConfigurationService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService protected _logService: ILogService,
+		@IErrorMessageService private _errorMessageService: IErrorMessageService
 	) {
 		super();
 		this._callbacks = callbacks;
@@ -173,76 +172,74 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this._authTypeSelectBox) {
 			this.onAuthTypeSelected(this._authTypeSelectBox.value);
 		}
-
-		DOM.addDisposableListener(container, 'paste', e => {
-			this._handleClipboard().catch(err => this._logService.error(`Unexpected error parsing clipboard contents for connection widget : ${err}`));
-		});
-	}
-
-	protected async _handleClipboard(): Promise<void> {
-		if (this._configurationService.getValue<boolean>('connection.parseClipboardForConnectionString')) {
-			let paste = await this._clipboardService.readText();
-			this._connectionManagementService.buildConnectionInfo(paste, this._providerName).then(e => {
-				if (e) {
-					let profile = new ConnectionProfile(this._capabilitiesService, this._providerName);
-					profile.options = e.options;
-					if (profile.serverName) {
-						this.initDialog(profile);
-					}
-				}
-			});
-		}
 	}
 
 	protected fillInConnectionForm(authTypeChanged: boolean = false): void {
 		this.addInputOptionRadioButtons();
 		this.addConnectionStringInput();
-		// Server Name
 		this.addServerNameOption();
-
-		// Authentication type
 		this.addAuthenticationTypeOption(authTypeChanged);
-
-		// Login Options
 		this.addLoginOptions();
-
-		// Database
 		this.addDatabaseOption();
-
-		// Server Group
 		this.addServerGroupOption();
-
-		// Connection Name
 		this.addConnectionNameOptions();
-
-		// Advanced Options
 		this.addAdvancedOptions();
+		this.updateRequiredStateForOptions();
+		if (this._connectionStringOptions.isEnabled) {
+			// update the UI based on connection string setting after initialization
+			this.handleConnectionStringOptionChange();
+		}
 	}
 
 	private addInputOptionRadioButtons(): void {
 		if (this._connectionStringOptions.isEnabled) {
 			const groupName = 'input-option-type';
-			const inputOptionContainer = DialogHelper.appendRow(this._tableContainer, '', 'connection-label', 'connection-input');
-			const defaultInputOptionRadioButton = new RadioButton(inputOptionContainer, { label: 'Default', checked: !this._connectionStringOptions.isDefaultOption });
-			const connectionStringRadioButton = new RadioButton(inputOptionContainer, { label: 'Connection String', checked: this._connectionStringOptions.isDefaultOption });
-			defaultInputOptionRadioButton.name = groupName;
-			connectionStringRadioButton.name = groupName;
-			defaultInputOptionRadioButton.onDidChangeCheckedState(() => {
-				this.handleConnectionStringOptionChange(!defaultInputOptionRadioButton.checked);
+			const inputOptionsContainer = DialogHelper.appendRow(this._tableContainer, '', 'connection-label', 'connection-input', 'connection-input-options');
+			this._defaultInputOptionRadioButton = new RadioButton(inputOptionsContainer, { label: 'Parameters', checked: !this._connectionStringOptions.isDefault });
+			this._connectionStringRadioButton = new RadioButton(inputOptionsContainer, { label: 'Connection String', checked: this._connectionStringOptions.isDefault });
+			this._defaultInputOptionRadioButton.name = groupName;
+			this._connectionStringRadioButton.name = groupName;
+			this._defaultInputOptionRadioButton.onDidChangeCheckedState(() => {
+				this.handleConnectionStringOptionChange();
 			});
 		}
 	}
 
 	private addConnectionStringInput(): void {
-		const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 		if (this._connectionStringOptions.isEnabled) {
-			let connectionStringContainer = DialogHelper.appendRow(this._tableContainer, ConnectionStringText, 'connection-label', 'connection-input', 'connection-string-row', true);
+			const connectionStringContainer = DialogHelper.appendRow(this._tableContainer, ConnectionStringText, 'connection-label', 'connection-input', 'connection-string-row', true);
 			this._connectionStringInputBox = new InputBox(connectionStringContainer, this._contextViewService, {
+				validationOptions: {
+					validation: (value: string) => {
+						if (!value) {
+							return ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", ConnectionStringText) });
+						}
+						return undefined;
+					}
+				},
 				ariaLabel: ConnectionStringText,
 				flexibleHeight: true,
-				flexibleMaxHeight: 100,
-				required: true
+				flexibleMaxHeight: 100
 			});
+			this._register(this._connectionStringInputBox.onDidChange(() => {
+				this.setConnectButton();
+			}));
+		}
+	}
+
+	private updateRequiredStateForOptions(): void {
+		this._serverNameInputBox.required = false;
+		this._userNameInputBox.required = false;
+		if (this._connectionStringInputBox) {
+			this._connectionStringInputBox.required = false;
+		}
+
+		if (this.useConnectionString) {
+			this._connectionStringInputBox.required = true;
+		} else {
+			const userNameOption: azdata.ConnectionOption = this._optionsMaps[ConnectionOptionSpecialType.userName];
+			this._serverNameInputBox.required = true;
+			this._userNameInputBox.required = userNameOption?.isRequired;
 		}
 	}
 
@@ -268,8 +265,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					return undefined;
 				}
 			},
-			ariaLabel: serverNameOption.displayName,
-			required: true
+			ariaLabel: serverNameOption.displayName
 		});
 	}
 
@@ -282,8 +278,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			validationOptions: {
 				validation: (value: string) => self.validateUsername(value, userNameOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", userNameOption.displayName) }) : null
 			},
-			ariaLabel: userNameOption.displayName,
-			required: userNameOption.isRequired
+			ariaLabel: userNameOption.displayName
 		});
 		// Password
 		let passwordOption = this._optionsMaps[ConnectionOptionSpecialType.password];
@@ -356,14 +351,16 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		});
 	}
 
-	private handleConnectionStringOptionChange(useConnectionString: boolean): void {
+	private handleConnectionStringOptionChange(): void {
 		const connectionStringClass = 'use-connection-string';
-		if (useConnectionString) {
+		if (this.useConnectionString) {
 			this._tableContainer.classList.add(connectionStringClass);
 			this._connectionStringInputBox.layout();
 		} else {
 			this._tableContainer.classList.remove(connectionStringClass);
 		}
+		this.updateRequiredStateForOptions();
+		this.setConnectButton();
 	}
 
 	private validateUsername(value: string, isOptionRequired: boolean): boolean {
@@ -425,12 +422,10 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					this._databaseNameInputBox.value = s;
 				}
 			}));
-			if (this._connectionStringInputBox) {
-				this._register(styler.attachInputBoxStyler(this._connectionStringInputBox, this._themeService));
-			}
-			if (this._useConnectionStringCheckBox) {
-				this._register(styler.attachCheckboxStyler(this._useConnectionStringCheckBox, this._themeService));
-			}
+		}
+
+		if (this._connectionStringInputBox) {
+			this._register(styler.attachInputBoxStyler(this._connectionStringInputBox, this._themeService));
 		}
 
 		if (this._authTypeSelectBox) {
@@ -487,12 +482,14 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	private setConnectButton(): void {
-		let showUsername: boolean;
-		if (this.authType) {
-			showUsername = this.authType === AuthenticationType.SqlLogin || this.authType === AuthenticationType.AzureMFAAndUser;
+		let shouldEnableConnectButton: boolean;
+		if (this.useConnectionString) {
+			shouldEnableConnectButton = !!this._connectionStringInputBox.value;
+		} else {
+			const showUsername: boolean = this.authType && (this.authType === AuthenticationType.SqlLogin || this.authType === AuthenticationType.AzureMFAAndUser);
+			shouldEnableConnectButton = showUsername ? (!!this.serverName && !!this.userName) : !!this.serverName;
 		}
-		showUsername ? this._callbacks.onSetConnectButton(!!this.serverName && !!this.userName) :
-			this._callbacks.onSetConnectButton(!!this.serverName);
+		this._callbacks.onSetConnectButton(shouldEnableConnectButton);
 	}
 
 	protected onAuthTypeSelected(selectedAuthType: string) {
@@ -667,9 +664,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	public focusOnOpen(): void {
-		this._handleClipboard().catch(err => this._logService.error(`Unexpected error parsing clipboard contents for connection widget : ${err}`));
-		this._serverNameInputBox.focus();
-		this.focusPasswordIfNeeded();
+		if (this.useConnectionString) {
+			this._connectionStringInputBox.focus();
+		} else {
+			this._serverNameInputBox.focus();
+			this.focusPasswordIfNeeded();
+		}
 		this.clearValidationMessages();
 	}
 
@@ -677,6 +677,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._serverNameInputBox.hideMessage();
 		this._userNameInputBox.hideMessage();
 		this._azureAccountDropdown.hideMessage();
+		if (this._connectionStringInputBox) {
+			this._connectionStringInputBox.hideMessage();
+		}
 	}
 
 	private getModelValue(value: string): string {
@@ -685,6 +688,10 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	public fillInConnectionInputs(connectionInfo: IConnectionProfile) {
 		if (connectionInfo) {
+			// If initializing from an existing connection, always switch to the parameters view.
+			if (connectionInfo.serverName && this._connectionStringOptions.isEnabled) {
+				this._defaultInputOptionRadioButton.checked = true;
+			}
 			this._serverNameInputBox.value = this.getModelValue(connectionInfo.serverName);
 			this._connectionNameInputBox.value = this.getModelValue(connectionInfo.connectionName);
 			this._userNameInputBox.value = this.getModelValue(connectionInfo.userName);
@@ -797,6 +804,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this._authTypeSelectBox) {
 			this._authTypeSelectBox.disable();
 		}
+
+		if (this._connectionStringOptions.isEnabled) {
+			this._connectionStringInputBox.disable();
+			this._defaultInputOptionRadioButton.enabled = false;
+			this._connectionStringRadioButton.enabled = false;
+		}
 	}
 
 	public handleResetConnection(): void {
@@ -829,6 +842,19 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this._databaseNameInputBox) {
 			this._databaseNameInputBox.enabled = true;
 		}
+		if (this._connectionStringOptions.isEnabled) {
+			this._connectionStringInputBox.enable();
+			this._defaultInputOptionRadioButton.enabled = true;
+			this._connectionStringRadioButton.enabled = true;
+		}
+	}
+
+	public get useConnectionString(): boolean {
+		return this._connectionStringRadioButton?.checked;
+	}
+
+	public get connectionString(): string {
+		return this._connectionStringInputBox.value;
 	}
 
 	public get connectionName(): string {
@@ -887,57 +913,75 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	private validateInputs(): boolean {
-		let isFocused = false;
-		const isServerNameValid = this._serverNameInputBox.validate() === undefined;
-		if (!isServerNameValid) {
-			this._serverNameInputBox.focus();
-			isFocused = true;
+		if (this.useConnectionString) {
+			const isConnectionStringValid = this._connectionStringInputBox.validate() === undefined;
+			if (!isConnectionStringValid) {
+				this._connectionStringInputBox.focus();
+			}
+			return isConnectionStringValid;
+		} else {
+			let isFocused = false;
+			const isServerNameValid = this._serverNameInputBox.validate() === undefined;
+			if (!isServerNameValid) {
+				this._serverNameInputBox.focus();
+				isFocused = true;
+			}
+			const isUserNameValid = this._userNameInputBox.validate() === undefined;
+			if (!isUserNameValid && !isFocused) {
+				this._userNameInputBox.focus();
+				isFocused = true;
+			}
+			const isPasswordValid = this._passwordInputBox.validate() === undefined;
+			if (!isPasswordValid && !isFocused) {
+				this._passwordInputBox.focus();
+				isFocused = true;
+			}
+			const isAzureAccountValid = this.validateAzureAccountSelection();
+			if (!isAzureAccountValid && !isFocused) {
+				this._azureAccountDropdown.focus();
+				isFocused = true;
+			}
+			return isServerNameValid && isUserNameValid && isPasswordValid && isAzureAccountValid;
 		}
-		const isUserNameValid = this._userNameInputBox.validate() === undefined;
-		if (!isUserNameValid && !isFocused) {
-			this._userNameInputBox.focus();
-			isFocused = true;
-		}
-		const isPasswordValid = this._passwordInputBox.validate() === undefined;
-		if (!isPasswordValid && !isFocused) {
-			this._passwordInputBox.focus();
-			isFocused = true;
-		}
-		const isAzureAccountValid = this.validateAzureAccountSelection();
-		if (!isAzureAccountValid && !isFocused) {
-			this._azureAccountDropdown.focus();
-			isFocused = true;
-		}
-		return isServerNameValid && isUserNameValid && isPasswordValid && isAzureAccountValid;
 	}
 
-	public connect(model: IConnectionProfile): boolean {
+	public async connect(model: IConnectionProfile): Promise<boolean> {
 		let validInputs = this.validateInputs();
 		if (validInputs) {
-			model.serverName = this.serverName;
-			model.userName = this.userName;
-			model.password = this.password;
-			model.authenticationType = this.authenticationType;
-			model.azureAccount = this.authToken;
-			model.savePassword = this._rememberPasswordCheckBox.checked;
-			model.connectionName = this.connectionName;
-			model.databaseName = this.databaseName;
-			if (this._serverGroupSelectBox) {
-				if (this._serverGroupSelectBox.value === this.DefaultServerGroup.name) {
-					model.groupFullName = '';
-					model.saveProfile = true;
-					model.groupId = this.findGroupId(model.groupFullName);
-				} else if (this._serverGroupSelectBox.value === this.NoneServerGroup.name) {
-					model.groupFullName = '';
-					model.saveProfile = false;
-				} else if (this._serverGroupSelectBox.value !== this._addNewServerGroup.name) {
-					model.groupFullName = this._serverGroupSelectBox.value;
-					model.saveProfile = true;
-					model.groupId = this.findGroupId(model.groupFullName);
+			if (this.useConnectionString) {
+				const connInfo = await this._connectionManagementService.buildConnectionInfo(this.connectionString, this._providerName);
+				if (connInfo) {
+					model.options = connInfo.options;
+				} else {
+					this._errorMessageService.showDialog(Severity.Error, localize('connectionWidget.Error', "Error"), localize('connectionWidget.ConnectionStringError', "Failed to parse the connection string."));
+					return false;
 				}
-			}
-			if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
-				model.azureTenantId = this._azureTenantId;
+			} else {
+				model.serverName = this.serverName;
+				model.userName = this.userName;
+				model.password = this.password;
+				model.authenticationType = this.authenticationType;
+				model.azureAccount = this.authToken;
+				model.savePassword = this._rememberPasswordCheckBox.checked;
+				model.connectionName = this.connectionName;
+				model.databaseName = this.databaseName;
+				if (this._serverGroupSelectBox) {
+					if (this._serverGroupSelectBox.value === this.DefaultServerGroup.name) {
+						model.groupFullName = '';
+						model.saveProfile = true;
+						model.groupId = this.findGroupId(model.groupFullName);
+					} else if (this._serverGroupSelectBox.value === this.NoneServerGroup.name) {
+						model.groupFullName = '';
+						model.saveProfile = false;
+					} else if (this._serverGroupSelectBox.value !== this._addNewServerGroup.name) {
+						model.groupFullName = this._serverGroupSelectBox.value;
+						model.saveProfile = true;
+						model.groupId = this.findGroupId(model.groupFullName);
+					}
+				}
+				if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
+					model.azureTenantId = this._azureTenantId;
+				}
 			}
 		}
 		return validInputs;

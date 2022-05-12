@@ -432,7 +432,7 @@ declare module 'azdata' {
 		/**
 		 * Whether the connection provider uses connection string as the default option to connect. The default value is false.
 		 */
-		isDefaultOption?: boolean;
+		isDefault?: boolean;
 	}
 
 	export interface TaskInfo {

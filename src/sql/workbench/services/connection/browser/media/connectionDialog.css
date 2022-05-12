@@ -162,7 +162,7 @@
 	display: table-row;
 }
 
-.connection-dialog .advanced-options-row {
-	height: 35px;
+.connection-dialog .connection-input-options .connection-input label {
+	margin-right: 10px;
 }
 
