@@ -1453,6 +1453,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.miaaVersionError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error getting SQL managed instance version number.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Errore durante il recupero del numero di versione dell'istanza gestita di SQL.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.missingExtension" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The {0} extension is required to view engine settings. Do you wish to install it now?]]></Val>
@@ -1719,6 +1728,15 @@
           <Val><![CDATA[Currently, only upgrading to the next immediate version is supported.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Attualmente sono supportati solo gli aggiornamenti alla versione immediatamente successiva.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.onlyNextImmediateVersionMiaa" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The version of a SQL Managed Instance can not be newer than the version of its data controller. Currently, only upgrading to the next immediate version is supported.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La versione di un Istanza gestita di SQL non può essere più recente della versione del relativo controller dei dati. Attualmente, è supportato solo l'aggiornamento alla versione immediatamente successiva.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2455,6 +2473,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.showMiaaError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error showing details of SQL managed instance.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Errore durante la visualizzazione dei dettagli dell'istanza gestita di SQL.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.sourceDatabase" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source database]]></Val>
@@ -2647,11 +2674,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.upgradeDialog" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.upgradeDialogController" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[During a data controller upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the data controller will not cause downtime for the data services (SQL Managed Instance or PostgreSQL server).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Durante un aggiornamento del controller dei dati, è possibile aggiornare parti del piano di controllo dei dati, ad esempio definizioni di risorse personalizzate (CRD) e contenitori. Un aggiornamento del controller dei dati non causerà tempi di inattività per i servizi dati (Istanza gestita di SQL o server PostgreSQL).]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.upgradeDialogMiaa" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[During a SQL managed instance upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the SQL managed instance will not cause downtime for the data services (SQL Managed Instance or PostgreSQL server).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Durante l'aggiornamento di un'istanza gestita di SQL, è possibile aggiornare parti del piano di controllo dei dati, come le definizioni delle risorse personalizzate (CRD) e i contenitori. L’aggiornamento dell'istanza gestita di SQL non causerà tempi di inattività dei servizi dati (Istanza gestita di SQL o server PostgreSQL).]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2665,11 +2701,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.upgrading" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.upgradeMiaa" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Upgrade SQL Managed Instance]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aggiornare l’Istanza gestita di SQL]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.upgradingController" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data controller is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get datacontrollers -A']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[È in corso l'aggiornamento del controller dei dati. È possibile controllare lo stato dell'aggiornamento eseguendo il comando seguente: 'kubectl get datacontrollers -A']]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.upgradingMiaa" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[SQL managed instance is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get sqlmi -A']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[È in corso l'aggiornamento dell'istanza gestita di SQL. È possibile controllare lo stato dell'aggiornamento eseguendo il comando seguente: 'kubectl get sqlmi -A']]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
