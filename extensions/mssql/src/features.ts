@@ -109,21 +109,21 @@ export class AccountFeature implements StaticFeature {
 		const accountList = await azdata.accounts.getAllAccounts();
 		const account = accountList.find(a => a.key.accountId === request.accountId);
 		if (account) {
-			console.log(localizedConstants.failedToFindAccount(request.accountId));
+			console.log(`Failed to find azure account ${request.accountId} when executing token refresh`);
 			throw Error(localizedConstants.failedToFindAccount(request.accountId));
 		}
 
 		// find tenant
 		const tenant = account.properties.tenants.find(tenant => tenant.id === request.tenantId);
 		if (!tenant) {
-			console.log(localizedConstants.failedToFindTenants(request.tenantId, account.displayInfo.displayName));
+			console.log(`Failed to find tenant ${request.tenantId} in account ${account.displayInfo.displayName} when refreshing security token`);
 			throw Error(localizedConstants.failedToFindTenants(request.tenantId, account.displayInfo.displayName));
 		}
 
 		// Get the updated token, which will handle refreshing it if necessary
 		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
 		if (!securityToken) {
-			console.log(localizedConstants.tokenRefreshFailedNoSecurityToken);
+			console.log('Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected');
 			throw Error(localizedConstants.tokenRefreshFailedNoSecurityToken);
 		}
 		let params: contracts.TokenRefreshedParams = {
