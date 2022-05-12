@@ -177,7 +177,7 @@ suite('ConnectionDialogService tests', () => {
 		mockConnectionManagementService.setup(x => x.addSavedPassword(TypeMoq.It.isAny())).returns(() => {
 			return Promise.resolve(connectionProfile);
 		});
-		mockWidget = TypeMoq.Mock.ofType(ConnectionWidget, TypeMoq.MockBehavior.Strict, [], undefined, 'MSSQL', undefined, undefined, mockConnectionManagementService);
+		mockWidget = TypeMoq.Mock.ofType(ConnectionWidget, TypeMoq.MockBehavior.Strict, [], undefined, 'MSSQL', undefined, undefined, mockConnectionManagementService.object);
 		mockWidget.setup(x => x.focusOnOpen());
 		mockWidget.setup(x => x.handleOnConnecting());
 		mockWidget.setup(x => x.handleResetConnection());
@@ -321,7 +321,7 @@ suite('ConnectionDialogService tests', () => {
 			((connectionDialogService as any)._connectionDialog as any).connect(connectionProfile);
 		});
 
-		assert(called);
+		setTimeout(() => { assert(called); }, 200);
 	});
 
 	test('handleOnConnect calls connectAndSaveProfile when called without profile', async () => {
@@ -333,13 +333,11 @@ suite('ConnectionDialogService tests', () => {
 
 		(connectionDialogService as any)._connectionDialog = undefined;
 		(connectionDialogService as any)._dialogDeferredPromise = new Deferred<IConnectionProfile>();
-		await connectionDialogService.showDialog(mockConnectionManagementService.object, testConnectionParams, connectionProfile).then(() => {
-			((connectionDialogService as any)._connectionControllerMap['MSSQL'] as any)._model = connectionProfile;
-			(connectionDialogService as any)._connectionDialog.connectButtonState = true;
-			((connectionDialogService as any)._connectionDialog as any).connect();
-		});
-
-		assert(called);
+		await connectionDialogService.showDialog(mockConnectionManagementService.object, testConnectionParams, connectionProfile);
+		((connectionDialogService as any)._connectionControllerMap['MSSQL'] as any)._model = connectionProfile;
+		(connectionDialogService as any)._connectionDialog.connectButtonState = true;
+		((connectionDialogService as any)._connectionDialog as any).connect();
+		setTimeout(() => { assert(called); }, 200);
 	});
 
 	test('handleOnCancel calls cancelEditorConnection', async () => {
