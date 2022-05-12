@@ -334,7 +334,7 @@ export class ProjectsController {
 		const project: Project = this.getProjectFromContext(context);
 		try {
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer)
-				.withAdditionalProperties({ image: deployProfile.localDbSetting!.dockerBaseImage })
+				.withAdditionalProperties({ dockerBaseImage: deployProfile.localDbSetting!.dockerBaseImage })
 				.send();
 
 			if (deployProfile && deployProfile.deploySettings) {
@@ -364,7 +364,7 @@ export class ProjectsController {
 		} catch (error) {
 			void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, error, this._outputChannel);
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer)
-				.withAdditionalProperties({ image: deployProfile.localDbSetting!.dockerBaseImage })
+				.withAdditionalProperties({ dockerBaseImage: deployProfile.localDbSetting!.dockerBaseImage })
 				.send();
 		}
 		return;
