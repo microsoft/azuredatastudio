@@ -353,10 +353,16 @@ export async function promptForObjectName(bindingType: BindingType, connectionUR
 			let selectedObjectName: string | undefined;
 			if (selectedObjectToQuery === constants.selectTable) {
 				// Create query to get list of tables from database selected
-				const params = { ownerUri: connectionURI, query: utils.listTablesQuery(selectedDatabase!) };
-				let listTables: string[] = await vscodeMssqlApi.sendRequest(azureFunctionsContracts.QueryExecuteStringRequest.type, params);
-				console.log(listTables);
-				selectedObjectName = await vscode.window.showQuickPick(listTables, {
+				let query = utils.listTablesQuery(selectedDatabase!);
+				let tableNames: string[] = [];
+
+				const params = { ownerUri: connectionURI, queryString: query };
+				let queryResult: { rowCount: number, columnInfo: [], rows: [[{ displayValue: string }]] } = await vscodeMssqlApi.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params);
+
+				// Get table names from query result rows
+				queryResult.rows.forEach(row => { tableNames.push(row[0].displayValue); });
+				// prompt user to select table from list of tables
+				selectedObjectName = await vscode.window.showQuickPick(tableNames, {
 					canPickMany: false,
 					title: constants.selectTable,
 					ignoreFocusOut: true
@@ -368,7 +374,7 @@ export async function promptForObjectName(bindingType: BindingType, connectionUR
 				return;
 			}
 
-			// return selectedObjectName;
+			return selectedObjectName;
 		}
 	}
 }

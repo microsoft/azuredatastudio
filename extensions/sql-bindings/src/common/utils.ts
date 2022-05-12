@@ -174,6 +174,11 @@ export function getErrorType(error: any): string | undefined {
 	}
 }
 
+/**
+ * Query to be used for the SimpleExecuteRequest to get the list of schemas and tables from the selected databse
+ * @param database database is the one user selected 
+ * @returns string query to be used for the SimpleExecuteRequest 
+ */
 export function listTablesQuery(database: string): string {
-	return `select table_name from ${database}.INFORMATION_SCHEMA.TABLES where TABLE_TYPE = 'BASE TABLE'`;
+	return `select concat(table_schema, '.', table_name) from ${database}.INFORMATION_SCHEMA.TABLES where TABLE_TYPE = 'BASE TABLE'`;
 }

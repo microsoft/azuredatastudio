@@ -21,12 +21,25 @@ export namespace GetAzureFunctionsRequest {
 }
 
 // ------------------------------- < Execute String > ------------------------------------
-export interface QueryExecuteStringParams {
-	query: string;
+export interface SimpleExecuteParams {
+	queryString: string;
 	ownerUri: string;
 }
-export namespace QueryExecuteStringRequest {
-	export const type = new RequestType<QueryExecuteStringParams, QueryExecuteResult, void, void>('query/executeString');
+
+/**
+ * Simple Query Execute Result will return rowCount, columnInfo, and rows from STS request
+ * rowCount is the number of rows returned with resultset
+ * columnInfo is the details about the columns that are povided as solutions
+ * rows is a 2D array of the cell values from the resultset
+ */
+export interface SimpleExecuteResult {
+	rowCount: number;
+	columnInfo: any;
+	rows: any;
 }
 
-export interface QueryExecuteResult { }
+export namespace SimpleExecuteRequest {
+	export const type = new RequestType<SimpleExecuteParams, SimpleExecuteResult, void, void>('query/simpleexecute');
+}
+
+
