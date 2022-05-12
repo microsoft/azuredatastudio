@@ -50,9 +50,9 @@ export class AccountFeature implements StaticFeature {
 			// Refresh token, then inform client the token has been updated. This is done as separate notification messages due to the synchronous processing nature of STS currently https://github.com/microsoft/azuredatastudio/issues/17179
 			let result = await this.refreshToken(request);
 			if (!result) {
-				void window.showErrorMessage(localizedConstants.tokenRefreshFailed('intellisense'));
+				void window.showErrorMessage(localizedConstants.tokenRefreshFailed('autocompletion'));
 				console.log(`Token Refresh Failed ${request.toString()}`);
-				throw Error(localizedConstants.tokenRefreshFailed('intellisense'));
+				throw Error(localizedConstants.tokenRefreshFailed('autocompletion'));
 			}
 			this._client.sendNotification(contracts.TokenRefreshedNotification.type, result);
 		});
@@ -108,19 +108,23 @@ export class AccountFeature implements StaticFeature {
 		// find account
 		const accountList = await azdata.accounts.getAllAccounts();
 		const account = accountList.find(a => a.key.accountId === request.accountId);
+		if (account) {
+			console.log(localizedConstants.failedToFindAccount(request.accountId));
+			throw Error(localizedConstants.failedToFindAccount(request.accountId));
+		}
 
 		// find tenant
 		const tenant = account.properties.tenants.find(tenant => tenant.id === request.tenantId);
 		if (!tenant) {
-			console.log(localizedConstants.failedToFindTenants);
-			throw Error(localizedConstants.failedToFindTenants);
+			console.log(localizedConstants.failedToFindTenants(request.tenantId, account.displayInfo.displayName));
+			throw Error(localizedConstants.failedToFindTenants(request.tenantId, account.displayInfo.displayName));
 		}
 
 		// Get the updated token, which will handle refreshing it if necessary
 		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
 		if (!securityToken) {
-			console.log(localizedConstants.tokenRefreshFailedToken);
-			throw Error(localizedConstants.tokenRefreshFailedToken);
+			console.log(localizedConstants.tokenRefreshFailedNoSecurityToken);
+			throw Error(localizedConstants.tokenRefreshFailedNoSecurityToken);
 		}
 		let params: contracts.TokenRefreshedParams = {
 			token: securityToken.token,
