@@ -133,6 +133,9 @@
     <trans-unit id="selectBindingType">
       <source xml:lang="en">Select type of binding</source>
     </trans-unit>
+    <trans-unit id="selectBindingTypeToSpecifiedFunction">
+      <source xml:lang="en">Select type of binding for the function '{0}'</source>
+    </trans-unit>
     <trans-unit id="selectButton">
       <source xml:lang="en">Select</source>
     </trans-unit>
