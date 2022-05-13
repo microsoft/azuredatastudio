@@ -952,6 +952,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				const connInfo = await this._connectionManagementService.buildConnectionInfo(this.connectionString, this._providerName);
 				if (connInfo) {
 					model.options = connInfo.options;
+					model.savePassword = true;
 				} else {
 					this._errorMessageService.showDialog(Severity.Error, localize('connectionWidget.Error', "Error"), localize('connectionWidget.ConnectionStringError', "Failed to parse the connection string."));
 					return false;
