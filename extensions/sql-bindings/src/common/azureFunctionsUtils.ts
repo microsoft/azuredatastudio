@@ -630,7 +630,12 @@ function checkBrackets(name: string): boolean {
 			continue;
 		}
 		if (name[i] === ']') {
-			bracketStack.pop();
+			if (bracketStack.length > 0 && bracketStack[bracketStack.length - 1] === '[') {
+				bracketStack.pop();
+			} else {
+				// if there is not an opening bracket in the stack then return false
+				return false;
+			}
 		}
 	}
 	return (bracketStack.length === 0);
