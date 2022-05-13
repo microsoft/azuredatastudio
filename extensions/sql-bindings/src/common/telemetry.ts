@@ -44,7 +44,6 @@ export enum CreateAzureFunctionStep {
 	getConnectionString = 'getConnectionString',
 	getAzureFunctionName = 'getAzureFunctionName',
 	getTemplateId = 'getTemplateId',
-	setAzureWebJobsStorage = 'setAzureWebJobsStorage',
 	getConnectionStringSettingName = 'getConnectionStringSettingName',
 	promptForIncludePassword = 'promptForIncludePassword',
 }

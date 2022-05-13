@@ -12,24 +12,19 @@ export const SqlManagedInstanceGeneralPurpose = {
 	licenseIncludedPricePerCore: 153,
 	maxMemorySize: 128,
 	maxVCores: 24,
-
 	replicaOptions: [
 		{
 			text: loc.replicaOne,
 			value: 1,
 		}
 	],
-
 	defaultReplicaValue: 1
 };
 
 const SqlManagedInstanceBusinessCritical = {
 	tierName: loc.businessCriticalLabel,
-
-	// Set to real values when BC is ready
-	basePricePerCore: 0,
-	licenseIncludedPricePerCore: 0,
-
+	basePricePerCore: 160,
+	licenseIncludedPricePerCore: 434,
 	replicaOptions: [
 		{
 			text: loc.replicaTwo,
@@ -40,7 +35,6 @@ const SqlManagedInstanceBusinessCritical = {
 			value: 3,
 		}
 	],
-
 	defaultReplicaValue: 3
 };
 

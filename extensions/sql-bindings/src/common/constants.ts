@@ -13,8 +13,6 @@ export const azureFunctionsExtensionName = 'ms-azuretools.vscode-azurefunctions'
 export const linkToAzureFunctionExtension = 'https://docs.microsoft.com/azure/azure-functions/functions-develop-vs-code';
 export const sqlBindingsDoc = 'https://aka.ms/sqlbindings';
 export const sqlConnectionStringSetting = 'SqlConnectionString';
-export const azureWebJobsStorageSetting = 'AzureWebJobsStorage';
-export const azureWebJobsStoragePlaceholder = 'Enter your Azure Web Jobs storage connection string';
 export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
 export const inputTemplateID = 'SqlInputBinding';
 export const outputTemplateID = 'SqlOutputBinding';
@@ -52,6 +50,8 @@ export const yesString = localize('yesString', "Yes");
 export const noString = localize('noString', "No");
 export const input = localize('input', "Input");
 export const output = localize('output', "Output");
+export const inputDescription = localize('inputDescription', "Retrieves data from a database");
+export const outputDescription = localize('outputDescription', "Save data to a database");
 export function selectBindingType(funcName?: string): string { return funcName ? localize('selectBindingTypeToSpecifiedFunction', "Select type of binding for the function '{0}'", funcName) : localize('selectBindingType', "Select type of binding"); }
 export const selectAzureFunction = localize('selectAzureFunction', "Select an Azure function in the current file to add SQL binding to");
 export const sqlTableOrViewToQuery = localize('sqlTableOrViewToQuery', "SQL table or view to query");
