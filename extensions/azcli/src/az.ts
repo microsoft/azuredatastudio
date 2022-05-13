@@ -321,6 +321,7 @@ export class AzTool implements azExt.IAzApi {
 			} catch (err) {
 				// If the output was not pure JSON, catch the error and log it here.
 				Logger.log(loc.azOutputParseErrorCaught(args.concat(['--output', 'json']).toString()));
+				throw err;
 			}
 
 			if ((<azExt.SqlMiShowResultDirect>stdout).properties) {
