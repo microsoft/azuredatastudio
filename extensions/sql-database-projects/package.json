@@ -456,6 +456,7 @@
     }
   },
   "dependencies": {
+    "axios": "^0.27.2",
     "@microsoft/ads-extension-telemetry": "^1.1.5",
     "fast-glob": "^3.2.7",
     "fs-extra": "^5.0.0",

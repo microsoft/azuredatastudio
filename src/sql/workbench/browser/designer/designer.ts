@@ -16,7 +16,7 @@ import { Orientation, Sizing, SplitView } from 'vs/base/browser/ui/splitview/spl
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import 'vs/css!./media/designer';
-import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
+import { ITableMouseEvent, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { IThemable } from 'vs/base/common/styler';
 import { Checkbox, ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
 import { Table } from 'sql/base/browser/ui/table/table';
@@ -33,18 +33,24 @@ import { Codicon } from 'vs/base/common/codicons';
 import { Color } from 'vs/base/common/color';
 import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { DesignerIssuesTabPanelView } from 'sql/workbench/browser/designer/designerIssuesTabPanelView';
 import { DesignerScriptEditorTabPanelView } from 'sql/workbench/browser/designer/designerScriptEditorTabPanelView';
 import { DesignerPropertyPathValidator } from 'sql/workbench/browser/designer/designerPropertyPathValidator';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { listActiveSelectionBackground, listActiveSelectionForeground } from 'vs/platform/theme/common/colorRegistry';
+import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { listActiveSelectionBackground, listActiveSelectionForeground, listHoverBackground } from 'vs/platform/theme/common/colorRegistry';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { layoutDesignerTable, TableHeaderRowHeight, TableRowHeight } from 'sql/workbench/browser/designer/designerTableUtil';
 import { Dropdown, IDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
+import { IAction } from 'vs/base/common/actions';
+import { InsertAfterSelectedRowAction, InsertBeforeSelectedRowAction, AddRowAction, DesignerTableActionContext, MoveRowDownAction, MoveRowUpAction, DesignerTableAction } from 'sql/workbench/browser/designer/tableActions';
+import { RowMoveManager, RowMoveOnDragEventData } from 'sql/base/browser/ui/table/plugins/rowMoveManager.plugin';
+import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
+import { listFocusAndSelectionBackground } from 'sql/platform/theme/common/colors';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -90,12 +96,13 @@ export class Designer extends Disposable implements IThemable {
 	private _input: DesignerComponentInput;
 	private _tableCellEditorFactory: TableCellEditorFactory;
 	private _propertiesPane: DesignerPropertiesPane;
-	private _buttons: Button[] = [];
 	private _inputDisposable: DisposableStore;
 	private _loadingTimeoutHandle: any;
 	private _groupHeaders: HTMLElement[] = [];
 	private _issuesView: DesignerIssuesTabPanelView;
 	private _scriptEditorView: DesignerScriptEditorTabPanelView;
+	private _taskbars: Taskbar[] = [];
+	private _actionsMap: Map<Taskbar, DesignerTableAction[]> = new Map<Taskbar, DesignerTableAction[]>();
 	private _onStyleChangeEventEmitter = new Emitter<void>();
 
 	constructor(private readonly _container: HTMLElement,
@@ -103,7 +110,8 @@ export class Designer extends Disposable implements IThemable {
 		@IContextViewService private readonly _contextViewProvider: IContextViewService,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@IDialogService private readonly _dialogService: IDialogService,
-		@IThemeService private readonly _themeService: IThemeService) {
+		@IThemeService private readonly _themeService: IThemeService,
+		@IContextMenuService private readonly _contextMenuService: IContextMenuService,) {
 		super();
 		this._tableCellEditorFactory = new TableCellEditorFactory(
 			{
@@ -209,6 +217,7 @@ export class Designer extends Disposable implements IThemable {
 		} else if (component instanceof TabbedPanel) {
 			component.style(this._styles.tabbedPanelStyles);
 		} else if (component instanceof Table) {
+			this.removeTableSelectionStyles();
 			component.style(this._styles.tableStyles);
 		} else if (component instanceof Button) {
 			component.style(this._styles.buttonStyles);
@@ -217,6 +226,17 @@ export class Designer extends Disposable implements IThemable {
 		} else {
 			component.style(this._styles.selectBoxStyles);
 		}
+	}
+
+	private removeTableSelectionStyles(): void {
+		this._styles.tableStyles.listActiveSelectionBackground = undefined;
+		this._styles.tableStyles.listActiveSelectionForeground = undefined;
+		this._styles.tableStyles.listFocusAndSelectionBackground = undefined;
+		this._styles.tableStyles.listFocusAndSelectionForeground = undefined;
+		this._styles.tableStyles.listInactiveFocusBackground = undefined;
+		this._styles.tableStyles.listInactiveFocusForeground = undefined;
+		this._styles.tableStyles.listInactiveSelectionBackground = undefined;
+		this._styles.tableStyles.listInactiveSelectionForeground = undefined;
 	}
 
 	private styleGroupHeader(header: HTMLElement): void {
@@ -241,10 +261,6 @@ export class Designer extends Disposable implements IThemable {
 
 		this._horizontalSplitView.style({
 			separatorBorder: styles.paneSeparator
-		});
-
-		this._buttons.forEach((button) => {
-			this.styleComponent(button);
 		});
 
 		this._groupHeaders.forEach((header) => {
@@ -304,14 +320,13 @@ export class Designer extends Disposable implements IThemable {
 	}
 
 	private clearUI(): void {
-		this._buttons.forEach(button => button.dispose());
-		this._buttons = [];
 		this._componentMap.forEach(item => item.component.dispose());
 		this._componentMap.clear();
 		DOM.clearNode(this._topContentContainer);
 		this._contentTabbedPanel.clearTabs();
 		this._propertiesPane.clear();
 		this._groupHeaders = [];
+		this._taskbars.map(t => t.dispose());
 	}
 
 	private initializeDesigner(): void {
@@ -326,6 +341,27 @@ export class Designer extends Disposable implements IThemable {
 		this.layoutTabbedPanel();
 		this.updatePropertiesPane(DesignerRootObjectPath);
 		this.restoreUIState();
+	}
+
+	private handleCellFocusAfterAddOrMove(edit: DesignerEdit): void {
+		if (edit.path.length === 2) {
+			const propertyName = edit.path[0] as string;
+			const index = edit.type === DesignerEditType.Add ? edit.path[1] as number : edit.value as number;
+			const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
+			const tableProperties = this._componentMap.get(propertyName).defintion.componentProperties as DesignerTableProperties;
+			let selectedCellIndex = tableProperties.itemProperties.findIndex(p => p.componentType === 'input');
+			selectedCellIndex = tableProperties.canMoveRows ? selectedCellIndex + 1 : selectedCellIndex;
+			try {
+				table.grid.resetActiveCell();
+				table.setActiveCell(index, selectedCellIndex);
+				table.setSelectedRows([index]);
+			}
+			catch {
+				// Ignore the slick grid error when setting active cell.
+			}
+		} else {
+			this.updatePropertiesPane(this._propertiesPane.objectPath);
+		}
 	}
 
 	private handleEditProcessedEvent(args: DesignerEditProcessedEventArgs): void {
@@ -344,21 +380,8 @@ export class Designer extends Disposable implements IThemable {
 				this.updateComponentValues();
 				this.layoutTabbedPanel();
 			}
-			if (edit.type === DesignerEditType.Add) {
-				// For tables in the main view, move focus to the first cell of the newly added row, and the properties pane will be showing the new object.
-				if (edit.path.length === 1) {
-					const propertyName = edit.path[0] as string;
-					const tableData = this._input.viewModel[propertyName] as DesignerTableProperties;
-					const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
-					try {
-						table.setActiveCell(tableData.data.length - 1, 0);
-					}
-					catch {
-						// Ignore the slick grid error when setting active cell.
-					}
-				} else {
-					this.updatePropertiesPane(this._propertiesPane.objectPath);
-				}
+			if (edit.type === DesignerEditType.Add || edit.type === DesignerEditType.Move) {
+				this.handleCellFocusAfterAddOrMove(edit);
 			} else if (edit.type === DesignerEditType.Update) {
 				// for edit, update the properties pane with new values of current object.
 				this.updatePropertiesPane(this._propertiesPane.objectPath);
@@ -574,7 +597,7 @@ export class Designer extends Disposable implements IThemable {
 		}
 	}
 
-	private handleEdit(edit: DesignerEdit): void {
+	public handleEdit(edit: DesignerEdit): void {
 		if (this._supressEditProcessing) {
 			return;
 		}
@@ -797,28 +820,7 @@ export class Designer extends Disposable implements IThemable {
 					container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				}
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
-				if (tableProperties.canAddRows) {
-					const buttonContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
-					const addNewText = tableProperties.labelForAddNewButton ?? localize('designer.newRowText', "Add New");
-					const addRowButton = new Button(buttonContainer, {
-						title: addNewText,
-						secondary: true
-					});
-					addRowButton.onDidClick(() => {
-						this.handleEdit({
-							type: DesignerEditType.Add,
-							path: propertyPath,
-							source: view
-						});
-					});
-					this.styleComponent(addRowButton);
-					addRowButton.label = addNewText;
-					addRowButton.icon = {
-						id: `add-row-button new codicon`
-					};
-					addRowButton.ariaLabel = localize('designer.newRowButtonAriaLabel', "Add new row to '{0}' table", tableProperties.ariaLabel);
-					this._buttons.push(addRowButton);
-				}
+				const taskbar = this.addTableTaskbar(container, tableProperties);
 				const tableContainer = container.appendChild(DOM.$('.full-row'));
 				const table = new Table(tableContainer, {
 					dataProvider: new TableDataView()
@@ -836,12 +838,55 @@ export class Designer extends Disposable implements IThemable {
 					headerRowHeight: TableHeaderRowHeight,
 					editorLock: new Slick.EditorLock()
 				});
+				table.grid.setSelectionModel(new RowSelectionModel());
+				if (taskbar) {
+					taskbar.context = { table: table, path: propertyPath, source: view };
+					this._actionsMap.get(taskbar).map(a => a.table = table);
+				}
+				const columns: Slick.Column<Slick.SlickData>[] = [];
+				if (tableProperties.canInsertRows || tableProperties.canMoveRows) {
+					// Add move context menu actions
+					this._register(table.onContextMenu((e) => {
+						this.openContextMenu(table, e, propertyPath, view, tableProperties);
+					}));
+				}
+				if (tableProperties.canMoveRows) {
+					// Add row move drag and drop
+					const moveRowsPlugin = new RowMoveManager({
+						cancelEditOnDrag: true,
+						id: 'moveRow',
+						iconCssClass: Codicon.grabber.classNames,
+						title: localize('designer.moveRowText', 'Move Row'),
+						width: 20,
+						resizable: false,
+						isFontIcon: true,
+						behavior: 'selectAndMove'
+					});
+					table.registerPlugin(moveRowsPlugin);
+					moveRowsPlugin.onMoveRows.subscribe((e: Slick.EventData, data: RowMoveOnDragEventData) => {
+						const row = data.rows[0];
+						// no point in moving before or after itself
+						if (row === data.insertBefore || row === data.insertBefore - 1) {
+							e.stopPropagation();
+							return;
+						}
+						this.handleEdit({
+							type: DesignerEditType.Move,
+							path: [...propertyPath, row],
+							source: view,
+							value: data.insertBefore < row ? data.insertBefore : data.insertBefore - 1
+						});
+					});
+					table.grid.registerPlugin(moveRowsPlugin);
+					columns.push(moveRowsPlugin.definition);
+				}
 				table.ariaLabel = tableProperties.ariaLabel;
-				const columns = tableProperties.columns.map(propName => {
+				columns.push(...tableProperties.columns.map((propName, index) => {
 					const propertyDefinition = tableProperties.itemProperties.find(item => item.propertyName === propName);
 					switch (propertyDefinition.componentType) {
 						case 'checkbox':
 							const checkboxColumn = new CheckBoxColumn({
+								id: index.toString(),
 								field: propertyDefinition.propertyName,
 								name: propertyDefinition.componentProperties.title,
 								width: propertyDefinition.componentProperties.width as number
@@ -859,6 +904,7 @@ export class Designer extends Disposable implements IThemable {
 						case 'dropdown':
 							const dropdownProperties = propertyDefinition.componentProperties as DropDownProperties;
 							return {
+								id: index.toString(),
 								name: dropdownProperties.title,
 								field: propertyDefinition.propertyName,
 								editor: this._tableCellEditorFactory.getDropdownEditorClass({ view: view, path: propertyPath }, dropdownProperties.values as string[], dropdownProperties.isEditable),
@@ -867,13 +913,14 @@ export class Designer extends Disposable implements IThemable {
 						default:
 							const inputProperties = propertyDefinition.componentProperties as InputBoxProperties;
 							return {
+								id: index.toString(),
 								name: inputProperties.title,
 								field: propertyDefinition.propertyName,
 								editor: this._tableCellEditorFactory.getTextEditorClass({ view: view, path: propertyPath }, inputProperties.inputType),
 								width: inputProperties.width as number
 							};
 					}
-				});
+				}));
 				if (tableProperties.canRemoveRows) {
 					const deleteRowColumn = new ButtonColumn({
 						id: 'deleteRow',
@@ -908,7 +955,10 @@ export class Designer extends Disposable implements IThemable {
 				table.grid.onBeforeEditCell.subscribe((e, data): boolean => {
 					return data.item[data.column.field].enabled !== false;
 				});
-
+				let currentTableActions = [];
+				if (taskbar) {
+					currentTableActions = this._actionsMap.get(taskbar);
+				}
 				table.grid.onActiveCellChanged.subscribe((e, data) => {
 					if (view === 'TabsView' || view === 'TopContentView') {
 						if (data.row !== undefined) {
@@ -925,12 +975,20 @@ export class Designer extends Disposable implements IThemable {
 							this._propertiesPane.updateDescription(componentDefinition);
 						}
 					}
+					if (data.row !== undefined) {
+						currentTableActions.forEach(a => a.updateState(data.row));
+						table.grid.setSelectedRows([data.row]);
+					}
 				});
-
+				table.onBlur((e) => {
+					currentTableActions.forEach(a => a.updateState());
+					table.grid.setSelectedRows([]);
+					table.grid.resetActiveCell();
+				});
 				component = table;
 				break;
 			default:
-				throw new Error(localize('tableDesigner.unknownComponentType', "The component type: {0} is not supported", componentDefinition.componentType));
+				throw new Error(localize('designer.unknownComponentType', "The component type: {0} is not supported", componentDefinition.componentType));
 		}
 		componentMap.set(componentDefinition.propertyName, {
 			defintion: componentDefinition,
@@ -939,6 +997,78 @@ export class Designer extends Disposable implements IThemable {
 
 		this.styleComponent(component);
 		return component;
+	}
+
+	private addTableTaskbar(container: HTMLElement, tableProperties: DesignerTableProperties): Taskbar | undefined {
+		if (tableProperties.canAddRows || tableProperties.canMoveRows) {
+			const taskbarContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
+			const taskbar = new Taskbar(taskbarContainer);
+			const actions = [];
+			if (tableProperties.canAddRows) {
+				const addRowAction = this._instantiationService.createInstance(AddRowAction, this, tableProperties);
+				actions.push(addRowAction);
+			}
+			if (tableProperties.canMoveRows) {
+				const moveUpAction = this._instantiationService.createInstance(MoveRowUpAction, this);
+				const moveDownAction = this._instantiationService.createInstance(MoveRowDownAction, this);
+				actions.push(moveUpAction);
+				actions.push(moveDownAction);
+			}
+			const taskbarContent: ITaskbarContent[] = actions.map((a) => { return { action: a }; });
+			taskbar.setContent(taskbarContent);
+			this._actionsMap.set(taskbar, actions);
+			return taskbar;
+		}
+		return undefined;
+	}
+
+	private openContextMenu(
+		table: Table<Slick.SlickData>,
+		event: ITableMouseEvent,
+		propertyPath: DesignerPropertyPath,
+		view: DesignerUIArea,
+		tableProperties: DesignerTableProperties
+	): void {
+		const rowIndex = event.cell.row;
+		const tableActionContext: DesignerTableActionContext = {
+			table: table,
+			path: propertyPath,
+			source: view,
+			selectedRow: rowIndex
+		};
+		const data = table.grid.getData() as Slick.DataProvider<Slick.SlickData>;
+		if (!data || rowIndex >= data.getLength()) {
+			return undefined;
+		}
+		const actions = this.getTableActions(tableProperties);
+		actions.forEach(a => {
+			if (a instanceof DesignerTableAction) {
+				a.table = table;
+				a.updateState(rowIndex);
+			}
+		});
+		this._contextMenuService.showContextMenu({
+			getAnchor: () => event.anchor,
+			getActions: () => actions,
+			getActionsContext: () => (tableActionContext)
+		});
+	}
+
+	private getTableActions(tableProperties: DesignerTableProperties): IAction[] {
+		const actions: IAction[] = [];
+		if (tableProperties.canInsertRows) {
+			const insertRowBefore = this._instantiationService.createInstance(InsertBeforeSelectedRowAction, this);
+			const insertRowAfter = this._instantiationService.createInstance(InsertAfterSelectedRowAction, this);
+			actions.push(insertRowBefore);
+			actions.push(insertRowAfter);
+		}
+		if (tableProperties.canMoveRows) {
+			const moveRowUp = this._instantiationService.createInstance(MoveRowUpAction, this);
+			const moveRowDown = this._instantiationService.createInstance(MoveRowDownAction, this);
+			actions.push(moveRowUp);
+			actions.push(moveRowDown);
+		}
+		return actions;
 	}
 
 	private startLoading(message: string, timeout: number): void {
@@ -979,3 +1109,27 @@ export class Designer extends Disposable implements IThemable {
 		}
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const listHoverBackgroundColor = theme.getColor(listHoverBackground);
+	const listActiveSelectionBackgroundColor = theme.getColor(listActiveSelectionBackground);
+	const listFocusSelectionBackgroundColor = theme.getColor(listFocusAndSelectionBackground);
+	if (listHoverBackgroundColor) {
+		collector.addRule(`
+		.designer-component .slick-cell.isDragging {
+			background-color: ${listHoverBackgroundColor};
+		}
+		.designer-component .slick-reorder-proxy {
+			background: ${listActiveSelectionBackgroundColor};
+			opacity: 0.5;
+		}
+		.vs-dark .designer-component .slick-reorder-proxy {
+			opacity: 0.3;
+		}
+		.designer-component .slick-reorder-guide {
+			background: ${listFocusSelectionBackgroundColor};
+			opacity: 1;
+		}
+		`);
+	}
+});

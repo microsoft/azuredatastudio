@@ -1506,7 +1506,7 @@
       <source xml:lang="en">Point in time retention (days)</source>
     </trans-unit>
     <trans-unit id="arc.sql.service.tier.business.critical">
-      <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
+      <source xml:lang="en">Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
     </trans-unit>
     <trans-unit id="arc.sql.service.tier.description">
       <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>

@@ -31,9 +31,29 @@ export class AzureAccountService implements IAzureAccountService {
 	 * @param ignoreErrors If true any errors are not thrown and instead collected and returned as part of the result
 	 * @param selectedOnly Whether to only list subscriptions the user has selected to filter to for this account
 	 */
-	public getSubscriptions(account: azurecore.AzureAccount, ignoreErrors?: boolean, selectedOnly?: boolean): Promise<azurecore.GetSubscriptionsResult> {
+	public async getSubscriptions(account: azurecore.AzureAccount, ignoreErrors?: boolean, selectedOnly?: boolean): Promise<azurecore.GetSubscriptionsResult> {
 		this.checkProxy();
 		return this._proxy.getSubscriptions(account, ignoreErrors, selectedOnly);
+	}
+
+	public async getStorageAccounts(account: azurecore.AzureAccount, subscriptions: azurecore.azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountResult> {
+		this.checkProxy();
+		return this._proxy.getStorageAccounts(account, subscriptions, ignoreErrors);
+	}
+
+	public async getBlobContainers(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetBlobContainersResult> {
+		this.checkProxy();
+		return this._proxy.getBlobContainers(account, subscription, storageAccount, ignoreErrors);
+	}
+
+	public async getBlobs(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, containerName: string, ignoreErrors?: boolean): Promise<azurecore.GetBlobsResult> {
+		this.checkProxy();
+		return this._proxy.getBlobs(account, subscription, storageAccount, containerName, ignoreErrors);
+	}
+
+	public async getStorageAccountAccessKey(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountAccessKeyResult> {
+		this.checkProxy();
+		return this._proxy.getStorageAccountAccessKey(account, subscription, storageAccount, ignoreErrors);
 	}
 
 	private checkProxy(): void {
@@ -42,4 +62,3 @@ export class AzureAccountService implements IAzureAccountService {
 		}
 	}
 }
-

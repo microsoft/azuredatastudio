@@ -209,12 +209,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		telemetryStep = CreateAzureFunctionStep.getTemplateId;
 		let templateId: string = selectedBindingType === BindingType.input ? constants.inputTemplateID : constants.outputTemplateID;
 
-		// We need to set the azureWebJobsStorage to a placeholder
-		// to suppress the warning for opening the wizard - but will ask them to overwrite if they are creating new azureFunction
-		// issue https://github.com/microsoft/azuredatastudio/issues/18780
-		telemetryStep = CreateAzureFunctionStep.setAzureWebJobsStorage;
-		await azureFunctionsUtils.setLocalAppSetting(projectFolder, constants.azureWebJobsStorageSetting, constants.azureWebJobsStoragePlaceholder);
-
 		// prompt for Connection String Setting Name
 		let connectionStringSettingName: string | undefined = constants.sqlConnectionStringSetting;
 		if (!isCreateNewProject && projectFile) {
