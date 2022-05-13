@@ -132,6 +132,8 @@ class TableFilterListRenderer implements IListRenderer<DesignerIssue, DesignerIs
 				href: element.moreInfoLink
 			}, undefined);
 			templateData.issueMoreInfoLink.appendChild(linkElement.el);
+		} else {
+			templateData.issueMoreInfoLink = undefined;
 		}
 	}
 
