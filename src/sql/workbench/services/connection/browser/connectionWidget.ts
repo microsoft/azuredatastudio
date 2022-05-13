@@ -682,9 +682,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._serverNameInputBox.hideMessage();
 		this._userNameInputBox.hideMessage();
 		this._azureAccountDropdown.hideMessage();
-		if (this._connectionStringInputBox) {
-			this._connectionStringInputBox.hideMessage();
-		}
+		this._connectionStringInputBox?.hideMessage();
 	}
 
 	private getModelValue(value: string): string {

@@ -39,11 +39,11 @@ const ConnectionProviderContrib: IJSONSchema = {
 			properties: {
 				isEnabled: {
 					type: 'boolean',
-					description: localize('schema.enableConnectionStringOption', "Whether the provider supports connection string. The default value is false.")
+					description: localize('schema.enableConnectionStringOption', "Whether the provider supports connection string as an input option. The default value is false.")
 				},
 				isDefaultOption: {
 					type: 'boolean',
-					description: localize('schema.useConnectionStringAsDefaultOption', "Whether connection string should be the default option to connect. The default value is false.")
+					description: localize('schema.useConnectionStringAsDefaultOption', "Whether the connection provider uses connection string as the default option to connect. The default value is false.")
 				}
 			},
 		},
