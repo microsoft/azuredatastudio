@@ -131,7 +131,7 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		props.forEach((p, i) => {
 			let row = {};
 			rows.push(row);
-			row['name'] = '  '.repeat(indent) + p.name;
+			row['name'] = p.name;
 			row['parent'] = parentIndex;
 			if (!isString(p.value)) {
 				// Styling values in the parent row differently to make them more apparent and standout compared to the rest of the cells.
@@ -143,10 +143,11 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 					text: removeLineBreaks(p.displayValue, ' '),
 					style: parentRowCellStyling
 				};
+				row['tootltip'] = p.displayValue;
 				this.convertModelToTableRows(p.value, rows.length - 1, indent + 2, rows);
 			} else {
-				row['value'] = removeLineBreaks(p.value, ' ');
-				row['tooltip'] = p.value;
+				row['value'] = removeLineBreaks(p.displayValue, ' ');
+				row['tooltip'] = p.displayValue;
 			}
 		});
 		return rows;

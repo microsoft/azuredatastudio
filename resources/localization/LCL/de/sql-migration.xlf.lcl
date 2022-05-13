@@ -1324,6 +1324,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.location" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure region for your Azure Database Migration Service. Only regions that contain a service will be shown.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure-Region für Ihre Azure Database Migration Service. Es werden nur Regionen angezeigt, die einen Dienst enthalten.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1342,18 +1345,27 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.resource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Your Azure Database Migration Service resource name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ihr Azure Database Migration Service-Ressourcenname]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.resource_group" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Resource group for your Azure SQL target. Only resource groups that contain a service will be shown.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ressourcengruppe für Ihr Azure SQL-Ziel. Es werden nur Ressourcengruppen angezeigt, die einen Dienst enthalten.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.subscription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Subscription name for your Azure Database Migration Service]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Abonnementname für Ihren Azure Database Migration Service]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2383,8 +2395,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.no.location.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No locations found.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Kein Speicherort gefunden.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Keine Speicherorte gefunden.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No location found.]]></Val>
@@ -2395,8 +2407,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.no.managedInstance.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No managed instances found.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Keine verwaltete Instanz gefunden.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Keine verwalteten Instanzen gefunden.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No managed instance found.]]></Val>
@@ -2425,8 +2437,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.no.storageAccount.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No storage accounts found.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Kein Speicherkonto gefunden.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Keine Speicherkonten gefunden.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No storage account found.]]></Val>
@@ -3715,8 +3727,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.location" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure region for your Azure SQL target. Only regions that contain a target eligible for migration will be shown.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure-Region für Ihr Azure SQL-Ziel]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure-Region für Ihr Azure SQL-Ziel. Es werden nur Regionen angezeigt, die ein für die Migration geeignetes Ziel enthalten.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure region for your Azure SQL target]]></Val>
@@ -4033,8 +4045,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.resource_group" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Resource group for your Azure SQL target. Only resource groups that contain a target eligible for migration will be shown.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Ressourcengruppe für Ihr Azure SQL Ziel]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ressourcengruppe für Ihr Azure SQL-Ziel. Es werden nur Ressourcengruppen angezeigt, die ein für die Migration geeignetes Ziel enthalten.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Resource group for your Azure SQL target]]></Val>
@@ -4837,6 +4849,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.vm.not.ready" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The virtual machine '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available virtual machine.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der virtuelle Computer „{0}“ ist für die Migration nicht verfügbar, da er sich derzeit im Zustand „{1}“ befindet. Wählen Sie einen verfügbaren virtuellen Computer aus, um den Vorgang fortzusetzen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

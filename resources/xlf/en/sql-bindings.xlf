@@ -85,6 +85,9 @@
     <trans-unit id="input">
       <source xml:lang="en">Input</source>
     </trans-unit>
+    <trans-unit id="inputDescription">
+      <source xml:lang="en">Retrieves data from a database</source>
+    </trans-unit>
     <trans-unit id="install">
       <source xml:lang="en">Install</source>
     </trans-unit>
@@ -118,6 +121,9 @@
     <trans-unit id="output">
       <source xml:lang="en">Output</source>
     </trans-unit>
+    <trans-unit id="outputDescription">
+      <source xml:lang="en">Save data to a database</source>
+    </trans-unit>
     <trans-unit id="save">
       <source xml:lang="en">Save</source>
     </trans-unit>
@@ -132,6 +138,9 @@
     </trans-unit>
     <trans-unit id="selectBindingType">
       <source xml:lang="en">Select type of binding</source>
+    </trans-unit>
+    <trans-unit id="selectBindingTypeToSpecifiedFunction">
+      <source xml:lang="en">Select type of binding for the function '{0}'</source>
     </trans-unit>
     <trans-unit id="selectButton">
       <source xml:lang="en">Select</source>

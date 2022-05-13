@@ -10065,6 +10065,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookActions.untitledNotSupported" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Run with parameters is not supported for Untitled notebooks. Please save the notebook before continuing. [Learn more]5D;(https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L’exécution avec des paramètres n’est pas prise en charge pour les notebooks sans titre. Enregistrez le bloc-notes avant de continuer. [Learn more]5D;(https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookActions.untrustLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Not Trusted]]></Val>
@@ -15041,6 +15050,24 @@
           <Val><![CDATA[SQL]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[SQL]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/models/cell.cellExecutionComplete" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Cell execution is complete]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L’exécution de la cellule est terminée]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/models/cell.cellExecutionStarted" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Cell execution started]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Début de l’exécution de la cellule]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

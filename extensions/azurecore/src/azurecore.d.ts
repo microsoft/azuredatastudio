@@ -122,7 +122,7 @@ declare module 'azurecore' {
 		/**
 		 * Information that describes the Azure Kusto resource
 		 */
-		 azureKustoResource?: Resource;
+		azureKustoResource?: Resource;
 
 		/**
 		 * Information that describes the Azure Log Analytics resource

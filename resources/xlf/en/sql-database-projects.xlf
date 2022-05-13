@@ -247,6 +247,9 @@
     <trans-unit id="defaultProjectNameStarter">
       <source xml:lang="en">DatabaseProject</source>
     </trans-unit>
+    <trans-unit id="defaultQuickPickItem">
+      <source xml:lang="en">Default - image defined as default in the container registry</source>
+    </trans-unit>
     <trans-unit id="deleteAction">
       <source xml:lang="en">Delete</source>
     </trans-unit>
@@ -294,6 +297,9 @@
     </trans-unit>
     <trans-unit id="dockerImageMessage">
       <source xml:lang="en">Docker Image:</source>
+    </trans-unit>
+    <trans-unit id="dockerImagesPlaceHolder">
+      <source xml:lang="en">Use {0} on local arm64/Apple Silicon</source>
     </trans-unit>
     <trans-unit id="dockerLogMessage">
       <source xml:lang="en">Docker logs: '{0}'</source>
@@ -657,6 +663,9 @@
     <trans-unit id="publishTo">
       <source xml:lang="en">Publish Target</source>
     </trans-unit>
+    <trans-unit id="publishToAzureEmulator">
+      <source xml:lang="en">Publish to new Azure SQL Database emulator</source>
+    </trans-unit>
     <trans-unit id="publishToContainerFailed">
       <source xml:lang="en">Failed to publish to container. {0}</source>
     </trans-unit>
@@ -761,6 +770,9 @@
     </trans-unit>
     <trans-unit id="selectFolderStructure">
       <source xml:lang="en">Select folder structure</source>
+    </trans-unit>
+    <trans-unit id="selectImageTag">
+      <source xml:lang="en">Select the image tag or press enter to use the default value</source>
     </trans-unit>
     <trans-unit id="selectProfile">
       <source xml:lang="en">Select Profile</source>
