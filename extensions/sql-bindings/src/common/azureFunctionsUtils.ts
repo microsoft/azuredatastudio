@@ -609,7 +609,6 @@ export function validateObjectName(name: string): string | undefined {
 }
 
 function checkQuotes(name: string): boolean {
-	// check that the quotes match
 	let numberQuotes = 0;
 	let numberSimpleQuotes = 0;
 	for (let pos = 0; pos < name.length; pos++) {
@@ -624,15 +623,15 @@ function checkQuotes(name: string): boolean {
 }
 
 function checkBrackets(name: string): boolean {
-	let stack = [];
+	let bracketStack = [];
 	for (let i = 0; i < name.length; i++) {
 		if (name[i] === '[') {
-			stack.push(name[i]);
+			bracketStack.push(name[i]);
 			continue;
 		}
 		if (name[i] === ']') {
-			stack.pop();
+			bracketStack.pop();
 		}
 	}
-	return (stack.length === 0);
+	return (bracketStack.length === 0);
 }
