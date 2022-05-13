@@ -180,7 +180,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 		// We need to set the azureWebJobsStorage to a placeholder
 		// to suppress the warning for opening the wizard - but will ask them to overwrite if they are creating new azureFunction
-		// issue https://github.com/microsoft/azuredatastudi o/issues/18780
+		// issue https://github.com/microsoft/azuredatastudio/issues/18780
 		telemetryStep = CreateAzureFunctionStep.setAzureWebJobsStorage;
 		await azureFunctionsUtils.setLocalAppSetting(projectFolder, constants.azureWebJobsStorageSetting, constants.azureWebJobsStoragePlaceholder);
 

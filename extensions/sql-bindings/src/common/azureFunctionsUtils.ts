@@ -317,62 +317,42 @@ export async function promptForBindingType(funcName?: string): Promise<BindingTy
  */
 export async function promptForObjectName(bindingType: BindingType, connectionInfo?: IConnectionInfo): Promise<string | undefined> {
 	// show the connection string methods (user input and connection profile options)
-	const listOfObjectNameMethods = bindingType === BindingType.input ? [constants.selectTableOrView, constants.enterObjectName] : [constants.selectTableToUpsert, constants.enterObjectNameToUpsert];
 	let connectionURI: string | undefined;
 	let selectedDatabase: string | undefined;
 
 	while (true) {
-		const selectedObjectNameMethod = await vscode.window.showQuickPick(listOfObjectNameMethods, {
-			canPickMany: false,
-			title: constants.selectObjectName,
-			ignoreFocusOut: true
-		});
-		if (!selectedObjectNameMethod) {
-			// User cancelled
-			return;
-		}
-		if (selectedObjectNameMethod === constants.enterObjectName) {
-			// user manually eneters table or view to query or upsert into
-			return vscode.window.showInputBox({
-				prompt: bindingType === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
-				placeHolder: constants.placeHolderObject,
-				validateInput: input => input ? undefined : constants.nameMustNotBeEmpty,
-				ignoreFocusOut: true
-			}) ?? '';
-		} else {
-			// TODO create path to solve for selectView (first need to support views as well)
-			// Prompt user to select a table based on connection profile and selected database 
-			const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+		// TODO create path to solve for selectView (first need to support views as well)
+		// Prompt user to select a table based on connection profile and selected database
+		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 
+		if (!connectionInfo) {
+			// prompt user for connection profile info if not already provided
+			connectionInfo = await vscodeMssqlApi.promptForConnection(true);
 			if (!connectionInfo) {
-				// prompt user for connection profile info if not already provided
-				connectionInfo = await vscodeMssqlApi.promptForConnection(true);
-				if (!connectionInfo) {
-					// User cancelled
-					return;
-				}
-			}
-
-			// get connectionURI and selectedDatabase to be used for listing tables query request
-			connectionURI = await getConnectionURI(connectionInfo);
-			if (!connectionURI) {
-				// User cancelled or mssql connection error 
-				// we will then prompt user to choose a connection profile again
-				continue;
-			}
-			selectedDatabase = await promptSelectDatabase(connectionURI);
-			if (!selectedDatabase) {
 				// User cancelled
-				// we will then prompt user to choose a connection profile again
-				continue;
+				return undefined;
 			}
-
-			connectionInfo.database = selectedDatabase;
-
-			let selectedObjectName = listTablesPrompt(connectionURI!, selectedDatabase!);
-
-			return selectedObjectName;
 		}
+
+		// get connectionURI and selectedDatabase to be used for listing tables query request
+		connectionURI = await getConnectionURI(connectionInfo);
+		if (!connectionURI) {
+			// User cancelled or mssql connection error
+			// we will then prompt user to choose a connection profile again
+			continue;
+		}
+		selectedDatabase = await promptSelectDatabase(connectionURI);
+		if (!selectedDatabase) {
+			// User cancelled
+			// we will then prompt user to choose a connection profile again
+			continue;
+		}
+
+		connectionInfo.database = selectedDatabase;
+
+		let selectedObjectName = await promptSelectTable(connectionURI, selectedDatabase, bindingType);
+
+		return selectedObjectName;
 	}
 }
 
@@ -514,6 +494,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 								) ?? '';
 								if (!connectionString) {
 									// User cancelled
+									// we can prompt for connection string methods again
 									continue;
 								}
 							} else {
@@ -664,7 +645,7 @@ export async function getConnectionURI(connectionInfo: IConnectionInfo): Promise
 				title: constants.connectionProgressTitle,
 				cancellable: false
 			}, async (_progress, _token) => {
-				// list databases based on connection profile selected
+				// show progress bar while connecting to the users selected connection profile
 				connectionURI = await vscodeMssqlApi.connect(connectionInfo!);
 			}
 		);
@@ -676,22 +657,35 @@ export async function getConnectionURI(connectionInfo: IConnectionInfo): Promise
 	return connectionURI;
 }
 
-export async function listTablesPrompt(connectionURI: string, selectedDatabase: string): Promise<string | undefined> {
+export async function promptSelectTable(connectionURI: string, selectedDatabase: string, bindingType: BindingType): Promise<string | undefined> {
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+	const userObjectName = bindingType === BindingType.input ? constants.enterObjectName : constants.enterObjectNameToUpsert;
 
 	// Create query to get list of tables from database selected
-	let query = utils.listTablesQuery(selectedDatabase!);
-	let tableNames: string[] = [];
-
-	const params = { ownerUri: connectionURI, queryString: query };
-	let queryResult: { rowCount: number, columnInfo: [], rows: [[{ displayValue: string }]] } = await vscodeMssqlApi.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params);
+	let tableQuery = tablesQuery(selectedDatabase);
+	const params = { ownerUri: connectionURI, queryString: tableQuery };
+	let queryResult: azureFunctionsContracts.SimpleExecuteResult = await vscodeMssqlApi.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params);
 
 	// Get table names from query result rows
-	queryResult.rows.forEach(row => { tableNames.push(row[0].displayValue); });
+	const tableNames = queryResult.rows.map(r => r[0].displayValue);
+	tableNames.push(userObjectName);
 	// prompt user to select table from list of tables
-	return await vscode.window.showQuickPick(tableNames, {
+	let selectedObject = await vscode.window.showQuickPick(tableNames, {
 		canPickMany: false,
 		title: constants.selectTable,
 		ignoreFocusOut: true
 	});
+
+	if (selectedObject === constants.enterObjectName) {
+		// user manually enters table or view to query or upsert into
+		return vscode.window.showInputBox({
+			prompt: bindingType === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
+			placeHolder: constants.placeHolderObject,
+			validateInput: input => input ? undefined : constants.nameMustNotBeEmpty,
+			ignoreFocusOut: true
+		}) ?? '';
+	}
+	return selectedObject;
 }
+
+export function tablesQuery(selectedDatabase: string): string { return `select concat('[',table_schema,']', '.', '[',table_name,']') from ${selectedDatabase}.INFORMATION_SCHEMA.TABLES where TABLE_TYPE = 'BASE TABLE'`; }

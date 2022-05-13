@@ -43,6 +43,8 @@ declare module 'sql-bindings' {
 		/**
 		 * Prompts the user to enter connection setting and updates it from AF project
 		 * @param projectUri Azure Function project uri
+		 * @param connectionInfo connection info from the user to update the connection string
+		 * @returns connection string setting name to be used for the createFunction API
 		 */
 		promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined, connectionInfo?: IConnectionInfo): Promise<IConnectionStringInfo | undefined>;
 
@@ -125,7 +127,7 @@ declare module 'sql-bindings' {
 	 */
 	export interface IConnectionStringInfo {
 		connectionStringSettingName: string | undefined;
-		connectionInfo?: IConnectionInfo | undefined;
+		connectionInfo: IConnectionInfo | undefined;
 	}
 
 }

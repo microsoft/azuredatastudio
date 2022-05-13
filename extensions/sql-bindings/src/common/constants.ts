@@ -39,9 +39,9 @@ export const browseEllipsisWithIcon = `$(folder) ${localize('browseEllipsis', "B
 export const selectButton = localize('selectButton', 'Select');
 export const selectObjectName = localize('selectObjectName', 'Select object name method');
 export const enterObjectName = localize('enterObjectName', 'Enter SQL table or view to query');
-export const selectTableOrView = localize('selectTableOrView', 'Select table to query');
+export const selectTableOrView = localize('selectTableOrView', 'Select SQL table to query');
 export const enterObjectNameToUpsert = localize('enterObjectNameToUpsert', 'Enter SQL table or view to upsert into');
-export const selectTableToUpsert = localize('selectTableToUpsert', 'Select table to upsert into');
+export const selectTableToUpsert = localize('selectTableToUpsert', 'Select SQL table to upsert into');
 export const selectTable = localize('selectTable', 'Select table to use');
 
 // Insert SQL binding
