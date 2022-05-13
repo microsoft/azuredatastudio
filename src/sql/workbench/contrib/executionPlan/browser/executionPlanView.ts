@@ -27,7 +27,7 @@ import { Progress } from 'vs/platform/progress/common/progress';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
-import { customZoomIconClassNames, disableTooltipIconClassName, enableTooltipIconClassName, openPlanFileIconClassNames, openPropertiesIconClassNames, openQueryIconClassNames, savePlanIconClassNames, searchIconClassNames, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { customZoomIconClassNames, disableTooltipIconClassName, enableTooltipIconClassName, executionPlanCompareIconClassName, openPlanFileIconClassNames, openPropertiesIconClassNames, openQueryIconClassNames, savePlanIconClassNames, searchIconClassNames, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { URI } from 'vs/base/common/uri';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { CustomZoomWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget';
@@ -35,6 +35,7 @@ import { NodeSearchWidget } from 'sql/workbench/contrib/executionPlan/browser/wi
 import { AzdataGraphView } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { ExecutionPlanComparisonInput } from 'sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput';
 
 export class ExecutionPlanView implements ISashLayoutProvider {
 
@@ -78,6 +79,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 		@IFileDialogService public fileDialogService: IFileDialogService,
 		@IFileService public fileService: IFileService,
 		@IWorkspaceContextService public workspaceContextService: IWorkspaceContextService,
+		@IEditorService private _editorService: IEditorService
 	) {
 		// parent container for query plan.
 		this._container = DOM.$('.execution-plan');
@@ -162,6 +164,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			this._instantiationService.createInstance(ZoomToFitAction, 'ActionBar'),
 			this._instantiationService.createInstance(CustomZoomAction, 'ActionBar'),
 			this._instantiationService.createInstance(PropertiesAction, 'ActionBar'),
+			new CompareExecutionPlanAction(),
 			this.actionBarToggleTopTip
 		];
 		this._actionBar.pushAction(actionBarActions, { icon: true, label: false });
@@ -178,6 +181,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			this._instantiationService.createInstance(ZoomToFitAction, 'ContextMenu'),
 			this._instantiationService.createInstance(CustomZoomAction, 'ContextMenu'),
 			this._instantiationService.createInstance(PropertiesAction, 'ContextMenu'),
+			new CompareExecutionPlanAction(),
 			this.contextMenuToggleTooltipAction
 		];
 		const self = this;
@@ -277,6 +281,14 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 
 	public hideActionBar() {
 		this._actionBarContainer.style.display = 'none';
+	}
+
+	public compareCurrentExecutionPlan() {
+		this._editorService.openEditor(this._instantiationService.createInstance(ExecutionPlanComparisonInput, {
+			topExecutionPlan: [this._model]
+		}), {
+			pinned: true
+		});
 	}
 }
 
@@ -511,5 +523,18 @@ export class ContextMenuTooltipToggle extends Action {
 			context.actionBarToggleTopTip.class = enableTooltipIconClassName;
 			context.actionBarToggleTopTip.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_ENABLED_LABEL;
 		}
+	}
+}
+
+export class CompareExecutionPlanAction extends Action {
+	public static ID = 'ep.tooltipToggleContextMenu';
+	public static COMPARE_PLAN = localize('executionPlanCompareExecutionPlanAction', "Compare execution plan");
+
+	constructor() {
+		super(CompareExecutionPlanAction.COMPARE_PLAN, CompareExecutionPlanAction.COMPARE_PLAN, executionPlanCompareIconClassName);
+	}
+
+	public override async run(context: ExecutionPlanView): Promise<void> {
+		context.compareCurrentExecutionPlan();
 	}
 }
