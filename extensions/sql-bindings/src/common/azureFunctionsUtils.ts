@@ -539,27 +539,11 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 			}
 		}
 		// set connection string to not include the password if connection info does not include password, or user chooses to not include password, or authentication type is not sql login
-		let userPassword: string | undefined;
 		if (includePassword !== constants.yesString) {
 			connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
-
-			// Ask user to enter password if auth type is sql login and password is not saved
-			if (connectionInfo.authenticationType === 'SqlLogin' && connectionInfo.password) {
-				userPassword = await vscode.window.showInputBox({
-					prompt: constants.enterPasswordPrompt,
-					placeHolder: constants.enterPasswordManually,
-					ignoreFocusOut: true,
-					password: true,
-					validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
-				});
-				if (userPassword) {
-					// if user enters password replace password placeholder with user entered password
-					connectionString = connectionString.replace(constants.passwordPlaceholder, userPassword);
-				}
-			}
 		}
 
-		if (includePassword !== constants.yesString && !userPassword && connectionInfo?.authenticationType === 'SqlLogin') {
+		if (includePassword !== constants.yesString && connectionInfo?.authenticationType === 'SqlLogin') {
 			// if user does not want to include password or user does not enter password, show warning message that they will have to enter it manually later in local.settings.json
 			void vscode.window.showWarningMessage(constants.userPasswordLater, constants.openFile, constants.closeButton).then(async (result) => {
 				if (result === constants.openFile) {
