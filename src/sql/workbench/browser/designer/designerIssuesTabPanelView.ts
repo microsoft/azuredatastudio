@@ -133,7 +133,7 @@ class TableFilterListRenderer implements IListRenderer<DesignerIssue, DesignerIs
 			}, undefined);
 			templateData.issueMoreInfoLink.appendChild(linkElement.el);
 		} else {
-			templateData.issueMoreInfoLink = undefined;
+			DOM.clearNode(templateData.issueMoreInfoLink);
 		}
 	}
 
