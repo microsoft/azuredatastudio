@@ -115,7 +115,13 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			telemetryStep = CreateAzureFunctionStep.launchFromCommandPalette;
 			// prompt user for connection profile to get connection info
 			while (true) {
-				connectionInfo = await vscodeMssqlApi.promptForConnection(true);
+				try {
+					connectionInfo = await vscodeMssqlApi.promptForConnection(true);
+				} catch (e) {
+					// user cancelled while creating connection profile
+					// show the connection profile selection prompt again
+					continue;
+				}
 				if (!connectionInfo) {
 					// User cancelled
 					return;
