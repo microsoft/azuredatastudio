@@ -316,7 +316,7 @@ export async function promptForObjectName(bindingType: BindingType): Promise<str
 	return vscode.window.showInputBox({
 		prompt: bindingType === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
 		placeHolder: constants.placeHolderObject,
-		validateInput: input => input ? undefined : constants.nameMustNotBeEmpty,
+		validateInput: input => validateObjectName(input),
 		ignoreFocusOut: true
 	});
 }
@@ -595,6 +595,44 @@ export async function promptSelectDatabase(connectionInfo: IConnectionInfo): Pro
 	return selectedDatabase;
 }
 
-export async function validateObjectName(name: string): Promise<void> {
+export function validateObjectName(name: string): string | undefined {
+	if (!name) {
+		return constants.nameMustNotBeEmpty;
+	}
+	if (!checkBrackets(name)) {
+		return constants.missingBracket;
+	}
+	if (!checkQuotes(name)) {
+		return constants.missingQuote;
+	}
+	return undefined;
+}
 
+function checkQuotes(name: string): boolean {
+	// check that the quotes match
+	let numberQuotes = 0;
+	let numberSimpleQuotes = 0;
+	for (let pos = 0; pos < name.length; pos++) {
+		if (name[pos] === '"') {
+			numberQuotes++;
+		}
+		if (name[pos] === `'`) {
+			numberSimpleQuotes++;
+		}
+	}
+	return numberQuotes % 2 === 0 && numberSimpleQuotes % 2 === 0;
+}
+
+function checkBrackets(name: string): boolean {
+	let stack = [];
+	for (let i = 0; i < name.length; i++) {
+		if (name[i] === '[') {
+			stack.push(name[i]);
+			continue;
+		}
+		if (name[i] === ']') {
+			stack.pop();
+		}
+	}
+	return (stack.length === 0);
 }
