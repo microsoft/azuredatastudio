@@ -449,13 +449,12 @@ export class ExecutionPlanComparisonEditorView {
 class AddExecutionPlanAction extends Action {
 	public static ID = 'ep.AddExecutionPlan';
 	public static LABEL = localize('addExecutionPlanLabel', "Add execution plan");
-	constructor(
-	) {
+	constructor() {
 		super(AddExecutionPlanAction.ID, AddExecutionPlanAction.LABEL, addIconClassName);
 	}
 
 	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
-		context.openAndAddExecutionPlanFile();
+		await context.openAndAddExecutionPlanFile();
 	}
 
 }

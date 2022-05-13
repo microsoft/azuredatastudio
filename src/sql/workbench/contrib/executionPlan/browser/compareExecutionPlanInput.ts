@@ -13,7 +13,7 @@ import { ExecutionPlanComparisonEditorView } from 'sql/workbench/contrib/executi
 export class ExecutionPlanComparisonInput extends EditorInput {
 	public static ID: string = 'workbench.editorinputs.compareExecutionPlanInput';
 	public static SCHEME: string = 'compareExecutionPlanInput';
-	private readonly editorNamePrefix = localize('epCompare.editorName', "Compare Execution Plans {0}");
+	private readonly editorNamePrefix = localize('epCompare.editorName', "Compare Execution Plans");
 	private _editorName: string;
 
 	// Caching the views for faster tab switching
