@@ -13,7 +13,6 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as styler from 'sql/platform/theme/common/styler';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
@@ -23,11 +22,10 @@ import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ConnectionWidget, AuthenticationType } from 'sql/workbench/services/connection/browser/connectionWidget';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 /**
  * Connection Widget clas for CMS Connections
@@ -46,14 +44,11 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		@IContextViewService _contextViewService: IContextViewService,
 		@ILayoutService _layoutService: ILayoutService,
 		@IConnectionManagementService _connectionManagementService: IConnectionManagementService,
-		@ICapabilitiesService _capabilitiesService: ICapabilitiesService,
-		@IClipboardService _clipboardService: IClipboardService,
-		@IConfigurationService _configurationService: IConfigurationService,
 		@IAccountManagementService _accountManagementService: IAccountManagementService,
 		@ILogService _logService: ILogService,
+		@IErrorMessageService _errorMessageService: IErrorMessageService,
 	) {
-		super(options, callbacks, providerName, _themeService, _contextViewService, _connectionManagementService, _capabilitiesService,
-			_clipboardService, _configurationService, _accountManagementService, _logService);
+		super(options, callbacks, providerName, _themeService, _contextViewService, _connectionManagementService, _accountManagementService, _logService, _errorMessageService);
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		if (authTypeOption) {
 			let authTypeDefault = this.getAuthTypeDefault(authTypeOption, OS);
@@ -132,10 +127,6 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		if (this._authTypeSelectBox) {
 			this.onAuthTypeSelected(this._authTypeSelectBox.value);
 		}
-
-		DOM.addDisposableListener(container, 'paste', e => {
-			this._handleClipboard().catch(err => this._logService.error(`Unexpected error parsing clipboard contents for CMS Connection Dialog ${err}`));
-		});
 	}
 
 	public override handleOnConnecting(): void {
@@ -156,8 +147,8 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		return this._serverDescriptionInputBox.value;
 	}
 
-	public override connect(model: IConnectionProfile): boolean {
-		let validInputs = super.connect(model);
+	public override async connect(model: IConnectionProfile): Promise<boolean> {
+		let validInputs = await super.connect(model);
 		if (this._serverDescriptionInputBox) {
 			model.options.registeredServerDescription = this._serverDescriptionInputBox.value;
 			model.options.registeredServerName = this._connectionNameInputBox.value;
