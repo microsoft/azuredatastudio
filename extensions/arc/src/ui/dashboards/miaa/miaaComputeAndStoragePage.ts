@@ -330,7 +330,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 	}
 
 	private editCores(): void {
-		let currentCPUSize = this._miaaModel.config?.properties?.k8SRaw?.spec?.scheduling?.default?.resources?.requests?.cpu;
+		let currentCPUSize = this._miaaModel.config?.spec?.scheduling?.default?.resources?.requests?.cpu;
 
 		if (!currentCPUSize) {
 			currentCPUSize = '';
@@ -340,7 +340,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.coresRequestBox!.value = '';
 		this.saveArgs.coresRequest = undefined;
 
-		currentCPUSize = this._miaaModel.config?.properties?.k8SRaw?.spec?.scheduling?.default?.resources?.limits?.cpu;
+		currentCPUSize = this._miaaModel.config?.spec?.scheduling?.default?.resources?.limits?.cpu;
 
 		if (!currentCPUSize) {
 			currentCPUSize = '';
@@ -353,7 +353,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 
 	private editMemory(): void {
 		let currentMemSizeConversion: string;
-		let currentMemorySize = this._miaaModel.config?.properties?.k8SRaw?.spec?.scheduling?.default?.resources?.requests?.memory;
+		let currentMemorySize = this._miaaModel.config?.spec?.scheduling?.default?.resources?.requests?.memory;
 
 		if (!currentMemorySize) {
 			currentMemSizeConversion = '';
@@ -366,7 +366,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 
 		this.saveArgs.memoryRequest = undefined;
 
-		currentMemorySize = this._miaaModel.config?.properties?.k8SRaw?.spec?.scheduling?.default?.resources?.limits?.memory;
+		currentMemorySize = this._miaaModel.config?.spec?.scheduling?.default?.resources?.limits?.memory;
 
 		if (!currentMemorySize) {
 			currentMemSizeConversion = '';
