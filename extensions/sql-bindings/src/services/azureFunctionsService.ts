@@ -86,6 +86,9 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 					TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 						.withAdditionalProperties(propertyBag).send();
 					break;
+				} else {
+					// user cancelled
+					return;
 				}
 			}
 		} else {

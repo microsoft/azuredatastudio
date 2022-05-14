@@ -177,8 +177,8 @@ export class ConnectionController implements IConnectionComponentController {
 		this._connectionWidget.focusOnOpen();
 	}
 
-	public validateConnection(): IConnectionValidateResult {
-		return { isValid: this._connectionWidget.connect(this._model), connection: this._model };
+	public async validateConnection(): Promise<IConnectionValidateResult> {
+		return { isValid: await this._connectionWidget.connect(this._model), connection: this._model };
 	}
 
 	public fillInConnectionInputs(connectionInfo: IConnectionProfile): void {
