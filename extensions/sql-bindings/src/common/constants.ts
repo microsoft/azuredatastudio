@@ -77,9 +77,7 @@ export const closeButton = localize('closeButton', "Close");
 export const connectionProgressTitle = localize('connectionProgressTitle', "Testing SQL Server connection...");
 export const selectObjectName = localize('selectObjectName', 'Select object name method');
 export const enterObjectName = localize('enterObjectName', 'Enter SQL table or view to query');
-export const selectTableOrView = localize('selectTableOrView', 'Select SQL table to query');
-export const enterObjectNameToUpsert = localize('enterObjectNameToUpsert', 'Enter SQL table or view to upsert into');
-export const selectTableToUpsert = localize('selectTableToUpsert', 'Select SQL table to upsert into');
+export const enterObjectNameToUpsert = localize('enterObjectNameToUpsert', 'Enter SQL table to upsert into');
 export const selectTable = localize('selectTable', 'Select table to use');
 export const selectConnectionError = (err?: any): string => err ? localize('selectConnectionError', "Failed to set connection string app setting: {0}", utils.getErrorMessage(err)) : localize('unableToSetConnectionString', "Failed to set connection string app setting");
 export function selectBindingType(funcName?: string): string { return funcName ? localize('selectBindingTypeToSpecifiedFunction', "Select type of binding for the function '{0}'", funcName) : localize('selectBindingType', "Select type of binding"); }

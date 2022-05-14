@@ -352,7 +352,7 @@ export async function promptForObjectName(bindingType: BindingType, connectionIn
 
 		connectionInfo.database = selectedDatabase;
 
-		let selectedObjectName = await promptSelectTable(connectionURI, selectedDatabase, bindingType);
+		let selectedObjectName = await promptSelectTable(connectionURI, bindingType, selectedDatabase);
 
 		return selectedObjectName;
 	}
@@ -361,7 +361,8 @@ export async function promptForObjectName(bindingType: BindingType, connectionIn
 /**
  * Prompts the user to enter connection setting and updates it from AF project
  * @param projectUri Azure Function project uri
- * @param connectionInfo connection info from the user to update the connection string
+ * @param connectionInfo (optional) connection info from the user to update the connection string, 
+ * if left undefined we prompt user to get connection info manually or list of connection profiles 
  * @returns connection string setting name to be used for the createFunction API
  */
 export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined, connectionInfo?: IConnectionInfo): Promise<IConnectionStringInfo | undefined> {
@@ -659,35 +660,45 @@ export async function getConnectionURI(connectionInfo: IConnectionInfo): Promise
 	return connectionURI;
 }
 
-export async function promptSelectTable(connectionURI: string, selectedDatabase: string, bindingType: BindingType): Promise<string | undefined> {
+export async function promptSelectTable(connectionURI: string, bindingType: BindingType, selectedDatabase: string): Promise<string | undefined> {
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 	const userObjectName = bindingType === BindingType.input ? constants.enterObjectName : constants.enterObjectNameToUpsert;
 
 	// Create query to get list of tables from database selected
 	let tableQuery = tablesQuery(selectedDatabase);
 	const params = { ownerUri: connectionURI, queryString: tableQuery };
+	// send SimpleExecuteRequest query to STS to get list of schema and tables based on the connection profile of the user
 	let queryResult: azureFunctionsContracts.SimpleExecuteResult = await vscodeMssqlApi.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params);
 
-	// Get table names from query result rows
+	// Get schema and table names from query result rows
 	const tableNames = queryResult.rows.map(r => r[0].displayValue);
-	tableNames.push(userObjectName);
-	// prompt user to select table from list of tables
-	let selectedObject = await vscode.window.showQuickPick(tableNames, {
-		canPickMany: false,
-		title: constants.selectTable,
-		ignoreFocusOut: true
-	});
-
-	if (selectedObject === constants.enterObjectName) {
-		// user manually enters table or view to query or upsert into
-		return vscode.window.showInputBox({
-			prompt: bindingType === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
-			placeHolder: constants.placeHolderObject,
-			validateInput: input => input ? undefined : constants.nameMustNotBeEmpty,
+	// add manual entry option to table names list for user to choose from as well (with pencil icon)
+	let manuallyEnterObjectName = '$(pencil) ' + userObjectName;
+	tableNames.push(manuallyEnterObjectName);
+	// prompt user to select table from list of tables options
+	while (true) {
+		let selectedObject = await vscode.window.showQuickPick(tableNames, {
+			canPickMany: false,
+			title: constants.selectTable,
 			ignoreFocusOut: true
-		}) ?? '';
+		});
+
+		if (selectedObject === manuallyEnterObjectName) {
+			// user manually enters table or view to query or upsert into
+			selectedObject = await vscode.window.showInputBox({
+				prompt: bindingType === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
+				placeHolder: constants.placeHolderObject,
+				validateInput: input => input ? undefined : constants.nameMustNotBeEmpty,
+				ignoreFocusOut: true
+			});
+			if (!selectedObject) {
+				// user cancelled so we will show the tables prompt again
+				continue;
+			}
+		}
+
+		return selectedObject;
 	}
-	return selectedObject;
 }
 
-export function tablesQuery(selectedDatabase: string): string { return `select concat('[',table_schema,']', '.', '[',table_name,']') from ${selectedDatabase}.INFORMATION_SCHEMA.TABLES where TABLE_TYPE = 'BASE TABLE'`; }
+export function tablesQuery(selectedDatabase: string): string { return `SELECT QUOTENAME(CONCAT(table_schema,'.',table_name)) from ${selectedDatabase}.INFORMATION_SCHEMA.TABLES where TABLE_TYPE = 'BASE TABLE'`; }
