@@ -76,8 +76,6 @@ export const openFile = localize('openFile', "Open File");
 export const closeButton = localize('closeButton', "Close");
 export const connectionProgressTitle = localize('connectionProgressTitle', "Testing SQL Server connection...");
 export const selectConnectionError = (err?: any): string => err ? localize('selectConnectionError', "Failed to set connection string app setting: {0}", utils.getErrorMessage(err)) : localize('unableToSetConnectionString', "Failed to set connection string app setting");
-
-// functions
 export function selectBindingType(funcName?: string): string { return funcName ? localize('selectBindingTypeToSpecifiedFunction', "Select type of binding for the function '{0}'", funcName) : localize('selectBindingType', "Select type of binding"); }
 export function settingAlreadyExists(settingName: string): string { return localize('SettingAlreadyExists', 'Local app setting \'{0}\' already exists. Overwrite?', settingName); }
 export function failedToParse(filename: string, error: any): string { return localize('failedToParse', 'Failed to parse "{0}": {1}.', filename, utils.getErrorMessage(error)); }
