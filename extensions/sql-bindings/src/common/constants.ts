@@ -16,6 +16,7 @@ export const sqlConnectionStringSetting = 'SqlConnectionString';
 export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
 export const inputTemplateID = 'SqlInputBinding';
 export const outputTemplateID = 'SqlOutputBinding';
+export const passwordPlaceholder = '******';
 export const functionNameTitle = localize('functionNameTitle', 'Function Name');
 export const selectProject = localize('selectProject', 'Select the Azure Function project for the SQL Binding');
 export const azureFunctionsExtensionNotFound = localize('azureFunctionsExtensionNotFound', 'The Azure Functions extension is required to create a new Azure Function with SQL binding but is not installed, install it now?');
@@ -35,6 +36,8 @@ export const needConnection = localize('needConnection', 'A connection is requir
 export const selectDatabase = localize('selectDatabase', 'Select Database');
 export const browseEllipsisWithIcon = `$(folder) ${localize('browseEllipsis', "Browse...")}`;
 export const selectButton = localize('selectButton', 'Select');
+export const enterPasswordPrompt = localize('enterPasswordPrompt', 'Enter the password to be used for the connection string');
+export const enterPasswordManually = localize('enterPasswordManually', 'Enter password or press escape to cancel');
 
 // Insert SQL binding
 export const hostFileName = 'host.json';
