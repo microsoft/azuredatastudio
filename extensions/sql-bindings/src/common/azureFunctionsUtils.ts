@@ -292,10 +292,12 @@ export async function promptForBindingType(funcName?: string): Promise<BindingTy
 	const inputOutputItems: (vscode.QuickPickItem & { type: BindingType })[] = [
 		{
 			label: constants.input,
+			description: constants.inputDescription,
 			type: BindingType.input
 		},
 		{
 			label: constants.output,
+			description: constants.outputDescription,
 			type: BindingType.output
 		}
 	];

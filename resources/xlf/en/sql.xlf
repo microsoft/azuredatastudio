@@ -677,11 +677,8 @@
     <trans-unit id="designer.loadingDesignerCompleted">
       <source xml:lang="en">Designer is loaded</source>
     </trans-unit>
-    <trans-unit id="designer.newRowButtonAriaLabel">
-      <source xml:lang="en">Add new row to '{0}' table</source>
-    </trans-unit>
-    <trans-unit id="designer.newRowText">
-      <source xml:lang="en">Add New</source>
+    <trans-unit id="designer.moveRowText">
+      <source xml:lang="en">Move Row</source>
     </trans-unit>
     <trans-unit id="designer.processing">
       <source xml:lang="en">Processing...</source>
@@ -707,13 +704,16 @@
     <trans-unit id="designer.scriptTabTitle">
       <source xml:lang="en">Scripts</source>
     </trans-unit>
-    <trans-unit id="tableDesigner.unknownComponentType">
+    <trans-unit id="designer.unknownComponentType">
       <source xml:lang="en">The component type: {0} is not supported</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/designer/designerIssuesTabPanelView" source-language="en" datatype="plaintext"><body>
     <trans-unit id="designer.IssueListAriaLabel">
       <source xml:lang="en">Issues</source>
+    </trans-unit>
+    <trans-unit id="designer.moreInfoLink">
+      <source xml:lang="en">More information</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/designer/designerPropertiesPane" source-language="en" datatype="plaintext"><body>
@@ -728,6 +728,32 @@
   <file original="src/sql/workbench/browser/designer/designerScriptEditor" source-language="en" datatype="plaintext"><body>
     <trans-unit id="designer.textEditorAriaLabel">
       <source xml:lang="en">Designer text editor.</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/browser/designer/tableActions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.addColumnAction">
+      <source xml:lang="en">Add New</source>
+    </trans-unit>
+    <trans-unit id="designer.insertAfterSelectedColumn">
+      <source xml:lang="en">Insert after</source>
+    </trans-unit>
+    <trans-unit id="designer.insertBeforeSelectedRow">
+      <source xml:lang="en">Insert before</source>
+    </trans-unit>
+    <trans-unit id="designer.moveRowDownAction">
+      <source xml:lang="en">Move Down</source>
+    </trans-unit>
+    <trans-unit id="designer.moveRowDownButtonAriaLabel">
+      <source xml:lang="en">Move selected row down one position</source>
+    </trans-unit>
+    <trans-unit id="designer.moveRowUpAction">
+      <source xml:lang="en">Move Up</source>
+    </trans-unit>
+    <trans-unit id="designer.moveRowUpButtonAriaLabel">
+      <source xml:lang="en">Move selected row up one position</source>
+    </trans-unit>
+    <trans-unit id="designer.newRowButtonAriaLabel">
+      <source xml:lang="en">Add new row to '{0}' table</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/editData/editDataInput" source-language="en" datatype="plaintext"><body>
@@ -1094,7 +1120,10 @@
 </body></file>
   <file original="src/sql/workbench/contrib/backup/browser/backup.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="addFile">
-      <source xml:lang="en">Add a file</source>
+      <source xml:lang="en">Add File</source>
+    </trans-unit>
+    <trans-unit id="addUrl">
+      <source xml:lang="en">Add URL</source>
     </trans-unit>
     <trans-unit id="backup.advancedConfiguration">
       <source xml:lang="en">Advanced Configuration</source>
@@ -1116,6 +1145,9 @@
     </trans-unit>
     <trans-unit id="backup.backupType">
       <source xml:lang="en">Backup type</source>
+    </trans-unit>
+    <trans-unit id="backup.backupUrl">
+      <source xml:lang="en">Backup URL</source>
     </trans-unit>
     <trans-unit id="backup.certificateOrAsymmetricKey">
       <source xml:lang="en">Certificate or Asymmetric key</source>
@@ -1180,6 +1212,9 @@
     <trans-unit id="backup.setBackupRetainDays">
       <source xml:lang="en">Set backup retain days</source>
     </trans-unit>
+    <trans-unit id="backup.toUrl">
+      <source xml:lang="en">Save backup to URL</source>
+    </trans-unit>
     <trans-unit id="backup.transactionLog">
       <source xml:lang="en">Transaction log</source>
     </trans-unit>
@@ -1188,6 +1223,9 @@
     </trans-unit>
     <trans-unit id="backup.verifyContainer">
       <source xml:lang="en">Verify backup when finished</source>
+    </trans-unit>
+    <trans-unit id="backupBrowseButton">
+      <source xml:lang="en">Browse</source>
     </trans-unit>
     <trans-unit id="backupComponent.backup">
       <source xml:lang="en">Backup</source>
@@ -1465,9 +1503,6 @@
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/connection/browser/connection.contribution" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="connection.parseClipboardForConnectionStringDescription">
-      <source xml:lang="en">Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.</source>
-    </trans-unit>
     <trans-unit id="connection.showUnsupportedServerVersionWarning">
       <source xml:lang="en">Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.</source>
     </trans-unit>
@@ -1505,6 +1540,9 @@
     <trans-unit id="schema.displayName">
       <source xml:lang="en">Display Name for the provider</source>
     </trans-unit>
+    <trans-unit id="schema.enableConnectionStringOption">
+      <source xml:lang="en">Whether the provider supports connection string as an input option. The default value is false.</source>
+    </trans-unit>
     <trans-unit id="schema.iconPath">
       <source xml:lang="en">Icon path for the server type</source>
     </trans-unit>
@@ -1516,6 +1554,9 @@
     </trans-unit>
     <trans-unit id="schema.providerId">
       <source xml:lang="en">Common id for the provider</source>
+    </trans-unit>
+    <trans-unit id="schema.useConnectionStringAsDefaultOption">
+      <source xml:lang="en">Whether the connection provider uses connection string as the default option to connect. The default value is false.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/connection/common/connectionTreeProviderExentionPoint" source-language="en" datatype="plaintext"><body>
@@ -4892,6 +4933,46 @@ Error: {1}</source>
       <source xml:lang="en">Connection is required in order to interact with Assessment Service</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="backupRestoreUrlBrowserDialog.account">
+      <source xml:lang="en">Azure Account</source>
+    </trans-unit>
+    <trans-unit id="backupRestoreUrlBrowserDialog.backupFile">
+      <source xml:lang="en">Backup file</source>
+    </trans-unit>
+    <trans-unit id="backupRestoreUrlBrowserDialog.blobContainer">
+      <source xml:lang="en">Blob container</source>
+    </trans-unit>
+    <trans-unit id="backupRestoreUrlBrowserDialog.linkAccount">
+      <source xml:lang="en">Link account</source>
+    </trans-unit>
+    <trans-unit id="backupRestoreUrlBrowserDialog.sharedAccessSignature">
+      <source xml:lang="en">Shared access signature generated</source>
+    </trans-unit>
+    <trans-unit id="backupRestoreUrlBrowserDialog.sharedAccessSignatureButton">
+      <source xml:lang="en">Create Credentials</source>
+    </trans-unit>
+    <trans-unit id="backupRestoreUrlBrowserDialog.storageAccount">
+      <source xml:lang="en">Storage account</source>
+    </trans-unit>
+    <trans-unit id="backupRestoreUrlBrowserDialog.subscription">
+      <source xml:lang="en">Azure subscription</source>
+    </trans-unit>
+    <trans-unit id="backupRestoreUrlBrowserDialog.tenant">
+      <source xml:lang="en">Azure AD Tenant</source>
+    </trans-unit>
+    <trans-unit id="fileBrowser.discard">
+      <source xml:lang="en">Discard</source>
+    </trans-unit>
+    <trans-unit id="fileBrowser.ok">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialogService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="filebrowser.selectBlob">
+      <source xml:lang="en">Select a blob</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/connection/browser/advancedPropertiesController" source-language="en" datatype="plaintext"><body>
     <trans-unit id="advancedProperties.discard">
       <source xml:lang="en">Discard</source>
@@ -5066,8 +5147,14 @@ Error: {1}</source>
     <trans-unit id="connectionWidget.AddAzureAccount">
       <source xml:lang="en">Add an account...</source>
     </trans-unit>
-    <trans-unit id="connectionWidget.fieldWillBeTrimmed">
-      <source xml:lang="en">{0} will be trimmed.</source>
+    <trans-unit id="connectionWidget.ConnectionStringError">
+      <source xml:lang="en">Failed to parse the connection string.</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.Error">
+      <source xml:lang="en">Error</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.connectionString">
+      <source xml:lang="en">Connection string</source>
     </trans-unit>
     <trans-unit id="connectionWidget.invalidAzureAccount">
       <source xml:lang="en">You must select an account</source>
@@ -5823,11 +5910,17 @@ Error: {1}</source>
     <trans-unit id="backupSetsToRestore">
       <source xml:lang="en">Backup sets to restore</source>
     </trans-unit>
+    <trans-unit id="backupUrl">
+      <source xml:lang="en">Backup URL</source>
+    </trans-unit>
     <trans-unit id="database">
       <source xml:lang="en">Database</source>
     </trans-unit>
     <trans-unit id="destination">
       <source xml:lang="en">Destination</source>
+    </trans-unit>
+    <trans-unit id="enterBackupUrl">
+      <source xml:lang="en">Please enter URL</source>
     </trans-unit>
     <trans-unit id="fileType">
       <source xml:lang="en">File type</source>
@@ -5843,6 +5936,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="missingBackupFilePathError">
       <source xml:lang="en">Backup file path is required.</source>
+    </trans-unit>
+    <trans-unit id="missingBackupUrlError">
+      <source xml:lang="en">Backup url is required.</source>
     </trans-unit>
     <trans-unit id="multipleBackupFilePath">
       <source xml:lang="en">Please enter one or more file paths separated by commas</source>
@@ -5865,6 +5961,9 @@ Error: {1}</source>
     <trans-unit id="restoreDialog.backupFile">
       <source xml:lang="en">Backup file</source>
     </trans-unit>
+    <trans-unit id="restoreDialog.browse">
+      <source xml:lang="en">Browse</source>
+    </trans-unit>
     <trans-unit id="restoreDialog.cancel">
       <source xml:lang="en">Cancel</source>
     </trans-unit>
@@ -5879,6 +5978,12 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="restoreDialog.script">
       <source xml:lang="en">Script</source>
+    </trans-unit>
+    <trans-unit id="restoreDialog.targetDatabaseAlreadyExists">
+      <source xml:lang="en">Target database already exists</source>
+    </trans-unit>
+    <trans-unit id="restoreDialog.url">
+      <source xml:lang="en">URL</source>
     </trans-unit>
     <trans-unit id="restoreFrom">
       <source xml:lang="en">Restore from</source>
@@ -5903,6 +6008,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="targetDatabase">
       <source xml:lang="en">Target database</source>
+    </trans-unit>
+    <trans-unit id="targetDatabaseTooltip">
+      <source xml:lang="en">Please enter target database name</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/restore/common/constants" source-language="en" datatype="plaintext"><body>

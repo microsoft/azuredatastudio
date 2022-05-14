@@ -87,6 +87,9 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 					TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 						.withAdditionalProperties(propertyBag).send();
 					break;
+				} else {
+					// user cancelled
+					return;
 				}
 			}
 		} else {
@@ -177,12 +180,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		// set the templateId based on the selected binding type
 		telemetryStep = CreateAzureFunctionStep.getTemplateId;
 		let templateId: string = selectedBindingType === BindingType.input ? constants.inputTemplateID : constants.outputTemplateID;
-
-		// We need to set the azureWebJobsStorage to a placeholder
-		// to suppress the warning for opening the wizard - but will ask them to overwrite if they are creating new azureFunction
-		// issue https://github.com/microsoft/azuredatastudio/issues/18780
-		telemetryStep = CreateAzureFunctionStep.setAzureWebJobsStorage;
-		await azureFunctionsUtils.setLocalAppSetting(projectFolder, constants.azureWebJobsStorageSetting, constants.azureWebJobsStoragePlaceholder);
 
 		// prompt for Connection String Setting Name
 		let connectionStringInfo: any = { connectionStringSettingName: constants.sqlConnectionStringSetting, connectionInfo: connectionInfo };

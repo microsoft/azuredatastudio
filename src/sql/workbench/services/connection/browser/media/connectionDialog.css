@@ -49,7 +49,7 @@
 }
 
 .connection-provider-info {
-	margin: 15px;
+	margin: 0 13px;
 }
 
 .connection-recent-content {
@@ -146,3 +146,23 @@
 	/* Hide twisties */
 	display: none !important;
 }
+
+.connection-dialog .use-connection-string .username-row,
+.connection-dialog .use-connection-string .password-row,
+.connection-dialog .use-connection-string .server-name-row,
+.connection-dialog .use-connection-string .azure-tenant-row,
+.connection-dialog .use-connection-string .auth-type-row,
+.connection-dialog .use-connection-string .database-row,
+.connection-dialog .use-connection-string .advanced-button,
+.connection-dialog .connection-string-row {
+	display: none;
+}
+
+.use-connection-string .connection-string-row {
+	display: table-row;
+}
+
+.connection-dialog .connection-input-options .connection-input label {
+	margin-right: 10px;
+}
+

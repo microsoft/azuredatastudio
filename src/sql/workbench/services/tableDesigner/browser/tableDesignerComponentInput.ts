@@ -442,6 +442,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						itemProperties: this.addAdditionalTableProperties(options, columnProperties),
 						objectTypeDisplayName: localize('tableDesigner.columnTypeName', "Column"),
 						canAddRows: options.canAddRows,
+						canInsertRows: options.canInsertRows,
+						canMoveRows: options.canMoveRows,
 						canRemoveRows: options.canRemoveRows,
 						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
 						showRemoveRowConfirmation: options.showRemoveRowConfirmation,
