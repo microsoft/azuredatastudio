@@ -809,13 +809,45 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param connection The connection to fill in or update
 	 */
 	private getAzureResourceForConnection(connection: interfaces.IConnectionProfile): azdata.AzureResource {
+		// check if this is a PowerBI connection which is determined based on connection domain address
+		if (this.isPowerBiConnection(connection)) {
+			return AzureResource.PowerBi;
+		}
+
+		// default to SQL if there are no provides or registered resources
 		let provider = this._providers.get(connection.providerName);
 		if (!provider || !provider.properties || !provider.properties.azureResource) {
+			this._logService.info('Connection providers incorrectly registered. Defaulting to SQL Azure resource,');
 			return AzureResource.Sql;
 		}
 
+		// lookup the Azure resource based on the provider azureResource properties
 		let result = ConnectionManagementService._azureResources.find(r => AzureResource[r] === provider.properties.azureResource);
 		return result ? result : AzureResource.Sql;
+	}
+
+	/**
+	 * Determine if a connection is to PowerBI based on the servers domain name.
+	 * PowerBi servers will be in one of the hard-coded domains listed in this method, based on the
+	 * Azure cloud being used.  This method can be removed once the connection/AAD service is updated
+	 * to parse the server endpoint using TDS prior to connecting.  But that will need to be part of a
+	 * larger refactoring of the connection & auth functionality.
+	 * @param connection The connection profile that is to be checked.
+	 */
+	private isPowerBiConnection(connection: interfaces.IConnectionProfile): boolean {
+		let powerBiDomains = [
+			'pbidedicated.windows.net',
+			'pbidedicated.cloudapi.de',
+			'pbidedicated.usgovcloudapi.net',
+			'pbidedicated.chinacloudapi.cn'
+		];
+		let serverName = connection.serverName.toLowerCase();
+		for (let domainIdx in powerBiDomains) {
+			if (serverName.indexOf(powerBiDomains[domainIdx]) >= 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
