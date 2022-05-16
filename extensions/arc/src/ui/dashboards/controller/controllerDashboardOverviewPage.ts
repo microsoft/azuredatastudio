@@ -32,6 +32,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		subscriptionId: '-',
 		connectionMode: '-',
 		instanceNamespace: '-',
+		status: '-'
 	};
 
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel) {
@@ -219,6 +220,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		this.controllerProperties.subscriptionId = config?.spec.settings.azure.subscription || this.controllerProperties.subscriptionId;
 		this.controllerProperties.connectionMode = getConnectionModeDisplayText(config?.spec.settings.azure.connectionMode) || this.controllerProperties.connectionMode;
 		this.controllerProperties.instanceNamespace = config?.metadata.namespace || this.controllerProperties.instanceNamespace;
+		this.controllerProperties.status = config?.status.state || this.controllerProperties.status;
 		this.refreshDisplayedProperties();
 
 		let registrations: (string | azdata.ImageComponent | azdata.HyperlinkComponent)[][] = this._controllerModel.registrations
@@ -285,6 +287,10 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			{
 				displayName: loc.namespace,
 				value: this.controllerProperties.instanceNamespace
+			},
+			{
+				displayName: loc.status,
+				value: this.controllerProperties.status
 			}
 		];
 
