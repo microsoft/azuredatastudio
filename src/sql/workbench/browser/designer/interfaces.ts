@@ -239,7 +239,12 @@ export type DesignerPropertyPath = (string | number)[];
 export const DesignerRootObjectPath: DesignerPropertyPath = [];
 
 export type DesignerIssueSeverity = 'error' | 'warning' | 'information';
-export type DesignerIssue = { description: string, propertyPath?: DesignerPropertyPath, severity: DesignerIssueSeverity };
+export type DesignerIssue = {
+	description: string,
+	propertyPath?: DesignerPropertyPath,
+	severity: DesignerIssueSeverity,
+	moreInfoLink?: string;
+};
 
 export interface DesignerEditResult {
 	isValid: boolean;

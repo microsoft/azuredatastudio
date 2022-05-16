@@ -17,6 +17,9 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 export class TestConnectionDialogWidget extends ConnectionDialogWidget {
 	constructor(
@@ -36,8 +39,11 @@ export class TestConnectionDialogWidget extends ConnectionDialogWidget {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@ICapabilitiesService capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService capabilitiesService: ICapabilitiesService,
+		@INotificationService notificationService: INotificationService,
+		@IViewletService viewletService: IViewletService,
+		@ICommandService commandService: ICommandService
 	) {
-		super(providerDisplayNameOptions, selectedProviderType, providerNameToDisplayNameMap, _instantiationService, _connectionManagementService, _contextMenuService, _contextViewService, themeService, layoutService, telemetryService, contextKeyService, clipboardService, logService, textResourcePropertiesService, configurationService, capabilitiesService);
+		super(providerDisplayNameOptions, selectedProviderType, providerNameToDisplayNameMap, _instantiationService, _connectionManagementService, _contextMenuService, _contextViewService, themeService, layoutService, telemetryService, contextKeyService, clipboardService, logService, textResourcePropertiesService, configurationService, capabilitiesService, notificationService, viewletService, commandService);
 	}
 }
