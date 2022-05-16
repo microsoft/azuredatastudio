@@ -35,6 +35,7 @@ export class IconPathHelper {
 	public static properties: IconPath;
 	public static networking: IconPath;
 	public static pitr: IconPath;
+	public static upgrade: IconPath;
 	public static refresh: IconPath;
 	public static reset: IconPath;
 	public static support: IconPath;
@@ -160,6 +161,10 @@ export class IconPathHelper {
 			light: context.asAbsolutePath('images/pitr.svg'),
 			dark: context.asAbsolutePath('images/pitr.svg'),
 		};
+		IconPathHelper.upgrade = {
+			light: context.asAbsolutePath('images/upgrade.svg'),
+			dark: context.asAbsolutePath('images/upgrade.svg'),
+		};
 	}
 }
 
@@ -178,6 +183,7 @@ export const enum ConnectionMode {
 
 export namespace cssStyles {
 	export const text = { 'user-select': 'text', 'cursor': 'text' };
+	export const code = { 'user-select': 'text', 'cursor': 'text', 'font-style': 'italic' };
 	export const title = { ...text, 'font-weight': 'bold', 'font-size': '14px' };
 	export const tableHeader = { ...text, 'text-align': 'left', 'border': 'none' };
 	export const tableRow = { ...text, 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none' };

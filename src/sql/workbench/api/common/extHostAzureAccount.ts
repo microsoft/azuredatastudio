@@ -15,8 +15,31 @@ export class ExtHostAzureAccount extends ExtHostAzureAccountShape {
 	}
 
 	public override $getSubscriptions(account: azurecore.AzureAccount, ignoreErrors?: boolean, selectedOnly?: boolean): Thenable<azurecore.GetSubscriptionsResult> {
-		const api = this._extHostExtensionService.getExtensionExports(new ExtensionIdentifier(azurecore.extension.name)) as azurecore.IExtension;
+		const api = this.getApi();
 		return api.getSubscriptions(account, ignoreErrors, selectedOnly);
 	}
-}
 
+	public override $getStorageAccounts(account: azurecore.AzureAccount, subscriptions: azurecore.azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountResult> {
+		const api = this.getApi();
+		return api.getStorageAccounts(account, subscriptions, ignoreErrors);
+	}
+
+	public override $getBlobContainers(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetBlobContainersResult> {
+		const api = this.getApi();
+		return api.getBlobContainers(account, subscription, storageAccount);
+	}
+
+	public override $getBlobs(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, containerName: string, ignoreErrors?: boolean): Promise<azurecore.GetBlobsResult> {
+		const api = this.getApi();
+		return api.getBlobs(account, subscription, storageAccount, containerName, ignoreErrors);
+	}
+
+	public override $getStorageAccountAccessKey(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountAccessKeyResult> {
+		const api = this.getApi();
+		return api.getStorageAccountAccessKey(account, subscription, storageAccount, ignoreErrors);
+	}
+
+	private getApi(): azurecore.IExtension {
+		return this._extHostExtensionService.getExtensionExports(new ExtensionIdentifier(azurecore.extension.name)) as azurecore.IExtension;
+	}
+}

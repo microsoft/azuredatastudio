@@ -2,7 +2,7 @@
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "Enables users to develop and publish database schemas for MSSQL Databases",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -185,6 +185,11 @@
         "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
         "title": "%sqlDatabaseProjects.generateProjectFromOpenApiSpec%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.convertToSdkStyleProject",
+        "title": "%sqlDatabaseProjects.convertToSdkStyleProject%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -296,77 +301,81 @@
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.convertToSdkStyleProject",
+          "when": "false"
         }
       ],
       "view/item/context": [
         {
           "command": "sqlDatabaseProjects.build",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "1_dbProjectsFirst@1"
         },
         {
           "command": "sqlDatabaseProjects.publish",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "1_dbProjectsFirst@2"
         },
         {
           "command": "sqlDatabaseProjects.schemaCompare",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project && azdataAvailable",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && azdataAvailable",
           "group": "1_dbProjectsFirst@3"
         },
         {
           "command": "sqlDatabaseProjects.updateProjectFromDatabase",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project && azdataAvailable",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && azdataAvailable",
           "group": "1_dbProjectsFirst@4"
         },
         {
           "command": "sqlDatabaseProjects.newItem",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "2_dbProjects_newMain@1"
         },
         {
           "command": "sqlDatabaseProjects.addExistingItem",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "2_dbProjects_newMain@2"
         },
         {
           "command": "sqlDatabaseProjects.newFolder",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "2_dbProjects_newMain@3"
         },
         {
           "command": "sqlDatabaseProjects.newTable",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@1"
         },
         {
           "command": "sqlDatabaseProjects.newView",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@2"
         },
         {
           "command": "sqlDatabaseProjects.newStoredProcedure",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@3"
         },
         {
           "command": "sqlDatabaseProjects.newExternalStreamingJob",
-          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@4"
         },
         {
           "command": "sqlDatabaseProjects.newScript",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@7"
         },
         {
           "command": "sqlDatabaseProjects.newPreDeploymentScript",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@8"
         },
         {
           "command": "sqlDatabaseProjects.newPostDeploymentScript",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@9"
         },
         {
@@ -376,32 +385,32 @@
         },
         {
           "command": "sqlDatabaseProjects.validateExternalStreamingJob",
-          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.file.externalStreamingJob",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.file.externalStreamingJob",
           "group": "5_dbProjects_streamingJob"
         },
         {
           "command": "sqlDatabaseProjects.exclude",
-          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/",
           "group": "9_dbProjectsLast@1"
         },
         {
           "command": "sqlDatabaseProjects.delete",
-          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem == databaseProject.itemType.reference",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem == databaseProject.itemType.reference",
           "group": "9_dbProjectsLast@2"
         },
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
-          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "9_dbProjectsLast@6"
         },
         {
           "command": "sqlDatabaseProjects.editProjectFile",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "9_dbProjectsLast@7"
         },
         {
           "command": "sqlDatabaseProjects.openContainingFolder",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "9_dbProjectsLast@8"
         },
         {
@@ -447,6 +456,7 @@
     }
   },
   "dependencies": {
+    "axios": "^0.27.2",
     "@microsoft/ads-extension-telemetry": "^1.1.5",
     "fast-glob": "^3.2.7",
     "fs-extra": "^5.0.0",
@@ -455,7 +465,7 @@
     "vscode-languageclient": "^5.3.0-next.1",
     "vscode-nls": "^4.1.2",
     "which": "^2.0.2",
-    "xml-formatter": "^2.1.0",
+    "xml-formatter": "2.1.0",
     "xmldom": "^0.6.0"
   },
   "devDependencies": {

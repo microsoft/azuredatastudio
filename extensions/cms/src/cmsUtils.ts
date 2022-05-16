@@ -6,7 +6,7 @@
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as mssql from '../../mssql';
+import * as mssql from 'mssql';
 import * as Utils from './cmsResource/utils';
 import { ICmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
 

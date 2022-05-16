@@ -168,6 +168,10 @@ class EmptyKernel implements nb.IKernel {
 	interrupt(): Thenable<void> {
 		return Promise.resolve(undefined);
 	}
+
+	restart(): Thenable<void> {
+		return Promise.resolve(undefined);
+	}
 }
 
 export class EmptyFuture implements FutureInternal {

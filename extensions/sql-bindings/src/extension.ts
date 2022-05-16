@@ -4,49 +4,32 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { ITreeNodeInfo } from 'vscode-mssql';
-import { IExtension, BindingType } from 'sql-bindings';
-import { getAzdataApi, getVscodeMssqlApi } from './common/utils';
+import { IExtension, BindingType, GetAzureFunctionsResult, ResultStatus } from 'sql-bindings';
 import { addSqlBinding, createAzureFunction, getAzureFunctions } from './services/azureFunctionsService';
 import { launchAddSqlBindingQuickpick } from './dialogs/addSqlBindingQuickpick';
 import { promptForBindingType, promptAndUpdateConnectionStringSetting, promptForObjectName } from './common/azureFunctionsUtils';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
-	const vscodeMssqlApi = await getVscodeMssqlApi();
-	void vscode.commands.executeCommand('setContext', 'azdataAvailable', !!getAzdataApi());
 	// register the add sql binding command
 	context.subscriptions.push(vscode.commands.registerCommand('sqlBindings.addSqlBinding', async (uri: vscode.Uri | undefined) => { return launchAddSqlBindingQuickpick(uri); }));
 	// Generate Azure Function command
-	context.subscriptions.push(vscode.commands.registerCommand('sqlBindings.createAzureFunction', async (node: ITreeNodeInfo) => {
-		let connectionInfo = node.connectionInfo;
-		// set the database containing the selected table so it can be used
-		// for the initial catalog property of the connection string
-		let newNode: ITreeNodeInfo = node;
-		while (newNode) {
-			if (newNode.nodeType === 'Database') {
-				connectionInfo.database = newNode.metadata.name;
-				break;
-			} else {
-				newNode = newNode.parentNode;
-			}
-		}
-		const connectionDetails = vscodeMssqlApi.createConnectionDetails(connectionInfo);
-		const connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
-		await createAzureFunction(connectionString, node.metadata.schema, node.metadata.name);
+	context.subscriptions.push(vscode.commands.registerCommand('sqlBindings.createAzureFunction', async (node?: ITreeNodeInfo) => {
+		return await createAzureFunction(node);
 	}));
 	return {
-		addSqlBinding: async (bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string) => {
+		addSqlBinding: async (bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string): Promise<ResultStatus> => {
 			return addSqlBinding(bindingType, filePath, functionName, objectName, connectionStringSetting);
 		},
-		promptForBindingType: async () => {
-			return promptForBindingType();
+		promptForBindingType: async (funcName?: string): Promise<BindingType | undefined> => {
+			return promptForBindingType(funcName);
 		},
-		promptForObjectName: async (bindingType: BindingType) => {
+		promptForObjectName: async (bindingType: BindingType): Promise<string | undefined> => {
 			return promptForObjectName(bindingType);
 		},
-		promptAndUpdateConnectionStringSetting: async (projectUri: vscode.Uri | undefined) => {
+		promptAndUpdateConnectionStringSetting: async (projectUri: vscode.Uri | undefined): Promise<string | undefined> => {
 			return promptAndUpdateConnectionStringSetting(projectUri);
 		},
-		getAzureFunctions: async (filePath: string) => {
+		getAzureFunctions: async (filePath: string): Promise<GetAzureFunctionsResult> => {
 			return getAzureFunctions(filePath);
 		}
 	};

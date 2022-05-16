@@ -14,7 +14,7 @@
 	"arc.openDashboard": "Manage",
 
 	"resource.type.azure.arc.display.name": "Azure Arc data controller",
-	"resource.type.azure.arc.description": "Creates an Azure Arc data controller",
+	"resource.type.azure.arc.description": "Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.",
 	"arc.data.controller.new.wizard.title": "Create Azure Arc data controller",
 	"arc.data.controller.cluster.environment.title": "What is your target existing Kubernetes cluster environment?",
 	"arc.data.controller.select.cluster.title": "Select from existing Kubernetes clusters",
@@ -105,7 +105,7 @@
 	"arc.sql.high.availability": "High availability",
 	"arc.sql.high.availability.description": "Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.",
 	"arc.sql.service.tier.general.purpose": "General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)",
-	"arc.sql.service.tier.business.critical": "[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)",
+	"arc.sql.service.tier.business.critical": "Business Critical (Unlimited vCores and RAM, advanced high availability)",
 	"arc.sql.one.replica": "1 replica",
 	"arc.sql.two.replicas": "2 replicas",
 	"arc.sql.three.replicas": "3 replicas",

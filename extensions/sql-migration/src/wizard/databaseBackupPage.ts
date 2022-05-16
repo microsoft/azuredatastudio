@@ -12,7 +12,7 @@ import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateM
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { findDropDownItemIndex, selectDropDownIndex, selectDefaultDropdownValue } from '../api/utils';
+import * as utils from '../api/utils';
 import { logError, TelemetryViews } from '../telemtery';
 import * as styles from '../constants/styles';
 
@@ -687,12 +687,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				},
 			}).component();
 		this._disposables.push(this._networkShareStorageAccountResourceGroupDropdown.onValueChanged(async (value) => {
-			const selectedIndex = findDropDownItemIndex(this._networkShareStorageAccountResourceGroupDropdown, value);
-			if (selectedIndex > -1) {
-				for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
-					this.migrationStateModel._databaseBackup.networkShares[i].resourceGroup = this.migrationStateModel.getAzureResourceGroup(selectedIndex);
+			if (value && value !== 'undefined') {
+				const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === value);
+				if (selectedResourceGroup) {
+					for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
+						this.migrationStateModel._databaseBackup.networkShares[i].resourceGroup = selectedResourceGroup;
+					}
+					await this.loadNetworkShareStorageDropdown();
 				}
-				await this.loadNetworkShareStorageDropdown();
 			}
 		}));
 
@@ -714,10 +716,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				fireOnTextChange: true,
 			}).component();
 		this._disposables.push(this._networkShareContainerStorageAccountDropdown.onValueChanged((value) => {
-			const selectedIndex = findDropDownItemIndex(this._networkShareContainerStorageAccountDropdown, value);
-			if (selectedIndex > -1) {
-				for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
-					this.migrationStateModel._databaseBackup.networkShares[i].storageAccount = this.migrationStateModel.getStorageAccount(selectedIndex);
+			if (value && value !== 'undefined') {
+				const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === value);
+				if (selectedStorageAccount) {
+					for (let i = 0; i < this.migrationStateModel._databaseBackup.networkShares.length; i++) {
+						this.migrationStateModel._databaseBackup.networkShares[i].storageAccount = selectedStorageAccount;
+					}
 				}
 			}
 		}));
@@ -786,15 +790,27 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				await this.switchNetworkContainerFields(this.migrationStateModel._databaseBackup.networkContainerType);
 
 				const connectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
-				const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>((await this.migrationStateModel.getSourceConnectionProfile()).providerId, azdata.DataProviderType.QueryProvider);
+				const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+					(await this.migrationStateModel.getSourceConnectionProfile()).providerId,
+					azdata.DataProviderType.QueryProvider);
+
 				const query = 'select SUSER_NAME()';
-				const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId)), query);
+				const results = await queryProvider.runQueryAndReturn(
+					await (azdata.connection.getUriForConnection(
+						this.migrationStateModel.sourceConnectionId)), query);
+
 				const username = results.rows[0][0].displayValue;
-				this.migrationStateModel._authenticationType = connectionProfile.authenticationType === 'SqlLogin' ? MigrationSourceAuthenticationType.Sql : connectionProfile.authenticationType === 'Integrated' ? MigrationSourceAuthenticationType.Integrated : undefined!;
+				this.migrationStateModel._authenticationType = connectionProfile.authenticationType === 'SqlLogin'
+					? MigrationSourceAuthenticationType.Sql
+					: connectionProfile.authenticationType === 'Integrated'
+						? MigrationSourceAuthenticationType.Integrated
+						: undefined!;
 				this._sourceHelpText.value = constants.SQL_SOURCE_DETAILS(this.migrationStateModel._authenticationType, connectionProfile.serverName);
 				this._sqlSourceUsernameInput.value = username;
 				this._sqlSourcePassword.value = (await azdata.connection.getCredentials(this.migrationStateModel.sourceConnectionId)).password;
-				this._windowsUserAccountText.value = this.migrationStateModel.savedInfo?.networkShares[0]?.windowsUser;
+				this._windowsUserAccountText.value = this.migrationStateModel.savedInfo?.networkShares
+					? this.migrationStateModel.savedInfo?.networkShares[0]?.windowsUser
+					: '';
 
 				this._networkShareTargetDatabaseNames = [];
 				this._networkShareLocations = [];
@@ -809,7 +825,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 
 				let originalTargetDatabaseNames = this.migrationStateModel._targetDatabaseNames;
-				let originalNetworkShares = this.migrationStateModel._databaseBackup.networkShares;
+				let originalNetworkShares = this.migrationStateModel._databaseBackup.networkShares || [];
 				let originalBlobs = this.migrationStateModel._databaseBackup.blobs;
 				if (this.migrationStateModel._didUpdateDatabasesForMigration) {
 					this.migrationStateModel._targetDatabaseNames = [];
@@ -830,7 +846,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							blob = originalBlobs[dbIndex] ?? blob;
 						} else {
 							// network share values are uniform for all dbs in the same migration, except for networkShareLocation
-							const previouslySelectedNetworkShare = originalNetworkShares[0];
+							const previouslySelectedNetworkShare = originalNetworkShares.length > 0
+								? originalNetworkShares[0]
+								: '';
+
 							if (previouslySelectedNetworkShare) {
 								networkShare = {
 									...previouslySelectedNetworkShare,
@@ -947,48 +966,58 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					}).component();
 
 					this._disposables.push(blobContainerResourceDropdown.onValueChanged(async (value) => {
-						const selectedIndex = findDropDownItemIndex(blobContainerResourceDropdown, value);
-						if (selectedIndex > -1 && !blobResourceGroupErrorStrings.includes(value)) {
-							this.migrationStateModel._databaseBackup.blobs[index].resourceGroup = this.migrationStateModel.getAzureResourceGroup(selectedIndex);
-							await this.loadBlobStorageDropdown(index);
-							await blobContainerStorageAccountDropdown.updateProperties({ enabled: true });
-						} else {
-							await this.disableBlobTableDropdowns(index, constants.RESOURCE_GROUP);
+						if (value && value !== 'undefined' && this.migrationStateModel._resourceGroups) {
+							const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === value);
+							if (selectedResourceGroup && !blobResourceGroupErrorStrings.includes(value)) {
+								this.migrationStateModel._databaseBackup.blobs[index].resourceGroup = selectedResourceGroup;
+								await this.loadBlobStorageDropdown(index);
+								await blobContainerStorageAccountDropdown.updateProperties({ enabled: true });
+							} else {
+								await this.disableBlobTableDropdowns(index, constants.RESOURCE_GROUP);
+							}
 						}
 					}));
 					this._blobContainerResourceGroupDropdowns.push(blobContainerResourceDropdown);
 
 					this._disposables.push(blobContainerStorageAccountDropdown.onValueChanged(async (value) => {
-						const selectedIndex = findDropDownItemIndex(blobContainerStorageAccountDropdown, value);
-						if (selectedIndex > -1 && !blobStorageAccountErrorStrings.includes(value)) {
-							this.migrationStateModel._databaseBackup.blobs[index].storageAccount = this.migrationStateModel.getStorageAccount(selectedIndex);
-							await this.loadBlobContainerDropdown(index);
-							await blobContainerDropdown.updateProperties({ enabled: true });
-						} else {
-							await this.disableBlobTableDropdowns(index, constants.STORAGE_ACCOUNT);
+						if (value && value !== 'undefined') {
+							const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === value);
+							if (selectedStorageAccount && !blobStorageAccountErrorStrings.includes(value)) {
+								this.migrationStateModel._databaseBackup.blobs[index].storageAccount = selectedStorageAccount;
+								await this.loadBlobContainerDropdown(index);
+								await blobContainerDropdown.updateProperties({ enabled: true });
+							} else {
+								await this.disableBlobTableDropdowns(index, constants.STORAGE_ACCOUNT);
+							}
 						}
 					}));
 					this._blobContainerStorageAccountDropdowns.push(blobContainerStorageAccountDropdown);
 
 					this._disposables.push(blobContainerDropdown.onValueChanged(async (value) => {
-						const selectedIndex = findDropDownItemIndex(blobContainerDropdown, value);
-						if (selectedIndex > -1 && !blobContainerErrorStrings.includes(value)) {
-							this.migrationStateModel._databaseBackup.blobs[index].blobContainer = this.migrationStateModel.getBlobContainer(selectedIndex);
-							if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
-								await this.loadBlobLastBackupFileDropdown(index);
-								await blobContainerLastBackupFileDropdown.updateProperties({ enabled: true });
+						if (value && value !== 'undefined' && this.migrationStateModel._blobContainers) {
+							const selectedBlobContainer = this.migrationStateModel._blobContainers.find(blob => blob.name === value);
+							if (selectedBlobContainer && !blobContainerErrorStrings.includes(value)) {
+								this.migrationStateModel._databaseBackup.blobs[index].blobContainer = selectedBlobContainer;
+								if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
+									await this.loadBlobLastBackupFileDropdown(index);
+									await blobContainerLastBackupFileDropdown.updateProperties({ enabled: true });
+								}
+							} else {
+								await this.disableBlobTableDropdowns(index, constants.BLOB_CONTAINER);
 							}
-						} else {
-							await this.disableBlobTableDropdowns(index, constants.BLOB_CONTAINER);
 						}
 					}));
 					this._blobContainerDropdowns.push(blobContainerDropdown);
 
 					if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 						this._disposables.push(blobContainerLastBackupFileDropdown.onValueChanged(value => {
-							const selectedIndex = findDropDownItemIndex(blobContainerLastBackupFileDropdown, value);
-							if (selectedIndex > -1 && !blobFileErrorStrings.includes(value)) {
-								this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = this.migrationStateModel.getBlobLastBackupFileName(selectedIndex);
+							if (value && value !== 'undefined') {
+								if (this.migrationStateModel._lastFileNames) {
+									const selectedLastBackupFile = this.migrationStateModel._lastFileNames.find(fileName => fileName.name === value);
+									if (selectedLastBackupFile && !blobFileErrorStrings.includes(value)) {
+										this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = selectedLastBackupFile.name;
+									}
+								}
 							}
 						}));
 						this._blobContainerLastBackupFileDropdowns.push(blobContainerLastBackupFileDropdown);
@@ -1261,8 +1290,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadNetworkStorageResourceGroup(): Promise<void> {
 		this._networkShareStorageAccountResourceGroupDropdown.loading = true;
 		try {
-			this._networkShareStorageAccountResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._databaseBackup.subscription);
-			selectDefaultDropdownValue(this._networkShareStorageAccountResourceGroupDropdown, this.migrationStateModel._databaseBackup?.networkShares[0]?.resourceGroup?.id, false);
+			this.migrationStateModel._storageAccounts = await utils.getStorageAccounts(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription);
+			this.migrationStateModel._resourceGroups = await utils.getStorageAccountResourceGroups(this.migrationStateModel._storageAccounts, this.migrationStateModel._location);
+			this._networkShareStorageAccountResourceGroupDropdown.values = await utils.getAzureResourceGroupsDropdownValues(this.migrationStateModel._resourceGroups);
+			utils.selectDefaultDropdownValue(this._networkShareStorageAccountResourceGroupDropdown, this.migrationStateModel._databaseBackup?.networkShares[0]?.resourceGroup?.id, false);
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingNetworkStorageResourceGroup', error);
 		} finally {
@@ -1275,8 +1306,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._networkShareContainerStorageAccountDropdown.loading = true;
 		this._networkShareStorageAccountResourceGroupDropdown.loading = true;
 		try {
-			this._networkShareContainerStorageAccountDropdown.values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.networkShares[0]?.resourceGroup);
-			selectDefaultDropdownValue(this._networkShareContainerStorageAccountDropdown, this.migrationStateModel?._databaseBackup?.networkShares[0]?.storageAccount?.id, false);
+			this._networkShareContainerStorageAccountDropdown.values = await utils.getStorageAccountsDropdownValues(this.migrationStateModel._storageAccounts, this.migrationStateModel._location, this.migrationStateModel._databaseBackup.networkShares[0]?.resourceGroup);
+			utils.selectDefaultDropdownValue(this._networkShareContainerStorageAccountDropdown, this.migrationStateModel?._databaseBackup?.networkShares[0]?.storageAccount?.id, false);
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingNetworkShareStorageDropdown', error);
 		} finally {
@@ -1288,10 +1319,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobResourceGroup(): Promise<void> {
 		this._blobContainerResourceGroupDropdowns.forEach(v => v.loading = true);
 		try {
-			const resourceGroupValues = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._databaseBackup.subscription);
+			this.migrationStateModel._storageAccounts = await utils.getStorageAccounts(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription);
+			this.migrationStateModel._resourceGroups = await utils.getStorageAccountResourceGroups(this.migrationStateModel._storageAccounts, this.migrationStateModel._location);
+			const resourceGroupValues = await utils.getAzureResourceGroupsDropdownValues(this.migrationStateModel._resourceGroups);
 			this._blobContainerResourceGroupDropdowns.forEach((dropDown, index) => {
 				dropDown.values = resourceGroupValues;
-				selectDefaultDropdownValue(dropDown, this.migrationStateModel._databaseBackup?.blobs[index]?.resourceGroup?.id, false);
+				utils.selectDefaultDropdownValue(dropDown, this.migrationStateModel._databaseBackup?.blobs[index]?.resourceGroup?.id, false);
 			});
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobResourceGroup', error);
@@ -1303,8 +1336,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobStorageDropdown(index: number): Promise<void> {
 		this._blobContainerStorageAccountDropdowns[index].loading = true;
 		try {
-			this._blobContainerStorageAccountDropdowns[index].values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.resourceGroup);
-			selectDefaultDropdownValue(this._blobContainerStorageAccountDropdowns[index], this.migrationStateModel._databaseBackup?.blobs[index]?.storageAccount?.id, false);
+			this._blobContainerStorageAccountDropdowns[index].values = await utils.getStorageAccountsDropdownValues(this.migrationStateModel._storageAccounts, this.migrationStateModel._location, this.migrationStateModel._databaseBackup.blobs[index]?.resourceGroup);
+			utils.selectDefaultDropdownValue(this._blobContainerStorageAccountDropdowns[index], this.migrationStateModel._databaseBackup?.blobs[index]?.storageAccount?.id, false);
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobStorageDropdown', error);
 		} finally {
@@ -1315,9 +1348,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobContainerDropdown(index: number): Promise<void> {
 		this._blobContainerDropdowns[index].loading = true;
 		try {
-			const blobContainerValues = await this.migrationStateModel.getBlobContainerValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount);
-			this._blobContainerDropdowns[index].values = blobContainerValues;
-			selectDefaultDropdownValue(this._blobContainerDropdowns[index], this.migrationStateModel._databaseBackup?.blobs[index]?.blobContainer?.id, false);
+			this.migrationStateModel._blobContainers = await utils.getBlobContainer(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount);
+			this._blobContainerDropdowns[index].values = await utils.getBlobContainersValues(this.migrationStateModel._blobContainers);
+			utils.selectDefaultDropdownValue(this._blobContainerDropdowns[index], this.migrationStateModel._databaseBackup?.blobs[index]?.blobContainer?.id, false);
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobContainers', error);
 		} finally {
@@ -1328,9 +1361,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async loadBlobLastBackupFileDropdown(index: number): Promise<void> {
 		this._blobContainerLastBackupFileDropdowns[index].loading = true;
 		try {
-			const blobLastBackupFileValues = await this.migrationStateModel.getBlobLastBackupFileNameValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount, this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
-			this._blobContainerLastBackupFileDropdowns[index].values = blobLastBackupFileValues;
-			selectDefaultDropdownValue(this._blobContainerLastBackupFileDropdowns[index], this.migrationStateModel._databaseBackup?.blobs[index]?.lastBackupFile, false);
+			this.migrationStateModel._lastFileNames = await utils.getBlobLastBackupFileNames(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index]?.storageAccount, this.migrationStateModel._databaseBackup.blobs[index]?.blobContainer);
+			this._blobContainerLastBackupFileDropdowns[index].values = await utils.getBlobLastBackupFileNamesValues(this.migrationStateModel._lastFileNames);
+			utils.selectDefaultDropdownValue(this._blobContainerLastBackupFileDropdowns[index], this.migrationStateModel._databaseBackup?.blobs[index]?.lastBackupFile, false);
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobLastBackupFiles', error);
 		} finally {
@@ -1348,18 +1381,18 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		if (this.migrationStateModel._databaseBackup?.migrationMode === MigrationMode.OFFLINE) {
 			this._blobContainerLastBackupFileDropdowns[rowIndex].values = createDropdownValuesWithPrereq(constants.SELECT_BLOB_CONTAINER);
-			selectDropDownIndex(this._blobContainerLastBackupFileDropdowns[rowIndex], 0);
+			utils.selectDropDownIndex(this._blobContainerLastBackupFileDropdowns[rowIndex], 0);
 			await this._blobContainerLastBackupFileDropdowns[rowIndex]?.updateProperties(dropdownProps);
 		}
 		if (columnName === constants.BLOB_CONTAINER) { return; }
 
 		this._blobContainerDropdowns[rowIndex].values = createDropdownValuesWithPrereq(constants.SELECT_STORAGE_ACCOUNT);
-		selectDropDownIndex(this._blobContainerDropdowns[rowIndex], 0);
+		utils.selectDropDownIndex(this._blobContainerDropdowns[rowIndex], 0);
 		await this._blobContainerDropdowns[rowIndex].updateProperties(dropdownProps);
 		if (columnName === constants.STORAGE_ACCOUNT) { return; }
 
 		this._blobContainerStorageAccountDropdowns[rowIndex].values = createDropdownValuesWithPrereq(constants.SELECT_RESOURCE_GROUP_PROMPT);
-		selectDropDownIndex(this._blobContainerStorageAccountDropdowns[rowIndex], 0);
+		utils.selectDropDownIndex(this._blobContainerStorageAccountDropdowns[rowIndex], 0);
 		await this._blobContainerStorageAccountDropdowns[rowIndex].updateProperties(dropdownProps);
 	}
 }

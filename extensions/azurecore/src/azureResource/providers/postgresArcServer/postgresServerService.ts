@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 
 export interface PostgresArcServerGraphData extends GraphData {
 	properties: {

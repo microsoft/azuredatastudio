@@ -7,11 +7,14 @@ import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as uiUtils from './utils';
-import { AppSettingType, IDeployAppIntegrationProfile, IDeployProfile, ILocalDbSetting } from '../models/deploy/deployProfile';
+import { AppSettingType, DockerImageInfo, IDeployAppIntegrationProfile, ISqlDbDeployProfile, ILocalDbDeployProfile, ILocalDbSetting } from '../models/deploy/deployProfile';
 import { Project } from '../models/project';
 import { getPublishDatabaseSettings } from './publishDatabaseQuickpick';
 import * as path from 'path';
 import * as fse from 'fs-extra';
+import { AzureSqlClient } from '../models/deploy/azureSqlClient';
+import { IDeploySettings } from '../models/IDeploySettings';
+import { IAccount } from 'vscode-mssql';
 
 /**
  * Create flow for Deploying a database using only VS Code-native APIs such as QuickPick
@@ -70,10 +73,8 @@ export async function launchDeployAppIntegrationQuickpick(project: Project): Pro
 	};
 }
 
-async function launchEulaQuickPick(baseImage: string): Promise<boolean> {
+async function launchEulaQuickPick(imageInfo: DockerImageInfo | undefined): Promise<boolean> {
 	let eulaAccepted: boolean = false;
-	const baseImages = uiUtils.getDockerBaseImages();
-	const imageInfo = baseImages.find(x => x.name === baseImage);
 	const agreementInfo = imageInfo?.agreementInfo;
 	if (agreementInfo) {
 		const openEulaButton: vscode.QuickInputButton = {
@@ -114,15 +115,172 @@ async function launchEulaQuickPick(baseImage: string): Promise<boolean> {
 	return false;
 }
 
+export async function launchCreateAzureServerQuickPick(project: Project, azureSqlClient: AzureSqlClient): Promise<ISqlDbDeployProfile | undefined> {
+
+	const name = uiUtils.getPublishServerName(project.getProjectTargetVersion());
+	const accounts = await azureSqlClient.getAccounts();
+	const accountOptions = accounts.map(x => x.displayInfo?.displayName || '');
+	accountOptions.unshift(constants.azureAddAccount);
+
+	let account: IAccount | undefined;
+	let accountOption = await vscode.window.showQuickPick(
+		accountOptions,
+		{ title: constants.azureAccounts, ignoreFocusOut: true });
+
+	// Return when user hits escape
+	if (!accountOption) {
+		return undefined;
+	}
+
+	if (accountOption === constants.azureAddAccount) {
+		account = await azureSqlClient.getAccount();
+	} else {
+		account = accounts.find(x => x.displayInfo.displayName === accountOption);
+	}
+
+	if (!account) {
+		return undefined;
+	}
+
+	const sessions = await azureSqlClient.getSessions(account);
+
+	const subscriptionName = await vscode.window.showQuickPick(
+		sessions.map(x => x.subscription.displayName || ''),
+		{ title: constants.azureSubscription, ignoreFocusOut: true });
+
+	// Return when user hits escape
+	if (!subscriptionName) {
+		return undefined;
+	}
+
+	const session = sessions.find(x => x.subscription.displayName === subscriptionName);
+
+	if (!session?.subscription?.subscriptionId) {
+		return undefined;
+	}
+
+	const resourceGroups = await azureSqlClient.getResourceGroups(session);
+	const resourceGroupName = await vscode.window.showQuickPick(
+		resourceGroups.map(x => x.name || ''),
+		{ title: constants.resourceGroup, ignoreFocusOut: true });
+
+	// Return when user hits escape
+	if (!resourceGroupName) {
+		return undefined;
+	}
+
+	const resourceGroup = resourceGroups.find(x => x.name === resourceGroupName);
+
+	// Return resource group is invalid
+	if (!resourceGroup) {
+		return undefined;
+	}
+
+	let locations = await azureSqlClient.getLocations(session);
+	if (resourceGroup.location) {
+		const defaultLocation = locations.find(x => x.name === resourceGroup.location);
+		if (defaultLocation) {
+			locations = locations.filter(x => x.name !== defaultLocation.name);
+			locations.unshift(defaultLocation);
+		}
+	}
+
+	let locationName = await vscode.window.showQuickPick(
+		locations.map(x => x.name || ''),
+		{ title: constants.azureLocation, ignoreFocusOut: true, placeHolder: resourceGroup?.location });
+
+	// Return when user hits escape
+	if (!locationName) {
+		return undefined;
+	}
+
+	let serverName: string | undefined = '';
+	serverName = await vscode.window.showInputBox({
+		title: constants.azureServerName,
+		ignoreFocusOut: true,
+		value: serverName,
+		password: false
+	}
+	);
+
+	// Return when user hits escape
+	if (!serverName) {
+		return undefined;
+	}
+
+	let user: string | undefined = '';
+	user = await vscode.window.showInputBox({
+		title: constants.enterUser(name),
+		ignoreFocusOut: true,
+		value: user,
+		password: false
+	}
+	);
+
+	// Return when user hits escape
+	if (!user) {
+		return undefined;
+	}
+
+	let password: string | undefined = '';
+	password = await vscode.window.showInputBox({
+		title: constants.enterPassword(name),
+		ignoreFocusOut: true,
+		value: password,
+		validateInput: input => !utils.isValidSQLPassword(input) ? constants.invalidSQLPasswordMessage(name) : undefined,
+		password: true
+	}
+	);
+
+	// Return when user hits escape
+	if (!password) {
+		return undefined;
+	}
+
+	let confirmPassword: string | undefined = '';
+	confirmPassword = await vscode.window.showInputBox({
+		title: constants.confirmPassword(name),
+		ignoreFocusOut: true,
+		value: confirmPassword,
+		validateInput: input => input !== password ? constants.passwordNotMatch(name) : undefined,
+		password: true
+	}
+	);
+
+	// Return when user hits escape
+	if (!confirmPassword) {
+		return undefined;
+	}
+
+	let settings: IDeploySettings | undefined = await getPublishDatabaseSettings(project, false);
+
+	return {
+		// TODO add tenant
+		deploySettings: settings, sqlDbSetting: {
+			tenantId: session.tenantId,
+			accountId: session.account.key.id,
+			serverName: serverName,
+			userName: user,
+			password: password,
+			port: 1433,
+			dbName: '',
+			session: session,
+			resourceGroupName: resourceGroup.name || '',
+			location: locationName
+		}
+	};
+}
+
 /**
  * Create flow for publishing a database to docker container using only VS Code-native APIs such as QuickPick
  */
-export async function launchPublishToDockerContainerQuickpick(project: Project): Promise<IDeployProfile | undefined> {
-
+export async function launchPublishToDockerContainerQuickpick(project: Project): Promise<ILocalDbDeployProfile | undefined> {
+	const target = project.getProjectTargetVersion();
+	const name = uiUtils.getPublishServerName(target);
 	let localDbSetting: ILocalDbSetting | undefined;
 	// Deploy to docker selected
 	let portNumber = await vscode.window.showInputBox({
-		title: constants.enterPortNumber,
+		title: constants.enterPortNumber(name),
 		ignoreFocusOut: true,
 		value: constants.defaultPortNumber,
 		validateInput: input => !utils.validateSqlServerPortNumber(input) ? constants.portMustBeNumber : undefined
@@ -136,10 +294,10 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 
 	let password: string | undefined = '';
 	password = await vscode.window.showInputBox({
-		title: constants.enterPassword,
+		title: constants.enterPassword(name),
 		ignoreFocusOut: true,
 		value: password,
-		validateInput: input => !utils.isValidSQLPassword(input) ? constants.invalidSQLPasswordMessage : undefined,
+		validateInput: input => !utils.isValidSQLPassword(input) ? constants.invalidSQLPasswordMessage(name) : undefined,
 		password: true
 	}
 	);
@@ -151,10 +309,10 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 
 	let confirmPassword: string | undefined = '';
 	confirmPassword = await vscode.window.showInputBox({
-		title: constants.confirmPassword,
+		title: constants.confirmPassword(name),
 		ignoreFocusOut: true,
 		value: confirmPassword,
-		validateInput: input => input !== password ? constants.passwordNotMatch : undefined,
+		validateInput: input => input !== password ? constants.passwordNotMatch(name) : undefined,
 		password: true
 	}
 	);
@@ -164,22 +322,52 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		return undefined;
 	}
 
-	const baseImages = uiUtils.getDockerBaseImages();
+	const baseImages = uiUtils.getDockerBaseImages(target);
 	const baseImage = await vscode.window.showQuickPick(
-		baseImages.map(x => x.name),
-		{ title: constants.selectBaseImage, ignoreFocusOut: true });
+		baseImages.map(x => x.displayName),
+		{ title: constants.selectBaseImage(name), ignoreFocusOut: true, placeHolder: uiUtils.getDockerImagePlaceHolder(target) });
 
 	// Return when user hits escape
 	if (!baseImage) {
 		return undefined;
 	}
 
-	const eulaAccepted = await launchEulaQuickPick(baseImage);
+	const imageInfo = baseImages.find(x => x.displayName === baseImage);
+
+	if (!imageInfo) {
+		return undefined;
+	}
+
+	const eulaAccepted = await launchEulaQuickPick(imageInfo);
 	if (!eulaAccepted) {
 		return undefined;
 	}
 
-	const imageInfo = baseImages.find(x => x.name === baseImage);
+	let imageTags = await uiUtils.getImageTags(imageInfo, target);
+	let imageTagsItems: vscode.QuickPickItem[] = imageTags.map(tag => { return { label: tag }; });
+
+	if (imageInfo.defaultTag) {
+		// move the default to be the first one in the list
+		const defaultIndex = imageTagsItems.findIndex(i => i.label === imageInfo.defaultTag);
+		if (defaultIndex > -1) {
+			imageTagsItems.splice(defaultIndex, 1);
+		}
+		// add default next to the default value
+		imageTagsItems.unshift({ label: imageInfo.defaultTag, description: constants.defaultQuickPickItem });
+	}
+	const imageTag = await vscode.window.showQuickPick(
+		imageTagsItems,
+		{ title: constants.selectImageTag(name), ignoreFocusOut: true });
+
+	if (!imageTag) {
+		return undefined;
+	}
+
+	// Add the image tag if it's not the latest
+	let imageName = imageInfo.name;
+	if (imageTag && imageTag.label !== constants.dockerImageDefaultTag) {
+		imageName = `${imageName}:${imageTag.label}`;
+	}
 
 	localDbSetting = {
 		serverName: constants.defaultLocalServerName,
@@ -187,8 +375,8 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		dbName: project.projectFileName,
 		password: password,
 		port: +portNumber,
-		dockerBaseImage: baseImage,
-		dockerBaseImageEula: imageInfo?.agreementInfo?.link?.url || ''
+		dockerBaseImage: imageName,
+		dockerBaseImageEula: imageInfo.agreementInfo.link.url
 	};
 
 	let deploySettings = await getPublishDatabaseSettings(project, false);
@@ -203,7 +391,6 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 
 	// Get the database name from deploy settings
 	localDbSetting.dbName = deploySettings.databaseName;
-
 
 	return {
 		localDbSetting: localDbSetting,

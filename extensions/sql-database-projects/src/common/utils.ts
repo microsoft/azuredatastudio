@@ -10,7 +10,7 @@ import * as constants from './constants';
 import * as path from 'path';
 import * as glob from 'fast-glob';
 import * as dataworkspace from 'dataworkspace';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import * as fse from 'fs-extra';
 import * as which from 'which';
@@ -307,6 +307,18 @@ export async function getVscodeMssqlApi(): Promise<vscodeMssql.IExtension> {
 	return ext.activate();
 }
 
+export type AzureResourceServiceFactory = () => Promise<vscodeMssql.IAzureResourceService>;
+export async function defaultAzureResourceServiceFactory(): Promise<vscodeMssql.IAzureResourceService> {
+	const vscodeMssqlApi = await getVscodeMssqlApi();
+	return vscodeMssqlApi.azureResourceService;
+}
+
+export type AzureAccountServiceFactory = () => Promise<vscodeMssql.IAzureAccountService>;
+export async function defaultAzureAccountServiceFactory(): Promise<vscodeMssql.IAzureAccountService> {
+	const vscodeMssqlApi = await getVscodeMssqlApi();
+	return vscodeMssqlApi.azureAccountService;
+}
+
 /*
  * Returns the default deployment options from DacFx, filtered to appropriate options for the given project.
  */
@@ -441,7 +453,7 @@ export async function retry<T>(
 			}
 
 		} catch (err) {
-			outputChannel.appendLine(constants.retryMessage(name, err));
+			outputChannel.appendLine(constants.retryMessage(name, getErrorMessage(err)));
 		}
 	}
 
@@ -598,4 +610,78 @@ export function getFoldersAlongPath(startFolder: string, endFolder: string): str
 	}
 
 	return folders;
+}
+
+/**
+ * Determines whether provided value is a well-known database source and therefore is allowed to be sent in telemetry.
+ *
+ * @param value Value to check if it is a well-known database source
+ * @returns Normalized database source value if it is well-known, otherwise returns undefined
+ */
+export function getWellKnownDatabaseSource(value: string): string | undefined {
+	const upperCaseValue = value.toUpperCase();
+	return constants.WellKnownDatabaseSources
+		.find(wellKnownSource => wellKnownSource.toUpperCase() === upperCaseValue);
+}
+
+/**
+ * Filters an array of specified database project sources to only those that are well-known.
+ *
+ * @param databaseSourceValues Array of database source values to filter
+ * @returns Array of well-known database sources
+ */
+export function getWellKnownDatabaseSources(databaseSourceValues: string[]): string[] {
+	const databaseSourceSet = new Set<string>();
+	for (let databaseSourceValue of databaseSourceValues) {
+		const wellKnownDatabaseSourceValue = getWellKnownDatabaseSource(databaseSourceValue);
+		if (wellKnownDatabaseSourceValue) {
+			databaseSourceSet.add(wellKnownDatabaseSourceValue);
+		}
+	}
+
+	return Array.from(databaseSourceSet);
+}
+
+/**
+ * Returns SQL version number from docker image name which is in the beginning of the image name
+ * @param imageName docker image name
+ * @returns SQL server version
+ */
+export function findSqlVersionInImageName(imageName: string): number | undefined {
+
+	// Regex to find the version in the beginning of the image name
+	// e.g. 2017-CU16-ubuntu, 2019-latest
+	const regex = new RegExp('^([0-9]+)[-].+$');
+
+	if (regex.test(imageName)) {
+		const finds = regex.exec(imageName);
+		if (finds) {
+
+			// 0 is the full match and 1 is the number with pattern inside the first ()
+			return +finds[1];
+		}
+	}
+	return undefined;
+}
+
+/**
+ * Returns SQL version number from target platform name
+ * @param targetPlatform target platform
+ * @returns SQL server version
+ */
+export function findSqlVersionInTargetPlatform(targetPlatform: string): number | undefined {
+
+	// Regex to find the version in target platform
+	// e.g. SQL Server 2019
+	const regex = new RegExp('([0-9]+)$');
+
+	if (regex.test(targetPlatform)) {
+		const finds = regex.exec(targetPlatform);
+		if (finds) {
+
+			// 0 is the full match and 1 is the number with pattern inside the first ()
+			return +finds[1];
+		}
+	}
+	return undefined;
 }

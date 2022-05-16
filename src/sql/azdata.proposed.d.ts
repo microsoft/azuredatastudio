@@ -128,6 +128,24 @@ declare module 'azdata' {
 		 * An event that is emitted when a [notebook document](#NotebookDocument) is closed.
 		 */
 		export const onDidCloseNotebookDocument: vscode.Event<NotebookDocument>;
+
+		export interface IKernel {
+
+			/**
+			 * Restart a kernel.
+			 *
+			 * #### Notes
+			 * Uses the [Jupyter Notebook API](http://petstore.swagger.io/?url=https://raw.githubusercontent.com/jupyter/notebook/4.x/notebook/services/api/api.yaml#!/kernels).
+			 *
+			 * The promise is fulfilled on a valid response and rejected otherwise.
+			 *
+			 * It is assumed that the API call does not mutate the kernel id or name.
+			 *
+			 * The promise will be rejected if the kernel status is `Dead` or if the
+			 * request fails or the response is invalid.
+			 */
+			restart(): Thenable<void>;
+		}
 	}
 
 	/**
@@ -559,9 +577,25 @@ declare module 'azdata' {
 		url?: string;
 	}
 
+	export interface ContextMenuColumnCellValue {
+		/**
+		 * The title of the hyperlink. By default, the title is 'Show Actions'
+		 */
+		title?: string;
+		/**
+		 * commands for the menu. Use an array for a group and menu separators will be added.
+		 */
+		commands: (string | string[])[];
+		/**
+		 * context that will be passed to the commands.
+		 */
+		context?: { [key: string]: string | boolean | number } | string | boolean | number | undefined
+	}
+
 	export enum ColumnType {
 		icon = 3,
-		hyperlink = 4
+		hyperlink = 4,
+		contextMenu = 5
 	}
 
 	export interface TableColumn {
@@ -595,6 +629,9 @@ declare module 'azdata' {
 
 	export interface CheckboxColumn extends TableColumn {
 		action: ActionOnCellCheckboxCheck;
+	}
+
+	export interface ContextMenuColumn extends TableColumn {
 	}
 
 	export interface QueryExecuteResultSetNotificationParams {
@@ -725,6 +762,11 @@ declare module 'azdata' {
 			 * Extension can store additional information that the provider needs to uniquely identify a table.
 			 */
 			[key: string]: any;
+			/**
+			 * Table icon type that's shown in the editor tab. Default is the basic
+			 * table icon.
+			 */
+			tableIcon?: TableIcon;
 		}
 
 		/**
@@ -742,6 +784,16 @@ declare module 'azdata' {
 		}
 
 		/**
+		 * Table icon that's shown on the editor tab
+		 */
+		export enum TableIcon {
+			Basic = 'Basic',
+			Temporal = 'Temporal',
+			GraphNode = 'GraphNode',
+			GraphEdge = 'GraphEdge'
+		}
+
+		/**
 		 * Name of the common table properties.
 		 * Extensions can use the names to access the designer view model.
 		 */
@@ -755,6 +807,7 @@ declare module 'azdata' {
 			CheckConstraints = 'checkConstraints',
 			Indexes = 'indexes',
 			PrimaryKeyName = 'primaryKeyName',
+			PrimaryKeyDescription = 'primaryKeyDescription',
 			PrimaryKeyColumns = 'primaryKeyColumns'
 		}
 		/**
@@ -766,7 +819,9 @@ declare module 'azdata' {
 			DefaultValue = 'defaultValue',
 			Length = 'length',
 			Name = 'name',
+			Description = 'description',
 			Type = 'type',
+			AdvancedType = 'advancedType',
 			IsPrimaryKey = 'isPrimaryKey',
 			Precision = 'precision',
 			Scale = 'scale'
@@ -778,6 +833,7 @@ declare module 'azdata' {
 		 */
 		export enum TableForeignKeyProperty {
 			Name = 'name',
+			Description = 'description',
 			ForeignTable = 'foreignTable',
 			OnDeleteAction = 'onDeleteAction',
 			OnUpdateAction = 'onUpdateAction',
@@ -798,6 +854,7 @@ declare module 'azdata' {
 		 */
 		export enum TableCheckConstraintProperty {
 			Name = 'name',
+			Description = 'description',
 			Expression = 'expression'
 		}
 
@@ -807,6 +864,7 @@ declare module 'azdata' {
 		 */
 		export enum TableIndexProperty {
 			Name = 'name',
+			Description = 'description',
 			Columns = 'columns'
 		}
 
@@ -872,7 +930,7 @@ declare module 'azdata' {
 			*/
 			primaryKeyColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
 			/**
-			 * Additional primary key properties. Common primary key properties: primaryKeyName.
+			 * Additional primary key properties. Common primary key properties: primaryKeyName, primaryKeyDescription.
 			 */
 			additionalPrimaryKeyProperties?: DesignerDataPropertyInfo[];
 		}
@@ -958,6 +1016,14 @@ declare module 'azdata' {
 			 */
 			canRemoveRows?: boolean;
 			/**
+			 * Whether user can move rows from one index to another. The default value is true.
+			 */
+			canMoveRows?: boolean;
+			/**
+			 * Whether user can insert rows at a given index to the table. The default value is true.
+			 */
+			canInsertRows?: boolean;
+			/**
 			 * Whether to show confirmation when user removes a row. The default value is false.
 			 */
 			showRemoveRowConfirmation?: boolean;
@@ -1023,7 +1089,11 @@ declare module 'azdata' {
 			/**
 			 * Update a property.
 			 */
-			Update = 2
+			Update = 2,
+			/**
+			 * Change the position of an item in the collection.
+			 */
+			Move = 3
 		}
 
 		/**
@@ -1093,6 +1163,10 @@ declare module 'azdata' {
 			 * The input validation error.
 			 */
 			inputValidationError?: string;
+			/**
+			 * Metadata related to the table
+			 */
+			metadata?: { [key: string]: string };
 		}
 
 		/**
@@ -1111,6 +1185,10 @@ declare module 'azdata' {
 			 * The new view.
 			 */
 			view: TableDesignerView;
+			/**
+			 * Metadata related to the table to be captured
+			 */
+			metadata?: { [key: string]: string };
 		}
 
 		export interface GeneratePreviewReportResult {
@@ -1126,6 +1204,10 @@ declare module 'azdata' {
 			 * The table schema validation error.
 			 */
 			schemaValidationError?: string;
+			/**
+			 * Metadata related to the table to be captured
+			 */
+			metadata?: { [key: string]: string };
 		}
 	}
 
@@ -1194,6 +1276,27 @@ declare module 'azdata' {
 			 * Edges corresponding to the children.
 			 */
 			edges: ExecutionPlanEdge[];
+			/**
+			 * Warning/parallelism badges applicable to the current node
+			 */
+			badges: ExecutionPlanBadge[];
+		}
+
+		export interface ExecutionPlanBadge {
+			/**
+			 * Type of the node overlay. This determines the icon that is displayed for it
+			 */
+			type: BadgeType;
+			/**
+			 * Text to display for the overlay tooltip
+			 */
+			tooltip: string;
+		}
+
+		export enum BadgeType {
+			Warning = 0,
+			CriticalWarning = 1,
+			Parallelism = 2
 		}
 
 		export interface ExecutionPlanEdge {
@@ -1268,6 +1371,38 @@ declare module 'azdata' {
 			graphs: ExecutionPlanGraph[]
 		}
 
+		export interface ExecutionGraphComparisonResult {
+			/**
+			 * The base ExecutionPlanNode for the ExecutionGraphComparisonResult.
+			 */
+			baseNode: ExecutionPlanNode;
+			/**
+			 * The children of the ExecutionGraphComparisonResult.
+			 */
+			children: ExecutionGraphComparisonResult[];
+			/**
+			 * The group index of the ExecutionGraphComparisonResult.
+			 */
+			groupIndex: number;
+			/**
+			 * Flag to indicate if the ExecutionGraphComparisonResult has a matching node in the compared execution plan.
+			 */
+			hasMatch: boolean;
+			/**
+			 * List of matching nodes for the ExecutionGraphComparisonResult.
+			 */
+			matchingNodes: ExecutionGraphComparisonResult[];
+			/**
+			 * The parent of the ExecutionGraphComparisonResult.
+			 */
+			parentNode: ExecutionGraphComparisonResult;
+		}
+
+		export interface ExecutionPlanComparisonResult extends ResultStatus {
+			firstComparisonResult: ExecutionGraphComparisonResult;
+			secondComparisonResult: ExecutionGraphComparisonResult;
+		}
+
 		export interface ExecutionPlanProvider extends DataProvider {
 			// execution plan service methods
 
@@ -1276,6 +1411,12 @@ declare module 'azdata' {
 			 * @param planFile file that contains the execution plan
 			 */
 			getExecutionPlan(planFile: ExecutionPlanGraphInfo): Thenable<GetExecutionPlanResult>;
+			/**
+			 * Compares two execution plans and identifies matching regions in both execution plans.
+			 * @param firstPlanFile file that contains the first execution plan.
+			 * @param secondPlanFile file that contains the second execution plan.
+			 */
+			compareExecutionPlanGraph(firstPlanFile: ExecutionPlanGraphInfo, secondPlanFile: ExecutionPlanGraphInfo): Thenable<ExecutionPlanComparisonResult>;
 		}
 	}
 
@@ -1284,9 +1425,13 @@ declare module 'azdata' {
 	 */
 	export interface InfoBoxComponent extends Component, InfoBoxComponentProperties {
 		/**
-		 * An event called when the InfoBox is clicked
+		 * An event fired when the InfoBox is clicked
 		 */
 		onDidClick: vscode.Event<void>;
+		/**
+		 * An event fired when the Infobox link is clicked
+		 */
+		onLinkClick: vscode.Event<InfoBoxLinkClickEventArgs>;
 	}
 
 	export interface InfoBoxComponentProperties {
@@ -1300,5 +1445,27 @@ declare module 'azdata' {
 		 * Sets the ariaLabel for the right arrow button that shows up in clickable infoboxes
 		 */
 		clickableButtonAriaLabel?: string;
+
+		/**
+		 * List of links to embed within the text. If links are specified there must be placeholder
+		 * values in the value indicating where the links should be placed, in the format {i}
+		 *
+		 * e.g. "Click {0} for more information!""
+		 */
+		links?: LinkArea[];
+	}
+
+	/**
+	 * Event argument for infobox link click event.
+	 */
+	export interface InfoBoxLinkClickEventArgs {
+		/**
+		 * Index of the link selected
+		 */
+		index: number;
+		/**
+		 * Link that is clicked
+		 */
+		link: LinkArea;
 	}
 }

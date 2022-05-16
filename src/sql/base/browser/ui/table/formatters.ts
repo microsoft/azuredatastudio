@@ -89,6 +89,7 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	let cellClasses = 'grid-cell-value-container';
 	let valueToDisplay = '';
 	let titleValue = '';
+	let cellStyle = '';
 
 	if (DBCellValue.isDBCellValue(value)) {
 		valueToDisplay = 'NULL';
@@ -102,6 +103,9 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	} else if (typeof value === 'string' || (value && value.text)) {
 		if (value.text) {
 			valueToDisplay = value.text;
+			if (value.style) {
+				cellStyle = value.style;
+			}
 		} else {
 			valueToDisplay = value;
 		}
@@ -109,7 +113,7 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 		titleValue = valueToDisplay;
 	}
 
-	return `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
+	return `<span title="${titleValue}" style="${cellStyle}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
 
 
@@ -163,6 +167,27 @@ export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: an
 	return {
 		text: displayValue,
 		ariaLabel: displayValue ? escape(displayValue) : ((displayValue !== undefined) ? localize("tableCell.NoDataAvailable", "no data available") : displayValue)
+	};
+}
+
+/**
+ * Creates a formatter for the first column of the treegrid. The created formatter will wrap the output of the provided formatter with a level based indentation and a chevron icon for tree grid parents that indicates their expand/collapse state.
+ */
+export function createTreeGridExpandableColumnFormatter<T>(formattingFunction: Slick.Formatter<T>): Slick.Formatter<T> {
+	return (row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string => {
+		const spacer = `<span style='display:inline-block;height:1px;width:${(15 * (dataContext['level'] - 1))}px'></span>`;
+
+		const innerCellContent = formattingFunction(row, cell, value, columnDef, dataContext);
+
+		if (dataContext['isParent']) {
+			if (dataContext.expanded) {
+				return `<div>${spacer}<span class='codicon codicon-chevron-down toggle' style='font-weight:bold;'></span>&nbsp; ${innerCellContent}</div>`;
+			} else {
+				return `<div>${spacer}<span class='codicon codicon-chevron-right toggle' style='font-weight:bold;'></span>&nbsp; ${innerCellContent}</div>`;
+			}
+		} else {
+			return `${spacer}${innerCellContent}`;
+		}
 	};
 }
 

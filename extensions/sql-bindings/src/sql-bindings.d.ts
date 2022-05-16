@@ -28,9 +28,10 @@ declare module 'sql-bindings' {
 		addSqlBinding(bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string): Promise<ResultStatus>;
 
 		/**
-		 * Prompts the user to select type of binding and returns result
+		 * Prompts the user to select type of binding and returns result or undefined if the user cancelled out of the prompt
+		 * @param funcName (Optional) Name of the function we are adding the SQL Binding to
 		 */
-		promptForBindingType(): Promise<(vscode.QuickPickItem & { type: BindingType })  | undefined>;
+		promptForBindingType(funcName?: string): Promise<BindingType | undefined>;
 
 		/**
 		 * Prompts the user to enter object name for the SQL query
@@ -42,7 +43,7 @@ declare module 'sql-bindings' {
 		 * Prompts the user to enter connection setting and updates it from AF project
 		 * @param projectUri Azure Function project uri
 		 */
-		 promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined): Promise<string | undefined>;
+		promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined): Promise<string | undefined>;
 
 		/**
 		 * Gets the names of the Azure Functions in the file
@@ -86,8 +87,8 @@ declare module 'sql-bindings' {
 	 * Azure Functions binding type
 	 */
 	export const enum BindingType {
-		input,
-		output
+		input = 'input',
+		output = 'output'
 	}
 
 	/**

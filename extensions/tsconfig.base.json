@@ -26,12 +26,11 @@
 		"strict": true,
 		"exactOptionalPropertyTypes": false,
 		"useUnknownInCatchVariables": false,
-		"alwaysStrict": true,
-		"noImplicitAny": true,
 		"noImplicitReturns": true,
 		"noImplicitOverride": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"forceConsistentCasingInFileNames": true
+		"forceConsistentCasingInFileNames": true,
+		"strictNullChecks": true
 	}
 }

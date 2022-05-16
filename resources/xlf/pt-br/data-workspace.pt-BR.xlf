@@ -31,8 +31,8 @@
         <target state="translated">Atualizar</target>
       </trans-unit>
       <trans-unit id="dataworkspace.NewProjectDialogTitle">
-        <source xml:lang="en">Create new project</source>
-        <target state="translated">Criar um novo projeto</target>
+        <source xml:lang="en">Create new database project</source>
+        <target state="translated">Criar novo projeto de banco de dados</target>
       </trans-unit>
       <trans-unit id="dataworkspace.Type">
         <source xml:lang="en">Type</source>
@@ -54,6 +54,10 @@
         <source xml:lang="en">Create</source>
         <target state="translated">Criar</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.default">
+        <source xml:lang="en">Default</source>
+        <target state="translated">Padrão</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.enterProjectName">
         <source xml:lang="en">Enter Project Name</source>
         <target state="translated">Inserir o nome do projeto</target>
@@ -70,6 +74,10 @@
         <source xml:lang="en">Git repository URL</source>
         <target state="translated">URL do repositório git</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.learnMore">
+        <source xml:lang="en">Learn More</source>
+        <target state="translated">Saiba mais</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.localClonePathPlaceholder">
         <source xml:lang="en">Select location to clone repository locally</source>
         <target state="translated">Selecione o local para clonar o repositório localmente</target>
@@ -85,6 +93,10 @@
       <trans-unit id="dataworkspace.nameCannotBeEmpty">
         <source xml:lang="en">Name cannot be empty</source>
         <target state="translated">O nome não pode estar vazio</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">Não</target>
       </trans-unit>
       <trans-unit id="dataworkspace.ok">
         <source xml:lang="en">OK</source>
@@ -150,6 +162,14 @@
         <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?</source>
         <target state="translated">O Azure Data Studio precisa ser reiniciado para que o projeto possa ser adicionado ao espaço de trabalho. Reiniciar agora?</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.sdkLearnMorePlaceholder">
+        <source xml:lang="en">Click "Learn More" button for more information about SDK-style projects</source>
+        <target state="translated">Clique no botão "Saiba mais" para obter mais informações sobre projetos no estilo SDK</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.sdkStyleProject">
+        <source xml:lang="en">SDK-style project (Preview)</source>
+        <target state="translated">Projeto no estilo SDK (versão prévia)</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.select">
         <source xml:lang="en">Select</source>
         <target state="translated">Selecionar</target>
@@ -159,8 +179,12 @@
         <target state="translated">Selecionar o local do projeto</target>
       </trans-unit>
       <trans-unit id="dataworkspace.selectProjectType">
-        <source xml:lang="en">Select Project Type</source>
-        <target state="translated">Selecionar o tipo de projeto</target>
+        <source xml:lang="en">Select Database Project Type</source>
+        <target state="translated">Selecionar tipo de projeto de banco de dados</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.selectTargetPlatform">
+        <source xml:lang="en">Select Target Platform</source>
+        <target state="translated">Selecionar Plataforma de Destino</target>
       </trans-unit>
       <trans-unit id="dataworkspace.targetPlatform">
         <source xml:lang="en">Target Platform</source>
@@ -169,6 +193,10 @@
       <trans-unit id="dataworkspace.workspacePlaceholder">
         <source xml:lang="en">Select workspace ({0}) file</source>
         <target state="translated">Selecionar o arquivo da ({0}) espaço de trabalho</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.yesRecommended">
+        <source xml:lang="en">Yes (Recommended)</source>
+        <target state="translated">Sim (Recomendado)</target>
       </trans-unit>
       <trans-unit id="fileDoesNotExist">
         <source xml:lang="en">File '{0}' doesn't exist</source>

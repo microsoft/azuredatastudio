@@ -14,6 +14,7 @@ import * as azureFunctionService from '../../services/azureFunctionsService';
 
 import { createTestUtils, TestUtils, createTestCredentials } from '../testUtils';
 import { launchAddSqlBindingQuickpick } from '../../dialogs/addSqlBindingQuickpick';
+import { BindingType } from 'sql-bindings';
 
 let testUtils: TestUtils;
 const fileUri = vscode.Uri.file('testUri');
@@ -66,7 +67,7 @@ describe('Add SQL Binding quick pick', () => {
 		// select Azure function
 		let quickpickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves({ label: 'af1' });
 		// select input or output binding
-		quickpickStub.onSecondCall().resolves({ label: constants.input });
+		quickpickStub.onSecondCall().resolves(<any>{ label: constants.input, type: BindingType.input });
 		// give object name
 		let inputBoxStub = sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves('dbo.table1');
 		// give connection string setting name
@@ -100,12 +101,12 @@ describe('Add SQL Binding quick pick', () => {
 		// select Azure function
 		quickpickStub.onFirstCall().resolves({ label: 'af1' });
 		// select input or output binding
-		quickpickStub.onSecondCall().resolves({ label: constants.input });
+		quickpickStub.onSecondCall().resolves(<any>{ label: constants.input, type: BindingType.input });
 
 		// give object name
 		let inputBoxStub = sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves('dbo.table1');
 
-		// select connection profile
+		// select connection string setting name
 		quickpickStub.onThirdCall().resolves({ label: constants.createNewLocalAppSettingWithIcon });
 
 		// give connection string setting name
@@ -117,8 +118,8 @@ describe('Add SQL Binding quick pick', () => {
 		await launchAddSqlBindingQuickpick(vscode.Uri.file('testUri'));
 
 		// should go back to the select connection string methods
-		should(quickpickStub.callCount === 5);
-		should(quickpickStub.getCall(4).args).deepEqual([
+		should(quickpickStub.callCount === 4);
+		should(quickpickStub.getCall(3).args).deepEqual([
 			[constants.connectionProfile, constants.userConnectionString],
 			{
 				canPickMany: false,

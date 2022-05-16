@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
 import * as sqldbproj from 'sqldbproj';
-import * as mssql from '../../mssql';
+import * as mssql from 'mssql';
 import * as loc from './localizedConstants';
 import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
 import { TelemetryReporter, TelemetryViews } from './telemetry';
@@ -898,7 +898,7 @@ export class SchemaCompareMainWindow {
 						throw new Error(`Unsupported SchemaCompareEndpointType: ${getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)}`);
 				}
 
-				if (!result || !result.success || result.errorMessage !== '') {
+				if (!result || !result.success || result.errorMessage) {
 					TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, getTelemetryErrorType(result?.errorMessage))
 						.withAdditionalProperties({
 							'operationId': this.comparisonResult.operationId,
@@ -914,6 +914,7 @@ export class SchemaCompareMainWindow {
 				} else if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
 					const workspaceApi = getDataWorkspaceExtensionApi();
 					workspaceApi.showProjectsView();
+					workspaceApi.refreshProjectsTree();
 
 					void vscode.window.showInformationMessage(loc.applySuccess);
 				}

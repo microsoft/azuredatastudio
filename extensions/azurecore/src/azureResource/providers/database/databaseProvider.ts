@@ -6,7 +6,7 @@
 
 import { ExtensionContext } from 'vscode';
 
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import { AzureResourceDatabaseTreeDataProvider } from './databaseTreeDataProvider';
 import { IAzureResourceService } from '../../interfaces';
 

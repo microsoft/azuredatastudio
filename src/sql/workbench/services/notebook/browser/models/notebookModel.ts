@@ -38,7 +38,8 @@ import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { AddCellEdit, CellOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, CellOutputDataEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
-import { DotnetInteractiveLabel } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { DotnetInteractiveDisplayName } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { IPYKERNEL_DISPLAY_NAME } from 'sql/workbench/common/constants';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -801,16 +802,18 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public updateActiveCell(cell?: ICellModel, isEditMode: boolean = false): void {
-		if (this._activeCell) {
-			this._activeCell.active = false;
-			this._activeCell.isEditMode = false;
+		if (this._activeCell !== cell) {
+			if (this._activeCell) {
+				this._activeCell.active = false;
+				this._activeCell.isEditMode = false;
+			}
+			this._activeCell = cell;
+			if (this._activeCell) {
+				this._activeCell.active = true;
+				this._activeCell.isEditMode = isEditMode;
+			}
+			this._onActiveCellChanged.fire(cell);
 		}
-		this._activeCell = cell;
-		if (this._activeCell) {
-			this._activeCell.active = true;
-			this._activeCell.isEditMode = isEditMode;
-		}
-		this._onActiveCellChanged.fire(cell);
 	}
 
 	public convertCellType(cell: ICellModel, addToUndoStack: boolean = true): void {
@@ -1345,19 +1348,20 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private sanitizeSavedKernelInfo(): void {
 		if (this._savedKernelInfo) {
 			let displayName = this._savedKernelInfo.display_name;
-
-			if (this._savedKernelInfo.display_name !== displayName) {
-				this._savedKernelInfo.display_name = displayName;
-			}
 			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName || displayName.startsWith(kernel.displayName));
-			if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
-				// Special case .NET Interactive kernel name to handle inconsistencies between notebook providers and jupyter kernel specs
-				if (this._savedKernelInfo.display_name === DotnetInteractiveLabel) {
-					this._savedKernelInfo.oldName = this._savedKernelInfo.name;
-				}
+			if (standardKernel) {
+				if (this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
+					// Special case .NET Interactive kernel name to handle inconsistencies between notebook providers and jupyter kernel specs
+					if (this._savedKernelInfo.display_name === DotnetInteractiveDisplayName) {
+						this._savedKernelInfo.oldName = this._savedKernelInfo.name;
+					}
 
-				this._savedKernelInfo.name = standardKernel.name;
-				this._savedKernelInfo.display_name = standardKernel.displayName;
+					this._savedKernelInfo.name = standardKernel.name;
+					this._savedKernelInfo.display_name = standardKernel.displayName;
+				} else if (displayName === IPYKERNEL_DISPLAY_NAME && this._savedKernelInfo.name === standardKernel.name) {
+					// Handle Jupyter alias for Python 3 kernel
+					this._savedKernelInfo.display_name = standardKernel.displayName;
+				}
 			}
 		}
 	}

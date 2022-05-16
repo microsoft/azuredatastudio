@@ -2,15 +2,14 @@
   "name": "sql-bindings",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
-    "vscode": "^1.30.1",
-    "azdata": ">=1.35.0"
+    "vscode": "^1.30.1"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
-  "icon": "",
+  "icon": "media/defaultExtensionIcon.png",
   "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
   "activationEvents": [
     "onCommand:sqlBindings.addSqlBinding",
@@ -40,15 +39,18 @@
       {
         "command": "sqlBindings.createAzureFunction",
         "title": "%sqlBindings.createAzureFunction%",
-        "category": "MS SQL",
-        "when": "view == objectExplorer && viewItem == Table"
+        "category": "MS SQL"
       }
     ],
     "menus": {
       "commandPalette": [
         {
           "command": "sqlBindings.addSqlBinding",
-          "when": "editorLangId == csharp && !azdataAvailable && resourceScheme != untitled"
+          "when": "editorLangId == csharp && resourceScheme != untitled"
+        },
+        {
+          "command": "sqlBindings.createAzureFunction",
+          "group": "zAzure_Function@1"
         }
       ],
       "view/item/context": [
@@ -62,6 +64,7 @@
   },
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^1.1.5",
+    "@microsoft/vscode-azext-utils": "^0.1.1",
     "fast-glob": "^3.2.7",
     "promisify-child-process": "^3.1.1",
     "vscode-nls": "^4.1.2",
@@ -69,6 +72,7 @@
   },
   "devDependencies": {
     "@types/node": "^14.14.16",
+    "@types/uuid": "^3.4.5",
     "should": "^13.2.1",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",

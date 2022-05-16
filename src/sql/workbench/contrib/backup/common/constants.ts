@@ -8,16 +8,31 @@ import { localize } from 'vs/nls';
 // Constants
 export const maxDevices: number = 64;
 
-// Constants for backup physical device type
-export const backupDeviceTypeDisk = 2;
-export const backupDeviceTypeTape = 5;
-export const backupDeviceTypeURL = 9;
+/**
+ * Backup phisical device type: https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.backupdevicetype
+ */
+export enum PhysicalDeviceType {
+	Disk = 2,
+	FloppyA = 3,
+	FloppyB = 4,
+	Tape = 5,
+	Pipe = 6,
+	CDRom = 7,
+	Url = 9,
+	Unknown = 100
+}
 
-// Constants for backup media device type
-export const deviceTypeLogicalDevice = 0;
-export const deviceTypeTape = 1;
-export const deviceTypeFile = 2;
-export const deviceTypeURL = 5;
+/**
+ * Backup media device type: https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.devicetype
+ */
+export enum MediaDeviceType {
+	LogicalDevice = 0,
+	Tape = 1,
+	File = 2,
+	Pipe = 3,
+	VirtualDevice = 4,
+	Url = 5
+}
 
 export const recoveryModelSimple = 'Simple';
 export const recoveryModelFull = 'Full';

@@ -116,6 +116,12 @@ declare module 'az-ext' {
 		}
 	}
 
+	export interface DcListUpgradesResult {
+		versions: string[], // ["v1.4.1_2022-03-08", "v1.4.0_2022-02-25"]
+		currentVersion: string, // "v1.4.1_2022-03-08"
+		dates: string[] // ["03/08/2022", "02/25/2022"]
+	}
+
 	export interface StorageVolume {
 		className?: string, // "local-storage"
 		size: string // "5Gi"
@@ -131,50 +137,208 @@ declare module 'az-ext' {
 		port?: number // 5432
 	}
 
+	// export interface SqlMiShowResult {
+	// 	apiVersion: string, // "sql.arcdata.microsoft.com/v1alpha1"
+	// 	kind: string, // "sqlmanagedinstance"
+	// 	metadata: {
+	// 		creationTimestamp: string, // "2020-08-19T17:35:45Z"
+	// 		generation: number, // 1
+	// 		name: string, // "miaa-instance"
+	// 		namespace: string, // "arc"
+	// 		resourceVersion: string, // "202623"
+	// 		selfLink: string, // "/apis/sql.arcdata.microsoft.com/v1alpha1/namespaces/arc/sqlmanagedinstances/miaa-instance"
+	// 		uid: string // "cea737aa-3f82-4f6a-9bed-2b51c2c33dff"
+	// 	},
+	// 	spec: {
+	// 		backup?: {
+	// 			retentionPeriodInDays: number, // 1
+	// 		}
+	// 		scheduling?: {
+	// 			default?: {
+	// 				resources?: {
+	// 					limits?: SchedulingOptions,
+	// 					requests?: SchedulingOptions
+	// 				}
+	// 			}
+	// 		}
+	// 		services: {
+	// 			primary: ServiceSpec
+	// 		}
+	// 		storage: {
+	// 			data: {
+	// 				volumes: StorageVolume[]
+	// 			},
+	// 			logs: {
+	// 				volumes: StorageVolume[]
+	// 			}
+	// 		}
+	// 	},
+	// 	status: {
+	// 		readyReplicas: string, // "1/1"
+	// 		state: string, // "Ready",
+	// 		logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:miaa1'))
+	// 		metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
+	// 		primaryEndpoint?: string // "10.91.86.39:32718"
+	// 		runningVersion: string // "v1.5.0_2022-04-05"
+	// 	}
+	// }
+
 	export interface SqlMiShowResult {
-		apiVersion: string, // "sql.arcdata.microsoft.com/v1alpha1"
-		kind: string, // "sqlmanagedinstance"
-		metadata: {
-			creationTimestamp: string, // "2020-08-19T17:35:45Z"
-			generation: number, // 1
-			name: string, // "miaa-instance"
-			namespace: string, // "arc"
-			resourceVersion: string, // "202623"
-			selfLink: string, // "/apis/sql.arcdata.microsoft.com/v1alpha1/namespaces/arc/sqlmanagedinstances/miaa-instance"
-			uid: string // "cea737aa-3f82-4f6a-9bed-2b51c2c33dff"
+		extendedLocation: {
+		  name: string, // /subscriptions/a2382b66-3h2k-3h2k-2gdd-8ef45dgfdc33/resourcegroups/name-rg/providers/microsoft.extendedlocation/customlocations/custom-loc,
+		  type: string, // CustomLocation
 		},
-		spec: {
-			backup?: {
-				retentionPeriodInDays: number, // 1
-			}
-			scheduling?: {
-				default?: {
-					resources?: {
-						limits?: SchedulingOptions,
-						requests?: SchedulingOptions
+		id: string, // /subscriptions/a2382b66-3h2k-3h2k-2gdd-8ef45dgfdc33/resourceGroups/name-rg/providers/Microsoft.AzureArcData/sqlManagedInstances/sql1,
+		location: string, // eastus2,
+		name: string, // sql2,
+		properties: {
+		  activeDirectoryInformation: string, // null,
+		  admin: string, // admin,
+		  basicLoginInformation: string, // null,
+		  clusterId: string, // null,
+		  dataControllerId: string, // dc-name,
+		  endTime: string, // null,
+		  extensionId: string, // null,
+		  k8SRaw: {
+			spec: {
+			  backup: {
+				retentionPeriodInDays: number, // 7
+			  },
+			  dev: boolean, // true,
+			  licenseType: string, // BasePrice,
+			  metadata: {
+				annotations: string, // ,
+				labels: string, // ,
+				namespace: string, // namespace-name
+			  },
+			  replicas: number, // 1,
+			  scheduling: {
+				additionalProperties: string, // null,
+				default: {
+				  additionalProperties: string, // null,
+				  resources: {
+					additionalProperties: string, // null,
+					limits: {
+					  cpu: string, // 4,
+					  memory: string, // 8Gi
+					},
+					requests: {
+					  cpu: string, // 2,
+					  memory: string, // 4Gi
 					}
+				  }
 				}
-			}
-			services: {
-				primary: ServiceSpec
-			}
-			storage: {
+			  },
+			  security: {
+				adminLoginSecret: string, // sql-login-secret,
+				serviceCertificateSecret: string, //
+			  },
+			  services: {
+				primary: {
+				  annotations: string, // ,
+				  labels: string, // ,
+				  type: string, // NodePort
+				}
+			  },
+			  settings: {
+				collation: string, // SQL_Latin1_General_CP1_CI_AS,
+				language: {
+				  lcid: number, // 1234
+				},
+				sqlagent: {
+				  enabled: boolean, // false
+				},
+				timezone: string, // UTC,
+				traceFlags: boolean, // false
+			  },
+			  storage: {
+				backups: {
+				  volumes: [
+					{
+					  annotations: string, // ,
+					  className: string, // azurefile,
+					  labels: string, // ,
+					  size: string, // 5Gi
+					}
+				  ]
+				},
 				data: {
-					volumes: StorageVolume[]
+				  volumes: [
+					{
+					  annotations: string, // ,
+					  className: string, // default,
+					  labels: string, // ,
+					  size: string, // 5Gi
+					}
+				  ]
+				},
+				datalogs: {
+				  volumes: [
+					{
+					  annotations: string, // ,
+					  className: string, // default,
+					  labels: string, // ,
+					  size: string, // 5Gi
+					}
+				  ]
 				},
 				logs: {
-					volumes: StorageVolume[]
+				  volumes: [
+					{
+					  annotations: string, // ,
+					  className: string, // default,
+					  labels: string, // ,
+					  size: string, // 5Gi
+					}
+				  ]
 				}
+			  },
+			  tier: string, // GeneralPurpose
+			},
+			status: {
+			  endpoints: {
+				logSearchDashboard: string, // https://localhost:12345/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:sql1')),
+				metricsDashboard: string, // https://12.123.1.4:12345/d/sdfgwseg/sql-managed-instance-metrics?var-hostname=sql1-0,
+				mirroring: string, // 10.224.0.4:32040,
+				primary: string, // 10.224.0.4,32477
+			  },
+			  highAvailability: {
+				lastUpdateTime: string, // 2022-05-09T23:40:19.626856Z,
+				mirroringCertificate: string,
+			  },
+			  lastUpdateTime: string, // 2022-05-09T23:41:00.137919Z,
+			  logSearchDashboard: string,
+			  metricsDashboard: string,
+			  observedGeneration: number, // 1,
+			  primaryEndpoint: string, // 10.224.0.4,32477,
+			  readyReplicas: string, // 1/1,
+			  roles: {
+				sql: {
+				  lastUpdateTime: string, // 2022-05-09T23:39:53.364002Z,
+				  readyReplicas: number, // 1,
+				  replicas: number, // 1
+				}
+			  },
+			  runningVersion: string, // v1.4.0_2022-02-25,
+			  state: string, // Ready
 			}
+		  },
+		  lastUploadedDate: string, // null,
+		  licenseType: string, // BasePrice,
+		  provisioningState: string, // Succeeded,
+		  startTime: string, // null
 		},
-		status: {
-			readyReplicas: string, // "1/1"
-			state: string, // "Ready",
-			logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:miaa1'))
-			metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
-			primaryEndpoint?: string // "10.91.86.39:32718"
-		}
-	}
+		resourceGroup: string, // rg-name,
+		sku: {
+		  capacity: string, // null,
+		  dev: string, // null,
+		  family: string, // null,
+		  size: string, // null,
+		  tier: string, // GeneralPurpose
+		},
+		tags: {},
+		type: string, // microsoft.azurearcdata/sqlmanagedinstances
+	  }
 
 	export interface SqlMiDbRestoreResult {
 		destDatabase: string, //testDbToRestore
@@ -332,7 +496,9 @@ declare module 'az-ext' {
 				config: {
 					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcConfigListResult[]>>,
 					show(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcConfigShowResult>>
-				}
+				},
+				listUpgrades(namespace: string, usek8s?: boolean, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcListUpgradesResult>>,
+				upgrade(desiredVersion: string, name: string, resourceGroup?: string, namespace?: string, usek8s?: boolean, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
 			}
 		},
 		postgres: {
@@ -366,7 +532,17 @@ declare module 'az-ext' {
 			miarc: {
 				delete(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
 				list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiListResult[]>>,
-				show(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiShowResult>>,
+				show(
+					name: string,
+					args: {
+						// Direct mode arguments
+						resourceGroup?: string,
+						// Indirect mode arguments
+						namespace?: string
+					},
+					// Additional arguments
+					additionalEnvVars?: AdditionalEnvVars
+				): Promise<AzOutput<SqlMiShowResult>>,
 				update(
 					name: string,
 					args: {
@@ -382,6 +558,17 @@ declare module 'az-ext' {
 					// Indirect mode arguments
 					namespace?: string,
 					usek8s?: boolean,
+					// Additional arguments
+					additionalEnvVars?: AdditionalEnvVars
+				): Promise<AzOutput<void>>,
+				upgrade(
+					name: string,
+					args: {
+						// Direct mode arguments
+						resourceGroup?: string,
+						// Indirect mode arguments
+						namespace?: string
+					},
 					// Additional arguments
 					additionalEnvVars?: AdditionalEnvVars
 				): Promise<AzOutput<void>>

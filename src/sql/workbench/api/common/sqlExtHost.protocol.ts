@@ -14,6 +14,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import type * as azdata from 'azdata';
 import type * as vscode from 'vscode';
 import type * as azurecore from 'azurecore';
+import type * as mssql from 'mssql';
 
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/workbench/services/tasks/common/tasks';
@@ -31,8 +32,16 @@ import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { TreeDataTransferDTO } from 'vs/workbench/api/common/shared/treeDataTransfer';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 
+export abstract class ExtHostAzureBlobShape {
+	public $createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse> { throw ni(); }
+}
+
 export abstract class ExtHostAzureAccountShape {
 	public $getSubscriptions(account: azurecore.AzureAccount, ignoreErrors?: boolean, selectedOnly?: boolean): Thenable<azurecore.GetSubscriptionsResult> { throw ni(); }
+	public $getStorageAccounts(account: azurecore.AzureAccount, subscriptions: azurecore.azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountResult> { throw ni(); }
+	public $getBlobContainers(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetBlobContainersResult> { throw ni(); }
+	public $getBlobs(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, containerName: string, ignoreErrors: boolean): Promise<azurecore.GetBlobsResult> { throw ni(); }
+	public $getStorageAccountAccessKey(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountAccessKeyResult> { throw ni(); }
 }
 
 export abstract class ExtHostAccountManagementShape {
@@ -572,6 +581,10 @@ export abstract class ExtHostDataProtocolShape {
 	 * Gets the generic execution plan graph for a plan file.
 	 */
 	$getExecutionPlan(handle: number, planFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.GetExecutionPlanResult> { throw ni(); }
+	/**
+	 * Compares two execution plans and identifies matching sections in both.
+	 */
+	$compareExecutionPlanGraph(handle: number, firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.ExecutionPlanComparisonResult> { throw ni(); }
 }
 
 /**
@@ -613,7 +626,14 @@ export interface MainThreadAccountManagementShape extends IDisposable {
 	$getAccountsForProvider(providerId: string): Thenable<azdata.Account[]>;
 }
 
+export interface MainThreadAzureBlobShape extends IDisposable {
+
+}
 export interface MainThreadAzureAccountShape extends IDisposable {
+
+}
+
+export interface MainThreadAzureBlobShape extends IDisposable {
 
 }
 
@@ -719,7 +739,8 @@ export const SqlMainContext = {
 	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook'),
 	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors'),
 	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement'),
-	MainThreadWorkspace: createMainId<MainThreadWorkspaceShape>('MainThreadWorkspace')
+	MainThreadWorkspace: createMainId<MainThreadWorkspaceShape>('MainThreadWorkspace'),
+	MainThreadAzureBlob: createMainId<MainThreadAzureBlobShape>('MainThreadAzureBlob'),
 };
 
 export const SqlExtHostContext = {
@@ -742,7 +763,8 @@ export const SqlExtHostContext = {
 	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook'),
 	ExtHostNotebookDocumentsAndEditors: createExtId<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors'),
 	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement'),
-	ExtHostWorkspace: createExtId<ExtHostWorkspaceShape>('ExtHostWorkspace')
+	ExtHostWorkspace: createExtId<ExtHostWorkspaceShape>('ExtHostWorkspace'),
+	ExtHostAzureBlob: createExtId<ExtHostAzureBlobShape>('ExtHostAzureBlob')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
@@ -948,6 +970,7 @@ export interface ExtHostNotebookShape {
 	$requestComplete(kernelId: number, content: azdata.nb.ICompleteRequest): Thenable<azdata.nb.ICompleteReplyMsg>;
 	$requestExecute(kernelId: number, content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails>;
 	$interruptKernel(kernelId: number): Thenable<void>;
+	$restartKernel(kernelId: number): Thenable<void>;
 
 	// Future APIs
 	$sendInputReply(futureId: number, content: azdata.nb.IInputReply): void;
@@ -1004,7 +1027,7 @@ export interface INotebookShowOptions {
 	providerId?: string;
 	connectionProfile?: azdata.IConnectionProfile;
 	defaultKernel?: azdata.nb.IKernelSpec;
-	initialContent?: string;
+	initialContent?: string | azdata.nb.INotebookContents;
 	initialDirtyState?: boolean;
 }
 

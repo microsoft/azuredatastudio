@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
 import * as TypeMoq from 'typemoq';
-import * as mssql from '../../../mssql/src/mssql';
+import * as mssql from 'mssql';
 
 export interface TestContext {
 	context: vscode.ExtensionContext;

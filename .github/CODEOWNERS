@@ -11,6 +11,7 @@
 /extensions/query-history/ @Charles-Gagnon
 /extensions/resource-deployment/ @Charles-Gagnon
 /extensions/schema-compare/ @kisantia
+/extensions/sql-bindings/ @vasubhog @Charles-Gagnon @lucyzhang929 @chlafreniere @MaddyDev
 /extensions/sql-database-projects/ @Benjin @kisantia
 /extensions/mssql/config.json @Charles-Gagnon @alanrenmsft @kburtram
 

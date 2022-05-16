@@ -212,6 +212,7 @@
 				"restrictions": [
 					"vs/nls",
 					"azdata",
+					"mssql",
 					"azurecore",
 					"**/{vs,sql}/base/common/**",
 					"**/{vs,sql}/base/parts/*/common/**",
@@ -473,6 +474,7 @@
 				"restrictions": [
 					"vscode",
 					"azdata",
+					"mssql",
 					"azurecore",
 					"vs/nls",
 					"**/{vs,sql}/base/common/**",
@@ -552,6 +554,7 @@
 					"**/{vs,sql}/workbench/common/**",
 					"**/{vs,sql}/workbench/services/**/common/**",
 					"**/{vs,sql}/workbench/api/**/common/**",
+					"**/{vs,sql}/workbench/contrib/**/common/**",
 					"vs/workbench/contrib/files/common/editors/fileEditorInput", // this should be fine, it only accesses constants from contrib
 					"vscode-textmate",
 					"vscode-oniguruma",
@@ -579,6 +582,7 @@
 					"vs/nls",
 					"vs/css!./**/*",
 					"azdata",
+					"mssql",
 					"azurecore",
 					"vscode",
 					"**/{vs,sql}/base/**/{common,browser,worker}/**",
@@ -588,6 +592,7 @@
 					"**/{vs,sql}/workbench/{common,browser}/**",
 					"**/{vs,sql}/workbench/api/{common,browser}/**",
 					"**/{vs,sql}/workbench/services/**/{common,browser}/**",
+					"**/{vs,sql}/workbench/contrib/**/common/**",
 					"vscode-textmate",
 					"vscode-oniguruma",
 					"iconv-lite-umd",
@@ -1146,6 +1151,7 @@
 				"src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin.ts",
 				"src/sql/base/browser/ui/table/plugins/headerFilter.plugin.ts",
 				"src/sql/base/browser/ui/table/plugins/rowDetailView.ts",
+				"src/sql/base/browser/ui/table/plugins/rowMoveManager.plugin.ts",
 				"src/sql/base/browser/ui/table/plugins/rowSelectionModel.plugin.ts",
 				"src/sql/workbench/services/notebook/browser/outputs/factories.ts",
 				"src/sql/workbench/services/notebook/browser/outputs/mimemodel.ts",

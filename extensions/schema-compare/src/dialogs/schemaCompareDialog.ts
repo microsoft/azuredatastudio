@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as sqldbproj from 'sqldbproj';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as loc from '../localizedConstants';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { TelemetryReporter, TelemetryViews } from '../telemetry';

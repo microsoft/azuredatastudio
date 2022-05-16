@@ -185,6 +185,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _trustedCacheQueue: URI[] = [];
 	private _unTrustedCacheQueue: URI[] = [];
 	private _onCodeCellExecutionStart: Emitter<void> = new Emitter<void>();
+	private _notebookInputsMap: Map<string, IEditorInput> = new Map();
 
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
@@ -255,7 +256,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		do {
 			uri = URI.from({ scheme: Schemas.untitled, path: `Notebook-${counter}` });
 			counter++;
-		} while (this._untitledEditorService.get(uri));
+		} while (this._untitledEditorService.get(uri) || this._notebookInputsMap.has(uri.toString())); // Also have to check stored inputs, since those might not be opened in an editor yet.
 		return uri;
 	}
 
@@ -268,16 +269,9 @@ export class NotebookService extends Disposable implements INotebookService {
 			resource = uri;
 		}
 
-		let serializedContent: string;
-		if (contents) {
-			// Have to serialize contents again first, since our notebook code assumes input is based on the raw file contents
-			let manager = await this.getOrCreateSerializationManager(providerId, uri);
-			serializedContent = await manager.contentManager.serializeNotebook(contents);
-		}
-
 		let options: INotebookShowOptions = {
 			providerId: providerId,
-			initialContent: serializedContent
+			initialContent: contents
 		};
 		return this.createNotebookInput(options, resource);
 	}
@@ -286,6 +280,9 @@ export class NotebookService extends Disposable implements INotebookService {
 		let uri: URI;
 		if (resource) {
 			uri = URI.revive(resource);
+			if (this._notebookInputsMap.has(uri.toString())) {
+				return this._notebookInputsMap.get(uri.toString());
+			}
 		} else {
 			uri = this.getUntitledFileUri();
 		}
@@ -293,12 +290,21 @@ export class NotebookService extends Disposable implements INotebookService {
 
 		let fileInput: IEditorInput;
 		let languageMode = options.providerId === INTERACTIVE_PROVIDER_ID ? INTERACTIVE_LANGUAGE_MODE : DEFAULT_NB_LANGUAGE_MODE;
+		let initialStringContents: string;
+		if (options.initialContent) {
+			if (typeof options.initialContent === 'string') {
+				initialStringContents = options.initialContent;
+			} else {
+				let manager = await this.getOrCreateSerializationManager(options.providerId, uri);
+				initialStringContents = await manager.contentManager.serializeNotebook(options.initialContent);
+			}
+		}
 		if (isUntitled && path.isAbsolute(uri.fsPath)) {
-			const model = this._untitledEditorService.create({ associatedResource: uri, mode: languageMode, initialValue: options.initialContent });
+			const model = this._untitledEditorService.create({ associatedResource: uri, mode: languageMode, initialValue: initialStringContents });
 			fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 		} else {
 			if (isUntitled) {
-				const model = this._untitledEditorService.create({ untitledResource: uri, mode: languageMode, initialValue: options.initialContent });
+				const model = this._untitledEditorService.create({ untitledResource: uri, mode: languageMode, initialValue: initialStringContents });
 				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 			} else {
 				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: languageMode });
@@ -312,6 +318,9 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (isINotebookInput(fileInput)) {
 				fileInput.defaultKernel = options.defaultKernel;
 				fileInput.connectionProfile = options.connectionProfile;
+				if (typeof options.initialContent !== 'string') {
+					fileInput.setNotebookContents(options.initialContent);
+				}
 
 				if (isUntitled) {
 					let untitledModel = await fileInput.resolve();
@@ -327,6 +336,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			throw new Error(localize('failedToCreateNotebookInput', "Failed to create notebook input for provider '{0}'", options.providerId));
 		}
 
+		this._notebookInputsMap.set(uri.toString(), fileInput);
 		return fileInput;
 	}
 
@@ -359,6 +369,19 @@ export class NotebookService extends Disposable implements INotebookService {
 			nextVal++;
 		}
 		return title;
+	}
+
+	public getNotebookURIForCell(cellUri: URI): URI | undefined {
+		for (let editor of this.listNotebookEditors()) {
+			if (editor.cells) {
+				for (let cell of editor.cells) {
+					if (cell.cellUri === cellUri) {
+						return editor.notebookParams.notebookUri;
+					}
+				}
+			}
+		}
+		return undefined;
 	}
 
 	private updateSQLRegistrationWithConnectionProviders() {
@@ -616,6 +639,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (this._editors.delete(editor.id)) {
 			this._onNotebookEditorRemove.fire(editor);
 		}
+		this._notebookInputsMap.delete(editor.notebookParams.notebookUri.toString());
+
 		// Remove the manager from the tracked list, and let the notebook provider know that it should update its mappings
 		this.sendNotebookCloseToProvider(editor);
 	}

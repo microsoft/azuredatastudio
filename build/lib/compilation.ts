@@ -44,7 +44,7 @@ function createCompile(src: string, build: boolean, emitError?: boolean) {
 
 	const projectPath = path.join(__dirname, '../../', src, 'tsconfig.json');
 	const overrideOptions = { ...getTypeScriptCompilerOptions(src), inlineSources: Boolean(build) };
-	if (!build) {
+	if (!build && !process.env['SQL_NO_INLINE_SOURCEMAP']) {
 		overrideOptions.inlineSourceMap = true;
 	}
 
@@ -87,7 +87,6 @@ function createCompile(src: string, build: boolean, emitError?: boolean) {
 export function compileTask(src: string, out: string, build: boolean): () => NodeJS.ReadWriteStream {
 
 	return function () {
-
 		if (os.totalmem() < 4_000_000_000) {
 			throw new Error('compilation requires 4GB of RAM');
 		}

@@ -50,9 +50,9 @@ export class ShellExecutionHelper {
 			// Add listeners to print stdout and stderr and exit code
 			void child.on('exit', (code: number | null, signal: string | null) => {
 				if (code !== null) {
-					this._outputChannel.appendLine(localize('sqlDatabaseProjects.RunStreamedCommand.ExitedWithCode', "    >>> {0}    … exited with code: {1}", command, code));
+					this._outputChannel.appendLine(localize('sqlDatabaseProjects.RunStreamedCommand.ExitedWithCode', "    >>> {0}    … exited with code: {1}", cmdOutputMessage, code));
 				} else {
-					this._outputChannel.appendLine(localize('sqlDatabaseProjects.RunStreamedCommand.ExitedWithSignal', "    >>> {0}   … exited with signal: {1}", command, signal));
+					this._outputChannel.appendLine(localize('sqlDatabaseProjects.RunStreamedCommand.ExitedWithSignal', "    >>> {0}   … exited with signal: {1}", cmdOutputMessage, signal));
 				}
 			});
 

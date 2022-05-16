@@ -43,6 +43,8 @@ export class IconPathHelper {
 	public static edit: IconPath;
 	public static restartDataCollection: IconPath;
 	public static stop: IconPath;
+	public static view: IconPath;
+	public static sqlMigrationService: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -172,6 +174,14 @@ export class IconPathHelper {
 		IconPathHelper.stop = {
 			light: context.asAbsolutePath('images/stop.svg'),
 			dark: context.asAbsolutePath('images/stop.svg')
+		};
+		IconPathHelper.view = {
+			light: context.asAbsolutePath('images/view.svg'),
+			dark: context.asAbsolutePath('images/view.svg')
+		};
+		IconPathHelper.sqlMigrationService = {
+			light: context.asAbsolutePath('images/sqlMigrationService.svg'),
+			dark: context.asAbsolutePath('images/sqlMigrationService.svg'),
 		};
 	}
 }

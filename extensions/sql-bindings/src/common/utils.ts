@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as vscodeMssql from 'vscode-mssql';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as glob from 'fast-glob';
 import * as cp from 'child_process';
+import * as constants from '../common/constants';
 
 export interface ValidationResult {
 	errorMessage: string;
@@ -23,8 +23,11 @@ export interface IPackageInfo {
 	aiKey: string;
 }
 
+export class TimeoutError extends Error { }
+
 /**
  * Consolidates on the error message string
+ * @param error The error object to get the message from
  */
 export function getErrorMessage(error: any): string {
 	return (error instanceof Error)
@@ -35,27 +38,6 @@ export function getErrorMessage(error: any): string {
 export async function getVscodeMssqlApi(): Promise<vscodeMssql.IExtension> {
 	const ext = vscode.extensions.getExtension(vscodeMssql.extension.name) as vscode.Extension<vscodeMssql.IExtension>;
 	return ext.activate();
-}
-
-// Try to load the azdata API - but gracefully handle the failure in case we're running
-// in a context where the API doesn't exist (such as VS Code)
-let azdataApi: typeof azdataType | undefined = undefined;
-try {
-	azdataApi = require('azdata');
-	if (!azdataApi?.version) {
-		// webpacking makes the require return an empty object instead of throwing an error so make sure we clear the var
-		azdataApi = undefined;
-	}
-} catch {
-	// no-op
-}
-
-/**
- * Gets the azdata API if it's available in the context this extension is running in.
- * @returns The azdata API if it's available
- */
-export function getAzdataApi(): typeof azdataType | undefined {
-	return azdataApi;
 }
 
 export async function executeCommand(command: string, cwd?: string): Promise<string> {
@@ -92,24 +74,6 @@ export async function getAllProjectsInFolder(folder: vscode.Uri, projectExtensio
 }
 
 /**
- * Format a string. Behaves like C#'s string.Format() function.
- */
-export function formatString(str: string, ...args: any[]): string {
-	// This is based on code originally from https://github.com/Microsoft/vscode/blob/master/src/vs/nls.js
-	// License: https://github.com/Microsoft/vscode/blob/master/LICENSE.txt
-	let result: string;
-	if (args.length === 0) {
-		result = str;
-	} else {
-		result = str.replace(/\{(\d+)\}/g, (match, rest) => {
-			let index = rest[0];
-			return typeof args[index] !== 'undefined' ? args[index] : match;
-		});
-	}
-	return result;
-}
-
-/**
  * Generates a quoted full name for the object
  * @param schema of the object
  * @param objectName object chosen by the user
@@ -128,7 +92,7 @@ export function generateQuotedFullName(schema: string, objectName: string): stri
 export function timeoutPromise(errorMessage: string, ms: number = 10000): Promise<string> {
 	return new Promise((_, reject) => {
 		setTimeout(() => {
-			reject(new Error(errorMessage));
+			reject(new TimeoutError(errorMessage));
 		}, ms);
 	});
 }
@@ -137,11 +101,16 @@ export function timeoutPromise(errorMessage: string, ms: number = 10000): Promis
  * Gets a unique file name
  * Increment the file name by adding 1 to function name if the file already exists
  * Undefined if the filename suffix count becomes greater than 1024
- * @param folderPath selected project folder path
  * @param fileName base filename to use
+ * @param folderPath selected project folder path
  * @returns a promise with the unique file name, or undefined
  */
-export async function getUniqueFileName(folderPath: string, fileName: string): Promise<string | undefined> {
+export async function getUniqueFileName(fileName: string, folderPath?: string): Promise<string | undefined> {
+	if (!folderPath) {
+		// user is creating a brand new azure function project
+		return undefined;
+	}
+
 	let count: number = 0;
 	const maxCount: number = 1024;
 	let uniqueFileName = fileName;
@@ -161,6 +130,30 @@ export function escapeClosingBrackets(str: string): string {
 }
 
 /**
+ * Removes all special characters from object name
+ * @param objectName can include brackets/periods and user entered special characters
+ * @returns the object name without any special characters
+ */
+export function santizeObjectName(objectName: string): string {
+	return objectName.replace(/[^a-zA-Z0-9 ]/g, '');
+}
+
+/**
+ * Check to see if the input from user entered is valid
+ * @param input from user input
+ * @returns returns error if the input is empty or has special characters, undefined if the input is valid
+ */
+export function validateFunctionName(input: string): string | undefined {
+	const specialChars = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+	if (!input) {
+		return constants.nameMustNotBeEmpty;
+	} else if (specialChars.test(input)) {
+		return constants.hasSpecialCharacters;
+	}
+	return undefined;
+}
+
+/**
  * Gets the package info for the extension based on where the extension is installed
  * @returns the package info object
  */
@@ -173,3 +166,11 @@ export function getPackageInfo(): IPackageInfo {
 		aiKey: packageJson.aiKey
 	};
 }
+export function getErrorType(error: any): string | undefined {
+	if (error instanceof TimeoutError) {
+		return 'TimeoutError';
+	} else {
+		return 'UnknownError';
+	}
+}
+

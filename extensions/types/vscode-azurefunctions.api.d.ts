@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import { AzureWizardExecuteStep, IActionContext } from "@microsoft/vscode-azext-utils";
 
 export interface AzureFunctionsExtensionApi {
     apiVersion: string;
@@ -83,4 +84,10 @@ export interface ICreateFunctionOptions {
      * If set, it will automatically select the worker runtime for .NET with the matching targetFramework
      */
     targetFramework?: string | string[];
+
+    /**
+     * If set, it will include a step that will be executed prior to OpenFolderStep
+     */
+    executeStep?: AzureWizardExecuteStep<IActionContext>;
+
 }
