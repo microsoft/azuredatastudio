@@ -362,7 +362,7 @@ export async function promptForObjectName(bindingType: BindingType, connectionIn
  * Prompts the user to enter connection setting and updates it from AF project
  * @param projectUri Azure Function project uri
  * @param connectionInfo (optional) connection info from the user to update the connection string, 
- * if left undefined we prompt user to get connection info manually or list of connection profiles 
+ * if left undefined we prompt the user for the connection info
  * @returns connection string setting name to be used for the createFunction API
  */
 export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined, connectionInfo?: IConnectionInfo): Promise<IConnectionStringInfo | undefined> {
@@ -674,7 +674,7 @@ export async function promptSelectTable(connectionURI: string, bindingType: Bind
 	const tableNames = queryResult.rows.map(r => r[0].displayValue);
 	// add manual entry option to table names list for user to choose from as well (with pencil icon)
 	let manuallyEnterObjectName = '$(pencil) ' + userObjectName;
-	tableNames.push(manuallyEnterObjectName);
+	tableNames.unshift(manuallyEnterObjectName);
 	// prompt user to select table from list of tables options
 	while (true) {
 		let selectedObject = await vscode.window.showQuickPick(tableNames, {
@@ -701,4 +701,4 @@ export async function promptSelectTable(connectionURI: string, bindingType: Bind
 	}
 }
 
-export function tablesQuery(selectedDatabase: string): string { return `SELECT QUOTENAME(CONCAT(table_schema,'.',table_name)) from ${selectedDatabase}.INFORMATION_SCHEMA.TABLES where TABLE_TYPE = 'BASE TABLE'`; }
+export function tablesQuery(selectedDatabase: string): string { return `SELECT CONCAT(QUOTENAME(table_schema),'.',QUOTENAME(table_name)) from ${selectedDatabase}.INFORMATION_SCHEMA.TABLES where TABLE_TYPE = 'BASE TABLE'`; }
