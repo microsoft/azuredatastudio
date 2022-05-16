@@ -13,6 +13,7 @@ import * as azureFunctionsContracts from '../contracts/azureFunctions/azureFunct
 import { CreateAzureFunctionStep, TelemetryActions, TelemetryReporter, TelemetryViews, ExitReason } from '../common/telemetry';
 import { AddSqlBindingParams, BindingType, GetAzureFunctionsParams, GetAzureFunctionsResult, ResultStatus } from 'sql-bindings';
 import { IConnectionInfo, ITreeNodeInfo } from 'vscode-mssql';
+import { createAddConnectionStringStep } from '../createNewProject/addConnectionStringStep';
 
 export const hostFileName: string = 'host.json';
 
@@ -85,6 +86,9 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 					TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 						.withAdditionalProperties(propertyBag).send();
 					break;
+				} else {
+					// user cancelled
+					return;
 				}
 			}
 		} else {
@@ -208,12 +212,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		telemetryStep = CreateAzureFunctionStep.getTemplateId;
 		let templateId: string = selectedBindingType === BindingType.input ? constants.inputTemplateID : constants.outputTemplateID;
 
-		// We need to set the azureWebJobsStorage to a placeholder
-		// to suppress the warning for opening the wizard - but will ask them to overwrite if they are creating new azureFunction
-		// issue https://github.com/microsoft/azuredatastudio/issues/18780
-		telemetryStep = CreateAzureFunctionStep.setAzureWebJobsStorage;
-		await azureFunctionsUtils.setLocalAppSetting(projectFolder, constants.azureWebJobsStorageSetting, constants.azureWebJobsStoragePlaceholder);
-
 		// prompt for Connection String Setting Name
 		let connectionStringSettingName: string | undefined = constants.sqlConnectionStringSetting;
 		if (!isCreateNewProject && projectFile) {
@@ -223,6 +221,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				.withAdditionalProperties(propertyBag)
 				.withConnectionInfo(connectionInfo).send();
 		}
+		// addtional execution step that will be used by vscode-azurefunctions to execute only when creating a new azure function project
+		let connectionStringExecuteStep = createAddConnectionStringStep(projectFolder, connectionInfo, connectionStringSettingName);
 
 		// create C# Azure Function with SQL Binding
 		telemetryStep = 'createFunctionAPI';
@@ -238,7 +238,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				...(selectedBindingType === BindingType.output && { table: objectName })
 			},
 			folderPath: projectFolder,
-			suppressCreateProjectPrompt: true
+			suppressCreateProjectPrompt: true,
+			...(isCreateNewProject && { executeStep: connectionStringExecuteStep })
 		});
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 			.withAdditionalProperties(propertyBag)
@@ -246,22 +247,9 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 		// check for the new function file to be created and dispose of the file system watcher
 		const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
-		let functionFilePath = await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
+		await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
 
-		// prompt user for include password for connection string
-		if (isCreateNewProject && functionFilePath) {
-			telemetryStep = CreateAzureFunctionStep.promptForIncludePassword;
-			let settingsFile = await azureFunctionsUtils.getSettingsFile(projectFolder);
-			if (!settingsFile) {
-				return;
-			}
-			let connectionString = await azureFunctionsUtils.promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo, settingsFile);
-			if (!connectionString) {
-				return;
-			}
-			void azureFunctionsUtils.addConnectionStringToConfig(connectionString, projectFolder, connectionStringSettingName);
-		}
-
+		telemetryStep = 'finishCreateFunction';
 		propertyBag.telemetryStep = telemetryStep;
 		exitReason = ExitReason.finishCreate;
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.finishCreateAzureFunctionWithSqlBinding)

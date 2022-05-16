@@ -20,6 +20,30 @@ export const clientCapabilities = {
 	hostVersion: HOST_VERSION
 };
 
+/**
+ * The map containing the connection provider names and the owning extensions.
+ * This is to workaround the issue that we don't have the ability to store and query the information from extension gallery.
+ */
+export const ConnectionProviderAndExtensionMap = new Map<string, string>([
+	['PGSQL', 'microsoft.azuredatastudio-postgresql'],
+	['KUSTO', 'microsoft.kusto'],
+	['LOGANALYTICS', 'microsoft.azuremonitor']
+]);
+
+/**
+ * The connection string options for connection provider.
+ */
+export interface ConnectionStringOptions {
+	/**
+	 * Whether the connection provider supports connection string as an input option. The default value is false.
+	 */
+	isEnabled?: boolean;
+	/**
+	 * Whether the connection provider uses connection string as the default option to connect. The default value is false.
+	 */
+	isDefault?: boolean;
+}
+
 export interface ConnectionProviderProperties {
 	providerId: string;
 	iconPath?: URI | IconPath | { id: string, path: IconPath, default?: boolean }[]
@@ -29,6 +53,7 @@ export interface ConnectionProviderProperties {
 	connectionOptions: azdata.ConnectionOption[];
 	isQueryProvider?: boolean;
 	supportedExecutionPlanFileExtensions?: string[];
+	connectionStringOptions?: ConnectionStringOptions;
 }
 
 export interface ProviderFeatures {

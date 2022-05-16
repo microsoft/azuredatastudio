@@ -34,8 +34,8 @@ import { attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachE
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/workbench/services/restore/browser/restoreViewModel';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
-import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IPanelTab, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
+import { DatabaseEngineEdition, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -46,6 +46,8 @@ import { fileFiltersSet } from 'sql/workbench/services/restore/common/constants'
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
+import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
+import { MediaDeviceType } from 'sql/workbench/contrib/backup/common/constants';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -55,6 +57,7 @@ interface FileListElement {
 }
 
 const LocalizedStrings = {
+	BACKURL: localize('backupUrl', "Backup URL"),
 	BACKFILEPATH: localize('backupFilePath', "Backup file path"),
 	TARGETDATABASE: localize('targetDatabase', "Target database")
 };
@@ -70,19 +73,27 @@ export class RestoreDialog extends Modal {
 	private _restoreTitle = localize('restoreDialog.restoreTitle', "Restore database");
 	private _databaseTitle = localize('restoreDialog.database', "Database");
 	private _backupFileTitle = localize('restoreDialog.backupFile', "Backup file");
+	private _urlTitle = localize('restoreDialog.url', "URL");
 	private _ownerUri?: string;
 	private _databaseDropdown?: Dropdown;
 	private _isBackupFileCheckboxChanged?: boolean;
 
 	// General options
 	private _filePathInputBox?: InputBox;
+	private _urlInputBox?: InputBox;
+	private _browseUrlButton?: Button;
 	private _browseFileButton?: Button;
 	private _destinationRestoreToInputBox?: InputBox;
 	private _restoreFromSelectBox?: SelectBox;
 	private _sourceDatabaseSelectBox?: SelectBox;
+	public _targetDatabaseInputBox: InputBox;
 
 	private _panel?: TabbedPanel;
-	private _generalTabId?: PanelTabIdentifier;
+	private _generalTab?: IPanelTab;
+	private _fileTab?: IPanelTab;
+	private _optionsTab?: IPanelTab;
+
+	private _engineEdition?: DatabaseEngineEdition;
 
 	// File option
 	private readonly _relocateDatabaseFilesOption = 'relocateDbFiles';
@@ -104,6 +115,11 @@ export class RestoreDialog extends Modal {
 	private readonly _closeExistingConnectionsOption = 'closeExistingConnections';
 
 	private _restoreFromBackupFileElement?: HTMLElement;
+	private _restoreFromUrlElement?: HTMLElement;
+	private _destinationRestoreToContainer?: HTMLElement;
+	private _sourceDatabasesElement?: HTMLElement;
+	private _targetDatabaseElement?: HTMLElement;
+	private _targetDatabaseInputElement?: HTMLElement;
 
 	private _fileListTable?: Table<FileListElement>;
 	private _fileListData?: TableDataView<FileListElement>;
@@ -138,12 +154,12 @@ export class RestoreDialog extends Modal {
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IFileBrowserDialogController private fileBrowserDialogService: IFileBrowserDialogController,
+		@IBackupRestoreUrlBrowserDialogService private backupRestoreUrlBrowserDialogService: IBackupRestoreUrlBrowserDialogService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.ModalDialogName.Restore, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasErrors: true, width: 'wide', hasSpinner: true });
-
 		// view model
 		this.viewModel = new RestoreViewModel(optionsMetadata);
 		this.viewModel.onSetLastBackupTaken((value) => this.updateLastBackupTaken(value));
@@ -170,7 +186,31 @@ export class RestoreDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		const restoreFromElement = DOM.$('.restore-from');
 		this.createLabelElement(restoreFromElement, localize('source', "Source"), true);
-		this._restoreFromSelectBox = this.createSelectBoxHelper(restoreFromElement, localize('restoreFrom', "Restore from"), [this._databaseTitle, this._backupFileTitle], this._databaseTitle);
+		this._restoreFromSelectBox = this.createSelectBoxHelper(restoreFromElement, localize('restoreFrom', "Restore from"), [this._databaseTitle, this._backupFileTitle, this._urlTitle], this._databaseTitle);
+
+		this._restoreFromUrlElement = DOM.$('.backup-url');
+		DOM.hide(this._restoreFromUrlElement);
+		const urlErrorMessage = localize('missingBackupUrlError', "Backup url is required.");
+		const urlValidationOptions: IInputOptions = {
+			validationOptions: {
+				validation: (value: string) => !value ? ({ type: MessageType.ERROR, content: urlErrorMessage }) : null
+			},
+			placeholder: localize('enterBackupUrl', "Please enter URL"),
+			ariaLabel: LocalizedStrings.BACKURL
+		};
+		const urlInputContainer = DOM.append(this._restoreFromUrlElement, DOM.$('.dialog-input-section'));
+		DOM.append(urlInputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.BACKURL;
+
+		this._urlInputBox = this._register(new InputBox(DOM.append(urlInputContainer, DOM.$('.dialog-input')), this._contextViewService, urlValidationOptions));
+
+		const urlBrowseContainer = DOM.append(this._restoreFromUrlElement, DOM.$('.dialog-input-section'));
+		DOM.append(urlBrowseContainer, DOM.$('.dialog-label')).innerText = '';
+
+		let browseLabel = localize('restoreDialog.browse', "Browse");
+		this._browseUrlButton = this._register(new Button(DOM.append(urlBrowseContainer, DOM.$('.file-browser')), { secondary: true }));
+		this._browseUrlButton.label = browseLabel;
+		this._browseUrlButton.setWidth('50px');
+
 
 		this._restoreFromBackupFileElement = DOM.$('.backup-file-path');
 		DOM.hide(this._restoreFromBackupFileElement);
@@ -185,38 +225,40 @@ export class RestoreDialog extends Modal {
 		const filePathInputContainer = DOM.append(this._restoreFromBackupFileElement, DOM.$('.dialog-input-section'));
 		DOM.append(filePathInputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.BACKFILEPATH;
 
-		this._filePathInputBox = new InputBox(DOM.append(filePathInputContainer, DOM.$('.dialog-input')), this._contextViewService, validationOptions);
+		this._filePathInputBox = this._register(new InputBox(DOM.append(filePathInputContainer, DOM.$('.dialog-input')), this._contextViewService, validationOptions));
 
-		this._browseFileButton = new Button(DOM.append(filePathInputContainer, DOM.$('.file-browser')), { secondary: true });
+		this._browseFileButton = this._register(new Button(DOM.append(filePathInputContainer, DOM.$('.file-browser')), { secondary: true }));
 		this._browseFileButton.label = '...';
 
-		const sourceDatabasesElement = DOM.$('.source-database-list');
-		this._sourceDatabaseSelectBox = this.createSelectBoxHelper(sourceDatabasesElement, localize('database', "Database"), [], '');
+		this._sourceDatabasesElement = DOM.$('.source-database-list');
+		this._sourceDatabaseSelectBox = this.createSelectBoxHelper(this._sourceDatabasesElement, localize('database', "Database"), [], '');
 
 		// Source section
 		const sourceElement = DOM.$('.source-section.new-section');
 		sourceElement.append(restoreFromElement);
+		sourceElement.append(this._restoreFromUrlElement);
 		sourceElement.append(this._restoreFromBackupFileElement);
-		sourceElement.append(sourceDatabasesElement);
+		sourceElement.append(this._sourceDatabasesElement);
 
 		// Destination section
 		const destinationElement = DOM.$('.destination-section.new-section');
 		this.createLabelElement(destinationElement, localize('destination', "Destination"), true);
 
-		const destinationInputContainer = DOM.append(destinationElement, DOM.$('.dialog-input-section'));
-		DOM.append(destinationInputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.TARGETDATABASE;
+		this._targetDatabaseElement = DOM.append(destinationElement, DOM.$('.dialog-input-section'));
+		DOM.append(this._targetDatabaseElement, DOM.$('.dialog-label')).innerText = LocalizedStrings.TARGETDATABASE;
 
-		const dropdownContainer = DOM.append(destinationInputContainer, DOM.$('.dialog-input'));
+
+		const dropdownContainer = DOM.append(this._targetDatabaseElement, DOM.$('.dialog-input'));
 
 		// Get the bootstrap params and perform the bootstrap
 		dropdownContainer.style.width = '100%';
 
-		this._databaseDropdown = new Dropdown(dropdownContainer, this._contextViewService,
+		this._databaseDropdown = this._register(new Dropdown(dropdownContainer, this._contextViewService,
 			{
 				strictSelection: false,
 				ariaLabel: LocalizedStrings.TARGETDATABASE
 			}
-		);
+		));
 		this._databaseDropdown.onValueChange(s => {
 			this.databaseSelected(s);
 		});
@@ -232,7 +274,30 @@ export class RestoreDialog extends Modal {
 		this._databaseDropdown.value = this.viewModel.targetDatabaseName!;
 		attachEditableDropdownStyler(this._databaseDropdown, this._themeService);
 
-		this._destinationRestoreToInputBox = this.createInputBoxHelper(destinationElement, localize('restoreTo', "Restore to"));
+		this._targetDatabaseInputElement = DOM.append(destinationElement, DOM.$('.dialog-input-section'));
+		DOM.append(this._targetDatabaseInputElement, DOM.$('.dialog-label')).innerText = LocalizedStrings.TARGETDATABASE;
+		DOM.hide(this._targetDatabaseInputElement);
+
+		const inputTargetDatabaseContainer = DOM.append(this._targetDatabaseInputElement, DOM.$('.dialog-input'));
+
+		// Get the bootstrap params and perform the bootstrap
+		inputTargetDatabaseContainer.style.width = '100%';
+
+		this._targetDatabaseInputBox = this._register(new InputBox(inputTargetDatabaseContainer, this._contextViewService, {
+			ariaLabel: LocalizedStrings.TARGETDATABASE,
+			placeholder: localize('targetDatabaseTooltip', "Please enter target database name"),
+			validationOptions: {
+				validation: (value: string) => this.viewModel.databases.includes(value) ? ({ type: MessageType.ERROR, content: localize('restoreDialog.targetDatabaseAlreadyExists', "Target database already exists") }) : null
+			},
+		}));
+
+		const restoreToLabel = localize('restoreTo', "Restore to");
+		const destinationRestoreToAriaOptions = {
+			ariaLabel: restoreToLabel
+		};
+		this._destinationRestoreToContainer = DOM.append(destinationElement, DOM.$('.dialog-input-section'));
+		DOM.append(this._destinationRestoreToContainer, DOM.$('.dialog-label')).innerText = restoreToLabel;
+		this._destinationRestoreToInputBox = this._register(new InputBox(DOM.append(this._destinationRestoreToContainer, DOM.$('.dialog-input')), this._contextViewService, mixin(destinationRestoreToAriaOptions, null)));
 
 		// Restore plan section
 		const restorePlanElement = DOM.$('.restore-plan-section.new-section');
@@ -243,8 +308,8 @@ export class RestoreDialog extends Modal {
 		this._restorePlanTableContainer = DOM.append(restorePlanElement, DOM.$('.dialog-input-section.restore-list'));
 		DOM.hide(this._restorePlanTableContainer);
 		this._restorePlanData = new TableDataView<Slick.SlickData>();
-		this._restorePlanTable = new Table<Slick.SlickData>(this._restorePlanTableContainer,
-			{ dataProvider: this._restorePlanData, columns: this._restorePlanColumn }, { enableColumnReorder: false });
+		this._restorePlanTable = this._register(new Table<Slick.SlickData>(this._restorePlanTableContainer,
+			{ dataProvider: this._restorePlanData, columns: this._restorePlanColumn }, { enableColumnReorder: false }));
 		this._restorePlanTable.setTableTitle(localize('restorePlan', "Restore plan"));
 		this._restorePlanTable.setSelectionModel(new RowSelectionModel({ selectActiveRow: false }));
 		this._restorePlanTable.onSelectedRowsChanged((e, data) => this.backupFileCheckboxChanged(e, data));
@@ -294,8 +359,8 @@ export class RestoreDialog extends Modal {
 			field: 'restoreAs'
 		}];
 		this._fileListData = new TableDataView<FileListElement>();
-		this._fileListTable = new Table<FileListElement>(this._fileListTableContainer,
-			{ dataProvider: this._fileListData, columns }, { enableColumnReorder: false });
+		this._fileListTable = this._register(new Table<FileListElement>(this._fileListTableContainer,
+			{ dataProvider: this._fileListData, columns }, { enableColumnReorder: false }));
 		this._fileListTable.setSelectionModel(new RowSelectionModel());
 
 		// Content in options tab
@@ -327,7 +392,7 @@ export class RestoreDialog extends Modal {
 		container.appendChild(restorePanel);
 		this._panel = new TabbedPanel(restorePanel);
 		attachTabbedPanelStyler(this._panel, this._themeService);
-		this._generalTabId = this._panel.pushTab({
+		this._generalTab = {
 			identifier: 'general',
 			title: localize('generalTitle', "General"),
 			view: {
@@ -336,9 +401,10 @@ export class RestoreDialog extends Modal {
 				},
 				layout: () => { }
 			}
-		});
+		};
+		this._panel.pushTab(this._generalTab);
 
-		const fileTab = this._panel.pushTab({
+		this._fileTab = {
 			identifier: 'fileContent',
 			title: localize('filesTitle', "Files"),
 			view: {
@@ -347,9 +413,10 @@ export class RestoreDialog extends Modal {
 					c.appendChild(fileContentElement);
 				}
 			}
-		});
+		};
+		this._panel.pushTab(this._fileTab);
 
-		this._panel.pushTab({
+		this._optionsTab = {
 			identifier: 'options',
 			title: localize('optionsTitle', "Options"),
 			view: {
@@ -358,17 +425,18 @@ export class RestoreDialog extends Modal {
 					c.appendChild(optionsContentElement);
 				}
 			}
-		});
+		};
+		this._panel.pushTab(this._optionsTab);
 
-		this._panel.onTabChange(c => {
-			if (c === fileTab && this._fileListTable) {
+		this._register(this._panel.onTabChange(c => {
+			if (c === this._fileTab.identifier && this._fileListTable) {
 				this._fileListTable.resizeCanvas();
 				this._fileListTable.autosizeColumns();
 			}
-			if (c !== this._generalTabId) {
+			if (c !== this._generalTab.identifier) {
 				this._restoreFromSelectBox!.hideMessage();
 			}
-		});
+		}));
 
 		this._restorePlanTable.grid.onKeyDown.subscribe(e => {
 			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
@@ -399,7 +467,7 @@ export class RestoreDialog extends Modal {
 		});
 	}
 
-	private focusOnFirstEnabledFooterButton() {
+	private focusOnFirstEnabledFooterButton(): void {
 		if (this._scriptButton!.enabled) {
 			this._scriptButton!.focus();
 		} else if (this._restoreButton!.enabled) {
@@ -418,9 +486,10 @@ export class RestoreDialog extends Modal {
 
 	public set databaseListOptions(vals: string[]) {
 		this._databaseDropdown!.values = vals;
+		this.viewModel.databases = vals;
 	}
 
-	private createLabelElement(container: HTMLElement, content: string, isHeader?: boolean) {
+	private createLabelElement(container: HTMLElement, content: string, isHeader?: boolean): void {
 		let className = 'dialog-label';
 		if (isHeader) {
 			className += ' header';
@@ -454,17 +523,17 @@ export class RestoreDialog extends Modal {
 		this._optionsMap[optionName] = propertyWidget!;
 	}
 
-	private onBooleanOptionChecked(optionName: string) {
+	private onBooleanOptionChecked(optionName: string): void {
 		this.viewModel.setOptionValue(optionName, (<Checkbox>this._optionsMap[optionName]).checked);
 		this.validateRestore(false);
 	}
 
-	private onCatagoryOptionChanged(optionName: string) {
+	private onCatagoryOptionChanged(optionName: string): void {
 		this.viewModel.setOptionValue(optionName, (<SelectBox>this._optionsMap[optionName]).value);
 		this.validateRestore(false);
 	}
 
-	private onStringOptionChanged(optionName: string, params: OnLoseFocusParams) {
+	private onStringOptionChanged(optionName: string, params: OnLoseFocusParams): void {
 		if (params.hasChanged && params.value) {
 			this.viewModel.setOptionValue(optionName, params.value);
 			this.validateRestore(false);
@@ -472,12 +541,12 @@ export class RestoreDialog extends Modal {
 	}
 
 	private createCheckBoxHelper(container: HTMLElement, label: string, isChecked: boolean, onCheck: (viaKeyboard: boolean) => void): Checkbox {
-		const checkbox = new Checkbox(DOM.append(container, DOM.$('.dialog-input-section')), {
+		const checkbox = this._register(new Checkbox(DOM.append(container, DOM.$('.dialog-input-section')), {
 			label: label,
 			checked: isChecked,
 			onChange: onCheck,
 			ariaLabel: label
-		});
+		}));
 		this._register(attachCheckboxStyler(checkbox, this._themeService));
 		return checkbox;
 	}
@@ -486,7 +555,7 @@ export class RestoreDialog extends Modal {
 		const inputContainer = DOM.append(container, DOM.$('.dialog-input-section'));
 		DOM.append(inputContainer, DOM.$('.dialog-label')).innerText = label;
 		const inputCellContainer = DOM.append(inputContainer, DOM.$('.dialog-input'));
-		const selectBox = new SelectBox(options, selectedOption, this._contextViewService, inputCellContainer, { ariaLabel: label });
+		const selectBox = this._register(new SelectBox(options, selectedOption, this._contextViewService, inputCellContainer, { ariaLabel: label }));
 		selectBox.render(inputCellContainer);
 		return selectBox;
 	}
@@ -497,7 +566,7 @@ export class RestoreDialog extends Modal {
 		};
 		const inputContainer = DOM.append(container, DOM.$('.dialog-input-section'));
 		DOM.append(inputContainer, DOM.$('.dialog-label')).innerText = label;
-		return new InputBox(DOM.append(inputContainer, DOM.$('.dialog-input')), this._contextViewService, mixin(ariaOptions, options));
+		return this._register(new InputBox(DOM.append(inputContainer, DOM.$('.dialog-input')), this._contextViewService, mixin(ariaOptions, options)));
 	}
 
 	private clearRestorePlanDataTable(): void {
@@ -521,7 +590,7 @@ export class RestoreDialog extends Modal {
 		this._scriptButton!.enabled = false;
 	}
 
-	public onValidateResponseFail(errorMessage: string) {
+	public onValidateResponseFail(errorMessage: string): void {
 		this.resetRestoreContent();
 		if (this.isRestoreFromDatabaseSelected) {
 			this._sourceDatabaseSelectBox!.showMessage({ type: MessageType.ERROR, content: errorMessage });
@@ -531,16 +600,22 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	public removeErrorMessage() {
+	public removeErrorMessage(): void {
 		this._filePathInputBox!.hideMessage();
 		this._sourceDatabaseSelectBox!.hideMessage();
 		this._destinationRestoreToInputBox!.hideMessage();
 	}
 
-	public enableRestoreButton(enabled: boolean) {
+	public enableRestoreButton(enabled: boolean): void {
 		this.spinner = false;
-		this._restoreButton!.enabled = enabled;
-		this._scriptButton!.enabled = enabled;
+		if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance && this.viewModel.databases.includes(this._targetDatabaseInputBox.value)) {
+			this._restoreButton!.enabled = false;
+			this._scriptButton!.enabled = false;
+		}
+		else {
+			this._restoreButton!.enabled = enabled;
+			this._scriptButton!.enabled = enabled;
+		}
 	}
 
 	public showError(errorMessage: string): void {
@@ -549,9 +624,19 @@ export class RestoreDialog extends Modal {
 
 	private backupFileCheckboxChanged(e: Slick.EventData, data: Slick.OnSelectedRowsChangedEventArgs<Slick.SlickData>): void {
 		let selectedFiles: string[] = [];
+		let selectedDatabases: string[] = [];
 		data.grid.getSelectedRows().forEach(row => {
 			selectedFiles.push(data.grid.getDataItem(row)['Id']);
+			selectedDatabases.push(data.grid.getDataItem(row)['Database']);
 		});
+
+		if (selectedDatabases.length !== 0) {
+			if (this._targetDatabaseInputBox.value === '') {
+				this._targetDatabaseInputBox.value = selectedDatabases[0];
+			}
+		} else {
+			this._targetDatabaseInputBox.value = '';
+		}
 
 		let isSame = false;
 		if (this.viewModel.selectedBackupSets && this.viewModel.selectedBackupSets.length === selectedFiles.length) {
@@ -566,24 +651,45 @@ export class RestoreDialog extends Modal {
 
 	private registerListeners(): void {
 		// Theme styler
+		this._register(attachInputBoxStyler(this._targetDatabaseInputBox, this._themeService));
+		this._register(attachInputBoxStyler(this._urlInputBox!, this._themeService));
 		this._register(attachInputBoxStyler(this._filePathInputBox!, this._themeService));
 		this._register(attachInputBoxStyler(this._destinationRestoreToInputBox!, this._themeService));
 		this._register(attachSelectBoxStyler(this._restoreFromSelectBox!, this._themeService));
 		this._register(attachSelectBoxStyler(this._sourceDatabaseSelectBox!, this._themeService));
 		this._register(attachButtonStyler(this._browseFileButton!, this._themeService));
+		this._register(attachButtonStyler(this._browseUrlButton!, this._themeService));
 		this._register(attachButtonStyler(this._scriptButton!, this._themeService));
 		this._register(attachButtonStyler(this._restoreButton!, this._themeService));
 		this._register(attachButtonStyler(this._closeButton!, this._themeService));
 		this._register(attachTableStyler(this._fileListTable!, this._themeService));
 		this._register(attachTableStyler(this._restorePlanTable!, this._themeService));
 
+		this._register(this._targetDatabaseInputBox.onDidChange(dbName => {
+			if (!this.viewModel.databases.includes(dbName)) {
+				if (this.viewModel.targetDatabaseName !== dbName) {
+					this.viewModel.targetDatabaseName = dbName;
+					this.validateRestore();
+				}
+			} else {
+				if (this.viewModel.targetDatabaseName !== dbName) {
+					this.viewModel.targetDatabaseName = dbName;
+					this.enableRestoreButton(false);
+				}
+			}
+		}));
+
 		this._register(this._filePathInputBox!.onLoseFocus(params => {
 			this.onFilePathLoseFocus(params);
 		}));
 
-		this._browseFileButton!.onDidClick(() => {
+		this._register(this._browseFileButton!.onDidClick(() => {
 			this.onFileBrowserRequested();
-		});
+		}));
+
+		this._register(this._browseUrlButton!.onDidClick(() => {
+			this.onUrlBrowserRequested();
+		}));
 
 		this._register(this._sourceDatabaseSelectBox!.onDidSelect(selectedDatabase => {
 			this.onSourceDatabaseChanged(selectedDatabase.selected);
@@ -591,6 +697,10 @@ export class RestoreDialog extends Modal {
 
 		this._register(this._restoreFromSelectBox!.onDidSelect(selectedRestoreFrom => {
 			this.onRestoreFromChanged(selectedRestoreFrom.selected);
+		}));
+
+		this._register(this._urlInputBox!.onDidChange(url => {
+			this.onUrlPathChanged(url);
 		}));
 	}
 
@@ -603,7 +713,18 @@ export class RestoreDialog extends Modal {
 			filepath => this.onFileBrowsed(filepath));
 	}
 
-	private onFileBrowsed(filepath: string) {
+	private onUrlBrowserRequested(): void {
+		this.backupRestoreUrlBrowserDialogService.showDialog(this._ownerUri!,
+			this.viewModel.defaultBackupFolder!,
+			fileFiltersSet,
+			FileValidationConstants.restore,
+			true,
+			true,
+			'')
+			.then(url => this._urlInputBox!.value = url);
+	}
+
+	private onFileBrowsed(filepath: string): void {
 		const oldFilePath = this._filePathInputBox!.value;
 		if (strings.isFalsyOrWhitespace(this._filePathInputBox!.value)) {
 			this._filePathInputBox!.value = filepath;
@@ -616,7 +737,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private onFilePathLoseFocus(params: OnLoseFocusParams) {
+	private onFilePathLoseFocus(params: OnLoseFocusParams): void {
 		if (params.value) {
 			if (params.hasChanged || (this.viewModel.filePath !== params.value)) {
 				this.onFilePathChanged(params.value);
@@ -624,14 +745,26 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private onFilePathChanged(filePath: string) {
+	private onFilePathChanged(filePath: string): void {
 		this.viewModel.filePath = filePath;
 		this.viewModel.selectedBackupSets = undefined;
 		this.validateRestore(true);
 	}
 
-	private onSourceDatabaseChanged(selectedDatabase: string) {
+	private onUrlPathChanged(urlPath: string): void {
+		this.viewModel.filePath = urlPath;
+		this.viewModel.selectedBackupSets = undefined;
+		this.validateRestore(true);
+	}
+
+	private onSourceDatabaseChanged(selectedDatabase: string): void {
 		// This check is to avoid any unnecessary even firing (to remove flickering)
+		if (this.viewModel.sourceDatabaseName === undefined) {
+			this.viewModel.sourceDatabaseName = null;
+		}
+		if (selectedDatabase === undefined) {
+			selectedDatabase = null;
+		}
 		if (this.viewModel.sourceDatabaseName !== selectedDatabase) {
 			this.viewModel.sourceDatabaseName = selectedDatabase;
 			this.viewModel.selectedBackupSets = undefined;
@@ -639,14 +772,52 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private onRestoreFromChanged(selectedRestoreFrom: string) {
+	private onRestoreFromChanged(selectedRestoreFrom: string): void {
 		this.removeErrorMessage();
 		if (selectedRestoreFrom === this._backupFileTitle) {
+			this._sourceDatabaseSelectBox.enable();
 			this.viewModel.onRestoreFromChanged(true);
+			DOM.show(this._destinationRestoreToContainer!);
+			DOM.show(this._sourceDatabasesElement!);
 			DOM.show(this._restoreFromBackupFileElement!);
-		} else {
+			DOM.hide(this._restoreFromUrlElement);
+			DOM.show(this._targetDatabaseElement!);
+			DOM.hide(this._targetDatabaseInputElement!);
+			if (!this._panel.contains(this._fileTab.identifier)) {
+				this._panel.pushTab(this._fileTab);
+			}
+			if (!this._panel.contains(this._optionsTab.identifier)) {
+				this._panel.pushTab(this._optionsTab);
+			}
+			this.viewModel.deviceType = MediaDeviceType.File;
+		} else if (selectedRestoreFrom === this._databaseTitle) {
+			this._sourceDatabaseSelectBox.enable();
 			this.viewModel.onRestoreFromChanged(false);
+			DOM.show(this._destinationRestoreToContainer!);
+			DOM.show(this._sourceDatabasesElement!);
 			DOM.hide(this._restoreFromBackupFileElement!);
+			DOM.hide(this._restoreFromUrlElement);
+			DOM.show(this._targetDatabaseElement!);
+			DOM.hide(this._targetDatabaseInputElement!);
+			if (!this._panel.contains(this._fileTab.identifier)) {
+				this._panel.pushTab(this._fileTab);
+			}
+			if (!this._panel.contains(this._optionsTab.identifier)) {
+				this._panel.pushTab(this._optionsTab);
+			}
+			this.viewModel.deviceType = MediaDeviceType.File;
+		} else if (selectedRestoreFrom === this._urlTitle) {
+			this.viewModel.onRestoreFromChanged(true);
+			DOM.hide(this._destinationRestoreToContainer!);
+			DOM.show(this._sourceDatabasesElement!);
+			DOM.hide(this._restoreFromBackupFileElement!);
+			DOM.show(this._restoreFromUrlElement!);
+			DOM.hide(this._targetDatabaseElement!);
+			DOM.show(this._targetDatabaseInputElement!);
+			this._panel.removeTab(this._fileTab.identifier);
+			this._panel.removeTab(this._optionsTab.identifier);
+			this._databaseDropdown.value = '';
+			this.viewModel.deviceType = MediaDeviceType.Url;
 		}
 		this.resetRestoreContent();
 	}
@@ -669,26 +840,26 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	public hideError() {
+	public hideError(): void {
 		this.setError('');
 	}
 
 	/* Overwrite esapce key behavior */
-	protected override onClose() {
+	protected override onClose(): void {
 		this.cancel();
 	}
 
 	/* Overwrite enter key behavior */
-	protected override onAccept() {
+	protected override onAccept(): void {
 		this.restore(false);
 	}
 
-	public cancel() {
+	public cancel(): void {
 		this._onCancel.fire();
 		this.close('cancel');
 	}
 
-	public close(hideReason: HideReason = 'close') {
+	public close(hideReason: HideReason = 'close'): void {
 		this.resetDialog();
 		this.hide(hideReason);
 		this._onCloseEvent.fire();
@@ -696,19 +867,38 @@ export class RestoreDialog extends Modal {
 
 	private resetDialog(): void {
 		this.hideError();
-		this._restoreFromSelectBox!.selectWithOptionName(this._databaseTitle);
-		this.onRestoreFromChanged(this._databaseTitle);
+		if (this._engineEdition !== DatabaseEngineEdition.SqlManagedInstance) {
+			this._restoreFromSelectBox!.selectWithOptionName(this._databaseTitle);
+			this.onRestoreFromChanged(this._databaseTitle);
+		}
 		this._sourceDatabaseSelectBox!.select(0);
-		this._panel!.showTab(this._generalTabId!);
+		this._panel!.showTab(this._generalTab.identifier!);
 		this._isBackupFileCheckboxChanged = false;
 		this.removeErrorMessage();
 		this.resetRestoreContent();
 	}
 
-	public open(serverName: string, ownerUri: string) {
+	public open(serverName: string, ownerUri: string, engineEdition: DatabaseEngineEdition): void {
+		this._engineEdition = engineEdition;
 		this.title = this._restoreTitle + ' - ' + serverName;
 		this._ownerUri = ownerUri;
+		this._urlInputBox.value = '';
+		this._targetDatabaseInputBox.value = '';
+		let title;
+		if (this._engineEdition === DatabaseEngineEdition.SqlManagedInstance) {
+			this._restoreFromSelectBox.setOptions([this._urlTitle]);
+			title = this._urlTitle;
+			// to fetch databases
+			this._onDatabaseListFocused.fire();
+			this._restoreFromSelectBox.disable();
+		} else {
+			this._restoreFromSelectBox.setOptions([this._databaseTitle, this._backupFileTitle]);
+			title = this._databaseTitle;
+			this._restoreFromSelectBox.enable();
+		}
 
+		this._restoreFromSelectBox.select(0);
+		this.onRestoreFromChanged(title);
 		this.show();
 		this._restoreFromSelectBox!.focus();
 	}
@@ -726,18 +916,18 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private updateLastBackupTaken(value: string) {
+	private updateLastBackupTaken(value: string): void {
 		this._destinationRestoreToInputBox!.value = value;
 	}
 
-	private updateFilePath(value: string) {
+	private updateFilePath(value: string): void {
 		this._filePathInputBox!.value = value;
 		if (!value) {
 			this._filePathInputBox!.hideMessage();
 		}
 	}
 
-	private updateSourceDatabaseName(databaseNamesParam: SouceDatabaseNamesParam) {
+	private updateSourceDatabaseName(databaseNamesParam: SouceDatabaseNamesParam): void {
 		// Always adding an empty name as the first item so if the selected db name is not in the list,
 		// The empty string would be selected and not the first db in the list
 		let dbNames: string[] = [];
@@ -755,7 +945,7 @@ export class RestoreDialog extends Modal {
 		this._databaseDropdown!.value = value;
 	}
 
-	private updateRestoreOption(optionParam: RestoreOptionParam) {
+	private updateRestoreOption(optionParam: RestoreOptionParam): void {
 		const widget = this._optionsMap[optionParam.optionName];
 		if (widget) {
 			if (widget instanceof Checkbox) {
@@ -771,7 +961,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private enableDisableWiget(widget: Checkbox | SelectBox | InputBox, isReadOnly: boolean) {
+	private enableDisableWiget(widget: Checkbox | SelectBox | InputBox, isReadOnly: boolean): void {
 		if (isReadOnly) {
 			widget.disable();
 		} else {
@@ -779,7 +969,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private updateRestoreDatabaseFiles(dbFiles: azdata.RestoreDatabaseFileInfo[]) {
+	private updateRestoreDatabaseFiles(dbFiles: azdata.RestoreDatabaseFileInfo[]): void {
 		this.clearFileListTable();
 		if (dbFiles && dbFiles.length > 0) {
 			const data = [];
@@ -801,7 +991,7 @@ export class RestoreDialog extends Modal {
 		}
 	}
 
-	private updateBackupSetsToRestore(backupSetsToRestore: azdata.DatabaseFileInfo[]) {
+	private updateBackupSetsToRestore(backupSetsToRestore: azdata.DatabaseFileInfo[]): void {
 		if (this._isBackupFileCheckboxChanged) {
 			const selectedRow = [];
 			for (let i = 0; i < backupSetsToRestore.length; i++) {
