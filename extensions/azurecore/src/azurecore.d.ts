@@ -130,9 +130,14 @@ declare module 'azurecore' {
 		azureLogAnalyticsResource?: Resource;
 
 		/**
-		 * Information that describes the Azure Storage resourceI
+		 * Information that describes the Azure Storage resource
 		 */
 		azureStorageResource?: Resource;
+
+		/**
+		 * Information that describes the Power BI resource
+		 */
+		powerBiResource?: Resource;
 
 		/**
 		 * A list of tenant IDs to authenticate against. If defined, then these IDs will be used
