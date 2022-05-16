@@ -835,6 +835,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param connection The connection profile that is to be checked.
 	 */
 	private isPowerBiConnection(connection: interfaces.IConnectionProfile): boolean {
+		if (!connection || !connection.serverName || connection.serverName.length === 0) {
+			return false;
+		}
 		let powerBiDomains = [
 			'pbidedicated.windows.net',
 			'pbidedicated.cloudapi.de',
@@ -842,7 +845,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			'pbidedicated.chinacloudapi.cn'
 		];
 		let serverName = connection.serverName.toLowerCase();
-		return serverName && !!powerBiDomains.find(d => serverName.indexOf(d) >= 0);
+		return !!powerBiDomains.find(d => serverName.indexOf(d) >= 0);
 	}
 
 	/**
