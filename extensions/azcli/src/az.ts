@@ -338,7 +338,7 @@ export class AzTool implements azExt.IAzApi {
 				// It must be indirect mode
 				return {
 					stdout: {
-						name: (<azExt.SqlMiShowResultIndirect>stdout).metadata.name,
+						name: (<azExt.SqlMiShowResultIndirect>stdout).metadata?.name,
 						spec: (<azExt.SqlMiShowResultIndirect>stdout).spec,
 						status: (<azExt.SqlMiShowResultIndirect>stdout).status
 					},
