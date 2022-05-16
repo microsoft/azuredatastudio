@@ -45,18 +45,6 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@src/sql/workbench/contrib/connection/browser/connection.contribution.connection.parseClipboardForConnectionString" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) Description" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Попытка проанализировать содержимое буфера обмена, когда открыто диалоговое окно подключения или выполняется вставка.]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
       <Item ItemId=";@src/sql/workbench/contrib/connection/browser/connection.contribution.connection.showUnsupportedServerVersionWarni" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ng" ItemType="0" PsrId="308" Leaf="true">
@@ -1107,7 +1095,7 @@
           <Str Cat="Text">
             <Val><![CDATA[Backup file]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Файл резервной копии]]></Val>
+              <Val><![CDATA[Резервная копия]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1131,7 +1119,7 @@
           <Str Cat="Text">
             <Val><![CDATA[Link account]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Свяжите учетную запись]]></Val>
+              <Val><![CDATA[Связать учетную запись]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1142,12 +1130,18 @@
         <Item ItemId=";(...) ccessSignature" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Shared access signature generated]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Подписанный URL-адрес создан]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) ccessSignatureButton" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Create Credentials]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Создать учетные данные]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -3450,6 +3444,9 @@
       <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.moveRowText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Move Row]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Переместить строку]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3543,6 +3540,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/browser/designer/designerIssuesTabPanelView.designer.moreInfoLink" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[More information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Дополнительные сведения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/browser/designer/designerPropertiesPane.tableDesigner.propertiesPaneTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Properties]]></Val>
@@ -3582,12 +3588,18 @@
       <Item ItemId=";src/sql/workbench/browser/designer/tableActions.designer.insertAfterSelectedColumn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Insert after]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Вставить после]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/browser/designer/tableActions.designer.insertBeforeSelectedRow" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Insert before]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Вставить до]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3603,6 +3615,9 @@
       <Item ItemId=";src/sql/workbench/browser/designer/tableActions.designer.moveRowDownButtonAriaLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Move selected row down one position]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Переместить выбранную строку вниз на одну позицию]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3618,6 +3633,9 @@
       <Item ItemId=";src/sql/workbench/browser/designer/tableActions.designer.moveRowUpButtonAriaLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Move selected row up one position]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Переместить выбранную строку вверх на одну позицию]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4626,6 +4644,9 @@
       <Item ItemId=";src/sql/workbench/contrib/backup/browser/backup.component.backup.backupUrl" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Backup URL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Резервный URL-адрес]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4821,6 +4842,9 @@
       <Item ItemId=";src/sql/workbench/contrib/backup/browser/backup.component.backup.toUrl" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save backup to URL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Сохранить резервную копию в URL-адрес]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5694,6 +5718,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/connection/common/connectionProviderExtension.schema.enableConnectionStringOption" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether the provider supports connection string as an input option. The default value is false.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Указывает, поддерживает ли поставщик услуг строку подключения в качестве параметра подключения. Значение по умолчанию — false.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/connection/common/connectionProviderExtension.schema.iconPath" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Icon path for the server type]]></Val>
@@ -5726,6 +5759,15 @@
           <Val><![CDATA[Common id for the provider]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Общий идентификатор поставщика]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/connection/common/connectionProviderExtension.schema.useConnectionStringAsDefaultOption" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether the connection provider uses connection string as the default option to connect. The default value is false.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Указывает, использует ли поставщик услуг подключения строку подключения в качестве параметра подключения по умолчанию. Значение по умолчанию — false.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14073,6 +14115,9 @@
       <Item ItemId=";src/sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialog.backupRestoreUrlBrowserDialog.tenant" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure AD Tenant]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Клиент Azure AD]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -14097,6 +14142,9 @@
       <Item ItemId=";src/sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialogService.filebrowser.selectBlob" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select a blob]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выбрать BLOB-объект]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -14556,11 +14604,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionWidget.connectionWidget.fieldWillBeTrimmed" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionWidget.connectionWidget.ConnectionStringError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} will be trimmed.]]></Val>
+          <Val><![CDATA[Failed to parse the connection string.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} будет обрезан.]]></Val>
+            <Val><![CDATA[Не удалось проанализировать строку подключения.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionWidget.connectionWidget.Error" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionWidget.connectionWidget.connectionString" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Connection string]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Строка подключения]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -16524,6 +16590,9 @@
       <Item ItemId=";src/sql/workbench/services/restore/browser/restoreDialog.backupUrl" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Backup URL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Резервный URL-адрес]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -16548,6 +16617,9 @@
       <Item ItemId=";src/sql/workbench/services/restore/browser/restoreDialog.enterBackupUrl" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please enter URL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Укажите URL-адрес]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -16599,6 +16671,9 @@
       <Item ItemId=";src/sql/workbench/services/restore/browser/restoreDialog.missingBackupUrlError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Backup url is required.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Необходимо указать резервный URL-адрес.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -16722,6 +16797,9 @@
       <Item ItemId=";src/sql/workbench/services/restore/browser/restoreDialog.restoreDialog.targetDatabaseAlreadyExists" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target database already exists]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Целевая база данных уже существует]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -16809,6 +16887,9 @@
       <Item ItemId=";src/sql/workbench/services/restore/browser/restoreDialog.targetDatabaseTooltip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please enter target database name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Введите имя целевой базы данных]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
