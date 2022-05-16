@@ -817,7 +817,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		// default to SQL if there are no provides or registered resources
 		let provider = this._providers.get(connection.providerName);
 		if (!provider || !provider.properties || !provider.properties.azureResource) {
-			this._logService.info('Connection providers incorrectly registered. Defaulting to SQL Azure resource,');
+			this._logService.warn('Connection providers incorrectly registered. Defaulting to SQL Azure resource,');
 			return AzureResource.Sql;
 		}
 
@@ -842,12 +842,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			'pbidedicated.chinacloudapi.cn'
 		];
 		let serverName = connection.serverName.toLowerCase();
-		for (let domainIdx in powerBiDomains) {
-			if (serverName.indexOf(powerBiDomains[domainIdx]) >= 0) {
-				return true;
-			}
-		}
-		return false;
+		return serverName && !!powerBiDomains.find(d => serverName.indexOf(d) >= 0);
 	}
 
 	/**
