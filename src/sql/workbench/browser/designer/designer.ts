@@ -983,7 +983,6 @@ export class Designer extends Disposable implements IThemable {
 				table.onBlur((e) => {
 					currentTableActions.forEach(a => a.updateState());
 					table.grid.setSelectedRows([]);
-					table.grid.resetActiveCell();
 				});
 				component = table;
 				break;

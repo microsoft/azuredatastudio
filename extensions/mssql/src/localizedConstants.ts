@@ -55,3 +55,10 @@ export function sparkJobSubmissionGetApplicationIdFailed(err: string): string { 
 export function sparkJobSubmissionLocalFileNotExisted(path: string): string { return localize('sparkJobSubmission.LocalFileNotExisted', "Local file {0} does not existed. ", path); }
 export const sparkJobSubmissionNoSqlBigDataClusterFound = localize('sparkJobSubmission.NoSqlBigDataClusterFound', "No SQL Server Big Data Cluster found.");
 export function sparkConnectionRequired(name: string): string { return localize('sparkConnectionRequired', "Please connect to the Spark cluster before View {0} History.", name); }
+
+
+export function failedToFindTenants(tenantId: string, accountName: string): string { return localize('mssql.failedToFindTenants', "Failed to find tenant '{0}' in account '{1}' when refreshing security token", tenantId, accountName); }
+export function tokenRefreshFailed(name: string): string { return localize('mssql.tokenRefreshFailed', "{0} AAD token refresh failed, please reconnect to enable {0}", name); }
+export const tokenRefreshFailedNoSecurityToken = localize('mssql.tokenRefreshFailedNoSecurityToken', "Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected");
+export function failedToFindAccount(accountName: string) { return localize('mssql.failedToFindAccount', "Failed to find azure account {0} when executing token refresh", accountName); }
+
