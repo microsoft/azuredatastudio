@@ -15,8 +15,9 @@ import { azureResource } from 'azurecore';
 import * as azdata from 'azdata';
 
 export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
-	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel', "CosmosDB for Mongo");
+	private static readonly COSMOSDG_MONGO_PROVIDER_ID = 'COSMOSDB_MONGO';
+	private static readonly CONTAINER_ID = 'azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainer';
+	private static readonly CONTAINER_LABEL = localize('azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel', "CosmosDB for Mongo");
 
 	public constructor(
 		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
@@ -45,7 +46,7 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: 'COSMOSDB_MONGO',
+				providerName: CosmosDbMongoTreeDataProvider.COSMOSDG_MONGO_PROVIDER_ID,
 				saveProfile: false,
 				options: {},
 				azureAccount: account.key.accountId,
@@ -53,7 +54,7 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 				azureResourceId: databaseServer.id,
 				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
-			childProvider: 'COSMOSDB_MONGO',
+			childProvider: CosmosDbMongoTreeDataProvider.COSMOSDG_MONGO_PROVIDER_ID,
 			type: azdata.ExtensionNodeType.Server
 		};
 	}
@@ -64,8 +65,8 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 			subscription: undefined,
 			tenantId: undefined,
 			treeItem: {
-				id: CosmosDbMongoTreeDataProvider.containerId,
-				label: CosmosDbMongoTreeDataProvider.containerLabel,
+				id: CosmosDbMongoTreeDataProvider.CONTAINER_ID,
+				label: CosmosDbMongoTreeDataProvider.CONTAINER_LABEL,
 				iconPath: {
 					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
 					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
