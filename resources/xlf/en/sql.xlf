@@ -5086,8 +5086,20 @@ Error: {1}</source>
     <trans-unit id="connectionDialog.connect">
       <source xml:lang="en">Connect</source>
     </trans-unit>
+    <trans-unit id="connectionDialog.connectionProviderNotSupported">
+      <source xml:lang="en">The extension that supports provider type '{0}' is not currently installed. Please install it and try again.</source>
+    </trans-unit>
+    <trans-unit id="connectionDialog.extensionNotInstalled">
+      <source xml:lang="en">The extension '{0}' is required in order to connect to this resource. Please install it and try again.</source>
+    </trans-unit>
     <trans-unit id="connectionDialog.recentConnections">
       <source xml:lang="en">Recent Connections</source>
+    </trans-unit>
+    <trans-unit id="connectionDialog.viewExtension">
+      <source xml:lang="en">View Extension</source>
+    </trans-unit>
+    <trans-unit id="connectionDialog.viewExtensions">
+      <source xml:lang="en">View Extensions</source>
     </trans-unit>
     <trans-unit id="noRecentConnections">
       <source xml:lang="en">No recent connection</source>
