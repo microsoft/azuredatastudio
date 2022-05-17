@@ -25,8 +25,8 @@ export interface ClickableColumnOptions {
 }
 
 export abstract class BaseClickableColumn<T extends Slick.SlickData> implements Slick.Plugin<T>, TableColumn<T> {
-	private _handler = new Slick.EventHandler();
-	private _grid!: Slick.Grid<T>;
+	protected _handler = new Slick.EventHandler();
+	protected _grid!: Slick.Grid<T>;
 	private _onClick = new Emitter<TableCellClickEventArgs<T>>();
 	public onClick = this._onClick.event;
 

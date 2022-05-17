@@ -73,13 +73,13 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 		if (!selectedBinding) {
 			return;
 		}
-		propertyBag.bindingType = selectedBinding.type;
+		propertyBag.bindingType = selectedBinding;
 		TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getBindingType)
 			.withAdditionalProperties(propertyBag).send();
 
 		// 3. ask for object name for the binding
 		quickPickStep = 'getObjectName';
-		const objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding.type);
+		const objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding);
 
 		if (!objectName) {
 			return;
@@ -106,7 +106,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 		// 5. insert binding
 		try {
 			quickPickStep = 'insertBinding';
-			const result = await addSqlBinding(selectedBinding.type, uri.fsPath, azureFunctionName, objectName, connectionStringSettingName);
+			const result = await addSqlBinding(selectedBinding, uri.fsPath, azureFunctionName, objectName, connectionStringSettingName);
 
 			if (!result.success) {
 				void vscode.window.showErrorMessage(result.errorMessage);

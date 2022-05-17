@@ -11,6 +11,7 @@ import { Disposable, IDisposable, toDisposable, DisposableStore, dispose } from 
 import { ResourceMap } from 'vs/base/common/map';
 import { IWorkingCopy, IWorkingCopyIdentifier } from 'vs/workbench/services/workingCopy/common/workingCopy';
 import { Schemas } from 'vs/base/common/network'; // {{SQL CARBON EDIT}} @chlafreniere need to block working copies of notebook editors from being tracked
+import { CELL_URI_PATH_PREFIX } from 'sql/workbench/common/constants';
 
 export const IWorkingCopyService = createDecorator<IWorkingCopyService>('workingCopyService');
 
@@ -142,7 +143,7 @@ export class WorkingCopyService extends Disposable implements IWorkingCopyServic
 		}
 
 		// {{SQL CARBON EDIT}} @chlafreniere need to block working copies of notebook editors from being tracked
-		if (workingCopy.resource.path.includes('notebook-editor-') && workingCopy.resource.scheme === Schemas.untitled) {
+		if (workingCopy.resource.path.includes(CELL_URI_PATH_PREFIX) && workingCopy.resource.scheme === Schemas.untitled) {
 			return new DisposableStore();
 		}
 

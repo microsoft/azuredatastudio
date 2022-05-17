@@ -20,7 +20,8 @@ const enum SettingIds {
 	ado = 'ado',
 	ala = 'ala',
 	storage = 'storage',
-	kusto = 'kusto'
+	kusto = 'kusto',
+	powerbi = 'powerbi'
 }
 
 const publicAzureSettings: ProviderSettings = {
@@ -87,6 +88,11 @@ const publicAzureSettings: ProviderSettings = {
 				endpoint: 'https://kusto.kusto.windows.net',
 				azureResourceId: AzureResource.AzureKusto,
 			},
+			powerBiResource: {
+				id: SettingIds.powerbi,
+				endpoint: 'https://analysis.windows.net/powerbi/api',
+				azureResourceId: AzureResource.PowerBi
+			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
@@ -146,6 +152,11 @@ const usGovAzureSettings: ProviderSettings = {
 				endpoint: '',
 				endpointSuffix: '.core.usgovcloudapi.net',
 				azureResourceId: AzureResource.AzureStorage
+			},
+			powerBiResource: {
+				id: SettingIds.powerbi,
+				endpoint: 'https://analysis.windows.net/powerbi/api',
+				azureResourceId: AzureResource.PowerBi
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
@@ -251,6 +262,11 @@ const germanyAzureSettings: ProviderSettings = {
 				endpointSuffix: '.core.cloudapi.de',
 				azureResourceId: AzureResource.AzureStorage
 			},
+			powerBiResource: {
+				id: SettingIds.powerbi,
+				endpoint: 'https://analysis.windows.net/powerbi/api',
+				azureResourceId: AzureResource.PowerBi
+			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
@@ -309,6 +325,11 @@ const chinaAzureSettings: ProviderSettings = {
 				endpoint: '',
 				endpointSuffix: '.core.chinacloudapi.cn',
 				azureResourceId: AzureResource.AzureStorage
+			},
+			powerBiResource: {
+				id: SettingIds.powerbi,
+				endpoint: 'https://analysis.windows.net/powerbi/api',
+				azureResourceId: AzureResource.PowerBi
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [

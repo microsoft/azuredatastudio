@@ -348,7 +348,7 @@
     "@azure/arm-resourcegraph": "^4.0.0",
     "@azure/arm-subscriptions": "^3.0.0",
     "@azure/storage-blob": "^12.6.0",
-    "axios": "^0.21.4",
+    "axios": "^0.27.2",
     "node-fetch": "^2.6.7",
     "qs": "^6.9.1",
     "vscode-nls": "^4.0.0",

@@ -7,14 +7,8 @@
     <trans-unit id="addPackage">
       <source xml:lang="en">Add Package</source>
     </trans-unit>
-    <trans-unit id="addPackageReferenceMessage">
-      <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
-    </trans-unit>
     <trans-unit id="addSqlBinding">
       <source xml:lang="en">Adding SQL Binding to function "{0}"...</source>
-    </trans-unit>
-    <trans-unit id="addSqlBindingPackageError">
-      <source xml:lang="en">Error adding Sql Binding extension package to project</source>
     </trans-unit>
     <trans-unit id="azureFunctionsExtensionNotFound">
       <source xml:lang="en">The Azure Functions extension is required to create a new Azure Function with SQL binding but is not installed, install it now?</source>
@@ -23,7 +17,7 @@
       <source xml:lang="en">Azure Functions extension must be installed in order to use this feature.</source>
     </trans-unit>
     <trans-unit id="azureFunctionsProjectMustBeOpened">
-      <source xml:lang="en">A C# Azure Functions project must be present in order to create a new Azure Function for this table.</source>
+      <source xml:lang="en">A C# Azure Functions project must be present in order to create a new Azure Function with SQL binding.</source>
     </trans-unit>
     <trans-unit id="browseEllipsis">
       <source xml:lang="en">Browse...</source>
@@ -33,6 +27,9 @@
     </trans-unit>
     <trans-unit id="connectionProfile">
       <source xml:lang="en">Select a connection profile</source>
+    </trans-unit>
+    <trans-unit id="connectionProgressTitle">
+      <source xml:lang="en">Testing SQL Server connection...</source>
     </trans-unit>
     <trans-unit id="connectionStringSetting">
       <source xml:lang="en">Connection string setting name</source>
@@ -82,11 +79,11 @@
     <trans-unit id="input">
       <source xml:lang="en">Input</source>
     </trans-unit>
+    <trans-unit id="inputDescription">
+      <source xml:lang="en">Retrieves data from a database</source>
+    </trans-unit>
     <trans-unit id="install">
       <source xml:lang="en">Install</source>
-    </trans-unit>
-    <trans-unit id="jsonParseError">
-      <source xml:lang="en">{0} near line "{1}", column "{2}"</source>
     </trans-unit>
     <trans-unit id="learnMore">
       <source xml:lang="en">Learn more</source>
@@ -96,9 +93,6 @@
     </trans-unit>
     <trans-unit id="nameMustNotBeEmpty">
       <source xml:lang="en">Name must not be empty</source>
-    </trans-unit>
-    <trans-unit id="needConnection">
-      <source xml:lang="en">A connection is required to use Azure Function with SQL Binding</source>
     </trans-unit>
     <trans-unit id="noAzureFunctionsInFile">
       <source xml:lang="en">No Azure functions in the current active file</source>
@@ -115,6 +109,9 @@
     <trans-unit id="output">
       <source xml:lang="en">Output</source>
     </trans-unit>
+    <trans-unit id="outputDescription">
+      <source xml:lang="en">Save data to a database</source>
+    </trans-unit>
     <trans-unit id="save">
       <source xml:lang="en">Save</source>
     </trans-unit>
@@ -129,6 +126,9 @@
     </trans-unit>
     <trans-unit id="selectBindingType">
       <source xml:lang="en">Select type of binding</source>
+    </trans-unit>
+    <trans-unit id="selectBindingTypeToSpecifiedFunction">
+      <source xml:lang="en">Select type of binding for the function '{0}'</source>
     </trans-unit>
     <trans-unit id="selectButton">
       <source xml:lang="en">Select</source>
@@ -160,9 +160,6 @@
     <trans-unit id="timeoutExtensionError">
       <source xml:lang="en">Timed out waiting for extension to install</source>
     </trans-unit>
-    <trans-unit id="timeoutProjectError">
-      <source xml:lang="en">Timed out waiting for project to be created</source>
-    </trans-unit>
     <trans-unit id="unableToSetConnectionString">
       <source xml:lang="en">Failed to set connection string app setting</source>
     </trans-unit>
@@ -190,7 +187,7 @@
       <source xml:lang="en">Add SQL Binding (preview)</source>
     </trans-unit>
     <trans-unit id="sqlBindings.createAzureFunction">
-      <source xml:lang="en">Create Azure Function with SQL binding</source>
+      <source xml:lang="en">Create Azure Function with SQL binding (preview)</source>
     </trans-unit>
 </body></file>
 </xliff>

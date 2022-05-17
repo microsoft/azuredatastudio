@@ -122,7 +122,7 @@ declare module 'azurecore' {
 		/**
 		 * Information that describes the Azure Kusto resource
 		 */
-		 azureKustoResource?: Resource;
+		azureKustoResource?: Resource;
 
 		/**
 		 * Information that describes the Azure Log Analytics resource
@@ -130,9 +130,14 @@ declare module 'azurecore' {
 		azureLogAnalyticsResource?: Resource;
 
 		/**
-		 * Information that describes the Azure Storage resourceI
+		 * Information that describes the Azure Storage resource
 		 */
 		azureStorageResource?: Resource;
+
+		/**
+		 * Information that describes the Power BI resource
+		 */
+		powerBiResource?: Resource;
 
 		/**
 		 * A list of tenant IDs to authenticate against. If defined, then these IDs will be used

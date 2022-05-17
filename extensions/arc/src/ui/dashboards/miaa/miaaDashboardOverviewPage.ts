@@ -337,7 +337,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		if (this._miaaModel.config) {
 			this._instanceProperties.status = this._miaaModel.config.status.state || '-';
 			this._instanceProperties.externalEndpoint = this._miaaModel.config.status.primaryEndpoint || loc.notConfigured;
-			this._instanceProperties.vCores = this._miaaModel.config.spec.scheduling?.default?.resources?.limits?.cpu?.toString() || '';
+			this._instanceProperties.vCores = this._miaaModel.config.spec?.scheduling?.default?.resources?.limits?.cpu?.toString() || '';
 			this._databasesMessage.value = !this._miaaModel.config.status.primaryEndpoint ? loc.noExternalEndpoint : '';
 			if (!this._miaaModel.config.status.primaryEndpoint) {
 				this._databasesContainer.removeItem(this._connectToServerLoading);

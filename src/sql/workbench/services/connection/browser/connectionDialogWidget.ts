@@ -43,7 +43,11 @@ import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/a
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ConnectionBrowseTab } from 'sql/workbench/services/connection/browser/connectionBrowseTab';
 import { ElementSizeObserver } from 'vs/editor/browser/config/elementSizeObserver';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionProviderAndExtensionMap, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
+import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensions/common/extensions';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -124,7 +128,10 @@ export class ConnectionDialogWidget extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@INotificationService private _notificationService: INotificationService,
+		@IViewletService private _viewletService: IViewletService,
+		@ICommandService private _commandService: ICommandService
 	) {
 		super(
 			localize('connection', "Connection"),
@@ -392,10 +399,37 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	private onConnectionClick(element: IConnectionProfile, connect: boolean = false): void {
-		if (connect) {
-			this.connect(element);
-		} else {
-			this._onFillinConnectionInputs.fire(element);
+		const isProviderAvailable = this._capabilitiesService.providers[element.providerName] !== undefined;
+		if (isProviderAvailable) {
+			if (connect) {
+				this.connect(element);
+			} else {
+				this._onFillinConnectionInputs.fire(element);
+			}
+		}
+		else {
+			const extensionId = ConnectionProviderAndExtensionMap.get(element.providerName);
+			if (extensionId) {
+				this._notificationService.prompt(Severity.Error,
+					localize('connectionDialog.extensionNotInstalled', "The extension '{0}' is required in order to connect to this resource. Please install it and try again.", extensionId),
+					[{
+						label: localize('connectionDialog.viewExtension', "View Extension"),
+						run: async () => {
+							this.close();
+							await this._commandService.executeCommand('extension.open', extensionId);
+						}
+					}]);
+			} else {
+				this._notificationService.prompt(Severity.Error,
+					localize('connectionDialog.connectionProviderNotSupported', "The extension that supports provider type '{0}' is not currently installed. Please install it and try again.", element.providerName),
+					[{
+						label: localize('connectionDialog.viewExtensions', "View Extensions"),
+						run: async () => {
+							this.close();
+							await this._viewletService.openViewlet(ExtensionsViewletID, true);
+						}
+					}]);
+			}
 		}
 	}
 

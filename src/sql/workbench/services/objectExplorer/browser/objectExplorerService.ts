@@ -22,6 +22,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/browser/serverTreeActionProvider';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -63,9 +64,9 @@ export interface IObjectExplorerService {
 
 	closeSession(providerId: string, session: azdata.ObjectExplorerSession): Promise<azdata.ObjectExplorerCloseSessionResponse | undefined>;
 
-	expandNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo>;
+	expandNode(providerId: string, session: azdata.ObjectExplorerSession, node: TreeNode): Promise<azdata.ObjectExplorerExpandInfo>;
 
-	refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo | undefined>;
+	refreshNode(providerId: string, session: azdata.ObjectExplorerSession, node: TreeNode): Promise<azdata.ObjectExplorerExpandInfo | undefined>;
 
 	resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]>;
 
@@ -231,7 +232,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 * Gets called when expanded node response is ready
 	 */
 	public onNodeExpanded(expandResponse: NodeExpandInfoWithProviderId) {
-
 		if (expandResponse.errorMessage) {
 			this.logService.error(expandResponse.errorMessage);
 		}
@@ -358,7 +358,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 	}
 
-	public async expandNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo> {
+	public async expandNode(providerId: string, session: azdata.ObjectExplorerSession, node: TreeNode): Promise<azdata.ObjectExplorerExpandInfo> {
 		const provider = this._providers[providerId];
 		if (provider) {
 			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.ObjectExplorerExpand)
@@ -366,7 +366,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					refresh: false,
 					provider: providerId
 				}).send();
-			return await this.expandOrRefreshNode(providerId, session, nodePath);
+			return await this.expandOrRefreshNode(providerId, session, node);
 		} else {
 			throw new Error(`Provider doesn't exist. id: ${providerId}`);
 		}
@@ -383,14 +383,14 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private expandOrRefreshNode(
 		providerId: string,
 		session: azdata.ObjectExplorerSession,
-		nodePath: string,
+		node: TreeNode,
 		refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo> {
 		let self = this;
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
 			if (session.sessionId! in self._sessions && self._sessions[session.sessionId!]) {
 				let newRequest = false;
-				if (!self._sessions[session.sessionId!].nodes[nodePath]) {
-					self._sessions[session.sessionId!].nodes[nodePath] = {
+				if (!self._sessions[session.sessionId!].nodes[node.nodePath]) {
+					self._sessions[session.sessionId!].nodes[node.nodePath] = {
 						expandEmitter: new Emitter<NodeExpandInfoWithProviderId>()
 					};
 					newRequest = true;
@@ -406,20 +406,33 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						allProviders.push(...nodeProviders);
 					}
 
-					self._sessions[session.sessionId!].nodes[nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
+					self._sessions[session.sessionId!].nodes[node.nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
 						if (expandResult && expandResult.providerId) {
 							resultMap.set(expandResult.providerId, expandResult);
+							// If we got an error result back then send error our error event
+							// We only do this for the MSSQL provider
+							if (expandResult.errorMessage && expandResult.providerId === mssqlProviderName) {
+								const errorType = expandResult.errorMessage.indexOf('Object Explorer task didn\'t complete') !== -1 ? 'Timeout' : 'Other';
+								// For folders send the actual name of the folder (since the nodeTypeId isn't useful in this case and the names are controlled by us)
+								const nodeType = node.nodeTypeId === NodeType.Folder ? node.label : node.nodeTypeId;
+								this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.ObjectExplorerExpandError, undefined, errorType)
+									.withAdditionalProperties({
+										nodeType,
+										providerId: expandResult.providerId
+									}).send();
+							}
+
 						} else {
 							this.logService.error('OE provider returns empty result or providerId');
 						}
 
 						// When get all responses from all providers, merge results
 						if (resultMap.size === allProviders.length) {
-							resolve(self.mergeResults(allProviders, resultMap, nodePath));
+							resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
 
 							// Have to delete it after get all reponses otherwise couldn't find session for not the first response
 							if (newRequest) {
-								delete self._sessions[session.sessionId!].nodes[nodePath];
+								delete self._sessions[session.sessionId!].nodes[node.nodePath];
 							}
 						}
 					});
@@ -427,13 +440,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						allProviders.forEach(provider => {
 							self.callExpandOrRefreshFromProvider(provider, {
 								sessionId: session.sessionId!,
-								nodePath: nodePath
+								nodePath: node.nodePath
 							}, refresh).then(isExpanding => {
 								if (!isExpanding) {
 									// The provider stated it's not going to expand the node, therefore do not need to track when merging results
 									let emptyResult: azdata.ObjectExplorerExpandInfo = {
 										errorMessage: undefined,
-										nodePath: nodePath,
+										nodePath: node.nodePath,
 										nodes: [],
 										sessionId: session.sessionId
 									};
@@ -446,7 +459,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					}
 				}
 			} else {
-				reject(`session cannot find to expand node. id: ${session.sessionId} nodePath: ${nodePath}`);
+				reject(`session cannot find to expand node. id: ${session.sessionId} nodePath: ${node.nodePath}`);
 			}
 		});
 	}
@@ -495,7 +508,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return finalResult;
 	}
 
-	public refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo | undefined> {
+	public refreshNode(providerId: string, session: azdata.ObjectExplorerSession, node: TreeNode): Promise<azdata.ObjectExplorerExpandInfo | undefined> {
 		let provider = this._providers[providerId];
 		if (provider) {
 			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.ObjectExplorerExpand)
@@ -503,7 +516,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					refresh: true,
 					provider: providerId
 				}).send();
-			return this.expandOrRefreshNode(providerId, session, nodePath, true);
+			return this.expandOrRefreshNode(providerId, session, node, true);
 		}
 		return Promise.resolve(undefined);
 	}
@@ -569,11 +582,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this.expandOrRefreshTreeNode(session, parentTree, true);
 	}
 
-	private callExpandOrRefreshFromService(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string, refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo | undefined> {
+	private callExpandOrRefreshFromService(providerId: string, session: azdata.ObjectExplorerSession, node: TreeNode, refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo | undefined> {
 		if (refresh) {
-			return this.refreshNode(providerId, session, nodePath);
+			return this.refreshNode(providerId, session, node);
 		} else {
-			return this.expandNode(providerId, session, nodePath);
+			return this.expandNode(providerId, session, node);
 		}
 	}
 
@@ -585,7 +598,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		if (!providerName) {
 			throw new Error('Failed to expand node - no provider name');
 		}
-		const expandResult = await this.callExpandOrRefreshFromService(providerName, session, parentTree.nodePath, refresh);
+		const expandResult = await this.callExpandOrRefreshFromService(providerName, session, parentTree, refresh);
 		if (expandResult && expandResult.nodes) {
 			const children = expandResult.nodes.map(node => {
 				return this.toTreeNode(node, parentTree);

@@ -371,6 +371,19 @@ export class NotebookService extends Disposable implements INotebookService {
 		return title;
 	}
 
+	public getNotebookURIForCell(cellUri: URI): URI | undefined {
+		for (let editor of this.listNotebookEditors()) {
+			if (editor.cells) {
+				for (let cell of editor.cells) {
+					if (cell.cellUri === cellUri) {
+						return editor.notebookParams.notebookUri;
+					}
+				}
+			}
+		}
+		return undefined;
+	}
+
 	private updateSQLRegistrationWithConnectionProviders() {
 		// Update the SQL extension
 		let sqlNotebookKernels = this._providerToStandardKernels.get(notebookConstants.SQL);
