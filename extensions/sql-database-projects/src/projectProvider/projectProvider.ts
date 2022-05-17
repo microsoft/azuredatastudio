@@ -209,4 +209,8 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	async getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
 		return await this.projectController.getProjectDatabaseSchemaProvider(projectFilePath);
 	}
+
+	async generateProjectFromOpenApiSpec(options?: sqldbproj.GenerateProjectFromOpenApiSpecOptions): Promise<sqldbproj.ISqlProject | undefined> {
+		return await this.projectController.generateProjectFromOpenApiSpec(options);
+	}
 }

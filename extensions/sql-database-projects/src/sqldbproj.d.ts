@@ -47,6 +47,13 @@ declare module 'sqldbproj' {
 		 * Gets the Database Schema Provider version for a SQL project
 		 */
 		getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string>;
+
+		/**
+		 * Generate project from OpenAPI specification file
+		 * @param options Options to use when generating a project from an OpenAPI spec
+		 * @returns the generated sql project
+		 */
+		generateProjectFromOpenApiSpec(options?: GenerateProjectFromOpenApiSpecOptions): Promise<ISqlProject | undefined>;
 	}
 
 	/**
