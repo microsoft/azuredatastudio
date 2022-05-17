@@ -538,21 +538,14 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 				connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, true, false);
 			}
 		}
+		let userPassword: string | undefined;
 		// set connection string to not include the password if connection info does not include password, 
 		// or user chooses to not include password, or authentication type is not SQL login
-		if (includePassword !== constants.yesString || !connectionInfo.password) {
+		if (includePassword !== constants.yesString || !connectionInfo.password || connectionInfo.authenticationType !== 'SqlLogin') {
 			connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
-			// show warning message that user will have to enter it manually later in local.settings.json if they choose to 
-			// not to include password or if connection info does not include password
-			void vscode.window.showWarningMessage(constants.userPasswordLater, constants.openFile, constants.closeButton).then(async (result) => {
-				if (result === constants.openFile) {
-					// open local.settings.json file (if it exists)
-					void vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(localSettingsPath));
-				}
-			});
-			// if a connection exists but does not have password saved we ask user if they would like to enter it
-			if (!includePassword) {
-				const userPassword = await vscode.window.showInputBox({
+			if (!includePassword && connectionInfo.authenticationType === 'SqlLogin') {
+				// if a connection exists but does not have password saved we ask user if they would like to enter it
+				userPassword = await vscode.window.showInputBox({
 					prompt: constants.enterPasswordPrompt,
 					placeHolder: constants.enterPasswordManually,
 					ignoreFocusOut: true,
@@ -563,6 +556,16 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 					// if user enters password replace password placeholder with user entered password
 					connectionString = connectionString.replace(constants.passwordPlaceholder, userPassword);
 				}
+			}
+			// show warning message that user will have to enter it manually later in local.settings.json if they choose to 
+			// not to include password or if connection info does not include password
+			if (!userPassword && connectionInfo.authenticationType === 'SqlLogin') {
+				void vscode.window.showWarningMessage(constants.userPasswordLater, constants.openFile, constants.closeButton).then(async (result) => {
+					if (result === constants.openFile) {
+						// open local.settings.json file (if it exists)
+						void vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(localSettingsPath));
+					}
+				});
 			}
 		}
 
