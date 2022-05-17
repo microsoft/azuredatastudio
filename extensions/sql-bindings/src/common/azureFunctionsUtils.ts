@@ -702,6 +702,6 @@ export async function promptSelectTable(connectionURI: string, bindingType: Bind
 }
 
 export function tablesQuery(selectedDatabase: string): string {
-	let quotedDatabase = '[' + selectedDatabase + ']';
+	let quotedDatabase = '[' + utils.escapeClosingBrackets(selectedDatabase) + ']';
 	return `SELECT CONCAT(QUOTENAME(table_schema),'.',QUOTENAME(table_name)) from ${quotedDatabase}.INFORMATION_SCHEMA.TABLES where TABLE_TYPE = 'BASE TABLE'`;
 }
