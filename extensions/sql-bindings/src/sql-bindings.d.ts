@@ -37,8 +37,11 @@ declare module 'sql-bindings' {
 		/**
 		 * Prompts the user to enter object name for the SQL query
 		 * @param bindingType Type of SQL Binding
+		 * @param connectionInfo (optional) connection info from the selected connection profile
+		 * if left undefined we prompt to manually enter the object name
+		 * @returns the object name from user's input or menu choice
 		 */
-		promptForObjectName(bindingType: BindingType): Promise<string | undefined>;
+		promptForObjectName(bindingType: BindingType, connectionInfo?: IConnectionInfo): Promise<string | undefined>;
 
 		/**
 		 * Prompts the user to enter connection setting and updates it from AF project

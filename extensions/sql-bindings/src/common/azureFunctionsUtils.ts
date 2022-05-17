@@ -315,6 +315,7 @@ export async function promptForBindingType(funcName?: string): Promise<BindingTy
  * Prompts the user to enter object name for the SQL query
  * @param bindingType Type of SQL Binding
  * @param connectionInfo (optional) connection info from the selected connection profile
+ * if left undefined we prompt to manually enter the object name
  * @returns the object name from user's input or menu choice
  */
 export async function promptForObjectName(bindingType: BindingType, connectionInfo?: IConnectionInfo): Promise<string | undefined> {
@@ -325,21 +326,15 @@ export async function promptForObjectName(bindingType: BindingType, connectionIn
 	while (true) {
 		// TODO create path to solve for selectView (first need to support views as well)
 		// Prompt user to select a table based on connection profile and selected database
-		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
-
 		if (!connectionInfo) {
-			// prompt user for connection profile info if not already provided
-			connectionInfo = await vscodeMssqlApi.promptForConnection(true);
-			if (!connectionInfo) {
-				// User cancelled
-				return undefined;
-			}
+			// prompt user for to manually enter object name
+			return await promptToManuallyEnterObjectName(bindingType);
 		}
 
 		// get connectionURI and selectedDatabase to be used for listing tables query request
 		connectionURI = await getConnectionURI(connectionInfo);
 		if (!connectionURI) {
-			// User cancelled or mssql connection error
+			// User cancelled or mssql connection error 
 			// we will then prompt user to choose a connection profile again
 			continue;
 		}
@@ -684,13 +679,7 @@ export async function promptSelectTable(connectionURI: string, bindingType: Bind
 		});
 
 		if (selectedObject === manuallyEnterObjectName) {
-			// user manually enters table or view to query or upsert into
-			selectedObject = await vscode.window.showInputBox({
-				prompt: bindingType === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
-				placeHolder: constants.placeHolderObject,
-				validateInput: input => input ? undefined : constants.nameMustNotBeEmpty,
-				ignoreFocusOut: true
-			});
+			let selectedObject = promptToManuallyEnterObjectName(bindingType);
 			if (!selectedObject) {
 				// user cancelled so we will show the tables prompt again
 				continue;
@@ -704,4 +693,15 @@ export async function promptSelectTable(connectionURI: string, bindingType: Bind
 export function tablesQuery(selectedDatabase: string): string {
 	let quotedDatabase = '[' + utils.escapeClosingBrackets(selectedDatabase) + ']';
 	return `SELECT CONCAT(QUOTENAME(table_schema),'.',QUOTENAME(table_name)) from ${quotedDatabase}.INFORMATION_SCHEMA.TABLES where TABLE_TYPE = 'BASE TABLE'`;
+}
+
+export async function promptToManuallyEnterObjectName(bindingType: BindingType): Promise<string | undefined> {
+	// user manually enters table or view to query or upsert into
+	let selectedObject = await vscode.window.showInputBox({
+		prompt: bindingType === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
+		placeHolder: constants.placeHolderObject,
+		validateInput: input => input ? undefined : constants.nameMustNotBeEmpty,
+		ignoreFocusOut: true
+	});
+	return selectedObject;
 }
