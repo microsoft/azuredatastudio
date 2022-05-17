@@ -11,6 +11,7 @@ import { IconPathHelper, cssStyles, ConnectionMode } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { UpgradeController } from '../../dialogs/upgradeController';
+import { config } from 'vscode-nls';
 
 export class ControllerUpgradesPage extends DashboardPage {
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel) {
@@ -80,6 +81,26 @@ export class ControllerUpgradesPage extends DashboardPage {
 		}).component();
 
 		content.addItem(infoOnlyNextImmediateVersion, { CSSStyles: { 'min-height': '30px' } });
+
+		// Current version text
+		const currentVersionText = this.modelView.modelBuilder.text().withProps({
+			value: loc.currentVersionColon,
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
+		}).component();
+
+		const currentVersionNumber = this.modelView.modelBuilder.text().withProps({
+			value: this._controllerModel.controllerConfig?.status.runningVersion,
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
+		}).component();
+
+		const currentVersionItem = this.modelView.modelBuilder.flexContainer()
+			.withLayout({ flexWrap: 'wrap' })
+			.withItems([
+				currentVersionText,
+				currentVersionNumber
+			], { CSSStyles: { 'margin-right': '5px' } }).component();
+
+		content.addItem(currentVersionItem, { CSSStyles: { 'min-height': '30px' } });
 
 		// Create loaded components
 		this._upgradesTableLoading = this.modelView.modelBuilder.loadingComponent().component();
@@ -231,6 +252,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 							async (_progress, _token): Promise<void> => {
 								if (nextVersion !== '') {
 									if (this._controllerModel.info.connectionMode === ConnectionMode.direct) {
+										console.log('Executing command: az arcdata dc upgrade --desired-version {0} --name {1} --resource-group {2}', nextVersion, this._controllerModel.info.name, this._controllerModel.info.resourceGroup);
 										await this._azApi.az.arcdata.dc.upgrade(
 											nextVersion,
 											this._controllerModel.info.name,
@@ -239,6 +261,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 											undefined // Indirect mode argument - usek8s
 										);
 									} else {
+										console.log('Executing command: az arcdata dc upgrade --desired-version {0} --name {1} --k8s-namespace {2} --use-k8s', [nextVersion, this._controllerModel.info.name, this._controllerModel.info.namespace]);
 										await this._azApi.az.arcdata.dc.upgrade(
 											nextVersion,
 											this._controllerModel.info.name,
@@ -253,6 +276,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 
 								try {
 									await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
+									this.container.updateProperty('currentVersionNumber', this._controllerModel.controllerConfig?.status.runningVersion);
 								} catch (error) {
 									vscode.window.showErrorMessage(loc.refreshFailed(error));
 								}

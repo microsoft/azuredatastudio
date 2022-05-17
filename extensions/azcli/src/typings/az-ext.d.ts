@@ -112,7 +112,8 @@ declare module 'az-ext' {
 			}
 		},
 		status: {
-			state: string, // "Ready"
+			runningVersion: string, // "v1.4.1_2022-03-08"
+			state: string // "Ready"
 		}
 	}
 
