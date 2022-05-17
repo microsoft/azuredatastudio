@@ -303,7 +303,7 @@ export class RestoreSqlDialog extends InitializingComponent {
 	}
 
 	public refreshPitrSettings(): void {
-		this.pitrSettings.instanceName = this._miaaModel?.config?.metadata.name || this.pitrSettings.instanceName;
+		this.pitrSettings.instanceName = this._miaaModel?.config?.name || this.pitrSettings.instanceName;
 		this.pitrSettings.resourceGroupName = this._controllerModel?.controllerConfig?.spec.settings.azure.resourceGroup || this.pitrSettings.resourceGroupName;
 		this.pitrSettings.location = this._azurecoreApi.getRegionDisplayName(this._controllerModel?.controllerConfig?.spec.settings.azure.location) || this.pitrSettings.location;
 		this.pitrSettings.subscriptionId = this._controllerModel?.controllerConfig?.spec.settings.azure.subscription || this.pitrSettings.subscriptionId;

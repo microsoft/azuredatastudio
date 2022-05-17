@@ -1,0 +1,32 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.url-browser-dialog {
+	height: 100%;
+	padding-top: 12px;
+	padding-left: 12px;
+	padding-right: 12px;
+	box-sizing: border-box;
+}
+
+.url-browser-dialog .url-table-content {
+	width: 100%;
+}
+
+.url-browser-dialog .option-section {
+	padding-top: 10px;
+	height: 90px;
+	box-sizing: border-box;
+}
+
+.url-browser-dialog .url-input-label {
+	width: 50px;
+	padding-bottom: 5px;
+}
+
+.url-browser-dialog .url-input-box {
+	width: 200px;
+	padding-bottom: 5px;
+}

@@ -17,8 +17,6 @@ export enum TelemetryViews {
 export enum TelemetryActions {
 	// Create Azure Function with Sql Binding from Table
 	startCreateAzureFunctionWithSqlBinding = 'startCreateAzureFunctionWithSqlBinding',
-	helpCreateAzureFunctionProject = 'helpCreateAzureFunctionProject',
-	learnMore = 'learnMore',
 	finishCreateAzureFunctionWithSqlBinding = 'finishCreateAzureFunctionWithSqlBinding',
 	exitCreateAzureFunctionQuickpick = 'exitCreateAzureFunctionQuickpick',
 
@@ -30,4 +28,30 @@ export enum TelemetryActions {
 	updateConnectionString = 'updateConnectionString',
 	finishAddSqlBinding = 'finishAddSqlBinding',
 	exitSqlBindingsQuickpick = 'exitSqlBindingsQuickpick',
+}
+
+export enum CreateAzureFunctionStep {
+	getAzureFunctionProject = 'getAzureFunctionProject',
+	learnMore = 'learnMore',
+	helpCreateAzureFunctionProject = 'helpCreateAzureFunctionProject',
+	getSelectedFolder = 'getSelectedFolder',
+	getBindingType = 'getBindingType',
+	launchFromCommandPalette = 'launchFromCommandPalette',
+	launchFromTable = 'launchFromTable',
+	getConnectionProfile = 'getConnectionProfile',
+	getDatabase = 'getDatabase',
+	getObjectName = 'getObjectName',
+	getConnectionString = 'getConnectionString',
+	getAzureFunctionName = 'getAzureFunctionName',
+	getTemplateId = 'getTemplateId',
+	getConnectionStringSettingName = 'getConnectionStringSettingName',
+	promptForIncludePassword = 'promptForIncludePassword',
+}
+
+export enum ExitReason {
+	cancelled = 'cancelled',
+	finishCreate = 'finishCreate',
+	timeout = 'timeout',
+	error = 'error',
+	exit = 'exit'
 }

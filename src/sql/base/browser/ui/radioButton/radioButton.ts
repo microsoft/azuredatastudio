@@ -40,6 +40,7 @@ export class RadioButton extends Widget {
 		this.label = opts.label;
 		this.enabled = opts.enabled || true;
 		this.checked = opts.checked || false;
+		this._internalCheckedStateTracker = this.checked;
 		this.onclick(this.inputElement, () => {
 			this._onClicked.fire();
 			this.checked = true;

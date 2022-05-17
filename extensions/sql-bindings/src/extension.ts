@@ -5,13 +5,11 @@
 import * as vscode from 'vscode';
 import { ITreeNodeInfo } from 'vscode-mssql';
 import { IExtension, BindingType, GetAzureFunctionsResult, ResultStatus } from 'sql-bindings';
-import { getAzdataApi } from './common/utils';
 import { addSqlBinding, createAzureFunction, getAzureFunctions } from './services/azureFunctionsService';
 import { launchAddSqlBindingQuickpick } from './dialogs/addSqlBindingQuickpick';
 import { promptForBindingType, promptAndUpdateConnectionStringSetting, promptForObjectName } from './common/azureFunctionsUtils';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
-	void vscode.commands.executeCommand('setContext', 'azdataAvailable', !!getAzdataApi());
 	// register the add sql binding command
 	context.subscriptions.push(vscode.commands.registerCommand('sqlBindings.addSqlBinding', async (uri: vscode.Uri | undefined) => { return launchAddSqlBindingQuickpick(uri); }));
 	// Generate Azure Function command
@@ -22,8 +20,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		addSqlBinding: async (bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string): Promise<ResultStatus> => {
 			return addSqlBinding(bindingType, filePath, functionName, objectName, connectionStringSetting);
 		},
-		promptForBindingType: async (): Promise<(vscode.QuickPickItem & { type: BindingType }) | undefined> => {
-			return promptForBindingType();
+		promptForBindingType: async (funcName?: string): Promise<BindingType | undefined> => {
+			return promptForBindingType(funcName);
 		},
 		promptForObjectName: async (bindingType: BindingType): Promise<string | undefined> => {
 			return promptForObjectName(bindingType);

@@ -49,7 +49,7 @@ export interface IConnectionComponentCallbacks {
 export interface IConnectionComponentController {
 	showUiComponent(container: HTMLElement, didChange?: boolean): void;
 	initDialog(providers: string[], model: IConnectionProfile): void;
-	validateConnection(): IConnectionValidateResult;
+	validateConnection(): Promise<IConnectionValidateResult>;
 	fillInConnectionInputs(connectionInfo: IConnectionProfile): void;
 	handleOnConnecting(): void;
 	handleResetConnection(): void;
@@ -162,14 +162,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	}
 
-	private handleOnConnect(params: INewConnectionParams, profile?: IConnectionProfile): void {
+	private async handleOnConnect(params: INewConnectionParams, profile?: IConnectionProfile): Promise<void> {
 		this._logService.debug('ConnectionDialogService: onConnect event is received');
 		if (!this._connecting) {
 			this._logService.debug('ConnectionDialogService: Start connecting');
 			this._connecting = true;
 			this.handleProviderOnConnecting();
 			if (!profile) {
-				let result = this.uiController.validateConnection();
+				let result = await this.uiController.validateConnection();
 				if (!result.isValid) {
 					this._logService.debug('ConnectionDialogService: Connection is invalid');
 					this._connecting = false;
@@ -472,8 +472,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this._connectionDialog.databaseDropdownExpanded = this.uiController.databaseDropdownExpanded;
 				this.handleOnCancel(this._connectionDialog.newConnectionParams);
 			});
-			this._connectionDialog.onConnect((profile) => {
-				this.handleOnConnect(this._connectionDialog.newConnectionParams, profile as IConnectionProfile);
+			this._connectionDialog.onConnect(async (profile) => {
+				await this.handleOnConnect(this._connectionDialog.newConnectionParams, profile as IConnectionProfile);
 			});
 			this._connectionDialog.onShowUiComponent((input) => this.handleShowUiComponent(input));
 			this._connectionDialog.onInitDialog(() => this.handleInitDialog());
