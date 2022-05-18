@@ -178,8 +178,25 @@ export class AzTool implements azExt.IAzApi {
 			delete: (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
 				return this.executeCommand<void>(['sql', 'mi-arc', 'delete', '-n', name, '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
 			},
-			list: (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.SqlMiListResult[]>> => {
-				return this.executeCommand<azExt.SqlMiListResult[]>(['sql', 'mi-arc', 'list', '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
+			list: (
+				args: {
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
+					namespace?: string
+					// Additional arguments
+				},
+				additionalEnvVars?: azExt.AdditionalEnvVars
+			): Promise<azExt.AzOutput<azExt.SqlMiListResult[]>> => {
+				const argsArray = ['sql', 'mi-arc', 'list'];
+				if (args.resourceGroup) {
+					argsArray.push('--resource-group', args.resourceGroup);
+				}
+				if (args.namespace) {
+					argsArray.push('--k8s-namespace', args.namespace);
+					argsArray.push('--use-k8s');
+				}
+				return this.executeCommand<azExt.SqlMiListResult[]>(argsArray, additionalEnvVars);
 			},
 			show: (
 				name: string,
@@ -193,12 +210,14 @@ export class AzTool implements azExt.IAzApi {
 				additionalEnvVars?: azExt.AdditionalEnvVars
 			): Promise<azExt.AzOutput<azExt.SqlMiShowResult>> => {
 				const argsArray = ['sql', 'mi-arc', 'show', '-n', name];
-				if (args.resourceGroup) { argsArray.push('--resource-group', args.resourceGroup); }
+				if (args.resourceGroup) {
+					argsArray.push('--resource-group', args.resourceGroup);
+				}
 				if (args.namespace) {
 					argsArray.push('--k8s-namespace', args.namespace);
 					argsArray.push('--use-k8s');
 				}
-				return this.executeCommand<azExt.SqlMiShowResult>(argsArray, additionalEnvVars);
+				return this.executeSqlMiShow(argsArray, additionalEnvVars);
 			},
 			update: (
 				name: string,
@@ -300,6 +319,64 @@ export class AzTool implements azExt.IAzApi {
 			stderr: output.stderr.split(os.EOL)
 		};
 	}
+
+	/**
+	 * Executes az sql mi-arc show and returns a normalized object, SqlMiShowResult, regardless of the indirect or direct mode raw output shape.
+	 * @param args The args to pass to az
+	 * @param additionalEnvVars Additional environment variables to set for this execution
+	 */
+	public async executeSqlMiShow(args: string[], additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.SqlMiShowResult>> {
+		try {
+			const result = await executeAzCommand(`"${this._path}"`, args.concat(['--output', 'json']), additionalEnvVars);
+
+			let stdout = <unknown>result.stdout;
+			let stderr = <unknown>result.stderr;
+
+			try {
+				// Automatically try parsing the JSON. This is expected to fail for some az commands such as resource delete.
+				stdout = JSON.parse(result.stdout);
+			} catch (err) {
+				// If the output was not pure JSON, catch the error and log it here.
+				Logger.log(loc.azOutputParseErrorCaught(args.concat(['--output', 'json']).toString()));
+				throw err;
+			}
+
+			if ((<azExt.SqlMiShowResultDirect>stdout).properties) {
+				// Then it is direct mode
+				return {
+					stdout: {
+						name: (<azExt.SqlMiShowResultDirect>stdout).name,
+						spec: (<azExt.SqlMiShowResultDirect>stdout).properties.k8SRaw.spec,
+						status: (<azExt.SqlMiShowResultDirect>stdout).properties.k8SRaw.status
+					},
+					stderr: <string[]>stderr
+				};
+			} else {
+				// It must be indirect mode
+				return {
+					stdout: {
+						name: (<azExt.SqlMiShowResultIndirect>stdout).metadata?.name,
+						spec: (<azExt.SqlMiShowResultIndirect>stdout).spec,
+						status: (<azExt.SqlMiShowResultIndirect>stdout).status
+					},
+					stderr: <string[]>stderr
+				};
+			}
+		} catch (err) {
+			if (err instanceof ExitCodeError) {
+				try {
+					await fs.promises.access(this._path);
+					//this.path exists
+				} catch (e) {
+					// this.path does not exist
+					await vscode.commands.executeCommand('setContext', azFound, false);
+					throw new NoAzureCLIError();
+				}
+			}
+			throw err;
+		}
+	}
+
 
 	/**
 	 * Executes the specified az command.

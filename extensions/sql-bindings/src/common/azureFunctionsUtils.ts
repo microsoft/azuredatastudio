@@ -7,7 +7,8 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as utils from './utils';
 import * as constants from './constants';
-import { BindingType } from 'sql-bindings';
+import * as azureFunctionsContracts from '../contracts/azureFunctions/azureFunctionsContracts';
+import { BindingType, IConnectionStringInfo } from 'sql-bindings';
 import { ConnectionDetails, IConnectionInfo } from 'vscode-mssql';
 // https://github.com/microsoft/vscode-azurefunctions/blob/main/src/vscode-azurefunctions.api.d.ts
 import { AzureFunctionsExtensionApi } from '../../../types/vscode-azurefunctions.api';
@@ -237,7 +238,7 @@ export function waitForNewHostFile(): IFileFunctionObject {
  * @param selectedProjectFile is the users selected project file path
  */
 export async function addNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void> {
-	await utils.executeCommand(`dotnet add ${selectedProjectFile} package ${constants.sqlExtensionPackageName} --prerelease`);
+	await utils.executeCommand(`dotnet add "${selectedProjectFile}" package ${constants.sqlExtensionPackageName} --prerelease`);
 }
 
 /**
@@ -313,23 +314,54 @@ export async function promptForBindingType(funcName?: string): Promise<BindingTy
 /**
  * Prompts the user to enter object name for the SQL query
  * @param bindingType Type of SQL Binding
+ * @param connectionInfo (optional) connection info from the selected connection profile
+ * if left undefined we prompt to manually enter the object name
+ * @returns the object name from user's input or menu choice
  */
-export async function promptForObjectName(bindingType: BindingType): Promise<string | undefined> {
-	return vscode.window.showInputBox({
-		prompt: bindingType === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
-		placeHolder: constants.placeHolderObject,
-		validateInput: input => input ? undefined : constants.nameMustNotBeEmpty,
-		ignoreFocusOut: true
-	});
+export async function promptForObjectName(bindingType: BindingType, connectionInfo?: IConnectionInfo): Promise<string | undefined> {
+	// show the connection string methods (user input and connection profile options)
+	let connectionURI: string | undefined;
+	let selectedDatabase: string | undefined;
+
+	while (true) {
+		if (!connectionInfo) {
+			// prompt is shown when user selects an existing connection string setting 
+			// or manually enters a connection string
+			return promptToManuallyEnterObjectName(bindingType);
+		}
+
+		// TODO create path to solve for selectView (first need to support views as well)
+		// Prompt user to select a table based on connection profile and selected database}
+		// get connectionURI and selectedDatabase to be used for listing tables query request
+		connectionURI = await getConnectionURI(connectionInfo);
+		if (!connectionURI) {
+			// User cancelled or mssql connection error 
+			// we will then prompt user to choose a connection profile again
+			continue;
+		}
+		selectedDatabase = await promptSelectDatabase(connectionURI);
+		if (!selectedDatabase) {
+			// User cancelled
+			// we will then prompt user to choose a connection profile again
+			continue;
+		}
+
+		connectionInfo.database = selectedDatabase;
+
+		let selectedObjectName = await promptSelectTable(connectionURI, bindingType, selectedDatabase);
+
+		return selectedObjectName;
+	}
 }
 
 /**
  * Prompts the user to enter connection setting and updates it from AF project
  * @param projectUri Azure Function project uri
- * @param connectionInfo connection info from the user to update the connection string
+ * @param connectionInfo (optional) connection info from the user to update the connection string, 
+ * if left undefined we prompt the user for the connection info
  * @returns connection string setting name to be used for the createFunction API
  */
-export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined, connectionInfo?: IConnectionInfo): Promise<string | undefined> {
+export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined, connectionInfo?: IConnectionInfo): Promise<IConnectionStringInfo | undefined> {
 	let connectionStringSettingName: string | undefined;
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 
@@ -459,6 +491,11 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 										validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
 									}
 								) ?? '';
+								if (!connectionString) {
+									// User cancelled
+									// we can prompt for connection string methods again
+									continue;
+								}
 							} else {
 								// Let user choose from existing connections to create connection string from
 								connectionInfo = await vscodeMssqlApi.promptForConnection(true);
@@ -509,7 +546,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 			ignoreFocusOut: true
 		});
 	}
-	return connectionStringSettingName;
+	return { connectionStringSettingName: connectionStringSettingName!, connectionInfo: connectionInfo };
 }
 
 /**
@@ -580,10 +617,9 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 	}
 }
 
-export async function promptSelectDatabase(connectionInfo: IConnectionInfo): Promise<string | undefined> {
+export async function promptSelectDatabase(connectionURI: string): Promise<string | undefined> {
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 
-	let connectionURI = await vscodeMssqlApi.connect(connectionInfo);
 	let listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
 	const selectedDatabase = (await vscode.window.showQuickPick(listDatabases, {
 		canPickMany: false,
@@ -596,4 +632,78 @@ export async function promptSelectDatabase(connectionInfo: IConnectionInfo): Pro
 		return undefined;
 	}
 	return selectedDatabase;
+}
+
+export async function getConnectionURI(connectionInfo: IConnectionInfo): Promise<string | undefined> {
+	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+
+	let connectionURI: string = '';
+	try {
+		await vscode.window.withProgress(
+			{
+				location: vscode.ProgressLocation.Notification,
+				title: constants.connectionProgressTitle,
+				cancellable: false
+			}, async (_progress, _token) => {
+				// show progress bar while connecting to the users selected connection profile
+				connectionURI = await vscodeMssqlApi.connect(connectionInfo!);
+			}
+		);
+	} catch (e) {
+		// mssql connection error will be shown to the user
+		return undefined;
+	}
+
+	return connectionURI;
+}
+
+export async function promptSelectTable(connectionURI: string, bindingType: BindingType, selectedDatabase: string): Promise<string | undefined> {
+	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+	const userObjectName = bindingType === BindingType.input ? constants.enterObjectName : constants.enterObjectNameToUpsert;
+
+	// Create query to get list of tables from database selected
+	let tableQuery = tablesQuery(selectedDatabase);
+	const params = { ownerUri: connectionURI, queryString: tableQuery };
+	// send SimpleExecuteRequest query to STS to get list of schema and tables based on the connection profile of the user
+	let queryResult: azureFunctionsContracts.SimpleExecuteResult = await vscodeMssqlApi.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params);
+
+	// Get schema and table names from query result rows
+	const tableNames = queryResult.rows.map(r => r[0].displayValue);
+	// add manual entry option to table names list for user to choose from as well (with pencil icon)
+	let manuallyEnterObjectName = '$(pencil) ' + userObjectName;
+	tableNames.unshift(manuallyEnterObjectName);
+	// prompt user to select table from list of tables options
+	while (true) {
+		let selectedObject = await vscode.window.showQuickPick(tableNames, {
+			canPickMany: false,
+			title: constants.selectTable,
+			ignoreFocusOut: true
+		});
+
+		if (selectedObject === manuallyEnterObjectName) {
+			let selectedObject = promptToManuallyEnterObjectName(bindingType);
+			if (!selectedObject) {
+				// user cancelled so we will show the tables prompt again
+				continue;
+			}
+		}
+
+		return selectedObject;
+	}
+}
+
+export function tablesQuery(selectedDatabase: string): string {
+	let quotedDatabase = '[' + utils.escapeClosingBrackets(selectedDatabase) + ']';
+	return `SELECT CONCAT(QUOTENAME(table_schema),'.',QUOTENAME(table_name)) from ${quotedDatabase}.INFORMATION_SCHEMA.TABLES where TABLE_TYPE = 'BASE TABLE'`;
+}
+
+export async function promptToManuallyEnterObjectName(bindingType: BindingType): Promise<string | undefined> {
+	// user manually enters table or view to query or upsert into
+	let selectedObject = await vscode.window.showInputBox({
+		prompt: bindingType === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
+		placeHolder: constants.placeHolderObject,
+		validateInput: input => input ? undefined : constants.nameMustNotBeEmpty,
+		ignoreFocusOut: true
+	});
+	return selectedObject;
 }

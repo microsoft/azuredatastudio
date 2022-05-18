@@ -74,7 +74,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	}
 
 	protected async refresh(): Promise<void> {
-		await Promise.all([this._controllerModel.refresh(false, this._controllerModel.info.namespace), this._miaaModel.refresh()]);
+		await Promise.all([this._controllerModel.refresh(false, this._controllerModel.info.resourceGroup, this._controllerModel.info.namespace), this._miaaModel.refresh()]);
 	}
 
 	public get container(): azdata.Component {
@@ -335,11 +335,11 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 	private handleMiaaConfigUpdated(): void {
 		if (this._miaaModel.config) {
-			this._instanceProperties.status = this._miaaModel.config.properties?.k8SRaw?.status.state || '-';
-			this._instanceProperties.externalEndpoint = this._miaaModel.config.properties?.k8SRaw?.status.primaryEndpoint || loc.notConfigured;
-			this._instanceProperties.vCores = this._miaaModel.config.properties?.k8SRaw?.spec?.scheduling?.default?.resources?.limits?.cpu?.toString() || '';
-			this._databasesMessage.value = !this._miaaModel.config.properties?.k8SRaw?.status.primaryEndpoint ? loc.noExternalEndpoint : '';
-			if (!this._miaaModel.config.properties?.k8SRaw?.status.primaryEndpoint) {
+			this._instanceProperties.status = this._miaaModel.config.status.state || '-';
+			this._instanceProperties.externalEndpoint = this._miaaModel.config.status.primaryEndpoint || loc.notConfigured;
+			this._instanceProperties.vCores = this._miaaModel.config.spec?.scheduling?.default?.resources?.limits?.cpu?.toString() || '';
+			this._databasesMessage.value = !this._miaaModel.config.status.primaryEndpoint ? loc.noExternalEndpoint : '';
+			if (!this._miaaModel.config.status.primaryEndpoint) {
 				this._databasesContainer.removeItem(this._connectToServerLoading);
 			}
 		}
@@ -368,7 +368,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		} else {
 			// If we don't have an endpoint then there's no point in showing the connect button - but the logic
 			// to display text informing the user of this is already handled by the handleMiaaConfigUpdated
-			if (this._miaaModel?.config?.properties?.k8SRaw?.status.primaryEndpoint) {
+			if (this._miaaModel?.config?.status.primaryEndpoint) {
 				this._connectToServerLoading.loading = false;
 				this._connectToServerButton.enabled = true;
 			}
@@ -419,12 +419,12 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 	private refreshDashboardLinks(): void {
 		if (this._miaaModel.config) {
-			const kibanaUrl = this._miaaModel.config.properties?.k8SRaw?.status.logSearchDashboard ?? '';
+			const kibanaUrl = this._miaaModel.config.status.logSearchDashboard ?? '';
 			this._kibanaLink.label = kibanaUrl;
 			this._kibanaLink.url = kibanaUrl;
 			this._kibanaLoading!.loading = false;
 
-			const grafanaUrl = this._miaaModel.config.properties?.k8SRaw?.status.metricsDashboard ?? '';
+			const grafanaUrl = this._miaaModel.config.status.metricsDashboard ?? '';
 			this._grafanaLink.label = grafanaUrl;
 			this._grafanaLink.url = grafanaUrl;
 			this._grafanaLoading!.loading = false;

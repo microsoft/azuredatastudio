@@ -137,53 +137,89 @@ declare module 'az-ext' {
 		port?: number // 5432
 	}
 
-	// export interface SqlMiShowResult {
-	// 	apiVersion: string, // "sql.arcdata.microsoft.com/v1alpha1"
-	// 	kind: string, // "sqlmanagedinstance"
-	// 	metadata: {
-	// 		creationTimestamp: string, // "2020-08-19T17:35:45Z"
-	// 		generation: number, // 1
-	// 		name: string, // "miaa-instance"
-	// 		namespace: string, // "arc"
-	// 		resourceVersion: string, // "202623"
-	// 		selfLink: string, // "/apis/sql.arcdata.microsoft.com/v1alpha1/namespaces/arc/sqlmanagedinstances/miaa-instance"
-	// 		uid: string // "cea737aa-3f82-4f6a-9bed-2b51c2c33dff"
-	// 	},
-	// 	spec: {
-	// 		backup?: {
-	// 			retentionPeriodInDays: number, // 1
-	// 		}
-	// 		scheduling?: {
-	// 			default?: {
-	// 				resources?: {
-	// 					limits?: SchedulingOptions,
-	// 					requests?: SchedulingOptions
-	// 				}
-	// 			}
-	// 		}
-	// 		services: {
-	// 			primary: ServiceSpec
-	// 		}
-	// 		storage: {
-	// 			data: {
-	// 				volumes: StorageVolume[]
-	// 			},
-	// 			logs: {
-	// 				volumes: StorageVolume[]
-	// 			}
-	// 		}
-	// 	},
-	// 	status: {
-	// 		readyReplicas: string, // "1/1"
-	// 		state: string, // "Ready",
-	// 		logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:miaa1'))
-	// 		metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
-	// 		primaryEndpoint?: string // "10.91.86.39:32718"
-	// 		runningVersion: string // "v1.5.0_2022-04-05"
-	// 	}
-	// }
-
 	export interface SqlMiShowResult {
+		name: string, // "miaa-instance"
+		spec: {
+			backup?: {
+				retentionPeriodInDays: number, // 1
+			}
+			scheduling?: {
+				default?: {
+					resources?: {
+						limits?: SchedulingOptions,
+						requests?: SchedulingOptions
+					}
+				}
+			}
+			services: {
+				primary: ServiceSpec
+			}
+			storage: {
+				data: {
+					volumes: StorageVolume[]
+				},
+				logs: {
+					volumes: StorageVolume[]
+				}
+			}
+		},
+		status: {
+			readyReplicas: string, // "1/1"
+			state: string, // "Ready",
+			logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:miaa1'))
+			metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
+			primaryEndpoint?: string // "10.91.86.39:32718"
+			runningVersion: string // "v1.5.0_2022-04-05"
+		}
+	}
+
+	export interface SqlMiShowResultIndirect {
+		apiVersion: string, // "sql.arcdata.microsoft.com/v1alpha1"
+		kind: string, // "sqlmanagedinstance"
+		metadata: {
+			creationTimestamp: string, // "2020-08-19T17:35:45Z"
+			generation: number, // 1
+			name: string, // "miaa-instance"
+			namespace: string, // "arc"
+			resourceVersion: string, // "202623"
+			selfLink: string, // "/apis/sql.arcdata.microsoft.com/v1alpha1/namespaces/arc/sqlmanagedinstances/miaa-instance"
+			uid: string // "cea737aa-3f82-4f6a-9bed-2b51c2c33dff"
+		},
+		spec: {
+			backup?: {
+				retentionPeriodInDays: number, // 1
+			}
+			scheduling?: {
+				default?: {
+					resources?: {
+						limits?: SchedulingOptions,
+						requests?: SchedulingOptions
+					}
+				}
+			}
+			services: {
+				primary: ServiceSpec
+			}
+			storage: {
+				data: {
+					volumes: StorageVolume[]
+				},
+				logs: {
+					volumes: StorageVolume[]
+				}
+			}
+		},
+		status: {
+			readyReplicas: string, // "1/1"
+			state: string, // "Ready",
+			logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:miaa1'))
+			metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
+			primaryEndpoint?: string // "10.91.86.39:32718"
+			runningVersion: string // "v1.5.0_2022-04-05"
+		}
+	}
+
+	export interface SqlMiShowResultDirect {
 		extendedLocation: {
 		  name: string, // /subscriptions/a2382b66-3h2k-3h2k-2gdd-8ef45dgfdc33/resourcegroups/name-rg/providers/microsoft.extendedlocation/customlocations/custom-loc,
 		  type: string, // CustomLocation
@@ -531,7 +567,16 @@ declare module 'az-ext' {
 		sql: {
 			miarc: {
 				delete(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
-				list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiListResult[]>>,
+				list(
+					args: {
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
+					namespace?: string
+					},
+					// Additional arguments
+					additionalEnvVars?: AdditionalEnvVars
+				): Promise<AzOutput<SqlMiListResult[]>>,
 				show(
 					name: string,
 					args: {
