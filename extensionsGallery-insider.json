@@ -4714,27 +4714,27 @@
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://dsct.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/0.1.0/azure-cosmosdb-ads-extension-0.1.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/0.1.0/azure-cosmosdb-ads-extension-0.1.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://dsct.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/0.1.0/extension.png"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/0.1.0/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://dsct.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/0.1.0/README.md"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/0.1.0/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://dsct.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/0.1.0/CHANGELOG.md"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/0.1.0/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://dsct.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/0.1.0/package.json"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/0.1.0/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://dsct.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/0.1.0/LICENSE"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/0.1.0/LICENSE"
 								}
 							],
 							"properties": [
