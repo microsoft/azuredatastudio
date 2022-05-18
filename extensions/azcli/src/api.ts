@@ -123,10 +123,18 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 					validateAz(azToolService.localAz);
 					return azToolService.localAz!.sql.miarc.delete(name, namespace, additionalEnvVars);
 				},
-				list: async (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+				list: async (
+					args: {
+						// Direct mode arguments
+						resourceGroup?: string;
+						// Indirect mode arguments
+						namespace?: string;
+					},
+					additionalEnvVars?: azExt.AdditionalEnvVars
+				) => {
 					await localAzDiscovered;
 					validateAz(azToolService.localAz);
-					return azToolService.localAz!.sql.miarc.list(namespace, additionalEnvVars);
+					return azToolService.localAz!.sql.miarc.list(args, additionalEnvVars);
 				},
 				show: async (
 					name: string,
