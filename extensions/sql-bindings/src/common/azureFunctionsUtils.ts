@@ -549,7 +549,6 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 				// if a connection exists but does not have password saved we ask user if they would like to enter it and save it in local.settings.json
 				userPassword = await vscode.window.showInputBox({
 					prompt: constants.enterPasswordPrompt,
-					placeHolder: constants.enterPasswordManually,
 					ignoreFocusOut: true,
 					password: true,
 					validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
