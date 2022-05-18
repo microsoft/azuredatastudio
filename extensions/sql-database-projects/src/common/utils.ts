@@ -316,14 +316,14 @@ export async function getDefaultPublishDeploymentOptions(project: Project): Prom
 	const deploymentOptions = result.defaultDeploymentOptions;
 	// re-include database-scoped credentials
 	if (getAzdataApi()) {
-		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== mssql.SchemaObjectType.DatabaseScopedCredentials);
+		deploymentOptions.excludeObjectTypes = (deploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.filter(x => x !== mssql.SchemaObjectType.DatabaseScopedCredentials);
 	} else {
-		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== vscodeMssql.SchemaObjectType.DatabaseScopedCredentials);
+		deploymentOptions.excludeObjectTypes = (deploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.filter(x => x !== vscodeMssql.SchemaObjectType.DatabaseScopedCredentials);
 	}
 
 	// this option needs to be true for same database references validation to work
 	if (project.databaseReferences.length > 0) {
-		deploymentOptions.includeCompositeObjects.value = true;
+		deploymentOptions.includeCompositeObjects = true;
 	}
 	return result.defaultDeploymentOptions;
 }
