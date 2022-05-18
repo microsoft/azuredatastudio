@@ -9,11 +9,10 @@ import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
-import * as templates from '../templates/templates';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 
 import { Uri, window } from 'vscode';
-import { ISqlProject, SqlTargetPlatform } from 'sqldbproj';
+import { ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
@@ -807,11 +806,11 @@ export class Project implements ISqlProject {
 
 		let xmlTag;
 		switch (itemType) {
-			case templates.preDeployScript:
+			case ItemType.preDeployScript:
 				xmlTag = constants.PreDeploy;
 				this._preDeployScripts.length === 0 ? this._preDeployScripts.push(fileEntry) : this._noneDeployScripts.push(fileEntry);
 				break;
-			case templates.postDeployScript:
+			case ItemType.postDeployScript:
 				xmlTag = constants.PostDeploy;
 				this._postDeployScripts.length === 0 ? this._postDeployScripts.push(fileEntry) : this._noneDeployScripts.push(fileEntry);
 				break;
@@ -822,7 +821,7 @@ export class Project implements ISqlProject {
 
 		const attributes = new Map<string, string>();
 
-		if (itemType === templates.externalStreamingJob) {
+		if (itemType === ItemType.externalStreamingJob) {
 			fileEntry.sqlObjectType = constants.ExternalStreamingJob;
 			attributes.set(constants.Type, constants.ExternalStreamingJob);
 		}
