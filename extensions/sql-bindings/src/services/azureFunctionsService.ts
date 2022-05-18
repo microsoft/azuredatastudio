@@ -11,7 +11,7 @@ import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
 import * as constants from '../common/constants';
 import * as azureFunctionsContracts from '../contracts/azureFunctions/azureFunctionsContracts';
 import { CreateAzureFunctionStep, TelemetryActions, TelemetryReporter, TelemetryViews, ExitReason } from '../common/telemetry';
-import { AddSqlBindingParams, BindingType, GetAzureFunctionsParams, GetAzureFunctionsResult, ResultStatus } from 'sql-bindings';
+import { AddSqlBindingParams, BindingType, GetAzureFunctionsParams, GetAzureFunctionsResult, IConnectionStringInfo, ResultStatus } from 'sql-bindings';
 import { IConnectionInfo, ITreeNodeInfo } from 'vscode-mssql';
 import { createAddConnectionStringStep } from '../createNewProject/addConnectionStringStep';
 
@@ -182,10 +182,14 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		let templateId: string = selectedBindingType === BindingType.input ? constants.inputTemplateID : constants.outputTemplateID;
 
 		// prompt for Connection String Setting Name
-		let connectionStringInfo: any = { connectionStringSettingName: constants.sqlConnectionStringSetting, connectionInfo: connectionInfo };
+		let connectionStringInfo: IConnectionStringInfo | undefined = { connectionStringSettingName: constants.sqlConnectionStringSetting, connectionInfo: connectionInfo };
 		if (!isCreateNewProject && projectFile) {
 			telemetryStep = CreateAzureFunctionStep.getConnectionStringSettingName;
 			connectionStringInfo = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(vscode.Uri.parse(projectFile), connectionInfo);
+			if (!connectionStringInfo) {
+				// User cancelled connection string setting name prompt or connection string method prompt
+				return;
+			}
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 				.withAdditionalProperties(propertyBag)
 				.withConnectionInfo(connectionInfo).send();

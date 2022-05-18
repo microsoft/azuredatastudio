@@ -324,13 +324,14 @@ export async function promptForObjectName(bindingType: BindingType, connectionIn
 	let selectedDatabase: string | undefined;
 
 	while (true) {
-		// TODO create path to solve for selectView (first need to support views as well)
-		// Prompt user to select a table based on connection profile and selected database
 		if (!connectionInfo) {
-			// prompt user for to manually enter object name
-			return await promptToManuallyEnterObjectName(bindingType);
+			// prompt is shown when user selects an existing connection string setting 
+			// or manually enters a connection string
+			return promptToManuallyEnterObjectName(bindingType);
 		}
 
+		// TODO create path to solve for selectView (first need to support views as well)
+		// Prompt user to select a table based on connection profile and selected database}
 		// get connectionURI and selectedDatabase to be used for listing tables query request
 		connectionURI = await getConnectionURI(connectionInfo);
 		if (!connectionURI) {

@@ -130,7 +130,7 @@ declare module 'sql-bindings' {
 	 * Result from promptAndUpdateConnectionStringSetting
 	 */
 	export interface IConnectionStringInfo {
-		connectionStringSettingName: string | undefined;
+		connectionStringSettingName: string;
 		connectionInfo: IConnectionInfo | undefined;
 	}
 
