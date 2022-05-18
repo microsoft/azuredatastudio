@@ -116,7 +116,7 @@ describe('az', function () {
 				});
 				it('list', async function (): Promise<void> {
 					// Assume indirect mode
-					await azTool.sql.miarc.list(namespace);
+					await azTool.sql.miarc.list({resourceGroup: undefined, namespace: namespace});
 					verifyExecuteCommandCalledWithArgs(['sql', 'mi-arc', 'list', '--k8s-namespace', namespace, '--use-k8s']);
 				});
 				it('show', async function (): Promise<void> {

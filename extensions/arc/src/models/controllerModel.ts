@@ -6,6 +6,7 @@
 import { ControllerInfo, ResourceType } from 'arc';
 import * as azExt from 'az-ext';
 import * as vscode from 'vscode';
+import { ConnectionMode } from '../constants';
 import * as loc from '../localizedConstants';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 
@@ -63,10 +64,19 @@ export class ControllerModel {
 		if (node) {
 			this.treeDataProvider.refreshNode(node);
 		} else {
-			await this.refresh(false, this.info.namespace);
+			await this.refresh(false, this.info.resourceGroup, this.info.namespace);
 		}
 	}
-	public async refresh(showErrors: boolean = true, namespace: string): Promise<void> {
+
+	public async refresh(showErrors: boolean = true, resourceGroup: string, namespace: string): Promise<void> {
+		if (this.info.connectionMode === ConnectionMode.direct) {
+			this.refreshDirectMode(showErrors, resourceGroup, namespace);
+		} else {
+			this.refreshIndirectMode(showErrors, namespace);
+		}
+	}
+
+	public async refreshDirectMode(showErrors: boolean = true, resourceGroup: string, namespace: string): Promise<void> {
 		const newRegistrations: Registration[] = [];
 		await Promise.all([
 			this._azApi.az.arcdata.dc.config.show(namespace, this.azAdditionalEnvVars).then(result => {
@@ -107,7 +117,66 @@ export class ControllerModel {
 						};
 					}));
 				}),
-				this._azApi.az.sql.miarc.list(namespace, this.azAdditionalEnvVars).then(result => {
+				this._azApi.az.sql.miarc.list({ resourceGroup: resourceGroup, namespace: undefined }, this.azAdditionalEnvVars).then(result => {
+					newRegistrations.push(...result.stdout.map(r => {
+						return {
+							instanceName: r.name,
+							state: r.state,
+							instanceType: ResourceType.sqlManagedInstances
+						};
+					}));
+
+				})
+			]).then(() => {
+				this._registrations = newRegistrations;
+				this.registrationsLastUpdated = new Date();
+				this._onRegistrationsUpdated.fire(this._registrations);
+			})
+		]);
+	}
+
+	public async refreshIndirectMode(showErrors: boolean = true, namespace: string): Promise<void> {
+		const newRegistrations: Registration[] = [];
+		await Promise.all([
+			this._azApi.az.arcdata.dc.config.show(namespace, this.azAdditionalEnvVars).then(result => {
+				this._controllerConfig = result.stdout;
+				this.configLastUpdated = new Date();
+				this._onConfigUpdated.fire(this._controllerConfig);
+			}).catch(err => {
+				// If an error occurs show a message so the user knows something failed but still
+				// fire the event so callers hooking into this can handle the error (e.g. so dashboards don't show the
+				// loading icon forever)
+				if (showErrors) {
+					vscode.window.showErrorMessage(loc.fetchConfigFailed(this.info.name, err));
+				}
+				this._onConfigUpdated.fire(this._controllerConfig);
+				throw err;
+			}),
+			this._azApi.az.arcdata.dc.endpoint.list(namespace, this.azAdditionalEnvVars).then(result => {
+				this._endpoints = result.stdout;
+				this.endpointsLastUpdated = new Date();
+				this._onEndpointsUpdated.fire(this._endpoints);
+			}).catch(err => {
+				// If an error occurs show a message so the user knows something failed but still
+				// fire the event so callers can know to update (e.g. so dashboards don't show the
+				// loading icon forever)
+				if (showErrors) {
+					vscode.window.showErrorMessage(loc.fetchEndpointsFailed(this.info.name, err));
+				}
+				this._onEndpointsUpdated.fire(this._endpoints);
+				throw err;
+			}),
+			Promise.all([
+				this._azApi.az.postgres.arcserver.list(namespace, this.azAdditionalEnvVars).then(result => {
+					newRegistrations.push(...result.stdout.map(r => {
+						return {
+							instanceName: r.name,
+							state: r.state,
+							instanceType: ResourceType.postgresInstances
+						};
+					}));
+				}),
+				this._azApi.az.sql.miarc.list({ resourceGroup: undefined, namespace: namespace }, this.azAdditionalEnvVars).then(result => {
 					newRegistrations.push(...result.stdout.map(r => {
 						return {
 							instanceName: r.name,

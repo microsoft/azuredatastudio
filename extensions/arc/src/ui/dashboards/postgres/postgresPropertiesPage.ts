@@ -77,7 +77,7 @@ export class PostgresPropertiesPage extends DashboardPage {
 					this.loading!.loading = true;
 					await Promise.all([
 						this._postgresModel.refresh(),
-						this._controllerModel.refresh(false, this._controllerModel.info.namespace)
+						this._controllerModel.refresh(false, this._controllerModel.info.resourceGroup, this._controllerModel.info.namespace)
 					]);
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.refreshFailed(error));
