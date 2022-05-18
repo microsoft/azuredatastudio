@@ -36,7 +36,7 @@ export class MiaaUpgradeManagementPage extends DashboardPage {
 		return IconPathHelper.upgrade;
 	}
 	protected async refresh(): Promise<void> {
-		await Promise.resolve(this._controllerModel.refresh(false, this._controllerModel.info.resourceGroup, this._controllerModel.info.namespace));
+		await Promise.resolve(this._controllerModel.refresh(false, this._controllerModel.info.namespace));
 		this.handleTableUpdated();
 	}
 
@@ -289,7 +289,7 @@ export class MiaaUpgradeManagementPage extends DashboardPage {
 								}
 
 								try {
-									await this._controllerModel.refresh(false, this._controllerModel.info.resourceGroup, this._controllerModel.info.namespace);
+									await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
 								} catch (error) {
 									vscode.window.showErrorMessage(loc.refreshFailed(error));
 								}

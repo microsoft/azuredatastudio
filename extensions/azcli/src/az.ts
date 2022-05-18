@@ -112,13 +112,15 @@ export class AzTool implements azExt.IAzApi {
 					stderr: output.stderr
 				};
 			},
-			upgrade: (desiredVersion: string, name: string, resourceGroup?: string, namespace?: string, usek8s?: boolean, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
+			upgrade: (desiredVersion: string, name: string, resourceGroup?: string, namespace?: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
 				const argsArray = ['arcdata', 'dc', 'upgrade', '--desired-version', desiredVersion, '--name', name];
 				// Direct mode argument
 				if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
 				// Indirect mode arguments
-				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
-				if (usek8s) { argsArray.push('--use-k8s'); }
+				if (namespace) {
+					argsArray.push('--k8s-namespace', namespace);
+					argsArray.push('--use-k8s');
+				}
 				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
 		}

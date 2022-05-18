@@ -74,7 +74,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	}
 
 	protected async refresh(): Promise<void> {
-		await Promise.all([this._controllerModel.refresh(false, this._controllerModel.info.resourceGroup, this._controllerModel.info.namespace), this._miaaModel.refresh()]);
+		await Promise.all([this._controllerModel.refresh(false, this._controllerModel.info.namespace), this._miaaModel.refresh()]);
 	}
 
 	public get container(): azdata.Component {

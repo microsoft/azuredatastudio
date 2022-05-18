@@ -534,7 +534,7 @@ declare module 'az-ext' {
 					show(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcConfigShowResult>>
 				},
 				listUpgrades(namespace: string, usek8s?: boolean, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcListUpgradesResult>>,
-				upgrade(desiredVersion: string, name: string, resourceGroup?: string, namespace?: string, usek8s?: boolean, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
+				upgrade(desiredVersion: string, name: string, resourceGroup?: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
 			}
 		},
 		postgres: {
