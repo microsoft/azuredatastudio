@@ -17,7 +17,7 @@ import { IconPathHelper } from '../common/iconHelper';
 import { WorkspaceTreeItem } from 'dataworkspace';
 import * as constants from '../common/constants';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
-import { GenerateProjectFromOpenApiSpecOptions } from 'sqldbproj';
+import { GenerateProjectFromOpenApiSpecOptions, ItemType } from 'sqldbproj';
 
 /**
  * The main controller class that initializes the extension
@@ -67,13 +67,13 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.createProjectFromDatabase', async (context: azdataType.IConnectionProfile | vscodeMssql.ITreeNodeInfo | undefined) => { return this.projectsController.createProjectFromDatabase(context); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.generateProjectFromOpenApiSpec', async (options?: GenerateProjectFromOpenApiSpecOptions) => { return this.projectsController.generateProjectFromOpenApiSpec(options); });
 
-		vscode.commands.registerCommand('sqlDatabaseProjects.newScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.script); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newPreDeploymentScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.preDeployScript); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newPostDeploymentScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.postDeployScript); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newTable', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.table); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newView', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.view); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newStoredProcedure', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.storedProcedure); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newExternalStreamingJob', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.externalStreamingJob); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.script); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newPreDeploymentScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.preDeployScript); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newPostDeploymentScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.postDeployScript); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newTable', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.table); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newView', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.view); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newStoredProcedure', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.storedProcedure); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newExternalStreamingJob', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.externalStreamingJob); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newItem', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.addExistingItem', async (node: WorkspaceTreeItem) => { return this.projectsController.addExistingItemPrompt(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newFolder', async (node: WorkspaceTreeItem) => { return this.projectsController.addFolderPrompt(node); });

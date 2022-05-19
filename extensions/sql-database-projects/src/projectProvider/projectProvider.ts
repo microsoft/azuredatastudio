@@ -104,6 +104,10 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 		return Project.openProject(projectFilePath);
 	}
 
+	public addItemPrompt(project: sqldbproj.ISqlProject, relativeFilePath: string, options?: sqldbproj.AddItemOptions): Promise<void> {
+		return this.projectController.addItemPrompt(project, relativeFilePath, options);
+	}
+
 	/**
 	 * Gets the project actions to be placed on the dashboard toolbar
 	 */
