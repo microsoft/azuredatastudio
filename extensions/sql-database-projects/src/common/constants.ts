@@ -179,6 +179,7 @@ export function confirmPassword(name: string) { return localize('confirmPassword
 export function selectBaseImage(name: string) { return localize('selectBaseImage', "Select the base {0} docker image", name); }
 export function selectImageTag(name: string) { return localize('selectImageTag', "Select the image tag or press enter to use the default value", name); }
 export function invalidSQLPasswordMessage(name: string) { return localize('invalidSQLPassword', "{0} password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy", name); }
+export function invalidAzureSQLPasswordMessage(name: string) { return localize('invalidAzureSQLPasswordMessage', "{0} password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=azuresqldb-current", name); }
 export function passwordNotMatch(name: string) { return localize('passwordNotMatch', "{0} password doesn't match the confirmation password", name); }
 export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be number");
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
