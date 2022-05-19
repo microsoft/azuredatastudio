@@ -35,15 +35,15 @@
   },
   "devDependencies": {
     "@types/chai": "3.4.34",
-    "@types/mocha": "^5.2.5",
+    "@types/mocha": "^7.0.2",
     "@types/node": "^10.14.8",
     "@azure/keyvault-secrets": "^4.4.0",
     "@azure/identity": "^2.0.4",
     "chai": "3.5.0",
-    "mocha": "^5.2.0",
+    "mocha": "^7.1.1",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
-    "@microsoft/vscodetestcover": "^1.2.0"
+    "vscodetestcover": "github:Microsoft/vscodetestcover#1.2.1"
   },
   "resolutions": {
     "mocha": "^7.1.1"

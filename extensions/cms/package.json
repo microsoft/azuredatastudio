@@ -657,13 +657,13 @@
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
-    "@types/mocha": "^5.2.5",
+    "@types/mocha": "^7.0.2",
     "@types/node": "^12.11.7",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
-    "mocha": "^5.2.0",
+    "mocha": "^7.1.1",
     "should": "^13.2.1",
-    "@microsoft/vscodetestcover": "^1.2.0",
+    "vscodetestcover": "github:Microsoft/vscodetestcover#1.2.1",
     "typemoq": "^2.1.0"
   },
   "resolutions": {

@@ -1,106 +1,106 @@
 {
-	"name": "import",
-	"displayName": "SQL Server Import",
-	"description": "SQL Server Import for Azure Data Studio supports importing CSV or JSON files into SQL Server.",
-	"version": "1.5.0",
-	"publisher": "Microsoft",
-	"preview": true,
-	"engines": {
-		"vscode": "*",
-		"azdata": ">=1.25.0"
-	},
-	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx",
-	"icon": "images/extension.png",
-	"aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
-	"activationEvents": [
-		"onCommand:flatFileImport.start"
-	],
-	"main": "./out/main",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Microsoft/azuredatastudio.git"
-	},
-	"capabilities": {
-		"virtualWorkspaces": false,
-		"untrustedWorkspaces": {
-		  "supported": true
-		}
-	},
-	"extensionDependencies": [
-		"Microsoft.mssql"
-	],
-	"contributes": {
-		"commands": [
-			{
-				"command": "flatFileImport.start",
-				"title": "Import wizard",
-				"category": "Flat File Import",
-				"icon": {
-					"light": "./images/light_icon.svg",
-					"dark": "./images/dark_icon.svg"
-				}
-			}
-		],
-		"keybindings": [
-			{
-				"command": "flatFileImport.start",
-				"key": "ctrl+i",
-				"mac": "ctrl+i"
-			}
-		],
-		"menus": {
-			"objectExplorer/item/context": [
-				{
-					"command": "flatFileImport.start",
-					"when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && mssql:engineedition != 11",
-					"group": "import"
-				}
-			],
-			"dataExplorer/context": [
-				{
-					"command": "flatFileImport.start",
-					"when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && mssql:engineedition != 11",
-					"group": "import"
-				}
-			]
-		},
-		"configuration": {
-			"type": "object",
-			"title": "%flatfileimport.configuration.title%",
-			"properties": {
-				"flatFileImport.logDebugInfo": {
-					"type": "boolean",
-					"default": false,
-					"description": "%flatfileimport.logDebugInfo%"
-				}
-			}
-		}
-	},
-	"dependencies": {
-		"dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.3.0",
-		"htmlparser2": "^3.10.1",
-		"@microsoft/ads-service-downloader": "0.2.4",
-		"vscode-extension-telemetry": "0.4.2",
-		"vscode-nls": "^3.2.1"
-	},
-	"devDependencies": {
-		"@types/mocha": "^5.2.5",
-		"@types/node": "^12.11.7",
-		"@types/sinon": "^9.0.4",
-		"mocha": "^5.2.0",
-		"mocha-junit-reporter": "^1.17.0",
-		"mocha-multi-reporters": "^1.1.7",
-		"should": "^13.2.1",
-		"sinon": "^9.0.2",
-		"typemoq": "^2.1.0",
-		"@microsoft/vscodetestcover": "^1.2.0"
-	},
+  "name": "import",
+  "displayName": "SQL Server Import",
+  "description": "SQL Server Import for Azure Data Studio supports importing CSV or JSON files into SQL Server.",
+  "version": "1.5.0",
+  "publisher": "Microsoft",
+  "preview": true,
+  "engines": {
+    "vscode": "*",
+    "azdata": ">=1.25.0"
+  },
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx",
+  "icon": "images/extension.png",
+  "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
+  "activationEvents": [
+    "onCommand:flatFileImport.start"
+  ],
+  "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
+  "extensionDependencies": [
+    "Microsoft.mssql"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "flatFileImport.start",
+        "title": "Import wizard",
+        "category": "Flat File Import",
+        "icon": {
+          "light": "./images/light_icon.svg",
+          "dark": "./images/dark_icon.svg"
+        }
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "flatFileImport.start",
+        "key": "ctrl+i",
+        "mac": "ctrl+i"
+      }
+    ],
+    "menus": {
+      "objectExplorer/item/context": [
+        {
+          "command": "flatFileImport.start",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && mssql:engineedition != 11",
+          "group": "import"
+        }
+      ],
+      "dataExplorer/context": [
+        {
+          "command": "flatFileImport.start",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && mssql:engineedition != 11",
+          "group": "import"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "%flatfileimport.configuration.title%",
+      "properties": {
+        "flatFileImport.logDebugInfo": {
+          "type": "boolean",
+          "default": false,
+          "description": "%flatfileimport.logDebugInfo%"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.3.0",
+    "htmlparser2": "^3.10.1",
+    "@microsoft/ads-service-downloader": "0.2.4",
+    "vscode-extension-telemetry": "0.4.2",
+    "vscode-nls": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^12.11.7",
+    "@types/sinon": "^9.0.4",
+    "mocha": "^7.1.1",
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.7",
+    "should": "^13.2.1",
+    "sinon": "^9.0.2",
+    "typemoq": "^2.1.0",
+    "vscodetestcover": "github:Microsoft/vscodetestcover#1.2.1"
+  },
   "resolutions": {
     "mocha": "^7.1.1"
   },
-	"__metadata": {
-		"id": "23",
-		"publisherDisplayName": "Microsoft",
-		"publisherId": "Microsoft"
-	}
+  "__metadata": {
+    "id": "23",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
+  }
 }
