@@ -215,9 +215,20 @@ declare module 'sqldbproj' {
 		 */
 		readonly sqlCmdVariables: Record<string, string>;
 
+		/**
+		 * Pre-deployment scripts in this project
+		 */
 		readonly preDeployScripts: IFileProjectEntry[];
 
+		/**
+		 * Post-deployment scripts in this project
+		 */
 		readonly postDeployScripts: IFileProjectEntry[];
+
+		/**
+		 * "None" scripts in this project (scripts ignored by the build)
+		 */
+		readonly noneDeployScripts: IFileProjectEntry[];
 	}
 
 	/**
