@@ -59,10 +59,21 @@ declare module 'sqldbproj' {
 		 * Prompts the user to add a new item to the specified project
 		 * @param project The project to add the item to
 		 * @param relativeFilePath The relative path in the project where the item should be added
-		 * @param itemType Optional - The type of item to add. If not specified the user will choose from a list of available types
+		 * @param options The additional options to use
 		 */
-		promptAddItem(project: ISqlProject, relativeFilePath: string, itemType?: string): Promise<void>;
+		promptAddItem(project: ISqlProject, relativeFilePath: string, options?: AddItemOptions): Promise<void>;
 
+	}
+
+	export interface AddItemOptions {
+		/**
+		 * The type of item to add. If not specified the user will choose from a list of available types
+		 */
+		itemType?: string,
+		/**
+		 * The default name to display in the name prompt
+		 */
+		defaultName?: string
 	}
 
 	/**
