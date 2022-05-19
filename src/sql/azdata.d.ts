@@ -2354,7 +2354,11 @@ declare module 'azdata' {
 		/**
 		 * Kusto
 		 */
-		AzureKusto = 10
+		AzureKusto = 10,
+		/**
+		 * Power BI
+		 */
+		PowerBi = 11
 	}
 
 	export interface DidChangeAccountsParams {
