@@ -681,7 +681,7 @@ export async function promptSelectTable(connectionURI: string, bindingType: Bind
 		});
 
 		if (selectedObject === manuallyEnterObjectName) {
-			let selectedObject = promptToManuallyEnterObjectName(bindingType);
+			selectedObject = await promptToManuallyEnterObjectName(bindingType);
 			if (!selectedObject) {
 				// user cancelled so we will show the tables prompt again
 				continue;
