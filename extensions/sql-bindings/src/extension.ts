@@ -20,6 +20,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		addSqlBinding: async (bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string): Promise<ResultStatus> => {
 			return addSqlBinding(bindingType, filePath, functionName, objectName, connectionStringSetting);
 		},
+		createAzureFunction: async (): Promise<void> => {
+			return createAzureFunction();
+		},
 		promptForBindingType: async (funcName?: string): Promise<BindingType | undefined> => {
 			return promptForBindingType(funcName);
 		},
