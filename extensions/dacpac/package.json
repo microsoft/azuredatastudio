@@ -108,9 +108,6 @@
     "typemoq": "^2.1.0",
     "@microsoft/vscodetestcover": "^1.2.1"
   },
-  "resolutions": {
-    "mocha": "^7.1.1"
-  },
   "__metadata": {
     "id": "33",
     "publisherDisplayName": "Microsoft",

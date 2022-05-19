@@ -20,12 +20,12 @@
     "Microsoft.azcli",
     "Microsoft.resource-deployment"
   ],
-	"capabilities": {
+  "capabilities": {
     "virtualWorkspaces": false,
     "untrustedWorkspaces": {
       "supported": true
     }
-	},
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
@@ -1134,8 +1134,7 @@
                           "defaultValue": "2",
                           "optionsType": "radio"
                         },
-                        "dynamicOptions":
-                        {
+                        "dynamicOptions": {
                           "target": "AZDATA_NB_VAR_SQL_SERVICE_TIER",
                           "alternates": [
                             {
@@ -1387,7 +1386,7 @@
                       }
                     ]
                   }
-                 ]
+                ]
               }
             ]
           },
@@ -1458,9 +1457,6 @@
     "sinon": "^9.0.2",
     "typemoq": "2.1.0",
     "@microsoft/vscodetestcover": "^1.2.1"
-  },
-  "resolutions": {
-    "mocha": "^7.1.1"
   },
   "__metadata": {
     "id": "68",

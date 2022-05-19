@@ -157,9 +157,6 @@
     "typemoq": "^2.1.0",
     "lodash": "^4.17.21"
   },
-  "resolutions": {
-    "mocha": "^7.1.1"
-  },
   "__metadata": {
     "id": "65",
     "publisherDisplayName": "Microsoft",

@@ -799,8 +799,7 @@
   },
   "resolutions": {
     "url-parse": "^1.5.8",
-    "moment": "^2.29.2",
-    "mocha": "^7.1.1"
+    "moment": "^2.29.2"
   },
   "enableProposedApi": true
 }
