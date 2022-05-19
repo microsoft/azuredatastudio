@@ -120,8 +120,11 @@ describe('Tests to verify utils functions', function (): void {
 		should(isValidSQLPassword('dF65530')).equals(false, 'string with char and numbers only is invalid password');
 		should(isValidSQLPassword('dF6$30')).equals(false, 'dF6$30 is invalid password');
 		should(isValidSQLPassword('dF65$530')).equals(true, 'dF65$530 is valid password');
-		should(isValidSQLPassword('dFdf65$530')).equals(true, 'dF65$530 is valid password');
-		should(isValidSQLPassword('av1fgh533@')).equals(true, 'dF65$530 is valid password');
+		should(isValidSQLPassword('dFdf65$530')).equals(true, 'dFdf65$530 is valid password');
+		should(isValidSQLPassword('av1fgh533@')).equals(true, 'av1fgh533@ is valid password');
+		should(isValidSQLPassword('av1fgh533', 'testuser', true)).equals(false, 'av1fgh533 is invalid password');
+		should(isValidSQLPassword('testuserFG533@', 'testuser', true)).equals(false, 'testuserFG533@ is invalid password');
+		should(isValidSQLPassword('accFG533@', 'testuser', true)).equals(true, 'accFG533@is valid password');
 	});
 
 	it('findSqlVersionInImageName should return the version correctly', () => {

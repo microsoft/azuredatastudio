@@ -227,7 +227,7 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 		title: constants.enterPassword(name),
 		ignoreFocusOut: true,
 		value: password,
-		validateInput: input => !utils.isValidSQLPassword(input) ? constants.invalidSQLPasswordMessage(name) : undefined,
+		validateInput: input => !utils.isValidSQLPassword(input, user, true) ? constants.invalidSQLPasswordMessage(name) : undefined,
 		password: true
 	}
 	);

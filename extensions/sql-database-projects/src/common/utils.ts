@@ -489,7 +489,7 @@ export function isEmptyString(input: string | undefined): boolean {
 	return input === undefined || input === '';
 }
 
-export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {
+export function isValidSQLPassword(password: string, userName: string = 'sa', isAzure: boolean = false): boolean {
 	// Validate SQL Server password
 	const containsUserName = password && userName !== undefined && password.toUpperCase().includes(userName.toUpperCase());
 	// Instead of using one RegEx, I am separating it to make it more readable.
@@ -497,7 +497,8 @@ export function isValidSQLPassword(password: string, userName: string = 'sa'): b
 	const hasLowerCase = /[a-z]/.test(password) ? 1 : 0;
 	const hasNumbers = /\d/.test(password) ? 1 : 0;
 	const hasNonAlphas = /\W/.test(password) ? 1 : 0;
-	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas >= 3);
+	const minScore = isAzure ? 4 : 3;
+	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas >= minScore);
 }
 
 export async function showErrorMessageWithOutputChannel(errorMessageFunc: (error: string) => string, error: any, outputChannel: vscode.OutputChannel): Promise<void> {
