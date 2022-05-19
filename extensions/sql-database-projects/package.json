@@ -30,12 +30,12 @@
     "Microsoft.mssql",
     "Microsoft.schema-compare"
   ],
-	"capabilities": {
+  "capabilities": {
     "virtualWorkspaces": false,
     "untrustedWorkspaces": {
       "supported": true
     }
-	},
+  },
   "contributes": {
     "projects": [
       "sqlproj"
@@ -482,6 +482,9 @@
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
     "@microsoft/vscodetestcover": "^1.2.0"
+  },
+  "resolutions": {
+    "mocha": "^7.1.1"
   },
   "__metadata": {
     "id": "70",

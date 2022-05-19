@@ -44,5 +44,8 @@
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "@microsoft/vscodetestcover": "^1.2.0"
+  },
+  "resolutions": {
+    "mocha": "^7.1.1"
   }
 }

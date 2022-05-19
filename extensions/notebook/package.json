@@ -329,7 +329,8 @@
           "Notebook"
         ],
         "configuration": "./language-configuration.json"
-      }, {
+      },
+      {
         "id": "dib",
         "extensions": [
           ".dib"
@@ -712,7 +713,9 @@
               "MSSQL"
             ],
             "blockedOnSAW": true,
-            "supportedLanguages": ["python"]
+            "supportedLanguages": [
+              "python"
+            ]
           },
           {
             "name": "sparkkernel",
@@ -720,7 +723,9 @@
             "connectionProviderIds": [
               "MSSQL"
             ],
-            "supportedLanguages": ["scala"],
+            "supportedLanguages": [
+              "scala"
+            ],
             "blockedOnSAW": true
           },
           {
@@ -729,20 +734,26 @@
             "connectionProviderIds": [
               "MSSQL"
             ],
-            "supportedLanguages": ["r"],
+            "supportedLanguages": [
+              "r"
+            ],
             "blockedOnSAW": true
           },
           {
             "name": "python3",
             "displayName": "Python 3",
             "connectionProviderIds": [],
-            "supportedLanguages": ["python"]
+            "supportedLanguages": [
+              "python"
+            ]
           },
           {
             "name": "powershell",
             "displayName": "PowerShell",
             "connectionProviderIds": [],
-            "supportedLanguages": ["powershell"]
+            "supportedLanguages": [
+              "powershell"
+            ]
           }
         ]
       }
@@ -788,7 +799,8 @@
   },
   "resolutions": {
     "url-parse": "^1.5.8",
-    "moment": "^2.29.2"
+    "moment": "^2.29.2",
+    "mocha": "^7.1.1"
   },
   "enableProposedApi": true
 }

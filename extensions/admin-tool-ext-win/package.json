@@ -120,6 +120,9 @@
     "should": "^13.2.3",
     "@microsoft/vscodetestcover": "^1.2.0"
   },
+  "resolutions": {
+    "mocha": "^7.1.1"
+  },
   "__metadata": {
     "id": "41",
     "publisherDisplayName": "Microsoft",

@@ -111,6 +111,9 @@
     "@microsoft/vscodetestcover": "^1.2.0",
     "sinon": "^9.0.2"
   },
+  "resolutions": {
+    "mocha": "^7.1.1"
+  },
   "__metadata": {
     "id": "37",
     "publisherDisplayName": "Microsoft",
