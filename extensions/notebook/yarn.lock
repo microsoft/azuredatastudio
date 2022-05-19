@@ -228,6 +228,21 @@
   dependencies:
     vscode-extension-telemetry "^0.1.6"
 
+"@microsoft/vscodetestcover@1.2.1-rc1":
+  version "1.2.1-rc1"
+  resolved "https://registry.yarnpkg.com/@microsoft/vscodetestcover/-/vscodetestcover-1.2.1-rc1.tgz#913f74afec7b9d3c88d1c57a0bd20e7c1623991c"
+  integrity sha512-LBV70wFHbPQVTSCxgnf5b6kL9Zp203onbG5dJY06+4+pFU7RiCNybADGm1ea5BJSwhYCc+8Qsfhv8UqoC2fZvQ==
+  dependencies:
+    decache "^4.4.0"
+    glob "^7.1.2"
+    istanbul-lib-coverage "^3.0.0"
+    istanbul-lib-hook "^3.0.0"
+    istanbul-lib-instrument "^4.0.0"
+    istanbul-lib-report "^3.0.0"
+    istanbul-lib-source-maps "^3.0.6"
+    istanbul-reports "^3.0.0"
+    mocha "^7.1.1"
+
 "@nodelib/fs.scandir@2.1.3":
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.3.tgz#3a582bdb53804c6ba6d146579c46e52130cf4a3b"
@@ -2367,20 +2382,6 @@ vscode-nls@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/vscode-nls/-/vscode-nls-4.0.0.tgz#4001c8a6caba5cedb23a9c5ce1090395c0e44002"
   integrity sha512-qCfdzcH+0LgQnBpZA53bA32kzp9rpq/f66Som577ObeuDlFIrtbEJ+A/+CCxjIh4G8dpJYNCKIsxpRAHIfsbNw==
-
-"vscodetestcover@github:Microsoft/vscodetestcover#1.2.1":
-  version "1.2.1"
-  resolved "https://codeload.github.com/Microsoft/vscodetestcover/tar.gz/ca7a57d34b25fa726582fa2cb1e0cc893768db74"
-  dependencies:
-    decache "^4.4.0"
-    glob "^7.1.2"
-    istanbul-lib-coverage "^3.0.0"
-    istanbul-lib-hook "^3.0.0"
-    istanbul-lib-instrument "^4.0.0"
-    istanbul-lib-report "^3.0.0"
-    istanbul-lib-source-maps "^3.0.6"
-    istanbul-reports "^3.0.0"
-    mocha "^7.1.1"
 
 webidl-conversions@^3.0.0:
   version "3.0.1"

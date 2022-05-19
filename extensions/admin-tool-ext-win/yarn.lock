@@ -203,6 +203,21 @@
     tmp "^0.0.33"
     yauzl "^2.10.0"
 
+"@microsoft/vscodetestcover@1.2.1-rc1":
+  version "1.2.1-rc1"
+  resolved "https://registry.yarnpkg.com/@microsoft/vscodetestcover/-/vscodetestcover-1.2.1-rc1.tgz#913f74afec7b9d3c88d1c57a0bd20e7c1623991c"
+  integrity sha512-LBV70wFHbPQVTSCxgnf5b6kL9Zp203onbG5dJY06+4+pFU7RiCNybADGm1ea5BJSwhYCc+8Qsfhv8UqoC2fZvQ==
+  dependencies:
+    decache "^4.4.0"
+    glob "^7.1.2"
+    istanbul-lib-coverage "^3.0.0"
+    istanbul-lib-hook "^3.0.0"
+    istanbul-lib-instrument "^4.0.0"
+    istanbul-lib-report "^3.0.0"
+    istanbul-lib-source-maps "^3.0.6"
+    istanbul-reports "^3.0.0"
+    mocha "^7.1.1"
+
 "@types/mocha@^7.0.2":
   version "7.0.2"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-7.0.2.tgz#b17f16cf933597e10d6d78eae3251e692ce8b0ce"
@@ -1570,20 +1585,6 @@ vscode-nls@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/vscode-nls/-/vscode-nls-4.1.2.tgz#ca8bf8bb82a0987b32801f9fddfdd2fb9fd3c167"
   integrity sha512-7bOHxPsfyuCqmP+hZXscLhiHwe7CSuFE4hyhbs22xPIhQ4jv99FcR4eBzfYYVLP356HNFpdvz63FFb/xw6T4Iw==
-
-"vscodetestcover@github:Microsoft/vscodetestcover#1.2.1":
-  version "1.2.1"
-  resolved "https://codeload.github.com/Microsoft/vscodetestcover/tar.gz/ca7a57d34b25fa726582fa2cb1e0cc893768db74"
-  dependencies:
-    decache "^4.4.0"
-    glob "^7.1.2"
-    istanbul-lib-coverage "^3.0.0"
-    istanbul-lib-hook "^3.0.0"
-    istanbul-lib-instrument "^4.0.0"
-    istanbul-lib-report "^3.0.0"
-    istanbul-lib-source-maps "^3.0.6"
-    istanbul-reports "^3.0.0"
-    mocha "^7.1.1"
 
 which-boxed-primitive@^1.0.2:
   version "1.0.2"

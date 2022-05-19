@@ -118,7 +118,7 @@
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",
-    "vscodetestcover": "github:Microsoft/vscodetestcover#1.2.1"
+    "@microsoft/vscodetestcover": "1.2.1-rc1"
   },
   "__metadata": {
     "id": "41",
