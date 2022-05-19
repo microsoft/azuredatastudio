@@ -345,7 +345,8 @@ declare module 'azurecore' {
 			postgresServer = 'microsoft.dbforpostgresql/servers',
 			azureArcService = 'microsoft.azuredata/datacontrollers',
 			storageAccount = 'microsoft.storage/storageaccounts',
-			logAnalytics = 'microsoft.operationalinsights/workspaces'
+			logAnalytics = 'microsoft.operationalinsights/workspaces',
+			cosmosDbAccount = 'microsoft.documentdb/databaseaccounts'
 		}
 
 		export interface IAzureResourceProvider extends azdata.DataProvider {
