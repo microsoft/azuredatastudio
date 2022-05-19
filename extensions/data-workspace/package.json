@@ -190,7 +190,7 @@
     "should": "^13.2.3",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "@microsoft/vscodetestcover": "1.2.1-rc1"
+    "@microsoft/vscodetestcover": "^1.2.1"
   },
   "resolutions": {
     "mocha": "^7.1.1"

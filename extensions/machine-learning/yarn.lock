@@ -230,10 +230,10 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
-"@microsoft/vscodetestcover@1.2.1-rc1":
-  version "1.2.1-rc1"
-  resolved "https://registry.yarnpkg.com/@microsoft/vscodetestcover/-/vscodetestcover-1.2.1-rc1.tgz#913f74afec7b9d3c88d1c57a0bd20e7c1623991c"
-  integrity sha512-LBV70wFHbPQVTSCxgnf5b6kL9Zp203onbG5dJY06+4+pFU7RiCNybADGm1ea5BJSwhYCc+8Qsfhv8UqoC2fZvQ==
+"@microsoft/vscodetestcover@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@microsoft/vscodetestcover/-/vscodetestcover-1.2.1.tgz#65f25132075a465a7a99688204486ee2b65ac07b"
+  integrity sha512-ODHGLbx+mqHCrs44Yy3OTxr6gZowqsf45s5FQYWukI6OCgJlWrhIPNgW2YyDVH8OE5ZDI7dt9pXXdhEbfGV7gA==
   dependencies:
     decache "^4.4.0"
     glob "^7.1.2"

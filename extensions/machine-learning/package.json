@@ -146,7 +146,7 @@
     "polly-js": "^1.6.3"
   },
   "devDependencies": {
-    "@microsoft/vscodetestcover": "1.2.1-rc1",
+    "@microsoft/vscodetestcover": "^1.2.1",
     "@types/mocha": "^7.0.2",
     "@types/node": "^10.14.8",
     "@types/request": "^2.48.1",
