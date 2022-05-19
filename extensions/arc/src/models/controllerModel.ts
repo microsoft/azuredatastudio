@@ -71,9 +71,9 @@ export class ControllerModel {
 	public async refresh(showErrors: boolean = true, namespace: string): Promise<void> {
 		await this.refreshController(showErrors, namespace);
 		if (this._controllerConfig?.spec.settings.azure.connectionMode === ConnectionMode.direct) {
-			this.refreshDirectMode(this._controllerConfig?.spec.settings.azure.resourceGroup, namespace);
+			await this.refreshDirectMode(this._controllerConfig?.spec.settings.azure.resourceGroup, namespace);
 		} else {
-			this.refreshIndirectMode(namespace);
+			await this.refreshIndirectMode(namespace);
 		}
 	}
 
