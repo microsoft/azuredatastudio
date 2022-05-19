@@ -111,7 +111,7 @@ export class AzdataGraphView {
 	 * Zooms in to the diagram.
 	 */
 	public zoomIn(): void {
-		this._diagram.graph.zoomIn();
+		this._diagram.zoomIn();
 	}
 
 
@@ -119,16 +119,14 @@ export class AzdataGraphView {
 	 * Zooms out of the diagram
 	 */
 	public zoomOut(): void {
-		this._diagram.graph.zoomOut();
+		this._diagram.zoomOut();
 	}
 
 	/**
 	 * Fits the diagram into the parent container size.
 	 */
 	public zoomToFit(): void {
-		this._diagram.graph.fit();
-		this._diagram.graph.view.rendering = true;
-		this._diagram.graph.view.refresh();
+		this._diagram.zoomToFit();
 	}
 
 	/**
@@ -146,7 +144,7 @@ export class AzdataGraphView {
 		if (level < 1) {
 			throw new Error(localize('invalidExecutionPlanZoomError', "Zoom level cannot be 0 or negative"));
 		}
-		this._diagram.graph.view.setScale(level / 100);
+		this._diagram.zoomTo(level);
 	}
 
 	/**
