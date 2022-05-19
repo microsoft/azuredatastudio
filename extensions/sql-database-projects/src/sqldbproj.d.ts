@@ -61,7 +61,7 @@ declare module 'sqldbproj' {
 		 * @param relativeFilePath The relative path in the project where the item should be added
 		 * @param options The additional options to use
 		 */
-		promptAddItem(project: ISqlProject, relativeFilePath: string, options?: AddItemOptions): Promise<void>;
+		addItemPrompt(project: ISqlProject, relativeFilePath: string, options?: AddItemOptions): Promise<void>;
 
 	}
 
