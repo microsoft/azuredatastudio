@@ -572,13 +572,13 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 				ignoreFocusOut: true
 			});
 			if (includePassword === constants.yesString) {
-				// set connection string to include password
+				// get connection string to include password
 				connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, true, false);
 			}
 		}
 
 		if (includePassword !== constants.yesString || !connectionInfo.password || connectionInfo.authenticationType !== 'SqlLogin') {
-			// set connection string to not include the password if connection info does not include password,
+			// get connection string to not include the password if connection info does not include password,
 			// or user chooses to not include password (or if user cancels out of include password prompt), or authentication type is not SQL login
 			connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
 
