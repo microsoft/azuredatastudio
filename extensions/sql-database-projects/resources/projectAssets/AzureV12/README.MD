@@ -7,10 +7,10 @@ Microsoft Azure SQL Database Local Development experience for Azure Data Studio 
 Microsoft SQL Server Database Projects for Azure Data Studio and VS Code provides a way to design, edit, and publish and run schemas for Azure SQL databases from a source-controlled project.
 
 ## Getting Started with Database Projects
-•	Create a new database project by going to the Projects viewlet or by searching Projects: New in the command palette.
-•	Existing database projects can be opened by going to the Projects viewlet or by searching Projects: Open Existing in the command palette.
-•	Start from an existing database by using the Create Project from Database from the command palette or database context menu.
-•	Start from an OpenAPI/Swagger spec by using the Generate SQL Project from OpenAPI/Swagger spec command.
+*	Create a new database project by going to the Projects viewlet or by searching Projects: New in the command palette.
+*	Existing database projects can be opened by going to the Projects viewlet or by searching Projects: Open Existing in the command palette.
+*	Start from an existing database by using the Create Project from Database from the command palette or database context menu.
+*	Start from an OpenAPI/Swagger spec by using the Generate SQL Project from OpenAPI/Swagger spec command.
 
 ![Pic1](./assets/pic1.jpg)
 
@@ -30,7 +30,7 @@ Database project files can be put under source control together with your applic
 You can get edit and build time support for your database project objects and scripts by selecting a proper target platform for your project. This will let VS Code to highlight syntax issues or the usage of unsupported features for the selected platform:
 
 ![Pic5](./assets/pic5.jpg)
- 
+
 You can build your project and validate that it will work against the selected platform:
 
 ![Pic6](./assets/pic6.jpg)
@@ -50,7 +50,6 @@ And you select between Azure SQL Database “lite” and a “full” images. Wi
 You can create as many local instances as necessary, based on available resources, and manage their lifecycle through VS Code Docker Extension or CLI commands.
 
 ![Pic10](./assets/pic10.jpg)
- 
 Once instances of your database projects are running, you can connect from VS Code mssql extension and test your scripts and queries, like any regular Azure SQL Database instance in the cloud:
 
 ![Pic11](./assets/pic11.jpg)
