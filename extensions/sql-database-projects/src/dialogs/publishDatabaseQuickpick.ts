@@ -9,7 +9,7 @@ import { Project } from '../models/project';
 import { PublishProfile, readPublishProfile } from '../models/publishProfile/publishProfile';
 import { promptForPublishProfile } from './publishDatabaseDialog';
 import { getDefaultPublishDeploymentOptions, getVscodeMssqlApi } from '../common/utils';
-import { IConnectionInfo } from 'vscode-mssql';
+import { IConnectionInfo, IFireWallRuleError } from 'vscode-mssql';
 import { IDeploySettings } from '../models/IDeploySettings';
 import { getPublishServerName } from './utils';
 import { SqlTargetPlatform } from 'sqldbproj';
@@ -89,7 +89,18 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 			}
 			// Get the list of databases now to validate that the connection is valid and re-prompt them if it isn't
 			try {
-				connectionUri = await vscodeMssqlApi.connect(connectionProfile);
+				try {
+					connectionUri = await vscodeMssqlApi.connect(connectionProfile);
+				} catch (azureErr) {
+					// If the error is the firewall rule, prompt to add firewall rule and try again
+					const firewallRuleError = <IFireWallRuleError>azureErr;
+					if (firewallRuleError?.connectionUri) {
+						await vscodeMssqlApi.promptForFirewallRule(azureErr.connectionUri, connectionProfile);
+						connectionUri = await vscodeMssqlApi.connect(connectionProfile);
+					} else {
+						throw azureErr;
+					}
+				}
 				dbs = await vscodeMssqlApi.listDatabases(connectionUri);
 			} catch (err) {
 				// no-op, the mssql extension handles showing the error to the user. We'll just go
