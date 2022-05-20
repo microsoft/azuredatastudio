@@ -858,6 +858,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.failedToFindAccount" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Failed to find azure account {0} when executing token refresh]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[執行權杖重新整理時找不到 azure 帳戶 {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.failedToFindTenants" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Failed to find tenant '{0}' in account '{1}' when refreshing security token]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[重新整理安全性權杖時，在帳戶 '{1}'中找不到租用戶 '{0}']]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.group" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Group]]></Val>
@@ -966,6 +984,24 @@
           <Prev Cat="Text">
             <Val><![CDATA[Sticky]]></Val>
           </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.tokenRefreshFailed" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0} AAD token refresh failed, please reconnect to enable {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} AAD 權杖重新更新失敗，請重新連接以啟用 {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.tokenRefreshFailedNoSecurityToken" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[編輯器權杖重新整理失敗，將會停用自動編譯，直到編輯器中斷連線並重新連線為止]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

@@ -111,12 +111,12 @@ describe('az', function () {
 			describe('mi-arc', function (): void {
 				it('delete', async function (): Promise<void> {
 					// Assume indirect mode
-					await azTool.sql.miarc.delete(name, namespace);
+					await azTool.sql.miarc.delete(name, {resourceGroup: undefined, namespace: namespace});
 					verifyExecuteCommandCalledWithArgs(['sql', 'mi-arc', 'delete', name, '--k8s-namespace', namespace, '--use-k8s']);
 				});
 				it('list', async function (): Promise<void> {
 					// Assume indirect mode
-					await azTool.sql.miarc.list(namespace);
+					await azTool.sql.miarc.list({resourceGroup: undefined, namespace: namespace});
 					verifyExecuteCommandCalledWithArgs(['sql', 'mi-arc', 'list', '--k8s-namespace', namespace, '--use-k8s']);
 				});
 				it('show', async function (): Promise<void> {

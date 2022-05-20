@@ -121,7 +121,7 @@ export class MiaaModel extends ResourceModel {
 				}
 				this._config = result.stdout;
 				this.configLastUpdated = new Date();
-				this.rpSettings.retentionDays = this._config?.properties?.k8SRaw?.spec?.backup?.retentionPeriodInDays?.toString() ?? '';
+				this.rpSettings.retentionDays = this._config?.spec?.backup?.retentionPeriodInDays?.toString() ?? '';
 				this._onConfigUpdated.fire(this._config);
 				this._onDatabasesUpdated.fire(this._databases);
 			} catch (err) {
@@ -135,7 +135,7 @@ export class MiaaModel extends ResourceModel {
 			}
 
 			// If we have an external endpoint configured then fetch the databases now
-			if (this._config.properties?.k8SRaw?.status.primaryEndpoint) {
+			if (this._config.status.primaryEndpoint) {
 				this.getDatabases(false).catch(_err => {
 					// If an error occurs still fire the event so callers can know to
 					// update (e.g. so dashboards don't show the loading icon forever)
@@ -217,7 +217,7 @@ export class MiaaModel extends ResourceModel {
 	}
 
 	protected createConnectionProfile(): azdata.IConnectionProfile {
-		const ipAndPort = parseIpAndPort(this.config?.properties?.k8SRaw?.status.primaryEndpoint || '');
+		const ipAndPort = parseIpAndPort(this.config?.status.primaryEndpoint || '');
 		return {
 			serverName: `${ipAndPort.ip},${ipAndPort.port}`,
 			databaseName: '',

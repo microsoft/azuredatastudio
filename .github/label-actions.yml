@@ -2,8 +2,9 @@
 Needs Logs:
   comment: "We need more info to debug your particular issue. If you could attach your logs to the issue (ensure no private data is in them), it would help us fix the issue much faster.
 
+First open the Settings page, find the `Mssql: Tracing Level` setting and change that to `All` then restart ADS and repro your issue.
 
-There are two types of logs to collect:
+Next there are two types of logs to collect:
 
 
 **Console Logs**

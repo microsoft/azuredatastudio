@@ -153,6 +153,11 @@
       <source xml:lang="en">Log Analytics workspace</source>
     </trans-unit>
 </body></file>
+  <file original="extensions/azurecore/dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel">
+      <source xml:lang="en">CosmosDB for Mongo</source>
+    </trans-unit>
+</body></file>
   <file original="extensions/azurecore/dist/azureResource/providers/database/databaseTreeDataProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
       <source xml:lang="en">SQL database</source>

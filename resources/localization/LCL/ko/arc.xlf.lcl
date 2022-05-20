@@ -4563,12 +4563,12 @@
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.service.tier.business.critical" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[[PREVIEW]5D; Business Critical (Unlimited vCores and RAM, advanced high availability)]]></Val>
+          <Val><![CDATA[Business Critical (Unlimited vCores and RAM, advanced high availability)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[[미리 보기]5D; 비즈니스 크리티컬(무제한 vCore 및 RAM, 고급 고가용성)]]></Val>
+            <Val><![CDATA[중요 비즈니스용(무제한 vCore 및 RAM, 고급 고가용성)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[BusinessCritical]]></Val>
+            <Val><![CDATA[[PREVIEW]5D; Business Critical (Unlimited vCores and RAM, advanced high availability)]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />

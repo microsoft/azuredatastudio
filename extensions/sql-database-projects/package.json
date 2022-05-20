@@ -30,12 +30,12 @@
     "Microsoft.mssql",
     "Microsoft.schema-compare"
   ],
-	"capabilities": {
+  "capabilities": {
     "virtualWorkspaces": false,
     "untrustedWorkspaces": {
       "supported": true
     }
-	},
+  },
   "contributes": {
     "projects": [
       "sqlproj"
@@ -470,18 +470,18 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^5.0.0",
-    "@types/mocha": "^5.2.5",
+    "@types/mocha": "^7.0.2",
     "@types/sinon": "^9.0.4",
     "@types/which": "^2.0.1",
     "@types/xml-formatter": "^1.1.0",
     "@types/xmldom": "^0.1.29",
-    "mocha": "^5.2.0",
+    "mocha": "^7.1.1",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "@microsoft/vscodetestcover": "^1.2.0"
+    "@microsoft/vscodetestcover": "^1.2.1"
   },
   "__metadata": {
     "id": "70",
