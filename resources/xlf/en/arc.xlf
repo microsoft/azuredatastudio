@@ -292,6 +292,9 @@
     <trans-unit id="arc.errorConnectingToController">
       <source xml:lang="en">Error connecting to controller. {0}</source>
     </trans-unit>
+    <trans-unit id="arc.errorGettingConnectionMode">
+      <source xml:lang="en">Error getting data controller connection mode.</source>
+    </trans-unit>
     <trans-unit id="arc.errorListingLogAnalyticsWorkspaces">
       <source xml:lang="en">Error listing Log Analytics workspaces {0}</source>
     </trans-unit>
