@@ -75,7 +75,7 @@
     "angular2-grid": "2.0.6",
     "ansi_up": "^5.1.0",
     "applicationinsights": "1.0.8",
-    "azdataGraph": "github:Microsoft/azdataGraph#0.0.25",
+    "azdataGraph": "github:Microsoft/azdataGraph#0.0.26",
     "chart.js": "^2.9.4",
     "chokidar": "3.5.2",
     "graceful-fs": "4.2.6",

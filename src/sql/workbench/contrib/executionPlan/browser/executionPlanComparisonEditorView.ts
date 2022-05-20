@@ -473,20 +473,20 @@ export class ExecutionPlanComparisonEditorView {
 	}
 
 	public zoomIn(): void {
-		this.topPlanDiagrams[this._activeTopPlanIndex].zoomIn();
-		this.bottomPlanDiagrams[this._activeBottomPlanIndex].zoomIn();
+		this._activeTopPlanDiagram.zoomIn();
+		this._activeBottomPlanDiagram.zoomIn();
 		this.syncZoom();
 	}
 
 	public zoomOut(): void {
-		this.topPlanDiagrams[this._activeTopPlanIndex].zoomOut();
-		this.bottomPlanDiagrams[this._activeBottomPlanIndex].zoomOut();
+		this._activeTopPlanDiagram.zoomOut();
+		this._activeBottomPlanDiagram.zoomOut();
 		this.syncZoom();
 	}
 
 	public zoomToFit(): void {
-		this.topPlanDiagrams[this._activeTopPlanIndex].zoomToFit();
-		this.bottomPlanDiagrams[this._activeBottomPlanIndex].zoomToFit();
+		this._activeTopPlanDiagram.zoomToFit();
+		this._activeBottomPlanDiagram.zoomToFit();
 		this.syncZoom();
 	}
 
@@ -500,10 +500,10 @@ export class ExecutionPlanComparisonEditorView {
 	}
 
 	private syncZoom(): void {
-		if (this.topPlanDiagrams[this._activeTopPlanIndex].getZoomLevel() < this.bottomPlanDiagrams[this._activeBottomPlanIndex].getZoomLevel()) {
-			this.bottomPlanDiagrams[this._activeBottomPlanIndex].setZoomLevel(this.topPlanDiagrams[this._activeTopPlanIndex].getZoomLevel());
+		if (this._activeTopPlanDiagram.getZoomLevel() < this._activeBottomPlanDiagram.getZoomLevel()) {
+			this._activeBottomPlanDiagram.setZoomLevel(this._activeTopPlanDiagram.getZoomLevel());
 		} else {
-			this.topPlanDiagrams[this._activeTopPlanIndex].setZoomLevel(this.bottomPlanDiagrams[this._activeBottomPlanIndex].getZoomLevel());
+			this._activeTopPlanDiagram.setZoomLevel(this._activeBottomPlanDiagram.getZoomLevel());
 		}
 	}
 }
