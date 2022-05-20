@@ -20,7 +20,7 @@ import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticip
 import * as DOM from 'vs/base/browser/dom';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { localize } from 'vs/nls';
-import { addIconClassName, openPropertiesIconClassNames, resetZoomIconClassName, splitScreenHorizontallyIconClassName, splitScreenVerticallyIconClassName, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { addIconClassName, openPropertiesIconClassNames, polygonBorderColor, polygonFillColor, resetZoomIconClassName, splitScreenHorizontallyIconClassName, splitScreenVerticallyIconClassName, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { extname } from 'vs/base/common/path';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -70,6 +70,11 @@ export class ExecutionPlanComparisonEditorView {
 	private _topPlanDiagramModels: azdata.executionPlan.ExecutionPlanGraph[];
 	private _activeTopPlanIndex: number = 0;
 	private _topPlanRecommendations: ExecutionPlanViewHeader;
+	private _topSimilarNode: Map<string, azdata.executionPlan.ExecutionGraphComparisonResult> = new Map();
+	private _polygonRootsMap: Map<number, {
+		topPolygon: azdata.executionPlan.ExecutionGraphComparisonResult,
+		bottomPolygon: azdata.executionPlan.ExecutionGraphComparisonResult
+	}> = new Map();
 
 	private get _activeTopPlanDiagram(): AzdataGraphView {
 		if (this.topPlanDiagrams.length > 0) {
@@ -86,6 +91,8 @@ export class ExecutionPlanComparisonEditorView {
 	private _bottomPlanDiagramModels: azdata.executionPlan.ExecutionPlanGraph[];
 	private _activeBottomPlanIndex: number = 0;
 	private _bottomPlanRecommendations: ExecutionPlanViewHeader;
+	private _bottomSimilarNode: Map<string, azdata.executionPlan.ExecutionGraphComparisonResult> = new Map();
+
 
 	private get _activeBottomPlanDiagram(): AzdataGraphView {
 		if (this.bottomPlanDiagrams.length > 0) {
@@ -174,6 +181,8 @@ export class ExecutionPlanComparisonEditorView {
 		this._topPlanDropdown = new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._topPlanDropdownContainer);
 		this._topPlanDropdown.render(this._topPlanDropdownContainer);
 		this._topPlanDropdown.onDidSelect(e => {
+			this._activeBottomPlanDiagram.clearSubtreePolygon();
+			this._activeTopPlanDiagram.clearSubtreePolygon();
 			this._topPlanDiagramContainers.forEach(c => {
 				c.style.display = 'none';
 			});
@@ -196,6 +205,8 @@ export class ExecutionPlanComparisonEditorView {
 		this._bottomPlanDropdown = new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._bottomPlanDropdownContainer);
 		this._bottomPlanDropdown.render(this._bottomPlanDropdownContainer);
 		this._bottomPlanDropdown.onDidSelect(e => {
+			this._activeBottomPlanDiagram.clearSubtreePolygon();
+			this._activeTopPlanDiagram.clearSubtreePolygon();
 			this._bottomPlanDiagramContainers.forEach(c => {
 				c.style.display = 'none';
 			});
@@ -303,6 +314,15 @@ export class ExecutionPlanComparisonEditorView {
 				const diagram = this._instantiationService.createInstance(AzdataGraphView, graphContainer, e);
 				diagram.onElementSelected(e => {
 					this._propertiesView.setTopElement(e);
+					const id = e.id.replace(`element-`, '');
+					if (this._topSimilarNode.has(id)) {
+						const similarNode = this._topSimilarNode.get(id);
+						const element = this._activeBottomPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
+						if (similarNode.matchingNodesId.find(m => this._activeBottomPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
+							return;
+						}
+						this._activeBottomPlanDiagram.selectElement(element);
+					}
 				});
 				this.topPlanDiagrams.push(diagram);
 				graphContainer.style.display = 'none';
@@ -327,6 +347,15 @@ export class ExecutionPlanComparisonEditorView {
 				const diagram = this._instantiationService.createInstance(AzdataGraphView, graphContainer, e);
 				diagram.onElementSelected(e => {
 					this._propertiesView.setBottomElement(e);
+					const id = e.id.replace(`element-`, '');
+					if (this._bottomSimilarNode.has(id)) {
+						const similarNode = this._bottomSimilarNode.get(id);
+						const element = this._activeTopPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
+						if (similarNode.matchingNodesId.find(m => this._activeTopPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
+							return;
+						}
+						this._activeTopPlanDiagram.selectElement(element);
+					}
 				});
 				this.bottomPlanDiagrams.push(diagram);
 				graphContainer.style.display = 'none';
@@ -342,14 +371,48 @@ export class ExecutionPlanComparisonEditorView {
 		this.refreshSplitView();
 	}
 
-	private getSkeletonNodes(): void {
+	private async getSkeletonNodes(): Promise<void> {
+		this._polygonRootsMap = new Map();
+		this._topSimilarNode = new Map();
+		this._bottomSimilarNode = new Map();
 		if (this._topPlanDiagramModels && this._bottomPlanDiagramModels) {
 			this._topPlanDiagramModels[this._activeTopPlanIndex].graphFile.graphFileType = 'sqlplan';
 			this._bottomPlanDiagramModels[this._activeBottomPlanIndex].graphFile.graphFileType = 'sqlplan';
-
-			this._executionPlanService.compareExecutionPlanGraph(this._topPlanDiagramModels[this._activeTopPlanIndex].graphFile,
+			const result = await this._executionPlanService.compareExecutionPlanGraph(this._topPlanDiagramModels[this._activeTopPlanIndex].graphFile,
 				this._bottomPlanDiagramModels[this._activeBottomPlanIndex].graphFile);
+			this.getSimilarSubtrees(result.firstComparisonResult);
+			this.getSimilarSubtrees(result.secondComparisonResult, true);
+			let colorIndex = 0;
+			this._polygonRootsMap.forEach((v, k) => {
+				this._activeTopPlanDiagram.drawSubtreePolygon(v.topPolygon.baseNode.id, polygonFillColor[colorIndex], polygonBorderColor[colorIndex]);
+				this._activeBottomPlanDiagram.drawSubtreePolygon(v.bottomPolygon.baseNode.id, polygonFillColor[colorIndex], polygonBorderColor[colorIndex]);
+				colorIndex += 1;
+			});
 		}
+	}
+
+	private getSimilarSubtrees(comparedNode: azdata.executionPlan.ExecutionGraphComparisonResult, isBottomPlan: boolean = false): void {
+		if (comparedNode.hasMatch) {
+			if (!isBottomPlan) {
+				this._topSimilarNode.set(`${comparedNode.baseNode.id}`, comparedNode);
+				if (!this._polygonRootsMap.has(comparedNode.groupIndex)) {
+					this._polygonRootsMap.set(comparedNode.groupIndex, {
+						topPolygon: comparedNode,
+						bottomPolygon: undefined
+					});
+				}
+			} else {
+				this._bottomSimilarNode.set(`${comparedNode.baseNode.id}`, comparedNode);
+				if (this._polygonRootsMap.get(comparedNode.groupIndex).bottomPolygon === undefined) {
+					const polygonMapEntry = this._polygonRootsMap.get(comparedNode.groupIndex);
+					polygonMapEntry.bottomPolygon = comparedNode;
+					this._polygonRootsMap.set(comparedNode.groupIndex, polygonMapEntry);
+				}
+			}
+		}
+		comparedNode.children.forEach(c => {
+			this.getSimilarSubtrees(c, isBottomPlan);
+		});
 	}
 
 	public togglePropertiesView(): void {

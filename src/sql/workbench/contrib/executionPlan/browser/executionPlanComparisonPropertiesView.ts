@@ -11,7 +11,7 @@ import { textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { isString } from 'vs/base/common/types';
 import { removeLineBreaks } from 'sql/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
-import { InternalExecutionPlanElement, InternalExecutionPlanNode } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
+import { InternalExecutionPlanElement } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
 
 export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanPropertiesViewBase {
 	private _model: ExecutionPlanComparisonPropertiesViewModel;
@@ -37,8 +37,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 	public setTopElement(e: InternalExecutionPlanElement): void {
 		this._model.topElement = e;
 		let target;
-		if ((<InternalExecutionPlanNode>e)?.name) {
-			target = removeLineBreaks((<InternalExecutionPlanNode>e).name);
+		if ((<azdata.executionPlan.ExecutionPlanNode>e).name) {
+			target = removeLineBreaks((<azdata.executionPlan.ExecutionPlanNode>e).name);
 		} else {
 			target = localize('executionPlanPropertiesEdgeOperationName', "Edge");
 		}
@@ -51,8 +51,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 	public setBottomElement(e: InternalExecutionPlanElement): void {
 		this._model.bottomElement = e;
 		let target;
-		if ((<InternalExecutionPlanNode>e)?.name) {
-			target = removeLineBreaks((<InternalExecutionPlanNode>e).name);
+		if ((<azdata.executionPlan.ExecutionPlanNode>e)?.name) {
+			target = removeLineBreaks((<azdata.executionPlan.ExecutionPlanNode>e).name);
 		} else {
 			target = localize('executionPlanPropertiesEdgeOperationName', "Edge");
 		}

@@ -279,3 +279,81 @@ export const splitScreenHorizontallyIconClassName = 'ep-split-screen-horizontall
 export const splitScreenVerticallyIconClassName = 'ep-split-screen-vertically-icon';
 export const resetZoomIconClassName = 'ep-reset-zoom-icon';
 export const executionPlanCompareIconClassName = 'ep-plan-compare-icon';
+
+/**
+ * Plan comparison polygon border colors
+ */
+export const polygonBorderColor: string[] = [
+	`rgba(0, 188, 242)`,    // "themeMain blue"
+	`rgba(236, 0, 140)`,    // "themeError pink"
+	`rgba(0, 216, 204)`,    // "h2 blue"
+	`rgba(236, 0, 140)`,    // "b0 orange"
+	`rgba(255, 140, 0)`,    // "themeWarning orange"
+	`rgba(127, 186, 0)`,    // "themeSuccess green"
+	`rgba(252, 214, 241)`,  // "paletteDiffDel light pink"
+	`rgba(252, 209, 22)`,   // "a1 gold"
+	`rgba(68,35,89)`,       // "e1 dark purple"
+	`rgba(0, 114, 198)`,    // "g1 blue"
+	`rgba(160, 165, 168)`,  // "i1 green"
+	`rgba(255, 140, 0)`,    // "k1 grey"
+	`rgba(199, 241, 199)`,  // "paletteDiffAdd light green"
+	`rgba(0, 24, 143)`,     // "d0 pink",
+	`rgba(186, 216, 10)`,   // "f0 royal blue"
+	`rgba(255, 252, 158)`,  // "h0 seafoam green"
+	`rgba(221, 89, 0)`,     // "j0 yellow green"
+	`rgba(155, 79, 150)`,   // "a2 light yellow"
+	`rgba(109, 194, 233)`,  // "c2 burnt orange"
+	`rgba(85, 212, 85)`,    // "e2 purple"
+	`rgba(180, 0, 158)`,    // "d1 purple"
+	`rgba(0, 32, 80)`,      // "f1 navy blue"
+	`rgba(0, 130, 114)`,    // "h1 blue green"
+	`rgba(127, 186, 0)`,    // "j1 yellow green"
+	`rgba(255, 241, 0)`,    // "a0 bright yellow"
+	`rgba(104, 33, 122)`,   // "e0 purple"
+	`rgba(0, 188, 242)`,    // "g0 sky blue"
+	`rgba(0, 158, 73)`,     // "i0 green"
+	`rgba(187, 194, 202)`,  // "k0 grey"
+	`rgba(255, 185, 0)`,    // "b2 gold"
+	`rgba(244, 114, 208)`,  // "d2 pink"
+	`rgba(70, 104, 197)`,   // "f2 blue purple"
+	`rgba(226, 229, 132)`,  // "j2 khaki"
+];
+
+/**
+ * Plan comparison polygon fill colors
+ */
+export const polygonFillColor: string[] = [
+	`rgba(0, 188, 242, 0.1)`,    // "themeMain blue"
+	`rgba(236, 0, 140, 0.1)`,    // "themeError pink"
+	`rgba(0, 216, 204, 0.1)`,    // "h2 blue"
+	`rgba(236, 0, 140, 0.1)`,    // "b0 orange"
+	`rgba(255, 140, 0, 0.1)`,    // "themeWarning orange"
+	`rgba(127, 186, 0, 0.1)`,    // "themeSuccess green"
+	`rgba(252, 214, 241, 0.1)`,  // "paletteDiffDel light pink"
+	`rgba(252, 209, 22, 0.1)`,   // "a1 gold"
+	`rgba(68,35,89, 0.1)`,       // "e1 dark purple"
+	`rgba(0, 114, 198, 0.1)`,    // "g1 blue"
+	`rgba(160, 165, 168, 0.1)`,  // "i1 green"
+	`rgba(255, 140, 0, 0.1)`,    // "k1 grey"
+	`rgba(199, 241, 199, 0.1)`,  // "paletteDiffAdd light green"
+	`rgba(0, 24, 143, 0.1)`,     // "d0 pink",
+	`rgba(186, 216, 10, 0.1)`,   // "f0 royal blue"
+	`rgba(255, 252, 158, 0.1)`,  // "h0 seafoam green"
+	`rgba(221, 89, 0, 0.1)`,     // "j0 yellow green"
+	`rgba(155, 79, 150, 0.1)`,   // "a2 light yellow"
+	`rgba(109, 194, 233, 0.1)`,  // "c2 burnt orange"
+	`rgba(85, 212, 85, 0.1)`,    // "e2 purple"
+	`rgba(180, 0, 158, 0.1)`,    // "d1 purple"
+	`rgba(0, 32, 80, 0.1)`,      // "f1 navy blue"
+	`rgba(0, 130, 114, 0.1)`,    // "h1 blue green"
+	`rgba(127, 186, 0, 0.1)`,    // "j1 yellow green"
+	`rgba(255, 241, 0, 0.1)`,    // "a0 bright yellow"
+	`rgba(104, 33, 122, 0.1)`,   // "e0 purple"
+	`rgba(0, 188, 242, 0.1)`,    // "g0 sky blue"
+	`rgba(0, 158, 73, 0.1)`,     // "i0 green"
+	`rgba(187, 194, 202, 0.1)`,  // "k0 grey"
+	`rgba(255, 185, 0, 0.1)`,    // "b2 gold"
+	`rgba(244, 114, 208, 0.1)`,  // "d2 pink"
+	`rgba(70, 104, 197, 0.1)`,   // "f2 blue purple"
+	`rgba(226, 229, 132, 0.1)`,  // "j2 khaki"
+];
