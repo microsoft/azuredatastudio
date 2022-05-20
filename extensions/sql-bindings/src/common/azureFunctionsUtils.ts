@@ -335,15 +335,15 @@ export async function promptForObjectName(bindingType: BindingType, connectionIn
 		// get connectionURI and selectedDatabase to be used for listing tables query request
 		connectionURI = await getConnectionURI(connectionInfo);
 		if (!connectionURI) {
-			// User cancelled or mssql connection error
+			// mssql connection error
 			// we will then prompt user to choose a connection profile again
-			continue;
+			return undefined;
 		}
 		selectedDatabase = await promptSelectDatabase(connectionURI);
 		if (!selectedDatabase) {
 			// User cancelled
 			// we will then prompt user to choose a connection profile again
-			continue;
+			return undefined;
 		}
 
 		connectionInfo.database = selectedDatabase;
