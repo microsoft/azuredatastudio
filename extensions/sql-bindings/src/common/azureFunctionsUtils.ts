@@ -323,35 +323,31 @@ export async function promptForObjectName(bindingType: BindingType, connectionIn
 	let connectionURI: string | undefined;
 	let selectedDatabase: string | undefined;
 
-	while (true) {
-		if (!connectionInfo) {
-			// prompt is shown when user selects an existing connection string setting
-			// or manually enters a connection string
-			return promptToManuallyEnterObjectName(bindingType);
-		}
-
-		// TODO create path to solve for selectView (first need to support views as well)
-		// Prompt user to select a table based on connection profile and selected database}
-		// get connectionURI and selectedDatabase to be used for listing tables query request
-		connectionURI = await getConnectionURI(connectionInfo);
-		if (!connectionURI) {
-			// mssql connection error
-			// we will then prompt user to choose a connection profile again
-			return undefined;
-		}
-		selectedDatabase = await promptSelectDatabase(connectionURI);
-		if (!selectedDatabase) {
-			// User cancelled
-			// we will then prompt user to choose a connection profile again
-			return undefined;
-		}
-
-		connectionInfo.database = selectedDatabase;
-
-		let selectedObjectName = await promptSelectTable(connectionURI, bindingType, selectedDatabase);
-
-		return selectedObjectName;
+	if (!connectionInfo) {
+		// prompt is shown when user selects an existing connection string setting
+		// or manually enters a connection string
+		return promptToManuallyEnterObjectName(bindingType);
 	}
+
+	// TODO create path to solve for selectView (first need to support views as well)
+	// Prompt user to select a table based on connection profile and selected database}
+	// get connectionURI and selectedDatabase to be used for listing tables query request
+	connectionURI = await getConnectionURI(connectionInfo);
+	if (!connectionURI) {
+		// mssql connection error
+		return undefined;
+	}
+	selectedDatabase = await promptSelectDatabase(connectionURI);
+	if (!selectedDatabase) {
+		// User cancelled
+		return undefined;
+	}
+
+	connectionInfo.database = selectedDatabase;
+
+	let selectedObjectName = await promptSelectTable(connectionURI, bindingType, selectedDatabase);
+
+	return selectedObjectName;
 }
 
 /**
