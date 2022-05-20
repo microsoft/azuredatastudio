@@ -35,7 +35,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 		return IconPathHelper.upgrade;
 	}
 	protected async refresh(): Promise<void> {
-		await Promise.resolve(this._controllerModel.refresh(false, this._controllerModel.info.resourceGroup, this._controllerModel.info.namespace));
+		await Promise.resolve(this._controllerModel.refresh(false, this._controllerModel.info.namespace));
 		this.handleTableUpdated();
 	}
 
@@ -236,7 +236,6 @@ export class ControllerUpgradesPage extends DashboardPage {
 											this._controllerModel.info.name,
 											this._controllerModel.info.resourceGroup,
 											undefined, // Indirect mode argument - namespace
-											undefined // Indirect mode argument - usek8s
 										);
 									} else {
 										await this._azApi.az.arcdata.dc.upgrade(
@@ -244,7 +243,6 @@ export class ControllerUpgradesPage extends DashboardPage {
 											this._controllerModel.info.name,
 											undefined, // Direct mode argument - resourceGroup
 											this._controllerModel.info.namespace,
-											true
 										);
 									}
 								} else {
@@ -252,7 +250,7 @@ export class ControllerUpgradesPage extends DashboardPage {
 								}
 
 								try {
-									await this._controllerModel.refresh(false, this._controllerModel.info.resourceGroup, this._controllerModel.info.namespace);
+									await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
 								} catch (error) {
 									vscode.window.showErrorMessage(loc.refreshFailed(error));
 								}
