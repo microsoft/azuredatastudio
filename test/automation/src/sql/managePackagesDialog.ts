@@ -37,8 +37,13 @@ export class ManagePackagesDialog extends Dialog {
 		const searchButton = `${ManagePackagesDialog.dialogPage} a[class="monaco-button monaco-text-button"][aria-label="Search"][aria-disabled="false"]`;
 		await this.code.waitAndClick(searchButton);
 
+		const packageNameSelector = `${ManagePackagesDialog.dialogPage} div[id="textContainer"] span`;
+		await this.code.waitForTextContent(packageNameSelector, packageName);
+
 		if (packageVersion) {
 			const versionSelectBox = `${ManagePackagesDialog.dialogPage} select[class="monaco-select-box monaco-select-box-dropdown-padding"][aria-label="Package Version"]`;
+			const versionOption = `${versionSelectBox} option[value="${packageVersion}]`;
+			await this.code.waitForElement(versionOption);
 			await this.code.waitForSetValue(versionSelectBox, packageVersion);
 		}
 
