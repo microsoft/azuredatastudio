@@ -22,7 +22,7 @@ This extension is bundled into the `SQL Server (MSSQL)` extension for VS Code an
 * Create an Azure Function with SQL binding by searching the command palette for `Create Azure Function with SQL Binding`. If you have not yet created the Azure Function project, the process will create one for you before populating the Azure Function.
 ![Add SQL Binding in command palette](media/CreateAzFunc.png)
 
-Learn more about Azure Functions with SQL bindings [here](https://aka.ms/azure-functions-sql-bindings).
+Learn more about Azure Functions with SQL bindings [here](https://aka.ms/sqlbindings).
 
 ## Code of Conduct
 
