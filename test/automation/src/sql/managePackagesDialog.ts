@@ -19,7 +19,7 @@ export class ManagePackagesDialog extends Dialog {
 		await this.waitForNewDialog();
 	}
 
-	async addNewPackage(packageName: string, packageVersion: string = ''): Promise<void> {
+	async addNewPackage(packageName: string): Promise<string> {
 		const addNewTab = `${ManagePackagesDialog.dialogPage} div[class="tab-header"][aria-controls="dialogPane.Manage Packages.1"]`;
 		await this.code.waitAndClick(addNewTab);
 
@@ -40,12 +40,8 @@ export class ManagePackagesDialog extends Dialog {
 		const packageNameSelector = `${ManagePackagesDialog.dialogPage} div[id="textContainer"] span`;
 		await this.code.waitForTextContent(packageNameSelector, packageName);
 
-		if (packageVersion) {
-			const versionSelectBox = `${ManagePackagesDialog.dialogPage} select[class="monaco-select-box monaco-select-box-dropdown-padding"][aria-label="Package Version"]`;
-			const versionOption = `${versionSelectBox} option[value="${packageVersion}]`;
-			await this.code.waitForElement(versionOption);
-			await this.code.waitForSetValue(versionSelectBox, packageVersion);
-		}
+		const versionSelectBox = `${ManagePackagesDialog.dialogPage} select[class="monaco-select-box monaco-select-box-dropdown-padding"][aria-label="Package Version"] option`;
+		let packageVersion = await this.code.waitForTextContent(versionSelectBox);
 
 		const installButton = `${ManagePackagesDialog.dialogPage} a[class="monaco-button monaco-text-button"][aria-label="Install"][aria-disabled="false"]`;
 		await this.code.waitAndClick(installButton);
@@ -60,5 +56,7 @@ export class ManagePackagesDialog extends Dialog {
 		const closeButton = '.modal .modal-footer a[class="monaco-button monaco-text-button"][aria-label="Close"][aria-disabled="false"]';
 		await this.code.waitAndClick(closeButton);
 		await this.waitForDialogGone();
+
+		return packageVersion;
 	}
 }
