@@ -579,6 +579,7 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 			connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
 
 			if (connectionInfo.authenticationType !== 'SqlLogin') {
+				// temporarily fix until STS is fix to not include the placeholder: https://github.com/microsoft/sqltoolsservice/issues/1508
 				// if authentication type is not SQL login, remove password in connection string
 				connectionString = connectionString.replace(`Password=${constants.passwordPlaceholder};`, '');
 			}
