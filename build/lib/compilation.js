@@ -40,6 +40,13 @@ function createCompile(src, build, emitError) {
     if (!build && !process.env['SQL_NO_INLINE_SOURCEMAP']) {
         overrideOptions.inlineSourceMap = true;
     }
+    else if (!build) {
+        console.warn('********************************************************************************************');
+        console.warn('* Inlining of source maps is DISABLED, which will prevent debugging from working properly, *');
+        console.warn('* but is required to generate code coverage reports.                                       *');
+        console.warn('* To re-enable inlining of source maps clear the SQL_NO_INLINE_SOURCEMAP environment var   *');
+        console.warn('********************************************************************************************');
+    }
     const compilation = tsb.create(projectPath, overrideOptions, false, err => reporter(err));
     function pipeline(token) {
         const bom = require('gulp-bom');
