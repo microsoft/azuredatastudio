@@ -578,6 +578,11 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 			// or user chooses to not include password (or if user cancels out of include password prompt), or authentication type is not SQL login
 			connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
 
+			if (connectionInfo.authenticationType !== 'SqlLogin') {
+				// if authentication type is not SQL login, remove password in connection string
+				connectionString = connectionString.replace(`Password=${constants.passwordPlaceholder};`, '');
+			}
+
 			if (!connectionInfo.password && connectionInfo.authenticationType === 'SqlLogin') {
 				// if a connection exists but does not have password saved we ask user if they would like to enter it and save it in local.settings.json
 				userPassword = await vscode.window.showInputBox({
