@@ -335,6 +335,11 @@ export class ExecutionPlanComparisonEditorView {
 			this.topPlanDiagrams[0].selectElement(undefined);
 			this._propertiesView.setTopElement(executionPlanGraphs[0].root);
 			this._propertiesAction.enabled = true;
+			this._zoomInAction.enabled = true;
+			this._zoomOutAction.enabled = true;
+			this._resetZoomAction.enabled = true;
+			this._zoomToFitAction.enabled = true;
+			this._toggleOrientationAction.enabled = true;
 		} else {
 			this._bottomPlanDiagramModels = executionPlanGraphs;
 			this._bottomPlanDropdown.setOptions(executionPlanGraphs.map(e => {
@@ -539,6 +544,7 @@ class ZoomInAction extends Action {
 	public static LABEL = localize('epCompare.zoomInAction', "Zoom In");
 	constructor() {
 		super(ZoomInAction.ID, ZoomInAction.LABEL, zoomInIconClassNames);
+		this.enabled = false;
 	}
 	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
 		context.zoomIn();
@@ -550,6 +556,7 @@ class ZoomOutAction extends Action {
 	public static LABEL = localize('epCompare.zoomOutAction', "Zoom Out");
 	constructor() {
 		super(ZoomOutAction.ID, ZoomOutAction.LABEL, zoomOutIconClassNames);
+		this.enabled = false;
 	}
 	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
 		context.zoomOut();
@@ -562,6 +569,7 @@ class ZoomToFitAction extends Action {
 
 	constructor() {
 		super(ZoomToFitAction.ID, ZoomToFitAction.LABEL, zoomToFitIconClassNames);
+		this.enabled = false;
 	}
 
 	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
@@ -575,6 +583,7 @@ class ZoomReset extends Action {
 
 	constructor() {
 		super(ZoomReset.ID, ZoomReset.LABEL, resetZoomIconClassName);
+		this.enabled = false;
 	}
 
 	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
@@ -588,6 +597,7 @@ class ToggleOrientation extends Action {
 
 	constructor() {
 		super(ToggleOrientation.ID, ToggleOrientation.LABEL, splitScreenHorizontallyIconClassName);
+		this.enabled = false;
 	}
 
 	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
