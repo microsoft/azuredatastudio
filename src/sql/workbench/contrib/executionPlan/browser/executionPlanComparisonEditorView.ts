@@ -182,7 +182,7 @@ export class ExecutionPlanComparisonEditorView {
 		this._topPlanDropdownContainer = DOM.$('.dropdown-container');
 		this._topPlanDropdown = new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._topPlanDropdownContainer);
 		this._topPlanDropdown.render(this._topPlanDropdownContainer);
-		this._topPlanDropdown.onDidSelect(e => {
+		this._topPlanDropdown.onDidSelect(async (e) => {
 			this._activeBottomPlanDiagram.clearSubtreePolygon();
 			this._activeTopPlanDiagram.clearSubtreePolygon();
 			this._topPlanDiagramContainers.forEach(c => {
@@ -193,7 +193,7 @@ export class ExecutionPlanComparisonEditorView {
 			this._propertiesView.setTopElement(this._topPlanDiagramModels[e.index].root);
 			this._topPlanRecommendations.recommendations = this._topPlanDiagramModels[e.index].recommendations;
 			this._activeTopPlanIndex = e.index;
-			this.getSkeletonNodes();
+			await this.getSkeletonNodes();
 		});
 		attachSelectBoxStyler(this._topPlanDropdown, this.themeService);
 		this._topPlanContainer.appendChild(this._topPlanDropdownContainer);
@@ -206,7 +206,7 @@ export class ExecutionPlanComparisonEditorView {
 		this._bottomPlanDropdownContainer = DOM.$('.dropdown-container');
 		this._bottomPlanDropdown = new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._bottomPlanDropdownContainer);
 		this._bottomPlanDropdown.render(this._bottomPlanDropdownContainer);
-		this._bottomPlanDropdown.onDidSelect(e => {
+		this._bottomPlanDropdown.onDidSelect(async (e) => {
 			this._activeBottomPlanDiagram.clearSubtreePolygon();
 			this._activeTopPlanDiagram.clearSubtreePolygon();
 			this._bottomPlanDiagramContainers.forEach(c => {
@@ -217,7 +217,7 @@ export class ExecutionPlanComparisonEditorView {
 			this._propertiesView.setTopElement(this._bottomPlanDiagramModels[e.index].root);
 			this._bottomPlanRecommendations.recommendations = this._bottomPlanDiagramModels[e.index].recommendations;
 			this._activeBottomPlanIndex = e.index;
-			this.getSkeletonNodes();
+			await this.getSkeletonNodes();
 		});
 		attachSelectBoxStyler(this._bottomPlanDropdown, this.themeService);
 
@@ -288,7 +288,7 @@ export class ExecutionPlanComparisonEditorView {
 					graphFileContent: fileContent,
 					graphFileType: extname(fileURI.fsPath).replace('.', '')
 				});
-				this.addExecutionPlanGraph(executionPlanGraphs.graphs);
+				await this.addExecutionPlanGraph(executionPlanGraphs.graphs);
 			}
 			this._placeholderInfoboxContainer.style.display = '';
 			this._placeholderLoading.loading = false;
@@ -300,7 +300,7 @@ export class ExecutionPlanComparisonEditorView {
 
 	}
 
-	public addExecutionPlanGraph(executionPlanGraphs: azdata.executionPlan.ExecutionPlanGraph[]): void {
+	public async addExecutionPlanGraph(executionPlanGraphs: azdata.executionPlan.ExecutionPlanGraph[]): Promise<void> {
 		if (!this._topPlanDiagramModels) {
 			this._topPlanDiagramModels = executionPlanGraphs;
 			this._topPlanDropdown.setOptions(executionPlanGraphs.map(e => {
@@ -367,8 +367,8 @@ export class ExecutionPlanComparisonEditorView {
 			this._bottomPlanRecommendations.recommendations = executionPlanGraphs[0].recommendations;
 			this.bottomPlanDiagrams[0].selectElement(undefined);
 			this._propertiesView.setBottomElement(executionPlanGraphs[0].root);
-			this.getSkeletonNodes();
 			this._addExecutionPlanAction.enabled = false;
+			await this.getSkeletonNodes();
 		}
 		this.refreshSplitView();
 	}
