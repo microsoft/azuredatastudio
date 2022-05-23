@@ -27,13 +27,15 @@ export class ExecutionPlanViewHeader {
 
 	public constructor(
 		private _parentContainer: HTMLElement,
-		headerData: PlanHeaderData,
+		headerData: PlanHeaderData | undefined,
 		@IInstantiationService public readonly _instantiationService: IInstantiationService) {
 
-		this._graphIndex = headerData.planIndex;
-		this._relativeCost = headerData.relativeCost;
-		this._query = headerData.query;
-		this._recommendations = headerData.recommendations ?? [];
+		if (headerData) {
+			this._graphIndex = headerData.planIndex;
+			this._relativeCost = headerData.relativeCost;
+			this._query = headerData.query;
+			this._recommendations = headerData.recommendations ?? [];
+		}
 
 		this._graphIndexAndCostContainer = DOM.$('.index-row');
 		this._queryContainer = DOM.$('.query-row');
@@ -84,28 +86,31 @@ export class ExecutionPlanViewHeader {
 	}
 
 	private renderQueryText(): void {
-		this._queryContainer.innerText = this._query;
+		if (this._query) {
+			this._queryContainer.innerText = this._query;
+		}
 	}
 
 	private renderRecommendations(): void {
-		while (this._recommendationsContainer.firstChild) {
-			this._recommendationsContainer.removeChild(this._recommendationsContainer.firstChild);
+		if (this._recommendations) {
+			while (this._recommendationsContainer.firstChild) {
+				this._recommendationsContainer.removeChild(this._recommendationsContainer.firstChild);
+			}
+			this._recommendations.forEach(r => {
+
+				const link = new Button(this._recommendationsContainer, {
+					title: r.displayString,
+					secondary: true,
+				});
+
+				link.label = r.displayString;
+
+				//Enabling on click action for recommendations. It will open the recommendation File
+				link.onDidClick(e => {
+					this._instantiationService.invokeFunction(openNewQuery, undefined, r.queryWithDescription, RunQueryOnConnectionMode.none);
+				});
+			});
 		}
-		this._recommendations.forEach(r => {
-
-			const link = new Button(this._recommendationsContainer, {
-				title: r.displayString,
-				secondary: true,
-			});
-
-			link.label = r.displayString;
-
-			//Enabling on click action for recommendations. It will open the recommendation File
-			link.onDidClick(e => {
-				this._instantiationService.invokeFunction(openNewQuery, undefined, r.queryWithDescription, RunQueryOnConnectionMode.none);
-			});
-		});
-
 	}
 }
 

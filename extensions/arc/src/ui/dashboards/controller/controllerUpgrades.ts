@@ -236,7 +236,6 @@ export class ControllerUpgradesPage extends DashboardPage {
 											this._controllerModel.info.name,
 											this._controllerModel.info.resourceGroup,
 											undefined, // Indirect mode argument - namespace
-											undefined // Indirect mode argument - usek8s
 										);
 									} else {
 										await this._azApi.az.arcdata.dc.upgrade(
@@ -244,7 +243,6 @@ export class ControllerUpgradesPage extends DashboardPage {
 											this._controllerModel.info.name,
 											undefined, // Direct mode argument - resourceGroup
 											this._controllerModel.info.namespace,
-											true
 										);
 									}
 								} else {

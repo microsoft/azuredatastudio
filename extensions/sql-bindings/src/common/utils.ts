@@ -173,4 +173,3 @@ export function getErrorType(error: any): string | undefined {
 		return 'UnknownError';
 	}
 }
-

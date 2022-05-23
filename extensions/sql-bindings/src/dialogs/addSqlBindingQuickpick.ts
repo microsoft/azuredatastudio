@@ -77,17 +77,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 		TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getBindingType)
 			.withAdditionalProperties(propertyBag).send();
 
-		// 3. ask for object name for the binding
-		quickPickStep = 'getObjectName';
-		const objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding);
-
-		if (!objectName) {
-			return;
-		}
-		TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getObjectName)
-			.withAdditionalProperties(propertyBag).send();
-
-		// 4. ask for connection string setting name
+		// 3. ask for connection string setting name
 		let projectUri: vscode.Uri | undefined;
 		try {
 			projectUri = await azureFunctionsUtils.getAFProjectContainingFile(uri);
@@ -96,17 +86,26 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 		}
 
 		quickPickStep = 'updateConnectionString';
-		let connectionStringSettingName = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(projectUri);
-		if (!connectionStringSettingName) {
+		let connectionStringInfo = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(projectUri);
+		if (!connectionStringInfo) {
 			return;
 		}
 		TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.updateConnectionString)
 			.withAdditionalProperties(propertyBag).send();
 
+		// 4. ask for object name for the binding
+		quickPickStep = 'getObjectName';
+		const objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding, connectionStringInfo.connectionInfo);
+		if (!objectName) {
+			return;
+		}
+		TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.getObjectName)
+			.withAdditionalProperties(propertyBag).send();
+
 		// 5. insert binding
 		try {
 			quickPickStep = 'insertBinding';
-			const result = await addSqlBinding(selectedBinding, uri.fsPath, azureFunctionName, objectName, connectionStringSettingName);
+			const result = await addSqlBinding(selectedBinding, uri.fsPath, azureFunctionName, objectName, connectionStringInfo.connectionStringSettingName!);
 
 			if (!result.success) {
 				void vscode.window.showErrorMessage(result.errorMessage);

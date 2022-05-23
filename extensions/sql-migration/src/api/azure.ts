@@ -200,11 +200,13 @@ export async function createSqlMigrationService(account: azdata.Account, subscri
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
-	const asyncUrl = response.response.headers['azure-asyncoperation'];
+	const asyncUrl = response.response.headers['azure-asyncoperation']
+		.replace('https://management.azure.com/', '');
+
 	const maxRetry = 24;
 	let i = 0;
 	for (i = 0; i < maxRetry; i++) {
-		const asyncResponse = await api.makeAzureRestRequest(account, subscription, asyncUrl.replace('https://management.azure.com/', ''), azurecore.HttpRequestMethod.GET, undefined, true);
+		const asyncResponse = await api.makeAzureRestRequest(account, subscription, asyncUrl, azurecore.HttpRequestMethod.GET, undefined, true);
 		const creationStatus = asyncResponse.response.data.status;
 		if (creationStatus === ProvisioningState.Succeeded) {
 			break;

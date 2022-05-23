@@ -30,6 +30,18 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider.azure.resource.pro" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) viders.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[CosmosDB for Mongo]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Mongo용 CosmosDB]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/database/databaseTreeDataProvider.azure.resource.providers.data" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) base.treeDataProvider.databaseContainerLabel" ItemType="0" PsrId="308" Leaf="true">

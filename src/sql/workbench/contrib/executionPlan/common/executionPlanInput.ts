@@ -67,6 +67,9 @@ export class ExecutionPlanInput extends EditorInput {
 	}
 
 	get resource(): URI | undefined {
-		return undefined;
+		return URI.from({
+			scheme: ExecutionPlanInput.SCHEMA,
+			path: 'execution-plan'
+		});
 	}
 }

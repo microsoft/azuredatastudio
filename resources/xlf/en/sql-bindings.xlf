@@ -52,11 +52,14 @@
     <trans-unit id="enterConnectionStringSettingName">
       <source xml:lang="en">Enter connection string setting name</source>
     </trans-unit>
-    <trans-unit id="enterPasswordManually">
-      <source xml:lang="en">Enter password or press escape to cancel</source>
+    <trans-unit id="enterObjectName">
+      <source xml:lang="en">Enter SQL table or view to query</source>
+    </trans-unit>
+    <trans-unit id="enterObjectNameToUpsert">
+      <source xml:lang="en">Enter SQL table to upsert into</source>
     </trans-unit>
     <trans-unit id="enterPasswordPrompt">
-      <source xml:lang="en">Enter the password to be used for the connection string</source>
+      <source xml:lang="en">(Optional) Enter connection password to save in local.settings.json</source>
     </trans-unit>
     <trans-unit id="errorNewAzureFunction">
       <source xml:lang="en">Error creating new Azure Function: {0}</source>
@@ -147,6 +150,9 @@
     </trans-unit>
     <trans-unit id="selectSetting">
       <source xml:lang="en">Select SQL connection string setting from local.settings.json</source>
+    </trans-unit>
+    <trans-unit id="selectTable">
+      <source xml:lang="en">Select table to use</source>
     </trans-unit>
     <trans-unit id="sqlTableOrViewToQuery">
       <source xml:lang="en">SQL table or view to query</source>

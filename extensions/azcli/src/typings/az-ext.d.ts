@@ -534,7 +534,7 @@ declare module 'az-ext' {
 					show(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcConfigShowResult>>
 				},
 				listUpgrades(namespace: string, usek8s?: boolean, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcListUpgradesResult>>,
-				upgrade(desiredVersion: string, name: string, resourceGroup?: string, namespace?: string, usek8s?: boolean, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
+				upgrade(desiredVersion: string, name: string, resourceGroup?: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
 			}
 		},
 		postgres: {
@@ -566,8 +566,27 @@ declare module 'az-ext' {
 		},
 		sql: {
 			miarc: {
-				delete(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
-				list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiListResult[]>>,
+				delete(
+					name: string,
+					args: {
+						// Direct mode arguments
+						resourceGroup?: string,
+						// Indirect mode arguments
+						namespace?: string
+						},
+						// Additional arguments
+						additionalEnvVars?: AdditionalEnvVars
+				): Promise<AzOutput<void>>,
+				list(
+					args: {
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
+					namespace?: string
+					},
+					// Additional arguments
+					additionalEnvVars?: AdditionalEnvVars
+				): Promise<AzOutput<SqlMiListResult[]>>,
 				show(
 					name: string,
 					args: {

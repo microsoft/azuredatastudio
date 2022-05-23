@@ -133,5 +133,23 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		return this._capabilitiesService.getCapabilities(providerId).connection.supportedExecutionPlanFileExtensions;
 	}
 
+	getSupportedExecutionPlanExtensions(providerId: string): string[] | undefined {
+		if (providerId) {
+			return this._capabilitiesService.getCapabilities(providerId).connection.supportedExecutionPlanFileExtensions;
+		} else {
+			const supportedFileExtensionsSet: Set<string> = new Set();
+
+			Object.keys(this._capabilitiesService.providers).forEach(v => {
+				const extensions = this._capabilitiesService.getCapabilities(v).connection.supportedExecutionPlanFileExtensions;
+				if (extensions) {
+					extensions.forEach(ext => {
+						supportedFileExtensionsSet.add(ext);
+					});
+				}
+			});
+
+			return [...supportedFileExtensionsSet];
+		}
+	}
 	_serviceBrand: undefined;
 }
