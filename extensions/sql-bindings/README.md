@@ -10,18 +10,19 @@ This extension is bundled into the `SQL Server (MSSQL)` extension for VS Code an
 
 ## Getting Started with SQL Bindings
 
-### While the Azure Function project file is open search the command palette for `Add SQL Binding` to add a SQL binding to the Azure Function project:
-
-![Add SQL Binding in command palette](media/AddSQLBinding.png)
-
-### Create an Azure Function with SQL Binding through the below options:
-
-* To create an Azure Function project from a specific table, choose a specific SQL Connection table via the object explorer and right click on the table and select **Create Azure Function with SQL Binding**.
+### From object explorer
+* To create an Azure Function from a specific table in object explorer, right-click on a table in a connected server in object explorer and select `Create Azure Function with SQL Binding.` If you have not yet created the Azure Function project, the process will create one for you before populating the Azure Function.
 ![Add SQL Binding in command palette](media/CreateAzFuncTableOE.png)
 
-* Create an Azure Function Project with SQL binding by searching the command palette for `Create Azure Function with SQL Binding` via the command palette.
+### In an existing Azure Function
+* While the Azure Function C# code definition is open, search the command palette for `Add SQL Binding` to add a SQL binding to the C# Azure Function.
+![Add SQL Binding in command palette](media/AddSQLBinding.png)
+
+### From the command palette
+* Create an Azure Function with SQL binding by searching the command palette for `Create Azure Function with SQL Binding`. If you have not yet created the Azure Function project, the process will create one for you before populating the Azure Function.
 ![Add SQL Binding in command palette](media/CreateAzFunc.png)
 
+Learn more about Azure Functions with SQL bindings [here](https://aka.ms/azure-functions-sql-bindings).
 
 ## Code of Conduct
 
