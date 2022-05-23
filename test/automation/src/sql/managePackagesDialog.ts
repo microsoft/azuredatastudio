@@ -40,7 +40,8 @@ export class ManagePackagesDialog extends Dialog {
 		const packageNameSelector = `${ManagePackagesDialog.dialogPage} div[id="textContainer"] span`;
 		await this.code.waitForTextContent(packageNameSelector, packageName);
 
-		const versionSelectBox = `${ManagePackagesDialog.dialogPage} select[class="monaco-select-box monaco-select-box-dropdown-padding"][aria-label="Package Version"] option`;
+		// Get the latest package version
+		const versionSelectBox = `${ManagePackagesDialog.dialogPage} select[aria-label="Package Version"] option`;
 		let packageVersion = await this.code.waitForTextContent(versionSelectBox);
 
 		const installButton = `${ManagePackagesDialog.dialogPage} a[class="monaco-button monaco-text-button"][aria-label="Install"][aria-disabled="false"]`;
