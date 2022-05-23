@@ -9,7 +9,7 @@ Microsoft SQL Bindings for VS Code enables users to develop Azure Functions with
 This extension is bundled into the `SQL Server (MSSQL)` extension for VS Code and will be installed automatically when that extension is updated or installed.
 
 ## Getting Started with SQL Bindings
- **_NOTE:_** Currently, only C# Azure Functions are supported.
+ **_NOTE:_** Currently, the SQL bindings extension only supports C# Azure Functions. JavaScript and Python Azure Functions support SQL bindings but are not supported by the SQL bindings extension at this time.
 
 ### From object explorer
 * To create an Azure Function from a specific table in object explorer, right-click on a table in a connected server in object explorer and select `Create Azure Function with SQL Binding.` If you have not yet created the Azure Function project, the process will create one for you before populating the Azure Function.
