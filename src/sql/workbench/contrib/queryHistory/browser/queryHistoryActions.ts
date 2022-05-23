@@ -53,23 +53,6 @@ export class DeleteAction extends Action {
 	}
 }
 
-export class ClearHistoryAction extends Action {
-	public static ID = 'queryHistory.clear';
-	public static LABEL = localize('queryHistory.clearLabel', "Clear All History");
-
-	constructor(
-		id: string,
-		label: string,
-		@ICommandService private _commandService: ICommandService
-	) {
-		super(id, label, 'clear-query-history-action codicon-clear-all');
-	}
-
-	public override async run(): Promise<void> {
-		return this._commandService.executeCommand('queryHistory.clear');
-	}
-}
-
 
 export class OpenQueryAction extends Action {
 	public static ID = 'queryHistory.openQuery';

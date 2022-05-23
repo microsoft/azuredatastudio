@@ -40,6 +40,7 @@ export interface IExecutionPlanInfo {
 export interface IQueryInfo {
 	range: IRange[];
 	messages: IQueryMessage[];
+	text?: string;
 }
 
 export interface IQueryEvent {

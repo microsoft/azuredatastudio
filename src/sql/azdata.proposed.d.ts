@@ -1468,4 +1468,30 @@ declare module 'azdata' {
 		 */
 		link: LinkArea;
 	}
+
+	export namespace queryeditor {
+
+		export interface IQueryMessage {
+			batchId?: number;
+			isError: boolean;
+			time?: string;
+			message: string;
+		}
+
+		export interface IQueryInfo {
+			messages: IQueryMessage[];
+			text?: string;
+		}
+
+		/**
+		 * args for each event type
+		 * queryStart: undefined
+		 * queryStop: undefined
+		 * executionPlan: string
+		 * visualize: ResultSetSummary
+		 */
+		export interface QueryEventListener {
+			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: IQueryInfo): void;
+		}
+	}
 }

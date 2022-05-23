@@ -60,27 +60,6 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 					// on some events
 					_queryHistoryService.start();
 
-					registerAction2(class extends Action2 {
-						constructor() {
-							super({
-								id: `queryHistory.clear`,
-								title: { value: localize('queryHistory.clearLabel', "Clear All History"), original: 'Clear All History' },
-								icon: Codicon.clearAll,
-								menu: {
-									id: MenuId.ViewTitle,
-									group: 'navigation',
-									when: ContextKeyEqualsExpr.create('view', QUERY_HISTORY_VIEW_ID),
-									order: 10
-								}
-							});
-						}
-
-						run(accessor: ServicesAccessor) {
-							const queryHistoryService = accessor.get(IQueryHistoryService);
-							queryHistoryService.clearQueryHistory();
-						}
-					});
-
 					const PAUSE_QUERY_HISTORY_CAPTURE = localize('queryHistory.disableCapture', "Pause Query History Capture");
 					const START_QUERY_HISTORY_CAPTURE = localize('queryHistory.enableCapture', "Start Query History Capture");
 

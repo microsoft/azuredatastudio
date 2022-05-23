@@ -68,7 +68,7 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 		let listener: azdata.queryeditor.QueryEventListener = this._queryListeners[handle];
 		if (listener) {
 			let params = event.params && event.params.planXml ? event.params.planXml : event.params;
-			listener.onQueryEvent(event.type, new ExtHostQueryDocument(providerId, fileUri, this._proxy), params);
+			listener.onQueryEvent(event.type, new ExtHostQueryDocument(providerId, fileUri, this._proxy), params, event.queryInfo);
 		}
 	}
 
