@@ -29,6 +29,7 @@ import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinne
 import { errorForeground, listHoverBackground, textLinkForeground } from 'vs/platform/theme/common/colorRegistry';
 import { ExecutionPlanViewHeader } from 'sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader';
 import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
+import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 
 
 export class ExecutionPlanComparisonEditorView {
@@ -112,6 +113,7 @@ export class ExecutionPlanComparisonEditorView {
 		@IContextViewService readonly contextViewService: IContextViewService,
 		@ITextFileService private readonly _textFileService: ITextFileService,
 		@INotificationService private _notificationService: INotificationService,
+		@IProgressService private _progressService: IProgressService
 	) {
 
 		this.container = DOM.$('.comparison-editor');
@@ -372,23 +374,33 @@ export class ExecutionPlanComparisonEditorView {
 	}
 
 	private async getSkeletonNodes(): Promise<void> {
-		this._polygonRootsMap = new Map();
-		this._topSimilarNode = new Map();
-		this._bottomSimilarNode = new Map();
-		if (this._topPlanDiagramModels && this._bottomPlanDiagramModels) {
-			this._topPlanDiagramModels[this._activeTopPlanIndex].graphFile.graphFileType = 'sqlplan';
-			this._bottomPlanDiagramModels[this._activeBottomPlanIndex].graphFile.graphFileType = 'sqlplan';
-			const result = await this._executionPlanService.compareExecutionPlanGraph(this._topPlanDiagramModels[this._activeTopPlanIndex].graphFile,
-				this._bottomPlanDiagramModels[this._activeBottomPlanIndex].graphFile);
-			this.getSimilarSubtrees(result.firstComparisonResult);
-			this.getSimilarSubtrees(result.secondComparisonResult, true);
-			let colorIndex = 0;
-			this._polygonRootsMap.forEach((v, k) => {
-				this._activeTopPlanDiagram.drawSubtreePolygon(v.topPolygon.baseNode.id, polygonFillColor[colorIndex], polygonBorderColor[colorIndex]);
-				this._activeBottomPlanDiagram.drawSubtreePolygon(v.bottomPolygon.baseNode.id, polygonFillColor[colorIndex], polygonBorderColor[colorIndex]);
-				colorIndex += 1;
-			});
-		}
+		this._progressService.withProgress(
+			{
+				location: ProgressLocation.Notification,
+				title: localize('epCompare.comparisonProgess', "Loading similar areas in compared plans"),
+				cancellable: false
+			},
+			async (progress) => {
+				this._polygonRootsMap = new Map();
+				this._topSimilarNode = new Map();
+				this._bottomSimilarNode = new Map();
+				if (this._topPlanDiagramModels && this._bottomPlanDiagramModels) {
+					this._topPlanDiagramModels[this._activeTopPlanIndex].graphFile.graphFileType = 'sqlplan';
+					this._bottomPlanDiagramModels[this._activeBottomPlanIndex].graphFile.graphFileType = 'sqlplan';
+					const result = await this._executionPlanService.compareExecutionPlanGraph(this._topPlanDiagramModels[this._activeTopPlanIndex].graphFile,
+						this._bottomPlanDiagramModels[this._activeBottomPlanIndex].graphFile);
+					this.getSimilarSubtrees(result.firstComparisonResult);
+					this.getSimilarSubtrees(result.secondComparisonResult, true);
+					let colorIndex = 0;
+					this._polygonRootsMap.forEach((v, k) => {
+						this._activeTopPlanDiagram.drawSubtreePolygon(v.topPolygon.baseNode.id, polygonFillColor[colorIndex], polygonBorderColor[colorIndex]);
+						this._activeBottomPlanDiagram.drawSubtreePolygon(v.bottomPolygon.baseNode.id, polygonFillColor[colorIndex], polygonBorderColor[colorIndex]);
+						colorIndex += 1;
+					});
+				}
+				return;
+			}
+		);
 	}
 
 	private getSimilarSubtrees(comparedNode: azdata.executionPlan.ExecutionGraphComparisonResult, isBottomPlan: boolean = false): void {
