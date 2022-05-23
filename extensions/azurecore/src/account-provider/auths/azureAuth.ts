@@ -357,7 +357,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
 			Logger.verbose('Fetching tenants', tenantUri);
-			Logger.pii('Tenant request token: ', [{ name: 'token', objOrArray: token.token }], []);
+			Logger.verbose('Tenant request token: ', token.token, []);
 			let tenantResponse = await this.makeGetRequest(tenantUri, token.token);
 			// multiple tenants in tenant response but not all have data, must parse through first
 			tenantResponse.data.value = tenantResponse.data.value.filter(((info: any) => {
