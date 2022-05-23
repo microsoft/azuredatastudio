@@ -596,7 +596,7 @@ export class MigrationCutoverDialog {
 			const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
 			const sqlServerVersion = versionName ? versionName : sqlServerInfo.serverVersion;
 			const targetDatabaseName = this._model._migration.name;
-			const targetServerName = getResourceName(this._model._migration.id);
+			const targetServerName = getResourceName(this._model._migration.properties.scope);
 			let targetServerVersion;
 			if (this._model.migrationStatus.id.includes('managedInstances')) {
 				targetServerVersion = loc.AZURE_SQL_DATABASE_MANAGED_INSTANCE;

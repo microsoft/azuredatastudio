@@ -359,3 +359,4 @@ export function upgradingMiaa(param: any): string { return localize('arc.upgradi
 export const currentVersion = localize('arc.currentVersion', "Current version");
 export const showMiaaError = localize('arc.showMiaaError', "Error showing details of SQL managed instance.");
 export const miaaVersionError = localize('arc.miaaVersionError', "Error getting SQL managed instance version number.");
+export const errorGettingConnectionMode = localize('arc.errorGettingConnectionMode', "Error getting data controller connection mode.");

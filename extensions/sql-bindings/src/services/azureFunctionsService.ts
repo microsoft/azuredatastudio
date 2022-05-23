@@ -11,7 +11,7 @@ import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
 import * as constants from '../common/constants';
 import * as azureFunctionsContracts from '../contracts/azureFunctions/azureFunctionsContracts';
 import { CreateAzureFunctionStep, TelemetryActions, TelemetryReporter, TelemetryViews, ExitReason } from '../common/telemetry';
-import { AddSqlBindingParams, BindingType, GetAzureFunctionsParams, GetAzureFunctionsResult, ResultStatus } from 'sql-bindings';
+import { AddSqlBindingParams, BindingType, GetAzureFunctionsParams, GetAzureFunctionsResult, IConnectionStringInfo, ResultStatus } from 'sql-bindings';
 import { IConnectionInfo, ITreeNodeInfo } from 'vscode-mssql';
 import { createAddConnectionStringStep } from '../createNewProject/addConnectionStringStep';
 
@@ -83,6 +83,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 						return;
 					}
 					projectFolder = projectFolders[0].fsPath;
+
 					TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 						.withAdditionalProperties(propertyBag).send();
 					break;
@@ -118,52 +119,26 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			telemetryStep = CreateAzureFunctionStep.launchFromCommandPalette;
 			// prompt user for connection profile to get connection info
 			while (true) {
-				connectionInfo = await vscodeMssqlApi.promptForConnection(true);
+				try {
+					connectionInfo = await vscodeMssqlApi.promptForConnection(true);
+				} catch (e) {
+					// user cancelled while creating connection profile
+					// show the connection profile selection prompt again
+					continue;
+				}
 				if (!connectionInfo) {
 					// User cancelled
 					return;
 				}
 				TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 					.withAdditionalProperties(propertyBag).withConnectionInfo(connectionInfo).send();
-				telemetryStep = CreateAzureFunctionStep.getConnectionProfile;
-				let connectionURI: string = '';
-				try {
-					await vscode.window.withProgress(
-						{
-							location: vscode.ProgressLocation.Notification,
-							title: constants.connectionProgressTitle,
-							cancellable: false
-						}, async (_progress, _token) => {
-							// list databases based on connection profile selected
-							connectionURI = await vscodeMssqlApi.connect(connectionInfo!);
-						}
-					);
-				} catch (e) {
-					// mssql connection error will be shown to the user
-					// we will then prompt user to choose a connection profile again
-					continue;
-				}
-				// list databases based on connection profile selected
-				telemetryStep = CreateAzureFunctionStep.getDatabase;
-				let listDatabases = await vscodeMssqlApi.listDatabases(connectionURI);
-				const selectedDatabase = (await vscode.window.showQuickPick(listDatabases, {
-					canPickMany: false,
-					title: constants.selectDatabase,
-					ignoreFocusOut: true
-				}));
-
-				if (!selectedDatabase) {
-					// User cancelled
-					// we will then prompt user to choose a connection profile again
-					continue;
-				}
-				connectionInfo.database = selectedDatabase;
+				telemetryStep = CreateAzureFunctionStep.getObjectName;
 
 				// prompt user for object name to create function from
-				objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding);
+				objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding, connectionInfo);
 				if (!objectName) {
 					// user cancelled
-					return;
+					continue;
 				}
 				break;
 			}
@@ -213,16 +188,20 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		let templateId: string = selectedBindingType === BindingType.input ? constants.inputTemplateID : constants.outputTemplateID;
 
 		// prompt for Connection String Setting Name
-		let connectionStringSettingName: string | undefined = constants.sqlConnectionStringSetting;
+		let connectionStringInfo: IConnectionStringInfo | undefined = { connectionStringSettingName: constants.sqlConnectionStringSetting, connectionInfo: connectionInfo };
 		if (!isCreateNewProject && projectFile) {
 			telemetryStep = CreateAzureFunctionStep.getConnectionStringSettingName;
-			connectionStringSettingName = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(vscode.Uri.parse(projectFile), connectionInfo);
+			connectionStringInfo = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(vscode.Uri.parse(projectFile), connectionInfo);
+			if (!connectionStringInfo) {
+				// User cancelled connection string setting name prompt or connection string method prompt
+				return;
+			}
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 				.withAdditionalProperties(propertyBag)
 				.withConnectionInfo(connectionInfo).send();
 		}
 		// addtional execution step that will be used by vscode-azurefunctions to execute only when creating a new azure function project
-		let connectionStringExecuteStep = createAddConnectionStringStep(projectFolder, connectionInfo, connectionStringSettingName);
+		let connectionStringExecuteStep = createAddConnectionStringStep(projectFolder, connectionInfo, connectionStringInfo.connectionStringSettingName);
 
 		// create C# Azure Function with SQL Binding
 		telemetryStep = 'createFunctionAPI';
@@ -233,7 +212,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			templateId: templateId,
 			functionName: functionName,
 			functionSettings: {
-				connectionStringSetting: connectionStringSettingName,
+				connectionStringSetting: connectionStringInfo.connectionStringSettingName,
 				...(selectedBindingType === BindingType.input && { object: objectName }),
 				...(selectedBindingType === BindingType.output && { table: objectName })
 			},

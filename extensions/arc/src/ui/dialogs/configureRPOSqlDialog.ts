@@ -26,7 +26,7 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 	public showDialog(dialogTitle: string, retentionDays: string | undefined): azdata.window.Dialog {
 		const dialog = azdata.window.createModelViewDialog(dialogTitle);
 		dialog.cancelButton.onClick(() => this.handleCancel());
-		retentionDays = (retentionDays === undefined ? this._model.config?.properties?.k8SRaw?.spec?.backup?.retentionPeriodInDays?.toString() : retentionDays);
+		retentionDays = (retentionDays === undefined ? this._model.config?.spec?.backup?.retentionPeriodInDays?.toString() : retentionDays);
 		dialog.registerContent(async view => {
 			this.modelBuilder = view.modelBuilder;
 			this.retentionDaysInputBox = this.modelBuilder.inputBox()
