@@ -195,7 +195,7 @@
     "gulp-shell": "^0.6.5",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-tsb": "4.0.6",
-    "gulp-untar": "^0.0.7",
+    "gulp-untar": "^0.0.8",
     "gulp-vinyl-zip": "^2.1.2",
     "husky": "^0.13.1",
     "innosetup": "6.0.5",
@@ -265,6 +265,7 @@
   },
   "resolutions": {
     "elliptic": "^6.5.3",
-    "nwmatcher": "^1.4.4"
+    "nwmatcher": "^1.4.4",
+    "gulp-untar/**/tar": "^4"
   }
 }
