@@ -1499,7 +1499,7 @@ declare module 'azdata' {
 		 * visualize: ResultSetSummary
 		 */
 		export interface QueryEventListener {
-			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: IQueryInfo): void;
+			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: IQueryInfo, connectionId: string): void;
 		}
 	}
 }

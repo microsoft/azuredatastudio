@@ -4,16 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as path from 'path';
 
 /**
  * Query history node
  */
 export class QueryHistoryNode extends vscode.TreeItem {
-	private readonly iconsPath: string = path.join(__dirname, 'icons');
-	private readonly successIcon: string = path.join(this.iconsPath, 'status_success.svg');
-	private readonly failureIcon: string = path.join(this.iconsPath, 'status_error.svg');
-	private _ownerUri: string;
+	private _connectionId: string;
 	private _timeStamp: Date;
 	private _isSuccess: boolean;
 	private _queryString: string;
@@ -23,19 +19,20 @@ export class QueryHistoryNode extends vscode.TreeItem {
 		label: string,
 		tooltip: string,
 		queryString: string,
-		ownerUri: string,
+		connectionId: string,
 		timeStamp: Date,
 		connectionLabel: string,
 		isSuccess: boolean
 	) {
 		super(label, vscode.TreeItemCollapsibleState.None);
 		this._queryString = queryString;
-		this._ownerUri = ownerUri;
+		this._connectionId = connectionId;
 		this._timeStamp = timeStamp;
 		this._isSuccess = isSuccess;
 		this._connectionLabel = connectionLabel;
-		this.iconPath = this._isSuccess ? this.successIcon : this.failureIcon;
+		this.iconPath = this._isSuccess ? new vscode.ThemeIcon('check', new vscode.ThemeColor('testing.iconPassed')) : new vscode.ThemeIcon('error', new vscode.ThemeColor('testing.iconFailed'));
 		this.tooltip = tooltip;
+		this.description = timeStamp.toLocaleString();
 	}
 
 	/** Getters */
@@ -44,8 +41,8 @@ export class QueryHistoryNode extends vscode.TreeItem {
 		return label;
 	}
 
-	public get ownerUri(): string {
-		return this._ownerUri;
+	public get connectionId(): string {
+		return this._connectionId;
 	}
 
 	public get timeStamp(): Date {

@@ -16,21 +16,20 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	const provider = new QueryHistoryProvider();
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('queryHistory', provider));
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.open', async (node: QueryHistoryNode) => {
+		// TODO Use provider ID from event
 		return azdata.queryeditor.openQueryDocument(
 			{
 				content: node.queryString
 			}, 'MSSQL');
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.run', async (node: QueryHistoryNode) => {
+		// TODO Use provider ID from event
 		const doc = await azdata.queryeditor.openQueryDocument(
 			{
 				content: node.queryString
 			}, 'MSSQL');
-		const conn = await azdata.connection.getConnection(node.ownerUri);
-		const conns = await azdata.connection.getConnections();
-		await doc.connect(conn);
-		// await azdata.queryeditor.connect(doc.uri, node.ownerUri);
-		azdata.queryeditor.runQuery(doc.uri.toString());
+		await azdata.queryeditor.connect(doc.uri, node.connectionId);
+		azdata.queryeditor.runQuery(doc.uri);
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.delete', (node: QueryHistoryNode) => {
 		provider.deleteNode(node);

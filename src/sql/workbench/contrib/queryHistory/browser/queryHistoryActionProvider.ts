@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DeleteAction, OpenQueryAction, RunQueryAction, ClearHistoryAction, ToggleQueryHistoryCaptureAction } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryActions';
+import { DeleteAction, OpenQueryAction, RunQueryAction, ToggleQueryHistoryCaptureAction } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryActions';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -18,7 +18,6 @@ export class QueryHistoryActionProvider {
 		openQueryAction: IAction,
 		runQueryAction: IAction,
 		deleteAction: IAction,
-		clearAction: IAction,
 		toggleCaptureAction: IAction
 	};
 
@@ -29,7 +28,6 @@ export class QueryHistoryActionProvider {
 			openQueryAction: instantiationService.createInstance(OpenQueryAction, OpenQueryAction.ID, OpenQueryAction.LABEL),
 			runQueryAction: instantiationService.createInstance(RunQueryAction, RunQueryAction.ID, RunQueryAction.LABEL),
 			deleteAction: instantiationService.createInstance(DeleteAction, DeleteAction.ID, DeleteAction.LABEL),
-			clearAction: instantiationService.createInstance(ClearHistoryAction, ClearHistoryAction.ID, ClearHistoryAction.LABEL),
 			toggleCaptureAction: instantiationService.createInstance(ToggleQueryHistoryCaptureAction, ToggleQueryHistoryCaptureAction.ID, ToggleQueryHistoryCaptureAction.LABEL)
 		};
 	}
@@ -51,8 +49,6 @@ export class QueryHistoryActionProvider {
 			}
 			actions.push(this._actions.deleteAction);
 		}
-		// Common actions we want to always display
-		actions.push(this._actions.clearAction, this._actions.toggleCaptureAction);
 		return actions;
 	}
 
