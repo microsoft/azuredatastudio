@@ -333,7 +333,7 @@ export class DeployService {
 			const connectionResult = <ConnectionResult>connection;
 			if (connectionResult) {
 				const connected = connectionResult !== undefined && connectionResult.connected && connectionResult.connectionId !== undefined;
-				return { validated: connected, errorMessage: connected ? '' : constants.connectionFailedError(connectionResult?.errorMessage) };
+				return { validated: connected, errorMessage: connected ? '' : constants.connectionFailedError(connectionResult?.errorMessage!) };
 			} else {
 				return { validated: false, errorMessage: constants.connectionFailedError('') };
 			}
@@ -346,7 +346,7 @@ export class DeployService {
 	private async formatConnectionResult(connection: ConnectionResult | string | undefined): Promise<string> {
 		const getAzdataApi = await utils.getAzdataApi();
 		const connectionResult = connection !== undefined && getAzdataApi ? <ConnectionResult>connection : undefined;
-		return connectionResult ? connectionResult.connectionId : <string>connection;
+		return connectionResult?.connected ? connectionResult.connectionId! : <string>connection;
 	}
 
 	public async getConnection(profile: ISqlConnectionProperties, saveConnectionAndPassword: boolean, database: string): Promise<string | undefined> {
@@ -364,7 +364,8 @@ export class DeployService {
 		if (connection) {
 			const connectionResult = <ConnectionResult>connection;
 			if (getAzdataApi) {
-				return await getAzdataApi.connection.getUriForConnection(connectionResult.connectionId);
+				utils.throwIfNotConnected(connectionResult);
+				return azdataApi.connection.getUriForConnection(connectionResult.connectionId!);
 			} else {
 				return <string>connection;
 			}
