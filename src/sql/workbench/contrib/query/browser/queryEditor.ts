@@ -455,15 +455,17 @@ export class QueryEditor extends EditorPane {
 		const newTextEditor = newInput.text instanceof FileEditorInput ? this.textFileEditor : this.textResourceEditor;
 		if (newTextEditor !== this.currentTextEditor) {
 			this.currentTextEditor = newTextEditor;
-			this.splitview.removeView(0, Sizing.Distribute);
+			if (!this.showResultsInSeparateTab) {
+				this.splitview.removeView(0, Sizing.Distribute);
 
-			this.splitview.addView({
-				element: this.currentTextEditor.getContainer(),
-				layout: size => this.currentTextEditor.layout(new DOM.Dimension(this.dimension.width, size)),
-				minimumSize: 0,
-				maximumSize: Number.POSITIVE_INFINITY,
-				onDidChange: Event.None
-			}, Sizing.Distribute, 0);
+				this.splitview.addView({
+					element: this.currentTextEditor.getContainer(),
+					layout: size => this.currentTextEditor.layout(new DOM.Dimension(this.dimension.width, size)),
+					minimumSize: 0,
+					maximumSize: Number.POSITIVE_INFINITY,
+					onDidChange: Event.None
+				}, Sizing.Distribute, 0);
+			}
 		}
 
 		await Promise.all([
@@ -478,7 +480,7 @@ export class QueryEditor extends EditorPane {
 
 		const editorViewState = this.loadTextEditorViewState(this.input.resource);
 
-		if (editorViewState && editorViewState.resultsHeight && this.splitview.length > 1) {
+		if (editorViewState && editorViewState.resultsHeight && !this.showResultsInSeparateTab && this.splitview.length > 1) {
 			this.splitview.resizeView(1, editorViewState.resultsHeight);
 		}
 	}
@@ -502,7 +504,7 @@ export class QueryEditor extends EditorPane {
 
 	private saveTextEditorViewState(resource: URI): void {
 		const editorViewState = {
-			resultsHeight: this.resultsVisible ? this.splitview.getViewSize(1) : undefined
+			resultsHeight: (this.resultsVisible && !this.showResultsInSeparateTab) ? this.splitview.getViewSize(1) : undefined
 		} as IQueryEditorViewState;
 
 		if (!this.group) {
@@ -603,7 +605,10 @@ export class QueryEditor extends EditorPane {
 		this.dimension = dimension;
 		const queryEditorHeight = dimension.height - DOM.getTotalHeight(this.taskbar.getContainer());
 		this.viewContainer.style.height = queryEditorHeight + 'px';
-		this.splitview.layout(queryEditorHeight);
+
+		if (!this.showResultsInSeparateTab) {
+			this.splitview.layout(queryEditorHeight);
+		}
 	}
 
 	/**
@@ -618,7 +623,7 @@ export class QueryEditor extends EditorPane {
 	}
 
 	private removeResultsEditor(): void {
-		if (this.resultsVisible) {
+		if (this.resultsVisible && !this.showResultsInSeparateTab) {
 			this.splitview.removeView(1, Sizing.Distribute);
 			this.resultsVisible = false;
 			if (this.input && this.input.state) {
@@ -628,7 +633,7 @@ export class QueryEditor extends EditorPane {
 	}
 
 	private addResultsEditor(): void {
-		if (!this.resultsVisible) {
+		if (!this.resultsVisible && !this.showResultsInSeparateTab) {
 			// size the results section to 65% of available height or at least 100px
 			let initialViewSize = Math.round(Math.max(this.dimension.height * 0.65, 100));
 			this.splitview.addView({
