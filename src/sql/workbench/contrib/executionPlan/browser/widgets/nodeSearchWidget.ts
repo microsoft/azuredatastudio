@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import { ExecutionPlanWidgetBase } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetBase';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import * as DOM from 'vs/base/browser/dom';
@@ -14,7 +15,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Action } from 'vs/base/common/actions';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { AzdataGraphView, InternalExecutionPlanNode, SearchType } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
+import { AzdataGraphView, SearchType } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
 
 const CONTAINS_DISPLAY_STRING = localize("executionPlanSearchTypeContains", 'Contains');
@@ -35,7 +36,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 	private _selectedSearchType: SearchType = SearchType.Equals;
 
 	private _searchTextInputBox: InputBox;
-	private _searchResults: InternalExecutionPlanNode[] = [];
+	private _searchResults: azdata.executionPlan.ExecutionPlanNode[] = [];
 	private _currentSearchResultIndex = 0;
 	private _usePreviousSearchResult: boolean = false;
 
