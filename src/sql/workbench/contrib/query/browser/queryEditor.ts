@@ -609,6 +609,9 @@ export class QueryEditor extends EditorPane {
 		if (!this.showResultsInSeparateTab) {
 			this.splitview.layout(queryEditorHeight);
 		}
+		else {
+			this.panelview.layout(dimension);
+		}
 	}
 
 	/**
