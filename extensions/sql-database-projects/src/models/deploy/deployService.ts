@@ -365,7 +365,7 @@ export class DeployService {
 			const connectionResult = <ConnectionResult>connection;
 			if (getAzdataApi) {
 				utils.throwIfNotConnected(connectionResult);
-				return azdataApi.connection.getUriForConnection(connectionResult.connectionId!);
+				return getAzdataApi.connection.getUriForConnection(connectionResult.connectionId!);
 			} else {
 				return <string>connection;
 			}
