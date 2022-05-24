@@ -2,12 +2,11 @@
   "name": "sql-bindings",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
-    "vscode": "^1.30.1",
-    "azdata": ">=1.35.0"
+    "vscode": "^1.30.1"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "media/defaultExtensionIcon.png",
@@ -47,18 +46,17 @@
       "commandPalette": [
         {
           "command": "sqlBindings.addSqlBinding",
-          "when": "editorLangId == csharp && !azdataAvailable && resourceScheme != untitled"
+          "when": "editorLangId == csharp && resourceScheme != untitled"
         },
         {
           "command": "sqlBindings.createAzureFunction",
-          "when": "!azdataAvailable",
           "group": "zAzure_Function@1"
         }
       ],
       "view/item/context": [
         {
           "command": "sqlBindings.createAzureFunction",
-          "when": "view == objectExplorer && viewItem == Table && !azdataAvailable",
+          "when": "view == objectExplorer && viewItem == Table",
           "group": "zAzure_Function@1"
         }
       ]
@@ -66,8 +64,10 @@
   },
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^1.1.5",
+    "@microsoft/vscode-azext-utils": "^0.1.1",
     "fast-glob": "^3.2.7",
     "promisify-child-process": "^3.1.1",
+    "uuid": "^8.3.2",
     "vscode-nls": "^4.1.2",
     "vscode-languageclient": "5.2.1"
   },
@@ -77,8 +77,8 @@
     "should": "^13.2.1",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "@microsoft/vscodetestcover": "^1.2.0",
-    "mocha": "^5.2.0",
+    "@microsoft/vscodetestcover": "^1.2.1",
+    "mocha": "^7.1.1",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7"
   }

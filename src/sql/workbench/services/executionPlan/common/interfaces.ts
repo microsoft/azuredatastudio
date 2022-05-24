@@ -30,7 +30,8 @@ export interface IExecutionPlanService {
 	compareExecutionPlanGraph(firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo): Promise<azdata.executionPlan.ExecutionPlanComparisonResult>;
 
 	/**
-	 * Get execution plan file extensions supported by the provider.
+	 * Get execution plan file extensions supported by all registered providers.
+	 * @param providerId optional parameter to get extensions only supported by a particular provider.
 	 */
-	getSupportedExecutionPlanExtensionsForProvider(providerId: string): string[];
+	getSupportedExecutionPlanExtensions(providerId?: string): string[];
 }

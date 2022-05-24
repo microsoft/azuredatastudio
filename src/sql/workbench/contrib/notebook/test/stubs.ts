@@ -235,6 +235,9 @@ export class ServerManagerStub implements nb.ServerManager {
 }
 
 export class NotebookServiceStub implements INotebookService {
+	getNotebookURIForCell(cellUri: URI): URI {
+		throw new Error('Method not implemented.');
+	}
 	getSupportedLanguagesForProvider(provider: string, kernelDisplayName?: string): Promise<string[]> {
 		throw new Error('Method not implemented.');
 	}

@@ -170,6 +170,27 @@ export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: an
 	};
 }
 
+/**
+ * Creates a formatter for the first column of the treegrid. The created formatter will wrap the output of the provided formatter with a level based indentation and a chevron icon for tree grid parents that indicates their expand/collapse state.
+ */
+export function createTreeGridExpandableColumnFormatter<T>(formattingFunction: Slick.Formatter<T>): Slick.Formatter<T> {
+	return (row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string => {
+		const spacer = `<span style='display:inline-block;height:1px;width:${(15 * (dataContext['level'] - 1))}px'></span>`;
+
+		const innerCellContent = formattingFunction(row, cell, value, columnDef, dataContext);
+
+		if (dataContext['isParent']) {
+			if (dataContext.expanded) {
+				return `<div>${spacer}<span class='codicon codicon-chevron-down toggle' style='font-weight:bold;'></span>&nbsp; ${innerCellContent}</div>`;
+			} else {
+				return `<div>${spacer}<span class='codicon codicon-chevron-right toggle' style='font-weight:bold;'></span>&nbsp; ${innerCellContent}</div>`;
+			}
+		} else {
+			return `${spacer}${innerCellContent}`;
+		}
+	};
+}
+
 /** The following code is a rewrite over the both formatter function using dom builder
  * rather than string manipulation, which is a safer and easier method of achieving the same goal.
  * However, when electron is in "Run as node" mode, dom creation acts differently than normal and therefore

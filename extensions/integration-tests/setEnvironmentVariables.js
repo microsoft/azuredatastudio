@@ -81,8 +81,8 @@ if (!fs.existsSync(NOTEBOOK_PYTHON_INSTALL_PATH)) {
 	throw message;
 }
 
-const msrestAzure = require('ms-rest-azure');
-const KeyVault = require('azure-keyvault');
+const { DefaultAzureCredential } = require('@azure/identity');
+const { SecretClient } = require('@azure/keyvault-secrets');
 const child_process = require('child_process');
 
 // Name of the values that are stored in Azure Key Vault
@@ -137,40 +137,29 @@ process.env[ENVAR_PYTHON_INSTALL_PATH] = NOTEBOOK_PYTHON_INSTALL_PATH;
 process.env[ENVAR_RUN_PYTHON3_TEST] = '1';
 process.env[ENVAR_RUN_PYSPARK_TEST] = '0';
 
-const promises = [];
+const credential = new DefaultAzureCredential();
+const client = new SecretClient(AKV_URL, credential);
 
-// Open up a web browser to the login page so the user doesn't have to copy the URL manually
-const start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
-child_process.exec(`${start} https://microsoft.com/devicelogin`);
-
-// Fetch the values from AKV
-msrestAzure.interactiveLogin().then((credentials) => {
-	const client = new KeyVault.KeyVaultClient(credentials);
-	SecretEnVarMapping.forEach(entry => {
+async function main() {
+	for (const entry of SecretEnVarMapping) {
 		const secretName = entry[0];
 		const environmentVariable = entry[1];
-		const promise = client.getSecret(AKV_URL, secretName, '').then((result) => {
+		try {
+			const result = await client.getSecret(secretName);
 			console.log(`${secretName}: ${result.value}`);
 			process.env[environmentVariable] = result.value;
-		}, (err) => {
+		} catch (err) {
 			console.error('An error occured while retrieving the value for secret:' + secretName);
 			console.error(err);
-		});
-		promises.push(promise);
-	});
-
-	Promise.all(promises).then(
-		() => {
-			console.log('Done reading values from Azure KeyVault!');
-			console.log(`Launching new window: ${LAUNCH_OPTION}...`);
-			if (LAUNCH_OPTION === LAUNCH_VSCODE) {
-				console.warn('Trying to launch vscode, make sure you have it set properly in the PATH environment variable');
-			}
-			child_process.execSync(LAUNCH_OPTION);
-			console.log('New window for running test has been opened.');
 		}
-	);
-}, (err) => {
-	console.error('An error occured while logging in to Azure portal');
-	console.error(err);
-});
+	}
+	console.log('Done reading values from Azure KeyVault!');
+	console.log(`Launching new window: ${LAUNCH_OPTION}...`);
+	if (LAUNCH_OPTION === LAUNCH_VSCODE) {
+		console.warn('Trying to launch vscode, make sure you have it set properly in the PATH environment variable');
+	}
+	child_process.execSync(LAUNCH_OPTION);
+	console.log('New window for running test has been opened.');
+}
+
+main();

@@ -20,7 +20,7 @@ export type TableFilterFunc<T extends Slick.SlickData> = (data: Array<T>, column
 export type TableSortFunc<T extends Slick.SlickData> = (args: Slick.OnSortEventArgs<T>, data: Array<T>) => Array<T>;
 export type TableFindFunc<T extends Slick.SlickData> = (val: T, exp: string) => Array<number>;
 
-function defaultCellValueGetter(data: any): any {
+export function defaultCellValueGetter(data: any): any {
 	return data;
 }
 
@@ -54,7 +54,7 @@ export function defaultSort<T extends Slick.SlickData>(args: Slick.OnSortEventAr
 	return data.sort((a, b) => comparer(a, b) * sign);
 }
 
-function defaultFilter<T extends Slick.SlickData>(data: T[], columns: FilterableColumn<T>[], cellValueGetter: CellValueGetter = defaultCellValueGetter): T[] {
+export function defaultFilter<T extends Slick.SlickData>(data: T[], columns: FilterableColumn<T>[], cellValueGetter: CellValueGetter = defaultCellValueGetter): T[] {
 	let filteredData = data;
 	columns?.forEach(column => {
 		if (column.filterValues?.length > 0 && column.field) {

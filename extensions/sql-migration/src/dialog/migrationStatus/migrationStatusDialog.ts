@@ -355,6 +355,11 @@ export class MigrationStatusDialog {
 				this._searchBox.value!);
 
 			this._filteredMigrations.sort((m1, m2) => {
+				if (!m1.properties?.startedOn) {
+					return 1;
+				} else if (!m2.properties?.startedOn) {
+					return -1;
+				}
 				return new Date(m1.properties?.startedOn) > new Date(m2.properties?.startedOn) ? -1 : 1;
 			});
 
