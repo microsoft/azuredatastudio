@@ -338,6 +338,6 @@ function validateResultMetadata(galleryFilePath, extensionCount, resultMetadataJ
 }
 
 await Promise.all([
-    validateExtensionGallery(path.join(dirname, '..', 'extensionsGallery.json')),
-    validateExtensionGallery(path.join(dirname, '..', 'extensionsGallery-insider.json'))
+    validateExtensionGallery(path.join(ROOT_DIR, 'extensionsGallery.json')),
+    validateExtensionGallery(path.join(ROOT_DIR, 'extensionsGallery-insider.json'))
 ]);
