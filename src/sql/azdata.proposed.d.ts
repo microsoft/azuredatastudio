@@ -1233,6 +1233,10 @@ declare module 'azdata' {
 
 		export interface ExecutionPlanNode {
 			/**
+			 * Unique id given to node by the provider
+			 */
+			id: string;
+			/**
 			 * Type of the node. This property determines the icon that is displayed for it
 			 */
 			type: string;
@@ -1365,6 +1369,10 @@ declare module 'azdata' {
 			 * File type for execution plan. This will be the file type of the editor when the user opens the graph file
 			 */
 			graphFileType: string;
+			/**
+			 * Index of the execution plan in the file content
+			 */
+			planIndexInFile?: number;
 		}
 
 		export interface GetExecutionPlanResult extends ResultStatus {
@@ -1391,7 +1399,7 @@ declare module 'azdata' {
 			/**
 			 * List of matching nodes for the ExecutionGraphComparisonResult.
 			 */
-			matchingNodes: ExecutionGraphComparisonResult[];
+			matchingNodesId: number[];
 			/**
 			 * The parent of the ExecutionGraphComparisonResult.
 			 */

@@ -2336,6 +2336,82 @@
       <source xml:lang="en">Zoom level cannot be 0 or negative</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="epCompare.editorName">
+      <source xml:lang="en">Compare Execution Plans</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="compareExecutionPlanEditor">
+      <source xml:lang="en">Compare Execution Plan Editor</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="addExecutionPlanLabel">
+      <source xml:lang="en">Add execution plan</source>
+    </trans-unit>
+    <trans-unit id="epComapre.LoadingPlanCompleteMessage">
+      <source xml:lang="en">Execution plan successfully loaded</source>
+    </trans-unit>
+    <trans-unit id="epComapre.LoadingPlanMessage">
+      <source xml:lang="en">Loading execution plan</source>
+    </trans-unit>
+    <trans-unit id="epComapre.placeholderInfoboxText">
+      <source xml:lang="en">Add execution plans to compare</source>
+    </trans-unit>
+    <trans-unit id="epCompare.FileFilterDescription">
+      <source xml:lang="en">Execution Plan Files</source>
+    </trans-unit>
+    <trans-unit id="epCompare.comparePropertiesAction">
+      <source xml:lang="en">Properties</source>
+    </trans-unit>
+    <trans-unit id="epCompare.comparisonProgess">
+      <source xml:lang="en">Loading similar areas in compared plans</source>
+    </trans-unit>
+    <trans-unit id="epCompare.toggleOrientation">
+      <source xml:lang="en">Toggle Orientation</source>
+    </trans-unit>
+    <trans-unit id="epCompare.zoomInAction">
+      <source xml:lang="en">Zoom In</source>
+    </trans-unit>
+    <trans-unit id="epCompare.zoomOutAction">
+      <source xml:lang="en">Zoom Out</source>
+    </trans-unit>
+    <trans-unit id="epCompare.zoomReset">
+      <source xml:lang="en">Reset Zoom</source>
+    </trans-unit>
+    <trans-unit id="epCompare.zoomToFit">
+      <source xml:lang="en">Zoom to fit</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanComparisonPropertiesBottomOperation">
+      <source xml:lang="en">Bottom operation: {0}</source>
+    </trans-unit>
+    <trans-unit id="executionPlanComparisonPropertiesTopOperation">
+      <source xml:lang="en">Top operation: {0}</source>
+    </trans-unit>
+    <trans-unit id="executionPlanPropertiesEdgeOperationName">
+      <source xml:lang="en">Edge</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameNameColumnHeader">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameValueColumnBottomHeader">
+      <source xml:lang="en">Value (Bottom Plan)</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameValueColumnTopHeader">
+      <source xml:lang="en">Value (Top Plan)</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanCompareCommandOriginalValue">
+      <source xml:lang="en">Compare execution plans</source>
+    </trans-unit>
+    <trans-unit id="executionPlanCompareCommandValue">
+      <source xml:lang="en">Compare execution plans</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor" source-language="en" datatype="plaintext"><body>
     <trans-unit id="executionPlanEditor">
       <source xml:lang="en">Query Execution Plan Editor</source>
@@ -2388,6 +2464,9 @@
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanView" source-language="en" datatype="plaintext"><body>
     <trans-unit id="executionPlan.SaveFileDescription">
       <source xml:lang="en">Execution Plan Files</source>
+    </trans-unit>
+    <trans-unit id="executionPlanCompareExecutionPlanAction">
+      <source xml:lang="en">Compare execution plan</source>
     </trans-unit>
     <trans-unit id="executionPlanContextMenuDisableTooltip">
       <source xml:lang="en">Disable Tooltips</source>
@@ -5086,8 +5165,20 @@ Error: {1}</source>
     <trans-unit id="connectionDialog.connect">
       <source xml:lang="en">Connect</source>
     </trans-unit>
+    <trans-unit id="connectionDialog.connectionProviderNotSupported">
+      <source xml:lang="en">The extension that supports provider type '{0}' is not currently installed. Please install it and try again.</source>
+    </trans-unit>
+    <trans-unit id="connectionDialog.extensionNotInstalled">
+      <source xml:lang="en">The extension '{0}' is required in order to connect to this resource. Please install it and try again.</source>
+    </trans-unit>
     <trans-unit id="connectionDialog.recentConnections">
       <source xml:lang="en">Recent Connections</source>
+    </trans-unit>
+    <trans-unit id="connectionDialog.viewExtension">
+      <source xml:lang="en">View Extension</source>
+    </trans-unit>
+    <trans-unit id="connectionDialog.viewExtensions">
+      <source xml:lang="en">View Extensions</source>
     </trans-unit>
     <trans-unit id="noRecentConnections">
       <source xml:lang="en">No recent connection</source>

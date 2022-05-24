@@ -7,14 +7,17 @@ import * as should from 'should';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
+import * as fs from 'fs';
 import * as utils from '../../common/utils';
 import * as constants from '../../common/constants';
 import * as azureFunctionUtils from '../../common/azureFunctionsUtils';
 import * as azureFunctionService from '../../services/azureFunctionsService';
+import * as azureFunctionsContracts from '../../contracts/azureFunctions/azureFunctionsContracts';
 
 import { createTestUtils, TestUtils, createTestCredentials } from '../testUtils';
 import { launchAddSqlBindingQuickpick } from '../../dialogs/addSqlBindingQuickpick';
 import { BindingType } from 'sql-bindings';
+import { IConnectionInfo } from 'vscode-mssql';
 
 let testUtils: TestUtils;
 const fileUri = vscode.Uri.file('testUri');
@@ -46,6 +49,17 @@ describe('Add SQL Binding quick pick', () => {
 
 	it('Should show error if adding SQL binding was not successful', async function (): Promise<void> {
 		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);
+		let connectionCreds: IConnectionInfo = createTestCredentials();// Mocks promptForConnection
+		let connectionDetails = { options: connectionCreds };
+		// set test vscode-mssql API calls
+		testUtils.vscodeMssqlIExtension.setup(x => x.promptForConnection(true)).returns(() => Promise.resolve(connectionCreds));
+		testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
+		testUtils.vscodeMssqlIExtension.setup(x => x.connect(connectionCreds)).returns(() => Promise.resolve('testConnectionURI'));
+		testUtils.vscodeMssqlIExtension.setup(x => x.listDatabases('testConnectionURI')).returns(() => Promise.resolve(['testDb']));
+		const params = { ownerUri: 'testConnectionURI', queryString: azureFunctionUtils.tablesQuery('testDb') };
+		testUtils.vscodeMssqlIExtension.setup(x => x.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params))
+			.returns(() => Promise.resolve({ rowCount: 1, columnInfo: [], rows: [['[schema].[testTable]']] }));
+
 		sinon.stub(azureFunctionService, 'getAzureFunctions').withArgs(fileUri.fsPath).returns(
 			Promise.resolve({
 				success: true,
@@ -53,7 +67,7 @@ describe('Add SQL Binding quick pick', () => {
 				azureFunctions: ['af1', 'af2']
 			}));
 		//failure since no AFs are found in the project
-		sinon.stub(azureFunctionUtils, 'getAFProjectContainingFile').resolves(undefined);
+
 		const errormsg = 'Error inserting binding';
 		sinon.stub(azureFunctionService, 'addSqlBinding').withArgs(
 			sinon.match.any, sinon.match.any, sinon.match.any,
@@ -65,13 +79,22 @@ describe('Add SQL Binding quick pick', () => {
 		const spy = sinon.spy(vscode.window, 'showErrorMessage');
 
 		// select Azure function
-		let quickpickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves({ label: 'af1' });
+		let quickpickStub = sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve('af1') as any);
 		// select input or output binding
 		quickpickStub.onSecondCall().resolves(<any>{ label: constants.input, type: BindingType.input });
-		// give object name
-		let inputBoxStub = sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves('dbo.table1');
+		sinon.stub(azureFunctionUtils, 'getAFProjectContainingFile').resolves(vscode.Uri.file('testUri'));
+		// select connection profile - create new
+		quickpickStub.onThirdCall().resolves(<any>{ label: constants.createNewLocalAppSettingWithIcon });
 		// give connection string setting name
-		inputBoxStub.onSecondCall().resolves('sqlConnectionString');
+		sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves('sqlConnectionString');
+		quickpickStub.onCall(3).returns(Promise.resolve(constants.connectionProfile) as any);
+		quickpickStub.onCall(4).returns(Promise.resolve(constants.yesString) as any);
+		// setLocalAppSetting fails if we dont set writeFile stub
+		sinon.stub(fs.promises, 'writeFile');
+		sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'sqlConnectionString', 'testConnectionString').returns(Promise.resolve(true));
+		sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
+		quickpickStub.onCall(5).returns(Promise.resolve('testDb') as any);
+		quickpickStub.onCall(6).returns(Promise.resolve('[schema].[testTable]') as any);
 
 		await launchAddSqlBindingQuickpick(vscode.Uri.file('testUri'));
 
