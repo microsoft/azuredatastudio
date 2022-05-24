@@ -1831,9 +1831,9 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.8.0.tgz#f0e003d9ca9e7f59c7a508945d7b2ef9a04a542f"
   integrity sha512-ReZxvNHIOv88FlT7rxcXIIC0fPt4KZqZbOlivyWtXLt8ESx84zd3kMC6iK5jVeS2qt+g7ftS7ye4fi06X5rtRQ==
 
-"azdataGraph@github:Microsoft/azdataGraph#0.0.26":
-  version "0.0.26"
-  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/a5f94e53cb655bc44f1a2727653bb403942e1cf9"
+"azdataGraph@github:Microsoft/azdataGraph#0.0.27":
+  version "0.0.27"
+  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/972e1f3a26cd2e5a9ce75594e83c041fce9cedcb"
 
 azure-storage@^2.10.2:
   version "2.10.2"
