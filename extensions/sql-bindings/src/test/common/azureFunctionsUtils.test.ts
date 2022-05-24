@@ -177,7 +177,7 @@ describe('Tests to verify Azure Functions Utils functions', function (): void {
 		should(quickInputSpy.notCalled).be.true('showInputBox should not have been called');
 		should(warningSpy.notCalled).be.true('showWarningMessage should not have been called');
 		// returned connection string should NOT include password
-		should(getConnectionString).equals(`Server=${connectionInfo.server};Initial Catalog=${connectionInfo.database};User ID=${connectionInfo.user};Password=${constants.passwordPlaceholder};`);
+		should(getConnectionString).equals(`Server=${connectionInfo.server};Initial Catalog=${connectionInfo.database};User ID=${connectionInfo.user};`);
 	});
 
 	it('Should ask user to enter password and set password to connection string when connection info does not contain password and auth type is SQL', async () => {
