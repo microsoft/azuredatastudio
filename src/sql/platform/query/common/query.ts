@@ -22,6 +22,7 @@ export interface IQueryEditorConfiguration {
 		readonly optimizedTable: boolean,
 		readonly inMemoryDataProcessingThreshold: number,
 		readonly openAfterSave: boolean
+		readonly showResultsInSeparateTab: boolean
 	},
 	readonly messages: {
 		readonly showBatchTime: boolean,

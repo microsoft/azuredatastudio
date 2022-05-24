@@ -45,6 +45,7 @@ import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -81,6 +82,8 @@ export class QueryEditor extends EditorPane {
 	private inputDisposables = this._register(new DisposableStore());
 
 	private resultsVisible = false;
+
+	private showResultsInSeparateTab = false;
 
 	private queryEditorVisible: IContextKey<boolean>;
 
@@ -151,6 +154,11 @@ export class QueryEditor extends EditorPane {
 	 */
 	public createEditor(parent: HTMLElement): void {
 		parent.classList.add('query-editor');
+
+		this.showResultsInSeparateTab = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.showResultsInSeparateTab;
+
+		if (this.showResultsInSeparateTab) {
+		}
 
 		this.splitviewContainer = DOM.$('.query-editor-view');
 
