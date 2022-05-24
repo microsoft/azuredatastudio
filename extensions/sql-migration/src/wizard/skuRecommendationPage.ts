@@ -466,7 +466,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				}
 			} catch (e) {
 				errors.push(constants.SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR(serverName, e));
-				logError(TelemetryViews.MigrationWizardTaSkuRecommendationPage, 'SkuRecommendationUnexpectedError', e);
+				logError(TelemetryViews.MigrationWizardSkuRecommendationPage, 'SkuRecommendationUnexpectedError', e);
 			} finally {
 				this.migrationStateModel._runAssessments = errors.length > 0;
 				if (errors.length > 0) {

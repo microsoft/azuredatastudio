@@ -46,10 +46,13 @@
 }
 
 .designer-component .issues-container .issue-item .issue-text {
-	flex: 1 1 auto;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	user-select: text;
+}
+
+.designer-component .issues-container .issue-item .issue-more-info {
+	padding-left: 10px;
 }
 
 .designer-component .tabbed-panel-container {
@@ -114,8 +117,11 @@
 	width: fit-content;
 	background-repeat: no-repeat;
 	background-size: 13px;
-	padding-left: 17px;
 	background-position: 2px center;
+}
+
+.designer-component .add-row-button-container .actions-container {
+	padding-left: 0px !important;
 }
 
 .designer-component .top-content-container .components-grid {
@@ -151,4 +157,8 @@
 .designer-component .description-component-content {
 	padding-top: 10px;
 	padding-left: 25px;
+}
+
+.designer-component .codicon-grabber {
+	cursor: move;
 }

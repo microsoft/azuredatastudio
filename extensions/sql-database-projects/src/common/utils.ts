@@ -307,6 +307,18 @@ export async function getVscodeMssqlApi(): Promise<vscodeMssql.IExtension> {
 	return ext.activate();
 }
 
+export type AzureResourceServiceFactory = () => Promise<vscodeMssql.IAzureResourceService>;
+export async function defaultAzureResourceServiceFactory(): Promise<vscodeMssql.IAzureResourceService> {
+	const vscodeMssqlApi = await getVscodeMssqlApi();
+	return vscodeMssqlApi.azureResourceService;
+}
+
+export type AzureAccountServiceFactory = () => Promise<vscodeMssql.IAzureAccountService>;
+export async function defaultAzureAccountServiceFactory(): Promise<vscodeMssql.IAzureAccountService> {
+	const vscodeMssqlApi = await getVscodeMssqlApi();
+	return vscodeMssqlApi.azureAccountService;
+}
+
 /*
  * Returns the default deployment options from DacFx, filtered to appropriate options for the given project.
  */
@@ -316,14 +328,14 @@ export async function getDefaultPublishDeploymentOptions(project: Project): Prom
 	const deploymentOptions = result.defaultDeploymentOptions;
 	// re-include database-scoped credentials
 	if (getAzdataApi()) {
-		deploymentOptions.excludeObjectTypes = (deploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.filter(x => x !== mssql.SchemaObjectType.DatabaseScopedCredentials);
+		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== mssql.SchemaObjectType.DatabaseScopedCredentials);
 	} else {
-		deploymentOptions.excludeObjectTypes = (deploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.filter(x => x !== vscodeMssql.SchemaObjectType.DatabaseScopedCredentials);
+		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== vscodeMssql.SchemaObjectType.DatabaseScopedCredentials);
 	}
 
 	// this option needs to be true for same database references validation to work
 	if (project.databaseReferences.length > 0) {
-		deploymentOptions.includeCompositeObjects = true;
+		deploymentOptions.includeCompositeObjects.value = true;
 	}
 	return result.defaultDeploymentOptions;
 }
@@ -441,7 +453,7 @@ export async function retry<T>(
 			}
 
 		} catch (err) {
-			outputChannel.appendLine(constants.retryMessage(name, err));
+			outputChannel.appendLine(constants.retryMessage(name, getErrorMessage(err)));
 		}
 	}
 
@@ -628,4 +640,48 @@ export function getWellKnownDatabaseSources(databaseSourceValues: string[]): str
 	}
 
 	return Array.from(databaseSourceSet);
+}
+
+/**
+ * Returns SQL version number from docker image name which is in the beginning of the image name
+ * @param imageName docker image name
+ * @returns SQL server version
+ */
+export function findSqlVersionInImageName(imageName: string): number | undefined {
+
+	// Regex to find the version in the beginning of the image name
+	// e.g. 2017-CU16-ubuntu, 2019-latest
+	const regex = new RegExp('^([0-9]+)[-].+$');
+
+	if (regex.test(imageName)) {
+		const finds = regex.exec(imageName);
+		if (finds) {
+
+			// 0 is the full match and 1 is the number with pattern inside the first ()
+			return +finds[1];
+		}
+	}
+	return undefined;
+}
+
+/**
+ * Returns SQL version number from target platform name
+ * @param targetPlatform target platform
+ * @returns SQL server version
+ */
+export function findSqlVersionInTargetPlatform(targetPlatform: string): number | undefined {
+
+	// Regex to find the version in target platform
+	// e.g. SQL Server 2019
+	const regex = new RegExp('([0-9]+)$');
+
+	if (regex.test(targetPlatform)) {
+		const finds = regex.exec(targetPlatform);
+		if (finds) {
+
+			// 0 is the full match and 1 is the number with pattern inside the first ()
+			return +finds[1];
+		}
+	}
+	return undefined;
 }

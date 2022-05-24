@@ -17,6 +17,7 @@ export const enum ModalDialogName {
 	Connection = 'Connection',
 	Backup = 'Backup',
 	FileBrowser = 'FileBrowser',
+	UrlBrowser = 'UrlBrowser',
 	Restore = 'Restore',
 	Insights = 'Insights',
 	Profiler = 'Profiler',
@@ -49,7 +50,8 @@ export const enum TelemetryView {
 }
 
 export const enum TelemetryError {
-	DatabaseConnectionError = 'DatabaseConnectionError'
+	DatabaseConnectionError = 'DatabaseConnectionError',
+	ObjectExplorerExpandError = 'ObjectExplorerExpandError'
 }
 
 export const enum TelemetryAction {

@@ -15,6 +15,7 @@ import { AzureArcTreeDataProvider } from '../tree/azureArcTreeDataProvider';
 import { RadioOptionsGroup } from '../components/radioOptionsGroup';
 import { getCurrentClusterContext, getDefaultKubeConfigPath, getKubeConfigClusterContexts, KubeClusterContext } from '../../common/kubeUtils';
 import { FilePicker } from '../components/filePicker';
+import { ConnectionMode } from '../../constants';
 
 export type ConnectToControllerDialogModel = { controllerModel: ControllerModel };
 
@@ -203,9 +204,9 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 			controllerModel.info.connectionMode = <string>controllerModel.controllerConfig?.spec.settings.azure.connectionMode;
 			controllerModel.info.location = <string>controllerModel.controllerConfig?.spec.settings.azure.location;
 
-			if (controllerModel.info.connectionMode === 'direct') {
+			if (controllerModel.info.connectionMode === ConnectionMode.direct) {
 				const rawCustomLocation = <string>controllerModel.controllerConfig?.metadata.annotations['management.azure.com/customLocation'];
-				const exp = /\/\bsubscriptions\b\/[\S]*\/\bresourceGroups\/[\S]*\/providers\/[\S]*\/customLocations\/([\S]*)/;
+				const exp = /customlocations\/([\S]*)/;
 				controllerModel.info.customLocation = <string>exp.exec(rawCustomLocation)?.pop();
 			}
 		} catch (err) {

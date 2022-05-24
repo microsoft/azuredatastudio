@@ -8,7 +8,6 @@ import * as path from 'path';
 import * as os from 'os';
 import * as sinon from 'sinon';
 import * as baselines from './baselines/baselines';
-import * as templates from '../templates/templates';
 import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
 
@@ -17,7 +16,7 @@ import { Project } from '../models/project';
 import { exists, convertSlashesForSqlProj, getWellKnownDatabaseSources } from '../common/utils';
 import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
-import { SqlTargetPlatform } from 'sqldbproj';
+import { ItemType, SqlTargetPlatform } from 'sqldbproj';
 import { EntryType, SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase } from '../models/projectEntry';
 
 let projFilePath: string;
@@ -110,7 +109,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 		await project.addFolderItem(folderPath);
 		await project.addScriptItem(scriptPath, scriptContents);
-		await project.addScriptItem(scriptPathTagged, scriptContentsTagged, templates.externalStreamingJob);
+		await project.addScriptItem(scriptPathTagged, scriptContentsTagged, ItemType.externalStreamingJob);
 
 		const newProject = await Project.openProject(projFilePath);
 
@@ -542,8 +541,8 @@ describe('Project: sqlproj content operations', function (): void {
 		const fileContents = ' ';
 
 		await project.addFolderItem(folderPath);
-		await project.addScriptItem(preDeploymentScriptFilePath, fileContents, templates.preDeployScript);
-		await project.addScriptItem(postDeploymentScriptFilePath, fileContents, templates.postDeployScript);
+		await project.addScriptItem(preDeploymentScriptFilePath, fileContents, ItemType.preDeployScript);
+		await project.addScriptItem(postDeploymentScriptFilePath, fileContents, ItemType.postDeployScript);
 
 		const newProject = await Project.openProject(projFilePath);
 
@@ -565,13 +564,13 @@ describe('Project: sqlproj content operations', function (): void {
 		const fileContents = ' ';
 
 		await project.addFolderItem(folderPath);
-		await project.addScriptItem(preDeploymentScriptFilePath, fileContents, templates.preDeployScript);
-		await project.addScriptItem(postDeploymentScriptFilePath, fileContents, templates.postDeployScript);
+		await project.addScriptItem(preDeploymentScriptFilePath, fileContents, ItemType.preDeployScript);
+		await project.addScriptItem(postDeploymentScriptFilePath, fileContents, ItemType.postDeployScript);
 
-		await project.addScriptItem(preDeploymentScriptFilePath2, fileContents, templates.preDeployScript);
+		await project.addScriptItem(preDeploymentScriptFilePath2, fileContents, ItemType.preDeployScript);
 		should(stub.calledWith(constants.deployScriptExists(constants.PreDeploy))).be.true(`showInformationMessage not called with expected message '${constants.deployScriptExists(constants.PreDeploy)}' Actual '${stub.getCall(0).args[0]}'`);
 
-		await project.addScriptItem(postDeploymentScriptFilePath2, fileContents, templates.postDeployScript);
+		await project.addScriptItem(postDeploymentScriptFilePath2, fileContents, ItemType.postDeployScript);
 		should(stub.calledWith(constants.deployScriptExists(constants.PostDeploy))).be.true(`showInformationMessage not called with expected message '${constants.deployScriptExists(constants.PostDeploy)}' Actual '${stub.getCall(0).args[0]}'`);
 
 		const newProject = await Project.openProject(projFilePath);
@@ -1026,9 +1025,9 @@ describe('Project: sdk style project content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newSdkStyleProjectSdkNodeBaseline, folderPath);
 
 		const project: Project = await Project.openProject(projFilePath);
-		await project.addScriptItem('Script.PreDeployment1.sql', 'fake contents', templates.preDeployScript);
-		await project.addScriptItem('Script.PreDeployment2.sql', 'fake contents', templates.preDeployScript);
-		await project.addScriptItem('Script.PostDeployment1.sql', 'fake contents', templates.postDeployScript);
+		await project.addScriptItem('Script.PreDeployment1.sql', 'fake contents', ItemType.preDeployScript);
+		await project.addScriptItem('Script.PreDeployment2.sql', 'fake contents', ItemType.preDeployScript);
+		await project.addScriptItem('Script.PostDeployment1.sql', 'fake contents', ItemType.postDeployScript);
 
 		// verify they were added to the sqlproj
 		let projFileText = (await fs.readFile(projFilePath)).toString();
@@ -1119,7 +1118,7 @@ describe('Project: sdk style project content operations', function (): void {
 		const otherFolderPath = 'OtherFolder\\';
 
 		await project.addScriptItem(scriptPath, scriptContents);
-		await project.addScriptItem(scriptPathTagged, scriptContentsTagged, templates.externalStreamingJob);
+		await project.addScriptItem(scriptPathTagged, scriptContentsTagged, ItemType.externalStreamingJob);
 		await project.addScriptItem(outsideFolderScriptPath, outsideFolderScriptContents);
 		await project.addFolderItem(otherFolderPath);
 
@@ -1784,6 +1783,9 @@ describe('Project: legacy to SDK-style updates', function (): void {
 		let projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText.includes('<Build Include=')).equal(true, 'sqlproj should have Build Includes before converting');
 		should(projFileText.includes('<Folder Include=')).equal(true, 'sqlproj should have Folder Includes before converting');
+		should(projFileText.includes('<VisualStudioVersion Condition="\'$(VisualStudioVersion)\' == \'\'">')).equal(true, 'sqlproj should have VisualStudioVersion property with empty condition before converting');
+		should(projFileText.includes('<SSDTExists Condition="Exists(\'$(MSBuildExtensionsPath)\\Microsoft\\VisualStudio\\v$(VisualStudioVersion)\\SSDT\\Microsoft.Data.Tools.Schema.SqlTasks.targets\')">')).equal(true, 'sqlproj should have SSDTExists property before converting');
+		should(projFileText.includes('<VisualStudioVersion Condition="\'$(SSDTExists)\' == \'\'">')).equal(true, 'sqlproj should have VisualStudioVersion property with SSDTExists condition before converting');
 
 		await project.convertProjectToSdkStyle();
 
@@ -1796,6 +1798,9 @@ describe('Project: legacy to SDK-style updates', function (): void {
 		should(projFileText.includes('<Folder Include=')).equal(false, 'All Folder Includes should have been removed');
 		should(project.files.filter(f => f.type === EntryType.File).length).equal(beforeFileCount, 'Same number of files should be included after Build Includes are removed');
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(beforeFolderCount, 'Same number of folders should be included after Folder Includes are removed');
+		should(projFileText.includes('<VisualStudioVersion Condition="\'$(VisualStudioVersion)\' == \'\'">')).equal(false, 'VisualStudioVersion property with empty condition should be removed');
+		should(projFileText.includes('<SSDTExists Condition="Exists(\'$(MSBuildExtensionsPath)\\Microsoft\\VisualStudio\\v$(VisualStudioVersion)\\SSDT\\Microsoft.Data.Tools.Schema.SqlTasks.targets\')">')).equal(false, 'SSDTExists property should be removed');
+		should(projFileText.includes('<VisualStudioVersion Condition="\'$(SSDTExists)\' == \'\'">')).equal(false, 'VisualStudioVersion property with SSDTExists condition should be removed');
 	});
 
 	it('Should not fail if legacy style project does not have Properties folder in sqlproj', async function (): Promise<void> {

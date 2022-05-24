@@ -47,6 +47,50 @@ declare module 'sqldbproj' {
 		 * Gets the Database Schema Provider version for a SQL project
 		 */
 		getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string>;
+
+		/**
+		 * Generate project from OpenAPI specification file
+		 * @param options Options to use when generating a project from an OpenAPI spec
+		 * @returns the generated sql project
+		 */
+		generateProjectFromOpenApiSpec(options?: GenerateProjectFromOpenApiSpecOptions): Promise<ISqlProject | undefined>;
+
+		/**
+		 * Prompts the user to add a new item to the specified project
+		 * @param project The project to add the item to
+		 * @param relativeFilePath The relative path in the project where the item should be added
+		 * @param options The additional options to use
+		 */
+		addItemPrompt(project: ISqlProject, relativeFilePath: string, options?: AddItemOptions): Promise<void>;
+
+	}
+
+	export interface AddItemOptions {
+		/**
+		 * The type of item to add. If not specified the user will choose from a list of available types
+		 */
+		itemType?: string,
+		/**
+		 * The default name to display in the name prompt
+		 */
+		defaultName?: string
+	}
+
+	/**
+	 * The type of an item in a SQL Project
+	 */
+	export const enum ItemType {
+		script = 'script',
+		table = 'table',
+		view = 'view',
+		storedProcedure = 'storedProcedure',
+		dataSource = 'dataSource',
+		fileFormat = 'fileFormat',
+		externalStream = 'externalStream',
+		externalStreamingJob = 'externalStreamingJob',
+		folder = 'folder',
+		preDeployScript = 'preDeployScript',
+		postDeployScript = 'postDeployScript'
 	}
 
 	/**
@@ -68,7 +112,12 @@ declare module 'sqldbproj' {
 		/**
 		 * If true then the project will not be opened in the workspace after being created
 		 */
-		doNotOpenInWorkspace?: boolean
+		doNotOpenInWorkspace?: boolean,
+
+		/**
+		 * Create SQL Project SDK style or non SDK style. The default is non SDK style.
+		 */
+		isSDKStyle?: boolean
 	};
 
 	export interface ISqlProject {
@@ -113,15 +162,15 @@ declare module 'sqldbproj' {
 		 *
 		 * @param databaseSource Source of the database to add
 		 */
-		 addDatabaseSource(databaseSource: string): Promise<void>;
+		addDatabaseSource(databaseSource: string): Promise<void>;
 
-		 /**
-		  * Removes database source from the DatabaseSource property element.
-		  * If no sources remain, then property element will be removed from the project file.
-		  *
-		  * @param databaseSource Source of the database to remove
-		  */
-		 removeDatabaseSource(databaseSource: string): Promise<void>;
+		/**
+		 * Removes database source from the DatabaseSource property element.
+		 * If no sources remain, then property element will be removed from the project file.
+		 *
+		 * @param databaseSource Source of the database to remove
+		 */
+		removeDatabaseSource(databaseSource: string): Promise<void>;
 
 		/**
 		 * Excludes entry from project by removing it from the project file
@@ -176,6 +225,21 @@ declare module 'sqldbproj' {
 		 * SqlCmd variables and their values
 		 */
 		readonly sqlCmdVariables: Record<string, string>;
+
+		/**
+		 * Pre-deployment scripts in this project
+		 */
+		readonly preDeployScripts: IFileProjectEntry[];
+
+		/**
+		 * Post-deployment scripts in this project
+		 */
+		readonly postDeployScripts: IFileProjectEntry[];
+
+		/**
+		 * "None" scripts in this project (scripts ignored by the build)
+		 */
+		readonly noneDeployScripts: IFileProjectEntry[];
 	}
 
 	/**

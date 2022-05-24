@@ -9,11 +9,10 @@ import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
-import * as templates from '../templates/templates';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 
 import { Uri, window } from 'vscode';
-import { ISqlProject, SqlTargetPlatform } from 'sqldbproj';
+import { ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
 import { promises as fs, readFileSync } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
@@ -671,8 +670,42 @@ export class Project implements ISqlProject {
 				}
 			}
 
-			const parent = importsToRemove[0]?.parentNode;
-			importsToRemove.forEach(i => { parent?.removeChild(i); });
+			const importsParent = importsToRemove[0]?.parentNode;
+			importsToRemove.forEach(i => {
+				importsParent?.removeChild(i);
+			});
+
+			// remove VisualStudio properties
+			const vsPropsToRemove = [];
+			for (let i = 0; i < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.VisualStudioVersion).length; i++) {
+				const visualStudioVersionNode = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.VisualStudioVersion)[i];
+				const conditionAttributeVal = visualStudioVersionNode.getAttribute(constants.Condition);
+
+				if (conditionAttributeVal === constants.VSVersionCondition || conditionAttributeVal === constants.SsdtExistsCondition) {
+					vsPropsToRemove.push(visualStudioVersionNode);
+				}
+			}
+
+			for (let i = 0; i < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.SSDTExists).length; i++) {
+				const ssdtExistsNode = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.SSDTExists)[i];
+				const conditionAttributeVal = ssdtExistsNode.getAttribute(constants.Condition);
+
+				if (conditionAttributeVal === constants.targetsExistsCondition) {
+					vsPropsToRemove.push(ssdtExistsNode);
+				}
+			}
+
+			const vsPropsParent = vsPropsToRemove[0]?.parentNode;
+			vsPropsToRemove.forEach(i => {
+				vsPropsParent?.removeChild(i);
+
+				// Remove the parent PropertyGroup if there aren't any other nodes. Only count element nodes, not text nodes
+				const otherChildren = Array.from(vsPropsParent!.childNodes).filter((c: ChildNode) => c.childNodes);
+
+				if (otherChildren.length === 0) {
+					vsPropsParent!.parentNode?.removeChild(vsPropsParent!);
+				}
+			});
 
 			// add SDK node
 			const sdkNode = this.projFileXmlDoc!.createElement(constants.Sdk);
@@ -783,11 +816,11 @@ export class Project implements ISqlProject {
 
 		let xmlTag;
 		switch (itemType) {
-			case templates.preDeployScript:
+			case ItemType.preDeployScript:
 				xmlTag = constants.PreDeploy;
 				this._preDeployScripts.length === 0 ? this._preDeployScripts.push(fileEntry) : this._noneDeployScripts.push(fileEntry);
 				break;
-			case templates.postDeployScript:
+			case ItemType.postDeployScript:
 				xmlTag = constants.PostDeploy;
 				this._postDeployScripts.length === 0 ? this._postDeployScripts.push(fileEntry) : this._noneDeployScripts.push(fileEntry);
 				break;
@@ -798,7 +831,7 @@ export class Project implements ISqlProject {
 
 		const attributes = new Map<string, string>();
 
-		if (itemType === templates.externalStreamingJob) {
+		if (itemType === ItemType.externalStreamingJob) {
 			fileEntry.sqlObjectType = constants.ExternalStreamingJob;
 			attributes.set(constants.Type, constants.ExternalStreamingJob);
 		}
