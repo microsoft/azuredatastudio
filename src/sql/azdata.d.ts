@@ -191,7 +191,7 @@ declare module 'azdata' {
 
 		/**
 		 * Attempts to open a new connection with the options from the given connection profile.
-		 * @param connectionProfile The connection profile containing the information for the connection
+		 * @param connectionProfile The {@link IConnectionProfile} containing the information for the connection
 		 * @param saveConnection Whether to save the connection in the saved connections list of the Servers view. Default is true
 		 * @param showDashboard Whether to show the dashboard for the connection upon success. Default is true
 		 */
@@ -5249,7 +5249,7 @@ declare module 'azdata' {
 		 */
 		connected: boolean;
 		/**
-		 * The ID of the connection if it was successful. {@linkcode connection.getUriForConnection} can be used to get
+		 * The ID of the connection if it was successful. {@link connection.getUriForConnection} can be used to get
 		 * the URI for this connection used by many of the other Extension API functions.
 		 */
 		connectionId?: string | undefined;
