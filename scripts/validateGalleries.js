@@ -10,7 +10,6 @@ import * as url from 'url';
 import * as fs from 'fs';
 import got from 'got';
 const ROOT_DIR = path.join(path.dirname(url.fileURLToPath(import.meta.url)), '..');
-const DOWNLOADED_EXTENSIONS_DIR = path.join(ROOT_DIR, '.downloadedExtensions');
 
 const MICROSOFT_SQLOPS_DOWNLOADPAGE = 'Microsoft.SQLOps.DownloadPage';
 const MICROSOFT_VISUALSTUDIO_SERVICES_VSIXPACKAGE = 'Microsoft.VisualStudio.Services.VSIXPackage';
