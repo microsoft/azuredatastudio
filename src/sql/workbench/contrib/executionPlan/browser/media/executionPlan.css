@@ -121,7 +121,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* Properties view in execution plan */
-.properties-content {
+.eps-container .properties .properties-content {
 	overflow: hidden;
 	width: 500px;
 	height: calc(100% - 2px);
@@ -237,119 +237,119 @@ However we always want it to be the width of the container it is resizing.
 	z-index: 3;
 }
 
-.ep-save-plan-icon {
+.eps-container .ep-save-plan-icon {
 	background-image: url(../images/actionIcons/save.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-open-properties-icon {
+.eps-container .ep-open-properties-icon {
 	background-image: url(../images/actionIcons/openProperties.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-open-query-icon {
+.eps-container .ep-open-query-icon {
 	background-image: url(../images/actionIcons/openQuery.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-open-plan-file-icon {
+.eps-container .ep-open-plan-file-icon {
 	background-image: url(../images/actionIcons/openPlanFile.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-search-icon {
+.eps-container .ep-search-icon {
 	background-image: url(../images/actionIcons/search.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-sort-alphabetically-icon {
+.eps-container .ep-sort-alphabetically-icon {
 	background-image: url(../images/actionIcons/sortAlphabetically.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-sort-reverse-alphabetically-icon {
+.eps-container .ep-sort-reverse-alphabetically-icon {
 	background-image: url(../images/actionIcons/sortReverseAlphabetically.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-sort-display-order-icon {
+.eps-container .ep-sort-display-order-icon {
 	background-image: url(../images/actionIcons/sortByDisplayOrder.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-zoom-in-icon {
+.eps-container .ep-zoom-in-icon {
 	background-image: url(../images/actionIcons/zoomIn.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-zoom-out-icon {
+.eps-container .ep-zoom-out-icon {
 	background-image: url(../images/actionIcons/zoomOut.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-custom-zoom-icon {
+.eps-container .ep-custom-zoom-icon {
 	background-image: url(../images/actionIcons/customZoom.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-zoom-to-fit-icon {
+.eps-container .ep-zoom-to-fit-icon {
 	background-image: url(../images/actionIcons/zoomToFit.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-zoom-icon {
+.eps-container .ep-zoom-icon {
 	background-image: url(../images/actionIcons/zoom.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-enable-tooltip-icon {
+.eps-container .ep-enable-tooltip-icon {
 	background-image: url(../images/actionIcons/enableTooltip.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-disable-tooltip-icon {
+.eps-container .ep-disable-tooltip-icon {
 	background-image: url(../images/actionIcons/disableTooltip.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-add-icon {
+.eps-container .ep-add-icon {
 	background-image: url(../images/actionIcons/add.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-settings-icon {
+.eps-container .ep-settings-icon {
 	background-image: url(../images/actionIcons/settings.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -363,21 +363,21 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.ep-split-screen-vertically-icon {
+.eps-container .ep-split-screen-vertically-icon {
 	background-image: url(../images/actionIcons/splitScreenVertically.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-reset-zoom-icon {
+.eps-container .ep-reset-zoom-icon {
 	background-image: url(../images/actionIcons/resetZoom.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-plan-compare-icon {
+.eps-container .ep-plan-compare-icon {
 	background-image: url(../images/actionIcons/execution-plan-compare.svg);
 	background-size: 16px 16px;
 	background-position: center;
