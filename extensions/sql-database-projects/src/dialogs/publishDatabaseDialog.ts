@@ -57,8 +57,8 @@ export class PublishDatabaseDialog {
 	private deploymentOptions: DeploymentOptions | undefined;
 	private profileUsed: boolean = false;
 	private serverName: string | undefined;
-	protected optionsButton!: azdataType.ButtonComponent;
-	private publishOptionsDialog!: PublishOptionsDialog;
+	protected optionsButton: azdataType.ButtonComponent | undefined;
+	private publishOptionsDialog: PublishOptionsDialog | undefined;
 
 	private completionPromise: Deferred = new Deferred();
 
@@ -913,7 +913,7 @@ export class PublishDatabaseDialog {
 		const optionsRow = view.modelBuilder.flexContainer().withItems([this.optionsButton], { CSSStyles: { flex: '0 0 auto', 'margin': '8px 0 0 295px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		this.optionsButton.onDidClick(async () => {
-			TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, 'PublishOptionsClicked');
+			TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.publishConfigureOptionsClicked);
 			// Create fresh options with default selections each time when creating the 'configure options' button
 			this.publishOptionsDialog = new PublishOptionsDialog(this.deploymentOptions!, this);
 			this.publishOptionsDialog.openDialog();

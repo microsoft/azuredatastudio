@@ -16,37 +16,36 @@ export class PublishOptionsDialog {
 	public dialog!: azdataType.window.Dialog;
 	private optionsTab: azdataType.window.DialogTab | undefined;
 	private disposableListeners: vscode.Disposable[] = [];
-	private descriptionHeading!: azdataType.TableComponent;
-	private descriptionText!: azdataType.TextComponent;
-	private optionsTable!: azdataType.TableComponent;
+	private descriptionHeading: azdataType.TableComponent | undefined;
+	private descriptionText: azdataType.TextComponent | undefined;
+	private optionsTable: azdataType.TableComponent | undefined;
 	private optionsModel: DeployOptionsModel;
-	private optionsFlexBuilder!: azdataType.FlexContainer;
+	private optionsFlexBuilder: azdataType.FlexContainer | undefined;
 
 	constructor(defaultOptions: mssql.DeploymentOptions, private publish: PublishDatabaseDialog) {
 		this.optionsModel = new DeployOptionsModel(defaultOptions);
 	}
 
 	protected initializeDialog(): void {
-		this.optionsTab = utils.getAzdataApi()!.window.createTab(constants.GeneralOptions);
+		this.optionsTab = utils.getAzdataApi()!.window.createTab(constants.publishOptions);
 		this.intializeDeploymentOptionsDialogTab();
 		this.dialog.content = [this.optionsTab];
 	}
 
 	public openDialog(): void {
-		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.GeneralOptions);
+		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.publishOptions);
 
 		this.initializeDialog();
 
 		this.dialog.okButton.label = constants.okString;
-		this.dialog.okButton.onClick(async () => this.execute());
+		this.dialog.okButton.onClick(() => this.execute());
 
 		this.dialog.cancelButton.label = constants.cancelButtonText;
-		this.dialog.cancelButton.onClick(async () => this.cancel());
+		this.dialog.cancelButton.onClick(() => this.cancel());
 
 		let resetButton = utils.getAzdataApi()!.window.createButton(constants.ResetButton);
 		resetButton.onClick(async () => await this.reset());
-		this.dialog.customButtons = [];
-		this.dialog.customButtons.push(resetButton);
+		this.dialog.customButtons = [resetButton];
 
 		utils.getAzdataApi()!.window.openDialog(this.dialog);
 	}
@@ -73,9 +72,9 @@ export class PublishOptionsDialog {
 
 			// Get the description of the selected option
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
-				const row = this.optionsTable.selectedRows![0];
-				let label = this.optionsModel.optionsLabels[row];
-				await this.descriptionText.updateProperties({
+				const row = this.optionsTable?.selectedRows![0];
+				let label = this.optionsModel.optionsLabels[row!];
+				await this.descriptionText?.updateProperties({
 					value: this.optionsModel.getDescription(label)
 				});
 			}));
@@ -98,6 +97,7 @@ export class PublishOptionsDialog {
 			this.optionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold', 'height': '30px' } });
 			this.optionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px', 'margin-right': '10px', 'overflow': 'scroll', 'height': '10vh' } });
 			await view.initializeModel(this.optionsFlexBuilder);
+			// focus the first option
 			await this.optionsTable.focus();
 		});
 	}
@@ -106,8 +106,8 @@ export class PublishOptionsDialog {
 	* Update the default options to the options table area
 	*/
 	private async updateOptionsTable(): Promise<void> {
-		let data = this.optionsModel.getOptionsData();
-		await this.optionsTable.updateProperties({
+		const data = this.optionsModel.getOptionsData();
+		await this.optionsTable?.updateProperties({
 			data: data,
 			columns: [
 				<azdataType.CheckboxColumn>
@@ -157,8 +157,8 @@ export class PublishOptionsDialog {
 		this.optionsModel.InitializeUpdateOptionsMapTable();
 
 		await this.updateOptionsTable();
-		this.optionsFlexBuilder.removeItem(this.optionsTable);
-		this.optionsFlexBuilder.insertItem(this.optionsTable, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
+		this.optionsFlexBuilder?.removeItem(this.optionsTable!);
+		this.optionsFlexBuilder?.insertItem(this.optionsTable!, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
 	}
 
 	private disposeListeners(): void {
