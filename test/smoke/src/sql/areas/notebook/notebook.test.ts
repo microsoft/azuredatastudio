@@ -46,7 +46,12 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			// check for completion suggestions
 			await app.workbench.sqlNotebook.waitForSuggestionWidget();
-			await app.workbench.sqlNotebook.waitForSuggestionResult('SELECT');
+
+			// Docs pane might be visible in the completions list, so also check for a docs aria-label
+			await Promise.race([
+				app.workbench.sqlNotebook.waitForSuggestionResult('SELECT'),
+				app.workbench.sqlNotebook.waitForSuggestionResult('SELECT, docs: SELECT keyword')
+			]);
 			await app.code.dispatchKeybinding('tab');
 
 			const text2: string = ' * FROM employees';
