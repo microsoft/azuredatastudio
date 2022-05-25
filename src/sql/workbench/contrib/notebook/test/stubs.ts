@@ -20,7 +20,7 @@ import { IContextViewProvider, IDelegate } from 'vs/base/browser/ui/contextview/
 import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
-import { INotebookView, INotebookViewCell, INotebookViewMetadata, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { INotebookView, INotebookViewCard, INotebookViewMetadata, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -796,6 +796,7 @@ export class NotebookViewStub implements INotebookView {
 	isNew: boolean;
 	name: string = '';
 	guid: string = '';
+	cards: INotebookViewCard[];
 	cells: readonly ICellModel[] = [];
 	hiddenCells: readonly ICellModel[];
 	displayedCells: readonly ICellModel[];
@@ -808,7 +809,7 @@ export class NotebookViewStub implements INotebookView {
 	nameAvailable(name: string): boolean {
 		throw new Error('Method not implemented.');
 	}
-	getCellMetadata(cell: ICellModel): INotebookViewCell {
+	getCellMetadata(cell: ICellModel): INotebookViewCard {
 		throw new Error('Method not implemented.');
 	}
 	hideCell(cell: ICellModel): void {
@@ -829,7 +830,7 @@ export class NotebookViewStub implements INotebookView {
 	getCell(guid: string): Readonly<ICellModel> {
 		throw new Error('Method not implemented.');
 	}
-	insertCell(cell: ICellModel): void {
+	insertCell(cell: ICellModel): INotebookViewCard {
 		throw new Error('Method not implemented.');
 	}
 	save(): void {

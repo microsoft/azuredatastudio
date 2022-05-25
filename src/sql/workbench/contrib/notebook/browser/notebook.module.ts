@@ -39,7 +39,9 @@ import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/brows
 import { NotebookViewsGridComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsGrid.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { NotebookViewsModalComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsModal.component';
-
+import { TabComponent } from 'sql/base/browser/ui/panel/tab.component';
+import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
+import { TabHeaderComponent } from 'sql/base/browser/ui/panel/tabHeader.component';
 const outputComponentRegistry = Registry.as<ICellComponentRegistry>(OutputComponentExtensions.CellComponentContributions);
 
 export const NotebookModule = (params, selector: string, instantiationService: IInstantiationService): any => {
@@ -66,6 +68,9 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			NotebookViewsGridComponent,
 			NotebookViewsCodeCellComponent,
 			NotebookViewsModalComponent,
+			TabComponent,
+			TabHeaderComponent,
+			PanelComponent,
 			ComponentHostDirective,
 			OutputAreaComponent,
 			OutputComponent,

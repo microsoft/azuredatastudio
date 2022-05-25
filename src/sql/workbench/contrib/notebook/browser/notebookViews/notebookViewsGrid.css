@@ -310,6 +310,10 @@
 .nb-grid-stack > .grid-stack-item {
 	margin: 0;
 }
+.nb-grid-stack > .grid-stack-item .grid-stack-header {
+	width: 100%;
+	height: 20px;
+}
 .nb-grid-stack > .grid-stack-item .grid-stack-item-content {
 	display: flex;
 	cursor: move;
@@ -325,6 +329,9 @@
 	margin-bottom: 0px;
 }
 .nb-grid-stack > .grid-stack-item .grid-stack-item-content .grid-stack-content-wrapper-inner {
+	height: calc(100% - 25px);
+}
+.nb-grid-stack > .grid-stack-item .grid-stack-item-content .grid-stack-content-wrapper-inner .card-container {
 	overflow-y: auto;
 	height: 100%;
 	cursor: auto;

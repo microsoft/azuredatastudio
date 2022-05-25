@@ -3,7 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { TabConfig } from 'sql/workbench/browser/modelComponents/tabbedPanel.component';
 import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ViewsTab } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
 import { Event } from 'vs/base/common/event';
 
 export type CellChangeEventType = 'hide' | 'insert' | 'active' | 'execution' | 'update';
@@ -29,19 +31,20 @@ export interface INotebookView {
 	readonly onCellVisibilityChanged: Event<ICellModel>;
 
 	isNew: boolean;
+	cards: INotebookViewCard[];
 	cells: Readonly<ICellModel[]>;
 	hiddenCells: Readonly<ICellModel[]>;
 	displayedCells: Readonly<ICellModel[]>;
 	name: string;
 	initialize(isNew?: boolean): void;
 	nameAvailable(name: string): boolean;
-	getCellMetadata(cell: ICellModel): INotebookViewCell;
+	getCellMetadata(cell: ICellModel): INotebookViewCard;
 	hideCell(cell: ICellModel): void;
 	moveCell(cell: ICellModel, x: number, y: number): void;
 	compactCells();
 	resizeCell(cell: ICellModel, width: number, height: number): void;
 	getCell(guid: string): Readonly<ICellModel>;
-	insertCell(cell: ICellModel): void;
+	insertCell(cell: ICellModel): INotebookViewCard;
 	markAsViewed(): void;
 	save(): void;
 	delete(): void;
@@ -49,11 +52,22 @@ export interface INotebookView {
 
 export interface INotebookViewCell {
 	readonly guid?: string;
+}
+
+
+export interface INotebookViewCard {
+	readonly guid?: string;
 	hidden?: boolean;
 	x?: number;
 	y?: number;
 	width?: number;
 	height?: number;
+	tabs?: ViewsTab[];
+	activeTab?: ViewsTab;
+}
+
+interface ViewsTabConfig extends TabConfig {
+	cell: INotebookViewCell
 }
 
 /*
@@ -71,7 +85,7 @@ export interface INotebookViewMetadata {
  * view at the cell level.
  */
 export interface INotebookViewCellMetadata {
-	views: INotebookViewCell[];
+	views: INotebookViewCard[];
 }
 
 export interface INotebookViews {

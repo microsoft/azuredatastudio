@@ -6,27 +6,37 @@
 -->
 <ng-template #templateRef>
 	<div
-		*ngIf="visible"
 		class="grid-stack-item"
-		attr.data-cell-id="{{cell.cellGuid}}"
+		attr.data-card-guid="{{guid}}"
 		attr.gs-w="{{width}}"
 		attr.gs-h="{{height}}"
 		attr.gs-x="{{x}}"
 		attr.gs-y="{{y}}"
-		(click)="selectCell(cell, $event)"
 	>
 		<div
 			#item
 			class="grid-stack-item-content notebook-cell"
-			[class.active]="cell.active"
 		>
-			<div #actionbar [style.display]="showActionBar ? 'block' : 'none'" class="actionbar"></div>
 			<div class="grid-stack-content-wrapper">
+				<div class="grid-stack-header" ></div>
 				<div class="grid-stack-content-wrapper-inner">
-					<views-code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId" [visible]="visible">
-					</views-code-cell-component>
-					<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
-					</text-cell-component>
+					<div #actionbar [style.display]="showActionBar ? 'block' : 'none'" class="actionbar"></div>
+					<panel (onTabChange)="handleTabChange($event)">
+						<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize" [identifier]="tab.id" [type]="'tab'">
+							<ng-template>
+								<ng-container>
+									<div #container class="card-container">
+										<div *ngIf="tab.cellModel !== undefined">
+											<views-code-cell-component *ngIf="tab.cellModel.cellType === 'code'" [cellModel]="tab.cellModel" [model]="model" [activeCellId]="tab.cellModel.id + 000" [visible]="visible">
+											</views-code-cell-component>
+											<text-cell-component *ngIf="tab.cellModel.cellType === 'markdown'" [cellModel]="tab.cellModel" [model]="model" [activeCellId]="tab.cellModel.id + 000">
+											</text-cell-component>
+										</div>
+									</div>
+								</ng-container>
+							</ng-template>
+						</tab>
+					</panel>
 				</div>
 			</div>
 		</div>
