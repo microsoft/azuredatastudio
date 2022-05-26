@@ -38,7 +38,7 @@ describe('Tests to verify Create Azure Function with SQL Binding', () => {
 		constants.install, constants.learnMore, constants.doNotInstall]);
 	});
 
-	it('Should create azure function project using command from command palette (no connection info)', async function (): Promise<void> {
+	it('Should create azure function project using the command from command palette (no connection info)', async function (): Promise<void> {
 		// This test will have an azure function project already in the project and the azure functions extension installed (stubbed)
 		sinon.stub(azureFunctionUtils, 'getAzureFunctionsExtensionApi').resolves(testUtils.azureFunctionsExtensionApi.object); // set azure functions extension api
 		sinon.stub(azureFunctionUtils, 'getAzureFunctionProject').resolves(projectFilePath); //set azure function project to have one project
@@ -153,7 +153,7 @@ describe('Tests to verify Create Azure Function with SQL Binding', () => {
 		should(showErrorStub.calledOnce).be.true('showErrorMessage should have been called');
 	});
 
-	it('Should ask user to choose folder to use for azure project and create azure function with the selected folder', async function (): Promise<void> {
+	it('Should ask the user to choose a folder to use for the azure project and create an azure function with the selected folder', async function (): Promise<void> {
 		// This test will ask user that an azure function project must be opened to create an azure function with sql binding
 		sinon.stub(azureFunctionUtils, 'getAzureFunctionsExtensionApi').resolves(testUtils.azureFunctionsExtensionApi.object); // set azure functions extension api
 		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);
