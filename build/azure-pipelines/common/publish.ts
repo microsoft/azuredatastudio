@@ -8,10 +8,10 @@
 import * as fs from 'fs';
 import { Readable } from 'stream';
 import * as crypto from 'crypto';
-import * as azure from 'azure-storage';
 import * as mime from 'mime';
 import * as minimist from 'minimist';
 import { DocumentClient, NewDocument } from 'documentdb';
+import { ContainerClient, StorageRetryPolicyType, StorageSharedKeyCredential } from '@azure/storage-blob';
 
 // {{SQL CARBON EDIT}}
 if (process.argv.length < 9) {
@@ -127,24 +127,27 @@ function createOrUpdate(commit: string, quality: string, platform: string, type:
 	}));
 }
 
-async function assertContainer(blobService: azure.BlobService, quality: string): Promise<void> {
-	await new Promise<void>((c, e) => blobService.createContainerIfNotExists(quality, { publicAccessLevel: 'blob' }, err => err ? e(err) : c()));
+async function assertContainer(containerClient: ContainerClient): Promise<void> {
+	await containerClient.createIfNotExists({
+		access: 'blob'
+	});
 }
 
-async function doesAssetExist(blobService: azure.BlobService, quality: string, blobName: string): Promise<boolean | undefined> {
-	const existsResult = await new Promise<azure.BlobService.BlobResult>((c, e) => blobService.doesBlobExist(quality, blobName, (err, r) => err ? e(err) : c(r)));
-	return existsResult.exists;
+async function doesAssetExist(containerClient: ContainerClient, blobName: string): Promise<boolean | undefined> {
+	return await containerClient.getBlobClient(blobName).exists();
 }
 
-async function uploadBlob(blobService: azure.BlobService, quality: string, blobName: string, file: string): Promise<void> {
-	const blobOptions: azure.BlobService.CreateBlockBlobRequestOptions = {
-		contentSettings: {
-			contentType: mime.lookup(file),
-			cacheControl: 'max-age=31536000, public'
+async function uploadBlob(containerClient: ContainerClient, blobName: string, file: string): Promise<void> {
+	const blobClient = containerClient.getBlockBlobClient(blobName);
+	await blobClient.uploadFile(
+		file,
+		{
+			metadata: {
+				contentType: mime.lookup(file),
+				cacheControl: 'max-age=31536000, public'
+			}
 		}
-	};
-
-	await new Promise<void>((c, e) => blobService.createBlockBlobFromLocalFile(quality, blobName, file, blobOptions, err => err ? e(err) : c()));
+	);
 }
 
 interface PublishOptions {
@@ -180,13 +183,20 @@ async function publish(commit: string, quality: string, platform: string, type: 
 
 	const blobName = commit + '/' + name;
 	const storageAccount = process.env['AZURE_STORAGE_ACCOUNT_2']!;
+	const storageAccountKey = process.env['AZURE_STORAGE_ACCESS_KEY_2']!;
+	const sharedKeyCredential = new StorageSharedKeyCredential(storageAccount, storageAccountKey);
+	const blobContainerClient = new ContainerClient(`https://${storageAccount}.blob.core.windows.net/${quality}`, sharedKeyCredential,
+		{
+			retryOptions: {
+				retryPolicyType: StorageRetryPolicyType.EXPONENTIAL,
+				tryTimeoutInMs: 10 * 60 * 1000,
+				maxTries: 20
+			}
+		});
 
-	const blobService = azure.createBlobService(storageAccount, process.env['AZURE_STORAGE_ACCESS_KEY_2']!)
-		.withFilter(new azure.ExponentialRetryPolicyFilter(20));
+	await assertContainer(blobContainerClient);
 
-	await assertContainer(blobService, quality);
-
-	const blobExists = await doesAssetExist(blobService, quality, blobName);
+	const blobExists = await doesAssetExist(blobContainerClient, blobName);
 
 	if (blobExists) {
 		console.log(`Blob ${quality}, ${blobName} already exists, not publishing again.`);
@@ -194,7 +204,7 @@ async function publish(commit: string, quality: string, platform: string, type: 
 	}
 	console.log('Uploading blobs to Azure storage...');
 
-	await uploadBlob(blobService, quality, blobName, file);
+	await uploadBlob(blobContainerClient, blobName, file);
 
 	console.log('Blobs successfully uploaded.');
 
