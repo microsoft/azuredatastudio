@@ -170,7 +170,7 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 
 	// Add info message with 'learn more' button if project type has a link
 	// for user to learn more about the project type
-	if (projectType.learnMoreUrl) {
-		void showInfoMessageWithLearnMoreLink(constants.LocalDevInfo, projectType.learnMoreUrl);
+	if (projectType.learnMoreUrl && projectType.defaultTargetPlatform) {
+		void showInfoMessageWithLearnMoreLink(constants.LocalDevInfo(projectType.defaultTargetPlatform), projectType.learnMoreUrl);
 	}
 }

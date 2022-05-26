@@ -56,8 +56,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 				targetPlatforms: Array.from(constants.targetPlatformToVersion.keys()),
 				defaultTargetPlatform: constants.defaultTargetPlatform,
 				sdkStyleOption: true,
-				sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl,
-				learnMoreUrl: undefined
+				sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl
 			},
 			{
 				id: constants.edgeSqlDatabaseProjectTypeId,
@@ -66,8 +65,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 				description: constants.edgeProjectTypeDescription,
 				icon: IconPathHelper.sqlEdgeProject,
 				sdkStyleOption: true,
-				sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl,
-				learnMoreUrl: undefined
+				sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl
 			}
 		];
 	}
