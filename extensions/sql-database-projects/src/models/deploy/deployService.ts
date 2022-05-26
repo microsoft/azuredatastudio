@@ -3,18 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AppSettingType, IDeployAppIntegrationProfile, ILocalDbDeployProfile, ILocalDbSetting, ISqlConnectionProperties, ISqlDbDeployProfile } from './deployProfile';
+import { ILocalDbDeployProfile, ILocalDbSetting, ISqlDbDeployProfile } from './deployProfile';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Project } from '../project';
 import * as constants from '../../common/constants';
 import * as utils from '../../common/utils';
-import * as fse from 'fs-extra';
 import * as vscode from 'vscode';
-import { ConnectionResult } from 'azdata';
-import * as templates from '../../templates/templates';
 import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
 import { AzureSqlClient } from './azureSqlClient';
-import { IFireWallRuleError } from 'vscode-mssql';
+import { ConnectionService } from '../connections/connectionService';
 
 interface DockerImageSpec {
 	label: string;
@@ -25,73 +22,11 @@ export class DeployService {
 
 	constructor(private _azureSqlClient = new AzureSqlClient(), private _outputChannel: vscode.OutputChannel, shellExecutionHelper: ShellExecutionHelper | undefined = undefined) {
 		this._shellExecutionHelper = shellExecutionHelper ?? new ShellExecutionHelper(this._outputChannel);
+		this._connectionService = new ConnectionService(this._outputChannel);
 	}
 
 	private _shellExecutionHelper: ShellExecutionHelper;
-	private DefaultSqlRetryTimeoutInSec: number = 10;
-	private DefaultSqlNumberOfRetries: number = 3;
-
-	private createConnectionStringTemplate(runtime: string | undefined): string {
-		switch (runtime?.toLocaleLowerCase()) {
-			case 'dotnet':
-				return constants.defaultConnectionStringTemplate;
-				break;
-			// TODO: add connection strings for other languages
-			default:
-				break;
-		}
-		return '';
-	}
-
-	private findAppRuntime(profile: IDeployAppIntegrationProfile, appSettingContent: any): string | undefined {
-		switch (profile.appSettingType) {
-			case AppSettingType.AzureFunction:
-				return <string>appSettingContent?.Values['FUNCTIONS_WORKER_RUNTIME'];
-			default:
-		}
-		return undefined;
-	}
-
-	public async updateAppSettings(profile: IDeployAppIntegrationProfile, deployProfile: ILocalDbDeployProfile | undefined): Promise<void> {
-		// Update app settings
-		//
-		if (!profile.appSettingFile) {
-			return;
-		}
-		this.logToOutput(constants.deployAppSettingUpdating(profile.appSettingFile));
-
-		// TODO: handle parsing errors
-		let content = JSON.parse(fse.readFileSync(profile.appSettingFile, 'utf8'));
-		if (content && content.Values) {
-			let connectionString: string | undefined = '';
-			if (deployProfile && deployProfile.localDbSetting) {
-				// Find the runtime and generate the connection string for the runtime
-				//
-				const runtime = this.findAppRuntime(profile, content);
-				let connectionStringTemplate = this.createConnectionStringTemplate(runtime);
-				const macroDict: Record<string, string> = {
-					'SERVER': deployProfile?.localDbSetting?.serverName || '',
-					'PORT': deployProfile?.localDbSetting?.port?.toString() || '',
-					'USER': deployProfile?.localDbSetting?.userName || '',
-					'SA_PASSWORD': deployProfile?.localDbSetting?.password || '',
-					'DATABASE': deployProfile?.localDbSetting?.dbName || '',
-				};
-
-				connectionString = templates.macroExpansion(connectionStringTemplate, macroDict);
-			} else if (deployProfile?.deploySettings?.connectionUri) {
-				connectionString = await this.getConnectionString(deployProfile?.deploySettings?.connectionUri);
-			}
-
-			if (connectionString && profile.envVariableName) {
-				content.Values[profile.envVariableName] = connectionString;
-				await fse.writeFileSync(profile.appSettingFile, JSON.stringify(content, undefined, 4));
-				this.logToOutput(`app setting '${profile.appSettingFile}' has been updated. env variable name: ${profile.envVariableName} connection String: ${connectionString}`);
-
-			} else {
-				this.logToOutput(constants.deployAppSettingUpdateFailed(profile.appSettingFile));
-			}
-		}
-	}
+	private _connectionService: ConnectionService;
 
 	private async verifyDocker(): Promise<void> {
 		try {
@@ -149,7 +84,7 @@ export class DeployService {
 			this.logToOutput(constants.azureSqlServerCreated(profile?.sqlDbSetting?.serverName));
 
 			// Connect to the server
-			return await this.getConnection(profile.sqlDbSetting, false, constants.master);
+			return await this._connectionService.getConnection(profile.sqlDbSetting, false, constants.master);
 		}
 		return undefined;
 	}
@@ -209,7 +144,7 @@ export class DeployService {
 
 			if (runningDockerId) {
 				this.logToOutput(constants.dockerContainerCreatedMessage(runningDockerId));
-				return await this.getConnection(profile.localDbSetting, false, 'master');
+				return await this._connectionService.getConnection(profile.localDbSetting, false, 'master');
 
 			} else {
 				this.logToOutput(constants.dockerContainerFailedToRunErrorMessage);
@@ -233,145 +168,6 @@ export class DeployService {
 
 		await this.executeCommand(`docker run -p ${profile.port}:1433 -e "MSSQL_SA_PASSWORD=${profile.password}" -e "ACCEPT_EULA=Y" -e "MSSQL_PID=Developer" --label ${dockerImageSpec.label} -d --name ${dockerImageSpec.containerName} ${profile.dockerBaseImage} `, sensitiveData);
 		return await this.executeCommand(`docker ps -q -a --filter label=${dockerImageSpec.label} -q`);
-	}
-
-	private async getConnectionString(connectionUri: string): Promise<string | undefined> {
-		const getAzdataApi = await utils.getAzdataApi();
-		if (getAzdataApi) {
-			const connection = await getAzdataApi.connection.getConnection(connectionUri);
-			if (connection) {
-				return await getAzdataApi.connection.getConnectionString(connection.connectionId, true);
-			}
-		}
-		// TODO: vscode connections string
-
-		return undefined;
-
-	}
-
-	// Connects to a database
-	private async connectToDatabase(profile: ISqlConnectionProperties, saveConnectionAndPassword: boolean, database: string): Promise<ConnectionResult | string | undefined> {
-		const getAzdataApi = await utils.getAzdataApi();
-		const vscodeMssqlApi = getAzdataApi ? undefined : await utils.getVscodeMssqlApi();
-		if (getAzdataApi) {
-			const connectionProfile = {
-				password: profile.password,
-				serverName: `${profile.serverName},${profile.port}`,
-				database: database,
-				savePassword: saveConnectionAndPassword,
-				userName: profile.userName,
-				providerName: 'MSSQL',
-				saveProfile: false,
-				id: '',
-				connectionName: profile.profileName,
-				options: [],
-				authenticationType: 'SqlLogin'
-			};
-			return await getAzdataApi.connection.connect(connectionProfile, saveConnectionAndPassword, false);
-		} else if (vscodeMssqlApi) {
-			const connectionProfile = {
-				password: profile.password,
-				server: `${profile.serverName}`,
-				port: profile.port,
-				database: database,
-				savePassword: saveConnectionAndPassword,
-				user: profile.userName,
-				authenticationType: 'SqlLogin',
-				encrypt: false,
-				connectTimeout: 30,
-				applicationName: 'SQL Database Project',
-				accountId: profile.accountId,
-				azureAccountToken: undefined,
-				applicationIntent: undefined,
-				attachDbFilename: undefined,
-				connectRetryCount: undefined,
-				connectRetryInterval: undefined,
-				connectionString: undefined,
-				currentLanguage: undefined,
-				email: undefined,
-				failoverPartner: undefined,
-				loadBalanceTimeout: undefined,
-				maxPoolSize: undefined,
-				minPoolSize: undefined,
-				multiSubnetFailover: undefined,
-				multipleActiveResultSets: undefined,
-				packetSize: undefined,
-				persistSecurityInfo: undefined,
-				pooling: undefined,
-				replication: undefined,
-				trustServerCertificate: undefined,
-				typeSystemVersion: undefined,
-				workstationId: undefined,
-				profileName: profile.profileName,
-				expiresOn: undefined,
-				tenantId: profile.tenantId
-			};
-			let connectionUrl = '';
-			try {
-				connectionUrl = await vscodeMssqlApi.connect(connectionProfile, saveConnectionAndPassword);
-			} catch (err) {
-				const firewallRuleError = <IFireWallRuleError>err;
-				if (firewallRuleError?.connectionUri) {
-					await vscodeMssqlApi.promptForFirewallRule(err.connectionUri, connectionProfile);
-				} else {
-					throw err;
-				}
-			}
-			return connectionUrl;
-		} else {
-			return undefined;
-		}
-	}
-
-	// Validates the connection result. If using azdata API, verifies connection was successful and connection id is returns
-	// If using vscode API, verifies the connection url is returns
-	private async validateConnection(connection: ConnectionResult | string | undefined): Promise<utils.ValidationResult> {
-		const getAzdataApi = await utils.getAzdataApi();
-		if (!connection) {
-			return { validated: false, errorMessage: constants.connectionFailedError('No result returned') };
-		} else if (getAzdataApi) {
-			const connectionResult = <ConnectionResult>connection;
-			if (connectionResult) {
-				const connected = connectionResult !== undefined && connectionResult.connected && connectionResult.connectionId !== undefined;
-				return { validated: connected, errorMessage: connected ? '' : constants.connectionFailedError(connectionResult?.errorMessage!) };
-			} else {
-				return { validated: false, errorMessage: constants.connectionFailedError('') };
-			}
-		} else {
-			return { validated: connection !== undefined, errorMessage: constants.connectionFailedError('') };
-		}
-	}
-
-	// Formats connection result to string to be able to add to log
-	private async formatConnectionResult(connection: ConnectionResult | string | undefined): Promise<string> {
-		const getAzdataApi = await utils.getAzdataApi();
-		const connectionResult = connection !== undefined && getAzdataApi ? <ConnectionResult>connection : undefined;
-		return connectionResult?.connected ? connectionResult.connectionId! : <string>connection;
-	}
-
-	public async getConnection(profile: ISqlConnectionProperties, saveConnectionAndPassword: boolean, database: string): Promise<string | undefined> {
-		const getAzdataApi = await utils.getAzdataApi();
-		let connection = await utils.retry(
-			constants.connectingToSqlServerMessage,
-			async () => {
-				return await this.connectToDatabase(profile, saveConnectionAndPassword, database);
-			},
-			this.validateConnection,
-			this.formatConnectionResult,
-			this._outputChannel,
-			this.DefaultSqlNumberOfRetries, profile.connectionRetryTimeout || this.DefaultSqlRetryTimeoutInSec);
-
-		if (connection) {
-			const connectionResult = <ConnectionResult>connection;
-			if (getAzdataApi) {
-				utils.throwIfNotConnected(connectionResult);
-				return getAzdataApi.connection.getUriForConnection(connectionResult.connectionId!);
-			} else {
-				return <string>connection;
-			}
-		}
-
-		return undefined;
 	}
 
 	private async executeTask<T>(taskName: string, task: () => Promise<T>): Promise<T> {
