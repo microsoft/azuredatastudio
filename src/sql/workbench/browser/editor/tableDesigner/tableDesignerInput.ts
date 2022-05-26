@@ -11,12 +11,9 @@ import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/comm
 import * as azdata from 'azdata';
 import { GroupIdentifier, IEditorInput, IRevertOptions, ISaveOptions } from 'vs/workbench/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { Schemas } from 'sql/base/common/schemas';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-
-const NewTable: string = localize('tableDesigner.newTable', "New Table");
 
 enum TableIcon {
 	Basic = 'Basic',
@@ -43,7 +40,6 @@ export class TableDesignerInput extends EditorInput {
 		tableInfo: azdata.designers.TableInfo,
 		telemetryInfo: { [key: string]: string },
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
-		@IEditorService private readonly _editorService: IEditorService,
 		@INotificationService private readonly _notificationService: INotificationService) {
 		super();
 		this._designerComponentInput = this._instantiationService.createInstance(TableDesignerComponentInput, this._provider, tableInfo, telemetryInfo);
@@ -97,7 +93,7 @@ export class TableDesignerInput extends EditorInput {
 		if (this._designerComponentInput.pendingAction) {
 			this._notificationService.warn(localize('tableDesigner.OperationInProgressWarning', "The operation cannot be performed while another operation is in progress."));
 		} else {
-			await this._designerComponentInput.openPublishDialog();
+			await this._designerComponentInput.save();
 		}
 		return this;
 	}
@@ -118,18 +114,7 @@ export class TableDesignerInput extends EditorInput {
 	}
 
 	private setEditorLabel(): void {
-		const tableInfo = this._designerComponentInput.tableInfo;
-		if (tableInfo.isNewTable) {
-			const existingNames = this._editorService.editors.map(editor => editor.getName());
-			// Find the next available unique name for the new table designer
-			let idx = 1;
-			do {
-				this._name = `${NewTable} ${idx}`;
-				idx++;
-			} while (existingNames.indexOf(this._name) !== -1);
-		} else {
-			this._name = `${tableInfo.schema}.${tableInfo.name}`;
-		}
-		this._title = `${tableInfo.server}.${tableInfo.database} - ${this._name}`;
+		this._name = this._designerComponentInput.tableInfo.title;
+		this._title = this._designerComponentInput.tableInfo.tooltip;
 	}
 }
