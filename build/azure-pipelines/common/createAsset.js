@@ -7,10 +7,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const url = require("url");
 const crypto = require("crypto");
-const azure = require("azure-storage");
 const mime = require("mime");
 const cosmos_1 = require("@azure/cosmos");
 const retry_1 = require("./retry");
+const storage_blob_1 = require("@azure/storage-blob");
 if (process.argv.length !== 8) {
     console.error('Usage: node createAsset.js PRODUCT OS ARCH TYPE NAME FILE');
     process.exit(-1);
@@ -109,19 +109,18 @@ function hashStream(hashName, stream) {
             .on('close', () => c(shasum.digest('hex')));
     });
 }
-async function doesAssetExist(blobService, quality, blobName) {
-    const existsResult = await new Promise((c, e) => blobService.doesBlobExist(quality, blobName, (err, r) => err ? e(err) : c(r)));
-    return existsResult.exists;
+async function doesAssetExist(containerClient, blobName) {
+    return await containerClient.getBlobClient(blobName).exists();
 }
-async function uploadBlob(blobService, quality, blobName, filePath, fileName) {
-    const blobOptions = {
-        contentSettings: {
-            contentType: mime.lookup(filePath),
+async function uploadBlob(containerClient, blobName, filePath, fileName) {
+    const blobClient = containerClient.getBlockBlobClient(blobName);
+    await blobClient.uploadFile(filePath, {
+        metadata: {
+            ontentType: mime.lookup(filePath),
             contentDisposition: `attachment; filename="${fileName}"`,
             cacheControl: 'max-age=31536000, public'
         }
-    };
-    await new Promise((c, e) => blobService.createBlockBlobFromLocalFile(quality, blobName, filePath, blobOptions, err => err ? e(err) : c()));
+    });
 }
 function getEnv(name) {
     const result = process.env[name];
@@ -147,22 +146,33 @@ async function main() {
     console.log('SHA256:', sha256hash);
     const blobName = commit + '/' + fileName;
     const storageAccount = process.env['AZURE_STORAGE_ACCOUNT_2'];
-    const blobService = azure.createBlobService(storageAccount, process.env['AZURE_STORAGE_ACCESS_KEY_2'])
-        .withFilter(new azure.ExponentialRetryPolicyFilter(20));
-    const blobExists = await doesAssetExist(blobService, quality, blobName);
+    const storageAccountKey = process.env['AZURE_STORAGE_ACCESS_KEY_2'];
+    const sharedKeyCredential = new storage_blob_1.StorageSharedKeyCredential(storageAccount, storageAccountKey);
+    const blobContainerClient = new storage_blob_1.ContainerClient(`https://${storageAccount}.blob.core.windows.net/${quality}`, sharedKeyCredential, {
+        retryOptions: {
+            retryPolicyType: storage_blob_1.StorageRetryPolicyType.EXPONENTIAL,
+            tryTimeoutInMs: 10 * 60 * 1000,
+            maxTries: 20
+        }
+    });
+    const blobExists = await doesAssetExist(blobContainerClient, blobName);
     if (blobExists) {
         console.log(`Blob ${quality}, ${blobName} already exists, not publishing again.`);
         return;
     }
-    const mooncakeBlobService = azure.createBlobService(storageAccount, process.env['MOONCAKE_STORAGE_ACCESS_KEY'], `${storageAccount}.blob.core.chinacloudapi.cn`)
-        .withFilter(new azure.ExponentialRetryPolicyFilter(20));
-    // mooncake is fussy and far away, this is needed!
-    blobService.defaultClientRequestTimeoutInMs = 10 * 60 * 1000;
-    mooncakeBlobService.defaultClientRequestTimeoutInMs = 10 * 60 * 1000;
+    const mooncakeAccountKey = process.env['MOONCAKE_STORAGE_ACCESS_KEY'];
+    const mooncakeKeyCredential = new storage_blob_1.StorageSharedKeyCredential(storageAccount, mooncakeAccountKey);
+    const mooncakeBlobContainerClient = new storage_blob_1.ContainerClient(`https://${storageAccount}.blob.core.chinacloudapi.cn/${quality}`, mooncakeKeyCredential, {
+        retryOptions: {
+            retryPolicyType: storage_blob_1.StorageRetryPolicyType.EXPONENTIAL,
+            tryTimeoutInMs: 10 * 60 * 1000,
+            maxTries: 20
+        }
+    });
     console.log('Uploading blobs to Azure storage and Mooncake Azure storage...');
     await (0, retry_1.retry)(() => Promise.all([
-        uploadBlob(blobService, quality, blobName, filePath, fileName),
-        uploadBlob(mooncakeBlobService, quality, blobName, filePath, fileName)
+        uploadBlob(blobContainerClient, blobName, filePath, fileName),
+        uploadBlob(mooncakeBlobContainerClient, blobName, filePath, fileName)
     ]));
     console.log('Blobs successfully uploaded.');
     // TODO: Understand if blobName and blobPath are the same and replace blobPath with blobName if so.
