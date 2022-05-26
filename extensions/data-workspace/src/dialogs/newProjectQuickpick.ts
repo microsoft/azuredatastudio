@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
-import { directoryExist } from '../common/utils';
+import { directoryExist, showInfoMessageWithLearnMoreLink } from '../common/utils';
 import { defaultProjectSaveLocation } from '../common/projectLocationHelper';
 import { WorkspaceService } from '../services/workspaceService';
 
@@ -23,8 +23,9 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 			targetPlatforms: projType.targetPlatforms,
 			defaultTargetPlatform: projType.defaultTargetPlatform,
 			sdkOption: projType.sdkStyleOption,
-			sdkLearnMoreUrl: projType.sdkStyleLearnMoreUrl
-		} as vscode.QuickPickItem & { id: string, sdkOption?: boolean, targetPlatforms?: string[], defaultTargetPlatform?: string, sdkLearnMoreUrl?: string };
+			sdkLearnMoreUrl: projType.sdkStyleLearnMoreUrl,
+			learnMoreUrl: projType.learnMoreUrl
+		} as vscode.QuickPickItem & { id: string, sdkOption?: boolean, targetPlatforms?: string[], defaultTargetPlatform?: string, sdkLearnMoreUrl?: string, learnMoreUrl?: string };
 	});
 
 	// 1. Prompt for project type
@@ -166,4 +167,10 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 	}
 
 	await workspaceService.createProject(projectName, vscode.Uri.file(projectLocation), projectType.id, targetPlatform, sdkStyle);
+
+	// Add info message with 'learn more' button if project type has a link
+	// for user to learn more about the project type
+	if (projectType.learnMoreUrl) {
+		void showInfoMessageWithLearnMoreLink(constants.LocalDevInfo, projectType.learnMoreUrl);
+	}
 }
