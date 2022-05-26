@@ -352,7 +352,7 @@
     "node-fetch": "^2.6.7",
     "qs": "^6.9.1",
     "vscode-nls": "^4.0.0",
-    "ws": "^7.2.0"
+    "ws": "^7.4.6"
   },
   "devDependencies": {
     "@types/keytar": "4.4.0",
