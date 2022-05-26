@@ -735,29 +735,21 @@ declare module 'azdata' {
 		 */
 		export interface TableInfo {
 			/**
-			 * The server name.
+			 * Used as the table designer editor's tab header text.
 			 */
-			server: string;
+			title: string;
 			/**
-			 * The database name
+			 * Used as the table designer editor's tab header hover text.
 			 */
-			database: string;
-			/**
-			 * The schema name, only required for existing table.
-			 */
-			schema?: string;
-			/**
-			 * The table name, only required for existing table.
-			 */
-			name?: string;
-			/**
-			 * A boolean value indicates whether a new table is being designed.
-			 */
-			isNewTable: boolean;
+			tooltip: string;
 			/**
 			 * Unique identifier of the table. Will be used to decide whether a designer is already opened for the table.
 			 */
 			id: string;
+			/**
+			 * A boolean value indicates whether a new table is being designed.
+			 */
+			isNewTable: boolean;
 			/**
 			 * Extension can store additional information that the provider needs to uniquely identify a table.
 			 */
@@ -933,6 +925,10 @@ declare module 'azdata' {
 			 * Additional primary key properties. Common primary key properties: primaryKeyName, primaryKeyDescription.
 			 */
 			additionalPrimaryKeyProperties?: DesignerDataPropertyInfo[];
+			/**
+			 * Whether to use advanced save mode. for advanced save mode, a publish changes dialog will be opened with preview of changes.
+			 */
+			useAdvancedSaveMode: boolean;
 		}
 
 		export interface TableDesignerBuiltInTableViewOptions extends DesignerTablePropertiesBase {

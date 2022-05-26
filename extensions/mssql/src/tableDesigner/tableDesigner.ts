@@ -9,14 +9,18 @@ import * as vscode from 'vscode';
 import { sqlProviderName } from '../constants';
 import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
 import { ITelemetryEventProperties, Telemetry } from '../telemetry';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
+const NewTableText = localize('tableDesigner.NewTable', "New Table");
 export function registerTableDesignerCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newTable', async (context: azdata.ObjectExplorerContext) => {
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
 		const tableIcon = context.nodeInfo.nodeSubType as azdata.designers.TableIcon;
 		const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
-			server: context.connectionProfile.serverName,
+			title: NewTableText,
+			tooltip: `${context.connectionProfile.serverName}.${context.connectionProfile.databaseName} - ${NewTableText}`,
 			database: context.connectionProfile.databaseName,
 			isNewTable: true,
 			id: generateUuid(),
@@ -35,7 +39,8 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		const tableIcon = context.nodeInfo.nodeSubType as azdata.designers.TableIcon;
 		const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
-			server: server,
+			title: `${schema}.${name}`,
+			tooltip: `${server}.${database} - ${schema}.${name}`,
 			database: database,
 			isNewTable: false,
 			name: name,
