@@ -659,8 +659,10 @@ export class QueryEditor extends EditorPane {
 				}
 			}
 			else {
-				let resultsTab = new ResultsTab(this.resultsEditor, this.resultsEditorContainer);
-				this.panelview.pushTab(resultsTab);
+				if (!this.panelview.contains('queryResultsEditorTab')) {
+					let resultsTab = new ResultsTab(this.resultsEditor, this.resultsEditorContainer);
+					this.panelview.pushTab(resultsTab);
+				}
 				this.panelview.showTab('queryResultsEditorTab');
 			}
 		}
