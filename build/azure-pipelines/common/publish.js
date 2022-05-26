@@ -9,7 +9,7 @@ const crypto = require("crypto");
 const azure = require("azure-storage");
 const mime = require("mime");
 const minimist = require("minimist");
-const documentdb_1 = require("documentdb");
+const cosmos_1 = require("@azure/cosmos");
 // {{SQL CARBON EDIT}}
 if (process.argv.length < 9) {
     console.error('Usage: node publish.js <product_quality> <platform> <file_type> <file_name> <version> <is_update> <file> [commit_id]');
@@ -30,79 +30,46 @@ function createDefaultConfig(quality) {
         frozen: false
     };
 }
-function getConfig(quality) {
+async function getConfig(quality) {
     console.log(`Getting config for quality ${quality}`);
-    const client = new documentdb_1.DocumentClient(process.env['AZURE_DOCUMENTDB_ENDPOINT'], { masterKey: process.env['AZURE_DOCUMENTDB_MASTERKEY'] });
-    const collection = 'dbs/builds/colls/config';
+    const client = new cosmos_1.CosmosClient({ endpoint: process.env['AZURE_DOCUMENTDB_ENDPOINT'], key: process.env['AZURE_DOCUMENTDB_MASTERKEY'] });
     const query = {
         query: `SELECT TOP 1 * FROM c WHERE c.id = @quality`,
         parameters: [
             { name: '@quality', value: quality }
         ]
     };
-    return retry(() => new Promise((c, e) => {
-        client.queryDocuments(collection, query, { enableCrossPartitionQuery: true }).toArray((err, results) => {
-            if (err && err.code !== 409) {
-                return e(err);
-            }
-            c(!results || results.length === 0 ? createDefaultConfig(quality) : results[0]);
-        });
-    }));
+    const res = await client.database('builds').container('config').items.query(query).fetchAll();
+    if (res.resources.length === 0) {
+        return createDefaultConfig(quality);
+    }
+    return res.resources[0];
 }
-function createOrUpdate(commit, quality, platform, type, release, asset, isUpdate) {
-    const client = new documentdb_1.DocumentClient(process.env['AZURE_DOCUMENTDB_ENDPOINT'], { masterKey: process.env['AZURE_DOCUMENTDB_MASTERKEY'] });
-    const collection = 'dbs/builds/colls/' + quality;
+async function createOrUpdate(commit, quality, platform, type, release, asset, isUpdate) {
+    const client = new cosmos_1.CosmosClient({ endpoint: process.env['AZURE_DOCUMENTDB_ENDPOINT'], key: process.env['AZURE_DOCUMENTDB_MASTERKEY'] });
     const updateQuery = {
         query: 'SELECT TOP 1 * FROM c WHERE c.id = @id',
         parameters: [{ name: '@id', value: commit }]
     };
-    let updateTries = 0;
-    function update() {
-        updateTries++;
-        return new Promise((c, e) => {
-            console.log(`Querying existing documents to update...`);
-            client.queryDocuments(collection, updateQuery, { enableCrossPartitionQuery: true }).toArray((err, results) => {
-                if (err) {
-                    return e(err);
-                }
-                if (results.length !== 1) {
-                    return e(new Error('No documents'));
-                }
-                const release = results[0];
-                release.assets = [
-                    ...release.assets.filter((a) => !(a.platform === platform && a.type === type)),
-                    asset
-                ];
-                if (isUpdate) {
-                    release.updates[platform] = type;
-                }
-                console.log(`Replacing existing document with updated version`);
-                client.replaceDocument(release._self, release, err => {
-                    if (err && err.code === 409 && updateTries < 5) {
-                        return c(update());
-                    }
-                    if (err) {
-                        return e(err);
-                    }
-                    console.log('Build successfully updated.');
-                    c();
-                });
-            });
-        });
-    }
-    return retry(() => new Promise((c, e) => {
+    const res = await client.database('builds').container(quality).items.query(updateQuery).fetchAll();
+    if (res.resources.length !== 1) {
         console.log(`Attempting to create document`);
-        client.createDocument(collection, release, err => {
-            if (err && err.code === 409) {
-                return c(update());
-            }
-            if (err) {
-                return e(err);
-            }
-            console.log('Build successfully published.');
-            c();
-        });
-    }));
+        await client.database('builds').container(quality).items.create(release);
+        console.log('Build successfully published.');
+    }
+    else {
+        release = res.resources[0];
+        release.assets = [
+            ...release.assets.filter((a) => !(a.platform === platform && a.type === type)),
+            asset
+        ];
+        if (isUpdate) {
+            release.updates[platform] = type;
+        }
+        console.log(`Replacing existing document with updated version`);
+        await client.database('builds').container(quality).item(release.id).replace(release._self);
+        console.log('Build successfully updated.');
+    }
 }
 async function assertContainer(blobService, quality) {
     await new Promise((c, e) => blobService.createContainerIfNotExists(quality, { publicAccessLevel: 'blob' }, err => err ? e(err) : c()));
@@ -190,21 +157,6 @@ async function publish(commit, quality, platform, type, name, version, _isUpdate
         }
     }
     await createOrUpdate(commit, quality, platform, type, release, asset, isUpdate);
-}
-const RETRY_TIMES = 10;
-async function retry(fn) {
-    for (let run = 1; run <= RETRY_TIMES; run++) {
-        try {
-            return await fn();
-        }
-        catch (err) {
-            if (!/ECONNRESET/.test(err.message)) {
-                throw err;
-            }
-            console.log(`Caught error ${err} - ${run}/${RETRY_TIMES}`);
-        }
-    }
-    throw new Error('Retried too many times');
 }
 function main() {
     const commit = process.env['BUILD_SOURCEVERSION'];
