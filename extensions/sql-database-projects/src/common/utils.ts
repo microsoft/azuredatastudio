@@ -685,3 +685,9 @@ export function findSqlVersionInTargetPlatform(targetPlatform: string): number |
 	}
 	return undefined;
 }
+
+export function throwIfNotConnected(connectionResult: azdataType.ConnectionResult): void {
+	if (!connectionResult.connected) {
+		throw new Error(`${connectionResult.errorMessage} (${connectionResult.errorCode})`);
+	}
+}
