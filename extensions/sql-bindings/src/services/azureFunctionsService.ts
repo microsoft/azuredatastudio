@@ -63,7 +63,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 					isCreateNewProject = true;
 					telemetryStep = CreateAzureFunctionStep.getSelectedFolder;
-					// user either has not folder open or an empty workspace
+					// user either has no folder open or an empty workspace
 					// prompt user to choose a folder to create the project in
 					const browseProjectLocation = await vscode.window.showQuickPick(
 						[constants.browseEllipsisWithIcon],
@@ -190,6 +190,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		// prompt for Connection String Setting Name
 		let connectionStringInfo: IConnectionStringInfo | undefined = { connectionStringSettingName: constants.sqlConnectionStringSetting, connectionInfo: connectionInfo };
 		if (!isCreateNewProject && projectFile) {
+			// if it is not a new project, we can prompt user for connection string setting name and connection string password prompts
 			telemetryStep = CreateAzureFunctionStep.getConnectionStringSettingName;
 			connectionStringInfo = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(vscode.Uri.parse(projectFile), connectionInfo);
 			if (!connectionStringInfo) {

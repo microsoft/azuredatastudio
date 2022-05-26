@@ -458,7 +458,6 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 					continue;
 				}
 
-				const listOfConnectionStringMethods = [constants.connectionProfile, constants.userConnectionString];
 				let selectedConnectionStringMethod: string | undefined;
 				let connectionString: string | undefined = '';
 				while (true) {
@@ -467,6 +466,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 						const localSettingsPath: string = path.join(projectFolder, constants.azureFunctionLocalSettingsFileName);
 
 						if (!connectionInfo) {
+							const listOfConnectionStringMethods = [constants.connectionProfile, constants.userConnectionString];
 							// show the connection string methods (user input and connection profile options)
 							selectedConnectionStringMethod = await vscode.window.showQuickPick(listOfConnectionStringMethods, {
 								canPickMany: false,

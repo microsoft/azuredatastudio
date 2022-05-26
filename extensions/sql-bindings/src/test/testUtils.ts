@@ -8,6 +8,7 @@ import * as TypeMoq from 'typemoq';
 import * as mssql from 'mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import { RequestType } from 'vscode-languageclient';
+import { AzureFunctionsExtensionApi, IAppSettingsClient, ICreateFunctionOptions } from '../../../types/vscode-azurefunctions.api';
 
 export interface TestUtils {
 	context: vscode.ExtensionContext;
@@ -16,6 +17,7 @@ export interface TestUtils {
 	vscodeMssqlIExtension: TypeMoq.IMock<vscodeMssql.IExtension>
 	dacFxMssqlService: TypeMoq.IMock<vscodeMssql.IDacFxService>;
 	schemaCompareService: TypeMoq.IMock<vscodeMssql.ISchemaCompareService>;
+	azureFunctionsExtensionApi: TypeMoq.IMock<AzureFunctionsExtensionApi>;
 }
 
 export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
@@ -58,6 +60,26 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 	}
 }
 
+export class MockAzureFunctionExtensionAPI implements AzureFunctionsExtensionApi {
+	public apiVersion: string = 'latest';
+
+	public revealTreeItem(_: string): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	public createFunction(_: ICreateFunctionOptions): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	public downloadAppSettings(_: IAppSettingsClient): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	public uploadAppSettings(_: IAppSettingsClient, __?: (RegExp | string)[]): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+}
+
 export function createTestUtils(): TestUtils {
 	return {
 		context: TypeMoq.Mock.ofType<vscode.ExtensionContext>().object,
@@ -65,7 +87,8 @@ export function createTestUtils(): TestUtils {
 		vscodeMssqlIExtension: TypeMoq.Mock.ofType(MockVscodeMssqlIExtension),
 		dacFxMssqlService: TypeMoq.Mock.ofType<vscodeMssql.IDacFxService>(),
 		schemaCompareService: TypeMoq.Mock.ofType<vscodeMssql.ISchemaCompareService>(),
-		outputChannel: TypeMoq.Mock.ofType<vscode.OutputChannel>().object
+		outputChannel: TypeMoq.Mock.ofType<vscode.OutputChannel>().object,
+		azureFunctionsExtensionApi: TypeMoq.Mock.ofType(MockAzureFunctionExtensionAPI)
 	};
 }
 
@@ -106,4 +129,40 @@ export function createTestCredentials(): vscodeMssql.IConnectionInfo {
 		connectionString: ''
 	};
 	return creds;
+}
+
+/**
+ * Create SQL server table node used for testing
+ * @param connectionInfo the connection info used for the test case
+ * @returns SQL Server table node
+ */
+export function createTestTableNode(connectionInfo: vscodeMssql.IConnectionInfo): vscodeMssql.ITreeNodeInfo {
+	return {
+		connectionInfo: connectionInfo,
+		nodeType: 'Table',
+		metadata: {
+			metadataType: 0,
+			metadataTypeName: 'Table',
+			urn: '',
+			name: 'testTable',
+			schema: 'testSchema',
+		},
+		parentNode: {
+			connectionInfo: connectionInfo,
+			nodeType: 'Folder',
+			metadata: null!,
+			parentNode: {
+				connectionInfo: connectionInfo,
+				nodeType: 'Database',
+				metadata: {
+					metadataType: 0,
+					metadataTypeName: 'Database',
+					urn: '',
+					name: 'testDb',
+					schema: null!,
+				},
+				parentNode: undefined! // set to undefined since we do not need further parent node
+			}
+		}
+	};
 }
