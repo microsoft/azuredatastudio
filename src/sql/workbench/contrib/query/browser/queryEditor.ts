@@ -945,6 +945,12 @@ export class QueryEditor extends EditorPane {
 			this.resultsEditor.setInput(newInput.results, options, context)
 		]);
 
+		// await Promise.all([
+		// 	super.setInput(newInput, options, context, token),
+		// 	this.currentTextEditor.setInput(newInput.text, options, context, token),
+		// 	() => { this._resultsInput = newInput.results }
+		// ]);
+
 		this.inputDisposables.clear();
 		this.inputDisposables.add(this.input.state.onChange(c => this.updateState(c)));
 		this.updateState({ connectingChange: true, connectedChange: true, executingChange: true, resultsVisibleChange: true, sqlCmdModeChanged: true });
