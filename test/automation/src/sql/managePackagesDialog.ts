@@ -38,7 +38,7 @@ export class ManagePackagesDialog extends Dialog {
 		await this.code.waitAndClick(searchButton);
 
 		if (packageVersion) {
-			const versionSelectBox = `${ManagePackagesDialog.dialogPage} select[class="monaco-select-box monaco-select-box-dropdown-padding"][aria-label="Package Version"]`;
+			const versionSelectBox = `${ManagePackagesDialog.dialogPage} select[class="monaco-select-box monaco-select-box-dropdown-padding"][aria-label^="Supported Package Versions for Python"]`;
 			const versionOption = `${versionSelectBox} option[value="${packageVersion}]`;
 			this.code.waitForElement(versionOption);
 			this.code.waitForSetValue(versionSelectBox, packageVersion);
