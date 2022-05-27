@@ -47,8 +47,66 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
+import { GridPanelState } from 'sql/workbench/common/editor/query/gridTableState';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import { MessagePanel } from 'sql/workbench/contrib/query/browser/messagePanel';
+import { GridPanel } from 'sql/workbench/contrib/query/browser/gridPanel';
+import { ChartTab } from 'sql/workbench/contrib/charts/browser/chartTab';
+import { TopOperationsTab } from 'sql/workbench/contrib/queryPlan/browser/topOperations';
+import { QueryModelViewTab } from 'sql/workbench/contrib/query/browser/modelViewTab/queryModelViewTab';
+import { ExecutionPlanTab } from 'sql/workbench/contrib/executionPlan/browser/executionPlanTab';
+import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
+import * as types from 'vs/base/common/types';
+import { getPixelRatio, getZoomLevel } from 'vs/base/browser/browser';
+import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
+import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
+
+export class BareResultsGridInfo extends BareFontInfo {
+
+	public static override createFromRawSettings(opts: {
+		fontFamily?: string;
+		fontWeight?: string;
+		fontSize?: number;
+		lineHeight?: number;
+		letterSpacing?: number;
+		cellPadding?: number | number[];
+	}, zoomLevel: number): BareResultsGridInfo {
+		let cellPadding = !types.isUndefinedOrNull(opts.cellPadding) ? opts.cellPadding : RESULTS_GRID_DEFAULTS.cellPadding;
+		return new BareResultsGridInfo(BareFontInfo.createFromRawSettings(opts, zoomLevel, getPixelRatio()), { cellPadding });
+	}
+
+	readonly cellPadding: number | number[];
+
+	protected constructor(fontInfo: BareFontInfo, opts: {
+		cellPadding: number | number[];
+	}) {
+		super(fontInfo);
+		this.cellPadding = opts.cellPadding;
+	}
+}
+
+export function getBareResultsGridInfoStyles(info: BareResultsGridInfo): string {
+	let content = '';
+	if (info.fontFamily) {
+		content += `font-family: ${info.fontFamily};`;
+	}
+	if (info.fontWeight) {
+		content += `font-weight: ${info.fontWeight};`;
+	}
+	if (info.fontSize) {
+		content += `font-size: ${info.fontSize}px;`;
+	}
+	if (info.lineHeight) {
+		content += `line-height: ${info.lineHeight}px;`;
+	}
+	if (info.letterSpacing) {
+		content += `letter-spacing: ${info.letterSpacing}px;`;
+	}
+	return content;
+}
 
 interface IQueryEditorViewState {
 	resultsHeight: number | undefined;
@@ -102,14 +160,14 @@ class TextTab implements IPanelTab {
 	}
 }
 
-class ResultsView extends Disposable implements IPanelView {
-	private selfResultsEditor: QueryResultsEditor;
-	public container: HTMLElement;
+class MessagesView extends Disposable implements IPanelView {
+	private messagePanel: MessagePanel;
+	private container = document.createElement('div');
 
-	constructor(inputResultsEditor: QueryResultsEditor, inputContainer: HTMLElement) {
+	constructor(private instantiationService: IInstantiationService) {
 		super();
-		this.selfResultsEditor = inputResultsEditor;
-		this.container = inputContainer;
+		this.messagePanel = this._register(this.instantiationService.createInstance(MessagePanel));
+		this.messagePanel.render(this.container);
 	}
 
 	render(container: HTMLElement): void {
@@ -119,25 +177,109 @@ class ResultsView extends Disposable implements IPanelView {
 	layout(dimension: DOM.Dimension): void {
 		this.container.style.width = `${dimension.width}px`;
 		this.container.style.height = `${dimension.height}px`;
-		this.selfResultsEditor.layout(dimension);
+		this.messagePanel.layout(dimension);
 	}
 
 	public clear() {
-		this.selfResultsEditor.clearInput();
+		this.messagePanel.clear();
 	}
 
 	remove(): void {
 		this.container.remove();
 	}
+
+	public set queryRunner(runner: QueryRunner) {
+		this.messagePanel.queryRunner = runner;
+	}
+}
+
+class ResultsView extends Disposable implements IPanelView {
+	private gridPanel: GridPanel;
+	private container = document.createElement('div');
+	private _state: GridPanelState | undefined;
+	private _runner: QueryRunner | undefined;
+
+	constructor(private instantiationService: IInstantiationService) {
+		super();
+		this.gridPanel = this._register(this.instantiationService.createInstance(GridPanel));
+		this.gridPanel.render(this.container);
+	}
+
+	render(container: HTMLElement): void {
+		container.appendChild(this.container);
+	}
+
+	layout(dimension: DOM.Dimension): void {
+		this.container.style.width = `${dimension.width}px`;
+		this.container.style.height = `${dimension.height}px`;
+		this.gridPanel.layout(dimension);
+	}
+
+	public clear() {
+		this.gridPanel.clear();
+	}
+
+	remove(): void {
+		this.container.remove();
+	}
+
+	onHide(): void {
+		this._state = this.gridPanel.state;
+		this.gridPanel.clear();
+	}
+
+	onShow(): void {
+		if (this._state) {
+			this.state = this._state;
+			if (this._runner) {
+				this.queryRunner = this._runner;
+			}
+		}
+	}
+
+	public set queryRunner(runner: QueryRunner) {
+		this._runner = runner;
+		this.gridPanel.queryRunner = runner;
+	}
+
+	public set state(val: GridPanelState) {
+		this.gridPanel.state = val;
+	}
 }
 
 class ResultsTab implements IPanelTab {
-	public readonly title = localize('queryResultsEditorTabTitle', "Query Results and Messages");
-	public readonly identifier = 'queryResultsEditorTab';
+	public readonly title = localize('resultsTabTitle', "Results");
+	public readonly identifier = 'resultsTab';
 	public readonly view: ResultsView;
 
-	constructor(inputResultsEditor: QueryResultsEditor, inputContainer: HTMLElement) {
-		this.view = new ResultsView(inputResultsEditor, inputContainer);
+	constructor(instantiationService: IInstantiationService) {
+		this.view = new ResultsView(instantiationService);
+	}
+
+	public set queryRunner(runner: QueryRunner) {
+		this.view.queryRunner = runner;
+	}
+
+	public dispose() {
+		dispose(this.view);
+	}
+
+	public clear() {
+		this.view.clear();
+	}
+}
+
+class MessagesTab implements IPanelTab {
+	public readonly title = localize('messagesTabTitle', "Messages");
+	public readonly identifier = 'messagesTab';
+	public readonly view: MessagesView;
+
+	constructor(instantiationService: IInstantiationService) {
+		this.view = new MessagesView(instantiationService);
+	}
+
+	public set queryRunner(runner: QueryRunner) {
+		this.view.queryRunner = runner;
 	}
 
 	public dispose() {
@@ -174,7 +316,6 @@ export class QueryEditor extends EditorPane {
 	private taskbar: Taskbar;
 	private viewContainer: HTMLElement;
 	private splitview: SplitView;
-	private panelview: TabbedPanel;
 
 	private inputDisposables = this._register(new DisposableStore());
 
@@ -185,6 +326,20 @@ export class QueryEditor extends EditorPane {
 	private queryEditorVisible: IContextKey<boolean>;
 
 	private editorMemento: IEditorMemento<IQueryEditorViewState>;
+
+	//stuff moved from queryResultsView
+	private _panelView: TabbedPanel;
+	private _resultsInput: QueryResultsInput | undefined;
+	private resultsTab: ResultsTab;
+	private messagesTab: MessagesTab;
+	private chartTab: ChartTab;
+	private executionPlanTab: ExecutionPlanTab;
+	private topOperationsTab: TopOperationsTab;
+	private dynamicModelViewTabs: QueryModelViewTab[] = [];
+
+	//stuff moved from queryResultsEditor
+	protected _rawOptions: BareResultsGridInfo;
+	private styleSheet = DOM.createStyleSheet();
 
 	//actions
 	private _runQueryAction: actions.RunQueryAction;
@@ -221,6 +376,28 @@ export class QueryEditor extends EditorPane {
 
 		// Clear view state for deleted files
 		this._register(fileService.onDidFilesChange(e => this.onFilesChanged(e)));
+
+		// Moved from queryResultsEditor
+		this._rawOptions = BareResultsGridInfo.createFromRawSettings(this.configurationService.getValue('resultsGrid'), getZoomLevel());
+		this._register(this.configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('resultsGrid')) {
+				this._rawOptions = BareResultsGridInfo.createFromRawSettings(this.configurationService.getValue('resultsGrid'), getZoomLevel());
+				this.applySettings();
+			}
+		}));
+
+	}
+
+	private applySettings() {
+		let cssRuleText = '';
+		if (types.isNumber(this._rawOptions.cellPadding)) {
+			cssRuleText = this._rawOptions.cellPadding + 'px';
+		} else {
+			cssRuleText = this._rawOptions.cellPadding.join('px ') + 'px;';
+		}
+		let content = `.grid-panel .monaco-table .slick-cell { padding: ${cssRuleText} }`;
+		content += `.grid-panel .monaco-table, .message-tree { ${getBareResultsGridInfoStyles(this._rawOptions)} }`;
+		this.styleSheet.innerHTML = content;
 	}
 
 	private onFilesChanged(e: FileChangesEvent): void {
@@ -264,9 +441,6 @@ export class QueryEditor extends EditorPane {
 		this.textResourceEditor.create(this.textResourceEditorContainer);
 		this.textFileEditorContainer = DOM.$('.text-file-editor-container');
 		this.textFileEditor.create(this.textFileEditorContainer);
-		this.resultsEditorContainer = DOM.$('.results-editor-container');
-		this.resultsEditor = this._register(this.instantiationService.createInstance(QueryResultsEditor));
-		this.resultsEditor.create(this.resultsEditorContainer);
 
 		this.viewContainer = DOM.$('.query-editor-view');
 		this.createTaskbar(parent);
@@ -274,6 +448,10 @@ export class QueryEditor extends EditorPane {
 		parent.appendChild(this.viewContainer);
 
 		if (!this.showResultsInSeparateTab) {
+			this.resultsEditorContainer = DOM.$('.results-editor-container');
+			this.resultsEditor = this._register(this.instantiationService.createInstance(QueryResultsEditor));
+			this.resultsEditor.create(this.resultsEditorContainer);
+
 			this.splitview = this._register(new SplitView(this.viewContainer, { orientation: Orientation.VERTICAL }));
 			this._register(this.splitview.onDidSashReset(() => this.splitview.distributeViewSizes()));
 
@@ -287,12 +465,22 @@ export class QueryEditor extends EditorPane {
 			}, Sizing.Distribute);
 		}
 		else {
-			this.panelview = this._register(new TabbedPanel(this.viewContainer, { showHeaderWhenSingleView: true }));
+			this._panelView = this._register(new TabbedPanel(this.viewContainer, { showHeaderWhenSingleView: true }));
+			this.resultsTab = this._register(new ResultsTab(this.instantiationService));
+			this.messagesTab = this._register(new MessagesTab(this.instantiationService));
+			this.chartTab = this._register(new ChartTab(this.instantiationService));
+			this.executionPlanTab = this._register(this.instantiationService.createInstance(ExecutionPlanTab));
+			this.topOperationsTab = this._register(new TopOperationsTab(this.instantiationService));
+
 			let textTab = new TextTab(this.textResourceEditor, this.textResourceEditorContainer);
-			this.panelview.pushTab(textTab);
-			this._register(this.resultsEditor.getResultsView.onQueryCompleteEvent(() => {
-				if (this.showResultsInSeparateTab && this.panelview.contains('queryResultsEditorTab')) {
-					this.panelview.showTab('queryResultsEditorTab');
+			this._register(attachTabbedPanelStyler(this._panelView, this.themeService));
+
+			this._panelView.pushTab(textTab);
+			this._panelView.pushTab(this.resultsTab);
+			this._panelView.pushTab(this.messagesTab);
+			this._register(this._panelView.onTabChange(e => {
+				if (this._resultsInput) {
+					this._resultsInput.state.activeTab = e;
 				}
 			}));
 		}
@@ -615,7 +803,7 @@ export class QueryEditor extends EditorPane {
 			this.splitview.layout(queryEditorHeight);
 		}
 		else {
-			this.panelview.layout(dimension);
+			this._panelView.layout(dimension);
 		}
 	}
 
@@ -640,8 +828,8 @@ export class QueryEditor extends EditorPane {
 				}
 			}
 			else {
-				this.panelview.removeTab('queryResultsEditorTab');
-				this.panelview.showTab('textTab');
+				this._panelView.removeTab('queryResultsEditorTab');
+				this._panelView.showTab('textTab');
 			}
 		}
 	}
@@ -664,9 +852,9 @@ export class QueryEditor extends EditorPane {
 				}
 			}
 			else {
-				if (!this.panelview.contains('queryResultsEditorTab')) {
-					let resultsTab = new ResultsTab(this.resultsEditor, this.resultsEditorContainer);
-					this.panelview.pushTab(resultsTab);
+				if (!this._panelView.contains('queryResultsEditorTab')) {
+					// let resultsTab = new ResultsTab(this.resultsEditor, this.resultsEditorContainer);
+					// this.panelview.pushTab(resultsTab);
 				}
 			}
 		}

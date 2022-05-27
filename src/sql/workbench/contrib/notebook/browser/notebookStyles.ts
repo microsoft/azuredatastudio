@@ -11,7 +11,7 @@ import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common
 import { cellBorder, notebookToolbarIcon, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder, notebookToolbarSelectBackground, splitBorder, notebookCellTagBackground, notebookCellTagForeground, notebookFindMatchHighlight, notebookFindRangeHighlight } from 'sql/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
+import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { getZoomLevel } from 'vs/base/browser/browser';
 import * as types from 'vs/base/common/types';
 import { cellStatusBarItemHover } from 'vs/workbench/contrib/notebook/browser/notebookEditorWidget';

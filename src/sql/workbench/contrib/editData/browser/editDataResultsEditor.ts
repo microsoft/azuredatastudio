@@ -15,7 +15,7 @@ import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import * as types from 'vs/base/common/types';
 
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
-import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
+import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { EditDataGridPanel } from 'sql/workbench/contrib/editData/browser/editDataGridPanel';
 import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';

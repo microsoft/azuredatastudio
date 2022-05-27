@@ -8,65 +8,19 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
-import { getPixelRatio, getZoomLevel } from 'vs/base/browser/browser';
+import { getZoomLevel } from 'vs/base/browser/browser';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-
+import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResultsView';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
 
 export const TextCompareEditorVisible = new RawContextKey<boolean>('textCompareEditorVisible', false);
-
-export class BareResultsGridInfo extends BareFontInfo {
-
-	public static override createFromRawSettings(opts: {
-		fontFamily?: string;
-		fontWeight?: string;
-		fontSize?: number;
-		lineHeight?: number;
-		letterSpacing?: number;
-		cellPadding?: number | number[];
-	}, zoomLevel: number): BareResultsGridInfo {
-		let cellPadding = !types.isUndefinedOrNull(opts.cellPadding) ? opts.cellPadding : RESULTS_GRID_DEFAULTS.cellPadding;
-		return new BareResultsGridInfo(BareFontInfo.createFromRawSettings(opts, zoomLevel, getPixelRatio()), { cellPadding });
-	}
-
-	readonly cellPadding: number | number[];
-
-	protected constructor(fontInfo: BareFontInfo, opts: {
-		cellPadding: number | number[];
-	}) {
-		super(fontInfo);
-		this.cellPadding = opts.cellPadding;
-	}
-}
-
-export function getBareResultsGridInfoStyles(info: BareResultsGridInfo): string {
-	let content = '';
-	if (info.fontFamily) {
-		content += `font-family: ${info.fontFamily};`;
-	}
-	if (info.fontWeight) {
-		content += `font-weight: ${info.fontWeight};`;
-	}
-	if (info.fontSize) {
-		content += `font-size: ${info.fontSize}px;`;
-	}
-	if (info.lineHeight) {
-		content += `line-height: ${info.lineHeight}px;`;
-	}
-	if (info.letterSpacing) {
-		content += `letter-spacing: ${info.letterSpacing}px;`;
-	}
-	return content;
-}
 
 /**
  * Editor associated with viewing and editing the data of a query results grid.
