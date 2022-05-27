@@ -448,6 +448,16 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}
 		}));
 
+		const refreshResourceButton = this._view.modelBuilder.hyperlink()
+			.withProps({
+				label: constants.REFRESH,
+				url: '',
+				CSSStyles: {
+					...styles.BODY_CSS
+				}
+			})
+			.component();
+
 		return this._view.modelBuilder.flexContainer().withItems(
 			[
 				subscriptionDropdownLabel,
@@ -457,7 +467,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				azureResourceGroupLabel,
 				this._azureResourceGroupDropdown,
 				this._azureResourceDropdownLabel,
-				this._azureResourceDropdown
+				this._azureResourceDropdown,
+				refreshResourceButton
 			]
 		).withLayout({
 			flexFlow: 'column',
