@@ -61,6 +61,7 @@ import * as types from 'vs/base/common/types';
 import { getPixelRatio, getZoomLevel } from 'vs/base/browser/browser';
 import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
+import { ExecutionPlanFileViewCache } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileViewCache';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -336,6 +337,7 @@ export class QueryEditor extends EditorPane {
 	private executionPlanTab: ExecutionPlanTab;
 	private topOperationsTab: TopOperationsTab;
 	private dynamicModelViewTabs: QueryModelViewTab[] = [];
+	private runnerDisposables = new DisposableStore();
 
 	//stuff moved from queryResultsEditor
 	protected _rawOptions: BareResultsGridInfo;
@@ -386,6 +388,204 @@ export class QueryEditor extends EditorPane {
 			}
 		}));
 
+	}
+
+	private hasResults(runner: QueryRunner): boolean {
+		let hasResults = false;
+		for (const batch of runner.batchSets) {
+			if (batch.resultSetSummaries?.length > 0) {
+				hasResults = true;
+				break;
+			}
+		}
+		return hasResults;
+	}
+
+	public hideResults() {
+		if (this._panelView.contains(this.resultsTab.identifier)) {
+			this._panelView.removeTab(this.resultsTab.identifier);
+		}
+	}
+
+	public showResults() {
+		if (!this._panelView.contains(this.resultsTab.identifier)) {
+			this._panelView.pushTab(this.resultsTab, 0);
+		}
+		this._panelView.showTab(this.resultsTab.identifier);
+	}
+
+	public hideChart() {
+		if (this._panelView.contains(this.chartTab.identifier)) {
+			this._panelView.removeTab(this.chartTab.identifier);
+		}
+	}
+
+	public showTopOperations(xml: string) {
+		this._resultsInput?.state.visibleTabs.add(this.topOperationsTab.identifier);
+		if (!this._panelView.contains(this.topOperationsTab.identifier)) {
+			this._panelView.pushTab(this.topOperationsTab);
+		}
+		this.topOperationsTab.view.showPlan(xml);
+	}
+
+	public showPlan() {
+		if (!this._panelView.contains(this.executionPlanTab.identifier)) {
+			this._resultsInput?.state.visibleTabs.add(this.executionPlanTab.identifier);
+			if (!this._panelView.contains(this.executionPlanTab.identifier)) {
+				this._panelView.pushTab(this.executionPlanTab);
+			}
+			this._panelView.showTab(this.executionPlanTab.identifier);
+		}
+	}
+
+	public hideTopOperations() {
+		if (this._panelView.contains(this.topOperationsTab.identifier)) {
+			this._panelView.removeTab(this.topOperationsTab.identifier);
+		}
+	}
+
+	public hidePlan() {
+		if (this._panelView.contains(this.executionPlanTab.identifier)) {
+			this._panelView.removeTab(this.executionPlanTab.identifier);
+			this.executionPlanTab.clear();
+		}
+	}
+
+	public hideDynamicViewModelTabs() {
+		this.dynamicModelViewTabs.forEach(tab => {
+			if (this._panelView.contains(tab.identifier)) {
+				this._panelView.removeTab(tab.identifier);
+			}
+		});
+
+		this.dynamicModelViewTabs = [];
+	}
+
+	public chartData(dataId: { resultId: number, batchId: number }): void {
+		this._resultsInput?.state.visibleTabs.add(this.chartTab.identifier);
+		if (!this._panelView.contains(this.chartTab.identifier)) {
+			this._panelView.pushTab(this.chartTab);
+		}
+
+		this._panelView.showTab(this.chartTab.identifier);
+		this.chartTab.chart(dataId);
+	}
+
+	private setQueryRunner(runner: QueryRunner) {
+		const activeTab = this._resultsInput?.state.activeTab;
+		if (this.hasResults(runner)) {
+			this.showResults();
+		} else {
+			if (runner.isExecuting) { // in case we don't have results yet, but we also have already started executing
+				this.runnerDisposables.add(Event.once(runner.onResultSet)(() => this.showResults()));
+			}
+			this.hideResults();
+		}
+		this.resultsTab.queryRunner = runner;
+		this.messagesTab.queryRunner = runner;
+		this.chartTab.queryRunner = runner;
+		this.runnerDisposables.add(runner.onQueryStart(e => {
+			this.runnerDisposables.add(Event.once(runner.onResultSet)(() => this.showResults()));
+			this.hideResults();
+			this.hideChart();
+			this.hideTopOperations();
+			this.hidePlan();
+			// clearing execution plans whenever a new query starts executing
+			this.executionPlanTab.view.clearPlans();
+			this.hideDynamicViewModelTabs();
+			this._resultsInput?.state.visibleTabs.clear();
+			if (this._resultsInput) {
+				this._resultsInput.state.activeTab = this.resultsTab.identifier;
+			}
+		}));
+		this.runnerDisposables.add(runner.onQueryEnd(() => {
+			if (runner.messages.some(v => v.isError)) {
+				this._panelView.showTab(this.messagesTab.identifier);
+			}
+			// Currently we only need to support visualization options for the first result set.
+			const batchSet = runner.batchSets[0];
+			const resultSet = batchSet?.resultSetSummaries?.[0];
+			if (resultSet?.visualization) {
+				this.chartData({
+					resultId: batchSet.id,
+					batchId: resultSet.batchId
+				});
+				this.chartTab.view.setVisualizationOptions(resultSet.visualization);
+			}
+		}));
+
+		this.runnerDisposables.add(runner.onExecutionPlanAvailable(e => {
+			if (this.executionPlanTab) {
+				/**
+				 * Adding execution plan graphs to execution plan file view
+				 * when they become available
+				 */
+				const executionPlanFileViewCache = ExecutionPlanFileViewCache.getInstance();
+				if (executionPlanFileViewCache) {
+					const view = executionPlanFileViewCache.executionPlanFileViewMap.get(
+						this._resultsInput.state.executionPlanState.executionPlanFileViewUUID
+					);
+					if (view) {
+						view.addGraphs(e.planGraphs);
+					}
+				}
+			}
+		}));
+
+		if (this._resultsInput?.state.visibleTabs.has(this.chartTab.identifier) && !this._panelView.contains(this.chartTab.identifier)) {
+			this._panelView.pushTab(this.chartTab);
+		} else if (!this._resultsInput?.state.visibleTabs.has(this.chartTab.identifier) && this._panelView.contains(this.chartTab.identifier)) {
+			this._panelView.removeTab(this.chartTab.identifier);
+		}
+
+		if (this._resultsInput?.state.visibleTabs.has(this.executionPlanTab.identifier) && !this._panelView.contains(this.executionPlanTab.identifier)) {
+			this._panelView.pushTab(this.executionPlanTab);
+		} else if (!this._resultsInput?.state.visibleTabs.has(this.executionPlanTab.identifier) && this._panelView.contains(this.executionPlanTab.identifier)) {
+			this._panelView.removeTab(this.executionPlanTab.identifier);
+		}
+
+		if (this._resultsInput?.state.visibleTabs.has(this.topOperationsTab.identifier) && !this._panelView.contains(this.topOperationsTab.identifier)) {
+			this._panelView.pushTab(this.topOperationsTab);
+		} else if (!this._resultsInput?.state.visibleTabs.has(this.topOperationsTab.identifier) && this._panelView.contains(this.topOperationsTab.identifier)) {
+			this._panelView.removeTab(this.topOperationsTab.identifier);
+		}
+
+		// restore query model view tabs
+		this.dynamicModelViewTabs.forEach(tab => {
+			if (this._panelView.contains(tab.identifier)) {
+				this._panelView.removeTab(tab.identifier);
+			}
+		});
+		this.dynamicModelViewTabs = [];
+
+		this._resultsInput?.state.visibleTabs.forEach(tabId => {
+			if (tabId.startsWith('querymodelview;')) {
+				// tab id format is 'tab type;title;model view id'
+				let parts = tabId.split(';');
+				if (parts.length === 3) {
+					let tab = this._register(new QueryModelViewTab(parts[1], this.instantiationService));
+					tab.view.componentId = parts[2];
+					this.dynamicModelViewTabs.push(tab);
+					if (!this._panelView.contains(tab.identifier)) {
+						this._panelView.pushTab(tab, undefined, true);
+					}
+				}
+			}
+		});
+
+		this.runnerDisposables.add(runner.onQueryEnd(() => {
+			if (runner.isQueryPlan) {
+				runner.planXml.then(e => {
+					this.showPlan();
+					this.showTopOperations(e);
+				});
+			}
+		}));
+		if (activeTab) {
+			this._panelView.showTab(activeTab);
+		} else {
+			this._panelView.showTab(this.resultsTab.identifier); // our default tab is the results view
+		}
 	}
 
 	private applySettings() {
