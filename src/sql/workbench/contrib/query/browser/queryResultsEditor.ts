@@ -101,6 +101,10 @@ export class QueryResultsEditor extends EditorPane {
 		return this._input as QueryResultsInput;
 	}
 
+	public get getResultsView(): QueryResultsView {
+		return this.resultsView;
+	}
+
 	private applySettings() {
 		let cssRuleText = '';
 		if (types.isNumber(this._rawOptions.cellPadding)) {

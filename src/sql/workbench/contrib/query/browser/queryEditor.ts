@@ -24,7 +24,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Event } from 'vs/base/common/event';
-import { DisposableStore } from 'vs/base/common/lifecycle';
+import { dispose, DisposableStore, Disposable } from 'vs/base/common/lifecycle';
 import { IAction } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
@@ -45,11 +45,108 @@ import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
+import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
 interface IQueryEditorViewState {
 	resultsHeight: number | undefined;
+}
+
+class TextResourceEditorView extends Disposable implements IPanelView {
+	public textResourceEditor: TextResourceEditor;
+	private container: HTMLElement;
+
+
+	constructor(inputTextResourceEditor: TextResourceEditor, inputContainer: HTMLElement) {
+		super();
+		this.textResourceEditor = inputTextResourceEditor;
+		this.container = inputContainer;
+	}
+
+	render(container: HTMLElement): void {
+		container.appendChild(this.container);
+	}
+
+	layout(dimension: DOM.Dimension): void {
+		this.container.style.width = `${dimension.width}px`;
+		this.container.style.height = `${dimension.height}px`;
+		this.textResourceEditor.layout(dimension);
+	}
+
+	public clear() {
+		this.textResourceEditor.clearInput();
+	}
+
+	remove(): void {
+		this.container.remove();
+	}
+}
+
+class TextTab implements IPanelTab {
+	public readonly title = localize('textTabTitle', "Query Text");
+	public readonly identifier = 'textTab';
+	public readonly view: TextResourceEditorView;
+
+	constructor(inputTextEditor: TextResourceEditor, inputContainer: HTMLElement) {
+		this.view = new TextResourceEditorView(inputTextEditor, inputContainer);
+	}
+
+	public dispose() {
+		dispose(this.view);
+	}
+
+	public clear() {
+		this.view.clear();
+	}
+}
+
+class ResultsView extends Disposable implements IPanelView {
+	private selfResultsEditor: QueryResultsEditor;
+	public container: HTMLElement;
+
+	constructor(inputResultsEditor: QueryResultsEditor, inputContainer: HTMLElement) {
+		super();
+		this.selfResultsEditor = inputResultsEditor;
+		this.container = inputContainer;
+	}
+
+	render(container: HTMLElement): void {
+		container.appendChild(this.container);
+	}
+
+	layout(dimension: DOM.Dimension): void {
+		this.container.style.width = `${dimension.width}px`;
+		this.container.style.height = `${dimension.height}px`;
+		this.selfResultsEditor.layout(dimension);
+	}
+
+	public clear() {
+		this.selfResultsEditor.clearInput();
+	}
+
+	remove(): void {
+		this.container.remove();
+	}
+}
+
+class ResultsTab implements IPanelTab {
+	public readonly title = localize('queryResultsEditorTabTitle', "Query Results and Messages");
+	public readonly identifier = 'queryResultsEditorTab';
+	public readonly view: ResultsView;
+
+	constructor(inputResultsEditor: QueryResultsEditor, inputContainer: HTMLElement) {
+		this.view = new ResultsView(inputResultsEditor, inputContainer);
+	}
+
+	public dispose() {
+		dispose(this.view);
+	}
+
+	public clear() {
+		this.view.clear();
+	}
 }
 
 /**
@@ -75,12 +172,15 @@ export class QueryEditor extends EditorPane {
 	private textFileEditorContainer: HTMLElement;
 
 	private taskbar: Taskbar;
-	private splitviewContainer: HTMLElement;
+	private viewContainer: HTMLElement;
 	private splitview: SplitView;
+	private panelview: TabbedPanel;
 
 	private inputDisposables = this._register(new DisposableStore());
 
 	private resultsVisible = false;
+
+	private showResultsInSeparateTab = false;
 
 	private queryEditorVisible: IContextKey<boolean>;
 
@@ -152,14 +252,7 @@ export class QueryEditor extends EditorPane {
 	public createEditor(parent: HTMLElement): void {
 		parent.classList.add('query-editor');
 
-		this.splitviewContainer = DOM.$('.query-editor-view');
-
-		this.createTaskbar(parent);
-
-		parent.appendChild(this.splitviewContainer);
-
-		this.splitview = this._register(new SplitView(this.splitviewContainer, { orientation: Orientation.VERTICAL }));
-		this._register(this.splitview.onDidSashReset(() => this.splitview.distributeViewSizes()));
+		this.showResultsInSeparateTab = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.showResultsInSeparateTab;
 
 		// We create two separate editors - one for Untitled Documents (ad-hoc queries) and another for queries from
 		// files. This is necessary because TextResourceEditor by default makes all non-Untitled inputs to be
@@ -171,19 +264,38 @@ export class QueryEditor extends EditorPane {
 		this.textResourceEditor.create(this.textResourceEditorContainer);
 		this.textFileEditorContainer = DOM.$('.text-file-editor-container');
 		this.textFileEditor.create(this.textFileEditorContainer);
-
-		this.currentTextEditor = this.textResourceEditor;
-		this.splitview.addView({
-			element: this.textResourceEditorContainer,
-			layout: size => this.currentTextEditor.layout(new DOM.Dimension(this.dimension.width, size)),
-			minimumSize: 0,
-			maximumSize: Number.POSITIVE_INFINITY,
-			onDidChange: Event.None
-		}, Sizing.Distribute);
-
 		this.resultsEditorContainer = DOM.$('.results-editor-container');
 		this.resultsEditor = this._register(this.instantiationService.createInstance(QueryResultsEditor));
 		this.resultsEditor.create(this.resultsEditorContainer);
+
+		this.viewContainer = DOM.$('.query-editor-view');
+		this.createTaskbar(parent);
+
+		parent.appendChild(this.viewContainer);
+
+		if (!this.showResultsInSeparateTab) {
+			this.splitview = this._register(new SplitView(this.viewContainer, { orientation: Orientation.VERTICAL }));
+			this._register(this.splitview.onDidSashReset(() => this.splitview.distributeViewSizes()));
+
+			this.currentTextEditor = this.textResourceEditor;
+			this.splitview.addView({
+				element: this.textResourceEditorContainer,
+				layout: size => this.currentTextEditor.layout(new DOM.Dimension(this.dimension.width, size)),
+				minimumSize: 0,
+				maximumSize: Number.POSITIVE_INFINITY,
+				onDidChange: Event.None
+			}, Sizing.Distribute);
+		}
+		else {
+			this.panelview = this._register(new TabbedPanel(this.viewContainer, { showHeaderWhenSingleView: true }));
+			let textTab = new TextTab(this.textResourceEditor, this.textResourceEditorContainer);
+			this.panelview.pushTab(textTab);
+			this._register(this.resultsEditor.getResultsView.onQueryCompleteEvent(() => {
+				if (this.showResultsInSeparateTab && this.panelview.contains('queryResultsEditorTab')) {
+					this.panelview.showTab('queryResultsEditorTab');
+				}
+			}));
+		}
 	}
 
 	/**
@@ -348,15 +460,17 @@ export class QueryEditor extends EditorPane {
 		const newTextEditor = newInput.text instanceof FileEditorInput ? this.textFileEditor : this.textResourceEditor;
 		if (newTextEditor !== this.currentTextEditor) {
 			this.currentTextEditor = newTextEditor;
-			this.splitview.removeView(0, Sizing.Distribute);
+			if (!this.showResultsInSeparateTab) {
+				this.splitview.removeView(0, Sizing.Distribute);
 
-			this.splitview.addView({
-				element: this.currentTextEditor.getContainer(),
-				layout: size => this.currentTextEditor.layout(new DOM.Dimension(this.dimension.width, size)),
-				minimumSize: 0,
-				maximumSize: Number.POSITIVE_INFINITY,
-				onDidChange: Event.None
-			}, Sizing.Distribute, 0);
+				this.splitview.addView({
+					element: this.currentTextEditor.getContainer(),
+					layout: size => this.currentTextEditor.layout(new DOM.Dimension(this.dimension.width, size)),
+					minimumSize: 0,
+					maximumSize: Number.POSITIVE_INFINITY,
+					onDidChange: Event.None
+				}, Sizing.Distribute, 0);
+			}
 		}
 
 		await Promise.all([
@@ -371,7 +485,7 @@ export class QueryEditor extends EditorPane {
 
 		const editorViewState = this.loadTextEditorViewState(this.input.resource);
 
-		if (editorViewState && editorViewState.resultsHeight && this.splitview.length > 1) {
+		if (editorViewState && editorViewState.resultsHeight && !this.showResultsInSeparateTab && this.splitview.length > 1) {
 			this.splitview.resizeView(1, editorViewState.resultsHeight);
 		}
 	}
@@ -395,7 +509,7 @@ export class QueryEditor extends EditorPane {
 
 	private saveTextEditorViewState(resource: URI): void {
 		const editorViewState = {
-			resultsHeight: this.resultsVisible ? this.splitview.getViewSize(1) : undefined
+			resultsHeight: (this.resultsVisible && !this.showResultsInSeparateTab) ? this.splitview.getViewSize(1) : undefined
 		} as IQueryEditorViewState;
 
 		if (!this.group) {
@@ -495,8 +609,14 @@ export class QueryEditor extends EditorPane {
 	public layout(dimension: DOM.Dimension): void {
 		this.dimension = dimension;
 		const queryEditorHeight = dimension.height - DOM.getTotalHeight(this.taskbar.getContainer());
-		this.splitviewContainer.style.height = queryEditorHeight + 'px';
-		this.splitview.layout(queryEditorHeight);
+		this.viewContainer.style.height = queryEditorHeight + 'px';
+
+		if (!this.showResultsInSeparateTab) {
+			this.splitview.layout(queryEditorHeight);
+		}
+		else {
+			this.panelview.layout(dimension);
+		}
 	}
 
 	/**
@@ -512,28 +632,42 @@ export class QueryEditor extends EditorPane {
 
 	private removeResultsEditor(): void {
 		if (this.resultsVisible) {
-			this.splitview.removeView(1, Sizing.Distribute);
-			this.resultsVisible = false;
-			if (this.input && this.input.state) {
-				this.input.state.resultsVisible = false;
+			if (!this.showResultsInSeparateTab) {
+				this.splitview.removeView(1, Sizing.Distribute);
+				this.resultsVisible = false;
+				if (this.input && this.input.state) {
+					this.input.state.resultsVisible = false;
+				}
+			}
+			else {
+				this.panelview.removeTab('queryResultsEditorTab');
+				this.panelview.showTab('textTab');
 			}
 		}
 	}
 
 	private addResultsEditor(): void {
 		if (!this.resultsVisible) {
-			// size the results section to 65% of available height or at least 100px
-			let initialViewSize = Math.round(Math.max(this.dimension.height * 0.65, 100));
-			this.splitview.addView({
-				element: this.resultsEditorContainer,
-				layout: size => this.resultsEditor && this.resultsEditor.layout(new DOM.Dimension(this.dimension.width, size)),
-				minimumSize: 0,
-				maximumSize: Number.POSITIVE_INFINITY,
-				onDidChange: Event.None
-			}, initialViewSize);
-			this.resultsVisible = true;
-			if (this.input && this.input.state) {
-				this.input.state.resultsVisible = true;
+			if (!this.showResultsInSeparateTab) {
+				// size the results section to 65% of available height or at least 100px
+				let initialViewSize = Math.round(Math.max(this.dimension.height * 0.65, 100));
+				this.splitview.addView({
+					element: this.resultsEditorContainer,
+					layout: size => this.resultsEditor && this.resultsEditor.layout(new DOM.Dimension(this.dimension.width, size)),
+					minimumSize: 0,
+					maximumSize: Number.POSITIVE_INFINITY,
+					onDidChange: Event.None
+				}, initialViewSize);
+				this.resultsVisible = true;
+				if (this.input && this.input.state) {
+					this.input.state.resultsVisible = true;
+				}
+			}
+			else {
+				if (!this.panelview.contains('queryResultsEditorTab')) {
+					let resultsTab = new ResultsTab(this.resultsEditor, this.resultsEditorContainer);
+					this.panelview.pushTab(resultsTab);
+				}
 			}
 		}
 	}
