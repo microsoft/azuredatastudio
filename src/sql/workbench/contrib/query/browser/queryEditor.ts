@@ -62,6 +62,9 @@ import { getPixelRatio, getZoomLevel } from 'vs/base/browser/browser';
 import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 import { ExecutionPlanFileViewCache } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileViewCache';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
+import { ILogService } from 'vs/platform/log/common/log';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -365,10 +368,13 @@ export class QueryEditor extends EditorPane {
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@INotificationService private notificationService: INotificationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IModeService private readonly modeService: IModeService,
 		@ITextResourceConfigurationService textResourceConfigurationService: ITextResourceConfigurationService,
-		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService,
+		@IQueryModelService private queryModelService: IQueryModelService,
+		@ILogService private logService: ILogService
 	) {
 		super(QueryEditor.ID, telemetryService, themeService, storageService);
 
@@ -399,76 +405,6 @@ export class QueryEditor extends EditorPane {
 			}
 		}
 		return hasResults;
-	}
-
-	public hideResults() {
-		if (this._panelView.contains(this.resultsTab.identifier)) {
-			this._panelView.removeTab(this.resultsTab.identifier);
-		}
-	}
-
-	public showResults() {
-		if (!this._panelView.contains(this.resultsTab.identifier)) {
-			this._panelView.pushTab(this.resultsTab, 0);
-		}
-		this._panelView.showTab(this.resultsTab.identifier);
-	}
-
-	public hideChart() {
-		if (this._panelView.contains(this.chartTab.identifier)) {
-			this._panelView.removeTab(this.chartTab.identifier);
-		}
-	}
-
-	public showTopOperations(xml: string) {
-		this._resultsInput?.state.visibleTabs.add(this.topOperationsTab.identifier);
-		if (!this._panelView.contains(this.topOperationsTab.identifier)) {
-			this._panelView.pushTab(this.topOperationsTab);
-		}
-		this.topOperationsTab.view.showPlan(xml);
-	}
-
-	public showPlan() {
-		if (!this._panelView.contains(this.executionPlanTab.identifier)) {
-			this._resultsInput?.state.visibleTabs.add(this.executionPlanTab.identifier);
-			if (!this._panelView.contains(this.executionPlanTab.identifier)) {
-				this._panelView.pushTab(this.executionPlanTab);
-			}
-			this._panelView.showTab(this.executionPlanTab.identifier);
-		}
-	}
-
-	public hideTopOperations() {
-		if (this._panelView.contains(this.topOperationsTab.identifier)) {
-			this._panelView.removeTab(this.topOperationsTab.identifier);
-		}
-	}
-
-	public hidePlan() {
-		if (this._panelView.contains(this.executionPlanTab.identifier)) {
-			this._panelView.removeTab(this.executionPlanTab.identifier);
-			this.executionPlanTab.clear();
-		}
-	}
-
-	public hideDynamicViewModelTabs() {
-		this.dynamicModelViewTabs.forEach(tab => {
-			if (this._panelView.contains(tab.identifier)) {
-				this._panelView.removeTab(tab.identifier);
-			}
-		});
-
-		this.dynamicModelViewTabs = [];
-	}
-
-	public chartData(dataId: { resultId: number, batchId: number }): void {
-		this._resultsInput?.state.visibleTabs.add(this.chartTab.identifier);
-		if (!this._panelView.contains(this.chartTab.identifier)) {
-			this._panelView.pushTab(this.chartTab);
-		}
-
-		this._panelView.showTab(this.chartTab.identifier);
-		this.chartTab.chart(dataId);
 	}
 
 	private setQueryRunner(runner: QueryRunner) {
@@ -618,7 +554,86 @@ export class QueryEditor extends EditorPane {
 		return new EditorMemento(this.getId(), key, Object.create(null), limit, editorGroupService, configurationService); // do not persist in storage as results are never persisted
 	}
 
+	private showQueryEditorError(): void {
+		this.notificationService.error(localize('queryEditor.queryEditorCrashError', "The query editor ran into an issue and has stopped working. Please save and reopen it."));
+	}
+
+
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////
+
+	// HELPER METHODS FROM QUERYRESULTSVIEW
+	public hideResults() {
+		if (this._panelView.contains(this.resultsTab.identifier)) {
+			this._panelView.removeTab(this.resultsTab.identifier);
+		}
+	}
+
+	public showResults() {
+		if (!this._panelView.contains(this.resultsTab.identifier)) {
+			this._panelView.pushTab(this.resultsTab, 0);
+		}
+		this._panelView.showTab(this.resultsTab.identifier);
+	}
+
+	public hideChart() {
+		if (this._panelView.contains(this.chartTab.identifier)) {
+			this._panelView.removeTab(this.chartTab.identifier);
+		}
+	}
+
+	public showTopOperations(xml: string) {
+		this._resultsInput?.state.visibleTabs.add(this.topOperationsTab.identifier);
+		if (!this._panelView.contains(this.topOperationsTab.identifier)) {
+			this._panelView.pushTab(this.topOperationsTab);
+		}
+		this.topOperationsTab.view.showPlan(xml);
+	}
+
+	public showPlan() {
+		if (!this._panelView.contains(this.executionPlanTab.identifier)) {
+			this._resultsInput?.state.visibleTabs.add(this.executionPlanTab.identifier);
+			if (!this._panelView.contains(this.executionPlanTab.identifier)) {
+				this._panelView.pushTab(this.executionPlanTab);
+			}
+			this._panelView.showTab(this.executionPlanTab.identifier);
+		}
+	}
+
+	public hideTopOperations() {
+		if (this._panelView.contains(this.topOperationsTab.identifier)) {
+			this._panelView.removeTab(this.topOperationsTab.identifier);
+		}
+	}
+
+	public hidePlan() {
+		if (this._panelView.contains(this.executionPlanTab.identifier)) {
+			this._panelView.removeTab(this.executionPlanTab.identifier);
+			this.executionPlanTab.clear();
+		}
+	}
+
+	public hideDynamicViewModelTabs() {
+		this.dynamicModelViewTabs.forEach(tab => {
+			if (this._panelView.contains(tab.identifier)) {
+				this._panelView.removeTab(tab.identifier);
+			}
+		});
+
+		this.dynamicModelViewTabs = [];
+	}
+
+	public chartData(dataId: { resultId: number, batchId: number }): void {
+		this._resultsInput?.state.visibleTabs.add(this.chartTab.identifier);
+		if (!this._panelView.contains(this.chartTab.identifier)) {
+			this._panelView.pushTab(this.chartTab);
+		}
+
+		this._panelView.showTab(this.chartTab.identifier);
+		this.chartTab.chart(dataId);
+	}
+
+	// ORIGINAL METHODS.
+
 	public override get input(): QueryEditorInput | null {
 		return this._input as QueryEditorInput;
 	}
@@ -675,6 +690,9 @@ export class QueryEditor extends EditorPane {
 			let textTab = new TextTab(this.textResourceEditor, this.textResourceEditorContainer);
 			this._register(attachTabbedPanelStyler(this._panelView, this.themeService));
 
+			this.styleSheet.remove();
+			this.viewContainer.appendChild(this.styleSheet);
+
 			this._panelView.pushTab(textTab);
 			this._panelView.pushTab(this.resultsTab);
 			this._panelView.pushTab(this.messagesTab);
@@ -684,6 +702,14 @@ export class QueryEditor extends EditorPane {
 				}
 			}));
 		}
+	}
+
+	override dispose() {
+		this.runnerDisposables.dispose();
+		this.runnerDisposables = new DisposableStore();
+		this.styleSheet.remove();
+		this.styleSheet = undefined;
+		super.dispose();
 	}
 
 	/**
@@ -830,6 +856,57 @@ export class QueryEditor extends EditorPane {
 		this.taskbar.setContent(content);
 	}
 
+
+
+	public set resultsInput(input: QueryResultsInput | undefined) {
+		try {
+			this._resultsInput = input;
+			this.runnerDisposables.clear();
+
+			[this.resultsTab, this.messagesTab, this.executionPlanTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
+			this.dynamicModelViewTabs.forEach(t => t.clear());
+
+			if (input) {
+				this.resultsTab.view.state = input.state.gridPanelState;
+				this.topOperationsTab.view.setState(input.state.topOperationsState);
+				this.chartTab.view.state = input.state.chartState;
+				this.executionPlanTab.view.state = input.state.executionPlanState;
+				this.dynamicModelViewTabs.forEach((dynamicTab: QueryModelViewTab) => {
+					dynamicTab.captureState(input.state.dynamicModelViewTabsState);
+				});
+				let info = this.queryModelService._getQueryInfo(input.uri) || this.queryModelService._getQueryInfo(URI.parse(input.uri).toString(true));
+
+				if (info?.queryRunner?.isDisposed) {
+					this.logService.error(`The query runner for '${input.uri}' has been disposed.`);
+					this.showQueryEditorError();
+					return;
+				}
+
+				if (info?.queryRunner) {
+					this.setQueryRunner(info.queryRunner);
+				} else {
+					let disposable = this.queryModelService.onRunQueryStart(c => {
+						if (URI.parse(c).toString() === URI.parse(input.uri).toString()) {
+							let info = this.queryModelService._getQueryInfo(c);
+							if (info?.queryRunner) {
+								this.setQueryRunner(info.queryRunner);
+							}
+							disposable.dispose();
+						}
+					});
+					this.runnerDisposables.add(disposable);
+				}
+			}
+		} catch (err) {
+			this.logService.error(err);
+			this.showQueryEditorError();
+		}
+	}
+
+	public get resultsInput() {
+		return this._resultsInput;
+	}
+
 	public override async setInput(newInput: QueryEditorInput, options: IEditorOptions, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		const oldInput = this.input;
 
@@ -842,6 +919,7 @@ export class QueryEditor extends EditorPane {
 			this.saveQueryEditorViewState(this.input);
 			this.currentTextEditor.clearInput();
 			this.resultsEditor.clearInput();
+			this.clearResultsInput();
 		}
 
 		// If we're switching editor types switch out the views
@@ -972,14 +1050,31 @@ export class QueryEditor extends EditorPane {
 
 		this.currentTextEditor.clearInput();
 		this.resultsEditor.clearInput();
+		this.clearResultsInput();
 		super.clearInput();
+	}
+
+	clearResultsInput() {
+		this._resultsInput = undefined;
+		this.runnerDisposables.clear();
+		this.resultsTab.clear();
+		this.messagesTab.clear();
+		this.topOperationsTab.clear();
+		this.chartTab.clear();
+		this.executionPlanTab.clear();
+		this.dynamicModelViewTabs.forEach(t => t.clear());
 	}
 
 	/**
 	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
 	 */
 	public override focus(): void {
-		this.currentTextEditor.focus();
+		if (!this.showResultsInSeparateTab) {
+			this.currentTextEditor.focus();
+		}
+		else {
+			this._panelView.focusCurrentTab();
+		}
 	}
 
 	public toggleFocusBetweenQueryEditorAndResults(): void {
@@ -1179,7 +1274,18 @@ export class QueryEditor extends EditorPane {
 	}
 
 	public registerQueryModelViewTab(title: string, componentId: string): void {
-		this.resultsEditor.registerQueryModelViewTab(title, componentId);
+		let tab = this._register(new QueryModelViewTab(title, this.instantiationService));
+		tab.view.componentId = componentId;
+		this.dynamicModelViewTabs.push(tab);
+
+		this._resultsInput?.state.visibleTabs.add('querymodelview;' + title + ';' + componentId);
+		if (!this._panelView.contains(tab.identifier)) {
+			this._panelView.pushTab(tab, undefined, true);
+		}
+
+		if (this.input) {
+			tab.putState(this._resultsInput.state.dynamicModelViewTabsState);
+		}
 	}
 
 	public chart(dataId: { batchId: number, resultId: number }): void {
