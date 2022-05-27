@@ -19,7 +19,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import * as DOM from 'vs/base/browser/dom';
 import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { Event } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -167,6 +167,10 @@ export class QueryResultsView extends Disposable {
 	private topOperationsTab: TopOperationsTab;
 	private dynamicModelViewTabs: QueryModelViewTab[] = [];
 
+	// Event for queryEditor to switch to the correct tab view when query has completed its run.
+	private onQueryCompleteEmitter: Emitter<void>;
+	public onQueryCompleteEvent: Event<void>;
+
 	private runnerDisposables = new DisposableStore();
 
 	constructor(
@@ -183,6 +187,8 @@ export class QueryResultsView extends Disposable {
 		this.chartTab = this._register(new ChartTab(instantiationService));
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: true }));
 		this._register(attachTabbedPanelStyler(this._panelView, themeService));
+		this.onQueryCompleteEmitter = this._register(new Emitter<void>());
+		this.onQueryCompleteEvent = this.onQueryCompleteEmitter.event;
 		this.executionPlanTab = this._register(this.instantiationService.createInstance(ExecutionPlanTab));
 		this.topOperationsTab = this._register(new TopOperationsTab(instantiationService));
 
@@ -315,6 +321,7 @@ export class QueryResultsView extends Disposable {
 					this.showTopOperations(e);
 				});
 			}
+			this.onQueryCompleteEmitter.fire();
 		}));
 		if (activeTab) {
 			this._panelView.showTab(activeTab);

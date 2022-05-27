@@ -290,6 +290,11 @@ export class QueryEditor extends EditorPane {
 			this.panelview = this._register(new TabbedPanel(this.viewContainer, { showHeaderWhenSingleView: true }));
 			let textTab = new TextTab(this.textResourceEditor, this.textResourceEditorContainer);
 			this.panelview.pushTab(textTab);
+			this._register(this.resultsEditor.getResultsView.onQueryCompleteEvent(() => {
+				if (this.showResultsInSeparateTab && this.panelview.contains('queryResultsEditorTab')) {
+					this.panelview.showTab('queryResultsEditorTab');
+				}
+			}));
 		}
 	}
 
@@ -663,7 +668,6 @@ export class QueryEditor extends EditorPane {
 					let resultsTab = new ResultsTab(this.resultsEditor, this.resultsEditorContainer);
 					this.panelview.pushTab(resultsTab);
 				}
-				this.panelview.showTab('queryResultsEditorTab');
 			}
 		}
 	}
