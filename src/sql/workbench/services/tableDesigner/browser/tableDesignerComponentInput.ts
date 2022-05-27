@@ -256,25 +256,28 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		}
 	}
 
-	initialize(): void {
+	async initialize(): Promise<void> {
 		if (this._view !== undefined || this.pendingAction === 'initialize') {
 			return;
 		}
 
 		this.updateState(this.valid, this.dirty, 'initialize');
-		this._provider.initializeTableDesigner(this.tableInfo).then(result => {
+		try {
+			const result = await this._provider.initializeTableDesigner(this.tableInfo);
 			this.doInitialization(result);
 			this._onInitialized.fire();
-		}, error => {
+		} catch (error) {
 			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.errorInitializingTableDesigner', "An error occurred while initializing the table designer: {0}", error?.message ?? error));
-		});
+		}
 	}
 
 	private doInitialization(designerInfo: azdata.designers.TableDesignerInfo): void {
+		this.tableInfo = designerInfo.tableInfo;
 		this.updateState(true, this.tableInfo.isNewTable);
 		this._viewModel = designerInfo.viewModel;
 		this._originalViewModel = this.tableInfo.isNewTable ? undefined : deepClone(this._viewModel);
 		this._tableDesignerView = designerInfo.view;
+		this._issues = designerInfo.issues;
 		this.setDesignerView(designerInfo.view);
 	}
 

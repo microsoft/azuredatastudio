@@ -773,6 +773,14 @@ declare module 'azdata' {
 			 * The initial state of the designer.
 			 */
 			viewModel: DesignerViewModel;
+			/**
+			 * The new table info after initialization.
+			 */
+			tableInfo: TableInfo;
+			/**
+			 * The issues.
+			 */
+			issues?: DesignerIssue[];
 		}
 
 		/**
@@ -1103,7 +1111,7 @@ declare module 'azdata' {
 			/**
 			 * the path of the edit target.
 			 */
-			path: DesignerEditPath;
+			path: DesignerPropertyPath;
 			/**
 			 * the new value.
 			 */
@@ -1111,7 +1119,7 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * The path of the edit target.
+		 * The path of the property.
 		 * Below are the 3 scenarios and their expected path.
 		 * Note: 'index-{x}' in the description below are numbers represent the index of the object in the list.
 		 * 1. 'Add' scenario
@@ -1125,7 +1133,7 @@ declare module 'azdata' {
 		 *     a. ['propertyName1',index-1]. Example: remove a column from the columns property: ['columns',0'].
 		 *     b. ['propertyName1',index-1,'propertyName2',index-2]. Example: remove a column mapping from a foreign key's column mapping table: ['foreignKeys',0,'mappings',0].
 		 */
-		export type DesignerEditPath = (string | number)[];
+		export type DesignerPropertyPath = (string | number)[];
 
 		/**
 		 * Severity of the messages returned by the provider after processing an edit.
@@ -1134,6 +1142,28 @@ declare module 'azdata' {
 		 * 'information': Informational message.
 		 */
 		export type DesignerIssueSeverity = 'error' | 'warning' | 'information';
+
+		/**
+		 * Represents the issue in the designer
+		 */
+		export interface DesignerIssue {
+			/**
+			 * Severity of the issue.
+			 */
+			severity: DesignerIssueSeverity,
+			/**
+			 * Path of the property that is associated with the issue.
+			 */
+			propertyPath?: DesignerPropertyPath,
+			/**
+			 * Description of the issue.
+			 */
+			description: string,
+			/**
+			 * Url to a web page that has the explaination of the issue.
+			 */
+			moreInfoLink?: string;
+		}
 
 		/**
 		 * The result returned by the table designer provider after handling an edit request.
@@ -1154,7 +1184,7 @@ declare module 'azdata' {
 			/**
 			 * Issues of current state.
 			 */
-			issues?: { severity: DesignerIssueSeverity, description: string, propertyPath?: DesignerEditPath }[];
+			issues?: DesignerIssue[];
 			/**
 			 * The input validation error.
 			 */

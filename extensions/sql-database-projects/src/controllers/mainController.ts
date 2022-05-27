@@ -94,11 +94,10 @@ export default class MainController implements vscode.Disposable {
 				const projectNode = tableFileNode.root as ProjectRootTreeItem;
 				const filePath = tableFileNode.fileSystemUri.fsPath;
 				const projectPath = projectNode.project.projectFilePath;
-				const projName = path.basename(projectPath);
 				const targetVersion = projectNode.project.getProjectTargetVersion();
 				await azdataType.designers.openTableDesigner('MSSQL', {
 					title: tableFileNode.friendlyName,
-					tooltip: `${projName} - ${tableFileNode.friendlyName}`,
+					tooltip: `${projectPath} - ${tableFileNode.friendlyName}`,
 					id: filePath,
 					isNewTable: false,
 					tableScriptPath: filePath,

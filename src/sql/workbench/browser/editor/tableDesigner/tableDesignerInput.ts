@@ -46,11 +46,13 @@ export class TableDesignerInput extends EditorInput {
 		this._register(this._designerComponentInput.onStateChange((e) => {
 			if (e.previousState.pendingAction === 'publish') {
 				this.setEditorLabel();
-				this._onDidChangeLabel.fire();
 			}
 			if (e.currentState.dirty !== e.previousState.dirty) {
 				this._onDidChangeDirty.fire();
 			}
+		}));
+		this._register(this._designerComponentInput.onInitialized(() => {
+			this.setEditorLabel();
 		}));
 
 		// default to basic if icon is null (new table) or no sub type
@@ -116,5 +118,6 @@ export class TableDesignerInput extends EditorInput {
 	private setEditorLabel(): void {
 		this._name = this._designerComponentInput.tableInfo.title;
 		this._title = this._designerComponentInput.tableInfo.tooltip;
+		this._onDidChangeLabel.fire();
 	}
 }
