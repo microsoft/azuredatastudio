@@ -5,6 +5,8 @@
 
 import * as fs from 'fs';
 import type * as azdataType from 'azdata';
+import * as vscode from 'vscode';
+import * as constants from './constants';
 
 export async function directoryExist(directoryPath: string): Promise<boolean> {
 	const stats = await getFileStatus(directoryPath);
@@ -68,4 +70,16 @@ try {
  */
 export function getAzdataApi(): typeof azdataType | undefined {
 	return azdataApi;
+}
+
+/**
+ * Shows a message with a "Learn More" button
+ * @param message Info message
+ * @param link Link to open when "Learn Button" is clicked
+ */
+export async function showInfoMessageWithLearnMoreLink(message: string, link: string): Promise<void> {
+	const result = await vscode.window.showInformationMessage(message, constants.LearnMore);
+	if (result === constants.LearnMore) {
+		void vscode.env.openExternal(vscode.Uri.parse(link));
+	}
 }
