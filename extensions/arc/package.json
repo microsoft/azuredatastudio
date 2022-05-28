@@ -1152,6 +1152,85 @@
                         }
                       },
                       {
+                        "label": "%arc.sql.sync.secondaries.label%",
+                        "description": "%arc.sql.sync.secondaries.description%",
+                        "variableName": "AZDATA_NB_VAR_SYNC_SECONDARY_TO_COMMIT",
+                        "type": "options",
+                        "editable": false,
+                        "options": {
+                          "values": [
+                            {
+                              "name": "-1",
+                              "displayName": "-1"
+                            },
+                            {
+                              "name": "0",
+                              "displayName": "0"
+                            },
+                            {
+                              "name": "1",
+                              "displayName": "1"
+                            }
+                          ],
+                          "defaultValue": "1",
+                          "optionsType": "radio"
+                        },
+                        "dynamicOptions":
+                        {
+                          "target": "AZDATA_NB_VAR_SQL_REPLICAS",
+                          "alternates": [
+                            {
+                              "selection": "2",
+                              "alternateValues": [
+                                {
+                                  "name": "-1",
+                                  "displayName": "-1"
+                                },
+                                {
+                                  "name": "0",
+                                  "displayName": "0"
+                                },
+                                {
+                                  "name": "1",
+                                  "displayName": "1"
+                                },
+                                {
+                                  "name": "2",
+                                  "displayName": "2"
+                                }
+                              ],
+                              "defaultValue": "2"
+                            },
+                            {
+                              "selection": "3",
+                              "alternateValues": [
+                                {
+                                  "name": "-1",
+                                  "displayName": "-1"
+                                },
+                                {
+                                  "name": "0",
+                                  "displayName": "0"
+                                },
+                                {
+                                  "name": "1",
+                                  "displayName": "1"
+                                },
+                                {
+                                  "name": "2",
+                                  "displayName": "2"
+                                },
+                                {
+                                  "name": "3",
+                                  "displayName": "3"
+                                }
+                              ],
+                              "defaultValue": "3"
+                            }
+                          ]
+                        }
+                      },
+                      {
                         "type": "checkbox",
                         "label": "%arc.sql.license.type.label%",
                         "variableName": "AZDATA_NB_VAR_SQL_LICENSE_TYPE",

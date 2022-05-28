@@ -109,6 +109,8 @@
 	"arc.sql.one.replica": "1 replica",
 	"arc.sql.two.replicas": "2 replicas",
 	"arc.sql.three.replicas": "3 replicas",
+	"arc.sql.sync.secondaries.label": "Synchronized secondaries required to commit",
+	"arc.sql.sync.secondaries.description": "The number of synchronous replicas required to commit a transaction before the primary replica is allowed to commit. Setting this value to -1 will set the number of required synchronized secondaries to '(# of replicas - 1) / 2', rounded down.",
 	"arc.storage-class.data.label": "Storage Class (Data)",
 	"arc.sql.storage-class.data.description": "The storage class to be used for data (.mdf). If no value is specified, the default storage class will be used.",
 	"arc.sql.cost.summary.sql.miaa.cost.summary": "SQL Managed Instance - Azure Arc Cost Summary",

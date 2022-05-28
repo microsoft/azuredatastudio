@@ -247,7 +247,8 @@ export class AzTool implements azExt.IAzApi {
 					memoryLimit?: string,
 					memoryRequest?: string,
 					noWait?: boolean,
-					retentionDays?: string
+					retentionDays?: string,
+					syncSecondaryToCommit?: string
 				},
 				// Direct mode arguments
 				resourceGroup?: string,

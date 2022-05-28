@@ -19,6 +19,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 	private coresRequestBox?: azdata.InputBoxComponent;
 	private memoryLimitBox?: azdata.InputBoxComponent;
 	private memoryRequestBox?: azdata.InputBoxComponent;
+	private syncSecondaryToCommitBox?: azdata.InputBoxComponent;
 
 	private discardButton?: azdata.ButtonComponent;
 	private saveButton?: azdata.ButtonComponent;
@@ -27,7 +28,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		coresLimit?: string,
 		coresRequest?: string,
 		memoryLimit?: string,
-		memoryRequest?: string
+		memoryRequest?: string,
+		syncSecondaryToCommit?: string
 	} = {};
 
 	private readonly _azApi: azExt.IExtension;
@@ -266,19 +268,39 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			})
 		);
 
+		this.syncSecondaryToCommitBox = this.modelView.modelBuilder.inputBox().withProps({
+			readOnly: false,
+			min: -1,
+			inputType: 'number',
+			placeHolder: loc.loading,
+			ariaLabel: loc.syncSecondaryToCommit
+		}).component();
+
+		this.disposables.push(
+			this.syncSecondaryToCommitBox.onTextChanged(() => {
+				if (!(this.handleOnTextChanged(this.syncSecondaryToCommitBox!))) {
+					this.saveArgs.syncSecondaryToCommit = undefined;
+				} else {
+					this.saveArgs.syncSecondaryToCommit = this.syncSecondaryToCommitBox!.value;
+				}
+			})
+		);
+
 	}
 
 	private createUserInputSection(): azdata.Component[] {
 		if (this._miaaModel.configLastUpdated) {
 			this.editCores();
 			this.editMemory();
+			this.editSyncSecondaryToCommit();
 		}
 
 		return [
 			this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBox!),
 			this.createConfigurationSectionContainer(loc.coresLimit, this.coresLimitBox!),
 			this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBox!),
-			this.createConfigurationSectionContainer(loc.memoryLimit, this.memoryLimitBox!)
+			this.createConfigurationSectionContainer(loc.memoryLimit, this.memoryLimitBox!),
+			this.createConfigurationSectionContainer(loc.syncSecondaryToCommit, this.syncSecondaryToCommitBox!),
 
 		];
 	}
@@ -380,8 +402,18 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.saveArgs.memoryLimit = undefined;
 	}
 
+	private editSyncSecondaryToCommit(): void {
+		let currentSyncSecondaryToCommit = this._miaaModel.config?.spec?.syncSecondaryToCommit;
+
+		this.syncSecondaryToCommitBox!.placeHolder = currentSyncSecondaryToCommit!;
+		this.syncSecondaryToCommitBox!.value = '';
+
+		this.saveArgs.syncSecondaryToCommit = undefined;
+	}
+
 	private handleServiceUpdated() {
 		this.editCores();
 		this.editMemory();
+		this.editSyncSecondaryToCommit();
 	}
 }
