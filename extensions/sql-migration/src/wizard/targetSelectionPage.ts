@@ -458,6 +458,13 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			})
 			.component();
 
+		this._disposables.push(refreshResourceButton.onDidClick(async (event) => {
+			await this.populateSubscriptionDropdown();
+			await this.populateLocationDropdown();
+			await this.populateResourceGroupDropdown();
+			await this.populateResourceInstanceDropdown();
+		}));
+
 		return this._view.modelBuilder.flexContainer().withItems(
 			[
 				subscriptionDropdownLabel,
