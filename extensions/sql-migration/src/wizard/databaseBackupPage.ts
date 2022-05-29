@@ -576,11 +576,25 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 			}).component();
 
+		const refreshBlobTable = this._view.modelBuilder.button()
+			.withProps({
+				iconPath: IconPathHelper.refresh,
+				label: constants.REFRESH_BUTTON_LABEL,
+				width: 90,
+				height: 24,
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'margin': "12px 0 4px 0"
+				}
+			})
+			.component();
+
 		this._blobTableContainer = this._view.modelBuilder.flexContainer().withItems([
 			blobTableText,
 			allFieldsRequiredLabel,
 			azureStoragePrivateEndpointInfoBox,
-			this._blobContainerTargetDatabaseNamesTable
+			this._blobContainerTargetDatabaseNamesTable,
+			refreshBlobTable
 		]).withProps({
 			CSSStyles: {
 				'display': 'none',

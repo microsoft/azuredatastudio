@@ -11,6 +11,7 @@ import { MigrationStateModel, MigrationTargetType, StateChangeEvent } from '../m
 import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
+import { IconPathHelper } from '../constants/iconPathHelper';
 import * as utils from '../api/utils';
 import { azureResource } from 'azurecore';
 import { SqlVMServer } from '../api/azure';
@@ -448,12 +449,15 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}
 		}));
 
-		const refreshResourceButton = this._view.modelBuilder.hyperlink()
+		const refreshResourceButton = this._view.modelBuilder.button()
 			.withProps({
-				label: constants.REFRESH,
-				url: '',
+				iconPath: IconPathHelper.refresh,
+				label: constants.REFRESH_BUTTON_LABEL,
+				width: 90,
+				height: 24,
 				CSSStyles: {
-					...styles.BODY_CSS
+					...styles.BODY_CSS,
+					'margin': '12px 0 4px 0'
 				}
 			})
 			.component();
