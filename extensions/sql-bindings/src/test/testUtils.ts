@@ -8,7 +8,7 @@ import * as TypeMoq from 'typemoq';
 import * as mssql from 'mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import { RequestType } from 'vscode-languageclient';
-import { AzureFunctionsExtensionApi, IAppSettingsClient, ICreateFunctionOptions } from '../../../types/vscode-azurefunctions.api';
+import { AzureFunctionsExtensionApi } from '../../../types/vscode-azurefunctions.api';
 
 export interface TestUtils {
 	context: vscode.ExtensionContext;
@@ -60,26 +60,6 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 	}
 }
 
-export class MockAzureFunctionExtensionAPI implements AzureFunctionsExtensionApi {
-	public apiVersion: string = 'latest';
-
-	public revealTreeItem(_: string): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
-
-	public createFunction(_: ICreateFunctionOptions): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
-
-	public downloadAppSettings(_: IAppSettingsClient): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
-
-	public uploadAppSettings(_: IAppSettingsClient, __?: (RegExp | string)[]): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
-}
-
 export function createTestUtils(): TestUtils {
 	return {
 		context: TypeMoq.Mock.ofType<vscode.ExtensionContext>().object,
@@ -88,7 +68,7 @@ export function createTestUtils(): TestUtils {
 		dacFxMssqlService: TypeMoq.Mock.ofType<vscodeMssql.IDacFxService>(),
 		schemaCompareService: TypeMoq.Mock.ofType<vscodeMssql.ISchemaCompareService>(),
 		outputChannel: TypeMoq.Mock.ofType<vscode.OutputChannel>().object,
-		azureFunctionsExtensionApi: TypeMoq.Mock.ofType(MockAzureFunctionExtensionAPI)
+		azureFunctionsExtensionApi: TypeMoq.Mock.ofType<AzureFunctionsExtensionApi>()
 	};
 }
 
