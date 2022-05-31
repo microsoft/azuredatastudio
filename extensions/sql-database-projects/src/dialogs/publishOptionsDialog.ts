@@ -19,7 +19,7 @@ export class PublishOptionsDialog {
 	private descriptionHeading: azdataType.TableComponent | undefined;
 	private descriptionText: azdataType.TextComponent | undefined;
 	private optionsTable: azdataType.TableComponent | undefined;
-	private optionsModel: DeployOptionsModel;
+	public optionsModel: DeployOptionsModel;
 	private optionsFlexBuilder: azdataType.FlexContainer | undefined;
 
 	constructor(defaultOptions: mssql.DeploymentOptions, private publish: PublishDatabaseDialog) {

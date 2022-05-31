@@ -7,7 +7,6 @@ import * as should from 'should';
 import * as testUtils from '../../test/testContext';
 import { DeployOptionsModel } from '../../models/options/deployOptionsModel';
 
-
 describe('Publish Dialog Deploy Options Model', () => {
 	it('Should create model and set options successfully', function (): void {
 		const model = new DeployOptionsModel(testUtils.getDeploymentOptions());
@@ -16,7 +15,6 @@ describe('Publish Dialog Deploy Options Model', () => {
 		should.doesNotThrow(() => model.setDeploymentOptions());
 
 		should(model.getDeployOptionUtil('')).equal(undefined);
-
 	});
 
 	it('Should get description', function (): void {
@@ -31,4 +29,3 @@ describe('Publish Dialog Deploy Options Model', () => {
 		should(model.getDescription('')).equal(undefined);
 	});
 });
-
