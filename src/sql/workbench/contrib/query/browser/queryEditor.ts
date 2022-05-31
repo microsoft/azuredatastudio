@@ -326,6 +326,7 @@ export class QueryEditor extends EditorPane {
 	private resultsVisible = false;
 
 	private showResultsInSeparateTab = false;
+	private switchToResultsOnRun = false;
 
 	private queryEditorVisible: IContextKey<boolean>;
 
@@ -568,11 +569,20 @@ export class QueryEditor extends EditorPane {
 		}
 	}
 
+	public hideMessages() {
+		if (this._panelView.contains(this.messagesTab.identifier)) {
+			this._panelView.removeTab(this.messagesTab.identifier);
+		}
+	}
+
 	public showResults() {
 		if (!this._panelView.contains(this.resultsTab.identifier)) {
-			this._panelView.pushTab(this.resultsTab, 0);
+			this._panelView.pushTab(this.resultsTab, 1);
 		}
-		this._panelView.showTab(this.resultsTab.identifier);
+		if (this.switchToResultsOnRun) {
+			this._panelView.showTab(this.resultsTab.identifier);
+			this._panelView.focusCurrentTab();
+		}
 	}
 
 	public hideChart() {
@@ -645,6 +655,7 @@ export class QueryEditor extends EditorPane {
 		parent.classList.add('query-editor');
 
 		this.showResultsInSeparateTab = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.showResultsInSeparateTab;
+		this.switchToResultsOnRun = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.switchToResultsTab;
 
 		// We create two separate editors - one for Untitled Documents (ad-hoc queries) and another for queries from
 		// files. This is necessary because TextResourceEditor by default makes all non-Untitled inputs to be
@@ -696,10 +707,8 @@ export class QueryEditor extends EditorPane {
 		currentResultsContainer.appendChild(this.styleSheet);
 
 		if (this.showResultsInSeparateTab) {
-			this._panelView.pushTab(textTab);
+			this._panelView.pushTab(textTab, 0);
 		}
-		this._panelView.pushTab(this.resultsTab);
-		this._panelView.pushTab(this.messagesTab);
 		this._register(this._panelView.onTabChange(e => {
 			if (this._resultsInput) {
 				this._resultsInput.state.activeTab = e;
@@ -1135,7 +1144,8 @@ export class QueryEditor extends EditorPane {
 				}
 			}
 			else {
-				this._panelView.removeTab('queryResultsEditorTab');
+				this.hideResults();
+				this.hideMessages();
 				this._panelView.showTab('textTab');
 			}
 		}
@@ -1153,17 +1163,17 @@ export class QueryEditor extends EditorPane {
 					maximumSize: Number.POSITIVE_INFINITY,
 					onDidChange: Event.None
 				}, initialViewSize);
-				this.resultsVisible = true;
-				if (this.input && this.input.state) {
-					this.input.state.resultsVisible = true;
-				}
 			}
 			else {
-				if (!this._panelView.contains('queryResultsEditorTab')) {
-					// let resultsTab = new ResultsTab(this.resultsEditor, this.resultsEditorContainer);
-					// this.panelview.pushTab(resultsTab);
+				if (!this._panelView.contains(this.messagesTab.identifier)) {
+					this._panelView.pushTab(this.messagesTab, 2);
 				}
 			}
+			this.resultsVisible = true;
+			if (this.input && this.input.state) {
+				this.input.state.resultsVisible = true;
+			}
+
 		}
 	}
 
