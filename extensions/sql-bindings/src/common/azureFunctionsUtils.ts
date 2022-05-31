@@ -666,11 +666,20 @@ export async function promptSelectTable(connectionURI: string, bindingType: Bind
 	// Create query to get list of tables from database selected
 	let tableQuery = tablesQuery(selectedDatabase);
 	const params = { ownerUri: connectionURI, queryString: tableQuery };
-	// send SimpleExecuteRequest query to STS to get list of schema and tables based on the connection profile of the user
-	let queryResult: azureFunctionsContracts.SimpleExecuteResult = await vscodeMssqlApi.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params);
+	let queryResult: azureFunctionsContracts.SimpleExecuteResult | undefined;
+	// send SimpleExecuteRequest query to STS to get list of schema and tables based on the connection profile and database of the user
+	await vscode.window.withProgress(
+		{
+			location: vscode.ProgressLocation.Notification,
+			title: constants.tableListProgressTitle,
+			cancellable: false
+		}, async (_progress, _token) => {
+			queryResult = await vscodeMssqlApi.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params);
+		}
+	);
 
 	// Get schema and table names from query result rows
-	const tableNames = queryResult.rows.map(r => r[0].displayValue);
+	const tableNames = queryResult!.rows.map(r => r[0].displayValue);
 	// add manual entry option to table names list for user to choose from as well (with pencil icon)
 	let manuallyEnterObjectName = '$(pencil) ' + userObjectName;
 	tableNames.unshift(manuallyEnterObjectName);
