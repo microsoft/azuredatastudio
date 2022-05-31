@@ -88,7 +88,7 @@
     "jquery": "3.5.0",
     "jschardet": "3.0.0",
     "kburtram-query-plan": "2.6.1",
-    "keytar": "7.2.0",
+    "keytar": "7.9.0",
     "mark.js": "^8.11.1",
     "minimist": "^1.2.5",
     "native-is-elevated": "0.4.3",
