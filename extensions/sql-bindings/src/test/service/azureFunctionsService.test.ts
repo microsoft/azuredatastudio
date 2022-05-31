@@ -85,7 +85,9 @@ describe('AzureFunctionsService', () => {
 			sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').returns(Promise.resolve(true));
 			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 
-			let testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>().object;
+			let testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>();
+			// Need to setup then when Promise.resolving a mocked object : https://github.com/florinn/typemoq/issues/66
+			testWatcher.setup((x: any) => x.then).returns(() => undefined);
 			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').withArgs(sinon.match.any).resolves({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
 			await azureFunctionService.createAzureFunction();
 
@@ -126,7 +128,9 @@ describe('AzureFunctionsService', () => {
 			sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').returns(Promise.resolve(true));
 			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 
-			let testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>().object;
+			let testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>();
+			// Need to setup then when Promise.resolving a mocked object : https://github.com/florinn/typemoq/issues/66
+			testWatcher.setup((x: any) => x.then).returns(() => undefined);
 			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').withArgs(sinon.match.any).resolves({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
 
 			await azureFunctionService.createAzureFunction(tableTestNode);
@@ -190,7 +194,9 @@ describe('AzureFunctionsService', () => {
 			sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').returns(Promise.resolve(true));
 			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 
-			let testWatcher: vscode.FileSystemWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>().object;
+			let testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>();
+			// Need to setup then when Promise.resolving a mocked object : https://github.com/florinn/typemoq/issues/66
+			testWatcher.setup((x: any) => x.then).returns(() => undefined);
 			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').withArgs(sinon.match.any).resolves({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
 
 			await azureFunctionService.createAzureFunction(tableTestNode);
