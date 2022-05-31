@@ -17,7 +17,6 @@ import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
  * @returns AzureWizardExecuteStep to be used in the createFunction API call
  */
 export function createAddConnectionStringStep(projectFolder: string, connectionInfo: IConnectionInfo, connectionStringSettingName?: string): AzureWizardExecuteStep<IActionContext> {
-	console.log(`azure wizard execute step`);
 	return new class AzureWizardExecuteStep {
 		// priority number is set to be lower than OpenFolderStep in vscode-azurefunctions
 		// https://github.com/microsoft/vscode-azurefunctions/blob/main/src/commands/createNewProject/OpenFolderStep.ts#L11
