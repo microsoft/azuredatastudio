@@ -34,7 +34,7 @@ import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/common/editor/query/queryEditorInput';
-import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
+// import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as actions from 'sql/workbench/contrib/query/browser/queryActions';
@@ -306,7 +306,7 @@ export class QueryEditor extends EditorPane {
 
 	private dimension: DOM.Dimension = new DOM.Dimension(0, 0);
 
-	private resultsEditor: QueryResultsEditor;
+	//private resultsEditor: QueryResultsEditor;
 
 	private resultsEditorContainer: HTMLElement;
 
@@ -393,7 +393,7 @@ export class QueryEditor extends EditorPane {
 				this.applySettings();
 			}
 		}));
-
+		this.applySettings();
 	}
 
 	private hasResults(runner: QueryRunner): boolean {
@@ -661,11 +661,12 @@ export class QueryEditor extends EditorPane {
 		this.createTaskbar(parent);
 
 		parent.appendChild(this.viewContainer);
+		let currentResultsContainer = this.viewContainer;
 
 		if (!this.showResultsInSeparateTab) {
 			this.resultsEditorContainer = DOM.$('.results-editor-container');
-			this.resultsEditor = this._register(this.instantiationService.createInstance(QueryResultsEditor));
-			this.resultsEditor.create(this.resultsEditorContainer);
+			//this.resultsEditor = this._register(this.instantiationService.createInstance(QueryResultsEditor));
+			//this.resultsEditor.create(this.resultsEditorContainer);
 
 			this.splitview = this._register(new SplitView(this.viewContainer, { orientation: Orientation.VERTICAL }));
 			this._register(this.splitview.onDidSashReset(() => this.splitview.distributeViewSizes()));
@@ -678,30 +679,33 @@ export class QueryEditor extends EditorPane {
 				maximumSize: Number.POSITIVE_INFINITY,
 				onDidChange: Event.None
 			}, Sizing.Distribute);
+			currentResultsContainer = this.resultsEditorContainer;
 		}
-		else {
-			this._panelView = this._register(new TabbedPanel(this.viewContainer, { showHeaderWhenSingleView: true }));
-			this.resultsTab = this._register(new ResultsTab(this.instantiationService));
-			this.messagesTab = this._register(new MessagesTab(this.instantiationService));
-			this.chartTab = this._register(new ChartTab(this.instantiationService));
-			this.executionPlanTab = this._register(this.instantiationService.createInstance(ExecutionPlanTab));
-			this.topOperationsTab = this._register(new TopOperationsTab(this.instantiationService));
 
-			let textTab = new TextTab(this.textResourceEditor, this.textResourceEditorContainer);
-			this._register(attachTabbedPanelStyler(this._panelView, this.themeService));
+		this._panelView = this._register(new TabbedPanel(currentResultsContainer, { showHeaderWhenSingleView: true }));
+		this.resultsTab = this._register(new ResultsTab(this.instantiationService));
+		this.messagesTab = this._register(new MessagesTab(this.instantiationService));
+		this.chartTab = this._register(new ChartTab(this.instantiationService));
+		this.executionPlanTab = this._register(this.instantiationService.createInstance(ExecutionPlanTab));
+		this.topOperationsTab = this._register(new TopOperationsTab(this.instantiationService));
 
-			this.styleSheet.remove();
-			this.viewContainer.appendChild(this.styleSheet);
+		let textTab = new TextTab(this.textResourceEditor, this.textResourceEditorContainer);
+		this._register(attachTabbedPanelStyler(this._panelView, this.themeService));
 
+		this.styleSheet.remove();
+		currentResultsContainer.appendChild(this.styleSheet);
+
+		if (this.showResultsInSeparateTab) {
 			this._panelView.pushTab(textTab);
-			this._panelView.pushTab(this.resultsTab);
-			this._panelView.pushTab(this.messagesTab);
-			this._register(this._panelView.onTabChange(e => {
-				if (this._resultsInput) {
-					this._resultsInput.state.activeTab = e;
-				}
-			}));
 		}
+		this._panelView.pushTab(this.resultsTab);
+		this._panelView.pushTab(this.messagesTab);
+		this._register(this._panelView.onTabChange(e => {
+			if (this._resultsInput) {
+				this._resultsInput.state.activeTab = e;
+			}
+		}));
+
 	}
 
 	override dispose() {
@@ -918,7 +922,7 @@ export class QueryEditor extends EditorPane {
 			// Remember view settings if input changes
 			this.saveQueryEditorViewState(this.input);
 			this.currentTextEditor.clearInput();
-			this.resultsEditor.clearInput();
+			//this.resultsEditor.clearInput();
 			this.clearResultsInput();
 		}
 
@@ -939,17 +943,17 @@ export class QueryEditor extends EditorPane {
 			}
 		}
 
-		await Promise.all([
-			super.setInput(newInput, options, context, token),
-			this.currentTextEditor.setInput(newInput.text, options, context, token),
-			this.resultsEditor.setInput(newInput.results, options, context)
-		]);
-
 		// await Promise.all([
 		// 	super.setInput(newInput, options, context, token),
 		// 	this.currentTextEditor.setInput(newInput.text, options, context, token),
-		// 	() => { this._resultsInput = newInput.results }
+		// 	this.resultsEditor.setInput(newInput.results, options, context)
 		// ]);
+
+		await Promise.all([
+			super.setInput(newInput, options, context, token),
+			this.currentTextEditor.setInput(newInput.text, options, context, token)
+		]);
+		this.resultsInput = newInput.results;
 
 		this.inputDisposables.clear();
 		this.inputDisposables.add(this.input.state.onChange(c => this.updateState(c)));
@@ -1020,7 +1024,7 @@ export class QueryEditor extends EditorPane {
 	public override setEditorVisible(visible: boolean, group: IEditorGroup): void {
 		this.textFileEditor.setVisible(visible, group);
 		this.textResourceEditor.setVisible(visible, group);
-		this.resultsEditor.setVisible(visible, group);
+		//this.resultsEditor.setVisible(visible, group);
 		super.setEditorVisible(visible, group);
 
 		// Note: must update after calling super.setEditorVisible so that the accurate count is handled
@@ -1055,7 +1059,7 @@ export class QueryEditor extends EditorPane {
 		this.saveQueryEditorViewState(this.input);
 
 		this.currentTextEditor.clearInput();
-		this.resultsEditor.clearInput();
+		//this.resultsEditor.clearInput();
 		this.clearResultsInput();
 		super.clearInput();
 	}
@@ -1084,11 +1088,13 @@ export class QueryEditor extends EditorPane {
 	}
 
 	public toggleFocusBetweenQueryEditorAndResults(): void {
-		if (!this.resultsVisible || this.resultsEditorContainer.contains(document.activeElement)) {
+		if (this.resultsVisible || this.resultsEditorContainer.contains(document.activeElement)) {
 			this.focus();
-		} else {
-			this.resultsEditor.focus();
 		}
+
+		// else {
+		// 	this.resultsEditor.focus();
+		// }
 	}
 
 	/**
@@ -1142,7 +1148,7 @@ export class QueryEditor extends EditorPane {
 				let initialViewSize = Math.round(Math.max(this.dimension.height * 0.65, 100));
 				this.splitview.addView({
 					element: this.resultsEditorContainer,
-					layout: size => this.resultsEditor && this.resultsEditor.layout(new DOM.Dimension(this.dimension.width, size)),
+					layout: size => this._panelView && this._panelView.layout(new DOM.Dimension(this.dimension.width, size)),
 					minimumSize: 0,
 					maximumSize: Number.POSITIVE_INFINITY,
 					onDidChange: Event.None
@@ -1295,6 +1301,6 @@ export class QueryEditor extends EditorPane {
 	}
 
 	public chart(dataId: { batchId: number, resultId: number }): void {
-		this.resultsEditor.chart(dataId);
+		this.chartData(dataId);
 	}
 }
