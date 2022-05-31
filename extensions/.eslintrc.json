@@ -2,6 +2,7 @@
 	"rules": {
 		"no-cond-assign": 2,
 		"jsdoc/check-param-names": "error",
-		"@typescript-eslint/explicit-function-return-type": ["error"]
+		"@typescript-eslint/explicit-function-return-type": ["error"],
+		"@typescript-eslint/await-thenable": ["error"]
 	}
 }
