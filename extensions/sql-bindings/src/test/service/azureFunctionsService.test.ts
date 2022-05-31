@@ -86,7 +86,7 @@ describe('AzureFunctionsService', () => {
 			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 
 			let testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>().object;
-			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').withArgs(sinon.match.any).returns({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
+			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').withArgs(sinon.match.any).resolves({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
 			await azureFunctionService.createAzureFunction();
 
 			should(spy.notCalled).be.true('showErrorMessage should not have been called');
@@ -127,7 +127,7 @@ describe('AzureFunctionsService', () => {
 			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 
 			let testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>().object;
-			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').withArgs(sinon.match.any).returns({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
+			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').withArgs(sinon.match.any).resolves({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
 
 			await azureFunctionService.createAzureFunction(tableTestNode);
 
@@ -191,7 +191,7 @@ describe('AzureFunctionsService', () => {
 			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 
 			let testWatcher: vscode.FileSystemWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>().object;
-			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').withArgs(sinon.match.any).returns({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
+			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').withArgs(sinon.match.any).resolves({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
 
 			await azureFunctionService.createAzureFunction(tableTestNode);
 
