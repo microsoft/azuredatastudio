@@ -364,7 +364,7 @@ export async function stopMigration(account: azdata.Account, subscription: Subsc
 
 export async function getLocationDisplayName(location: string): Promise<string> {
 	const api = await getAzureCoreAPI();
-	return await api.getRegionDisplayName(location);
+	return api.getRegionDisplayName(location);
 }
 
 type SortableAzureResources = AzureProduct | azurecore.azureResource.FileShare | azurecore.azureResource.BlobContainer | azurecore.azureResource.Blob | azurecore.azureResource.AzureResourceSubscription | SqlMigrationService;

@@ -31,7 +31,7 @@ export class TargetDatabaseSummaryDialog {
 
 	async initialize(): Promise<void> {
 		let tab = azdata.window.createTab('sql.migration.CreateResourceGroupDialog');
-		await tab.registerContent(async (view: azdata.ModelView) => {
+		tab.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
 
 			const databaseCount = this._view.modelBuilder.text().withProps({
