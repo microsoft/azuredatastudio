@@ -8,16 +8,16 @@
 **/semver/**
 **/test/**/*.js
 **/node_modules/**
-/extensions/**/out/**
-/extensions/**/build/**
-/extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts
-/extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts
-/extensions/markdown-language-features/media/**
-/extensions/markdown-language-features/notebook-out/**
-/extensions/typescript-basics/test/colorize-fixtures/**
-/extensions/**/dist/**
+**/extensions/**/out/**
+**/extensions/**/build/**
+**/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts
+**/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts
+**/extensions/markdown-language-features/media/**
+**/extensions/markdown-language-features/notebook-out/**
+**/extensions/typescript-basics/test/colorize-fixtures/**
+**/extensions/**/dist/**
+**/extensions/typescript-language-features/test-workspace/**
 /extensions/types
-/extensions/typescript-language-features/test-workspace/**
 
 # These files are not linted by `yarn eslint`, so we exclude them from being linted in the editor.
 # This ensures that if we add new rules and they pass CI, the are also no errors in the editor.
