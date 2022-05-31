@@ -1268,10 +1268,13 @@
       </Item>
       <Item ItemId=";extensions/notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.packageVersionTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Package Version]]></Val>
+          <Val><![CDATA[Supported Package Versions for Python {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Versione del pacchetto]]></Val>
+            <Val><![CDATA[Versioni dei pacchetti supportate per python {0}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Package Version]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
