@@ -85,10 +85,8 @@ describe('AzureFunctionsService', () => {
 			sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').returns(Promise.resolve(true));
 			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 
-			let testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>();
-			// Need to setup then when Promise.resolving a mocked object : https://github.com/florinn/typemoq/issues/66
-			testWatcher.setup((x: any) => x.then).returns(() => Promise.resolve(undefined));
-			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').resolves({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
+			const testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>().object;
+			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').withArgs(sinon.match.any).returns({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
 			await azureFunctionService.createAzureFunction();
 
 			should(spy.notCalled).be.true('showErrorMessage should not have been called');
@@ -128,10 +126,8 @@ describe('AzureFunctionsService', () => {
 			sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').returns(Promise.resolve(true));
 			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 
-			let testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>();
-			// Need to setup then when Promise.resolving a mocked object : https://github.com/florinn/typemoq/issues/66
-			testWatcher.setup((x: any) => x.then).returns(() => Promise.resolve(undefined));
-			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').resolves({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
+			const testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>().object;
+			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').withArgs(sinon.match.any).returns({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
 
 			await azureFunctionService.createAzureFunction(tableTestNode);
 
@@ -194,10 +190,8 @@ describe('AzureFunctionsService', () => {
 			sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').returns(Promise.resolve(true));
 			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 
-			let testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>();
-			// Need to setup then when Promise.resolving a mocked object : https://github.com/florinn/typemoq/issues/66
-			testWatcher.setup((x: any) => x.then).returns(() => Promise.resolve(undefined));
-			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').resolves({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
+			const testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>().object;
+			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').withArgs(sinon.match.any).returns({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
 
 			await azureFunctionService.createAzureFunction(tableTestNode);
 

@@ -61,6 +61,9 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 }
 
 export function createTestUtils(): TestUtils {
+	// Need to setup then when Promise.resolving a mocked object : https://github.com/florinn/typemoq/issues/66
+	const azureFunctionsExtensionApi = TypeMoq.Mock.ofType<AzureFunctionsExtensionApi>();
+	azureFunctionsExtensionApi.setup((x: any) => x.then).returns(() => undefined);
 	return {
 		context: TypeMoq.Mock.ofType<vscode.ExtensionContext>().object,
 		dacFxService: TypeMoq.Mock.ofType<mssql.IDacFxService>(),
@@ -68,7 +71,7 @@ export function createTestUtils(): TestUtils {
 		dacFxMssqlService: TypeMoq.Mock.ofType<vscodeMssql.IDacFxService>(),
 		schemaCompareService: TypeMoq.Mock.ofType<vscodeMssql.ISchemaCompareService>(),
 		outputChannel: TypeMoq.Mock.ofType<vscode.OutputChannel>().object,
-		azureFunctionsExtensionApi: TypeMoq.Mock.ofType<AzureFunctionsExtensionApi>()
+		azureFunctionsExtensionApi
 	};
 }
 

@@ -271,10 +271,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		propertyBag.exitReason = exitReason;
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
 			.withAdditionalProperties(propertyBag).send();
-		if (newFunctionFileObject) {
-			console.log(`${telemetryStep}`);
-			newFunctionFileObject.watcherDisposable.dispose();
-		}
+		newFunctionFileObject?.watcherDisposable.dispose();
 	}
 }
 
