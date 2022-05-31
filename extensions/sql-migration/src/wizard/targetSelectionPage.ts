@@ -460,7 +460,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					'margin': '12px 0 4px 0'
 				}
 			})
-			.component();
+		.component();
 
 		this._disposables.push(refreshResourceButton.onDidClick(async (event) => {
 			await this.populateSubscriptionDropdown();

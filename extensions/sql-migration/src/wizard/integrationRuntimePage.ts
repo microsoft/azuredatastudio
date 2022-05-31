@@ -233,6 +233,24 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			await this.populateDms();
 		}));
 
+		const refreshMigrationServiceButton = this._view.modelBuilder.button()
+			.withProps({
+				iconPath: IconPathHelper.refresh,
+				label: constants.REFRESH_BUTTON_LABEL,
+				width: 90,
+				height: 24,
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'margin': '12px 0 4px 0'
+				}
+			})
+		.component();
+
+		this._disposables.push(refreshMigrationServiceButton.onDidClick(async (e) => {
+			await this.loadResourceGroupDropdown();
+			await this.populateDms();
+		}));
+
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems([
 			descriptionText,
 			subscriptionLabel,
@@ -243,7 +261,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this._resourceGroupDropdown,
 			migrationServiceDropdownLabel,
 			this._dmsDropdown,
-			createNewMigrationService
+			createNewMigrationService,
+			refreshMigrationServiceButton
 		]).withLayout({
 			flexFlow: 'column'
 		}).component();

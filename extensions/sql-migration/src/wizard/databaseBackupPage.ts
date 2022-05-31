@@ -589,6 +589,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			})
 			.component();
 
+		this._disposables.push(refreshBlobTable.onDidClick(async (event) => {
+			await this.getSubscriptionValues();
+		}));
+
 		this._blobTableContainer = this._view.modelBuilder.flexContainer().withItems([
 			blobTableText,
 			allFieldsRequiredLabel,
