@@ -17,10 +17,11 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 
 	constructor() {
 		azdata.queryeditor.registerQueryEventListener({
-			onQueryEvent: (type: azdata.queryeditor.QueryEventType, document: azdata.queryeditor.QueryDocument, args: azdata.ResultSetSummary | string | undefined, queryInfo?: azdata.queryeditor.IQueryInfo, connectionId?: string) => {
+			onQueryEvent: async (type: azdata.queryeditor.QueryEventType, document: azdata.queryeditor.QueryDocument, args: azdata.ResultSetSummary | string | undefined, queryInfo?: azdata.queryeditor.IQueryInfo) => {
 				if (queryInfo && type === 'queryStop') {
-					const queryText = queryInfo.text ?? '';
-					this._queryHistoryNodes.push(new QueryHistoryNode(queryText, '', queryText, connectionId ?? '', new Date(), 'sqltools2019-3', queryInfo.messages.find(m => m.isError) ? false : true));
+					const queryText = queryInfo.query ?? '';
+					const connProfile = await azdata.connection.getConnection(document.uri);
+					this._queryHistoryNodes.push(new QueryHistoryNode(queryText, '', queryText, connProfile?.connectionId ?? '', new Date(), 'sqltools2019-3', queryInfo.messages.find(m => m.isError) ? false : true));
 					this._onDidChangeTreeData.fire(undefined);
 				}
 			}

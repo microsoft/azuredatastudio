@@ -292,11 +292,11 @@ export class QueryModelService implements IQueryModelService {
 			this._onRunQueryComplete.fire(queryRunner.uri);
 			const uri: URI = URI.parse(queryRunner.uri);
 			const model = this._modelService.getModel(uri);
-			let text = '';
+			let query = '';
 			if (model) {
 				// VS Range is 1 based so offset values by 1. The endLine we get back from SqlToolsService is incremented
 				// by 1 from the original input range sent in as well so take that into account and don't modify
-				text = info.range?.length > 0 ?
+				query = info.range?.length > 0 ?
 					model.getValueInRange(new Range(
 						info.range[0].startLineNumber,
 						info.range[0].startColumn,
@@ -313,7 +313,7 @@ export class QueryModelService implements IQueryModelService {
 				{
 					range: info.range!,
 					messages: info.queryRunner!.messages,
-					text
+					query
 				}
 			};
 			this._onQueryEvent.fire(event);

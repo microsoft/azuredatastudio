@@ -64,11 +64,11 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 		});
 	}
 
-	public $onQueryEvent(providerId: string, handle: number, fileUri: string, connectionId: string, event: IQueryEvent): void {
+	public $onQueryEvent(providerId: string, handle: number, fileUri: string, event: IQueryEvent): void {
 		let listener: azdata.queryeditor.QueryEventListener = this._queryListeners[handle];
 		if (listener) {
 			let params = event.params && event.params.planXml ? event.params.planXml : event.params;
-			listener.onQueryEvent(event.type, new ExtHostQueryDocument(providerId, fileUri, this._proxy), params, event.queryInfo, connectionId);
+			listener.onQueryEvent(event.type, new ExtHostQueryDocument(providerId, fileUri, this._proxy), params, event.queryInfo);
 		}
 	}
 

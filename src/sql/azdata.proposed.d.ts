@@ -1486,9 +1486,18 @@ declare module 'azdata' {
 			message: string;
 		}
 
+		/**
+		 * Information about a query that was executed
+		 */
 		export interface IQueryInfo {
+			/**
+			 * Any messages that have been received from the query provider
+			 */
 			messages: IQueryMessage[];
-			text?: string;
+			/**
+			 * The query text itself
+			 */
+			query?: string;
 		}
 
 		/**
@@ -1499,7 +1508,7 @@ declare module 'azdata' {
 		 * visualize: ResultSetSummary
 		 */
 		export interface QueryEventListener {
-			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: IQueryInfo, connectionId: string): void;
+			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: IQueryInfo): void;
 		}
 	}
 }

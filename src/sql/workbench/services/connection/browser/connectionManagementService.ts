@@ -1634,7 +1634,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return connections;
 	}
 
-	public getConnection(uri: string): ConnectionProfile {
+	public getConnection(uri: string): ConnectionProfile | undefined {
 		const connections = this.getActiveConnections();
 		if (connections) {
 			for (let connection of connections) {
