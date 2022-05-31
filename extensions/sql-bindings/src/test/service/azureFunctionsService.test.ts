@@ -145,7 +145,7 @@ describe('AzureFunctionsService', () => {
 			let connectionDetails = { options: connectionInfo };
 			testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
 
-			const executeCommandSpy = sinon.spy(vscode.commands, 'executeCommand');
+			const executeCommandSpy = sinon.stub(vscode.commands, 'executeCommand').withArgs(sinon.match.any, sinon.match.any).returns(Promise.resolve());
 			const showErrorStub = sinon.stub(vscode.window, 'showErrorMessage').returns(Promise.resolve(constants.learnMore) as any);
 			await azureFunctionService.createAzureFunction();
 
