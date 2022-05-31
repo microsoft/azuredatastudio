@@ -210,6 +210,7 @@ export function waitForNewFunctionFile(projectFolder: string): IFileFunctionObje
 			resolve(e.fsPath);
 		});
 	});
+	console.log('Promise resolved!');
 	return {
 		filePromise,
 		watcherDisposable: watcher
@@ -370,6 +371,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 			void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 			return;
 		}
+		console.log(`getLocalSettingsJson`);
 
 		// Known Azure settings reference for Azure Functions
 		// https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings
@@ -444,6 +446,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 			}
 
 			if (selectedSetting.label === constants.createNewLocalAppSettingWithIcon) {
+				console.log(`createNewLocalAppSetting`);
 				const newConnectionStringSettingName = await vscode.window.showInputBox(
 					{
 						title: constants.enterConnectionStringSettingName,
@@ -466,6 +469,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 						const localSettingsPath: string = path.join(projectFolder, constants.azureFunctionLocalSettingsFileName);
 
 						if (!connectionInfo) {
+							console.log(`getConnectionInfo`);
 							const listOfConnectionStringMethods = [constants.connectionProfile, constants.userConnectionString];
 							// show the connection string methods (user input and connection profile options)
 							selectedConnectionStringMethod = await vscode.window.showQuickPick(listOfConnectionStringMethods, {
@@ -509,7 +513,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 							// user cancelled the prompts
 							return;
 						}
-
+						console.log(`setConnectionString: ${connectionString}`);
 						const success = await setLocalAppSetting(projectFolder, newConnectionStringSettingName, connectionString);
 						if (success) {
 							// exit both loops and insert binding
@@ -532,6 +536,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 			}
 		}
 		// Add sql extension package reference to project. If the reference is already there, it doesn't get added again
+		console.log(`addSqlExtensionPackageReference`);
 		await addNugetReferenceToProjectFile(projectUri.fsPath);
 	} else {
 		// if no AF project was found or there's more than one AF functions project in the workspace,
@@ -560,6 +565,7 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 	connectionDetails = { options: connectionInfo };
 
 	try {
+		console.log(`passwordPrompts`);
 		if (connectionInfo.authenticationType === 'SqlLogin' && connectionInfo.password) {
 			// Prompt to include password in connection string if authentication type is SqlLogin and connection has password saved
 			includePassword = await vscode.window.showQuickPick([constants.yesString, constants.noString], {
@@ -569,6 +575,7 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 			});
 			if (includePassword === constants.yesString) {
 				// get connection string to include password
+				console.log(`getConnectionString Request`);
 				connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, true, false);
 			}
 		}
@@ -576,6 +583,7 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 		if (includePassword !== constants.yesString || !connectionInfo.password || connectionInfo.authenticationType !== 'SqlLogin') {
 			// get connection string to not include the password if connection info does not include password,
 			// or user chooses to not include password (or if user cancels out of include password prompt), or authentication type is not SQL login
+			console.log(`getConnectionString Request with no password`);
 			connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
 
 			if (connectionInfo.authenticationType !== 'SqlLogin') {
@@ -609,6 +617,7 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 				});
 			}
 		}
+		console.log(`return getConnectionString`);
 
 		return connectionString;
 	} catch (e) {

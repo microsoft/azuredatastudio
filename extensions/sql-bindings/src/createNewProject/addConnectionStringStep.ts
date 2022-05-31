@@ -9,7 +9,7 @@ import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
 
 /**
  * This execute step is used to add a connection string to the local.settings.json file when creating a new Azure Functions project
- * and is needed due to vscode restarting the extension host after the user chooses to open project in new window or current window 
+ * and is needed due to vscode restarting the extension host after the user chooses to open project in new window or current window
  * through the createFunction API call for vscode-azurefunctions
  * @param projectFolder The folder containing the Azure Functions project
  * @param connectionInfo The connection info to use when creating the connection string
@@ -17,6 +17,7 @@ import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
  * @returns AzureWizardExecuteStep to be used in the createFunction API call
  */
 export function createAddConnectionStringStep(projectFolder: string, connectionInfo: IConnectionInfo, connectionStringSettingName?: string): AzureWizardExecuteStep<IActionContext> {
+	console.log(`azure wizard execute step`);
 	return new class AzureWizardExecuteStep {
 		// priority number is set to be lower than OpenFolderStep in vscode-azurefunctions
 		// https://github.com/microsoft/vscode-azurefunctions/blob/main/src/commands/createNewProject/OpenFolderStep.ts#L11
