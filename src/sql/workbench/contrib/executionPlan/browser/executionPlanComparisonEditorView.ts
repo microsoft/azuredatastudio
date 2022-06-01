@@ -30,6 +30,7 @@ import { errorForeground, listHoverBackground, textLinkForeground } from 'vs/pla
 import { ExecutionPlanViewHeader } from 'sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader';
 import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
+import { generateUuid } from 'vs/base/common/uuid';
 
 
 export class ExecutionPlanComparisonEditorView {
@@ -93,7 +94,7 @@ export class ExecutionPlanComparisonEditorView {
 	private _activeBottomPlanIndex: number = 0;
 	private _bottomPlanRecommendations: ExecutionPlanViewHeader;
 	private _bottomSimilarNode: Map<string, azdata.executionPlan.ExecutionGraphComparisonResult> = new Map();
-
+	private _currentRequestUuid: string;
 
 	private get _activeBottomPlanDiagram(): AzdataGraphView {
 		if (this.bottomPlanDiagrams.length > 0) {
@@ -392,8 +393,14 @@ export class ExecutionPlanComparisonEditorView {
 				if (this._topPlanDiagramModels && this._bottomPlanDiagramModels) {
 					this._topPlanDiagramModels[this._activeTopPlanIndex].graphFile.graphFileType = 'sqlplan';
 					this._bottomPlanDiagramModels[this._activeBottomPlanIndex].graphFile.graphFileType = 'sqlplan';
+
+					const semaphore = generateUuid();
+					this._currentRequestUuid = semaphore;
 					const result = await this._executionPlanService.compareExecutionPlanGraph(this._topPlanDiagramModels[this._activeTopPlanIndex].graphFile,
 						this._bottomPlanDiagramModels[this._activeBottomPlanIndex].graphFile);
+					if (semaphore !== this._currentRequestUuid) {
+						return;
+					}
 					this.getSimilarSubtrees(result.firstComparisonResult);
 					this.getSimilarSubtrees(result.secondComparisonResult, true);
 					let colorIndex = 0;
