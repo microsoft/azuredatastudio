@@ -171,11 +171,11 @@ export class DeployService {
 	}
 
 	private async executeTask<T>(taskName: string, task: () => Promise<T>): Promise<T> {
-		const getAzdataApi = await utils.getAzdataApi();
-		if (getAzdataApi) {
+		const azdataApi = utils.getAzdataApi();
+		if (azdataApi) {
 			return new Promise<T>((resolve, reject) => {
 				let msgTaskName = taskName;
-				getAzdataApi!.tasks.startBackgroundOperation({
+				azdataApi!.tasks.startBackgroundOperation({
 					displayName: msgTaskName,
 					description: msgTaskName,
 					isCancelable: false,
@@ -183,11 +183,11 @@ export class DeployService {
 						try {
 							let result: T = await task();
 
-							op.updateStatus(getAzdataApi!.TaskStatus.Succeeded);
+							op.updateStatus(azdataApi!.TaskStatus.Succeeded);
 							resolve(result);
 						} catch (error) {
 							let errorMsg = constants.taskFailedError(taskName, error ? error.message : '');
-							op.updateStatus(getAzdataApi!.TaskStatus.Failed, errorMsg);
+							op.updateStatus(azdataApi!.TaskStatus.Failed, errorMsg);
 							reject(errorMsg);
 						}
 					}
