@@ -1152,6 +1152,23 @@ suite('Cell Model', function (): void {
 		assert.notDeepStrictEqual(model.attachments, cellAttachment, 'Cell attachments are updated when they are not referenced in cell source');
 	});
 
+	test('Should not update cell attachments if the attachment reference is not in the correct format', async function () {
+		const cellAttachment = JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}');
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '![ads.png](attachment:ads.png)'
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		model.updateAttachmentsFromSource('ads.png', cellAttachment);
+
+		assert.notDeepStrictEqual(model.attachments, cellAttachment, 'Cell attachments are updated when the reference is not in the correct format');
+	});
+
 	test('Should not have cache chart data after new cell created', async function () {
 		let notebookModel = new NotebookModelStub({
 			name: '',
