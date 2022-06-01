@@ -438,6 +438,7 @@ export class QueryEditor extends EditorPane {
 		this.runnerDisposables.add(runner.onQueryEnd(() => {
 			if (runner.messages.some(v => v.isError)) {
 				this._panelView.showTab(this.messagesTab.identifier);
+				this._panelView.focusCurrentTab();
 			}
 			// Currently we only need to support visualization options for the first result set.
 			const batchSet = runner.batchSets[0];
@@ -520,8 +521,10 @@ export class QueryEditor extends EditorPane {
 		}));
 		if (activeTab) {
 			this._panelView.showTab(activeTab);
+			this._panelView.focusCurrentTab();
 		} else {
 			this._panelView.showTab(this.resultsTab.identifier); // our default tab is the results view
+			this._panelView.focusCurrentTab();
 		}
 	}
 
@@ -606,6 +609,7 @@ export class QueryEditor extends EditorPane {
 				this._panelView.pushTab(this.executionPlanTab);
 			}
 			this._panelView.showTab(this.executionPlanTab.identifier);
+			this._panelView.focusCurrentTab();
 		}
 	}
 
