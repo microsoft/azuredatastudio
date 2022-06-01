@@ -574,6 +574,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let newCellIndex = index;
 				let tailCellIndex = index;
 				let splitCells: SplitCell[] = [];
+				let attachments = {};
 
 				// Save UI state
 				let showMarkdown = this.cells[index].showMarkdown;
@@ -607,7 +608,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						partialSource = source.slice(selection.startLineNumber - 1, selection.startLineNumber)[0].slice(0, selection.startColumn - 1);
 						headsource = headsource.concat(partialSource.toString());
 					}
+					attachments = this.cells[index].attachments;
 					this.cells[index].source = headsource;
+					// reset attachments
+					// if(attachments && !Object.keys(this.cells[index].attachments).some(attachment => headsource.includes(attachment))) {
+					// 	this.cells[index].attachments = undefined;
+					// }
 					splitCells.push({ cell: this.cells[index], prefix: undefined });
 				}
 
@@ -651,6 +657,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					if (tailSource[0] === '\r\n' || tailSource[0] === '\n') {
 						newlinesBeforeTailCellContent = tailSource.splice(0, 1)[0];
 					}
+					tailCell.attachments = attachments;
 					tailCell.source = tailSource;
 					tailCellIndex = newCellIndex + 1;
 					this.insertCell(tailCell, tailCellIndex, false);

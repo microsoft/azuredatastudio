@@ -346,6 +346,22 @@ export class CellModel extends Disposable implements ICellModel {
 		this._preventNextChartCache = true;
 	}
 
+	public attachImageToNewCell(newSource: string | string[]) {
+		// Find existing attachments in the form ![...](attachment:...) so that we can make sure we keep those attachments
+		const attachmentRegex = /!\[.*?\]\(attachment:(.*?)\)/g;
+		const source = Array.isArray(newSource) ? newSource.join() : newSource;
+		let match = attachmentRegex.exec(source);
+		// const uri = FileAccess.asBrowserUri(URI.file(imageCalloutResult.imagePath));
+		// let base64String = await this.getFileContentBase64(uri);
+		// let mimeType = await this.getFileMimeType(uri);
+		// const originalImageName: string = path.basename(imageCalloutResult.imagePath).replace(/\s/g, '');
+		// let attachmentName = this.cellModel.addAttachment(mimeType, base64String, originalImageName);
+		while (match) {
+			//this.addAttachment()
+
+		}
+	}
+
 	private attachImageFromSource(newSource: string | string[]): string | string[] {
 		if (!Array.isArray(newSource) && this.isValidBase64OctetStream(newSource)) {
 			let results;
