@@ -34,7 +34,6 @@ import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/common/editor/query/queryEditorInput';
-// import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as actions from 'sql/workbench/contrib/query/browser/queryActions';
@@ -326,7 +325,6 @@ export class QueryEditor extends EditorPane {
 	private resultsVisible = false;
 
 	private showResultsInSeparateTab = false;
-	private switchToResultsOnRun = false;
 
 	private queryEditorVisible: IContextKey<boolean>;
 
@@ -582,7 +580,7 @@ export class QueryEditor extends EditorPane {
 		if (!this._panelView.contains(this.resultsTab.identifier)) {
 			this._panelView.pushTab(this.resultsTab, 1);
 		}
-		if (this.switchToResultsOnRun) {
+		if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.switchToResultsTab) {
 			this._panelView.showTab(this.resultsTab.identifier);
 			this._panelView.focusCurrentTab();
 		}
@@ -659,7 +657,6 @@ export class QueryEditor extends EditorPane {
 		parent.classList.add('query-editor');
 
 		this.showResultsInSeparateTab = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.showResultsInSeparateTab;
-		this.switchToResultsOnRun = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.switchToResultsTab;
 
 		// We create two separate editors - one for Untitled Documents (ad-hoc queries) and another for queries from
 		// files. This is necessary because TextResourceEditor by default makes all non-Untitled inputs to be
@@ -1146,6 +1143,7 @@ export class QueryEditor extends EditorPane {
 				this.hideResults();
 				this.hideMessages();
 				this._panelView.showTab('textTab');
+				this._panelView.focusCurrentTab();
 			}
 		}
 	}

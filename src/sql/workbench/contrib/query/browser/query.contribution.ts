@@ -404,12 +404,12 @@ const queryEditorConfiguration: IConfigurationNode = {
 		},
 		'queryEditor.results.showResultsInSeparateTab': {
 			'type': 'boolean',
-			'description': localize('queryEditor.results.showResultsInSeparateTab', "Show results and messages to their own tabs separate from text (Setting requires a restart to take effect)"),
+			'description': localize('queryEditor.results.showResultsInSeparateTab', "Show results and messages to their own tabs separate from text \n(Setting requires a restart to take effect)"),
 			'default': false
 		},
 		'queryEditor.results.switchToResultsTab': {
 			'type': 'boolean',
-			'description': localize('queryEditor.results.switchToResultsTab', "Switch to results tab automatically once query has been run (applicable when \'Show Results in Separate Tab\' has been enabled and requires a restart to take effect)"),
+			'description': localize('queryEditor.results.switchToResultsTab', "Switch to results tab automatically once query has been run \n(applicable when \'Show Results in Separate Tab\' has been enabled)"),
 			'default': false
 		},
 		'queryEditor.messages.showBatchTime': {
