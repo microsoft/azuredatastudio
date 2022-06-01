@@ -631,7 +631,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					//If the selection is not from the start of the cell, create a new cell.
 					if (headContent.length) {
 						newCell = this.createCell(cellType, language);
-						newCell.attachments = attachments;
+						newCell.attachments = this.getCellAttachmentFromSource(newSource, attachments);
 						newCell.source = newSource;
 						newCellIndex++;
 						this.insertCell(newCell, newCellIndex, false);
@@ -655,7 +655,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					if (tailSource[0] === '\r\n' || tailSource[0] === '\n') {
 						newlinesBeforeTailCellContent = tailSource.splice(0, 1)[0];
 					}
-					tailCell.attachments = attachments;
+					tailCell.attachments = this.getCellAttachmentFromSource(tailSource, attachments);
 					tailCell.source = tailSource;
 					tailCellIndex = newCellIndex + 1;
 					this.insertCell(tailCell, tailCellIndex, false);
@@ -685,10 +685,22 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return undefined;
 	}
 
+	private getCellAttachmentFromSource(source: string | string[], attachments: nb.ICellAttachments): nb.ICellAttachments {
+		let newCellAttachment = {};
+		let newSource = Array.isArray(source) ? source.join() : source;
+		for (let key of Object.keys(attachments)) {
+			if (newSource.includes(key)) {
+				newCellAttachment[key] = attachments[key];
+			}
+		}
+		return newCellAttachment;
+	}
+
 	public mergeCells(cells: SplitCell[]): void {
 		let firstCell = cells[0].cell;
 		// Append the other cell sources to the first cell
 		for (let i = 1; i < cells.length; i++) {
+			firstCell.attachments = { ...firstCell.attachments, ...cells[i].cell.attachments };
 			firstCell.source = cells[i].prefix ? [...firstCell.source, ...cells[i].prefix, ...cells[i].cell.source] : [...firstCell.source, ...cells[i].cell.source];
 		}
 		// Set newly created cell as active cell
