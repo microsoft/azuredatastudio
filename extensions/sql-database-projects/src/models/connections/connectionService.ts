@@ -32,7 +32,13 @@ export class ConnectionService {
 	private DefaultSqlRetryTimeoutInSec: number = 10;
 	private DefaultSqlNumberOfRetries: number = 3;
 
-	// Connects to a database
+	/**
+	 * Connects to a database
+	 * @param profile connection profile
+	 * @param saveConnectionAndPassword if true, connection will be saved in the connection view
+	 * @param database database name
+	 * @returns
+	 */
 	private async connectToDatabase(profile: ISqlConnectionProperties, saveConnectionAndPassword: boolean, database: string): Promise<ConnectionResult | string | undefined> {
 		const azdataApi = utils.getAzdataApi();
 		const vscodeMssqlApi = azdataApi ? undefined : await utils.getVscodeMssqlApi();
@@ -111,8 +117,12 @@ export class ConnectionService {
 		}
 	}
 
-	// Validates the connection result. If using azdata API, verifies connection was successful and connection id is returns
-	// If using vscode API, verifies the connection url is returns
+	/**
+	 * Validates the connection result. If using azdata API, verifies connection was successful and connection id is returns
+	 * If using vscode API, verifies the connection url is returns
+	 * @param connection connection result or connection Id
+	 * @returns validation result
+	 */
 	private async validateConnection(connection: ConnectionResult | string | undefined): Promise<utils.ValidationResult> {
 		const azdataApi = utils.getAzdataApi();
 		if (!connection) {
@@ -130,7 +140,11 @@ export class ConnectionService {
 		}
 	}
 
-	// Formats connection result to string to be able to add to log
+	/**
+	 * Formats connection result to string to be able to add to log
+	 * @param connection connection result or connection Id
+	 * @returns formatted connection result
+	 */
 	private async formatConnectionResult(connection: ConnectionResult | string | undefined): Promise<string> {
 		const azdataApi = utils.getAzdataApi();
 		const connectionResult = connection !== undefined && azdataApi ? <ConnectionResult>connection : undefined;
