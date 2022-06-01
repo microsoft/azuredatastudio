@@ -1079,6 +1079,43 @@ suite('Cell Model', function (): void {
 		assert.deepStrictEqual(serializedCell.attachments, undefined, 'JSON should not include attachments if attachments do not exist');
 	});
 
+	test('Should remove unused attachments name when updating cell source', async function () {
+		const cellAttachment = JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}');
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '',
+			attachments: cellAttachment
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		assert.deepStrictEqual(model.attachments, contents.attachments, 'Attachments do not match in cellModel');
+
+		model.source = 'Test';
+
+		assert.notDeepStrictEqual(model.attachments, contents.attachments, 'Unused attachments are not removed after updating cell source');
+	});
+
+	test('Should update cell attachments', async function () {
+		const cellAttachment = JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}');
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '![ads.png](attachment:ads.png)'
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		model.updateAttachmentsFromSource('![ads.png](attachment:ads.png)', cellAttachment);
+
+		assert.deepStrictEqual(model.attachments, cellAttachment, 'Cell attachments are not updated correctly');
+	});
+
 	test('Should not have cache chart data after new cell created', async function () {
 		let notebookModel = new NotebookModelStub({
 			name: '',
