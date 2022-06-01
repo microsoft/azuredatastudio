@@ -608,8 +608,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						partialSource = source.slice(selection.startLineNumber - 1, selection.startLineNumber)[0].slice(0, selection.startColumn - 1);
 						headsource = headsource.concat(partialSource.toString());
 					}
-					// save attachments before updating the cell contents
+					// Save attachments before updating cell contents
 					attachments = this.cells[index].attachments;
+					// No need to update attachments, since unused attachments are removed when updating the cell source
 					this.cells[index].source = headsource;
 					splitCells.push({ cell: this.cells[index], prefix: undefined });
 				}
