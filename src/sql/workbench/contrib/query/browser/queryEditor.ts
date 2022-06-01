@@ -676,8 +676,6 @@ export class QueryEditor extends EditorPane {
 
 		if (!this.showResultsInSeparateTab) {
 			this.resultsEditorContainer = DOM.$('.results-editor-container');
-			//this.resultsEditor = this._register(this.instantiationService.createInstance(QueryResultsEditor));
-			//this.resultsEditor.create(this.resultsEditorContainer);
 
 			this.splitview = this._register(new SplitView(this.viewContainer, { orientation: Orientation.VERTICAL }));
 			this._register(this.splitview.onDidSashReset(() => this.splitview.distributeViewSizes()));
@@ -931,7 +929,6 @@ export class QueryEditor extends EditorPane {
 			// Remember view settings if input changes
 			this.saveQueryEditorViewState(this.input);
 			this.currentTextEditor.clearInput();
-			//this.resultsEditor.clearInput();
 			this.clearResultsInput();
 		}
 
@@ -1033,7 +1030,6 @@ export class QueryEditor extends EditorPane {
 	public override setEditorVisible(visible: boolean, group: IEditorGroup): void {
 		this.textFileEditor.setVisible(visible, group);
 		this.textResourceEditor.setVisible(visible, group);
-		//this.resultsEditor.setVisible(visible, group);
 		super.setEditorVisible(visible, group);
 
 		// Note: must update after calling super.setEditorVisible so that the accurate count is handled
@@ -1068,7 +1064,6 @@ export class QueryEditor extends EditorPane {
 		this.saveQueryEditorViewState(this.input);
 
 		this.currentTextEditor.clearInput();
-		//this.resultsEditor.clearInput();
 		this.clearResultsInput();
 		super.clearInput();
 	}
