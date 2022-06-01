@@ -25,7 +25,7 @@ describe('Publish Database Options Dialog', () => {
 	});
 
 	it('Should open dialog successfully ', async function (): Promise<void> {
-		const publishDatabaseDialog = new PublishDatabaseDialog(new Project(TypeMoq.It.isAny()));
+		const publishDatabaseDialog = new PublishDatabaseDialog(new Project(''));
 		const optionsDialog = new PublishOptionsDialog(testUtils.getDeploymentOptions(), publishDatabaseDialog);
 		optionsDialog.openDialog();
 
