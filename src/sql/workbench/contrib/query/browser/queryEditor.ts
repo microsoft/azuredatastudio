@@ -570,15 +570,15 @@ export class QueryEditor extends EditorPane {
 		}
 	}
 
-	public hideMessages() {
-		if (this._panelView.contains(this.messagesTab.identifier)) {
-			this._panelView.removeTab(this.messagesTab.identifier);
-		}
-	}
-
 	public showResults() {
 		if (!this._panelView.contains(this.resultsTab.identifier)) {
-			this._panelView.pushTab(this.resultsTab, 1);
+			if (!this.showResultsInSeparateTab) {
+				this._panelView.pushTab(this.resultsTab, 0);
+			}
+			else {
+				//Change index to account for the query text tab.
+				this._panelView.pushTab(this.resultsTab, 1);
+			}
 		}
 		if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.switchToResultsTab) {
 			this._panelView.showTab(this.resultsTab.identifier);
@@ -1141,7 +1141,6 @@ export class QueryEditor extends EditorPane {
 			}
 			else {
 				this.hideResults();
-				this.hideMessages();
 				this._panelView.showTab('textTab');
 				this._panelView.focusCurrentTab();
 			}
@@ -1161,10 +1160,12 @@ export class QueryEditor extends EditorPane {
 					onDidChange: Event.None
 				}, initialViewSize);
 			}
-			else {
-				if (!this._panelView.contains(this.messagesTab.identifier)) {
-					this._panelView.pushTab(this.messagesTab, 2);
-				}
+
+			if (!this._panelView.contains(this.resultsTab.identifier)) {
+				this._panelView.pushTab(this.resultsTab);
+			}
+			if (!this._panelView.contains(this.messagesTab.identifier)) {
+				this._panelView.pushTab(this.messagesTab);
 			}
 			this.resultsVisible = true;
 			if (this.input && this.input.state) {
