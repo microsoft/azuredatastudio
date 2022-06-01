@@ -384,6 +384,41 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
+.eps-container .ep-properties-different {
+	background-image: url(../images/actionIcons/differentValues.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-properties-down-arrow-worse {
+	background-image: url(../images/actionIcons/downArrowWorse.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-properties-down-arrow-better {
+	background-image: url(../images/actionIcons/downArrowBetter.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-properties-up-arrow-worse {
+	background-image: url(../images/actionIcons/upArrowWorse.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-properties-up-arrow-worse {
+	background-image: url(../images/actionIcons/upArrowWorse.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
 .eps-container .comparison-editor {
 	width: 100%;
 	height: 100%;

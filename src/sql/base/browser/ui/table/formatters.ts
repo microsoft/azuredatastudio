@@ -90,7 +90,6 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	let valueToDisplay = '';
 	let titleValue = '';
 	let cellStyle = '';
-
 	if (DBCellValue.isDBCellValue(value)) {
 		valueToDisplay = 'NULL';
 		if (!value.isNull) {
@@ -119,7 +118,12 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 
 export function iconCssFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
 	if (isCssIconCellValue(value)) {
-		return `<div role="image" title="${escape(value.title)}" aria-label="${escape(value.title)}" class="grid-cell-value-container icon codicon slick-icon-cell-content ${value.iconCssClass}"></div>`;
+		if ((<any>value).text) {
+			return `<div style="display:flex;"><div role="image" style = "width: 16px; height: auto" title="${escape(value.title)}" aria-label="${escape(value.title)}" class="grid-cell-value-container icon codicon ${value.iconCssClass}"></div>${textFormatter(row, cell, value, columnDef, dataContext)}</div>`;
+		} else {
+			return `<div role="image" title="${escape(value.title)}" aria-label="${escape(value.title)}" class="grid-cell-value-container icon codicon slick-icon-cell-content ${value.iconCssClass}"></div>`;
+		}
+
 	}
 	return textFormatter(row, cell, value, columnDef, dataContext);
 }

@@ -1343,6 +1343,29 @@ declare module 'azdata' {
 			 * Display value of property to show in tooltip and other UI element.
 			 */
 			displayValue: string;
+			/**
+			 * Data type of the property value
+			 */
+			dataType: ExecutionPlanGraphElementPropertyDataType;
+			/**
+			 * Indicates which value is better when 2 similar properties are compared.
+			 */
+			betterValue: ExecutionPlanGraphElementPropertyBetterValue;
+		}
+
+		export enum ExecutionPlanGraphElementPropertyDataType {
+			Number = 0,
+			String = 1,
+			Boolean = 2,
+			Nested = 3
+		}
+
+		export enum ExecutionPlanGraphElementPropertyBetterValue {
+			LowerNumber = 0,
+			HigherNumber = 1,
+			True = 2,
+			False = 3,
+			None = 4
 		}
 
 		export interface ExecutionPlanRecommendations {
