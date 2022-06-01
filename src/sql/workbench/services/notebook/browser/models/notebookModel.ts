@@ -631,6 +631,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					//If the selection is not from the start of the cell, create a new cell.
 					if (headContent.length) {
 						newCell = this.createCell(cellType, language);
+						newCell.attachments = attachments;
 						newCell.source = newSource;
 						newCellIndex++;
 						this.insertCell(newCell, newCellIndex, false);
