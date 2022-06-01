@@ -689,7 +689,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		let newCellAttachment = {};
 		let newSource = Array.isArray(source) ? source.join() : source;
 		for (let key of Object.keys(attachments)) {
-			if (newSource.includes(key)) {
+			if (newSource.includes(`![${key}](attachment:${key})`)) {
 				newCellAttachment[key] = attachments[key];
 			}
 		}
