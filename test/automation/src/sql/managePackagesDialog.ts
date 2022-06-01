@@ -41,7 +41,7 @@ export class ManagePackagesDialog extends Dialog {
 		await this.code.waitForTextContent(packageNameSelector, packageName);
 
 		// Get the latest package version
-		const versionSelectBox = `${ManagePackagesDialog.dialogPage} select[aria-label="Package Version"] option`;
+		const versionSelectBox = `${ManagePackagesDialog.dialogPage} select[aria-label^="Supported Package Versions for Python"] option`;
 		let packageVersion = await this.code.waitForTextContent(versionSelectBox);
 
 		const installButton = `${ManagePackagesDialog.dialogPage} a[class="monaco-button monaco-text-button"][aria-label="Install"][aria-disabled="false"]`;

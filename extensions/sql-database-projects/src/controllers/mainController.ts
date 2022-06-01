@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import * as vscodeMssql from 'vscode-mssql';
 import * as mssql from 'mssql';
 import * as templates from '../templates/templates';
-import * as projectAssets from '../projectProvider/projectAssets';
 import * as path from 'path';
 
 import { ProjectsController } from './projectController';
@@ -113,7 +112,6 @@ export default class MainController implements vscode.Disposable {
 		IconPathHelper.setExtensionContext(this.extensionContext);
 
 		await templates.loadTemplates(path.join(this.context.extensionPath, 'resources', 'templates'));
-		projectAssets.loadAssets(path.join(this.context.extensionPath, 'resources', 'projectAssets'));
 	}
 
 	public dispose(): void {
