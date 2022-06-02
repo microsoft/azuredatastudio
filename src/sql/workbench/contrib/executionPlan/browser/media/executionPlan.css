@@ -550,6 +550,8 @@ However we always want it to be the width of the container it is resizing.
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
+	width: 16px;
+	height: auto;
 }
 
 .eps-container .ep-properties-red-down-arrow {
@@ -557,6 +559,8 @@ However we always want it to be the width of the container it is resizing.
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
+	width: 16px;
+	height: auto;
 }
 
 .eps-container .ep-properties-green-down-arrow {
@@ -564,6 +568,8 @@ However we always want it to be the width of the container it is resizing.
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
+	width: 16px;
+	height: auto;
 }
 
 .eps-container .ep-properties-red-up-arrow {
@@ -571,6 +577,8 @@ However we always want it to be the width of the container it is resizing.
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
+	width: 16px;
+	height: auto;
 }
 
 .eps-container .ep-properties-green-down-arrow {
@@ -578,6 +586,8 @@ However we always want it to be the width of the container it is resizing.
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
+	width: 16px;
+	height: auto;
 }
 
 .eps-container .comparison-editor {
