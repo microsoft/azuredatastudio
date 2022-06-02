@@ -60,14 +60,14 @@
     "mime": "^1.4.1",
     "mkdirp": "^1.0.4",
     "p-limit": "^3.1.0",
-    "plist": "^3.0.1",
+    "plist": "^3.0.5",
     "rollup": "^1.20.3",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "source-map": "0.6.1",
     "tmp": "^0.2.1",
     "typescript": "^4.5.0-dev.20210817",
-    "vsce": "1.48.0",
+    "vsce": "2.8.0",
     "vscode-universal-bundler": "^0.0.2"
   },
   "scripts": {

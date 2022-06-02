@@ -327,6 +327,7 @@
 		"package": {
 			"description": "Azure Data Studio에 대한 SQL Server 스키마 비교는 데이터베이스 및 Dacpac의 스키마 비교를 지원합니다.",
 			"displayName": "SQL Server 스키마 비교",
+			"schemaCompare.runComparison": "스키마 비교 실행",
 			"schemaCompare.start": "스키마 비교"
 		}
 	}

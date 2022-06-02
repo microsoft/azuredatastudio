@@ -329,6 +329,15 @@
           "Notebook"
         ],
         "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "dib",
+        "extensions": [
+          ".dib"
+        ],
+        "aliases": [
+          ".NET Interactive Notebook"
+        ]
       }
     ],
     "menus": {
@@ -703,13 +712,19 @@
             "connectionProviderIds": [
               "MSSQL"
             ],
-            "blockedOnSAW": true
+            "blockedOnSAW": true,
+            "supportedLanguages": [
+              "python"
+            ]
           },
           {
             "name": "sparkkernel",
             "displayName": "Spark | Scala",
             "connectionProviderIds": [
               "MSSQL"
+            ],
+            "supportedLanguages": [
+              "scala"
             ],
             "blockedOnSAW": true
           },
@@ -719,17 +734,26 @@
             "connectionProviderIds": [
               "MSSQL"
             ],
+            "supportedLanguages": [
+              "r"
+            ],
             "blockedOnSAW": true
           },
           {
             "name": "python3",
             "displayName": "Python 3",
-            "connectionProviderIds": []
+            "connectionProviderIds": [],
+            "supportedLanguages": [
+              "python"
+            ]
           },
           {
             "name": "powershell",
             "displayName": "PowerShell",
-            "connectionProviderIds": []
+            "connectionProviderIds": [],
+            "supportedLanguages": [
+              "powershell"
+            ]
           }
         ]
       }
@@ -756,7 +780,7 @@
     "@types/fs-extra": "^5.0.0",
     "@types/glob": "^7.1.1",
     "@types/js-yaml": "^3.12.1",
-    "@types/mocha": "^5.2.5",
+    "@types/mocha": "^7.0.2",
     "@types/node": "^12.11.7",
     "@types/request": "^2.48.1",
     "@types/rimraf": "^2.0.2",
@@ -764,17 +788,18 @@
     "@types/tar": "^4.0.3",
     "@types/uuid": "^3.4.5",
     "assert": "^1.4.1",
-    "mocha": "^5.2.0",
+    "mocha": "^7.1.1",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "nock": "^13.0.2",
     "should": "^13.2.3",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "@microsoft/vscodetestcover": "^1.2.0"
+    "@microsoft/vscodetestcover": "^1.2.1"
   },
   "resolutions": {
-    "url-parse": "^1.5.1"
+    "url-parse": "^1.5.8",
+    "moment": "^2.29.2"
   },
   "enableProposedApi": true
 }

@@ -40,6 +40,7 @@ import { LocalContentManager } from 'sql/workbench/services/notebook/common/loca
 import { Registry } from 'vs/platform/registry/common/platform';
 import { Extensions as LanguageAssociationExtensions, ILanguageAssociationRegistry } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NotebookLanguage } from 'sql/workbench/common/constants';
+import { convertToInternalInteractiveKernelMetadata } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
@@ -221,6 +222,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	private _providers: string[];
 	private _standardKernels: IStandardKernelWithProvider[];
 	private _connectionProfile: IConnectionProfile;
+	private _notebookContents: azdata.nb.INotebookContents;
 	private _defaultKernel: azdata.nb.IKernelSpec;
 	public hasBootstrapped = false;
 	// Holds the HTML content for the editor when the editor discards this input and loads another
@@ -282,7 +284,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	public get contentLoader(): IContentLoader {
 		if (!this._contentLoader) {
 			let contentManager = this.instantiationService.createInstance(LocalContentManager);
-			this._contentLoader = this.instantiationService.createInstance(NotebookEditorContentLoader, this, contentManager);
+			this._contentLoader = this.instantiationService.createInstance(NotebookEditorContentLoader, this, contentManager, this._notebookContents);
 		}
 		return this._contentLoader;
 	}
@@ -318,6 +320,11 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		return this._connectionProfile;
 	}
 
+	public setNotebookContents(value: azdata.nb.INotebookContents) {
+		this._notebookContents = value;
+		(this.contentLoader as NotebookEditorContentLoader).notebookContents = value;
+	}
+
 	public get standardKernels(): IStandardKernelWithProvider[] {
 		return this._standardKernels;
 	}
@@ -351,7 +358,8 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 				connectionProviderIds: kernel.connectionProviderIds,
 				name: kernel.name,
 				displayName: kernel.displayName,
-				notebookProvider: kernel.notebookProvider
+				notebookProvider: kernel.notebookProvider,
+				supportedLanguages: kernel.supportedLanguages
 			});
 		});
 	}
@@ -445,7 +453,11 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 
 	private async assignProviders(): Promise<void> {
 		await this.extensionService.whenInstalledExtensionsRegistered();
-		let providerIds: string[] = getProvidersForFileName(this._title, this.notebookService);
+		let mode: string;
+		if (this._textInput instanceof UntitledTextEditorInput) {
+			mode = this._textInput.model.getMode();
+		}
+		let providerIds: string[] = getProvidersForFileName(this._title, this.notebookService, mode);
 		if (providerIds && providerIds.length > 0) {
 			this._providerId = providerIds.filter(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER)[0];
 			this._providers = providerIds;
@@ -455,7 +467,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 				this._standardKernels.push(...standardKernels);
 			}
 			let serializationProvider = await this.notebookService.getOrCreateSerializationManager(this._providerId, this._resource);
-			this._contentLoader = this.instantiationService.createInstance(NotebookEditorContentLoader, this, serializationProvider.contentManager);
+			this._contentLoader = this.instantiationService.createInstance(NotebookEditorContentLoader, this, serializationProvider.contentManager, this._notebookContents);
 		}
 	}
 
@@ -535,11 +547,22 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 export class NotebookEditorContentLoader implements IContentLoader {
 	constructor(
 		private notebookInput: NotebookInput,
-		private contentManager: azdata.nb.ContentManager) {
+		private contentManager: azdata.nb.ContentManager,
+		public notebookContents: azdata.nb.INotebookContents | undefined) {
 	}
 
 	async loadContent(): Promise<azdata.nb.INotebookContents> {
-		let notebookEditorModel = await this.notebookInput.resolve();
-		return this.contentManager.deserializeNotebook(notebookEditorModel.contentString);
+		let notebookContents: azdata.nb.INotebookContents;
+		if (this.notebookContents) {
+			notebookContents = this.notebookContents;
+		} else {
+			let notebookEditorModel = await this.notebookInput.resolve();
+			notebookContents = await this.contentManager.deserializeNotebook(notebookEditorModel.contentString);
+		}
+
+		// Special case .NET Interactive kernel spec to handle inconsistencies between notebook providers and jupyter kernel specs
+		convertToInternalInteractiveKernelMetadata(notebookContents.metadata);
+
+		return notebookContents;
 	}
 }

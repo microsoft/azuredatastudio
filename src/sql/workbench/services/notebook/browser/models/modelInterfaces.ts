@@ -179,15 +179,14 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * Restart the session.
 	 *
-	 * @returns A promise that resolves with whether the kernel has restarted.
+	 * @returns A promise that resolves when the kernel has restarted.
 	 *
 	 * #### Notes
-	 * If there is a running kernel, present a dialog.
-	 * If there is no kernel, we start a kernel with the last run
-	 * kernel name and resolves with `true`. If no kernel has been started,
-	 * this is a no-op, and resolves with `false`.
+	 * If there is an existing kernel, restart it and resolve.
+	 * If no kernel has been started, this is a no-op, and resolves.
+	 * Reject on error.
 	 */
-	restart(): Promise<boolean>;
+	restart(): Promise<void>;
 
 	/**
 	 * Change the session path.
@@ -389,7 +388,7 @@ export interface INotebookModel {
 	/**
 	 * Adds a cell to the index of the model
 	 */
-	addCell(cellType: CellType, index?: number): void;
+	addCell(cellType: CellType, index?: number, language?: string): void;
 
 	/**
 	 * Moves a cell up/down
@@ -500,7 +499,9 @@ export interface ITableUpdatedEvent {
 export interface ICellModel {
 	cellUri: URI;
 	id: string;
+	cellLabel: string;
 	readonly language: string;
+	readonly displayLanguage: string;
 	readonly cellGuid: string;
 	source: string | string[];
 	cellType: CellType;
@@ -530,6 +531,7 @@ export interface ICellModel {
 	isCollapsed: boolean;
 	isParameter: boolean;
 	isInjectedParameter: boolean;
+	readonly onLanguageChanged: Event<string>;
 	readonly onCollapseStateChanged: Event<boolean>;
 	readonly onParameterStateChanged: Event<boolean>;
 	readonly onCellModeChanged: Event<boolean>;
@@ -552,6 +554,13 @@ export interface ICellModel {
 	 * Returns the name of the attachment added to metadata.
 	 */
 	addAttachment(mimeType: string, base64Encoding: string, name: string): string;
+	/**
+	 * Updates the current cell attachments with the attachments provided.
+	 * If no attachments are passed in then it cleans up the current cell attachments and removes any ones that aren't being currently used in the specified source string.
+	 * @param source The new source string to check for attachments being used
+	 * @param attachments (Optional) The new attachments for the cell
+	 */
+	updateAttachmentsFromSource(source: string, attachments?: nb.ICellAttachments): void;
 	richTextCursorPosition: ICaretPosition;
 	markdownCursorPosition: IPosition;
 	/**

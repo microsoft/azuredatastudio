@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type * as vscode from 'vscode';
+import type * as azdata from 'azdata';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { INotebookKernelDto2 } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -14,12 +15,14 @@ import { URI } from 'vs/base/common/uri';
 import { NotebookCellExecutionTaskState } from 'vs/workbench/api/common/extHostNotebookKernels';
 import { asArray } from 'vs/base/common/arrays';
 import { convertToADSCellOutput } from 'sql/workbench/api/common/notebooks/notebookUtils';
-import { CancellationToken } from 'vs/base/common/cancellation';
+import { CancellationTokenSource } from 'vs/base/common/cancellation';
 
 type SelectionChangedEvent = { selected: boolean, notebook: vscode.NotebookDocument; };
 type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };
 type ExecutionHandler = (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>;
+type LanguagesHandler = (languages: string[]) => void;
 type InterruptHandler = (notebook: vscode.NotebookDocument) => void | Promise<void>;
+type GetDocHandler = (notebookUri: URI) => azdata.nb.NotebookDocument;
 
 /**
  * A VS Code Notebook Controller that is used as part of converting VS Code notebook extension APIs into ADS equivalents.
@@ -34,14 +37,17 @@ export class ADSNotebookController implements vscode.NotebookController {
 	private readonly _languagesAdded = new Deferred<void>();
 	private readonly _executionHandlerAdded = new Deferred<void>();
 
+	private readonly _execMap: Map<string, ADSNotebookCellExecution> = new Map();
+
 	constructor(
 		private _extension: IExtensionDescription,
 		private _id: string,
 		private _viewType: string,
 		private _label: string,
-		private _addLanguagesHandler: (providerId, languages) => void,
 		private _extHostNotebookDocumentsAndEditors: ExtHostNotebookDocumentsAndEditors,
-		private _handler?: ExecutionHandler,
+		private _languagesHandler: LanguagesHandler,
+		private _getDocHandler: GetDocHandler,
+		private _execHandler?: ExecutionHandler,
 		preloads?: vscode.NotebookRendererScript[]
 	) {
 		this._kernelData = {
@@ -52,7 +58,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 			label: this._label || this._extension.identifier.value,
 			preloads: preloads ? preloads.map(extHostTypeConverters.NotebookRendererScript.from) : []
 		};
-		if (this._handler) {
+		if (this._execHandler) {
 			this._executionHandlerAdded.resolve();
 		}
 	}
@@ -107,7 +113,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 
 	public set supportedLanguages(value: string[]) {
 		this._kernelData.supportedLanguages = value;
-		this._addLanguagesHandler(this._viewType, value);
+		this._languagesHandler(value);
 		this._languagesAdded.resolve();
 	}
 
@@ -124,11 +130,11 @@ export class ADSNotebookController implements vscode.NotebookController {
 	}
 
 	public get executeHandler(): ExecutionHandler {
-		return this._handler;
+		return this._execHandler;
 	}
 
 	public set executeHandler(value: ExecutionHandler) {
-		this._handler = value;
+		this._execHandler = value;
 		this._executionHandlerAdded.resolve();
 	}
 
@@ -141,8 +147,22 @@ export class ADSNotebookController implements vscode.NotebookController {
 		this._kernelData.supportsInterrupt = Boolean(value);
 	}
 
+	public getCellExecution(cellUri: URI): ADSNotebookCellExecution | undefined {
+		return this._execMap.get(cellUri.toString());
+	}
+
+	public removeCellExecution(cellUri: URI): void {
+		this._execMap.delete(cellUri.toString());
+	}
+
+	public getNotebookDocument(notebookUri: URI): azdata.nb.NotebookDocument {
+		return this._getDocHandler(notebookUri);
+	}
+
 	public createNotebookCellExecution(cell: vscode.NotebookCell): vscode.NotebookCellExecution {
-		return new ADSNotebookCellExecution(cell, this._extHostNotebookDocumentsAndEditors);
+		let exec = new ADSNotebookCellExecution(cell, this._extHostNotebookDocumentsAndEditors);
+		this._execMap.set(cell.document.uri.toString(), exec);
+		return exec;
 	}
 
 	public dispose(): void {
@@ -165,6 +185,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 	private _executionOrder: number;
 	private _state = NotebookCellExecutionTaskState.Init;
+	private _cancellationSource = new CancellationTokenSource();
 	constructor(private readonly _cell: vscode.NotebookCell, private readonly _extHostNotebookDocumentsAndEditors: ExtHostNotebookDocumentsAndEditors) {
 		this._executionOrder = this._cell.executionSummary?.executionOrder ?? -1;
 	}
@@ -173,8 +194,12 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 		return this._cell;
 	}
 
+	public get tokenSource(): vscode.CancellationTokenSource {
+		return this._cancellationSource;
+	}
+
 	public get token(): vscode.CancellationToken {
-		return CancellationToken.None;
+		return this._cancellationSource.token;
 	}
 
 	public get executionOrder(): number {

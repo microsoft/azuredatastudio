@@ -1,0 +1,8 @@
+{
+	"parserOptions": {
+		"project": "./extensions/machine-learning/tsconfig.json"
+	},
+	"rules": {
+		"@typescript-eslint/explicit-function-return-type": ["off"]
+	}
+}

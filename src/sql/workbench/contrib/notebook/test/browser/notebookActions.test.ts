@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as sinon from 'sinon';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
-import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, CreateNotebookViewAction, DashboardViewAction, kernelNotSupported, KernelsDropdown, msgChanging, NewNotebookAction, noKernelName, noParameterCell, noParametersInCell, NotebookViewAction, NotebookViewsActionProvider, RunAllCellsAction, RunParametersAction, TrustedAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, CreateNotebookViewAction, DashboardViewAction, kernelNotSupported, KernelsDropdown, msgChanging, NewNotebookAction, noKernelName, noParameterCell, noParametersInCell, NotebookViewAction, NotebookViewsActionProvider, RunAllCellsAction, RunParametersAction, TrustedAction, untitledNotSupported } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { ClientSessionStub, ContextViewProviderStub, NotebookComponentStub, NotebookModelStub, NotebookServiceStub, NotebookViewsStub, NotebookViewStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { ICellModel, INotebookModel, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -67,7 +67,8 @@ class TestNotebookModel extends NotebookModelStub {
 					name: 'StandardKernel1',
 					displayName: 'StandardKernel1',
 					connectionProviderIds: ['Kernel1 connection 1', 'Kernel1 connection2'],
-					notebookProvider: 'kernel provider1'
+					notebookProvider: 'kernel provider1',
+					supportedLanguages: ['python']
 				}
 			],
 			[
@@ -76,7 +77,8 @@ class TestNotebookModel extends NotebookModelStub {
 					name: 'StandardKernel2',
 					displayName: 'StandardKernel2',
 					connectionProviderIds: ['Kernel1 connection 2', 'Kernel1 connection2'],
-					notebookProvider: 'kernel provider2'
+					notebookProvider: 'kernel provider2',
+					supportedLanguages: ['python']
 				}
 			]
 		]
@@ -118,7 +120,7 @@ suite('Notebook Actions', function (): void {
 
 	let mockNotebookEditor: TypeMoq.Mock<INotebookEditor>;
 	let mockNotebookService: TypeMoq.Mock<INotebookService>;
-	const testUri = URI.parse('untitled');
+	const testUri = URI.parse('file://a/b/c/test.ipynb');
 	let testNotebookModel = new TestNotebookModel();
 
 	suiteSetup(function (): void {
@@ -530,6 +532,51 @@ suite('Notebook Actions', function (): void {
 
 		// Run Parameters Action
 		await action.run(testUri);
+
+		assert.strictEqual(actualMsg, expectedMsg);
+	});
+
+	test('Should inform user that run with parameters is not supported for untitled notebooks', async function (): Promise<void> {
+		// Kernels that are supported (Python, PySpark, PowerShell)
+		const untitledUri = URI.parse('untitled:Notebook-0');
+		const testContents: azdata.nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: ['x=2.0\n', 'y=5.0'],
+				metadata: { language: 'python' },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python',
+					language: 'python',
+					display_name: 'Python 3'
+				}
+			},
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
+		};
+		let expectedMsg: string = untitledNotSupported;
+
+		let actualMsg: string;
+		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
+		mockNotification.setup(n => n.notify(TypeMoq.It.isAny())).returns(notification => {
+			actualMsg = notification.message;
+			return undefined;
+		});
+
+		let quickInputService = new MockQuickInputService;
+		let testLanguageInfo: azdata.nb.ILanguageInfo = {
+			name: 'python',
+		};
+		let mockNotebookModel = new NotebookModelStub(testLanguageInfo, undefined, testContents);
+
+		let action = new RunParametersAction('TestId', true, untitledUri, quickInputService, mockNotebookService.object, mockNotification.object);
+
+		mockNotebookEditor.setup(x => x.model).returns(() => mockNotebookModel);
+
+		// Run Parameters Action
+		await action.run(untitledUri);
 
 		assert.strictEqual(actualMsg, expectedMsg);
 	});

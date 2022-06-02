@@ -39,8 +39,8 @@
         <target state="translated">Der Benutzer wies in AAD keinen eindeutigen Bezeichner auf.</target>
       </trans-unit>
       <trans-unit id="azure.responseError">
-        <source xml:lang="en">Token retrieval failed with an error. Open developer tools to view the error</source>
-        <target state="translated">Fehler beim Tokenabruf. Öffnen Sie die Entwicklertools, um den Fehler anzuzeigen.</target>
+        <source xml:lang="en">Token retrieval failed with an error. [Open developer tools]({0}) for more details.</source>
+        <target state="translated">Fehler beim Abrufen des Tokens. [Entwicklertools öffnen] ({0}) für weitere Details.</target>
       </trans-unit>
       <trans-unit id="azure.tenantNotFound">
         <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
@@ -795,13 +795,17 @@
         <source xml:lang="en">Should US National Azure cloud integration be enabled</source>
         <target state="translated">Hiermit wird festgelegt, ob die Integration der Azure-Cloud (USA, national) aktiviert werden soll.</target>
       </trans-unit>
+      <trans-unit id="config.loggingLevel">
+        <source xml:lang="en">[Optional] The verbosity of logging for the Azure Accounts extension.</source>
+        <target state="translated">[Optional] Die Ausführlichkeitsprotokollierung für die Azure-Konten-Erweiterung.</target>
+      </trans-unit>
       <trans-unit id="config.noSystemKeychain">
         <source xml:lang="en">Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.</source>
         <target state="translated">Hiermit wird die Keychain-Systemintegration deaktiviert. Die Anmeldeinformationen werden in einer Flatfile im Basisverzeichnis des Benutzers gespeichert.</target>
       </trans-unit>
       <trans-unit id="config.piiLogging">
-        <source xml:lang="en">Should Personally Identifiable Information (PII) be logged in the console view locally</source>
-        <target state="translated">Hiermit wird festgelegt, ob personenbezogene Informationen (PII) lokal in der Konsolenansicht protokolliert werden sollen.</target>
+        <source xml:lang="en">Should Personally Identifiable Information (PII) be logged in the Azure Accounts output channel and the output channel log file.</source>
+        <target state="translated">Hiermit wird festgelegt, ob personenbezogene Informationen (PII) im Ausgangskanal und in der Protokolldatei des Ausgangskanals von Azure-Konten protokolliert werden sollen.</target>
       </trans-unit>
     </body>
   </file>

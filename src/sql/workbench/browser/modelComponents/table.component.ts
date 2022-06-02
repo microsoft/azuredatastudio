@@ -34,7 +34,11 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { TableCellClickEventArgs } from 'sql/base/browser/ui/table/plugins/tableColumn';
 import { HyperlinkCellValue, HyperlinkColumn } from 'sql/base/browser/ui/table/plugins/hyperlinkColumn.plugin';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { ContextMenuColumn, ContextMenuCellValue } from 'sql/base/browser/ui/table/plugins/contextMenuColumn.plugin';
+import { IAction, Separator } from 'vs/base/common/actions';
+import { MenuItemAction, MenuRegistry } from 'vs/platform/actions/common/actions';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -47,11 +51,12 @@ enum ColumnType {
 	checkBox = 1,
 	button = 2,
 	icon = 3,
-	hyperlink = 4
+	hyperlink = 4,
+	contextMenu = 5
 }
 
-type TableCellInputDataType = string | azdata.IconColumnCellValue | azdata.ButtonColumnCellValue | azdata.HyperlinkColumnCellValue | undefined;
-type TableCellDataType = string | CssIconCellValue | ButtonCellValue | HyperlinkCellValue | undefined;
+type TableCellInputDataType = string | azdata.IconColumnCellValue | azdata.ButtonColumnCellValue | azdata.HyperlinkColumnCellValue | azdata.ContextMenuColumnCellValue | undefined;
+type TableCellDataType = string | CssIconCellValue | ButtonCellValue | HyperlinkCellValue | ContextMenuCellValue | undefined;
 
 @Component({
 	selector: 'modelview-table',
@@ -68,6 +73,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	private _checkboxColumns: CheckboxSelectColumn<{}>[] = [];
 	private _buttonColumns: ButtonColumn<{}>[] = [];
 	private _hyperlinkColumns: HyperlinkColumn<{}>[] = [];
+	private _contextMenuColumns: ContextMenuColumn<{}>[] = [];
 	private _pluginsRegisterStatus: boolean[] = [];
 	private _filterPlugin: HeaderFilter<Slick.SlickData>;
 	private _onCheckBoxChanged = new Emitter<ICheckboxCellActionEventArgs>();
@@ -82,7 +88,10 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(ILogService) logService: ILogService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService) {
+		@Inject(IContextViewService) private contextViewService: IContextViewService,
+		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService
+	) {
 		super(changeRef, el, logService);
 	}
 
@@ -101,6 +110,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 					mycolumns.push(TableComponent.createIconColumn(col));
 				} else if (col.type === ColumnType.hyperlink) {
 					this.createHyperlinkPlugin(col);
+				} else if (col.type === ColumnType.contextMenu) {
+					this.createContextMenuButtonPlugin(col);
 				}
 				else if (col.value) {
 					mycolumns.push(TableComponent.createTextColumn(col as azdata.TableColumn));
@@ -195,6 +206,16 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 										url: hyperlinkValue.url
 									};
 									break;
+								}
+								break;
+							case ColumnType.contextMenu:
+								if (val) {
+									const contextMenuValue = <azdata.ContextMenuColumnCellValue>val;
+									cellValue = <ContextMenuCellValue>{
+										title: contextMenuValue.title,
+										commands: contextMenuValue.commands,
+										context: contextMenuValue.context
+									};
 								}
 								break;
 							default:
@@ -355,6 +376,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		Object.keys(this._checkboxColumns).forEach(col => this.registerPlugins(col, this._checkboxColumns[col]));
 		Object.keys(this._buttonColumns).forEach(col => this.registerPlugins(col, this._buttonColumns[col]));
 		Object.keys(this._hyperlinkColumns).forEach(col => this.registerPlugins(col, this._hyperlinkColumns[col]));
+		Object.keys(this._contextMenuColumns).forEach(col => this.registerPlugins(col, this._contextMenuColumns[col]));
 
 		if (this.headerFilter === true) {
 			this.registerFilterPlugin();
@@ -483,7 +505,62 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 	}
 
-	private registerPlugins(col: string, plugin: CheckboxSelectColumn<{}> | ButtonColumn<{}> | HyperlinkColumn<{}>): void {
+
+	private createContextMenuButtonPlugin(col: azdata.ContextMenuColumn) {
+		if (!this._contextMenuColumns[col.value]) {
+			this._contextMenuColumns[col.value] = new ContextMenuColumn({
+				title: col.value,
+				width: col.width,
+				field: col.value,
+				name: col.name,
+				resizable: col.resizable
+			});
+		}
+
+		this._register(
+			this._contextMenuColumns[col.value].onClick((state) => {
+				const cellValue = state.item[col.value];
+				const actions: IAction[] = [];
+				cellValue.commands.forEach((c, i) => {
+					if (typeof c === 'string') {
+						actions.push(this.createMenuItem(c));
+					} else {
+						if (actions.length !== 0) {
+							actions.push(new Separator());
+						}
+						actions.push(...c.map(cmd => {
+							return this.createMenuItem(cmd);
+						}));
+						if (i !== cellValue.commands.length - 1) {
+							actions.push(new Separator());
+						}
+					}
+				});
+
+				this.contextMenuService.showContextMenu({
+					getAnchor: () => {
+						return {
+							x: state.position.x,
+							y: state.position.y
+						};
+					},
+					getActions: () => actions,
+					getActionsContext: () => cellValue.context,
+					onHide: () => {
+						this.focus();
+					}
+				});
+			})
+		);
+	}
+
+	private createMenuItem(commandId: string): MenuItemAction {
+		const command = MenuRegistry.getCommand(commandId);
+		return this.instantiationService.createInstance(MenuItemAction, command, undefined, { shouldForwardArgs: true });
+	}
+
+
+	private registerPlugins(col: string, plugin: CheckboxSelectColumn<{}> | ButtonColumn<{}> | HyperlinkColumn<{}> | ContextMenuColumn<{}>): void {
 
 		const index = 'index' in plugin ? plugin.index : this.columns?.findIndex(x => x === col || ('value' in x && x['value'] === col));
 		if (index >= 0) {

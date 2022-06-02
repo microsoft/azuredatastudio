@@ -18,37 +18,48 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 
 const NewTable: string = localize('tableDesigner.newTable', "New Table");
 
+enum TableIcon {
+	Basic = 'Basic',
+	Temporal = 'Temporal',
+	GraphEdge = 'GraphEdge',
+	GraphNode = 'GraphNode'
+}
 export class TableDesignerInput extends EditorInput {
 	public static ID: string = 'workbench.editorinputs.tableDesignerInput';
 	private _designerComponentInput: TableDesignerComponentInput;
 	private _title: string;
 	private _name: string;
+	private _tableIcon: azdata.designers.TableIcon;
+	private _tableIconMap: Map<TableIcon, string> = new Map<TableIcon, string>([
+		[TableIcon.Basic, 'table-basic'],
+		[TableIcon.Temporal, 'table-temporal'],
+		[TableIcon.GraphEdge, 'table-graphedge'],
+		[TableIcon.GraphNode, 'table-graphnode']
+	]);
+
 
 	constructor(
 		private _provider: TableDesignerProvider,
-		private _tableInfo: azdata.designers.TableInfo,
+		tableInfo: azdata.designers.TableInfo,
+		telemetryInfo: { [key: string]: string },
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
-		@IEditorService editorService: IEditorService,
+		@IEditorService private readonly _editorService: IEditorService,
 		@INotificationService private readonly _notificationService: INotificationService) {
 		super();
-		this._designerComponentInput = this._instantiationService.createInstance(TableDesignerComponentInput, this._provider, this._tableInfo);
+		this._designerComponentInput = this._instantiationService.createInstance(TableDesignerComponentInput, this._provider, tableInfo, telemetryInfo);
 		this._register(this._designerComponentInput.onStateChange((e) => {
+			if (e.previousState.pendingAction === 'publish') {
+				this.setEditorLabel();
+				this._onDidChangeLabel.fire();
+			}
 			if (e.currentState.dirty !== e.previousState.dirty) {
 				this._onDidChangeDirty.fire();
 			}
 		}));
-		if (this._tableInfo.isNewTable) {
-			const existingNames = editorService.editors.map(editor => editor.getName());
-			// Find the next available unique name for the new table designer
-			let idx = 1;
-			do {
-				this._name = `${NewTable} ${idx}`;
-				idx++;
-			} while (existingNames.indexOf(this._name) !== -1);
-		} else {
-			this._name = `${this._tableInfo.schema}.${this._tableInfo.name}`;
-		}
-		this._title = `${this._tableInfo.server}.${this._tableInfo.database} - ${this._name}`;
+
+		// default to basic if icon is null (new table) or no sub type
+		this._tableIcon = tableInfo.tableIcon ? tableInfo.tableIcon as TableIcon : TableIcon.Basic;
+		this.setEditorLabel();
 	}
 
 	get typeId(): string {
@@ -58,7 +69,7 @@ export class TableDesignerInput extends EditorInput {
 	public get resource(): URI {
 		return URI.from({
 			scheme: Schemas.tableDesigner,
-			path: 'table-designer'
+			path: this._tableIconMap.get(this._tableIcon)
 		});
 	}
 
@@ -79,7 +90,7 @@ export class TableDesignerInput extends EditorInput {
 	}
 
 	override isSaving(): boolean {
-		return this._designerComponentInput.pendingAction === 'save';
+		return this._designerComponentInput.pendingAction === 'publish';
 	}
 
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
@@ -98,11 +109,27 @@ export class TableDesignerInput extends EditorInput {
 	override matches(otherInput: any): boolean {
 		return otherInput instanceof TableDesignerInput
 			&& this._provider.providerId === otherInput._provider.providerId
-			&& this._tableInfo.id === otherInput._tableInfo.id;
+			&& this._designerComponentInput.tableInfo.id === otherInput._designerComponentInput.tableInfo.id;
 	}
 
 	override dispose(): void {
 		super.dispose();
-		this._provider.disposeTableDesigner(this._tableInfo).then(undefined, err => onUnexpectedError(err));
+		this._provider.disposeTableDesigner(this._designerComponentInput.tableInfo).then(undefined, err => onUnexpectedError(err));
+	}
+
+	private setEditorLabel(): void {
+		const tableInfo = this._designerComponentInput.tableInfo;
+		if (tableInfo.isNewTable) {
+			const existingNames = this._editorService.editors.map(editor => editor.getName());
+			// Find the next available unique name for the new table designer
+			let idx = 1;
+			do {
+				this._name = `${NewTable} ${idx}`;
+				idx++;
+			} while (existingNames.indexOf(this._name) !== -1);
+		} else {
+			this._name = `${tableInfo.schema}.${tableInfo.name}`;
+		}
+		this._title = `${tableInfo.server}.${tableInfo.database} - ${this._name}`;
 	}
 }

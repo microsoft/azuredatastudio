@@ -2,8 +2,9 @@
 Needs Logs:
   comment: "We need more info to debug your particular issue. If you could attach your logs to the issue (ensure no private data is in them), it would help us fix the issue much faster.
 
+First open the Settings page, find the `Mssql: Tracing Level` setting and change that to `All` then restart ADS and repro your issue.
 
-There are two types of logs to collect:
+Next there are two types of logs to collect:
 
 
 **Console Logs**
@@ -26,6 +27,22 @@ There are two types of logs to collect:
 - Run the command: **`Developer: Open Logs Folder`**
 
 - This will open the log folder locally. Please zip up this folder and attach it to the issue."
+
+# actions for Needs Logs - Azure label
+Needs Logs - Azure:
+  comment: "We need more info to debug your Azure Active Directory issue. If you could attach your logs to the issue (ensure no private data is in them), it would help us fix the issue much faster.
+
+- In the settings menu, find the setting titled `Azure: Logging Level` and select the `Verbose` option
+
+- Run the process that produces your error
+
+- Open command palette (Click **View** -> **Command Palette**)
+
+- Run the command: **`Developer: Open Logs Folder`**
+
+- Follow this path to find the Azure Accounts log file: `[default log folder]/exthost1/output_logging_[earliest timestamp]/#-Azure Acounts.log`
+
+- Please attach the Azure-Accounts.log file to the issue."
 
 # actions for Out of Scope label
 Out of Scope:

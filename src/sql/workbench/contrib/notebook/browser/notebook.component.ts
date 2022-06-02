@@ -55,6 +55,9 @@ import { MaskedLabeledMenuItemActionItem } from 'sql/platform/actions/browser/me
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Emitter } from 'vs/base/common/event';
 import { RedoCommand, UndoCommand } from 'vs/editor/browser/editorExtensions';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { debounce } from 'vs/base/common/decorators';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 const PRIORITY = 105;
@@ -75,7 +78,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	@Input() _views: NotebookViewsExtension;
 
 	protected _actionBar: Taskbar;
-	protected isLoading: boolean;
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 	private _trustedAction: TrustedAction;
 	private _runAllCellsAction: RunAllCellsAction;
@@ -83,7 +85,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _scrollTop: number;
 	private _navProvider: INavigationProvider;
 	private navigationResult: nb.NavigationResult;
-	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
 	private _onScroll = new Emitter<void>();
 	// Don't show the right hand toolbar actions if the notebook is created in a diff editor.
@@ -109,11 +110,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
-		this.isLoading = true;
 		this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
-		this._register(this._configurationService.onDidChangeConfiguration(e => {
-			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
-		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		}));
@@ -134,6 +131,54 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	ngOnInit() {
+		// We currently have to hook this onto window because the Notebook component currently doesn't support having document focus
+		// on its elements (we have a "virtual" focus that is updated as users click or navigate through cells). So some of the keyboard
+		// events we care about are fired when the document focus is on something else - typically the root window.
+		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+			// For DownArrow, UpArrow, Enter, Escape (unselecting active cell) - Make sure that the current active element is an ancestor - this is to prevent us from handling events when the focus is
+			// on some other dialog or part of the app.
+			// For Escape (exiting edit mode)- the focused element is the div.notebook-preview or textarea.inputarea of the cell, so we need to make sure that it is a descendant of the current active cell
+			//  on the current active editor.
+			const activeCellElement = this.container.nativeElement.querySelector(`.editor-group-container.active .notebook-cell.active`);
+			let handled = false;
+			if ((DOM.isAncestor(this.container.nativeElement, document.activeElement) || document.activeElement === activeCellElement) && this.isActive() && this.model.activeCell) {
+				const event = new StandardKeyboardEvent(e);
+				if (!this.model.activeCell?.isEditMode) {
+					if (event.keyCode === KeyCode.DownArrow) {
+						let next = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
+						this.navigateToCell(this.cells[next]);
+						handled = true;
+					} else if (event.keyCode === KeyCode.UpArrow) {
+						let index = this.findCellIndex(this.model.activeCell);
+						if (index === 0) {
+							index = this.cells.length;
+						}
+						this.navigateToCell(this.cells[--index]);
+						handled = true;
+					}
+					else if (event.keyCode === KeyCode.Enter) {
+						this.toggleEditMode();
+						handled = true;
+					}
+					else if (event.keyCode === KeyCode.Escape) {
+						// unselects active cell and removes the focus from code cells
+						this.unselectActiveCell();
+						(document.activeElement as HTMLElement).blur();
+						handled = true;
+					}
+				}
+			} else if (DOM.isAncestor(document.activeElement, activeCellElement) && this.isActive() && this.model.activeCell) {
+				const event = new StandardKeyboardEvent(e);
+				if (event.keyCode === KeyCode.Escape) {
+					// first time hitting escape removes the cursor from code cell and changes toolbar in text cells and changes edit mode to false
+					this.toggleEditMode();
+					handled = true;
+				}
+			}
+			if (handled) {
+				DOM.EventHelper.stop(e);
+			}
+		}));
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
@@ -238,14 +283,33 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		toolbarEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
-	public selectCell(cell: ICellModel, event?: Event) {
-		if (event) {
-			event.stopPropagation();
-		}
+	@debounce(20)
+	public navigateToCell(cell: ICellModel) {
+		this.selectCell(cell);
+		this.scrollToActiveCell();
+	}
+
+	public selectCell(cell: ICellModel) {
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
 			this.model.updateActiveCell(cell);
-			this.detectChanges();
 		}
+	}
+
+	private scrollToActiveCell(): void {
+		const activeCellElement = document.querySelector(`.editor-group-container.active .notebook-cell.active`);
+		(activeCellElement as HTMLElement).focus();
+		activeCellElement.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+	}
+
+	private toggleEditMode(): void {
+		let selectedCell: TextCellComponent | CodeCellComponent = undefined;
+		if (this.model.activeCell.cellType !== CellTypes.Code) {
+			selectedCell = this.textCells.find(c => c.cellModel.id === this.activeCellId);
+		} else {
+			selectedCell = this.codeCells.find(c => c.cellModel.id === this.activeCellId);
+		}
+		selectedCell.toggleEditMode();
+		this.setActiveCellEditActionMode(selectedCell.cellModel.isEditMode);
 	}
 
 	//Saves scrollTop value on scroll change
@@ -254,21 +318,41 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.model.onScroll.fire();
 	}
 
+	public clickOffCell(event?: MouseEvent) {
+		event?.stopPropagation();
+		this.unselectActiveCell();
+	}
+
+	public clickOnCell(cell: ICellModel, event?: MouseEvent) {
+		event?.stopPropagation();
+		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
+			this.selectCell(cell);
+			if (cell.cellType === CellTypes.Code) {
+				cell.isEditMode = true;
+			}
+		}
+	}
+
 	public unselectActiveCell() {
 		this.model.updateActiveCell(undefined);
-		this.detectChanges();
+	}
+
+	public updateActiveCell(cell: ICellModel) {
+		this._model.updateActiveCell(cell);
 	}
 
 	// Handles double click to edit icon change
 	// See textcell.component.ts for changing edit behavior
-	public enableActiveCellIconOnDoubleClick() {
+	public enableActiveCellEditIconOnDoubleClick() {
 		if (this.doubleClickEditEnabled) {
-			const toolbarComponent = (<CellToolbarComponent>this.cellToolbar.first);
-			const toolbarEditCellAction = toolbarComponent.getEditCellAction();
-			if (!toolbarEditCellAction.editMode) {
-				toolbarEditCellAction.editMode = !toolbarEditCellAction.editMode;
-			}
+			this.setActiveCellEditActionMode(true);
 		}
+	}
+
+	public setActiveCellEditActionMode(editMode: boolean) {
+		const toolbarComponent = (<CellToolbarComponent>this.cellToolbar.first);
+		const toolbarEditCellAction = toolbarComponent.getEditCellAction();
+		toolbarEditCellAction.editMode = editMode;
 	}
 
 	// Add cell based on cell type
@@ -348,7 +432,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					}
 				} else {
 					this.setViewInErrorState(localize('displayFailed', "Could not display contents: {0}", getErrorMessage(error)));
-					this.setLoading(false);
 					this._modelReadyDeferred.reject(error);
 					this.notebookService.addNotebookEditor(this);
 				}
@@ -356,21 +439,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
-	private setLoading(isLoading: boolean): void {
-		this.isLoading = isLoading;
-		this.detectChanges();
-	}
-
 	private async registerModel(): Promise<void> {
 		this._register(this._model.onError((errInfo: INotification) => this.handleModelError(errInfo)));
 		this._register(this._model.contentChanged((change) => this.handleContentChanged(change)));
 		this._register(this._model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider)));
 		this._register(this._model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs)));
+		this._register(this._model.onActiveCellChanged(() => this.detectChanges()));
 		this._register(this._model.onCellTypeChanged(() => this.detectChanges()));
 		this._register(this._model.layoutChanged(() => this.detectChanges()));
 		this._register(this.model.onScroll.event(() => this._onScroll.fire()));
 
-		this.setLoading(false);
 		// Check if URI fragment is present; if it is, navigate to section by default
 		this.navigateToSectionIfURIFragmentExists();
 		this.updateToolbarComponents();
@@ -421,159 +499,104 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	protected initActionBar(): void {
-		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
+		let kernelContainer = document.createElement('li');
+		let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
+		kernelDropdown.render(kernelContainer);
+		attachSelectBoxStyler(kernelDropdown, this.themeService);
 
-		if (this.previewFeaturesEnabled) {
-			let kernelContainer = document.createElement('li');
-			let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
-			kernelDropdown.render(kernelContainer);
-			attachSelectBoxStyler(kernelDropdown, this.themeService);
+		let attachToContainer = document.createElement('li');
+		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
+			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService, this._configurationService);
+		attachToDropdown.render(attachToContainer);
+		attachSelectBoxStyler(attachToDropdown, this.themeService);
 
-			let attachToContainer = document.createElement('li');
-			let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
-				this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService, this._configurationService);
-			attachToDropdown.render(attachToContainer);
-			attachSelectBoxStyler(attachToDropdown, this.themeService);
+		let spacerElement = document.createElement('li');
+		spacerElement.style.marginLeft = 'auto';
 
-			let spacerElement = document.createElement('li');
-			spacerElement.style.marginLeft = 'auto';
+		let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'masked-pseudo code');
 
-			let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'masked-pseudo code');
+		let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codePreview', "Code cell"), 'masked-pseudo code');
+		addCodeCellButton.cellType = CellTypes.Code;
 
-			let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codePreview', "Code cell"), 'masked-pseudo code');
-			addCodeCellButton.cellType = CellTypes.Code;
+		let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('textPreview', "Text cell"), 'masked-pseudo markdown');
+		addTextCellButton.cellType = CellTypes.Markdown;
 
-			let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('textPreview', "Text cell"), 'masked-pseudo markdown');
-			addTextCellButton.cellType = CellTypes.Markdown;
+		this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'masked-pseudo start-outline');
 
-			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'masked-pseudo start-outline');
+		let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', true);
 
-			let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', true);
+		let clearResultsButton = this.instantiationService.createInstance(ClearAllOutputsAction, 'notebook.ClearAllOutputs', true);
 
-			let clearResultsButton = this.instantiationService.createInstance(ClearAllOutputsAction, 'notebook.ClearAllOutputs', true);
+		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', true);
+		this._trustedAction.enabled = false;
 
-			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', true);
-			this._trustedAction.enabled = false;
+		let runParametersAction = this.instantiationService.createInstance(RunParametersAction, 'notebook.runParameters', true, this._notebookParams.notebookUri);
 
-			let runParametersAction = this.instantiationService.createInstance(RunParametersAction, 'notebook.runParameters', true, this._notebookParams.notebookUri);
+		let taskbar = <HTMLElement>this.toolbar.nativeElement;
+		this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
+		this._actionBar.context = this._notebookParams.notebookUri;
+		taskbar.classList.add('in-preview');
 
-			let taskbar = <HTMLElement>this.toolbar.nativeElement;
-			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
-			this._actionBar.context = this._notebookParams.notebookUri;
-			taskbar.classList.add('in-preview');
+		let buttonDropdownContainer = DOM.$('li.action-item');
+		buttonDropdownContainer.setAttribute('role', 'presentation');
+		let dropdownMenuActionViewItem = new DropdownMenuActionViewItem(
+			addCellsButton,
+			[addCodeCellButton, addTextCellButton],
+			this.contextMenuService,
+			undefined,
+			this._actionBar.actionRunner,
+			undefined,
+			'codicon masked-pseudo masked-pseudo-after add-new dropdown-arrow',
+			localize('addCell', "Cell"),
+			undefined
+		);
+		dropdownMenuActionViewItem.render(buttonDropdownContainer);
+		dropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
 
-			let buttonDropdownContainer = DOM.$('li.action-item');
-			buttonDropdownContainer.setAttribute('role', 'presentation');
-			let dropdownMenuActionViewItem = new DropdownMenuActionViewItem(
-				addCellsButton,
-				[addCodeCellButton, addTextCellButton],
+		let viewsDropdownContainer;
+		if (this._configurationService.getValue<boolean>('notebookViews.enabled')) {
+			let viewsContainer = document.createElement('li');
+			let viewsActionsProvider = new NotebookViewsActionProvider(viewsContainer, this.views, this.modelReady, this.notebookService, this.notificationService, this.instantiationService);
+			let viewsButton = new Action('notebook.OpenViews', localize('views', "Views"), 'notebook-button masked-pseudo code');
+			viewsDropdownContainer = DOM.$('li.action-item');
+			viewsDropdownContainer.setAttribute('role', 'presentation');
+			let viewsDropdownMenuActionViewItem = new DropdownMenuActionViewItem(
+				viewsButton,
+				viewsActionsProvider,
 				this.contextMenuService,
 				undefined,
 				this._actionBar.actionRunner,
 				undefined,
-				'codicon masked-pseudo masked-pseudo-after add-new dropdown-arrow',
-				localize('addCell', "Cell"),
+				'codicon notebook-button masked-pseudo masked-pseudo-after icon-dashboard-view dropdown-arrow',
+				localize('editor', "Editor"),
 				undefined
 			);
-			dropdownMenuActionViewItem.render(buttonDropdownContainer);
-			dropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
+			viewsDropdownMenuActionViewItem.render(viewsDropdownContainer);
+			viewsDropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
+		}
 
-			let viewsDropdownContainer;
-			if (this._configurationService.getValue<boolean>('notebookViews.enabled')) {
-				let viewsContainer = document.createElement('li');
-				let viewsActionsProvider = new NotebookViewsActionProvider(viewsContainer, this.views, this.modelReady, this.notebookService, this.notificationService, this.instantiationService);
-				let viewsButton = new Action('notebook.OpenViews', localize('views', "Views"), 'notebook-button masked-pseudo code');
-				viewsDropdownContainer = DOM.$('li.action-item');
-				viewsDropdownContainer.setAttribute('role', 'presentation');
-				let viewsDropdownMenuActionViewItem = new DropdownMenuActionViewItem(
-					viewsButton,
-					viewsActionsProvider,
-					this.contextMenuService,
-					undefined,
-					this._actionBar.actionRunner,
-					undefined,
-					'codicon notebook-button masked-pseudo masked-pseudo-after icon-dashboard-view dropdown-arrow',
-					localize('editor', "Editor"),
-					undefined
-				);
-				viewsDropdownMenuActionViewItem.render(viewsDropdownContainer);
-				viewsDropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
-			}
-
-			if (this._showToolbarActions) {
-				this._actionBar.setContent([
-					{ element: buttonDropdownContainer },
-					{ action: this._runAllCellsAction },
-					{ element: Taskbar.createTaskbarSeparator() },
-					{ element: kernelContainer },
-					{ element: attachToContainer },
-					{ element: spacerElement },
-					{ element: viewsDropdownContainer },
-					{ action: collapseCellsAction },
-					{ action: clearResultsButton },
-					{ action: this._trustedAction },
-					{ action: runParametersAction },
-				]);
-			} else {
-				this._actionBar.setContent([
-					{ element: buttonDropdownContainer },
-					{ action: this._runAllCellsAction },
-					{ element: Taskbar.createTaskbarSeparator() },
-					{ element: kernelContainer },
-					{ element: attachToContainer },
-				]);
-			}
+		if (this._showToolbarActions) {
+			this._actionBar.setContent([
+				{ element: buttonDropdownContainer },
+				{ action: this._runAllCellsAction },
+				{ element: Taskbar.createTaskbarSeparator() },
+				{ element: kernelContainer },
+				{ element: attachToContainer },
+				{ element: spacerElement },
+				{ element: viewsDropdownContainer },
+				{ action: collapseCellsAction },
+				{ action: clearResultsButton },
+				{ action: this._trustedAction },
+				{ action: runParametersAction },
+			]);
 		} else {
-			let kernelContainer = document.createElement('div');
-			let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
-			kernelDropdown.render(kernelContainer);
-			attachSelectBoxStyler(kernelDropdown, this.themeService);
-
-			let attachToContainer = document.createElement('div');
-			let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
-				this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService, this._configurationService);
-			attachToDropdown.render(attachToContainer);
-			attachSelectBoxStyler(attachToDropdown, this.themeService);
-
-			let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('code', "Code"), 'icon-add');
-			addCodeCellButton.cellType = CellTypes.Code;
-
-			let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('text', "Text"), 'icon-add');
-			addTextCellButton.cellType = CellTypes.Markdown;
-
-			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run Cells"), 'icon-run-cells');
-
-			let clearResultsButton = this.instantiationService.createInstance(ClearAllOutputsAction, 'notebook.ClearAllOutputs', false);
-
-			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', false);
-			this._trustedAction.enabled = false;
-
-			let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', false);
-
-			let taskbar = <HTMLElement>this.toolbar.nativeElement;
-			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
-			this._actionBar.context = this._notebookParams.notebookUri;
-
-			if (this._showToolbarActions) {
-				this._actionBar.setContent([
-					{ action: addCodeCellButton },
-					{ action: addTextCellButton },
-					{ element: kernelContainer },
-					{ element: attachToContainer },
-					{ action: this._trustedAction },
-					{ action: this._runAllCellsAction },
-					{ action: clearResultsButton },
-					{ action: collapseCellsAction },
-				]);
-			} else {
-				this._actionBar.setContent([
-					{ action: addCodeCellButton },
-					{ action: addTextCellButton },
-					{ element: kernelContainer },
-					{ element: attachToContainer },
-					{ action: this._runAllCellsAction },
-				]);
-			}
+			this._actionBar.setContent([
+				{ element: buttonDropdownContainer },
+				{ action: this._runAllCellsAction },
+				{ element: Taskbar.createTaskbarSeparator() },
+				{ element: kernelContainer },
+				{ element: attachToContainer },
+			]);
 		}
 	}
 
@@ -618,7 +641,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		// This is similar behavior that exists in MenuItemActionItem
 		if (action instanceof MenuItemAction) {
 
-			if ((action.item.id.includes('jupyter.cmd') && this.previewFeaturesEnabled) || action.item.id.includes('mssql')) {
+			if (action.item.id.includes('jupyter.cmd') || action.item.id.includes('mssql')) {
 				action.tooltip = action.label;
 				action.label = '';
 			}

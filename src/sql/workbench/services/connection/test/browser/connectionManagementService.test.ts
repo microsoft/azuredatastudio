@@ -29,7 +29,7 @@ import * as sinon from 'sinon';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
-import { TestEnvironmentService, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { ILogService, NullLogService } from 'vs/platform/log/common/log';
@@ -94,7 +94,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionDialogService = TypeMoq.Mock.ofType(TestConnectionDialogService);
 		connectionStore = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
 		workbenchEditorService = TypeMoq.Mock.ofType(TestEditorService);
-		connectionStatusManager = new ConnectionStatusManager(capabilitiesService, new NullLogService(), TestEnvironmentService, new TestNotificationService());
+		connectionStatusManager = new ConnectionStatusManager(capabilitiesService, new NullLogService());
 		mssqlConnectionProvider = TypeMoq.Mock.ofType(TestConnectionProvider);
 		let resourceProviderStub = new TestResourceProvider();
 		resourceProviderStubMock = TypeMoq.Mock.ofInstance(resourceProviderStub);
@@ -781,8 +781,8 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		await connect(uri, options, true, profile);
 		// invalid uri check.
-		assert.strictEqual(connectionManagementService.getConnection(badString), undefined);
-		let returnedProfile = connectionManagementService.getConnection(uri);
+		assert.strictEqual(connectionManagementService.getConnectionProfile(badString), undefined);
+		let returnedProfile = connectionManagementService.getConnectionProfile(uri);
 		assert.strictEqual(returnedProfile.groupFullName, profile.groupFullName);
 		assert.strictEqual(returnedProfile.groupId, profile.groupId);
 	});

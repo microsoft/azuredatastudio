@@ -5,7 +5,8 @@
 
 declare module 'azurecore' {
 	import * as azdata from 'azdata';
-	import { azureResource } from 'azureResource';
+	import { TreeDataProvider } from 'vscode';
+	import { BlobItem } from '@azure/storage-blob';
 
 	/**
 	 * Covers defining what the azurecore extension exports to other extensions
@@ -121,7 +122,7 @@ declare module 'azurecore' {
 		/**
 		 * Information that describes the Azure Kusto resource
 		 */
-		 azureKustoResource?: Resource;
+		azureKustoResource?: Resource;
 
 		/**
 		 * Information that describes the Azure Log Analytics resource
@@ -129,9 +130,14 @@ declare module 'azurecore' {
 		azureLogAnalyticsResource?: Resource;
 
 		/**
-		 * Information that describes the Azure Storage resourceI
+		 * Information that describes the Azure Storage resource
 		 */
 		azureStorageResource?: Resource;
+
+		/**
+		 * Information that describes the Power BI resource
+		 */
+		powerBiResource?: Resource;
 
 		/**
 		 * A list of tenant IDs to authenticate against. If defined, then these IDs will be used
@@ -263,6 +269,12 @@ declare module 'azurecore' {
 	}
 
 	export interface IExtension {
+		/**
+		 * Gets the list of subscriptions for the specified AzureAccount
+		 * @param account The account to get the subscriptions for
+		 * @param ignoreErrors If true any errors are not thrown and instead collected and returned as part of the result
+		 * @param selectedOnly Whether to only list subscriptions the user has selected to filter to for this account
+		 */
 		getSubscriptions(account?: AzureAccount, ignoreErrors?: boolean, selectedOnly?: boolean): Promise<GetSubscriptionsResult>;
 		getResourceGroups(account?: AzureAccount, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<GetResourceGroupsResult>;
 		getLocations(account?: AzureAccount, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<GetLocationsResult>;
@@ -314,4 +326,152 @@ declare module 'azurecore' {
 	export type AzureRestResponse = { response: any, errors: Error[] };
 	export type GetBlobsResult = { blobs: azureResource.Blob[], errors: Error[] };
 	export type GetStorageAccountAccessKeyResult = { keyName1: string, keyName2: string, errors: Error[] };
+
+	export namespace azureResource {
+
+		/**
+		 * AzureCore core extension supports following resource types of Azure Resource Graph.
+		 * To add more resources, please refer this guide: https://docs.microsoft.com/en-us/azure/governance/resource-graph/reference/supported-tables-resources
+		 */
+		export const enum AzureResourceType {
+			resourceGroup = 'microsoft.resources/subscriptions/resourcegroups',
+			sqlServer = 'microsoft.sql/servers',
+			sqlDatabase = 'microsoft.sql/servers/databases',
+			sqlManagedInstance = 'microsoft.sql/managedinstances',
+			azureArcSqlManagedInstance = 'microsoft.azuredata/sqlmanagedinstances',
+			virtualMachines = 'microsoft.compute/virtualmachines',
+			kustoClusters = 'microsoft.kusto/clusters',
+			azureArcPostgresServer = 'microsoft.azuredata/postgresinstances',
+			postgresServer = 'microsoft.dbforpostgresql/servers',
+			azureArcService = 'microsoft.azuredata/datacontrollers',
+			storageAccount = 'microsoft.storage/storageaccounts',
+			logAnalytics = 'microsoft.operationalinsights/workspaces',
+			cosmosDbAccount = 'microsoft.documentdb/databaseaccounts'
+		}
+
+		export interface IAzureResourceProvider extends azdata.DataProvider {
+			getTreeDataProvider(): IAzureResourceTreeDataProvider;
+		}
+
+		export interface IAzureResourceTreeDataProvider extends TreeDataProvider<IAzureResourceNode> {
+			browseConnectionMode: boolean;
+		}
+
+		export interface IAzureResourceNode {
+			readonly account: AzureAccount;
+			readonly subscription: AzureResourceSubscription;
+			readonly tenantId: string;
+			readonly treeItem: azdata.TreeItem;
+		}
+
+		export interface IAzureSubscriptionInfo {
+			id: string;
+			name: string;
+		}
+
+		export interface AzureResource {
+			name: string;
+			id: string;
+			subscription: IAzureSubscriptionInfo;
+			resourceGroup?: string;
+			tenant?: string;
+		}
+
+		export interface AzureResourceSubscription extends Omit<AzureResource, 'subscription'> {
+		}
+
+		export interface AzureSqlResource extends AzureResource {
+			loginName: string;
+		}
+
+		export interface AzureGraphResource extends Omit<AzureResource, 'tenant' | 'subscription'> {
+			tenantId: string;
+			subscriptionId: string;
+			type: string;
+			location: string;
+		}
+
+		export interface AzureResourceResourceGroup extends AzureResource {
+			location?: string;
+			managedBy?: string;
+			properties?: {
+				provisioningState?: string
+			};
+			type?: string;
+		}
+
+		export interface AzureLocation {
+			id: string,
+			name: string,
+			displayName: string,
+			regionalDisplayName: string,
+			metadata: {
+				regionType: string,
+				regionCategory: string,
+				geographyGroup: string,
+				longitude: number,
+				latitude: number,
+				physicalLocation: string,
+				pairedRegion: {
+					name: string,
+					id: string,
+				}[],
+			},
+		}
+
+		export interface AzureSqlManagedInstance extends AzureGraphResource {
+			sku: {
+				capacity: number;
+				family: string;
+				name: string;
+				tier: 'GeneralPurpose' | 'BusinessCritical';
+			},
+			properties: {
+				provisioningState: string,
+				storageAccountType: string,
+				maintenanceConfigurationId: string,
+				state: string,
+				licenseType: string,
+				zoneRedundant: false,
+				fullyQualifiedDomainName: string,
+				collation: string,
+				administratorLogin: string,
+				minimalTlsVersion: string,
+				subnetId: string,
+				publicDataEndpointEnabled: boolean,
+				storageSizeInGB: number,
+				timezoneId: string,
+				proxyOverride: string,
+				vCores: number,
+				dnsZone: string,
+			}
+
+		}
+
+		export interface ManagedDatabase {
+			id: string,
+			location: string,
+			name: string,
+			properties: {
+				sourceDatabaseId: string,
+				status: string
+			},
+			type: string
+		}
+
+		export interface AzureResourceDatabase extends AzureSqlResource {
+			serverName: string;
+			serverFullName: string;
+		}
+
+		export interface AzureResourceDatabaseServer extends AzureSqlResource {
+			fullName: string;
+			defaultDatabaseName: string;
+		}
+		export interface BlobContainer extends AzureResource { }
+
+		export interface FileShare extends AzureResource { }
+
+		export interface Blob extends BlobItem { }
+	}
 }

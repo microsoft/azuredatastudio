@@ -35,33 +35,39 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * Gets the supported project types
 	 */
 	get supportedProjectTypes(): dataworkspace.IProjectType[] {
-		return [{
-			id: constants.emptySqlDatabaseSdkProjectTypeId,
-			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
-			displayName: constants.emptySdkProjectTypeDisplayName,
-			description: constants.emptySdkProjectTypeDescription,
-			icon: IconPathHelper.colorfulSqlProject,
-			targetPlatforms: Array.from(constants.targetPlatformToVersion.keys()),
-			defaultTargetPlatform: constants.defaultTargetPlatform,
-			linkDisplayValue: constants.learnMore,
-			linkLocation: 'https://github.com/microsoft/DacFx/tree/main/src/Microsoft.Build.Sql'
-		},
-		{
-			id: constants.emptySqlDatabaseProjectTypeId,
-			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
-			displayName: constants.emptyProjectTypeDisplayName,
-			description: constants.emptyProjectTypeDescription,
-			icon: IconPathHelper.colorfulSqlProject,
-			targetPlatforms: Array.from(constants.targetPlatformToVersion.keys()),
-			defaultTargetPlatform: constants.defaultTargetPlatform
-		},
-		{
-			id: constants.edgeSqlDatabaseProjectTypeId,
-			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
-			displayName: constants.edgeProjectTypeDisplayName,
-			description: constants.edgeProjectTypeDescription,
-			icon: IconPathHelper.sqlEdgeProject
-		}];
+		return [
+			{
+				id: constants.emptyAzureDbSqlDatabaseProjectTypeId,
+				projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
+				displayName: constants.emptyAzureDbProjectTypeDisplayName,
+				description: constants.emptyAzureDbProjectTypeDescription,
+				defaultTargetPlatform: sqldbproj.SqlTargetPlatform.sqlAzure,
+				icon: IconPathHelper.azureSqlDbProject,
+				sdkStyleOption: true,
+				sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl,
+				learnMoreUrl: constants.azureDevOpsLink
+			},
+			{
+				id: constants.emptySqlDatabaseProjectTypeId,
+				projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
+				displayName: constants.emptyProjectTypeDisplayName,
+				description: constants.emptyProjectTypeDescription,
+				icon: IconPathHelper.colorfulSqlProject,
+				targetPlatforms: Array.from(constants.targetPlatformToVersion.keys()),
+				defaultTargetPlatform: constants.defaultTargetPlatform,
+				sdkStyleOption: true,
+				sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl
+			},
+			{
+				id: constants.edgeSqlDatabaseProjectTypeId,
+				projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
+				displayName: constants.edgeProjectTypeDisplayName,
+				description: constants.edgeProjectTypeDescription,
+				icon: IconPathHelper.sqlEdgeProject,
+				sdkStyleOption: true,
+				sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl
+			}
+		];
 	}
 
 	/**
@@ -69,14 +75,24 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * @param name name of the project
 	 * @param location the parent directory
 	 * @param projectTypeId the ID of the project/template
+	 * @param targetPlatform the target platform of the project
+	 * @param sdkStyle whether project is sdk-style. Default is false
 	 * @returns Uri of the newly created project file
 	 */
-	async createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform?: sqldbproj.SqlTargetPlatform): Promise<vscode.Uri> {
+	async createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform?: sqldbproj.SqlTargetPlatform, sdkStyle: boolean = false): Promise<vscode.Uri> {
+
+		if (!targetPlatform) {
+			const projectType = this.supportedProjectTypes.find(x => x.id === projectTypeId);
+			if (projectType && projectType.defaultTargetPlatform) {
+				targetPlatform = projectType.defaultTargetPlatform as sqldbproj.SqlTargetPlatform;
+			}
+		}
 		const projectFile = await this.projectController.createNewProject({
 			newProjName: name,
 			folderUri: location,
 			projectTypeId: projectTypeId,
-			targetPlatform: targetPlatform
+			targetPlatform: targetPlatform,
+			sdkStyle: sdkStyle
 		});
 
 		return vscode.Uri.file(projectFile);
@@ -87,6 +103,10 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 */
 	openProject(projectFilePath: string): Promise<sqldbproj.ISqlProject> {
 		return Project.openProject(projectFilePath);
+	}
+
+	public addItemPrompt(project: sqldbproj.ISqlProject, relativeFilePath: string, options?: sqldbproj.AddItemOptions): Promise<void> {
+		return this.projectController.addItemPrompt(project, relativeFilePath, options);
 	}
 
 	/**
@@ -193,5 +213,9 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 */
 	async getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
 		return await this.projectController.getProjectDatabaseSchemaProvider(projectFilePath);
+	}
+
+	async generateProjectFromOpenApiSpec(options?: sqldbproj.GenerateProjectFromOpenApiSpecOptions): Promise<sqldbproj.ISqlProject | undefined> {
+		return await this.projectController.generateProjectFromOpenApiSpec(options);
 	}
 }

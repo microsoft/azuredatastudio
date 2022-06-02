@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { ViewBase } from '../viewBase';
 import { ImportedModel, WorkspaceModel, ImportedModelDetails, ModelParameters } from '../../modelManagement/interfaces';
@@ -217,7 +217,7 @@ export abstract class ModelViewBase extends ViewBase {
 	 * Stores the name of the table as recent config table for importing models
 	 */
 	public async storeImportConfigTable(): Promise<void> {
-		await this.sendRequest(StoreImportTableEventName, this.importTable);
+		this.sendRequest(StoreImportTableEventName, this.importTable);
 	}
 
 	/**

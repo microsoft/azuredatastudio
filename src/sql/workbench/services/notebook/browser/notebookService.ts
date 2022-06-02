@@ -17,7 +17,7 @@ import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/co
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { Range } from 'vs/editor/common/core/range';
-import { IEditorPane } from 'vs/workbench/common/editor';
+import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
 import { INotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
@@ -75,6 +75,8 @@ export interface INotebookService {
 	getProvidersForFileType(fileType: string): string[] | undefined;
 
 	getStandardKernelsForProvider(provider: string): Promise<azdata.nb.IStandardKernel[] | undefined>;
+
+	getSupportedLanguagesForProvider(provider: string, kernelDisplayName?: string): Promise<string[]>;
 
 	getOrCreateSerializationManager(providerId: string, uri: URI): Promise<ISerializationManager>;
 
@@ -137,9 +139,13 @@ export interface INotebookService {
 	 */
 	notifyCellExecutionStarted(): void;
 
+	createNotebookInputFromContents(providerId: string, contents?: azdata.nb.INotebookContents, resource?: UriComponents): Promise<IEditorInput | undefined>;
+
 	openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined>;
 
 	getUntitledUriPath(originalTitle: string): string;
+
+	getNotebookURIForCell(cellUri: URI): URI | undefined;
 }
 
 export interface IExecuteProvider {

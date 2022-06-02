@@ -16,7 +16,6 @@ export enum TelemetryViews {
 	ProjectController = 'ProjectController',
 	SqlProjectPublishDialog = 'SqlProjectPublishDialog',
 	ProjectTree = 'ProjectTree',
-	SqlBindingsQuickPick = 'SqlBindingsQuickPick'
 }
 
 export enum TelemetryActions {
@@ -27,6 +26,7 @@ export enum TelemetryActions {
 	deleteObjectFromProject = 'deleteObjectFromProject',
 	editProjectFile = 'editProjectFile',
 	addItemFromTree = 'addItemFromTree',
+	addExistingItem = 'addExistingItem',
 	excludeFromProject = 'excludeFromProject',
 	projectSchemaCompareCommandInvoked = 'projectSchemaCompareCommandInvoked',
 	publishProject = 'publishProject',
@@ -35,5 +35,10 @@ export enum TelemetryActions {
 	changePlatformType = 'changePlatformType',
 	updateSystemDatabaseReferencesInProjFile = 'updateSystemDatabaseReferencesInProjFile',
 	startAddSqlBinding = 'startAddSqlBinding',
-	finishAddSqlBinding = 'finishAddSqlBinding'
+	finishAddSqlBinding = 'finishAddSqlBinding',
+	createProjectFromDatabase = 'createProjectFromDatabase',
+	updateProjectFromDatabase = 'updateProjectFromDatabase',
+	publishToContainer = 'publishToContainer',
+	publishToNewAzureServer = 'publishToNewAzureServer',
+	generateProjectFromOpenApiSpec = 'generateProjectFromOpenApiSpec'
 }

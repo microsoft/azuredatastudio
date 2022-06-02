@@ -116,8 +116,8 @@ export class ProjectDashboard {
 				height: '20px'
 			}).component();
 
-		button.onDidClick(async () => {
-			await projectAction.run(this._treeItem);
+		button.onDidClick(() => {
+			projectAction.run(this._treeItem);
 		});
 
 		return button;
@@ -169,10 +169,12 @@ export class ProjectDashboard {
 			.component();
 		header.addItem(locationLabel, { CSSStyles: { 'padding-left': '34px', 'padding-top': '15px', 'padding-bottom': '50px', 'font-size': '16px' } });
 
-		const image = this.projectProvider!.image;		// background image added at the bottom right of the header
+		const backgroundImage = this.projectProvider!.image; // background image added at the bottom right of the header
+		// Files need to have the vscode-file scheme to be loaded by ADS
+		const backgroundUri = vscode.Uri.file(backgroundImage!.light.toString()).with({ scheme: 'vscode-file' });
 		headerContainer.addItem(header, {
 			CSSStyles: {
-				'background-image': `url(${vscode.Uri.file(image!.light.toString())})`,
+				'background-image': `url(${backgroundUri})`,
 				'background-repeat': 'no-repeat',
 				'background-position': '85% bottom',
 				'background-size': '10%',

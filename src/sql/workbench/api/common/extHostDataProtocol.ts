@@ -14,6 +14,7 @@ import { IURITransformer } from 'vs/base/common/uriIpc';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { mapToSerializable } from 'sql/base/common/map';
+import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
@@ -197,6 +198,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	$registerTableDesignerProvider(provider: azdata.designers.TableDesignerProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.TableDesignerProvider);
 		this._proxy.$registerTableDesignerProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
+	$registerExecutionPlanProvider(provider: azdata.executionPlan.ExecutionPlanProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.ExecutionPlanProvider);
+		this._proxy.$registerExecutionPlanProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
@@ -896,11 +903,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).initializeTableDesigner(table);
 	}
 
-	public override $processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> {
+	public override $processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult<azdata.designers.TableDesignerView>> {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).processTableEdit(table, edit);
 	}
 
-	public override $publishTableDesignerChanges(handle: number, table: azdata.designers.TableInfo): Thenable<void> {
+	public override $publishTableDesignerChanges(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.PublishChangesResult> {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).publishChanges(table);
 	}
 
@@ -908,7 +915,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).generateScript(table);
 	}
 
-	public override $generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> {
+	public override $generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.GeneratePreviewReportResult> {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).generatePreviewReport(table);
 	}
 
@@ -916,8 +923,18 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).disposeTableDesigner(table);
 	}
 
-	public override $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo): Promise<void> {
-		this._proxy.$openTableDesigner(providerId, tableInfo);
+	public override $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): Promise<void> {
+		this._proxy.$openTableDesigner(providerId, tableInfo, telemetryInfo);
 		return Promise.resolve();
+	}
+
+	// Execution Plan
+
+	public override $getExecutionPlan(handle: number, planFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.GetExecutionPlanResult> {
+		return this._resolveProvider<azdata.executionPlan.ExecutionPlanProvider>(handle).getExecutionPlan(planFile);
+	}
+
+	public override $compareExecutionPlanGraph(handle: number, firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.ExecutionPlanComparisonResult> {
+		return this._resolveProvider<azdata.executionPlan.ExecutionPlanProvider>(handle).compareExecutionPlanGraph(firstPlanFile, secondPlanFile);
 	}
 }

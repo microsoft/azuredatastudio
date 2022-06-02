@@ -7,7 +7,10 @@ import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
 import { ADSNotebookController } from 'sql/workbench/api/common/notebooks/adsNotebookController';
 import * as nls from 'vs/nls';
-import { convertToVSCodeNotebookCell } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { addExternalInteractiveKernelMetadata, convertToVSCodeNotebookCell } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
+import { URI } from 'vs/base/common/uri';
 
 class VSCodeFuture implements azdata.nb.IFuture {
 	private _inProgress = true;
@@ -70,28 +73,36 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	private readonly _name: string;
 	private readonly _info: azdata.nb.IInfoReply;
 	private readonly _kernelSpec: azdata.nb.IKernelSpec;
+	private _activeRequest: azdata.nb.IExecuteRequest;
 
-	constructor(private readonly _controller: ADSNotebookController, private readonly _options: azdata.nb.ISessionOptions, language: string) {
+	constructor(private readonly _controller: ADSNotebookController, private readonly _options: azdata.nb.ISessionOptions) {
 		this._id = this._options.kernelId ?? (VSCodeKernel.kernelId++).toString();
-		this._name = this._options.kernelName ?? this._controller.notebookType;
+		this._kernelSpec = this._options.kernelSpec ?? {
+			name: this._controller.notebookType,
+			display_name: this._controller.label,
+		};
+		if (!this._kernelSpec.language) {
+			this._kernelSpec.language = this._controller.supportedLanguages[0];
+			this._kernelSpec.supportedLanguages = this._controller.supportedLanguages;
+		}
+
+		// Store external kernel names for .NET Interactive kernels for when notebook gets saved, so that notebook is usable outside of ADS
+		addExternalInteractiveKernelMetadata(this._kernelSpec);
+
+		this._name = this._kernelSpec.name;
 		this._info = {
 			protocol_version: '',
 			implementation: '',
 			implementation_version: '',
 			language_info: {
-				name: language,
-				version: '',
+				name: this._kernelSpec.language,
+				oldName: this._kernelSpec.oldLanguage
 			},
 			banner: '',
 			help_links: [{
 				text: '',
 				url: ''
 			}]
-		};
-		this._kernelSpec = {
-			name: this._name,
-			language: language,
-			display_name: this._name
 		};
 	}
 
@@ -123,17 +134,29 @@ class VSCodeKernel implements azdata.nb.IKernel {
 		return this._info;
 	}
 
+	public get spec(): azdata.nb.IKernelSpec {
+		return this._kernelSpec;
+	}
+
 	getSpec(): Thenable<azdata.nb.IKernelSpec> {
-		return Promise.resolve(this._kernelSpec);
+		return Promise.resolve(this.spec);
+	}
+
+	private cleanUpActiveExecution(cellUri: URI) {
+		this._activeRequest = undefined;
+		this._controller.removeCellExecution(cellUri);
 	}
 
 	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
+		if (this._activeRequest) {
+			throw new Error(nls.localize('notebookMultipleRequestsError', "Cannot execute code cell. Another cell is currently being executed."));
+		}
 		let executePromise: Promise<void>;
 		if (this._controller.executeHandler) {
-			let cell = convertToVSCodeNotebookCell(content.code, content.cellIndex, content.notebookUri, this._kernelSpec.language);
-			executePromise = Promise.resolve(this._controller.executeHandler([cell], cell.notebook, this._controller));
-		}
-		else {
+			let cell = convertToVSCodeNotebookCell(CellTypes.Code, content.cellIndex, content.cellUri, content.notebookUri, content.language ?? this._kernelSpec.language, content.code);
+			this._activeRequest = content;
+			executePromise = Promise.resolve(this._controller.executeHandler([cell], cell.notebook, this._controller)).then(() => this.cleanUpActiveExecution(content.cellUri));
+		} else {
 			executePromise = Promise.resolve();
 		}
 
@@ -146,6 +169,19 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	}
 
 	public async interrupt(): Promise<void> {
+		if (this._activeRequest) {
+			if (this._controller.interruptHandler) {
+				let doc = this._controller.getNotebookDocument(this._activeRequest.notebookUri);
+				await this._controller.interruptHandler.call(this._controller, new VSCodeNotebookDocument(doc));
+			} else {
+				let exec = this._controller.getCellExecution(this._activeRequest.cellUri);
+				exec?.tokenSource.cancel();
+			}
+			this.cleanUpActiveExecution(this._activeRequest.cellUri);
+		}
+	}
+
+	public async restart(): Promise<void> {
 		return;
 	}
 }
@@ -153,8 +189,8 @@ class VSCodeKernel implements azdata.nb.IKernel {
 class VSCodeSession implements azdata.nb.ISession {
 	private _kernel: VSCodeKernel;
 	private _defaultKernelLoaded = false;
-	constructor(controller: ADSNotebookController, private readonly _options: azdata.nb.ISessionOptions, language: string) {
-		this._kernel = new VSCodeKernel(controller, this._options, language);
+	constructor(controller: ADSNotebookController, private readonly _options: azdata.nb.ISessionOptions) {
+		this._kernel = new VSCodeKernel(controller, this._options);
 	}
 
 	public set defaultKernelLoaded(value) {
@@ -189,8 +225,12 @@ class VSCodeSession implements azdata.nb.ISession {
 		return 'connected';
 	}
 
-	public get kernel(): azdata.nb.IKernel {
+	public get vsKernel(): VSCodeKernel {
 		return this._kernel;
+	}
+
+	public get kernel(): azdata.nb.IKernel {
+		return this.vsKernel;
 	}
 
 	changeKernel(kernelInfo: azdata.nb.IKernelSpec): Thenable<azdata.nb.IKernel> {
@@ -207,7 +247,7 @@ class VSCodeSession implements azdata.nb.ISession {
 }
 
 class VSCodeSessionManager implements azdata.nb.SessionManager {
-	private _sessions: azdata.nb.ISession[] = [];
+	private _sessions: VSCodeSession[] = [];
 
 	constructor(private readonly _controller: ADSNotebookController) {
 	}
@@ -221,16 +261,16 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 	}
 
 	public get specs(): azdata.nb.IAllKernels {
-		let languages = this._controller.supportedLanguages?.length > 0 ? this._controller.supportedLanguages : [this._controller.label];
+		// Have to return the default kernel here, since the manager specs are accessed before kernels get added
+		let defaultKernel: azdata.nb.IKernelSpec = {
+			name: this._controller.notebookType,
+			language: this._controller.supportedLanguages[0],
+			display_name: this._controller.label,
+			supportedLanguages: this._controller.supportedLanguages ?? []
+		};
 		return {
-			defaultKernel: languages[0],
-			kernels: languages.map<azdata.nb.IKernelSpec>(language => {
-				return {
-					name: language,
-					language: language,
-					display_name: language
-				};
-			})
+			defaultKernel: defaultKernel.name,
+			kernels: [defaultKernel]
 		};
 	}
 
@@ -238,8 +278,7 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 		if (!this.isReady) {
 			return Promise.reject(new Error(nls.localize('errorStartBeforeReady', "Cannot start a session, the manager is not yet initialized")));
 		}
-
-		let session: azdata.nb.ISession = new VSCodeSession(this._controller, options, this.specs.defaultKernel);
+		let session = new VSCodeSession(this._controller, options);
 		let index = this._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
 			this._sessions.splice(index);

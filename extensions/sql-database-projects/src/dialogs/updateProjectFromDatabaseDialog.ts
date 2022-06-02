@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import type * as azdata from 'azdata';
 import * as constants from '../common/constants';
 import * as newProjectTool from '../tools/newProjectTool';
@@ -234,6 +234,10 @@ export class UpdateProjectFromDatabaseDialog {
 		let values = [];
 		try {
 			values = await this.getDatabaseValues(connectionProfile.connectionId);
+
+			// move system dbs to the bottom of the list so it's easier to find user dbs
+			const systemDbs = values.filter(db => constants.systemDbs.includes(db));
+			values = values.filter(db => !constants.systemDbs.includes(db)).concat(systemDbs);
 		} catch (e) {
 			// if the user doesn't have access to master, just set the database of the connection profile
 			values = [connectionProfile.databaseName];
@@ -380,8 +384,9 @@ export class UpdateProjectFromDatabaseDialog {
 			width: cssStyles.updateProjectFromDatabaseLabelWidth
 		}).component();
 
-		const projectLocationRow = view.modelBuilder.flexContainer().withItems([projectLocationLabel, this.projectFileTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-5px', 'margin-top': '-10px' } }).component();
-		projectLocationRow.addItem(browseFolderButton, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '-5px', 'margin-top': '-10px' } });
+		const projectLocationRow = view.modelBuilder.flexContainer().withItems([projectLocationLabel,], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-5px', 'margin-top': '-7px' } }).component();
+		projectLocationRow.addItem(this.projectFileTextBox, { CSSStyles: { 'margin-right': '10px' } });
+		projectLocationRow.addItem(browseFolderButton, { CSSStyles: { 'margin-top': '2px' } });
 
 		return projectLocationRow;
 	}
@@ -478,8 +483,8 @@ export class UpdateProjectFromDatabaseDialog {
 			width: cssStyles.updateProjectFromDatabaseLabelWidth
 		}).component();
 
-		const actionRow = view.modelBuilder.flexContainer().withItems([actionLabel, <azdata.FlexContainer>radioButtons], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-
+		const actionRow = view.modelBuilder.flexContainer().withItems([actionLabel], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '-17px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		actionRow.addItem(radioButtons);
 		return actionRow;
 	}
 
@@ -559,9 +564,7 @@ export class UpdateProjectFromDatabaseDialog {
 			action: this.action!
 		};
 
-		getAzdataApi()!.window.closeDialog(this.dialog);
-		await this.updateProjectFromDatabaseCallback!(model);
-
+		void this.updateProjectFromDatabaseCallback!(model);
 		this.dispose();
 	}
 

@@ -23,6 +23,7 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { CellView, findHighlightClass, findRangeSpecificClass } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
 import { INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -156,6 +157,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			this.errorText = options.trusted ?
 				localize('noMimeTypeFound', "No renderer could be found for output. It has the following MIME types: {0}", mimeTypes) :
 				localize('noSafeMimeTypeFound', "No safe renderer could be found for output. It has the following MIME types: {0}", mimeTypes);
+			this.cellModel?.notebookModel?.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.MIMETypeRendererNotFound, { mime_types: mimeTypesWithoutRenderer });
 			return;
 		}
 		let selector = componentRegistry.getCtorFromMimeType(mimeType);

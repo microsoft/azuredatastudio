@@ -50,6 +50,8 @@ export class ClientSession implements IClientSession {
 	private _kernelConfigActions: ((kernelName: string) => Promise<any>)[] = [];
 	private _connectionId: string = '';
 
+	private readonly _kernelNotFoundError = 501;
+
 	constructor(private options: IClientSessionOptions) {
 		this._notebookUri = options.notebookUri;
 		this._executeManager = options.executeManager;
@@ -62,7 +64,6 @@ export class ClientSession implements IClientSession {
 	public async initialize(): Promise<void> {
 		try {
 			this._serverLoadFinished = this.startServer(this.options.kernelSpec);
-			await this._serverLoadFinished;
 			await this.initializeSession();
 			await this.updateCachedKernelSpec();
 		} catch (err) {
@@ -99,25 +100,25 @@ export class ClientSession implements IClientSession {
 				await this._executeManager.sessionManager.ready;
 			}
 			if (this._defaultKernel) {
-				await this.startSessionInstance(this._defaultKernel.name);
+				await this.startSessionInstance(this._defaultKernel);
 			}
 		}
 	}
 
-	private async startSessionInstance(kernelName: string): Promise<void> {
+	private async startSessionInstance(kernelSpec: nb.IKernelSpec): Promise<void> {
 		let session: nb.ISession;
 		try {
 			// TODO #3164 should use URI instead of path for startNew
 			session = await this._executeManager.sessionManager.startNew({
 				path: this.notebookUri.fsPath,
-				kernelName: kernelName
-				// TODO add kernel name if saved in the document
+				kernelName: kernelSpec.name,
+				kernelSpec: kernelSpec
 			});
 			session.defaultKernelLoaded = true;
 		} catch (err) {
 			// TODO move registration
-			if (err && err.response && err.response.status === 501) {
-				this.options.notificationService.warn(localize('kernelRequiresConnection', "Kernel {0} was not found. The default kernel will be used instead.", kernelName));
+			if (err.response?.status === this._kernelNotFoundError || err.errorCode === this._kernelNotFoundError) {
+				this.options.notificationService.warn(localize('kernelRequiresConnection', "Kernel '{0}' was not found. The default kernel will be used instead.", kernelSpec.name));
 				session = await this._executeManager.sessionManager.startNew({
 					path: this.notebookUri.fsPath,
 					kernelName: undefined
@@ -128,7 +129,7 @@ export class ClientSession implements IClientSession {
 			}
 		}
 		this._session = session;
-		await this.runKernelConfigActions(kernelName);
+		await this.runKernelConfigActions(kernelSpec.name);
 		this._statusChangedEmitter.fire(session);
 	}
 
@@ -278,7 +279,7 @@ export class ClientSession implements IClientSession {
 			kernel = await this._session.changeKernel(options);
 			await this.runKernelConfigActions(kernel.name);
 		} else {
-			kernel = await this.startSessionInstance(options.name).then(() => this.kernel);
+			kernel = await this.startSessionInstance(options).then(() => this.kernel);
 		}
 		return kernel;
 	}
@@ -322,16 +323,27 @@ export class ClientSession implements IClientSession {
 	/**
 	 * Restart the session.
 	 *
-	 * @returns A promise that resolves with whether the kernel has restarted.
+	 * @returns A promise that resolves when the kernel has restarted.
 	 *
 	 * #### Notes
-	 * If there is a running kernel, present a dialog.
-	 * If there is no kernel, we start a kernel with the last run
-	 * kernel name and resolves with `true`. If no kernel has been started,
-	 * this is a no-op, and resolves with `false`.
+	 * If there is an existing kernel, restart it and resolve.
+	 * If no kernel has been started, this is a no-op, and resolves.
+	 * Reject on error.
 	 */
-	restart(): Promise<boolean> {
-		throw new Error('Not implemented');
+	restart(): Promise<void> {
+		if (!this._session?.kernel) {
+			// no-op if no kernel is present
+			return Promise.resolve();
+		}
+		let restartCompleted = new Deferred<void>();
+		this._session?.kernel?.restart().then(() => {
+			this.options.notificationService.info(localize('kernelRestartedSuccessfully', 'Kernel restarted successfully'));
+			restartCompleted.resolve();
+		}, err => {
+			this.options.notificationService.error(localize('kernelRestartFailed', 'Kernel restart failed: {0}', err));
+			restartCompleted.reject(err);
+		});
+		return restartCompleted.promise;
 	}
 
 	/**

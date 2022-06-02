@@ -37,6 +37,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { KernelsLanguage } from 'sql/workbench/services/notebook/common/notebookConstants';
 import { INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { Schemas } from 'vs/base/common/network';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -53,6 +54,7 @@ const maskedIconClass = 'masked-icon';
 export const kernelNotSupported: string = localize('kernelNotSupported', "This notebook cannot run with parameters as the kernel is not supported. Please use the supported kernels and format. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
 export const noParameterCell: string = localize('noParametersCell', "This notebook cannot run with parameters until a parameter cell is added. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
 export const noParametersInCell: string = localize('noParametersInCell', "This notebook cannot run with parameters until there are parameters added to the parameter cell. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
+export const untitledNotSupported: string = localize('untitledNotSupported', "Run with parameters is not supported for Untitled notebooks. Please save the notebook before continuing. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
 
 // Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {
@@ -74,7 +76,7 @@ export class AddCellAction extends Action {
 				}
 			}
 			if (context?.model) {
-				context.model.addCell(this.cellType, index);
+				context.model.addCell(this.cellType, index, context.cell.metadata?.language);
 				context.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.AddCell, { cell_type: this.cellType });
 			}
 		} else {
@@ -448,6 +450,14 @@ export class RunParametersAction extends TooltipFromLabelAction {
 	 * with injected parameters value from the QuickInput
 	*/
 	public override async run(context: URI): Promise<void> {
+		if (context.scheme === Schemas.untitled) {
+			// Run with parameters is not supported for untitled notebooks
+			this.notificationService.notify({
+				severity: Severity.Info,
+				message: untitledNotSupported,
+			});
+			return;
+		}
 		const editor = this._notebookService.findNotebookEditor(context);
 		// Only run action for kernels that are supported (Python, PySpark, PowerShell)
 		let supportedKernels: string[] = [KernelsLanguage.Python, KernelsLanguage.PowerShell];

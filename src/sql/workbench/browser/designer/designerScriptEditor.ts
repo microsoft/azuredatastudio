@@ -64,6 +64,7 @@ export class DesignerScriptEditor extends BaseTextEditor implements DesignerText
 		this.setInput(this._editorInput, undefined, undefined).catch(onUnexpectedError);
 		this._editorInput.resolve().then((model) => {
 			this._editorModel = model.textEditorModel;
+			this.updateEditor();
 		});
 	}
 
@@ -83,9 +84,6 @@ export class DesignerScriptEditor extends BaseTextEditor implements DesignerText
 			options.renderIndentGuides = false;
 			options.rulers = [];
 			options.glyphMargin = true;
-			options.minimap = {
-				enabled: true
-			};
 		}
 		return options;
 	}
@@ -111,8 +109,14 @@ export class DesignerScriptEditor extends BaseTextEditor implements DesignerText
 
 	set content(val: string) {
 		this._content = val;
-		this._modelService.updateModel(this._editorModel, this._content);
-		this._untitledTextEditorModel.setDirty(false);
-		this.layout(new DOM.Dimension(this._container.clientWidth, this._container.clientHeight));
+		this.updateEditor();
+	}
+
+	private updateEditor(): void {
+		if (this._editorModel && this._content) {
+			this._modelService.updateModel(this._editorModel, this._content);
+			this._untitledTextEditorModel.setDirty(false);
+			this.layout(new DOM.Dimension(this._container.clientWidth, this._container.clientHeight));
+		}
 	}
 }

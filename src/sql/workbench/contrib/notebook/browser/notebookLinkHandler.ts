@@ -8,6 +8,7 @@ import * as path from 'vs/base/common/path';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 import { isWindows } from 'vs/base/common/platform';
+import { containsEncodedUriComponentReservedCharacters } from 'sql/base/common/network';
 
 const useAbsolutePathConfigName = 'notebook.useAbsoluteFilePaths';
 
@@ -116,6 +117,24 @@ export class NotebookLinkHandler {
 			// Web links
 			return this._href || '';
 		}
+	}
+
+	/**
+	* Function to get encoded url, Gets the link URI-encoded link URL
+	* (https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
+	* @returns the encoded url
+	*/
+	public getEncodedLinkUrl(): string | undefined {
+		if (typeof this._link === 'string') {
+			// Need to encode URI here in order for user to click the proper encoded link in WYSIWYG
+			// skip encoding it if it's already encoded
+			if (!containsEncodedUriComponentReservedCharacters(this._link)) {
+				return encodeURI(this._link);
+			}
+			return this._link;
+		}
+		// since we only handle strings that come from call out dialogs
+		return undefined;
 	}
 
 	/**

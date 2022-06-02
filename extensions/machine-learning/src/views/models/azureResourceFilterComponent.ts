@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import * as constants from '../../common/constants';
 import { AzureWorkspaceResource, IDataComponent } from '../interfaces';
@@ -66,7 +66,7 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 		});
 		this._workspaces.onValueChanged(async (newValue) => {
 			if (newValue.selected !== (<azdata.CategoryValue>this._workspaces.value)?.name) {
-				await this.onWorkspaceSelectedChanged();
+				this.onWorkspaceSelectedChanged();
 			}
 		});
 

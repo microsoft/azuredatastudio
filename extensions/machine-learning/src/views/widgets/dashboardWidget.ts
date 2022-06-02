@@ -38,10 +38,11 @@ export class DashboardWidget {
 				}).component();
 				const header = await this.createHeader(view);
 				const footerContainer = this.createFooter(view);
+				const backgroundImageUri = vscode.Uri.file(this.asAbsolutePath('images/background.svg')).with({ scheme: 'vscode-file' });
 				container.addItem(header, {
 					CSSStyles: {
 						'background-image': `
-							url(${vscode.Uri.file(this.asAbsolutePath('images/background.svg'))}),
+							url(${backgroundImageUri}),
 							linear-gradient(0deg, rgba(0,0,0,0.09) 0%, rgba(0,0,0,0) 100%)
 						`,
 						'background-repeat': 'no-repeat',
@@ -300,9 +301,11 @@ export class DashboardWidget {
 				await this._apiWrapper.openExternal(vscode.Uri.parse(linkMetaData.link));
 			}
 		});
+		// Files need to have the vscode-file scheme to be loaded by ADS
+		const imageUri = vscode.Uri.file(this.asAbsolutePath(linkMetaData.iconPath?.light as string || '')).with({ scheme: 'vscode-file' });
 		videosContainer.addItem(video1Container, {
 			CSSStyles: {
-				'background-image': `url(${vscode.Uri.file(this.asAbsolutePath(linkMetaData.iconPath?.light as string || ''))})`,
+				'background-image': `url(${imageUri})`,
 				'background-repeat': 'no-repeat',
 				'background-position': 'top',
 				'width': `${maxWidth}px`,

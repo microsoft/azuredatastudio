@@ -17,7 +17,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { IContextViewProvider, IDelegate } from 'vs/base/browser/ui/contextview/contextview';
-import { IEditorPane } from 'vs/workbench/common/editor';
+import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { INotebookView, INotebookViewCell, INotebookViewMetadata, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
@@ -122,7 +122,7 @@ export class NotebookModelStub implements INotebookModel {
 	getMetaValue(key: string) {
 		throw new Error('Method not implemented.');
 	}
-	addCell(cellType: CellType, index?: number): void {
+	addCell(cellType: CellType, index?: number, language?: string): void {
 		throw new Error('Method not implemented.');
 	}
 	moveCell(cellModel: ICellModel, direction: MoveDirection): void {
@@ -235,6 +235,15 @@ export class ServerManagerStub implements nb.ServerManager {
 }
 
 export class NotebookServiceStub implements INotebookService {
+	getNotebookURIForCell(cellUri: URI): URI {
+		throw new Error('Method not implemented.');
+	}
+	getSupportedLanguagesForProvider(provider: string, kernelDisplayName?: string): Promise<string[]> {
+		throw new Error('Method not implemented.');
+	}
+	createNotebookInputFromContents(providerId: string, contents?: nb.INotebookContents, resource?: UriComponents): Promise<IEditorInput> {
+		throw new Error('Method not implemented.');
+	}
 	_serviceBrand: undefined;
 	get onNotebookEditorAdd(): vsEvent.Event<INotebookEditor> {
 		throw new Error('Method not implemented.');
@@ -347,7 +356,7 @@ export class ClientSessionStub implements IClientSession {
 	selectKernel(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
-	restart(): Promise<boolean> {
+	restart(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 	setPath(path: string): Promise<void> {
@@ -456,6 +465,9 @@ export class KernelStub implements nb.IKernel {
 		throw new Error('Method not implemented.');
 	}
 	interrupt(): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	restart(): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
 }

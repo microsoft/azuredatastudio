@@ -87,9 +87,9 @@
         <target state="translated">만들기</target>
       </trans-unit>
       <trans-unit id="duplicateFileError">
-        <source xml:lang="en">File {0} already exists in the destination folder {1}
+        <source xml:lang="en">File {0} already exists in the destination folder {1} 
  The file has been renamed to {2} to prevent data loss.</source>
-        <target state="translated">대상 폴더 {1}에 {0} 파일이 이미 있습니다.
+        <target state="translated">대상 폴더 {1}에 {0} 파일이 이미 있습니다. 
  데이터 손실을 방지하기 위해 파일 이름이 {2}(으)로 바뀌었습니다.</target>
       </trans-unit>
       <trans-unit id="editBookError">

@@ -102,8 +102,12 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 		}
 	}
 
-	public $updateProviderDescriptionLanguages(providerId: string, languages: string[]): void {
-		notebookRegistry.updateProviderDescriptionLanguages(providerId, languages);
+	public $updateProviderKernels(providerId: string, languages: azdata.nb.IStandardKernel[]): void {
+		notebookRegistry.updateProviderKernels(providerId, languages);
+	}
+
+	public $updateKernelLanguages(providerId: string, kernelName: string, languages: string[]): void {
+		notebookRegistry.updateKernelLanguages(providerId, kernelName, languages);
 	}
 	//#endregion
 }
@@ -479,6 +483,10 @@ class KernelWrapper implements azdata.nb.IKernel {
 
 	interrupt(): Thenable<void> {
 		return this._proxy.ext.$interruptKernel(this.kernelDetails.kernelId);
+	}
+
+	restart(): Thenable<void> {
+		return this._proxy.ext.$restartKernel(this.kernelDetails.kernelId);
 	}
 }
 

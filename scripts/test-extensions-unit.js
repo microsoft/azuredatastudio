@@ -24,8 +24,8 @@ const extensionList = [
 	'machine-learning',
 	'resource-deployment',
 	'schema-compare',
-	'sql-database-projects',
-
+	'sql-bindings',
+	'sql-database-projects'
 ];
 
 let argv = require('yargs')
@@ -80,6 +80,7 @@ for (const ext of argv.extensions) {
 		console.log(execSync(command, { stdio: 'inherit'}));
 	} else {
 		const env = {
+			...process.env,
 			VSCODE_CLI: 1,
 			ELECTRON_ENABLE_STACK_DUMPING: 1,
 			ELECTRON_ENABLE_LOGGING: 1

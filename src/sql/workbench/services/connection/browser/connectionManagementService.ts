@@ -23,8 +23,8 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { Deferred } from 'sql/base/common/promise';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
+import { AzureResource, ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 import * as azdata from 'azdata';
 
@@ -347,7 +347,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		options?: IConnectionCompletionOptions): Promise<IConnectionResult> {
 		if (options && options.showConnectionDialogOnError) {
 			let params: INewConnectionParams = options && options.params ? options.params : {
-				connectionType: this._connectionStatusManager.isDefaultTypeUri(owner.uri) ? ConnectionType.default : ConnectionType.editor,
+				connectionType: this._connectionStatusManager.isEditorTypeUri(owner.uri) ? ConnectionType.editor : ConnectionType.default,
 				input: owner,
 				runQueryOnCompletion: RunQueryOnConnectionMode.none,
 				showDashboard: options.showDashboard
@@ -809,13 +809,43 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param connection The connection to fill in or update
 	 */
 	private getAzureResourceForConnection(connection: interfaces.IConnectionProfile): azdata.AzureResource {
+		// check if this is a PowerBI connection which is determined based on connection domain address
+		if (this.isPowerBiConnection(connection)) {
+			return AzureResource.PowerBi;
+		}
+
+		// default to SQL if there are no provides or registered resources
 		let provider = this._providers.get(connection.providerName);
 		if (!provider || !provider.properties || !provider.properties.azureResource) {
+			this._logService.warn('Connection providers incorrectly registered. Defaulting to SQL Azure resource,');
 			return AzureResource.Sql;
 		}
 
+		// lookup the Azure resource based on the provider azureResource properties
 		let result = ConnectionManagementService._azureResources.find(r => AzureResource[r] === provider.properties.azureResource);
 		return result ? result : AzureResource.Sql;
+	}
+
+	/**
+	 * Determine if a connection is to PowerBI based on the servers domain name.
+	 * PowerBi servers will be in one of the hard-coded domains listed in this method, based on the
+	 * Azure cloud being used.  This method can be removed once the connection/AAD service is updated
+	 * to parse the server endpoint using TDS prior to connecting.  But that will need to be part of a
+	 * larger refactoring of the connection & auth functionality.
+	 * @param connection The connection profile that is to be checked.
+	 */
+	private isPowerBiConnection(connection: interfaces.IConnectionProfile): boolean {
+		if (!connection || !connection.serverName || connection.serverName.length === 0) {
+			return false;
+		}
+		let powerBiDomains = [
+			'pbidedicated.windows.net',
+			'pbidedicated.cloudapi.de',
+			'pbidedicated.usgovcloudapi.net',
+			'pbidedicated.chinacloudapi.cn'
+		];
+		let serverName = connection.serverName.toLowerCase();
+		return !!powerBiDomains.find(d => serverName.indexOf(d) >= 0);
 	}
 
 	/**
@@ -1602,20 +1632,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}
 		}
 		return connections;
-	}
-
-	public getConnection(uri: string): ConnectionProfile {
-		const connections = this.getActiveConnections();
-		if (connections) {
-			for (let connection of connections) {
-				let connectionUri = this.getConnectionUriFromId(connection.id);
-				if (connectionUri === uri) {
-					return connection;
-				}
-			}
-		}
-
-		return undefined;
 	}
 
 	private getConnectionsInGroup(group: ConnectionProfileGroup): ConnectionProfile[] {

@@ -15,6 +15,7 @@ import { ConnectToMiaaSqlDialog } from '../ui/dialogs/connectMiaaDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { ControllerModel, Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
+import { ConnectionMode } from '../constants';
 
 export type DatabaseModel = { name: string, status: string, earliestBackup: string, lastBackup: string };
 export type RPModel = { recoveryPointObjective: string, retentionDays: string };
@@ -29,6 +30,7 @@ export type PITRModel = {
 	latestPitr: string,
 	destDbName: string
 };
+export type UpgradeModel = {};
 
 export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
 export class MiaaModel extends ResourceModel {
@@ -97,7 +99,26 @@ export class MiaaModel extends ResourceModel {
 		this._refreshPromise = new Deferred();
 		try {
 			try {
-				const result = await this._azApi.az.sql.miarc.show(this.info.name, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars);
+				let result;
+				if (this.controllerModel.info.connectionMode === ConnectionMode.direct) {
+					result = await this._azApi.az.sql.miarc.show(
+						this.info.name,
+						{
+							resourceGroup: this.controllerModel.info.resourceGroup,
+							namespace: undefined
+						},
+						this.controllerModel.azAdditionalEnvVars
+					);
+				} else {
+					result = await this._azApi.az.sql.miarc.show(
+						this.info.name,
+						{
+							resourceGroup: undefined,
+							namespace: this.controllerModel.info.namespace
+						},
+						this.controllerModel.azAdditionalEnvVars
+					);
+				}
 				this._config = result.stdout;
 				this.configLastUpdated = new Date();
 				this.rpSettings.retentionDays = this._config?.spec?.backup?.retentionPeriodInDays?.toString() ?? '';
@@ -166,7 +187,7 @@ export class MiaaModel extends ResourceModel {
 			if (!result.connected) {
 				throw new Error(result.errorMessage);
 			}
-			this._activeConnectionId = result.connectionId;
+			this._activeConnectionId = result.connectionId!;
 		}
 
 		const provider = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(this._connectionProfile!.providerName, azdata.DataProviderType.MetadataProvider);

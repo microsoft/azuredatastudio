@@ -90,6 +90,38 @@ export class AzTool implements azExt.IAzApi {
 				show: (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.DcConfigShowResult>> => {
 					return this.executeCommand<azExt.DcConfigShowResult>(['arcdata', 'dc', 'config', 'show', '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
 				}
+			},
+			listUpgrades: async (namespace: string, usek8s?: boolean, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.DcListUpgradesResult>> => {
+				const argsArray = ['arcdata', 'dc', 'list-upgrades'];
+				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
+				if (usek8s) { argsArray.push('--use-k8s'); }
+
+				const output = await this.executeCommand<string>(argsArray, additionalEnvVars);
+				const versions = <string[]>parseDcListUpgrades(output.stdout);
+				const currentVersion = <string>parseCurrentVersion(output.stdout);
+				let dates: string[] = [];
+				for (let i = 0; i < versions.length; i++) {
+					dates.push(parseReleaseDateFromUpgrade(versions[i]));
+				}
+				return {
+					stdout: {
+						versions: versions,
+						currentVersion: currentVersion,
+						dates: dates
+					},
+					stderr: output.stderr
+				};
+			},
+			upgrade: (desiredVersion: string, name: string, resourceGroup?: string, namespace?: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
+				const argsArray = ['arcdata', 'dc', 'upgrade', '--desired-version', desiredVersion, '--name', name];
+				// Direct mode argument
+				if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
+				// Indirect mode arguments
+				if (namespace) {
+					argsArray.push('--k8s-namespace', namespace);
+					argsArray.push('--use-k8s');
+				}
+				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
 		}
 	};
@@ -145,16 +177,69 @@ export class AzTool implements azExt.IAzApi {
 
 	public sql = {
 		miarc: {
-			delete: (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
-				return this.executeCommand<void>(['sql', 'mi-arc', 'delete', '-n', name, '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
+			delete: (
+				name: string,
+				args: {
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
+					namespace?: string
+					// Additional arguments
+				},
+				additionalEnvVars?: azExt.AdditionalEnvVars
+			): Promise<azExt.AzOutput<void>> => {
+				const argsArray = ['sql', 'mi-arc', 'delete', '-n', name];
+				if (args.resourceGroup) {
+					argsArray.push('--resource-group', args.resourceGroup);
+				}
+				if (args.namespace) {
+					argsArray.push('--k8s-namespace', args.namespace);
+					argsArray.push('--use-k8s');
+				}
+				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			},
-			list: (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.SqlMiListResult[]>> => {
-				return this.executeCommand<azExt.SqlMiListResult[]>(['sql', 'mi-arc', 'list', '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
+			list: (
+				args: {
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
+					namespace?: string
+					// Additional arguments
+				},
+				additionalEnvVars?: azExt.AdditionalEnvVars
+			): Promise<azExt.AzOutput<azExt.SqlMiListResult[]>> => {
+				const argsArray = ['sql', 'mi-arc', 'list'];
+				if (args.resourceGroup) {
+					argsArray.push('--resource-group', args.resourceGroup);
+				}
+				if (args.namespace) {
+					argsArray.push('--k8s-namespace', args.namespace);
+					argsArray.push('--use-k8s');
+				}
+				return this.executeCommand<azExt.SqlMiListResult[]>(argsArray, additionalEnvVars);
 			},
-			show: (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.SqlMiShowResult>> => {
-				return this.executeCommand<azExt.SqlMiShowResult>(['sql', 'mi-arc', 'show', '-n', name, '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
+			show: (
+				name: string,
+				args: {
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
+					namespace?: string
+					// Additional arguments
+				},
+				additionalEnvVars?: azExt.AdditionalEnvVars
+			): Promise<azExt.AzOutput<azExt.SqlMiShowResult>> => {
+				const argsArray = ['sql', 'mi-arc', 'show', '-n', name];
+				if (args.resourceGroup) {
+					argsArray.push('--resource-group', args.resourceGroup);
+				}
+				if (args.namespace) {
+					argsArray.push('--k8s-namespace', args.namespace);
+					argsArray.push('--use-k8s');
+				}
+				return this.executeSqlMiShow(argsArray, additionalEnvVars);
 			},
-			edit: (
+			update: (
 				name: string,
 				args: {
 					coresLimit?: string,
@@ -164,16 +249,43 @@ export class AzTool implements azExt.IAzApi {
 					noWait?: boolean,
 					retentionDays?: string
 				},
-				namespace: string,
+				// Direct mode arguments
+				resourceGroup?: string,
+				// Indirect mode arguments
+				namespace?: string,
+				usek8s?: boolean,
+				// Additional arguments
 				additionalEnvVars?: azExt.AdditionalEnvVars
 			): Promise<azExt.AzOutput<void>> => {
-				const argsArray = ['sql', 'mi-arc', 'edit', '-n', name, '--k8s-namespace', namespace, '--use-k8s'];
+				const argsArray = ['sql', 'mi-arc', 'update', '-n', name];
 				if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
 				if (args.coresRequest) { argsArray.push('--cores-request', args.coresRequest); }
 				if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
 				if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
 				if (args.noWait) { argsArray.push('--no-wait'); }
 				if (args.retentionDays) { argsArray.push('--retention-days', args.retentionDays); }
+				if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
+				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
+				if (usek8s) { argsArray.push('--use-k8s'); }
+				return this.executeCommand<void>(argsArray, additionalEnvVars);
+			},
+			upgrade: (
+				name: string,
+				args: {
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
+					namespace?: string
+					// Additional arguments
+				},
+				additionalEnvVars?: azExt.AdditionalEnvVars
+			): Promise<azExt.AzOutput<void>> => {
+				const argsArray = ['sql', 'mi-arc', 'upgrade', '--name', name];
+				if (args.resourceGroup) { argsArray.push('--resource-group', args.resourceGroup); }
+				if (args.namespace) {
+					argsArray.push('--k8s-namespace', args.namespace);
+					argsArray.push('--use-k8s');
+				}
 				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
 		},
@@ -201,6 +313,19 @@ export class AzTool implements azExt.IAzApi {
 		}
 	};
 
+	public monitor = {
+		logAnalytics: {
+			workspace: {
+				list: (resourceGroup?: string, subscription?: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.LogAnalyticsWorkspaceListResult[]>> => {
+					const argsArray = ['monitor', 'log-analytics', 'workspace', 'list'];
+					if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
+					if (subscription) { argsArray.push('--subscription', subscription); }
+					return this.executeCommand<azExt.LogAnalyticsWorkspaceListResult[]>(argsArray, additionalEnvVars);
+				}
+			}
+		}
+	};
+
 
 	/**
 	 * Gets the output of running '--version' command on the az tool.
@@ -214,6 +339,64 @@ export class AzTool implements azExt.IAzApi {
 			stderr: output.stderr.split(os.EOL)
 		};
 	}
+
+	/**
+	 * Executes az sql mi-arc show and returns a normalized object, SqlMiShowResult, regardless of the indirect or direct mode raw output shape.
+	 * @param args The args to pass to az
+	 * @param additionalEnvVars Additional environment variables to set for this execution
+	 */
+	public async executeSqlMiShow(args: string[], additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.SqlMiShowResult>> {
+		try {
+			const result = await executeAzCommand(`"${this._path}"`, args.concat(['--output', 'json']), additionalEnvVars);
+
+			let stdout = <unknown>result.stdout;
+			let stderr = <unknown>result.stderr;
+
+			try {
+				// Automatically try parsing the JSON. This is expected to fail for some az commands such as resource delete.
+				stdout = JSON.parse(result.stdout);
+			} catch (err) {
+				// If the output was not pure JSON, catch the error and log it here.
+				Logger.log(loc.azOutputParseErrorCaught(args.concat(['--output', 'json']).toString()));
+				throw err;
+			}
+
+			if ((<azExt.SqlMiShowResultDirect>stdout).properties) {
+				// Then it is direct mode
+				return {
+					stdout: {
+						name: (<azExt.SqlMiShowResultDirect>stdout).name,
+						spec: (<azExt.SqlMiShowResultDirect>stdout).properties.k8SRaw.spec,
+						status: (<azExt.SqlMiShowResultDirect>stdout).properties.k8SRaw.status
+					},
+					stderr: <string[]>stderr
+				};
+			} else {
+				// It must be indirect mode
+				return {
+					stdout: {
+						name: (<azExt.SqlMiShowResultIndirect>stdout).metadata?.name,
+						spec: (<azExt.SqlMiShowResultIndirect>stdout).spec,
+						status: (<azExt.SqlMiShowResultIndirect>stdout).status
+					},
+					stderr: <string[]>stderr
+				};
+			}
+		} catch (err) {
+			if (err instanceof ExitCodeError) {
+				try {
+					await fs.promises.access(this._path);
+					//this.path exists
+				} catch (e) {
+					// this.path does not exist
+					await vscode.commands.executeCommand('setContext', azFound, false);
+					throw new NoAzureCLIError();
+				}
+			}
+			throw err;
+		}
+	}
+
 
 	/**
 	 * Executes the specified az command.
@@ -532,6 +715,70 @@ function parseArcExtensionVersion(raw: string): string | undefined {
 	// connectedk8s                       1.1.5
 	// ...
 	const exp = /arcdata\s*(\d*.\d*.\d*)/;
+	return exp.exec(raw)?.pop();
+}
+
+/**
+ * Parses out all available upgrades
+ * @param raw The raw version output from az arcdata dc list-upgrades
+ */
+function parseDcListUpgrades(raw: string): string[] | undefined {
+	// Currently the version is a multi-line string that contains other version information such
+	// as the Python installation, with the first line holding the version of az itself.
+	//
+	// Found 6 valid versions.  The current datacontroller version is v1.2.0_2021-12-15.
+	// v1.4.1_2022-03-08
+	// v1.4.0_2022-02-25
+	// v1.3.0_2022-01-27
+	// v1.2.0_2021-12-15 << current version
+	// v1.1.0_2021-11-02
+	// v1.0.0_2021-07-30
+	let versions: string[] = [];
+	const lines = raw.split('\n');
+	const exp = /^(v\d*.\d*.\d*.\d*.\d*.\d*.\d)/;
+	for (let i = 1; i < lines.length; i++) {
+		let result = exp.exec(lines[i])?.pop();
+		if (result) {
+			versions.push(result);
+		}
+	}
+	return versions;
+}
+
+/**
+ * Parses out the release date from the upgrade version number and formats it into MM/DD/YYYY format.
+ * For example: v1.4.1_2022-03-08 ==> 03/08/2022
+ * @param raw The raw upgrade version number, such as: v1.4.1_2022-03-08
+ */
+function parseReleaseDateFromUpgrade(raw: string): string {
+	let formattedDate = '';
+	const exp = /^v\d*.\d*.\d*_(\d*).(\d*).(\d*.\d)/;
+	let rawDate = exp.exec(raw);
+	if (rawDate) {
+		formattedDate += rawDate[2] + '/' + rawDate[3] + '/' + rawDate[1];
+	} else {
+		console.error(loc.releaseDateNotParsed);
+	}
+	return formattedDate;
+}
+
+/**
+ * Parses out the current version number out of all available upgrades
+ * @param raw The raw version output from az arcdata dc list-upgrades
+ */
+function parseCurrentVersion(raw: string): string | undefined {
+	// Currently the version is a multi-line string that contains other version information such
+	// as the Python installation, with the first line holding the version of az itself.
+	//
+	// Found 6 valid versions.  The current datacontroller version is v1.2.0_2021-12-15.
+	// v1.4.1_2022-03-08
+	// v1.4.0_2022-02-25
+	// v1.3.0_2022-01-27
+	// v1.2.0_2021-12-15 << current version
+	// v1.1.0_2021-11-02
+	// v1.0.0_2021-07-30
+
+	const exp = /The current datacontroller version is\s*(v\d*.\d*.\d*.\d*.\d*.\d*.\d)/;
 	return exp.exec(raw)?.pop();
 }
 

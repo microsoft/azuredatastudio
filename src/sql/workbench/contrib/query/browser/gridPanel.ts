@@ -65,6 +65,13 @@ const ACTIONBAR_HEIGHT = 120;
 // this handles min size if rows is greater than the min grid visible rows
 const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 
+// The regex to check whether a string is a valid JSON string. It is used to determine:
+// 1. whether the cell should be rendered as a hyperlink.
+// 2. when user clicks a cell, whether the cell content should be displayed in a new text editor as json.
+// Based on the requirements, the solution doesn't need to be very accurate, a simple regex is enough since it is more
+// performant than trying to parse the string to object.
+const IsJsonRegex = /({.*?})/g;
+
 export class GridPanel extends Disposable {
 	private container = document.createElement('div');
 	private scrollableView: ScrollableView;
@@ -395,15 +402,13 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.container.style.height = '100%';
 
 		this.columns = this.resultSet.columnInfo.map((c, i) => {
-			let isLinked = c.isXml || c.isJson;
-
 			return <Slick.Column<T>>{
 				id: i.toString(),
 				name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
 					? localize('xmlShowplan', "XML Showplan")
 					: escape(c.columnName),
 				field: i.toString(),
-				formatter: isLinked ? hyperLinkFormatter : textFormatter,
+				formatter: c.isXml ? hyperLinkFormatter : queryResultTextFormatter,
 				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
 			};
 		});
@@ -491,7 +496,14 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			(offset, count) => { return this.loadData(offset, count); },
 			undefined,
 			undefined,
-			(data: ICellValue) => { return data.isNull ? undefined : data?.displayValue; },
+			(data: ICellValue) => {
+				if (!data || data.isNull) {
+					return undefined;
+				}
+				// If the string only contains whitespaces, it will be treated as empty string to make the filtering easier.
+				// Note: this is the display string and does not impact the export/copy features.
+				return data.displayValue.trim() === '' ? '' : data.displayValue;
+			},
 			{
 				inMemoryDataProcessing: this.options.inMemoryDataProcessing,
 				inMemoryDataCountThreshold: this.options.inMemoryDataCountThreshold
@@ -501,7 +513,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
 		const autoSizeOnRender: boolean = !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns');
-		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: autoSizeOnRender, maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth'), extraColumnHeaderWidth: this.enableFilteringFeature ? FilterButtonWidth : 0 }));
+		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: autoSizeOnRender, maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth'), extraColumnHeaderWidth: FilterButtonWidth }));
 		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
@@ -527,14 +539,12 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			};
 			this.table.rerenderGrid();
 		}));
-		if (this.enableFilteringFeature) {
-			this.filterPlugin = new HeaderFilter(this.contextViewService, this.notificationService, {
-				disabledFilterMessage: localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'"),
-				refreshColumns: !autoSizeOnRender // The auto size columns plugin refreshes the columns so we don't need to refresh twice if both plugins are on.
-			});
-			this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
-			this.table.registerPlugin(this.filterPlugin);
-		}
+		this.filterPlugin = new HeaderFilter(this.contextViewService, this.notificationService, {
+			disabledFilterMessage: localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'"),
+			refreshColumns: !autoSizeOnRender // The auto size columns plugin refreshes the columns so we don't need to refresh twice if both plugins are on.
+		});
+		this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
+		this.table.registerPlugin(this.filterPlugin);
 		if (this.styles) {
 			this.table.style(this.styles);
 		}
@@ -659,18 +669,23 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.scrolled = false;
 	}
 
+	private async getRowData(start: number, length: number): Promise<ICellValue[][]> {
+		let subset;
+		if (this.dataProvider.isDataInMemory) {
+			// handle the scenario when the data is sorted/filtered,
+			// we need to use the data that is being displayed
+			const data = await this.dataProvider.getRangeAsync(start, length);
+			subset = data.map(item => Object.keys(item).map(key => item[key]));
+		} else {
+			subset = (await this.gridDataProvider.getRowData(start, length)).rows;
+		}
+		return subset;
+	}
+
 	private async notifyTableSelectionChanged() {
 		const selectedCells = [];
 		for (const range of this.state.selection) {
-			let subset;
-			if (this.dataProvider.isDataInMemory) {
-				// handle the scenario when the data is sorted/filtered,
-				// we need to use the data that is being displayed
-				const data = await this.dataProvider.getRangeAsync(range.fromRow, range.toRow - range.fromRow + 1);
-				subset = data.map(item => Object.keys(item).map(key => item[key]));
-			} else {
-				subset = (await this.gridDataProvider.getRowData(range.fromRow, range.toRow - range.fromRow + 1)).rows;
-			}
+			const subset = await this.getRowData(range.fromRow, range.toRow - range.fromRow + 1);
 			subset.forEach(row => {
 				// start with range.fromCell -1 because we have row number column which is not available in the actual data
 				for (let i = range.fromCell - 1; i < range.toCell; i++) {
@@ -681,22 +696,22 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.queryModelService.notifyCellSelectionChanged(selectedCells);
 	}
 
-	private onTableClick(event: ITableMouseEvent) {
+	private async onTableClick(event: ITableMouseEvent) {
 		// account for not having the number column
-		let column = this.resultSet.columnInfo[event.cell.cell - 1];
+		const column = this.resultSet.columnInfo[event.cell.cell - 1];
 		// handle if a showplan link was clicked
-		if (column && (column.isXml || column.isJson)) {
-			this.gridDataProvider.getRowData(event.cell.row, 1).then(async d => {
-				let value = d.rows[0][event.cell.cell - 1];
-				let content = value.displayValue;
-
+		if (column) {
+			const subset = await this.getRowData(event.cell.row, 1);
+			const value = subset[0][event.cell.cell - 1];
+			const isJson = isJsonCell(value);
+			if (column.isXml || isJson) {
+				const content = value.displayValue;
 				const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
 				await input.resolve();
 				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
 				input.setDirty(false);
-
-				return this.editorService.openEditor(input);
-			});
+				await this.editorService.openEditor(input);
+			}
 		}
 	}
 
@@ -710,16 +725,10 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this._onDidChange.fire(undefined);
 	}
 
-	private get enableFilteringFeature(): boolean {
-		return this.configurationService.getValue<boolean>('workbench')['enablePreviewFeatures'];
-	}
-
 	private setFilterState(): void {
-		if (this.enableFilteringFeature) {
-			const rowCount = this.table.getData().getLength();
-			this.filterPlugin.enabled = this.options.inMemoryDataProcessing
-				&& (this.options.inMemoryDataCountThreshold === undefined || this.options.inMemoryDataCountThreshold >= rowCount);
-		}
+		const rowCount = this.table.getData().getLength();
+		this.filterPlugin.enabled = this.options.inMemoryDataProcessing
+			&& (this.options.inMemoryDataCountThreshold === undefined || this.options.inMemoryDataCountThreshold >= rowCount);
 	}
 
 	private generateContext(cell?: Slick.Cell): IGridActionContext {
@@ -933,5 +942,17 @@ class GridTable<T> extends GridTableBase<T> {
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
 		];
+	}
+}
+
+function isJsonCell(value: ICellValue): boolean {
+	return !!(value && !value.isNull && value.displayValue?.match(IsJsonRegex));
+}
+
+function queryResultTextFormatter(row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string {
+	if (isJsonCell(value)) {
+		return hyperLinkFormatter(row, cell, value, columnDef, dataContext);
+	} else {
+		return textFormatter(row, cell, value, columnDef, dataContext);
 	}
 }

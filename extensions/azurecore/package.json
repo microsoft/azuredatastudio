@@ -110,6 +110,20 @@
             "type": "boolean",
             "default": false,
             "description": "%config.piiLogging%"
+          },
+          "azure.loggingLevel": {
+            "type": "string",
+            "description": "%config.loggingLevel%",
+            "default": "Error",
+            "enum": [
+              "Off",
+              "Critical",
+              "Error",
+              "Warning",
+              "Information",
+              "Verbose",
+              "All"
+            ]
           }
         }
       }
@@ -334,26 +348,26 @@
     "@azure/arm-resourcegraph": "^4.0.0",
     "@azure/arm-subscriptions": "^3.0.0",
     "@azure/storage-blob": "^12.6.0",
-    "axios": "^0.21.4",
+    "axios": "^0.27.2",
     "node-fetch": "^2.6.7",
     "qs": "^6.9.1",
     "vscode-nls": "^4.0.0",
-    "ws": "^7.2.0"
+    "ws": "^7.4.6"
   },
   "devDependencies": {
     "@types/keytar": "4.4.0",
-    "@types/mocha": "^5.2.5",
+    "@types/mocha": "^7.0.2",
     "@types/node": "^12.11.7",
     "@types/qs": "^6.9.1",
     "@types/request": "^2.48.1",
     "@types/sinon": "^9.0.4",
     "@types/ws": "^6.0.4",
-    "mocha": "^5.2.0",
+    "mocha": "^7.1.1",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "@microsoft/vscodetestcover": "^1.2.0"
+    "@microsoft/vscodetestcover": "^1.2.1"
   }
 }

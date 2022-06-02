@@ -31,7 +31,7 @@
 			"contentFolder": "콘텐츠 폴더",
 			"contentFolderOptional": "콘텐츠 폴더(선택 사항)",
 			"create": "만들기",
-			"duplicateFileError": "대상 폴더 {1}에 {0} 파일이 이미 있습니다.\r\n 데이터 손실을 방지하기 위해 파일 이름이 {2}(으)로 바뀌었습니다.",
+			"duplicateFileError": "대상 폴더 {1}에 {0} 파일이 이미 있습니다. \r\n 데이터 손실을 방지하기 위해 파일 이름이 {2}(으)로 바뀌었습니다.",
 			"editBookError": "Jupyter Book {0}을(를) 편집하는 동안 오류 발생: {1}",
 			"fileExtension": "파일 확장명",
 			"fileName": "파일 이름",

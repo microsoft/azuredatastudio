@@ -16,8 +16,17 @@
     <trans-unit id="arc.arcResources">
       <source xml:lang="en">Azure Arc Resources</source>
     </trans-unit>
+    <trans-unit id="arc.areYouSure">
+      <source xml:lang="en">Are you sure you want to apply the selected upgrade?</source>
+    </trans-unit>
     <trans-unit id="arc.available">
       <source xml:lang="en">Available</source>
+    </trans-unit>
+    <trans-unit id="arc.availableUpgrades">
+      <source xml:lang="en">Available Upgrades</source>
+    </trans-unit>
+    <trans-unit id="arc.availableUpgradesDescription">
+      <source xml:lang="en">Available upgrades for this resource are listed below. You can apply upgrades by clicking the upgrade button.</source>
     </trans-unit>
     <trans-unit id="arc.backup">
       <source xml:lang="en">Backup</source>
@@ -76,9 +85,6 @@
     <trans-unit id="arc.confirmNewPassword">
       <source xml:lang="en">Confirm the new password</source>
     </trans-unit>
-    <trans-unit id="arc.connecToServer">
-      <source xml:lang="en">Connect to Server</source>
-    </trans-unit>
     <trans-unit id="arc.connect">
       <source xml:lang="en">Connect</source>
     </trans-unit>
@@ -103,6 +109,9 @@
     <trans-unit id="arc.connectToPostgresDescription">
       <source xml:lang="en">A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.</source>
     </trans-unit>
+    <trans-unit id="arc.connectToServer">
+      <source xml:lang="en">Connect to Server</source>
+    </trans-unit>
     <trans-unit id="arc.connectionMode">
       <source xml:lang="en">Connection Mode</source>
     </trans-unit>
@@ -120,7 +129,7 @@
       <source xml:lang="en">Cluster Context</source>
     </trans-unit>
     <trans-unit id="arc.controllerDashboard">
-      <source xml:lang="en">Azure Arc Data Controller Dashboard (Preview) - {0}</source>
+      <source xml:lang="en">Azure Arc Data Controller Dashboard - {0}</source>
     </trans-unit>
     <trans-unit id="arc.controllerKubeConfig">
       <source xml:lang="en">Kube Config File Path</source>
@@ -202,6 +211,9 @@
     <trans-unit id="arc.createNew">
       <source xml:lang="en">New Instance</source>
     </trans-unit>
+    <trans-unit id="arc.currentVersion">
+      <source xml:lang="en">Current version</source>
+    </trans-unit>
     <trans-unit id="arc.dataController">
       <source xml:lang="en">Data controller</source>
     </trans-unit>
@@ -279,6 +291,12 @@
     </trans-unit>
     <trans-unit id="arc.errorConnectingToController">
       <source xml:lang="en">Error connecting to controller. {0}</source>
+    </trans-unit>
+    <trans-unit id="arc.errorGettingConnectionMode">
+      <source xml:lang="en">Error getting data controller connection mode.</source>
+    </trans-unit>
+    <trans-unit id="arc.errorListingLogAnalyticsWorkspaces">
+      <source xml:lang="en">Error listing Log Analytics workspaces {0}</source>
     </trans-unit>
     <trans-unit id="arc.errorVerifyingPassword">
       <source xml:lang="en">Error encountered while verifying password. {0}</source>
@@ -455,7 +473,7 @@
       <source xml:lang="en">A connection is required to list the databases on this instance.</source>
     </trans-unit>
     <trans-unit id="arc.miaaDashboard">
-      <source xml:lang="en">SQL managed instance - Azure Arc Dashboard (Preview) - {0}</source>
+      <source xml:lang="en">SQL managed instance - Azure Arc Dashboard - {0}</source>
     </trans-unit>
     <trans-unit id="arc.miaaProviderName">
       <source xml:lang="en">MSSQL</source>
@@ -463,11 +481,17 @@
     <trans-unit id="arc.miaaType">
       <source xml:lang="en">SQL managed instance - Azure Arc</source>
     </trans-unit>
+    <trans-unit id="arc.miaaVersionError">
+      <source xml:lang="en">Error getting SQL managed instance version number.</source>
+    </trans-unit>
     <trans-unit id="arc.missingExtension">
       <source xml:lang="en">The {0} extension is required to view engine settings. Do you wish to install it now?</source>
     </trans-unit>
     <trans-unit id="arc.monitor">
       <source xml:lang="en">Monitor</source>
+    </trans-unit>
+    <trans-unit id="arc.monitorUpgrade">
+      <source xml:lang="en">You can check the status of the upgrade by running the following command:</source>
     </trans-unit>
     <trans-unit id="arc.name">
       <source xml:lang="en">Name</source>
@@ -501,6 +525,9 @@
     </trans-unit>
     <trans-unit id="arc.noPodIssuesDetected">
       <source xml:lang="en">There aren’t any known issues affecting this PostgreSQL Hyperscale instance.</source>
+    </trans-unit>
+    <trans-unit id="arc.noUpgrades">
+      <source xml:lang="en">The current version is the latest version. No upgrades available.</source>
     </trans-unit>
     <trans-unit id="arc.noWorkerPods">
       <source xml:lang="en">No worker pods in this configuration.</source>
@@ -543,6 +570,12 @@
     </trans-unit>
     <trans-unit id="arc.online">
       <source xml:lang="en">Online</source>
+    </trans-unit>
+    <trans-unit id="arc.onlyNextImmediateVersion">
+      <source xml:lang="en">Currently, only upgrading to the next immediate version is supported.</source>
+    </trans-unit>
+    <trans-unit id="arc.onlyNextImmediateVersionMiaa">
+      <source xml:lang="en">The version of a SQL Managed Instance can not be newer than the version of its data controller. Currently, only upgrading to the next immediate version is supported.</source>
     </trans-unit>
     <trans-unit id="arc.openDashboardFailed">
       <source xml:lang="en">Error opening dashboard. {0}</source>
@@ -629,7 +662,7 @@
       <source xml:lang="en">You can scale your Azure Arc-enabled</source>
     </trans-unit>
     <trans-unit id="arc.postgresDashboard">
-      <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc Dashboard (Preview) - {0}</source>
+      <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc Dashboard - {0}</source>
     </trans-unit>
     <trans-unit id="arc.postgresExtension">
       <source xml:lang="en">microsoft.azuredatastudio-postgresql</source>
@@ -678,6 +711,12 @@
     </trans-unit>
     <trans-unit id="arc.region">
       <source xml:lang="en">Region</source>
+    </trans-unit>
+    <trans-unit id="arc.releaseDate">
+      <source xml:lang="en">Release Date</source>
+    </trans-unit>
+    <trans-unit id="arc.releaseNotes">
+      <source xml:lang="en">Release Notes</source>
     </trans-unit>
     <trans-unit id="arc.rememberPassword">
       <source xml:lang="en">Remember Password</source>
@@ -778,6 +817,9 @@
     <trans-unit id="arc.settings">
       <source xml:lang="en">Settings</source>
     </trans-unit>
+    <trans-unit id="arc.showMiaaError">
+      <source xml:lang="en">Error showing details of SQL managed instance.</source>
+    </trans-unit>
     <trans-unit id="arc.sourceDatabase">
       <source xml:lang="en">Source database</source>
     </trans-unit>
@@ -835,6 +877,30 @@
     <trans-unit id="arc.updatingInstance">
       <source xml:lang="en">Updating instance '{0}'...</source>
     </trans-unit>
+    <trans-unit id="arc.upgrade">
+      <source xml:lang="en">Upgrade</source>
+    </trans-unit>
+    <trans-unit id="arc.upgradeDataController">
+      <source xml:lang="en">Upgrade Data Controller</source>
+    </trans-unit>
+    <trans-unit id="arc.upgradeDialogController">
+      <source xml:lang="en">During a data controller upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the data controller will not cause downtime for the data services (SQL Managed Instance or PostgreSQL server).</source>
+    </trans-unit>
+    <trans-unit id="arc.upgradeDialogMiaa">
+      <source xml:lang="en">During a SQL managed instance upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the SQL managed instance will not cause downtime for the data services (SQL Managed Instance or PostgreSQL server).</source>
+    </trans-unit>
+    <trans-unit id="arc.upgradeManagement">
+      <source xml:lang="en">Upgrade Management</source>
+    </trans-unit>
+    <trans-unit id="arc.upgradeMiaa">
+      <source xml:lang="en">Upgrade SQL Managed Instance</source>
+    </trans-unit>
+    <trans-unit id="arc.upgradingController">
+      <source xml:lang="en">Data controller is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get datacontrollers -A'</source>
+    </trans-unit>
+    <trans-unit id="arc.upgradingMiaa">
+      <source xml:lang="en">SQL managed instance is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get sqlmi -A'</source>
+    </trans-unit>
     <trans-unit id="arc.userCancelledError">
       <source xml:lang="en">User cancelled the dialog</source>
     </trans-unit>
@@ -846,6 +912,12 @@
     </trans-unit>
     <trans-unit id="arc.value">
       <source xml:lang="en">Value</source>
+    </trans-unit>
+    <trans-unit id="arc.version">
+      <source xml:lang="en">Version</source>
+    </trans-unit>
+    <trans-unit id="arc.versionLog">
+      <source xml:lang="en">Learn more about each release here.</source>
     </trans-unit>
     <trans-unit id="arc.worker">
       <source xml:lang="en">Worker</source>
@@ -1042,6 +1114,15 @@
     </trans-unit>
     <trans-unit id="arc.data.controller.location">
       <source xml:lang="en">Location</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.log.analytics.primary.key">
+      <source xml:lang="en">Log Analytics primary key</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.log.analytics.workspace.id">
+      <source xml:lang="en">Log Analytics workspace ID</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.log.analytics.workspace.names">
+      <source xml:lang="en">Log Analytics workspace</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.confirm.password">
       <source xml:lang="en">Confirm password</source>
@@ -1293,7 +1374,7 @@
       <source xml:lang="en">Provide Azure enabled PostgreSQL Hyperscale server group parameters</source>
     </trans-unit>
     <trans-unit id="arc.postgres.wizard.title">
-      <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group (Preview)</source>
+      <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group</source>
     </trans-unit>
     <trans-unit id="arc.sql.connection.settings.section.title">
       <source xml:lang="en">SQL Connection information</source>
@@ -1350,7 +1431,7 @@
       <source xml:lang="en">Service Tier</source>
     </trans-unit>
     <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.description">
-      <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
+      <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>
     </trans-unit>
     <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.text">
       <source xml:lang="en">Learn more</source>
@@ -1379,8 +1460,11 @@
     <trans-unit id="arc.sql.dev.use.label">
       <source xml:lang="en">For development use only</source>
     </trans-unit>
+    <trans-unit id="arc.sql.high.availability">
+      <source xml:lang="en">High availability</source>
+    </trans-unit>
     <trans-unit id="arc.sql.high.availability.description">
-      <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas. Choose from: General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability) or [PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability).</source>
+      <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</source>
     </trans-unit>
     <trans-unit id="arc.sql.instance.name">
       <source xml:lang="en">Instance name</source>
@@ -1410,16 +1494,13 @@
       <source xml:lang="en">The request for the capacity of the managed instance as an integer amount of memory in GBs.</source>
     </trans-unit>
     <trans-unit id="arc.sql.one.replica">
-      <source xml:lang="en">1</source>
+      <source xml:lang="en">1 replica</source>
     </trans-unit>
     <trans-unit id="arc.sql.pitr.description">
       <source xml:lang="en">Point in time restore</source>
     </trans-unit>
     <trans-unit id="arc.sql.pitr.retention.description">
       <source xml:lang="en">Configure retention for point-in-time backups. {0}</source>
-    </trans-unit>
-    <trans-unit id="arc.sql.replicas">
-      <source xml:lang="en">Replicas</source>
     </trans-unit>
     <trans-unit id="arc.sql.retention.days.description">
       <source xml:lang="en">Specify how long you want to keep your point-in-time backups.</source>
@@ -1428,13 +1509,13 @@
       <source xml:lang="en">Point in time retention (days)</source>
     </trans-unit>
     <trans-unit id="arc.sql.service.tier.business.critical">
-      <source xml:lang="en">BusinessCritical</source>
+      <source xml:lang="en">Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
     </trans-unit>
     <trans-unit id="arc.sql.service.tier.description">
-      <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
+      <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>
     </trans-unit>
     <trans-unit id="arc.sql.service.tier.general.purpose">
-      <source xml:lang="en">GeneralPurpose</source>
+      <source xml:lang="en">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</source>
     </trans-unit>
     <trans-unit id="arc.sql.service.tier.label">
       <source xml:lang="en">Service Tier</source>
@@ -1458,10 +1539,10 @@
       <source xml:lang="en">by Microsoft</source>
     </trans-unit>
     <trans-unit id="arc.sql.three.replicas">
-      <source xml:lang="en">3</source>
+      <source xml:lang="en">3 replicas</source>
     </trans-unit>
     <trans-unit id="arc.sql.two.replicas">
-      <source xml:lang="en">2</source>
+      <source xml:lang="en">2 replicas</source>
     </trans-unit>
     <trans-unit id="arc.sql.username">
       <source xml:lang="en">Username</source>
@@ -1494,7 +1575,7 @@
       <source xml:lang="en">Provide Azure SQL managed instance parameters</source>
     </trans-unit>
     <trans-unit id="arc.sql.wizard.title">
-      <source xml:lang="en">Deploy Azure SQL managed instance - Azure Arc (preview)</source>
+      <source xml:lang="en">Deploy Azure SQL managed instance - Azure Arc</source>
     </trans-unit>
     <trans-unit id="arc.storage-class.backups.label">
       <source xml:lang="en">Storage Class (Backups)</source>
@@ -1564,19 +1645,19 @@
       <source xml:lang="en">Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment</source>
     </trans-unit>
     <trans-unit id="resource.type.arc.postgres.display.name">
-      <source xml:lang="en">PostgreSQL Hyperscale server groups - Azure Arc (preview)</source>
+      <source xml:lang="en">PostgreSQL Hyperscale server groups - Azure Arc</source>
     </trans-unit>
     <trans-unit id="resource.type.arc.sql.description">
       <source xml:lang="en">Managed SQL Instance service for app developers in a customer-managed environment</source>
     </trans-unit>
     <trans-unit id="resource.type.arc.sql.display.name">
-      <source xml:lang="en">Azure SQL managed instance - Azure Arc (preview)</source>
+      <source xml:lang="en">Azure SQL managed instance - Azure Arc</source>
     </trans-unit>
     <trans-unit id="resource.type.azure.arc.description">
-      <source xml:lang="en">Creates an Azure Arc data controller</source>
+      <source xml:lang="en">Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.</source>
     </trans-unit>
     <trans-unit id="resource.type.azure.arc.display.name">
-      <source xml:lang="en">Azure Arc data controller (preview)</source>
+      <source xml:lang="en">Azure Arc data controller</source>
     </trans-unit>
     <trans-unit id="should.be.integer">
       <source xml:lang="en">Value must be an integer</source>

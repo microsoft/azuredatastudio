@@ -7,17 +7,12 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
 import * as TypeMoq from 'typemoq';
-import * as mssql from '../../../mssql/src/mssql';
-import * as vscodeMssql from 'vscode-mssql';
+import * as mssql from 'mssql';
 
 export interface TestContext {
 	context: vscode.ExtensionContext;
 	dacFxService: TypeMoq.IMock<mssql.IDacFxService>;
-	azureFunctionService: TypeMoq.IMock<vscodeMssql.IAzureFunctionsService>;
 	outputChannel: vscode.OutputChannel;
-	vscodeMssqlIExtension: TypeMoq.IMock<vscodeMssql.IExtension>
-	dacFxMssqlService: TypeMoq.IMock<vscodeMssql.IDacFxService>;
-	schemaCompareService: TypeMoq.IMock<vscodeMssql.ISchemaCompareService>;
 }
 
 export const mockDacFxResult = {
@@ -27,89 +22,112 @@ export const mockDacFxResult = {
 	report: ''
 };
 
+/* Get the deployment options sample model */
+export function getDeploymentOptions(): mssql.DeploymentOptions {
+	const sampleDesc = 'Sample Description text';
+	const sampleName = 'Sample Display Name';
+	const defaultOptions: mssql.DeploymentOptions = {
+		ignoreTableOptions: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreSemicolonBetweenStatements: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreRouteLifetime: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreRoleMembership: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreQuotedIdentifiers: { value: false, description: sampleDesc, displayName: sampleName },
+		ignorePermissions: { value: false, description: sampleDesc, displayName: sampleName },
+		ignorePartitionSchemes: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreObjectPlacementOnPartitionScheme: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreNotForReplication: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreLoginSids: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreLockHintsOnIndexes: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreKeywordCasing: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreIndexPadding: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreIndexOptions: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreIncrement: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreIdentitySeed: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreUserSettingsObjects: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreFullTextCatalogFilePath: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreWhitespace: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreWithNocheckOnForeignKeys: { value: false, description: sampleDesc, displayName: sampleName },
+		verifyCollationCompatibility: { value: false, description: sampleDesc, displayName: sampleName },
+		unmodifiableObjectWarnings: { value: false, description: sampleDesc, displayName: sampleName },
+		treatVerificationErrorsAsWarnings: { value: false, description: sampleDesc, displayName: sampleName },
+		scriptRefreshModule: { value: false, description: sampleDesc, displayName: sampleName },
+		scriptNewConstraintValidation: { value: false, description: sampleDesc, displayName: sampleName },
+		scriptFileSize: { value: false, description: sampleDesc, displayName: sampleName },
+		scriptDeployStateChecks: { value: false, description: sampleDesc, displayName: sampleName },
+		scriptDatabaseOptions: { value: false, description: sampleDesc, displayName: sampleName },
+		scriptDatabaseCompatibility: { value: false, description: sampleDesc, displayName: sampleName },
+		scriptDatabaseCollation: { value: false, description: sampleDesc, displayName: sampleName },
+		runDeploymentPlanExecutors: { value: false, description: sampleDesc, displayName: sampleName },
+		registerDataTierApplication: { value: false, description: sampleDesc, displayName: sampleName },
+		populateFilesOnFileGroups: { value: false, description: sampleDesc, displayName: sampleName },
+		noAlterStatementsToChangeClrTypes: { value: false, description: sampleDesc, displayName: sampleName },
+		includeTransactionalScripts: { value: false, description: sampleDesc, displayName: sampleName },
+		includeCompositeObjects: { value: false, description: sampleDesc, displayName: sampleName },
+		allowUnsafeRowLevelSecurityDataMovement: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreWithNocheckOnCheckConstraints: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreFillFactor: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreFileSize: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreFilegroupPlacement: { value: false, description: sampleDesc, displayName: sampleName },
+		doNotAlterReplicatedObjects: { value: false, description: sampleDesc, displayName: sampleName },
+		doNotAlterChangeDataCaptureObjects: { value: false, description: sampleDesc, displayName: sampleName },
+		disableAndReenableDdlTriggers: { value: false, description: sampleDesc, displayName: sampleName },
+		deployDatabaseInSingleUserMode: { value: false, description: sampleDesc, displayName: sampleName },
+		createNewDatabase: { value: false, description: sampleDesc, displayName: sampleName },
+		compareUsingTargetCollation: { value: false, description: sampleDesc, displayName: sampleName },
+		commentOutSetVarDeclarations: { value: false, description: sampleDesc, displayName: sampleName },
+		blockWhenDriftDetected: { value: false, description: sampleDesc, displayName: sampleName },
+		blockOnPossibleDataLoss: { value: false, description: sampleDesc, displayName: sampleName },
+		backupDatabaseBeforeChanges: { value: false, description: sampleDesc, displayName: sampleName },
+		allowIncompatiblePlatform: { value: false, description: sampleDesc, displayName: sampleName },
+		allowDropBlockingAssemblies: { value: false, description: sampleDesc, displayName: sampleName },
+		dropConstraintsNotInSource: { value: false, description: sampleDesc, displayName: sampleName },
+		dropDmlTriggersNotInSource: { value: false, description: sampleDesc, displayName: sampleName },
+		dropExtendedPropertiesNotInSource: { value: false, description: sampleDesc, displayName: sampleName },
+		dropIndexesNotInSource: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreFileAndLogFilePath: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreExtendedProperties: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreDmlTriggerState: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreDmlTriggerOrder: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreDefaultSchema: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreDdlTriggerState: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreDdlTriggerOrder: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreCryptographicProviderFilePath: { value: false, description: sampleDesc, displayName: sampleName },
+		verifyDeployment: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreComments: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreColumnCollation: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreAuthorizer: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreAnsiNulls: { value: false, description: sampleDesc, displayName: sampleName },
+		generateSmartDefaults: { value: false, description: sampleDesc, displayName: sampleName },
+		dropStatisticsNotInSource: { value: false, description: sampleDesc, displayName: sampleName },
+		dropRoleMembersNotInSource: { value: false, description: sampleDesc, displayName: sampleName },
+		dropPermissionsNotInSource: { value: false, description: sampleDesc, displayName: sampleName },
+		dropObjectsNotInSource: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreColumnOrder: { value: false, description: sampleDesc, displayName: sampleName },
+		doNotDropObjectTypes: { value: [], description: sampleDesc, displayName: sampleName },
+		excludeObjectTypes: { value: [], description: sampleDesc, displayName: sampleName },
+		ignoreTablePartitionOptions: { value: false, description: sampleDesc, displayName: sampleName },
+		doNotEvaluateSqlCmdVariables: { value: false, description: sampleDesc, displayName: sampleName },
+		disableParallelismForEnablingIndexes: { value: false, description: sampleDesc, displayName: sampleName },
+		disableIndexesForDataPhase: { value: false, description: sampleDesc, displayName: sampleName },
+		restoreSequenceCurrentValue: { value: false, description: sampleDesc, displayName: sampleName },
+		rebuildIndexesOfflineForDataPhase: { value: false, description: sampleDesc, displayName: sampleName },
+		isAlwaysEncryptedParameterizationEnabled: { value: false, description: sampleDesc, displayName: sampleName },
+		preserveIdentityLastValues: { value: false, description: sampleDesc, displayName: sampleName },
+		allowExternalLibraryPaths: { value: false, description: sampleDesc, displayName: sampleName },
+		allowExternalLanguagePaths: { value: false, description: sampleDesc, displayName: sampleName },
+		hashObjectNamesInLogs: { value: false, description: sampleDesc, displayName: sampleName },
+		doNotDropWorkloadClassifiers: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreWorkloadClassifiers: { value: false, description: sampleDesc, displayName: sampleName },
+		ignoreDatabaseWorkloadGroups: { value: false, description: sampleDesc, displayName: sampleName },
+		doNotDropDatabaseWorkloadGroups: { value: false, description: sampleDesc, displayName: sampleName }
+	};
+	return defaultOptions;
+}
+
 export const mockDacFxOptionsResult: mssql.DacFxOptionsResult = {
 	success: true,
 	errorMessage: '',
-	deploymentOptions: {
-		ignoreTableOptions: false,
-		ignoreSemicolonBetweenStatements: false,
-		ignoreRouteLifetime: false,
-		ignoreRoleMembership: false,
-		ignoreQuotedIdentifiers: false,
-		ignorePermissions: false,
-		ignorePartitionSchemes: false,
-		ignoreObjectPlacementOnPartitionScheme: false,
-		ignoreNotForReplication: false,
-		ignoreLoginSids: false,
-		ignoreLockHintsOnIndexes: false,
-		ignoreKeywordCasing: false,
-		ignoreIndexPadding: false,
-		ignoreIndexOptions: false,
-		ignoreIncrement: false,
-		ignoreIdentitySeed: false,
-		ignoreUserSettingsObjects: false,
-		ignoreFullTextCatalogFilePath: false,
-		ignoreWhitespace: false,
-		ignoreWithNocheckOnForeignKeys: false,
-		verifyCollationCompatibility: false,
-		unmodifiableObjectWarnings: false,
-		treatVerificationErrorsAsWarnings: false,
-		scriptRefreshModule: false,
-		scriptNewConstraintValidation: false,
-		scriptFileSize: false,
-		scriptDeployStateChecks: false,
-		scriptDatabaseOptions: false,
-		scriptDatabaseCompatibility: false,
-		scriptDatabaseCollation: false,
-		runDeploymentPlanExecutors: false,
-		registerDataTierApplication: false,
-		populateFilesOnFileGroups: false,
-		noAlterStatementsToChangeClrTypes: false,
-		includeTransactionalScripts: false,
-		includeCompositeObjects: false,
-		allowUnsafeRowLevelSecurityDataMovement: false,
-		ignoreWithNocheckOnCheckConstraints: false,
-		ignoreFillFactor: false,
-		ignoreFileSize: false,
-		ignoreFilegroupPlacement: false,
-		doNotAlterReplicatedObjects: false,
-		doNotAlterChangeDataCaptureObjects: false,
-		disableAndReenableDdlTriggers: false,
-		deployDatabaseInSingleUserMode: false,
-		createNewDatabase: false,
-		compareUsingTargetCollation: false,
-		commentOutSetVarDeclarations: false,
-		blockWhenDriftDetected: false,
-		blockOnPossibleDataLoss: false,
-		backupDatabaseBeforeChanges: false,
-		allowIncompatiblePlatform: false,
-		allowDropBlockingAssemblies: false,
-		dropConstraintsNotInSource: false,
-		dropDmlTriggersNotInSource: false,
-		dropExtendedPropertiesNotInSource: false,
-		dropIndexesNotInSource: false,
-		ignoreFileAndLogFilePath: false,
-		ignoreExtendedProperties: false,
-		ignoreDmlTriggerState: false,
-		ignoreDmlTriggerOrder: false,
-		ignoreDefaultSchema: false,
-		ignoreDdlTriggerState: false,
-		ignoreDdlTriggerOrder: false,
-		ignoreCryptographicProviderFilePath: false,
-		verifyDeployment: false,
-		ignoreComments: false,
-		ignoreColumnCollation: false,
-		ignoreAuthorizer: false,
-		ignoreAnsiNulls: false,
-		generateSmartDefaults: false,
-		dropStatisticsNotInSource: false,
-		dropRoleMembersNotInSource: false,
-		dropPermissionsNotInSource: false,
-		dropObjectsNotInSource: false,
-		ignoreColumnOrder: false,
-		doNotDropObjectTypes: [],
-		excludeObjectTypes: []
-	}
+	deploymentOptions: getDeploymentOptions()
 };
 
 export class MockDacFxService implements mssql.IDacFxService {
@@ -122,153 +140,6 @@ export class MockDacFxService implements mssql.IDacFxService {
 	public generateDeployPlan(_: string, __: string, ___: string, ____: azdata.TaskExecutionMode): Thenable<mssql.GenerateDeployPlanResult> { return Promise.resolve(mockDacFxResult); }
 	public getOptionsFromProfile(_: string): Thenable<mssql.DacFxOptionsResult> { return Promise.resolve(mockDacFxOptionsResult); }
 	public validateStreamingJob(_: string, __: string): Thenable<mssql.ValidateStreamingJobResult> { return Promise.resolve(mockDacFxResult); }
-}
-
-export const mockResultStatus = {
-	success: true,
-	errorMessage: ''
-};
-
-export const mockGetAzureFunctionsResult = {
-	success: true,
-	errorMessage: '',
-	azureFunctions: []
-};
-
-export class MockAzureFunctionService implements vscodeMssql.IAzureFunctionsService {
-	addSqlBinding(_: vscodeMssql.BindingType, __: string, ___: string, ____: string, _____: string): Thenable<vscodeMssql.ResultStatus> { return Promise.resolve(mockResultStatus); }
-	getAzureFunctions(_: string): Thenable<vscodeMssql.GetAzureFunctionsResult> { return Promise.resolve(mockGetAzureFunctionsResult); }
-}
-
-export const mockDacFxMssqlOptionResult: vscodeMssql.DacFxOptionsResult = {
-	success: true,
-	errorMessage: '',
-	deploymentOptions: {
-		ignoreTableOptions: false,
-		ignoreSemicolonBetweenStatements: false,
-		ignoreRouteLifetime: false,
-		ignoreRoleMembership: false,
-		ignoreQuotedIdentifiers: false,
-		ignorePermissions: false,
-		ignorePartitionSchemes: false,
-		ignoreObjectPlacementOnPartitionScheme: false,
-		ignoreNotForReplication: false,
-		ignoreLoginSids: false,
-		ignoreLockHintsOnIndexes: false,
-		ignoreKeywordCasing: false,
-		ignoreIndexPadding: false,
-		ignoreIndexOptions: false,
-		ignoreIncrement: false,
-		ignoreIdentitySeed: false,
-		ignoreUserSettingsObjects: false,
-		ignoreFullTextCatalogFilePath: false,
-		ignoreWhitespace: false,
-		ignoreWithNocheckOnForeignKeys: false,
-		verifyCollationCompatibility: false,
-		unmodifiableObjectWarnings: false,
-		treatVerificationErrorsAsWarnings: false,
-		scriptRefreshModule: false,
-		scriptNewConstraintValidation: false,
-		scriptFileSize: false,
-		scriptDeployStateChecks: false,
-		scriptDatabaseOptions: false,
-		scriptDatabaseCompatibility: false,
-		scriptDatabaseCollation: false,
-		runDeploymentPlanExecutors: false,
-		registerDataTierApplication: false,
-		populateFilesOnFileGroups: false,
-		noAlterStatementsToChangeClrTypes: false,
-		includeTransactionalScripts: false,
-		includeCompositeObjects: false,
-		allowUnsafeRowLevelSecurityDataMovement: false,
-		ignoreWithNocheckOnCheckConstraints: false,
-		ignoreFillFactor: false,
-		ignoreFileSize: false,
-		ignoreFilegroupPlacement: false,
-		doNotAlterReplicatedObjects: false,
-		doNotAlterChangeDataCaptureObjects: false,
-		disableAndReenableDdlTriggers: false,
-		deployDatabaseInSingleUserMode: false,
-		createNewDatabase: false,
-		compareUsingTargetCollation: false,
-		commentOutSetVarDeclarations: false,
-		blockWhenDriftDetected: false,
-		blockOnPossibleDataLoss: false,
-		backupDatabaseBeforeChanges: false,
-		allowIncompatiblePlatform: false,
-		allowDropBlockingAssemblies: false,
-		dropConstraintsNotInSource: false,
-		dropDmlTriggersNotInSource: false,
-		dropExtendedPropertiesNotInSource: false,
-		dropIndexesNotInSource: false,
-		ignoreFileAndLogFilePath: false,
-		ignoreExtendedProperties: false,
-		ignoreDmlTriggerState: false,
-		ignoreDmlTriggerOrder: false,
-		ignoreDefaultSchema: false,
-		ignoreDdlTriggerState: false,
-		ignoreDdlTriggerOrder: false,
-		ignoreCryptographicProviderFilePath: false,
-		verifyDeployment: false,
-		ignoreComments: false,
-		ignoreColumnCollation: false,
-		ignoreAuthorizer: false,
-		ignoreAnsiNulls: false,
-		generateSmartDefaults: false,
-		dropStatisticsNotInSource: false,
-		dropRoleMembersNotInSource: false,
-		dropPermissionsNotInSource: false,
-		dropObjectsNotInSource: false,
-		ignoreColumnOrder: false,
-		doNotDropObjectTypes: [],
-		excludeObjectTypes: []
-	}
-};
-
-export class MockDacFxMssqlService implements vscodeMssql.IDacFxService {
-	public exportBacpac(_: string, __: string, ___: string, ____: vscodeMssql.TaskExecutionMode): Thenable<vscodeMssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
-	public importBacpac(_: string, __: string, ___: string, ____: vscodeMssql.TaskExecutionMode): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
-	public extractDacpac(_: string, __: string, ___: string, ____: string, _____: string, ______: vscodeMssql.TaskExecutionMode): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
-	public createProjectFromDatabase(_: string, __: string, ___: string, ____: string, _____: string, ______: vscodeMssql.ExtractTarget, _______: vscodeMssql.TaskExecutionMode): Thenable<vscodeMssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
-	public deployDacpac(_: string, __: string, ___: boolean, ____: string, _____: vscodeMssql.TaskExecutionMode, ______?: Record<string, string>): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
-	public generateDeployScript(_: string, __: string, ___: string, ____: vscodeMssql.TaskExecutionMode, ______?: Record<string, string>): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
-	public generateDeployPlan(_: string, __: string, ___: string, ____: vscodeMssql.TaskExecutionMode): Thenable<vscodeMssql.GenerateDeployPlanResult> { return Promise.resolve(mockDacFxResult); }
-	public getOptionsFromProfile(_: string): Thenable<vscodeMssql.DacFxOptionsResult> { return Promise.resolve(mockDacFxMssqlOptionResult); }
-	public validateStreamingJob(_: string, __: string): Thenable<mssql.ValidateStreamingJobResult> { return Promise.resolve(mockDacFxResult); }
-}
-
-export class MockSchemaCompareService implements vscodeMssql.ISchemaCompareService {
-	schemaCompareGetDefaultOptions(): Thenable<vscodeMssql.SchemaCompareOptionsResult> {
-		throw new Error('Method not implemented.');
-	}
-}
-
-export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
-	sqlToolsServicePath: string = '';
-	dacFx: vscodeMssql.IDacFxService;
-	schemaCompare: vscodeMssql.ISchemaCompareService;
-	azureFunctions: vscodeMssql.IAzureFunctionsService;
-
-	constructor() {
-		this.dacFx = new MockDacFxMssqlService;
-		this.schemaCompare = new MockSchemaCompareService;
-		this.azureFunctions = new MockAzureFunctionService;
-	}
-	promptForConnection(_?: boolean): Promise<vscodeMssql.IConnectionInfo | undefined> {
-		throw new Error('Method not implemented.');
-	}
-	connect(_: vscodeMssql.IConnectionInfo, __?: boolean): Promise<string> {
-		throw new Error('Method not implemented.');
-	}
-	listDatabases(_: string): Promise<string[]> {
-		throw new Error('Method not implemented.');
-	}
-	getDatabaseNameFromTreeNode(_: vscodeMssql.ITreeNodeInfo): string {
-		throw new Error('Method not implemented.');
-	}
-	getConnectionString(__: string, ___?: boolean): Promise<string> {
-		throw new Error('Method not implemented.');
-	}
 }
 
 export function createContext(): TestContext {
@@ -303,10 +174,6 @@ export function createContext(): TestContext {
 			extension: undefined as any
 		},
 		dacFxService: TypeMoq.Mock.ofType(MockDacFxService),
-		azureFunctionService: TypeMoq.Mock.ofType(MockAzureFunctionService),
-		vscodeMssqlIExtension: TypeMoq.Mock.ofType(MockVscodeMssqlIExtension),
-		dacFxMssqlService: TypeMoq.Mock.ofType(MockDacFxMssqlService),
-		schemaCompareService: TypeMoq.Mock.ofType(MockSchemaCompareService),
 		outputChannel: {
 			name: '',
 			append: () => { },
@@ -342,41 +209,3 @@ export const mockConnectionProfile: azdata.IConnectionProfile = {
 		connectionName: 'My Connection Name'
 	}
 };
-
-export function createTestCredentials(): vscodeMssql.IConnectionInfo {
-	const creds: vscodeMssql.IConnectionInfo = {
-		server: 'my-server',
-		database: 'my_db',
-		user: 'sa',
-		password: '12345678',
-		email: 'test-email',
-		accountId: 'test-account-id',
-		port: 1234,
-		authenticationType: 'test',
-		azureAccountToken: '',
-		expiresOn: 0,
-		encrypt: false,
-		trustServerCertificate: false,
-		persistSecurityInfo: false,
-		connectTimeout: 15,
-		connectRetryCount: 0,
-		connectRetryInterval: 0,
-		applicationName: 'vscode-mssql',
-		workstationId: 'test',
-		applicationIntent: '',
-		currentLanguage: '',
-		pooling: true,
-		maxPoolSize: 15,
-		minPoolSize: 0,
-		loadBalanceTimeout: 0,
-		replication: false,
-		attachDbFilename: '',
-		failoverPartner: '',
-		multiSubnetFailover: false,
-		multipleActiveResultSets: false,
-		packetSize: 8192,
-		typeSystemVersion: 'Latest',
-		connectionString: ''
-	};
-	return creds;
-}

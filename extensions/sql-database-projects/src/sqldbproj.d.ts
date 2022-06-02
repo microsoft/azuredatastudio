@@ -20,9 +20,10 @@ declare module 'sqldbproj' {
 		 * @param location the parent directory
 		 * @param projectTypeId the ID of the project/template
 		 * @param targetPlatform the target platform for the project. Default is SQL Server 2019
+		 * @param sdkStyle whether the project is sdk-style. Default is false
 		 * @returns Uri of the newly created project file
 		 */
-		createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform: SqlTargetPlatform): Promise<vscode.Uri>;
+		createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform: SqlTargetPlatform, sdkStyle?: boolean): Promise<vscode.Uri>;
 
 		/**
 		 * Opens and loads a .sqlproj file
@@ -46,6 +47,50 @@ declare module 'sqldbproj' {
 		 * Gets the Database Schema Provider version for a SQL project
 		 */
 		getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string>;
+
+		/**
+		 * Generate project from OpenAPI specification file
+		 * @param options Options to use when generating a project from an OpenAPI spec
+		 * @returns the generated sql project
+		 */
+		generateProjectFromOpenApiSpec(options?: GenerateProjectFromOpenApiSpecOptions): Promise<ISqlProject | undefined>;
+
+		/**
+		 * Prompts the user to add a new item to the specified project
+		 * @param project The project to add the item to
+		 * @param relativeFilePath The relative path in the project where the item should be added
+		 * @param options The additional options to use
+		 */
+		addItemPrompt(project: ISqlProject, relativeFilePath: string, options?: AddItemOptions): Promise<void>;
+
+	}
+
+	export interface AddItemOptions {
+		/**
+		 * The type of item to add. If not specified the user will choose from a list of available types
+		 */
+		itemType?: string,
+		/**
+		 * The default name to display in the name prompt
+		 */
+		defaultName?: string
+	}
+
+	/**
+	 * The type of an item in a SQL Project
+	 */
+	export const enum ItemType {
+		script = 'script',
+		table = 'table',
+		view = 'view',
+		storedProcedure = 'storedProcedure',
+		dataSource = 'dataSource',
+		fileFormat = 'fileFormat',
+		externalStream = 'externalStream',
+		externalStreamingJob = 'externalStreamingJob',
+		folder = 'folder',
+		preDeployScript = 'preDeployScript',
+		postDeployScript = 'postDeployScript'
 	}
 
 	/**
@@ -67,7 +112,12 @@ declare module 'sqldbproj' {
 		/**
 		 * If true then the project will not be opened in the workspace after being created
 		 */
-		doNotOpenInWorkspace?: boolean
+		doNotOpenInWorkspace?: boolean,
+
+		/**
+		 * Create SQL Project SDK style or non SDK style. The default is non SDK style.
+		 */
+		isSDKStyle?: boolean
 	};
 
 	export interface ISqlProject {
@@ -105,6 +155,22 @@ declare module 'sqldbproj' {
 		 * @param defaultValue
 		 */
 		addSqlCmdVariable(name: string, defaultValue: string): Promise<void>;
+
+		/**
+		 * Appends given database source to the DatabaseSource property element.
+		 * If property element does not exist, then new one will be created.
+		 *
+		 * @param databaseSource Source of the database to add
+		 */
+		addDatabaseSource(databaseSource: string): Promise<void>;
+
+		/**
+		 * Removes database source from the DatabaseSource property element.
+		 * If no sources remain, then property element will be removed from the project file.
+		 *
+		 * @param databaseSource Source of the database to remove
+		 */
+		removeDatabaseSource(databaseSource: string): Promise<void>;
 
 		/**
 		 * Excludes entry from project by removing it from the project file
@@ -159,6 +225,21 @@ declare module 'sqldbproj' {
 		 * SqlCmd variables and their values
 		 */
 		readonly sqlCmdVariables: Record<string, string>;
+
+		/**
+		 * Pre-deployment scripts in this project
+		 */
+		readonly preDeployScripts: IFileProjectEntry[];
+
+		/**
+		 * Post-deployment scripts in this project
+		 */
+		readonly postDeployScripts: IFileProjectEntry[];
+
+		/**
+		 * "None" scripts in this project (scripts ignored by the build)
+		 */
+		readonly noneDeployScripts: IFileProjectEntry[];
 	}
 
 	/**
@@ -173,14 +254,13 @@ declare module 'sqldbproj' {
 	 * Target platforms for a sql project
 	 */
 	export const enum SqlTargetPlatform {
-		sqlServer2005 = 'SQL Server 2005',
-		sqlServer2008 = 'SQL Server 2008',
 		sqlServer2012 = 'SQL Server 2012',
 		sqlServer2014 = 'SQL Server 2014',
 		sqlServer2016 = 'SQL Server 2016',
 		sqlServer2017 = 'SQL Server 2017',
 		sqlServer2019 = 'SQL Server 2019',
-		sqlAzure = 'Microsoft Azure SQL Database',
-		sqlDW = 'Microsoft Azure SQL Data Warehouse'
+		sqlAzure = 'Azure SQL Database',
+		sqlDW = 'Azure Synapse Dedicated SQL Pool',
+		sqlEdge = 'Azure SQL Edge'
 	}
 }

@@ -21,12 +21,14 @@ suite('notebookUtils', function (): void {
 	const testKernel: nb.IStandardKernel = {
 		name: 'testName',
 		displayName: 'testDisplayName',
-		connectionProviderIds: ['testId1', 'testId2']
+		connectionProviderIds: ['testId1', 'testId2'],
+		supportedLanguages: ['python']
 	};
 	const sqlStandardKernel: nb.IStandardKernel = {
 		name: notebookConstants.SQL,
 		displayName: notebookConstants.SQL,
-		connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER]
+		connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER],
+		supportedLanguages: ['sql']
 	};
 
 	function setupMockNotebookService() {
@@ -108,7 +110,8 @@ suite('notebookUtils', function (): void {
 			name: 'testName',
 			displayName: 'testDisplayName',
 			connectionProviderIds: ['testId1', 'testId2'],
-			notebookProvider: 'testProvider'
+			notebookProvider: 'testProvider',
+			supportedLanguages: ['python']
 		}]);
 	});
 

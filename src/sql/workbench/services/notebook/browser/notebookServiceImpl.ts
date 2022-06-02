@@ -50,7 +50,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
+import { DEFAULT_NB_LANGUAGE_MODE, INTERACTIVE_LANGUAGE_MODE, INTERACTIVE_PROVIDER_ID, JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
 
@@ -185,6 +185,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _trustedCacheQueue: URI[] = [];
 	private _unTrustedCacheQueue: URI[] = [];
 	private _onCodeCellExecutionStart: Emitter<void> = new Emitter<void>();
+	private _notebookInputsMap: Map<string, IEditorInput> = new Map();
 
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
@@ -248,27 +249,68 @@ export class NotebookService extends Disposable implements INotebookService {
 		lifecycleService.onWillShutdown(() => this.shutdown());
 	}
 
-	public async openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined> {
-		const uri = URI.revive(resource);
+	private getUntitledFileUri(): URI {
+		// Need to create a new untitled URI, so find the lowest numbered one that's available
+		let uri: URI;
+		let counter = 1;
+		do {
+			uri = URI.from({ scheme: Schemas.untitled, path: `Notebook-${counter}` });
+			counter++;
+		} while (this._untitledEditorService.get(uri) || this._notebookInputsMap.has(uri.toString())); // Also have to check stored inputs, since those might not be opened in an editor yet.
+		return uri;
+	}
 
-		const editorOptions: ITextEditorOptions = {
-			preserveFocus: options.preserveFocus,
-			pinned: !options.preview
+	public async createNotebookInputFromContents(providerId: string, contents?: nb.INotebookContents, resource?: UriComponents): Promise<IEditorInput> {
+		let uri: URI;
+		if (resource) {
+			uri = URI.revive(resource);
+		} else {
+			uri = this.getUntitledFileUri();
+			resource = uri;
+		}
+
+		let options: INotebookShowOptions = {
+			providerId: providerId,
+			initialContent: contents
 		};
+		return this.createNotebookInput(options, resource);
+	}
+
+	private async createNotebookInput(options: INotebookShowOptions, resource?: UriComponents): Promise<IEditorInput | undefined> {
+		let uri: URI;
+		if (resource) {
+			uri = URI.revive(resource);
+			if (this._notebookInputsMap.has(uri.toString())) {
+				return this._notebookInputsMap.get(uri.toString());
+			}
+		} else {
+			uri = this.getUntitledFileUri();
+		}
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
 		let fileInput: IEditorInput;
+		let languageMode = options.providerId === INTERACTIVE_PROVIDER_ID ? INTERACTIVE_LANGUAGE_MODE : DEFAULT_NB_LANGUAGE_MODE;
+		let initialStringContents: string;
+		if (options.initialContent) {
+			if (typeof options.initialContent === 'string') {
+				initialStringContents = options.initialContent;
+			} else {
+				let manager = await this.getOrCreateSerializationManager(options.providerId, uri);
+				initialStringContents = await manager.contentManager.serializeNotebook(options.initialContent);
+			}
+		}
 		if (isUntitled && path.isAbsolute(uri.fsPath)) {
-			const model = this._untitledEditorService.create({ associatedResource: uri, mode: 'notebook', initialValue: options.initialContent });
+			const model = this._untitledEditorService.create({ associatedResource: uri, mode: languageMode, initialValue: initialStringContents });
 			fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 		} else {
 			if (isUntitled) {
-				const model = this._untitledEditorService.create({ untitledResource: uri, mode: 'notebook', initialValue: options.initialContent });
+				const model = this._untitledEditorService.create({ untitledResource: uri, mode: languageMode, initialValue: initialStringContents });
 				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 			} else {
-				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: 'notebook' });
+				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: languageMode });
 			}
 		}
+
 		// We only need to get the Notebook language association as such we only need to use ipynb
 		const inputCreator = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
 		if (inputCreator) {
@@ -276,6 +318,9 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (isINotebookInput(fileInput)) {
 				fileInput.defaultKernel = options.defaultKernel;
 				fileInput.connectionProfile = options.connectionProfile;
+				if (typeof options.initialContent !== 'string') {
+					fileInput.setNotebookContents(options.initialContent);
+				}
 
 				if (isUntitled) {
 					let untitledModel = await fileInput.resolve();
@@ -286,7 +331,22 @@ export class NotebookService extends Disposable implements INotebookService {
 				}
 			}
 		}
-		return await this._editorService.openEditor(fileInput, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
+
+		if (!fileInput) {
+			throw new Error(localize('failedToCreateNotebookInput', "Failed to create notebook input for provider '{0}'", options.providerId));
+		}
+
+		this._notebookInputsMap.set(uri.toString(), fileInput);
+		return fileInput;
+	}
+
+	public async openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined> {
+		const editorOptions: ITextEditorOptions = {
+			preserveFocus: options.preserveFocus,
+			pinned: !options.preview
+		};
+		let input = await this.createNotebookInput(options, resource);
+		return await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
 	}
 
 	/**
@@ -311,6 +371,19 @@ export class NotebookService extends Disposable implements INotebookService {
 		return title;
 	}
 
+	public getNotebookURIForCell(cellUri: URI): URI | undefined {
+		for (let editor of this.listNotebookEditors()) {
+			if (editor.cells) {
+				for (let cell of editor.cells) {
+					if (cell.cellUri === cellUri) {
+						return editor.notebookParams.notebookUri;
+					}
+				}
+			}
+		}
+		return undefined;
+	}
+
 	private updateSQLRegistrationWithConnectionProviders() {
 		// Update the SQL extension
 		let sqlNotebookKernels = this._providerToStandardKernels.get(notebookConstants.SQL);
@@ -321,7 +394,8 @@ export class NotebookService extends Disposable implements INotebookService {
 				let descriptor = new StandardKernelsDescriptor(notebookConstants.SQL, [{
 					name: notebookConstants.SQL,
 					displayName: notebookConstants.SQL,
-					connectionProviderIds: sqlConnectionTypes
+					connectionProviderIds: sqlConnectionTypes,
+					supportedLanguages: [notebookConstants.sqlKernelSpec.language]
 				}]);
 				this._providerToStandardKernels.set(notebookConstants.SQL, descriptor);
 			}
@@ -361,9 +435,10 @@ export class NotebookService extends Disposable implements INotebookService {
 
 		// Emit activation event if the provider is not one of the default options
 		if (p.id !== SQL_NOTEBOOK_PROVIDER && p.id !== JUPYTER_PROVIDER_ID) {
-			this._extensionService.whenInstalledExtensionsRegistered().then(() => {
-				this._extensionService.activateByEvent(`onNotebook:${p.id}`).catch(err => onUnexpectedError(err));
-			}).catch(err => onUnexpectedError(err));
+			this._extensionService.whenInstalledExtensionsRegistered()
+				.then(() => this._extensionService.activateByEvent(`onNotebook:${p.id}`))
+				.then(() => this._extensionService.activateByEvent(`onNotebook:*`))
+				.catch(err => onUnexpectedError(err));
 		}
 	}
 
@@ -456,8 +531,9 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	getProvidersForFileType(fileType: string): string[] | undefined {
-		let providers = this._fileToProviderDescriptions.get(fileType.toLowerCase());
-		return providers?.map(provider => provider.provider);
+		let provDescriptions = this._fileToProviderDescriptions.get(fileType.toLowerCase());
+		let providers = provDescriptions?.map(provider => provider.provider);
+		return providers ? [...new Set(providers)] : undefined; // Use a set to remove duplicates
 	}
 
 	public async getStandardKernelsForProvider(provider: string): Promise<nb.IStandardKernel[] | undefined> {
@@ -471,6 +547,22 @@ export class NotebookService extends Disposable implements INotebookService {
 			}
 		}
 		return kernels;
+	}
+
+	public async getSupportedLanguagesForProvider(provider: string, kernelDisplayName?: string): Promise<string[]> {
+		let languages: string[] = [];
+		let kernels = await this.getStandardKernelsForProvider(provider);
+		if (kernelDisplayName && kernels) {
+			kernels = kernels.filter(kernel => kernel.displayName === kernelDisplayName);
+		}
+		kernels?.forEach(kernel => {
+			if (kernel.supportedLanguages) {
+				languages.push(...kernel.supportedLanguages);
+			}
+		});
+		// Remove duplicates
+		languages = [...new Set(languages)];
+		return languages;
 	}
 
 	private shutdown(): void {
@@ -547,6 +639,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (this._editors.delete(editor.id)) {
 			this._onNotebookEditorRemove.fire(editor);
 		}
+		this._notebookInputsMap.delete(editor.notebookParams.notebookUri.toString());
+
 		// Remove the manager from the tracked list, and let the notebook provider know that it should update its mappings
 		this.sendNotebookCloseToProvider(editor);
 	}
@@ -785,7 +879,12 @@ export class NotebookService extends Disposable implements INotebookService {
 		notebookRegistry.registerProviderDescription({
 			provider: serializationProvider.providerId,
 			fileExtensions: [DEFAULT_NOTEBOOK_FILETYPE],
-			standardKernels: [{ name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }]
+			standardKernels: [{
+				name: notebookConstants.SQL,
+				displayName: notebookConstants.SQL,
+				connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER],
+				supportedLanguages: [notebookConstants.sqlKernelSpec.language]
+			}]
 		});
 	}
 

@@ -93,6 +93,7 @@ steps:
     AZURE_STORAGE_ACCESS_KEY="$(sourcemap-storage-key)" \
       node build/azure-pipelines/upload-sourcemaps
   displayName: Upload sourcemaps
+  condition: and(succeeded(), ne(variables['VSCODE_PUBLISH'], 'false'))
 
 - script: |
     set -e

@@ -17,13 +17,20 @@ export interface TableCellClickEventArgs<T extends Slick.SlickData> {
 	column: number;
 }
 
+export interface ClickableColumnOptions {
+	/**
+	 * The field name of enabled state in the data.The default enabled state is true.
+	 */
+	enabledField?: string;
+}
+
 export abstract class BaseClickableColumn<T extends Slick.SlickData> implements Slick.Plugin<T>, TableColumn<T> {
-	private _handler = new Slick.EventHandler();
-	private _grid!: Slick.Grid<T>;
+	protected _handler = new Slick.EventHandler();
+	protected _grid!: Slick.Grid<T>;
 	private _onClick = new Emitter<TableCellClickEventArgs<T>>();
 	public onClick = this._onClick.event;
 
-	constructor() {
+	constructor(private readonly _options: ClickableColumnOptions) {
 	}
 
 	public init(grid: Slick.Grid<T>): void {
@@ -46,7 +53,7 @@ export abstract class BaseClickableColumn<T extends Slick.SlickData> implements 
 	public abstract get definition(): Slick.Column<T>;
 
 	private handleActiveCellChanged(args: Slick.OnActiveCellChangedEventArgs<T>): void {
-		if (this.isCurrentColumn(args.cell)) {
+		if (this.isCellEnabled(args.row, args.cell)) {
 			const cellElement = this._grid.getActiveCellNode();
 			if (cellElement && cellElement.children) {
 				const element = cellElement.children[0] as HTMLElement;
@@ -56,7 +63,7 @@ export abstract class BaseClickableColumn<T extends Slick.SlickData> implements 
 	}
 
 	private handleClick(args: Slick.OnClickEventArgs<T>): void {
-		if (this.isCurrentColumn(args.cell)) {
+		if (this.isCellEnabled(args.row, args.cell)) {
 			// SlickGrid will automatically set active cell on mouse click event,
 			// during the process of setting active cell, blur event will be triggered and handled in a setTimeout block,
 			// on Windows platform, the context menu is html based which will respond the focus related events and hide the context menu.
@@ -69,7 +76,7 @@ export abstract class BaseClickableColumn<T extends Slick.SlickData> implements 
 
 	private handleKeyboardEvent(e: KeyboardEvent, args: Slick.OnKeyDownEventArgs<T>): void {
 		let event = new StandardKeyboardEvent(e);
-		if ((event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) && this.isCurrentColumn(args.cell)) {
+		if ((event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) && this.isCellEnabled(args.row, args.cell)) {
 			event.stopPropagation();
 			event.preventDefault();
 			this.fireClickEvent();
@@ -92,8 +99,11 @@ export abstract class BaseClickableColumn<T extends Slick.SlickData> implements 
 		}
 	}
 
-	private isCurrentColumn(columnIndex: number): boolean {
-		return this._grid.getColumns()[columnIndex]?.id === this.definition.id;
+	protected isCellEnabled(row: number, cell: number): boolean {
+		const isCurrentColumn = this._grid.getColumns()[cell]?.id === this.definition.id;
+		const dataItem = this._grid.getDataItem(row);
+		const disabled = dataItem && !!this._options.enabledField && dataItem[this._options.enabledField] === false;
+		return isCurrentColumn && !disabled;
 	}
 }
 

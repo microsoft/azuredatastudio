@@ -31,7 +31,7 @@ import * as nls from 'vs/nls';
 import * as objects from 'vs/base/common/objects';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Action, IAction, SubmenuAction } from 'vs/base/common/actions';
-import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
+import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IContextKeyService, ContextKeyExpr, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
@@ -54,9 +54,11 @@ import { LabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntr
 import { DASHBOARD_BORDER, TOOLBAR_OVERFLOW_SHADOW } from 'sql/workbench/common/theme';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 const homeTabGroupId = 'home';
+const zoomLevelConfiguration = 'window.zoomLevel';
 
 @Component({
 	selector: 'dashboard-page',
@@ -83,7 +85,11 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	// tslint:disable:no-unused-variable
 	private readonly homeTabTitle: string = nls.localize('home', "Home");
 	private readonly homeTabId: string = 'homeTab';
-	private tabToolbarActionsConfig = new Map<string, any[]>();
+	private tabToolbarActionsConfig = new Map<string, {
+		actions: any[],
+		hideRefreshTask: boolean
+	}>();
+
 	private tabContents = new Map<string, string>();
 
 	static tabName = new RawContextKey<string>('tabName', undefined);
@@ -126,7 +132,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
 		@Inject(IMenuService) private menuService: IMenuService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IInstantiationService) private instantiationService: IInstantiationService
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(IConfigurationService) private configurationService: IConfigurationService
 	) {
 		super();
 		this._tabName = DashboardPage.tabName.bindTo(contextKeyService);
@@ -168,6 +175,16 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this._register(this.themeService.onDidColorThemeChange((event: IColorTheme) => {
 			this.updateTheme(event);
 		}));
+
+		// Workaround for issue: https://github.com/microsoft/azuredatastudio/issues/14128
+		// While the Angular loads the dashboard components, the Electron's zoom level will be reset without going through
+		// the setZoomLevel API in VSCode.
+		// Before a permanent fix is available, to workaround the issue, we can get the current zoom level and
+		// set it so that the electron's zoom level is consistent with the vscode configuration.
+		const currentZoom: number = this.configurationService.getValue(zoomLevelConfiguration);
+		this.configurationService.updateValue(zoomLevelConfiguration, currentZoom - 1).then(() => {
+			return this.configurationService.updateValue(zoomLevelConfiguration, currentZoom);
+		}).catch(onUnexpectedError);
 	}
 
 	private getContributedTasks(tabId: string): ITaskbarContent[] {
@@ -190,10 +207,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				}
 			});
 
-			if (primary.length > 0) {
-				let separator: HTMLElement = Taskbar.createTaskbarSeparator();
-				tasks.push({ element: separator });
-			}
 		}
 		return tasks;
 	}
@@ -219,8 +232,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		const toolbarTasks = this.tabToolbarActionsConfig.get(tabId);
 		let tasks = TaskRegistry.getTasks();
 		let content = [];
-		if (types.isArray(toolbarTasks) && toolbarTasks.length > 0) {
-			tasks = toolbarTasks.map(i => {
+		if (types.isArray(toolbarTasks.actions) && toolbarTasks.actions.length > 0) {
+			tasks = toolbarTasks.actions.map(i => {
 				if (types.isString(i)) {
 					if (tasks.some(x => x === i)) {
 						return i;
@@ -239,12 +252,29 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 		// get extension actions contributed to the page's toolbar
 		const contributedTasks = this.getContributedTasks(tabId);
+		if (content.length > 0 && contributedTasks.length > 0) {
+			/**
+			 * Adding the separator before adding contributed tasks if there other
+			 * toolbar tasks already present in the toolbar
+			 */
+			const separator: HTMLElement = Taskbar.createTaskbarSeparator();
+			content.push({ element: separator });
+		}
 		content.push(...contributedTasks);
 
-		const refreshAction = new RefreshWidgetAction(() => {
-			this.refresh();
-		}, this);
-		content.push({ action: refreshAction });
+		if (!toolbarTasks.hideRefreshTask) {
+			/**
+			 * Adding the separator only when there are other actions present on the task
+			 */
+			if (content.length > 0) {
+				const separator: HTMLElement = Taskbar.createTaskbarSeparator();
+				content.push({ element: separator });
+			}
+			const refreshAction = new RefreshWidgetAction(() => {
+				this.refresh();
+			}, this);
+			content.push({ action: refreshAction });
+		}
 		return content;
 	}
 
@@ -262,11 +292,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		toolbarActions.forEach(a => {
 			content.push({ action: a });
 		});
-
-		if (content.length > 0) {
-			let separator: HTMLElement = Taskbar.createTaskbarSeparator();
-			content.push({ element: separator });
-		}
 
 		return content;
 	}
@@ -442,7 +467,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				configs = cb.apply(this, [configs]);
 			});
 
-			this.processTasksWidgets(configs, value.id);
+			this.processTasksWidgets(configs, value.id, value.hideRefreshTask);
 
 			if (key === WIDGETS_CONTAINER) {
 				return { id: value.id, title: value.title, container: { 'widgets-container': configs }, alwaysShow: value.alwaysShow, iconClass: value.iconClass };
@@ -459,7 +484,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	 * @param widgets widgets
 	 * @param tabId tab id
 	 */
-	private processTasksWidgets(widgets: WidgetConfig[], tabId: string): void {
+	private processTasksWidgets(widgets: WidgetConfig[], tabId: string, hideRefreshTask?: boolean): void {
 		let index;
 		const allTasks = [];
 		// do this in a while loop since there might be multiple tasks widgets in a tab
@@ -473,7 +498,10 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 				widgets.splice(index, 1);
 			}
 		} while (index !== -1);
-		this.tabToolbarActionsConfig.set(tabId, allTasks);
+		this.tabToolbarActionsConfig.set(tabId, {
+			actions: allTasks,
+			hideRefreshTask: hideRefreshTask
+		});
 	}
 
 	protected getContentType(tab: TabConfig): string {

@@ -14,7 +14,7 @@ import * as baselines from './baselines/baselines';
 import * as templates from '../templates/templates';
 import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as utils from '../common/utils';
 
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
@@ -30,7 +30,7 @@ import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialo
 import { IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { ImportDataModel } from '../models/api/import';
-import { SqlTargetPlatform } from 'sqldbproj';
+import { ItemType, SqlTargetPlatform } from 'sqldbproj';
 import { SystemDatabaseReferenceProjectEntry, SystemDatabase, EntryType, FileProjectEntry } from '../models/projectEntry';
 
 let testContext: TestContext;
@@ -59,7 +59,8 @@ describe('ProjectsController', function (): void {
 					newProjName: 'TestProjectName',
 					folderUri: vscode.Uri.file(projFileDir),
 					projectTypeId: constants.emptySqlDatabaseProjectTypeId,
-					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575'
+					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
+					sdkStyle: false
 				});
 
 				let projFileText = (await fs.readFile(projFilePath)).toString();
@@ -77,7 +78,8 @@ describe('ProjectsController', function (): void {
 					folderUri: vscode.Uri.file(projFileDir),
 					projectTypeId: constants.emptySqlDatabaseProjectTypeId,
 					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
-					targetPlatform: projTargetPlatform
+					targetPlatform: projTargetPlatform,
+					sdkStyle: false
 				});
 
 				const project = await Project.openProject(projFilePath);
@@ -94,7 +96,7 @@ describe('ProjectsController', function (): void {
 					const project = new Project('FakePath');
 
 					should(project.files.length).equal(0);
-					await projController.addItemPrompt(new Project('FakePath'), '', templates.script);
+					await projController.addItemPrompt(new Project('FakePath'), '', { itemType: ItemType.script });
 					should(project.files.length).equal(0, 'Expected to return without throwing an exception or adding a file when an empty/undefined name is provided.');
 					should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
 					showInputBoxStub.restore();
@@ -110,9 +112,9 @@ describe('ProjectsController', function (): void {
 				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 
 				should(project.files.length).equal(0, 'There should be no files');
-				await projController.addItemPrompt(project, '', templates.script);
+				await projController.addItemPrompt(project, '', { itemType: ItemType.script });
 				should(project.files.length).equal(1, 'File should be successfully added');
-				await projController.addItemPrompt(project, '', templates.script);
+				await projController.addItemPrompt(project, '', { itemType: ItemType.script });
 				const msg = constants.fileAlreadyExists(tableName);
 				should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
 				should(spy.calledWith(msg)).be.true(`showErrorMessage not called with expected message '${msg}' Actual '${spy.getCall(0).args[0]}'`);
@@ -325,13 +327,13 @@ describe('ProjectsController', function (): void {
 
 				sinon.stub(vscode.window, 'showInputBox').resolves(preDeployScriptName);
 				should(project.preDeployScripts.length).equal(0, 'There should be no pre deploy scripts');
-				await projController.addItemPrompt(project, '', templates.preDeployScript);
+				await projController.addItemPrompt(project, '', { itemType: ItemType.preDeployScript });
 				should(project.preDeployScripts.length).equal(1, `Pre deploy script should be successfully added. ${project.preDeployScripts.length}, ${project.files.length}`);
 
 				sinon.restore();
 				sinon.stub(vscode.window, 'showInputBox').resolves(postDeployScriptName);
 				should(project.postDeployScripts.length).equal(0, 'There should be no post deploy scripts');
-				await projController.addItemPrompt(project, '', templates.postDeployScript);
+				await projController.addItemPrompt(project, '', { itemType: ItemType.postDeployScript });
 				should(project.postDeployScripts.length).equal(1, 'Post deploy script should be successfully added');
 			});
 
@@ -496,7 +498,8 @@ describe('ProjectsController', function (): void {
 					projName: 'testProject',
 					filePath: 'testLocation',
 					version: '1.0.0.0',
-					extractTarget: mssql.ExtractTarget['schemaObjectType']
+					extractTarget: mssql.ExtractTarget['schemaObjectType'],
+					sdkStyle: false
 				});
 
 				return Promise.resolve(undefined);
@@ -520,7 +523,7 @@ describe('ProjectsController', function (): void {
 			let folderPath = await testUtils.generateTestFolderPath();
 			let projectName = 'My Project';
 			let importPath;
-			let model: ImportDataModel = { connectionUri: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['file'] };
+			let model: ImportDataModel = { connectionUri: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['file'], sdkStyle: false };
 
 			const projController = new ProjectsController(testContext.outputChannel);
 			projController.setFilePath(model);
@@ -533,7 +536,7 @@ describe('ProjectsController', function (): void {
 			let folderPath = await testUtils.generateTestFolderPath();
 			let projectName = 'My Project';
 			let importPath;
-			let model: ImportDataModel = { connectionUri: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'] };
+			let model: ImportDataModel = { connectionUri: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'], sdkStyle: false };
 
 			const projController = new ProjectsController(testContext.outputChannel);
 			projController.setFilePath(model);
@@ -736,9 +739,9 @@ async function setupDeleteExcludeTest(proj: Project): Promise<[FileProjectEntry,
 	const scriptEntry = await proj.addScriptItem('UpperFolder/LowerFolder/someScript.sql', 'not a real script');
 	await proj.addScriptItem('UpperFolder/LowerFolder/someOtherScript.sql', 'Also not a real script');
 	await proj.addScriptItem('../anotherScript.sql', 'Also not a real script');
-	const preDeployEntry = await proj.addScriptItem('Script.PreDeployment1.sql', 'pre-deployment stuff', templates.preDeployScript);
-	const noneEntry = await proj.addScriptItem('Script.PreDeployment2.sql', 'more pre-deployment stuff', templates.preDeployScript);
-	const postDeployEntry = await proj.addScriptItem('Script.PostDeployment1.sql', 'post-deployment stuff', templates.postDeployScript);
+	const preDeployEntry = await proj.addScriptItem('Script.PreDeployment1.sql', 'pre-deployment stuff', ItemType.preDeployScript);
+	const noneEntry = await proj.addScriptItem('Script.PreDeployment2.sql', 'more pre-deployment stuff', ItemType.preDeployScript);
+	const postDeployEntry = await proj.addScriptItem('Script.PostDeployment1.sql', 'post-deployment stuff', ItemType.postDeployScript);
 
 	const projTreeRoot = new ProjectRootTreeItem(proj);
 	sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));

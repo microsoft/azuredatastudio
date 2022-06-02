@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as mssql from '../../mssql';
+import * as mssql from 'mssql';
 import * as azdata from 'azdata';
 import { createHistoryFileName, readHistoryFileNames, getAssessmentDate, TargetWithChildren } from './utils';
 import { promises as fs } from 'fs';
@@ -65,7 +65,7 @@ export class AssessmentEngine {
 		} else {
 			if (asmtType === AssessmentType.AvailableRules) {
 				TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.GetDatabaseAssessmentRules);
-				await onResult(await this.sqlAssessment.getAssessmentItems(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Database), asmtType, false);
+				onResult(await this.sqlAssessment.getAssessmentItems(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Database), asmtType, false);
 			} else {
 				TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.InvokeDatabaseAssessment);
 				const result = await this.sqlAssessment.assessmentInvoke(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Database);
@@ -76,7 +76,7 @@ export class AssessmentEngine {
 					result: result
 				};
 
-				await onResult(result, asmtType, false);
+				onResult(result, asmtType, false);
 
 				this.saveAssessment(this.databaseName, result);
 			}
@@ -147,7 +147,7 @@ export class AssessmentEngine {
 			assessmentResult = await this.sqlAssessment.getAssessmentItems(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Server);
 		}
 
-		await onResult(assessmentResult, asmtType, false);
+		onResult(assessmentResult, asmtType, false);
 
 		let connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(
 			this.connectionProfile.providerId, azdata.DataProviderType.ConnectionProvider);
@@ -167,7 +167,7 @@ export class AssessmentEngine {
 						this.lastInvokedResults.result.items.push(...assessmentResult?.items);
 						this.saveAssessment(db, assessmentResult);
 					}
-					await onResult(assessmentResult, asmtType, true);
+					onResult(assessmentResult, asmtType, true);
 				}
 			}
 		}

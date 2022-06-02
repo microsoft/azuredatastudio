@@ -11,7 +11,6 @@ import * as sinon from 'sinon';
 import 'mocha';
 import { AppContext } from '../../../appContext';
 
-import { azureResource } from 'azureResource';
 import {
 	IAzureResourceCacheService,
 	IAzureResourceSubscriptionService,
@@ -23,7 +22,7 @@ import { AzureResourceSubscriptionTreeNode } from '../../../azureResource/tree/s
 import { AzureResourceItemType, AzureResourceServiceNames } from '../../../azureResource/constants';
 import { AzureResourceMessageTreeNode } from '../../../azureResource/messageTreeNode';
 import { generateGuid } from '../../../azureResource/utils';
-import { AzureAccount } from 'azurecore';
+import { AzureAccount, azureResource } from 'azurecore';
 
 // Mock services
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;

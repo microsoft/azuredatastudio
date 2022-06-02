@@ -53,15 +53,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._activeCellId = value;
 	}
 
-	@HostListener('document:keydown.escape', ['$event'])
-	handleKeyboardEvent() {
-		if (this.isEditMode) {
-			this.toggleEditMode(false);
-		}
-		this.cellModel.active = false;
-		this._model.updateActiveCell(undefined);
-	}
-
 	// Double click to edit text cell in notebook
 	@HostListener('dblclick', ['$event']) onDblClick() {
 		this.enableActiveCellEditOnDoubleClick();
@@ -70,8 +61,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@HostListener('document:keydown', ['$event'])
 	onkeydown(e: KeyboardEvent) {
 		if (DOM.getActiveElement() === this.output?.nativeElement && this.isActive() && this.cellModel?.currentMode === CellEditModes.WYSIWYG) {
-			// Select all text
 			const keyEvent = new StandardKeyboardEvent(e);
+			// Select all text
 			if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_A) {
 				preventDefaultAndExecCommand(e, 'selectAll');
 			} else if ((keyEvent.metaKey && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_Z) || (keyEvent.ctrlKey && keyEvent.keyCode === KeyCode.KEY_Y) && !this.markdownMode) {
@@ -119,7 +110,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private _htmlMarkdownConverter: HTMLMarkdownConverter;
 	private markdownPreviewLineHeight: number;
 	public readonly onDidClickLink = this._onDidClickLink.event;
-	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
 	private _editorHeight: number;
 	private readonly _markdownMaxHeight = 4000;
@@ -148,7 +138,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			}
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
-			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 			if (e.affectsConfiguration('notebook.markdownPreviewLineHeight')) {
 				this.markdownPreviewLineHeight = this._configurationService.getValue('notebook.markdownPreviewLineHeight');
@@ -197,7 +186,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	ngOnInit() {
 		this._editorHeight = document.querySelector('.editor-container').clientHeight;
-		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.setFocusAndScroll();
@@ -221,33 +209,34 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					this.cellModel.markdownCursorPosition = selection?.getPosition();
 				}
 			}
+			const selection = window.getSelection();
+			const range = selection?.rangeCount > 0 ? selection.getRangeAt(0) : undefined;
 			// On preview mode change, get the cursor position (get the position only when the selection node is a text node)
-			if (window.getSelection() && window.getSelection().focusNode?.nodeName === '#text' && window.getSelection().getRangeAt(0)) {
-				let selection = window.getSelection().getRangeAt(0);
+			if (selection.focusNode?.nodeName === '#text' && range) {
 				// Check to see if the last cursor position is still the same and skip
-				if (selection.startOffset !== this.cellModel.richTextCursorPosition?.startOffset) {
+				if (range.startOffset !== this.cellModel.richTextCursorPosition?.startOffset) {
 					// window.getSelection gives the exact html element and offsets of cursor location
 					// Since we only have the output element reference which is the parent of all html nodes
 					// we iterate through it's child nodes until we get the selection element and store the node indexes
 					// in the startElementNodes and endElementNodes and their offsets respectively.
 					let startElementNodes = [];
-					let startNode = selection.startContainer;
-					let endNode = selection.endContainer;
-					while (startNode !== this.output.nativeElement) {
+					let startNode = range.startContainer;
+					let endNode = range.endContainer;
+					while (startNode && startNode !== this.output.nativeElement) {
 						startElementNodes.push(this.getNodeIndex(startNode));
 						startNode = startNode.parentNode;
 					}
 					let endElementNodes = [];
-					while (endNode !== this.output.nativeElement) {
+					while (endNode && endNode !== this.output.nativeElement) {
 						endElementNodes.push(this.getNodeIndex(endNode));
 						endNode = endNode.parentNode;
 					}
 					// Create cursor position
 					let cursorPosition: ICaretPosition = {
 						startElementNodes: startElementNodes,
-						startOffset: selection.startOffset,
+						startOffset: range.startOffset,
 						endElementNodes: endElementNodes,
-						endOffset: selection.endOffset
+						endOffset: range.endOffset
 					};
 					this.cellModel.richTextCursorPosition = cursorPosition;
 				}
@@ -276,8 +265,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	getNodeIndex(n: Node): number {
 		let i = 0;
-		// walk up the node to the top and get it's index
-		n = n.previousSibling;
+		// walk up the node to the top and get its index
+		n = n?.previousSibling;
 		while (n) {
 			i++;
 			n = n.previousSibling;
@@ -556,9 +545,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private enableActiveCellEditOnDoubleClick() {
 		if (!this.isEditMode && this.doubleClickEditEnabled) {
 			this.toggleEditMode(true);
+			this._model.updateActiveCell(this.cellModel, true);
 		}
-		this.cellModel.active = true;
-		this._model.updateActiveCell(this.cellModel);
 	}
 }
 

@@ -153,6 +153,12 @@
     <trans-unit id="mssql.executeHeader">
       <source xml:lang="en">Execute</source>
     </trans-unit>
+    <trans-unit id="mssql.failedToFindAccount">
+      <source xml:lang="en">Failed to find azure account {0} when executing token refresh</source>
+    </trans-unit>
+    <trans-unit id="mssql.failedToFindTenants">
+      <source xml:lang="en">Failed to find tenant '{0}' in account '{1}' when refreshing security token</source>
+    </trans-unit>
     <trans-unit id="mssql.group">
       <source xml:lang="en">Group</source>
     </trans-unit>
@@ -188,6 +194,12 @@
     </trans-unit>
     <trans-unit id="mssql.stickyHeader">
       <source xml:lang="en">Sticky Bit</source>
+    </trans-unit>
+    <trans-unit id="mssql.tokenRefreshFailed">
+      <source xml:lang="en">{0} AAD token refresh failed, please reconnect to enable {0}</source>
+    </trans-unit>
+    <trans-unit id="mssql.tokenRefreshFailedNoSecurityToken">
+      <source xml:lang="en">Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected</source>
     </trans-unit>
     <trans-unit id="mssql.userLabel">
       <source xml:lang="en">User</source>
@@ -973,6 +985,9 @@
     </trans-unit>
     <trans-unit id="mssql.logRetentionMinutes">
       <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
+    </trans-unit>
+    <trans-unit id="mssql.parallelMessageProcessing">
+      <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.</source>
     </trans-unit>
     <trans-unit id="mssql.provider.displayName">
       <source xml:lang="en">Microsoft SQL Server</source>

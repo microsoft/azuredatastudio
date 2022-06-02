@@ -6,7 +6,7 @@
 import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as vscodeMssql from 'vscode-mssql';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as templates from '../templates/templates';
 import * as path from 'path';
 
@@ -16,9 +16,7 @@ import { IconPathHelper } from '../common/iconHelper';
 import { WorkspaceTreeItem } from 'dataworkspace';
 import * as constants from '../common/constants';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
-import { launchAddSqlBindingQuickpick } from '../dialogs/addSqlBindingQuickpick';
-import { PackageHelper } from '../tools/packageHelper';
-import { GenerateProjectFromOpenApiSpecOptions } from 'sqldbproj';
+import { GenerateProjectFromOpenApiSpecOptions, ItemType } from 'sqldbproj';
 
 /**
  * The main controller class that initializes the extension
@@ -26,13 +24,11 @@ import { GenerateProjectFromOpenApiSpecOptions } from 'sqldbproj';
 export default class MainController implements vscode.Disposable {
 	protected projectsController: ProjectsController;
 	protected netcoreTool: NetCoreTool;
-	protected packageHelper: PackageHelper;
 	private _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(constants.projectsOutputChannel);
 
 	public constructor(private context: vscode.ExtensionContext) {
 		this.projectsController = new ProjectsController(this._outputChannel);
 		this.netcoreTool = new NetCoreTool(this._outputChannel);
-		this.packageHelper = new PackageHelper(this._outputChannel);
 	}
 
 	public get extensionContext(): vscode.ExtensionContext {
@@ -70,25 +66,25 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.createProjectFromDatabase', async (context: azdataType.IConnectionProfile | vscodeMssql.ITreeNodeInfo | undefined) => { return this.projectsController.createProjectFromDatabase(context); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.generateProjectFromOpenApiSpec', async (options?: GenerateProjectFromOpenApiSpecOptions) => { return this.projectsController.generateProjectFromOpenApiSpec(options); });
 
-		vscode.commands.registerCommand('sqlDatabaseProjects.newScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.script); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newPreDeploymentScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.preDeployScript); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newPostDeploymentScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.postDeployScript); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newTable', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.table); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newView', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.view); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newStoredProcedure', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.storedProcedure); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.newExternalStreamingJob', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.externalStreamingJob); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.script); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newPreDeploymentScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.preDeployScript); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newPostDeploymentScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.postDeployScript); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newTable', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.table); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newView', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.view); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newStoredProcedure', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.storedProcedure); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newExternalStreamingJob', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, ItemType.externalStreamingJob); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newItem', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.addExistingItem', async (node: WorkspaceTreeItem) => { return this.projectsController.addExistingItemPrompt(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newFolder', async (node: WorkspaceTreeItem) => { return this.projectsController.addFolderPrompt(node); });
 
 		vscode.commands.registerCommand('sqlDatabaseProjects.addDatabaseReference', async (node: WorkspaceTreeItem) => { return this.projectsController.addDatabaseReference(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.openContainingFolder', async (node: WorkspaceTreeItem) => { return this.projectsController.openContainingFolder(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.editProjectFile', async (node: WorkspaceTreeItem) => { return this.projectsController.editProjectFile(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.convertToSdkStyleProject', async (node: WorkspaceTreeItem) => { return this.projectsController.convertToSdkStyleProject(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.delete', async (node: WorkspaceTreeItem) => { return this.projectsController.delete(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: WorkspaceTreeItem) => { return this.projectsController.exclude(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.changeTargetPlatform', async (node: WorkspaceTreeItem) => { return this.projectsController.changeTargetPlatform(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.validateExternalStreamingJob', async (node: WorkspaceTreeItem) => { return this.projectsController.validateExternalStreamingJob(node); });
-
-		vscode.commands.registerCommand('sqlDatabaseProjects.addSqlBinding', async (uri: vscode.Uri | undefined) => { return launchAddSqlBindingQuickpick(uri, this.packageHelper); });
 
 		IconPathHelper.setExtensionContext(this.extensionContext);
 

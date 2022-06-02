@@ -35,7 +35,7 @@ export const DefaultInputWidth = '400px';
 export const DefaultButtonWidth = '80px';
 
 // New Project Dialog
-export const NewProjectDialogTitle = localize('dataworkspace.NewProjectDialogTitle', "Create new project");
+export const NewProjectDialogTitle = localize('dataworkspace.NewProjectDialogTitle', "Create new database project");
 export const TypeTitle = localize('dataworkspace.Type', "Type");
 export const ProjectNameTitle = localize('dataworkspace.projectNameTitle', "Name");
 export const ProjectNamePlaceholder = localize('dataworkspace.projectNamePlaceholder', "Enter project name");
@@ -45,10 +45,18 @@ export const ProjectLocationPlaceholder = localize('dataworkspace.projectLocatio
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
 export const ProjectDirectoryAlreadyExistErrorShort = (projectName: string) => { return localize('dataworkspace.projectDirectoryAlreadyExistErrorShort', "Directory '{0}' already exists in the selected location, please choose another", projectName); };
-export const SelectProjectType = localize('dataworkspace.selectProjectType', "Select Project Type");
+export const SelectProjectType = localize('dataworkspace.selectProjectType', "Select Database Project Type");
 export const SelectProjectLocation = localize('dataworkspace.selectProjectLocation', "Select Project Location");
 export const NameCannotBeEmpty = localize('dataworkspace.nameCannotBeEmpty', "Name cannot be empty");
 export const TargetPlatform = localize('dataworkspace.targetPlatform', "Target Platform");
+export const SdkStyleProject = localize('dataworkspace.sdkStyleProject', "SDK-style project (Preview)");
+export const LearnMore = localize('dataworkspace.learnMore', "Learn More");
+export const YesRecommended = localize('dataworkspace.yesRecommended', "Yes (Recommended)");
+export const No = localize('dataworkspace.no', "No");
+export const SdkLearnMorePlaceholder = localize('dataworkspace.sdkLearnMorePlaceholder', "Click \"Learn More\" button for more information about SDK-style projects");
+export const Default = localize('dataworkspace.default', "Default");
+export const SelectTargetPlatform = localize('dataworkspace.selectTargetPlatform', "Select Target Platform");
+export const LocalDevInfo = (target: string) => localize('LocalDevInfo', "Click \"Learn more\" button for more information about local development experience to {0}", target);
 
 //Open Existing Dialog
 export const OpenExistingDialogTitle = localize('dataworkspace.openExistingDialogTitle', "Open Existing Project");

@@ -160,8 +160,8 @@
         <target state="translated">叢集內容</target>
       </trans-unit>
       <trans-unit id="arc.controllerDashboard">
-        <source xml:lang="en">Azure Arc Data Controller Dashboard (Preview) - {0}</source>
-        <target state="translated">Azure Arc 資料控制器儀表板 (預覽) - {0}</target>
+        <source xml:lang="en">Azure Arc Data Controller Dashboard - {0}</source>
+        <target state="translated">Azure Arc 資料控制器儀表板 - {0}</target>
       </trans-unit>
       <trans-unit id="arc.controllerKubeConfig">
         <source xml:lang="en">Kube Config File Path</source>
@@ -372,6 +372,10 @@
       <trans-unit id="arc.errorConnectingToController">
         <source xml:lang="en">Error connecting to controller. {0}</source>
         <target state="translated">連線至控制器時發生錯誤。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.errorListingLogAnalyticsWorkspaces">
+        <source xml:lang="en">Error listing Log Analytics workspaces {0}</source>
+        <target state="translated">列出 Log Analytics 工作區 {0} 時發生錯誤</target>
       </trans-unit>
       <trans-unit id="arc.errorVerifyingPassword">
         <source xml:lang="en">Error encountered while verifying password. {0}</source>
@@ -606,8 +610,8 @@
         <target state="translated">需要連線才能列出此執行個體上的資料庫。</target>
       </trans-unit>
       <trans-unit id="arc.miaaDashboard">
-        <source xml:lang="en">SQL managed instance - Azure Arc Dashboard (Preview) - {0}</source>
-        <target state="translated">SQL 受控執行個體 - Azure Arc 儀表板 (預覽) - {0}</target>
+        <source xml:lang="en">SQL managed instance - Azure Arc Dashboard - {0}</source>
+        <target state="translated">SQL 受控執行個體 - Azure Arc 儀表板 - {0}</target>
       </trans-unit>
       <trans-unit id="arc.miaaProviderName">
         <source xml:lang="en">MSSQL</source>
@@ -838,8 +842,8 @@
         <target state="translated">您可以調整已啟用的 Azure Arc 規模</target>
       </trans-unit>
       <trans-unit id="arc.postgresDashboard">
-        <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc Dashboard (Preview) - {0}</source>
-        <target state="translated">PostgreSQL 超大規模資料庫 - Azure Arc 儀表板 (預覽) - {0}</target>
+        <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc Dashboard - {0}</source>
+        <target state="translated">PostgreSQL 超大規模資料庫 - Azure Arc 儀表板 - {0}</target>
       </trans-unit>
       <trans-unit id="arc.postgresExtension">
         <source xml:lang="en">microsoft.azuredatastudio-postgresql</source>
@@ -1193,7 +1197,7 @@
         <source xml:lang="en">The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:
 	{2}
  Do you want to update this information?</source>
-        <target state="translated">組態檔所指定的叢集內容資訊: {0} 和叢集內容: {1} 不再有效。錯誤為:
+        <target state="translated">組態檔所指定的叢集內容資訊: {0} 和叢集內容: {1} 不再有效。錯誤為: 
 	{2}
  您要更新此資訊嗎?</target>
       </trans-unit>
@@ -1309,22 +1313,6 @@
         <source xml:lang="en">Cores Request</source>
         <target state="translated">核心數要求</target>
       </trans-unit>
-      <trans-unit id="arc.data.controller.admin.account.confirm.password">
-        <source xml:lang="en">Confirm password</source>
-        <target state="translated">確認密碼</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.admin.account.name">
-        <source xml:lang="en">Data controller login</source>
-        <target state="translated">資料控制器登入</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.admin.account.password">
-        <source xml:lang="en">Password</source>
-        <target state="translated">密碼</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.admin.account.title">
-        <source xml:lang="en">Administrator account</source>
-        <target state="translated">系統管理員帳戶</target>
-      </trans-unit>
       <trans-unit id="arc.data.controller.agreement">
         <source xml:lang="en">I accept {0} and {1}.</source>
         <target state="translated">我接受 {0} 和 {1}。</target>
@@ -1408,6 +1396,42 @@
       <trans-unit id="arc.data.controller.location">
         <source xml:lang="en">Location</source>
         <target state="translated">位置</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.log.analytics.primary.key">
+        <source xml:lang="en">Log Analytics primary key</source>
+        <target state="translated">記錄分析主要金鑰</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.log.analytics.workspace.id">
+        <source xml:lang="en">Log Analytics workspace ID</source>
+        <target state="translated">Log Analytics 工作區識別碼</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.log.analytics.workspace.names">
+        <source xml:lang="en">Log Analytics workspace</source>
+        <target state="translated">Log Analytics 工作區</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.confirm.password">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">確認密碼</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.password">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密碼</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.password.description">
+        <source xml:lang="en">Enter the password that will be used to log in to the metrics and logs dashboards.</source>
+        <target state="translated">輸入將用於登入計量和記錄儀表板的密碼。</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.title">
+        <source xml:lang="en">Metrics and Logs Dashboard Credentials</source>
+        <target state="translated">計量和記錄儀表板認證</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.username">
+        <source xml:lang="en">Username</source>
+        <target state="translated">使用者名稱</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.metrics.and.logs.dashboard.credentials.username.description">
+        <source xml:lang="en">Enter the username that will be used for the metrics and logs dashboards.</source>
+        <target state="translated">輸入將用於計量和記錄儀表板的使用者名稱。</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.name">
         <source xml:lang="en">Data controller name</source>
@@ -1718,8 +1742,8 @@
         <target state="translated">提供支援 Azure 的 PostgreSQL 超大規模資料庫伺服器群組參數</target>
       </trans-unit>
       <trans-unit id="arc.postgres.wizard.title">
-        <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group (Preview)</source>
-        <target state="translated">部署啟用 Azure Arc 的 PostgreSQL 超大規模資料庫伺服器群組 (預覽)</target>
+        <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group</source>
+        <target state="translated">部署啟用 Azure Arc 的 PostgreSQL 超大規模資料庫伺服器群組</target>
       </trans-unit>
       <trans-unit id="arc.sql.connection.settings.section.title">
         <source xml:lang="en">SQL Connection information</source>
@@ -1794,8 +1818,8 @@
         <target state="translated">服務層級</target>
       </trans-unit>
       <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.description">
-        <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
-        <target state="translated">從 Azure SQL 受控執行個體 - Azure Arc (包括一般用途和商務關鍵性) 可用的最新虛擬核心服務層級中選取。 {0}</target>
+        <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>
+        <target state="translated">從 Azure SQL 受控執行個體 - Azure Arc (包括一般用途和商務關鍵性) 可用的最新 V 核心服務層級中選取。</target>
       </trans-unit>
       <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.text">
         <source xml:lang="en">Learn more</source>
@@ -1833,9 +1857,13 @@
         <source xml:lang="en">For development use only</source>
         <target state="translated">僅供開發使用</target>
       </trans-unit>
+      <trans-unit id="arc.sql.high.availability">
+        <source xml:lang="en">High availability</source>
+        <target state="translated">高可用性</target>
+      </trans-unit>
       <trans-unit id="arc.sql.high.availability.description">
-        <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas. Choose from: General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability) or [PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability).</source>
-        <target state="translated">啟用其他複本以提升可用性。以下選取的計算和儲存體設定將會套用到所有複本。選項: 一般用途 (最多 24 個 vCore 和 128 Gi 的 RAM、標準高可用性) 或 [預覽] 業務關鍵 (無上限的 vCore 數目和 RAM、進階高可用性)。</target>
+        <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</source>
+        <target state="translated">為求高可用性啟用其他複本。下方選取的計算與儲存體組態將會套用至所有複本。</target>
       </trans-unit>
       <trans-unit id="arc.sql.instance.name">
         <source xml:lang="en">Instance name</source>
@@ -1874,8 +1902,8 @@
         <target state="translated">受控執行個體的容量要求，以記憶體整數 GB 為單位。</target>
       </trans-unit>
       <trans-unit id="arc.sql.one.replica">
-        <source xml:lang="en">1</source>
-        <target state="translated">1</target>
+        <source xml:lang="en">1 replica</source>
+        <target state="translated">1 個複本</target>
       </trans-unit>
       <trans-unit id="arc.sql.pitr.description">
         <source xml:lang="en">Point in time restore</source>
@@ -1884,10 +1912,6 @@
       <trans-unit id="arc.sql.pitr.retention.description">
         <source xml:lang="en">Configure retention for point-in-time backups. {0}</source>
         <target state="translated">設定時間點備份的保留期。{0}</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.replicas">
-        <source xml:lang="en">Replicas</source>
-        <target state="translated">複本</target>
       </trans-unit>
       <trans-unit id="arc.sql.retention.days.description">
         <source xml:lang="en">Specify how long you want to keep your point-in-time backups.</source>
@@ -1898,16 +1922,16 @@
         <target state="translated">保留時間點 (天)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.business.critical">
-        <source xml:lang="en">BusinessCritical</source>
-        <target state="translated">BusinessCritical</target>
+        <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
+        <target state="translated">[預覽] 商務關鍵性 (無限虛擬核心及 RAM，進階高可用性)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.description">
-        <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
-        <target state="translated">從 Azure SQL 受控執行個體 - Azure Arc (包括一般用途和商務關鍵性) 可用的最新虛擬核心服務層級中選取。 {0}</target>
+        <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>
+        <target state="translated">從 Azure SQL 受控執行個體 - Azure Arc (包括一般用途和商務關鍵性) 可用的最新 V 核心服務層級中選取。</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.general.purpose">
-        <source xml:lang="en">GeneralPurpose</source>
-        <target state="translated">GeneralPurpose</target>
+        <source xml:lang="en">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</source>
+        <target state="translated">一般用途 (最高 24 個虛擬核心及 128 Gi RAM，標準高可用性)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.label">
         <source xml:lang="en">Service Tier</source>
@@ -1938,12 +1962,12 @@
         <target state="translated">由 Microsoft 提供</target>
       </trans-unit>
       <trans-unit id="arc.sql.three.replicas">
-        <source xml:lang="en">3</source>
-        <target state="translated">3</target>
+        <source xml:lang="en">3 replicas</source>
+        <target state="translated">3 個複本</target>
       </trans-unit>
       <trans-unit id="arc.sql.two.replicas">
-        <source xml:lang="en">2</source>
-        <target state="translated">2</target>
+        <source xml:lang="en">2 replicas</source>
+        <target state="translated">2 個複本</target>
       </trans-unit>
       <trans-unit id="arc.sql.username">
         <source xml:lang="en">Username</source>
@@ -1986,8 +2010,8 @@
         <target state="translated">提供 Azure SQL 受控執行個體參數</target>
       </trans-unit>
       <trans-unit id="arc.sql.wizard.title">
-        <source xml:lang="en">Deploy Azure SQL managed instance - Azure Arc (preview)</source>
-        <target state="translated">部署 Azure SQL 受控執行個體 - Azure Arc (預覽)</target>
+        <source xml:lang="en">Deploy Azure SQL managed instance - Azure Arc</source>
+        <target state="translated">部署 Azure SQL 受控執行個體 - Azure Arc</target>
       </trans-unit>
       <trans-unit id="arc.storage-class.backups.label">
         <source xml:lang="en">Storage Class (Backups)</source>
@@ -2080,24 +2104,24 @@
         <target state="translated">將 PostgreSQL 超大規模資料庫伺服器群組部署到 Azure Arc 環境</target>
       </trans-unit>
       <trans-unit id="resource.type.arc.postgres.display.name">
-        <source xml:lang="en">PostgreSQL Hyperscale server groups - Azure Arc (preview)</source>
-        <target state="translated">PostgreSQL 超大規模資料庫伺服器群組 - Azure Arc (預覽)</target>
+        <source xml:lang="en">PostgreSQL Hyperscale server groups - Azure Arc</source>
+        <target state="translated">PostgreSQL 超大規模資料庫伺服器群組 - Azure Arc</target>
       </trans-unit>
       <trans-unit id="resource.type.arc.sql.description">
         <source xml:lang="en">Managed SQL Instance service for app developers in a customer-managed environment</source>
         <target state="translated">適用於客戶自控環境中應用程式開發人員的受控 SQL 執行個體服務</target>
       </trans-unit>
       <trans-unit id="resource.type.arc.sql.display.name">
-        <source xml:lang="en">Azure SQL managed instance - Azure Arc (preview)</source>
-        <target state="translated">Azure SQL 受控執行個體 - Azure Arc (預覽)</target>
+        <source xml:lang="en">Azure SQL managed instance - Azure Arc</source>
+        <target state="translated">Azure SQL 受控執行個體 - Azure Arc</target>
       </trans-unit>
       <trans-unit id="resource.type.azure.arc.description">
-        <source xml:lang="en">Creates an Azure Arc data controller</source>
-        <target state="translated">建立 Azure Arc 資料控制器</target>
+        <source xml:lang="en">Creates an Azure Arc data controller. Ensure that you have run az login before starting this wizard.</source>
+        <target state="translated">建立 Azure Arc 資料控制器。啟動此精靈之前，請先確認您已執行 AZ 登入。</target>
       </trans-unit>
       <trans-unit id="resource.type.azure.arc.display.name">
-        <source xml:lang="en">Azure Arc data controller (preview)</source>
-        <target state="translated">Azure Arc 資料控制器 (預覽)</target>
+        <source xml:lang="en">Azure Arc data controller</source>
+        <target state="translated">Azure Arc 資料控制器</target>
       </trans-unit>
       <trans-unit id="should.be.integer">
         <source xml:lang="en">Value must be an integer</source>

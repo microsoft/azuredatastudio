@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import * as fs from 'fs';
 import { EOL } from 'os';
 import * as path from 'path';
@@ -438,7 +438,7 @@ async function hookUpDynamicOptions(context: WizardPageContext): Promise<void> {
 				const updateOptions = async () => {
 					const currentValue = await targetComponent.getValue();
 					if (field.dynamicOptions && field.options && fieldComponent && fieldComponent.setOptions) {
-						const targetValueFound = field.dynamicOptions.alternates.find(item => item.selection === currentValue);
+						let targetValueFound = field.dynamicOptions.alternates.find(item => item.selection === currentValue);
 						if (targetValueFound) {
 							fieldComponent.setOptions(<OptionsInfo>{
 								values: targetValueFound.alternateValues,
@@ -1646,7 +1646,12 @@ export function getPasswordMismatchMessage(fieldName: string): string {
 export async function setModelValues(inputComponents: InputComponents, model: Model): Promise<void> {
 	await Promise.all(Object.keys(inputComponents).map(async key => {
 		const value = await inputComponents[key].getValue();
-		model.setPropertyValue(key, value);
+		// Check if value is of type CategoryValue. If so, we need to get the name from the CategoryValue object.
+		if (typeof (value) === 'object') {
+			model.setPropertyValue(key, value.name);
+		} else {
+			model.setPropertyValue(key, value);
+		}
 	}));
 }
 

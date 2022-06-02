@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
-import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges, HostListener, ViewChildren, QueryList, ViewChild } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges, ViewChildren, QueryList, ViewChild } from '@angular/core';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
@@ -12,7 +12,6 @@ import { Deferred } from 'sql/base/common/promise';
 import { ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
 import { OutputAreaComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/outputArea.component';
-
 
 export const CODE_SELECTOR: string = 'code-cell-component';
 
@@ -30,12 +29,6 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	}
 	@Input() set activeCellId(value: string) {
 		this._activeCellId = value;
-	}
-
-	@HostListener('document:keydown.escape', ['$event'])
-	handleKeyboardEvent() {
-		this.cellModel.active = false;
-		this._model.updateActiveCell(undefined);
 	}
 
 	private _activeCellId: string;
@@ -59,6 +52,11 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 			}));
 			this._register(this.cellModel.onOutputsChanged(() => {
 				this._changeRef.detectChanges();
+			}));
+			this._register(this.cellModel.onCellModeChanged(mode => {
+				if (mode !== this.cellModel.isEditMode) {
+					this._changeRef.detectChanges();
+				}
 			}));
 			// Register request handler, cleanup on dispose of this component
 			this.cellModel.setStdInHandler({ handle: (msg) => this.handleStdIn(msg) });
@@ -97,6 +95,11 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 
 	public layout() {
 
+	}
+
+	public toggleEditMode(): void {
+		this.cellModel.isEditMode = !this.cellModel.isEditMode;
+		this._changeRef.detectChanges();
 	}
 
 	handleStdIn(msg: nb.IStdinMessage): void | Thenable<void> {

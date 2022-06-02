@@ -180,6 +180,8 @@ import { IJobManagementService } from 'sql/workbench/services/jobManagement/comm
 import { JobManagementService } from 'sql/workbench/services/jobManagement/common/jobManagementService';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { BackupService } from 'sql/platform/backup/common/backupServiceImp';
+import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
+import { AzureBlobService } from 'sql/workbench/services/azureBlob/browser/azureBlobService';
 import { IBackupUiService } from 'sql/workbench/contrib/backup/common/backupUiService';
 import { BackupUiService } from 'sql/workbench/contrib/backup/browser/backupUiService';
 import { IRestoreDialogController, IRestoreService } from 'sql/workbench/services/restore/common/restoreService';
@@ -190,6 +192,8 @@ import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/i
 import { FileBrowserService } from 'sql/workbench/services/fileBrowser/common/fileBrowserService';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { FileBrowserDialogController } from 'sql/workbench/services/fileBrowser/browser/fileBrowserDialogController';
+import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
+import { BackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialogService';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { InsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogServiceImpl';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
@@ -213,6 +217,8 @@ import { DataGridProviderService } from 'sql/workbench/services/dataGridProvider
 import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
 import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/common/interface';
 import { TableDesignerService } from 'sql/workbench/services/tableDesigner/browser/tableDesignerService';
+import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
+import { ExecutionPlanService } from 'sql/workbench/services/executionPlan/common/executionPlanService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -227,12 +233,14 @@ registerSingleton(IMetadataService, MetadataService);
 registerSingleton(IAdminService, AdminService);
 registerSingleton(IJobManagementService, JobManagementService);
 registerSingleton(IBackupService, BackupService);
+registerSingleton(IAzureBlobService, AzureBlobService);
 registerSingleton(IBackupUiService, BackupUiService);
 registerSingleton(IScriptingService, ScriptingService);
 registerSingleton(IRestoreService, RestoreService);
 registerSingleton(IRestoreDialogController, RestoreDialogController);
 registerSingleton(IFileBrowserService, FileBrowserService);
 registerSingleton(IFileBrowserDialogController, FileBrowserDialogController);
+registerSingleton(IBackupRestoreUrlBrowserDialogService, BackupRestoreUrlBrowserDialogService);
 registerSingleton(IInsightsDialogService, InsightsDialogService);
 registerSingleton(INotebookService, NotebookService);
 registerSingleton(IAccountPickerService, AccountPickerService);
@@ -253,7 +261,7 @@ registerSingleton(IOEShimService, OEShimService);
 registerSingleton(IAssessmentService, AssessmentService);
 registerSingleton(IDataGridProviderService, DataGridProviderService);
 registerSingleton(ITableDesignerService, TableDesignerService);
-
+registerSingleton(IExecutionPlanService, ExecutionPlanService);
 //#endregion
 
 
@@ -527,6 +535,9 @@ import 'sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.cont
 // Extension
 import 'sql/workbench/contrib/extensions/browser/extensions.contribution';
 
+// TSGOps ads light image
+import 'sql/workbench/contrib/tsgops/browser/tsgops.contribution';
+
 // Azure
 import 'sql/workbench/contrib/azure/browser/azure.contribution';
 
@@ -535,5 +546,8 @@ import 'sql/workbench/contrib/charts/browser/charts.contribution';
 
 // table designer
 import 'sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution';
+
+// execution plan
+import 'sql/workbench/contrib/executionPlan/browser/executionPlanContribution';
 
 //#endregion

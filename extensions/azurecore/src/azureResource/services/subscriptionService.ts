@@ -6,15 +6,13 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { SubscriptionClient } from '@azure/arm-subscriptions';
-
-import { azureResource } from 'azureResource';
+import { AzureAccount, azureResource } from 'azurecore';
 import { IAzureResourceSubscriptionService } from '../interfaces';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import { AzureSubscriptionError } from '../errors';
 import { AzureResourceErrorMessageUtil } from '../utils';
 
 import * as nls from 'vscode-nls';
-import { AzureAccount } from 'azurecore';
 const localize = nls.loadMessageBundle();
 
 export class AzureResourceSubscriptionService implements IAzureResourceSubscriptionService {

@@ -50,7 +50,6 @@ import { throwProposedApiError, checkProposedApiEnabled } from 'vs/workbench/ser
 import { ProxyIdentifier } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/common/extensionDescriptionRegistry';
 import type * as vscode from 'vscode';
-import type * as azdata from 'azdata';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { values } from 'vs/base/common/collections';
 import { ExtHostEditorInsets } from 'vs/workbench/api/common/extHostCodeInsets';
@@ -93,12 +92,12 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 // import { ExtHostNotebookDocuments } from 'vs/workbench/api/common/extHostNotebookDocuments'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 // import { ExtHostInteractive } from 'vs/workbench/api/common/extHostInteractive'; {{SQL CARBON EDIT}} Remove until we need it
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
-import { functionalityNotSupportedError, invalidArgumentsError } from 'sql/base/common/locConstants';
+import { docCreationFailedError, functionalityNotSupportedError, invalidArgumentsError } from 'sql/base/common/locConstants';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
-import { convertToADSNotebookContents } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { IdGenerator } from 'vs/base/common/idGenerator';
+import { convertToADSNotebookContents } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -893,15 +892,18 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 			},
 			async openNotebookDocument(uriOrType?: URI | string, content?: vscode.NotebookData): Promise<vscode.NotebookDocument> {
 				// {{SQL CARBON EDIT}} Use our own notebooks
-				let doc: azdata.nb.NotebookDocument;
+				let uri: URI;
 				if (URI.isUri(uriOrType)) {
-					let editor = await extHostNotebookDocumentsAndEditors.showNotebookDocument(uriOrType, {});
-					doc = editor.document;
+					uri = uriOrType;
+					await extHostNotebookDocumentsAndEditors.openNotebookDocument(uriOrType);
 				} else if (typeof uriOrType === 'string') {
-					let convertedContents = convertToADSNotebookContents(content);
-					doc = await extHostNotebookDocumentsAndEditors.createNotebookDocument(uriOrType, convertedContents);
+					uri = URI.revive(await extHostNotebookDocumentsAndEditors.createNotebookDocument(uriOrType, convertToADSNotebookContents(content)));
 				} else {
 					throw new Error(invalidArgumentsError);
+				}
+				let doc = extHostNotebookDocumentsAndEditors.getDocument(uri.toString())?.document;
+				if (!doc) {
+					throw new Error(docCreationFailedError);
 				}
 				return new VSCodeNotebookDocument(doc);
 			},
@@ -1156,7 +1158,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 		const notebooks: typeof vscode.notebooks = {
 			createNotebookController(id: string, notebookType: string, label: string, handler?, rendererScripts?: vscode.NotebookRendererScript[]) {
 				// {{SQL CARBON EDIT}} Use our own notebooks
-				return extHostNotebook.createNotebookController(extension, id, notebookType, label, handler, extension.enableProposedApi ? rendererScripts : undefined);
+				let getDocHandler = (notebookUri: URI) => extHostNotebookDocumentsAndEditors.getDocument(notebookUri.toString())?.document;
+				return extHostNotebook.createNotebookController(extension, id, notebookType, label, getDocHandler, handler, extension.enableProposedApi ? rendererScripts : undefined);
 			},
 			registerNotebookCellStatusBarItemProvider: (notebookType: string, provider: vscode.NotebookCellStatusBarItemProvider) => {
 				// {{SQL CARBON EDIT}} Disable VS Code notebooks

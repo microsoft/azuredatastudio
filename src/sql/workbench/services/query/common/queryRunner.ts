@@ -6,7 +6,7 @@
 import { IQueryManagementService, QueryCancelResult, ExecutionPlanOptions } from 'sql/workbench/services/query/common/queryManagement';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { Deferred } from 'sql/base/common/promise';
-import { IQueryPlanInfo, IQueryPlan2Info } from 'sql/workbench/services/query/common/queryModel';
+import { IQueryPlanInfo, IExecutionPlanInfo } from 'sql/workbench/services/query/common/queryModel';
 import { ResultSerializer, SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 
 import * as azdata from 'azdata';
@@ -73,8 +73,8 @@ export default class QueryRunner extends Disposable {
 	private readonly _onQueryPlanAvailable = this._register(new Emitter<IQueryPlanInfo>());
 	public readonly onQueryPlanAvailable = this._onQueryPlanAvailable.event;
 
-	private readonly _onQueryPlan2Available = this._register(new Emitter<IQueryPlan2Info>());
-	public readonly onQueryPlan2Available = this._onQueryPlan2Available.event;
+	private readonly _onExecutionPlanAvailable = this._register(new Emitter<IExecutionPlanInfo>());
+	public readonly onExecutionPlanAvailable = this._onExecutionPlanAvailable.event;
 
 	private readonly _onVisualize = this._register(new Emitter<ResultSetSummary>());
 	public readonly onVisualize = this._onVisualize.event;
@@ -387,12 +387,12 @@ export default class QueryRunner extends Disposable {
 		}
 	}
 
-	public handleQueryPlan2Available(queryPlans: azdata.QueryPlanGraph[] | undefined) {
-		if (queryPlans) {
-			this._onQueryPlan2Available.fire({
+	public handleExecutionPlanAvailable(executionPlans: azdata.executionPlan.ExecutionPlanGraph[] | undefined) {
+		if (executionPlans) {
+			this._onExecutionPlanAvailable.fire({
 				providerId: mssqlProviderName,
 				fileUri: this.uri,
-				planGraphs: queryPlans
+				planGraphs: executionPlans
 			});
 		}
 	}
@@ -437,7 +437,6 @@ export default class QueryRunner extends Disposable {
 	}
 
 	public override dispose() {
-		this.logService.info(`Disposing the query runner of: '${this.uri}'', call stack: ${new Error().stack}`);
 		this._batchSets = undefined!;
 		super.dispose();
 		this._isDisposed = true;

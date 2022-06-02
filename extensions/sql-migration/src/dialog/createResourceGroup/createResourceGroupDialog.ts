@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { azureResource } from 'azureResource';
+import { azureResource } from 'azurecore';
 import { EventEmitter } from 'events';
 import { createResourceGroup } from '../../api/azure';
 import * as constants from '../../constants/strings';
@@ -37,7 +37,7 @@ export class CreateResourceGroupDialog {
 
 	async initialize(): Promise<azureResource.AzureResourceResourceGroup> {
 		let tab = azdata.window.createTab('sql.migration.CreateResourceGroupDialog');
-		await tab.registerContent(async (view: azdata.ModelView) => {
+		tab.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
 
 			const resourceGroupDescription = view.modelBuilder.text().withProps({

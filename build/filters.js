@@ -122,7 +122,8 @@ module.exports.indentationFilter = [
 	'!extensions/simple-browser/media/*.js',
 	'!resources/xlf/LocProject.json',
 	'!build/**/*',
-	'!test/coverage/**'
+	'!test/coverage/**',
+	'!extensions/**/coverage/**'
 ];
 
 module.exports.copyrightFilter = [
@@ -182,6 +183,7 @@ module.exports.copyrightFilter = [
 	'!src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/cellSelectionModel.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/autoSizeColumns.plugin.ts',
+	'!src/sql/base/browser/ui/table/plugins/rowMoveManager.plugin.ts',
 	'!src/sql/workbench/services/notebook/browser/outputs/sanitizer.ts',
 	'!src/sql/workbench/contrib/notebook/browser/outputs/renderers.ts',
 	'!src/sql/workbench/services/notebook/browser/outputs/tableRenderers.ts',

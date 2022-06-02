@@ -54,6 +54,22 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 						validateAz(azToolService.localAz);
 						return azToolService.localAz!.arcdata.dc.config.show(namespace, additionalEnvVars);
 					}
+				},
+				listUpgrades: async (namespace: string, usek8s?: boolean, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					await localAzDiscovered;
+					validateAz(azToolService.localAz);
+					return azToolService.localAz!.arcdata.dc.listUpgrades(namespace, usek8s, additionalEnvVars);
+				},
+				upgrade: async (
+					desiredVersion: string,
+					name: string,
+					resourceGroup?: string,
+					namespace?: string,
+					additionalEnvVars?: azExt.AdditionalEnvVars
+				) => {
+					await localAzDiscovered;
+					validateAz(azToolService.localAz);
+					return azToolService.localAz!.arcdata.dc.upgrade(desiredVersion, name, resourceGroup, namespace, additionalEnvVars);
 				}
 			}
 		},
@@ -101,22 +117,49 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 		},
 		sql: {
 			miarc: {
-				delete: async (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+				delete: async (
+					name: string,
+					args: {
+						// Direct mode arguments
+						resourceGroup?: string;
+						// Indirect mode arguments
+						namespace?: string;
+					},
+					additionalEnvVars?: azExt.AdditionalEnvVars
+				) => {
 					await localAzDiscovered;
 					validateAz(azToolService.localAz);
-					return azToolService.localAz!.sql.miarc.delete(name, namespace, additionalEnvVars);
+					return azToolService.localAz!.sql.miarc.delete(name, args, additionalEnvVars);
 				},
-				list: async (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+				list: async (
+					args: {
+						// Direct mode arguments
+						resourceGroup?: string;
+						// Indirect mode arguments
+						namespace?: string;
+					},
+					additionalEnvVars?: azExt.AdditionalEnvVars
+				) => {
 					await localAzDiscovered;
 					validateAz(azToolService.localAz);
-					return azToolService.localAz!.sql.miarc.list(namespace, additionalEnvVars);
+					return azToolService.localAz!.sql.miarc.list(args, additionalEnvVars);
 				},
-				show: async (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+				show: async (
+					name: string,
+					args: {
+						// Direct mode arguments
+						resourceGroup?: string;
+						// Indirect mode arguments
+						namespace?: string;
+					},
+					// Additional arguments
+					additionalEnvVars?: azExt.AdditionalEnvVars
+				) => {
 					await localAzDiscovered;
 					validateAz(azToolService.localAz);
-					return azToolService.localAz!.sql.miarc.show(name, namespace, additionalEnvVars);
+					return azToolService.localAz!.sql.miarc.show(name, args, additionalEnvVars);
 				},
-				edit: async (
+				update: async (
 					name: string,
 					args: {
 						coresLimit?: string;
@@ -125,12 +168,32 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 						memoryRequest?: string;
 						noWait?: boolean;
 					},
-					namespace: string,
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
+					namespace?: string,
+					usek8s?: boolean,
+					// Additional arguments
 					additionalEnvVars?: azExt.AdditionalEnvVars
 				) => {
 					await localAzDiscovered;
 					validateAz(azToolService.localAz);
-					return azToolService.localAz!.sql.miarc.edit(name, args, namespace, additionalEnvVars);
+					return azToolService.localAz!.sql.miarc.update(name, args, resourceGroup, namespace, usek8s, additionalEnvVars);
+				},
+				upgrade: async (
+					name: string,
+					args: {
+						// Direct mode arguments
+						resourceGroup?: string;
+						// Indirect mode arguments
+						namespace?: string;
+					},
+					// Additional arguments
+					additionalEnvVars?: azExt.AdditionalEnvVars
+				) => {
+					await localAzDiscovered;
+					validateAz(azToolService.localAz);
+					return azToolService.localAz!.sql.miarc.upgrade(name, args, additionalEnvVars);
 				}
 			},
 			midbarc: {
@@ -146,6 +209,17 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 					await localAzDiscovered;
 					validateAz(azToolService.localAz);
 					return azToolService.localAz!.sql.midbarc.restore(name, args, namespace, additionalEnvVars);
+				}
+			}
+		},
+		monitor: {
+			logAnalytics: {
+				workspace: {
+					list: async (resourceGroup?: string, subscription?: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+						await localAzDiscovered;
+						validateAz(azToolService.localAz);
+						return azToolService.localAz!.monitor.logAnalytics.workspace.list(resourceGroup, subscription, additionalEnvVars);
+					}
 				}
 			}
 		},

@@ -146,7 +146,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		}
 
 		if (this.authMappings.size === 0) {
-			Logger.log('No auth method was enabled.');
+			Logger.error('No auth method was enabled.');
 			void vscode.window.showErrorMessage(noAuthAvailable);
 			return { canceled: true };
 		}
@@ -163,7 +163,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const pick = await vscode.window.showQuickPick(options, { canPickMany: false });
 
 		if (!pick) {
-			Logger.log('No auth method was selected.');
+			Logger.error('No auth method was selected.');
 			void vscode.window.showErrorMessage(noAuthSelected);
 			return { canceled: true };
 		}
@@ -172,6 +172,11 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	}
 
 	refresh(account: AzureAccount): Thenable<AzureAccount | azdata.PromptFailedResult> {
+		return this._refresh(account);
+	}
+
+	private async _refresh(account: AzureAccount): Promise<AzureAccount | azdata.PromptFailedResult> {
+		await this._clear(account.key);
 		return this.prompt();
 	}
 

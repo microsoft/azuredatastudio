@@ -129,16 +129,19 @@ gulp.task('package-external-extensions', task.series(
 				const packageManifestPath = path.join(packageDir, 'package.json');
 				const json = require('gulp-json-editor');
 				const packageJsonStream = gulp.src(packageManifestPath) // Create stream for the original package.json
-					.pipe(json(data => { // And now use gulp-json-editor to modify the contents
+					.pipe(json(data => {
+						// And now use gulp-json-editor to modify the contents
 						const updateData = JSON.parse(fs.readFileSync(vscodeManifestFullPath)); // Read in the set of values to replace from package.vscode.json
 						Object.keys(updateData).forEach(key => {
 							data[key] = updateData[key];
 						});
-						// Remove ADS-only menus. This is a subset of the menus listed in https://github.com/microsoft/azuredatastudio/blob/main/src/vs/workbench/api/common/menusExtensionPoint.ts
-						// More can be added to the list as needed.
-						['objectExplorer/item/context', 'dataExplorer/context', 'dashboard/toolbar'].forEach(menu => {
-							delete data.contributes.menus[menu];
-						});
+						if(data.contributes?.menus){
+							// Remove ADS-only menus. This is a subset of the menus listed in https://github.com/microsoft/azuredatastudio/blob/main/src/vs/workbench/api/common/menusExtensionPoint.ts
+							// More can be added to the list as needed.
+							['objectExplorer/item/context', 'dataExplorer/context', 'dashboard/toolbar'].forEach(menu => {
+								delete data.contributes.menus[menu];
+							});
+						}
 						return data;
 					}, { beautify: false }))
 					.pipe(gulp.dest(packageDir));

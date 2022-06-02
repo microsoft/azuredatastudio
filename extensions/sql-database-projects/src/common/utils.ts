@@ -10,7 +10,7 @@ import * as constants from './constants';
 import * as path from 'path';
 import * as glob from 'fast-glob';
 import * as dataworkspace from 'dataworkspace';
-import * as mssql from '../../../mssql';
+import * as mssql from 'mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import * as fse from 'fs-extra';
 import * as which from 'which';
@@ -302,19 +302,21 @@ export async function getSchemaCompareService(): Promise<ISchemaCompareService> 
 	}
 }
 
-export async function getAzureFunctionService(): Promise<vscodeMssql.IAzureFunctionsService> {
-	if (getAzdataApi()) {
-		// this isn't supported in ADS
-		throw new Error('Azure Functions service is not supported in Azure Data Studio');
-	} else {
-		const api = await getVscodeMssqlApi();
-		return api.azureFunctions;
-	}
-}
-
 export async function getVscodeMssqlApi(): Promise<vscodeMssql.IExtension> {
 	const ext = vscode.extensions.getExtension(vscodeMssql.extension.name) as vscode.Extension<vscodeMssql.IExtension>;
 	return ext.activate();
+}
+
+export type AzureResourceServiceFactory = () => Promise<vscodeMssql.IAzureResourceService>;
+export async function defaultAzureResourceServiceFactory(): Promise<vscodeMssql.IAzureResourceService> {
+	const vscodeMssqlApi = await getVscodeMssqlApi();
+	return vscodeMssqlApi.azureResourceService;
+}
+
+export type AzureAccountServiceFactory = () => Promise<vscodeMssql.IAzureAccountService>;
+export async function defaultAzureAccountServiceFactory(): Promise<vscodeMssql.IAzureAccountService> {
+	const vscodeMssqlApi = await getVscodeMssqlApi();
+	return vscodeMssqlApi.azureAccountService;
 }
 
 /*
@@ -326,14 +328,14 @@ export async function getDefaultPublishDeploymentOptions(project: Project): Prom
 	const deploymentOptions = result.defaultDeploymentOptions;
 	// re-include database-scoped credentials
 	if (getAzdataApi()) {
-		deploymentOptions.excludeObjectTypes = (deploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.filter(x => x !== mssql.SchemaObjectType.DatabaseScopedCredentials);
+		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== mssql.SchemaObjectType.DatabaseScopedCredentials);
 	} else {
-		deploymentOptions.excludeObjectTypes = (deploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.filter(x => x !== vscodeMssql.SchemaObjectType.DatabaseScopedCredentials);
+		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== vscodeMssql.SchemaObjectType.DatabaseScopedCredentials);
 	}
 
 	// this option needs to be true for same database references validation to work
 	if (project.databaseReferences.length > 0) {
-		deploymentOptions.includeCompositeObjects = true;
+		deploymentOptions.includeCompositeObjects.value = true;
 	}
 	return result.defaultDeploymentOptions;
 }
@@ -451,7 +453,7 @@ export async function retry<T>(
 			}
 
 		} catch (err) {
-			outputChannel.appendLine(constants.retryMessage(name, err));
+			outputChannel.appendLine(constants.retryMessage(name, getErrorMessage(err)));
 		}
 	}
 
@@ -473,23 +475,6 @@ export async function detectCommandInstallation(command: string): Promise<boolea
 	}
 
 	return false;
-}
-
-/**
- * Gets all the projects of the specified extension in the folder
- * @param folder
- * @param projectExtension project extension to filter on
- * @returns array of project uris
- */
-export async function getAllProjectsInFolder(folder: vscode.Uri, projectExtension: string): Promise<vscode.Uri[]> {
-	// path needs to use forward slashes for glob to work
-	const escapedPath = glob.escapePath(folder.fsPath.replace(/\\/g, '/'));
-
-	// filter for projects with the specified project extension
-	const projFilter = path.posix.join(escapedPath, '**', `*${projectExtension}`);
-
-	// glob will return an array of file paths with forward slashes, so they need to be converted back if on windows
-	return (await glob(projFilter)).map(p => vscode.Uri.file(path.resolve(p)));
 }
 
 export function validateSqlServerPortNumber(port: string | undefined): boolean {
@@ -625,4 +610,84 @@ export function getFoldersAlongPath(startFolder: string, endFolder: string): str
 	}
 
 	return folders;
+}
+
+/**
+ * Determines whether provided value is a well-known database source and therefore is allowed to be sent in telemetry.
+ *
+ * @param value Value to check if it is a well-known database source
+ * @returns Normalized database source value if it is well-known, otherwise returns undefined
+ */
+export function getWellKnownDatabaseSource(value: string): string | undefined {
+	const upperCaseValue = value.toUpperCase();
+	return constants.WellKnownDatabaseSources
+		.find(wellKnownSource => wellKnownSource.toUpperCase() === upperCaseValue);
+}
+
+/**
+ * Filters an array of specified database project sources to only those that are well-known.
+ *
+ * @param databaseSourceValues Array of database source values to filter
+ * @returns Array of well-known database sources
+ */
+export function getWellKnownDatabaseSources(databaseSourceValues: string[]): string[] {
+	const databaseSourceSet = new Set<string>();
+	for (let databaseSourceValue of databaseSourceValues) {
+		const wellKnownDatabaseSourceValue = getWellKnownDatabaseSource(databaseSourceValue);
+		if (wellKnownDatabaseSourceValue) {
+			databaseSourceSet.add(wellKnownDatabaseSourceValue);
+		}
+	}
+
+	return Array.from(databaseSourceSet);
+}
+
+/**
+ * Returns SQL version number from docker image name which is in the beginning of the image name
+ * @param imageName docker image name
+ * @returns SQL server version
+ */
+export function findSqlVersionInImageName(imageName: string): number | undefined {
+
+	// Regex to find the version in the beginning of the image name
+	// e.g. 2017-CU16-ubuntu, 2019-latest
+	const regex = new RegExp('^([0-9]+)[-].+$');
+
+	if (regex.test(imageName)) {
+		const finds = regex.exec(imageName);
+		if (finds) {
+
+			// 0 is the full match and 1 is the number with pattern inside the first ()
+			return +finds[1];
+		}
+	}
+	return undefined;
+}
+
+/**
+ * Returns SQL version number from target platform name
+ * @param targetPlatform target platform
+ * @returns SQL server version
+ */
+export function findSqlVersionInTargetPlatform(targetPlatform: string): number | undefined {
+
+	// Regex to find the version in target platform
+	// e.g. SQL Server 2019
+	const regex = new RegExp('([0-9]+)$');
+
+	if (regex.test(targetPlatform)) {
+		const finds = regex.exec(targetPlatform);
+		if (finds) {
+
+			// 0 is the full match and 1 is the number with pattern inside the first ()
+			return +finds[1];
+		}
+	}
+	return undefined;
+}
+
+export function throwIfNotConnected(connectionResult: azdataType.ConnectionResult): void {
+	if (!connectionResult.connected) {
+		throw new Error(`${connectionResult.errorMessage} (${connectionResult.errorCode})`);
+	}
 }

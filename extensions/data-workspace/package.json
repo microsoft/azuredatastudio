@@ -2,7 +2,7 @@
   "name": "data-workspace",
   "displayName": "Data Workspace",
   "description": "Additional common functionality for database projects",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -20,12 +20,12 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
-	"capabilities": {
+  "capabilities": {
     "virtualWorkspaces": false,
     "untrustedWorkspaces": {
       "supported": true
     }
-	},
+  },
   "extensionDependencies": [],
   "contributes": {
     "configuration": [
@@ -133,12 +133,12 @@
       "view/item/context": [
         {
           "command": "projects.manageProject",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project && azdataAvailable",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && azdataAvailable",
           "group": "0_projectsFirst@1"
         },
         {
           "command": "projects.removeProject",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "9_dbProjectsLast@9"
         }
       ]
@@ -182,14 +182,14 @@
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
-    "@types/mocha": "^5.2.5",
+    "@types/mocha": "^7.0.2",
     "@types/sinon": "^9.0.4",
-    "mocha": "^5.2.0",
+    "mocha": "^7.1.1",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "@microsoft/vscodetestcover": "^1.2.0"
+    "@microsoft/vscodetestcover": "^1.2.1"
   }
 }

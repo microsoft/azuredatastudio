@@ -13,6 +13,7 @@ import * as Utils from './utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { DataItemCache } from './util/dataCache';
 import * as azurecore from 'azurecore';
+import * as localizedConstants from './localizedConstants';
 
 const localize = nls.loadMessageBundle();
 
@@ -43,7 +44,17 @@ export class AccountFeature implements StaticFeature {
 		let timeToLiveInSeconds = 10;
 		this.tokenCache = new DataItemCache(this.getToken, timeToLiveInSeconds);
 		this._client.onRequest(contracts.SecurityTokenRequest.type, async (request): Promise<contracts.RequestSecurityTokenResponse | undefined> => {
-			return this.tokenCache.getData(request);
+			return await this.tokenCache.getData(request);
+		});
+		this._client.onNotification(contracts.RefreshTokenNotification.type, async (request) => {
+			// Refresh token, then inform client the token has been updated. This is done as separate notification messages due to the synchronous processing nature of STS currently https://github.com/microsoft/azuredatastudio/issues/17179
+			let result = await this.refreshToken(request);
+			if (!result) {
+				void window.showErrorMessage(localizedConstants.tokenRefreshFailed('autocompletion'));
+				console.log(`Token Refresh Failed ${request.toString()}`);
+				throw Error(localizedConstants.tokenRefreshFailed('autocompletion'));
+			}
+			this._client.sendNotification(contracts.TokenRefreshedNotification.type, result);
 		});
 	}
 
@@ -87,6 +98,38 @@ export class AccountFeature implements StaticFeature {
 		let params: contracts.RequestSecurityTokenResponse = {
 			accountKey: JSON.stringify(account.key),
 			token: securityToken.token
+		};
+
+		return params;
+	}
+
+	protected async refreshToken(request: contracts.RefreshTokenParams): Promise<contracts.TokenRefreshedParams> {
+
+		// find account
+		const accountList = await azdata.accounts.getAllAccounts();
+		const account = accountList.find(a => a.key.accountId === request.accountId);
+		if (!account) {
+			console.log(`Failed to find azure account ${request.accountId} when executing token refresh`);
+			throw Error(localizedConstants.failedToFindAccount(request.accountId));
+		}
+
+		// find tenant
+		const tenant = account.properties.tenants.find(tenant => tenant.id === request.tenantId);
+		if (!tenant) {
+			console.log(`Failed to find tenant ${request.tenantId} in account ${account.displayInfo.displayName} when refreshing security token`);
+			throw Error(localizedConstants.failedToFindTenants(request.tenantId, account.displayInfo.displayName));
+		}
+
+		// Get the updated token, which will handle refreshing it if necessary
+		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
+		if (!securityToken) {
+			console.log('Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected');
+			throw Error(localizedConstants.tokenRefreshFailedNoSecurityToken);
+		}
+		let params: contracts.TokenRefreshedParams = {
+			token: securityToken.token,
+			expiresOn: securityToken.expiresOn,
+			uri: request.uri
 		};
 
 		return params;
@@ -1117,7 +1160,7 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 				return Promise.reject(e);
 			}
 		};
-		const processTableEdit = (tableInfo: azdata.designers.TableInfo, tableChangeInfo: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> => {
+		const processTableEdit = (tableInfo: azdata.designers.TableInfo, tableChangeInfo: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult<azdata.designers.TableDesignerView>> => {
 			let params: contracts.TableDesignerEditRequestParams = {
 				tableInfo: tableInfo,
 				tableChangeInfo: tableChangeInfo
@@ -1131,7 +1174,7 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 			}
 		};
 
-		const publishChanges = (tableInfo: azdata.designers.TableInfo): Thenable<void> => {
+		const publishChanges = (tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.PublishChangesResult> => {
 			try {
 				return client.sendRequest(contracts.PublishTableDesignerChangesRequest.type, tableInfo);
 			}
@@ -1151,7 +1194,7 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 			}
 		};
 
-		const generatePreviewReport = (tableInfo: azdata.designers.TableInfo): Thenable<string> => {
+		const generatePreviewReport = (tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.GeneratePreviewReportResult> => {
 			try {
 				return client.sendRequest(contracts.TableDesignerGenerateChangePreviewReportRequest.type, tableInfo);
 			}
@@ -1183,3 +1226,63 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 	}
 }
 
+
+/**
+ * Execution Plan Service Feature
+ * TODO: Move this feature to data protocol client repo once stablized
+ */
+export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		contracts.GetExecutionPlanRequest.type,
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, ExecutionPlanServiceFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		const getExecutionPlan = (planFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.GetExecutionPlanResult> => {
+			const params: contracts.GetExecutionPlanParams = { graphInfo: planFile };
+			return client.sendRequest(contracts.GetExecutionPlanRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.GetExecutionPlanRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		const compareExecutionPlanGraph = (firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.ExecutionPlanComparisonResult> => {
+			const params: contracts.ExecutionPlanComparisonParams = {
+				firstExecutionPlanGraphInfo: firstPlanFile,
+				secondExecutionPlanGraphInfo: secondPlanFile
+			};
+
+			return client.sendRequest(contracts.ExecutionPlanComparisonRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.ExecutionPlanComparisonRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		return azdata.dataprotocol.registerExecutionPlanProvider({
+			providerId: client.providerId,
+			getExecutionPlan,
+			compareExecutionPlanGraph
+		});
+	}
+}

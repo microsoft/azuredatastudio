@@ -22,7 +22,7 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
-import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookService, OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
@@ -36,6 +36,11 @@ import { notebookConstants } from 'sql/workbench/services/notebook/browser/inter
 import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
+import { IQuickInputService, QuickPickInput } from 'vs/platform/quickinput/common/quickInput';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { getIconClasses } from 'vs/editor/common/services/getIconClasses';
+import { URI } from 'vs/base/common/uri';
+import { ILanguagePickInput } from 'vs/workbench/contrib/notebook/browser/contrib/coreActions';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -48,6 +53,7 @@ const DEFAULT_OR_LOCAL_CONTEXT_ID = '-1';
 export class CodeComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
+	@ViewChild('cellLanguage', { read: ElementRef }) private languageElement: ElementRef;
 
 	public get cellModel(): ICellModel {
 		return this._cellModel;
@@ -101,7 +107,9 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IModeService) private _modeService: IModeService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
-		@Inject(ILogService) private readonly logService: ILogService
+		@Inject(ILogService) private readonly logService: ILogService,
+		@Inject(IQuickInputService) private _quickInputService: IQuickInputService,
+		@Inject(INotebookService) private _notebookService: INotebookService,
 	) {
 		super();
 		this._register(Event.debounce(this._layoutEmitter.event, (l, e) => e, 250, /*leading=*/false)
@@ -144,6 +152,10 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		return this.cellModel.cellGuid;
 	}
 
+	get cellLanguageTitle(): string {
+		return localize('selectCellLanguage', "Select Cell Language Mode");
+	}
+
 	get parametersText(): string {
 		return localize('parametersText', "Parameters");
 	}
@@ -155,7 +167,15 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			if (!shouldConnect && connectionService && connectionService.isConnected(cellUri)) {
 				connectionService.disconnect(cellUri).catch(e => this.logService.error(e));
 			} else if (shouldConnect && this._model.context && this._model.context.id !== DEFAULT_OR_LOCAL_CONTEXT_ID) {
-				connectionService.connect(this._model.context, cellUri).catch(e => this.logService.error(e));
+				// Don't connect immediately in case the user is switching cells quickly (such as holding down the arrow key to navigate through cells)
+				// Instead wait a small bit and then check if the cell is still active, and if it is at that point then connect so we aren't thrashing
+				// connections
+				setTimeout(() => {
+					if (this.isActive()) {
+						connectionService.connect(this._model.context, cellUri).catch(e => this.logService.error(e));
+					}
+				}, 250);
+
 			}
 		}
 	}
@@ -231,7 +251,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._register(this._editorInput);
 		this._register(this._editorModel.onDidChangeContent(e => {
 			this.cellModel.modelContentChangedEvent = e;
-
 			let originalSourceLength = this.cellModel.source.length;
 			this.cellModel.source = this._editorModel.getValue();
 			if (this._cellModel.isCollapsed && originalSourceLength !== this.cellModel.source.length) {
@@ -258,6 +277,13 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 				this.setFocusAndScroll();
 			}
 		}));
+		this._register(this.cellModel.onLanguageChanged(language => {
+			let nativeElement = <HTMLElement>this.languageElement.nativeElement;
+			nativeElement.innerText = this.cellModel.displayLanguage;
+			nativeElement.ariaLabel = this.cellModel.displayLanguage;
+			this.updateLanguageMode();
+			this._changeRef.detectChanges();
+		}));
 		this._register(this.cellModel.onCollapseStateChanged(isCollapsed => {
 			this.onCellCollapse(isCollapsed);
 		}));
@@ -269,6 +295,10 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			}
 			this._layoutEmitter.fire();
 		}));
+		this._register(this.cellModel.onCellModeChanged((isEditMode) => {
+			this.onCellModeChanged(isEditMode);
+		}));
+
 		this.layout();
 
 		if (this._cellModel.isCollapsed) {
@@ -368,8 +398,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 						this.cellModel.setOverrideLanguage(magic.language);
 						this.updateLanguageMode();
 					}
-				} else {
-					this.cellModel.setOverrideLanguage(undefined);
 				}
 			}
 		} catch (err) {
@@ -420,5 +448,90 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			editorWidget.setHiddenAreas([]);
 		}
 		this._editor.setHeightToScrollHeight(false, isCollapsed);
+	}
+
+	private onCellModeChanged(isEditMode: boolean): void {
+		if (this.cellModel.id === this._activeCellId || this._activeCellId === '') {
+			if (isEditMode) {
+				this._editor.getControl().focus();
+			} else {
+				(document.activeElement as HTMLElement).blur();
+			}
+		}
+	}
+
+	public onCellLanguageClick(): void {
+		this._notebookService.getSupportedLanguagesForProvider(this._model.providerId, this._model.selectedKernelDisplayName)
+			.then(languages => this.pickCellLanguage(languages))
+			.then(selection => {
+				if (selection?.languageId) {
+					this._cellModel.setOverrideLanguage(selection.languageId);
+				}
+			})
+			.catch(err => onUnexpectedError(err));
+	}
+
+	public onCellLanguageFocus(): void {
+		this._model.updateActiveCell(this._cellModel);
+	}
+
+	private pickCellLanguage(languages: string[]): Promise<ILanguagePickInput | undefined> {
+		if (languages.length === 0) {
+			languages = [this._cellModel.language];
+		}
+
+		const topItems: ILanguagePickInput[] = [];
+		const mainItems: ILanguagePickInput[] = [];
+		languages.forEach(lang => {
+			let description: string;
+			if (lang === this._cellModel.language) {
+				description = localize('cellLanguageDescription', "({0}) - Current Language", lang);
+			} else {
+				description = localize('cellLanguageDescriptionConfigured', "({0})", lang);
+			}
+
+			const languageName = this._modeService.getLanguageName(lang) ?? lang;
+			const item = <ILanguagePickInput>{
+				label: languageName,
+				iconClasses: getIconClasses(this._modelService, this._modeService, this.getFakeResource(languageName, this._modeService)),
+				description,
+				languageId: lang
+			};
+			if (lang === this._cellModel.language) {
+				topItems.push(item);
+			} else {
+				mainItems.push(item);
+			}
+		});
+
+		mainItems.sort((a, b) => {
+			return a.description.localeCompare(b.description);
+		});
+
+		const picks: QuickPickInput[] = [
+			...topItems,
+			{ type: 'separator' },
+			...mainItems
+		];
+		return this._quickInputService.pick(picks, { placeHolder: this.cellLanguageTitle, canPickMany: false }) as Promise<ILanguagePickInput | undefined>;
+	}
+
+	/**
+	 * Copied from coreActions.ts
+	 */
+	private getFakeResource(lang: string, modeService: IModeService): URI | undefined {
+		let fakeResource: URI | undefined;
+
+		const extensions = modeService.getExtensions(lang);
+		if (extensions?.length) {
+			fakeResource = URI.file(extensions[0]);
+		} else {
+			const filenames = modeService.getFilenames(lang);
+			if (filenames?.length) {
+				fakeResource = URI.file(filenames[0]);
+			}
+		}
+
+		return fakeResource;
 	}
 }

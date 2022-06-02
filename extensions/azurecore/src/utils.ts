@@ -3,9 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { azureResource } from 'azureResource';
 import * as loc from './localizedConstants';
-import { AzureRegion } from 'azurecore';
+import { AzureRegion, azureResource } from 'azurecore';
 import { AppContext } from './appContext';
 
 /**

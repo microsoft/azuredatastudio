@@ -12,7 +12,7 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import * as assert from 'assert';
 import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
-import { convertToVSCodeNotebookCell, convertToVSCodeCellOutput, convertToADSCellOutput } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { convertToVSCodeNotebookCell, convertToVSCodeCellOutput, convertToADSCellOutput, convertToInternalInteractiveKernelMetadata, addExternalInteractiveKernelMetadata } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { URI } from 'vs/base/common/uri';
 import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
@@ -64,21 +64,23 @@ suite('Notebook Serializer', () => {
 			}
 		}],
 		metadata: {
-			kernelspec: {
-				name: 'python3',
-				display_name: 'Python 3',
-				language: 'python'
-			},
-			language_info: {
-				name: 'python',
-				version: '3.8.10',
-				mimetype: 'text/x-python',
-				codemirror_mode: {
-					name: 'ipython',
-					version: '3'
-				}
-			},
 			custom: {
+				metadata: {
+					kernelspec: {
+						name: 'python3',
+						display_name: 'Python 3',
+						language: 'python'
+					},
+					language_info: {
+						name: 'python',
+						version: '3.8.10',
+						mimetype: 'text/x-python',
+						codemirror_mode: {
+							name: 'ipython',
+							version: '3'
+						}
+					}
+				},
 				nbformat: NBFORMAT,
 				nbformat_minor: NBFORMAT_MINOR
 			}
@@ -161,6 +163,13 @@ suite('Notebook Serializer', () => {
 			}],
 			executionSummary: {
 				executionOrder: 1
+			},
+			metadata: {
+				custom: {
+					metadata: {
+						language: 'python'
+					}
+				}
 			}
 		}, {
 			kind: NotebookCellKind.Code,
@@ -176,24 +185,33 @@ suite('Notebook Serializer', () => {
 			}],
 			executionSummary: {
 				executionOrder: 2
+			},
+			metadata: {
+				custom: {
+					metadata: {
+						language: 'python'
+					}
+				}
 			}
 		}],
 		metadata: {
-			kernelspec: {
-				name: 'python3',
-				display_name: 'Python 3',
-				language: 'python'
-			},
-			language_info: {
-				name: 'python',
-				version: '3.8.10',
-				mimetype: 'text/x-python',
-				codemirror_mode: {
-					name: 'ipython',
-					version: '3'
-				}
-			},
 			custom: {
+				metadata: {
+					kernelspec: {
+						name: 'python3',
+						display_name: 'Python 3',
+						language: 'python'
+					},
+					language_info: {
+						name: 'python',
+						version: '3.8.10',
+						mimetype: 'text/x-python',
+						codemirror_mode: {
+							name: 'ipython',
+							version: '3'
+						}
+					}
+				},
 				nbformat: NBFORMAT,
 				nbformat_minor: NBFORMAT_MINOR
 			}
@@ -349,7 +367,10 @@ suite('Notebook Serializer', () => {
 		cells: [{
 			contents: {
 				cell_type: 'code',
-				source: '1+1'
+				source: '1+1',
+				metadata: {
+					language: 'python'
+				}
 			}
 		}, {
 			contents: {
@@ -404,6 +425,9 @@ suite('Notebook Serializer', () => {
 		assert.deepStrictEqual(actual.document.uri, expected.document.uri);
 		assert.strictEqual(actual.document.languageId, expected.document.languageId);
 		assert.deepStrictEqual(actual.notebook.uri, expected.notebook.uri);
+		assert.deepStrictEqual(actual.document.notebook.uri, expected.document.notebook.uri);
+		assert.deepStrictEqual(actual.document.notebook.uri, expected.notebook.uri);
+		assert.deepStrictEqual(actual.notebook.uri, expected.document.notebook.uri);
 	}
 	function validateCellsMatch(actual: vscode.NotebookCell[], expected: vscode.NotebookCell[]): void {
 		assert.strictEqual(actual.length, expected.length, 'Cell arrays did not have equal lengths.');
@@ -413,7 +437,7 @@ suite('Notebook Serializer', () => {
 	}
 
 	test('Retrieve range of cells from VS Code NotebookDocument', async () => {
-		let expectedCells: vscode.NotebookCell[] = testDoc.cells.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.source, index, testDoc.uri, testDoc.kernelSpec.language));
+		let expectedCells: vscode.NotebookCell[] = testDoc.cells.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.cell_type, index, cell.uri, testDoc.uri, cell.contents.metadata?.language, cell.contents.source));
 		let vsDoc = new VSCodeNotebookDocument(testDoc);
 
 		let actualCells = vsDoc.getCells();
@@ -430,7 +454,7 @@ suite('Notebook Serializer', () => {
 	});
 
 	test('Retrieve specific cell from VS Code NotebookDocument', async () => {
-		let expectedCells: vscode.NotebookCell[] = testDoc.cells.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.source, index, testDoc.uri, testDoc.kernelSpec.language));
+		let expectedCells: vscode.NotebookCell[] = testDoc.cells.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.cell_type, index, cell.uri, testDoc.uri, cell.contents.metadata?.language, cell.contents.source));
 		let vsDoc = new VSCodeNotebookDocument(testDoc);
 
 		let firstCell = vsDoc.cellAt(0);
@@ -463,5 +487,119 @@ suite('Notebook Serializer', () => {
 	});
 });
 
-suite('Notebook Controller', () => {
+suite('.NET Interactive Kernel Metadata Conversion', async () => {
+	test('Convert to internal kernel metadata', async () => {
+		let originalMetadata: azdata.nb.INotebookMetadata = {
+			kernelspec: {
+				name: '.net-csharp',
+				display_name: '.NET (C#)',
+				language: 'C#'
+			},
+			language_info: {
+				name: 'C#'
+			}
+		};
+		let expectedCovertedMetadata: azdata.nb.INotebookMetadata = {
+			kernelspec: {
+				name: '.net-csharp',
+				display_name: '.NET Interactive',
+				language: 'dotnet-interactive.csharp',
+				oldDisplayName: '.NET (C#)',
+				oldLanguage: 'C#'
+			},
+			language_info: {
+				name: 'dotnet-interactive.csharp',
+				oldName: 'C#'
+			}
+		};
+
+		convertToInternalInteractiveKernelMetadata(originalMetadata);
+		assert.deepStrictEqual(originalMetadata, expectedCovertedMetadata);
+	});
+
+	test('Do not convert to internal metadata for non-Interactive kernels', async () => {
+		let originalMetadata: azdata.nb.INotebookMetadata = {
+			kernelspec: {
+				name: 'not-interactive',
+				display_name: '.NET (C#)',
+				language: 'C#'
+			},
+			language_info: {
+				name: 'C#'
+			}
+		};
+		let expectedCovertedMetadata: azdata.nb.INotebookMetadata = {
+			kernelspec: {
+				name: 'not-interactive',
+				display_name: '.NET (C#)',
+				language: 'C#'
+			},
+			language_info: {
+				name: 'C#'
+			}
+		};
+
+		convertToInternalInteractiveKernelMetadata(originalMetadata);
+		assert.deepStrictEqual(originalMetadata, expectedCovertedMetadata);
+	});
+
+	test('Add external kernel metadata', async () => {
+		let originalKernelSpec: azdata.nb.IKernelSpec = {
+			name: 'jupyter-notebook',
+			display_name: '.NET Interactive',
+			language: 'dotnet-interactive.csharp'
+		};
+		let expectedCovertedKernel: azdata.nb.IKernelSpec = {
+			name: 'jupyter-notebook',
+			display_name: '.NET Interactive',
+			language: 'dotnet-interactive.csharp',
+			oldName: '.net-csharp',
+			oldDisplayName: '.NET (C#)',
+			oldLanguage: 'C#'
+		};
+		addExternalInteractiveKernelMetadata(originalKernelSpec);
+		assert.deepStrictEqual(originalKernelSpec, expectedCovertedKernel);
+	});
+
+	test('Do not add external metadata to non-Interactive kernels', async () => {
+		// Different kernel name
+		let originalKernelSpec: azdata.nb.IKernelSpec = {
+			name: 'not-interactive',
+			display_name: '.NET Interactive',
+			language: 'dotnet-interactive.csharp'
+		};
+		let expectedCovertedKernel: azdata.nb.IKernelSpec = {
+			name: 'not-interactive',
+			display_name: '.NET Interactive',
+			language: 'dotnet-interactive.csharp'
+		};
+		addExternalInteractiveKernelMetadata(originalKernelSpec);
+		assert.deepStrictEqual(originalKernelSpec, expectedCovertedKernel);
+
+		// Different display name
+		originalKernelSpec = {
+			name: 'jupyter-notebook',
+			display_name: 'Not An Interactive Kernel',
+			language: 'dotnet-interactive.csharp'
+		};
+		expectedCovertedKernel = {
+			name: 'jupyter-notebook',
+			display_name: 'Not An Interactive Kernel',
+			language: 'dotnet-interactive.csharp'
+		};
+		addExternalInteractiveKernelMetadata(originalKernelSpec);
+		assert.deepStrictEqual(originalKernelSpec, expectedCovertedKernel);
+
+		// No language provided
+		originalKernelSpec = {
+			name: 'jupyter-notebook',
+			display_name: '.NET Interactive'
+		};
+		expectedCovertedKernel = {
+			name: 'jupyter-notebook',
+			display_name: '.NET Interactive'
+		};
+		addExternalInteractiveKernelMetadata(originalKernelSpec);
+		assert.deepStrictEqual(originalKernelSpec, expectedCovertedKernel);
+	});
 });

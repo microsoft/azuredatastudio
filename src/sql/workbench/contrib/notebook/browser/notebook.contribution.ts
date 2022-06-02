@@ -239,6 +239,24 @@ CommandsRegistry.registerCommand({
 	}
 });
 
+CommandsRegistry.registerCommand({
+	id: 'notebook.restartKernel',
+	handler: async (accessor: ServicesAccessor) => {
+		const editorService: IEditorService = accessor.get(IEditorService);
+		if (editorService.activeEditor instanceof NotebookInput) {
+			await editorService.activeEditor.notebookModel?.clientSession?.restart();
+		}
+	}
+});
+
+MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
+	command: {
+		id: 'notebook.restartKernel',
+		title: localize('restartNotebookKernel', "Restart Notebook Kernel"),
+	},
+	when: ContextKeyExpr.and(ActiveEditorContext.isEqualTo(NotebookEditor.ID))
+});
+
 MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 	command: {
 		id: TOGGLE_TAB_FOCUS_COMMAND_ID,
@@ -410,9 +428,24 @@ registerComponentType({
 	mimeTypes: [
 		'text/plain',
 		'application/vnd.jupyter.stdout',
-		'application/vnd.jupyter.stderr'
+		'application/vnd.jupyter.stderr',
+		'application/vnd.code.notebook.stdout',
+		'application/vnd.code.notebook.stderr'
 	],
 	rank: 120,
+	safe: true,
+	ctor: MimeRendererComponent,
+	selector: MimeRendererComponent.SELECTOR
+});
+
+/**
+ * A mime renderer component for VS Code Notebook error data.
+ */
+registerComponentType({
+	mimeTypes: [
+		'application/vnd.code.notebook.error'
+	],
+	rank: 121,
 	safe: true,
 	ctor: MimeRendererComponent,
 	selector: MimeRendererComponent.SELECTOR

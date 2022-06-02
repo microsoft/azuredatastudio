@@ -12,6 +12,7 @@ import { QueryPlanState } from 'sql/workbench/common/editor/query/queryPlanState
 import { GridPanelState } from 'sql/workbench/common/editor/query/gridTableState';
 import { QueryModelViewState } from 'sql/workbench/common/editor/query/modelViewState';
 import { URI } from 'vs/base/common/uri';
+import { ExecutionPlanState } from 'sql/workbench/common/editor/query/executionPlanState';
 
 export class ResultsViewState {
 	public readonly gridPanelState: GridPanelState = new GridPanelState();
@@ -19,6 +20,7 @@ export class ResultsViewState {
 	public readonly queryPlanState: QueryPlanState = new QueryPlanState();
 	public readonly topOperationsState = new TopOperationsState();
 	public readonly dynamicModelViewTabsState: Map<string, QueryModelViewState> = new Map<string, QueryModelViewState>();
+	public readonly executionPlanState: ExecutionPlanState = new ExecutionPlanState();
 
 	public activeTab?: string;
 	public readonly visibleTabs: Set<string> = new Set<string>();

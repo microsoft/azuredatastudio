@@ -18,7 +18,7 @@
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Ha habido algún error problema con la autenticación, o bien los tokens se han eliminado del sistema. Pruebe a volver a agregar la cuenta de Azure Data Studio.",
 			"azure.noUniqueIdentifier": "El usuario no tenía ningún identificador único en AAD.",
-			"azure.responseError": "Error al recuperar el token. Abra las herramientas de desarrollo para ver el error.",
+			"azure.responseError": "Error al recuperar el token. [Abra las herramientas de desarrollo]({0}) para obtener más detalles.",
 			"azure.tenantNotFound": "No se encuentra el inquilino especificado con el id. \"{0}\".",
 			"azureAuth.unidentifiedError": "Error no identificado con la autenticación de Azure.",
 			"azureWorkAccountDisplayName": "Cuenta profesional o educativa",
@@ -233,8 +233,9 @@
 			"config.enablePublicCloudDescription": "Si debería habilitarse la integración de la nube pública de Azure",
 			"config.enableUsGovCloudDescription": "Si debería habilitarse la integración de la nube de US Government Azure",
 			"config.enableUsNatCloudDescription": "Indica si se debe habilitar la integración de la nube de Azure nacional de EE. UU.",
+			"config.loggingLevel": "[Optional] El nivel de detalle del registro de la extensión Cuentas de Azure.",
 			"config.noSystemKeychain": "Deshabilite la integración de las cadenas de claves del sistema. Las credenciales se almacenarán en un archivo plano en el directorio principal del usuario.",
-			"config.piiLogging": "Indica si se debe registrar la información de identificación personal (PII) en la vista de la consola de forma local."
+			"config.piiLogging": "La información de identificación personal (DCP) debe registrarse en el canal de salida de las cuentas de Azure y en el archivo de registro del canal de salida."
 		}
 	}
 }

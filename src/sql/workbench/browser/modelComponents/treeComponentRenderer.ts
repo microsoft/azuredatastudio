@@ -147,8 +147,8 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 	 */
 	public renderElement(tree: ITree, element: ITreeComponentItem, templateId: string, templateData: TreeDataTemplate): void {
 		const icon = this.themeService.getColorTheme().type === ColorScheme.LIGHT ? element.icon : element.iconDark;
-		const iconUri = icon ? URI.revive(icon) : null;
-		templateData.icon.style.backgroundImage = iconUri ? `url('${iconUri.toString(true)}')` : '';
+		const iconUri = icon ? URI.revive(icon) : undefined;
+		templateData.icon.style.backgroundImage = dom.asCSSUrl(iconUri);
 		templateData.icon.style.backgroundRepeat = 'no-repeat';
 		templateData.icon.style.backgroundPosition = 'center';
 		templateData.icon.classList.toggle('model-view-tree-node-item-icon', !!icon);

@@ -18,7 +18,7 @@ import { ProjectsController } from '../../controllers/projectController';
 import { IDeploySettings } from '../../models/IDeploySettings';
 import { emptySqlDatabaseProjectTypeId } from '../../common/constants';
 import { createContext, mockDacFxOptionsResult, TestContext } from '../testContext';
-import { IDeployProfile } from '../../models/deploy/deployProfile';
+import { ILocalDbDeployProfile } from '../../models/deploy/deployProfile';
 
 let testContext: TestContext;
 describe('Publish Database Dialog', () => {
@@ -36,7 +36,8 @@ describe('Publish Database Dialog', () => {
 			newProjName: 'TestProjectName',
 			folderUri: vscode.Uri.file(projFileDir),
 			projectTypeId: emptySqlDatabaseProjectTypeId,
-			projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575'
+			projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
+			sdkStyle: false
 		});
 
 		const project = new Project(projFilePath);
@@ -54,7 +55,8 @@ describe('Publish Database Dialog', () => {
 			newProjName: 'TestProjectName',
 			folderUri: vscode.Uri.file(projFileDir),
 			projectTypeId: emptySqlDatabaseProjectTypeId,
-			projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575'
+			projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
+			sdkStyle: false
 		});
 
 		const project = new Project(projFilePath);
@@ -110,7 +112,7 @@ describe('Publish Database Dialog', () => {
 
 		should(profile).deepEqual(expectedGenScript);
 
-		const expectedContainerPublishProfile: IDeployProfile = {
+		const expectedContainerPublishProfile: ILocalDbDeployProfile = {
 			localDbSetting: {
 				dbName: 'MockDatabaseName',
 				dockerBaseImage: '',
@@ -134,7 +136,7 @@ describe('Publish Database Dialog', () => {
 			}
 		};
 		dialog.object.publishToExistingServer = false;
-		let deployProfile: IDeployProfile | undefined;
+		let deployProfile: ILocalDbDeployProfile | undefined;
 		dialog.object.publishToContainer = (_, prof) => { deployProfile = prof; };
 		await dialog.object.publishClick();
 

@@ -208,11 +208,11 @@ export class Graph implements IInsight {
 					}
 				}];
 
-				if (options.xAxisMax) {
+				if (options.xAxisMax !== undefined) {
 					retval.scales = mixin(retval.scales, { xAxes: [{ ticks: { max: options.xAxisMax } }] }, true, customMixin);
 				}
 
-				if (options.xAxisMin) {
+				if (options.xAxisMin !== undefined) {
 					retval.scales = mixin(retval.scales, { xAxes: [{ ticks: { min: options.xAxisMin } }] }, true, customMixin);
 				}
 
@@ -230,17 +230,17 @@ export class Graph implements IInsight {
 					}
 				}];
 
-				if (options.yAxisMax) {
+				if (options.yAxisMax !== undefined) {
 					retval.scales = mixin(retval.scales, { yAxes: [{ ticks: { max: options.yAxisMax } }] }, true, customMixin);
 				}
 
-				if (options.yAxisMin) {
+				if (options.yAxisMin !== undefined) {
 					retval.scales = mixin(retval.scales, { yAxes: [{ ticks: { min: options.yAxisMin } }] }, true, customMixin);
 				}
 
 				if (this.originalType === ChartType.TimeSeries) {
 					retval = mixin(retval, timeSeriesScales, true, customMixin);
-					if (options.xAxisMax) {
+					if (options.xAxisMax !== undefined) {
 						retval = mixin(retval, {
 							scales: {
 								xAxes: [{
@@ -252,7 +252,7 @@ export class Graph implements IInsight {
 						}, true, customMixin);
 					}
 
-					if (options.xAxisMin) {
+					if (options.xAxisMin !== undefined) {
 						retval = mixin(retval, {
 							scales: {
 								xAxes: [{

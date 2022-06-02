@@ -1,0 +1,317 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/azcli/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="az.accept">
+        <source xml:lang="en">Accept</source>
+        <target state="translated">接受</target>
+      </trans-unit>
+      <trans-unit id="az.arcdataExtensionNotInstalled">
+        <source xml:lang="en">This extension requires the Azure CLI extension 'arcdata' to be installed. Install the latest version using instructions from [here](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).</source>
+        <target state="translated">此延伸模組需要安裝 Azure CLI 延伸模組 'arcdata'。使用[此處](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension) 的指示安裝正確的版本。</target>
+      </trans-unit>
+      <trans-unit id="az.arcdataInstalled">
+        <source xml:lang="en">The Azure CLI arcdata extension was successfully installed. Restarting Azure Studio is required to complete configuration - features will not be activated until this is done.</source>
+        <target state="translated">已成功安裝 Azure CLI arcdata 延伸模組。需要重新啟動 Azure Studio 才能完成設定 - 除非完成此作業，否則功能將不會啟用。</target>
+      </trans-unit>
+      <trans-unit id="az.askLater">
+        <source xml:lang="en">Ask Later</source>
+        <target state="translated">稍後再問我</target>
+      </trans-unit>
+      <trans-unit id="az.az">
+        <source xml:lang="en">Azure CLI</source>
+        <target state="translated">Azure CLI</target>
+      </trans-unit>
+      <trans-unit id="az.azInstalled">
+        <source xml:lang="en">Azure CLI was successfully installed. Restarting Azure Studio is required to complete configuration - features will not be activated until this is done.</source>
+        <target state="translated">已成功安裝 Azure CLI。需要重新啟動 Azure Studio 才能完成設定 - 除非完成此作業，否則功能將不會啟用。</target>
+      </trans-unit>
+      <trans-unit id="az.azOutputParseErrorCaught">
+        <source xml:lang="en">An error occurred while parsing the output of az command: {0}. The output is not JSON.</source>
+        <target state="translated">剖析 az 命令的輸出時發生錯誤: {0}。輸出不是 JSON。</target>
+      </trans-unit>
+      <trans-unit id="az.azUserSettingReadLog">
+        <source xml:lang="en">Azure CLI user setting: {0}.{1} read, value: {2}</source>
+        <target state="translated">Azure CLI 使用者設定: {0}.{1} 讀取，值: {2}</target>
+      </trans-unit>
+      <trans-unit id="az.azUserSettingUpdatedLog">
+        <source xml:lang="en">Azure CLI user setting: {0}.{1} updated, newValue: {2}</source>
+        <target state="translated">Azure CLI 使用者設定: {0}.{1} 已更新，新值: {2}</target>
+      </trans-unit>
+      <trans-unit id="az.checkingLatestAzVersion">
+        <source xml:lang="en">Checking for latest available version of Azure CLI</source>
+        <target state="translated">正在檢查 Azure CLI 最新可用的版本</target>
+      </trans-unit>
+      <trans-unit id="az.couldNotFindArcdataWithPrompt">
+        <source xml:lang="en">Could not find the Azure CLI arcdata extension, install it now? If not then some features will not be able to function.</source>
+        <target state="translated">找不到 Azure CLI arcdata 延伸模組，要立即安裝嗎? 否則，某些功能將無法運作。</target>
+      </trans-unit>
+      <trans-unit id="az.couldNotFindAz">
+        <source xml:lang="en">Could not find Azure CLI. Error: {0}</source>
+        <target state="translated">找不到 Azure CLI。錯誤: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.couldNotFindAzArc">
+        <source xml:lang="en">Could not find the Azure CLI arcdata extension. Error: {0}</source>
+        <target state="translated">找不到 Azure CLI arcdata 延伸模組。錯誤: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.couldNotFindAzWithPrompt">
+        <source xml:lang="en">Could not find Azure CLI, install it now? If not then some features will not be able to function.</source>
+        <target state="translated">找不到 Azure CLI，要立即安裝嗎? 否則，某些功能將無法運作。</target>
+      </trans-unit>
+      <trans-unit id="az.currentlyInstalledVersionIsLatest">
+        <source xml:lang="en">Currently installed version of Azure CLI: {0} is same or newer than any other version available</source>
+        <target state="translated">目前安裝的 Azure CLI 版本 {0} 與其他可用版本相同或更新</target>
+      </trans-unit>
+      <trans-unit id="az.decline">
+        <source xml:lang="en">Decline</source>
+        <target state="translated">拒絕</target>
+      </trans-unit>
+      <trans-unit id="az.doNotAskAgain">
+        <source xml:lang="en">Don't Ask Again</source>
+        <target state="translated">不要再詢問</target>
+      </trans-unit>
+      <trans-unit id="az.downloadError">
+        <source xml:lang="en">Error while downloading</source>
+        <target state="translated">下載時發生錯誤</target>
+      </trans-unit>
+      <trans-unit id="az.downloadFinished">
+        <source xml:lang="en">Download finished</source>
+        <target state="translated">下載完成</target>
+      </trans-unit>
+      <trans-unit id="az.downloadingProgressMb">
+        <source xml:lang="en">Downloading ({0} / {1} MB)</source>
+        <target state="translated">正在下載 ({0} / {1} MB)</target>
+      </trans-unit>
+      <trans-unit id="az.downloadingTo">
+        <source xml:lang="en">Downloading {0} from {1} to {2}</source>
+        <target state="translated">正在將 {0} 從 {1} 下載到 {2}</target>
+      </trans-unit>
+      <trans-unit id="az.endpointOrNamespaceRequired">
+        <source xml:lang="en">Either an endpoint or a namespace must be specified</source>
+        <target state="translated">必須指定端點或命名空間</target>
+      </trans-unit>
+      <trans-unit id="az.executingCommand">
+        <source xml:lang="en">Executing command: '{0} {1}'</source>
+        <target state="translated">正在執行命令: '{0} {1}'</target>
+      </trans-unit>
+      <trans-unit id="az.failedToParseReleaseInfo">
+        <source xml:lang="en">Failed to parse the JSON of contents at: {0}.
+File contents:
+{1}
+Error: {2}</source>
+        <target state="translated">無法剖析位於: {0} 的內容 JSON。
+檔案內容:
+{1}
+錯誤: {2}</target>
+      </trans-unit>
+      <trans-unit id="az.foundExistingAz">
+        <source xml:lang="en">Found existing Azure CLI installation of version (v{0}) at path:{1} with arcdata version: {2}.</source>
+        <target state="translated">在路徑 {1} 中找到版本 (v{0}) 的現有 Azure CLI 安裝，arcdata 版本為 {2}。</target>
+      </trans-unit>
+      <trans-unit id="az.gettingTextContentsOfUrl">
+        <source xml:lang="en">Getting text contents of resource at URL {0}</source>
+        <target state="translated">正在取得位於 URL {0} 之資源的文字內容</target>
+      </trans-unit>
+      <trans-unit id="az.installError">
+        <source xml:lang="en">Error installing Azure CLI and arcdata extension: {0}</source>
+        <target state="translated">安裝 Azure CLI 和 arcdata 延伸模組時發生錯誤: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.installingArcdata">
+        <source xml:lang="en">Installing the Azure CLI arcdata extension...</source>
+        <target state="translated">正在安裝 Azure CLI arcdata 延伸模組...</target>
+      </trans-unit>
+      <trans-unit id="az.installingAz">
+        <source xml:lang="en">Installing Azure CLI...</source>
+        <target state="translated">正在安裝 Azure CLI...</target>
+      </trans-unit>
+      <trans-unit id="az.latestAzVersionAvailable">
+        <source xml:lang="en">Latest available Azure CLI version: {0}.</source>
+        <target state="translated">最新可用的 Azure CLI 版本: {0}。</target>
+      </trans-unit>
+      <trans-unit id="az.missingRequiredVersion">
+        <source xml:lang="en">Azure CLI &gt;= {0} is required for this feature. Run the 'Azure CLI: Check for Update' command to install this and then try again.</source>
+        <target state="translated">此功能需要 Azure CLI &gt;= {0}。請執行 'Azure CLI: Check for Update' 命令安裝它，然後再試一次。</target>
+      </trans-unit>
+      <trans-unit id="az.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">否</target>
+      </trans-unit>
+      <trans-unit id="az.noAz">
+        <source xml:lang="en">No Azure CLI is available, run the command 'Azure CLI: Install' to enable the features that require it.</source>
+        <target state="translated">沒有 Azure CLI 可用，請執行 'Azure CLI: Install' 命令以啟用需要它的功能。</target>
+      </trans-unit>
+      <trans-unit id="az.noAzArc">
+        <source xml:lang="en">No Azure CLI arcdata extension is available.</source>
+        <target state="translated">沒有可用的 Azure CLI arcdata 延伸模組。</target>
+      </trans-unit>
+      <trans-unit id="az.noAzWithLink">
+        <source xml:lang="en">No Azure CLI is available, [install the Azure CLI](command:az.install) to enable the features that require it.</source>
+        <target state="translated">沒有 Azure CLI 可用，請[安裝 Azure CLI](command:az.install) 以啟用需要它的功能。</target>
+      </trans-unit>
+      <trans-unit id="az.noAzureCLI">
+        <source xml:lang="en">No Azure CLI is available. Install the latest version manually from [here](https://docs.microsoft.com/cli/azure/install-azure-cli) and then restart Azure Studio.</source>
+        <target state="translated">沒有可用的 Azure CLI。從 [此處](https://docs.microsoft.com/cli/azure/install-azure-cli)手動安裝最新版本，然後重新啟動 Azure Studio。</target>
+      </trans-unit>
+      <trans-unit id="az.noDownloadLink">
+        <source xml:lang="en">No download link available for platform '{0}'
+Release info: ${1}</source>
+        <target state="translated">平台 '{0}' 沒有可用的下載連結
+發行資訊: ${1}</target>
+      </trans-unit>
+      <trans-unit id="az.noReleaseVersion">
+        <source xml:lang="en">No release version available for platform '{0}'
+Release info: ${1}</source>
+        <target state="translated">平台 '{0}' 沒有發行版本
+發行資訊: ${1}</target>
+      </trans-unit>
+      <trans-unit id="az.parseVersionError">
+        <source xml:lang="en">An error occurred while parsing the output of az --version.</source>
+        <target state="translated">剖析 az --version 的輸出時發生錯誤。</target>
+      </trans-unit>
+      <trans-unit id="az.platformUnsupported">
+        <source xml:lang="en">Platform '{0}' is currently unsupported</source>
+        <target state="translated">目前不支援平台 '{0}'</target>
+      </trans-unit>
+      <trans-unit id="az.promptForAzUpdate">
+        <source xml:lang="en">A new version of Azure CLI ( {0} ) is available, do you wish to update to it now?</source>
+        <target state="translated">有新版的 Azure CLI ( {0} )，您要立即更新嗎?</target>
+      </trans-unit>
+      <trans-unit id="az.promptForRequiredAzUpdate">
+        <source xml:lang="en">This extension requires Azure CLI &gt;= {0} to be installed, do you wish to update to the latest version ({1}) now? If you do not then some functionality may not work.</source>
+        <target state="translated">此延伸模組需要安裝 Azure CLI &gt;= {0}，您要立即更新至最新版本 ({1}) 嗎? 否則，某些功能可能無法運作。</target>
+      </trans-unit>
+      <trans-unit id="az.promptLog">
+        <source xml:lang="en">Prompting the user to accept the following: {0}</source>
+        <target state="translated">提示使用者接受下列內容: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.requiredVersionNotAvailable">
+        <source xml:lang="en">This extension requires the Azure CLI extension 'arcdata' version &gt;= {0} to be installed, but the current version available is only {1}. Install the correct version using instructions from [here](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).</source>
+        <target state="translated">此延伸模組需要安裝 Azure CLI 延伸模組 'arcdata' &gt;= {0}，但目前可用的版本僅為 {1}。使用 [此處](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension) 的指示安裝正確的版本。</target>
+      </trans-unit>
+      <trans-unit id="az.searchingForAz">
+        <source xml:lang="en">Searching for existing Azure CLI installation...</source>
+        <target state="translated">正在搜尋現有的 Azure CLI 安裝...</target>
+      </trans-unit>
+      <trans-unit id="az.skipInstall">
+        <source xml:lang="en">Skipping installation of Azure CLI and arcdata extension, since the operation was not user requested and config option: {0}.{1} is {2}</source>
+        <target state="translated">略過 Azure CLI 和 arcdata 延伸模組的安裝，因為此作業不是使用者要求的，且設定選項: {0}.{1} 是 {2}</target>
+      </trans-unit>
+      <trans-unit id="az.stderrOutput">
+        <source xml:lang="en">stderr: {0}</source>
+        <target state="translated">stderr: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.stdoutOutput">
+        <source xml:lang="en">stdout: {0}</source>
+        <target state="translated">stdout: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.unexpectedCommandError">
+        <source xml:lang="en">Unexpected error executing command: {0}</source>
+        <target state="translated">執行命令時發生未預期的錯誤: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.unexpectedExitCode">
+        <source xml:lang="en">Unexpected exit code from command: {1} ({0})</source>
+        <target state="translated">命令中未預期的結束代碼: {1} ({0})</target>
+      </trans-unit>
+      <trans-unit id="az.unsupportedArcDataVersion">
+        <source xml:lang="en">Your downloaded version {1} of the Azure CLI extension 'arcdata' is not yet supported. The latest version is is {0}. Install the correct version using instructions from [here](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).</source>
+        <target state="translated">尚不 支援您下載的 Azure CLI 延伸模組 'arcdata' 版本 {1}。最新版本是 {0}。使用[此處](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension) 中的指示安裝正確的版本。</target>
+      </trans-unit>
+      <trans-unit id="az.updateCheckSkipped">
+        <source xml:lang="en">No check for new Azure CLI version availability performed as Azure CLI was not found to be installed</source>
+        <target state="translated">因為找不到要安裝的 Azure CLI，所以未執行新的 Azure CLI 版本可用性檢查</target>
+      </trans-unit>
+      <trans-unit id="az.updateError">
+        <source xml:lang="en">Error updating Azure CLI: {0}</source>
+        <target state="translated">更新 Azure CLI 時發生錯誤: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.updatingAz">
+        <source xml:lang="en">Updating Azure CLI...</source>
+        <target state="translated">正在更新 Azure CLI...</target>
+      </trans-unit>
+      <trans-unit id="az.userRequestedInstall">
+        <source xml:lang="en">User requested to install Azure CLI and arcdata extension using 'Azure CLI: Install' command</source>
+        <target state="translated">使用者要求使用 'Azure CLI: Install' 命令安裝 Azure CLI 和 arcdata 延伸模組</target>
+      </trans-unit>
+      <trans-unit id="az.userResponseInstall">
+        <source xml:lang="en">User Response on prompt to install Azure CLI: {0}</source>
+        <target state="translated">提示安裝 Azure CLI 時的使用者回應: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.userResponseUpdate">
+        <source xml:lang="en">User Response on prompt to update Azure CLI: {0}</source>
+        <target state="translated">提示更新 Azure CLI 時的使用者回應: {0}</target>
+      </trans-unit>
+      <trans-unit id="az.versionForUpdate">
+        <source xml:lang="en">Found version: {0} that Azure CLI can be updated to from current version: {1}.</source>
+        <target state="translated">找到 Azure CLI 可從目前版本 {1} 更新的版本 {0}。</target>
+      </trans-unit>
+      <trans-unit id="az.yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">是</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azcli/package" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="azcli.arc.azArcdataInstallKey.description">
+        <source xml:lang="en">Choose whether you will be prompted to download the Azure CLI arcdata extension.</source>
+        <target state="translated">選擇是否要提示您下載 Azure CLI arcdata 延伸模組。</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.azArcdataUpdateKey.description">
+        <source xml:lang="en">Choose whether you will be prompted when an update of the Azure CLI arcdata extension is available.</source>
+        <target state="translated">選擇當 Azure CLI arcdata 延伸模組有更新時是否要提示您。</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.category">
+        <source xml:lang="en">Azure CLI</source>
+        <target state="translated">Azure CLI</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.config.debug">
+        <source xml:lang="en">Log debug info to the output channel for all executed az commands</source>
+        <target state="translated">將偵錯資訊記錄到所有已執行 az 命令的輸出通道</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.config.title">
+        <source xml:lang="en">Azure CLI Configuration</source>
+        <target state="translated">Azure CLI 設定</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.description">
+        <source xml:lang="en">Support for Azure CLI.</source>
+        <target state="translated">支援 Azure CLI。</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.displayName">
+        <source xml:lang="en">Azure CLI</source>
+        <target state="translated">Azure CLI</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.install.dontPrompt.description">
+        <source xml:lang="en">The user will not be prompted to install the Azure CLI arcdata extension</source>
+        <target state="translated">系統不會提示使用者安裝 Azure CLI arcdata 延伸模組</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.install.prompt.description">
+        <source xml:lang="en">The user will be prompted to install the Azure CLI arcdata extension</source>
+        <target state="translated">系統將提示使用者安裝 Azure CLI arcdata 延伸模組</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.update.dontPrompt.description">
+        <source xml:lang="en">The user will not be prompted for update of the Azure CLI arcdata extension</source>
+        <target state="translated">系統將不會提示使用者更新 Azure CLI arcdata 延伸模組</target>
+      </trans-unit>
+      <trans-unit id="azcli.arc.update.prompt.description">
+        <source xml:lang="en">The user will be prompted for update of the Azure CLI arcdata extension</source>
+        <target state="translated">系統將提示使用者更新 Azure CLI arcdata 延伸模組</target>
+      </trans-unit>
+      <trans-unit id="azcli.azCliInstallKey.description">
+        <source xml:lang="en">Choose whether you will be prompted to install Azure CLI.</source>
+        <target state="translated">選擇是否要提示您安裝 Azure CLI。</target>
+      </trans-unit>
+      <trans-unit id="azcli.install.dontPrompt.description">
+        <source xml:lang="en">The user will not be prompted to install the Azure CLI</source>
+        <target state="translated">系統將不會提示使用者安裝 Azure CLI</target>
+      </trans-unit>
+      <trans-unit id="azcli.install.prompt.description">
+        <source xml:lang="en">The user will be prompted to install the Azure CLI</source>
+        <target state="translated">系統會提示使用者安裝 Azure CLI</target>
+      </trans-unit>
+      <trans-unit id="command.category">
+        <source xml:lang="en">Azure CLI</source>
+        <target state="translated">Azure CLI</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

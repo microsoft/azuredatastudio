@@ -9956,6 +9956,8 @@
 			"table.selectAll": "Выбрать все",
 			"table.sortAscending": "Сортировка по возрастанию",
 			"table.sortDescending": "Сортировка по убыванию",
+			"tableFilter.blankStringDisplayText": "(Пустые)",
+			"tableFilter.nullDisplayText": "NULL",
 			"tableFilter.selectedCount": "Выбрано: {0}",
 			"tableFilter.visibleCount": "Результатов: {0}"
 		},
@@ -9980,6 +9982,7 @@
 			"dataExplorer.context": "Контекстное меню элемента обозревателя данных",
 			"dataGrid.context": "Контекстное меню элемента сетки данных",
 			"default": "Включение автоматических проверок обновлений. Azure Data Studio будет периодически проверять наличие обновлений в автоматическом режиме.",
+			"docNotFoundForUriError": "Не удалось открыть документ записной книжки для указанного универсального кода ресурса (URI).",
 			"enable locally": "Перезапустите Azure Data Studio, чтобы включить это расширение локально.",
 			"enable remote": "Перезапустите Azure Data Studio, чтобы включить это расширение в {0}.",
 			"enableWindowsBackgroundUpdates": "Включите, чтобы скачивать и устанавливать новые версии Azure Data Studio в Windows в фоновом режиме",
@@ -9992,6 +9995,7 @@
 			"miinstallVsix": "Установить расширение из пакета VSIX",
 			"newQuery": "Создать запрос",
 			"notebook.cellTitle": "Меню заголовка ячейки записной книжки",
+			"notebook.cellToolbarLocation.compatibilityDescription": "Где следует отображать панель инструментов ячейки (или следует ли ее скрыть). Примечание. Этот параметр включен только в целях совместимости расширений, он ни на что не влияет.",
 			"notebook.title": "Меню раздела записной книжки",
 			"notebook.toolbar": "Меню панели инструментов записной книжки",
 			"objectExplorer.context": "Контекстное меню элемента обозревателя объектов",
@@ -10002,16 +10006,16 @@
 			"recommendedExtensions": "Marketplace",
 			"scenarioTypeUndefined": "Необходимо указать тип сценария для рекомендаций по расширениям.",
 			"showReleaseNotes": "Отображение заметок о выпуске после обновления. Заметки о выпуске будут открыты в новом окне веб-браузера.",
+			"sql.watcherExclude": "Настройте стандартные маски путей файлов, которые следует исключить из списка отслеживаемых файлов. Шаблоны должны соответствовать абсолютным путям, т. е. необходимо указывать префикс \"**/\" или полный путь для правильного сопоставления и суффикс \"/**\" для сопоставления файлов в пути (например, \"**/build/output/**\" или \"/Users/name/workspaces/project/build/output/**\"). После изменения этого параметра потребуется перезагрузка. Если отображается сообщение \"Azure Data Studio потребляет большое количество времени ЦП при запуске\", можно исключить большие папки, чтобы уменьшить начальную нагрузку.",
 			"uninstallExtensionComplete": "Перезапустите Azure Data Studio, чтобы завершить удаление расширения {0}.",
 			"updateLocale": "Хотите изменить язык пользовательского интерфейса Azure Data Studio на {0} и выполнить перезапуск?",
+			"vscodeDocCreationFailedError": "Не удалось создать документ записной книжки.",
+			"vscodeFunctionalityNotSupportedError": "Этот VS Code не поддерживается в Azure Data Studio.",
+			"vscodeInvalidArgumentsError": "Недопустимые аргументы.",
 			"watermark.newNotebook": "Новая записная книжка",
 			"watermark.newSqlFile": "Новый файл SQL",
 			"workspace.trust.description": "Определяет, включено ли доверие рабочей области в Azure Data Studio.",
 			"workspace.trust.emptyWindow.description": "Определяет, является ли пустое окно доверенным по умолчанию в Azure Data Studio. При использовании с \"#{0}#\" можно включить все функции Azure Data Studio без запросов в пустом окне."
-		},
-		"sql/base/parts/editableDropdown/browser/dropdown": {
-			"editableDropdown.errorValidate": "Необходимо выбрать вариант из списка",
-			"selectBox": "Поле выбора"
 		},
 		"sql/platform/accounts/common/accountActions": {
 			"NoAccountToRefresh": "Учетные записи для обновления отсутствуют",
@@ -10165,15 +10169,22 @@
 			"showConnectDialogOnStartup": "Показывать диалоговое окно подключения при запуске"
 		},
 		"sql/workbench/browser/designer/designer": {
+			"designer.defaultRemoveRowConfirmationMessage": "Действительно удалить эту строку?",
 			"designer.generalGroupName": "Общие",
+			"designer.issueCountAlert": "Найдено столько проблем при проверке: {0}",
+			"designer.issuesTabTitle": "Проблемы ({0})",
 			"designer.loadingDesigner": "Идет загрузка конструктора...",
 			"designer.loadingDesignerCompleted": "Конструктор загружен",
+			"designer.newRowButtonAriaLabel": "Добавить новую строку в таблицу «{0}»",
 			"designer.newRowText": "Добавить новый",
+			"designer.processing": "Обработка…",
 			"designer.processingChanges": "Обработка изменений...",
 			"designer.processingChangesCompleted": "Изменения обработаны",
+			"designer.processingCompleted": "Обработка завершена",
+			"designer.publishChangesCompleted": "Изменения опубликованы",
+			"designer.publishingChanges": "Публикация изменений…",
 			"designer.removeRowText": "Удалить",
-			"designer.savingChanges": "Сохранение изменений...",
-			"designer.savingChangesCompleted": "Изменения сохранены",
+			"designer.scriptTabTitle": "Сценарии",
 			"tableDesigner.unknownComponentType": "Тип компонента {0} не поддерживается"
 		},
 		"sql/workbench/browser/designer/designerPropertiesPane": {
@@ -10198,6 +10209,7 @@
 			"resourceViewerInput.resourceViewer": "Средство просмотра ресурсов"
 		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
+			"tableDesigner.OperationInProgressWarning": "Невозможно выполнить операцию, пока выполняется другая операция.",
 			"tableDesigner.newTable": "Создать таблицу"
 		},
 		"sql/workbench/browser/modal/modal": {
@@ -10486,7 +10498,7 @@
 			"sql.defaultAuthenticationType.AzureMFA": "Azure Active Directory — универсальный с поддержкой MFA",
 			"sql.defaultAuthenticationType.AzureMFAAndUser": "Azure Active Directory — пароль",
 			"sql.defaultAuthenticationType.Integrated": "Проверка подлинности Windows",
-			"sql.defaultAuthenticationType.SqlLogin": "Вход SQL",
+			"sql.defaultAuthenticationType.SqlLogin": "Имя входа SQL",
 			"sql.defaultAuthenticationTypeDescription": "Тип проверки подлинности по умолчанию, используемый при подключении к ресурсам Azure. ",
 			"sql.defaultEngineDescription": "Ядро СУБД, используемое по умолчанию. Оно определяет поставщика языка по умолчанию в файлах .sql и используется по умолчанию при создании новых подключений.",
 			"sql.maxRecentConnectionsDescription": "Максимальное количество недавно использованных подключений для хранения в списке подключений."
@@ -11019,7 +11031,10 @@
 			"textPreview": "Текстовая ячейка"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
-			"parametersText": "Параметры"
+			"cellLanguageDescription": "({0}) — текущий язык",
+			"cellLanguageDescriptionConfigured": "({0})",
+			"parametersText": "Параметры",
+			"selectCellLanguage": "Выбор языкового режима ячейки"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/codeActions": {
 			"errorRunCell": "Ошибка при последнем запуске. Щелкните, чтобы запустить повторно",
@@ -11129,6 +11144,7 @@
 			"notebook.useNewMarkdownRenderer": "Следует ли использовать более новую версию отрисовщика Markdown для записных книжек. Это может привести к тому, что Markdown отображается не так, как в предыдущих версиях.",
 			"notebookViews": "Представления записной книжки",
 			"notebookViews.enabled": "(Предварительная версия) Включить представления записной книжки",
+			"restartNotebookKernel": "Перезапуск ядра Notebook",
 			"search.actionsPosition": "Управляет положением панели действий в строках в области поиска.",
 			"search.actionsPositionAuto": "Разместить панель действий справа, когда область поиска узкая, и сразу же после содержимого, когда область поиска широкая.",
 			"search.actionsPositionRight": "Всегда размещать панель действий справа.",
@@ -11184,7 +11200,7 @@
 			"newViewLabel": "Создать новое представление",
 			"noContextAvailable": "Нет",
 			"noKernel": "Нет ядра",
-			"noParametersCell": "Эта записная книжка не может работать с параметрами до тех пор, пока не будет добавлена ячейка параметров. [Подробнее] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
+			"noParametersCell": "This notebook cannot run with parameters until a parameter cell is added. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"noParametersInCell": "Эта записная книжка не может работать с параметрами до тех пор, пока в ячейку параметров не будут добавлены параметры. [Подробнее](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"notebook.findNext": "Найти следующую строку",
 			"notebook.findPrevious": "Найти предыдущую строку",
@@ -11581,11 +11597,8 @@
 			"refreshError": "Произошла ошибка при обновлении узла \"{0}\": {1}"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/actions": {
-			"tableDesigner.saveTableChanges": "Сохранить изменения"
-		},
-		"sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution": {
-			"tableDesigner.configTitle": "Конструктор таблиц",
-			"tableDesigner.featureEnabledDescription": "Определяет, включена ли функция конструктора таблиц. Значение по умолчанию — false."
+			"tableDesigner.generateScript": "Создать сценарий",
+			"tableDesigner.publishTableChanges": "Опубликовать изменения…"
 		},
 		"sql/workbench/contrib/tasks/browser/tasks.contribution": {
 			"inProgressTasksChangesBadge": "Выполняющихся задач: {0}",
@@ -11647,8 +11660,6 @@
 			"welcomePage.location": "Расположение",
 			"welcomePage.moreRecent": "Показать больше",
 			"welcomePage.name": "Имя",
-			"welcomePage.preview": "Предварительная версия",
-			"welcomePage.previewBody": "Эта страница функции находится на этапе предварительной версии. Предварительные версии функций представляют собой новые функции, которые в будущем станут постоянной частью продукта. Они стабильны, но требуют дополнительного улучшения специальных возможностей. Мы будем рады вашим отзывам о функциях, пока они находятся в разработке.",
 			"welcomePage.resources": "Ресурсы",
 			"welcomePage.runQuery": "Выполнить запрос",
 			"welcomePage.runQueryBody": "Взаимодействие с данными через редактор запросов.",
@@ -11725,45 +11736,11 @@
 			"welcomePage.startTour": "Начать обзор",
 			"welcomePage.willReloadAfterInstallingExtensionPack": "После установки дополнительной поддержки для {0} окно будет перезагружено."
 		},
-		"sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page": {
-			"welcomePage.azdata": "Azure Data Studio",
-			"welcomePage.azdataBlog": "Ознакомьтесь с изменениями в последнем выпуске",
-			"welcomePage.azdataBlogDescription": "Ежемесячные записи в блоге с обзором новых функций",
-			"welcomePage.colorTheme": "Цветовая тема",
-			"welcomePage.colorThemeDescription": "Настройте редактор и код удобным образом.",
-			"welcomePage.customize": "Настроить",
-			"welcomePage.deploy": "Развернуть",
-			"welcomePage.extensionDescription": "Скачайте необходимые расширения, включая пакет администрирования SQL Server и другие.",
-			"welcomePage.extensions": "Расширения",
-			"welcomePage.followTwitter": "Следите за нашими новостями в Twitter",
-			"welcomePage.followTwitterDescription": "Будьте в курсе того, как сообщество использует Azure Data Studio, и общайтесь с техническими специалистами напрямую.",
-			"welcomePage.gettingStarted": "Приступая к работе",
-			"welcomePage.gitHubRepository": "Репозиторий GitHub",
-			"welcomePage.help": "Справка",
-			"welcomePage.keyboardShortcut": "Сочетания клавиш",
-			"welcomePage.keyboardShortcutDescription": "Найдите любимые команды и настройте их",
-			"welcomePage.learn": "Дополнительные сведения",
-			"welcomePage.moreRecent": "Подробнее…",
-			"welcomePage.newConnection": "Создать подключение",
-			"welcomePage.newDeployment": "Новое развертывание…",
-			"welcomePage.newNotebook": "Создать записную книжку",
-			"welcomePage.newQuery": "Создать запрос",
-			"welcomePage.noRecentFolders": "Нет последних папок",
-			"welcomePage.openFileLinuxPC": "Открыть файл",
-			"welcomePage.openFileMac": "Открыть файл",
-			"welcomePage.productDocumentation": "Документация",
-			"welcomePage.recent": "Последние",
-			"welcomePage.releaseNotes": "Заметки о выпуске",
-			"welcomePage.reportIssue": "Сообщить о проблеме или отправить запрос на добавление новой возможности",
-			"welcomePage.showCommands": "Найти и выполнить все команды",
-			"welcomePage.showCommandsDescription": "Быстро обращайтесь к командам и выполняйте поиск по командам с помощью палитры команд ({0})",
-			"welcomePage.showOnStartup": "Отображать страницу приветствия при запуске",
-			"welcomePage.start": "Запуск"
-		},
 		"sql/workbench/services/accountManagement/browser/accountDialog": {
 			"accountDialog.addConnection": "Добавить учетную запись",
 			"accountDialog.close": "Закрыть",
 			"accountDialog.didNotPickAuthProvider": "Вы не выбрали поставщик проверки подлинности. Повторите попытку.",
+			"accountDialog.loadingProviderLabel": "Загрузка учетных записей…",
 			"accountDialog.noAccountLabel": "Связанная учетная запись не существует. Добавьте учетную запись.",
 			"accountDialog.noCloudsRegistered": "Облака не включены. Перейдите в раздел \"Параметры\", откройте раздел \"Конфигурация учетной записи Azure\" и включите хотя бы одно облако",
 			"accountExplorer.name": "Учетные записи",
@@ -11995,9 +11972,12 @@
 			"splitCellEdit": "Разбить ячейку"
 		},
 		"sql/workbench/services/notebook/browser/models/clientSession": {
+			"NoExecuteManager": "Не удалось запустить сервер, так как для этого типа файла записной книжки не определен поставщик.",
 			"ServerNotStarted": "Не удалось запустить сервер по неизвестной причине",
 			"clientSession.unknownError": "Произошла ошибка во время запуска сеанса записной книжки",
-			"kernelRequiresConnection": "Ядро {0} не найдено. Будет использоваться ядро по умолчанию."
+			"kernelRequiresConnection": "Ядро “{0}” не найдено. Будет использоваться ядро по умолчанию.",
+			"kernelRestartFailed": "Сбой перезапуска ядра: {0}",
+			"kernelRestartedSuccessfully": "Ядро успешно перезапущено"
 		},
 		"sql/workbench/services/notebook/browser/models/notebookContexts": {
 			"localhost": "localhost",
@@ -12015,8 +11995,12 @@
 			"startSessionFailed": "Не удалось запустить сеанс: {0}"
 		},
 		"sql/workbench/services/notebook/browser/notebookServiceImpl": {
+			"executeProviderTimeout": "Истекло время ожидания доступности поставщика выполнения для поставщика записных книжек \"{0}\"",
+			"failedToCreateNotebookInput": "Не удалось создать входные данные записной книжки для «{0}»",
 			"notebookServiceNoProvider": "Поставщик записных книжек не существует",
-			"notebookUriNotDefined": "При создании диспетчера записных книжек не был передан URI"
+			"notebookUriNotDefined": "При создании диспетчера записных книжек не был передан URI",
+			"serializationProviderTimeout": "Истекло время ожидания доступности поставщика сериализации для поставщика записных книжек \"{0}\"",
+			"standardKernelsTimeout": "Истекло время ожидания доступности стандартных ядер для поставщика записных книжек \"{0}\""
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewModel": {
 			"notebookView.nameTaken": "Представление с именем {0} уже существует в этой записной книжке."
@@ -12025,6 +12009,7 @@
 			"notebookView.untitledView": "Представление без названия"
 		},
 		"sql/workbench/services/notebook/browser/sql/sqlSessionManager": {
+			"SqlKernelRestartNotSupported": "Перезапуск ядра SQL не поддерживается",
 			"connectionRequired": "Для выполнения ячеек записной книжки необходимо выбрать подключение",
 			"sqlKernelError": "Ошибка ядра SQL",
 			"sqlMaxRowsDisplayed": "Отображаются первые {0} строк."
@@ -12050,6 +12035,7 @@
 			"carbon.extension.contributes.notebook.magic": "Название магической команды ячейки, например, \"%%sql\".",
 			"carbon.extension.contributes.notebook.provider": "Идентификатор поставщика записных книжек.",
 			"carbon.extension.contributes.notebook.standardKernels": "Какие ядра следует использовать в качестве стандартных для этого поставщика записных книжек",
+			"providerNotInRegistryError": "Указанный поставщик, \"{0}\", отсутствует в реестре записных книжек.",
 			"vscode.extension.contributes.notebook.languagemagics": "Определяет язык записной книжки.",
 			"vscode.extension.contributes.notebook.providersDescriptions": "Добавляет описания поставщиков записных книжек."
 		},
@@ -12119,7 +12105,6 @@
 		"sql/workbench/services/query/common/queryModelService": {
 			"commitEditFailed": "Не удалось зафиксировать строку: ",
 			"msgCancelQueryFailed": "Ошибка при сбое запроса: {0}",
-			"queryModelService.noQueryFoundForUri": "Не найдены запросы для {0}",
 			"queryModelService.uriAlreadyHasQuery": "У {0} уже есть существующий запрос",
 			"runQueryBatchStartLine": "Строка {0}",
 			"runQueryBatchStartMessage": "Начало выполнения запроса ",
@@ -12227,11 +12212,27 @@
 			"designer.foreignkey.description.onDeleteAction": "Поведение, которое реализуется при попытке пользователя удалить строку с данными, участвующую в связи по внешнему ключу.",
 			"designer.foreignkey.description.onUpdateAction": "Поведение, которое реализуется при попытке пользователя обновить строку с данными, участвующую в связи по внешнему ключу.",
 			"designer.foreignkey.description.primaryKeyTable": "Таблица, которая содержит первичный или уникальный ключевой столбец.",
+			"designer.index.column.description.name": "Имя столбца.",
+			"designer.index.description.columns": "Столбцы индекса.",
+			"designer.index.description.name": "Имя индекса.",
 			"designer.table.description.description": "Описание таблицы.",
 			"designer.table.description.name": "Имя объекта таблицы.",
 			"designer.table.description.schema": "Схема, содержащая таблицу.",
+			"designer.table.primaryKeyColumns.description": "Столбцы в первичном ключе.",
+			"designer.table.primaryKeyName.description": "Имя первичного ключа.",
+			"tableDesigner.ErrorDialogTitle": "Ошибка конструктора таблиц",
 			"tableDesigner.ForeignKeyTypeName": "Внешний ключ",
-			"tableDesigner.PrimaryKeyTableName": "Таблица первичных ключей",
+			"tableDesigner.ForeignTableName": "Внешняя таблица",
+			"tableDesigner.IndexTypeName": "Индекс",
+			"tableDesigner.PrimaryKeyTabTitle": "Первичный ключ",
+			"tableDesigner.TableSchemaValidationError": "Сбой проверки схемы таблицы. Ошибка: {0}",
+			"tableDesigner.addForeignKey": "Создать внешний ключ",
+			"tableDesigner.addNewCheckConstraint": "Создать ограничение CHECK",
+			"tableDesigner.addNewColumn": "Создать столбец",
+			"tableDesigner.addNewColumnMapping": "Новое сопоставление столбцов",
+			"tableDesigner.addNewColumnToIndex": "Добавить столбец",
+			"tableDesigner.addNewColumnToPrimaryKey": "Добавить столбец",
+			"tableDesigner.addNewIndex": "Создание индекса",
 			"tableDesigner.checkConstraintExpressionTitle": "Выражение",
 			"tableDesigner.checkConstraintNameTitle": "Имя",
 			"tableDesigner.checkConstraintTypeName": "Проверочное ограничение",
@@ -12249,18 +12250,30 @@
 			"tableDesigner.descriptionTitle": "Описание",
 			"tableDesigner.errorInitializingTableDesigner": "Произошла ошибка при инициализации конструктора таблиц: {0}",
 			"tableDesigner.errorProcessingEdit": "Произошла ошибка при обработке изменения: {0}",
-			"tableDesigner.foreignKeyColumn": "Столбец внешних ключей",
-			"tableDesigner.foreignKeyColumns": "Сопоставление столбцов",
+			"tableDesigner.foreignKey.column": "Столбец",
+			"tableDesigner.foreignKey.foreignColumn": "Внешний столбец",
+			"tableDesigner.foreignKeyColumns": "Столбцы",
 			"tableDesigner.foreignKeyNameTitle": "Имя",
 			"tableDesigner.foreignKeyOnDeleteAction": "При действии удаления",
 			"tableDesigner.foreignKeyOnUpdateAction": "При действии обновления",
 			"tableDesigner.foreignKeysTabTitle": "Внешние ключи",
 			"tableDesigner.generalTab": "Общие",
+			"tableDesigner.generatePreviewReportError": "Произошла ошибка при создании предварительного просмотра отчета: {0}",
+			"tableDesigner.generateScriptError": "Произошла ошибка при создании сценария: {0}",
+			"tableDesigner.generatingPreviewReport": "Создание предварительного просмотра отчета…",
+			"tableDesigner.generatingScript": "Создание сценария…",
+			"tableDesigner.generatingScriptCompleted": "Сценарий создан.",
+			"tableDesigner.index.column.name": "Столбец",
+			"tableDesigner.indexColumns": "Столбцы",
+			"tableDesigner.indexName": "Имя",
+			"tableDesigner.indexesTabTitle": "Индексы",
+			"tableDesigner.inputValidationError": "Сбой проверки входных данных. Ошибка: {0}",
 			"tableDesigner.nameTitle": "Имя таблицы",
-			"tableDesigner.primaryKeyColumn": "Столбец первичного ключа",
-			"tableDesigner.saveChangeError": "Произошла ошибка при сохранении изменений: {0}",
-			"tableDesigner.savedChangeSuccess": "Изменения успешно сохранены.",
-			"tableDesigner.savingChanges": "Сохранение изменений конструктора таблиц...",
+			"tableDesigner.primaryKeyColumnsTitle": "Столбцы первичного ключа",
+			"tableDesigner.primaryKeyNameTitle": "Имя",
+			"tableDesigner.publishChangeError": "Произошла ошибка при публикации изменений: {0}",
+			"tableDesigner.publishChangeSuccess": "Изменения опубликованы.",
+			"tableDesigner.savingChanges": "Публикация изменений конструктора таблиц...",
 			"tableDesigner.schemaTitle": "Схема",
 			"tableDesigner.tableObjectType": "Таблицы"
 		},
@@ -12272,6 +12285,88 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "Начало р&&аботы",
 			"showReleaseNotes": "Показать раздел \"Начало работы\""
+		},
+		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
+			"errorStartBeforeReady": "Не удается запустить сеанс, диспетчер еще не инициализирован"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
+			"tableDesigner.PreviewFeature": "Предварительная версия функции"
+		},
+		"sql/workbench/contrib/tsgops/browser/tsgopsActions": {
+			"hideActivityBarViewContainers": "Скрыть вьюлет расширения",
+			"hidePanel": "Скрыть панель",
+			"hideSettings": "Скрыть значок параметров"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerPublishDialog": {
+			"tableDesigner.UpdateDatabase": "Обновить базу данных",
+			"tableDesigner.cancel": "Отмена",
+			"tableDesigner.generateScript": "Создать сценарий",
+			"tableDesigner.previewDatabaseUpdates": "Предварительный просмотр обновлений базы данных"
+		},
+		"sql/base/browser/ui/editableDropdown/browser/dropdown": {
+			"editableDropdown.errorValidate": "Необходимо выбрать вариант из списка",
+			"selectBox": "Поле выбора"
+		},
+		"sql/workbench/browser/designer/designerIssuesTabPanelView": {
+			"designer.IssueListAriaLabel": "Проблемы"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlan": {
+			"executionPlan.SaveFileDescription": "Файлы плана выполнения",
+			"executionPlanCustomZoom": "Пользовательское увеличение",
+			"executionPlanFileLoadingComplete": "Планы выполнения созданы",
+			"executionPlanFileLoadingFailed": "Не удалось загрузить план выполнения",
+			"executionPlanFitGraphLabel": "По размеру окна",
+			"executionPlanOpenGraphFile": "Показать XML-файл плана запроса",
+			"executionPlanPropertiesActionLabel": "Панель свойств",
+			"executionPlanSavePlanXML": "Сохранить файл плана",
+			"executionPlanSearchNodeAction": "Найти узел",
+			"executionPlanTitle": "План запроса (предварительная версия)",
+			"executionPlanZoomInActionLabel": "Увеличить",
+			"executionPlanZoomOutActionLabel": "Уменьшить",
+			"loadingExecutionPlanFile": "Создание планов выполнения",
+			"openQueryAction": "Открыть запрос"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
+			"executionPlanEditor": "Редактор планов выполнения запросов"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView": {
+			"executionPlanPropertiesEdgeOperationName": "Edge",
+			"executionPlanPropertyViewClose": "Закрыть",
+			"executionPlanPropertyViewSortAlphabetically": "В алфавитном порядке",
+			"executionPlanPropertyViewSortByDisplayOrder": "По категориям",
+			"nodePropertyViewNameNameColumnHeader": "Имя",
+			"nodePropertyViewNameValueColumnHeader": "Значение",
+			"nodePropertyViewTitle": "Свойства"
+		},
+		"sql/workbench/contrib/executionPlan/browser/planHeader": {
+			"planHeaderIndexAndCost": "Запрос {0}: стоимость запроса (по отношению к сценарию): {1}%"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
+			"cancelCustomZoomAction": "Закрыть (ESC)",
+			"customZoomApplyButton": "Применить",
+			"customZoomApplyButtonTitle": "Применить масштабирование (ВВОД)",
+			"invalidCustomZoomError": "Выберите значение масштаба от 1 до 200",
+			"qpZoomValueLabel": "Увеличить (в процентах)",
+			"zoomAction": "Увеличить (ВВОД)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget": {
+			"cancelSearchAction": "Закрыть (ESC)",
+			"executionPlanSearchTypeContains": "Содержит",
+			"executionPlanSearchTypeEquals": "Равно",
+			"nextSearchItemAction": "Следующее совпадение (ВВОД)",
+			"previousSearchItemAction": "Предыдущее совпадение (SHIFT+ВВОД)"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookEditor.component": {
+			"loadingNotebookCompletedMessage": "Загрузка записной книжки {0} завершена",
+			"loadingNotebookMessage": "Загрузка записной книжки {0}"
+		},
+		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"noHandlerRegistered": "Допустимый обработчик планов выполнения не зарегистрирован",
+			"providerIdNotValidError": "Для взаимодействия с ExecutionPlanService требуется допустимый поставщик",
+			"selectExecutionPlanProvider": "Выберите поставщика, чтобы открыть план выполнения"
+		},
+		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
+			"table.showActions": "Показать действия"
 		}
 	}
 }

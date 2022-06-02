@@ -28,10 +28,10 @@ import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { serializableToMap } from 'sql/base/common/map';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
 import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/common/interface';
-
+import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 /**
  * Main thread class for handling data protocol management registration.
  */
@@ -61,7 +61,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@IAssessmentService private _assessmentService: IAssessmentService,
 		@IDataGridProviderService private _dataGridProviderService: IDataGridProviderService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
-		@ITableDesignerService private _tableDesignerService: ITableDesignerService
+		@ITableDesignerService private _tableDesignerService: ITableDesignerService,
+		@IExecutionPlanService private _executionPlanService: IExecutionPlanService
 	) {
 		super();
 		if (extHostContext) {
@@ -516,16 +517,16 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			initializeTableDesigner(tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> {
 				return self._proxy.$initializeTableDesigner(handle, tableInfo);
 			},
-			processTableEdit(table, edit): Thenable<azdata.designers.DesignerEditResult> {
+			processTableEdit(table, edit): Thenable<azdata.designers.DesignerEditResult<azdata.designers.TableDesignerView>> {
 				return self._proxy.$processTableDesignerEdit(handle, table, edit);
 			},
-			publishChanges(tableInfo: azdata.designers.TableInfo): Thenable<void> {
+			publishChanges(tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.PublishChangesResult> {
 				return self._proxy.$publishTableDesignerChanges(handle, tableInfo);
 			},
 			generateScript(tableInfo: azdata.designers.TableInfo): Thenable<string> {
 				return self._proxy.$generateScriptForTableDesigner(handle, tableInfo);
 			},
-			generatePreviewReport(tableInfo: azdata.designers.TableInfo): Thenable<string> {
+			generatePreviewReport(tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.GeneratePreviewReportResult> {
 				return self._proxy.$generatePreviewReportForTableDesigner(handle, tableInfo);
 			},
 			disposeTableDesigner(tableInfo: azdata.designers.TableInfo): Thenable<void> {
@@ -548,6 +549,13 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		});
 
 		return undefined;
+	}
+
+	public $registerExecutionPlanProvider(providerId: string, handle: number): void {
+		this._executionPlanService.registerProvider(providerId, <azdata.executionPlan.ExecutionPlanProvider>{
+			getExecutionPlan: (planFile: azdata.executionPlan.ExecutionPlanGraphInfo) => this._proxy.$getExecutionPlan(handle, planFile),
+			compareExecutionPlanGraph: (firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo) => this._proxy.$compareExecutionPlanGraph(handle, firstPlanFile, secondPlanFile)
+		});
 	}
 
 	// Connection Management handlers
@@ -646,8 +654,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	}
 
 	// Table Designer
-	public $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo): void {
-		this._tableDesignerService.openTableDesigner(providerId, tableInfo);
+	public $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): void {
+		this._tableDesignerService.openTableDesigner(providerId, tableInfo, telemetryInfo);
 	}
 
 	public $unregisterProvider(handle: number): Promise<any> {

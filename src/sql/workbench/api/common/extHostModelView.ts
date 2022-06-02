@@ -2085,6 +2085,8 @@ class InfoBoxComponentWrapper extends ComponentWrapper implements azdata.InfoBox
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.InfoBox, id, logService);
 		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onChildClick, new Emitter<any>());
 	}
 
 	public get style(): azdata.InfoBoxStyle {
@@ -2103,12 +2105,46 @@ class InfoBoxComponentWrapper extends ComponentWrapper implements azdata.InfoBox
 		this.setProperty('text', v);
 	}
 
+	public get links(): azdata.LinkArea[] {
+		return this.properties['links'];
+	}
+
+	public set links(v: azdata.LinkArea[]) {
+		this.setProperty('links', v);
+	}
+
 	public get announceText(): boolean {
 		return this.properties['announceText'];
 	}
 
 	public set announceText(v: boolean) {
 		this.setProperty('announceText', v);
+	}
+
+	public get isClickable(): boolean {
+		return this.properties['isClickable'];
+	}
+
+	public set isClickable(v: boolean) {
+		this.setProperty('isClickable', v);
+	}
+
+	public get clickableButtonAriaLabel(): string {
+		return this.properties['clickableButtonAriaLabel'];
+	}
+
+	public set clickableButtonAriaLabel(v: string) {
+		this.setProperty('clickableButtonAriaLabel', v);
+	}
+
+	public get onDidClick(): vscode.Event<void> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
+	}
+
+	public get onLinkClick(): vscode.Event<azdata.InfoBoxLinkClickEventArgs> {
+		let emitter = this._emitterMap.get(ComponentEventType.onChildClick);
+		return emitter && emitter.event;
 	}
 }
 

@@ -769,9 +769,9 @@ suite('Cell Model', function (): void {
 		cell.trustedMode = true;
 		assert.strictEqual(cell.trustedMode, true, 'Cell should be trusted after manually setting trustedMode');
 
-		assert.strictEqual(cell.isEditMode, true, 'Code cells should be editable by default');
-		cell.isEditMode = false;
-		assert.strictEqual(cell.isEditMode, false, 'Cell should not be editable after manually setting isEditMode');
+		assert.strictEqual(cell.isEditMode, false, 'Code cells should not be editable by default');
+		cell.isEditMode = true;
+		assert.strictEqual(cell.isEditMode, true, 'Cell should be editable after manually setting isEditMode');
 
 		cell.hover = true;
 		assert.strictEqual(cell.hover, true, 'Cell should be hovered after manually setting hover=true');
@@ -1079,6 +1079,96 @@ suite('Cell Model', function (): void {
 		assert.deepStrictEqual(serializedCell.attachments, undefined, 'JSON should not include attachments if attachments do not exist');
 	});
 
+	test('Should remove unused attachments name when updating cell source', async function () {
+		const cellAttachment = JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}');
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '',
+			attachments: cellAttachment
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		assert.deepStrictEqual(model.attachments, contents.attachments, 'Attachments do not match in cellModel');
+
+		model.source = 'Test';
+
+		assert.notDeepStrictEqual(model.attachments, contents.attachments, 'Unused attachments are not removed after updating cell source');
+	});
+
+	test('Should not remove attachments that are still referenced in cell after updating the cell source', async function () {
+		const cellAttachment = JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}');
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '![ads.png](attachment:ads.png)',
+			attachments: cellAttachment
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+
+		model.source = '![ads.png](attachment:ads.png) \n Test';
+
+		assert.deepStrictEqual(model.attachments, contents.attachments, 'Attachments referenced in cell were removed');
+	});
+
+	test('Should update cell attachments', async function () {
+		const cellAttachment = JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}');
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '![ads.png](attachment:ads.png)'
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		model.updateAttachmentsFromSource('![ads.png](attachment:ads.png)', cellAttachment);
+
+		assert.deepStrictEqual(model.attachments, cellAttachment, 'Cell attachments are not updated correctly');
+	});
+
+	test('Should not update cell attachments if they are not referenced in cell source', async function () {
+		const cellAttachment = JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}');
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '![ads.png](attachment:ads.png)'
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		model.updateAttachmentsFromSource('test', cellAttachment);
+
+		assert.notDeepStrictEqual(model.attachments, cellAttachment, 'Cell attachments are updated when they are not referenced in cell source');
+	});
+
+	test('Should not update cell attachments if the attachment reference is not in the correct format', async function () {
+		const cellAttachment = JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}');
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '![ads.png](attachment:ads.png)'
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		model.updateAttachmentsFromSource('ads.png', cellAttachment);
+
+		assert.notDeepStrictEqual(model.attachments, cellAttachment, 'Cell attachments are updated when the reference is not in the correct format');
+	});
+
 	test('Should not have cache chart data after new cell created', async function () {
 		let notebookModel = new NotebookModelStub({
 			name: '',
@@ -1358,4 +1448,64 @@ suite('Cell Model', function (): void {
 		assert(editMode);
 		assert.strictEqual(editMode, CellEditModes.WYSIWYG, 'Default edit mode should be WYSIWYG.');
 	});
+
+	test('cell should have lastEditMode set to whatever the user edited out of last', async function () {
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '',
+			metadata: {}
+		};
+		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+
+		// Non-Editing Preview mode -> showPreview should be true and showMarkdown should be false.
+		assert(cellModel.showPreview, 'showPreview should default to true when not in editMode');
+		assert(!cellModel.showMarkdown, 'showMarkdown should be false when not in editMode');
+
+		let getCurrentCellEditModePromise = () => {
+			return new Promise((resolve, reject) => {
+				cellModel.onCurrentEditModeChanged(cellEditMode => {
+					resolve(cellEditMode);
+				});
+			});
+		};
+
+		let cellModePromise = getCurrentCellEditModePromise();
+		// Initially mode is defaulted be WYSIWYG -> showPreview is true and showMarkdown is false
+		assert.strictEqual(cellModel.currentMode, CellEditModes.WYSIWYG, 'Current mode should be WYSIWYG when not in edit mode');
+		assert.strictEqual(cellModel.isEditMode, false, 'cell should not default to edit mode');
+
+		cellModel.isEditMode = true;
+		let lastEditMode = await cellModePromise;
+		assert.strictEqual(lastEditMode, CellEditModes.WYSIWYG, 'Default edit mode should be WYSIWYG');
+		// update mode to SPLITVIEW -> showMarkdown and showPreview both are true
+		cellModePromise = getCurrentCellEditModePromise();
+		cellModel.showMarkdown = true;
+		lastEditMode = await cellModePromise;
+		assert.strictEqual(lastEditMode, CellEditModes.SPLIT, 'LastEditMode should be set to split view');
+
+		// come out of edit mode and enter edit mode again to check edit mode.
+		cellModel.isEditMode = false;
+		assert.strictEqual(cellModel.currentMode, CellEditModes.WYSIWYG, 'Should default to WYSIWYG when not editing');
+		cellModel.isEditMode = true;
+		assert.strictEqual(cellModel.currentMode, CellEditModes.SPLIT, 'Should persist lastEditMode and be in Split View');
+
+		// update mode to markdown mode only -> showPreview is false and showMarkdown is true
+		cellModePromise = getCurrentCellEditModePromise();
+		cellModel.showPreview = false;
+		lastEditMode = await cellModePromise;
+		assert.strictEqual(lastEditMode, CellEditModes.MARKDOWN, 'LastEditMode should be set to markdown');
+
+		// come out of edit mode and enter edit mode again to check edit mode.
+		cellModel.isEditMode = false;
+		assert.strictEqual(cellModel.currentMode, CellEditModes.WYSIWYG, 'Should default to WYSIWYG when not editing');
+		cellModel.isEditMode = true;
+		assert.strictEqual(cellModel.currentMode, CellEditModes.MARKDOWN, 'Should persist lastEditMode and be in markdown only');
+
+	});
+
 });

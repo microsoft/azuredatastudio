@@ -1,0 +1,1947 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/git/dist/askpass-main" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="missOrInvalid">
+        <source xml:lang="en">Missing or invalid credentials.</source>
+        <target state="translated">Учетные данные отсутствуют или недопустимы.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/git/dist/autofetch" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="no">
+        <source xml:lang="en">No</source>
+        <target state="translated">Нет</target>
+      </trans-unit>
+      <trans-unit id="not now">
+        <source xml:lang="en">Ask Me Later</source>
+        <target state="translated">Спросить меня позже</target>
+      </trans-unit>
+      <trans-unit id="suggest auto fetch">
+        <source xml:lang="en">Would you like Azure Data Studio to [periodically run 'git fetch']({0})?</source>
+        <target state="translated">Вы хотите, чтобы средство Azure Data Studio [периодически запускало \"git fetch\"]({0})?</target>
+      </trans-unit>
+      <trans-unit id="yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Да</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/git/dist/commands" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="HEAD not available">
+        <source xml:lang="en">HEAD version of '{0}' is not available.</source>
+        <target state="translated">Версия HEAD '{0}' недоступна.</target>
+      </trans-unit>
+      <trans-unit id="add">
+        <source xml:lang="en">Add to Workspace</source>
+        <target state="translated">Добавить в рабочую область</target>
+      </trans-unit>
+      <trans-unit id="add remote">
+        <source xml:lang="en">Add a new remote...</source>
+        <target state="translated">Добавить новый удаленный репозиторий...</target>
+      </trans-unit>
+      <trans-unit id="addFrom">
+        <source xml:lang="en">Add remote from URL</source>
+        <target state="translated">Добавить удаленный репозиторий по URL-адресу</target>
+      </trans-unit>
+      <trans-unit id="addfrom">
+        <source xml:lang="en">Add remote from {0}</source>
+        <target state="translated">Добавить удаленный репозиторий из {0}</target>
+      </trans-unit>
+      <trans-unit id="addremote">
+        <source xml:lang="en">Add Remote</source>
+        <target state="translated">Добавить удаленный репозиторий</target>
+      </trans-unit>
+      <trans-unit id="always">
+        <source xml:lang="en">Always</source>
+        <target state="translated">Всегда</target>
+      </trans-unit>
+      <trans-unit id="are you sure">
+        <source xml:lang="en">This will create a Git repository in '{0}'. Are you sure you want to continue?</source>
+        <target state="translated">В '{0}' будет создан репозиторий Git. Вы действительно хотите продолжить?</target>
+      </trans-unit>
+      <trans-unit id="auth failed">
+        <source xml:lang="en">Failed to authenticate to git remote.</source>
+        <target state="translated">Не удалось выполнить проверку подлинности в удаленном Git.</target>
+      </trans-unit>
+      <trans-unit id="auth failed specific">
+        <source xml:lang="en">Failed to authenticate to git remote:
+
+{0}</source>
+        <target state="translated">Не удалось выполнить проверку подлинности в удаленном репозитории Git:
+
+{0}</target>
+      </trans-unit>
+      <trans-unit id="branch already exists">
+        <source xml:lang="en">A branch named '{0}' already exists</source>
+        <target state="translated">Ветви с именем '{0}' уже существует</target>
+      </trans-unit>
+      <trans-unit id="branch name">
+        <source xml:lang="en">Branch name</source>
+        <target state="translated">Имя ветви</target>
+      </trans-unit>
+      <trans-unit id="branch name format invalid">
+        <source xml:lang="en">Branch name needs to match regex: {0}</source>
+        <target state="translated">Имя ветви должно соответствовать регулярному выражению: {0}</target>
+      </trans-unit>
+      <trans-unit id="cant push">
+        <source xml:lang="en">Can't push refs to remote. Try running 'Pull' first to integrate your changes.</source>
+        <target state="translated">Не удается отправить ссылки в удаленный репозиторий. Сначала запустите операцию извлечения, чтобы интегрировать изменения.</target>
+      </trans-unit>
+      <trans-unit id="changed">
+        <source xml:lang="en">Log level changed to: {0}</source>
+        <target state="translated">Уровень ведения журнала изменен на: {0}</target>
+      </trans-unit>
+      <trans-unit id="checkout detached">
+        <source xml:lang="en">Checkout detached...</source>
+        <target state="translated">Извлечение в отключенном режиме...</target>
+      </trans-unit>
+      <trans-unit id="choose">
+        <source xml:lang="en">Choose Folder...</source>
+        <target state="translated">Выбрать папку...</target>
+      </trans-unit>
+      <trans-unit id="clean repo">
+        <source xml:lang="en">Please clean your repository working tree before checkout.</source>
+        <target state="translated">Очистите рабочее дерево репозитория перед извлечением.</target>
+      </trans-unit>
+      <trans-unit id="clonefrom">
+        <source xml:lang="en">Clone from {0}</source>
+        <target state="translated">Клонировать из {0}</target>
+      </trans-unit>
+      <trans-unit id="cloning">
+        <source xml:lang="en">Cloning git repository '{0}'...</source>
+        <target state="translated">Клонирование репозитория Git \"{0}\"...</target>
+      </trans-unit>
+      <trans-unit id="commit">
+        <source xml:lang="en">Commit Staged Changes</source>
+        <target state="translated">Зафиксировать подготовленные изменения</target>
+      </trans-unit>
+      <trans-unit id="commit anyway">
+        <source xml:lang="en">Create Empty Commit</source>
+        <target state="translated">Создать пустую фиксацию</target>
+      </trans-unit>
+      <trans-unit id="commit hash">
+        <source xml:lang="en">Commit Hash</source>
+        <target state="translated">Хэш фиксации</target>
+      </trans-unit>
+      <trans-unit id="commit message">
+        <source xml:lang="en">Commit message</source>
+        <target state="translated">Сообщение о фиксации</target>
+      </trans-unit>
+      <trans-unit id="commitMessageWithHeadLabel2">
+        <source xml:lang="en">Message (commit on '{0}')</source>
+        <target state="translated">Сообщение (фиксация: \"{0}\")</target>
+      </trans-unit>
+      <trans-unit id="confirm delete">
+        <source xml:lang="en">Are you sure you want to DELETE {0}?
+This is IRREVERSIBLE!
+This file will be FOREVER LOST if you proceed.</source>
+        <target state="translated">Вы действительно хотите удалить файл {0}?
+Эта операция является необратимой!
+Восстановить этот файл будет невозможно.</target>
+      </trans-unit>
+      <trans-unit id="confirm delete multiple">
+        <source xml:lang="en">Are you sure you want to DELETE {0} files?
+This is IRREVERSIBLE!
+These files will be FOREVER LOST if you proceed.</source>
+        <target state="translated">Вы действительно хотите удалить файлы ({0})?
+Эта операция является необратимой!
+Восстановить эти файлы будет невозможно.</target>
+      </trans-unit>
+      <trans-unit id="confirm discard">
+        <source xml:lang="en">Are you sure you want to discard changes in {0}?</source>
+        <target state="translated">Вы действительно хотите отменить изменения в {0}?</target>
+      </trans-unit>
+      <trans-unit id="confirm discard all">
+        <source xml:lang="en">Are you sure you want to discard ALL changes in {0} files?
+This is IRREVERSIBLE!
+Your current working set will be FOREVER LOST if you proceed.</source>
+        <target state="translated">Вы действительно хотите отменить все изменения в файлах ({0})?
+Эта операция является необратимой!
+Восстановить ваш текущий набор изменений будет невозможно.</target>
+      </trans-unit>
+      <trans-unit id="confirm discard all 2">
+        <source xml:lang="en">{0}
+
+This is IRREVERSIBLE, your current working set will be FOREVER LOST.</source>
+        <target state="translated">{0}
+
+Отменить эту операцию будет НЕВОЗМОЖНО, ваш текущий рабочий набор БУДЕТ УТЕРЯН.</target>
+      </trans-unit>
+      <trans-unit id="confirm discard all single">
+        <source xml:lang="en">Are you sure you want to discard changes in {0}?</source>
+        <target state="translated">Вы действительно хотите отменить изменения в {0}?</target>
+      </trans-unit>
+      <trans-unit id="confirm discard multiple">
+        <source xml:lang="en">Are you sure you want to discard changes in {0} files?</source>
+        <target state="translated">Вы действительно хотите отменить изменения в файлах ({0})?</target>
+      </trans-unit>
+      <trans-unit id="confirm emtpy commit">
+        <source xml:lang="en">Are you sure you want to create an empty commit?</source>
+        <target state="translated">Вы действительно хотите создать пустую фиксацию?</target>
+      </trans-unit>
+      <trans-unit id="confirm force delete branch">
+        <source xml:lang="en">The branch '{0}' is not fully merged. Delete anyway?</source>
+        <target state="translated">Ветвь '{0}' объединена не полностью. Удалить ее?</target>
+      </trans-unit>
+      <trans-unit id="confirm force push">
+        <source xml:lang="en">You are about to force push your changes, this can be destructive and could inadvertently overwrite changes made by others.
+
+Are you sure to continue?</source>
+        <target state="translated">Вы собираетесь принудительно отправить ваши изменения. Это может привести к деструктивным изменениям и к непреднамеренной перезаписи изменений, внесенных другими пользователями.
+
+Вы действительно хотите продолжить?</target>
+      </trans-unit>
+      <trans-unit id="confirm no verify commit">
+        <source xml:lang="en">You are about to commit your changes without verification, this skips pre-commit hooks and can be undesirable.
+
+Are you sure to continue?</source>
+        <target state="translated">Вы собираетесь зафиксировать изменения без проверки. Перехватчики перед фиксацией будут пропущены, что может быть нежелательным.
+
+Продолжить?</target>
+      </trans-unit>
+      <trans-unit id="confirm publish branch">
+        <source xml:lang="en">The branch '{0}' has no upstream branch. Would you like to publish this branch?</source>
+        <target state="translated">В ветви '{0}' отсутствует восходящая ветвь. Вы хотите опубликовать эту ветвь?</target>
+      </trans-unit>
+      <trans-unit id="confirm restore">
+        <source xml:lang="en">Are you sure you want to restore {0}?</source>
+        <target state="translated">Вы действительно хотите восстановить {0}?</target>
+      </trans-unit>
+      <trans-unit id="confirm restore multiple">
+        <source xml:lang="en">Are you sure you want to restore {0} files?</source>
+        <target state="translated">Вы действительно хотите восстановить файлы ({0})?</target>
+      </trans-unit>
+      <trans-unit id="confirm stage file with merge conflicts">
+        <source xml:lang="en">Are you sure you want to stage {0} with merge conflicts?</source>
+        <target state="translated">Вы действительно хотите проиндексировать {0} с конфликтами слияния?</target>
+      </trans-unit>
+      <trans-unit id="confirm stage files with merge conflicts">
+        <source xml:lang="en">Are you sure you want to stage {0} files with merge conflicts?</source>
+        <target state="translated">Вы действительно хотите проиндексировать файлы ({0}) с конфликтами слияния?</target>
+      </trans-unit>
+      <trans-unit id="create branch">
+        <source xml:lang="en">Create new branch...</source>
+        <target state="translated">Создание новой ветви...</target>
+      </trans-unit>
+      <trans-unit id="create branch from">
+        <source xml:lang="en">Create new branch from...</source>
+        <target state="translated">Создание новой ветви из...</target>
+      </trans-unit>
+      <trans-unit id="create repo">
+        <source xml:lang="en">Initialize Repository</source>
+        <target state="translated">Инициализировать репозиторий</target>
+      </trans-unit>
+      <trans-unit id="current">
+        <source xml:lang="en">Current</source>
+        <target state="translated">Текущая</target>
+      </trans-unit>
+      <trans-unit id="delete">
+        <source xml:lang="en">Delete File</source>
+        <target state="translated">Удалить файл</target>
+      </trans-unit>
+      <trans-unit id="delete branch">
+        <source xml:lang="en">Delete Branch</source>
+        <target state="translated">Удалить ветвь</target>
+      </trans-unit>
+      <trans-unit id="delete file">
+        <source xml:lang="en">Delete file</source>
+        <target state="translated">Удалить файл</target>
+      </trans-unit>
+      <trans-unit id="delete files">
+        <source xml:lang="en">Delete Files</source>
+        <target state="translated">Удалить файлы</target>
+      </trans-unit>
+      <trans-unit id="deleted by them">
+        <source xml:lang="en">File '{0}' was deleted by them and modified by us.
+
+What would you like to do?</source>
+        <target state="translated">Файл \"{0}\" был удален ими и изменен нами.
+
+Что вы хотели бы сделать?</target>
+      </trans-unit>
+      <trans-unit id="deleted by us">
+        <source xml:lang="en">File '{0}' was deleted by us and modified by them.
+
+What would you like to do?</source>
+        <target state="translated">Файл \"{0}\" был удален нами и изменен ими.
+
+Что вы хотели бы сделать?</target>
+      </trans-unit>
+      <trans-unit id="discard">
+        <source xml:lang="en">Discard Changes</source>
+        <target state="translated">Отменить изменения</target>
+      </trans-unit>
+      <trans-unit id="discardAll">
+        <source xml:lang="en">Discard All {0} Files</source>
+        <target state="translated">Отменить изменения во всех файлах ({0})</target>
+      </trans-unit>
+      <trans-unit id="discardAll multiple">
+        <source xml:lang="en">Discard 1 File</source>
+        <target state="translated">Отменить изменения в одном файле</target>
+      </trans-unit>
+      <trans-unit id="force">
+        <source xml:lang="en">Force Checkout</source>
+        <target state="translated">Принудительное извлечение</target>
+      </trans-unit>
+      <trans-unit id="force push not allowed">
+        <source xml:lang="en">Force push is not allowed, please enable it with the 'git.allowForcePush' setting.</source>
+        <target state="translated">Принудительная отправка не разрешена. Включите ее, установив параметр \"git.allowForcePush\".</target>
+      </trans-unit>
+      <trans-unit id="git error">
+        <source xml:lang="en">Git error</source>
+        <target state="translated">Ошибка Git</target>
+      </trans-unit>
+      <trans-unit id="git error details">
+        <source xml:lang="en">Git: {0}</source>
+        <target state="translated">Git: {0}</target>
+      </trans-unit>
+      <trans-unit id="git.title.diff">
+        <source xml:lang="en">{0} ⟷ {1}</source>
+        <target state="translated">{0} ⟷ {1}</target>
+      </trans-unit>
+      <trans-unit id="git.title.diffRefs">
+        <source xml:lang="en">{0} ({1}) ⟷ {0} ({2})</source>
+        <target state="translated">{0} ({1}) ⟷ {0} ({2})</target>
+      </trans-unit>
+      <trans-unit id="git.title.index">
+        <source xml:lang="en">{0} (Index)</source>
+        <target state="translated">{0} (индекс)</target>
+      </trans-unit>
+      <trans-unit id="git.title.ref">
+        <source xml:lang="en">{0} ({1})</source>
+        <target state="translated">{0} ({1})</target>
+      </trans-unit>
+      <trans-unit id="git.title.workingTree">
+        <source xml:lang="en">{0} (Working Tree)</source>
+        <target state="translated">{0} (Рабочее дерево)</target>
+      </trans-unit>
+      <trans-unit id="init">
+        <source xml:lang="en">Pick workspace folder to initialize git repo in</source>
+        <target state="translated">Выберите папку рабочей области для инициализации репозитория Git</target>
+      </trans-unit>
+      <trans-unit id="init repo">
+        <source xml:lang="en">Initialize Repository</source>
+        <target state="translated">Инициализировать репозиторий</target>
+      </trans-unit>
+      <trans-unit id="invalid branch name">
+        <source xml:lang="en">Invalid branch name</source>
+        <target state="translated">Недопустимое имя ветви</target>
+      </trans-unit>
+      <trans-unit id="keep ours">
+        <source xml:lang="en">Keep Our Version</source>
+        <target state="translated">Сохранить нашу версию</target>
+      </trans-unit>
+      <trans-unit id="keep theirs">
+        <source xml:lang="en">Keep Their Version</source>
+        <target state="translated">Сохранить их версию</target>
+      </trans-unit>
+      <trans-unit id="learn more">
+        <source xml:lang="en">Learn More</source>
+        <target state="translated">Дополнительные сведения</target>
+      </trans-unit>
+      <trans-unit id="local changes">
+        <source xml:lang="en">Your local changes would be overwritten by checkout.</source>
+        <target state="translated">Локальные изменения будут перезаписаны при извлечении.</target>
+      </trans-unit>
+      <trans-unit id="merge commit">
+        <source xml:lang="en">The last commit was a merge commit. Are you sure you want to undo it?</source>
+        <target state="translated">Последняя фиксация была фиксацией слияния. Вы действительно хотите отменить ее?</target>
+      </trans-unit>
+      <trans-unit id="merge conflicts">
+        <source xml:lang="en">There are merge conflicts. Resolve them before committing.</source>
+        <target state="translated">Обнаружены конфликты слияния. Устраните их перед фиксацией.</target>
+      </trans-unit>
+      <trans-unit id="missing user info">
+        <source xml:lang="en">Make sure you configure your 'user.name' and 'user.email' in git.</source>
+        <target state="translated">Убедитесь, что вы настроили параметры \"user.name\" и \"user.email\" в git.</target>
+      </trans-unit>
+      <trans-unit id="never">
+        <source xml:lang="en">Never</source>
+        <target state="translated">Никогда</target>
+      </trans-unit>
+      <trans-unit id="never again">
+        <source xml:lang="en">OK, Don't Show Again</source>
+        <target state="translated">ОК, больше не показывать</target>
+      </trans-unit>
+      <trans-unit id="never ask again">
+        <source xml:lang="en">OK, Don't Ask Again</source>
+        <target state="translated">ОК, больше не показывать</target>
+      </trans-unit>
+      <trans-unit id="no changes">
+        <source xml:lang="en">There are no changes to commit.</source>
+        <target state="translated">Нет изменений для фиксации.</target>
+      </trans-unit>
+      <trans-unit id="no changes stash">
+        <source xml:lang="en">There are no changes to stash.</source>
+        <target state="translated">Отсутствуют изменения, которые необходимо спрятать.</target>
+      </trans-unit>
+      <trans-unit id="no more">
+        <source xml:lang="en">Can't undo because HEAD doesn't point to any commit.</source>
+        <target state="translated">Невозможно отменить операцию, так как HEAD не указывает ни на какой коммит.</target>
+      </trans-unit>
+      <trans-unit id="no rebase">
+        <source xml:lang="en">No rebase in progress.</source>
+        <target state="translated">Перемещение изменений из одной ветви в другую не выполняется.</target>
+      </trans-unit>
+      <trans-unit id="no remotes added">
+        <source xml:lang="en">Your repository has no remotes.</source>
+        <target state="translated">Ваш репозиторий не содержит удаленные репозитории.</target>
+      </trans-unit>
+      <trans-unit id="no remotes to fetch">
+        <source xml:lang="en">This repository has no remotes configured to fetch from.</source>
+        <target state="translated">Для этого репозитория не настроены удаленные репозитории для забора изменений.</target>
+      </trans-unit>
+      <trans-unit id="no remotes to publish">
+        <source xml:lang="en">Your repository has no remotes configured to publish to.</source>
+        <target state="translated">Для вашего репозитория не настроены удаленные репозитории для публикации.</target>
+      </trans-unit>
+      <trans-unit id="no remotes to pull">
+        <source xml:lang="en">Your repository has no remotes configured to pull from.</source>
+        <target state="translated">Для вашего репозитория не настроены удаленные репозитории для получения данных.</target>
+      </trans-unit>
+      <trans-unit id="no remotes to push">
+        <source xml:lang="en">Your repository has no remotes configured to push to.</source>
+        <target state="translated">Для вашего репозитория не настроены удаленные репозитории для отправки данных.</target>
+      </trans-unit>
+      <trans-unit id="no staged changes">
+        <source xml:lang="en">There are no staged changes to commit.
+
+Would you like to stage all your changes and commit them directly?</source>
+        <target state="translated">Нет подготовленных изменений для фиксации.
+
+Хотите подготовить все свои изменения и зафиксировать их напрямую?</target>
+      </trans-unit>
+      <trans-unit id="no stashes">
+        <source xml:lang="en">There are no stashes in the repository.</source>
+        <target state="translated">В репозитории отсутствуют скрытые изменения.</target>
+      </trans-unit>
+      <trans-unit id="no tags">
+        <source xml:lang="en">This repository has no tags.</source>
+        <target state="translated">У этого репозитория не было тегов.</target>
+      </trans-unit>
+      <trans-unit id="no verify commit not allowed">
+        <source xml:lang="en">Commits without verification are not allowed, please enable them with the 'git.allowNoVerifyCommit' setting.</source>
+        <target state="translated">Фиксации без проверки не допускаются, включите их с помощью параметра \"git.allowNoVerifyCommit\".</target>
+      </trans-unit>
+      <trans-unit id="nobranch">
+        <source xml:lang="en">Please check out a branch to push to a remote.</source>
+        <target state="translated">Переключитесь на какую-либо ветвь, чтобы отправить изменения в удаленный репозиторий.</target>
+      </trans-unit>
+      <trans-unit id="ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">ОК</target>
+      </trans-unit>
+      <trans-unit id="open git log">
+        <source xml:lang="en">Open Git Log</source>
+        <target state="translated">Открыть журнал GIT</target>
+      </trans-unit>
+      <trans-unit id="open repo">
+        <source xml:lang="en">Open Repository</source>
+        <target state="translated">Открыть репозиторий</target>
+      </trans-unit>
+      <trans-unit id="openrepo">
+        <source xml:lang="en">Open</source>
+        <target state="translated">Открыть</target>
+      </trans-unit>
+      <trans-unit id="openreponew">
+        <source xml:lang="en">Open in New Window</source>
+        <target state="translated">Открыть в новом окне</target>
+      </trans-unit>
+      <trans-unit id="pick branch pull">
+        <source xml:lang="en">Pick a branch to pull from</source>
+        <target state="translated">Выберите ветвь для извлечения</target>
+      </trans-unit>
+      <trans-unit id="pick provider">
+        <source xml:lang="en">Pick a provider to publish the branch '{0}' to:</source>
+        <target state="translated">Выберите поставщика, в который необходимо опубликовать ветвь \"{0}\":</target>
+      </trans-unit>
+      <trans-unit id="pick remote">
+        <source xml:lang="en">Pick a remote to publish the branch '{0}' to:</source>
+        <target state="translated">Выберите удаленный сервер, на котором нужно опубликовать ветвь \"{0}\":</target>
+      </trans-unit>
+      <trans-unit id="pick remote pull repo">
+        <source xml:lang="en">Pick a remote to pull the branch from</source>
+        <target state="translated">Выберите удаленный репозиторий, с которого нужно получить ветвь</target>
+      </trans-unit>
+      <trans-unit id="pick stash to apply">
+        <source xml:lang="en">Pick a stash to apply</source>
+        <target state="translated">Выберите спрятанное изменение для применения</target>
+      </trans-unit>
+      <trans-unit id="pick stash to drop">
+        <source xml:lang="en">Pick a stash to drop</source>
+        <target state="translated">Выберите спрятанные данные для удаления</target>
+      </trans-unit>
+      <trans-unit id="pick stash to pop">
+        <source xml:lang="en">Pick a stash to pop</source>
+        <target state="translated">Выберите спрятанное изменение для отображения</target>
+      </trans-unit>
+      <trans-unit id="proposeopen">
+        <source xml:lang="en">Would you like to open the cloned repository?</source>
+        <target state="translated">Вы хотите открыть клонированный репозиторий?</target>
+      </trans-unit>
+      <trans-unit id="proposeopen init">
+        <source xml:lang="en">Would you like to open the initialized repository?</source>
+        <target state="translated">Вы хотите открыть инициализированный репозиторий?</target>
+      </trans-unit>
+      <trans-unit id="proposeopen2">
+        <source xml:lang="en">Would you like to open the cloned repository, or add it to the current workspace?</source>
+        <target state="translated">Вы хотите открыть клонированный репозиторий, или добавить его в текущую рабочую область?</target>
+      </trans-unit>
+      <trans-unit id="proposeopen2 init">
+        <source xml:lang="en">Would you like to open the initialized repository, or add it to the current workspace?</source>
+        <target state="translated">Вы хотите открыть инициализированный репозиторий, или добавить его в текущую рабочую область?</target>
+      </trans-unit>
+      <trans-unit id="provide branch name">
+        <source xml:lang="en">Please provide a new branch name</source>
+        <target state="translated">Укажите новое имя ветви</target>
+      </trans-unit>
+      <trans-unit id="provide commit hash">
+        <source xml:lang="en">Please provide the commit hash</source>
+        <target state="translated">Укажите хэш фиксации</target>
+      </trans-unit>
+      <trans-unit id="provide commit message">
+        <source xml:lang="en">Please provide a commit message</source>
+        <target state="translated">Введите сообщение фиксации.</target>
+      </trans-unit>
+      <trans-unit id="provide remote name">
+        <source xml:lang="en">Please provide a remote name</source>
+        <target state="translated">Укажите удаленное имя</target>
+      </trans-unit>
+      <trans-unit id="provide stash message">
+        <source xml:lang="en">Optionally provide a stash message</source>
+        <target state="translated">Укажите сообщение о скрытии</target>
+      </trans-unit>
+      <trans-unit id="provide tag message">
+        <source xml:lang="en">Please provide a message to annotate the tag</source>
+        <target state="translated">Укажите сообщение для аннотирования тега</target>
+      </trans-unit>
+      <trans-unit id="provide tag name">
+        <source xml:lang="en">Please provide a tag name</source>
+        <target state="translated">Укажите имя тега</target>
+      </trans-unit>
+      <trans-unit id="publish to">
+        <source xml:lang="en">Publish to {0}</source>
+        <target state="translated">Опубликовать в {0}</target>
+      </trans-unit>
+      <trans-unit id="remote already exists">
+        <source xml:lang="en">Remote '{0}' already exists.</source>
+        <target state="translated">Удаленный репозиторий \"{0}\" уже существует.</target>
+      </trans-unit>
+      <trans-unit id="remote branch at">
+        <source xml:lang="en">Remote branch at {0}</source>
+        <target state="translated">Удаленная ветвь в {0}</target>
+      </trans-unit>
+      <trans-unit id="remote name">
+        <source xml:lang="en">Remote name</source>
+        <target state="translated">Удаленное имя</target>
+      </trans-unit>
+      <trans-unit id="remote name format invalid">
+        <source xml:lang="en">Remote name format invalid</source>
+        <target state="translated">Недопустимый формат имени удаленного репозитория</target>
+      </trans-unit>
+      <trans-unit id="remove remote">
+        <source xml:lang="en">Pick a remote to remove</source>
+        <target state="translated">Выберите удаленный репозиторий для удаления</target>
+      </trans-unit>
+      <trans-unit id="repourl">
+        <source xml:lang="en">Clone from URL</source>
+        <target state="translated">URL-адрес репозитория</target>
+      </trans-unit>
+      <trans-unit id="restore file">
+        <source xml:lang="en">Restore file</source>
+        <target state="translated">Восстановить файл</target>
+      </trans-unit>
+      <trans-unit id="restore files">
+        <source xml:lang="en">Restore files</source>
+        <target state="translated">Восстановить файлы</target>
+      </trans-unit>
+      <trans-unit id="save and commit">
+        <source xml:lang="en">Save All &amp; Commit</source>
+        <target state="translated">Сохранить все и фиксировать</target>
+      </trans-unit>
+      <trans-unit id="save and stash">
+        <source xml:lang="en">Save All &amp; Stash</source>
+        <target state="translated">Сохранить все и спрятать</target>
+      </trans-unit>
+      <trans-unit id="select a branch to merge from">
+        <source xml:lang="en">Select a branch to merge from</source>
+        <target state="translated">Выберите ветвь для слияния</target>
+      </trans-unit>
+      <trans-unit id="select a branch to rebase onto">
+        <source xml:lang="en">Select a branch to rebase onto</source>
+        <target state="translated">Выберите ветвь для перемещения в нее изменений</target>
+      </trans-unit>
+      <trans-unit id="select a ref to checkout">
+        <source xml:lang="en">Select a ref to checkout</source>
+        <target state="translated">Выберите ссылку для переключения</target>
+      </trans-unit>
+      <trans-unit id="select a ref to checkout detached">
+        <source xml:lang="en">Select a ref to checkout in detached mode</source>
+        <target state="translated">Выберите ссылку для извлечения в отключенном режиме</target>
+      </trans-unit>
+      <trans-unit id="select a ref to create a new branch from">
+        <source xml:lang="en">Select a ref to create the '{0}' branch from</source>
+        <target state="translated">Выберите ссылку для создания ветви \"{0}\" из</target>
+      </trans-unit>
+      <trans-unit id="select a tag to delete">
+        <source xml:lang="en">Select a tag to delete</source>
+        <target state="translated">Выберите тег для удаления</target>
+      </trans-unit>
+      <trans-unit id="select branch to delete">
+        <source xml:lang="en">Select a branch to delete</source>
+        <target state="translated">Выберите ветвь для удаления</target>
+      </trans-unit>
+      <trans-unit id="select log level">
+        <source xml:lang="en">Select log level</source>
+        <target state="translated">Установите уровень ведения журнала</target>
+      </trans-unit>
+      <trans-unit id="selectFolder">
+        <source xml:lang="en">Select Repository Location</source>
+        <target state="translated">Выбрать расположение репозитория</target>
+      </trans-unit>
+      <trans-unit id="show command output">
+        <source xml:lang="en">Show Command Output</source>
+        <target state="translated">Показать выходные данные команды</target>
+      </trans-unit>
+      <trans-unit id="stash">
+        <source xml:lang="en">Stash Anyway</source>
+        <target state="translated">Все равно спрятать</target>
+      </trans-unit>
+      <trans-unit id="stash merge conflicts">
+        <source xml:lang="en">There were merge conflicts while applying the stash.</source>
+        <target state="translated">Обнаружены конфликты слияния при применении скрытых изменений.</target>
+      </trans-unit>
+      <trans-unit id="stash message">
+        <source xml:lang="en">Stash message</source>
+        <target state="translated">Сообщение к спрятанным изменениям</target>
+      </trans-unit>
+      <trans-unit id="stashcheckout">
+        <source xml:lang="en">Stash &amp; Checkout</source>
+        <target state="translated">Спрятать и извлечь</target>
+      </trans-unit>
+      <trans-unit id="sure drop">
+        <source xml:lang="en">Are you sure you want to drop the stash: {0}?</source>
+        <target state="translated">Вы действительно хотите удалить спрятанные изменения: {0}?</target>
+      </trans-unit>
+      <trans-unit id="sync is unpredictable">
+        <source xml:lang="en">This action will push and pull commits to and from '{0}/{1}'.</source>
+        <target state="translated">Это действие отправит фиксации в \"{0}/{1}\" и извлечет их оттуда.</target>
+      </trans-unit>
+      <trans-unit id="tag at">
+        <source xml:lang="en">Tag at {0}</source>
+        <target state="translated">Тег в {0}</target>
+      </trans-unit>
+      <trans-unit id="tag message">
+        <source xml:lang="en">Message</source>
+        <target state="translated">Сообщение</target>
+      </trans-unit>
+      <trans-unit id="tag name">
+        <source xml:lang="en">Tag name</source>
+        <target state="translated">Имя тега</target>
+      </trans-unit>
+      <trans-unit id="there are untracked files">
+        <source xml:lang="en">There are {0} untracked files which will be DELETED FROM DISK if discarded.</source>
+        <target state="translated">Существует {0} неотслеживаемых файлов, которые будут удалены с диска в случае отмены изменений.</target>
+      </trans-unit>
+      <trans-unit id="there are untracked files single">
+        <source xml:lang="en">The following untracked file will be DELETED FROM DISK if discarded: {0}.</source>
+        <target state="translated">При отмене изменений для этого неотслеживаемого файла этот файл будет удален с диска: {0}.</target>
+      </trans-unit>
+      <trans-unit id="undo commit">
+        <source xml:lang="en">Undo merge commit</source>
+        <target state="translated">Отменить фиксацию слияния</target>
+      </trans-unit>
+      <trans-unit id="unsaved files">
+        <source xml:lang="en">There are {0} unsaved files.
+
+Would you like to save them before committing?</source>
+        <target state="translated">Некоторые файлы ({0}) не сохранены.
+
+Вы хотите сохранить их перед фиксацией?</target>
+      </trans-unit>
+      <trans-unit id="unsaved files single">
+        <source xml:lang="en">The following file has unsaved changes which won't be included in the commit if you proceed: {0}.
+
+Would you like to save it before committing?</source>
+        <target state="translated">В следующем файле есть несохраненные изменения, которые не будут включены в фиксацию, если вы захотите продолжить: {0}.
+
+Вы хотите сохранить этот файл перед фиксацией?</target>
+      </trans-unit>
+      <trans-unit id="unsaved stash files">
+        <source xml:lang="en">There are {0} unsaved files.
+
+Would you like to save them before stashing?</source>
+        <target state="translated">Некоторые файлы ({0}) не сохранены.
+
+Вы хотите сохранить их, прежде чем спрятать?</target>
+      </trans-unit>
+      <trans-unit id="unsaved stash files single">
+        <source xml:lang="en">The following file has unsaved changes which won't be included in the stash if you proceed: {0}.
+
+Would you like to save it before stashing?</source>
+        <target state="translated">В следующем файле есть несохраненные изменения, которые не будут включены в спрятанные изменения, если вы захотите продолжить: {0}.
+
+Вы хотите сохранить этот файл, прежде чем спрятать?</target>
+      </trans-unit>
+      <trans-unit id="warn untracked">
+        <source xml:lang="en">This will DELETE {0} untracked files!
+This is IRREVERSIBLE!
+These files will be FOREVER LOST.</source>
+        <target state="translated">Эта операция приведет к УДАЛЕНИЮ неотслеживаемых файлов ({0})!
+Она является НЕОБРАТИМОЙ!
+Восстановить эти файлы будет НЕВОЗМОЖНО.</target>
+      </trans-unit>
+      <trans-unit id="yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Да</target>
+      </trans-unit>
+      <trans-unit id="yes discard tracked">
+        <source xml:lang="en">Discard 1 Tracked File</source>
+        <target state="translated">Отменить изменения для одного отслеживаемого файла</target>
+      </trans-unit>
+      <trans-unit id="yes discard tracked multiple">
+        <source xml:lang="en">Discard {0} Tracked Files</source>
+        <target state="translated">Отменить изменения для отслеживаемых файлов ({0})</target>
+      </trans-unit>
+      <trans-unit id="yes never again">
+        <source xml:lang="en">Yes, Don't Show Again</source>
+        <target state="translated">Да, больше не показывать</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/git/dist/main" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="skipped">
+        <source xml:lang="en">Skipped found git in: {0}</source>
+        <target state="translated">Пропущенный найденный Git в: {0}</target>
+      </trans-unit>
+      <trans-unit id="using git">
+        <source xml:lang="en">Using git {0} from {1}</source>
+        <target state="translated">Используется git {0} из {1}</target>
+      </trans-unit>
+      <trans-unit id="validating">
+        <source xml:lang="en">Validating found git in: {0}</source>
+        <target state="translated">Проверка найденного git в:{0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/git/dist/model" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="no repositories">
+        <source xml:lang="en">There are no available repositories</source>
+        <target state="translated">Доступные репозитории отсутствуют</target>
+      </trans-unit>
+      <trans-unit id="not supported">
+        <source xml:lang="en">Absolute paths not supported in 'git.scanRepositories' setting.</source>
+        <target state="translated">Абсолютные пути в параметре \"git.scanRepositories\" не поддерживаются.</target>
+      </trans-unit>
+      <trans-unit id="pick repo">
+        <source xml:lang="en">Choose a repository</source>
+        <target state="translated">Выберите репозиторий</target>
+      </trans-unit>
+      <trans-unit id="too many submodules">
+        <source xml:lang="en">The '{0}' repository has {1} submodules which won't be opened automatically. You can still open each one individually by opening a file within.</source>
+        <target state="translated">В репозитории '{0}' есть подмодули ({1}), которые не будут открыты автоматически. Вы можете открыть каждый подмодуль вручную, открыв соответствующий файл.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/git/dist/remoteSource" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="branch name">
+        <source xml:lang="en">Branch name</source>
+        <target state="translated">Имя ветви</target>
+      </trans-unit>
+      <trans-unit id="error">
+        <source xml:lang="en">$(error) Error: {0}</source>
+        <target state="translated">$(error) Ошибка: {0}</target>
+      </trans-unit>
+      <trans-unit id="none found">
+        <source xml:lang="en">No remote repositories found.</source>
+        <target state="translated">Удаленные репозитории не найдены.</target>
+      </trans-unit>
+      <trans-unit id="pick url">
+        <source xml:lang="en">Choose a URL to clone from.</source>
+        <target state="translated">Выберите URL-адрес, откуда требуется клонировать.</target>
+      </trans-unit>
+      <trans-unit id="provide url">
+        <source xml:lang="en">Provide repository URL</source>
+        <target state="translated">Укажите URL-адрес репозитория</target>
+      </trans-unit>
+      <trans-unit id="provide url or pick">
+        <source xml:lang="en">Provide repository URL or pick a repository source.</source>
+        <target state="translated">Укажите URL-адрес репозитория или выберите источник репозитория.</target>
+      </trans-unit>
+      <trans-unit id="type to filter">
+        <source xml:lang="en">Repository name</source>
+        <target state="translated">Имя репозитория</target>
+      </trans-unit>
+      <trans-unit id="type to search">
+        <source xml:lang="en">Repository name (type to search)</source>
+        <target state="translated">Имя репозитория (введите текст для поиска)</target>
+      </trans-unit>
+      <trans-unit id="url">
+        <source xml:lang="en">URL</source>
+        <target state="translated">URL-адрес</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/git/dist/repository" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="add known">
+        <source xml:lang="en">Would you like to add '{0}' to .gitignore?</source>
+        <target state="translated">Вы хотите добавить \"{0}\" в GITIGNORE-файл?</target>
+      </trans-unit>
+      <trans-unit id="added by them">
+        <source xml:lang="en">Conflict: Added By Them</source>
+        <target state="translated">Конфликт: добавлено ими</target>
+      </trans-unit>
+      <trans-unit id="added by us">
+        <source xml:lang="en">Conflict: Added By Us</source>
+        <target state="translated">Конфликт: добавлено нами</target>
+      </trans-unit>
+      <trans-unit id="always pull">
+        <source xml:lang="en">Always Pull</source>
+        <target state="translated">Всегда получать</target>
+      </trans-unit>
+      <trans-unit id="both added">
+        <source xml:lang="en">Conflict: Both Added</source>
+        <target state="translated">Конфликт: оба добавили</target>
+      </trans-unit>
+      <trans-unit id="both deleted">
+        <source xml:lang="en">Conflict: Both Deleted</source>
+        <target state="translated">Конфликт: оба удалили</target>
+      </trans-unit>
+      <trans-unit id="both modified">
+        <source xml:lang="en">Conflict: Both Modified</source>
+        <target state="translated">Конфликт: оба изменили</target>
+      </trans-unit>
+      <trans-unit id="changes">
+        <source xml:lang="en">Changes</source>
+        <target state="translated">Изменения</target>
+      </trans-unit>
+      <trans-unit id="commit">
+        <source xml:lang="en">Commit</source>
+        <target state="translated">Зафиксировать</target>
+      </trans-unit>
+      <trans-unit id="commit in rebase">
+        <source xml:lang="en">It's not possible to change the commit message in the middle of a rebase. Please complete the rebase operation and use interactive rebase instead.</source>
+        <target state="translated">Невозможно изменить сообщение коммита во время перебазирования. Завершите операцию перебазирования и используйте взамен интерактивное перебазирование.</target>
+      </trans-unit>
+      <trans-unit id="commitMessage">
+        <source xml:lang="en">Message ({0} to commit)</source>
+        <target state="translated">Сообщение ({0} для фиксации)</target>
+      </trans-unit>
+      <trans-unit id="commitMessageCountdown">
+        <source xml:lang="en">{0} characters left in current line</source>
+        <target state="translated">В текущей строке остается {0} симв.</target>
+      </trans-unit>
+      <trans-unit id="commitMessageWarning">
+        <source xml:lang="en">{0} characters over {1} in current line</source>
+        <target state="translated">На {0} симв. превышен предел {1} в текущей строке</target>
+      </trans-unit>
+      <trans-unit id="commitMessageWhitespacesOnlyWarning">
+        <source xml:lang="en">Current commit message only contains whitespace characters</source>
+        <target state="translated">Текущее сообщение коммита содержит только пробелы.</target>
+      </trans-unit>
+      <trans-unit id="commitMessageWithHeadLabel">
+        <source xml:lang="en">Message ({0} to commit on '{1}')</source>
+        <target state="translated">Сообщение ({0} для фиксации в \"{1}\")</target>
+      </trans-unit>
+      <trans-unit id="deleted">
+        <source xml:lang="en">Deleted</source>
+        <target state="translated">Удалить</target>
+      </trans-unit>
+      <trans-unit id="deleted by them">
+        <source xml:lang="en">Conflict: Deleted By Them</source>
+        <target state="translated">Конфликт: удалено ими</target>
+      </trans-unit>
+      <trans-unit id="deleted by us">
+        <source xml:lang="en">Conflict: Deleted By Us</source>
+        <target state="translated">Конфликт: удалено нами</target>
+      </trans-unit>
+      <trans-unit id="dont pull">
+        <source xml:lang="en">Don't Pull</source>
+        <target state="translated">Не получать</target>
+      </trans-unit>
+      <trans-unit id="git.title.deleted">
+        <source xml:lang="en">{0} (Deleted)</source>
+        <target state="translated">{0} (удалено)</target>
+      </trans-unit>
+      <trans-unit id="git.title.index">
+        <source xml:lang="en">{0} (Index)</source>
+        <target state="translated">{0} (индекс)</target>
+      </trans-unit>
+      <trans-unit id="git.title.ours">
+        <source xml:lang="en">{0} (Ours)</source>
+        <target state="translated">{0} (наш)</target>
+      </trans-unit>
+      <trans-unit id="git.title.theirs">
+        <source xml:lang="en">{0} (Theirs)</source>
+        <target state="translated">{0} (их)</target>
+      </trans-unit>
+      <trans-unit id="git.title.untracked">
+        <source xml:lang="en">{0} (Untracked)</source>
+        <target state="translated">{0} (не отслеживается)</target>
+      </trans-unit>
+      <trans-unit id="git.title.workingTree">
+        <source xml:lang="en">{0} (Working Tree)</source>
+        <target state="translated">{0} (рабочее дерево)</target>
+      </trans-unit>
+      <trans-unit id="huge">
+        <source xml:lang="en">The git repository at '{0}' has too many active changes, only a subset of Git features will be enabled.</source>
+        <target state="translated">Репозиторий git в '{0}' имеет очень много активных изменений, только часть функций Git будет доступна.</target>
+      </trans-unit>
+      <trans-unit id="ignored">
+        <source xml:lang="en">Ignored</source>
+        <target state="translated">Проигнорировано</target>
+      </trans-unit>
+      <trans-unit id="index added">
+        <source xml:lang="en">Index Added</source>
+        <target state="translated">Добавлено в индексе</target>
+      </trans-unit>
+      <trans-unit id="index copied">
+        <source xml:lang="en">Index Copied</source>
+        <target state="translated">Скопировано в индексе</target>
+      </trans-unit>
+      <trans-unit id="index deleted">
+        <source xml:lang="en">Index Deleted</source>
+        <target state="translated">Удалено в индексе</target>
+      </trans-unit>
+      <trans-unit id="index modified">
+        <source xml:lang="en">Index Modified</source>
+        <target state="translated">Изменено в индексе</target>
+      </trans-unit>
+      <trans-unit id="index renamed">
+        <source xml:lang="en">Index Renamed</source>
+        <target state="translated">Переименовано в индексе</target>
+      </trans-unit>
+      <trans-unit id="intent to add">
+        <source xml:lang="en">Intent to Add</source>
+        <target state="translated">Добавляемое намерение</target>
+      </trans-unit>
+      <trans-unit id="merge changes">
+        <source xml:lang="en">Merge Changes</source>
+        <target state="translated">Изменения слияния</target>
+      </trans-unit>
+      <trans-unit id="modified">
+        <source xml:lang="en">Modified</source>
+        <target state="translated">Изменен</target>
+      </trans-unit>
+      <trans-unit id="neveragain">
+        <source xml:lang="en">Don't Show Again</source>
+        <target state="translated">Больше не показывать</target>
+      </trans-unit>
+      <trans-unit id="open">
+        <source xml:lang="en">Open</source>
+        <target state="translated">Открыто</target>
+      </trans-unit>
+      <trans-unit id="pull">
+        <source xml:lang="en">Pull</source>
+        <target state="translated">Получать</target>
+      </trans-unit>
+      <trans-unit id="pull branch maybe rebased">
+        <source xml:lang="en">It looks like the current branch '{0}' might have been rebased. Are you sure you still want to pull into it?</source>
+        <target state="translated">Похоже, изменения из текущей ветви \"{0}\" перемещены в другую. Все равно выполнить в нее вытягивание?</target>
+      </trans-unit>
+      <trans-unit id="pull maybe rebased">
+        <source xml:lang="en">It looks like the current branch might have been rebased. Are you sure you still want to pull into it?</source>
+        <target state="translated">Похоже, изменения из текущей ветви перемещены в другую. Все равно выполнить в нее вытягивание?</target>
+      </trans-unit>
+      <trans-unit id="pull n">
+        <source xml:lang="en">Pull {0} commits from {1}/{2}</source>
+        <target state="translated">Вытягивание фиксаций ({0}) из {1}/{2}</target>
+      </trans-unit>
+      <trans-unit id="pull push n">
+        <source xml:lang="en">Pull {0} and push {1} commits between {2}/{3}</source>
+        <target state="translated">Вытягивание ({0}) и отправка ({1}) фиксаций между {2}/{3}</target>
+      </trans-unit>
+      <trans-unit id="push n">
+        <source xml:lang="en">Push {0} commits to {1}/{2}</source>
+        <target state="translated">Отправка фиксаций ({0}) в {1}/{2}</target>
+      </trans-unit>
+      <trans-unit id="push success">
+        <source xml:lang="en">Successfully pushed.</source>
+        <target state="translated">Отправка выполнена успешно.</target>
+      </trans-unit>
+      <trans-unit id="staged changes">
+        <source xml:lang="en">Staged Changes</source>
+        <target state="translated">Промежуточные изменения</target>
+      </trans-unit>
+      <trans-unit id="sync changes">
+        <source xml:lang="en">Synchronize Changes</source>
+        <target state="translated">Синхронизация изменений</target>
+      </trans-unit>
+      <trans-unit id="sync is unpredictable">
+        <source xml:lang="en">Syncing. Cancelling may cause serious damages to the repository</source>
+        <target state="translated">Выполняется синхронизация. Отмена может привести к серьезному повреждению репозитория</target>
+      </trans-unit>
+      <trans-unit id="untracked">
+        <source xml:lang="en">Untracked</source>
+        <target state="translated">Не отслеживается</target>
+      </trans-unit>
+      <trans-unit id="untracked changes">
+        <source xml:lang="en">Untracked Changes</source>
+        <target state="translated">Неотслеживаемые изменения</target>
+      </trans-unit>
+      <trans-unit id="yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Да</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/git/dist/statusbar" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="checkout">
+        <source xml:lang="en">Checkout branch/tag...</source>
+        <target state="translated">Извлечение ветви/тега...</target>
+      </trans-unit>
+      <trans-unit id="publish changes">
+        <source xml:lang="en">Publish Changes</source>
+        <target state="translated">Опубликовать изменения</target>
+      </trans-unit>
+      <trans-unit id="publish to">
+        <source xml:lang="en">Publish to {0}</source>
+        <target state="translated">Опубликовать в {0}</target>
+      </trans-unit>
+      <trans-unit id="publish to...">
+        <source xml:lang="en">Publish to...</source>
+        <target state="translated">Опубликовать в…</target>
+      </trans-unit>
+      <trans-unit id="rebasing">
+        <source xml:lang="en">Rebasing</source>
+        <target state="translated">Перебазирование</target>
+      </trans-unit>
+      <trans-unit id="syncing changes">
+        <source xml:lang="en">Synchronizing Changes...</source>
+        <target state="translated">Синхронизация изменений...</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/git/dist/timelineProvider" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="git.index">
+        <source xml:lang="en">Index</source>
+        <target state="translated">Индекс</target>
+      </trans-unit>
+      <trans-unit id="git.timeline.detail">
+        <source xml:lang="en">{0}  — {1}
+{2}
+
+{3}</source>
+        <target state="translated">{0}  — {1}
+{2}
+
+{3}</target>
+      </trans-unit>
+      <trans-unit id="git.timeline.source">
+        <source xml:lang="en">Git History</source>
+        <target state="translated">Журнал Git</target>
+      </trans-unit>
+      <trans-unit id="git.timeline.stagedChanges">
+        <source xml:lang="en">Staged Changes</source>
+        <target state="translated">Промежуточно сохраненные изменения</target>
+      </trans-unit>
+      <trans-unit id="git.timeline.uncommitedChanges">
+        <source xml:lang="en">Uncommitted Changes</source>
+        <target state="translated">Незафиксированные изменения</target>
+      </trans-unit>
+      <trans-unit id="git.timeline.you">
+        <source xml:lang="en">You</source>
+        <target state="translated">Вы</target>
+      </trans-unit>
+      <trans-unit id="git.workingTree">
+        <source xml:lang="en">Working Tree</source>
+        <target state="translated">Рабочее дерево</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/git/package" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="colors.added">
+        <source xml:lang="en">Color for added resources.</source>
+        <target state="translated">Цвет для добавленных ресурсов.</target>
+      </trans-unit>
+      <trans-unit id="colors.conflict">
+        <source xml:lang="en">Color for resources with conflicts.</source>
+        <target state="translated">Цвет ресурсов с конфликтами.</target>
+      </trans-unit>
+      <trans-unit id="colors.deleted">
+        <source xml:lang="en">Color for deleted resources.</source>
+        <target state="translated">Цвет удаленных ресурсов.</target>
+      </trans-unit>
+      <trans-unit id="colors.ignored">
+        <source xml:lang="en">Color for ignored resources.</source>
+        <target state="translated">Цвет игнорируемых ресурсов.</target>
+      </trans-unit>
+      <trans-unit id="colors.modified">
+        <source xml:lang="en">Color for modified resources.</source>
+        <target state="translated">Цвет измененных ресурсов.</target>
+      </trans-unit>
+      <trans-unit id="colors.renamed">
+        <source xml:lang="en">Color for renamed or copied resources.</source>
+        <target state="translated">Цвет для переименованных или скопированных ресурсов.</target>
+      </trans-unit>
+      <trans-unit id="colors.stageDeleted">
+        <source xml:lang="en">Color for deleted resources which have been staged.</source>
+        <target state="translated">Цвет для удаленных ресурсов, которые были помещены на промежуточное хранение.</target>
+      </trans-unit>
+      <trans-unit id="colors.stageModified">
+        <source xml:lang="en">Color for modified resources which have been staged.</source>
+        <target state="translated">Цвет для измененных ресурсов, которые были помещены на промежуточное хранение.</target>
+      </trans-unit>
+      <trans-unit id="colors.submodule">
+        <source xml:lang="en">Color for submodule resources.</source>
+        <target state="translated">Цвет ресурсов подмодуля.</target>
+      </trans-unit>
+      <trans-unit id="colors.untracked">
+        <source xml:lang="en">Color for untracked resources.</source>
+        <target state="translated">Цвет неотслеживаемых ресурсов.</target>
+      </trans-unit>
+      <trans-unit id="command.addRemote">
+        <source xml:lang="en">Add Remote...</source>
+        <target state="translated">Добавить удаленный репозиторий...</target>
+      </trans-unit>
+      <trans-unit id="command.branch">
+        <source xml:lang="en">Create Branch...</source>
+        <target state="translated">Создать ветвь...</target>
+      </trans-unit>
+      <trans-unit id="command.branchFrom">
+        <source xml:lang="en">Create Branch From...</source>
+        <target state="translated">Создать ветвь из...</target>
+      </trans-unit>
+      <trans-unit id="command.checkout">
+        <source xml:lang="en">Checkout to...</source>
+        <target state="translated">Извлечь в...</target>
+      </trans-unit>
+      <trans-unit id="command.checkoutDetached">
+        <source xml:lang="en">Checkout to (Detached)...</source>
+        <target state="translated">Извлечь в (отключено)...</target>
+      </trans-unit>
+      <trans-unit id="command.cherryPick">
+        <source xml:lang="en">Cherry Pick...</source>
+        <target state="translated">Выборочный отбор...</target>
+      </trans-unit>
+      <trans-unit id="command.clean">
+        <source xml:lang="en">Discard Changes</source>
+        <target state="translated">Отменить изменения</target>
+      </trans-unit>
+      <trans-unit id="command.cleanAll">
+        <source xml:lang="en">Discard All Changes</source>
+        <target state="translated">Отменить все изменения</target>
+      </trans-unit>
+      <trans-unit id="command.cleanAllTracked">
+        <source xml:lang="en">Discard All Tracked Changes</source>
+        <target state="translated">Удалить все отслеживаемые изменения</target>
+      </trans-unit>
+      <trans-unit id="command.cleanAllUntracked">
+        <source xml:lang="en">Discard All Untracked Changes</source>
+        <target state="translated">Удалить все неотслеживаемые изменения</target>
+      </trans-unit>
+      <trans-unit id="command.clone">
+        <source xml:lang="en">Clone</source>
+        <target state="translated">Клонировать</target>
+      </trans-unit>
+      <trans-unit id="command.cloneRecursive">
+        <source xml:lang="en">Clone (Recursive)</source>
+        <target state="translated">Клонировать (рекурсивно)</target>
+      </trans-unit>
+      <trans-unit id="command.close">
+        <source xml:lang="en">Close Repository</source>
+        <target state="translated">Закрыть репозиторий</target>
+      </trans-unit>
+      <trans-unit id="command.commit">
+        <source xml:lang="en">Commit</source>
+        <target state="translated">Фиксация</target>
+      </trans-unit>
+      <trans-unit id="command.commitAll">
+        <source xml:lang="en">Commit All</source>
+        <target state="translated">Зафиксировать все</target>
+      </trans-unit>
+      <trans-unit id="command.commitAllAmend">
+        <source xml:lang="en">Commit All (Amend)</source>
+        <target state="translated">Зафиксировать все (изменение)</target>
+      </trans-unit>
+      <trans-unit id="command.commitAllAmendNoVerify">
+        <source xml:lang="en">Commit All (Amend, No Verify)</source>
+        <target state="translated">Зафиксировать все (исправить, без проверки)</target>
+      </trans-unit>
+      <trans-unit id="command.commitAllNoVerify">
+        <source xml:lang="en">Commit All (No Verify)</source>
+        <target state="translated">Зафиксировать все (без проверки)</target>
+      </trans-unit>
+      <trans-unit id="command.commitAllSigned">
+        <source xml:lang="en">Commit All (Signed Off)</source>
+        <target state="translated">Зафиксировать все (завершено)</target>
+      </trans-unit>
+      <trans-unit id="command.commitAllSignedNoVerify">
+        <source xml:lang="en">Commit All (Signed Off, No Verify)</source>
+        <target state="translated">Зафиксировать все (завершено, без проверки)</target>
+      </trans-unit>
+      <trans-unit id="command.commitEmpty">
+        <source xml:lang="en">Commit Empty</source>
+        <target state="translated">Отправить пустую фиксацию</target>
+      </trans-unit>
+      <trans-unit id="command.commitEmptyNoVerify">
+        <source xml:lang="en">Commit Empty (No Verify)</source>
+        <target state="translated">Зафиксировать пустые (без проверки)</target>
+      </trans-unit>
+      <trans-unit id="command.commitNoVerify">
+        <source xml:lang="en">Commit (No Verify)</source>
+        <target state="translated">Зафиксировать (без проверки)</target>
+      </trans-unit>
+      <trans-unit id="command.commitStaged">
+        <source xml:lang="en">Commit Staged</source>
+        <target state="translated">Зафиксировать промежуточно сохраненные изменения</target>
+      </trans-unit>
+      <trans-unit id="command.commitStagedAmend">
+        <source xml:lang="en">Commit Staged (Amend)</source>
+        <target state="translated">Зафиксировать промежуточные (изменение)</target>
+      </trans-unit>
+      <trans-unit id="command.commitStagedAmendNoVerify">
+        <source xml:lang="en">Commit Staged (Amend, No Verify)</source>
+        <target state="translated">Зафиксировать промежуточные (исправить, без проверки)</target>
+      </trans-unit>
+      <trans-unit id="command.commitStagedNoVerify">
+        <source xml:lang="en">Commit Staged (No Verify)</source>
+        <target state="translated">Зафиксировать промежуточные (без проверки)</target>
+      </trans-unit>
+      <trans-unit id="command.commitStagedSigned">
+        <source xml:lang="en">Commit Staged (Signed Off)</source>
+        <target state="translated">Зафиксировать промежуточные элементы (завершено)</target>
+      </trans-unit>
+      <trans-unit id="command.commitStagedSignedNoVerify">
+        <source xml:lang="en">Commit Staged (Signed Off, No Verify)</source>
+        <target state="translated">Зафиксировать промежуточные (завершено, без проверки)</target>
+      </trans-unit>
+      <trans-unit id="command.createTag">
+        <source xml:lang="en">Create Tag</source>
+        <target state="translated">Создать Тег</target>
+      </trans-unit>
+      <trans-unit id="command.deleteBranch">
+        <source xml:lang="en">Delete Branch...</source>
+        <target state="translated">Удалить ветвь...</target>
+      </trans-unit>
+      <trans-unit id="command.deleteTag">
+        <source xml:lang="en">Delete Tag</source>
+        <target state="translated">Удалить тег</target>
+      </trans-unit>
+      <trans-unit id="command.fetch">
+        <source xml:lang="en">Fetch</source>
+        <target state="translated">Забрать</target>
+      </trans-unit>
+      <trans-unit id="command.fetchAll">
+        <source xml:lang="en">Fetch From All Remotes</source>
+        <target state="translated">Забрать из всех удаленных репозиториев</target>
+      </trans-unit>
+      <trans-unit id="command.fetchPrune">
+        <source xml:lang="en">Fetch (Prune)</source>
+        <target state="translated">Получение (с обрезкой)</target>
+      </trans-unit>
+      <trans-unit id="command.ignore">
+        <source xml:lang="en">Add to .gitignore</source>
+        <target state="translated">Добавить в GITIGNORE</target>
+      </trans-unit>
+      <trans-unit id="command.init">
+        <source xml:lang="en">Initialize Repository</source>
+        <target state="translated">Инициализировать репозиторий</target>
+      </trans-unit>
+      <trans-unit id="command.merge">
+        <source xml:lang="en">Merge Branch...</source>
+        <target state="translated">Объединить ветвь...</target>
+      </trans-unit>
+      <trans-unit id="command.openAllChanges">
+        <source xml:lang="en">Open All Changes</source>
+        <target state="translated">Открыть все изменения</target>
+      </trans-unit>
+      <trans-unit id="command.openChange">
+        <source xml:lang="en">Open Changes</source>
+        <target state="translated">Открыть изменения</target>
+      </trans-unit>
+      <trans-unit id="command.openFile">
+        <source xml:lang="en">Open File</source>
+        <target state="translated">Открыть файл</target>
+      </trans-unit>
+      <trans-unit id="command.openHEADFile">
+        <source xml:lang="en">Open File (HEAD)</source>
+        <target state="translated">Открыть файл (HEAD)</target>
+      </trans-unit>
+      <trans-unit id="command.openRepository">
+        <source xml:lang="en">Open Repository</source>
+        <target state="translated">Открыть репозиторий</target>
+      </trans-unit>
+      <trans-unit id="command.publish">
+        <source xml:lang="en">Publish Branch...</source>
+        <target state="translated">Опубликовать ветвь...</target>
+      </trans-unit>
+      <trans-unit id="command.pull">
+        <source xml:lang="en">Pull</source>
+        <target state="translated">Получить</target>
+      </trans-unit>
+      <trans-unit id="command.pullFrom">
+        <source xml:lang="en">Pull from...</source>
+        <target state="translated">Получить из...</target>
+      </trans-unit>
+      <trans-unit id="command.pullRebase">
+        <source xml:lang="en">Pull (Rebase)</source>
+        <target state="translated">Получить (переместить изменения из одной ветви в другую)</target>
+      </trans-unit>
+      <trans-unit id="command.push">
+        <source xml:lang="en">Push</source>
+        <target state="translated">Отправить</target>
+      </trans-unit>
+      <trans-unit id="command.pushFollowTags">
+        <source xml:lang="en">Push (Follow Tags)</source>
+        <target state="translated">Отправить (подписаться на теги)</target>
+      </trans-unit>
+      <trans-unit id="command.pushFollowTagsForce">
+        <source xml:lang="en">Push (Follow Tags, Force)</source>
+        <target state="translated">Отправить (подписаться на теги, принудительно)</target>
+      </trans-unit>
+      <trans-unit id="command.pushForce">
+        <source xml:lang="en">Push (Force)</source>
+        <target state="translated">Отправить (принудительно)</target>
+      </trans-unit>
+      <trans-unit id="command.pushTags">
+        <source xml:lang="en">Push Tags</source>
+        <target state="translated">Отправить теги</target>
+      </trans-unit>
+      <trans-unit id="command.pushTo">
+        <source xml:lang="en">Push to...</source>
+        <target state="translated">Отправить в:</target>
+      </trans-unit>
+      <trans-unit id="command.pushToForce">
+        <source xml:lang="en">Push to... (Force)</source>
+        <target state="translated">Отправить в... (принудительно)</target>
+      </trans-unit>
+      <trans-unit id="command.rebase">
+        <source xml:lang="en">Rebase Branch...</source>
+        <target state="translated">Перемещение изменений из одной ветви в другую…</target>
+      </trans-unit>
+      <trans-unit id="command.rebaseAbort">
+        <source xml:lang="en">Abort Rebase</source>
+        <target state="translated">Прервать перемещение изменений из одной ветви в другую</target>
+      </trans-unit>
+      <trans-unit id="command.refresh">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">Обновить</target>
+      </trans-unit>
+      <trans-unit id="command.removeRemote">
+        <source xml:lang="en">Remove Remote</source>
+        <target state="translated">Удалить удаленный репозиторий</target>
+      </trans-unit>
+      <trans-unit id="command.rename">
+        <source xml:lang="en">Rename</source>
+        <target state="translated">Переименование</target>
+      </trans-unit>
+      <trans-unit id="command.renameBranch">
+        <source xml:lang="en">Rename Branch...</source>
+        <target state="translated">Переименовать ветвь...</target>
+      </trans-unit>
+      <trans-unit id="command.restoreCommitTemplate">
+        <source xml:lang="en">Restore Commit Template</source>
+        <target state="translated">Восстановить шаблон коммита</target>
+      </trans-unit>
+      <trans-unit id="command.revealInExplorer">
+        <source xml:lang="en">Reveal in Side Bar</source>
+        <target state="translated">Показать в боковой панели</target>
+      </trans-unit>
+      <trans-unit id="command.revertChange">
+        <source xml:lang="en">Revert Change</source>
+        <target state="translated">Обратить изменение</target>
+      </trans-unit>
+      <trans-unit id="command.revertSelectedRanges">
+        <source xml:lang="en">Revert Selected Ranges</source>
+        <target state="translated">Обратить выбранные диапазоны</target>
+      </trans-unit>
+      <trans-unit id="command.setLogLevel">
+        <source xml:lang="en">Set Log Level...</source>
+        <target state="translated">Установите уровень ведения журнала...</target>
+      </trans-unit>
+      <trans-unit id="command.showOutput">
+        <source xml:lang="en">Show Git Output</source>
+        <target state="translated">Показать выходные данные GIT</target>
+      </trans-unit>
+      <trans-unit id="command.stage">
+        <source xml:lang="en">Stage Changes</source>
+        <target state="translated">Индексировать изменения</target>
+      </trans-unit>
+      <trans-unit id="command.stageAll">
+        <source xml:lang="en">Stage All Changes</source>
+        <target state="translated">Хранить все промежуточные изменения</target>
+      </trans-unit>
+      <trans-unit id="command.stageAllMerge">
+        <source xml:lang="en">Stage All Merge Changes</source>
+        <target state="translated">Хранить все изменения слияния</target>
+      </trans-unit>
+      <trans-unit id="command.stageAllTracked">
+        <source xml:lang="en">Stage All Tracked Changes</source>
+        <target state="translated">Подготовить все отслеживаемые изменения</target>
+      </trans-unit>
+      <trans-unit id="command.stageAllUntracked">
+        <source xml:lang="en">Stage All Untracked Changes</source>
+        <target state="translated">Подготовить все неотслеживаемые изменения</target>
+      </trans-unit>
+      <trans-unit id="command.stageChange">
+        <source xml:lang="en">Stage Change</source>
+        <target state="translated">Изменение стадии</target>
+      </trans-unit>
+      <trans-unit id="command.stageSelectedRanges">
+        <source xml:lang="en">Stage Selected Ranges</source>
+        <target state="translated">Индексировать выбранные диапазоны</target>
+      </trans-unit>
+      <trans-unit id="command.stash">
+        <source xml:lang="en">Stash</source>
+        <target state="translated">Спрятать</target>
+      </trans-unit>
+      <trans-unit id="command.stashApply">
+        <source xml:lang="en">Apply Stash...</source>
+        <target state="translated">Применить спрятанное...</target>
+      </trans-unit>
+      <trans-unit id="command.stashApplyLatest">
+        <source xml:lang="en">Apply Latest Stash</source>
+        <target state="translated">Применить последнее спрятанное</target>
+      </trans-unit>
+      <trans-unit id="command.stashDrop">
+        <source xml:lang="en">Drop Stash...</source>
+        <target state="translated">Удалить спрятанные данные...</target>
+      </trans-unit>
+      <trans-unit id="command.stashIncludeUntracked">
+        <source xml:lang="en">Stash (Include Untracked)</source>
+        <target state="translated">Спрятать (включить неотслеживаемые)</target>
+      </trans-unit>
+      <trans-unit id="command.stashPop">
+        <source xml:lang="en">Pop Stash...</source>
+        <target state="translated">Извлечь спрятанное</target>
+      </trans-unit>
+      <trans-unit id="command.stashPopLatest">
+        <source xml:lang="en">Pop Latest Stash</source>
+        <target state="translated">Извлечь последнее спрятанное</target>
+      </trans-unit>
+      <trans-unit id="command.sync">
+        <source xml:lang="en">Sync</source>
+        <target state="translated">Синхронизация</target>
+      </trans-unit>
+      <trans-unit id="command.syncRebase">
+        <source xml:lang="en">Sync (Rebase)</source>
+        <target state="translated">Синхронизация (с перебазированием)</target>
+      </trans-unit>
+      <trans-unit id="command.timelineCompareWithSelected">
+        <source xml:lang="en">Compare with Selected</source>
+        <target state="translated">Сравнить с выбранным</target>
+      </trans-unit>
+      <trans-unit id="command.timelineCopyCommitId">
+        <source xml:lang="en">Copy Commit ID</source>
+        <target state="translated">Копировать идентификатор фиксации</target>
+      </trans-unit>
+      <trans-unit id="command.timelineCopyCommitMessage">
+        <source xml:lang="en">Copy Commit Message</source>
+        <target state="translated">Копировать сообщение фиксации</target>
+      </trans-unit>
+      <trans-unit id="command.timelineOpenDiff">
+        <source xml:lang="en">Open Changes</source>
+        <target state="translated">Открыть изменения</target>
+      </trans-unit>
+      <trans-unit id="command.timelineSelectForCompare">
+        <source xml:lang="en">Select for Compare</source>
+        <target state="translated">Выбрать для сравнения</target>
+      </trans-unit>
+      <trans-unit id="command.undoCommit">
+        <source xml:lang="en">Undo Last Commit</source>
+        <target state="translated">Отменить последнюю фиксацию</target>
+      </trans-unit>
+      <trans-unit id="command.unstage">
+        <source xml:lang="en">Unstage Changes</source>
+        <target state="translated">Отменить промежуточное изменение</target>
+      </trans-unit>
+      <trans-unit id="command.unstageAll">
+        <source xml:lang="en">Unstage All Changes</source>
+        <target state="translated">Отменить все промежуточные изменения</target>
+      </trans-unit>
+      <trans-unit id="command.unstageSelectedRanges">
+        <source xml:lang="en">Unstage Selected Ranges</source>
+        <target state="translated">Отменить индексацию выбранных диапазонов</target>
+      </trans-unit>
+      <trans-unit id="config.allowForcePush">
+        <source xml:lang="en">Controls whether force push (with or without lease) is enabled.</source>
+        <target state="translated">Определяет, будет ли применяться принудительная отправка (с арендой или без).</target>
+      </trans-unit>
+      <trans-unit id="config.allowNoVerifyCommit">
+        <source xml:lang="en">Controls whether commits without running pre-commit and commit-msg hooks are allowed.</source>
+        <target state="translated">Определяет, разрешены ли фиксации без выполнения обработчиков, запускаемых перед фиксацией, и обработчиков сообщений фиксации.</target>
+      </trans-unit>
+      <trans-unit id="config.alwaysShowStagedChangesResourceGroup">
+        <source xml:lang="en">Always show the Staged Changes resource group.</source>
+        <target state="translated">Всегда показывать группу ресурсов \"Изменения в индексе\".</target>
+      </trans-unit>
+      <trans-unit id="config.alwaysSignOff">
+        <source xml:lang="en">Controls the signoff flag for all commits.</source>
+        <target state="translated">Управляет флагом одобрения (signoff) для всех создаваемых коммитов.</target>
+      </trans-unit>
+      <trans-unit id="config.autoRepositoryDetection">
+        <source xml:lang="en">Configures when repositories should be automatically detected.</source>
+        <target state="translated">Определяет, как автоматически обнаруживать репозитории.</target>
+      </trans-unit>
+      <trans-unit id="config.autoRepositoryDetection.false">
+        <source xml:lang="en">Disable automatic repository scanning.</source>
+        <target state="translated">Отключить автоматический поиск репозиториев.</target>
+      </trans-unit>
+      <trans-unit id="config.autoRepositoryDetection.openEditors">
+        <source xml:lang="en">Scan for parent folders of open files.</source>
+        <target state="translated">Сканировать родительские папки открытых файлов.</target>
+      </trans-unit>
+      <trans-unit id="config.autoRepositoryDetection.subFolders">
+        <source xml:lang="en">Scan for subfolders of the currently opened folder.</source>
+        <target state="translated">Сканировать подпапки для текущей открытой папки.</target>
+      </trans-unit>
+      <trans-unit id="config.autoRepositoryDetection.true">
+        <source xml:lang="en">Scan for both subfolders of the current opened folder and parent folders of open files.</source>
+        <target state="translated">Сканировать подпапки для текущей открытой папки и родительские папки открытых файлов.</target>
+      </trans-unit>
+      <trans-unit id="config.autoStash">
+        <source xml:lang="en">Stash any changes before pulling and restore them after successful pull.</source>
+        <target state="translated">Прятать все изменения перед вытягиванием и восстанавливать их после успешного вытягивания.</target>
+      </trans-unit>
+      <trans-unit id="config.autofetch">
+        <source xml:lang="en">When set to true, commits will automatically be fetched from the default remote of the current Git repository. Setting to `all` will fetch from all remotes.</source>
+        <target state="translated">Если задано значение true, фиксации будут автоматически извлекаться из удаленного репозитория по умолчанию для текущего репозитория Git. Если задано значение all, фиксации будут извлекаться из всех удаленных репозиториев.</target>
+      </trans-unit>
+      <trans-unit id="config.autofetchPeriod">
+        <source xml:lang="en">Duration in seconds between each automatic git fetch, when `#git.autofetch#` is enabled.</source>
+        <target state="translated">Длительность в секундах между автоматическими извлечениями из git, если включен параметр \"#git.autofetch#\".</target>
+      </trans-unit>
+      <trans-unit id="config.autorefresh">
+        <source xml:lang="en">Whether auto refreshing is enabled.</source>
+        <target state="translated">Включено ли автоматическое обновление.</target>
+      </trans-unit>
+      <trans-unit id="config.branchSortOrder">
+        <source xml:lang="en">Controls the sort order for branches.</source>
+        <target state="translated">Управляет порядком сортировки ветвей.</target>
+      </trans-unit>
+      <trans-unit id="config.branchValidationRegex">
+        <source xml:lang="en">A regular expression to validate new branch names.</source>
+        <target state="translated">Регулярное выражение для проверки новых имен ветвей.</target>
+      </trans-unit>
+      <trans-unit id="config.branchWhitespaceChar">
+        <source xml:lang="en">The character to replace whitespace in new branch names.</source>
+        <target state="translated">Символ, которым будут заменены пробелы в новых именах ветвей.</target>
+      </trans-unit>
+      <trans-unit id="config.checkoutType">
+        <source xml:lang="en">Controls what type of git refs are listed when running `Checkout to...`.</source>
+        <target state="translated">Определяет, какие типы ссылок на GIT отображаются в списке при выполнении команды \"Извлечь в...\".</target>
+      </trans-unit>
+      <trans-unit id="config.checkoutType.local">
+        <source xml:lang="en">Local branches</source>
+        <target state="translated">Локальные ветви</target>
+      </trans-unit>
+      <trans-unit id="config.checkoutType.remote">
+        <source xml:lang="en">Remote branches</source>
+        <target state="translated">Удаленные ветви</target>
+      </trans-unit>
+      <trans-unit id="config.checkoutType.tags">
+        <source xml:lang="en">Tags</source>
+        <target state="translated">Теги</target>
+      </trans-unit>
+      <trans-unit id="config.confirmEmptyCommits">
+        <source xml:lang="en">Always confirm the creation of empty commits for the 'Git: Commit Empty' command.</source>
+        <target state="translated">Всегда подтверждайте создание пустых фиксаций для команды \"Git: Пустая фиксация\".</target>
+      </trans-unit>
+      <trans-unit id="config.confirmForcePush">
+        <source xml:lang="en">Controls whether to ask for confirmation before force-pushing.</source>
+        <target state="translated">Определяет, следует ли спрашивать подтверждение перед принудительной отправкой.</target>
+      </trans-unit>
+      <trans-unit id="config.confirmNoVerifyCommit">
+        <source xml:lang="en">Controls whether to ask for confirmation before committing without verification.</source>
+        <target state="translated">Определяет, следует ли запрашивать подтверждение перед фиксацией без проверки.</target>
+      </trans-unit>
+      <trans-unit id="config.confirmSync">
+        <source xml:lang="en">Confirm before synchronizing git repositories.</source>
+        <target state="translated">Подтвердите синхронизацию репозиториев Git.</target>
+      </trans-unit>
+      <trans-unit id="config.countBadge">
+        <source xml:lang="en">Controls the Git count badge.</source>
+        <target state="translated">Определяет индикатор событий Git.</target>
+      </trans-unit>
+      <trans-unit id="config.countBadge.all">
+        <source xml:lang="en">Count all changes.</source>
+        <target state="translated">Учитывать все изменения.</target>
+      </trans-unit>
+      <trans-unit id="config.countBadge.off">
+        <source xml:lang="en">Turn off counter.</source>
+        <target state="translated">Отключить счетчик.</target>
+      </trans-unit>
+      <trans-unit id="config.countBadge.tracked">
+        <source xml:lang="en">Count only tracked changes.</source>
+        <target state="translated">Учитывать только отслеживаемые изменения.</target>
+      </trans-unit>
+      <trans-unit id="config.decorations.enabled">
+        <source xml:lang="en">Controls whether Git contributes colors and badges to the Explorer and the Open Editors view.</source>
+        <target state="translated">Управляет тем, используются ли цвета и эмблемы Git в Проводнике и в представлении открытых редакторов.</target>
+      </trans-unit>
+      <trans-unit id="config.defaultCloneDirectory">
+        <source xml:lang="en">The default location to clone a git repository.</source>
+        <target state="translated">Расположение по умолчанию, в которое будет клонирован репозиторий Git.</target>
+      </trans-unit>
+      <trans-unit id="config.detectSubmodules">
+        <source xml:lang="en">Controls whether to automatically detect git submodules.</source>
+        <target state="translated">Определяет, следует ли автоматически определять подмодули Git.</target>
+      </trans-unit>
+      <trans-unit id="config.detectSubmodulesLimit">
+        <source xml:lang="en">Controls the limit of git submodules detected.</source>
+        <target state="translated">Управляет ограничением на количество обнаруженных подмодулей Git.</target>
+      </trans-unit>
+      <trans-unit id="config.discardAllScope">
+        <source xml:lang="en">Controls what changes are discarded by the `Discard all changes` command. `all` discards all changes. `tracked` discards only tracked files. `prompt` shows a prompt dialog every time the action is run.</source>
+        <target state="translated">Определяет, какие изменения отменяются с помощью команды `Отменить все изменения`. При значении `all` отменяются все изменения, при значении `tracked` отменяются изменения только в отслеживаемых файлах, при значении `prompt` выдается запрос подтверждения каждый раз при выполнении действия.</target>
+      </trans-unit>
+      <trans-unit id="config.enableCommitSigning">
+        <source xml:lang="en">Enables commit signing with GPG or X.509.</source>
+        <target state="translated">Разрешает подписывание фиксаций с использованием GPG или X.509.</target>
+      </trans-unit>
+      <trans-unit id="config.enableSmartCommit">
+        <source xml:lang="en">Commit all changes when there are no staged changes.</source>
+        <target state="translated">Делать коммит из всех изменений, когда нет изменений в индексе.</target>
+      </trans-unit>
+      <trans-unit id="config.enableStatusBarSync">
+        <source xml:lang="en">Controls whether the Git Sync command appears in the status bar.</source>
+        <target state="translated">Определяет, отображается ли команда синхронизации Git в строке состояния.</target>
+      </trans-unit>
+      <trans-unit id="config.enabled">
+        <source xml:lang="en">Whether git is enabled.</source>
+        <target state="translated">Определяет, включен ли git.</target>
+      </trans-unit>
+      <trans-unit id="config.fetchOnPull">
+        <source xml:lang="en">When enabled, fetch all branches when pulling. Otherwise, fetch just the current one.</source>
+        <target state="translated">Если параметр включен, то при вытягивании получаются все ветви. В противном случае получается только текущая ветвь.</target>
+      </trans-unit>
+      <trans-unit id="config.followTagsWhenSync">
+        <source xml:lang="en">Follow push all tags when running the sync command.</source>
+        <target state="translated">Отправка всех тегов при выполнении команды синхронизации.</target>
+      </trans-unit>
+      <trans-unit id="config.ignoreLegacyWarning">
+        <source xml:lang="en">Ignores the legacy Git warning.</source>
+        <target state="translated">Игнорирует предупреждение об устаревшей версии Git.</target>
+      </trans-unit>
+      <trans-unit id="config.ignoreLimitWarning">
+        <source xml:lang="en">Ignores the warning when there are too many changes in a repository.</source>
+        <target state="translated">Игнорирует предупреждение о том, что в репозитории слишком много изменений.</target>
+      </trans-unit>
+      <trans-unit id="config.ignoreMissingGitWarning">
+        <source xml:lang="en">Ignores the warning when Git is missing.</source>
+        <target state="translated">Игнорирует предупреждение об отсутствии Git.</target>
+      </trans-unit>
+      <trans-unit id="config.ignoreRebaseWarning">
+        <source xml:lang="en">Ignores the warning when it looks like the branch might have been rebased when pulling.</source>
+        <target state="translated">Пропускает предупреждение, если изменения ветви могли быть перемещены в другую ветвь при получении.</target>
+      </trans-unit>
+      <trans-unit id="config.ignoreSubmodules">
+        <source xml:lang="en">Ignore modifications to submodules in the file tree.</source>
+        <target state="translated">Игнорировать изменения подмодулей в дереве файлов.</target>
+      </trans-unit>
+      <trans-unit id="config.ignoreWindowsGit27Warning">
+        <source xml:lang="en">Ignores the warning when Git 2.25 - 2.26 is installed on Windows.</source>
+        <target state="translated">Игнорирует предупреждение, если в Windows установлен Git версий 2.25–2.26.</target>
+      </trans-unit>
+      <trans-unit id="config.ignoredRepositories">
+        <source xml:lang="en">List of git repositories to ignore.</source>
+        <target state="translated">Список репозиториев Git, которые будут проигнорированы.</target>
+      </trans-unit>
+      <trans-unit id="config.inputValidation">
+        <source xml:lang="en">Controls when to show commit message input validation.</source>
+        <target state="translated">Определяет, как производить проверку введенного сообщения коммита.</target>
+      </trans-unit>
+      <trans-unit id="config.inputValidationLength">
+        <source xml:lang="en">Controls the commit message length threshold for showing a warning.</source>
+        <target state="translated">Определяет максимальную длину сообщения коммита, при превышении которой будет выдано предупреждение.</target>
+      </trans-unit>
+      <trans-unit id="config.inputValidationSubjectLength">
+        <source xml:lang="en">Controls the commit message subject length threshold for showing a warning. Unset it to inherit the value of `config.inputValidationLength`.</source>
+        <target state="translated">Управляет максимальной допустимой длиной темы сообщения фиксации, при превышении которой будет выдано предупреждение. Удалите это значение, чтобы использовалось значение параметра \"config.inputValidationLength\".</target>
+      </trans-unit>
+      <trans-unit id="config.openAfterClone">
+        <source xml:lang="en">Controls whether to open a repository automatically after cloning.</source>
+        <target state="translated">Определяет, следует ли автоматически открывать репозиторий после клонирования.</target>
+      </trans-unit>
+      <trans-unit id="config.openAfterClone.always">
+        <source xml:lang="en">Always open in current window.</source>
+        <target state="translated">Всегда открывать в текущем окне.</target>
+      </trans-unit>
+      <trans-unit id="config.openAfterClone.alwaysNewWindow">
+        <source xml:lang="en">Always open in a new window.</source>
+        <target state="translated">Всегда открывать в новом окне.</target>
+      </trans-unit>
+      <trans-unit id="config.openAfterClone.prompt">
+        <source xml:lang="en">Always prompt for action.</source>
+        <target state="translated">Всегда запрашивать действие.</target>
+      </trans-unit>
+      <trans-unit id="config.openAfterClone.whenNoFolderOpen">
+        <source xml:lang="en">Only open in current window when no folder is opened.</source>
+        <target state="translated">Открывать в текущем окне только при отсутствии открытых папок.</target>
+      </trans-unit>
+      <trans-unit id="config.openDiffOnClick">
+        <source xml:lang="en">Controls whether the diff editor should be opened when clicking a change. Otherwise the regular editor will be opened.</source>
+        <target state="translated">Управляет тем, следует ли открыть редактор несовпадений при щелчке по изменению. Если этот параметр не установлен, будет открыт обычный редактор.</target>
+      </trans-unit>
+      <trans-unit id="config.path">
+        <source xml:lang="en">Path and filename of the git executable, e.g. `C:\Program Files\Git\bin\git.exe` (Windows). This can also be an array of string values containing multiple paths to look up.</source>
+        <target state="translated">Путь и имя исполняемого файла Git, например, \"C:\Program Files\Git\bin\git.exe\" (Windows). Это также может быть массив строковых значений, содержащий несколько путей для поиска.</target>
+      </trans-unit>
+      <trans-unit id="config.postCommitCommand">
+        <source xml:lang="en">Runs a git command after a successful commit.</source>
+        <target state="translated">Запускает команду git после успешной фиксации.</target>
+      </trans-unit>
+      <trans-unit id="config.postCommitCommand.none">
+        <source xml:lang="en">Don't run any command after a commit.</source>
+        <target state="translated">Не выполнять никаких команд после успешной фиксации.</target>
+      </trans-unit>
+      <trans-unit id="config.postCommitCommand.push">
+        <source xml:lang="en">Run 'Git Push' after a successful commit.</source>
+        <target state="translated">Выполните \"Git Push\" после успешной фиксации.</target>
+      </trans-unit>
+      <trans-unit id="config.postCommitCommand.sync">
+        <source xml:lang="en">Run 'Git Sync' after a successful commit.</source>
+        <target state="translated">Выполните \"Git Sync\" после успешной фиксации.</target>
+      </trans-unit>
+      <trans-unit id="config.promptToSaveFilesBeforeCommit">
+        <source xml:lang="en">Controls whether Git should check for unsaved files before committing.</source>
+        <target state="translated">Определяет, должен ли Git проверять несохраненные файлы перед фиксацией.</target>
+      </trans-unit>
+      <trans-unit id="config.promptToSaveFilesBeforeCommit.always">
+        <source xml:lang="en">Check for any unsaved files.</source>
+        <target state="translated">Проверить наличие несохраненных файлов.</target>
+      </trans-unit>
+      <trans-unit id="config.promptToSaveFilesBeforeCommit.never">
+        <source xml:lang="en">Disable this check.</source>
+        <target state="translated">Отключите эту проверку.</target>
+      </trans-unit>
+      <trans-unit id="config.promptToSaveFilesBeforeCommit.staged">
+        <source xml:lang="en">Check only for unsaved staged files.</source>
+        <target state="translated">Проверять только наличие несохраненных промежуточных файлов.</target>
+      </trans-unit>
+      <trans-unit id="config.promptToSaveFilesBeforeStash">
+        <source xml:lang="en">Controls whether Git should check for unsaved files before stashing changes.</source>
+        <target state="translated">Определяет, должен ли GIT проверять несохраненные файлы прежде чем прятать изменения.</target>
+      </trans-unit>
+      <trans-unit id="config.promptToSaveFilesBeforeStash.always">
+        <source xml:lang="en">Check for any unsaved files.</source>
+        <target state="translated">Проверить наличие несохраненных файлов.</target>
+      </trans-unit>
+      <trans-unit id="config.promptToSaveFilesBeforeStash.never">
+        <source xml:lang="en">Disable this check.</source>
+        <target state="translated">Отключение этой проверки.</target>
+      </trans-unit>
+      <trans-unit id="config.promptToSaveFilesBeforeStash.staged">
+        <source xml:lang="en">Check only for unsaved staged files.</source>
+        <target state="translated">Проверять только наличие несохраненных промежуточных файлов.</target>
+      </trans-unit>
+      <trans-unit id="config.pruneOnFetch">
+        <source xml:lang="en">Prune when fetching.</source>
+        <target state="translated">Урезать при извлечении.</target>
+      </trans-unit>
+      <trans-unit id="config.pullTags">
+        <source xml:lang="en">Fetch all tags when pulling.</source>
+        <target state="translated">Получить все теги при извлечении.</target>
+      </trans-unit>
+      <trans-unit id="config.rebaseWhenSync">
+        <source xml:lang="en">Force git to use rebase when running the sync command.</source>
+        <target state="translated">Принудительно использовать перемещение изменений из одной ветви в другую вместо слияния при запуске команды sync в Git.</target>
+      </trans-unit>
+      <trans-unit id="config.requireGitUserConfig">
+        <source xml:lang="en">Controls whether to require explicit Git user configuration or allow Git to guess if missing.</source>
+        <target state="translated">Позволяет определить, требовать ли явной настройки пользователя Git или разрешить Git использовать предположения, если пользователь не указан.</target>
+      </trans-unit>
+      <trans-unit id="config.scanRepositories">
+        <source xml:lang="en">List of paths to search for git repositories in.</source>
+        <target state="translated">Список путей для поиска репозиториев Git.</target>
+      </trans-unit>
+      <trans-unit id="config.showCommitInput">
+        <source xml:lang="en">Controls whether to show the commit input in the Git source control panel.</source>
+        <target state="translated">Определяет, отображаются ли входные данные фиксации на панели управления исходным кодом Git.</target>
+      </trans-unit>
+      <trans-unit id="config.showInlineOpenFileAction">
+        <source xml:lang="en">Controls whether to show an inline Open File action in the Git changes view.</source>
+        <target state="translated">Определяет, должно ли отображаться интерактивное действие \"Открыть файл\" в представлении \"Изменения Git\".</target>
+      </trans-unit>
+      <trans-unit id="config.showProgress">
+        <source xml:lang="en">Controls whether git actions should show progress.</source>
+        <target state="translated">Определяет, следует ли отображать ход выполнения для действий Git.</target>
+      </trans-unit>
+      <trans-unit id="config.showPushSuccessNotification">
+        <source xml:lang="en">Controls whether to show a notification when a push is successful.</source>
+        <target state="translated">Определяет, следует ли отображать уведомление об успешной отправке.</target>
+      </trans-unit>
+      <trans-unit id="config.smartCommitChanges">
+        <source xml:lang="en">Control which changes are automatically staged by Smart Commit.</source>
+        <target state="translated">Определяет, какие изменения автоматически размещаются при интеллектуальной фиксации.</target>
+      </trans-unit>
+      <trans-unit id="config.smartCommitChanges.all">
+        <source xml:lang="en">Automatically stage all changes.</source>
+        <target state="translated">Автоматически размещать все изменения.</target>
+      </trans-unit>
+      <trans-unit id="config.smartCommitChanges.tracked">
+        <source xml:lang="en">Automatically stage tracked changes only.</source>
+        <target state="translated">Только автоматически размещенные отслеживаемые изменения.</target>
+      </trans-unit>
+      <trans-unit id="config.suggestSmartCommit">
+        <source xml:lang="en">Suggests to enable smart commit (commit all changes when there are no staged changes).</source>
+        <target state="translated">Предлагает включить интеллектуальную фиксацию (отправка всех изменений даже при отсутствии промежуточных изменений).</target>
+      </trans-unit>
+      <trans-unit id="config.supportCancellation">
+        <source xml:lang="en">Controls whether a notification comes up when running the Sync action, which allows the user to cancel the operation.</source>
+        <target state="translated">Определяет, выдается ли уведомление при запуске действия синхронизации. Это уведомление позволяет пользователю отменить операцию.</target>
+      </trans-unit>
+      <trans-unit id="config.terminalAuthentication">
+        <source xml:lang="en">Controls whether to enable Azure Data Studio to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</source>
+        <target state="translated">Определяет, следует ли включить Azure Data Studio в качестве обработчика проверки подлинности для процессов Git, порожденных во встроенном терминале. Примечание. Для получения изменения в этом параметре необходимо перезапустить терминалы.</target>
+      </trans-unit>
+      <trans-unit id="config.timeline.date">
+        <source xml:lang="en">Controls which date to use for items in the Timeline view.</source>
+        <target state="translated">Определяет, какую дату использовать для элементов в представлении временной шкалы.</target>
+      </trans-unit>
+      <trans-unit id="config.timeline.date.authored">
+        <source xml:lang="en">Use the authored date</source>
+        <target state="translated">Использовать дату создания</target>
+      </trans-unit>
+      <trans-unit id="config.timeline.date.committed">
+        <source xml:lang="en">Use the committed date</source>
+        <target state="translated">Использовать дату фиксации</target>
+      </trans-unit>
+      <trans-unit id="config.timeline.showAuthor">
+        <source xml:lang="en">Controls whether to show the commit author in the Timeline view.</source>
+        <target state="translated">Определяет, показывать ли автора фиксации в представлении временной шкалы.</target>
+      </trans-unit>
+      <trans-unit id="config.untrackedChanges">
+        <source xml:lang="en">Controls how untracked changes behave.</source>
+        <target state="translated">Определяет поведение неотслеживаемых изменений.</target>
+      </trans-unit>
+      <trans-unit id="config.untrackedChanges.hidden">
+        <source xml:lang="en">Untracked changes are hidden and excluded from several actions.</source>
+        <target state="translated">Неотслеживаемые изменения скрываются и исключаются из нескольких действий.</target>
+      </trans-unit>
+      <trans-unit id="config.untrackedChanges.mixed">
+        <source xml:lang="en">All changes, tracked and untracked, appear together and behave equally.</source>
+        <target state="translated">Все изменения — отслеживаемые и неотслеживаемые — отображаются вместе и работают одинаково.</target>
+      </trans-unit>
+      <trans-unit id="config.untrackedChanges.separate">
+        <source xml:lang="en">Untracked changes appear separately in the Source Control view. They are also excluded from several actions.</source>
+        <target state="translated">Неотслеживаемые изменения отображаются отдельно от представления исходного кода. Они также исключаются из нескольких действий.</target>
+      </trans-unit>
+      <trans-unit id="config.useCommitInputAsStashMessage">
+        <source xml:lang="en">Controls whether to use the message from the commit input box as the default stash message.</source>
+        <target state="translated">Определяет, следует ли использовать сообщение из поля входных данных фиксации в качестве сообщения о спрятанных изменениях по умолчанию.</target>
+      </trans-unit>
+      <trans-unit id="config.useForcePushWithLease">
+        <source xml:lang="en">Controls whether force pushing uses the safer force-with-lease variant.</source>
+        <target state="translated">Определяет, используется ли более безопасный вариант принудительной отправки с арендой.</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source xml:lang="en">Git SCM Integration</source>
+        <target state="translated">Интеграция системы контроля версий Git</target>
+      </trans-unit>
+      <trans-unit id="displayName">
+        <source xml:lang="en">Git</source>
+        <target state="translated">Git</target>
+      </trans-unit>
+      <trans-unit id="submenu.branch">
+        <source xml:lang="en">Branch</source>
+        <target state="translated">Ветвь</target>
+      </trans-unit>
+      <trans-unit id="submenu.changes">
+        <source xml:lang="en">Changes</source>
+        <target state="translated">Изменения</target>
+      </trans-unit>
+      <trans-unit id="submenu.commit">
+        <source xml:lang="en">Commit</source>
+        <target state="translated">Фиксация</target>
+      </trans-unit>
+      <trans-unit id="submenu.commit.amend">
+        <source xml:lang="en">Amend</source>
+        <target state="translated">Исправить</target>
+      </trans-unit>
+      <trans-unit id="submenu.commit.signoff">
+        <source xml:lang="en">Sign Off</source>
+        <target state="translated">Выйти</target>
+      </trans-unit>
+      <trans-unit id="submenu.explorer">
+        <source xml:lang="en">Git</source>
+        <target state="translated">Git</target>
+      </trans-unit>
+      <trans-unit id="submenu.pullpush">
+        <source xml:lang="en">Pull, Push</source>
+        <target state="translated">Получение, отправка</target>
+      </trans-unit>
+      <trans-unit id="submenu.remotes">
+        <source xml:lang="en">Remote</source>
+        <target state="translated">Удаленный</target>
+      </trans-unit>
+      <trans-unit id="submenu.stash">
+        <source xml:lang="en">Stash</source>
+        <target state="translated">Спрятать</target>
+      </trans-unit>
+      <trans-unit id="submenu.tags">
+        <source xml:lang="en">Tags</source>
+        <target state="translated">Теги</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.cloneRepository">
+        <source xml:lang="en">You can clone a repository locally.
+[Clone Repository](command:git.clone 'Clone a repository once the git extension has activated')</source>
+        <target state="translated">Репозиторий можно клонировать локально.
+[Клонировать репозиторий](command:git.clone \"Клонировать репозиторий после активации расширения Git\")</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.learnMore">
+        <source xml:lang="en">To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <target state="translated">Чтобы получить дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio, [изучите нашу документацию](https://aka.ms/vscode-scm).</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.disabled">
+        <source xml:lang="en">If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
+To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <target state="translated">Если вы хотите использовать возможности Git, включите Git в своих [параметрах](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
+Чтобы получить дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio, [изучите нашу документацию](https://aka.ms/vscode-scm).</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.empty">
+        <source xml:lang="en">In order to use git features, you can open a folder containing a git repository or clone from a URL.
+[Open Folder](command:vscode.openFolder)
+[Clone Repository](command:git.clone)
+To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <target state="translated">Чтобы использовать возможности Git, можно открыть папку, содержащую репозиторий Git, или клонировать из URL-адреса.
+[Открыть папку](command:vscode.openFolder)
+[Клонировать репозиторий](command:git.clone)
+Чтобы получить дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio, [изучите нашу документацию](https://aka.ms/vscode-scm).</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.emptyWorkspace">
+        <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories.
+[Add Folder to Workspace](command:workbench.action.addRootFolder)
+To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <target state="translated">В открытой сейчас рабочей области нет папок, содержащих репозитории Git.
+[Добавить папку в рабочую область](command:workbench.action.addRootFolder)
+Чтобы получить дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio, [изучите нашу документацию](https://aka.ms/vscode-scm).</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.folder">
+        <source xml:lang="en">The folder currently open doesn't have a git repository. You can initialize a repository which will enable source control features powered by git.
+[Initialize Repository](command:git.init?%5Btrue%5D)
+To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <target state="translated">В открытой папке нет репозитория Git. Вы можете инициализировать репозиторий, что позволит получить доступ к возможностям системы управления версиями на платформе Git.
+[Инициализировать репозиторий](command:git.init?%5Btrue%5D)
+Чтобы получить дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio, [изучите нашу документацию](https://aka.ms/vscode-scm).</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing">
+        <source xml:lang="en">A valid git installation was not detected, more details can be found in the [git output](command:git.showOutput).
+Please [install git](https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs](https://aka.ms/vscode-scm).
+If you're using a different version control system, you can [search the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.</source>
+        <target state="translated">Допустимая установка Git не обнаружена, дополнительные сведения см. в [выходных данных Git](command:git.showOutput).
+[Установите Git](https://git-scm.com/) либо получите дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio в [нашей документации](https://aka.ms/vscode-scm).
+Если вы используете другую систему управления версиями, можете поискать дополнительные расширения [в Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.workspace">
+        <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.
+[Initialize Repository](command:git.init)
+To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <target state="translated">В открытой рабочей области нет папок, содержащих репозитории Git. Вы можете инициализировать репозиторий в папке, что позволит получить доступ к возможностям системы управления версиями на платформе Git.
+[Инициализировать репозиторий](command:git.init)
+Чтобы получить дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio, [изучите нашу документацию](https://aka.ms/vscode-scm).</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

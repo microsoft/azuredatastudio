@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import type * as azdataType from 'azdata'; // eslint-disable-line no-duplicate-imports
 import * as vscode from 'vscode';
-import * as mssql from '../../mssql';
+import * as mssql from 'mssql';
 import * as os from 'os';
 import * as loc from './localizedConstants';
 import * as dataworkspace from 'dataworkspace';
@@ -109,7 +109,7 @@ export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompa
 	let ownerUri = undefined;
 
 	if (endpoint.endpointType === mssql.SchemaCompareEndpointType.Database && endpoint.connectionDetails) {
-		let connectionProfile = await connectionInfoToConnectionProfile(endpoint.connectionDetails);
+		let connectionProfile = connectionInfoToConnectionProfile(endpoint.connectionDetails);
 		let connection = await azdata.connection.connect(connectionProfile, false, false);
 
 		if (connection) {

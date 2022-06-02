@@ -1,0 +1,14 @@
+{
+	"parserOptions": {
+		"project": "./extensions/sql-bindings/tsconfig.json"
+	},
+	"rules": {
+		"@typescript-eslint/no-floating-promises": [
+			"error",
+			{
+				"ignoreVoid": true
+			}
+		],
+		"jsdoc/require-param": "error"
+	}
+}

@@ -9,13 +9,12 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { AppContext } from '../appContext';
-import { azureResource } from 'azureResource';
 import { TreeNode } from './treeNode';
 import { AzureResourceTreeProvider } from './tree/treeProvider';
 import { AzureResourceAccountTreeNode } from './tree/accountTreeNode';
 import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService } from '../azureResource/interfaces';
 import { AzureResourceServiceNames } from './constants';
-import { AzureAccount, Tenant } from 'azurecore';
+import { AzureAccount, Tenant, azureResource } from 'azurecore';
 import { FlatAccountTreeNode } from './tree/flatAccountTreeNode';
 import { ConnectionDialogTreeProvider } from './tree/connectionDialogTreeProvider';
 import { AzureResourceErrorMessageUtil } from './utils';

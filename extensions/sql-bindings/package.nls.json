@@ -1,0 +1,6 @@
+{
+	"displayName": "SQL Bindings",
+	"description": "Enables users to develop and publish Azure Functions with Azure SQL bindings",
+	"sqlBindings.addSqlBinding": "Add SQL Binding (preview)",
+	"sqlBindings.createAzureFunction": "Create Azure Function with SQL binding (preview)"
+}

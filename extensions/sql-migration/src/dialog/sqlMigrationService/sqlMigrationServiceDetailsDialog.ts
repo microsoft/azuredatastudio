@@ -5,10 +5,10 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, regenerateSqlMigrationServiceAuthKey } from '../../api/azure';
+import { DatabaseMigration, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, regenerateSqlMigrationServiceAuthKey } from '../../api/azure';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import * as constants from '../../constants/strings';
-import { MigrationContext } from '../../models/migrationLocalStorage';
+import { MigrationServiceContext } from '../../models/migrationLocalStorage';
 import * as styles from '../../constants/styles';
 
 const CONTROL_MARGIN = '10px';
@@ -28,7 +28,10 @@ export class SqlMigrationServiceDetailsDialog {
 	private _migrationServiceAuthKeyTable!: azdata.DeclarativeTableComponent;
 	private _disposables: vscode.Disposable[] = [];
 
-	constructor(private migrationContext: MigrationContext) {
+	constructor(
+		private _serviceContext: MigrationServiceContext,
+		private _migration: DatabaseMigration) {
+
 		this._dialog = azdata.window.createModelViewDialog(
 			'',
 			'SqlMigrationServiceDetailsDialog',
@@ -46,7 +49,8 @@ export class SqlMigrationServiceDetailsDialog {
 
 				await this.createServiceContent(
 					view,
-					this.migrationContext);
+					this._serviceContext,
+					this._migration);
 			});
 
 		this._dialog.okButton.label = constants.SQL_MIGRATION_SERVICE_DETAILS_BUTTON_LABEL;
@@ -55,33 +59,31 @@ export class SqlMigrationServiceDetailsDialog {
 		azdata.window.openDialog(this._dialog);
 	}
 
-	private async createServiceContent(view: azdata.ModelView, migrationContext: MigrationContext): Promise<void> {
+	private async createServiceContent(view: azdata.ModelView, serviceContext: MigrationServiceContext, migration: DatabaseMigration): Promise<void> {
 		this._migrationServiceAuthKeyTable = this._createIrTable(view);
 		const serviceNode = (await getSqlMigrationServiceMonitoringData(
-			migrationContext.azureAccount,
-			migrationContext.subscription,
-			migrationContext.controller.properties.resourceGroup,
-			migrationContext.controller.location,
-			migrationContext.controller.name,
-			this.migrationContext.sessionId!
-		));
+			serviceContext.azureAccount!,
+			serviceContext.subscription!,
+			serviceContext.migrationService?.properties.resourceGroup!,
+			serviceContext.migrationService?.location!,
+			serviceContext.migrationService?.name!));
 		const serviceNodeName = serviceNode.nodes?.map(node => node.nodeName).join(', ')
 			|| constants.SQL_MIGRATION_SERVICE_DETAILS_STATUS_UNAVAILABLE;
 
 		const flexContainer = view.modelBuilder
 			.flexContainer()
 			.withItems([
-				this._createHeading(view, migrationContext),
+				this._createHeading(view, this._migration),
 				view.modelBuilder
 					.separator()
 					.withProps({ width: STRETCH_WIDTH })
 					.component(),
 				this._createTextItem(view, constants.SUBSCRIPTION, LABEL_MARGIN),
-				this._createTextItem(view, migrationContext.subscription.name, VALUE_MARGIN),
+				this._createTextItem(view, serviceContext.subscription?.name!, VALUE_MARGIN),
 				this._createTextItem(view, constants.LOCATION, LABEL_MARGIN),
-				this._createTextItem(view, migrationContext.controller.location.toUpperCase(), VALUE_MARGIN),
+				this._createTextItem(view, serviceContext.migrationService?.location?.toUpperCase()!, VALUE_MARGIN),
 				this._createTextItem(view, constants.RESOURCE_GROUP, LABEL_MARGIN),
-				this._createTextItem(view, migrationContext.controller.properties.resourceGroup, VALUE_MARGIN),
+				this._createTextItem(view, serviceContext.migrationService?.properties.resourceGroup!, VALUE_MARGIN),
 				this._createTextItem(view, constants.SQL_MIGRATION_SERVICE_DETAILS_IR_LABEL, LABEL_MARGIN),
 				this._createTextItem(view, serviceNodeName, VALUE_MARGIN),
 				this._createTextItem(
@@ -96,10 +98,10 @@ export class SqlMigrationServiceDetailsDialog {
 			.component();
 
 		await view.initializeModel(flexContainer);
-		return await this._refreshAuthTable(view, migrationContext);
+		return await this._refreshAuthTable(view, serviceContext, migration);
 	}
 
-	private _createHeading(view: azdata.ModelView, migrationContext: MigrationContext): azdata.FlexContainer {
+	private _createHeading(view: azdata.ModelView, migration: DatabaseMigration): azdata.FlexContainer {
 		return view.modelBuilder
 			.flexContainer()
 			.withItems([
@@ -120,19 +122,15 @@ export class SqlMigrationServiceDetailsDialog {
 						view.modelBuilder
 							.text()
 							.withProps({
-								value: migrationContext.controller.name,
-								CSSStyles: {
-									...styles.SECTION_HEADER_CSS
-								}
+								value: this._serviceContext.migrationService?.name,
+								CSSStyles: { ...styles.SECTION_HEADER_CSS }
 							})
 							.component(),
 						view.modelBuilder
 							.text()
 							.withProps({
 								value: constants.SQL_MIGRATION_SERVICE_DETAILS_SUB_TITLE,
-								CSSStyles: {
-									...styles.SMALL_NOTE_CSS
-								}
+								CSSStyles: { ...styles.SMALL_NOTE_CSS }
 							})
 							.component(),
 					])
@@ -197,15 +195,14 @@ export class SqlMigrationServiceDetailsDialog {
 		};
 	}
 
-	private async _regenerateAuthKey(view: azdata.ModelView, migrationContext: MigrationContext, keyName: string): Promise<void> {
+	private async _regenerateAuthKey(view: azdata.ModelView, serviceContext: MigrationServiceContext, migration: DatabaseMigration, keyName: string): Promise<void> {
 		const keys = await regenerateSqlMigrationServiceAuthKey(
-			migrationContext.azureAccount,
-			migrationContext.subscription,
-			migrationContext.controller.properties.resourceGroup,
-			migrationContext.controller.location.toUpperCase(),
-			migrationContext.controller.name,
-			keyName,
-			migrationContext.sessionId!);
+			serviceContext.azureAccount!,
+			serviceContext.subscription!,
+			serviceContext.migrationService?.properties.resourceGroup!,
+			serviceContext.migrationService?.properties.location?.toUpperCase()!,
+			serviceContext.migrationService?.name!,
+			keyName);
 
 		if (keys?.authKey1 && keyName === AUTH_KEY1) {
 			await this._updateTableCell(this._migrationServiceAuthKeyTable, 0, 1, keys.authKey1, constants.SERVICE_KEY1_LABEL);
@@ -223,14 +220,13 @@ export class SqlMigrationServiceDetailsDialog {
 		await vscode.window.showInformationMessage(constants.AUTH_KEY_REFRESHED(keyName));
 	}
 
-	private async _refreshAuthTable(view: azdata.ModelView, migrationContext: MigrationContext): Promise<void> {
+	private async _refreshAuthTable(view: azdata.ModelView, serviceContext: MigrationServiceContext, migration: DatabaseMigration): Promise<void> {
 		const keys = await getSqlMigrationServiceAuthKeys(
-			migrationContext.azureAccount,
-			migrationContext.subscription,
-			migrationContext.controller.properties.resourceGroup,
-			migrationContext.controller.location.toUpperCase(),
-			migrationContext.controller.name,
-			migrationContext.sessionId!);
+			serviceContext.azureAccount!,
+			serviceContext.subscription!,
+			serviceContext.migrationService?.properties.resourceGroup!,
+			serviceContext.migrationService?.location.toUpperCase()!,
+			serviceContext.migrationService?.name!);
 
 		const copyKey1Button = view.modelBuilder
 			.button()
@@ -275,7 +271,7 @@ export class SqlMigrationServiceDetailsDialog {
 			})
 			.component();
 		this._disposables.push(refreshKey1Button.onDidClick(
-			async (e) => await this._regenerateAuthKey(view, migrationContext, AUTH_KEY1)));
+			async (e) => await this._regenerateAuthKey(view, serviceContext, migration, AUTH_KEY1)));
 
 		const refreshKey2Button = view.modelBuilder
 			.button()
@@ -288,7 +284,7 @@ export class SqlMigrationServiceDetailsDialog {
 			})
 			.component();
 		this._disposables.push(refreshKey2Button.onDidClick(
-			async (e) => await this._regenerateAuthKey(view, migrationContext, AUTH_KEY2)));
+			async (e) => await this._regenerateAuthKey(view, serviceContext, migration, AUTH_KEY2)));
 
 		await this._migrationServiceAuthKeyTable.updateProperties({
 			dataValues: [
