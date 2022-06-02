@@ -216,28 +216,28 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 							diffIconClass = executionPlanComparisonPropertiesDifferent;
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyBetterValue.LowerNumber:
-							if (parseFloat(v.topProp.displayValue) > parseFloat(v.bottomProp.displayValue)) {
+							if (parseFloat(v.bottomProp.displayValue) < parseFloat(v.topProp.displayValue)) {
 								diffIconClass = executionPlanComparisonPropertiesGreenDownArrow;
 							} else {
 								diffIconClass = executionPlanComparisonPropertiesRedUpArrow;
 							}
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyBetterValue.HigherNumber:
-							if (parseFloat(v.topProp.displayValue) > parseFloat(v.bottomProp.displayValue)) {
-								diffIconClass = executionPlanComparisonPropertiesRedDownArrow;
-							} else {
+							if (parseFloat(v.bottomProp.displayValue) > parseFloat(v.topProp.displayValue)) {
 								diffIconClass = executionPlanComparisonPropertiesGreenUpArrow;
+							} else {
+								diffIconClass = executionPlanComparisonPropertiesRedDownArrow;
 							}
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyBetterValue.True:
-							if (v.topProp.displayValue === 'True') {
-								diffIconClass = executionPlanComparisonPropertiesRedDownArrow;
-							} else {
+							if (v.bottomProp.displayValue === 'True') {
 								diffIconClass = executionPlanComparisonPropertiesGreenUpArrow;
+							} else {
+								diffIconClass = executionPlanComparisonPropertiesRedDownArrow;
 							}
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyBetterValue.False:
-							if (v.topProp.displayValue === 'True') {
+							if (v.bottomProp.displayValue === 'False') {
 								diffIconClass = executionPlanComparisonPropertiesGreenDownArrow;
 							} else {
 								diffIconClass = executionPlanComparisonPropertiesRedUpArrow;
