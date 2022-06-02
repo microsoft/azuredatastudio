@@ -201,7 +201,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				.withAdditionalProperties(propertyBag)
 				.withConnectionInfo(connectionInfo).send();
 		}
-		// addtional execution step that will be used by vscode-azurefunctions to execute only when creating a new azure function project
+		// additional execution step that will be used by vscode-azurefunctions to execute only when creating a new azure function project
 		let connectionStringExecuteStep = createAddConnectionStringStep(projectFolder, connectionInfo, connectionStringInfo.connectionStringSettingName);
 
 		// create C# Azure Function with SQL Binding
