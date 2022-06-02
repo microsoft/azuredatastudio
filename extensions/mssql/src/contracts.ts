@@ -49,6 +49,69 @@ export namespace SecurityTokenRequest {
 }
 // ------------------------------- </ Security Token Request > ------------------------------------------
 
+// ------------------------------- < Refresh Token Notification > ---------------------------------
+
+/**
+ * Parameters for a refresh token notification sent from STS to ADS
+ */
+export interface RefreshTokenParams {
+	/**
+	 * The tenant ID
+	 */
+	tenantId: string;
+	/**
+	 * The provider that indicates the type of linked account to query
+	 */
+	provider: string;
+	/**
+	 * The identifier of the target resource of the requested token
+	 */
+	resource: string;
+	/**
+	 * The account ID
+	 */
+	accountId: string;
+	/**
+	 * The URI for the editor that needs a token refresh
+	 */
+	uri: string;
+}
+
+export namespace RefreshTokenNotification {
+	export const type = new NotificationType<RefreshTokenParams, void>('account/refreshToken');
+}
+
+
+
+// ------------------------------- </ Refresh Token Notification > -------------------------------
+
+// ------------------------------- < Token Refreshed Notification > ---------------------------------
+
+/**
+ * Parameters for a new refresh token sent from ADS to STS
+ */
+export interface TokenRefreshedParams {
+	/**
+	 * The refresh token
+	 */
+	token: string;
+	/**
+	 * The token expiration, a Unix epoch
+	 */
+	expiresOn: Number;
+	/**
+	 * The URI for the editor that needs a token refresh
+	 */
+	uri: string;
+}
+
+export namespace TokenRefreshedNotification {
+	export const type = new NotificationType<TokenRefreshedParams, void>('account/tokenRefreshed');
+}
+
+// ------------------------------- </ Token Refreshed Notification > -------------------------------
+
+
 // ------------------------------- < Agent Management > ------------------------------------
 // Job management parameters
 export interface AgentJobsParams {
