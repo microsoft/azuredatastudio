@@ -443,7 +443,8 @@ export enum AzureResource {
 	MsGraph = 7,
 	AzureLogAnalytics = 8,
 	AzureStorage = 9,
-	AzureKusto = 10
+	AzureKusto = 10,
+	PowerBi = 11
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
